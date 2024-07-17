@@ -34,7 +34,8 @@ specification {
   element mobileApp {
     style {
       shape mobile
-      icon https://icon.icepanel.io/Technology/svg/Swift.svg
+      icon tech:swift
+      //icon https://icon.icepanel.io/Technology/svg/Swift.svg
     }
   }
 
@@ -60,7 +61,7 @@ specification {
   element gqlQuery
   element lambda {
     style {
-      icon https://icon.icepanel.io/AWS/svg/Compute/Lambda.svg
+      icon aws:lambda
     }
   }
 

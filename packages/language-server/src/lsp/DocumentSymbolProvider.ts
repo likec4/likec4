@@ -17,10 +17,11 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
   getSymbols({
     parseResult: {
-      value: { specifications, models, views }
+      value: { specifications, models, views, likec4lib }
     }
   }: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
     return [
+      ...likec4lib.map(l => () => this.getLikec4LibSymbol(l)),
       ...specifications.map(s => () => this.getSpecSymbol(s)),
       ...models.map(s => () => this.getModelSymbol(s)),
       ...views.map(s => () => this.getModelViewsSymbol(s))
@@ -32,6 +33,22 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         return []
       }
     })
+  }
+
+  protected getLikec4LibSymbol(astLib: ast.LikeC4Lib): DocumentSymbol[] {
+    const cstModel = astLib?.$cstNode
+    if (!cstModel) return []
+    const children = astLib.icons.map(i => this.getLibIconSymbol(i)).filter(isTruthy)
+    if (children.length === 0) return []
+    return [
+      {
+        kind: SymbolKind.Namespace,
+        name: 'icons',
+        range: cstModel.range,
+        selectionRange: GrammarUtils.findNodeForKeyword(cstModel, 'icons')?.range ?? cstModel.range,
+        children
+      }
+    ]
   }
 
   protected getSpecSymbol(astSpec: ast.SpecificationRule): DocumentSymbol[] {
@@ -176,6 +193,16 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       name: '#' + astTag.tag.name,
       range: astTag.$cstNode.range,
       selectionRange: astTag.tag.$cstNode.range
+    }
+  }
+
+  protected getLibIconSymbol(astTag: ast.LibIcon): DocumentSymbol | null {
+    if (!astTag.$cstNode || isEmpty(astTag.name)) return null
+    return {
+      kind: this.symbolKind(astTag),
+      name: astTag.name,
+      range: astTag.$cstNode.range,
+      selectionRange: astTag.$cstNode.range
     }
   }
 

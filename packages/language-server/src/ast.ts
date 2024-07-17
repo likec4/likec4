@@ -8,7 +8,7 @@ import {
 } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
-import { clamp, isNullish } from 'remeda'
+import { clamp, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-protocol'
 import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
@@ -338,7 +338,10 @@ export function toElementStyle(props?: Array<ast.StyleProperty>) {
         break
       }
       case ast.isIconProperty(prop): {
-        result.icon = prop.value as c4.IconUrl
+        const icon = prop.libicon?.ref?.name ?? prop.value
+        if (isTruthy(icon)) {
+          result.icon = icon as c4.IconUrl
+        }
         break
       }
       case ast.isOpacityProperty(prop): {

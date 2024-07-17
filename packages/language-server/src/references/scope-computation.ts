@@ -6,7 +6,7 @@ import {
   MultiMap,
   type PrecomputedScopes
 } from 'langium'
-import { isTruthy } from 'remeda'
+import { isNullish, isTruthy } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -20,77 +20,130 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<AstNodeDescription[]> {
     const docExports: AstNodeDescription[] = []
     try {
-      const { specifications, models, views } = document.parseResult.value
+      const { specifications, models, views, likec4lib } = document.parseResult.value
+
+      // Process library
+      this.exportLibrary(likec4lib, docExports, document)
 
       // Process specification
-      for (
-        const spec of specifications.flatMap(s => [
-          ...s.elements,
-          ...s.relationships,
-          ...s.tags
-        ])
-      ) {
-        try {
-          switch (true) {
-            case ast.isSpecificationElementKind(spec): {
-              if (isTruthy(spec.kind.name)) {
-                docExports.push(
-                  this.descriptions.createDescription(spec.kind, spec.kind.name, document)
-                )
-              }
-              continue
-            }
-            case ast.isSpecificationTag(spec): {
-              if (isTruthy(spec.tag.name)) {
-                docExports.push(
-                  this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
-                )
-              }
-              continue
-            }
-            case ast.isSpecificationRelationshipKind(spec): {
-              if (isTruthy(spec.kind.name)) {
-                docExports.push(
-                  this.descriptions.createDescription(spec.kind, spec.kind.name, document),
-                  this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document)
-                )
-              }
-              continue
-            }
-            // Thow error if not exhaustive
-            default:
-              nonexhaustive(spec)
-          }
-        } catch (e) {
-          logError(e)
-        }
-      }
+      this.exportSpecification(specifications, docExports, document)
 
       // Process models
-      for (const elAst of models.flatMap(m => m.elements)) {
-        try {
-          if (ast.isElement(elAst) && isTruthy(elAst.name)) {
-            docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
-          }
-        } catch (e) {
-          logError(e)
-        }
-      }
+      this.exportModel(models, docExports, document)
 
       // Process views
-      for (const viewAst of views.flatMap(v => v.views)) {
-        try {
-          if (isTruthy(viewAst.name)) {
-            docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
-          }
-        } catch (e) {
-          logError(e)
-        }
-      }
+      this.exportViews(views, docExports, document)
     } catch (e) {
       logError(e)
     }
     return docExports
+  }
+
+  private exportViews(
+    views: ast.ModelViews[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument
+  ) {
+    if (isNullish(views) || views.length === 0) {
+      return
+    }
+    for (const viewAst of views.flatMap(v => v.views)) {
+      try {
+        if (isTruthy(viewAst.name)) {
+          docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+  }
+
+  private exportModel(
+    models: ast.Model[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument
+  ) {
+    if (isNullish(models) || models.length === 0) {
+      return
+    }
+    for (const elAst of models.flatMap(m => m.elements)) {
+      try {
+        if (ast.isElement(elAst) && isTruthy(elAst.name)) {
+          docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+  }
+
+  private exportLibrary(
+    likec4lib: ast.LikeC4Lib[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument
+  ) {
+    if (isNullish(likec4lib) || likec4lib.length === 0) {
+      return
+    }
+    for (const iconAst of likec4lib.flatMap(l => l.icons)) {
+      try {
+        docExports.push(this.descriptions.createDescription(iconAst, iconAst.name, document))
+      } catch (e) {
+        logError(e)
+      }
+    }
+  }
+
+  private exportSpecification(
+    specifications: ast.SpecificationRule[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument
+  ) {
+    if (isNullish(specifications) || specifications.length === 0) {
+      return
+    }
+    for (
+      const spec of specifications.flatMap(s => [
+        ...s.elements,
+        ...s.relationships,
+        ...s.tags
+      ])
+    ) {
+      try {
+        switch (true) {
+          case ast.isSpecificationElementKind(spec): {
+            if (isTruthy(spec.kind.name)) {
+              docExports.push(
+                this.descriptions.createDescription(spec.kind, spec.kind.name, document)
+              )
+            }
+            continue
+          }
+          case ast.isSpecificationTag(spec): {
+            if (isTruthy(spec.tag.name)) {
+              docExports.push(
+                this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
+              )
+            }
+            continue
+          }
+          case ast.isSpecificationRelationshipKind(spec): {
+            if (isTruthy(spec.kind.name)) {
+              docExports.push(
+                this.descriptions.createDescription(spec.kind, spec.kind.name, document),
+                this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document)
+              )
+            }
+            continue
+          }
+          // Thow error if not exhaustive
+          default:
+            nonexhaustive(spec)
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
   }
 
   override computeLocalScopes(

@@ -61,7 +61,7 @@
       }
     },
     {
-      "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
+      "match": "\\b(shape|color|head|tail|line|border):?\\s+([\\w\\d]+)\\b",
       "captures": {
         "1": {
           "name": "variable.other.property.likec4"
@@ -80,7 +80,7 @@
       "name": "entity.name.type.enum.likec4",
       "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
     },
-        {
+    {
       "name": "entity.name.type.enum.likec4",
       "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate)\\b"
     },
@@ -94,11 +94,11 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|element|exclude|extend|extends|head|icon|include|it|kind|line|link|mobile|model|navigateTo|none|normal|odiamond|odot|of|onormal|opacity|open|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
+      "match": "\\b(autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|element|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|mobile|model|navigateTo|none|normal|odiamond|odot|of|onormal|opacity|open|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
     },
     {
       "name": "keyword.symbol.likec4",
-      "match": "(\\{|\\}|\\:|\\]->|-\\[|<?->|<-|\\,|\\;|\\!|\\=)"
+      "match": "(\\{|\\}|\\:|\\]->|-\\[|<->|<-|->|\\,|\\;|\\!|\\=)"
     }
   ],
   "repository": {

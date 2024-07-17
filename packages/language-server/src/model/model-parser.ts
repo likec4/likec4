@@ -145,10 +145,19 @@ export class LikeC4ModelParser {
     const bodyProps = mapToObj(astNode.body?.props.filter(ast.isElementStringProperty) ?? [], p => [p.key, p.value])
 
     title = toSingleLine(title ?? bodyProps.title)
-    description = removeIndent(description ?? bodyProps.description)
-    technology = toSingleLine(technology ?? bodyProps.technology)
+    description = removeIndent(bodyProps.description ?? description)
+    technology = toSingleLine(bodyProps.technology ?? technology)
 
     const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
+
+    // Property has higher priority than from style
+    const iconProp = astNode.body?.props.find(ast.isIconProperty)
+    if (iconProp) {
+      const value = iconProp.libicon?.ref?.name ?? iconProp.value
+      if (isTruthy(value)) {
+        style.icon = value as c4.IconUrl
+      }
+    }
 
     return {
       id,
@@ -215,7 +224,9 @@ export class LikeC4ModelParser {
     let exprNode: ast.Expressions | undefined = astNode.exprs
     while (exprNode) {
       try {
-        exprs.unshift(this.parseExpression(exprNode.value))
+        if (isTruthy(exprNode.value)) {
+          exprs.unshift(this.parseExpression(exprNode.value))
+        }
       } catch (e) {
         logWarnError(e)
       }
@@ -324,7 +335,10 @@ export class LikeC4ModelParser {
           return acc
         }
         if (ast.isIconProperty(prop)) {
-          acc.custom[prop.key] = prop.value as c4.IconUrl
+          const value = prop.libicon?.ref?.name ?? prop.value
+          if (isTruthy(value)) {
+            acc.custom[prop.key] = value as c4.IconUrl
+          }
           return acc
         }
         if (ast.isColorProperty(prop)) {
@@ -435,7 +449,7 @@ export class LikeC4ModelParser {
       return this.parseViewRulePredicate(astRule, isValid)
     }
     if (ast.isViewRuleStyle(astRule)) {
-      const styleProps = toElementStyle(astRule.styleprops)
+      const styleProps = toElementStyle(astRule.props)
       return {
         targets: this.parseElementExpressionsIterator(astRule.target),
         style: {
@@ -617,7 +631,7 @@ export class LikeC4ModelParser {
             return acc
           }
           if (ast.isViewRuleStyle(n)) {
-            const styleProps = toElementStyle(n.styleprops)
+            const styleProps = toElementStyle(n.props)
             const targets = this.parseElementExpressionsIterator(n.target)
             if (targets.length > 0) {
               acc.push({

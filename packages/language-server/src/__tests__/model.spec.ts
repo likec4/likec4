@@ -216,9 +216,27 @@ describe.concurrent('model', () => {
       element component
     }
     model {
-      component system {
+      component system1 {
+        icon https://icons.terrastruct.com/dev%2Ftypescript.svg
+      }
+      component system2 {
         style {
           icon: https://icons.terrastruct.com/dev%2Ftypescript.svg
+        }
+      }
+    }`
+
+  test('element with libicon').valid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        icon tech:react
+      }
+      component system2 {
+        style {
+          icon tech:aws
         }
       }
     }`

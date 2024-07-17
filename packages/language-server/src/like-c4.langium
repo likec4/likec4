@@ -4,9 +4,21 @@ entry LikeC4Grammar:
   (
     specifications+=SpecificationRule |
     models+=Model  |
-    views+=ModelViews
+    views+=ModelViews |
+    likec4lib+=LikeC4Lib
   )*
 ;
+
+// Lib -------------------------------------
+LikeC4Lib:
+  'likec4lib' '{'
+    'icons' '{'
+      (icons+=LibIcon)+
+    '}'
+  '}';
+
+LibIcon:
+  name=ICON_ID;
 
 // Specification -------------------------------------
 
@@ -80,7 +92,7 @@ ElementBody: '{'
 ;
 
 ElementProperty:
-  ElementStringProperty | StyleProperties | LinkProperty;
+  ElementStringProperty | StyleProperties | LinkProperty | IconProperty;
 
 ElementStringProperty:
   key=('title' | 'technology' | 'description') ':'? value=String ';'?;
@@ -296,7 +308,7 @@ DynamicViewElementExpressions infers DynamicViewElementExpression:
 
 ViewRuleStyle:
   'style' target=ElementExpressionsIterator '{'
-    styleprops+=StyleProperty*
+    props+=StyleProperty*
   '}';
 
 ViewRuleAutoLayout:
@@ -334,7 +346,7 @@ OpacityProperty:
 
 // Element properties -------------------------------------
 IconProperty:
-  key='icon' ':'? value=Uri ';'?;
+  key='icon' ':'? (libicon=[LibIcon:IconId] | value=Uri) ';'?;
 
 ShapeProperty:
   key='shape' ':'? value=ElementShape ';'?;
@@ -392,6 +404,10 @@ ThemeColor returns string:
   'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string:
   'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
+
+IconId returns string:
+  ICON_ID;
+
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
 
@@ -428,6 +444,9 @@ hidden terminal WS: /\s+/;
 // -----------------------------------
 // Terminals
 //terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
+
+// LibIcons
+terminal ICON_ID: /(aws|gcp|tech):[_-\w\d]+/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;

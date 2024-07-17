@@ -7,9 +7,11 @@
     "generate": {
       "outputs": [
         "contrib/**",
-        "src/generated/**"
+        "src/generated/**",
+        "src/generated-lib/**"
       ],
       "inputs": [
+        "scripts/**",
         "src/**/*.langium",
         "langium-config.json",
         "package.json"

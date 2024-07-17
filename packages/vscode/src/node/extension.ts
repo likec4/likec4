@@ -1,3 +1,4 @@
+import { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
 import os from 'node:os'
 import path from 'node:path'
 import * as vscode from 'vscode'
@@ -100,6 +101,9 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       const w = vscode.Uri.joinPath(f.uri, globPattern)
       return { language: languageId, scheme, pattern: w.scheme === 'file' ? w.fsPath : w.path }
     })
+
+  // Add the scheme for the likec4libq
+  documentSelector.push({ language: languageId, scheme: LibScheme })
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {

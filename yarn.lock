@@ -2297,6 +2297,7 @@ __metadata:
   dependencies:
     "@dagrejs/graphlib": "npm:^2.2.2"
     "@likec4/core": "workspace:*"
+    "@likec4/icons": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/node": "npm:^20.14.10"
@@ -2304,6 +2305,7 @@ __metadata:
     "@types/string-hash": "npm:^1.1.3"
     execa: "npm:^9.3.0"
     fast-equals: "npm:^5.0.1"
+    glob: "npm:^11.0.0"
     indent-string: "npm:^5.0.0"
     json5: "npm:^2.2.3"
     langium: "npm:3.1.2"
@@ -2314,6 +2316,7 @@ __metadata:
     remeda: "npm:^2.3.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
+    tsx: "npm:~4.9.3"
     type-fest: "npm:^4.21.0"
     typescript: "npm:^5.5.3"
     ufo: "npm:^1.5.3"

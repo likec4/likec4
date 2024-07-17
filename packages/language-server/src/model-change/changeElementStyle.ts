@@ -127,7 +127,7 @@ export function changeElementStyle(services: LikeC4Services, {
       invariant(ruleCstNode, 'RuleCstNode not found')
       for (const [key, _value] of entries(style)) {
         const value = key === 'opacity' ? _value.toString() + '%' : _value
-        const ruleProp = rule.styleprops.find(p => p.key === key)
+        const ruleProp = rule.props.find(p => p.key === key)
         // replace existing  property
         if (ruleProp && ruleProp.$cstNode) {
           const { range: { start, end } } = nonNullable(

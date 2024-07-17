@@ -3,9 +3,9 @@ model {
   amazon = externalSystem 'Amazon' {
     technology 'cloud provider'
     description: 'Cloud and managed services provider'
+    icon https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
     style {
-      color amber
-      icon https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
+      color amber      
     }
 
     rds = container 'RDS' {
@@ -13,19 +13,15 @@ model {
 
       pg = component 'PostgreSQL' {
         #db
-        style {
-          icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
-        }
-
+        icon tech:postgres-sql
+        
         tblUsers = table 'Users Table' {
           #deprecated
           description: '
             Table with registered users. Contains references to Identity provider.
             [deprecated, moving to Aurora]
           '
-          style {
-            icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
-          }
+          icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
         }
       }
 

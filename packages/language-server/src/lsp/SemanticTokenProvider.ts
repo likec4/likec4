@@ -17,8 +17,18 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.function
       })
     }
+    if (ast.isLibIcon(node)) {
+      acceptor({
+        node,
+        property: 'name',
+        type: SemanticTokenTypes.type,
+        modifier: [SemanticTokenModifiers.definition]
+      })
+      return 'prune'
+    }
+
     if (ast.isRelation(node) && 'kind' in node) {
-      return acceptor({
+      acceptor({
         node,
         property: 'kind',
         type: SemanticTokenTypes.function
@@ -159,11 +169,21 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'key',
         type: SemanticTokenTypes.property
       })
-      acceptor({
-        node,
-        property: 'value',
-        type: SemanticTokenTypes.string
-      })
+      if (ast.isIconProperty(node) && node.libicon) {
+        acceptor({
+          node,
+          property: 'libicon',
+          type: SemanticTokenTypes.enum
+        })
+      }
+      if ('value' in node) {
+        acceptor({
+          node,
+          property: 'value',
+          type: SemanticTokenTypes.string
+        })
+      }
+
       return 'prune'
     }
     if (ast.isElement(node)) {

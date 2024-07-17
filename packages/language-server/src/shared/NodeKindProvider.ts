@@ -25,6 +25,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         return SymbolKind.Class
       }
       case (ast.isTag(node) || hasType(ast.Tag))
+        || (ast.isLibIcon(node) || hasType(ast.LibIcon))
         || (ast.isSpecificationTag(node) || hasType(ast.SpecificationTag)): {
         return SymbolKind.EnumMember
       }

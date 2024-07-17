@@ -31,7 +31,12 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
-      expectedItems: ['specification', 'model', 'views']
+      expectedItems: [
+        'specification',
+        'model',
+        'views',
+        'likec4lib'
+      ]
     })
 
     await completion({

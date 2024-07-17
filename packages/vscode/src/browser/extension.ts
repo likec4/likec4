@@ -1,4 +1,5 @@
 import { hasAtLeast } from '@likec4/core'
+import { Scheme } from '@likec4/language-server/likec4lib'
 import * as vscode from 'vscode'
 import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
 import { ExtensionController } from '../common/ExtensionController'
@@ -59,7 +60,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     documentSelector: [
       { language: languageId, scheme: 'file' },
       { language: languageId, scheme: 'vscode-vfs' },
-      { language: languageId, scheme: 'vscode-test-web' }
+      { language: languageId, scheme: 'vscode-test-web' },
+      { language: languageId, scheme: Scheme }
     ]
   }
 

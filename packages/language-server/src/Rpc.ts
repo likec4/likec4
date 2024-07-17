@@ -5,6 +5,7 @@ import type { LikeC4Services } from './module'
 import { nonexhaustive } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
+import { Scheme } from './likec4lib'
 import {
   buildDocuments,
   changeView,
@@ -69,7 +70,7 @@ export class Rpc implements Disposable {
         const changed = docs.map(d => URI.parse(d))
         const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
         const deleted = LangiumDocuments.all
-          .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri))
+          .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri) && d.uri.scheme !== Scheme)
           .map(d => d.uri)
           .toArray()
         logger.debug(
