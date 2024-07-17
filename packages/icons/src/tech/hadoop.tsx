@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgApacheHadoop = (props: SVGProps<SVGSVGElement>) => (
+const SvgHadoop = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#ff0"
@@ -20,4 +20,4 @@ const SvgApacheHadoop = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgApacheHadoop
+export default SvgHadoop

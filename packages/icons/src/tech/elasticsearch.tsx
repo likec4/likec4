@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgElasticSearch = (props: SVGProps<SVGSVGElement>) => (
+const SvgElasticsearch = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#343741"
@@ -15,4 +15,4 @@ const SvgElasticSearch = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgElasticSearch
+export default SvgElasticsearch

@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgHashiCorpVault = (props: SVGProps<SVGSVGElement>) => (
+const SvgHashicorpVault = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#ffd814"
@@ -7,4 +7,4 @@ const SvgHashiCorpVault = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgHashiCorpVault
+export default SvgHashicorpVault

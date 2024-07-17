@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgApacheSubversion = (props: SVGProps<SVGSVGElement>) => (
+const SvgSubversion = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#809CC8"
@@ -7,4 +7,4 @@ const SvgApacheSubversion = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgApacheSubversion
+export default SvgSubversion

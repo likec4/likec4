@@ -21,7 +21,6 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/tech/index.ts",
-    "./registry": "./src/registry.ts",
     "./aws": "./src/aws/index.ts",
     "./aws/*": "./src/aws/*.tsx",
     "./tech": "./src/tech/index.ts",
@@ -37,10 +36,6 @@
       ".": {
         "types": "./dist/tech/index.d.ts",
         "default": "./dist/tech/index.js"
-      },
-      "./registry": {
-        "types": "./dist/registry.d.ts",
-        "default": "./dist/registry.js"
       },
       "./aws": {
         "types": "./dist/aws/index.d.ts",

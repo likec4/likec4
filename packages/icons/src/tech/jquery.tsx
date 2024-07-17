@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgJQuery = (props: SVGProps<SVGSVGElement>) => (
+const SvgJquery = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#0868AC"
@@ -7,4 +7,4 @@ const SvgJQuery = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgJQuery
+export default SvgJquery

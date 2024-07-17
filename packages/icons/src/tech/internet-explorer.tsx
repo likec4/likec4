@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgInternetExplorer10Ie10 = (props: SVGProps<SVGSVGElement>) => (
+const SvgInternetExplorer = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#1EBBEE"
@@ -7,4 +7,4 @@ const SvgInternetExplorer10Ie10 = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgInternetExplorer10Ie10
+export default SvgInternetExplorer

@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgApacheAirflow = (props: SVGProps<SVGSVGElement>) => (
+const SvgAirflow = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#017cee"
@@ -36,4 +36,4 @@ const SvgApacheAirflow = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={64.009} cy={63.995} r={2.718} fill="#4a4848" />
   </svg>
 )
-export default SvgApacheAirflow
+export default SvgAirflow

@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgApacheMaven = (props: SVGProps<SVGSVGElement>) => (
+const SvgMaven = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
@@ -516,4 +516,4 @@ const SvgApacheMaven = (props: SVGProps<SVGSVGElement>) => (
     <path d="M78.953 62.621h-.687a7 7 0 0 1 .687 0m0 0" stroke="none" fillRule="nonzero" fill="url(#M)" />
   </svg>
 )
-export default SvgApacheMaven
+export default SvgMaven

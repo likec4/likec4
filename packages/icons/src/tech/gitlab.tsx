@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgGitLab = (props: SVGProps<SVGSVGElement>) => (
+const SvgGitlab = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 128 128" {...props}>
     <path
       fill="#E24329"
@@ -19,4 +19,4 @@ const SvgGitLab = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgGitLab
+export default SvgGitlab

@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgApacheKafka = (props: SVGProps<SVGSVGElement>) => (
+const SvgKafka = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#231f20"
@@ -7,4 +7,4 @@ const SvgApacheKafka = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgApacheKafka
+export default SvgKafka

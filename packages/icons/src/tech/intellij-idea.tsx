@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgIntelliJIdea = (props: SVGProps<SVGSVGElement>) => (
+const SvgIntellijIdea = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
@@ -70,4 +70,4 @@ const SvgIntelliJIdea = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgIntelliJIdea
+export default SvgIntellijIdea

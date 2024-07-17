@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgVisualStudioCodeVsCode = (props: SVGProps<SVGSVGElement>) => (
+const SvgVscode = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <mask
       id="a"
@@ -89,4 +89,4 @@ const SvgVisualStudioCodeVsCode = (props: SVGProps<SVGSVGElement>) => (
     </defs>
   </svg>
 )
-export default SvgVisualStudioCodeVsCode
+export default SvgVscode
