@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgEsLint = (props: SVGProps<SVGSVGElement>) => (
+const SvgEslint = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#8080F2"
@@ -11,4 +11,4 @@ const SvgEsLint = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgEsLint
+export default SvgEslint

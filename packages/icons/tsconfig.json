@@ -12,6 +12,7 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "isolatedModules": true,
     "outDir": "dist",
+    "rootDir": "src",
     "declaration": true,
     "skipLibCheck": true,
     "incremental": true,

@@ -15,7 +15,8 @@
     "prepack": "tsc"
   },
   "files": [
-    "dist"
+    "dist",
+    "!**/*.tsbuildinfo"
   ],
   "type": "module",
   "sideEffects": false,
