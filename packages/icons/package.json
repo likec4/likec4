@@ -12,11 +12,11 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "update-icons": "node scripts/update-icons.mjs",
-    "prepack": "tsc"
+    "prepack": "tsc",
+    "generate": ""
   },
   "files": [
-    "dist",
-    "!**/*.tsbuildinfo"
+    "dist"
   ],
   "type": "module",
   "sideEffects": false,

@@ -45,10 +45,7 @@ model {
     backend = container 'Backend' {
       description 'The backend services of the cloud system'
       link ./cloud/backend.c4#L3
-
-      style {
-        icon https://icon.icepanel.io/Technology/svg/Node.js.svg
-      }
+      icon tech:nodejs
     }
 
     reporting = service 'Reporting' {

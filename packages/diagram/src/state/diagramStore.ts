@@ -10,7 +10,12 @@ import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
-import type { Changes, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
+import type {
+  Changes,
+  DiagramNodeWithNavigate,
+  ElementIconRenderer,
+  LikeC4DiagramEventHandlers
+} from '../LikeC4Diagram.props'
 import { MinZoom } from '../xyflow/const'
 import type { XYStoreApi } from '../xyflow/hooks'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
@@ -29,6 +34,7 @@ export type DiagramStore = {
   nodesDraggable: boolean
   nodesSelectable: boolean
   experimentalEdgeEditing: boolean
+  renderIcon: ElementIconRenderer | null
   // Diagram Container, see DiagramContainer.tsx
   getContainer: () => HTMLDivElement | null
 
@@ -76,6 +82,7 @@ export type DiagramInitialState = // Required properties
   & Pick<
     DiagramStore,
     | 'view'
+    | 'renderIcon'
     | 'readonly'
     | 'showElementLinks'
     | 'fitViewEnabled'

@@ -18,7 +18,7 @@ LikeC4Lib:
   '}';
 
 LibIcon:
-  name=ICON_ID;
+  name=IconId;
 
 // Specification -------------------------------------
 
@@ -406,7 +406,8 @@ ElementShape returns string:
   'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
 
 IconId returns string:
-  ICON_ID;
+  LIB_ICON;
+  // ('aws:' | 'gcp:' | 'tech:') IdTerminal;
 
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
@@ -446,7 +447,7 @@ hidden terminal WS: /\s+/;
 //terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
 
 // LibIcons
-terminal ICON_ID: /(aws|gcp|tech):[_-\w\d]+/;
+terminal LIB_ICON: /\b(aws|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
@@ -466,4 +467,4 @@ terminal String: /"[^"]*"|'[^']*'/;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
-terminal IdTerminal:  /\b[_]*[a-zA-Z][_-\w]*/;
+terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;

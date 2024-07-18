@@ -1,6 +1,6 @@
 declare module 'virtual:likec4' {
   import type { MapStore } from 'nanostores'
-  import type { DiagramView } from '@likec4/core'
+  import type { DiagramNode, DiagramView } from '@likec4/core'
 
   export const $views: MapStore<Record<string, DiagramView>>
 }
@@ -30,6 +30,21 @@ declare module 'virtual:likec4/d2-sources' {
 }
 declare module 'virtual:likec4/mmd-sources' {
   export function mmdSource(viewId: string): string
+}
+declare module 'virtual:likec4/icon-renderer' {
+  import type { DiagramNode } from '@likec4/core'
+  import type { ReactNode } from 'react'
+
+  export type RendererProps = {
+    node: {
+      id: string
+      title: string
+      icon?: string | undefined
+    }
+  }
+
+  const Renderer: (props: RendererProps) => ReactNode
+  export default Renderer
 }
 
 declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {

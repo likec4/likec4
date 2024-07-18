@@ -49,7 +49,8 @@ export function LikeC4Diagram({
   onEdgeContextMenu,
   onNavigateTo,
   onNodeClick,
-  onNodeContextMenu
+  onNodeContextMenu,
+  renderIcon
 }: LikeC4DiagramProps) {
   DEV && useTilg()
   const initialRef = useRef<{
@@ -70,6 +71,7 @@ export function LikeC4Diagram({
       initialHeight: initialHeight ?? view.height
     }
   }
+
   return (
     <EnsureMantine>
       <XYFlowProvider
@@ -89,6 +91,7 @@ export function LikeC4Diagram({
           nodesDraggable={nodesDraggable}
           nodesSelectable={nodesSelectable}
           experimentalEdgeEditing={experimentalEdgeEditing}
+          renderIcon={renderIcon ?? null}
           onCanvasClick={onCanvasClick}
           onCanvasContextMenu={onCanvasContextMenu}
           onEdgeClick={onEdgeClick}

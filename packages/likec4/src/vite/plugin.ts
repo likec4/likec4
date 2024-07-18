@@ -2,7 +2,7 @@ import { generateViewsDataJs } from '@likec4/generators'
 import consola from 'consola'
 import pLimit from 'p-limit'
 import k from 'picocolors'
-import { mapToObj } from 'remeda'
+import { filter, isString, map, mapToObj, pipe, unique } from 'remeda'
 import type { PluginOption } from 'vite'
 import type { LanguageServices } from '../language-services'
 import type { Logger } from '../logger'
@@ -56,7 +56,7 @@ if (import.meta.env.DEV) {
 
 const generatedViews = {
   id: 'virtual:likec4/views',
-  virtualId: '/@vite-plugin-likec4/views',
+  virtualId: '/@vite-plugin-likec4/views.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/views'))
     const diagrams = await likec4.views.diagrams()
@@ -66,7 +66,7 @@ const generatedViews = {
 
 const dotSourcesModule = {
   id: 'virtual:likec4/dot-sources',
-  virtualId: '/@vite-plugin-likec4/dot-sources',
+  virtualId: '/@vite-plugin-likec4/dot-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/dot-sources'))
     const views = await likec4.views.viewsAsGraphvizOut()
@@ -77,7 +77,7 @@ const dotSourcesModule = {
 
 const d2SourcesModule = {
   id: 'virtual:likec4/d2-sources',
-  virtualId: '/@vite-plugin-likec4/d2-sources',
+  virtualId: '/@vite-plugin-likec4/d2-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/d2-sources'))
     const views = await likec4.views.computedViews()
@@ -87,7 +87,7 @@ const d2SourcesModule = {
 
 const mmdSourcesModule = {
   id: 'virtual:likec4/mmd-sources',
-  virtualId: '/@vite-plugin-likec4/mmd-sources',
+  virtualId: '/@vite-plugin-likec4/mmd-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/mmd-sources'))
     const views = await likec4.views.computedViews()
@@ -95,11 +95,75 @@ const mmdSourcesModule = {
   }
 } satisfies Module
 
+const iconsModule = {
+  id: 'virtual:likec4/icon-renderer',
+  virtualId: '/@vite-plugin-likec4/icon-renderer.jsx',
+  async load({ likec4, logger }) {
+    logger.info(k.dim('generating virtual:likec4/icon-renderer'))
+    const views = await likec4.views.computedViews()
+    const icons = pipe(
+      views.flatMap(v => v.nodes.map(n => n.icon)),
+      filter((s: any): s is string => isString(s) && !!s.match(/^(aws|gcp|tech):/)),
+      unique(),
+      map(s => {
+        const [group, fname] = s.split(':') as ['aws' | 'gcp' | 'tech', string]
+
+        const cmpName = [
+          group[0]!.toUpperCase(),
+          group.substring(1),
+          fname[0]!.toUpperCase(),
+          fname.substring(1).replaceAll('-', '').replaceAll('_', '')
+        ].join('')
+
+        return [
+          group,
+          fname,
+          cmpName
+        ] as const
+      })
+    )
+
+    if (icons.length === 0) {
+      return `
+export default function IconRenderer() {
+  return null
+}
+      `
+    }
+
+    const imports = icons.map(([group, fname, cmp]) => {
+      return `import ${cmp} from '@likec4/icons/${group}/${fname}'`
+    }).join('\n')
+
+    const cases = icons.flatMap(([group, fname, cmp]) => {
+      return [
+        `     case '${group}:${fname}':`,
+        `       return <${cmp} />`
+      ]
+    }).join('\n')
+
+    return `
+${imports}
+
+export default function IconRenderer({node}) {
+  if (!node.icon) {
+    return null
+  }
+  switch (node.icon) {
+${cases}
+  }
+  return null
+}
+`
+  }
+} satisfies Module
+
 export const modules = [
   generatedViews,
   dotSourcesModule,
   d2SourcesModule,
-  mmdSourcesModule
+  mmdSourcesModule,
+  iconsModule
 ] as const
 
 const isTarget = (path: string) => {

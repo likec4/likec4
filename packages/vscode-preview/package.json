@@ -13,6 +13,7 @@
     "!**/*.map"
   ],
   "scripts": {
+    "generate": "tsx scripts/generate-icons.ts",
     "typecheck": "tsc --noEmit",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
@@ -41,10 +42,12 @@
     "@vitejs/plugin-react": "^4.3.1",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "esm-env": "1.0.0",
+    "langium": "3.1.2",
     "postcss": "^8.4.39",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",
+    "tsx": "~4.9.3",
     "typescript": "^5.5.3",
     "vite": "5.3.3",
     "vscode-messenger-webview": "^0.4.5"

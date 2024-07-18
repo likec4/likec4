@@ -19,6 +19,7 @@ apps/playground/prebuild
 packages/diagram/bundle
 packages/language-server/src/generated/
 packages/language-server/src/generated-lib/
+packages/vscode-preview/src/generated-icons.tsx
 
 vite.config.ts.timestamp*
 vitest.config.ts.timestamp*

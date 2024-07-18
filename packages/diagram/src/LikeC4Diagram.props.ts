@@ -6,17 +6,29 @@ import type {
   EdgeId,
   ElementShape,
   Fqn,
+  IconUrl,
   NonEmptyArray,
   ThemeColor,
   ViewID
 } from '@likec4/core'
 import type { XYPosition } from '@xyflow/system'
-import type { MouseEvent as ReactMouseEvent } from 'react'
-import type { SetRequired, Simplify } from 'type-fest'
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import type { XYBackground } from './xyflow/XYFlowBackground'
 
-export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
+export type DiagramNodeWithNavigate = Omit<DiagramNode, 'navigateTo'> & {
+  navigateTo: ViewID
+}
+
+type ElementIconNodeProps = {
+  id: string
+  title: string
+  icon?: string | undefined
+}
+
+export type ElementIconRenderer = (props: {
+  node: ElementIconNodeProps
+}) => ReactNode
 
 export type OnNavigateTo = {
   (
@@ -177,6 +189,12 @@ export interface LikeC4DiagramProperties {
    * @default false
    */
   experimentalEdgeEditing?: boolean | undefined
+
+  /**
+   * Render custom icon for a node
+   * By default, if icon is http:// or https://, it will be rendered as an image
+   */
+  renderIcon?: ElementIconRenderer | undefined
 }
 
 export interface LikeC4DiagramEventHandlers {

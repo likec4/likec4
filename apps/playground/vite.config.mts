@@ -99,6 +99,7 @@ export default defineConfig((env) => {
               'esm-env',
               '#monaco/bootstrap',
               '#monaco/config',
+              /@likec4\/(icons|layouts|language-server).*/,
               /hpcc-js/,
               /node_modules.*vscode/,
               /node_modules.*monaco/

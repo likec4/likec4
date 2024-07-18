@@ -161,7 +161,7 @@ describe('LikeC4ModelBuilder', () => {
 
   it.concurrent('builds model with icon', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { errors, warnings } = await validate(`
     specification {
       element component
       element system {
@@ -175,17 +175,25 @@ describe('LikeC4ModelBuilder', () => {
       system system2 {
         // override icon
         style {
-          icon https://system2.png
+          icon tech:react
         }
       }
+      system system3 {
+        // override icon
+        icon tech:astro
+      }
       component component1 {
+        icon https://component.png
         style {
-          icon https://component.png
+          icon https://ignored.png
         }
       }
     }
     `)
-    expect(diagnostics).toHaveLength(0)
+    expect(errors).toHaveLength(0)
+    expect(warnings).toEqual([
+      'Redundant as icon defined on element'
+    ])
     const model = await buildModel()
     expect(model).toHaveProperty('elements', expect.any(Object))
     expect(model.elements).toMatchObject({
@@ -195,7 +203,11 @@ describe('LikeC4ModelBuilder', () => {
       },
       system2: {
         kind: 'system',
-        icon: 'https://system2.png'
+        icon: 'tech:react'
+      },
+      system3: {
+        kind: 'system',
+        icon: 'tech:astro'
       },
       component1: {
         kind: 'component',

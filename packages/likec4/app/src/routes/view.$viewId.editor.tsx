@@ -3,6 +3,7 @@ import { type ChangeEvent, LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { DEV } from 'esm-env'
+import RenderIcon from 'virtual:likec4/icon-renderer'
 import { useLikeC4View } from '../data'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
@@ -40,6 +41,7 @@ function ViewEditor() {
       showNavigationButtons
       fitViewPadding={0.08}
       onNavigateTo={onNavigateTo}
+      renderIcon={RenderIcon}
       {...(DEV && { onChange })}
     />
   )

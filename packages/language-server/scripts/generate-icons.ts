@@ -16,8 +16,6 @@ if (icons.length === 0) {
   process.exit(1)
 }
 
-// icons.unshift('none')
-
 out
   .append('export const LibIcons = `likec4lib {')
   .appendNewLine()

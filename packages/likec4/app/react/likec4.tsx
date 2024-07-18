@@ -1,5 +1,6 @@
 import { LikeC4Browser, type LikeC4ViewBaseProps, LikeC4ViewElement } from 'likec4/react'
 import { memo, useCallback, useState } from 'react'
+import RenderIcon from 'virtual:likec4/icon-renderer'
 import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 
 export { isLikeC4ViewId }
@@ -41,6 +42,7 @@ export const LikeC4View = memo<LikeC4ViewProps>(function LikeC4ViewComponent({
         injectFontCss={injectFontCss}
         onNavigateTo={interactive ? onNavigateTo : undefined}
         background={background}
+        renderIcon={RenderIcon}
         {...props}
       />
       {browserView && (
@@ -51,6 +53,7 @@ export const LikeC4View = memo<LikeC4ViewProps>(function LikeC4ViewComponent({
           onNavigateTo={onNavigateTo}
           background={browserBackground}
           onClose={closeBrowser}
+          renderIcon={RenderIcon}
         />
       )}
     </>

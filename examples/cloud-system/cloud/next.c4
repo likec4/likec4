@@ -3,7 +3,9 @@ model {
   extend amazon.rds {
     aurora = component 'Aurora' {
       #db
+      description 'Aurora RDS'
       style {
+        icon tech:my-sql
         shape storage
         color secondary
       }
@@ -26,6 +28,7 @@ model {
 
     backend = app 'Backend V2' {
       #api
+      icon tech:nestjs
       description 'The next version of backend'
     }
 
@@ -35,6 +38,7 @@ model {
         GraphQL API for the backend
         Uses Apollo Server
       '
+      icon tech:graphql
 
       gqlQuery myAccount {
         description '

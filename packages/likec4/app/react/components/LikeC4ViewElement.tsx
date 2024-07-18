@@ -1,13 +1,13 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
-import { type HTMLAttributes, useId } from 'react'
+import { type HTMLAttributes, type ReactNode, useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
 
 import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { cssInteractive, cssLikeC4View } from './styles.css'
-import type { DiagramView } from './types'
+import type { DiagramView, ElementIconRenderer } from './types'
 
 export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
   view: DiagramView<ViewId>
@@ -33,6 +33,12 @@ export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<
   background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
 
   onNavigateTo?: ((to: ViewId) => void) | undefined
+
+  /**
+   * Render custom icon for a node
+   * By default, if icon is http:// or https://, it will be rendered as an image
+   */
+  renderIcon?: ElementIconRenderer | undefined
 }
 
 export function LikeC4ViewElement<ViewId extends string>({
@@ -42,6 +48,7 @@ export function LikeC4ViewElement<ViewId extends string>({
   injectFontCss,
   colorScheme,
   background = 'transparent',
+  renderIcon,
   ...props
 }: LikeC4ViewElementProps<ViewId>) {
   const id = useId()
@@ -112,6 +119,7 @@ export function LikeC4ViewElement<ViewId extends string>({
             controls={false}
             nodesSelectable={false}
             keepAspectRatio={false}
+            renderIcon={renderIcon}
             {...(_onNavigateTo && {
               onNavigateTo
             })}

@@ -61,7 +61,7 @@
       }
     },
     {
-      "match": "\\b(shape|color|head|tail|line|border):?\\s+([\\w\\d]+)\\b",
+      "match": "\\b(shape|color|head|tail|line|border):?\\s+([-\\w]+)\\b",
       "captures": {
         "1": {
           "name": "variable.other.property.likec4"

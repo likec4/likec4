@@ -1,15 +1,18 @@
 model {
 
   amazon = externalSystem 'Amazon' {
-    technology 'cloud provider'
     description: 'Cloud and managed services provider'
-    icon https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
+    icon tech:amazon-web-services
     style {
       color amber      
     }
 
     rds = container 'RDS' {
       description: 'Relational Database Service'
+      icon aws:rds
+      style {
+        shape storage
+      }
 
       pg = component 'PostgreSQL' {
         #db
@@ -30,6 +33,7 @@ model {
     sqs = container {
       title: 'SQS'
       description: 'Simple Queue Service'
+      icon aws:simple-queue-service
 
       queue queue1 'Raw Data' {
         description: 'Queue with raw data'
@@ -84,7 +88,7 @@ views {
   }
 
   view amazon_sqs of sqs {
-    title: 'Overview Amazon SQS'
+    title 'Overview Amazon SQS'
 
     include
       *,

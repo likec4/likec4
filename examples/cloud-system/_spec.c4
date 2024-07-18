@@ -43,7 +43,7 @@ specification {
     style {
       shape queue
       color secondary
-      icon https://icon.icepanel.io/AWS/svg/App-Integration/Simple-Queue-Service.svg
+      icon aws:simple-queue-service
     }
   }
 
@@ -57,8 +57,16 @@ specification {
       shape storage
     }
   }
-  element gqlMutation
-  element gqlQuery
+  element gqlMutation {
+    style {
+      icon tech:graphql
+    }
+  }
+  element gqlQuery {
+    style {
+      icon tech:graphql
+    }
+  }
   element lambda {
     style {
       icon aws:lambda

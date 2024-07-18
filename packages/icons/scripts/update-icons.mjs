@@ -22,6 +22,7 @@ const renames = {
   'Apache-Groovy': 'Groovy',
   'Apache-Cassandra': 'Cassandra',
   'Apache-Airflow': 'Airflow',
+  'AWS': 'AmazonWebServices',
   'Internet-Explorer-10-(ie10)': 'ie10',
   'Elastic-Search': 'Elasticsearch',
   'Elastic-Beats': 'Elasticbeats',

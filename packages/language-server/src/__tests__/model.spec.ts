@@ -236,7 +236,7 @@ describe.concurrent('model', () => {
       }
       component system2 {
         style {
-          icon tech:aws
+          icon aws:rds
         }
       }
     }`

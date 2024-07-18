@@ -1,3 +1,4 @@
+import type { DiagramNode } from '@likec4/core/types'
 import { Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
@@ -190,14 +191,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             'likec4-element'
           )}
         >
-          {isTruthy(element.icon) && (
-            <div className={clsx(css.elementIcon, 'likec4-element-icon')}>
-              <img
-                src={element.icon}
-                alt={element.title}
-              />
-            </div>
-          )}
+          {isTruthy(element.icon) && <ElementIcon node={element} />}
           <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
             <Text
               className={clsx(css.title, 'likec4-element-title')}>
@@ -228,3 +222,26 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     </>
   )
 }, isEqualProps)
+
+const ElementIcon = ({ node }: { node: DiagramNode }) => {
+  const RenderIcon = useDiagramState(s => s.renderIcon)
+  if (!node.icon) {
+    return null
+  }
+  if (node.icon.startsWith('http://') || node.icon.startsWith('https://')) {
+    return (
+      <div className={clsx(css.elementIcon, 'likec4-element-icon')}>
+        <img src={node.icon} alt={node.title} />
+      </div>
+    )
+  }
+  const icon = RenderIcon ? <RenderIcon node={node} /> : null
+  if (!icon) {
+    return null
+  }
+  return (
+    <div className={clsx(css.elementIcon, 'likec4-element-icon')}>
+      {icon}
+    </div>
+  )
+}

@@ -2,6 +2,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
+import RenderIcon from 'virtual:likec4/icon-renderer'
 import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
 import { cssExportBox, cssExportView } from './view.css'
@@ -60,6 +61,7 @@ function ExportPage() {
           showDiagramTitle={false}
           nodesSelectable={false}
           nodesDraggable={false}
+          renderIcon={RenderIcon}
           initialWidth={diagram.width}
           initialHeight={diagram.height} />
       </Box>

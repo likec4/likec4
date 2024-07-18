@@ -9,6 +9,7 @@ import {
   likec4error,
   likec4ParsingScreen
 } from './App.css'
+import IconRenderer from './generated-icons'
 import { Toolbar } from './Toolbar'
 import { extensionApi, getPreviewWindowState, isEditorEnabled, savePreviewWindowState, useMessenger } from './vscode'
 
@@ -109,6 +110,7 @@ const App = () => {
           nodesDraggable={isEditorEnabled}
           experimentalEdgeEditing={isEditorEnabled}
           showNavigationButtons
+          renderIcon={IconRenderer}
           onNavigateTo={(to) => {
             resetLastClickedNd()
             extensionApi.goToViewSource(to)

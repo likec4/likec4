@@ -2,13 +2,13 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { ActionIcon } from '@mantine/core'
 import { useMountEffect } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
-import { useId, useRef, useState } from 'react'
+import { type ReactNode, useId, useRef, useState } from 'react'
 import { closeButton, cssDiagram } from './LikeC4Browser.css'
 import { ShadowRoot } from './ShadowRoot'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { useColorScheme } from './styles'
 import * as css from './styles.css'
-import type { DiagramView } from './types'
+import type { DiagramView, ElementIconRenderer } from './types'
 
 export type LikeC4BrowserProps<ViewId extends string> = {
   view: DiagramView<ViewId>
@@ -35,6 +35,12 @@ export type LikeC4BrowserProps<ViewId extends string> = {
 
   onNavigateTo: (to: ViewId) => void
   onClose: () => void
+
+  /**
+   * Render custom icon for a node
+   * By default, if icon is http:// or https://, it will be rendered as an image
+   */
+  renderIcon?: ElementIconRenderer | undefined
 }
 
 export function LikeC4Browser<ViewId extends string>({
@@ -43,6 +49,7 @@ export function LikeC4Browser<ViewId extends string>({
   injectFontCss,
   onNavigateTo,
   onClose,
+  renderIcon,
   background = 'dots'
 }: LikeC4BrowserProps<ViewId>) {
   const [opened, setOpened] = useState(false)
@@ -174,6 +181,7 @@ export function LikeC4Browser<ViewId extends string>({
                 nodesSelectable={false}
                 nodesDraggable={false}
                 keepAspectRatio={false}
+                renderIcon={renderIcon}
                 // @ts-expect-error string cast to ViewId
                 onNavigateTo={onNavigateTo}
               />

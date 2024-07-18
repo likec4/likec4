@@ -34,6 +34,7 @@ model {
       api = component 'GraphQL' {
         technology 'Hasura'
         description 'Provide access to the data from database or calls services'
+        icon tech:graphql
       }
 
       services = component 'Service Functions' {
@@ -43,6 +44,7 @@ model {
           process change requests and
           comminucate with external services
         '
+        icon aws:lambda
       }
 
       api -> services 'calls'
@@ -54,6 +56,7 @@ model {
       description 'NextJS application'
       style {
         shape browser
+        icon tech:react
       }
     }
 

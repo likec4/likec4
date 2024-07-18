@@ -30,9 +30,7 @@ model {
     supportPanel = app {
       title 'Support Panel'
       description 'Retoool Application'
-      style {
-        shape browser
-      }
+      icon tech:astro
       -> cloud.next.graphql "updates data in case of a support request"
       -> amazon.aurora.tblUsers "reads users from the database"
     }
@@ -101,8 +99,8 @@ views {
       *,
       cloud.ui,
       cloud,
-      supportPanel -> *,
-      amazon.aurora
+      supportPanel ->,
+      amazon.rds
 
     style cloud, cloud.* {
       color muted

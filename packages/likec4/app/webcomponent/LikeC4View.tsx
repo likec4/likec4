@@ -2,6 +2,7 @@ import { invariant, type ViewID } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import { createRoot, type Root } from 'react-dom/client'
+import RenderIcon from 'virtual:likec4/icon-renderer'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 import { ComponentName } from '../src/const'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
@@ -135,6 +136,7 @@ export class LikeC4View extends HTMLElement {
           controls={false}
           nodesSelectable={false}
           keepAspectRatio={false}
+          renderIcon={RenderIcon}
           onNavigateTo={to => {
             this.openBrowser(to)
           }}

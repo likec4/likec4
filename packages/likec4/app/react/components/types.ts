@@ -1,10 +1,20 @@
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 
 export type DiagramView<ViewId extends string> = {
   id: ViewId
   width: number
   height: number
 }
+
+export type ElementIconRendererProps = {
+  node: {
+    id: string
+    title: string
+    icon?: string | undefined
+  }
+}
+
+export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
 export type LikeC4ViewBaseProps<ViewId extends string> = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
   /**

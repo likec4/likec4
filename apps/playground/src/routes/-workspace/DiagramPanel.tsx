@@ -1,10 +1,21 @@
-import { LikeC4Diagram } from '@likec4/diagram'
+import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
+import React from 'react'
 import { hasAtLeast } from 'remeda'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
+
+const Icons = React.lazy(() => import('../../icons.gen'))
+
+const RendererIcon: ElementIconRenderer = ({ node }) => {
+  return (
+    <React.Suspense fallback={<div>{'...'}</div>}>
+      <Icons node={node} />
+    </React.Suspense>
+  )
+}
 
 const selector = (s: WorkspaceState) => {
   switch (true) {
@@ -96,6 +107,7 @@ export function DiagramPanel() {
               showLocation({ view: diagram.id })
               event.stopPropagation()
             }}
+            renderIcon={RendererIcon}
           />
           {message && (
             <Box className={css.stateAlert}>

@@ -4,7 +4,9 @@
   "version": "1.5.0",
   "private": true,
   "scripts": {
-    "generate": "tsr generate",
+    "generate:routes": "tsr generate",
+    "generate:icons": "tsx scripts/generate-icons.ts",
+    "generate": "run generate:routes && run generate:icons",
     "dev": "vite dev --clearScreen false",
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo run build --filter='@likec4/playground' --log-prefix=none --log-order=grouped",
@@ -27,6 +29,7 @@
     "@hpcc-js/wasm": "2.18.0",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
+    "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@mantine/core": "7.11.1",
