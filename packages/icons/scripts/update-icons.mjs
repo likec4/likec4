@@ -36,7 +36,12 @@ const renames = {
   'IntelliJ-IDEA': 'IntellijIdea',
   'JUnit': 'Junit',
   'JQuery': 'Jquery',
-  'NW.js-(node-webkit)': 'NodeWebkit'
+  'NW.js-(node-webkit)': 'NodeWebkit',
+  'GraphQL': 'Graphql-',
+  'RocksDB': 'Rocksdb-',
+  'RabbitMQ': 'Rabbitmq-',
+  'Qt-Framework': 'Qt',
+  'LLVM': 'Llvm-'
 }
 for (const [oldName, newName] of Object.entries(renames)) {
   await $`mv .tmp/src/tech/${oldName}.svg .tmp/src/tech/${newName}.svg`
@@ -67,7 +72,7 @@ for (const svg of svgs) {
 }
 consola.success('aws-icons - OK')
 
-await $`rm -r -f src/*`
+await $`rm -r -f ${'src/'}`
 const opts = [
   '--typescript',
   '--filename-case',
@@ -98,8 +103,8 @@ for (const fname of globSync(`src/*/*.tsx`)) {
 
 consola.start('Building TypeScript')
 
-await $`rm -r -f dist/*`
+await $`rm -r -f ${'dist/'}`
 await $`tsc`
-await $`dprint fmt ${'./src/**/*.tsx'}`
+await $`dprint fmt ${'./src/**/*'}`
 
 consola.success('DONE')

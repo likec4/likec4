@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgQtFramework = (props: SVGProps<SVGSVGElement>) => (
+const SvgQt = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#41cd52"
@@ -7,4 +7,4 @@ const SvgQtFramework = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgQtFramework
+export default SvgQt

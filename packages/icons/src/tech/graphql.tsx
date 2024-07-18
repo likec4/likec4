@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgGraphQl = (props: SVGProps<SVGSVGElement>) => (
+const SvgGraphql = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fill="#E434AA">
       <path d="m18.39 96.852-4.6-2.657L65.04 5.434l4.597 2.656zm0 0" />
@@ -13,4 +13,4 @@ const SvgGraphQl = (props: SVGProps<SVGSVGElement>) => (
     </g>
   </svg>
 )
-export default SvgGraphQl
+export default SvgGraphql

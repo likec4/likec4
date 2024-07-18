@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgRabbitMq = (props: SVGProps<SVGSVGElement>) => (
+const SvgRabbitmq = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#f60"
@@ -7,4 +7,4 @@ const SvgRabbitMq = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgRabbitMq
+export default SvgRabbitmq
