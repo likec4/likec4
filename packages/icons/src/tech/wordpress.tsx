@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-const SvgWordPress = (props: SVGProps<SVGSVGElement>) => (
+const SvgWordpress = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#337BA2"
@@ -45,4 +45,4 @@ const SvgWordPress = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 )
-export default SvgWordPress
+export default SvgWordpress

@@ -10,18 +10,17 @@
     "directory": "packages/icons"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
-  "scripts": {
-    "update-icons": "node scripts/update-icons.mjs",
-    "prepack": "tsc",
-    "generate": ""
-  },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "package.json",
+    "README.md"
   ],
   "type": "module",
   "sideEffects": false,
   "exports": {
     ".": "./src/tech/index.ts",
+    "./all": "./src/all.tsx",
     "./aws": "./src/aws/index.ts",
     "./aws/*": "./src/aws/*.tsx",
     "./tech": "./src/tech/index.ts",
@@ -37,6 +36,10 @@
       ".": {
         "types": "./dist/tech/index.d.ts",
         "default": "./dist/tech/index.js"
+      },
+      "./all": {
+        "types": "./dist/all.d.ts",
+        "default": "./dist/all.jsx"
       },
       "./aws": {
         "types": "./dist/aws/index.d.ts",
@@ -68,10 +71,23 @@
       }
     }
   },
+  "scripts": {
+    "update-icons": "node scripts/update-icons.mjs",
+    "prepack": "tsc",
+    "generate": "node scripts/generate.mjs"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
   "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "consola": "^3.2.3",
     "execa": "^9.3.0",
     "glob": "^11.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^5.5.3"
   },
   "packageManager": "yarn@4.3.1"

@@ -42,6 +42,7 @@ const renames = {
   'Next.js': 'Nextjs',
   'Nest.js': 'Nestjs',
   'MongoDB': 'Mongodb-',
+  'InfluxDB': 'Influxdb-',
   'LinkedIn': 'Linkedin-',
   'JetBrains': 'Jetbrains-',
   'JavaScript': 'Javascript-',
@@ -79,14 +80,20 @@ const renames = {
   'Cosmos-BD': 'Cosmosdb',
   'CouchDB': 'Couchdb-',
   'Core-js': 'Corejs',
+  'LaTeX': 'Latex-',
   'ESLint': 'Eslint-',
   'DBeaver': 'Dbeaver-',
   'uWSGI': 'uwsgi-',
+  'p5-JS': 'p5js',
   'LLVM': 'Llvm-',
+  'Karate-Labs': 'Karate',
+  'LabVIEW': 'Labview-',
+  'SQLite': 'Sqlite-',
   'Vue.js': 'Vue',
   'vSphere': 'vsphere-',
   'WebAssembly': 'Webassembly-',
   'WebStorm': 'Webstorm-',
+  'WordPress': 'Wordpress-',
   'Windows-8': 'Windows8',
   'Windows-11': 'Windows11'
 }
@@ -148,10 +155,12 @@ for (const fname of globSync(`src/*/*.tsx`)) {
   }
 }
 
-consola.start('Building TypeScript')
+consola.start('Formatting...')
 
 await $`rm -r -f ${'dist/'}`
-await $`tsc`
+await $`rm *.tsbuildinfo`
 await $`dprint fmt ${'./src/**/*'}`
+
+await $`run generate`
 
 consola.success('DONE')

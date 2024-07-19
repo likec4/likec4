@@ -15,8 +15,8 @@
     "rootDir": "src",
     "declaration": true,
     "skipLibCheck": true,
-    "incremental": true,
     "composite": true,
+    "incremental": true,
     "jsx": "preserve"
   },
   "include": [
