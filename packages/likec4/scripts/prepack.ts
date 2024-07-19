@@ -29,6 +29,8 @@ consola.success('React bundle copied to react/index.mjs')
 
 // Copy icons
 await $`mkdir -p icons`
-await $`cp -r ../icons/dist/ icons`
+await $`cp -r ../icons/aws icons`
+await $`cp -r ../icons/gcp icons`
+await $`cp -r ../icons/tech icons`
 
 consola.success('Copied icons')

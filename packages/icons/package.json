@@ -11,7 +11,12 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "files": [
-    "dist",
+    "aws",
+    "gcp",
+    "tech",
+    "all.jsx",
+    "all.d.ts",
+    "icon.d.ts",
     "LICENSE",
     "package.json",
     "README.md"
@@ -19,57 +24,34 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/tech/index.ts",
-    "./all": "./src/all.tsx",
-    "./aws": "./src/aws/index.ts",
-    "./aws/*": "./src/aws/*.tsx",
-    "./tech": "./src/tech/index.ts",
-    "./tech/*": "./src/tech/*.tsx",
-    "./gcp": "./src/gcp/index.ts",
-    "./gcp/*": "./src/gcp/*.tsx",
-    "./*": "./src/tech/*.tsx"
+    ".": "./tech/index.js",
+    "./all": {
+      "types": "./all.d.ts",
+      "default": "./all.jsx"
+    },
+    "./aws": "./aws/index.js",
+    "./aws/*": {
+      "types": "./icon.d.ts",
+      "default": "./aws/*.jsx"
+    },
+    "./tech": "./tech/index.js",
+    "./tech/*": {
+      "types": "./icon.d.ts",
+      "default": "./tech/*.jsx"
+    },
+    "./gcp": "./gcp/index.js",
+    "./gcp/*": {
+      "types": "./icon.d.ts",
+      "default": "./gcp/*.jsx"
+    },
+    "./*": {
+      "types": "./icon.d.ts",
+      "default": "./tech/*.jsx"
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/tech/index.d.ts",
-        "default": "./dist/tech/index.js"
-      },
-      "./all": {
-        "types": "./dist/all.d.ts",
-        "default": "./dist/all.jsx"
-      },
-      "./aws": {
-        "types": "./dist/aws/index.d.ts",
-        "default": "./dist/aws/index.js"
-      },
-      "./aws/*": {
-        "types": "./dist/aws/*.d.ts",
-        "default": "./dist/aws/*.jsx"
-      },
-      "./tech": {
-        "types": "./dist/tech/index.d.ts",
-        "default": "./dist/tech/index.js"
-      },
-      "./tech/*": {
-        "types": "./dist/tech/*.d.ts",
-        "default": "./dist/tech/*.jsx"
-      },
-      "./gcp": {
-        "types": "./dist/gcp/index.d.ts",
-        "default": "./dist/gcp/index.js"
-      },
-      "./gcp/*": {
-        "types": "./dist/gcp/*.d.ts",
-        "default": "./dist/gcp/*.jsx"
-      },
-      "./*": {
-        "types": "./dist/tech/*.d.ts",
-        "default": "./dist/tech/*.jsx"
-      }
-    }
+    "access": "public"
   },
   "scripts": {
     "update-icons": "node scripts/update-icons.mjs",

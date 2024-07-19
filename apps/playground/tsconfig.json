@@ -15,10 +15,5 @@
   },
   "include": [
     "./src",
-  ],
-  "references": [
-    {
-      "path": "../../packages/icons"
-    }
   ]
 }

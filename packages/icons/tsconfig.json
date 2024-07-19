@@ -11,18 +11,15 @@
     "allowArbitraryExtensions": true,
     "assumeChangesOnlyAffectDirectDependencies": true,
     "isolatedModules": true,
-    "outDir": "dist",
-    "rootDir": "src",
     "declaration": true,
     "skipLibCheck": true,
-    "composite": true,
-    "incremental": true,
+    "allowJs": true,
     "jsx": "preserve"
   },
-  "include": [
-    "src/"
+  "files": [
+    "all.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "**/*.jsx",
   ]
 }

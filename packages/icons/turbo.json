@@ -6,9 +6,9 @@
   "tasks": {
     "generate": {
       "outputs": [
-        "dist/",
-        "src/all.tsx",
-        "tsconfig.tsbuildinfo"
+        "all.tsx",
+        "all.jsx",
+        "all.d.ts"
       ]
     }
   }

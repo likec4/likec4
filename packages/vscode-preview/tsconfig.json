@@ -15,10 +15,5 @@
   "include": [
     "protocol.ts",
     "./src"
-  ],
-  "references": [
-    {
-      "path": "../icons"
-    }
   ]
 }

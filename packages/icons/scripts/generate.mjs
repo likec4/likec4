@@ -8,7 +8,7 @@ consola.info('Generating all.tsx...')
 const {
   imports,
   icons
-} = globSync(`src/*/*.tsx`).toSorted().reduce(
+} = globSync(`*/*.jsx`).toSorted().reduce(
   /**
    * @param {{
    *  imports: string[]
@@ -19,7 +19,7 @@ const {
    */
   (acc, path) => {
     const parts = path.split('/')
-    const icon = (parts.pop() || 'invalid').replace('.tsx', '')
+    const icon = (parts.pop() || 'invalid').replace('.jsx', '')
     const group = parts.pop() || 'error'
 
     const Component = [
@@ -64,8 +64,8 @@ export default function BundledIcon({ name, ...props }: IconProps) {
 }
 `
 
-await writeFile('src/all.tsx', Source)
+await writeFile('all.tsx', Source)
 
-consola.info('Build typescript')
+// consola.info('Build typescript')
 
-await $`tsc`
+// await $`tsc`

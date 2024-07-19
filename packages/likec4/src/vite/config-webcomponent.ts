@@ -35,7 +35,7 @@ export async function viteWebcomponentConfig({
     configFile: false,
     resolve: {
       alias: {
-        'likec4/icons': resolve('../icons/src'),
+        'likec4/icons': resolve('../icons'),
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts')
       }

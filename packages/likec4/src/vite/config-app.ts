@@ -65,7 +65,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     resolve: {
       alias: {
-        'likec4/icons': resolve('../icons/src'),
+        'likec4/icons': resolve('../icons'),
         'likec4/react': resolve('app/react/components/index.ts'),
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),

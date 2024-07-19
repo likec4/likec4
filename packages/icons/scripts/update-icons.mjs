@@ -126,40 +126,49 @@ for (const svg of svgs) {
 }
 consola.success('aws-icons - OK')
 
-await $`rm -r -f ${'src/'}`
+await $`rm -r -f ${['aws', 'gcp', 'tech']}`
 const opts = [
-  '--typescript',
   '--filename-case',
   'kebab',
+  '--ext',
+  'jsx',
   '--jsx-runtime',
   'automatic',
   '--svgo-config',
   'svgo.config.json'
 ]
 
-await $`npx @svgr/cli ${opts} --out-dir src -- .tmp/src`
+await $`npx @svgr/cli ${opts} --out-dir . -- .tmp/src`
 
-consola.success('generated svg tsx - DONE')
+consola.success('generated svg - DONE')
 
 await $`rm -r -f .tmp/src .tmp/aws .tmp/gcp`
 
-for (const fname of globSync(`src/*/*.tsx`)) {
+await $`mv aws/index.jsx aws/index.js`
+await $`mv gcp/index.jsx gcp/index.js`
+await $`mv tech/index.jsx tech/index.js`
+
+const files = [
+  ...globSync('aws/*.jsx'),
+  ...globSync('gcp/*.jsx'),
+  ...globSync('tech/*.jsx')
+]
+
+for (const fname of files) {
   const input = readFileSync(fname, 'utf-8')
-  const output = input
-    .replaceAll(/InkscapeStroke: "none",/g, '')
-    .replaceAll(/shape(Margin|Padding): 0,/g, '')
-    .replaceAll(/solid(Color|Opacity):([^,]+),/g, '')
-  if (input !== output) {
-    consola.info(`Updating ${fname}`)
-    await writeFile(fname, output)
-  }
+
+  const output = `
+/**
+ * @component
+ * @param {React.SVGProps<SVGSVGElement>} props - The component props.
+ * @returns {React.JSX.Element} - The rendered SVG component.
+ */
+` + input
+  await writeFile(fname, output)
 }
 
 consola.start('Formatting...')
-
-await $`rm -r -f ${'dist/'}`
-await $`rm *.tsbuildinfo`
-await $`dprint fmt ${'./src/**/*'}`
+await $`dprint fmt ${'./*/*.{jsx,js}'}`
 
 await $`run generate`
 
