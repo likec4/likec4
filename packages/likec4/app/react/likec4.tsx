@@ -1,7 +1,20 @@
 import { LikeC4Browser, type LikeC4ViewBaseProps, LikeC4ViewElement } from 'likec4/react'
 import { memo, useCallback, useState } from 'react'
-import RenderIcon from 'virtual:likec4/icon-renderer'
+import { Icons } from 'virtual:likec4/icons'
 import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+
+type IconRendererProps = {
+  node: {
+    id: string
+    title: string
+    icon?: string | undefined
+  }
+}
+
+const RenderIcon = ({ node }: IconRendererProps) => {
+  const IconComponent = Icons[node.icon ?? '']
+  return IconComponent ? <IconComponent /> : null
+}
 
 export { isLikeC4ViewId }
 

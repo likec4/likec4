@@ -2,7 +2,7 @@ import { type DiagramView } from '@likec4/core'
 import { useStore } from '@nanostores/react'
 import { batched } from 'nanostores'
 import { find, values } from 'remeda'
-import { $views } from 'virtual:likec4'
+import { $views } from '../../data'
 
 interface DiagramTreeNodeData {
   label: string

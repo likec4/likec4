@@ -267,9 +267,9 @@ globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
   maxHeight: '100%',
   pointerEvents: 'none',
   filter: `
-    drop-shadow(0 0 1px ${vars.element.stroke})
-    drop-shadow(0 0 3px rgb(0 0 0 / 20%))
-    drop-shadow(1px 1px 16px rgb(0 0 0 / 5%))
+    drop-shadow(0 0 3px rgb(0 0 0 / 12%))
+    drop-shadow(0 1px 8px rgb(0 0 0 / 8%))
+    drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))
   `
 })
 globalStyle(`${elementIcon} img`, {

@@ -5,12 +5,8 @@
   ],
   "tasks": {
     "generate": {
-      "dependsOn": [
-        "^generate"
-      ],
       "outputs": [
-        "src/routeTree.gen.ts",
-        "src/icons.gen.tsx"
+        "src/routeTree.gen.ts"
       ],
       "inputs": [
         "scripts/*",
@@ -21,7 +17,8 @@
     },
     "build": {
       "dependsOn": [
-        "generate"
+        "generate",
+        "^generate"
       ],
       "outputs": [
         "dist/**"

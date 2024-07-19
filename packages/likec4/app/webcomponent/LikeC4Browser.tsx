@@ -4,8 +4,8 @@ import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot }
 import { useTimeoutEffect } from '@react-hookz/web'
 import { memo, useEffect, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import RenderIcon from 'virtual:likec4/icon-renderer'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
 const BrowserModal = memo<{

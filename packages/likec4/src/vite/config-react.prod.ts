@@ -57,6 +57,7 @@ export async function viteReactConfig({
       },
       rollupOptions: {
         external: [
+          /^likec4\/icons/,
           'likec4/react',
           'react',
           'react-dom',

@@ -1,5 +1,6 @@
 import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
-import { LikeC4Diagram } from '@likec4/diagram'
+import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
+import Icon from '@likec4/icons/all'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -9,7 +10,6 @@ import {
   likec4error,
   likec4ParsingScreen
 } from './App.css'
-import IconRenderer from './generated-icons'
 import { Toolbar } from './Toolbar'
 import { extensionApi, getPreviewWindowState, isEditorEnabled, savePreviewWindowState, useMessenger } from './vscode'
 
@@ -26,6 +26,10 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
     </p>
   </div>
 )
+
+const IconRenderer: ElementIconRenderer = ({ node }) => {
+  return <Icon name={(node.icon ?? '') as any} />
+}
 
 const App = () => {
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)

@@ -13,7 +13,6 @@
     "!**/*.map"
   ],
   "scripts": {
-    "generate": "tsx scripts/generate-icons.ts",
     "typecheck": "tsc --noEmit",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
@@ -49,7 +48,7 @@
     "react-error-boundary": "^4.0.13",
     "tsx": "~4.9.3",
     "typescript": "^5.5.3",
-    "vite": "5.3.3",
+    "vite": "5.3.4",
     "vscode-messenger-webview": "^0.4.5"
   }
 }

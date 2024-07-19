@@ -5,8 +5,7 @@
   "private": true,
   "scripts": {
     "generate:routes": "tsr generate",
-    "generate:icons": "tsx scripts/generate-icons.ts",
-    "generate": "run generate:routes && run generate:icons",
+    "generate": "run generate:routes",
     "dev": "vite dev --clearScreen false",
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo run build --filter='@likec4/playground' --log-prefix=none --log-order=grouped",
@@ -68,7 +67,7 @@
     "type-fest": "^4.21.0",
     "typescript": "^5.5.3",
     "ufo": "^1.5.3",
-    "vite": "5.3.3",
+    "vite": "5.3.4",
     "vscode": "npm:@codingame/monaco-vscode-api@6.0.3",
     "vscode-languageclient": "~9.0.1",
     "vscode-languageserver": "~9.0.1",

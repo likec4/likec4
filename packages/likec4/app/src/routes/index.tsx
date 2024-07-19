@@ -6,13 +6,12 @@ import { useDebouncedEffect } from '@react-hookz/web'
 import { memo, useState } from 'react'
 import { useLikeC4View } from '../data'
 
-import { Box, Card, Grid, Group, SimpleGrid, Text } from '@mantine/core'
+import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
 import { useStore } from '@nanostores/react'
-import { batched } from 'nanostores'
-import { ceil, clamp, groupBy, keys, values } from 'remeda'
-import { $views } from 'virtual:likec4'
+import { ceil, clamp, keys } from 'remeda'
+import { RenderIcon } from '../components/RenderIcon'
+import { $views } from '../data'
 import * as styles from './index.css'
-import { cssPreviewCardLink } from './view.css'
 
 export const Route = createFileRoute('/')({
   component: IndexPage
@@ -85,6 +84,7 @@ function DiagramPreview(props: { diagram: DiagramView }) {
           background={'transparent'}
           view={diagram}
           keepAspectRatio={false}
+          renderIcon={RenderIcon}
           fitView
           fitViewPadding={0.1} />
       )}

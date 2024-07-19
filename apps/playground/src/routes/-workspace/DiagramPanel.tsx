@@ -1,18 +1,18 @@
 import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
-import { IconCheck, IconX } from '@tabler/icons-react'
+import { IconCheck, IconLoader, IconX } from '@tabler/icons-react'
 import React from 'react'
 import { hasAtLeast } from 'remeda'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
 
-const Icons = React.lazy(() => import('../../icons.gen'))
+const Icons = React.lazy(() => import('@likec4/icons/all'))
 
 const RendererIcon: ElementIconRenderer = ({ node }) => {
   return (
-    <React.Suspense fallback={<div>{'...'}</div>}>
-      <Icons node={node} />
+    <React.Suspense fallback={<IconLoader />}>
+      <Icons name={(node.icon ?? '') as any} />
     </React.Suspense>
   )
 }
@@ -91,6 +91,7 @@ export function DiagramPanel() {
             experimentalEdgeEditing
             nodesDraggable
             showNavigationButtons
+            renderIcon={RendererIcon}
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
             onNodeClick={({ element, event }) => {
@@ -107,7 +108,6 @@ export function DiagramPanel() {
               showLocation({ view: diagram.id })
               event.stopPropagation()
             }}
-            renderIcon={RendererIcon}
           />
           {message && (
             <Box className={css.stateAlert}>

@@ -11,21 +11,24 @@ const $ = $_({
   }
 })
 
-await rm('dist/', { recursive: true, force: true })
-
 consola.start('Building...')
 
 // Run build
 await $`yarn turbo-build`
 
 // Build type definitions
-await $`yarn tsc -p ./app/react/tsconfig-build.json `
+await $`yarn tsc -p ./app/react/tsconfig-build.json`
 
 const components = 'dist/__app__/react/components.mjs'
 if (!existsSync(components)) {
   throw new Error('Components not found')
 }
 await cp(components, 'react/index.mjs')
-await rm(components)
 
-consola.success('React bundle moved to react/index.mjs')
+consola.success('React bundle copied to react/index.mjs')
+
+// Copy icons
+await $`mkdir -p icons`
+await $`cp -r ../icons/dist/ icons`
+
+consola.success('Copied icons')

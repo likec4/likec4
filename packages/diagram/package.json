@@ -88,7 +88,7 @@
     "tilg": "^0.1.1",
     "type-fest": "^4.21.0",
     "typescript": "^5.5.3",
-    "vite": "5.3.3",
+    "vite": "5.3.4",
     "vite-plugin-dts": "^3.9.1"
   }
 }

@@ -45,7 +45,7 @@ const baseConfig: UserConfigFnObject = () => {
     optimizeDeps: {
       esbuildOptions: {
         plugins: [
-          importMetaUrlPlugin,
+          importMetaUrlPlugin as any,
           vanillaExtractEsbuildPlugin({
             runtime: true
           })

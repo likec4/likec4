@@ -1,7 +1,7 @@
 import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import RenderIcon from 'virtual:likec4/icon-renderer'
+import { RenderIcon } from '../components/RenderIcon'
 import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
 
