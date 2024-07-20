@@ -1,3 +1,29 @@
+# [1.6.0](https://github.com/likec4/likec4/compare/v1.5.0...v1.6.0) (2024-07-20)
+
+### Features
+
+* Bundled icons
+
+  ```zig
+  model {
+    fn = service 'Lambda Function' {
+      icon aws:lambda
+    }
+    k8s = service 'K8s Service' {
+      icon gcp:google-kubernetes-engine
+    }
+    pg = storage 'PostgreSQL' {
+      icon tech:postgresql
+    }
+  }
+  ```
+  
+  <img width="733" alt="Screenshot 2024-07-20 at 14 29 03" src="https://github.com/user-attachments/assets/7314ee25-cbea-4b3e-9293-f0db891cd69b">
+
+  Besides, icon can be just an element property, skipping `style` block
+  
+* Improved code completion in view predicates
+
 # [1.5.0](https://github.com/likec4/likec4/compare/v1.4.0...v1.5.0) (2024-07-12)
 
 ### Features
