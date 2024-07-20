@@ -108,7 +108,8 @@ export function compoundLabel(node: ComputedNode, color?: string) {
   const html = wrapWithFont({
     text: node.title.toUpperCase(),
     maxchars: 50,
-    fontsize: 12,
+    fontsize: 11,
+    bold: true,
     color
   })
   if (html.includes('<BR/>')) {
@@ -126,7 +127,7 @@ export function edgeLabel(text: string) {
     fontsize: 14,
     bold: text === '[...]'
   })
-  return `<<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" ${BGCOLOR}><TR><TD ALIGN="TEXT" BALIGN="LEFT">${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}><TR><TD ALIGN="TEXT" BALIGN="LEFT">${html}</TD></TR></TABLE>>`
 }
 
 const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`

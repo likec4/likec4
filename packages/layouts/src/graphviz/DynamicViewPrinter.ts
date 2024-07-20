@@ -55,8 +55,6 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
         // ...targetNode.outEdges
       ].filter(e => !this.edgesWithCompounds.has(e)))
       e.attributes.set(_.weight, connected.size)
-    } else {
-      e.attributes.set(_.weight, 0.5)
     }
 
     // IF we already have "seen" the target node in previous steps

@@ -41,10 +41,10 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
 
       let chunkSize = 2
       switch (true) {
-        case children.length > 4 && children.length % 4 !== 1:
+        case children.length > 11:
           chunkSize = 4
           break
-        case children.length > 3 && children.length % 3 !== 1:
+        case children.length > 4:
           chunkSize = 3
           break
       }
@@ -104,8 +104,6 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
         ...targetNode.outEdges
       ].filter(e => !this.edgesWithCompounds.has(e)))
       e.attributes.set(_.weight, connected.size)
-    } else {
-      e.attributes.set(_.weight, 0.5)
     }
 
     if (isTruthy(edge.label)) {
