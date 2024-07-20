@@ -2211,8 +2211,8 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.1"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.8"
     "@vitejs/plugin-react": "npm:^4.3.1"
-    "@xyflow/react": "npm:12.0.1"
-    "@xyflow/system": "npm:0.0.35"
+    "@xyflow/react": "npm:12.0.2"
+    "@xyflow/system": "npm:0.0.36"
     bezier-js: "npm:^6.1.4"
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
@@ -4327,23 +4327,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xyflow/react@npm:12.0.1":
-  version: 12.0.1
-  resolution: "@xyflow/react@npm:12.0.1"
+"@xyflow/react@npm:12.0.2":
+  version: 12.0.2
+  resolution: "@xyflow/react@npm:12.0.2"
   dependencies:
-    "@xyflow/system": "npm:0.0.35"
+    "@xyflow/system": "npm:0.0.36"
     classcat: "npm:^5.0.3"
     zustand: "npm:^4.4.0"
   peerDependencies:
     react: ">=17"
     react-dom: ">=17"
-  checksum: 10c0/67b0d92e685dc43199652d8c675b4d8f871fb23fe20a202831416744ae483ce999dbfa4a47662a6ebfa7c75f9d3073d6655ee4ad3e0bdeb2324061b0dc4c66ca
+  checksum: 10c0/23c3f41f9b449b4c2da99bf80a81134b2138988b44c7981f7894693e135cc9886be119f4786ac19e1938afddc308db35eb917fe2d243a8c46b1023d8e1c97b6c
   languageName: node
   linkType: hard
 
-"@xyflow/system@npm:0.0.35":
-  version: 0.0.35
-  resolution: "@xyflow/system@npm:0.0.35"
+"@xyflow/system@npm:0.0.36":
+  version: 0.0.36
+  resolution: "@xyflow/system@npm:0.0.36"
   dependencies:
     "@types/d3-drag": "npm:^3.0.7"
     "@types/d3-selection": "npm:^3.0.10"
@@ -4352,7 +4352,7 @@ __metadata:
     d3-drag: "npm:^3.0.0"
     d3-selection: "npm:^3.0.0"
     d3-zoom: "npm:^3.0.0"
-  checksum: 10c0/7c36b2c21f09acb6fd58c16fe039751e07dbdf73ad7980ebe8715bf6a2db986590afbb78ec09d889582fa7959283e9ed04a58c9f64c00f516a417d4cc22b9061
+  checksum: 10c0/f2ad994a2fc78653e38b9e1b7ff8fe1252367860cbdfdffcbb0779b229fc19fa8950f38ce5ed06a5f9efa8b25156ceba95a4a98a5a4264922667fd481d6cf839
   languageName: node
   linkType: hard
 
