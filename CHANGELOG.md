@@ -1,3 +1,22 @@
+# [1.6.0](https://github.com/likec4/likec4/compare/v1.5.0...v1.6.0) (2024-07-20)
+
+
+### Bug Fixes
+
+* **deps:** update mantine to 7.11.2, @xyflow/react to 12.0.3 ([018a138](https://github.com/likec4/likec4/commit/018a1386f3668da09a1b068a0358d708a99c2276))
+* enable NavigationButtons in webcomponent ([aa6c616](https://github.com/likec4/likec4/commit/aa6c6166e0d7f1d68116b052a70a89a90b8b8f12))
+* rename postgres-sql to postgresql ([d06f6ce](https://github.com/likec4/likec4/commit/d06f6ce6c5368ed3cee21ef425ac061436492e6e))
+
+
+### Features
+
+* **diagrams:** icons are left aligned ([50af142](https://github.com/likec4/likec4/commit/50af14213357ecde9acc36b47d9f8a9ab7f9baa2))
+* icons ([a53ee0a](https://github.com/likec4/likec4/commit/a53ee0a8563e7226a0acc463c32be16d6ada730e))
+* **icons:** bundled icons ([0786c1e](https://github.com/likec4/likec4/commit/0786c1ef80dd9a674f831dd4a3d560ce9728b846))
+* new package - `@likec4/icons` ([86e6cb6](https://github.com/likec4/likec4/commit/86e6cb6276943d0f13b4c20b0e4f3311c2d1d77d))
+
+
+
 # [1.5.0](https://github.com/likec4/likec4/compare/v1.4.0...v1.5.0) (2024-07-12)
 
 ### Features
