@@ -1,7 +1,7 @@
 import { ActionIcon } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { useDiagramStoreApi } from '../../../state/hooks'
+import { useDiagramStoreApi } from '../../../state/useDiagramStore'
 
 export type NavigateToBtnProps = {
   xynodeId: string

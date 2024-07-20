@@ -2,7 +2,7 @@ import { nonNullable } from '@likec4/core'
 import type { EdgeChange, NodeChange } from '@xyflow/react'
 import { getBoundsOfRects, getViewportForBounds, nodeToRect } from '@xyflow/system'
 import { useEffect } from 'react'
-import { useDiagramStoreApi } from '../state/hooks'
+import { useDiagramStoreApi } from '../state/useDiagramStore'
 import { MinZoom } from './const'
 import type { XYFlowEdge, XYFlowNode } from './types'
 

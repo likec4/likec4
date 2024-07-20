@@ -116,38 +116,8 @@ export const fillMixStroke = style({
 
 export const hasIcon = style({})
 
-export const elementDataContainer = style({
-  flex: '1',
-  height: 'fit-content',
-  display: 'flex',
-  alignItems: 'flex-start',
-  justifyContent: 'center',
-  flexDirection: 'row',
-  padding: rem(24),
-  overflow: 'hidden',
-  gap: rem(16),
-  selectors: {
-    ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
-      paddingLeft: 40,
-      paddingRight: 20
-    },
-    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      paddingTop: 30
-    },
-    ':where([data-likec4-shape="browser"]) &': {
-      paddingTop: 32,
-      paddingBottom: 28
-    },
-    [`&:is(${hasIcon})`]: {
-      paddingRight: 20
-    },
-    [`${container}:not(:is([data-likec4-shape="queue"],[data-likec4-shape="mobile"])) &:is(${hasIcon})`]: {
-      paddingLeft: 20
-    }
-  }
-})
-
 const textAlign = createVar('text-align')
+const iconSize = createVar('icon-size')
 
 export const title = style({
   flex: '0 0 auto',
@@ -202,6 +172,47 @@ export const technology = style({
   }
 })
 
+export const elementDataContainer = style({
+  flex: '1',
+  height: 'fit-content',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'row',
+  padding: rem(24),
+  overflow: 'hidden',
+  gap: rem(10),
+  vars: {
+    [iconSize]: '48px'
+  },
+  selectors: {
+    ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
+      paddingLeft: 40,
+      paddingRight: 20
+    },
+    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+      paddingTop: 30
+    },
+    ':where([data-likec4-shape="browser"]) &': {
+      paddingTop: 32,
+      paddingBottom: 28
+    },
+    [`&:is(${hasIcon})`]: {
+      paddingRight: 20
+    },
+    [`${container}:not(:is([data-likec4-shape="queue"],[data-likec4-shape="mobile"])) &:is(${hasIcon})`]: {
+      paddingLeft: 20
+    },
+    [`&:has(${description}, ${technology})`]: {
+      alignItems: 'flex-start',
+      gap: rem(16),
+      vars: {
+        [iconSize]: '60px'
+      }
+    }
+  }
+})
+
 export const elementTextData = style({
   height: 'fit-content',
   width: 'max-content',
@@ -229,33 +240,10 @@ export const elementTextData = style({
   }
 })
 
-// export const elementIcon = style({
-//   flex: `0 1 ${iconMaxH}`,
-//   maxHeight: iconMaxH,
-//   position: 'relative',
-//   userSelect: 'none',
-//   pointerEvents: 'none',
-//   overflow: 'visible',
-//   mixBlendMode: 'hard-light',
-//   'vars': {
-//     [iconMaxH]: calc(iconOffsetY).subtract('12px').toString()
-//   }
-// })
-
-// globalStyle(`${elementIcon} img`, {
-//   position: 'absolute',
-//   left: 0,
-//   bottom: 4,
-//   width: '100%',
-//   height: 'auto',
-//   objectFit: 'contain',
-//   maxHeight: iconOffsetY
-// })
-
 export const elementIcon = style({
-  flex: '0 0 60px',
-  height: 60,
-  width: 60,
+  flex: `0 0 ${iconSize}`,
+  height: iconSize,
+  width: iconSize,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

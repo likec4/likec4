@@ -2,7 +2,7 @@ import { deepEqual as eq } from 'fast-equals'
 
 import { useEffect } from 'react'
 import { omit } from 'remeda'
-import { useDiagramState, useDiagramStoreApi } from '../state/hooks'
+import { useDiagramState, useDiagramStoreApi } from '../state/useDiagramStore'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
 /**

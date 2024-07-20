@@ -3,7 +3,7 @@ import { useDebouncedEffect } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { useEffect, useRef } from 'react'
 import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state/hooks'
-import { useXYStore, useXYStoreApi, type XYStoreApi } from './hooks'
+import { useXYStore, useXYStoreApi, type XYStoreApi } from './hooks/useXYFlow'
 import type { XYFlowState } from './types'
 import { toDomPrecision } from './utils'
 

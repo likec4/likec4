@@ -2,7 +2,7 @@ import { shallowEqual } from 'fast-equals'
 import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
 import { hasSubObject, isNonNullish, pickBy } from 'remeda'
 import { useUpdateEffect } from '../hooks'
-import { useXYFlow, useXYStoreApi } from '../xyflow/hooks'
+import { useXYFlow, useXYStoreApi } from '../xyflow/hooks/useXYFlow'
 import { createDiagramStore, type DiagramInitialState } from './diagramStore'
 
 export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
