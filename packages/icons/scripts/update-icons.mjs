@@ -68,6 +68,7 @@ const renames = {
   'NW.js-(node-webkit)': 'Nodewebkit',
   'GraphQL': 'Graphql-',
   'RocksDB': 'Rocksdb-',
+  'PostgresSQL': 'Postgresql',
   'RabbitMQ': 'Rabbitmq-',
   'Stack-Overflow': 'Stackoverflow',
   'Simple-DirectMedia-Layer-(SDL)': 'Sdl',
