@@ -25,6 +25,9 @@ views {
   view icons_example {
     title 'Bundled icons example'
     include icons_example.*
+    style * {
+      color muted
+    }
     autoLayout LeftRight
   }
 
@@ -32,7 +35,7 @@ views {
     title 'URL icon example'
     include pg with {
       icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
-      color green
+      color muted
     }
   }
 

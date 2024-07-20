@@ -44,7 +44,24 @@
       }
     },
     {
-      "match": "\\b(element\\.kind|element\\.tag)\\s*(==|\\!=|=)\\s*([a-zA-Z#][_\\*\\.\\w]*)\\b",
+      "match": "\\b(include|exclude)\\s+(element\\.kind|element\\.tag)\\s+(\\!=|==?)\\s+([#_\\*\\.\\w]+)\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "keyword.control.likec4"
+        },
+        "3": {
+          "name": "keyword.symbol.likec4"
+        },
+        "4": {
+          "name": "variable.other.constant.likec4"
+        }
+      }
+    },
+    {
+      "match": "\\b(element\\.kind|element\\.tag)\\s+(\\!=|==?)\\s+([#_\\*\\.\\w]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -76,7 +93,7 @@
       "match": "\\b(navigateTo)\\s+([_\\*\\.\\w]+)\\b",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.parameter.function.likec4"
         },
         "2": {
           "name": "variable.other.constant.likec4"

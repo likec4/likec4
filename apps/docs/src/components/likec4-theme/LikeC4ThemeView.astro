@@ -2,13 +2,18 @@
 import { LikeC4View, type LikeC4ViewId } from './likec4-views'
 interface Props {
   viewId: LikeC4ViewId;
+  interactive?: boolean;
 }
-const { viewId } = Astro.props
+const {
+  viewId,
+  interactive = true
+} = Astro.props
 ---
 
 <LikeC4View
   className="likec4-theme-view"
   viewId={viewId}
+  interactive={interactive}
   injectFontCss={false}
   client:only="react">
 </LikeC4View>

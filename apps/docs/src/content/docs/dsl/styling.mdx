@@ -152,7 +152,7 @@ specification {
 
 ```
 
-<LikeC4ThemeView viewId="border_example"/>
+<LikeC4ThemeView viewId="border_example" interactive={false}/>
 
 #### Icon
 
@@ -169,7 +169,7 @@ model {
 }
 ```
 
-<LikeC4ThemeView viewId="icon_url_example"/>
+<LikeC4ThemeView viewId="icon_url_example" interactive={false}/>
 
 <Aside type='tip'>
   To reduce boilerplate, `icon` may be defined as a property of the element.
@@ -185,7 +185,12 @@ model {
 
 #### Bundled icons
 
-LikeC4 includes a set of icons:
+LikeC4 includes a set of icons from these packs:
+- `aws:` from <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
+- `gcp:` from <a href="https://gcpicons.com" target='_blank'>gcpicons.com</a>
+- `tech:` from <a href="https://techicons.dev" target='_blank'>techicons.dev</a>
+
+Example:
 
 ```likec4 copy
 model {
@@ -201,12 +206,15 @@ model {
 }
 ```
 
-Icons are coming from these packs:
-- `aws:` from <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
-- `gcp:` from <a href="https://gcpicons.com" target='_blank'>gcpicons.com</a>
-- `tech:` from <a href="https://techicons.dev" target='_blank'>techicons.dev</a>
+<br/>
 
-<LikeC4ThemeView viewId="icons_example"/>
+<LikeC4ThemeView viewId="icons_example" interactive={false}/>
+
+<br/>
+
+<Aside type='tip'>
+  Use VSCode code completion to explore available icons.
+</Aside>
 
 ### Relationship
 
@@ -217,7 +225,7 @@ There are multiple ways to style relationships:
 
 #### Relationships of a kind
 
-Relationships can be styled using the [kinds](/dsl/relationships/#relationship-kinds):
+Relationships can be styled in [specification](/dsl/relationships/#relationship-kinds):
 
 ```likec4
 specification {
