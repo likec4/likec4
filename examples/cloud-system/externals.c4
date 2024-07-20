@@ -4,7 +4,7 @@ model {
     description: 'Cloud and managed services provider'
     icon tech:amazon-web-services
     style {
-      color amber      
+      color amber
     }
 
     rds = container 'RDS' {
@@ -16,8 +16,8 @@ model {
 
       pg = component 'PostgreSQL' {
         #db
-        icon tech:postgres-sql
-        
+        icon tech:postgresql
+
         tblUsers = table 'Users Table' {
           #deprecated
           description: '

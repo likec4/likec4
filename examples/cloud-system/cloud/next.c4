@@ -5,7 +5,7 @@ model {
       #db
       description 'Aurora RDS'
       style {
-        icon tech:my-sql
+        icon tech:mysql
         shape storage
         color secondary
       }
@@ -22,7 +22,7 @@ model {
         }
       }
     }
-  } 
+  }
 
   extend cloud.next {
 
@@ -48,7 +48,7 @@ model {
         -> backend 'reads'
       }
       gqlMutation updateAccount {
-        description '          
+        description '
           If requested by customer, updates only its own account
           Support user updates any account
         '
@@ -95,7 +95,7 @@ views {
       color amber
       opacity 20%
     }
-  }  
+  }
 
   view backend of backend {
     include
@@ -112,9 +112,9 @@ views {
 
     style backend {
       color primary
-    }       
-  } 
-  
+    }
+  }
+
   view graphql of graphql {
     include *, cloud.next
 
@@ -124,7 +124,7 @@ views {
 
     style graphql, graphql.* {
       color primary
-    }    
+    }
   }
 
 }
