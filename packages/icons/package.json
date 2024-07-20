@@ -19,7 +19,8 @@
     "icon.d.ts",
     "LICENSE",
     "package.json",
-    "README.md"
+    "README.md",
+    "!*/*.jsx"
   ],
   "type": "module",
   "sideEffects": false,
@@ -31,22 +32,22 @@
     },
     "./aws": "./aws/index.js",
     "./aws/*": {
-      "types": "./icon.d.ts",
-      "default": "./aws/*.jsx"
+      "types": "./aws/*.d.ts",
+      "default": "./aws/*.js"
     },
     "./tech": "./tech/index.js",
     "./tech/*": {
-      "types": "./icon.d.ts",
-      "default": "./tech/*.jsx"
+      "types": "./tech/*.d.ts",
+      "default": "./tech/*.js"
     },
     "./gcp": "./gcp/index.js",
     "./gcp/*": {
-      "types": "./icon.d.ts",
-      "default": "./gcp/*.jsx"
+      "types": "./gcp/*.d.ts",
+      "default": "./gcp/*.js"
     },
     "./*": {
-      "types": "./icon.d.ts",
-      "default": "./tech/*.jsx"
+      "types": "./tech/*.d.ts",
+      "default": "./tech/*.js"
     }
   },
   "publishConfig": {
@@ -54,7 +55,7 @@
     "access": "public"
   },
   "scripts": {
-    "update-icons": "node scripts/update-icons.mjs",
+    "update-icons": "node scripts/update-icons.mjs && run generate",
     "prepack": "tsc",
     "generate": "node scripts/generate.mjs"
   },

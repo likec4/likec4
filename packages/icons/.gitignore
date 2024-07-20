@@ -1,3 +1,6 @@
 dist/
 .tmp/
 all.*
+*/*.d.ts
+*/*.js
+!*/index.js

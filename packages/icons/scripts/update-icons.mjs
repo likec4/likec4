@@ -168,8 +168,6 @@ for (const fname of files) {
 }
 
 consola.start('Formatting...')
-await $`dprint fmt ${'./*/*.{jsx,js}'}`
-
-await $`run generate`
+await $`dprint fmt ${'./**/*.{jsx,js}'}`
 
 consola.success('DONE')

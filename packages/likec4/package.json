@@ -24,6 +24,8 @@
     "!dist/**/*.d.ts",
     "!dist/__app__/react/components.mjs",
     "!dist/**/*.map",
+    "!icons/*/*.jsx",
+    "!icons/*/*.d.ts",
     "!dist/**/metafile.json"
   ],
   "type": "module",
@@ -38,13 +40,16 @@
       "default": "./dist/__app__/react/components.mjs"
     },
     "./icons/aws/*": {
-      "default": "../icons/aws/*.jsx"
+      "types": "../icons/icon.d.ts",
+      "default": "../icons/aws/*.js"
     },
     "./icons/tech/*": {
-      "default": "../icons/tech/*.jsx"
+      "types": "../icons/icon.d.ts",
+      "default": "../icons/tech/*.js"
     },
     "./icons/gcp/*": {
-      "default": "../icons/gcp/*.jsx"
+      "types": "../icons/icon.d.ts",
+      "default": "../icons/gcp/*.js"
     }
   },
   "publishConfig": {
@@ -61,15 +66,15 @@
       },
       "./icons/aws/*": {
         "types": "./icons/icon.d.ts",
-        "default": "./icons/aws/*.jsx"
+        "default": "./icons/aws/*.js"
       },
       "./icons/tech/*": {
         "types": "./icons/icon.d.ts",
-        "default": "./icons/tech/*.jsx"
+        "default": "./icons/tech/*.js"
       },
       "./icons/gcp/*": {
         "types": "./icons/icon.d.ts",
-        "default": "./icons/gcp/*.jsx"
+        "default": "./icons/gcp/*.js"
       }
     }
   },

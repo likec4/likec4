@@ -8,14 +8,16 @@
     "strict": false,
     "target": "ES2020",
     "module": "Preserve",
-    "allowArbitraryExtensions": true,
-    "assumeChangesOnlyAffectDirectDependencies": true,
     "isolatedModules": true,
     "declaration": true,
     "skipLibCheck": true,
-    "allowJs": false,
+    "allowJs": true,
     "checkJs": false,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": [
+      "react",
+      "react-dom"
+    ],
   },
   "files": [
     "all.tsx"

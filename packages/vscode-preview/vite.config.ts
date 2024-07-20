@@ -17,7 +17,6 @@ export default defineConfig(({ mode }) => {
       ],
       alias: {
         '@likec4/core': resolve(__dirname, '../core/src/index.ts'),
-        '@likec4/icons/all': resolve(__dirname, '../icons/all.jsx'),
         '@likec4/diagram': resolve(__dirname, '../diagram/src/index.ts')
       }
     },

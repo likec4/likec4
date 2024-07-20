@@ -6,6 +6,9 @@
   "tasks": {
     "generate": {
       "outputs": [
+        "*/*.d.ts",
+        "*/*.js",
+        "!*/index.js",
         "all.tsx",
         "all.js",
         "all.d.ts"
