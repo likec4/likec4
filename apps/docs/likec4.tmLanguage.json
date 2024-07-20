@@ -21,10 +21,6 @@
       "name": "keyword.control.likec4",
       "match": "\\b(specification|model|views)\\b"
     },
-        {
-      "name": "variable.other.likec4",
-      "match": "#[^\\s]+\\b"
-    },
     {
       "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
       "captures": {
@@ -40,7 +36,7 @@
       "match": "\\b(opacity):?\\s+([^\\s]+)",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.parameter.function.likec4"
         },
         "2": {
           "name": "constant.numeric.likec4"
@@ -48,21 +44,22 @@
       }
     },
     {
-      "match": "\\b(include|exclude)\\s+(element\\.kind|element\\.tag)\\s*(==|\\!=|=)\\s*([a-zA-Z#][_\\*\\.\\w]*)\\b",
+      "match": "\\b(element\\.kind|element\\.tag)\\s*(==|\\!=|=)\\s*([a-zA-Z#][_\\*\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "keyword.control.likec4"
-        },
-        "3": {
           "name": "keyword.symbol.likec4"
         },
-        "4": {
+        "3": {
           "name": "variable.other.constant.likec4"
         }
       }
+    },
+    {
+      "match": "#[^\\s]+\\b",
+      "name": "variable.other.constant.likec4"
     },
     {
       "match": "\\b(actor|component|system|container|service|include|exclude|extend)\\s+([a-zA-Z][_\\*\\.\\w]*)\\b",
@@ -91,15 +88,19 @@
       "match": "\\b(include|exclude)\\b"
     },
     {
-      "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
+      "match": "\\b(shape|color|head|tail|line|border|icon):?\\s+([_:\\w]+)\\b",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.parameter.function.likec4"
         },
         "2": {
           "name": "variable.other.likec4"
         }
       }
+    },
+    {
+      "match": "\\b(title|description|technology|style):?\\b",
+      "name": "variable.parameter.function.likec4"
     },
     {
       "name": "variable.other.likec4",
@@ -221,7 +222,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|dynamic|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|with)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|dynamic|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|tag|technology|this|title|view|views|with)\\b"
     },
     {
       "name": "variable.other.constant.likec4",

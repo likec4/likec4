@@ -193,7 +193,7 @@ and follow the steps:
 
     Let's add descriptions, define the shape of the `ui` and add a label to the relationship `ui -> backend`
 
-    ```diff lang="likec4" {10,15-18,21-24,28,46-48} ins="'fetches via HTTPS'" copy
+    ```diff lang="likec4" {10,15-19,22-25,29,47-49} ins="'fetches via HTTPS'" copy
     // tutorial.c4
     specification {
       element actor
@@ -210,6 +210,7 @@ and follow the steps:
         component ui 'Frontend' {
     +      description 'Nextjs application, hosted on Vercel'
     +      style {
+    +        icon tech:nextjs  
     +        shape browser
     +      }
         }
@@ -273,6 +274,7 @@ and follow the steps:
         component ui 'Frontend' {
           description 'Nextjs application, hosted on Vercel'
           style {
+            icon tech:nextjs
             shape browser
           }
         }
@@ -288,8 +290,8 @@ and follow the steps:
       }
 
       // Customer uses the UI
-    -  customer -> ui 'opens in browser'
-    +  customer -> ui 'enjoys our product'
+      customer -> ui 'opens in browser'
+    +  customer -> saas 'enjoys our product'
     }
 
     views {

@@ -20,6 +20,7 @@ model {
     component ui 'Frontend' {
       description 'Nextjs application, hosted on Vercel'
       style {
+        icon tech:nextjs
         shape browser
       }
     }
@@ -36,6 +37,7 @@ model {
 
   // Customer uses the UI
   customer -> ui 'opens in browser'
+  customer -> saas 'enjoys our product'
 }
 
 views {

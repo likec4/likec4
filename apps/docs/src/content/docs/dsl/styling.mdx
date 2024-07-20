@@ -160,14 +160,53 @@ Element may have an icon - any browser-supported image and publicly available wi
 
 ```likec4 copy
 model {
-  k8s = service 'K8s Service' {
+  pg = service 'PostgreSQL' {
     style {
       icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+      color green
     }
   }
 }
 ```
 
+<LikeC4ThemeView viewId="icon_url_example"/>
+
+<Aside type='tip'>
+  To reduce boilerplate, `icon` may be defined as a property of the element.
+</Aside>
+
+```likec4 copy
+model {
+  pg = service 'PostgreSQL' {
+    icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+  }
+}
+```
+
+#### Bundled icons
+
+LikeC4 includes a set of icons:
+
+```likec4 copy
+model {
+  fn = service 'Lambda Function' {
+    icon aws:lambda
+  }
+  k8s = service 'K8s Service' {
+    icon gcp:google-kubernetes-engine
+  }
+  pg = storage 'PostgreSQL' {
+    icon tech:postgresql
+  }  
+}
+```
+
+Icons are coming from these packs:
+- `aws:` from <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
+- `gcp:` from <a href="https://gcpicons.com" target='_blank'>gcpicons.com</a>
+- `tech:` from <a href="https://techicons.dev" target='_blank'>techicons.dev</a>
+
+<LikeC4ThemeView viewId="icons_example"/>
 
 ### Relationship
 

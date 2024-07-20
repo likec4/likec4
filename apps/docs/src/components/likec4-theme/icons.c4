@@ -1,0 +1,39 @@
+// DO NOT EDIT MANUALLY
+
+specification {
+
+  element iService
+
+}
+model {
+
+  icons_example = iService "Example" {
+    fn = iService 'Lambda Function' {
+      icon aws:lambda
+    }
+    k8s = iService 'K8s Service' {
+      icon gcp:google-kubernetes-engine
+    }
+    pg = iService 'PostgreSQL' {
+      icon tech:postgresql
+    }
+  }
+}
+
+views {
+
+  view icons_example {
+    title 'Bundled icons example'
+    include icons_example.*
+    autoLayout LeftRight
+  }
+
+  view icon_url_example {
+    title 'URL icon example'
+    include pg with {
+      icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+      color green
+    }
+  }
+
+}
