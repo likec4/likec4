@@ -14,7 +14,7 @@
     "aws",
     "gcp",
     "tech",
-    "all.jsx",
+    "all.js",
     "all.d.ts",
     "icon.d.ts",
     "LICENSE",
@@ -27,7 +27,7 @@
     ".": "./tech/index.js",
     "./all": {
       "types": "./all.d.ts",
-      "default": "./all.jsx"
+      "default": "./all.js"
     },
     "./aws": "./aws/index.js",
     "./aws/*": {

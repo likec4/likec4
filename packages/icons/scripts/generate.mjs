@@ -66,6 +66,6 @@ export default function BundledIcon({ name, ...props }: IconProps) {
 
 await writeFile('all.tsx', Source)
 
-// consola.info('Build typescript')
+consola.info('Build typescript')
 
-// await $`tsc`
+await $`tsc`

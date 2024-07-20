@@ -7,7 +7,7 @@
     "generate": {
       "outputs": [
         "all.tsx",
-        "all.jsx",
+        "all.js",
         "all.d.ts"
       ]
     }

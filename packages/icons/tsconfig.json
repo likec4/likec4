@@ -13,13 +13,11 @@
     "isolatedModules": true,
     "declaration": true,
     "skipLibCheck": true,
-    "allowJs": true,
-    "jsx": "preserve"
+    "allowJs": false,
+    "checkJs": false,
+    "jsx": "react-jsx"
   },
   "files": [
     "all.tsx"
-  ],
-  "exclude": [
-    "**/*.jsx",
   ]
 }
