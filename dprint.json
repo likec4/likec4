@@ -37,16 +37,12 @@
     ".next",
     ".fleet",
     "dist",
-    ".tsbuildinfo",
-    "docs/tsconfig.*",
-    "docs/out",
-    "docs/components/ui/",
     "packages/*/contrib",
     "**/routeTree.gen.ts",
     "packages/*/src/generated"
   ],
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.91.3.wasm",
+    "https://plugins.dprint.dev/typescript-0.91.4.wasm",
     "https://plugins.dprint.dev/json-0.19.3.wasm",
     "https://plugins.dprint.dev/markdown-0.17.1.wasm",
     "https://plugins.dprint.dev/biome-0.6.0.wasm"
