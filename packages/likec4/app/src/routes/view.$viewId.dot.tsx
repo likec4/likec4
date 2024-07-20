@@ -18,6 +18,7 @@ export const Route = createFileRoute('/view/$viewId/dot')({
         dotSvg
       }
     } catch (error) {
+      console.error(error)
       throw notFound()
     }
   }
