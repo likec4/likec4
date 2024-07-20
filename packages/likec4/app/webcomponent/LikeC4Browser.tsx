@@ -54,8 +54,10 @@ const BrowserModal = memo<{
                 zoomable
                 fitView
                 fitViewPadding={0.08}
-                showElementLinks
                 showDiagramTitle
+                showElementLinks
+                enableDynamicViewWalkthrough
+                showNavigationButtons
                 controls={false}
                 nodesSelectable={false}
                 nodesDraggable={false}
