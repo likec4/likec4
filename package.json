@@ -31,9 +31,8 @@
     "clean:root:vitetmp": "rimraf -v -g '**/vi*.config.ts.timestamp-*'",
     "clean:root:afterpublish": "rimraf -v -g '**/package*.tgz'",
     "git:pre-commit": "lint-staged",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "vitest": "vitest run --no-isolate",
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest --no-isolate",
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {

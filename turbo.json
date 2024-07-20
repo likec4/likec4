@@ -46,15 +46,6 @@
     },
     "//#clean:root": {
       "cache": false
-    },
-    "test": {
-      "dependsOn": [
-        "generate"
-      ]
-    },
-    "test:watch": {
-      "cache": false,
-      "persistent": true
     }
   }
 }
