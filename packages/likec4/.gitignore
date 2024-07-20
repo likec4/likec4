@@ -1,6 +1,6 @@
-./dist
-./react
-./icons
+dist/
+react/
+icons/
 dev/export
 dev/dist
 .vscode/

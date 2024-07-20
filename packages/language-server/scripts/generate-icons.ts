@@ -1,15 +1,10 @@
-import { globSync } from 'glob'
+import { Icons } from '@likec4/icons/all'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 const out = new CompositeGeneratorNode()
 
-const icons = globSync(`../icons/src/*/*.tsx`).map(path => {
-  const parts = path.split('/')
-  const icon = parts.pop()!.replace('.tsx', '')
-  const group = parts.pop()!
-  return `${group}:${icon}`
-}).toSorted()
+const icons = Object.keys(Icons).toSorted()
 
 if (icons.length === 0) {
   console.error('No icons found')

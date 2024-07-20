@@ -32,5 +32,6 @@ await $`mkdir -p icons`
 await $`cp -r ../icons/aws icons`
 await $`cp -r ../icons/gcp icons`
 await $`cp -r ../icons/tech icons`
+await $`cp ../icons/icon.d.ts icons/`
 
 consola.success('Copied icons')

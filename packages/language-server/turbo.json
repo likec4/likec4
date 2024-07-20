@@ -5,6 +5,9 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "^generate"
+      ],
       "outputs": [
         "contrib/**",
         "src/generated/**",
