@@ -3,7 +3,7 @@
  * @param {React.SVGProps<SVGSVGElement>} props - The component props.
  * @returns {React.JSX.Element} - The rendered SVG component.
  */
-const SvgAdobeCommerceMagneto = (props) => (
+const SvgMagento = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#F26322"
@@ -11,4 +11,4 @@ const SvgAdobeCommerceMagneto = (props) => (
     />
   </svg>
 )
-export default SvgAdobeCommerceMagneto
+export default SvgMagento
