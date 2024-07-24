@@ -7,7 +7,7 @@ import { extname, resolve } from 'node:path'
 import k from 'picocolors'
 import type { InlineConfig } from 'vite'
 import { likec4Plugin } from './plugin'
-import { JsBanners } from './utils'
+import { chunkSizeWarningLimit, JsBanners } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LanguageServices
@@ -31,8 +31,6 @@ export async function viteReactConfig({
 
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
-  const isJsx = extname(filename) === '.jsx'
-
   return {
     customLogger,
     root,
@@ -42,23 +40,23 @@ export async function viteReactConfig({
     mode: 'production',
     resolve: {
       alias: {
-        'likec4/icons': resolve(root, '../../icons')
+        'likec4/icons': resolve('../icons'),
+        '@likec4/core': resolve('../core/src/index.ts'),
+        '@likec4/diagram': resolve('../diagram/src/index.ts')
       }
     },
     esbuild: {
       banner: `'use client'\n\n` + JsBanners.banner,
       footer: JsBanners.footer,
-      jsx: isJsx ? 'preserve' : 'automatic',
       jsxDev: false,
       minifyIdentifiers: false,
       minifySyntax: true,
       minifyWhitespace: true,
       tsconfigRaw: {
         compilerOptions: {
-          target: 'ES2020',
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
-          jsx: isJsx ? 'preserve' : 'react-jsx'
+          jsx: 'react-jsx'
         }
       }
     },
@@ -68,7 +66,7 @@ export async function viteReactConfig({
       sourcemap: false,
       minify: 'esbuild',
       copyPublicDir: false,
-      chunkSizeWarningLimit: 10000,
+      chunkSizeWarningLimit,
       lib: {
         entry: 'react/likec4.tsx',
         fileName(_format, _entryName) {
@@ -83,8 +81,16 @@ export async function viteReactConfig({
           'react-dom',
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
-          'react-dom/client'
-        ]
+          'react-dom/client',
+          /likec4\/icons\/.*/
+        ],
+        // https://github.com/vitejs/vite/issues/15012
+        onwarn(warning, defaultHandler) {
+          if (warning.code === 'SOURCEMAP_ERROR') {
+            return
+          }
+          defaultHandler(warning)
+        }
       }
     },
     plugins: [

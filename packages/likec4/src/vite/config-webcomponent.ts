@@ -57,10 +57,15 @@ export async function viteWebcomponentConfig({
       sourcemap: false,
       minify: 'esbuild',
       chunkSizeWarningLimit,
-      rollupOptions: {
-        input: {
-          'webcomponent': 'webcomponent/webcomponent.tsx'
+      lib: {
+        entry: 'webcomponent/webcomponent.tsx',
+        fileName(_format, _entryName) {
+          return filename
         },
+        formats: ['iife'],
+        name: 'LikeC4Views'
+      },
+      rollupOptions: {
         treeshake: {
           preset: 'recommended'
         },
