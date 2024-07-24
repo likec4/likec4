@@ -36,6 +36,7 @@ model {
 
     cognito = component 'Cognito' {
       description: 'User management and authentication'
+      icon aws:cognito
     }
 
     kinesis = component 'Kinesis' {

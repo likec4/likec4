@@ -2,11 +2,10 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { ActionIcon } from '@mantine/core'
 import { useMountEffect } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
-import { type ReactNode, useId, useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { closeButton, cssDiagram } from './LikeC4Browser.css'
 import { ShadowRoot } from './ShadowRoot'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
-import { useColorScheme } from './styles'
 import * as css from './styles.css'
 import type { DiagramView, ElementIconRenderer } from './types'
 
@@ -16,7 +15,7 @@ export type LikeC4BrowserProps<ViewId extends string> = {
   /**
    * By default determined by the user's system preferences.
    */
-  colorScheme?: 'light' | 'dark' | undefined
+  colorScheme?: 'light' | 'dark'
 
   /**
    * LikeC4 views are using 'IBM Plex Sans' font.
@@ -55,7 +54,6 @@ export function LikeC4Browser<ViewId extends string>({
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const id = useId()
-  const scheme = useColorScheme(colorScheme)
 
   useMountEffect(() => {
     dialogRef.current?.showModal()
@@ -69,7 +67,7 @@ export function LikeC4Browser<ViewId extends string>({
     }, 400)
   }
 
-  const backdropRgb = scheme === 'dark' ? '36 36 36' : '255 255 255'
+  const backdropRgb = colorScheme === 'dark' ? '36 36 36' : '255 255 255'
 
   return (
     <>
@@ -111,7 +109,7 @@ export function LikeC4Browser<ViewId extends string>({
           100% {
             -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
-            background-color: rgb(${backdropRgb} / ${scheme === 'dark' ? '85' : '75'}%);
+            background-color: rgb(${backdropRgb} / ${colorScheme === 'dark' ? '85' : '75'}%);
           }
         }
         [data-likec4-instance="${id}"] {
@@ -160,7 +158,7 @@ export function LikeC4Browser<ViewId extends string>({
         onClose={closeMe}>
         <ShadowRoot injectFontCss={injectFontCss}>
           <ShadowRootMantineProvider
-            colorScheme={scheme}
+            colorScheme={colorScheme}
             className={css.cssLikeC4Browser}
           >
             {opened && (
@@ -191,7 +189,10 @@ export function LikeC4Browser<ViewId extends string>({
               variant="light"
               color="gray"
               autoFocus
-              onClick={() => dialogRef.current?.close()}>
+              onClick={(e) => {
+                e.stopPropagation()
+                dialogRef.current?.close()
+              }}>
               <IconX />
             </ActionIcon>
           </ShadowRootMantineProvider>

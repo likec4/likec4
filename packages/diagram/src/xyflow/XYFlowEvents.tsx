@@ -1,5 +1,7 @@
+import { extractStep } from '@likec4/core'
 import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
+import { isNonNullish, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../state/useDiagramStore'
 import type { XYFlowEdge, XYFlowNode } from './types'
@@ -13,6 +15,7 @@ export type XYFlowEventHandlers = Simplify<
       | 'onNodeClick'
       | 'onNodeDoubleClick'
       | 'onEdgeClick'
+      | 'onEdgeDoubleClick'
       | 'onMoveEnd'
       | 'onNodeContextMenu'
       | 'onEdgeContextMenu'
@@ -172,14 +175,36 @@ export function useXYFlowEvents() {
         }
       },
       onEdgeClick: (event, xyedge) => {
-        diagramApi.getState().setLastClickedEdge(xyedge.id)
         const {
+          lastClickedEdgeId,
+          isDynamicView,
+          enableDynamicViewWalkthrough,
+          activateDynamicStep,
+          activeDynamicViewStep,
           focusedNodeId,
           focusOnNode,
-          onEdgeClick
+          onEdgeClick,
+          setLastClickedEdge
         } = diagramApi.getState()
+        if (lastClickedEdgeId !== xyedge.id) {
+          setLastClickedEdge(xyedge.id)
+        }
+        const isNotAFirstClick = lastClickedEdgeId === xyedge.id
+        const isEdgeOfFocusedNode = isTruthy(focusedNodeId)
+          && (focusedNodeId === xyedge.source || focusedNodeId === xyedge.target)
+        if (
+          isDynamicView && enableDynamicViewWalkthrough
+          && (isEdgeOfFocusedNode || isNotAFirstClick || isNonNullish(activeDynamicViewStep))
+        ) {
+          const nextStep = extractStep(xyedge.data.edge.id)
+          if (activeDynamicViewStep !== nextStep) {
+            activateDynamicStep(nextStep)
+            event.stopPropagation()
+            return
+          }
+        }
         // if we focused on a node, and clicked on an edge connected to it - focus on the other node
-        if (focusedNodeId && (focusedNodeId === xyedge.source || focusedNodeId === xyedge.target)) {
+        if (isEdgeOfFocusedNode) {
           focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
           if (!onEdgeClick) {
             // user did not provide a custom handler, stop propagation
@@ -191,6 +216,23 @@ export function useXYFlowEvents() {
           xyedge,
           event
         })
+      },
+      onEdgeDoubleClick: (event, xyedge) => {
+        diagramApi.getState().setLastClickedEdge(xyedge.id)
+        const {
+          isDynamicView,
+          enableDynamicViewWalkthrough,
+          activateDynamicStep,
+          activeDynamicViewStep
+        } = diagramApi.getState()
+        // if we are in dynamic view, and clicked on an edge, activate the step
+        if (isDynamicView && enableDynamicViewWalkthrough) {
+          const nextStep = extractStep(xyedge.data.edge.id)
+          if (activeDynamicViewStep !== nextStep) {
+            activateDynamicStep(extractStep(xyedge.data.edge.id))
+            event.stopPropagation()
+          }
+        }
       },
       onMoveEnd: (event, _viewport) => {
         // if event is present, the move was triggered by user

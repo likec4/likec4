@@ -2,13 +2,13 @@ import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
 import { domAnimation, LazyMotion } from 'framer-motion'
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useRef } from 'react'
 import { rootClassName } from './globals.css'
 import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
-import { useDiagramStoreApi } from './state/useDiagramStore'
+import { useDiagramState } from './state/useDiagramStore'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
@@ -33,7 +33,7 @@ export function LikeC4Diagram({
   showElementLinks = true,
   showDiagramTitle = true,
   showNavigationButtons = false,
-  enableDynamicViewWalkthrough = true,
+  enableDynamicViewWalkthrough = false,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -70,93 +70,78 @@ export function LikeC4Diagram({
 
   return (
     <EnsureMantine>
-      <XYFlowProvider
-        fitView={fitView}
-        {...initialRef.current}
-      >
-        <DiagramContextProvider
-          view={view}
-          keepAspectRatio={keepAspectRatio}
-          className={clsx(rootClassName, className)}
-          readonly={readonly}
-          pannable={pannable}
-          zoomable={zoomable}
-          fitViewEnabled={fitView}
-          fitViewPadding={fitViewPadding}
-          showElementLinks={showElementLinks}
-          nodesDraggable={nodesDraggable}
-          nodesSelectable={nodesSelectable}
-          experimentalEdgeEditing={experimentalEdgeEditing}
-          renderIcon={renderIcon ?? null}
-          onCanvasClick={onCanvasClick}
-          onCanvasContextMenu={onCanvasContextMenu}
-          onEdgeClick={onEdgeClick}
-          onEdgeContextMenu={onEdgeContextMenu}
-          onNodeClick={onNodeClick}
-          onNodeContextMenu={onNodeContextMenu}
-          onChange={onChange}
-          onNavigateTo={onNavigateTo}
-          onCanvasDblClick={onCanvasDblClick}
+      <LazyMotion features={domAnimation} strict>
+        <XYFlowProvider
+          fitView={fitView}
+          {...initialRef.current}
         >
-          <LazyMotion features={domAnimation} strict>
+          <DiagramContextProvider
+            view={view}
+            keepAspectRatio={keepAspectRatio}
+            className={clsx(rootClassName, className)}
+            readonly={readonly}
+            pannable={pannable}
+            zoomable={zoomable}
+            fitViewEnabled={fitView}
+            fitViewPadding={fitViewPadding}
+            showElementLinks={showElementLinks}
+            nodesDraggable={nodesDraggable}
+            nodesSelectable={nodesSelectable}
+            experimentalEdgeEditing={experimentalEdgeEditing}
+            enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+            renderIcon={renderIcon ?? null}
+            onCanvasClick={onCanvasClick ?? null}
+            onCanvasContextMenu={onCanvasContextMenu ?? null}
+            onEdgeClick={onEdgeClick ?? null}
+            onEdgeContextMenu={onEdgeContextMenu ?? null}
+            onNodeClick={onNodeClick ?? null}
+            onNodeContextMenu={onNodeContextMenu ?? null}
+            onChange={onChange ?? null}
+            onNavigateTo={onNavigateTo ?? null}
+            onCanvasDblClick={onCanvasDblClick ?? null}
+          >
             <LikeC4DiagramInnerMemo
               defaultNodes={initialRef.current.defaultNodes}
               defaultEdges={initialRef.current.defaultEdges}
-              fitView={fitView}
-              zoomable={zoomable}
-              background={background}
               controls={controls}
-              pannable={pannable}
+              background={background}
               showDiagramTitle={showDiagramTitle}
               showNavigationButtons={showNavigationButtons}
-              enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             />
-          </LazyMotion>
-        </DiagramContextProvider>
-      </XYFlowProvider>
+          </DiagramContextProvider>
+        </XYFlowProvider>
+      </LazyMotion>
     </EnsureMantine>
   )
 }
 
 type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
-  fitView: boolean
-  zoomable: boolean
-  pannable: boolean
   controls: boolean
   defaultNodes: XYFlowNode[]
   defaultEdges: XYFlowEdge[]
   showDiagramTitle: boolean
   showNavigationButtons: boolean
-  enableDynamicViewWalkthrough: boolean
 }
 const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
-  fitView,
-  zoomable,
   controls,
-  pannable,
   defaultNodes,
   defaultEdges,
   showDiagramTitle,
-  showNavigationButtons,
-  enableDynamicViewWalkthrough
+  showNavigationButtons
 }) {
-  const diagramApi = useDiagramStoreApi()
-  const [isInitialized, setIsInitialized] = useState(diagramApi.getState().initialized)
-
-  useEffect(() => {
-    if (isInitialized) {
-      return
-    }
-    return diagramApi.subscribe(
-      s => s.initialized,
-      setIsInitialized,
-      {
-        fireImmediately: true
-      }
-    )
-  }, [isInitialized])
+  const {
+    isInitialized,
+    zoomable,
+    pannable,
+    fitView
+  } = useDiagramState(s => ({
+    isInitialized: s.initialized,
+    zoomable: s.zoomable,
+    pannable: s.pannable,
+    fitView: s.fitViewEnabled
+  }))
 
   return (
     <>
@@ -174,7 +159,6 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
         <XYFlowInner
           showNavigationButtons={showNavigationButtons}
           showDiagramTitle={showDiagramTitle}
-          enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
           background={background}
           controls={controls}
         />

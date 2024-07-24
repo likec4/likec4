@@ -1,7 +1,7 @@
 import { Controls } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { memo, type PropsWithChildren } from 'react'
-import { isNonNull } from 'remeda'
+import { isNonNullish } from 'remeda'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramState } from '../state/useDiagramStore'
 import { BackwardForwardPanel } from '../ui/BackwardForwardPanel'
@@ -15,7 +15,6 @@ type XYFlowInnerProps = PropsWithChildren<{
   controls: boolean
   showDiagramTitle: boolean
   showNavigationButtons: boolean
-  enableDynamicViewWalkthrough: boolean
 }>
 
 export const XYFlowInner = memo(function XYFlowInnerR({
@@ -23,22 +22,23 @@ export const XYFlowInner = memo(function XYFlowInnerR({
   background,
   controls,
   showDiagramTitle,
-  showNavigationButtons,
-  enableDynamicViewWalkthrough
+  showNavigationButtons
 }: XYFlowInnerProps) {
   const {
     isDynamicView,
     isDynamicViewActive,
-    readonly
+    readonly,
+    enableDynamicViewWalkthrough
   } = useDiagramState(s => ({
-    isDynamicView: s.isDynamicView(),
+    isDynamicView: s.isDynamicView,
     readonly: s.readonly,
-    isDynamicViewActive: isNonNull(s.activeDynamicViewStep)
+    enableDynamicViewWalkthrough: s.enableDynamicViewWalkthrough,
+    isDynamicViewActive: isNonNullish(s.activeDynamicViewStep)
   }))
 
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
 
-  const isDiagramTitleVisible = !isDynamicViewActive && showDiagramTitle === true
+  const isDiagramTitleVisible = showDiagramTitle === true && !isDynamicViewActive
 
   return (
     <>

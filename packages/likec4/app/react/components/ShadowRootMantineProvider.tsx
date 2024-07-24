@@ -43,6 +43,7 @@ export function ShadowRootMantineProvider({
     >
       <MantineProvider
         {...(colorScheme && { forceColorScheme: colorScheme })}
+        defaultColorScheme={'auto'}
         getRootElement={() => mantineRootRef.current ?? undefined}
         cssVariablesSelector={ShadowRootCssSelector}
         theme={theme}>

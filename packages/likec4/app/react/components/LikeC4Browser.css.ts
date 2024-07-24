@@ -37,13 +37,13 @@ export const closeButton = style({
   top: '1rem',
   right: '1rem',
   vars: {
-    ['--ai-size']: 'var(--ai-size-md)'
-  },
-  '@media': {
-    '(min-width: 62em)': {
-      vars: {
-        ['--ai-size']: 'var(--ai-size-lg)'
-      }
-    }
+    ['--ai-size']: 'var(--ai-size-lg)'
   }
+  // '@media': {
+  //   '(min-width: 62em)': {
+  //     vars: {
+  //       ['--ai-size']: 'var(--ai-size-lg)'
+  //     }
+  //   }
+  // }
 })

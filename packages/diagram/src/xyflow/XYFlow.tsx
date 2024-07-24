@@ -95,12 +95,10 @@ export function XYFlow({
    */
   useOnViewportChange({
     onEnd: ({ x, y, zoom }) => {
-      const rounded = {
-        x: Math.round(x),
-        y: Math.round(y)
-      }
-      if (x !== rounded.x || y !== rounded.y) {
-        xyflowApi.setState({ transform: [rounded.x, rounded.y, zoom] })
+      const roundedX = Math.round(x),
+        roundedY = Math.round(y)
+      if (x !== roundedX || y !== roundedY) {
+        xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
       }
     }
   })
@@ -152,6 +150,7 @@ export function XYFlow({
       onNodeClick={handlers.onNodeClick}
       onNodeDoubleClick={handlers.onNodeDoubleClick}
       onEdgeClick={handlers.onEdgeClick}
+      onEdgeDoubleClick={handlers.onEdgeDoubleClick}
       onInit={useCallback(() => {
         diagramApi.setState({ initialized: true }, false, 'initialized')
       }, [diagramApi])}

@@ -33,7 +33,11 @@ function ViewReact() {
       readonly
       controls={false}
       fitViewPadding={0.08}
+      showDiagramTitle
+      showElementLinks
       showNavigationButtons
+      enableDynamicViewWalkthrough
+      experimentalEdgeEditing={false}
       renderIcon={RenderIcon}
       onNavigateTo={onNavigateTo}
     />

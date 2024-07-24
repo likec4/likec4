@@ -38,8 +38,11 @@ function ViewEditor() {
       readonly={false}
       nodesDraggable
       experimentalEdgeEditing
-      showNavigationButtons
       fitViewPadding={0.08}
+      showDiagramTitle
+      showElementLinks
+      showNavigationButtons
+      enableDynamicViewWalkthrough
       onNavigateTo={onNavigateTo}
       renderIcon={RenderIcon}
       {...(DEV && { onChange })}

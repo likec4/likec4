@@ -1,4 +1,5 @@
-import { LikeC4Browser, type LikeC4ViewBaseProps, LikeC4ViewElement } from 'likec4/react'
+import type { LikeC4ViewBaseProps } from 'likec4/react'
+import { LikeC4Browser, LikeC4ViewElement, useColorScheme } from 'likec4/react'
 import { memo, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
 import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
@@ -23,7 +24,7 @@ export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
 export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4ViewComponent({
   viewId,
   interactive = true,
-  colorScheme,
+  colorScheme: explicitColorScheme,
   injectFontCss = true,
   background = 'transparent',
   browserBackground = 'dots',
@@ -47,6 +48,8 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
     throw new Error(`View with id ${browserViewId} not found`)
   }
 
+  const colorScheme = useColorScheme(explicitColorScheme)
+
   return (
     <>
       <LikeC4ViewElement<LikeC4ViewId>
@@ -56,6 +59,7 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
         onNavigateTo={interactive ? onNavigateTo : undefined}
         background={background}
         renderIcon={RenderIcon}
+        showElementLinks={interactive}
         {...props}
       />
       {browserView && (

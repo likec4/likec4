@@ -128,17 +128,21 @@ for (const color of keys(defaultTheme.elements)) {
   }
 
   for (let depth = 1; depth <= 6; depth++) {
-    createGlobalTheme(`:where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`, compounds, {
-      fill: compoundDarkColor(defaultTheme.elements[color].fill, depth),
-      stroke: compoundDarkColor(defaultTheme.elements[color].stroke, depth)
-    })
-
     createGlobalTheme(
-      `:where([data-mantine-color-scheme='light']) :where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`,
+      `:where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`,
       compounds,
       {
         fill: compoundLightColor(defaultTheme.elements[color].fill, depth),
         stroke: compoundLightColor(defaultTheme.elements[color].stroke, depth)
+      }
+    )
+
+    createGlobalTheme(
+      `:where([data-mantine-color-scheme='dark']) :where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`,
+      compounds,
+      {
+        fill: compoundDarkColor(defaultTheme.elements[color].fill, depth),
+        stroke: compoundDarkColor(defaultTheme.elements[color].stroke, depth)
       }
     )
   }

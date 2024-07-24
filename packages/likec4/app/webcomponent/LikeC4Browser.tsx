@@ -62,6 +62,7 @@ const BrowserModal = memo<{
                 nodesSelectable={false}
                 nodesDraggable={false}
                 keepAspectRatio={false}
+                experimentalEdgeEditing={false}
                 renderIcon={RenderIcon}
                 onNavigateTo={onNavigateTo} />
             )}

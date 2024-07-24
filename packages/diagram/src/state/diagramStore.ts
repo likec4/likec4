@@ -47,6 +47,7 @@ export type DiagramStore = {
   xyflowSynced: boolean
 
   // If Dynamic View
+  enableDynamicViewWalkthrough: boolean
   activeDynamicViewStep: number | null
 
   // This is XYFlow id's
@@ -92,11 +93,12 @@ export type DiagramInitialState = // Required properties
     | 'nodesDraggable'
     | 'nodesSelectable'
     | 'experimentalEdgeEditing'
+    | 'enableDynamicViewWalkthrough'
   >
   & LikeC4DiagramEventHandlers
 
 interface DiagramStoreActions {
-  isDynamicView: () => boolean
+  isDynamicView: boolean
 
   updateView: (view: DiagramView) => void
 
@@ -119,6 +121,7 @@ interface DiagramStoreActions {
   fitDiagram: (duration?: number) => void
 
   nextDynamicStep: (increment?: number) => void
+  activateDynamicStep: (step: number) => void
   stopDynamicView: () => void
 }
 
@@ -162,6 +165,7 @@ const EmptyStringSet: ReadonlySet<string> = new StringSet()
 
 export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props: T) {
   const storeDevId = 'DiagramStore' + String(StoreDevId++).padStart(2, '0')
+  const isDynamicView = props.view.__ === 'dynamic'
   return createWithEqualityFn<
     DiagramState,
     [
@@ -175,10 +179,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           storeDevId,
           ...DEFAULT_PROPS,
           ...(props as CreateDiagramStore),
-          isDynamicView: () => {
-            return get().view?.__ === 'dynamic'
-          },
-
+          isDynamicView,
           updateView: (nextView) => {
             let {
               viewSyncDebounceTimeout,
@@ -269,6 +270,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
             set(
               {
+                isDynamicView: nextView.__ === 'dynamic',
                 viewSyncDebounceTimeout,
                 view: nextView,
                 activeDynamicViewStep,
@@ -576,12 +578,19 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           nextDynamicStep: (increment = 1) => {
-            const { view, activeDynamicViewStep, xyflow, xystore, fitViewPadding } = get()
-            invariant(view.__ === 'dynamic', 'view is not dynamic')
+            const { activeDynamicViewStep, activateDynamicStep } = get()
             const nextStep = (activeDynamicViewStep ?? 0) + increment
-            if (nextStep <= 0 || nextStep > view.edges.length) {
+            if (nextStep <= 0) {
               return
             }
+            if (nextStep !== activeDynamicViewStep) {
+              activateDynamicStep(nextStep)
+            }
+          },
+
+          activateDynamicStep: (nextStep: number) => {
+            const { isDynamicView, xyflow, xystore, fitViewPadding } = get()
+            invariant(isDynamicView, 'view is not dynamic')
             const edgeId = StepEdgeId(nextStep)
             const dimmed = new StringSet()
             let edge: XYFlowEdge | null = null
@@ -617,7 +626,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 dimmed
               },
               noReplace,
-              'nextDynamicStep'
+              'activateDynamicStep'
             )
           },
 

@@ -15,7 +15,7 @@ export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<
   /**
    * By default determined by the user's system preferences.
    */
-  colorScheme?: 'light' | 'dark' | undefined
+  colorScheme?: 'light' | 'dark'
 
   /**
    * LikeC4 views are using 'IBM Plex Sans' font.
@@ -39,6 +39,8 @@ export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
+
+  showElementLinks?: boolean | undefined
 }
 
 export function LikeC4ViewElement<ViewId extends string>({
@@ -49,10 +51,10 @@ export function LikeC4ViewElement<ViewId extends string>({
   colorScheme,
   background = 'transparent',
   renderIcon,
+  showElementLinks = true,
   ...props
 }: LikeC4ViewElementProps<ViewId>) {
   const id = useId()
-  const scheme = useColorScheme(colorScheme)
 
   const isLandscape = view.width > view.height
 
@@ -101,7 +103,7 @@ export function LikeC4ViewElement<ViewId extends string>({
         })}
       >
         <ShadowRootMantineProvider
-          colorScheme={scheme}
+          colorScheme={colorScheme}
           className={clsx(cssLikeC4View, !!_onNavigateTo && cssInteractive)}
         >
           <LikeC4Diagram
@@ -112,10 +114,11 @@ export function LikeC4ViewElement<ViewId extends string>({
             background={background}
             fitView
             fitViewPadding={0}
-            showElementLinks
+            showElementLinks={showElementLinks}
             showDiagramTitle={false}
             enableDynamicViewWalkthrough={false}
             showNavigationButtons={false}
+            experimentalEdgeEditing={false}
             controls={false}
             nodesSelectable={false}
             keepAspectRatio={false}
