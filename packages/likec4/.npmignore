@@ -1,0 +1,17 @@
+# Ignore everything
+*
+
+# Include the following
+!bin/**
+!dist/**
+!react/**
+!icons/**
+!package.json
+!LICENSE
+!README.md
+
+# Exclude the following
+dist/**/*.d.ts
+**/*.map
+dist/__app__/react/components.mjs
+dist/**/metafile.json

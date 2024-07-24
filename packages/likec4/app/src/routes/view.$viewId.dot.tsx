@@ -1,8 +1,8 @@
 import { Code, ScrollArea } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { CopyToClipboard } from '../components'
-import { svgContainer } from './view.css'
+import { CopyToClipboard } from '../components/CopyToClipboard'
+import * as css from './view.css'
 import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 
 export const Route = createFileRoute('/view/$viewId/dot')({
@@ -50,7 +50,7 @@ function ViewAsDot() {
       />
       <Panel>
         <ScrollArea h={'100%'}>
-          <div className={svgContainer} dangerouslySetInnerHTML={{ __html: dotSvg }}></div>
+          <div className={css.svgContainer} dangerouslySetInnerHTML={{ __html: dotSvg }}></div>
         </ScrollArea>
       </Panel>
     </PanelGroup>

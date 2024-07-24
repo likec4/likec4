@@ -6,7 +6,13 @@ import { mapToObj } from 'remeda'
 import type { PluginOption } from 'vite'
 import type { LanguageServices } from '../language-services'
 import type { Logger } from '../logger'
-import { generateD2Sources, generateDotSources, generateIconRendererSource, generateMmdSources } from './generators'
+import {
+  generateD2Sources,
+  generateDotSources,
+  generateIconRendererSource,
+  generateMmdSources,
+  storeSource
+} from './generators'
 
 export type LikeC4PluginOptions = {
   languageServices: LanguageServices
@@ -19,9 +25,18 @@ interface Module {
   load(opts: { logger: Logger; likec4: LanguageServices }): Promise<string>
 }
 
+const generatedStore = {
+  id: 'virtual:likec4/store',
+  virtualId: '\0likec4-plugin/store.js',
+  async load({ likec4, logger }) {
+    logger.info(k.dim('generating virtual:likec4/store'))
+    return storeSource
+  }
+} satisfies Module
+
 const generatedViews = {
   id: 'virtual:likec4/views',
-  virtualId: '\0likec4/views.js',
+  virtualId: '\0likec4-plugin/views.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/views'))
     const diagrams = await likec4.views.diagrams()
@@ -31,7 +46,7 @@ const generatedViews = {
 
 const dotSourcesModule = {
   id: 'virtual:likec4/dot-sources',
-  virtualId: '\0likec4/dot-sources.js',
+  virtualId: '\0likec4-plugin/dot-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/dot-sources'))
     const views = await likec4.views.viewsAsGraphvizOut()
@@ -42,7 +57,7 @@ const dotSourcesModule = {
 
 const d2SourcesModule = {
   id: 'virtual:likec4/d2-sources',
-  virtualId: '\0likec4/d2-sources.js',
+  virtualId: '\0likec4-plugin/d2-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/d2-sources'))
     const views = await likec4.views.computedViews()
@@ -52,7 +67,7 @@ const d2SourcesModule = {
 
 const mmdSourcesModule = {
   id: 'virtual:likec4/mmd-sources',
-  virtualId: '\0likec4/mmd-sources.js',
+  virtualId: '\0likec4-plugin/mmd-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/mmd-sources'))
     const views = await likec4.views.computedViews()
@@ -62,7 +77,7 @@ const mmdSourcesModule = {
 
 const iconsModule = {
   id: 'virtual:likec4/icons',
-  virtualId: '\0likec4/icons.js',
+  virtualId: '\0likec4-plugin/icons.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/icons'))
     const views = await likec4.views.computedViews()
@@ -70,13 +85,18 @@ const iconsModule = {
   }
 } satisfies Module
 
-export const modules = [
+const hmrmodules = [
   iconsModule,
-  generatedViews,
   dotSourcesModule,
   d2SourcesModule,
-  mmdSourcesModule
-] as const
+  mmdSourcesModule,
+  generatedViews
+]
+
+export const modules = [
+  ...hmrmodules,
+  generatedStore
+]
 
 const isTarget = (path: string) => {
   const p = path.toLowerCase()
@@ -116,7 +136,7 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
         void limit(async () => {
           const [error] = likec4.getErrors()
           if (error) {
-            server.hot.send({
+            server.ws.send({
               type: 'error',
               err: {
                 name: 'LikeC4ValidationError',
@@ -132,7 +152,7 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
             })
             return
           }
-          for (const module of modules) {
+          for (const module of hmrmodules) {
             const md = server.moduleGraph.getModuleById(module.virtualId)
             if (md && md.importers.size > 0) {
               logger.info(`${k.green('trigger hmr')} ${k.dim(md.url)}`)

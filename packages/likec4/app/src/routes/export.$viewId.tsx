@@ -2,10 +2,10 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
+import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
-import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
-import { cssExportBox, cssExportView } from './view.css'
+import * as css from './view.css'
 
 export const Route = createFileRoute('/export/$viewId')({
   component: ExportPage
@@ -30,7 +30,7 @@ function ExportPage() {
 
   return (
     <Box
-      className={cssExportView}
+      className={css.cssExportView}
       role="presentation"
       style={{
         minWidth: diagram.width + padding * 2,
@@ -40,7 +40,7 @@ function ExportPage() {
         padding
       }}>
       <Box
-        className={cssExportBox}
+        className={css.cssExportBox}
         style={{
           width: diagram.width,
           minWidth: diagram.width,

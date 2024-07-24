@@ -40,22 +40,26 @@ export async function viteReactConfig({
     configFile: false,
     clearScreen: false,
     mode: 'production',
+    resolve: {
+      alias: {
+        'likec4/icons': resolve(root, '../../icons')
+      }
+    },
     esbuild: {
-      banner: `'use client'\n` + JsBanners.banner,
+      banner: `'use client'\n\n` + JsBanners.banner,
       footer: JsBanners.footer,
       jsx: isJsx ? 'preserve' : 'automatic',
+      jsxDev: false,
       minifyIdentifiers: false,
       minifySyntax: true,
       minifyWhitespace: true,
-      sourcesContent: false,
-      sourcemap: false
-    },
-    resolve: {
-      alias: {
-        'likec4/icons': resolve('../icons'),
-        '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts'),
-        'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
+      tsconfigRaw: {
+        compilerOptions: {
+          target: 'ES2020',
+          useDefineForClassFields: true,
+          verbatimModuleSyntax: true,
+          jsx: isJsx ? 'preserve' : 'react-jsx'
+        }
       }
     },
     build: {
@@ -64,7 +68,7 @@ export async function viteReactConfig({
       sourcemap: false,
       minify: 'esbuild',
       copyPublicDir: false,
-      chunkSizeWarningLimit: 5000,
+      chunkSizeWarningLimit: 10000,
       lib: {
         entry: 'react/likec4.tsx',
         fileName(_format, _entryName) {

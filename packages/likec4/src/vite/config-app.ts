@@ -73,21 +73,48 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       }
     },
     clearScreen: false,
+    optimizeDeps: {
+      force: true
+    },
     base,
     build: {
       outDir,
       emptyOutDir: false,
       cssCodeSplit: false,
       sourcemap: false,
-      minify: true,
+      minify: false,
       copyPublicDir: true,
       assetsInlineLimit: 1_000_000,
-      chunkSizeWarningLimit,
-      commonjsOptions: {
-        esmExternals: true,
-        transformMixedEsModules: true,
-        ignoreTryCatch: 'remove'
-      }
+      chunkSizeWarningLimit
+      // commonjsOptions: {
+      //       defaultIsModuleExports: (id: string) => {
+      //     if (id.includes('react')) {
+      //       return true
+      //     }
+      //     return 'auto'
+      //   },
+      //   requireReturnsDefault: 'auto',
+      //   extensions: ['.js', '.mjs'],
+      //   transformMixedEsModules: true,
+      //   // requireReturnsDefault: 'namespace',
+      //   ignoreTryCatch: 'remove'
+      // // },
+      // commonjsOptions: {
+      //   requireReturnsDefault: 'auto',
+      //   extensions: ['.js', '.mjs'],
+      //   transformMixedEsModules: true,
+      // //   // requireReturnsDefault: 'namespace',
+      //   ignoreTryCatch: 'remove'
+      // },
+      // rollupOptions: {
+      //   treeshake: {
+      //     preset: 'safest'
+      //   },
+      //   output: {
+      //     interop: 'auto',
+      //     hoistTransitiveImports: false,
+      //   }
+      // }
     },
     css: {
       postcss: {
@@ -101,7 +128,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       vanillaExtractPlugin({
         unstable_mode: 'transform'
       }),
-      react(),
       likec4Plugin({ languageServices }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',
@@ -109,6 +135,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         routesDirectory: resolve(root, 'src/routes'),
         quoteStyle: 'single'
       }),
+      react(),
       cssInjectedByJsPlugin({
         injectionCodeFormat: 'esm',
         injectCodeFunction: function(cssCode: string, options) {

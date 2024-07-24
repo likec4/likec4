@@ -2,7 +2,7 @@ import type { DiagramView } from '@likec4/core'
 import { ActionIcon, Box, Code, CopyButton, Group, Stack, Text } from '@mantine/core'
 import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
-import { ComponentName } from '../../../const'
+import { ComponentName } from '../../../const.js'
 import { AlertLocalhost } from './AlertLocalhost'
 import { CopyButtonChild } from './CopyButtonChild'
 

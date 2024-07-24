@@ -2,8 +2,9 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
+import { globSync } from 'glob'
 import { copyFile, readFile, rm, writeFile } from 'node:fs/promises'
-import { resolve } from 'path'
+import { extname, join, relative, resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
@@ -23,10 +24,6 @@ export async function buildReact(_isDev = false) {
     root,
     configFile: false,
     resolve: {
-      dedupe: [
-        '@mantine/core',
-        '@mantine/hooks'
-      ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),
@@ -41,15 +38,23 @@ export async function buildReact(_isDev = false) {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      treeShaking: true,
-      // jsx: 'transform',
-      jsxDev: false,
-      // jsxImportSource: 'react',
-      // jsxFactory: 'React.createElement',
-      // banner: '/* eslint-disable */',
+      // include: [
+      //   '**/*.ts',
+      //   '**/*.tsx',
+      //   '**/*.jsx',
+      //   '**/@mantine/**/*.mjs'
+      // ],
+      legalComments: 'none',
       minifyIdentifiers: false,
+      minifyWhitespace: true,
       minifySyntax: true,
-      minifyWhitespace: true
+      tsconfigRaw: {
+        compilerOptions: {
+          useDefineForClassFields: true,
+          verbatimModuleSyntax: true,
+          jsx: 'react-jsx'
+        }
+      }
     },
     build: {
       outDir,
@@ -57,8 +62,8 @@ export async function buildReact(_isDev = false) {
       cssCodeSplit: false,
       cssMinify: true,
       sourcemap: false,
-      minify: 'esbuild',
-      target: 'esnext',
+      target: 'es2022',
+      minify: true,
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,
       lib: {
@@ -69,23 +74,29 @@ export async function buildReact(_isDev = false) {
         formats: ['es']
       },
       commonjsOptions: {
-        esmExternals: true,
-        ignoreTryCatch: 'remove',
-        transformMixedEsModules: true
+        defaultIsModuleExports: 'auto',
+        requireReturnsDefault: 'auto',
+        extensions: ['.js', '.mjs'],
+        transformMixedEsModules: true,
+        ignoreTryCatch: 'remove'
       },
       rollupOptions: {
-        treeshake: true,
+        treeshake: {
+          preset: 'recommended'
+        },
         output: {
-          esModule: true,
-          exports: 'named',
-          compact: true
+          hoistTransitiveImports: false,
+          compact: true,
+          interop: 'auto'
         },
         external: [
           'react',
           'react-dom',
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
-          'react-dom/client'
+          'react-dom/client',
+          '@nanostores/react',
+          'nanostores'
         ],
         plugins: [
           shadowStyle()
@@ -101,26 +112,20 @@ export async function buildReact(_isDev = false) {
       }
     },
     plugins: [
-      react({}),
+      react(),
       vanillaExtractPlugin({
         identifiers: 'short'
       })
     ]
   })
-
   const outputFilepath = resolve(outDir, outputFilename)
 
   let bundledJs = await readFile(outputFilepath, 'utf-8')
-  let updated = bundledJs.replace('loadExternalIsValidProp(require("@emotion/is-prop-valid").default);', '')
-
-  if (updated !== bundledJs) {
-    await writeFile(outputFilepath, updated)
-  } else if (bundledJs.includes('@emotion/is-prop-valid')) {
+  if (bundledJs.includes('@emotion/is-prop-valid')) {
     throw new Error(
-      `${outputFilename} should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)`
+      `${outputFilepath} should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)`
     )
   }
-
   await rm(resolve(outDir, 'style.css'))
   await copyFile('app/react/likec4.tsx', resolve(outDir, 'likec4.tsx'))
 }

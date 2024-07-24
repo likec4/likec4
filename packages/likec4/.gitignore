@@ -1,7 +1,7 @@
-dist/
-react/
-icons/
-dev/export
-dev/dist
-.vscode/
-package.json.backup
+dist/**
+react/**
+icons/**
+dev/export/**
+dev/dist/**
+.vscode/**
+app/src/routeTree.gen.ts

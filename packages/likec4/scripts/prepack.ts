@@ -1,7 +1,7 @@
 import consola from 'consola'
 import { $ as $_ } from 'execa'
 import { existsSync } from 'node:fs'
-import { cp, rm } from 'node:fs/promises'
+import { cp } from 'node:fs/promises'
 
 const $ = $_({
   stderr: 'inherit',
@@ -26,12 +26,3 @@ if (!existsSync(components)) {
 await cp(components, 'react/index.mjs')
 
 consola.success('React bundle copied to react/index.mjs')
-
-// Copy icons
-await $`mkdir -p icons`
-await $`cp -r ../icons/aws icons`
-await $`cp -r ../icons/gcp icons`
-await $`cp -r ../icons/tech icons`
-await $`cp ../icons/icon.d.ts icons/`
-
-consola.success('Copied icons')

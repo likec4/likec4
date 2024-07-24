@@ -13,21 +13,6 @@
     "node": "^18.0.0 || >=20.0.0"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
-  "files": [
-    "package.json",
-    "LICENSE",
-    "README.md",
-    "bin",
-    "dist",
-    "react",
-    "icons",
-    "!dist/**/*.d.ts",
-    "!dist/__app__/react/components.mjs",
-    "!dist/**/*.map",
-    "!icons/*/*.jsx",
-    "!icons/*/*.d.ts",
-    "!dist/**/metafile.json"
-  ],
   "type": "module",
   "bin": "./bin/likec4.mjs",
   "exports": {
@@ -39,17 +24,9 @@
       "types": "./app/react/components/index.ts",
       "default": "./dist/__app__/react/components.mjs"
     },
-    "./icons/aws/*": {
-      "types": "../icons/icon.d.ts",
-      "default": "../icons/aws/*.js"
-    },
-    "./icons/tech/*": {
-      "types": "../icons/icon.d.ts",
-      "default": "../icons/tech/*.js"
-    },
-    "./icons/gcp/*": {
-      "types": "../icons/icon.d.ts",
-      "default": "../icons/gcp/*.js"
+    "./icons/*": {
+      "types": "./icons/icon.d.ts",
+      "default": "./icons/*"
     }
   },
   "publishConfig": {
@@ -64,17 +41,9 @@
         "types": "./react/index.d.ts",
         "default": "./react/index.mjs"
       },
-      "./icons/aws/*": {
+      "./icons/*": {
         "types": "./icons/icon.d.ts",
-        "default": "./icons/aws/*.js"
-      },
-      "./icons/tech/*": {
-        "types": "./icons/icon.d.ts",
-        "default": "./icons/tech/*.js"
-      },
-      "./icons/gcp/*": {
-        "types": "./icons/icon.d.ts",
-        "default": "./icons/gcp/*.js"
+        "default": "./icons/*"
       }
     }
   },
@@ -83,13 +52,14 @@
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.json",
     "typecheck": "run 'typecheck:cli' && run 'typecheck:app'",
+    "prebuild": "tsx scripts/prebuild.ts",
     "build:cli": "tsx scripts/build-cli.ts",
     "build:app": "tsx scripts/bundle-app.ts",
     "build:react": "tsx scripts/bundle-react.ts",
     "build:webcomponent": "tsx scripts/bundle-webcomponent.ts",
-    "build": "run-p --print-label 'build:*'",
+    "build": "run prebuild && run-p --print-label 'build:*'",
+    "generate": "tsx scripts/generate.ts",
     "prepack": "tsx scripts/prepack.ts",
-    "postpack": "tsx scripts/postpack.ts",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist app/dist dev/.export dev/dist node_modules/.vite",
     "dev": "tsx watch src/cli/index.ts serve dev",
@@ -109,22 +79,13 @@
   },
   "dependencies": {
     "@hpcc-js/wasm": "2.18.0",
+    "@nanostores/react": "0.7.2",
     "@vitejs/plugin-react": "4.3.1",
-    "esm-env": "1.0.0",
+    "nanostores": "0.10.3",
     "playwright": "1.45.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "vite": "5.3.4"
-  },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@fontsource/ibm-plex-sans": "^5.0.20",
@@ -138,11 +99,11 @@
     "@mantine/core": "7.11.2",
     "@mantine/hooks": "7.11.2",
     "@mantine/vanilla-extract": "7.11.2",
-    "@nanostores/react": "^0.7.2",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.11.0",
-    "@tanstack/react-router": "^1.43.4",
-    "@tanstack/router-vite-plugin": "^1.43.1",
+    "@tanstack/react-router": "^1.45.8",
+    "@tanstack/router-cli": "^1.45.8",
+    "@tanstack/router-vite-plugin": "^1.45.8",
     "@types/node": "^20.14.10",
     "@types/prop-types": "^15.7.11",
     "@types/react": "18.3.3",
@@ -159,25 +120,23 @@
     "consola": "^3.2.3",
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.13.1",
+    "esm-env": "^1.0.0",
     "execa": "^9.3.0",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.3.8",
     "get-port": "^7.1.0",
+    "glob": "^11.0.0",
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
     "langium": "3.1.2",
     "mkdirp": "^3.0.1",
-    "nanostores": "^0.10.3",
     "npm-run-all2": "^6.2.2",
     "p-limit": "^6.0.0",
     "package-up": "^5.0.0",
     "picocolors": "^1.0.1",
     "postcss": "^8.4.39",
-    "postcss-preset-mantine": "^1.16.0",
+    "postcss-preset-mantine": "^1.17.0",
     "pretty-ms": "^9.0.0",
-    "prop-types": "^15.8.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",
     "react-resizable-panels": "^2.0.20",
     "react-shadow": "^20.5.0",

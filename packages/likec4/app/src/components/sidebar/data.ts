@@ -1,8 +1,6 @@
-import { type DiagramView } from '@likec4/core'
-import { useStore } from '@nanostores/react'
-import { batched } from 'nanostores'
+import type { DiagramView } from '@likec4/core'
 import { find, values } from 'remeda'
-import { $views } from '../../data'
+import { useLikeC4Views } from 'virtual:likec4/store'
 
 interface DiagramTreeNodeData {
   label: string
@@ -63,8 +61,9 @@ function buildDiagramTreeData(views: DiagramView[]): DiagramTreeNodeData[] {
   return root.children.sort(compareTreeNodes)
 }
 
-const $diagramsTree = batched($views, views => buildDiagramTreeData(values(views)))
+// const $diagramsTree = batched($views, views => buildDiagramTreeData(values(views)))
 
 export function useDiagramsTreeData() {
-  return useStore($diagramsTree)
+  const views = useLikeC4Views() as unknown as Record<string, DiagramView>
+  return buildDiagramTreeData(values(views))
 }

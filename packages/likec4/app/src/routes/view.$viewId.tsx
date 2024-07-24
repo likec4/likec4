@@ -3,9 +3,9 @@ import { useDisclosure } from '@mantine/hooks'
 import { useUpdateEffect } from '@react-hookz/web'
 import { createFileRoute, isNotFound, Outlet, useRouter } from '@tanstack/react-router'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
+import { useLikeC4View } from 'virtual:likec4/store'
 import { SidebarDrawer } from '../components/sidebar/Drawer'
 import { Header } from '../components/view-page/Header'
-import { useLikeC4View } from '../data'
 import * as css from './view.css'
 
 export const Route = createFileRoute('/view/$viewId')({

@@ -18,6 +18,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
+import type { ReactNode } from 'react'
 import { findLast } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as css from './Header.css'
@@ -94,7 +95,7 @@ const viewPages = [
     icon: <IconFile opacity={0.7} size={16} />,
     title: <>Mermaid</>
   }
-] as const satisfies Array<{ route: RegisteredRoute; icon: React.ReactNode; title: React.ReactNode }>
+] as const satisfies Array<{ route: RegisteredRoute; icon: ReactNode; title: ReactNode }>
 
 const routeIds = viewPages.map(({ route }) => route as string)
 

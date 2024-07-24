@@ -3,7 +3,7 @@ import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { CopyToClipboard } from '../components'
+import { CopyToClipboard } from '../components/CopyToClipboard'
 import { svgContainer } from './view.css'
 import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 

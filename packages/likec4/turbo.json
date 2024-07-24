@@ -1,0 +1,39 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "dependsOn": [
+        "@likec4/icons#generate"
+      ],
+      "outputs": [
+        "app/src/routeTree.gen.ts",
+        "icons/**"
+      ],
+      "inputs": [
+        "scripts/generate.ts",
+        "app/src/routes/**/*.tsx",
+        "tsr.config.json",
+        "package.json"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!dev/**",
+        "!test/**"
+      ],
+      "outputLogs": "new-only"
+    }
+  }
+}

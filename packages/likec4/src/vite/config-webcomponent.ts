@@ -57,19 +57,18 @@ export async function viteWebcomponentConfig({
       sourcemap: false,
       minify: 'esbuild',
       chunkSizeWarningLimit,
-      lib: {
-        entry: 'webcomponent/webcomponent.tsx',
-        fileName(_format, _entryName) {
-          return filename
-        },
-        formats: ['iife'],
-        name: 'LikeC4Views'
-      },
-      // commonjsOptions: {
-      //   esmExternals: true,
-      //   transformMixedEsModules: true
-      // },
       rollupOptions: {
+        input: {
+          'webcomponent': 'webcomponent/webcomponent.tsx'
+        },
+        treeshake: {
+          preset: 'recommended'
+        },
+        output: {
+          format: 'iife',
+          compact: true,
+          entryFileNames: filename
+        },
         plugins: [
           shadowStyle()
         ]

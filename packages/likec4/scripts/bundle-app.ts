@@ -1,20 +1,29 @@
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
-import { copyFile, readFile, writeFile } from 'node:fs/promises'
-import { resolve } from 'path'
+import { $ } from 'execa'
+import { copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises'
+import process from 'node:process'
+import { join, resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { modules } from '../src/vite/plugin'
 import { amIExecuted } from './_utils'
 
 export async function bundleApp() {
-  const root = resolve('app')
-  const outDir = resolve('dist/__app__/src')
+  const cwd = process.cwd()
+
+  consola.info(`Run tanstack-router generate`)
+  await $`tsr generate`
+
+  const root = resolve(cwd, 'app')
+  const outDir = resolve(cwd, 'dist/__app__/src')
   consola.start(`Bundling App...`)
   consola.info(`root: ${root}`)
+
+  const tsconfig = await readFile('app/tsconfig.json', 'utf-8')
+
   // Static website
   await build({
     root,
@@ -22,8 +31,9 @@ export async function bundleApp() {
     clearScreen: false,
     resolve: {
       alias: {
-        '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts')
+        '@likec4/core': resolve(cwd, '../core/src/index.ts'),
+        '@likec4/diagram': resolve(cwd, '../diagram/src/index.ts'),
+        'react-dom/server': resolve(cwd, 'app/react/react-dom-server-mock.ts')
       }
     },
     mode: 'production',
@@ -31,41 +41,76 @@ export async function bundleApp() {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      legalComments: 'none',
       minifyIdentifiers: false,
       minifyWhitespace: true,
-      minifySyntax: true
+      minifySyntax: true,
+      lineLimit: 150,
+      tsconfigRaw: {
+        compilerOptions: {
+          useDefineForClassFields: true,
+          verbatimModuleSyntax: true,
+          jsx: 'react-jsx'
+        }
+      }
     },
     build: {
-      emptyOutDir: false,
+      modulePreload: false,
+      emptyOutDir: true,
       outDir,
       chunkSizeWarningLimit: 2000,
       cssCodeSplit: false,
       cssMinify: true,
       minify: 'esbuild',
-      target: 'esnext',
+      target: 'es2022',
       sourcemap: false,
+      assetsInlineLimit: 1_000_000,
       lib: {
         entry: {
-          main: 'src/main.tsx'
+          'main': 'src/main.tsx'
         },
         formats: ['es']
       },
       commonjsOptions: {
-        esmExternals: true,
-        ignoreTryCatch: 'remove',
-        transformMixedEsModules: true
+        defaultIsModuleExports: 'auto',
+        requireReturnsDefault: 'auto',
+        extensions: ['.mjs', '.js'],
+        transformMixedEsModules: true,
+        ignoreTryCatch: 'remove'
       },
       rollupOptions: {
+        // input: {
+        //   main: root + '',
+        //   // 'routes/index': root + '/src/routes/index.tsx',
+        //   // 'routes/export.$viewId': root + '/src/routes/export.$viewId.tsx',
+        //   // 'routes/embed.$viewId': root + '/src/routes/embed.$viewId.tsx',
+        //   // 'routes/view.$viewId.editor': root + '/src/routes/view.$viewId.editor.tsx',
+        //   // 'routes/view.$viewId.index': root + '/src/routes/view.$viewId.index.tsx',
+        //   // 'router': root + '/src/router.tsx',
+        //   // 'routeTree.gen': root + '/src/routeTree.gen.ts',
+        //   // 'components/sidebar/Drawer': root + '/src/components/sidebar/Drawer.tsx',
+        //   'components/RenderIcon': root + '/src/components/RenderIcon.tsx',
+        // },
+        treeshake: {
+          preset: 'recommended'
+          // moduleSideEffects: false,
+        },
         output: {
-          esModule: true,
-          compact: true,
-          entryFileNames: '[name].mjs',
-          chunkFileNames: '[name]-[hash].mjs'
+          hoistTransitiveImports: false,
+          interop: 'auto',
+          format: 'esm',
+          entryFileNames: '[name].js',
+          chunkFileNames: '[name]-[hash].js',
+          assetFileNames: '[name][extname]'
         },
         external: [
-          'virtual:likec4',
-          resolve('app/src/const.js'),
+          'react/jsx-runtime',
+          'react/jsx-dev-runtime',
+          'react-dom/client',
+          'react',
+          'react-dom',
+          '@nanostores/react',
+          'nanostores',
+          resolve(cwd, 'app/src/const.js'),
           ...modules.map(m => m.id)
         ]
       }
@@ -79,16 +124,10 @@ export async function bundleApp() {
       }
     },
     plugins: [
-      react({}),
-      TanStackRouterVite({
-        routeFileIgnorePattern: '.css.ts',
-        generatedRouteTree: resolve('app/src/routeTree.gen.ts'),
-        routesDirectory: resolve('app/src/routes'),
-        quoteStyle: 'single'
-      }),
       vanillaExtractPlugin({
         identifiers: 'short'
-      })
+      }),
+      react()
     ]
   })
 

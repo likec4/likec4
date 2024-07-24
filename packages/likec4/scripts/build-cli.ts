@@ -39,7 +39,7 @@ export async function buildCli(isDev = false) {
       '@/vite/config-webcomponent': '@/vite/config-webcomponent.prod'
     },
     banner: {
-      js: 'import { createRequire as crReq } from \'module\'; const require = crReq(import.meta.url);'
+      js: 'import { createRequire as crReq } from \'module\';\nconst require = crReq(import.meta.url);\n'
     },
     plugins: [
       nodeExternalsPlugin({

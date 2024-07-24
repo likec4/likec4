@@ -1,7 +1,7 @@
 import type { LanguageServices } from '@/language-services'
 import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
-import { extname } from 'node:path'
+import { extname, resolve } from 'node:path'
 import k from 'picocolors'
 import type { InlineConfig } from 'vite'
 import { likec4Plugin } from './plugin'
@@ -31,23 +31,34 @@ export async function viteReactConfig({
     configFile: false,
     clearScreen: false,
     publicDir: false,
+    mode: 'production',
     esbuild: {
       banner: `'use client'\n\n` + JsBanners.banner,
       footer: JsBanners.footer,
-      jsx: isJsx ? 'preserve' : 'automatic',
+      jsx: 'transform',
+      // jsx: isJsx ? 'preserve' : 'automatic',
+      jsxDev: false,
       minifyIdentifiers: false,
+      lineLimit: 150,
       minifySyntax: true,
-      minifyWhitespace: true,
-      sourcesContent: false,
-      sourcemap: false
+      minifyWhitespace: false,
+      tsconfigRaw: {
+        compilerOptions: {
+          target: 'ES2020',
+          useDefineForClassFields: true,
+          verbatimModuleSyntax: true,
+          jsx: 'react-jsx'
+        }
+      }
     },
     build: {
       outDir,
       emptyOutDir: false,
       sourcemap: false,
       minify: 'esbuild',
+      target: 'es2020',
       copyPublicDir: false,
-      chunkSizeWarningLimit: 5000,
+      chunkSizeWarningLimit,
       lib: {
         entry: 'react/likec4.tsx',
         fileName(_format, _entryName) {
@@ -57,14 +68,21 @@ export async function viteReactConfig({
       },
       rollupOptions: {
         external: [
-          /^likec4\/icons/,
           'likec4/react',
           'react',
           'react-dom',
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
-          'react-dom/client'
-        ]
+          'react-dom/client',
+          /likec4\/icons\/.*/
+        ],
+        // https://github.com/vitejs/vite/issues/15012
+        onwarn(warning, defaultHandler) {
+          if (warning.code === 'SOURCEMAP_ERROR') {
+            return
+          }
+          defaultHandler(warning)
+        }
       }
     },
     plugins: [

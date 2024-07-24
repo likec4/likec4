@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { NotFound } from './components/NotFound'
-import { basepath, useHasHistory } from './const'
+import { basepath, useHashHistory } from './const'
 import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
@@ -17,7 +17,7 @@ function createRouter() {
     context: {},
     basepath,
     trailingSlash: 'preserve',
-    history: useHasHistory ? createHashHistory() : createBrowserHistory(),
+    history: useHashHistory ? createHashHistory() : createBrowserHistory(),
     // defaultErrorComponent
     // defaultPendingMinMs: 600,
     // defaultPendingMs: 300,

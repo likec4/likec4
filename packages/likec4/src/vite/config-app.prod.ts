@@ -1,6 +1,6 @@
 import { createLikeC4Logger } from '@/logger'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import react from '@vitejs/plugin-react'
+import { resolve } from 'node:path'
 import k from 'picocolors'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
@@ -60,13 +60,25 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     languageServices,
     clearScreen: false,
     base,
-    configFile: false,
     resolve: {
       alias: {
-        '@emotion/is-prop-valid': 'fast-equals'
+        'likec4/icons': resolve(root, '../../icons')
       }
     },
+    configFile: false,
     mode: 'production',
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react-dom/client',
+        '@nanostores/react',
+        'nanostores'
+      ],
+      noDiscovery: true,
+      force: true
+    },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'false',
@@ -78,17 +90,32 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       emptyOutDir: false,
       cssCodeSplit: false,
       sourcemap: false,
+      cssMinify: true,
       minify: true,
       copyPublicDir: true,
       chunkSizeWarningLimit,
       commonjsOptions: {
-        esmExternals: true,
-        transformMixedEsModules: true,
-        ignoreTryCatch: 'remove'
+        defaultIsModuleExports: (id: string) => {
+          if (id.includes('react')) {
+            return true
+          }
+          return 'auto'
+        },
+        requireReturnsDefault: 'auto'
+      },
+      rollupOptions: {
+        treeshake: {
+          preset: 'recommended'
+        },
+        output: {
+          interop: 'auto',
+          hoistTransitiveImports: false
+        }
       }
     },
     customLogger,
     plugins: [
+      react(),
       likec4Plugin({ languageServices })
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }

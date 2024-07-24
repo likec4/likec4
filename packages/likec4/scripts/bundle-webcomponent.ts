@@ -12,28 +12,22 @@ import { amIExecuted } from './_utils'
 
 export async function buildWebcomponentBundle(_isDev = false) {
   const root = resolve('app')
-  const outDir = resolve('dist/__app__/src/lib')
+  const outDir = resolve('dist/__app__/webcomponent')
   consola.start(`Bundling Webcomponent...`)
   consola.info(`root: ${root}`)
   consola.info(`outDir: ${outDir}`)
 
-  const outputFilename = 'webcomponent.mjs'
+  const outputFilename = 'webcomponent.js'
 
   // Static website
   await build({
     root,
     configFile: false,
     resolve: {
-      dedupe: [
-        'react',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom',
-        'react-dom/client'
-      ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts')
+        '@likec4/diagram': resolve('../diagram/src/index.ts'),
+        'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
       }
     },
     clearScreen: false,
@@ -44,10 +38,23 @@ export async function buildWebcomponentBundle(_isDev = false) {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      treeShaking: true,
+      // include: [
+      //   '**/*.ts',
+      //   '**/*.tsx',
+      //   '**/*.jsx',
+      //   // '**/@mantine/**/*.mjs'
+      // ],
+      // legalComments: 'none',
       minifyIdentifiers: false,
+      minifyWhitespace: true,
       minifySyntax: true,
-      minifyWhitespace: true
+      tsconfigRaw: {
+        compilerOptions: {
+          useDefineForClassFields: true,
+          verbatimModuleSyntax: true,
+          jsx: 'react-jsx'
+        }
+      }
     },
     build: {
       outDir,
@@ -56,6 +63,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
       cssMinify: true,
       sourcemap: false,
       minify: 'esbuild',
+      target: 'es2020',
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,
       lib: {
@@ -66,14 +74,29 @@ export async function buildWebcomponentBundle(_isDev = false) {
         formats: ['es']
       },
       commonjsOptions: {
-        esmExternals: true,
-        ignoreTryCatch: 'remove',
-        transformMixedEsModules: true
+        defaultIsModuleExports: 'auto',
+        requireReturnsDefault: 'auto',
+        extensions: ['.js', '.mjs'],
+        transformMixedEsModules: true,
+        ignoreTryCatch: 'remove'
       },
       rollupOptions: {
-        treeshake: true,
+        treeshake: {
+          preset: 'recommended'
+        },
+        output: {
+          hoistTransitiveImports: false,
+          compact: true,
+          interop: 'auto'
+        },
         external: [
-          'virtual:likec4',
+          'react',
+          'react-dom',
+          'react/jsx-runtime',
+          'react/jsx-dev-runtime',
+          'react-dom/client',
+          '@nanostores/react',
+          'nanostores',
           ...modules.map(m => m.id)
         ],
         plugins: [
@@ -99,14 +122,10 @@ export async function buildWebcomponentBundle(_isDev = false) {
 
   const outputFilepath = resolve(outDir, outputFilename)
 
-  let webcomponent = await readFile(outputFilepath, 'utf-8')
-  let updated = webcomponent.replace('loadExternalIsValidProp(require("@emotion/is-prop-valid").default);', '')
-
-  if (updated !== webcomponent) {
-    await writeFile(outputFilepath, updated)
-  } else if (webcomponent.includes('@emotion/is-prop-valid')) {
+  let bundledJs = await readFile(outputFilepath, 'utf-8')
+  if (bundledJs.includes('@emotion/is-prop-valid')) {
     throw new Error(
-      'webcomponent.mjs should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)'
+      `${outputFilepath} should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)`
     )
   }
 

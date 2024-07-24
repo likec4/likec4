@@ -1,13 +1,10 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
-import '@xyflow/react/dist/style.css'
 import clsx from 'clsx'
-import { DEV } from 'esm-env'
 import { shallowEqual } from 'fast-equals'
 import { domAnimation, LazyMotion } from 'framer-motion'
 import { memo, useEffect, useRef, useState } from 'react'
-import useTilg from 'tilg'
 import { rootClassName } from './globals.css'
-import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
+import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
@@ -52,7 +49,6 @@ export function LikeC4Diagram({
   onNodeContextMenu,
   renderIcon
 }: LikeC4DiagramProps) {
-  DEV && useTilg()
   const initialRef = useRef<{
     defaultNodes: XYFlowData['nodes']
     defaultEdges: XYFlowData['edges']
@@ -146,7 +142,6 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
   showNavigationButtons,
   enableDynamicViewWalkthrough
 }) {
-  DEV && useTilg()
   const diagramApi = useDiagramStoreApi()
   const [isInitialized, setIsInitialized] = useState(diagramApi.getState().initialized)
 
@@ -170,10 +165,10 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
         defaultEdges={defaultEdges}
         className={clsx(
           'likec4-diagram',
-          cssReactFlow,
-          controls === false && cssNoControls,
-          pannable !== true && cssDisablePan,
-          background === 'transparent' && cssTransparentBg
+          css.cssReactFlow,
+          controls === false && css.cssNoControls,
+          pannable !== true && css.cssDisablePan,
+          background === 'transparent' && css.cssTransparentBg
         )}
       >
         <XYFlowInner

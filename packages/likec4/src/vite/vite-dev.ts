@@ -59,6 +59,11 @@ export async function viteDev({
 
   const server = await createServer({
     ...config,
+    define: {
+      ...config.define,
+      'process.env.NODE_ENV': '"development"'
+    },
+    mode: 'development',
     publicDir,
     server: {
       host: '0.0.0.0',

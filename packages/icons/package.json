@@ -11,18 +11,6 @@
     "directory": "packages/icons"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
-  "files": [
-    "aws",
-    "gcp",
-    "tech",
-    "all.js",
-    "all.d.ts",
-    "icon.d.ts",
-    "LICENSE",
-    "package.json",
-    "README.md",
-    "!*/*.jsx"
-  ],
   "type": "module",
   "sideEffects": false,
   "exports": {

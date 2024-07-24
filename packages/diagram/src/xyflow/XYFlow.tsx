@@ -1,8 +1,6 @@
 import { ReactFlow, useOnViewportChange } from '@xyflow/react'
-import { DEV } from 'esm-env'
 import { deepEqual as eq } from 'fast-equals'
 import { type CSSProperties, type PropsWithChildren, useCallback } from 'react'
-import useTilg from 'tilg'
 import type { DiagramState } from '../state/diagramStore'
 import { useDiagramState, useDiagramStoreApi } from '../state/useDiagramStore'
 import { MinZoom } from './const'
@@ -68,7 +66,6 @@ export function XYFlow({
   defaultEdges,
   style
 }: XYFlowWrapperProps) {
-  DEV && useTilg()
   const xyflowApi = useXYStoreApi()
   const diagramApi = useDiagramStoreApi()
   const {

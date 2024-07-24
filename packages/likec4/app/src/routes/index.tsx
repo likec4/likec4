@@ -4,13 +4,11 @@ import type { DiagramView } from '@likec4/core'
 import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { memo, useState } from 'react'
-import { useLikeC4View } from '../data'
+import { useLikeC4View, useLikeC4Views } from 'virtual:likec4/store'
 
 import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
-import { useStore } from '@nanostores/react'
 import { ceil, clamp, keys } from 'remeda'
 import { RenderIcon } from '../components/RenderIcon'
-import { $views } from '../data'
 import * as styles from './index.css'
 
 export const Route = createFileRoute('/')({
@@ -18,7 +16,7 @@ export const Route = createFileRoute('/')({
 })
 
 export function IndexPage() {
-  const views = keys(useStore($views))
+  const views = keys(useLikeC4Views())
 
   return (
     <SimpleGrid

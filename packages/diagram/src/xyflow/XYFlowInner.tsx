@@ -52,3 +52,4 @@ export const XYFlowInner = memo(function XYFlowInnerR({
     </>
   )
 }, shallowEqual)
+XYFlowInner.displayName = 'XYFlowInner'

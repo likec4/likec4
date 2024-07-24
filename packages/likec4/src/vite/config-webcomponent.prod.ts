@@ -1,6 +1,6 @@
 import { createLikeC4Logger } from '@/logger'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
+
 import k from 'picocolors'
 import type { InlineConfig } from 'vite'
 import type { LanguageServices } from '../language-services'
@@ -37,6 +37,11 @@ export async function viteWebcomponentConfig({
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       'process.env.NODE_ENV': '"production"'
     },
+    resolve: {
+      alias: {
+        'likec4/icons': resolve(root, '../../icons')
+      }
+    },
     esbuild: {
       ...JsBanners
     },
@@ -48,19 +53,29 @@ export async function viteWebcomponentConfig({
       // 100Kb
       assetsInlineLimit: 100 * 1024,
       chunkSizeWarningLimit,
-      commonjsOptions: {
-        ignoreTryCatch: 'remove'
-      },
       lib: {
-        entry: 'src/lib/webcomponent.mjs',
+        entry: 'webcomponent/webcomponent.js',
         fileName(_format, _entryName) {
           return filename
         },
         formats: ['iife'],
         name: 'LikeC4Views'
       },
+      commonjsOptions: {
+        defaultIsModuleExports: (id: string) => {
+          if (id.includes('react')) {
+            return true
+          }
+          return 'auto'
+        },
+        requireReturnsDefault: 'auto'
+      },
       rollupOptions: {
+        treeshake: {
+          preset: 'recommended'
+        },
         output: {
+          format: 'iife',
           compact: true
         }
       }

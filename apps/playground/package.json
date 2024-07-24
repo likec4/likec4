@@ -36,7 +36,8 @@
     "@mantine/vanilla-extract": "7.11.2",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.11.0",
-    "@tanstack/router-vite-plugin": "^1.43.1",
+    "@tanstack/react-router": "^1.45.8",
+    "@tanstack/router-vite-plugin": "^1.45.8",
     "@typefox/monaco-editor-react": "4.3.2",
     "@types/node": "^20.14.10",
     "@types/react": "18.3.3",
@@ -56,7 +57,6 @@
     "monaco-languageclient": "8.6.0",
     "nanoid": "^5.0.7",
     "react": "^18.3.1",
-    "react-accessible-treeview": "^2.9.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",
     "react-resizable-panels": "^2.0.20",
@@ -77,6 +77,6 @@
   },
   "packageManager": "yarn@4.3.1",
   "devDependencies": {
-    "@tanstack/router-cli": "^1.43.1"
+    "@tanstack/router-cli": "^1.45.8"
   }
 }

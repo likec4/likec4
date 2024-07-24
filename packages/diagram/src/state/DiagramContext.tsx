@@ -52,16 +52,16 @@ export function DiagramContextProvider({
     () => {
       if (!store.current) return
       const state = store.current.getState()
-      if (state.view !== view) {
-        state.updateView(view)
-      }
       const newProps = pickBy(props, isNonNullish)
       if (!hasSubObject(state, newProps)) {
         store.current.setState(newProps, false, 'update incoming props')
       }
+      if (state.view !== view) {
+        state.updateView(view)
+      }
     },
     [view, props],
-    shallowEqual
+    (prev, next) => shallowEqual(prev[0], next[0]) && shallowEqual(prev[1], next[1])
   )
   return (
     <div

@@ -3,12 +3,12 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import { createRoot, type Root } from 'react-dom/client'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
-import { ComponentName } from '../src/const'
+import { ComponentName } from './const.js'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
 export class LikeC4View extends HTMLElement {
-  static observedAttributes = ['view-id']
+  static observedAttributes = ['view-id', 'interactive']
 
   private rootEl: HTMLDivElement
   private shadow: ShadowRoot

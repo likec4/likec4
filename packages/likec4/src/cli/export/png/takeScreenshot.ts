@@ -57,6 +57,8 @@ export async function takeScreenshot({
       await page.goto(url + `?padding=${padding}&theme=${theme}`)
 
       const diagramElement = page.getByRole('presentation')
+      await diagramElement.waitFor()
+
       const hasImages = view.nodes.some(n => isTruthy(n.icon))
       if (hasImages) {
         await waitAllImages(page, timeout)

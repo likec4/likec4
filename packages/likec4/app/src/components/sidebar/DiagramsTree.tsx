@@ -1,11 +1,12 @@
-import { Box, Button, Tree, useComputedColorScheme, useMantineColorScheme, useTree } from '@mantine/core'
+import { Box, Button, Tree, useComputedColorScheme, useTree } from '@mantine/core'
 import { IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
 import { Link, useParams } from '@tanstack/react-router'
+import { memo } from 'react'
 import { isTruthy } from 'remeda'
-import { useLikeC4View } from '../../data'
+import { useLikeC4View } from 'virtual:likec4/store'
 import { useDiagramsTreeData } from './data'
 
-export function DiagramsTree() {
+export const DiagramsTree = /* @__PURE__ */ memo(() => {
   const data = useDiagramsTreeData()
   const { viewId } = useParams({
     from: '/view/$viewId'
@@ -78,4 +79,4 @@ export function DiagramsTree() {
       />
     </Box>
   )
-}
+})

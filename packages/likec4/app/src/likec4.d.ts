@@ -1,3 +1,13 @@
+declare module 'virtual:likec4/store' {
+  import type { MapStore } from 'nanostores'
+  import type { DiagramView, LikeC4ViewId } from 'virtual:likec4/views'
+
+  export const $views: MapStore<Record<string, DiagramView>>
+
+  export function useLikeC4Views(): Record<string, DiagramView>
+  export function useLikeC4View(viewId: string): DiagramView | null
+}
+
 declare module 'virtual:likec4/views' {
   import type { DiagramView as CoreDiagramView, Opaque } from '@likec4/core'
 

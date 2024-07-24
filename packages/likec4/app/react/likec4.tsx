@@ -20,7 +20,7 @@ export { isLikeC4ViewId }
 
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
 
-export const LikeC4View = memo<LikeC4ViewProps>(function LikeC4ViewComponent({
+export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4ViewComponent({
   viewId,
   interactive = true,
   colorScheme,
@@ -72,3 +72,4 @@ export const LikeC4View = memo<LikeC4ViewProps>(function LikeC4ViewComponent({
     </>
   )
 })
+LikeC4View.displayName = 'LikeC4View'

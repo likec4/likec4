@@ -6,7 +6,7 @@ import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo } from 'react'
 import { isNumber, isTruthy } from 'remeda'
-import { useDiagramState } from '../../../state/useDiagramStore'
+import { type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../../../state/useDiagramStore'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -71,7 +71,7 @@ const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
   && eq(prev.dragging ?? false, next.dragging ?? false)
-  && eq(prev.draggable ?? false, next.draggable ?? false)
+  // && eq(prev.draggable ?? false, next.draggable ?? false)
   && eq(prev.width ?? 0, next.width ?? 0)
   && eq(prev.height ?? 0, next.height ?? 0)
   && eq(prev.data.element, next.data.element)
@@ -88,6 +88,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   width,
   height
 }) {
+  const store = useDiagramStoreApi()
   const { isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
@@ -120,7 +121,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
       break
   }
 
-  // useTilg(animate, isHovered, isInteractive)
+  const elementIcon = ElementIcon({ node: element, store })
 
   return (
     <>
@@ -187,11 +188,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         <div
           className={clsx(
             css.elementDataContainer,
-            isTruthy(element.icon) && css.hasIcon,
+            isTruthy(elementIcon) && css.hasIcon,
             'likec4-element'
           )}
         >
-          {isTruthy(element.icon) && <ElementIcon node={element} />}
+          {elementIcon}
           <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
             <Text
               className={clsx(css.title, 'likec4-element-title')}>
@@ -223,8 +224,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   )
 }, isEqualProps)
 
-const ElementIcon = ({ node }: { node: DiagramNode }) => {
-  const RenderIcon = useDiagramState(s => s.renderIcon)
+const ElementIcon = ({ node, store }: { node: DiagramNode; store: DiagramStoreApi }) => {
   if (!node.icon) {
     return null
   }
@@ -235,6 +235,7 @@ const ElementIcon = ({ node }: { node: DiagramNode }) => {
       </div>
     )
   }
+  const RenderIcon = store.getState().renderIcon
   const icon = RenderIcon ? <RenderIcon node={node} /> : null
   if (!icon) {
     return null

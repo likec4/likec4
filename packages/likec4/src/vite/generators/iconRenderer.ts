@@ -8,12 +8,6 @@ export function generateIconRendererSource(views: ComputedView[]) {
     unique()
   ).sort()
 
-  if (icons.length === 0) {
-    return `
-export const Icons = {}
-`
-  }
-
   const {
     imports,
     cases
@@ -40,5 +34,20 @@ ${imports.join('\n')}
 
 export const Icons = {
 ${cases.join(',\n')}
-}`
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept(md => {
+    const update = md.Icons
+    if (update) {
+      if (!import.meta.hot.data.icons) {
+        import.meta.hot.data.icons = Icons
+      }
+      Object.assign(import.meta.hot.data.icons, update)
+    } else {
+      import.meta.hot.invalidate()
+    }
+  })
+}
+`
 }
