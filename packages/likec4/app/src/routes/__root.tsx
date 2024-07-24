@@ -44,7 +44,7 @@ function RootComponent() {
   return (
     <MantineProvider
       {...(theme && { forceColorScheme: theme })}
-      defaultColorScheme={theme ?? 'dark'}
+      defaultColorScheme={theme ?? 'auto'}
       theme={mantineTheme}>
       <ScrollRestoration />
       <Outlet />
