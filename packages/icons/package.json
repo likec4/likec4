@@ -21,21 +21,21 @@
     },
     "./aws": "./aws/index.js",
     "./aws/*": {
-      "types": "./aws/*.d.ts",
+      "types": "./icon.d.ts",
       "default": "./aws/*.js"
     },
     "./tech": "./tech/index.js",
     "./tech/*": {
-      "types": "./tech/*.d.ts",
+      "types": "./icon.d.ts",
       "default": "./tech/*.js"
     },
     "./gcp": "./gcp/index.js",
     "./gcp/*": {
-      "types": "./gcp/*.d.ts",
+      "types": "./icon.d.ts",
       "default": "./gcp/*.js"
     },
     "./*": {
-      "types": "./tech/*.d.ts",
+      "types": "./icon.d.ts",
       "default": "./tech/*.js"
     }
   },

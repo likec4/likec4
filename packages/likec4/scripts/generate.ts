@@ -7,14 +7,22 @@ await $`tsr generate`
 
 // Copy icons
 await $`mkdir -p icons`
-await $`cp -r ../icons/aws icons`
-await $`cp -r ../icons/gcp icons`
-await $`cp -r ../icons/tech icons`
+const copyDirs = [
+  '../icons/aws',
+  '../icons/gcp',
+  '../icons/tech'
+]
+await $`cp -r ${copyDirs} icons`
 
 await rimraf('icons/*/*.d.ts', { glob: true })
 await rimraf('icons/*/index.js', { glob: true })
 await rimraf('icons/*/*.jsx', { glob: true })
 
-await $`cp ../icons/icon.d.ts icons/`
+const copyFiles = [
+  '../icons/icon.d.ts',
+  '../icons/all.d.ts',
+  '../icons/all.js'
+]
+await $`cp ${copyFiles} icons/`
 
 consola.success('Copied icons')

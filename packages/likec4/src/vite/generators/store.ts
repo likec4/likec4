@@ -23,16 +23,14 @@ if (import.meta.hot) {
       if (!import.meta.hot.data.$current) {
         import.meta.hot.data.$current = $views
       }
-      const $current = import.meta.hot.data.$current
-      const newKeys = new Set()
+      const oldKeys = new Set([...Object.keys(import.meta.hot.data.$current.get())])
       for (const [id, view] of Object.entries(update.get())) {
-        newKeys.add(id)
-        $current.setKey(id, view)
+        oldKeys.delete(id)
+        import.meta.hot.data.$current.setKey(id, view)
       }
-      for (const key of Object.keys($current.get())) {
-        if (!newKeys.has(key)) {
-          $current.setKey(key, undefined)
-        }
+
+      for (const key of oldKeys.values()) {
+        import.meta.hot.data.$current.setKey(key, undefined)
       }
     } else {
       import.meta.hot.invalidate()

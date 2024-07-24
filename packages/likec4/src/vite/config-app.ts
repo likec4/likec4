@@ -67,6 +67,14 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
     },
     clearScreen: false,
     optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react-dom/client',
+        'nanostores',
+        '@nanostores/react'
+      ],
       force: true
     },
     base,

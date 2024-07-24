@@ -4,7 +4,9 @@ import { filter, isString, pipe, unique } from 'remeda'
 export function generateIconRendererSource(views: ComputedView[]) {
   const icons = pipe(
     views.flatMap(v => v.nodes.map(n => n.icon)),
-    filter((s: any): s is string => isString(s) && !!s.match(/^(aws|gcp|tech):/)),
+    filter((s: any): s is string =>
+      isString(s) && !s.toLowerCase().startsWith('http') && !!s.match(/^\w{3,5}:[_\w\d]+$/)
+    ),
     unique()
   ).sort()
 
@@ -28,7 +30,6 @@ export function generateIconRendererSource(views: ComputedView[]) {
     imports: [] as string[],
     cases: [] as string[]
   })
-
   return `
 ${imports.join('\n')}
 

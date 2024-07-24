@@ -59,7 +59,7 @@ export async function takeScreenshot({
       const diagramElement = page.getByRole('presentation')
       await diagramElement.waitFor()
 
-      const hasImages = view.nodes.some(n => isTruthy(n.icon))
+      const hasImages = view.nodes.some(n => isTruthy(n.icon) && n.icon.toLowerCase().startsWith('http'))
       if (hasImages) {
         await waitAllImages(page, timeout)
       }

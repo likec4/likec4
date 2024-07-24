@@ -23,6 +23,6 @@ const components = 'dist/__app__/react/components.mjs'
 if (!existsSync(components)) {
   throw new Error('Components not found')
 }
-await cp(components, 'react/index.mjs')
+await $`mv dist/__app__/react/components.mjs react/index.mjs`
 
-consola.success('React bundle copied to react/index.mjs')
+consola.success('React bundle moved to react/index.mjs')

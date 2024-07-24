@@ -57,10 +57,9 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
         'react-dom',
         'react/jsx-runtime',
         'react-dom/client',
-        '@nanostores/react',
-        'nanostores'
+        'nanostores',
+        '@nanostores/react'
       ],
-      noDiscovery: true,
       force: true
     },
     define: {

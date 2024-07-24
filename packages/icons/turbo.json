@@ -5,6 +5,13 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [],
+      "inputs": [
+        "**/*.jsx",
+        "scripts/**",
+        "svgo.config.json",
+        "tsconfig.json"
+      ],
       "outputs": [
         "*/*.d.ts",
         "*/*.js",
