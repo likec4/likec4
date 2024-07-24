@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { mergeDeep, pick } from 'remeda'
-import clipkg from '../../../../package.json' assert { type: 'json' }
+import clipkg from '../../../../package.json' with { type: 'json' }
 
 import { readFile, writeFile } from 'node:fs/promises'
 
@@ -9,24 +9,16 @@ const packageJson = {
   private: true,
   version: '0.0.1',
   type: 'module',
-  types: './index.d.ts',
-  module: './index.js',
+  sideEffects: false,
   exports: {
     '.': {
       types: './index.d.ts',
       default: './index.js'
     }
   },
-  files: [
-    'package.json',
-    '*.js',
-    '*.d.ts'
-  ],
   dependencies: {
-    '@likec4/diagram': clipkg.devDependencies['@likec4/diagram'],
-    ...pick(clipkg.devDependencies, [
-      '@mantine/core',
-      '@mantine/hooks',
+    'likec4': clipkg.version,
+    ...pick(clipkg.dependencies, [
       'react',
       'react-dom'
     ])

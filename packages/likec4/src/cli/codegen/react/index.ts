@@ -67,23 +67,23 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     logLevel: 'warn'
   })
 
-  const ids = diagrams.map((d) => `  | '${d.id}'`).join('\n')
+  const ids = diagrams.map((d) => `  | ${JSON.stringify(d.id)}`).join('\n')
 
   await writeFile(
     resolve(outDir, basename(outfilepath, ext) + '.d.ts'),
     `
-/// <reference types="react" />
-
+import type { JSX } from 'react'
 import type { LikeC4ViewBaseProps } from 'likec4/react'
 
 export type LikeC4ViewId =
-${ids};
+${ids}
 
 export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
 
-export declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): React.ReactElement
+export declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element
+
 `.trimStart()
   )
 

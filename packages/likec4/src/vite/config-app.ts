@@ -10,12 +10,11 @@ import postcssPresetMantine from 'postcss-preset-mantine'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
-import { LanguageServices } from '../language-services'
 import type { LikeC4ViteConfig } from './config-app.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
 
-export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
+export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:vite')
 
@@ -25,17 +24,11 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     throw new Error(`app root does not exist: ${root}`)
   }
 
-  const languageServices = cfg?.languageServices
-    ?? (await LanguageServices.get({
-      path: cfg?.workspaceDir ?? process.cwd(),
-      logValidationErrors: true
-    }))
-
-  const outDir = cfg?.outputDir ?? resolve(languageServices.workspace, 'dist')
+  const outDir = cfg.outputDir ?? resolve(languageServices.workspace, 'dist')
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
   let base = '/'
-  if (cfg?.base) {
+  if (cfg.base) {
     base = withTrailingSlash(cfg.base)
     if (!hasProtocol(base)) {
       base = withLeadingSlash(base)
@@ -45,7 +38,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
 
-  const webcomponentPrefix = cfg?.webcomponentPrefix ?? 'likec4'
+  const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
 
   // Explicitly set NODE_ENV to development
   process.env['NODE_ENV'] = 'development'

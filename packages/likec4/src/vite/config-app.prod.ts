@@ -8,40 +8,24 @@ import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, viteAppRoot } from './utils'
 
-export type LikeC4ViteConfig =
-  | {
-    languageServices: LanguageServices
-    workspaceDir?: never
-    outputDir?: string | undefined
-    base?: string | undefined
-    webcomponentPrefix?: string | undefined
-    useHashHistory?: boolean | undefined
-  }
-  | {
-    languageServices?: never
-    workspaceDir: string
-    outputDir?: string | undefined
-    base?: string | undefined
-    webcomponentPrefix?: string | undefined
-    useHashHistory?: boolean | undefined
-  }
+export type LikeC4ViteConfig = {
+  languageServices: LanguageServices
+  outputDir?: string | undefined
+  base?: string | undefined
+  webcomponentPrefix?: string | undefined
+  useHashHistory?: boolean | undefined
+}
 
-export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
+export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig) => {
   const customLogger = createLikeC4Logger('c4:vite')
   const root = viteAppRoot()
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
 
-  const languageServices = cfg?.languageServices
-    ?? (await LanguageServices.get({
-      path: cfg?.workspaceDir ?? process.cwd(),
-      logValidationErrors: true
-    }))
-
-  const outDir = cfg?.outputDir ?? resolve(languageServices.workspace, 'dist')
+  const outDir = cfg.outputDir ?? resolve(languageServices.workspace, 'dist')
   customLogger.info(k.cyan('output') + ' ' + k.dim(outDir))
 
   let base = '/'
-  if (cfg?.base) {
+  if (cfg.base) {
     base = withTrailingSlash(cfg.base)
     if (!hasProtocol(base)) {
       base = withLeadingSlash(base)
@@ -51,7 +35,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
 
-  const webcomponentPrefix = cfg?.webcomponentPrefix ?? 'likec4'
+  const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
 
   return {
     isDev: false,

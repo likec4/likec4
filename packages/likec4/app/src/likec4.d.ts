@@ -13,7 +13,7 @@ declare module 'virtual:likec4/views' {
 
   export type LikeC4ViewId = Opaque<string, 'LikeC4ViewId'>
 
-  export type DiagramView = Omit<CoreDiagramView, 'id'> & {
+  export type DiagramView = CoreDiagramView & {
     id: LikeC4ViewId
   }
 

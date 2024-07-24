@@ -3,7 +3,7 @@ import type { Options, PositionalOptions } from 'yargs'
 
 export const path = {
   type: 'string',
-  desc: '<directory> with LikeC4 source files (by default current directory)',
+  desc: '<directory> with LikeC4 sources (default is current directory)',
   normalize: true,
   default: '.',
   coerce: resolve
