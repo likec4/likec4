@@ -1,3 +1,12 @@
+## [1.6.1](https://github.com/likec4/likec4/compare/v1.6.0...v1.6.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency playwright to v1.45.2 ([#783](https://github.com/likec4/likec4/issues/783)) ([73ddd69](https://github.com/likec4/likec4/commit/73ddd69d968a48d77688daaf81e975beba9642a3))
+
+
+
 # [1.6.0](https://github.com/likec4/likec4/compare/v1.5.0...v1.6.0) (2024-07-20)
 
 ### Features
