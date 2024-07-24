@@ -27,7 +27,8 @@
     "build": {
       "dependsOn": [
         "generate",
-        "^build"
+        "^build",
+        "topo"
       ],
       "outputs": [
         "dist/**"
