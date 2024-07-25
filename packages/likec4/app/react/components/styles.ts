@@ -64,7 +64,7 @@ const getComputedBodyColorScheme = (): ColorScheme | undefined => {
 }
 
 export type ColorScheme = 'light' | 'dark'
-export const useColorScheme = (explicit?: ColorScheme) => {
+export function useColorScheme(explicit?: ColorScheme): ColorScheme {
   const preferred = usePreferredColorScheme(explicit)
   const [current, setCurrent] = useState<ColorScheme>(explicit ?? preferred)
 
