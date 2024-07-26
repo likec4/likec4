@@ -2,9 +2,9 @@ import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
 
-export const customRelationExprChecks = (
+export const relationPredicateWithChecks = (
   _services: LikeC4Services
-): ValidationCheck<ast.CustomRelationExpression> => {
+): ValidationCheck<ast.RelationPredicateWith> => {
   return (el, accept) => {
     const container = AstUtils.getContainerOfType(el, ast.isViewRulePredicate)
     if (ast.isExcludePredicate(container)) {

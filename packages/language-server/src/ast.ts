@@ -207,12 +207,11 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
-  ast.isDynamicViewRulePredicateIterator,
-  ast.isCustomElementExpression,
-  ast.isCustomRelationExpression,
+  ast.isDynamicViewPredicateIterator,
+  ast.isElementPredicateWith,
+  ast.isRelationPredicateWith,
   ast.isElementExpression,
   ast.isRelationExpression,
-  ast.isDynamicViewRulePredicate,
   ast.isDynamicViewStep,
   ast.isViewProperty,
   ast.isStyleProperty,
@@ -239,11 +238,22 @@ const isValidatableAstNode = validatableAstNodeGuards([
 ])
 type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
 
+const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefined => {
+  let nd = node as LikeC4AstNode['$container']
+  while (nd) {
+    if (isValidatableAstNode(nd)) {
+      return nd
+    }
+    nd = nd.$container
+  }
+  return
+}
+
 export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   const errors = doc.diagnostics?.filter(d => d.severity === DiagnosticSeverity.Error) ?? []
   const invalidNodes = new WeakSet(
     errors.flatMap(d => {
-      return AstUtils.getContainerOfType(d.node, isValidatableAstNode) ?? []
+      return findInvalidContainer(d.node) ?? []
     }) ?? []
   )
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -446,4 +456,17 @@ export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['autoLayout']
     default:
       nonexhaustive(c4)
   }
+}
+
+export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
+  if (ast.isElementExpression(predicate)) {
+    return predicate
+  }
+  if (ast.isElementPredicateWhere(predicate)) {
+    return predicate.subject
+  }
+  if (ast.isElementPredicateWith(predicate)) {
+    return elementExpressionFromPredicate(predicate.subject)
+  }
+  nonexhaustive(predicate)
 }

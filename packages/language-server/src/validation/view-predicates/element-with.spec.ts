@@ -3,7 +3,7 @@ import { createTestServices } from '../../test'
 
 vi.mock('../../logger')
 
-describe.concurrent('customRelationExprChecks', () => {
+describe.concurrent('elementPredicateWithChecks', () => {
   it('should not warn', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
@@ -15,13 +15,30 @@ describe.concurrent('customRelationExprChecks', () => {
       }
       views {
         view {
-          include c1 -> * with {
-            title ''
-          }
+          include c1 with {}
         }
       }
     `)
     expect(errors).toEqual([])
+  })
+
+  it('should error if not a element ref', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors, warnings } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1
+      }
+      views {
+        view {
+          include * with {}
+        }
+      }
+    `)
+    expect(errors).toHaveLength(1)
+    expect(errors).toEqual(['Invalid target (expect reference to specific element)'])
   })
 
   it('should error if used in exclude', async ({ expect }) => {
@@ -35,7 +52,7 @@ describe.concurrent('customRelationExprChecks', () => {
       }
       views {
         view {
-          exclude c1 -> * with {
+          exclude c1 with {
             title ''
           }
         }

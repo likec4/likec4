@@ -164,11 +164,13 @@ describe('LikeC4CompletionProvider', () => {
       specification {
         element actor
         element system
-        tag deprecated
+        tag tag1
+        tag tag2
+        tag tag3
       }
       model {
         actor customer {
-          <|>
+          <|>#tag1 #tag2 <|>
         }
         <|>
       }
@@ -182,7 +184,9 @@ describe('LikeC4CompletionProvider', () => {
         expect(completions.items).not.to.be.empty
         const labels = pluck('label', completions.items)
         expect(labels).to.include.members([
-          '#deprecated',
+          '#tag1',
+          '#tag2',
+          '#tag3',
           'title',
           'technology',
           'description',
@@ -198,6 +202,20 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 1,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const labels = pluck('label', completions.items)
+        expect(labels).to.include.members([
+          '#tag1',
+          '#tag2',
+          '#tag3'
+        ])
+        expect(labels).not.to.include.members(['extend'])
+      }
+    })
+    await completion({
+      text,
+      index: 2,
       assert: completions => {
         expect(completions.items).not.to.be.empty
         expect(pluck('label', completions.items)).to.include.members([
@@ -274,7 +292,8 @@ describe('LikeC4CompletionProvider', () => {
       }
       views {
         view {
-          include <|>root.<|> -> *,
+          include
+            <|>root.<|> -> *,
             * -> b<|>2 <|>
         }
       }
@@ -310,6 +329,7 @@ describe('LikeC4CompletionProvider', () => {
       text,
       index: 3,
       expectedItems: [
+        'where',
         'with',
         'include',
         'exclude',
@@ -349,7 +369,14 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
-      expectedItems: ['with', 'include', 'exclude', 'style', 'autoLayout'],
+      expectedItems: [
+        'where',
+        'with',
+        'include',
+        'exclude',
+        'style',
+        'autoLayout'
+      ],
       disposeAfterCheck: true
     })
     await completion({

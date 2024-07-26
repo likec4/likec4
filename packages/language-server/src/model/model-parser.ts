@@ -221,18 +221,42 @@ export class LikeC4ModelParser {
   // TODO validate view rules
   private parseViewRulePredicate(astNode: ast.ViewRulePredicate, _isValid: IsValidFn): c4.ViewRulePredicate {
     const exprs = [] as c4.Expression[]
-    let exprNode: ast.Expressions | undefined = astNode.exprs
-    while (exprNode) {
+    let predicate: ast.Predicates | undefined = astNode.predicates
+    while (predicate) {
       try {
-        if (isTruthy(exprNode.value)) {
-          exprs.unshift(this.parseExpression(exprNode.value))
+        if (isTruthy(predicate.value) && _isValid(predicate.value as any)) {
+          exprs.unshift(this.parsePredicate(predicate.value, _isValid))
         }
       } catch (e) {
         logWarnError(e)
       }
-      exprNode = exprNode.prev
+      predicate = predicate.prev
     }
     return ast.isIncludePredicate(astNode) ? { include: exprs } : { exclude: exprs }
+  }
+
+  private parsePredicate(astNode: ast.Predicate, _isValid: IsValidFn): c4.Expression {
+    if (ast.isElementPredicate(astNode)) {
+      return this.parseElementPredicate(astNode, _isValid)
+    }
+    if (ast.isRelationPredicate(astNode)) {
+      return this.parseRelationPredicate(astNode, _isValid)
+    }
+    nonexhaustive(astNode)
+  }
+
+  private parseElementPredicate(astNode: ast.ElementPredicate, _isValid: IsValidFn): c4.ElementPredicateExpression {
+    if (ast.isElementPredicateWith(astNode)) {
+      const subject = ast.isElementPredicateWhere(astNode.subject) ? astNode.subject.subject : astNode.subject
+      return this.parseElementPredicateWith(astNode, subject, _isValid)
+    }
+    if (ast.isElementPredicateWhere(astNode)) {
+      return this.parseElementExpr(astNode.subject)
+    }
+    if (ast.isElementExpression(astNode)) {
+      return this.parseElementExpr(astNode)
+    }
+    nonexhaustive(astNode)
   }
 
   private parseElementExpressionsIterator(astNode: ast.ElementExpressionsIterator): c4.ElementExpression[] {
@@ -301,17 +325,21 @@ export class LikeC4ModelParser {
     nonexhaustive(astNode)
   }
 
-  private parseCustomElementExpr(astNode: ast.CustomElementExpression): c4.CustomElementExpr {
+  private parseElementPredicateWith(
+    astNode: ast.ElementPredicateWith,
+    subject: ast.ElementExpression,
+    _isValid: IsValidFn
+  ): c4.CustomElementExpr {
     let targetRef
     switch (true) {
-      case ast.isElementRef(astNode.target):
-        targetRef = astNode.target
+      case ast.isElementRef(subject):
+        targetRef = subject
         break
-      case ast.isExpandElementExpression(astNode.target):
-        targetRef = astNode.target.expand
+      case ast.isExpandElementExpression(subject):
+        targetRef = subject.expand
         break
-      case ast.isElementDescedantsExpression(astNode.target):
-        targetRef = astNode.target.parent
+      case ast.isElementDescedantsExpression(subject):
+        targetRef = subject.parent
         break
       default:
         throw new Error('Unsupported target of custom element')
@@ -319,7 +347,7 @@ export class LikeC4ModelParser {
     const elementNode = elementRef(targetRef)
     invariant(elementNode, 'element not found: ' + astNode.$cstNode?.text)
     const element = this.resolveFqn(elementNode)
-    const props = astNode.custom.props ?? []
+    const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
         if (ast.isNavigateToProperty(prop)) {
@@ -368,15 +396,13 @@ export class LikeC4ModelParser {
     )
   }
 
-  private parseExpression(astNode: ast.Expression): c4.Expression {
-    if (ast.isCustomRelationExpression(astNode)) {
-      return this.parseCustomRelationExpr(astNode)
+  private parseRelationPredicate(astNode: ast.RelationPredicate, _isValid: IsValidFn): c4.RelationPredicateExpression {
+    if (ast.isRelationPredicateWith(astNode)) {
+      const subject = ast.isRelationPredicateWhere(astNode.subject) ? astNode.subject.subject : astNode.subject
+      return this.parseRelationPredicateWith(astNode, subject)
     }
-    if (ast.isCustomElementExpression(astNode)) {
-      return this.parseCustomElementExpr(astNode)
-    }
-    if (ast.isElementExpression(astNode)) {
-      return this.parseElementExpr(astNode)
+    if (ast.isRelationPredicateWhere(astNode)) {
+      return this.parseRelationExpr(astNode.subject)
     }
     if (ast.isRelationExpression(astNode)) {
       return this.parseRelationExpr(astNode)
@@ -384,9 +410,12 @@ export class LikeC4ModelParser {
     nonexhaustive(astNode)
   }
 
-  private parseCustomRelationExpr(astNode: ast.CustomRelationExpression): c4.CustomRelationExpr {
-    const relation = this.parseRelationExpr(astNode.relation)
-    const props = astNode.custom.props ?? []
+  private parseRelationPredicateWith(
+    astNode: ast.RelationPredicateWith,
+    subject: ast.RelationExpression
+  ): c4.CustomRelationExpr {
+    const relation = this.parseRelationExpr(subject)
+    const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
         if (ast.isRelationStringProperty(prop)) {
@@ -604,21 +633,14 @@ export class LikeC4ModelParser {
           return acc
         }
         try {
-          if (ast.isDynamicViewRulePredicate(n)) {
+          if (ast.isDynamicViewIncludePredicate(n)) {
             const include = [] as (c4.ElementExpression | c4.CustomElementExpr)[]
-            let iter: ast.DynamicViewRulePredicateIterator | undefined = n.exprs
+            let iter: ast.DynamicViewPredicateIterator | undefined = n.predicates
             while (iter) {
               try {
-                switch (true) {
-                  case ast.isElementExpression(iter.value):
-                    isValid(iter.value) && include.unshift(this.parseElementExpr(iter.value))
-                    break
-
-                  case ast.isCustomElementExpression(iter.value):
-                    isValid(iter.value) && include.unshift(this.parseCustomElementExpr(iter.value))
-                    break
-                  default:
-                    nonexhaustive(iter.value)
+                if (isValid(iter.value as any)) {
+                  const c4expr = this.parseElementPredicate(iter.value, isValid)
+                  include.unshift(c4expr)
                 }
               } catch (e) {
                 logWarnError(e)
@@ -686,7 +708,19 @@ export class LikeC4ModelParser {
     if (!withTags) {
       return null
     }
-    const tags = withTags.tags?.value.flatMap(({ ref }) => (ref ? (ref.name as c4.Tag) : []))
+    const tags = [] as c4.Tag[]
+    let iter = withTags.tags
+    while (iter) {
+      try {
+        const values = iter.values.map(t => t.ref?.name).filter(Boolean) as c4.Tag[]
+        if (values.length > 0) {
+          tags.unshift(...values)
+        }
+      } catch (e) {
+        // ignore
+      }
+      iter = iter.prev
+    }
     return isNonEmptyArray(tags) ? tags : null
   }
 }

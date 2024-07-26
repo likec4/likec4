@@ -4,9 +4,9 @@ import { AstUtils } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
 
-export const customElementExprChecks = (
+export const elementPredicateWithChecks = (
   _services: LikeC4Services
-): ValidationCheck<ast.CustomElementExpression> => {
+): ValidationCheck<ast.ElementPredicateWith> => {
   return (el, accept) => {
     const container = AstUtils.getContainerOfType(el, ast.isViewRulePredicate)
     if (ast.isExcludePredicate(container)) {
@@ -14,21 +14,22 @@ export const customElementExprChecks = (
         node: el
       })
     }
+    const subject = ast.isElementPredicateWhere(el.subject) ? el.subject.subject : el.subject
     switch (true) {
-      case ast.isElementRef(el.target):
-      case ast.isElementDescedantsExpression(el.target):
-      case ast.isExpandElementExpression(el.target):
+      case ast.isElementRef(subject):
+      case ast.isElementDescedantsExpression(subject):
+      case ast.isExpandElementExpression(subject):
         return
-      case ast.isElementKindExpression(el.target):
-      case ast.isElementTagExpression(el.target):
-      case ast.isWildcardExpression(el.target):
+      case ast.isElementKindExpression(subject):
+      case ast.isElementTagExpression(subject):
+      case ast.isWildcardExpression(subject):
         accept('error', 'Invalid target (expect reference to specific element)', {
           node: el,
-          property: 'target'
+          property: 'subject'
         })
         return
       default:
-        nonexhaustive(el.target)
+        nonexhaustive(subject)
     }
   }
 }

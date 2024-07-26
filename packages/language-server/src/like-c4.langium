@@ -111,17 +111,23 @@ ExtendElementBody:  '{'
 
 //
 FqnElementRef:
-  el=[Element] ({infer FqnElementRef.parent=current} dot=StickyDot el=[Element])*;
+  el=[Element] ({infer FqnElementRef.parent=current} StickyDot el=[Element])*;
 
 ElementRef:
-  el=[Element] ({infer ElementRef.parent=current} dot=StickyDot el=[Element])*;
+  el=[Element] ({infer ElementRef.parent=current} StickyDot el=[Element])*;
 
 Tags:
-  value+=[Tag:TagId] (','? value+=[Tag:TagId])* (';')?
+  (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
 ;
 
 Relation:
   ExplicitRelation | ImplicitRelation;
+
+ExplicitRelation:
+  source=ElementRef RelationFragment;
+
+ImplicitRelation:
+  ('this' | 'it')? RelationFragment;
 
 fragment RelationFragment:
   ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
@@ -130,12 +136,6 @@ fragment RelationFragment:
   tags=Tags?
   body=RelationBody?
 ;
-
-ExplicitRelation:
-  source=ElementRef RelationFragment;
-
-ImplicitRelation:
-  ('this' | 'it')? RelationFragment;
 
 RelationBody: '{'
   tags=Tags?
@@ -160,13 +160,12 @@ RelationStyleProperty:
 
 ModelViews:
   name='views' '{'
-    views+=(
-      DynamicView |
-      ElementView
-    )*
+    views+=LikeC4ViewRule*
   '}';
 
 type LikeC4View = ElementView | DynamicView;
+LikeC4ViewRule returns LikeC4View:
+  ElementView | DynamicView;
 
 ElementView:
   'view' name=Id? (
@@ -201,7 +200,7 @@ DynamicViewBody: '{'
 ;
 
 
-type StringProperty = ElementStringProperty| ViewStringProperty | RelationStringProperty;
+type StringProperty = ElementStringProperty | ViewStringProperty | RelationStringProperty;
 
 ViewProperty:
   ViewStringProperty | LinkProperty
@@ -220,7 +219,7 @@ ViewRule:
 ;
 
 DynamicViewRule:
-  DynamicViewRulePredicate |
+  DynamicViewIncludePredicate |
   ViewRuleStyle |
   ViewRuleAutoLayout
 ;
@@ -230,24 +229,27 @@ DynamicViewStep:
 ;
 
 ViewRulePredicate:
-  {infer IncludePredicate} 'include' exprs=Expressions |
-  {infer ExcludePredicate} 'exclude' exprs=Expressions
+  {infer IncludePredicate} 'include' predicates=Predicates |
+  {infer ExcludePredicate} 'exclude' predicates=Predicates
+;
+Predicates:
+  value=Predicate ({infer Predicates.prev=current} ',' value=Predicate?)*
 ;
 
-// IncludePredicate:
-//   'include' expr=WithExpressions ({infer IncludePredicate.prev=current} ',' (expr=WithExpressions)?)*
-// ;
-// ExcludePredicate:
-//   'exclude' expr=WithExpressions ({infer ExcludePredicate.prev=current} ',' (expr=WithExpressions)?)*
-// ;
-
-Expressions:
-  value=WithExpressions ({infer Expressions.prev=current} ',' (value=WithExpressions)?)*
+Predicate:
+  RelationPredicate |
+  ElementPredicate
 ;
 
-WithExpressions infers Expression:
-  RelationExpression ({infer CustomRelationExpression.relation=current} 'with' custom=CustomRelationProperties)? |
-  ElementExpression ({infer CustomElementExpression.target=current} 'with' custom=CustomElementProperties)?
+ElementPredicate:
+  ElementPredicates;
+
+ElementPredicates infers ElementPredicate:
+  ElementPredicateOrWhere ({infer ElementPredicateWith.subject=current} 'with' custom=CustomElementProperties?)?
+;
+
+ElementPredicateOrWhere:
+  ElementExpression ({infer ElementPredicateWhere.subject=current} 'where')?
 ;
 
 ElementExpression:
@@ -266,6 +268,18 @@ ElementDescedantsExpression infers ElementExpression:
     {infer ExpandElementExpression.expand=current} DotUnderscore |
     {infer ElementDescedantsExpression.parent=current} DotWildcard
   )?
+;
+
+RelationPredicate:
+  RelationPredicates
+;
+
+RelationPredicates infers RelationPredicate:
+  RelationPredicateOrWhere ({infer RelationPredicateWith.subject=current} 'with' custom=CustomRelationProperties?)?
+;
+
+RelationPredicateOrWhere:
+  RelationExpression ({infer RelationPredicateWhere.subject=current} 'where')?
 ;
 
 RelationExpression:
@@ -294,16 +308,12 @@ ElementExpressionsIterator:
   value=ElementExpression ({infer ElementExpressionsIterator.prev=current} ',' (value=ElementExpression)?)*
 ;
 
-DynamicViewRulePredicate:
-  'include' exprs=DynamicViewRulePredicateIterator
+DynamicViewIncludePredicate:
+  'include' predicates=DynamicViewPredicateIterator
 ;
 
-DynamicViewRulePredicateIterator:
-  value=DynamicViewElementExpressions ({infer DynamicViewRulePredicateIterator.prev=current} ',' (value=DynamicViewElementExpressions)?)*
-;
-
-DynamicViewElementExpressions infers DynamicViewElementExpression:
-  ElementExpression ({infer CustomElementExpression.target=current} 'with' custom=CustomElementProperties)?
+DynamicViewPredicateIterator:
+  value=ElementPredicate ({infer DynamicViewPredicateIterator.prev=current} ',' (value=ElementPredicate)?)*
 ;
 
 ViewRuleStyle:
@@ -407,12 +417,9 @@ ElementShape returns string:
 
 IconId returns string:
   LIB_ICON;
-  // ('aws:' | 'gcp:' | 'tech:') IdTerminal;
 
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
-
-// Percent returns string: PERCENT;
 
 TagId returns string:
   Hash Id;
@@ -447,7 +454,7 @@ hidden terminal WS: /\s+/;
 //terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
 
 // LibIcons
-terminal LIB_ICON: /\b(aws|gcp|tech):[-\w]*/;
+terminal LIB_ICON: /(aws|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;

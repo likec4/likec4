@@ -104,7 +104,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     if (ast.isTags(node)) {
       acceptor({
         node,
-        property: 'value',
+        property: 'values',
         type: SemanticTokenTypes.interface
       })
       return

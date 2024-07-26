@@ -109,7 +109,7 @@ describe.concurrent('model', () => {
         title 'Person4'
       }
       user5 = person {
-        #one #two #three;
+        #one #two, #three;
         title 'Person4'
       }
     }`
@@ -144,7 +144,7 @@ describe.concurrent('model', () => {
       }
     }`
 
-  test('fail if comma left after tag').invalid`
+  test('should not fail if comma left after tag').valid`
     specification {
       element person
       tag one

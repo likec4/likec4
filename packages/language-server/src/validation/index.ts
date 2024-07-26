@@ -16,11 +16,11 @@ import {
 } from './specification'
 import { viewChecks } from './view'
 import {
-  customElementExprChecks,
-  customRelationExprChecks,
+  elementPredicateWithChecks,
   expandElementExprChecks,
   incomingExpressionChecks,
-  outgoingExpressionChecks
+  outgoingExpressionChecks,
+  relationPredicateWithChecks
 } from './view-predicates'
 
 export function registerValidationChecks(services: LikeC4Services) {
@@ -38,9 +38,9 @@ export function registerValidationChecks(services: LikeC4Services) {
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),
     Tag: tagChecks(services),
-    DynamicViewRulePredicateIterator: dynamicViewRulePredicate(services),
-    CustomElementExpression: customElementExprChecks(services),
-    CustomRelationExpression: customRelationExprChecks(services),
+    DynamicViewPredicateIterator: dynamicViewRulePredicate(services),
+    ElementPredicateWith: elementPredicateWithChecks(services),
+    RelationPredicateWith: relationPredicateWithChecks(services),
     ExpandElementExpression: expandElementExprChecks(services),
     RelationshipKind: relationshipChecks(services),
     IncomingRelationExpression: incomingExpressionChecks(services),
