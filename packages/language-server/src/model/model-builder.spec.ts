@@ -384,8 +384,8 @@ describe('LikeC4ModelBuilder', () => {
         title: 'Index',
         description: null,
         tags: null,
-        links: null,
-        docUri: document.uri.toString()
+        links: null
+        // docUri: document.uri.toString()
       },
       withLinks: {
         id: 'withLinks',
@@ -396,8 +396,8 @@ describe('LikeC4ModelBuilder', () => {
           'https://example1.com',
           'https://example2.com/',
           'file:///test/workspace/src/samefolder.html'
-        ],
-        docUri: 'file:///test/workspace/src/1.c4'
+        ]
+        // docUri: 'file:///test/workspace/src/1.c4'
       }
     })
   })
@@ -473,12 +473,12 @@ describe('LikeC4ModelBuilder', () => {
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
-      docUri: 'vscode-vfs://host/virtual/src/index.c4',
+      // docUri: 'vscode-vfs://host/virtual/src/index.c4',
       relativePath: ''
     })
     expect(views['sys2']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
-      docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
+      // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
       relativePath: 'subdir'
     })
   })
@@ -569,17 +569,17 @@ describe('LikeC4ModelBuilder', () => {
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
-      docUri: 'vscode-vfs://host/virtual/src/index.c4',
+      // docUri: 'vscode-vfs://host/virtual/src/index.c4',
       relativePath: ''
     })
     expect(views['sys2']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
-      docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
+      // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
       relativePath: 'subdir'
     })
     expect(views['sys3']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/a/b/c/sys3/index.html'],
-      docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
+      // docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
       relativePath: 'a/b/c'
     })
   })

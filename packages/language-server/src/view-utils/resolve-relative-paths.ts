@@ -1,14 +1,20 @@
 import type { LikeC4View } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import { hasAtLeast, unique, zip } from 'remeda'
+import { filter, hasAtLeast, isTruthy, map, pipe, unique, zip } from 'remeda'
 
 function commonAncestorPath(views: LikeC4View[], sep = '/') {
-  if (views.length <= 1) return ''
-  const uniqURIs = unique(views.flatMap(({ docUri }) => (docUri ? [docUri] : [])))
+  const uniqURIs = pipe(
+    views,
+    map(v => v.docUri),
+    filter(isTruthy),
+    unique()
+  )
   if (uniqURIs.length === 0) return ''
-  if (uniqURIs.length === 1) {
-    invariant(hasAtLeast(uniqURIs, 1))
-    return new URL(uniqURIs[0]).pathname
+  if (hasAtLeast(uniqURIs, 1) && uniqURIs.length === 1) {
+    const parts = new URL(uniqURIs[0]).pathname.split(sep)
+    if (parts.length <= 1) return sep
+    parts.pop() // remove filename
+    return parts.join(sep) + sep
   }
   invariant(hasAtLeast(uniqURIs, 2), 'Expected at least 2 unique URIs')
   const [baseUri, ...tail] = uniqURIs
@@ -31,7 +37,8 @@ function commonAncestorPath(views: LikeC4View[], sep = '/') {
 }
 
 export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
-  const commonPrefix = commonAncestorPath(views)
+  const sep = '/'
+  const commonPrefix = commonAncestorPath(views, sep)
   return (
     views
       // For each view, compute the relative path to the common prefix
@@ -43,8 +50,11 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
             parts: []
           }
         }
-        const path = new URL(view.docUri).pathname
-        const parts = path.replace(commonPrefix, '').split('/')
+        let path = new URL(view.docUri).pathname
+        if (commonPrefix.length > 0 && path.startsWith(commonPrefix)) {
+          path = path.slice(commonPrefix.length)
+        }
+        const parts = path.split(sep)
         parts.pop() // remove filename
         return {
           ...view,
@@ -75,7 +85,7 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
         if (view.docUri) {
           return {
             ...view,
-            relativePath: parts.join('/')
+            relativePath: parts.join(sep)
           }
         }
         return view

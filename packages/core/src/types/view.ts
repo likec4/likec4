@@ -204,16 +204,21 @@ export interface ComputedEdge {
   dir?: 'forward' | 'back'
 }
 
-export interface ComputedElementView extends Omit<ElementView, 'rules'> {
+export interface ComputedElementView extends Omit<ElementView, 'rules' | 'docUri'> {
   readonly extends?: ViewID
   readonly autoLayout: ViewRuleAutoLayout['autoLayout']
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
+  rules?: never
+  docUri?: never
 }
-export interface ComputedDynamicView extends Omit<DynamicView, 'rules' | 'steps'> {
+export interface ComputedDynamicView extends Omit<DynamicView, 'rules' | 'steps' | 'docUri'> {
   readonly autoLayout: ViewRuleAutoLayout['autoLayout']
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
+  steps?: never
+  rules?: never
+  docUri?: never
 }
 export function isComputedDynamicView(view: ComputedView): view is ComputedDynamicView {
   return view.__ === 'dynamic'

@@ -46,8 +46,12 @@ export class DynamicViewComputeCtx {
   ) {}
 
   protected compute(): ComputedDynamicView {
-    // reset ctx
-    const { rules, steps, ...view } = this.view
+    const {
+      docUri: _docUri, // exclude docUri
+      rules,
+      steps,
+      ...view
+    } = this.view
 
     // const sources = new Set<Element>()
     // const stepsStack = new Set<string>()

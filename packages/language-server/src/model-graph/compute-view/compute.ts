@@ -90,7 +90,11 @@ export class ComputeCtx {
   protected compute(): ComputedElementView {
     // reset ctx
     this.reset()
-    const { rules, ...view } = this.view
+    const {
+      docUri: _docUri, // exclude docUri
+      rules,
+      ...view
+    } = this.view
 
     const viewPredicates = rules.filter(isViewRulePredicate)
     if (this.root && viewPredicates.length == 0) {

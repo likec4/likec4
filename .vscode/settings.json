@@ -44,7 +44,7 @@
   "exportall.config.semis": false,
   "json.schemas": [
     {
-      "url": "node_modules/langium-cli/langium-config-schema.json",
+      "url": "./node_modules/langium-cli/langium-config-schema.json",
       "fileMatch": [
         "langium-config.json"
       ]

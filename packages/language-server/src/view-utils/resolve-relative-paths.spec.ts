@@ -14,8 +14,8 @@ describe('resolveRelativePaths', () => {
       d('_1', 'file.c4'),
       d('_ab', 'a/b/file.c4'),
       d('_a', 'a/file.c4'),
-      d('_2', 'file.c4'),
-      d('_3', 'file.c4'),
+      d('_2', 'file2.c4'),
+      d('_3', 'file3.c4'),
       d('_a2', 'a/file.c4'),
       d('_b', 'b/file.c4')
     ])
