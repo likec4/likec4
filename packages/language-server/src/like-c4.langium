@@ -111,10 +111,10 @@ ExtendElementBody:  '{'
 
 //
 FqnElementRef:
-  el=[Element] ({infer FqnElementRef.parent=current} StickyDot el=[Element])*;
+  el=[Element:Id] ({infer FqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
 ElementRef:
-  el=[Element] ({infer ElementRef.parent=current} StickyDot el=[Element])*;
+  el=[Element:Id] ({infer ElementRef.parent=current} StickyDot el=[Element:Id])*;
 
 Tags:
   (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
@@ -253,7 +253,31 @@ ElementPredicates infers ElementPredicate:
 ;
 
 ElementPredicateOrWhere:
-  ElementExpression ({infer ElementPredicateWhere.subject=current} 'where')?
+  ElementExpression ({infer ElementPredicateWhere.subject=current} 'where' where=WhereElementExpression?)?
+;
+
+WhereElementExpression:
+  WhereElementOr
+;
+WhereElementOr infers WhereElementExpression:
+  WhereElementAnd ({infer WhereBinaryExpression.left=current} operator='or' right=WhereElementAnd)*
+;
+WhereElementAnd infers WhereElementExpression:
+  WhereElementPrimary ({infer WhereBinaryExpression.left=current} operator='and' right=WhereElementPrimary)*
+;
+
+WhereElementPrimary infers WhereElementExpression:
+  '(' WhereElementExpression ')' |
+  WhereElementNegation |
+  WhereElement
+;
+
+WhereElementNegation:
+  'not' value=WhereElementExpression;
+
+WhereElement:
+  {infer WhereElementTag} 'tag' EqOperator value=[Tag:TagId]? |
+  {infer WhereElementKind} 'kind' EqOperator value=[ElementKind]?
 ;
 
 ElementExpression:
@@ -264,7 +288,7 @@ ElementExpression:
 ElementSelectorExpression infers ElementExpression:
   {infer WildcardExpression} isWildcard?='*' |
   {infer ElementTagExpression} 'element.tag' IsEqual tag=[Tag:TagId]? |
-  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind:Id]?
+  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind]?
 ;
 
 ElementDescedantsExpression infers ElementExpression:
@@ -283,8 +307,38 @@ RelationPredicates infers RelationPredicate:
 ;
 
 RelationPredicateOrWhere:
-  RelationExpression ({infer RelationPredicateWhere.subject=current} 'where')?
+  RelationExpression ({infer RelationPredicateWhere.subject=current} 'where' where=WhereRelationExpression?)?
 ;
+
+WhereRelationExpression:
+  WhereRelationOr
+;
+
+WhereRelationOr infers WhereRelationExpression:
+  WhereRelationAnd ({infer WhereBinaryExpression.left=current} operator='or' right=WhereRelationAnd)*
+;
+WhereRelationAnd infers WhereRelationExpression:
+  WhereRelationPrimary ({infer WhereBinaryExpression.left=current} operator='and' right=WhereRelationPrimary)*
+;
+
+WhereRelationPrimary infers WhereRelationExpression:
+  '(' WhereRelationExpression ')' |
+  WhereRelationNegation |
+  WhereRelation
+;
+
+WhereRelationNegation:
+  'not' value=WhereRelationExpression;
+
+WhereRelation:
+  {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind]?
+;
+
+type WhereTagEqual = WhereElementTag | WhereRelationTag;
+type WhereKindEqual = WhereElementKind | WhereRelationKind;
+
+type WhereExpression = WhereElementExpression | WhereRelationExpression;
 
 RelationExpression:
   InOutRelationExpressions |
@@ -433,6 +487,13 @@ DotId returns string:
 
 Id returns string:
   IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
+
+fragment EqOperator:
+  (
+    operator=(Eq | NotEqual) |
+    operator="is" not?='not'?
+  )
+;
 
 fragment IsEqual:
   isEqual?=Eq | NotEqual;

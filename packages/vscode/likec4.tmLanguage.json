@@ -25,6 +25,10 @@
       "match": "\\b(specification|model|views)\\b"
     },
     {
+      "match": "\\b(tag|kind)\\s+is\\b",
+      "name": "keyword.control.likec4"
+    },
+    {
       "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
       "captures": {
         "1": {
@@ -94,11 +98,11 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|element|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|mobile|model|navigateTo|none|normal|odiamond|odot|of|onormal|opacity|open|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|where|with)\\b"
+      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|element|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|mobile|model|navigateTo|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|where|with)\\b"
     },
     {
       "name": "keyword.symbol.likec4",
-      "match": "(\\{|\\}|\\:|\\]->|-\\[|<->|<-|->|\\,|\\;|\\!|\\=)"
+      "match": "(\\{|\\}|\\(|\\)|\\:|\\]->|-\\[|<->|<-|->|\\,|\\;|\\!|\\=+)"
     }
   ],
   "repository": {

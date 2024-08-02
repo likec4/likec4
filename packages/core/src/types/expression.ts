@@ -1,10 +1,12 @@
 import type { IconUrl } from './_common'
 import type { BorderStyle, ElementKind, ElementShape, Fqn, Tag } from './element'
+import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
 import type { ViewID } from './view'
 
 interface BaseExpr {
+  where?: never
   element?: never
   custom?: never
   expanded?: never
@@ -91,7 +93,20 @@ export function isElement(expr: Expression): expr is ElementExpression {
     || isExpandedElementExpr(expr)
 }
 
-export type ElementPredicateExpression = ElementExpression | CustomElementExpr
+export interface ElementWhereExpr extends Omit<BaseExpr, 'where'> {
+  where: {
+    expr: ElementExpression
+    condition: WhereOperator
+  }
+}
+export function isElementWhere(expr: Expression): expr is ElementWhereExpr {
+  return 'where' in expr && isElement(expr.where.expr)
+}
+
+export type ElementPredicateExpression = ElementExpression | ElementWhereExpr | CustomElementExpr
+export function isElementPredicateExpr(expr: Expression): expr is ElementPredicateExpression {
+  return isElement(expr) || isElementWhere(expr) || isCustomElement(expr)
+}
 
 export interface RelationExpr extends Omit<BaseExpr, 'source' | 'target'> {
   source: ElementExpression
@@ -122,9 +137,25 @@ export function isOutgoing(expr: Expression): expr is OutgoingExpr {
   return 'outgoing' in expr
 }
 
+export type RelationExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr
+
+export function isRelationExpression(expr: Expression): expr is RelationExpression {
+  return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr)
+}
+
+export interface RelationWhereExpr extends Omit<BaseExpr, 'where'> {
+  where: {
+    expr: RelationExpression
+    condition: WhereOperator
+  }
+}
+export function isRelationWhere(expr: Expression): expr is ElementWhereExpr {
+  return 'where' in expr && isRelationExpression(expr.where.expr)
+}
+
 export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
   customRelation: {
-    relation: RelationExpr
+    relation: RelationExpr | RelationWhereExpr
     title?: string
     description?: string
     technology?: string
@@ -138,12 +169,10 @@ export function isCustomRelationExpr(expr: Expression): expr is CustomRelationEx
   return 'customRelation' in expr
 }
 
-export type RelationExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr
+export type RelationPredicateExpression = RelationExpression | RelationWhereExpr | CustomRelationExpr
 
-export type RelationPredicateExpression = RelationExpression | CustomRelationExpr
-
-export function isAnyRelation(expr: Expression): expr is RelationPredicateExpression {
-  return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr) || isCustomRelationExpr(expr)
+export function isRelationPredicateExpr(expr: Expression): expr is RelationPredicateExpression {
+  return isRelationExpression(expr) || isRelationWhere(expr) || isCustomRelationExpr(expr)
 }
 
 export type Expression = ElementPredicateExpression | RelationPredicateExpression

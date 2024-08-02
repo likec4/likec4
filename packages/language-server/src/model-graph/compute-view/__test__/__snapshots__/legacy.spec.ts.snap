@@ -205,7 +205,9 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": null,
       "shape": "rectangle",
       "style": {},
-      "tags": null,
+      "tags": [
+        "aws",
+      ],
       "technology": null,
       "title": "amazon",
     },
@@ -374,7 +376,9 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "parent": "cloud.frontend",
       "shape": "rectangle",
       "style": {},
-      "tags": null,
+      "tags": [
+        "next",
+      ],
       "technology": null,
       "title": "dashboard",
     },

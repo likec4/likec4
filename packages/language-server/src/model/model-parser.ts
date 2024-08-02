@@ -32,6 +32,7 @@ import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
 import { deserializeFromComment } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
+import { parseWhereClause } from './model-parser-where'
 
 const { getDocument } = AstUtils
 
@@ -258,20 +259,6 @@ export class LikeC4ModelParser {
     nonexhaustive(astNode)
   }
 
-  private parseElementPredicate(astNode: ast.ElementPredicate, _isValid: IsValidFn): c4.ElementPredicateExpression {
-    if (ast.isElementPredicateWith(astNode)) {
-      const subject = ast.isElementPredicateWhere(astNode.subject) ? astNode.subject.subject : astNode.subject
-      return this.parseElementPredicateWith(astNode, subject, _isValid)
-    }
-    if (ast.isElementPredicateWhere(astNode)) {
-      return this.parseElementExpr(astNode.subject)
-    }
-    if (ast.isElementExpression(astNode)) {
-      return this.parseElementExpr(astNode)
-    }
-    nonexhaustive(astNode)
-  }
-
   private parseElementExpressionsIterator(astNode: ast.ElementExpressionsIterator): c4.ElementExpression[] {
     const exprs = [] as c4.ElementExpression[]
     let iter: ast.ElementExpressionsIterator['prev'] = astNode
@@ -284,6 +271,20 @@ export class LikeC4ModelParser {
       iter = iter.prev
     }
     return exprs
+  }
+
+  private parseElementPredicate(astNode: ast.ElementPredicate, _isValid: IsValidFn): c4.ElementPredicateExpression {
+    if (ast.isElementPredicateWith(astNode)) {
+      const subject = ast.isElementPredicateWhere(astNode.subject) ? astNode.subject.subject : astNode.subject
+      return this.parseElementPredicateWith(astNode, subject, _isValid)
+    }
+    if (ast.isElementPredicateWhere(astNode)) {
+      return this.parseElementPredicateWhere(astNode)
+    }
+    if (ast.isElementExpression(astNode)) {
+      return this.parseElementExpr(astNode)
+    }
+    nonexhaustive(astNode)
   }
 
   private parseElementExpr(astNode: ast.ElementExpression): c4.ElementExpression {
@@ -408,6 +409,19 @@ export class LikeC4ModelParser {
       } as c4.CustomElementExpr
     )
   }
+  private parseElementPredicateWhere(
+    astNode: ast.ElementPredicateWhere
+  ): c4.ElementWhereExpr {
+    const expr = this.parseElementExpr(astNode.subject)
+    return {
+      where: {
+        expr,
+        condition: astNode.where ? parseWhereClause(astNode.where) : {
+          kind: { neq: '--always-true--' }
+        }
+      }
+    }
+  }
 
   private parseRelationPredicate(astNode: ast.RelationPredicate, _isValid: IsValidFn): c4.RelationPredicateExpression {
     if (ast.isRelationPredicateWith(astNode)) {
@@ -415,12 +429,26 @@ export class LikeC4ModelParser {
       return this.parseRelationPredicateWith(astNode, subject)
     }
     if (ast.isRelationPredicateWhere(astNode)) {
-      return this.parseRelationExpr(astNode.subject)
+      return this.parseRelationPredicateWhere(astNode)
     }
     if (ast.isRelationExpression(astNode)) {
       return this.parseRelationExpr(astNode)
     }
     nonexhaustive(astNode)
+  }
+
+  private parseRelationPredicateWhere(
+    astNode: ast.RelationPredicateWhere
+  ): c4.RelationWhereExpr {
+    const expr = this.parseRelationExpr(astNode.subject)
+    return {
+      where: {
+        expr,
+        condition: astNode.where ? parseWhereClause(astNode.where) : {
+          kind: { neq: '--always-true--' }
+        }
+      }
+    }
   }
 
   private parseRelationPredicateWith(
@@ -679,7 +707,7 @@ export class LikeC4ModelParser {
         }
         try {
           if (ast.isDynamicViewIncludePredicate(n)) {
-            const include = [] as (c4.ElementExpression | c4.CustomElementExpr)[]
+            const include = [] as c4.ElementPredicateExpression[]
             let iter: ast.DynamicViewPredicateIterator | undefined = n.predicates
             while (iter) {
               try {

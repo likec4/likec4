@@ -6,18 +6,21 @@ import type {
   ElementExpression as C4ElementExpression,
   ElementKind,
   ElementShape,
+  ElementWhereExpr,
   Expression as C4Expression,
   Fqn,
   Relation,
   RelationID,
   RelationshipArrowType,
   RelationshipLineType,
+  RelationWhereExpr,
   Tag,
   ThemeColor,
   ViewID,
   ViewRule,
   ViewRulePredicate,
-  ViewRuleStyle
+  ViewRuleStyle,
+  WhereOperator
 } from '@likec4/core'
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
@@ -177,18 +180,21 @@ export const fakeElements = {
   'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',
     kind: 'component',
-    title: 'dashboard'
+    title: 'dashboard',
+    tags: ['next' as Tag]
   }),
   'amazon': el({
     id: 'amazon',
     kind: 'system',
-    title: 'amazon'
+    title: 'amazon',
+    tags: ['aws' as Tag]
   }),
   'amazon.s3': el({
     id: 'amazon.s3',
     kind: 'component',
     title: 's3',
-    shape: 'storage'
+    shape: 'storage',
+    tags: ['aws' as Tag]
   })
 } satisfies Record<string, Element>
 
@@ -351,6 +357,8 @@ export type Expression =
   | OutgoingExpr
   | RelationExpr
   | CustomExpr
+  | ElementWhereExpr
+  | RelationWhereExpr
 
 export function $customRelation(
   relation: RelationExpr,
@@ -360,6 +368,15 @@ export function $customRelation(
     customRelation: {
       relation: $expr(relation) as any,
       ...props
+    }
+  }
+}
+
+export function $where(expr: Expression | C4Expression, operator: WhereOperator): ElementWhereExpr | RelationWhereExpr {
+  return {
+    where: {
+      expr: $expr(expr) as any,
+      condition: operator
     }
   }
 }
