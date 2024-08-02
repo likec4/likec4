@@ -58,7 +58,7 @@
     "d3-shape": "^3.2.0",
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.3.8",
+    "framer-motion": "^11.3.19",
     "remeda": "^2.3.0",
     "zustand": "^4.5.4"
   },
