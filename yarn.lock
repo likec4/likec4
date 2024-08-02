@@ -8888,7 +8888,7 @@ __metadata:
     ufo: "npm:^1.5.4"
     vite: "npm:5.3.4"
     vite-plugin-css-injected-by-js: "npm:^3.5.1"
-    vite-plugin-shadow-style: "npm:^1.1.0"
+    vite-plugin-shadow-style: "npm:^1.1.1"
     vitest: "npm:~2.0.3"
     yargs: "npm:^17.7.2"
   bin:
@@ -14322,10 +14322,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-shadow-style@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "vite-plugin-shadow-style@npm:1.1.0"
-  checksum: 10c0/dd17d7e45b01a72134472b68e12c772cc76017ff41869aa637075aff38466ab829edd151f28364af433f4ea09f997ec8ccd911420300aeff7dc5e86d3d4964d3
+"vite-plugin-shadow-style@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "vite-plugin-shadow-style@npm:1.1.1"
+  checksum: 10c0/d175a21ac4e5b49b70fc18a825b0e938c38b03389e8a32f630760ec1ac6a98eb2d34c14607a373e4df7bc0d06447d53860c2e571f5a23f68a568b69d70df26cb
   languageName: node
   linkType: hard
 
