@@ -25,7 +25,7 @@
     "clean": "run -T rimraf -v 'dist' '.astro' 'node_modules'"
   },
   "dependencies": {
-    "@astrojs/check": "^0.7.0",
+    "@astrojs/check": "^0.8.3",
     "@astrojs/react": "^3.6.0",
     "@astrojs/starlight": "^0.24.5",
     "@expressive-code/plugin-collapsible-sections": "^0.35.3",
