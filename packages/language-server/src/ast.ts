@@ -74,6 +74,8 @@ export interface ParsedAstRelation {
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
+  description?: string
+  technology?: string
   color?: c4.ThemeColor
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType

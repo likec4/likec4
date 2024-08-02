@@ -22,6 +22,25 @@ describe.concurrent('scope', () => {
       }
     }`
 
+  test('valid for elements with names "aws"/"azure"/"tech"').valid`
+    specification {
+      element component
+      element element
+    }
+    model {
+      system = component {
+        aws = element {
+          rds = element 'RDS'
+        }
+        azure = element
+        tech = element {
+          nodejs = element 'Node.js'
+        }
+      }
+      azure -> aws.rds
+      tech.nodejs -> aws.rds
+    }`
+
   test('fail if duplicate name in scope').invalid`
     specification {
       element person

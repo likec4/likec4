@@ -126,6 +126,8 @@ export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
   customRelation: {
     relation: RelationExpr
     title?: string
+    description?: string
+    technology?: string
     color?: ThemeColor
     line?: RelationshipLineType
     head?: RelationshipArrowType

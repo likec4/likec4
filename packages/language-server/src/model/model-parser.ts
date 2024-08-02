@@ -3,6 +3,7 @@ import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
 import { isTruthy, mapToObj } from 'remeda'
 import stripIndent from 'strip-indent'
+import type { Writable } from 'type-fest'
 import type {
   ChecksFromDiagnostics,
   FqnIndexedDocument,
@@ -142,7 +143,10 @@ export class LikeC4ModelParser {
 
     let [title, description, technology] = astNode.props ?? []
 
-    const bodyProps = mapToObj(astNode.body?.props.filter(ast.isElementStringProperty) ?? [], p => [p.key, p.value])
+    const bodyProps = mapToObj(
+      astNode.body?.props.filter(ast.isElementStringProperty) ?? [],
+      p => [p.key, p.value || undefined]
+    )
 
     title = toSingleLine(title ?? bodyProps.title)
     description = removeIndent(bodyProps.description ?? description)
@@ -180,9 +184,16 @@ export class LikeC4ModelParser {
     const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const astPath = this.getAstNodePath(astNode)
-    const title = removeIndent(
-      astNode.title ?? astNode.body?.props.find((p): p is ast.RelationStringProperty => p.key === 'title')?.value
-    ) ?? ''
+
+    const bodyProps = mapToObj(
+      astNode.body?.props.filter(ast.isRelationStringProperty) ?? [],
+      p => [p.key, p.value || undefined]
+    )
+
+    const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
+    const description = removeIndent(bodyProps.description)
+    const technology = toSingleLine(bodyProps.technology)
+
     const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
     const id = stringHash(
       astPath,
@@ -195,6 +206,8 @@ export class LikeC4ModelParser {
       source,
       target,
       title,
+      ...(isTruthy(technology) && { technology }),
+      ...(isTruthy(description) && { description }),
       ...(kind && { kind }),
       ...(tags && { tags }),
       ...(isNonEmptyArray(links) && { links }),
@@ -261,7 +274,7 @@ export class LikeC4ModelParser {
 
   private parseElementExpressionsIterator(astNode: ast.ElementExpressionsIterator): c4.ElementExpression[] {
     const exprs = [] as c4.ElementExpression[]
-    let iter: ast.ElementExpressionsIterator | undefined = astNode
+    let iter: ast.ElementExpressionsIterator['prev'] = astNode
     while (iter) {
       try {
         exprs.unshift(this.parseElementExpr(iter.value))
@@ -421,7 +434,7 @@ export class LikeC4ModelParser {
         if (ast.isRelationStringProperty(prop)) {
           const value = removeIndent(prop.value)
           if (isTruthy(value)) {
-            acc.customRelation['title'] = value
+            acc.customRelation[prop.key] = value
           }
           return acc
         }
@@ -511,23 +524,55 @@ export class LikeC4ModelParser {
     if (!targetEl) {
       throw new Error('Invalid reference to target')
     }
-    const title = removeIndent(node.title) ?? null
     let source = this.resolveFqn(sourceEl)
     let target = this.resolveFqn(targetEl)
+    const title = removeIndent(
+      node.title ?? node.custom?.props.find((p): p is ast.RelationStringProperty => p.key === 'title')?.value
+    ) ?? ''
+
+    let step: Writable<c4.DynamicViewStep> = {
+      source,
+      target,
+      title
+    }
     if (node.isBackward) {
-      return {
+      step = {
         source: target,
         target: source,
         title,
         isBackward: true
       }
     }
-
-    return {
-      source,
-      target,
-      title
+    if (Array.isArray(node.custom?.props)) {
+      for (const prop of node.custom.props) {
+        try {
+          if (ast.isRelationStringProperty(prop)) {
+            const value = removeIndent(prop.value)
+            if (isTruthy(value) && prop.key !== 'title') {
+              step[prop.key] = value
+            }
+            continue
+          }
+          if (ast.isArrowProperty(prop)) {
+            step[prop.key] = prop.value
+            continue
+          }
+          if (ast.isColorProperty(prop)) {
+            step[prop.key] = prop.value
+            continue
+          }
+          if (ast.isLineProperty(prop)) {
+            step[prop.key] = prop.value
+            continue
+          }
+          nonexhaustive(prop)
+        }
+        catch (e) {
+          logWarnError(e)
+        }
+      }
     }
+    return step
   }
 
   private parseElementView(astNode: ast.ElementView, isValid: IsValidFn): ParsedAstElementView {
@@ -597,7 +642,7 @@ export class LikeC4ModelParser {
 
   private parseDynamicElementView(astNode: ast.DynamicView, isValid: IsValidFn): ParsedAstDynamicView {
     const body = astNode.body
-    invariant(body, 'ElementView body is not defined')
+    invariant(body, 'DynamicElementView body is not defined')
     // only valid props
     const props = body.props.filter(isValid)
     const astPath = this.getAstNodePath(astNode)
@@ -705,11 +750,11 @@ export class LikeC4ModelParser {
   }
 
   private convertTags<E extends { tags?: ast.Tags }>(withTags?: E) {
-    if (!withTags) {
+    let iter = withTags?.tags
+    if (!iter) {
       return null
     }
     const tags = [] as c4.Tag[]
-    let iter = withTags.tags
     while (iter) {
       try {
         const values = iter.values.map(t => t.ref?.name).filter(Boolean) as c4.Tag[]

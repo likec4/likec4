@@ -13,10 +13,6 @@ import {
 } from '@likec4/core'
 import { filter, isIncludedIn } from 'remeda'
 
-function intersection<T>(source: ReadonlyArray<T>, other: ReadonlyArray<T>): Array<T> {
-  return filter(source, isIncludedIn(other))
-}
-
 type Params = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
@@ -44,6 +40,8 @@ export class LikeC4ModelGraph {
   #outgoing = new Map<Fqn, RelationID[]>()
   // Relationships inside the element descendants
   #internal = new Map<Fqn, RelationID[]>()
+
+  #cacheAscendingSiblings = new Map<Fqn, Element[]>()
 
   constructor({ elements, relations }: Params) {
     for (const el of Object.values(elements)) {
@@ -108,7 +106,15 @@ export class LikeC4ModelGraph {
    */
   public ascendingSiblings(element: Fqn | Element) {
     const id = isString(element) ? element : element.id
-    return [...this.siblings(id), ...this.ancestors(id).flatMap(a => this.siblings(a.id))]
+    let siblings = this.#cacheAscendingSiblings.get(id)
+    if (!siblings) {
+      siblings = [
+        ...this.siblings(id),
+        ...this.ancestors(id).flatMap(a => this.siblings(a.id))
+      ]
+      this.#cacheAscendingSiblings.set(id, siblings)
+    }
+    return siblings.slice()
   }
 
   /**
@@ -124,6 +130,8 @@ export class LikeC4ModelGraph {
     if (in_element.length === 0 && element_out.length === 0) {
       return []
     }
+    const isIncoming = isIncludedIn(in_element)
+    const isOutgoing = isIncludedIn(element_out)
 
     const result = [] as Array<RelationEdge>
     for (const _other of others) {
@@ -133,8 +141,8 @@ export class LikeC4ModelGraph {
       }
 
       if (element_out.length > 0) {
-        const in_other = this._incomingTo(other.id)
-        const outcoming = intersection(element_out, in_other)
+        const outcoming = this._incomingTo(other.id).filter(isOutgoing)
+        // const outcoming = filter(in_other, isOutgoing)
         if (outcoming.length > 0) {
           result.push({
             source: element,
@@ -145,8 +153,8 @@ export class LikeC4ModelGraph {
       }
 
       if (in_element.length > 0) {
-        const other_out = this._outgoingFrom(other.id)
-        const incoming = intersection(other_out, in_element)
+        const incoming = this._outgoingFrom(other.id).filter(isIncoming)
+        // const incoming = filter(other_out, isIncoming)
         if (incoming.length > 0) {
           result.push({
             source: other,
@@ -196,6 +204,7 @@ export class LikeC4ModelGraph {
       if (outcoming.length === 0) {
         continue
       }
+      const isSameAsOut = isIncludedIn(outcoming)
 
       for (const _target of targets) {
         const target = isString(_target) ? this.element(_target) : _target
@@ -207,7 +216,7 @@ export class LikeC4ModelGraph {
           continue
         }
 
-        const relations = intersection(outcoming, incoming).flatMap(
+        const relations = filter(incoming, isSameAsOut).flatMap(
           id => this.#relations.get(id) ?? []
         )
         if (relations.length > 0) {

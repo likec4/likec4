@@ -55,6 +55,9 @@ export function changeElementStyle(services: LikeC4Services, {
   modifiedRange: Range
   edits: TextEdit[]
 } {
+  // Should never happen
+  invariant(viewAst.body, `View ${view.id} has no body`)
+
   const viewCstNode = viewAst.$cstNode
   invariant(viewCstNode, 'viewCstNode')
   const insertPos = last(viewAst.body.rules)?.$cstNode?.range.end

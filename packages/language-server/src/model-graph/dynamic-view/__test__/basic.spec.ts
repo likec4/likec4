@@ -2,6 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { $include } from '../../compute-view/__test__/fixture'
 import { $step, compute } from './fixture'
 
+const defaultStepProps = {
+  color: 'gray',
+  head: 'normal',
+  line: 'dashed'
+}
+
 describe('dynamic-view', () => {
   it('should include nodes and edges from steps', () => {
     const { nodeIds, edgeIds, edges } = compute([
@@ -49,7 +55,10 @@ describe('dynamic-view', () => {
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
       $step('cloud.backend -> amazon'),
       $step('cloud.backend <- amazon'),
-      $step('cloud.frontend <- cloud.backend')
+      $step('cloud.frontend <- cloud.backend', {
+        line: 'dotted',
+        color: 'red'
+      })
     ])
     expect(nodeIds).toEqual([
       'customer',
@@ -118,6 +127,7 @@ describe('dynamic-view', () => {
     expect(step1).toMatchObject({
       id: 'step-001',
       source: 'customer',
+      ...defaultStepProps,
       target: 'cloud.frontend.dashboard',
       label: 'opens in browser' // inferred from relations
     })
@@ -126,6 +136,7 @@ describe('dynamic-view', () => {
       id: 'step-002',
       source: 'cloud.frontend.dashboard',
       target: 'cloud.backend.graphql',
+      ...defaultStepProps,
       label: 'requests' // inferred from relations
     })
     expect(step2).not.toHaveProperty('dir')
@@ -133,6 +144,7 @@ describe('dynamic-view', () => {
       id: 'step-003',
       source: 'cloud.backend',
       target: 'amazon',
+      ...defaultStepProps,
       label: 'uploads' // inferred from relations
     })
     expect(step3).not.toHaveProperty('dir')
@@ -140,13 +152,17 @@ describe('dynamic-view', () => {
       id: 'step-004',
       source: 'amazon',
       target: 'cloud.backend',
+      ...defaultStepProps,
       label: null,
       dir: 'back'
     })
     expect(step5).toMatchObject({
       id: 'step-005',
       source: 'cloud.backend',
+      ...defaultStepProps,
       target: 'cloud.frontend',
+      color: 'red',
+      line: 'dotted',
       label: null,
       dir: 'back'
     })
@@ -174,6 +190,37 @@ describe('dynamic-view', () => {
     //     label: 'return data'
     //   }
     // ])
+  })
+
+  it('should apply steps custom props', () => {
+    const { nodeIds, edgeIds, nodes, edges } = compute([
+      $step('cloud.backend -> amazon', {
+        line: 'dotted',
+        description: 'uploads1',
+        head: 'open',
+        tail: 'odot',
+        color: 'red'
+      })
+    ])
+    expect(nodeIds).toEqual([
+      'cloud.backend',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([
+      'step-001'
+    ])
+    const [step1] = edges
+    expect(step1).toMatchObject({
+      line: 'dotted',
+      description: 'uploads1',
+      head: 'open',
+      tail: 'odot',
+      color: 'red',
+      'id': 'step-001',
+      'label': 'uploads',
+      'source': 'cloud.backend',
+      'target': 'amazon'
+    })
   })
 
   it('should include nodes and edges from rules', () => {
@@ -228,6 +275,7 @@ describe('dynamic-view', () => {
     ])
     const [step1, step2, step3] = edges
     expect(step1).toMatchObject({
+      ...defaultStepProps,
       id: 'step-001',
       source: 'customer',
       target: 'cloud.frontend.dashboard',
@@ -235,6 +283,7 @@ describe('dynamic-view', () => {
     })
     expect(step1).not.toHaveProperty('dir')
     expect(step2).toMatchObject({
+      ...defaultStepProps,
       id: 'step-002',
       source: 'cloud.frontend.dashboard',
       target: 'cloud.backend.graphql',
@@ -242,6 +291,7 @@ describe('dynamic-view', () => {
     })
     expect(step2).not.toHaveProperty('dir')
     expect(step3).toMatchObject({
+      ...defaultStepProps,
       id: 'step-003',
       source: 'cloud.backend.graphql',
       target: 'cloud.frontend.dashboard',

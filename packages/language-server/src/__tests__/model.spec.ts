@@ -40,6 +40,26 @@ describe.concurrent('model', () => {
       el2 = model
     }`
 
+  test('allow elements with names "aws"/"azure"/"tech"').valid`
+    specification {
+      element element
+    }
+    model {
+      aws = element
+      azure = element
+      tech = element
+    }`
+
+  test('allow element with names "aws"/"azure"/"tech" (2) ').valid`
+    specification {
+      element element
+    }
+    model {
+      element aws
+      element azure
+      element tech
+    }`
+
   test('allow element with kind "solid" (reserved for line style)').valid`
     specification {
       element solid

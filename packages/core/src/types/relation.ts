@@ -30,6 +30,8 @@ export interface Relation {
   readonly source: Fqn
   readonly target: Fqn
   readonly title: string
+  readonly description?: string
+  readonly technology?: string
   readonly tags?: NonEmptyArray<Tag>
   readonly kind?: RelationshipKind
   readonly color?: ThemeColor

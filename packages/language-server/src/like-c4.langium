@@ -147,7 +147,7 @@ RelationProperty:
   RelationStringProperty | RelationStyleProperty |  LinkProperty;
 
 RelationStringProperty:
-  key='title' ':'? value=String ';'?;
+  key=('title' | 'technology' | 'description') ':'? value=String ';'?;
 
 RelationStyleProperty:
   key='style' '{'
@@ -172,11 +172,11 @@ ElementView:
     'extends' extends=ElementViewRef |
     'of' viewOf=ElementRef
   )?
-  body=ElementViewBody
+  body=ElementViewBody?
 ;
 
 DynamicView:
-  'dynamic' 'view' name=Id body=DynamicViewBody
+  'dynamic' 'view' name=Id body=DynamicViewBody?
 ;
 
 ViewRef:
@@ -225,7 +225,11 @@ DynamicViewRule:
 ;
 
 DynamicViewStep:
-  source=ElementRef (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] ) target=ElementRef title=String?
+  source=ElementRef
+  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
+  target=ElementRef
+  title=String?
+  custom=CustomRelationProperties?
 ;
 
 ViewRulePredicate:
@@ -260,7 +264,7 @@ ElementExpression:
 ElementSelectorExpression infers ElementExpression:
   {infer WildcardExpression} isWildcard?='*' |
   {infer ElementTagExpression} 'element.tag' IsEqual tag=[Tag:TagId]? |
-  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind]?
+  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind:Id]?
 ;
 
 ElementDescedantsExpression infers ElementExpression:

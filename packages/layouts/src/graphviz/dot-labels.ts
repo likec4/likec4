@@ -1,4 +1,5 @@
 import {
+  type ComputedEdge,
   type ComputedNode,
   DefaultRelationshipColor,
   defaultTheme as Theme,
@@ -86,6 +87,7 @@ export function nodeLabel(node: ComputedNode) {
   const rowMapper = hasIcon
     ? (line: string, idx: number, all: string[]) => {
       let cell = `<TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD>`
+      // if first row, prepend columns with ROWSPAN
       if (idx === 0) {
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
         let leftwidth = 76 // icon is 60px, plus 10px here and plus 10px padding from node margin
@@ -93,7 +95,10 @@ export function nodeLabel(node: ComputedNode) {
           // add 20px padding more
           leftwidth += 20
         }
-        cell = `<TD${rowspan} WIDTH="${leftwidth}"> </TD>${cell}<TD${rowspan} WIDTH="16"> </TD>`
+        // prepend empty cell (left padding)
+        cell = `<TD${rowspan} WIDTH="${leftwidth}" FIXEDSIZE="TRUE"> </TD>${cell}`
+        // append empty cell (right padding)
+        cell = `${cell}<TD${rowspan} WIDTH="16" FIXEDSIZE="TRUE"> </TD>`
       }
       return `<TR>${cell}</TR>`
     }
@@ -119,6 +124,43 @@ export function compoundLabel(node: ComputedNode, color?: string) {
 }
 
 export const EDGE_LABEL_MAX_CHARS = 35
+
+export function edgelabel({ label, description, technology }: ComputedEdge) {
+  const lines = [] as string[]
+  if (isTruthy(label)) {
+    lines.push(
+      wrapWithFont({
+        text: label,
+        maxchars: EDGE_LABEL_MAX_CHARS,
+        fontsize: 14,
+        bold: label === '[...]'
+      })
+    )
+  }
+  if (isTruthy(description)) {
+    lines.push(
+      wrapWithFont({
+        text: description,
+        maxchars: EDGE_LABEL_MAX_CHARS,
+        fontsize: 14
+      })
+    )
+  }
+  if (isTruthy(technology)) {
+    lines.push(
+      wrapWithFont({
+        text: technology,
+        fontsize: 12,
+        maxchars: EDGE_LABEL_MAX_CHARS
+      })
+    )
+  }
+  if (lines.length === 0) {
+    return null
+  }
+  const rows = lines.map(line => `<TR><TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD></TR>`).join('')
+  return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}>${rows}</TABLE>>`
+}
 
 export function edgeLabel(text: string) {
   const html = wrapWithFont({

@@ -129,15 +129,20 @@ describe.concurrent('model relation', () => {
     valid`
       specification {
         element person
-        tag next
+        tag one
+        tag two
+        tag three
       }
       model {
         person user1
         person user2 {
-          -> user1 #next
+          -> user1 #one #two
         }
-        user1 -> user2 'responds to' {
-          #next
+        user1 -> user2 'responds to' #one #two, #three
+        person user3 {
+          -> user2 {
+            #one #two, #three;
+          }
         }
       }`
   )
@@ -153,10 +158,15 @@ describe.concurrent('model relation', () => {
       person user2 {
         -> user1 {
           title 'calls'
+          description 'some description'
         }
       }
       user1 -> user2 'responds to' {
-        title: 'some description';
+        title: 'some title';
+      }
+      user2 -> user1 'responds to' {
+        technology: 'technology';
+        description 'description'
       }
     }`
   )

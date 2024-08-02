@@ -1,4 +1,14 @@
-import type { ComputedDynamicView, ComputedEdge, DynamicView, EdgeId, Element, RelationID } from '@likec4/core'
+import type {
+  ComputedDynamicView,
+  ComputedEdge,
+  DynamicView,
+  EdgeId,
+  Element,
+  RelationID,
+  RelationshipArrowType,
+  RelationshipLineType,
+  ThemeColor
+} from '@likec4/core'
 import {
   ancestorsFqn,
   commonAncestor,
@@ -26,6 +36,12 @@ export namespace DynamicViewComputeCtx {
     source: Element
     target: Element
     title: string | null
+    description?: string
+    technology?: string
+    color?: ThemeColor
+    line?: RelationshipLineType
+    head?: RelationshipArrowType
+    tail?: RelationshipArrowType
     relations: RelationID[]
     isBackward: boolean
   }
@@ -49,18 +65,21 @@ export class DynamicViewComputeCtx {
     const {
       docUri: _docUri, // exclude docUri
       rules,
-      steps,
+      steps: viewSteps,
       ...view
     } = this.view
 
-    // const sources = new Set<Element>()
-    // const stepsStack = new Set<string>()
-
-    // const sourcesOf = new Map<Fqn, Set<Element>>()
-
-    for (let step of steps) {
-      const source = this.graph.element(step.source)
-      const target = this.graph.element(step.target)
+    for (
+      let {
+        source: stepSource,
+        target: stepTarget,
+        title: stepTitle,
+        isBackward,
+        ...step
+      } of viewSteps
+    ) {
+      const source = this.graph.element(stepSource)
+      const target = this.graph.element(stepTarget)
 
       this.explicits.add(source)
       this.explicits.add(target)
@@ -68,11 +87,12 @@ export class DynamicViewComputeCtx {
       const { title, relations } = this.findRelations(source, target)
 
       this.steps.push({
+        ...step,
         source,
         target,
-        title: step.title ?? title,
+        title: isTruthy(stepTitle) ? stepTitle : title,
         relations,
-        isBackward: step.isBackward ?? false
+        isBackward: isBackward ?? false
       })
     }
 
@@ -99,24 +119,23 @@ export class DynamicViewComputeCtx {
     const elements = [...this.explicits]
     const nodesMap = buildComputeNodes(elements)
 
-    const edges = this.steps.map(({ source, target, relations, ...step }, index) => {
-      const sourceNode = nodesMap.get(source.id)
-      const targetNode = nodesMap.get(target.id)
-      invariant(sourceNode, `Source node ${source.id} not found`)
-      invariant(targetNode, `Target node ${target.id} not found`)
+    const edges = this.steps.map(({ source, target, relations, title, isBackward, ...step }, index) => {
+      const sourceNode = nonNullable(nodesMap.get(source.id), `Source node ${source.id} not found`)
+      const targetNode = nonNullable(nodesMap.get(target.id), `Target node ${target.id} not found`)
       const stepNum = index + 1
       const edge: ComputedEdge = {
         id: StepEdgeId(stepNum),
         parent: commonAncestor(source.id, target.id),
         source: source.id,
         target: target.id,
-        label: step.title,
+        label: title,
         relations,
         color: DefaultRelationshipColor,
         line: DefaultLineStyle,
-        head: DefaultArrowType
+        head: DefaultArrowType,
+        ...step
       }
-      if (step.isBackward) {
+      if (isBackward) {
         edge.dir = 'back'
       }
 

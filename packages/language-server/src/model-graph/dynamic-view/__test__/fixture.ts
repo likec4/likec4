@@ -14,13 +14,16 @@ const emptyView = {
 }
 
 type StepExpr = `${FakeElementIds} ${'->' | '<-'} ${FakeElementIds}`
+type StepProps = Omit<DynamicViewStep, 'source' | 'target' | 'isBackward'>
 
-export function $step(expr: StepExpr, title?: string): DynamicViewStep {
+export function $step(expr: StepExpr, props?: string | Partial<StepProps>): DynamicViewStep {
+  const title = typeof props === 'string' ? props : props?.title
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
     return {
       source: source as Fqn,
       target: target as Fqn,
+      ...(typeof props === 'object' ? props : {}),
       title: title ?? null
     }
   }
@@ -29,6 +32,7 @@ export function $step(expr: StepExpr, title?: string): DynamicViewStep {
     return {
       source: source as Fqn,
       target: target as Fqn,
+      ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
       isBackward: true
     }

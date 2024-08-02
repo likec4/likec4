@@ -246,7 +246,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     invariant(isCompound(compound), 'node should be compound')
     invariant(isNumber(compound.depth), 'node.depth should be defined')
     const textColor = compoundLabelColor(Theme.elements[compound.color].loContrast)
-    const label = compoundLabel(compound, textColor)
     subgraph.apply({
       [_.likec4_id]: compound.id,
       [_.likec4_level]: compound.level,
@@ -254,11 +253,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fillcolor]: compoundColor(Theme.elements[compound.color].fill, compound.depth),
       [_.color]: compoundColor(Theme.elements[compound.color].stroke, compound.depth),
       [_.style]: 'filled',
-      [_.margin]: pxToPoints(32)
+      [_.margin]: pxToPoints(32),
+      [_.label]: compoundLabel(compound, textColor)
     })
-    if (label) {
-      subgraph.set(_.label, label)
-    }
     return subgraph
   }
 

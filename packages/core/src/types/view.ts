@@ -94,6 +94,12 @@ export interface DynamicViewStep {
   readonly source: Fqn
   readonly target: Fqn
   readonly title: string | null
+  readonly description?: string
+  readonly technology?: string
+  readonly color?: ThemeColor
+  readonly line?: RelationshipLineType
+  readonly head?: RelationshipArrowType
+  readonly tail?: RelationshipArrowType
   readonly isBackward?: boolean
 }
 
@@ -188,6 +194,8 @@ export interface ComputedEdge {
   source: NodeId
   target: NodeId
   label: string | null
+  description?: string
+  technology?: string
   relations: RelationID[]
   color?: ThemeColor
   line?: RelationshipLineType

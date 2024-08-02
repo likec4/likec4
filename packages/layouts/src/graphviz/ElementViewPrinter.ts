@@ -3,7 +3,7 @@ import { DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/co
 import { chunk, difference, filter, first, intersection, isNonNullish, isTruthy, last, map, pipe, unique } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
-import { edgeLabel } from './dot-labels'
+import { edgeLabel, edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import type { DotSource } from './types'
 import { isCompound, toArrowType } from './utils'
@@ -106,8 +106,9 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       e.attributes.set(_.weight, connected.size)
     }
 
-    if (isTruthy(edge.label)) {
-      const label = edgeLabel(edge.label)
+    const label = edgelabel(edge)
+    if (label) {
+      // const label = edgeLabel(edge.label)
       if (hasCompoundEndpoint) {
         e.attributes.set(_.xlabel, label)
       } else {

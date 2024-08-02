@@ -243,7 +243,7 @@ describe.concurrent('views2', () => {
       `)
     })
 
-    it('element { }', async ctx => {
+    it('element with { }', async ctx => {
       const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
       await invalid(`
         exclude system.backend.api with { }
@@ -424,6 +424,9 @@ describe.concurrent('views2', () => {
 
       await valid(`
         include * -> * with {
+          title 'aa'
+          description 'bb'
+          technology 'cc'
           color red
           line dotted
           head normal

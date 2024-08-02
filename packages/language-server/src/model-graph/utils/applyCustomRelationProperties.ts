@@ -10,7 +10,7 @@ export function applyCustomRelationProperties(
 ): ComputedEdge[] {
   const rules = _rules.flatMap(r => ('include' in r ? r.include.filter(Expr.isCustomRelationExpr) : []))
   const edges = Array.from(_edges)
-  if (rules.length === 0) {
+  if (rules.length === 0 || edges.length === 0) {
     return edges
   }
   for (

@@ -5,6 +5,9 @@ import type {
   Element,
   ElementView,
   Relation,
+  RelationshipArrowType,
+  RelationshipLineType,
+  ThemeColor,
   ViewRulePredicate
 } from '@likec4/core'
 import {
@@ -106,7 +109,10 @@ export class ComputeCtx {
     const elements = [...this.includedElements]
     const nodesMap = buildComputeNodes(elements)
 
-    const edges = this.computedEdges.reduce((acc, edge) => {
+    const edgesMap = new Map<EdgeId, ComputedEdge>()
+    const edges = this.computeEdges()
+    for (const edge of edges) {
+      edgesMap.set(edge.id, edge)
       const source = nodesMap.get(edge.source)
       const target = nodesMap.get(edge.target)
       invariant(source, `Source node ${edge.source} not found`)
@@ -130,9 +136,7 @@ export class ComputeCtx {
         }
         nodesMap.get(targetAncestor)?.inEdges.push(edge.id)
       }
-      acc.push(edge)
-      return acc
-    }, [] as ComputedEdge[])
+    }
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
@@ -149,8 +153,6 @@ export class ComputeCtx {
         })
       )
     )
-
-    const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(e => [e.id, e]))
 
     const sortedEdges = new Set([
       ...nodes.flatMap(n => n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []),
@@ -170,7 +172,7 @@ export class ComputeCtx {
     return isScopedElementView(this.view) ? this.view.viewOf : null
   }
 
-  protected get computedEdges(): ComputedEdge[] {
+  protected computeEdges(): ComputedEdge[] {
     return this.ctxEdges.map((e): ComputedEdge => {
       invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
       const relations = e.relations.toSorted(compareRelations)
@@ -186,7 +188,16 @@ export class ComputeCtx {
         relations: relations.map(r => r.id)
       }
 
-      let relation
+      let relation: Pick<Relation, 'title' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail'> | {
+        // TODO refactor with type-fest
+        title: string
+        description?: string | undefined
+        technology?: string | undefined
+        color?: ThemeColor | undefined
+        line?: RelationshipLineType | undefined
+        head?: RelationshipArrowType | undefined
+        tail?: RelationshipArrowType | undefined
+      } | undefined
       if (relations.length === 1) {
         relation = relations[0]
       } else {
@@ -197,7 +208,7 @@ export class ComputeCtx {
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
       if (!relation) {
-        const shared = relations.reduce((acc, r) => {
+        relation = relations.reduce((acc, r) => {
           if (r.color && acc.color !== r.color) {
             acc.color = undefined
           }
@@ -210,30 +221,42 @@ export class ComputeCtx {
           if (r.line && acc.line !== r.line) {
             acc.line = undefined
           }
+          if (r.description && acc.description !== r.description) {
+            acc.description = undefined
+          }
+          if (r.technology && acc.technology !== r.technology) {
+            acc.technology = undefined
+          }
           if (isTruthy(r.title) && acc.title !== r.title) {
             acc.title = '[...]'
           }
           return acc
         }, {
-          title: first(flatMap(relations, r => isTruthy(r.title) ? r.title : [])),
+          title: first(flatMap(relations, r => isTruthy(r.title) ? r.title : [])) ?? '[...]',
+          description: first(flatMap(relations, r => isTruthy(r.description) ? r.description : [])),
+          technology: first(flatMap(relations, r => isTruthy(r.technology) ? r.technology : [])),
           head: first(flatMap(relations, r => isTruthy(r.head) ? r.head : [])),
           tail: first(flatMap(relations, r => isTruthy(r.tail) ? r.tail : [])),
           color: first(flatMap(relations, r => isTruthy(r.color) ? r.color : [])),
           line: first(flatMap(relations, r => isTruthy(r.line) ? r.line : []))
         })
-        return Object.assign(
-          edge,
-          isTruthy(shared.title) && { label: shared.title },
-          shared.color && { color: shared.color },
-          shared.line && { line: shared.line },
-          shared.head && { head: shared.head },
-          shared.tail && { tail: shared.tail }
-        )
+        // return Object.assign(
+        //   edge,
+        //   isTruthy(shared.title) && { label: shared.title },
+        //   isTruthy(shared.description) && { description: shared.description },
+        //   isTruthy(shared.technology) && { technology: shared.technology },
+        //   shared.color && { color: shared.color },
+        //   shared.line && { line: shared.line },
+        //   shared.head && { head: shared.head },
+        //   shared.tail && { tail: shared.tail }
+        // )
       }
 
       return Object.assign(
         edge,
         isTruthy(relation.title) && { label: relation.title },
+        isTruthy(relation.description) && { description: relation.description },
+        isTruthy(relation.technology) && { description: relation.technology },
         relation.color && { color: relation.color },
         relation.line && { line: relation.line },
         relation.head && { head: relation.head },
