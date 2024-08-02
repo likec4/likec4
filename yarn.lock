@@ -2392,7 +2392,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     type-fest: "npm:^4.21.0"
     typescript: "npm:^5.5.3"
-    ufo: "npm:^1.5.3"
+    ufo: "npm:^1.5.4"
     vitest: "npm:~2.0.3"
     vscode-languageserver: "npm:9.0.1"
     vscode-languageserver-protocol: "npm:3.17.5"
@@ -2483,7 +2483,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     type-fest: "npm:^4.21.0"
     typescript: "npm:^5.5.3"
-    ufo: "npm:^1.5.3"
+    ufo: "npm:^1.5.4"
     vite: "npm:5.3.4"
     vscode: "npm:@codingame/monaco-vscode-api@6.0.3"
     vscode-languageclient: "npm:~9.0.1"
@@ -8885,7 +8885,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     type-fest: "npm:^4.21.0"
     typescript: "npm:^5.5.3"
-    ufo: "npm:^1.5.3"
+    ufo: "npm:^1.5.4"
     vite: "npm:5.3.4"
     vite-plugin-css-injected-by-js: "npm:^3.5.1"
     vite-plugin-shadow-style: "npm:^1.1.0"
@@ -13795,6 +13795,13 @@ __metadata:
   version: 1.5.3
   resolution: "ufo@npm:1.5.3"
   checksum: 10c0/1df10702582aa74f4deac4486ecdfd660e74be057355f1afb6adfa14243476cf3d3acff734ccc3d0b74e9bfdefe91d578f3edbbb0a5b2430fe93cd672370e024
+  languageName: node
+  linkType: hard
+
+"ufo@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "ufo@npm:1.5.4"
+  checksum: 10c0/b5dc4dc435c49c9ef8890f1b280a19ee4d0954d1d6f9ab66ce62ce64dd04c7be476781531f952a07c678d51638d02ad4b98e16237be29149295b0f7c09cda765
   languageName: node
   linkType: hard
 
