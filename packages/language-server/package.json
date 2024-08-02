@@ -73,7 +73,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@dagrejs/graphlib": "^2.2.2",
+    "@dagrejs/graphlib": "^2.2.3",
     "@likec4/core": "workspace:*",
     "@total-typescript/ts-reset": "^0.5.1",
     "fast-equals": "^5.0.1",
