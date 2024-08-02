@@ -38,7 +38,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         return SymbolKind.TypeParameter
       }
     }
-    return SymbolKind.Constant
+    return SymbolKind.Field
   }
   /**
    * Returns a `CompletionItemKind` as used by the `CompletionProvider`.
@@ -61,6 +61,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
         return CompletionItemKind.Interface
       case SymbolKind.Event:
         return CompletionItemKind.Event
+      case SymbolKind.Constant:
+        return CompletionItemKind.Constant
       default:
         return CompletionItemKind.Reference
     }
