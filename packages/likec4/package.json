@@ -152,7 +152,7 @@
     "remeda": "^2.3.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
-    "terser": "^5.31.1",
+    "terser": "^5.31.3",
     "tsx": "~4.9.3",
     "type-fest": "^4.21.0",
     "typescript": "^5.5.4",
