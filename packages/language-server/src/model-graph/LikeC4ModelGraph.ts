@@ -28,6 +28,13 @@ type RelationEdge = {
 type FqnOrElement = Fqn | Element
 type FqnsOrElements = Fqn[] | Element[]
 
+const RelationsSet = Set<Relation>
+const MapRelations = Map<Fqn, Set<Relation>>
+
+function intersection<T>(a: Set<T>, b: Set<T>) {
+  return new Set([...a].filter(value => b.has(value)))
+}
+
 export class LikeC4ModelGraph {
   #elements = new Map<Fqn, Element>()
   #children = new Map<Fqn, Fqn[]>()
@@ -35,11 +42,11 @@ export class LikeC4ModelGraph {
 
   #relations = new Map<RelationID, Relation>()
   // Incoming to an element or its descendants
-  #incoming = new Map<Fqn, RelationID[]>()
+  #incoming = new MapRelations()
   // Outgoing from an element or its descendants
-  #outgoing = new Map<Fqn, RelationID[]>()
+  #outgoing = new MapRelations()
   // Relationships inside the element descendants
-  #internal = new Map<Fqn, RelationID[]>()
+  #internal = new MapRelations()
 
   #cacheAscendingSiblings = new Map<Fqn, Element[]>()
 
@@ -66,16 +73,8 @@ export class LikeC4ModelGraph {
     return el
   }
 
-  public incoming(id: Fqn) {
-    return this._incomingTo(id).flatMap(id => this.#relations.get(id) ?? [])
-  }
-
-  public outgoing(id: Fqn) {
-    return this._outgoingFrom(id).flatMap(id => this.#relations.get(id) ?? [])
-  }
-
-  public internal(id: Fqn) {
-    return this._internalOf(id).flatMap(id => this.#relations.get(id) ?? [])
+  public connectedRelations(id: Fqn) {
+    return [...this._incomingTo(id), ...this._outgoingFrom(id), ...this._internalOf(id)]
   }
 
   public children(id: Fqn) {
@@ -127,11 +126,9 @@ export class LikeC4ModelGraph {
     const element = isString(_element) ? this.element(_element) : _element
     const in_element = this._incomingTo(element.id)
     const element_out = this._outgoingFrom(element.id)
-    if (in_element.length === 0 && element_out.length === 0) {
+    if (in_element.size === 0 && element_out.size === 0) {
       return []
     }
-    const isIncoming = isIncludedIn(in_element)
-    const isOutgoing = isIncludedIn(element_out)
 
     const result = [] as Array<RelationEdge>
     for (const _other of others) {
@@ -140,26 +137,26 @@ export class LikeC4ModelGraph {
         continue
       }
 
-      if (element_out.length > 0) {
-        const outcoming = this._incomingTo(other.id).filter(isOutgoing)
+      if (element_out.size > 0) {
+        const outcoming = intersection(this._incomingTo(other.id), element_out)
         // const outcoming = filter(in_other, isOutgoing)
-        if (outcoming.length > 0) {
+        if (outcoming.size > 0) {
           result.push({
             source: element,
             target: other,
-            relations: outcoming.flatMap(id => this.#relations.get(id) ?? [])
+            relations: [...outcoming]
           })
         }
       }
 
-      if (in_element.length > 0) {
-        const incoming = this._outgoingFrom(other.id).filter(isIncoming)
+      if (in_element.size > 0) {
+        const incoming = intersection(this._outgoingFrom(other.id), in_element)
         // const incoming = filter(other_out, isIncoming)
-        if (incoming.length > 0) {
+        if (incoming.size > 0) {
           result.push({
             source: other,
             target: element,
-            relations: incoming.flatMap(id => this.#relations.get(id) ?? [])
+            relations: [...incoming]
           })
         }
       }
@@ -201,10 +198,10 @@ export class LikeC4ModelGraph {
     for (const _source of sources) {
       const source = isString(_source) ? this.element(_source) : _source
       const outcoming = this._outgoingFrom(source.id)
-      if (outcoming.length === 0) {
+      if (outcoming.size === 0) {
         continue
       }
-      const isSameAsOut = isIncludedIn(outcoming)
+      // const isSameAsOut = isIncludedIn(outcoming)
 
       for (const _target of targets) {
         const target = isString(_target) ? this.element(_target) : _target
@@ -212,18 +209,16 @@ export class LikeC4ModelGraph {
           continue
         }
         const incoming = this._incomingTo(target.id)
-        if (incoming.length === 0) {
+        if (incoming.size === 0) {
           continue
         }
 
-        const relations = filter(incoming, isSameAsOut).flatMap(
-          id => this.#relations.get(id) ?? []
-        )
-        if (relations.length > 0) {
+        const relations = intersection(outcoming, incoming)
+        if (relations.size > 0) {
           result.push({
             source,
             target,
-            relations
+            relations: [...relations]
           })
         }
       }
@@ -249,14 +244,14 @@ export class LikeC4ModelGraph {
       throw new InvalidModelError(`Relation ${rel.id} already exists`)
     }
     this.#relations.set(rel.id, rel)
-    this._incomingTo(rel.target).push(rel.id)
-    this._outgoingFrom(rel.source).push(rel.id)
+    this._incomingTo(rel.target).add(rel)
+    this._outgoingFrom(rel.source).add(rel)
 
     const relParent = commonAncestor(rel.source, rel.target)
     // Process internal relationships
     if (relParent) {
       for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
-        this._internalOf(ancestor).push(rel.id)
+        this._internalOf(ancestor).add(rel)
       }
     }
     // Process source hierarchy
@@ -264,14 +259,14 @@ export class LikeC4ModelGraph {
       if (sourceAncestor === relParent) {
         break
       }
-      this._outgoingFrom(sourceAncestor).push(rel.id)
+      this._outgoingFrom(sourceAncestor).add(rel)
     }
     // Process target hierarchy
     for (const targetAncestor of ancestorsFqn(rel.target)) {
       if (targetAncestor === relParent) {
         break
       }
-      this._incomingTo(targetAncestor).push(rel.id)
+      this._incomingTo(targetAncestor).add(rel)
     }
   }
 
@@ -287,7 +282,7 @@ export class LikeC4ModelGraph {
   private _incomingTo(id: Fqn) {
     let incoming = this.#incoming.get(id)
     if (!incoming) {
-      incoming = []
+      incoming = new RelationsSet()
       this.#incoming.set(id, incoming)
     }
     return incoming
@@ -296,7 +291,7 @@ export class LikeC4ModelGraph {
   private _outgoingFrom(id: Fqn) {
     let outgoing = this.#outgoing.get(id)
     if (!outgoing) {
-      outgoing = []
+      outgoing = new RelationsSet()
       this.#outgoing.set(id, outgoing)
     }
     return outgoing
@@ -305,7 +300,7 @@ export class LikeC4ModelGraph {
   private _internalOf(id: Fqn) {
     let internal = this.#internal.get(id)
     if (!internal) {
-      internal = []
+      internal = new RelationsSet()
       this.#internal.set(id, internal)
     }
     return internal

@@ -117,9 +117,7 @@ export function excludeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
       ...this.graph.children(root)
     )
     this.excludeRelation(
-      ...this.graph.internal(root),
-      ...this.graph.incoming(root),
-      ...this.graph.outgoing(root)
+      ...this.graph.connectedRelations(root)
     )
   } else {
     this.reset()

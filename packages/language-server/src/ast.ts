@@ -256,7 +256,7 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   const invalidNodes = new WeakSet(
     errors.flatMap(d => {
       return findInvalidContainer(d.node) ?? []
-    }) ?? []
+    })
   )
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)
