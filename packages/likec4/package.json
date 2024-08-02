@@ -147,7 +147,7 @@
     "postcss-preset-mantine": "^1.17.0",
     "pretty-ms": "^9.0.0",
     "react-error-boundary": "^4.0.13",
-    "react-resizable-panels": "^2.0.20",
+    "react-resizable-panels": "^2.0.22",
     "react-shadow": "^20.5.0",
     "remeda": "^2.3.0",
     "string-hash": "^1.1.3",
