@@ -1,7 +1,6 @@
 import type { LanguageServices } from '@/language-services'
 import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
-import { extname, resolve } from 'node:path'
 import k from 'picocolors'
 import type { InlineConfig } from 'vite'
 import { likec4Plugin } from './plugin'
@@ -23,8 +22,6 @@ export async function viteReactConfig({
   const root = viteAppRoot()
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
-  const isJsx = extname(filename) === '.jsx'
-
   return {
     customLogger,
     root,
@@ -36,7 +33,6 @@ export async function viteReactConfig({
       banner: `'use client'\n\n` + JsBanners.banner,
       footer: JsBanners.footer,
       jsx: 'transform',
-      // jsx: isJsx ? 'preserve' : 'automatic',
       jsxDev: false,
       minifyIdentifiers: false,
       lineLimit: 150,
