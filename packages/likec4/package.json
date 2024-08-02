@@ -155,7 +155,7 @@
     "terser": "^5.31.1",
     "tsx": "~4.9.3",
     "type-fest": "^4.21.0",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "ufo": "^1.5.4",
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-shadow-style": "^1.1.0",

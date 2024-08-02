@@ -102,7 +102,7 @@
     "langium-cli": "3.1.0",
     "npm-run-all2": "^6.2.2",
     "tsx": "~4.9.3",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "vitest": "~2.0.3"
   },
   "packageManager": "yarn@4.3.1"

@@ -36,7 +36,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "starlight-links-validator": "^0.9.1",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   },
   "devDependencies": {
     "@types/picomatch": "^2.3.4",
