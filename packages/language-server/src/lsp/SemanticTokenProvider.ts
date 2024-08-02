@@ -27,6 +27,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       return 'prune'
     }
 
+    if (ast.isOutgoingRelationExpression(node) && 'kind' in node) {
+      acceptor({
+        node,
+        property: 'kind',
+        type: SemanticTokenTypes.function
+      })
+      return
+    }
     if (ast.isRelation(node) && 'kind' in node) {
       acceptor({
         node,
@@ -60,7 +68,27 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           SemanticTokenModifiers.readonly
         ]
       })
-      return 'prune'
+      return
+    }
+    if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
+      acceptor({
+        node,
+        property: 'value',
+        type: SemanticTokenTypes.function
+      })
+      return
+    }
+    if ((ast.isWhereElement(node) || ast.isWhereRelation(node)) && isTruthy(node.value)) {
+      acceptor({
+        node,
+        property: 'value',
+        type: SemanticTokenTypes.type,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly
+        ]
+      })
+      return
     }
     if (ast.isElementKindExpression(node) && isTruthy(node.kind)) {
       acceptor({
@@ -102,12 +130,11 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
     }
     if (ast.isTags(node)) {
-      acceptor({
+      return acceptor({
         node,
         property: 'values',
         type: SemanticTokenTypes.interface
       })
-      return
     }
     if (ast.isTag(node)) {
       return acceptor({
@@ -126,25 +153,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'key',
         type: SemanticTokenTypes.property
       })
-    }
-    if (
-      ast.isColorProperty(node)
-      || ast.isShapeProperty(node)
-      || ast.isArrowProperty(node)
-      || ast.isLineProperty(node)
-      || ast.isBorderProperty(node)
-    ) {
-      acceptor({
-        node,
-        property: 'key',
-        type: SemanticTokenTypes.property
-      })
-      acceptor({
-        node,
-        property: 'value',
-        type: SemanticTokenTypes.enum
-      })
-      return 'prune'
     }
     if (ast.isOpacityProperty(node)) {
       acceptor({
@@ -169,13 +177,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'key',
         type: SemanticTokenTypes.property
       })
-      if (ast.isIconProperty(node) && node.libicon) {
-        acceptor({
-          node,
-          property: 'libicon',
-          type: SemanticTokenTypes.enum
-        })
-      }
       if ('value' in node) {
         acceptor({
           node,
@@ -183,7 +184,34 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           type: SemanticTokenTypes.string
         })
       }
-
+      if (ast.isIconProperty(node) && node.libicon) {
+        acceptor({
+          node,
+          property: 'libicon',
+          type: SemanticTokenTypes.enum
+        })
+      }
+      return 'prune'
+    }
+    if (
+      ast.isColorProperty(node)
+      || ast.isShapeProperty(node)
+      || ast.isArrowProperty(node)
+      || ast.isLineProperty(node)
+      || ast.isBorderProperty(node)
+    ) {
+      acceptor({
+        node,
+        property: 'key',
+        type: SemanticTokenTypes.property
+      })
+      if ('value' in node) {
+        acceptor({
+          node,
+          property: 'value',
+          type: SemanticTokenTypes.enum
+        })
+      }
       return 'prune'
     }
     if (ast.isElement(node)) {

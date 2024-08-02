@@ -228,6 +228,29 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
+  it('should suggest relationship kind after dot', async () => {
+    const text = `
+      specification {
+        element actor
+        relationship uses
+      }
+      model {
+        actor customer {
+          .<|>
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: [
+        '.uses'
+      ]
+    })
+  })
+
   it('should suggest nested elements for elementref', async () => {
     const text = `
       specification {
@@ -336,6 +359,73 @@ describe('LikeC4CompletionProvider', () => {
         'style',
         'autoLayout'
       ],
+      disposeAfterCheck: true
+    })
+  })
+  it('should suggest tags inside "where"-predicates', async () => {
+    const text = `
+      specification {
+        element service
+        element component
+        tag tag1
+        tag tag2
+        relationship uses
+      }
+      model {
+        root = component {
+          a = component {
+            b1 = component {
+              b2 = component
+            }
+          }
+        }
+      }
+      views {
+        view {
+          include
+            * where (
+              tag == <|>#tag1 and
+              tag is not #<|>tag2 or
+              kind != <|>service
+            )
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const first = take(completions.items, 2)
+        expect(pluck('label', first)).toEqual([
+          '#tag1',
+          '#tag2'
+        ])
+      },
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        '#tag1',
+        '#tag2'
+      ],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 2,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const first = take(completions.items, 2)
+        expect(pluck('label', first)).toEqual([
+          'service',
+          'component'
+        ])
+      },
       disposeAfterCheck: true
     })
   })
