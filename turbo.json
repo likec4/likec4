@@ -4,6 +4,8 @@
     "NODE_ENV"
   ],
   "globalDependencies": [
+    ".tool-versions",
+    "package.json",
     "yarn.lock",
     ".yarnrc.yml"
   ],

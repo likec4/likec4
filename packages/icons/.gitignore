@@ -3,4 +3,3 @@ dist/
 all.*
 */*.d.ts
 */*.js
-!*/index.js

@@ -2454,6 +2454,7 @@ __metadata:
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     consola: "npm:^3.2.3"
+    esbuild: "npm:^0.21.5"
     execa: "npm:^9.3.0"
     glob: "npm:^11.0.0"
     react: "npm:^18.3.1"

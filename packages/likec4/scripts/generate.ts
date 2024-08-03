@@ -14,9 +14,8 @@ const copyDirs = [
 ]
 await $`cp -r ${copyDirs} icons`
 
-await rimraf('icons/*/*.d.ts', { glob: true })
+await rimraf('icons/*/*.{tsx,ts}', { glob: true })
 await rimraf('icons/*/index.js', { glob: true })
-await rimraf('icons/*/*.jsx', { glob: true })
 
 const copyFiles = [
   '../icons/icon.d.ts',
