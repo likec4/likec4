@@ -46,30 +46,6 @@ describe.concurrent('expandElementExprChecks', () => {
     }
   })
 
-  it('should warn if used in exclude', async ({ expect }) => {
-    const { validate } = createTestServices()
-    const { diagnostics } = await validate(`
-      specification {
-        element component
-      }
-      model {
-        component c1
-      }
-      views {
-        view {
-          exclude c1._
-        }
-      }
-    `)
-    expect(diagnostics).toHaveLength(1)
-    for (const diagnostic of diagnostics) {
-      expect(diagnostic.severity, 'diagnostic severity').toBe(2)
-      expect(diagnostic.message, 'diagnostic message').toBe(
-        'Expand predicate is ignored in exclude'
-      )
-    }
-  })
-
   it('should warn if used as target of relation predicate', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`

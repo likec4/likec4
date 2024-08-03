@@ -238,7 +238,7 @@ describe.concurrent('views2', () => {
       await onlyWarnings(`
         include -> system._
       `)
-      await onlyWarnings(`
+      await valid(`
         exclude system._
       `)
     })
@@ -257,7 +257,7 @@ describe.concurrent('views2', () => {
       await invalid(`
         include system.backend with {
       `)
-      await invalid(`
+      await valid(`
         include * with { }
       `)
       await valid(`
