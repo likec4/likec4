@@ -72,8 +72,8 @@
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.14.10",
-    "typescript": "^5.5.3",
+    "@types/node": "^20.14.13",
+    "typescript": "^5.5.4",
     "vitest": "~2.0.3"
   },
   "packageManager": "yarn@4.3.1"

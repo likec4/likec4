@@ -36,10 +36,10 @@
     "@mantine/vanilla-extract": "7.11.2",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.11.0",
-    "@tanstack/react-router": "^1.45.8",
-    "@tanstack/router-vite-plugin": "^1.45.8",
+    "@tanstack/react-router": "^1.45.14",
+    "@tanstack/router-vite-plugin": "^1.45.13",
     "@typefox/monaco-editor-react": "4.3.2",
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.14.13",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/string-hash": "^1.1.3",
@@ -51,7 +51,7 @@
     "clsx": "^2.1.1",
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.3.8",
+    "framer-motion": "^11.3.19",
     "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@6.0.3",
     "monaco-editor-wrapper": "5.3.1",
     "monaco-languageclient": "8.6.0",
@@ -59,14 +59,14 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",
-    "react-resizable-panels": "^2.0.20",
+    "react-resizable-panels": "^2.0.22",
     "remeda": "^2.3.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
     "tsx": "~4.9.3",
     "type-fest": "^4.21.0",
-    "typescript": "^5.5.3",
-    "ufo": "^1.5.3",
+    "typescript": "^5.5.4",
+    "ufo": "^1.5.4",
     "vite": "5.3.4",
     "vscode": "npm:@codingame/monaco-vscode-api@6.0.3",
     "vscode-languageclient": "~9.0.1",
@@ -77,6 +77,6 @@
   },
   "packageManager": "yarn@4.3.1",
   "devDependencies": {
-    "@tanstack/router-cli": "^1.45.8"
+    "@tanstack/router-cli": "^1.45.13"
   }
 }
