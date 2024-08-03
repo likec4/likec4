@@ -40,7 +40,7 @@ export function isExpandedElementExpr(expr: Expression): expr is ExpandedElement
 
 export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
   custom: {
-    element: Fqn
+    expr: ElementExpression | ElementWhereExpr
     title?: string
     description?: string
     technology?: string
@@ -54,7 +54,7 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
 }
 
 export function isCustomElement(expr: Expression): expr is CustomElementExpr {
-  return 'custom' in expr
+  return 'custom' in expr && (isElement(expr.custom.expr) || isElementWhere(expr.custom.expr))
 }
 
 export interface WildcardExpr extends Omit<BaseExpr, 'wildcard'> {
@@ -149,13 +149,13 @@ export interface RelationWhereExpr extends Omit<BaseExpr, 'where'> {
     condition: WhereOperator
   }
 }
-export function isRelationWhere(expr: Expression): expr is ElementWhereExpr {
+export function isRelationWhere(expr: Expression): expr is RelationWhereExpr {
   return 'where' in expr && isRelationExpression(expr.where.expr)
 }
 
 export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
   customRelation: {
-    relation: RelationExpr | RelationWhereExpr
+    relation: RelationExpression | RelationWhereExpr
     title?: string
     description?: string
     technology?: string

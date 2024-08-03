@@ -1,4 +1,4 @@
-import { isNullish } from 'remeda'
+import { allPass, anyPass, isNot, isNullish } from 'remeda'
 import { nonexhaustive } from '../errors'
 import type { NonEmptyArray } from './_common'
 
@@ -67,18 +67,21 @@ type Filterable<
 
 type OperatorPredicate<V extends Filterable> = (value: V) => boolean
 
-export function whereOperatorAsPredicate(operator: WhereOperator): OperatorPredicate<Filterable> {
+export function whereOperatorAsPredicate<
+  FTag extends string = string,
+  FKind extends string = string
+>(operator: WhereOperator): OperatorPredicate<Filterable<FTag, FKind>> {
   switch (true) {
     case isTagEqual(operator): {
       if ('eq' in operator.tag) {
         const tag = operator.tag.eq
         return (value) => {
-          return Array.isArray(value.tags) && value.tags.includes(tag)
+          return Array.isArray(value.tags) && value.tags.includes(tag as FTag)
         }
       }
       const tag = operator.tag.neq
       return (value) => {
-        return !Array.isArray(value.tags) || !value.tags.includes(tag)
+        return !Array.isArray(value.tags) || !value.tags.includes(tag as FTag)
       }
     }
     case isKindEqual(operator): {
@@ -95,15 +98,15 @@ export function whereOperatorAsPredicate(operator: WhereOperator): OperatorPredi
     }
     case isNotOperator(operator): {
       const predicate = whereOperatorAsPredicate(operator.not)
-      return (value) => !predicate(value)
+      return isNot(predicate)
     }
     case isAndOperator(operator): {
       const predicates = operator.and.map(whereOperatorAsPredicate)
-      return (value) => predicates.every((predicate) => predicate(value))
+      return allPass(predicates)
     }
     case isOrOperator(operator): {
       const predicates = operator.or.map(whereOperatorAsPredicate)
-      return (value) => predicates.some((predicate) => predicate(value))
+      return anyPass(predicates)
     }
     default:
       nonexhaustive(operator)

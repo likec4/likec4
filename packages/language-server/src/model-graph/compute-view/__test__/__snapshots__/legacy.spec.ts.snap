@@ -123,7 +123,10 @@ exports[`compute-element-view > view of cloud 1`] = `
       "parent": null,
       "shape": "rectangle",
       "style": {},
-      "tags": null,
+      "tags": [
+        "next",
+        "old",
+      ],
       "technology": null,
       "title": "cloud",
     },

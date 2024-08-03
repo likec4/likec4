@@ -275,8 +275,7 @@ export class LikeC4ModelParser {
 
   private parseElementPredicate(astNode: ast.ElementPredicate, _isValid: IsValidFn): c4.ElementPredicateExpression {
     if (ast.isElementPredicateWith(astNode)) {
-      const subject = ast.isElementPredicateWhere(astNode.subject) ? astNode.subject.subject : astNode.subject
-      return this.parseElementPredicateWith(astNode, subject, _isValid)
+      return this.parseElementPredicateWith(astNode, _isValid)
     }
     if (ast.isElementPredicateWhere(astNode)) {
       return this.parseElementPredicateWhere(astNode)
@@ -341,26 +340,9 @@ export class LikeC4ModelParser {
 
   private parseElementPredicateWith(
     astNode: ast.ElementPredicateWith,
-    subject: ast.ElementExpression,
     _isValid: IsValidFn
   ): c4.CustomElementExpr {
-    let targetRef
-    switch (true) {
-      case ast.isElementRef(subject):
-        targetRef = subject
-        break
-      case ast.isExpandElementExpression(subject):
-        targetRef = subject.expand
-        break
-      case ast.isElementDescedantsExpression(subject):
-        targetRef = subject.parent
-        break
-      default:
-        throw new Error('Unsupported target of custom element')
-    }
-    const elementNode = elementRef(targetRef)
-    invariant(elementNode, 'element not found: ' + astNode.$cstNode?.text)
-    const element = this.resolveFqn(elementNode)
+    const expr = this.parseElementPredicate(astNode.subject, _isValid)
     const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
@@ -404,7 +386,7 @@ export class LikeC4ModelParser {
       },
       {
         custom: {
-          element
+          expr
         }
       } as c4.CustomElementExpr
     )

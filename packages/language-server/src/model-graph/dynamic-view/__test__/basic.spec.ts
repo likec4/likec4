@@ -227,7 +227,7 @@ describe('dynamic-view', () => {
     const { nodeIds, edgeIds, nodes, edges } = compute([
       $step('customer -> cloud.frontend.dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
-      $include('cloud.*'),
+      $include('cloud'),
       $step('cloud.frontend.dashboard <- cloud.backend.graphql')
     ])
     expect(nodeIds).toEqual([
@@ -311,39 +311,69 @@ describe('dynamic-view', () => {
       'customer',
       'cloud.frontend.dashboard',
       'cloud.backend.graphql',
-      'amazon'
+      'amazon',
+      'amazon.s3'
     ])
     expect(edgeIds).toEqual([
       'step-001',
       'step-002'
     ])
 
+    const common = {
+      children: expect.any(Array),
+      color: expect.any(String),
+      description: null,
+      'kind': expect.any(String),
+      'level': expect.any(Number),
+      'links': null,
+      'parent': null,
+      'shape': expect.any(String),
+      'style': expect.any(Object),
+      'tags': null,
+      'technology': null,
+      'title': expect.any(String)
+    }
+
     expect(nodes).toMatchObject([
       {
+        ...common,
         id: 'customer',
         parent: null,
         outEdges: ['step-001'],
         inEdges: []
       },
       {
+        ...common,
         id: 'cloud.frontend.dashboard',
         parent: null,
         inEdges: [
           'step-001'
         ],
-        outEdges: ['step-002']
+        outEdges: ['step-002'],
+        tags: ['next']
       },
       {
+        ...common,
         id: 'cloud.backend.graphql',
         parent: null,
         inEdges: ['step-002'],
         outEdges: []
       },
       {
+        ...common,
         id: 'amazon',
         parent: null,
         inEdges: [],
-        outEdges: []
+        outEdges: [],
+        tags: ['aws']
+      },
+      {
+        ...common,
+        id: 'amazon.s3',
+        parent: 'amazon',
+        inEdges: [],
+        outEdges: [],
+        tags: ['aws']
       }
     ])
   })

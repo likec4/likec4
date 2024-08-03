@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, computeView } from './fixture'
+import { $exclude, $include, $where, computeView } from './fixture'
 
 describe('wildcard-expr', () => {
   it('include *', () => {
@@ -19,6 +19,43 @@ describe('wildcard-expr', () => {
       'cloud.frontend:cloud.backend',
       'cloud.backend:amazon',
       'cloud.backend:email'
+    ])
+  })
+
+  it('include * where tag', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include(
+        $where('*', {
+          or: [
+            { tag: { eq: 'aws' } },
+            { tag: { neq: 'next' } }
+          ]
+        })
+      )
+    ])
+    expect(nodeIds).toEqual([
+      'customer',
+      'support',
+      'email',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([])
+  })
+
+  it('exclude * where kind', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include('*'),
+      $exclude($where('*', { kind: { eq: 'actor' } }))
+    ])
+    expect(nodeIds).toEqual([
+      'cloud',
+      'email',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([
+      'cloud:amazon',
+      'cloud:email',
+      'email:cloud'
     ])
   })
 

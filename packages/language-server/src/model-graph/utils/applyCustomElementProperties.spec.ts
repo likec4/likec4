@@ -1,6 +1,6 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
-import { $include } from '../compute-view/__test__/fixture'
+import { $custom, $include } from '../compute-view/__test__/fixture'
 import { applyCustomElementProperties } from './applyCustomElementProperties'
 
 function nd(id: string): ComputedNode {
@@ -23,13 +23,10 @@ describe('applyElementCustomProperties', () => {
   it('should apply custom properties to matching nodes', () => {
     const nodes = [nd('cloud'), nd('2')]
     const rules = [
-      $include({
-        custom: {
-          element: 'cloud',
-          title: 'value1',
-          technology: 'value2'
-        }
-      })
+      $include($custom('cloud', {
+        title: 'value1',
+        technology: 'value2'
+      }))
     ]
     const result = applyCustomElementProperties(rules, nodes)
     expect(result).toEqual([{
@@ -57,18 +54,15 @@ describe('applyElementCustomProperties', () => {
       } satisfies ComputedNode
     ]
     const rules = [
-      $include({
-        custom: {
-          element: 'customer',
-          title: null as any, // null should be ignored
-          technology: undefined as any, // undefined should be ignored
-          description: '',
-          border: undefined as any, // undefined should be ignored
-          shape: 'queue',
-          color: 'indigo',
-          opacity: 90
-        }
-      })
+      $include($custom('customer', {
+        title: null as any, // null should be ignored
+        technology: undefined as any, // undefined should be ignored
+        description: '',
+        border: undefined as any, // undefined should be ignored
+        shape: 'queue',
+        color: 'indigo',
+        opacity: 90
+      }))
     ]
     const result = applyCustomElementProperties(rules, nodes)
     expect(result).toEqual([
@@ -93,13 +87,10 @@ describe('applyElementCustomProperties', () => {
   it('should ignore rules for non-existent nodes', () => {
     const nodes = [nd('1'), nd('2')]
     const rules = [
-      $include({
-        custom: {
-          element: 'cloud',
-          title: 'value1',
-          technology: 'value2'
-        }
-      })
+      $include($custom('cloud', {
+        title: 'value1',
+        technology: 'value2'
+      }))
     ]
     const result = applyCustomElementProperties(rules, nodes)
     expect(result).not.toBe(nodes) // should return new array

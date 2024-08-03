@@ -2,7 +2,6 @@ import type {
   ComputedDynamicView,
   ComputedEdge,
   DynamicView,
-  EdgeId,
   Element,
   RelationID,
   RelationshipArrowType,
@@ -15,11 +14,7 @@ import {
   DefaultArrowType,
   DefaultLineStyle,
   DefaultRelationshipColor,
-  invariant,
-  isCustomElement,
   isDynamicViewIncludeRule,
-  isElementRef,
-  isExpandedElementExpr,
   isViewRuleAutoLayout,
   nonNullable,
   parentFqn,
@@ -30,6 +25,7 @@ import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
+import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 
 export namespace DynamicViewComputeCtx {
   export interface Step {
@@ -99,19 +95,8 @@ export class DynamicViewComputeCtx {
     for (const rule of rules) {
       if (isDynamicViewIncludeRule(rule)) {
         for (const expr of rule.include) {
-          if (isElementRef(expr)) {
-            this.explicits.add(this.graph.element(expr.element))
-            continue
-          }
-          if (isExpandedElementExpr(expr)) {
-            this.explicits.add(this.graph.element(expr.expanded))
-            continue
-          }
-          if (isCustomElement(expr)) {
-            this.explicits.add(this.graph.element(expr.custom.element))
-            continue
-          }
-          console.warn('Unsupported include expression: ', expr)
+          const predicate = elementExprToPredicate(expr)
+          this.graph.elements.filter(predicate).forEach(e => this.explicits.add(e))
         }
       }
     }

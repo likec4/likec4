@@ -1,25 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { $include, $style, computeView } from './fixture'
+import { $custom, $expr, $include, $style, computeView } from './fixture'
 
 describe('custom-element-expr', () => {
   it('include element and apply props', () => {
     const { nodes, nodeIds, edgeIds } = computeView([
       $include('amazon'),
-      $include({
-        custom: {
-          element: 'cloud',
-          title: 'CHANGED',
-          navigateTo: 'custom'
-        }
-      }),
-      $include({
-        custom: {
-          element: 'customer',
-          title: null as any, // null should be ignored
-          technology: '',
-          description: undefined as any // undefined should be ignored
-        }
-      })
+      $include($custom('cloud', {
+        title: 'CHANGED',
+        navigateTo: 'custom'
+      })),
+      $include($custom('customer', {
+        title: null as any, // null should be ignored
+        technology: '',
+        description: undefined as any // undefined should be ignored
+      }))
     ])
     expect(nodeIds).toEqual(['customer', 'cloud', 'amazon'])
     expect(edgeIds).toEqual(['customer:cloud', 'cloud:amazon'])
@@ -48,19 +42,13 @@ describe('custom-element-expr', () => {
         color: 'muted'
       }),
       // override color
-      $include({
-        custom: {
-          element: 'cloud',
-          color: 'red'
-        }
-      }),
+      $include($custom('cloud', {
+        color: 'red'
+      })),
       // override shape
-      $include({
-        custom: {
-          element: 'amazon',
-          shape: 'queue'
-        }
-      }),
+      $include($custom('amazon', {
+        shape: 'queue'
+      })),
       // style only cloud, color should be red
       $style('cloud', {
         color: 'green',

@@ -1,11 +1,10 @@
-import type { ComputedNode } from '@likec4/core'
 import { Expr, nonexhaustive, parentFqn } from '@likec4/core'
-import { whereOperatorAsPredicate } from '@likec4/core/types'
+import { type Element, whereOperatorAsPredicate } from '@likec4/core/types'
 import { isNullish } from 'remeda'
 
 type Predicate<T> = (x: T) => boolean
 
-export function elementExprToPredicate(target: Expr.ElementPredicateExpression): Predicate<ComputedNode> {
+export function elementExprToPredicate(target: Expr.ElementPredicateExpression): Predicate<Element> {
   if (Expr.isElementWhere(target)) {
     const predicate = elementExprToPredicate(target.where.expr)
     const where = whereOperatorAsPredicate(target.where.condition)
@@ -32,7 +31,7 @@ export function elementExprToPredicate(target: Expr.ElementPredicateExpression):
       : n => (n.id as string) === element
   }
   if (Expr.isCustomElement(target)) {
-    return n => (n.id as string) === target.custom.element
+    return elementExprToPredicate(target.custom.expr)
   }
   nonexhaustive(target)
 }

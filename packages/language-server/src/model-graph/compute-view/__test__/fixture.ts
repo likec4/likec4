@@ -1,6 +1,7 @@
 import type {
   BorderStyle,
   ComputedView,
+  CustomElementExpr as C4CustomElementExpr,
   CustomRelationExpr as C4CustomRelationExpr,
   Element,
   ElementExpression as C4ElementExpression,
@@ -142,7 +143,8 @@ export const fakeElements = {
   'cloud': el({
     id: 'cloud',
     kind: 'system',
-    title: 'cloud'
+    title: 'cloud',
+    tags: ['next' as Tag, 'old' as Tag]
   }),
   'cloud.backend': el({
     id: 'cloud.backend',
@@ -335,9 +337,18 @@ type OutgoingExpr = `${ElementRefExpr} ->`
 type RelationKeyword = '->' | '<->'
 type RelationExpr = `${ElementRefExpr} ${RelationKeyword} ${ElementRefExpr}`
 
-type CustomExpr = {
-  custom: {
-    element: FakeElementIds
+export type Expression =
+  | ElementRefExpr
+  | InOutExpr
+  | IncomingExpr
+  | OutgoingExpr
+  | RelationExpr
+  | ElementWhereExpr
+  | RelationWhereExpr
+
+export function $custom(
+  expr: ElementRefExpr,
+  props: {
     title?: string
     description?: string
     technology?: string
@@ -348,17 +359,14 @@ type CustomExpr = {
     opacity?: number
     navigateTo?: string
   }
+): C4CustomElementExpr {
+  return {
+    custom: {
+      expr: $expr(expr) as any,
+      ...props as any
+    }
+  }
 }
-
-export type Expression =
-  | ElementRefExpr
-  | InOutExpr
-  | IncomingExpr
-  | OutgoingExpr
-  | RelationExpr
-  | CustomExpr
-  | ElementWhereExpr
-  | RelationWhereExpr
 
 export function $customRelation(
   relation: RelationExpr,

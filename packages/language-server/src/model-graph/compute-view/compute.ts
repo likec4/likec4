@@ -3,8 +3,10 @@ import type {
   ComputedElementView,
   EdgeId,
   Element,
+  ElementPredicateExpression,
   ElementView,
   Relation,
+  RelationPredicateExpression,
   RelationshipArrowType,
   RelationshipLineType,
   ThemeColor,
@@ -21,7 +23,8 @@ import {
   isViewRuleAutoLayout,
   isViewRulePredicate,
   nonexhaustive,
-  parentFqn
+  parentFqn,
+  whereOperatorAsPredicate
 } from '@likec4/core'
 import { first, flatMap, hasAtLeast, isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
@@ -31,15 +34,15 @@ import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
 import { sortNodes } from '../utils/sortNodes'
 import {
+  type ElementPredicateFn,
   excludeElementKindOrTag,
   excludeElementRef,
+  excludeExpandedElementExpr,
   excludeIncomingExpr,
   excludeInOutExpr,
   excludeOutgoingExpr,
   excludeRelationExpr,
   excludeWildcardRef,
-  includeCustomElement,
-  includeCustomRelation,
   includeElementKindOrTag,
   includeElementRef,
   includeExpandedElementExpr,
@@ -47,7 +50,8 @@ import {
   includeInOutExpr,
   includeOutgoingExpr,
   includeRelationExpr,
-  includeWildcardRef
+  includeWildcardRef,
+  type RelationPredicateFn
 } from './predicates'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -432,57 +436,91 @@ export class ComputeCtx {
       const isInclude = 'include' in rule
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
-        if (Expr.isCustomElement(expr)) {
-          if (isInclude) {
-            includeCustomElement.call(this, expr)
-          }
+        if (Expr.isElementPredicateExpr(expr)) {
+          this.processElementPredicate(expr, isInclude)
           continue
         }
-        if (Expr.isCustomRelationExpr(expr)) {
-          if (isInclude) {
-            includeCustomRelation.call(this, expr)
-          }
-          continue
-        }
-        if (Expr.isExpandedElementExpr(expr)) {
-          if (isInclude) {
-            includeExpandedElementExpr.call(this, expr)
-          }
-          continue
-        }
-        if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {
-          isInclude
-            ? includeElementKindOrTag.call(this, expr)
-            : excludeElementKindOrTag.call(this, expr)
-          continue
-        }
-        if (Expr.isElementRef(expr)) {
-          isInclude ? includeElementRef.call(this, expr) : excludeElementRef.call(this, expr)
-          continue
-        }
-        if (Expr.isWildcard(expr)) {
-          isInclude ? includeWildcardRef.call(this, expr) : excludeWildcardRef.call(this, expr)
-          continue
-        }
-        if (Expr.isIncoming(expr)) {
-          isInclude ? includeIncomingExpr.call(this, expr) : excludeIncomingExpr.call(this, expr)
-          continue
-        }
-        if (Expr.isOutgoing(expr)) {
-          isInclude ? includeOutgoingExpr.call(this, expr) : excludeOutgoingExpr.call(this, expr)
-          continue
-        }
-        if (Expr.isInOut(expr)) {
-          isInclude ? includeInOutExpr.call(this, expr) : excludeInOutExpr.call(this, expr)
-          continue
-        }
-        if (Expr.isRelation(expr)) {
-          isInclude ? includeRelationExpr.call(this, expr) : excludeRelationExpr.call(this, expr)
+        if (Expr.isRelationPredicateExpr(expr)) {
+          this.processRelationPredicate(expr, isInclude)
           continue
         }
         nonexhaustive(expr)
       }
     }
     return this
+  }
+
+  protected processElementPredicate(
+    expr: ElementPredicateExpression,
+    isInclude: boolean,
+    where?: ElementPredicateFn
+  ): this {
+    if (Expr.isCustomElement(expr)) {
+      if (isInclude) {
+        this.processElementPredicate(expr.custom.expr, isInclude)
+      }
+      return this
+    }
+    if (Expr.isElementWhere(expr)) {
+      const where = whereOperatorAsPredicate(expr.where.condition)
+      this.processElementPredicate(expr.where.expr, isInclude, where)
+      return this
+    }
+    if (Expr.isExpandedElementExpr(expr)) {
+      isInclude
+        ? includeExpandedElementExpr.call(this, expr, where)
+        : excludeExpandedElementExpr.call(this, expr, where)
+      return this
+    }
+    if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {
+      isInclude
+        ? includeElementKindOrTag.call(this, expr, where)
+        : excludeElementKindOrTag.call(this, expr, where)
+      return this
+    }
+    if (Expr.isElementRef(expr)) {
+      isInclude ? includeElementRef.call(this, expr, where) : excludeElementRef.call(this, expr, where)
+      return this
+    }
+    if (Expr.isWildcard(expr)) {
+      isInclude ? includeWildcardRef.call(this, expr, where) : excludeWildcardRef.call(this, expr, where)
+      return this
+    }
+    nonexhaustive(expr)
+  }
+
+  protected processRelationPredicate(
+    expr: RelationPredicateExpression,
+    isInclude: boolean,
+    where?: RelationPredicateFn
+  ): this {
+    if (Expr.isCustomRelationExpr(expr)) {
+      if (isInclude) {
+        this.processRelationPredicate(expr.customRelation.relation, isInclude)
+      }
+      return this
+    }
+    if (Expr.isRelationWhere(expr)) {
+      const where = whereOperatorAsPredicate(expr.where.condition)
+      this.processRelationPredicate(expr.where.expr, isInclude, where)
+      return this
+    }
+    if (Expr.isIncoming(expr)) {
+      isInclude ? includeIncomingExpr.call(this, expr, where) : excludeIncomingExpr.call(this, expr, where)
+      return this
+    }
+    if (Expr.isOutgoing(expr)) {
+      isInclude ? includeOutgoingExpr.call(this, expr, where) : excludeOutgoingExpr.call(this, expr, where)
+      return this
+    }
+    if (Expr.isInOut(expr)) {
+      isInclude ? includeInOutExpr.call(this, expr, where) : excludeInOutExpr.call(this, expr, where)
+      return this
+    }
+    if (Expr.isRelation(expr)) {
+      isInclude ? includeRelationExpr.call(this, expr, where) : excludeRelationExpr.call(this, expr, where)
+      return this
+    }
+    nonexhaustive(expr)
   }
 }
