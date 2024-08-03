@@ -1,5 +1,5 @@
-import type { ComputedEdge, ComputedNode, ViewRule } from '@likec4/core'
-import { Element, Expr, nonexhaustive } from '@likec4/core'
+import type { ComputedEdge, ComputedNode, Element, ViewRule } from '@likec4/core'
+import { Expr, nonexhaustive } from '@likec4/core'
 import { isEmpty } from 'remeda'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
