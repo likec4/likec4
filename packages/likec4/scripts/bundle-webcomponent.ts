@@ -38,13 +38,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      // include: [
-      //   '**/*.ts',
-      //   '**/*.tsx',
-      //   '**/*.jsx',
-      //   // '**/@mantine/**/*.mjs'
-      // ],
-      // legalComments: 'none',
+      jsxDev: false,
       minifyIdentifiers: false,
       minifyWhitespace: true,
       minifySyntax: true,
@@ -97,6 +91,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
           'react-dom/client',
           '@nanostores/react',
           'nanostores',
+          '@emotion/is-prop-valid', // dev-only import from framer-motion
           ...modules.map(m => m.id)
         ],
         plugins: [
@@ -125,7 +120,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
   let bundledJs = await readFile(outputFilepath, 'utf-8')
   if (bundledJs.includes('@emotion/is-prop-valid')) {
     throw new Error(
-      `${outputFilepath} should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)`
+      `${outputFilepath} should not import "@emotion/is-prop-valid"`
     )
   }
 

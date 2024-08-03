@@ -38,12 +38,7 @@ export async function buildReact(_isDev = false) {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      // include: [
-      //   '**/*.ts',
-      //   '**/*.tsx',
-      //   '**/*.jsx',
-      //   '**/@mantine/**/*.mjs'
-      // ],
+      jsxDev: false,
       legalComments: 'none',
       minifyIdentifiers: false,
       minifyWhitespace: true,
@@ -96,7 +91,8 @@ export async function buildReact(_isDev = false) {
           'react/jsx-dev-runtime',
           'react-dom/client',
           '@nanostores/react',
-          'nanostores'
+          'nanostores',
+          '@emotion/is-prop-valid' // dev-only import from framer-motion
         ],
         plugins: [
           shadowStyle()
@@ -123,7 +119,7 @@ export async function buildReact(_isDev = false) {
   let bundledJs = await readFile(outputFilepath, 'utf-8')
   if (bundledJs.includes('@emotion/is-prop-valid')) {
     throw new Error(
-      `${outputFilepath} should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)`
+      `${outputFilepath} should not import "@emotion/is-prop-valid"`
     )
   }
   await rm(resolve(outDir, 'style.css'))

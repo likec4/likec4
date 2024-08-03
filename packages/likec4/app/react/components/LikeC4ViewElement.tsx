@@ -2,7 +2,6 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
 import { type HTMLAttributes, type ReactNode, useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
-import { useColorScheme } from './styles'
 
 import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'

@@ -41,6 +41,7 @@ export async function bundleApp() {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
+      jsxDev: false,
       minifyIdentifiers: false,
       minifyWhitespace: true,
       minifySyntax: true,
@@ -110,6 +111,7 @@ export async function bundleApp() {
           'react-dom',
           '@nanostores/react',
           'nanostores',
+          '@emotion/is-prop-valid', // dev-only import from framer-motion
           resolve(cwd, 'app/src/const.js'),
           ...modules.map(m => m.id)
         ]
