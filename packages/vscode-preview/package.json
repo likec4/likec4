@@ -48,7 +48,7 @@
     "react-error-boundary": "^4.0.13",
     "tsx": "~4.9.3",
     "typescript": "^5.5.4",
-    "vite": "5.3.4",
+    "vite": "5.3.5",
     "vscode-messenger-webview": "^0.4.5"
   }
 }
