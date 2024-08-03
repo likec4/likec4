@@ -12,6 +12,7 @@ const root = dirname(__filename)
 const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
+  '@likec4/core/types': resolve('../../packages/core/src/types/index.ts'),
   '@likec4/core': resolve('../../packages/core/src/index.ts'),
   '@likec4/language-server/protocol': resolve('../../packages/language-server/src/protocol.ts'),
   '@likec4/language-server/browser': resolve('../../packages/language-server/src/browser/index.ts'),
@@ -66,6 +67,7 @@ export default defineConfig((env) => {
           'process.env.NODE_ENV': JSON.stringify('production')
         },
         mode: 'production',
+        logLevel: 'warn',
         build: {
           cssCodeSplit: false,
           cssMinify: false,
