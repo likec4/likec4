@@ -117,7 +117,7 @@ Two types of predicates define what elements/relationships are visible.
 
 Element predicates explicitly define what elements are visible, regardless of the relationships.
 
-```likec4 wrap title="example.c4"
+```likec4
 view {
   // Only backend is visible
   include backend
@@ -148,7 +148,7 @@ view {
 
 Predicates may be combined. The following is equivalent to the previous example:
 
-```likec4 wrap title="example.c4"
+```likec4
 view {
   include
     backend,
@@ -207,19 +207,23 @@ views {
 
 It is possible to change element properties just for this view:
 
-```likec4 title="example.c4"
-view {
-  // Include the element and override its properties
-  include cloud.backend with {
-    title 'Backend components'
-    description '...'
-    technology 'Java, Spring'
-    icon tech:java
-    color amber
-    shape browser
-  }
+```likec4
+// Include the element and override its properties
+include cloud.backend with {
+  title 'Backend components'
+  description '...'
+  technology 'Java, Spring'
+  icon tech:java
+  color amber
+  shape browser
 }
+// Include all nested elements and change color
+include cloud.* with {
+  color amber
+}  
 ```
+
+`with` may be used only within `include`.
 
 ###### With custom navigation
 
@@ -244,9 +248,10 @@ view view3 {
 }
 ```
 
+
 ###### By element kind or tag
 
-```likec4 title="example.c4"
+```likec4
 // elements by kind
 include element.kind != system
 exclude element.kind = container
@@ -255,6 +260,10 @@ exclude element.kind = container
 include element.tag != #V2
 exclude element.tag = #next
 ```
+
+:::caution
+These predicates may be deprecated in the future, as they are replaced with [`where`](#filter) operator
+:::
 
 ##### Relationship predicates
 
@@ -365,6 +374,83 @@ include cloud._
 include cloud,        
   -> cloud.* ->
 ```
+#### Filter
+
+`where` operator narrows down the predicate results by applying additional conditions:
+
+```likec4
+// include only microservices from nested
+include cloud.*
+  where kind is microservice
+
+// only microservices and not deprecated
+include cloud.*
+  where
+     kind == microservice and // possible to use 'is' or '=='
+     tag != #deprecated       // possible to use 'is not' or '!='
+
+// Use logical operators
+include cloud.*
+  where
+     not (kind is microservice or kind is webapp)
+     and tag is not #legacy
+     and (tag is #v1 or tag is #v2)
+```
+
+<br/>
+
+**Relationship predicates**
+
+When `where` is used with element predicates, it is applied to the elements.    
+When used with relationship predicates - to the relationships.
+
+```likec4
+include
+  // only relationships with tag #messaging
+  cloud.* <-> amazon.*
+    where tag is #messaging,
+
+  // only incoming http-requests
+  -> backend
+    where kind is http-request
+```
+
+<br/>
+
+**Together with `with`**
+
+It is possible to use `where` together with `with`, but `where` should be defined first:
+
+```likec4
+include *
+  where
+    kind is microservice
+  with {
+    color amber
+  }  
+```
+
+<br/>
+
+:::tip
+Less verbose and more satisfying results are achieved with `where` in `exclude` predicates.  
+For example:
+
+```likec4
+view {
+  // keep elements only with tag #v1
+  exclude * where tag is not #v1
+}
+
+view {
+  // keep relationships only with tag #commands
+  exclude * -> * where tag is not #commands
+}
+```
+
+Together with [extend views](#extend-views) it allows to define a "baseline" and then filter out specific parts.
+
+:::
 
 ### Auto-layout
 
@@ -376,6 +462,12 @@ view {
 ```
 
 Possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
+
+<Aside>
+Manual changes are supported in VSCode extension, but functionality is experimental and in active development.
+Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is appreciated.
+</Aside>
+
 
 ### Style predicates
 
@@ -419,9 +511,7 @@ view apiApp of internetBankingSystem.apiApplication {
 }
 ```
 
-:::caution
-[Overrides](#with-overrides) have higher priority.
-:::
+Please note, that [overrides](#with-overrides) have higher priority.
 
 ### Extend views
 

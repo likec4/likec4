@@ -11,10 +11,9 @@ This action wraps [CLI](/tooling/cli) as a GitHub Action.
 
 ### Usage
 
-Build website:
+#### Build website
 
 ```yaml
----
 steps:
   - uses: actions/checkout@v4
 
@@ -38,10 +37,9 @@ steps:
 </Aside>
 
 
-Export diagrams to PNG:
+#### Export diagrams to PNG
 
 ```yaml
----
 steps:
   - name: export diagrams
     uses: likec4/actions@v1
@@ -52,10 +50,9 @@ steps:
       use-dot-bin: 'true'
 ```
 
-Code generation:
+#### Code generation
 
 ```yaml
----
 steps:
   - name: code generation
     uses: likec4/actions@v1
