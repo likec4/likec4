@@ -121,7 +121,6 @@ Extended element must be referenced by a fully qualified name.
 Example:
 
 ```likec4
-// cloud/service3.c4
 model {
   extend service2       // ⛔️ Error: service2 not found in the global scope
   extend cloud.service2 // ✅ Resolved by fully qualified name

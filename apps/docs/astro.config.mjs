@@ -124,6 +124,7 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
+        'likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
         '@': new URL('./src', import.meta.url).pathname
       }
     },
