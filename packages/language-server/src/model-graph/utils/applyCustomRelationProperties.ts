@@ -13,7 +13,8 @@ function relationExpressionToPredicates(
       const isSource = elementExprToPredicate(expr.source)
       const isTarget = elementExprToPredicate(expr.target)
       return edge => {
-        return isSource(edge.source) && isTarget(edge.target)
+        return (isSource(edge.source) && isTarget(edge.target))
+          || (!!expr.isBidirectional && isSource(edge.target) && isTarget(edge.source))
       }
     }
     case Expr.isInOut(expr): {
