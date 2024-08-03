@@ -15,7 +15,11 @@ describe.concurrent('elementPredicateWithChecks', () => {
       }
       views {
         view {
-          include c1 with {}
+          include
+              c1 with {},
+              * with {
+                color red
+              }
         }
       }
     `)
@@ -33,7 +37,7 @@ describe.concurrent('elementPredicateWithChecks', () => {
       }
       views {
         view {
-          include * with {}
+          include element.kind == component with {}
         }
       }
     `)

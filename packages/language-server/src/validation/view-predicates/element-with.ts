@@ -19,10 +19,10 @@ export const elementPredicateWithChecks = (
       case ast.isElementRef(subject):
       case ast.isElementDescedantsExpression(subject):
       case ast.isExpandElementExpression(subject):
+      case ast.isWildcardExpression(subject):
         return
       case ast.isElementKindExpression(subject):
       case ast.isElementTagExpression(subject):
-      case ast.isWildcardExpression(subject):
         accept('error', 'Invalid target (expect reference to specific element)', {
           node: el,
           property: 'subject'
