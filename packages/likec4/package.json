@@ -94,7 +94,7 @@
     "playwright": "1.45.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "vite": "5.3.4"
+    "vite": "5.3.5"
   },
   "devDependencies": {
     "@fontsource/ibm-plex-sans": "^5.0.20",
