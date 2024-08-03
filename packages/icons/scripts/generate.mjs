@@ -1,25 +1,28 @@
 import consola from 'consola'
+import { build } from 'esbuild'
 import { $ } from 'execa'
 import { globSync } from 'glob'
 import { writeFile } from 'node:fs/promises'
 
-consola.info('Generating all.tsx...')
+consola.info('Generating all.js and all.d.ts')
 
 const {
   imports,
-  icons
-} = globSync(`*/*.jsx`).toSorted().reduce(
+  icons,
+  types
+} = globSync(`*/*.tsx`).toSorted().reduce(
   /**
    * @param {{
    *  imports: string[]
    *  icons: string[]
+   *  types: string[]
    * }} acc
    * @param {string} path
    * @returns
    */
   (acc, path) => {
     const parts = path.split('/')
-    const icon = (parts.pop() || 'invalid').replace('.jsx', '')
+    const icon = (parts.pop() || 'invalid').replace('.tsx', '')
     const group = parts.pop() || 'error'
 
     const Component = [
@@ -30,42 +33,60 @@ const {
     ].join('')
 
     acc.imports.push(`import ${Component} from './${group}/${icon}'`)
-    acc.icons.push(`  '${group}:${icon}': ${Component} as SvgIcon,`)
+    acc.icons.push(`  '${group}:${icon}': ${Component},`)
+    acc.types.push(`  readonly '${group}:${icon}': SvgIcon;`)
     return acc
   },
   {
     imports: [],
-    icons: []
+    icons: [],
+    types: []
   }
 )
 
-const Source = `import type { SVGProps, JSX } from 'react'
+// Write the typescript file
+await writeFile(
+  'all.d.ts',
+  `
+import type { SVGProps, JSX } from 'react';
+type SvgIcon = (props: SVGProps<SVGSVGElement>) => JSX.Element;
+export declare const Icons: {
+${types.join('\n')}
+};
+export type IconName = keyof typeof Icons;
+export type IconProps = Omit<SVGProps<SVGSVGElement>, 'name'> & {
+  name: IconName;
+};
+export default function BundledIcon({ name, ...props }: IconProps): JSX.Element;
+`
+)
 
+// Write the javascript file
+await writeFile(
+  'all.js',
+  `
+import { jsx as _jsx } from "react/jsx-runtime";
 ${imports.join('\n')}
-
-type SvgIcon = (props: SVGProps<SVGSVGElement>) => JSX.Element
-
 export const Icons = {
 ${icons.join('\n')}
-} as const
-
-export type IconName = keyof typeof Icons
-
-export type IconProps = Omit<SVGProps<SVGSVGElement>, 'name'> & {
-  /**
-   * From the list of icons
-   */
-  name: IconName
 }
-
-export default function BundledIcon({ name, ...props }: IconProps) {
-  const IconComponent = Icons[name]
-  return IconComponent ? <IconComponent {...props}/> : null
+export default function BundledIcon({ name, ...props }) {
+  const IconComponent = Icons[name];
+  return IconComponent ? _jsx(IconComponent, { ...props }) : null;
 }
 `
+)
 
-await writeFile('all.tsx', Source)
+consola.info('Generate js for all icons')
 
-consola.info('Build typescript')
-
-await $`tsc`
+await build({
+  entryPoints: [
+    '**/*.tsx',
+    '**/index.ts'
+  ],
+  sourceRoot: '.',
+  outdir: '.',
+  format: 'esm',
+  target: 'esnext',
+  platform: 'browser'
+})

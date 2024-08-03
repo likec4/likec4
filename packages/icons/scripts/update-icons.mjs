@@ -134,8 +134,7 @@ await $`rm -r -f ${['aws', 'gcp', 'tech']}`
 const opts = [
   '--filename-case',
   'kebab',
-  '--ext',
-  'jsx',
+  '--typescript',
   '--jsx-runtime',
   'automatic',
   '--svgo-config',
@@ -148,30 +147,24 @@ consola.success('generated svg - DONE')
 
 await $`rm -r -f .tmp/src .tmp/aws .tmp/gcp`
 
-await $`mv aws/index.jsx aws/index.js`
-await $`mv gcp/index.jsx gcp/index.js`
-await $`mv tech/index.jsx tech/index.js`
+// await $`mv aws/index.jsx aws/index.js`
+// await $`mv gcp/index.jsx gcp/index.js`
+// await $`mv tech/index.jsx tech/index.js`
 
-const files = [
-  ...globSync('aws/*.jsx'),
-  ...globSync('gcp/*.jsx'),
-  ...globSync('tech/*.jsx')
-]
+// const files = [
+//   ...
+//   // ...globSync('gcp/*.jsx'),
+//   // ...globSync('tech/*.jsx')
+// ]
 
-for (const fname of files) {
+for (const fname of globSync('*/*.tsx')) {
   const input = readFileSync(fname, 'utf-8')
 
-  const output = `
-/**
- * @component
- * @param {React.SVGProps<SVGSVGElement>} props - The component props.
- * @returns {React.JSX.Element} - The rendered SVG component.
- */
-` + input
+  const output = `// @ts-nocheck \n\n` + input
   await writeFile(fname, output)
 }
 
 consola.start('Formatting...')
-await $`dprint fmt ${'./**/*.{jsx,js}'}`
+await $`dprint fmt ${'./**/*.{tsx,ts}'}`
 
 consola.success('DONE')

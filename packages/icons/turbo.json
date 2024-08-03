@@ -1,22 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "extends": [
-    "//"
-  ],
+  "extends": ["//"],
   "tasks": {
     "generate": {
       "dependsOn": [],
       "inputs": [
-        "**/*.jsx",
-        "scripts/**",
-        "svgo.config.json",
-        "tsconfig.json"
+        "*/*.tsx",
+        "scripts/generate.mjs",
+        "svgo.config.json"
       ],
       "outputs": [
-        "*/*.d.ts",
         "*/*.js",
-        "!*/index.js",
-        "all.tsx",
         "all.js",
         "all.d.ts"
       ]
