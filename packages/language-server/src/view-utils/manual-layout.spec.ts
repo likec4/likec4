@@ -29,8 +29,7 @@ describe('manual-layout', () => {
     expect(commentText).toMatchInlineSnapshot(`
       "/**
        * @likec4-generated(v1)
-       * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgqRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqRz
-       * eXMyhaF4FKF5FKV3aWR0aB6maGVpZ2h0Hqppc0NvbXBvdW5kw6VlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBv
+       * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgqRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqRzeXMyhaF4FKF5FKV3aWR0aB6maGVpZ2h0Hqppc0NvbXBvdW5kw6VlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBv
        * aW50c5GCoXgKoXkK
        */"
     `)

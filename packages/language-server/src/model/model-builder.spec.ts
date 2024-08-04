@@ -791,8 +791,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       views {
         /**
          * @likec4-generated(v1)
-         * WzEsW1snc3lzMScsMCwwLDAsMF0sWydzeXMyJywyMDAwLC0zMDAwLDEwMDAwMDAsOTAwMDAwMF1dLFtbJ3N5czEtPnN5czInLFsx
-         * MCwxMCwyMDAsMjAwXV1dXQ==
+         * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgaRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc
+         * 0NvbXBvdW5kwqVlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBvaW50c5GCoXgKoXkK
          */
         view index {
           include *
@@ -804,12 +804,17 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const indexView = model?.views['index' as ViewID]!
     expect(indexView).toBeDefined()
     expect(indexView).toHaveProperty('manualLayout', {
+      hash: 'hash',
+      height: 100,
+      width: 200,
       nodes: {
-        ['sys1' as Fqn]: { x: 0, y: 0, width: 0, height: 0 },
-        ['sys2' as Fqn]: { x: 2000, y: -3000, width: 1000000, height: 9000000 }
+        'sys1': { x: 0, y: 0, width: 100, height: 100, isCompound: false }
       },
       edges: {
-        ['sys1->sys2' as EdgeId]: { controlPoints: [{ x: 10, y: 10 }, { x: 200, y: 200 }] }
+        'edge1': {
+          points: [[0, 0], [100, 100]],
+          controlPoints: [{ x: 10, y: 10 }]
+        }
       }
     })
   })
