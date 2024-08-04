@@ -484,8 +484,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }, {} as Changes.SaveManualLayout['layout']['nodes'])
               const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
                 let controlPoints = data.controlPoints
+                const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
                 // If edge control points are not set, but the source or target node was moved
-                if (!controlPoints && (movedNodes.has(source) || movedNodes.has(target))) {
+                if (!controlPoints && sourceOrTargetMoved) {
                   controlPoints = bezierControlPoints(data.edge)
                 }
                 const _updated: Changes.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
@@ -496,6 +497,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 }
                 if (controlPoints && hasAtLeast(controlPoints, 1)) {
                   _updated.controlPoints = controlPoints
+                }
+                if (!sourceOrTargetMoved && data.edge.dotpos) {
+                  _updated.dotpos = data.edge.dotpos
                 }
                 return acc
               }, {} as Changes.SaveManualLayout['layout']['edges'])

@@ -2,7 +2,6 @@ import {
   compareFqnHierarchically,
   DefaultRelationshipColor,
   defaultTheme as Theme,
-  DefaultThemeColor,
   invariant,
   nameFromFqn,
   nonNullable,
@@ -16,9 +15,9 @@ import type {
   EdgeId,
   Fqn,
   RelationshipLineType,
-  ViewManualLayout
+  XYPoint
 } from '@likec4/core/types'
-import { entries, filter, first, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take, values } from 'remeda'
+import { filter, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
 import {
   attribute as _,
   type AttributeListModel,
@@ -40,10 +39,29 @@ export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 
 const FontName = Theme.font
 
+export type ApplyManualLayoutData = {
+  height: number
+
+  nodes: Array<{
+    id: string
+    center: XYPoint
+    fixedsize?: {
+      width: number
+      height: number
+    }
+  }>
+
+  edges: Array<{
+    id: string
+    dotpos: string
+  }>
+}
+
 export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   private ids = new Set<string>()
   private subgraphs = new Map<Fqn, SubgraphModel>()
   private nodes = new Map<Fqn, NodeModel>()
+  protected edges = new Map<EdgeId, EdgeModel>()
   protected compoundIds: Set<Fqn>
   protected edgesWithCompounds: Set<EdgeId>
 
@@ -62,6 +80,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
     this.buildGraphvizModel(G)
+  }
+
+  public get hasEdgesWithCompounds(): boolean {
+    return this.edgesWithCompounds.size > 0
   }
 
   protected buildGraphvizModel(G: RootGraphModel): void {
@@ -96,7 +118,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     }
 
     for (const edge of this.view.edges) {
-      this.addEdge(edge, G)
+      const model = this.addEdge(edge, G)
+      if (model) {
+        this.edges.set(edge.id, model)
+      }
     }
   }
 
@@ -113,40 +138,84 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
    * Use coordinates from given diagram as initial position for nodes
    * (try to keep existing layout as much as possible)
    */
-  public applyManualLayout({ nodes, edges }: ViewManualLayout): this {
+  public applyManualLayout(layout: ApplyManualLayoutData): this {
     const height = Math.max(
-      ...values(nodes).map(({ y, height }) => y + height),
-      ...values(edges).flatMap(({ controlPoints }) => controlPoints.map(p => p.y))
+      layout.height,
+      ...layout.nodes.map(({ center: { y }, fixedsize }) => y + (fixedsize?.height ?? 0) / 2)
     )
-    let inherited = false
-    for (const [id, pos] of entries(nodes)) {
+    const isShifted = layout.height !== height
+    for (const { id, ...manual } of layout.nodes) {
+      // we pin only nodes, not clusters
       const model = this.getGraphNode(id as Fqn)
-      if (model) {
-        // Invert Y axis and convert to inches
-        const x = pxToInch(pos.x + pos.width / 2)
-        const y = pxToInch(height - (pos.y + pos.height / 2))
+      if (!model) {
+        continue
+      }
+
+      // Invert Y axis and convert to inches
+      const x = pxToInch(manual.center.x)
+      const y = pxToInch(height - manual.center.y)
+      if (manual.fixedsize) {
         model.attributes.apply({
           [_.pos]: `${x},${y}!`,
-          [_.width]: pxToInch(pos.width),
-          [_.height]: pxToInch(pos.height)
+          [_.pin]: true,
+          [_.width]: pxToInch(manual.fixedsize.width),
+          [_.height]: pxToInch(manual.fixedsize.height),
+          [_.fixedsize]: true
         })
-        inherited = true
+      } else {
+        // Not pinned, but suggested position
+        model.attributes.set(_.pos, `${x},${y}`)
       }
     }
-    if (inherited) {
-      this.graphvizModel.apply({
-        [_.layout]: 'fdp',
-        [_.scale]: 72.0,
-        [_.overlap]: 'vpsc',
-        [_.sep]: '+50,50',
-        [_.esep]: '+10,10',
-        [_.splines]: 'curved'
-      })
-      this.graphvizModel.delete(_.compound)
-      this.graphvizModel.delete(_.rankdir)
-      this.graphvizModel.delete(_.nodesep)
-      this.graphvizModel.delete(_.ranksep)
+    for (const [id, edgeModel] of this.edges.entries()) {
+      edgeModel.attributes.delete(_.weight)
+      edgeModel.attributes.delete(_.minlen)
+      edgeModel.attributes.delete(_.constraint)
+      if (!isShifted) {
+        const dotpos = layout.edges.find(e => e.id === id)?.dotpos
+        if (dotpos) {
+          edgeModel.attributes.set(_.pos, dotpos)
+        }
+      }
     }
+    // TODO: apply manual layout fails when there are edges with compounds
+    // Array.from(this.edgesWithCompounds.values()).forEach(edgeId => {
+    //   const edge = this.edges.get(edgeId)!
+    //   if (!edge) {
+    //     return
+    //   }
+    //   const source = edge.attributes.get(_.ltail) ?? edge.targets[0]
+    //   const target = edge.attributes.get(_.lhead) ?? edge.targets[1]
+
+    //   edge.attributes.delete(_.ltail)
+    //   edge.attributes.delete(_.lhead)
+
+    //   const xlabel = edge.attributes.get(_.xlabel)
+    //   if (xlabel) {
+    //     edge.attributes.delete(_.xlabel)
+    //     edge.attributes.set(_.label, xlabel)
+    //   }
+    //   this.graphvizModel.edge([source, target]).attributes.apply(edge.attributes.values)
+    //   this.graphvizModel.removeEdge(edge)
+    // })
+
+    this.graphvizModel.apply({
+      [_.layout]: 'fdp',
+      // [_.scale]: 72.0,
+      [_.overlap]: 'vpsc',
+      [_.sep]: '+50,50',
+      [_.esep]: '+10,10',
+      [_.start]: 'random2',
+      [_.splines]: 'compound'
+    })
+    this.graphvizModel.delete(_.compound)
+    this.graphvizModel.delete(_.rankdir)
+    this.graphvizModel.delete(_.nodesep)
+    this.graphvizModel.delete(_.ranksep)
+    this.graphvizModel.delete(_.pack)
+    this.graphvizModel.delete(_.pad)
+    this.graphvizModel.delete(_.packmode)
+    this.graphvizModel.attributes.graph.delete(_.margin)
     return this
   }
 

@@ -152,6 +152,7 @@ function parseGraphvizEdge(
     target,
     label,
     ...isTruthy(description) && { description },
+    ...isTruthy(graphvizEdge.pos) && { dotpos: graphvizEdge.pos },
     points: parseEdgePoints(graphvizEdge, viewId),
     labelBBox,
     ...(isBack ? { dir: 'back' } : {}),
