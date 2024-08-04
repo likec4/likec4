@@ -1,9 +1,24 @@
-import type { EdgeId, Fqn, ViewID } from '@likec4/core'
+import type { ViewID, ViewManualLayout } from '@likec4/core'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { saveManualLayout } from './saveManualLayout'
 
 vi.mock('../logger')
+
+const layout: ViewManualLayout = {
+  hash: 'hash',
+  height: 100,
+  width: 200,
+  nodes: {
+    'sys1': { x: 0, y: 0, width: 100, height: 100, isCompound: false }
+  },
+  edges: {
+    'edge1': {
+      points: [[0, 0], [100, 100]],
+      controlPoints: [{ x: 10, y: 10 }]
+    }
+  }
+}
 
 async function mkTestServices() {
   const tst = createTestServices()
@@ -35,19 +50,12 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
 
     const textedit = saveManualLayout(services, {
       ...lookup!,
-      nodes: {
-        ['sys1' as Fqn]: { x: 0, y: 0, width: 0, height: 0 },
-        ['sys2' as Fqn]: { x: 2000, y: -3000, width: 1000000, height: 9000000 }
-      },
-      edges: {
-        ['sys1->sys2' as EdgeId]: { controlPoints: [{ x: 10, y: 10 }, { x: 200, y: 200 }] }
-      }
+      layout
     })
     expect(textedit.newText).toMatchInlineSnapshot(`
       "  /**
          * @likec4-generated(v1)
-         * WzEsW1snc3lzMScsMCwwLDAsMF0sWydzeXMyJywyMDAwLC0zMDAwLDEwMDAwMDAsOTAwMDAwMF1dLFtbJ3N5czEtPnN5czInLFsx
-         * MCwxMCwyMDAsMjAwXV1dXQ==
+         * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgaRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqVlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBvaW50c5GCoXgKoXkK
          */
       "
     `)
@@ -78,15 +86,12 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
 
     const textedit = saveManualLayout(services, {
       ...lookup!,
-      nodes: {
-        ['el' as Fqn]: { x: 12, y: 34, width: 800, height: 600 }
-      },
-      edges: {}
+      layout
     })
     expect(textedit.newText).toMatchInlineSnapshot(`
       " /**
         * @likec4-generated(v1)
-        * WzEsW1snZWwnLDEyLDM0LDgwMCw2MDBdXSxbXV0=
+        * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgaRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqVlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBvaW50c5GCoXgKoXkK
         */
       "
     `)
