@@ -1,65 +1,16 @@
-import { invariant } from '@likec4/core'
-import type { EdgeId, Fqn, ViewManualLayout } from '@likec4/core/types'
-import JSON5 from 'json5'
-import { chunk, entries, hasAtLeast, mapToObj } from 'remeda'
-
-// export namespace CompactViewManualLayout {
-//   export type Node = [
-//     id: Fqn,
-//     x: number,
-//     y: number,
-//     width: number,
-//     height: number
-//   ]
-
-//   export type Edge = [
-//     id: EdgeId,
-//     // flatten array of points, [x1, y1, x2, y2, ...]
-//     controlPoints: number[]
-//   ]
-
-//   // TODO replace with Zod/Valibot
-//   export function isCompactLayout(layout: any): layout is CompactViewManualLayout {
-//     return Array.isArray(layout) && hasAtLeast(layout, 3)
-//       && layout[0] === 1
-//       && Array.isArray(layout[1])
-//       && Array.isArray(layout[2])
-//   }
-
-//   export function pack(layout: ViewManualLayout): CompactViewManualLayout {
-//     return [
-//       1,
-//       entries(layout.nodes).map(([id, { x, y, width, height }]) => [id as Fqn, x, y, width, height]),
-//       entries(layout.edges).map((
-//         [id, { controlPoints }]
-//       ) => [id as EdgeId, controlPoints.flatMap(({ x, y }) => [x, y])])
-//     ]
-//   }
-
-//   export function unpack([_v, nodes, edges]: CompactViewManualLayout): ViewManualLayout {
-//     return {
-//       nodes: mapToObj(nodes, ([id, x, y, width, height]) => [id, { x, y, width, height }]),
-//       // edges: Object.fromEntries(edges.map(([id, controlPoints]) => [id, { controlPoints: mapWithFeedback(controlPoints, (x, y) => ({ x, y }), { x: 0, y: 0 }) }])
-//       edges: mapToObj(edges, ([id, controlPoints]) => {
-//         return [id, {
-//           controlPoints: chunk(controlPoints, 2).map(([x, y = 0]) => ({ x, y }))
-//         }]
-//       })
-//     }
-//   }
-// }
-
-// export type CompactViewManualLayout = [
-//   1, // version
-//   nodes: Array<CompactViewManualLayout.Node>,
-//   edges: Array<CompactViewManualLayout.Edge>
-// ]
+import type { ViewManualLayout } from '@likec4/core/types'
+import { decode, encode } from '@msgpack/msgpack'
+import { fromBase64, toBase64 } from '@smithy/util-base64'
 
 export function serializeToComment(layout: ViewManualLayout) {
-  // const compacted = CompactViewManualLayout.pack(layout)
-  // const compacted = CompactViewManualLayout.pack(layout)
-  const encoded = btoa(JSON5.stringify(layout))
-  const lines = chunk(Array.from(encoded), 100).map(l => ' * ' + l.join(''))
+  const bytes = encode(layout)
+  const base64 = toBase64(bytes)
+  const lines = [] as string[]
+  let offset = 0
+  while (offset < base64.length) {
+    lines.push(' * ' + base64.slice(offset, Math.min(offset + 100, base64.length)))
+    offset += 100
+  }
   lines.unshift(
     '/**',
     ' * @likec4-generated(v1)'
@@ -85,11 +36,8 @@ export function deserializeFromComment(comment: string): ViewManualLayout | unde
       .filter(l => !l.includes('**') && !l.includes('@likec4-') && !l.includes('*/'))
       .map(l => l.replaceAll('*', '').trim())
       .join('')
-    const decodedb64 = atob(b64)
-    const compacted = JSON5.parse(decodedb64)
-    return compacted as ViewManualLayout
-    // invariant(CompactViewManualLayout.isCompactLayout(compacted), 'Invalid compacted layout')
-    // return CompactViewManualLayout.unpack(compacted)
+    const decodedb64 = fromBase64(b64)
+    return decode(decodedb64) as ViewManualLayout
   } catch (e) {
     console.error(e)
     return undefined

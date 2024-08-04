@@ -75,6 +75,8 @@
   "dependencies": {
     "@dagrejs/graphlib": "^2.2.2",
     "@likec4/core": "workspace:*",
+    "@msgpack/msgpack": "^3.0.0-beta2",
+    "@smithy/util-base64": "^3.0.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "fast-equals": "^5.0.1",
     "indent-string": "^5.0.0",

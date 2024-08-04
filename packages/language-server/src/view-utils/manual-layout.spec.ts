@@ -9,11 +9,18 @@ function views(...views: ElementView[]): Record<ViewID, ElementView> {
 
 describe('manual-layout', () => {
   const manualLayout: ViewManualLayout = {
+    hash: 'hash',
+    height: 100,
+    width: 200,
     nodes: {
-      ['sys1' as Fqn]: { x: 0, y: 0, width: 0, height: 0 }
+      'sys1': { x: 0, y: 0, width: 100, height: 100, isCompound: false },
+      'sys2': { x: 20, y: 20, width: 30, height: 30, isCompound: true }
     },
     edges: {
-      ['sys1->sys2' as Fqn]: { controlPoints: [{ x: 0, y: 0 }, { x: 100, y: 100 }] }
+      'edge1': {
+        points: [[0, 0], [100, 100]],
+        controlPoints: [{ x: 10, y: 10 }]
+      }
     }
   }
 
@@ -22,7 +29,9 @@ describe('manual-layout', () => {
     expect(commentText).toMatchInlineSnapshot(`
       "/**
        * @likec4-generated(v1)
-       * WzEsW1snc3lzMScsMCwwLDAsMF1dLFtbJ3N5czEtPnN5czInLFswLDAsMTAwLDEwMF1dXV0=
+       * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgqRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqRz
+       * eXMyhaF4FKF5FKV3aWR0aB6maGVpZ2h0Hqppc0NvbXBvdW5kw6VlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBv
+       * aW50c5GCoXgKoXkK
        */"
     `)
     expect(deserializeFromComment(commentText)).toEqual(manualLayout)
@@ -32,8 +41,9 @@ describe('manual-layout', () => {
     expect(deserializeFromComment(`
       /**
        * @likec4-generated(v1)
-       *   WzEsW1snc3lzMScsMCwwLDAsMF1dLFtb
-       * J3N5czEtPnN5czInLFswLDAsMTAwLDEwMF1dXV0=
+       *   haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgqRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqRz
+       * eXMyhaF4FKF5FKV3aWR0aB6maGVpZ2h0Hqppc0NvbXBvdW5kw6VlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBv
+       *    aW50c5GCoXgKoXkK
        */
     `)).toEqual(manualLayout)
 
@@ -42,10 +52,14 @@ describe('manual-layout', () => {
 
       /**
        * @likec4-generated(v1)
-       *   WzEsW1snc3lzMScsMCwwLDAsMF1dLFtb
+       *   haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgqRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqRz
        *
        *
-       * J3N5czEtPnN5czInLFswLDAsMTAwLDEwMF1dXV0=
+       *
+       *
+       * eXMyhaF4FKF5FKV3aWR0aB6maGVpZ2h0Hqppc0NvbXBvdW5kw6VlZG
+       * dlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBv
+       *    aW50c5GCoXgKoXkK
        */
     `)).toEqual(manualLayout)
   })
