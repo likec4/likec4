@@ -5,6 +5,9 @@
       "label": "typecheck",
       "type": "npm",
       "script": "vscode:typecheck",
+      "problemMatcher": [
+        "$tsc"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true

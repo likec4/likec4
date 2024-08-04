@@ -1,7 +1,10 @@
 import { type ComputedView, type DiagramView, isComputedDynamicView } from '@likec4/core'
+import type { Writable } from 'type-fest'
+import { applyManualLayout } from '../manual/applyManualLayout'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson } from './GraphvizParser'
+import { stringHash } from './stringHash'
 import type { DotSource } from './types'
 
 export interface GraphvizPort {
@@ -30,7 +33,13 @@ export class GraphvizLayouter {
   async layout(view: ComputedView): Promise<LayoutResult> {
     let dot = await this.dot(view)
     const rawjson = await this.graphviz.layoutJson(dot)
-    const diagram = parseGraphvizJson(rawjson, view)
+    let diagram = parseGraphvizJson(rawjson, view)
+    ;(diagram as Writable<DiagramView>).hash = stringHash(dot)
+
+    if (view.manualLayout) {
+      diagram = applyManualLayout(diagram, view.manualLayout).diagram
+    }
+
     dot = dot
       .split('\n')
       .filter(l => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
@@ -56,9 +65,9 @@ export class GraphvizLayouter {
       ? new DynamicViewPrinter(computedView)
       : new ElementViewPrinter(computedView)
 
-    if (computedView.manualLayout) {
-      printer.applyManualLayout(computedView.manualLayout)
-    }
+    // if (computedView.manualLayout) {
+    //   printer.applyManualLayout(computedView.manualLayout)
+    // }
 
     if (isComputedDynamicView(computedView)) {
       return printer.print()

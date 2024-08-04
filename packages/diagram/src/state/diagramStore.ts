@@ -5,7 +5,7 @@ import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, isEmpty, reduce } from 'remeda'
+import { entries, hasAtLeast, isEmpty, pick, reduce } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -463,7 +463,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               clearTimeout(debounced)
             }
             debounced = setTimeout(() => {
-              const { xyflow, onChange, xystore } = get()
+              const { xyflow, view, onChange, xystore } = get()
               const { nodeLookup } = xystore.getState()
               set({ viewSyncDebounceTimeout: null })
 
@@ -474,35 +474,41 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                   movedNodes.add(node.id)
                 }
                 acc[node.data.fqn] = {
+                  isCompound: node.data.element.children.length > 0,
                   x: node.internals.positionAbsolute.x,
                   y: node.internals.positionAbsolute.y,
                   width: dimensions.width,
                   height: dimensions.height
                 }
                 return acc
-              }, {} as Changes.SaveManualLayout['nodes'])
+              }, {} as Changes.SaveManualLayout['layout']['nodes'])
               const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
                 let controlPoints = data.controlPoints
                 // If edge control points are not set, but the source or target node was moved
                 if (!controlPoints && (movedNodes.has(source) || movedNodes.has(target))) {
                   controlPoints = bezierControlPoints(data.edge)
                 }
-                if (controlPoints) {
-                  acc[data.edge.id] = {
-                    controlPoints
-                  }
+                const _updated: Changes.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
+                  points: data.edge.points
+                }
+                if (data.edge.labelBBox) {
+                  _updated.labelBBox = data.edge.labelBBox
+                }
+                if (controlPoints && hasAtLeast(controlPoints, 1)) {
+                  _updated.controlPoints = controlPoints
                 }
                 return acc
-              }, {} as Changes.SaveManualLayout['edges'])
-              if (movedNodes.size === 0 && isEmpty(edges)) {
-                DEV && console.debug('ignore triggerSaveManualLayout, as no changes detected')
-                return
-              }
+              }, {} as Changes.SaveManualLayout['layout']['edges'])
 
               const change: Changes.SaveManualLayout = {
                 op: 'save-manual-layout',
-                nodes,
-                edges
+                layout: {
+                  hash: view.hash,
+                  width: view.width,
+                  height: view.height,
+                  nodes,
+                  edges
+                }
               }
 
               if (DEV) {
@@ -510,7 +516,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
 
               onChange?.({ change })
-            }, 2000) as any as number // explicit typecast to number to suppress TS error in astro build
+            }, 1000) as any as number // explicit typecast to number to suppress TS error in astro build
             set(
               {
                 viewSyncDebounceTimeout: debounced

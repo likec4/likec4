@@ -7,7 +7,7 @@ import { ZIndexes } from './const'
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 
 export function diagramViewToXYFlowData(
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__' | 'manualLayout'>,
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>,
   opts: {
     draggable: boolean
     selectable: boolean
@@ -114,7 +114,7 @@ export function diagramViewToXYFlowData(
       data: {
         edge,
         type: 'bezier',
-        controlPoints: view.manualLayout?.edges[edge.id]?.controlPoints || null,
+        controlPoints: edge?.controlPoints || null,
         stepNum: isDynamicView ? extractStep(edge.id) : null,
         label: !!edge.labelBBox
           ? {

@@ -40,9 +40,6 @@ export default defineConfig(({ mode }) => {
       // exclude: external,
       // jsxInject: `import React from 'react'`
     },
-    resolve: {
-      dedupe: ['react', 'react-dom']
-    },
     mode,
     define: {
       'process.env.NODE_ENV': '"production"'
@@ -63,16 +60,20 @@ export default defineConfig(({ mode }) => {
       cssMinify: false,
       minify: 'esbuild',
       commonjsOptions: {
-        // extensions: ['.js', '.cjs'],
-        esmExternals: true
-        //   requireReturnsDefault: true
+        defaultIsModuleExports: 'auto',
+        requireReturnsDefault: 'auto',
+        extensions: ['.js', '.mjs'],
+        transformMixedEsModules: true,
+        ignoreTryCatch: 'remove'
       },
       rollupOptions: {
+        treeshake: {
+          preset: 'recommended'
+        },
         output: {
-          strict: true,
-          minifyInternalExports: true,
-          esModule: true,
-          exports: 'named'
+          hoistTransitiveImports: false,
+          compact: true,
+          interop: 'auto'
         },
         external
       }

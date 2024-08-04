@@ -12,18 +12,16 @@ export type ManualLayoutArg = {
   view: ParsedAstView
   doc: ParsedLikeC4LangiumDocument
   viewAst: ast.LikeC4View
-  nodes: ViewChanges.SaveManualLayout['nodes']
-  edges: ViewChanges.SaveManualLayout['edges']
+  layout: ViewChanges.SaveManualLayout['layout']
 }
 
 export function saveManualLayout(_services: LikeC4Services, {
   viewAst,
-  nodes,
-  edges
+  layout
 }: ManualLayoutArg): TextEdit {
   invariant(viewAst.$cstNode, 'invalid view.$cstNode')
   const commentCst = CstUtils.findCommentNode(viewAst.$cstNode, ['BLOCK_COMMENT'])
-  let txt = serializeToComment({ nodes, edges })
+  let txt = serializeToComment(layout)
   if (viewAst.$cstNode.range.start.character > 0) {
     txt = indentString(txt, viewAst.$cstNode.range.start.character)
     // const indent = ' '.repeat(viewAst.$cstNode.range.start.character)

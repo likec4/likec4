@@ -162,10 +162,17 @@ function parseGraphvizEdge(
 export function parseGraphvizJson(json: string, computedView: ComputedView): DiagramView {
   const graphvizJson = JSON.parse(json) as GraphvizJson
   const page = parseBB(graphvizJson.bb)
-  const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
+  const {
+    nodes: computedNodes,
+    edges: computedEdges,
+    // exclude
+    manualLayout: _manualLayout,
+    ...view
+  } = computedView
 
   const diagram: DiagramView = {
     ...view,
+    hash: Date.now().toString(),
     width: page.x + page.width,
     height: page.y + page.height,
     nodes: [],
