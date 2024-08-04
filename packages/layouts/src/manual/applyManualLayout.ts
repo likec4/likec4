@@ -1,5 +1,12 @@
 import { type DiagramEdge, type DiagramNode, type DiagramView, nonNullable, type ViewManualLayout } from '@likec4/core'
 import { entries, filter, pipe, take } from 'remeda'
+import type { MergeExclusive, SetRequired } from 'type-fest'
+import type { ApplyManualLayoutData } from '../graphviz/DotPrinter'
+
+type ManualNode = ViewManualLayout['nodes'][string]
+type ManualEdge = ViewManualLayout['edges'][string]
+
+type ManualEdgeWithDotPos = SetRequired<ManualEdge, 'dotpos'>
 
 /**
  * When the hash of the diagram view is the same as the previous hash, we can safely apply the layout.
@@ -33,7 +40,13 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
   }
 }
 
-export function applyManualLayout(diagramView: DiagramView, manualLayout: ViewManualLayout) {
+const hasBecomeLarger = (diagramNode: DiagramNode, manualNode: ManualNode) =>
+  diagramNode.width > manualNode.width + 10 || diagramNode.height > manualNode.height + 10
+
+export function applyManualLayout(
+  diagramView: DiagramView,
+  manualLayout: ViewManualLayout
+): MergeExclusive<{ diagram: DiagramView }, { relayout: ApplyManualLayoutData }> {
   if (diagramView.hash === manualLayout.hash) {
     return {
       diagram: safeApplyLayout(diagramView, manualLayout)
@@ -46,7 +59,7 @@ export function applyManualLayout(diagramView: DiagramView, manualLayout: ViewMa
   // - leaf nodes do not become larger
   // TODO: - edge labels do not become larger
 
-  const hasBecomeLarger = () =>
+  const anyBecomeLarger = () =>
     pipe(
       entries(manualLayout.nodes),
       filter(([fqn, n]) => {
@@ -54,10 +67,7 @@ export function applyManualLayout(diagramView: DiagramView, manualLayout: ViewMa
           return false
         }
         const diagramNode = diagramView.nodes.find(n => n.id === fqn)
-        if (!diagramNode) {
-          return false
-        }
-        return diagramNode.width > n.width || diagramNode.height > n.height
+        return diagramNode ? hasBecomeLarger(diagramNode, n) : false
       }),
       take(1)
     ).length > 0
@@ -65,7 +75,7 @@ export function applyManualLayout(diagramView: DiagramView, manualLayout: ViewMa
   if (
     diagramView.nodes.every(n => n.id in manualLayout.nodes)
     && diagramView.edges.every(e => e.id in manualLayout.edges)
-    && !hasBecomeLarger()
+    && !anyBecomeLarger()
   ) {
     return {
       diagram: safeApplyLayout(diagramView, manualLayout)
@@ -75,16 +85,41 @@ export function applyManualLayout(diagramView: DiagramView, manualLayout: ViewMa
   // Re-layout is required, find nodes where we can pin position
   const pinned = diagramView.nodes.reduce((acc, node) => {
     const manualNode = manualLayout.nodes[node.id]
-    // We can't pin the position of groups or if the node is not in the manual layout
+    // We can't pin the position of groups
+    // Or this is a new node
     if (node.children.length > 0 || !manualNode) {
       return acc
     }
-    acc[node.id] = manualNode
+    const _pinned: ApplyManualLayoutData['nodes'][number] = {
+      id: node.id,
+      center: {
+        x: manualNode.x + manualNode.width / 2,
+        y: manualNode.y + manualNode.height / 2
+      }
+    }
+    if (!manualNode.isCompound && !hasBecomeLarger(node, manualNode)) {
+      _pinned.fixedsize = {
+        width: manualNode.width,
+        height: manualNode.height
+      }
+    }
+    acc.push(_pinned)
     return acc
-  }, {} as ViewManualLayout['nodes'])
+  }, [] as ApplyManualLayoutData['nodes'])
 
   return {
-    diagram: diagramView,
-    pinned
+    relayout: {
+      height: manualLayout.height,
+      nodes: pinned,
+      edges: entries(manualLayout.edges).flatMap(([id, edge]) => {
+        if (edge.dotpos) {
+          return {
+            id,
+            dotpos: edge.dotpos
+          }
+        }
+        return []
+      })
+    }
   }
 }

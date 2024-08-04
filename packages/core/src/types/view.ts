@@ -260,6 +260,9 @@ export interface DiagramEdge extends ComputedEdge {
   // Control points to adjust the edge
   controlPoints?: NonEmptyArray<XYPoint>
   labelBBox?: BBox | null
+  // Graphviz edge POS
+  // TODO: temporary solution, should be moved out
+  dotpos?: string
 }
 
 export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'manualLayout'> {
@@ -267,7 +270,7 @@ export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'man
   readonly edges: DiagramEdge[]
   readonly width: number
   readonly height: number
-  readonly hash: string
+  hash: string
   manualLayout?: never
 }
 
@@ -283,16 +286,9 @@ export type ViewManualLayout = {
     width: number
     height: number
   }>
-  // readonly nodes: {
-  //   [x: NodeId]: {
-  //     children?: NodeId[]
-  //     x: number
-  //     y: number
-  //     width: number
-  //     height: number
-  //   } | undefined
-  // }
   readonly edges: Record<string, {
+    // Graphviz edge POS
+    dotpos?: string
     // Bezier points
     points: NonEmptyArray<Point>
     // Control points to adjust the edge

@@ -1,5 +1,4 @@
 import { type ComputedView, type DiagramView, isComputedDynamicView } from '@likec4/core'
-import type { Writable } from 'type-fest'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
@@ -14,13 +13,15 @@ export interface GraphvizPort {
   svg(dot: DotSource): Promise<string>
 }
 
+const getPrinter = (computedView: ComputedView) =>
+  isComputedDynamicView(computedView) ? new DynamicViewPrinter(computedView) : new ElementViewPrinter(computedView)
+
 export type LayoutResult = {
   dot: DotSource
   diagram: DiagramView
 }
 export class GraphvizLayouter {
-  constructor(private graphviz: GraphvizPort) {
-  }
+  constructor(private graphviz: GraphvizPort) {}
 
   get port() {
     return this.graphviz
@@ -32,17 +33,32 @@ export class GraphvizLayouter {
 
   async layout(view: ComputedView): Promise<LayoutResult> {
     let dot = await this.dot(view)
+    const hash = stringHash(dot)
     const rawjson = await this.graphviz.layoutJson(dot)
     let diagram = parseGraphvizJson(rawjson, view)
-    ;(diagram as Writable<DiagramView>).hash = stringHash(dot)
+    diagram.hash = hash
 
     if (view.manualLayout) {
-      diagram = applyManualLayout(diagram, view.manualLayout).diagram
+      const result = applyManualLayout(diagram, view.manualLayout)
+      if (result.relayout) {
+        const printer = getPrinter(view)
+        // TODO: apply manual layout fails when there are edges with compounds
+        if (printer.hasEdgesWithCompounds) {
+          console.error(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
+        } else {
+          printer.applyManualLayout(result.relayout)
+          const rawjson = await this.graphviz.layoutJson(printer.print())
+          diagram = parseGraphvizJson(rawjson, view)
+          diagram.hash = hash
+        }
+      } else {
+        diagram = result.diagram
+      }
     }
 
     dot = dot
       .split('\n')
-      .filter(l => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
+      .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
       .join('\n') as DotSource
     return { dot, diagram }
   }
@@ -51,7 +67,7 @@ export class GraphvizLayouter {
     let dot = await this.dot(view)
     dot = dot
       .split('\n')
-      .filter(l => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
+      .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
       .join('\n') as DotSource
     const svg = await this.graphviz.svg(dot)
     return {
@@ -61,14 +77,7 @@ export class GraphvizLayouter {
   }
 
   async dot(computedView: ComputedView): Promise<DotSource> {
-    const printer = isComputedDynamicView(computedView)
-      ? new DynamicViewPrinter(computedView)
-      : new ElementViewPrinter(computedView)
-
-    // if (computedView.manualLayout) {
-    //   printer.applyManualLayout(computedView.manualLayout)
-    // }
-
+    const printer = getPrinter(computedView)
     if (isComputedDynamicView(computedView)) {
       return printer.print()
     }
