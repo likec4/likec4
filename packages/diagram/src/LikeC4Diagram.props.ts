@@ -9,7 +9,8 @@ import type {
   IconUrl,
   NonEmptyArray,
   ThemeColor,
-  ViewID
+  ViewID,
+  ViewManualLayout
 } from '@likec4/core'
 import type { XYPosition } from '@xyflow/system'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
@@ -73,15 +74,7 @@ export namespace Changes {
 
   export interface SaveManualLayout {
     op: 'save-manual-layout'
-    nodes: Record<Fqn, {
-      x: number
-      y: number
-      width: number
-      height: number
-    }>
-    edges: Record<EdgeId, {
-      controlPoints: XYPosition[]
-    }>
+    layout: ViewManualLayout
   }
 }
 

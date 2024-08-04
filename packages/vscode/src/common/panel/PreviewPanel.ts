@@ -190,7 +190,7 @@ export class PreviewPanel extends AbstractDisposable {
       // ]
     }
     const conf = vscode.workspace.getConfiguration('likec4.experimental.layoutEditor')
-    const isEditorEnabled = conf.get<boolean>('enabled') ?? true
+    const isEditorEnabled = conf.get<boolean>('enabled', true)
     Logger.debug(`[Extension.PreviewPanel._update] isEditorEnabled=${isEditorEnabled}`)
     const nonce = getNonce()
 

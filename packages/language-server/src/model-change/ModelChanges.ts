@@ -110,8 +110,7 @@ export class LikeC4ModelChanges {
       case 'save-manual-layout':
         const edit = saveManualLayout(this.services, {
           ...lookup,
-          nodes: change.nodes,
-          edges: change.edges
+          layout: change.layout
         })
         return {
           doc: lookup.doc,

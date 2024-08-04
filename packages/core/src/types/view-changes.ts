@@ -1,7 +1,7 @@
-import type { NonEmptyArray, XYPosition } from './_common'
+import type { NonEmptyArray, XYPoint } from './_common'
 import type { BorderStyle, ElementShape, Fqn } from './element'
 import type { ThemeColor } from './theme'
-import type { EdgeId } from './view'
+import type { EdgeId, ViewManualLayout } from './view'
 
 export namespace ViewChanges {
   export interface ChangeElementStyle {
@@ -17,15 +17,7 @@ export namespace ViewChanges {
 
   export interface SaveManualLayout {
     op: 'save-manual-layout'
-    nodes: Record<Fqn, {
-      x: number
-      y: number
-      width: number
-      height: number
-    }>
-    edges: Record<EdgeId, {
-      controlPoints: XYPosition[]
-    }>
+    layout: ViewManualLayout
   }
 }
 export type ViewChangeOp = ViewChanges.ChangeElementStyle | ViewChanges.SaveManualLayout

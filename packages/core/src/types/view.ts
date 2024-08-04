@@ -1,5 +1,5 @@
 import { isNullish } from 'remeda'
-import type { IconUrl, NonEmptyArray, Point, XYPosition } from './_common'
+import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { Opaque } from './opaque'
@@ -255,25 +255,48 @@ export interface DiagramNode extends ComputedNode {
 }
 
 export interface DiagramEdge extends ComputedEdge {
+  // Bezier points
   points: NonEmptyArray<Point>
+  // Control points to adjust the edge
+  controlPoints?: NonEmptyArray<XYPoint>
   labelBBox?: BBox | null
 }
 
-export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges'> {
+export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'manualLayout'> {
   readonly nodes: DiagramNode[]
   readonly edges: DiagramEdge[]
   readonly width: number
   readonly height: number
+  readonly hash: string
+  manualLayout?: never
 }
 
-export interface ViewManualLayout {
-  readonly nodes: Record<Fqn, {
+export type ViewManualLayout = {
+  // Object hash of previous layout
+  readonly hash: string
+  readonly width: number
+  readonly height: number
+  readonly nodes: Record<string, {
+    isCompound: boolean
     x: number
     y: number
     width: number
     height: number
   }>
-  readonly edges: Record<EdgeId, {
-    controlPoints: XYPosition[]
+  // readonly nodes: {
+  //   [x: NodeId]: {
+  //     children?: NodeId[]
+  //     x: number
+  //     y: number
+  //     width: number
+  //     height: number
+  //   } | undefined
+  // }
+  readonly edges: Record<string, {
+    // Bezier points
+    points: NonEmptyArray<Point>
+    // Control points to adjust the edge
+    controlPoints?: NonEmptyArray<XYPoint>
+    labelBBox?: BBox
   }>
 }

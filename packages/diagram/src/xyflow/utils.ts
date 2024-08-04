@@ -55,3 +55,7 @@ export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point) {
   const [bx, by] = isArray(b) ? b : [b.x, b.y]
   return isClose(ax, bx) && isClose(ay, by)
 }
+
+export function distanceBetweenPoints(a: XYPosition, b: XYPosition) {
+  return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
+}

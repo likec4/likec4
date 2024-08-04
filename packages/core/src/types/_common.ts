@@ -6,7 +6,7 @@ export type IconUrl = Opaque<string, 'IconUrl'>
 
 export type Point = readonly [x: number, y: number]
 
-export interface XYPosition {
+export interface XYPoint {
   x: number
   y: number
 }

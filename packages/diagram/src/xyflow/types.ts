@@ -1,4 +1,4 @@
-import type { BBox, DiagramEdge, DiagramNode, Fqn, XYPosition } from '@likec4/core'
+import type { BBox, DiagramEdge, DiagramNode, Fqn, XYPoint } from '@likec4/core'
 import type {
   Edge,
   EdgeMouseHandler,
@@ -60,7 +60,7 @@ export type RelationshipData = {
   // to replace edges on view change
   // viewId: ViewID
   // if set - edge was changed by user
-  controlPoints: XYPosition[] | null
+  controlPoints: XYPoint[] | null
   type: 'bezier' | 'poly'
   // if dynamic view
   stepNum: number | null

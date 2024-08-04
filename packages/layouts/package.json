@@ -49,7 +49,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "run -T rimraf -g 'dist/**' '.tsbuildinfo/**'"
+    "clean": "run -T rimraf -g 'dist/**'"
   },
   "dependencies": {
     "esm-env": "^1.0.0",
@@ -58,6 +58,7 @@
     "khroma": "^2.1.0",
     "p-limit": "^6.0.0",
     "remeda": "^2.3.0",
+    "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
     "type-fest": "^4.21.0",
