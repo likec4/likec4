@@ -2557,9 +2557,9 @@ __metadata:
     "@mantine/vanilla-extract": "npm:7.11.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.11.0"
-    "@tanstack/react-router": "npm:^1.45.14"
-    "@tanstack/router-cli": "npm:^1.45.13"
-    "@tanstack/router-vite-plugin": "npm:^1.45.13"
+    "@tanstack/react-router": "npm:1.45.13"
+    "@tanstack/router-cli": "npm:1.45.13"
+    "@tanstack/router-vite-plugin": "npm:1.45.13"
     "@typefox/monaco-editor-react": "npm:4.3.2"
     "@types/node": "npm:^20.14.13"
     "@types/react": "npm:18.3.3"
@@ -3612,9 +3612,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.45.14":
-  version: 1.46.0
-  resolution: "@tanstack/react-router@npm:1.46.0"
+"@tanstack/react-router@npm:1.45.13":
+  version: 1.45.13
+  resolution: "@tanstack/react-router@npm:1.45.13"
   dependencies:
     "@tanstack/history": "npm:1.45.3"
     "@tanstack/react-store": "npm:^0.5.5"
@@ -3623,7 +3623,7 @@ __metadata:
   peerDependencies:
     react: ">=18"
     react-dom: ">=18"
-  checksum: 10c0/2be120cd4ea83e7139c94ec3059efa878fd499cd7ae6b5bb8c9e955d65240cfbb97ec7dc42268cb91544ff4dd6eb3ebb5cd06c4cda344ddf9804a4a12100ffb9
+  checksum: 10c0/0b317e53e2b4bf35726556834640f1cf4cc4a29d3c7d14a6f4ef50eb5e84724383486399c868683d2cd340d5ec5b711b3647ea96bf52cf23c127d4a812011f13
   languageName: node
   linkType: hard
 
@@ -3640,7 +3640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-cli@npm:^1.45.13":
+"@tanstack/router-cli@npm:1.45.13":
   version: 1.45.13
   resolution: "@tanstack/router-cli@npm:1.45.13"
   dependencies:
@@ -3699,7 +3699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-vite-plugin@npm:^1.45.13":
+"@tanstack/router-vite-plugin@npm:1.45.13":
   version: 1.45.13
   resolution: "@tanstack/router-vite-plugin@npm:1.45.13"
   dependencies:
@@ -9022,9 +9022,9 @@ __metadata:
     "@nanostores/react": "npm:0.7.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.11.0"
-    "@tanstack/react-router": "npm:^1.45.14"
-    "@tanstack/router-cli": "npm:^1.45.13"
-    "@tanstack/router-vite-plugin": "npm:^1.45.13"
+    "@tanstack/react-router": "npm:1.45.13"
+    "@tanstack/router-cli": "npm:1.45.13"
+    "@tanstack/router-vite-plugin": "npm:1.45.13"
     "@types/node": "npm:^20.14.13"
     "@types/prop-types": "npm:^15.7.11"
     "@types/react": "npm:18.3.3"
