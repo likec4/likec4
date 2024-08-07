@@ -219,6 +219,12 @@ export interface ComputedElementView extends Omit<ElementView, 'rules' | 'docUri
   readonly edges: ComputedEdge[]
   rules?: never
   docUri?: never
+
+  /**
+   * Hash of the view object.
+   * This is used to detect changes in layout
+   */
+  hash: string
 }
 export interface ComputedDynamicView extends Omit<DynamicView, 'rules' | 'steps' | 'docUri'> {
   readonly autoLayout: ViewRuleAutoLayout['autoLayout']
@@ -227,6 +233,12 @@ export interface ComputedDynamicView extends Omit<DynamicView, 'rules' | 'steps'
   steps?: never
   rules?: never
   docUri?: never
+
+  /**
+   * Hash of the view object.
+   * This is used to detect changes in layout
+   */
+  hash: string
 }
 export function isComputedDynamicView(view: ComputedView): view is ComputedDynamicView {
   return view.__ === 'dynamic'
@@ -270,7 +282,6 @@ export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'man
   readonly edges: DiagramEdge[]
   readonly width: number
   readonly height: number
-  hash: string
   manualLayout?: never
 }
 

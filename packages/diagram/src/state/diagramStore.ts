@@ -7,7 +7,7 @@ import {
   type OnEdgesChange,
   type OnNodesChange
 } from '@xyflow/react'
-import { getNodeDimensions } from '@xyflow/system'
+import { getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
@@ -202,7 +202,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           xyedges: xyflowdata.edges,
           navigationHistory: [{
             viewId: props.view.id,
-            nodeId: null
+            nodeId: null as Fqn | null
           }],
           navigationHistoryIndex: 0,
 
@@ -350,7 +350,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const _xynodes = nodes.map(update => {
               const existing = xynodes.find(n => n.id === update.id)
               if (existing && existing.type === update.type && eq(existing.parentId ?? null, update.parentId ?? null)) {
-                if (hasSubObject(existing, update)) {
+                if (eq(existing.data.element, update.data.element)) {
                   return existing
                 }
                 return {
@@ -360,10 +360,10 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
               return update
             })
-            const _xyedges = edges.map(update => {
+            const _xyedges = edges.map((update): XYFlowEdge => {
               const existing = xyedges.find(n => n.id === update.id)
               if (existing) {
-                if (hasSubObject(existing, update)) {
+                if (eq(existing.data.edge, update.data.edge)) {
                   return existing
                 }
                 return {
@@ -371,7 +371,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                   ...update,
                   data: {
                     ...existing.data,
-                    ...update.data
+                    ...update.data,
+                    controlPoints: update.data.controlPoints || existing.data.controlPoints
                   }
                 }
               }
@@ -581,25 +582,32 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               set({ viewSyncDebounceTimeout: null })
 
               const movedNodes = new StringSet()
+              let bounds = {
+                x: 0,
+                y: 0,
+                width: view.width,
+                height: view.height
+              }
               const nodes = reduce([...nodeLookup.values()], (acc, node) => {
                 const dimensions = getNodeDimensions(node)
                 if (!isSamePoint(node.internals.positionAbsolute, node.data.element.position)) {
                   movedNodes.add(node.id)
                 }
-                acc[node.data.fqn] = {
+                const rect = acc[node.data.fqn] = {
                   isCompound: node.data.element.children.length > 0,
-                  x: node.internals.positionAbsolute.x,
-                  y: node.internals.positionAbsolute.y,
-                  width: dimensions.width,
-                  height: dimensions.height
+                  x: Math.floor(node.internals.positionAbsolute.x),
+                  y: Math.floor(node.internals.positionAbsolute.y),
+                  width: Math.ceil(dimensions.width),
+                  height: Math.ceil(dimensions.height)
                 }
+                bounds = getBoundsOfRects(bounds, rect)
                 return acc
               }, {} as Changes.SaveManualLayout['layout']['nodes'])
               const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
                 let controlPoints = data.controlPoints
                 const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
                 // If edge control points are not set, but the source or target node was moved
-                if (!controlPoints && sourceOrTargetMoved) {
+                if ((!controlPoints || controlPoints.length === 0) && sourceOrTargetMoved) {
                   controlPoints = bezierControlPoints(data.edge)
                 }
                 const _updated: Changes.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
@@ -621,8 +629,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 op: 'save-manual-layout',
                 layout: {
                   hash: view.hash,
-                  width: view.width,
-                  height: view.height,
+                  width: Math.ceil(bounds.width),
+                  height: Math.ceil(bounds.height),
                   nodes,
                   edges
                 }

@@ -83,6 +83,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "target": "system",
         },
       ],
+      "hash": "907d8d0b34eb89998cbcb331e6fde252d22a8b07",
       "id": "index",
       "links": null,
       "nodes": [
@@ -229,6 +230,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend",
         },
       ],
+      "hash": "71437a508c9cf8c69d1ffac67c39c36058599993",
       "id": "frontend",
       "links": null,
       "nodes": [
@@ -313,6 +315,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system",
         },
       ],
+      "hash": "c8b515df6b794e89d2aeb5304bca750432a50a41",
       "id": "index",
       "links": null,
       "nodes": [
@@ -375,6 +378,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend.api",
         },
       ],
+      "hash": "33c91dfd4f3c1fad9520d57de4659a6bf96a559d",
       "id": "v1",
       "links": null,
       "nodes": [
@@ -502,6 +506,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "target": "user2",
         },
       ],
+      "hash": "1a670d7c1a549b0e26761f6c720847e3c94e267c",
       "id": "index",
       "links": null,
       "nodes": [
@@ -608,6 +613,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "target": "user2",
         },
       ],
+      "hash": "338b9c9cedd186e77770f280d16e61661a8ce65a",
       "id": "index",
       "links": null,
       "nodes": [

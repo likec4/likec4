@@ -3,7 +3,6 @@ import { applyManualLayout } from '../manual/applyManualLayout'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson } from './GraphvizParser'
-import { stringHash } from './stringHash'
 import type { DotSource } from './types'
 
 export interface GraphvizPort {
@@ -33,10 +32,8 @@ export class GraphvizLayouter {
 
   async layout(view: ComputedView): Promise<LayoutResult> {
     let dot = await this.dot(view)
-    const hash = stringHash(dot)
     const rawjson = await this.graphviz.layoutJson(dot)
     let diagram = parseGraphvizJson(rawjson, view)
-    diagram.hash = hash
 
     if (view.manualLayout) {
       const result = applyManualLayout(diagram, view.manualLayout)
@@ -49,7 +46,6 @@ export class GraphvizLayouter {
           printer.applyManualLayout(result.relayout)
           const rawjson = await this.graphviz.layoutJson(printer.print())
           diagram = parseGraphvizJson(rawjson, view)
-          diagram.hash = hash
         }
       } else {
         diagram = result.diagram

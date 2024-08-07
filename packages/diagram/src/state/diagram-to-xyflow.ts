@@ -113,7 +113,7 @@ export function diagramViewToXYFlowData(
       data: {
         edge,
         // type: 'bezier',
-        controlPoints: edge?.controlPoints || null,
+        controlPoints: edge.controlPoints || null,
         stepNum: isDynamicView ? extractStep(edge.id) : null,
         label: !!edge.labelBBox
           ? {

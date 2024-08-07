@@ -146,3 +146,5 @@ export const EdgeMarkers = {
   Dot,
   ODot
 }
+
+export type EdgeMarkerType = keyof typeof EdgeMarkers

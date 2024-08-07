@@ -13,10 +13,11 @@ type ManualEdgeWithDotPos = SetRequired<ManualEdge, 'dotpos'>
  */
 function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayout): DiagramView {
   const nodes = diagramView.nodes.map(node => {
-    const { x, y, width, height } = nonNullable(
-      manualLayout.nodes[node.id],
-      `Node ${node.id} not found in manual layout`
-    )
+    const previous = manualLayout.nodes[node.id]
+    if (!previous) {
+      return node
+    }
+    const { x, y, width, height } = previous
     return {
       ...node,
       width,
@@ -25,7 +26,10 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
     } satisfies DiagramNode
   })
   const edges = diagramView.edges.map(edge => {
-    const previous = nonNullable(manualLayout.edges[edge.id], `Edge ${edge.id} not found in manual layout`)
+    const previous = manualLayout.edges[edge.id]
+    if (!previous) {
+      return edge
+    }
     return {
       ...edge,
       ...previous
@@ -33,8 +37,8 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
   })
   return {
     ...diagramView,
-    width: manualLayout.width,
-    height: manualLayout.height,
+    width: Math.max(manualLayout.width, diagramView.width),
+    height: Math.max(manualLayout.height, diagramView.height),
     nodes,
     edges
   }
@@ -73,7 +77,11 @@ export function applyManualLayout(
     ).length > 0
 
   if (
-    diagramView.nodes.every(n => n.id in manualLayout.nodes)
+    diagramView.nodes.every(n =>
+      n.id in manualLayout.nodes
+      && (n.children.length > 0 && manualLayout.nodes[n.id]?.isCompound
+        || n.children.length === 0 && !manualLayout.nodes[n.id]?.isCompound)
+    )
     && diagramView.edges.every(e => e.id in manualLayout.edges)
     && !anyBecomeLarger()
   ) {
