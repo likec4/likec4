@@ -18,7 +18,6 @@ function ViewReact() {
     router.navigate({
       to: '/view/$viewId',
       params: { viewId },
-      startTransition: true,
       search: true
     })
   })

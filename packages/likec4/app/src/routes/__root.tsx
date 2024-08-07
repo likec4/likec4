@@ -42,12 +42,14 @@ export const Route = createRootRouteWithContext<{}>()({
 function RootComponent() {
   const { theme } = Route.useSearch()
   return (
-    <MantineProvider
-      {...(theme && { forceColorScheme: theme })}
-      defaultColorScheme={theme ?? 'auto'}
-      theme={mantineTheme}>
+    <>
       <ScrollRestoration />
-      <Outlet />
-    </MantineProvider>
+      <MantineProvider
+        {...(theme && { forceColorScheme: theme })}
+        defaultColorScheme={theme ?? 'auto'}
+        theme={mantineTheme}>
+        <Outlet />
+      </MantineProvider>
+    </>
   )
 }
