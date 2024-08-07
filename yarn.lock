@@ -2498,8 +2498,9 @@ __metadata:
     typescript: "npm:^5.5.4"
     ufo: "npm:^1.5.4"
     vitest: "npm:~2.0.3"
+    vscode-jsonrpc: "npm:8.2.0"
     vscode-languageserver: "npm:9.0.1"
-    vscode-languageserver-protocol: "npm:3.17.5"
+    vscode-languageserver-types: "npm:3.17.5"
     vscode-uri: "npm:3.0.8"
   languageName: unknown
   linkType: soft
@@ -8994,7 +8995,7 @@ __metadata:
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
     vscode-languageserver: "npm:9.0.1"
-    vscode-languageserver-protocol: "npm:3.17.5"
+    vscode-languageserver-types: "npm:3.17.5"
     vscode-messenger: "npm:^0.4.5"
     vscode-uri: "npm:3.0.8"
     which: "npm:^4.0.0"
@@ -9077,7 +9078,7 @@ __metadata:
     vite-plugin-css-injected-by-js: "npm:^3.5.1"
     vite-plugin-shadow-style: "npm:^1.1.0"
     vitest: "npm:~2.0.3"
-    yargs: "npm:^17.7.2"
+    yargs: "npm:17.7.2"
   bin:
     likec4: ./bin/likec4.mjs
   languageName: unknown
@@ -14856,7 +14857,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-types@npm:3.17.5, vscode-languageserver-types@npm:^3.15.1, vscode-languageserver-types@npm:^3.17.5, vscode-languageserver-types@npm:~3.17.5":
+"vscode-languageserver-types@npm:3.17.5":
   version: 3.17.5
   resolution: "vscode-languageserver-types@npm:3.17.5"
   checksum: 10c0/1e1260de79a2cc8de3e46f2e0182cdc94a7eddab487db5a3bd4ee716f67728e685852707d72c059721ce500447be9a46764a04f0611e94e4321ffa088eef36f8

@@ -1,6 +1,6 @@
 import consola from 'consola'
 import k from 'picocolors'
-import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
+import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
 import type { CliServices } from './module'
 

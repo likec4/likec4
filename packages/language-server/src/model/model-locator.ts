@@ -1,7 +1,7 @@
 import type { likec4 as c4 } from '@likec4/core'
 import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
-import type { Location } from 'vscode-languageserver-protocol'
+import type { Location } from 'vscode-languageserver-types'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'

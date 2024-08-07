@@ -2,10 +2,17 @@ import consola from 'consola'
 import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
 import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { amIExecuted } from './_utils'
 
-export async function buildCli(isDev = false) {
-  consola.start(`Building CLI...`)
+const isProd = env['NODE_ENV'] === 'production' || env['NODE_ENV'] === 'prod'
+
+export async function buildCli(isDev = !isProd) {
+  if (isDev) {
+    consola.warn('⚠️ LikeC4 CLI DEVELOPMENT bundle')
+  } else {
+    consola.start(`LikeC4 CLI production bundle`)
+  }
 
   const cfg: BuildOptions = {
     metafile: isDev,
@@ -18,12 +25,10 @@ export async function buildCli(isDev = false) {
     color: true,
     bundle: true,
     sourcemap: isDev,
-    sourcesContent: isDev,
-    keepNames: isDev,
-    minify: !isDev,
+    keepNames: false,
+    minify: true,
     treeShaking: true,
     legalComments: 'none',
-    mainFields: ['module', 'main'],
     entryPoints: ['src/cli/index.ts'],
     ...(!isDev && {
       define: {
@@ -31,7 +36,7 @@ export async function buildCli(isDev = false) {
       }
     }),
     format: 'esm',
-    target: 'node18',
+    target: 'node20',
     platform: 'node',
     alias: {
       '@/vite/config-app': '@/vite/config-app.prod',
@@ -39,7 +44,10 @@ export async function buildCli(isDev = false) {
       '@/vite/config-webcomponent': '@/vite/config-webcomponent.prod'
     },
     banner: {
-      js: 'import { createRequire as crReq } from \'module\';\nconst require = crReq(import.meta.url);\n'
+      js: `
+import { createRequire as createRequire_ } from 'module';
+const require = createRequire_(import.meta.url);
+`
     },
     plugins: [
       nodeExternalsPlugin({

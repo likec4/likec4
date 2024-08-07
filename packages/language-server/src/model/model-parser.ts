@@ -30,7 +30,7 @@ import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
-import { deserializeFromComment } from '../view-utils/manual-layout'
+import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
 
@@ -519,10 +519,21 @@ export class LikeC4ModelParser {
 
   private parseViewManualLaout(node: ast.DynamicView | ast.ElementView): c4.ViewManualLayout | undefined {
     const commentNode = CstUtils.findCommentNode(node.$cstNode, ['BLOCK_COMMENT'])
-    if (!commentNode) {
+    if (!commentNode || !hasManualLayout(commentNode.text)) {
       return undefined
     }
-    return deserializeFromComment(commentNode.text)
+    try {
+      return deserializeFromComment(commentNode.text)
+    } catch (e) {
+      const doc = getDocument(node)
+      logger.warn(e)
+      logger.warn(
+        `Ignoring manual layout of "${node.name ?? 'unnamed'}" at ${doc.uri.fsPath}:${
+          1 + (commentNode.range.start.line || 0)
+        }`
+      )
+      return undefined
+    }
   }
 
   private parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep {

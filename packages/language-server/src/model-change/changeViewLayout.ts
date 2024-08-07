@@ -1,6 +1,6 @@
 import { type AutoLayoutDirection, invariant } from '@likec4/core'
 import { GrammarUtils } from 'langium'
-import { TextEdit } from 'vscode-languageserver-protocol'
+import { TextEdit } from 'vscode-languageserver-types'
 import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument, toAstViewLayoutDirection } from '../ast'
 import type { LikeC4Services } from '../module'
 

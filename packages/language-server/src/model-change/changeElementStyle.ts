@@ -1,7 +1,7 @@
 import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable, type ViewChanges } from '@likec4/core'
 import { GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
-import { type Range, TextEdit } from 'vscode-languageserver-protocol'
+import { type Range, TextEdit } from 'vscode-languageserver-types'
 import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument } from '../ast'
 import type { FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'

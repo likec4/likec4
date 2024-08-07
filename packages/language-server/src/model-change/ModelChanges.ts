@@ -1,5 +1,5 @@
 import { invariant, nonexhaustive } from '@likec4/core'
-import { Location, Range, TextEdit } from 'vscode-languageserver-protocol'
+import { Location, Range, TextEdit } from 'vscode-languageserver-types'
 import { type ParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4ModelLocator } from '../model'
 import type { LikeC4Services } from '../module'
