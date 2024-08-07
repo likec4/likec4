@@ -1,4 +1,3 @@
-import type { Point } from '@likec4/core'
 import { Position, type XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import type { InternalXYFlowNode } from '../types'

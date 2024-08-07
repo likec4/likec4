@@ -1,8 +1,8 @@
 import { extractStep, invariant, nonNullable } from '@likec4/core'
 import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
+import { ZIndexes } from '../xyflow/const'
 import type { XYFlowData } from '../xyflow/types'
-import { ZIndexes } from './const'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 
@@ -73,10 +73,9 @@ export function diagramViewToXYFlowData(
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       hidden: false,
-      initialWidth: node.width,
-      initialHeight: node.height,
       width: node.width,
       height: node.height,
+      // parentId: parent ? ns + parent.id : null,
       ...(parent && {
         parentId: ns + parent.id
       }),
@@ -113,7 +112,7 @@ export function diagramViewToXYFlowData(
       deletable: false,
       data: {
         edge,
-        type: 'bezier',
+        // type: 'bezier',
         controlPoints: edge?.controlPoints || null,
         stepNum: isDynamicView ? extractStep(edge.id) : null,
         label: !!edge.labelBBox

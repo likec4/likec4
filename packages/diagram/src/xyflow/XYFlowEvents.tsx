@@ -113,22 +113,20 @@ export function useXYFlowEvents() {
       },
       onNodeClick: (event, xynode) => {
         const {
-          zoomable,
-          fitViewEnabled,
           focusedNodeId,
           fitDiagram,
           focusOnNode,
           onNodeClick,
+          enableFocusMode,
           lastClickedNodeId,
           setLastClickedNode
         } = diagramApi.getState()
         setLastClickedNode(xynode.id)
-        const focusPossible = zoomable && fitViewEnabled
         // if we focused on a node, and clicked on another node - focus on the clicked node
         const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
         // if user clicked on the same node twice in a short time, focus on it
         const clickedRecently = lastClickedNodeId === xynode.id && lastClickWasRecent()
-        if (focusPossible) {
+        if (enableFocusMode) {
           let stopPropagation = false
           switch (true) {
             case !focusedNodeId && clickedRecently:
@@ -156,15 +154,14 @@ export function useXYFlowEvents() {
       onNodeDoubleClick: (event, xynode) => {
         const {
           focusedNodeId,
-          zoomable,
-          fitViewEnabled,
+          enableFocusMode,
           fitDiagram,
           focusOnNode,
           setLastClickedNode
         } = diagramApi.getState()
         setLastClickedNode(xynode.id)
         lastClickTimestamp.current = Date.now()
-        if (!!focusedNodeId || (zoomable && fitViewEnabled)) {
+        if (isNonNullish(focusedNodeId) || enableFocusMode) {
           // if we are already focused on the node, cancel
           if (focusedNodeId === xynode.id) {
             fitDiagram()
@@ -220,8 +217,10 @@ export function useXYFlowEvents() {
       onEdgeDoubleClick: (event, xyedge) => {
         diagramApi.getState().setLastClickedEdge(xyedge.id)
         const {
+          enableFocusMode,
           isDynamicView,
           enableDynamicViewWalkthrough,
+          focusOnNode,
           activateDynamicStep,
           activeDynamicViewStep
         } = diagramApi.getState()
@@ -232,6 +231,13 @@ export function useXYFlowEvents() {
             activateDynamicStep(extractStep(xyedge.data.edge.id))
             event.stopPropagation()
           }
+          return
+        }
+
+        if (enableFocusMode) {
+          focusOnNode(xyedge.source)
+          event.stopPropagation()
+          return
         }
       },
       onMoveEnd: (event, _viewport) => {

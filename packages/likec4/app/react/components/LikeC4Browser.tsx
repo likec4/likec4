@@ -173,6 +173,7 @@ export function LikeC4Browser<ViewId extends string>({
                 showDiagramTitle
                 showElementLinks
                 enableDynamicViewWalkthrough
+                enableFocusMode
                 showNavigationButtons
                 background={background}
                 controls={false}

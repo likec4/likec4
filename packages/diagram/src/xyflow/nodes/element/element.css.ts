@@ -197,14 +197,15 @@ export const elementDataContainer = style({
       paddingTop: 32,
       paddingBottom: 28
     },
-    [`&:is(${hasIcon})`]: {
-      paddingRight: 20
-    },
+    // [`&:is(${hasIcon})`]: {
+    //   paddingLeft: 40,
+    //   paddingRight: 20
+    // },
     [`${container}:not(:is([data-likec4-shape="queue"],[data-likec4-shape="mobile"])) &:is(${hasIcon})`]: {
-      paddingLeft: 20
+      paddingLeft: 24,
+      paddingRight: 18
     },
     [`&:has(${description}, ${technology})`]: {
-      alignItems: 'flex-start',
       gap: rem(16),
       vars: {
         [iconSize]: '60px'
@@ -247,7 +248,8 @@ export const elementIcon = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  mixBlendMode: 'hard-light'
+  mixBlendMode: 'hard-light',
+  alignSelf: 'flex-start'
 })
 globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
   width: '100%',

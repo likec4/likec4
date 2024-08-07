@@ -13,38 +13,22 @@ import type {
 import { isNode } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isTruthy } from 'remeda'
-import type { SetReadonly, SetRequired } from 'type-fest'
 
-export type ElementNodeData = {
+export type ElementXYFlowNode = Node<{
   fqn: Fqn
   element: DiagramNode
-}
+}, 'element'>
 
-type TypedXYFlowNode<D extends Record<string, unknown>, T extends string> = SetReadonly<
-  SetRequired<Node<D, T>, 'type'>,
-  'id' | 'type'
->
-type TypedXYFlowEdge<D extends Record<string, unknown>, T extends string> = SetReadonly<
-  SetRequired<Edge<D, T>, 'type' | 'data'>,
-  'id' | 'type'
->
-
-export type ElementXYFlowNode = TypedXYFlowNode<ElementNodeData, 'element'>
-
-export type CompoundNodeData = {
+export type CompoundXYFlowNode = Node<{
   fqn: Fqn
   element: DiagramNode
-}
-
-export type CompoundXYFlowNode = TypedXYFlowNode<CompoundNodeData, 'compound'>
+}, 'compound'>
 
 export type XYFlowNode = ElementXYFlowNode | CompoundXYFlowNode
 
 export type InternalXYFlowNode = InternalNode<XYFlowNode>
 
 export namespace XYFlowNode {
-  export type Data = ElementNodeData | CompoundNodeData
-
   export function isCompound(node: unknown): node is CompoundXYFlowNode {
     return isNode(node) && node.type === 'compound'
   }
@@ -57,12 +41,8 @@ export namespace XYFlowNode {
 
 export type RelationshipData = {
   edge: DiagramEdge
-  // to replace edges on view change
-  // viewId: ViewID
   // if set - edge was changed by user
   controlPoints: XYPoint[] | null
-  type: 'bezier' | 'poly'
-  // if dynamic view
   stepNum: number | null
   label: null | {
     bbox: BBox
@@ -70,7 +50,10 @@ export type RelationshipData = {
   }
 }
 
-export type RelationshipEdge = TypedXYFlowEdge<RelationshipData, 'relationship'>
+export type RelationshipEdge = Edge<RelationshipData, 'relationship'> & {
+  // Make field required
+  data: RelationshipData
+}
 
 export type XYFlowEdge = RelationshipEdge
 

@@ -135,6 +135,7 @@ export class LikeC4View extends HTMLElement {
           showNavigationButtons={false}
           enableDynamicViewWalkthrough={false}
           experimentalEdgeEditing={false}
+          enableFocusMode={false}
           controls={false}
           nodesSelectable={false}
           keepAspectRatio={false}

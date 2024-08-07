@@ -96,10 +96,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isHovercards: s.showElementLinks,
     hasOnNavigateTo: !!s.onNavigateTo
   }))
-  // const diagramState = useDiagramState()
-  // const isNodeInteractive = diagramState.isNodeInteractive
-  // const isHovercards = diagramState.disableHovercards !== true
-  // const isNavigable = diagramState.hasOnNavigateTo && !!element.navigateTo
   const isNavigable = hasOnNavigateTo && !!element.navigateTo
 
   const w = toDomPrecision(width ?? element.width)

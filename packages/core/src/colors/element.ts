@@ -53,7 +53,7 @@ export const ElementColors = {
     hiContrast: '#FBD3CB',
     // hiContrast: '#f8fafc',
     // loContrast: '#fdd8d8' // radix black red 12
-    loContrast: '#FF977D'
+    loContrast: '#f5b2a3'
   },
   green: {
     fill: '#428a4f',
