@@ -245,7 +245,6 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     views
   }
 }
-
 const RAW_MODEL_CACHE = 'LikeC4RawModel'
 const MODEL_CACHE = 'LikeC4Model'
 
@@ -361,12 +360,12 @@ export class LikeC4ModelBuilder {
           logError(result.error)
           return null
         }
+        let computedView = result.view
 
         const allElementViews = values(model.views).filter(
           (v): v is ScopedElementView => isScopedElementView(v) && v.id !== viewId
         )
 
-        let computedView = result.view
         computedView.nodes.forEach(node => {
           if (!node.navigateTo) {
             // find first element view that is not the current one

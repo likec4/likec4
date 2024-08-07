@@ -21,6 +21,7 @@ import {
   StepEdgeId
 } from '@likec4/core'
 import { isTruthy, unique } from 'remeda'
+import { applyViewHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
@@ -157,12 +158,12 @@ export class DynamicViewComputeCtx {
 
     const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)
 
-    return {
+    return applyViewHash({
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'LR',
       nodes,
       edges
-    }
+    })
   }
 
   private findRelations(source: Element, target: Element): {

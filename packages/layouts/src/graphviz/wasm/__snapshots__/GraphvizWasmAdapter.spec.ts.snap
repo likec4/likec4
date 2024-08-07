@@ -7,6 +7,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
   "description": null,
   "edges": [
     {
+      "dotpos": "s,359.91,151.2 e,567.29,151.2 370.78,151.2 430.46,151.2 497.41,151.2 557.02,151.2",
       "id": "cloud.backend:amazon.s3",
       "label": "persists artifacts",
       "labelBBox": {
@@ -42,6 +43,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "target": "amazon.s3",
     },
   ],
+  "hash": "b0893852a41efeb3d6e941dbe5221bde3d9a048a",
   "height": 282,
   "id": "amazon",
   "links": null,
@@ -191,6 +193,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
   "description": null,
   "edges": [
     {
+      "dotpos": "e,216,319.02 216,179.72 216,219.83 216,267.38 216,308.67",
       "id": "support:cloud.frontend.adminPanel",
       "label": "manages",
       "labelBBox": {
@@ -225,6 +228,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "target": "cloud.frontend.adminPanel",
     },
     {
+      "dotpos": "e,639,319.02 639,179.72 639,219.83 639,267.38 639,308.67",
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
       "labelBBox": {
@@ -259,6 +263,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "target": "cloud.frontend.dashboard",
     },
     {
+      "dotpos": "e,227.73,654.81 220.25,498.58 222.4,543.47 225.02,598.13 227.24,644.45",
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": "fetches data in zero trust network
 with sso authentification",
@@ -294,6 +299,7 @@ with sso authentification",
       "target": "cloud.backend.graphql",
     },
     {
+      "dotpos": "e,354.67,654.86 566.43,498.82 536.34,531.68 499.48,567.29 461,593.6 453.44,598.77 450.05,597.23 442,601.6 415.83,615.79 388.84,632.4 363.28,649.17",
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
       "labelBBox": {
@@ -352,6 +358,7 @@ with sso authentification",
       "target": "cloud.backend.graphql",
     },
     {
+      "dotpos": "e,491.36,744.8 391.93,744.8 421.58,744.8 451.23,744.8 480.87,744.8",
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
       "labelBBox": null,
@@ -381,6 +388,7 @@ with sso authentification",
       "target": "cloud.backend.storage",
     },
     {
+      "dotpos": "s,814.7,744.8 e,1020.4,744.8 825.51,744.8 884.82,744.8 951.15,744.8 1010.2,744.8",
       "id": "cloud.backend.storage:amazon",
       "label": "persists artifacts",
       "labelBBox": {
@@ -416,6 +424,7 @@ with sso authentification",
       "target": "amazon",
     },
   ],
+  "hash": "d251757de7f97a6d12026d6cb711903508a5e227",
   "height": 907,
   "id": "cloud3levels",
   "links": null,
@@ -738,6 +747,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
   "description": null,
   "edges": [
     {
+      "dotpos": "e,311.08,319.02 218.8,179.72 245.76,220.42 277.8,268.79 305.43,310.5",
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
       "labelBBox": {
@@ -772,6 +782,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "cloud.frontend",
     },
     {
+      "dotpos": "e,428.96,319.02 521.24,179.72 494.28,220.42 462.24,268.79 434.61,310.5",
       "id": "support:cloud.frontend",
       "label": "manages",
       "labelBBox": {
@@ -806,6 +817,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "cloud.frontend",
     },
     {
+      "dotpos": "e,657.06,409 529.82,409 567.78,409 608.41,409 646.82,409",
       "id": "cloud.frontend:cloud.backend",
       "label": "[...]",
       "labelBBox": {
@@ -841,6 +853,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "cloud.backend",
     },
     {
+      "dotpos": "s,976.93,409 e,1184.3,409 987.8,409 1047.5,409 1114.4,409 1174,409",
       "id": "cloud.backend:amazon",
       "label": "persists artifacts",
       "labelBBox": {
@@ -876,6 +889,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "amazon",
     },
   ],
+  "hash": "a2aecd4a69928a2ba4e12c37df5eb263ef503e31",
   "height": 539,
   "id": "cloudView",
   "links": null,
@@ -1093,6 +1107,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
   "description": null,
   "edges": [
     {
+      "dotpos": "e,310.04,313.04 219.92,179.65 246.23,218.59 277.22,264.45 304.18,304.35",
       "id": "customer:cloud",
       "label": "opens in browser",
       "labelBBox": {
@@ -1127,6 +1142,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "cloud",
     },
     {
+      "dotpos": "e,430,313.04 520.12,179.65 493.81,218.59 462.82,264.45 435.86,304.35",
       "id": "support:cloud",
       "label": "manages",
       "labelBBox": {
@@ -1161,6 +1177,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "cloud",
     },
     {
+      "dotpos": "s,529.93,402.8 e,737.31,402.8 540.8,402.8 600.48,402.8 667.43,402.8 727.04,402.8",
       "id": "cloud:amazon",
       "label": "persists artifacts",
       "labelBBox": {
@@ -1196,6 +1213,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "amazon",
     },
   ],
+  "hash": "1cb03738dd683e790ee2267d046851d00b0d9c1a",
   "height": 493,
   "id": "index",
   "links": null,

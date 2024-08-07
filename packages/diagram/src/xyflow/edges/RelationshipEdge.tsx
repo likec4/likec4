@@ -18,7 +18,7 @@ import { memo, type PointerEvent as ReactPointerEvent, useRef, useState } from '
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../state/useDiagramStore'
 import { ZIndexes } from '../const'
-import { EdgeMarkers } from '../EdgeMarkers'
+import { EdgeMarkers, type EdgeMarkerType } from '../EdgeMarkers'
 import { useXYStoreApi } from '../hooks/useXYFlow'
 import { type RelationshipData, type XYFlowEdge } from '../types'
 import { bezierControlPoints } from '../utils'
@@ -56,7 +56,7 @@ import { getNodeIntersectionFromCenterToPoint } from './utils'
 //   return path + segment
 // }
 
-const toMarker = (arrowType?: RelationshipArrowType) => {
+const toMarker = (arrowType?: RelationshipArrowType): EdgeMarkerType | undefined => {
   if (!arrowType || arrowType === 'none') {
     return undefined
   }
@@ -149,8 +149,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
-  const { isActive, isEditable, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
-    isEditable: s.readonly !== true,
+  const { isActive, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true,
     isActive: s.focusedNodeId === source || s.focusedNodeId === target
       || (s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum),
@@ -161,10 +160,9 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
 
-  const isModified = isEditable && (0
-    || isTruthy(data.controlPoints)
+  const isModified = isTruthy(data.controlPoints)
     || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
-    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.element.position))
+    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.element.position)
 
   const {
     label,
@@ -224,12 +222,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     edgePath = nonNullable(curve(points))
   } else {
     edgePath = bezierPath(diagramEdgePoints)
-    // if (diagramEdge.tailArrowPoint) {
-    //   edgePath = `M ${diagramEdge.tailArrowPoint[0]},${diagramEdge.tailArrowPoint[1]} L ${edgePath.substring(1)}`
-    // }
-    // if (diagramEdge.headArrowPoint) {
-    //   edgePath += ` L ${diagramEdge.headArrowPoint[0]},${diagramEdge.headArrowPoint[1]}`
-    // }
   }
 
   const svgPathRef = useRef<SVGPathElement>(null)
@@ -263,15 +255,13 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     if (e.button !== 0) {
       return
     }
+    diagramStore.getState().cancelSaveManualLayout()
     e.stopPropagation()
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
     const onPointerMove = (e: PointerEvent) => {
       if (!isSamePoint(pointer, [e.clientX, e.clientY])) {
         setIsControlPointDragging(true)
-        if (!hasMoved) {
-          diagramStore.getState().cancelSaveManualLayout()
-        }
         hasMoved = true
         pointer = { x: e.clientX, y: e.clientY }
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
@@ -284,12 +274,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       }
     }
     const onPointerUp = () => {
-      setIsControlPointDragging(false)
       domNode.removeEventListener('pointermove', onPointerMove)
       domNode.removeEventListener('pointerup', onPointerUp)
       if (hasMoved) {
         diagramStore.getState().triggerSaveManualLayout()
       }
+      setIsControlPointDragging(false)
     }
     domNode.addEventListener('pointermove', onPointerMove)
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
