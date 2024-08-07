@@ -1,11 +1,11 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
-import type { InternalNode, ReactFlowProps, XYPosition } from '@xyflow/react'
+import type { InternalNode, NodeChange, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { useDiagramStoreApi } from '../../state/useDiagramStore'
-import type { XYFlowInstance, XYFlowNode } from '../types'
+import type { XYFlowNode } from '../types'
 import { isSamePoint } from '../utils'
 import { useXYStoreApi, type XYStoreApi } from './useXYFlow'
 
@@ -81,28 +81,28 @@ class Compound extends Rect {
     )
     const { weak } = Strength
     this.solver.createConstraint(leftPadding, Operator.Ge, 40)
-    this.solver.createConstraint(leftPadding, Operator.Eq, 40, weak)
+    this.solver.createConstraint(leftPadding, Operator.Eq, 41, weak)
 
     const topPadding = new Expr(
       rect.minY,
       [-1, this.minY]
     )
-    this.solver.createConstraint(topPadding, Operator.Ge, 60)
-    this.solver.createConstraint(topPadding, Operator.Eq, 60, weak)
+    this.solver.createConstraint(topPadding, Operator.Ge, 54)
+    this.solver.createConstraint(topPadding, Operator.Eq, 55, weak)
 
     const rightPadding = new Expr(
       this.maxX,
       [-1, rect.maxX]
     )
     this.solver.createConstraint(rightPadding, Operator.Ge, 40)
-    this.solver.createConstraint(rightPadding, Operator.Eq, 40, weak)
+    this.solver.createConstraint(rightPadding, Operator.Eq, 41, weak)
 
     const bottomPadding = new Expr(
       this.maxY,
       [-1, rect.maxY]
     )
     this.solver.createConstraint(bottomPadding, Operator.Ge, 40)
-    this.solver.createConstraint(bottomPadding, Operator.Eq, 40, weak)
+    this.solver.createConstraint(bottomPadding, Operator.Eq, 41, weak)
   }
 }
 
@@ -164,7 +164,6 @@ class Leaf extends Rect {
 }
 
 function createLayoutConstraints(
-  xyflow: XYFlowInstance,
   xyflowApi: XYStoreApi,
   draggingNodeId: string
 ) {
@@ -206,40 +205,29 @@ function createLayoutConstraints(
   solver.updateVariables()
   solver.maxIterations = 1000
 
+  const rectsToUpdate = [...rects.values()].filter(r => r.id !== draggingNodeId)
+
   function updateXYFlowNodes() {
     solver.updateVariables()
-
-    xyflow.setNodes(nodes =>
-      nodes.map((n) => {
-        if (n.id === draggingNodeId || n.dragging === true) {
-          return n
+    xyflowApi.getState().triggerNodeChanges(
+      rectsToUpdate.reduce((acc, r) => {
+        acc.push({
+          id: r.id,
+          type: 'position',
+          dragging: false,
+          position: r.position,
+          positionAbsolute: r.positionAbsolute
+        })
+        if (r instanceof Compound) {
+          acc.push({
+            id: r.id,
+            type: 'dimensions',
+            setAttributes: true,
+            dimensions: r.dimensions
+          })
         }
-        const rect = rects.get(n.id)
-        if (!rect) {
-          return n
-        }
-        const dimensions = rect.dimensions
-        const newXY = rect.position
-
-        if (newXY.x !== n.position.x || newXY.y !== n.position.y) {
-          return {
-            ...n,
-            position: rect.position,
-            width: dimensions.width,
-            height: dimensions.height,
-            measured: dimensions
-          }
-        }
-        if (dimensions.width !== n.width || dimensions.height !== n.height) {
-          return {
-            ...n,
-            width: dimensions.width,
-            height: dimensions.height,
-            measured: dimensions
-          }
-        }
-        return n
-      })
+        return acc
+      }, [] as NodeChange<XYFlowNode>[])
     )
   }
 
@@ -249,6 +237,9 @@ function createLayoutConstraints(
    * Move the editing node to the given position.
    */
   function onNodeDrag(xynode: XYFlowNode) {
+    if (rectsToUpdate.length === 0) {
+      return
+    }
     const pos = nodeLookup.get(xynode.id)!.internals.positionAbsolute
     const rect = nonNullable(rects.get(xynode.id))
     solver.suggestValue(rect.minX, Math.ceil(pos.x))
@@ -285,9 +276,8 @@ export function useLayoutConstraints(): LayoutConstraints {
         x: event.clientX,
         y: event.clientY
       }
-      const { xyflow, cancelSaveManualLayout } = diagramApi.getState()
-      cancelSaveManualLayout()
-      solverRef.current = createLayoutConstraints(xyflow, xyflowApi, xynode.id)
+      diagramApi.getState().cancelSaveManualLayout()
+      solverRef.current = createLayoutConstraints(xyflowApi, xynode.id)
     },
     onNodeDrag: (_event, xynode) => {
       invariant(solverRef.current, 'solverRef.current should be defined')

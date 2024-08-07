@@ -46,7 +46,7 @@ export const RelationshipColors = {
   red: {
     lineColor: '#AC4D39',
     labelBgColor: '#b91c1c',
-    labelColor: '#FF977D'
+    labelColor: '#f5b2a3'
   },
   secondary: sky,
   sky,

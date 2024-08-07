@@ -9,11 +9,9 @@ import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from '.
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { useDiagramState } from './state/useDiagramStore'
-import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
-import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
-import type { XYFlowData, XYFlowEdge, XYFlowNode } from './xyflow/types'
+import type { XYFlowData } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
 import { XYFlowInner } from './xyflow/XYFlowInner'
 
@@ -34,6 +32,7 @@ export function LikeC4Diagram({
   showDiagramTitle = true,
   showNavigationButtons = false,
   enableDynamicViewWalkthrough = false,
+  enableFocusMode = readonly,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -56,17 +55,14 @@ export function LikeC4Diagram({
     initialHeight: number
   }>()
   if (!initialRef.current) {
-    const initial = diagramViewToXYFlowData(view, {
-      selectable: nodesSelectable,
-      draggable: nodesDraggable
-    })
     initialRef.current = {
-      defaultNodes: initial.nodes,
-      defaultEdges: initial.edges,
+      defaultNodes: [],
+      defaultEdges: [],
       initialWidth: initialWidth ?? view.width,
       initialHeight: initialHeight ?? view.height
     }
   }
+  // useLogger('LikeC4Diagram', [{view}])
 
   return (
     <EnsureMantine>
@@ -89,6 +85,7 @@ export function LikeC4Diagram({
             nodesSelectable={nodesSelectable}
             experimentalEdgeEditing={experimentalEdgeEditing}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+            enableFocusMode={enableFocusMode}
             renderIcon={renderIcon ?? null}
             onCanvasClick={onCanvasClick ?? null}
             onCanvasContextMenu={onCanvasContextMenu ?? null}
@@ -101,8 +98,6 @@ export function LikeC4Diagram({
             onCanvasDblClick={onCanvasDblClick ?? null}
           >
             <LikeC4DiagramInnerMemo
-              defaultNodes={initialRef.current.defaultNodes}
-              defaultEdges={initialRef.current.defaultEdges}
               controls={controls}
               background={background}
               showDiagramTitle={showDiagramTitle}
@@ -118,36 +113,31 @@ export function LikeC4Diagram({
 type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
   controls: boolean
-  defaultNodes: XYFlowNode[]
-  defaultEdges: XYFlowEdge[]
   showDiagramTitle: boolean
   showNavigationButtons: boolean
 }
 const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
   controls,
-  defaultNodes,
-  defaultEdges,
   showDiagramTitle,
   showNavigationButtons
 }) {
   const {
     isInitialized,
-    zoomable,
     pannable,
-    fitView
+    fitView,
+    enableFocusMode
   } = useDiagramState(s => ({
     isInitialized: s.initialized,
     zoomable: s.zoomable,
     pannable: s.pannable,
-    fitView: s.fitViewEnabled
+    fitView: s.fitViewEnabled,
+    enableFocusMode: s.enableFocusMode
   }))
 
   return (
     <>
       <XYFlow
-        defaultNodes={defaultNodes}
-        defaultEdges={defaultEdges}
         className={clsx(
           'likec4-diagram',
           css.cssReactFlow,
@@ -165,9 +155,8 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
       </XYFlow>
       {isInitialized && (
         <>
-          <SyncWithDiagram />
           {fitView && <FitViewOnDiagramChange />}
-          {fitView && zoomable && <SelectEdgesOnNodeFocus />}
+          {enableFocusMode && <SelectEdgesOnNodeFocus />}
         </>
       )}
     </>

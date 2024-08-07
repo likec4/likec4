@@ -2,12 +2,23 @@ import { ActionIcon, Group } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
-import { useNavigationHistory } from '../state/useNavigationHistory'
+import { type DiagramState, useDiagramState } from '../state/hooks'
 import * as css from './BackwardForwardPanel.css'
 
-export function BackwardForwardPanel() {
-  const { hasBack, hasForward, ops } = useNavigationHistory()
+const historySelector = (s: DiagramState) => ({
+  hasStepBack: s.navigationHistoryIndex > 0,
+  hasStepForward: s.navigationHistoryIndex < s.navigationHistory.length - 1,
+  goBack: s.goBack,
+  goForward: s.goForward
+})
 
+export function BackwardForwardPanel() {
+  const {
+    hasStepBack,
+    hasStepForward,
+    goBack,
+    goForward
+  } = useDiagramState(historySelector)
   return (
     <Group
       className={clsx(
@@ -17,7 +28,7 @@ export function BackwardForwardPanel() {
       )}
       gap={'xs'}>
       <AnimatePresence>
-        {hasBack && (
+        {hasStepBack && (
           <m.div
             layout
             initial={{ opacity: 0.05, transform: 'translateX(-10px)' }}
@@ -30,12 +41,15 @@ export function BackwardForwardPanel() {
             <ActionIcon
               variant="light"
               color="gray"
-              onClick={() => ops.back()}>
+              onClick={e => {
+                e.stopPropagation()
+                goBack()
+              }}>
               <IconChevronLeft />
             </ActionIcon>
           </m.div>
         )}
-        {hasForward && (
+        {hasStepForward && (
           <m.div
             layout
             initial={{ opacity: 0.05, transform: 'translateX(10px)' }}
@@ -48,7 +62,10 @@ export function BackwardForwardPanel() {
             <ActionIcon
               variant="light"
               color="gray"
-              onClick={() => ops.forward()}>
+              onClick={e => {
+                e.stopPropagation()
+                goForward()
+              }}>
               <IconChevronRight />
             </ActionIcon>
           </m.div>

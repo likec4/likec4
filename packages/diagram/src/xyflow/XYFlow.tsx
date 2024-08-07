@@ -1,6 +1,6 @@
 import { ReactFlow, useOnViewportChange } from '@xyflow/react'
-import { deepEqual as eq } from 'fast-equals'
-import { type CSSProperties, type PropsWithChildren, useCallback } from 'react'
+import { deepEqual as eq, shallowEqual } from 'fast-equals'
+import { type CSSProperties, type PropsWithChildren, useCallback, useMemo } from 'react'
 import type { DiagramState } from '../state/diagramStore'
 import { useDiagramState, useDiagramStoreApi } from '../state/useDiagramStore'
 import { MinZoom } from './const'
@@ -11,6 +11,7 @@ import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
 import { XYFlowEdge, XYFlowNode } from './types'
 import { useXYFlowEvents } from './XYFlowEvents'
+// import { useLogger } from '@mantine/hooks'
 
 const nodeTypes = {
   element: ElementNode,
@@ -23,8 +24,6 @@ const edgeTypes = {
 type XYFlowWrapperProps = PropsWithChildren<{
   colorMode?: 'system' | 'light' | 'dark'
   className?: string | undefined
-  defaultNodes: XYFlowNode[]
-  defaultEdges: XYFlowEdge[]
   style?: CSSProperties | undefined
 }>
 
@@ -39,15 +38,14 @@ type XYFlowWrapperProps = PropsWithChildren<{
 // }
 
 const selector = (s: DiagramState) => ({
+  nodes: s.xynodes,
+  edges: s.xyedges,
+  onNodesChange: s.onNodesChange,
+  onEdgesChange: s.onEdgesChange,
   nodesSelectable: s.nodesSelectable || s.focusedNodeId !== null,
   nodesDraggable: s.nodesDraggable,
   fitView: s.fitViewEnabled,
-  fitViewOptions: {
-    minZoom: MinZoom,
-    maxZoom: 1,
-    padding: s.fitViewPadding,
-    includeHiddenNodes: true
-  },
+  fitViewPadding: s.fitViewPadding,
   hasOnNavigateTo: !!s.onNavigateTo,
   hasOnNodeClick: !!s.onNodeClick,
   hasOnNodeContextMenu: !!s.onNodeContextMenu,
@@ -62,26 +60,32 @@ export function XYFlow({
   colorMode = 'system',
   className,
   children,
-  defaultNodes,
-  defaultEdges,
   style
 }: XYFlowWrapperProps) {
   const xyflowApi = useXYStoreApi()
   const diagramApi = useDiagramStoreApi()
   const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
     nodesSelectable,
     nodesDraggable,
     fitView,
-    fitViewOptions,
+    fitViewPadding,
     pannable,
     zoomable,
     hasOnNodeClick,
     hasOnNavigateTo,
     hasOnNodeContextMenu,
     hasOnCanvasContextMenu,
-    hasOnEdgeContextMenu,
-    hasOnEdgeClick
-  } = useDiagramState(selector, eq)
+    hasOnEdgeContextMenu
+  } = useDiagramState(selector, shallowEqual)
+
+  // useLogger('XYFlow',[
+  //   nodes,
+  //   edges,
+  // ])
 
   const layoutConstraints = useLayoutConstraints()
 
@@ -108,8 +112,8 @@ export function XYFlow({
       className={className}
       style={style}
       {...colorMode && { colorMode }}
-      defaultNodes={defaultNodes}
-      defaultEdges={defaultEdges}
+      nodes={nodes}
+      edges={edges}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       zoomOnPinch={zoomable}
@@ -120,7 +124,12 @@ export function XYFlow({
       maxZoom={zoomable ? 1.9 : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
-      fitViewOptions={fitViewOptions}
+      fitViewOptions={useMemo(() => ({
+        minZoom: MinZoom,
+        maxZoom: 1,
+        padding: fitViewPadding,
+        includeHiddenNodes: true
+      }), [fitViewPadding])}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
@@ -129,17 +138,20 @@ export function XYFlow({
       panOnDrag={pannable}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable || hasOnNodeClick || hasOnNavigateTo}
-      edgesFocusable={hasOnEdgeClick}
+      edgesFocusable={false}
       nodesDraggable={nodesDraggable}
       {...nodesDraggable && {
         onNodeDragStart: layoutConstraints.onNodeDragStart,
         onNodeDrag: layoutConstraints.onNodeDrag,
         onNodeDragStop: layoutConstraints.onNodeDragStop
       }}
+      nodeDragThreshold={2}
       zoomOnDoubleClick={false}
-      elevateNodesOnSelect={false} // or edges are not visible after select
+      elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false} // or weird camera movement
       selectionKeyCode={null}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
       onDoubleClick={handlers.onDoubleClick}
       onPaneClick={handlers.onPaneClick}
       onMoveEnd={handlers.onMoveEnd}

@@ -1,4 +1,4 @@
-import { shallowEqual } from 'fast-equals'
+import { deepEqual } from 'fast-equals'
 import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
 import { hasSubObject, isNonNullish, pickBy } from 'remeda'
 import { useUpdateEffect } from '../hooks'
@@ -48,21 +48,20 @@ export function DiagramContextProvider({
     [xyflow, xystore]
   )
 
+  const newProps = pickBy(props, isNonNullish)
+  useUpdateEffect(
+    () => store.current?.setState(newProps, false, 'update incoming props'),
+    [newProps]
+  )
+
   useUpdateEffect(
     () => {
-      if (!store.current) return
-      const state = store.current.getState()
-      const newProps = pickBy(props, isNonNullish)
-      if (!hasSubObject(state, newProps)) {
-        store.current.setState(newProps, false, 'update incoming props')
-      }
-      if (state.view !== view) {
-        state.updateView(view)
-      }
+      store.current?.getState().updateView(view)
     },
-    [view, props],
-    (prev, next) => shallowEqual(prev[0], next[0]) && shallowEqual(prev[1], next[1])
+    [view],
+    deepEqual
   )
+
   return (
     <div
       ref={containerRef}

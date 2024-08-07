@@ -1,11 +1,17 @@
-import type { DiagramNode, DiagramView, Fqn, ViewID } from '@likec4/core'
-import { invariant, nonexhaustive, StepEdgeId } from '@likec4/core'
-import { getViewportForBounds, type XYPosition } from '@xyflow/react'
+import type { DiagramNode, DiagramView, Fqn, NodeId, ViewID } from '@likec4/core'
+import { invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
+import {
+  applyEdgeChanges,
+  applyNodeChanges,
+  getViewportForBounds,
+  type OnEdgesChange,
+  type OnNodesChange
+} from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
-import { deepEqual, shallowEqual } from 'fast-equals'
+import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, hasAtLeast, isEmpty, pick, reduce } from 'remeda'
+import { entries, hasAtLeast, hasSubObject, isNullish, reduce } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -19,7 +25,8 @@ import type {
 import { MinZoom } from '../xyflow/const'
 import type { XYStoreApi } from '../xyflow/hooks'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
-import { bezierControlPoints, isSamePoint } from '../xyflow/utils'
+import { bezierControlPoints, isSamePoint, toDomPrecision } from '../xyflow/utils'
+import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
 export type DiagramStore = {
   readonly storeDevId: string
@@ -34,17 +41,19 @@ export type DiagramStore = {
   nodesDraggable: boolean
   nodesSelectable: boolean
   experimentalEdgeEditing: boolean
+  enableFocusMode: boolean
   renderIcon: ElementIconRenderer | null
   // Diagram Container, see DiagramContainer.tsx
   getContainer: () => HTMLDivElement | null
 
   // Internal state
+  xynodes: XYFlowNode[]
+  xyedges: XYFlowEdge[]
   viewSyncDebounceTimeout: number | null
 
   xyflow: XYFlowInstance
   xystore: XYStoreApi
   initialized: boolean
-  xyflowSynced: boolean
 
   // If Dynamic View
   enableDynamicViewWalkthrough: boolean
@@ -60,18 +69,16 @@ export type DiagramStore = {
   // id's of nodes / edges that
   dimmed: ReadonlySet<string>
 
-  // Stack of previous distinct views (unique id's)
-  previousViews: DiagramView[]
-
   lastOnNavigate: null | {
     fromView: ViewID
     toView: ViewID
-    element: DiagramNode
-    // Position of the element in the source view
-    elementScreenPosition: XYPosition
-    // If node from the target view is placed on the same position as the node from the source view
-    positionCorrected: boolean
+    fromNode: NodeId
   }
+  navigationHistory: Array<{
+    viewId: ViewID
+    nodeId: NodeId | null
+  }>
+  navigationHistoryIndex: number
 
   // User changed the viewport by dragging or zooming
   viewportChanged: boolean
@@ -94,6 +101,7 @@ export type DiagramInitialState = // Required properties
     | 'nodesSelectable'
     | 'experimentalEdgeEditing'
     | 'enableDynamicViewWalkthrough'
+    | 'enableFocusMode'
   >
   & LikeC4DiagramEventHandlers
 
@@ -120,21 +128,27 @@ interface DiagramStoreActions {
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
   fitDiagram: (duration?: number) => void
 
+  goBack: () => void
+  goForward: () => void
+
   nextDynamicStep: (increment?: number) => void
   activateDynamicStep: (step: number) => void
   stopDynamicView: () => void
+
+  onNodesChange: OnNodesChange<XYFlowNode>
+  onEdgesChange: OnEdgesChange<XYFlowEdge>
 }
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
 const DEFAULT_PROPS: Except<
   DiagramStore,
-  RequiredKeysOf<DiagramInitialState> | 'xystore' | 'xyflow' | 'getContainer' | 'storeDevId'
+  'xystore' | 'xyedges' | 'xynodes' | 'xyflow' | 'getContainer' | 'storeDevId' | RequiredKeysOf<DiagramInitialState>
 > = {
   viewSyncDebounceTimeout: null,
   initialized: false,
-  xyflowSynced: false,
-  previousViews: [],
+  navigationHistory: [],
+  navigationHistoryIndex: 0,
   viewportChanged: false,
   activeDynamicViewStep: null,
   focusedNodeId: null,
@@ -166,6 +180,10 @@ const EmptyStringSet: ReadonlySet<string> = new StringSet()
 export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props: T) {
   const storeDevId = 'DiagramStore' + String(StoreDevId++).padStart(2, '0')
   const isDynamicView = props.view.__ === 'dynamic'
+  const xyflowdata = diagramViewToXYFlowData(props.view, {
+    draggable: props.nodesDraggable,
+    selectable: props.nodesSelectable
+  })
   return createWithEqualityFn<
     DiagramState,
     [
@@ -176,25 +194,49 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
     subscribeWithSelector(
       devtools(
         (set, get) => ({
-          storeDevId,
           ...DEFAULT_PROPS,
           ...(props as CreateDiagramStore),
+          storeDevId,
           isDynamicView,
+          xynodes: xyflowdata.nodes,
+          xyedges: xyflowdata.edges,
+          navigationHistory: [{
+            viewId: props.view.id,
+            nodeId: null
+          }],
+          navigationHistoryIndex: 0,
+
+          onNodesChange: (changes) => {
+            set({
+              xynodes: applyNodeChanges(changes, get().xynodes)
+            })
+          },
+          onEdgesChange: (changes) => {
+            set({
+              xyedges: applyEdgeChanges(changes, get().xyedges)
+            })
+          },
+
           updateView: (nextView) => {
             let {
               viewSyncDebounceTimeout,
               xyflow,
+              xystore,
               dimmed,
-              xyflowSynced,
               view: current,
               lastOnNavigate,
-              previousViews,
+              navigationHistory,
+              navigationHistoryIndex,
               focusedNodeId,
               lastClickedNodeId,
               lastClickedEdgeId,
               activeDynamicViewStep,
+              nodesDraggable,
+              nodesSelectable,
               hoveredEdgeId,
-              hoveredNodeId
+              hoveredNodeId,
+              xyedges,
+              xynodes
             } = get()
 
             if (shallowEqual(current, nextView)) {
@@ -231,7 +273,6 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               if (activeDynamicViewStep && !edgeIds.has(StepEdgeId(activeDynamicViewStep))) {
                 activeDynamicViewStep = null
               }
-              xyflowSynced = deepEqual([current.nodes, current.edges], [nextView.nodes, nextView.edges])
               if (dimmed.size > 0) {
                 let nextDimmed = new StringSet([...dimmed].filter(id => nodeIds.has(id) || edgeIds.has(id)))
                 if (nextDimmed.size !== dimmed.size) {
@@ -240,15 +281,55 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
             } else {
               // Reset lastOnNavigate if the view is not the source or target view
-              if (lastOnNavigate) {
-                if (lastOnNavigate.toView !== nextView.id && lastOnNavigate.fromView !== nextView.id) {
-                  lastOnNavigate = null
+              const stepCurrent = nonNullable(navigationHistory[navigationHistoryIndex])
+              if (stepCurrent.viewId !== nextView.id) {
+                navigationHistory = [
+                  ...navigationHistory.slice(0, navigationHistoryIndex + 1),
+                  {
+                    viewId: nextView.id,
+                    nodeId: lastOnNavigate?.fromNode || null
+                  }
+                ]
+                navigationHistoryIndex = navigationHistory.length - 1
+              } else {
+                // We are navigating to the same view as in the history
+                if (stepCurrent.nodeId) {
+                  lastOnNavigate ??= {
+                    fromView: current.id,
+                    toView: nextView.id,
+                    fromNode: stepCurrent.nodeId
+                  }
                 }
               }
 
-              if (!lastOnNavigate) {
+              if (lastOnNavigate && lastOnNavigate.toView !== nextView.id) {
+                lastOnNavigate = null
+              }
+
+              const elTo = lastOnNavigate && nextView.nodes.find(n => n.id === lastOnNavigate?.fromNode)
+              const xynodeFrom = elTo && xyflow.getInternalNode(elTo.id)
+
+              if (!lastOnNavigate || isNullish(elTo) || isNullish(xynodeFrom)) {
                 const zoom = xyflow.getZoom()
                 xyflow.setCenter(nextView.width / 2, nextView.height / 2, { zoom })
+                lastOnNavigate = null
+              }
+
+              if (lastOnNavigate && !!elTo && !!xynodeFrom) {
+                const fromPos = xyflow.flowToScreenPosition({
+                    x: xynodeFrom.internals.positionAbsolute.x, // + dimensions.width / 2,
+                    y: xynodeFrom.internals.positionAbsolute.y // + dimensions.height / 2
+                  }),
+                  toPos = xyflow.flowToScreenPosition({
+                    x: elTo.position[0], // + elFrom.width / 2,
+                    y: elTo.position[1] // + elFrom.height / 2
+                  }),
+                  diff = {
+                    x: toDomPrecision(fromPos.x - toPos.x),
+                    y: toDomPrecision(fromPos.y - toPos.y)
+                  }
+                xystore.getState().panBy(diff)
+                lastOnNavigate = null
               }
 
               // Reset hovered / clicked node/edge if the view is different
@@ -259,14 +340,43 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               focusedNodeId = null
               activeDynamicViewStep = null
               dimmed = EmptyStringSet
-
-              // Update history stack (back button not implemented yet)
-              previousViews = [
-                current,
-                ...previousViews.filter((v) => v.id !== nextView.id && v.id !== current.id)
-              ]
-              xyflowSynced = false
             }
+
+            const { nodes, edges } = diagramViewToXYFlowData(nextView, {
+              draggable: nodesDraggable,
+              selectable: nodesSelectable
+            })
+
+            const _xynodes = nodes.map(update => {
+              const existing = xynodes.find(n => n.id === update.id)
+              if (existing && existing.type === update.type && eq(existing.parentId ?? null, update.parentId ?? null)) {
+                if (hasSubObject(existing, update)) {
+                  return existing
+                }
+                return {
+                  ...existing,
+                  ...update
+                }
+              }
+              return update
+            })
+            const _xyedges = edges.map(update => {
+              const existing = xyedges.find(n => n.id === update.id)
+              if (existing) {
+                if (hasSubObject(existing, update)) {
+                  return existing
+                }
+                return {
+                  ...existing,
+                  ...update,
+                  data: {
+                    ...existing.data,
+                    ...update.data
+                  }
+                }
+              }
+              return update
+            })
 
             set(
               {
@@ -274,15 +384,17 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 viewSyncDebounceTimeout,
                 view: nextView,
                 activeDynamicViewStep,
-                xyflowSynced,
                 lastOnNavigate,
-                previousViews,
                 lastClickedNodeId,
                 lastClickedEdgeId,
                 focusedNodeId,
                 hoveredEdgeId,
                 hoveredNodeId,
-                dimmed
+                navigationHistory,
+                navigationHistoryIndex,
+                dimmed,
+                xynodes: shallowEqual(_xynodes, xynodes) ? xynodes : _xynodes,
+                xyedges: shallowEqual(_xyedges, xyedges) ? xyedges : _xyedges
               },
               noReplace,
               isSameView ? 'update-view [same]' : 'update-view [another]'
@@ -290,7 +402,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           focusOnNode: (nodeId) => {
-            const { focusedNodeId, view } = get()
+            const { focusedNodeId, view, enableFocusMode } = get()
+            invariant(enableFocusMode, 'focus mode is not enabled')
             if (nodeId !== focusedNodeId) {
               const notDimmed = new StringSet([nodeId])
               const dimmed = new StringSet()
@@ -531,23 +644,18 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           triggerOnNavigateTo: (xynodeId, event) => {
-            const { xyflow, view } = get()
-            const xynode = xyflow.getInternalNode(xynodeId)
-            invariant(!!xynode, `node not found: ${xynodeId}`)
-            const element = xynode.data.element as DiagramNodeWithNavigate
-            invariant(element.navigateTo, `node is not navigable: ${xynodeId}`)
+            const { view, xynodes } = get()
+            const xynode = xynodes.find(({ id }) => id === xynodeId)
+            invariant(xynode, `xynode not found: ${xynodeId}`)
+            const element = view.nodes.find(({ id }) => id === xynodeId)
+            invariant(element?.navigateTo, `node is not navigable: ${xynodeId}`)
             set(
               {
                 lastClickedNodeId: xynodeId,
                 lastOnNavigate: {
                   fromView: view.id,
                   toView: element.navigateTo,
-                  element: element,
-                  elementScreenPosition: xyflow.flowToScreenPosition({
-                    x: xynode.internals.positionAbsolute.x, // + dimensions.width / 2,
-                    y: xynode.internals.positionAbsolute.y // + dimensions.height / 2
-                  }),
-                  positionCorrected: false
+                  fromNode: element.id
                 }
               },
               noReplace,
@@ -556,9 +664,60 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             get().onNavigateTo?.(
               element.navigateTo,
               event,
-              element,
-              xynode.internals.userNode
+              element as DiagramNodeWithNavigate,
+              xynode
             )
+          },
+
+          goBack: () => {
+            const { navigationHistory, navigationHistoryIndex, onNavigateTo } = get()
+            const { viewId, nodeId } = nonNullable(navigationHistory[navigationHistoryIndex])
+            const stepBack = (navigationHistoryIndex > 0 && navigationHistory[navigationHistoryIndex - 1]) || null
+            if (stepBack) {
+              set(
+                {
+                  lastClickedEdgeId: null,
+                  lastClickedNodeId: null,
+                  navigationHistoryIndex: navigationHistoryIndex - 1,
+                  lastOnNavigate: nodeId
+                    ? {
+                      fromView: viewId,
+                      toView: stepBack.viewId,
+                      fromNode: nodeId as Fqn
+                    }
+                    : null
+                },
+                noReplace,
+                'goBack'
+              )
+              onNavigateTo?.(stepBack.viewId)
+            }
+          },
+          goForward: () => {
+            const { navigationHistory, navigationHistoryIndex, onNavigateTo } = get()
+            const { viewId } = nonNullable(navigationHistory[navigationHistoryIndex])
+            const stepForward = navigationHistoryIndex < navigationHistory.length - 1
+              ? navigationHistory[navigationHistoryIndex + 1]
+              : null
+            if (stepForward) {
+              set(
+                {
+                  lastClickedEdgeId: null,
+                  lastClickedNodeId: null,
+                  navigationHistoryIndex: navigationHistoryIndex + 1,
+                  lastOnNavigate: stepForward.nodeId
+                    ? {
+                      fromView: viewId,
+                      toView: stepForward.viewId,
+                      fromNode: stepForward.nodeId as Fqn
+                    }
+                    : null
+                },
+                noReplace,
+                'goForward'
+              )
+              onNavigateTo?.(stepForward.viewId)
+            }
           },
 
           fitDiagram: (duration = 500) => {

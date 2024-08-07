@@ -131,6 +131,7 @@ export interface LikeC4DiagramProperties {
    * @default 0
    */
   fitViewPadding?: number | undefined
+
   nodesSelectable?: boolean | undefined
 
   /**
@@ -170,6 +171,12 @@ export interface LikeC4DiagramProperties {
    * @default false
    */
   showNavigationButtons?: undefined | boolean
+
+  /**
+   * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
+   * @default true
+   */
+  enableFocusMode?: boolean | undefined
 
   /**
    * If Walkthrough for dynamic views should be enabled

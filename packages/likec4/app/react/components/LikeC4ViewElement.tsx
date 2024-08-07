@@ -40,6 +40,8 @@ export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<
   renderIcon?: ElementIconRenderer | undefined
 
   showElementLinks?: boolean | undefined
+
+  enableFocusMode?: boolean | undefined
 }
 
 export function LikeC4ViewElement<ViewId extends string>({
@@ -51,6 +53,7 @@ export function LikeC4ViewElement<ViewId extends string>({
   background = 'transparent',
   renderIcon,
   showElementLinks = true,
+  enableFocusMode = true,
   ...props
 }: LikeC4ViewElementProps<ViewId>) {
   const id = useId()
@@ -118,6 +121,7 @@ export function LikeC4ViewElement<ViewId extends string>({
             enableDynamicViewWalkthrough={false}
             showNavigationButtons={false}
             experimentalEdgeEditing={false}
+            enableFocusMode={enableFocusMode}
             controls={false}
             nodesSelectable={false}
             keepAspectRatio={false}

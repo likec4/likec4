@@ -57,6 +57,7 @@ const BrowserModal = memo<{
                 showDiagramTitle
                 showElementLinks
                 enableDynamicViewWalkthrough
+                enableFocusMode
                 showNavigationButtons
                 controls={false}
                 nodesSelectable={false}
