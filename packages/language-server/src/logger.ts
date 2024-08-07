@@ -18,7 +18,6 @@ export const logger = {
     console.info(message)
   },
   warn(message: unknown) {
-    if (isSilent) return
     if (typeof message === 'string' || message instanceof Error) {
       console.warn(message)
       return
@@ -27,7 +26,6 @@ export const logger = {
     console.warn(`${error.name}: ${error.message}`)
   },
   error(message: unknown) {
-    if (isSilent) return
     if (typeof message === 'string' || message instanceof Error) {
       console.error(message)
       return

@@ -1,6 +1,6 @@
 import { textDocumentParams } from 'langium/test'
 import { describe, it, vi } from 'vitest'
-import { SymbolKind } from 'vscode-languageserver-protocol'
+import { SymbolKind } from 'vscode-languageserver-types'
 import { createTestServices } from '../test'
 
 vi.mock('../logger')

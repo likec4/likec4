@@ -1,7 +1,7 @@
 import { DocumentState, EmptyFileSystem } from 'langium'
 import * as assert from 'node:assert'
 import stripIndent from 'strip-indent'
-import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-protocol'
+import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { createLanguageServices } from '../module'

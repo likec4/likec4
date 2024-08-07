@@ -1,7 +1,7 @@
 import { invariant, type ViewChanges } from '@likec4/core'
 import indentString from 'indent-string'
 import { CstUtils, GrammarUtils } from 'langium'
-import { TextEdit } from 'vscode-languageserver-protocol'
+import { TextEdit } from 'vscode-languageserver-types'
 import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { serializeToComment } from '../view-utils/manual-layout'

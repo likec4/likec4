@@ -25,22 +25,16 @@ export function hasManualLayout(comment: string) {
   return comment.includes('@likec4-generated')
 }
 
-export function deserializeFromComment(comment: string): ViewManualLayout | undefined {
+export function deserializeFromComment(comment: string): ViewManualLayout {
   if (!hasManualLayout(comment)) {
-    console.error(`Not a likec4-generated comment: ${comment}`)
-    return undefined
+    throw new Error(`Not a likec4-generated comment: ${comment}`)
   }
-  try {
-    const b64 = comment
-      .trim()
-      .split('\n')
-      .filter(l => !l.includes('**') && !l.includes('@likec4-') && !l.includes('*/'))
-      .map(l => l.replaceAll('*', '').trim())
-      .join('')
-    const decodedb64 = fromBase64(b64)
-    return decode(decodedb64) as ViewManualLayout
-  } catch (e) {
-    console.error(e)
-    return undefined
-  }
+  const b64 = comment
+    .trim()
+    .split('\n')
+    .filter(l => !l.includes('**') && !l.includes('@likec4-') && !l.includes('*/'))
+    .map(l => l.replaceAll('*', '').trim())
+    .join('')
+  const decodedb64 = fromBase64(b64)
+  return decode(decodedb64) as ViewManualLayout
 }

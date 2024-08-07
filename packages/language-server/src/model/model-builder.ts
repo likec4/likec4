@@ -8,8 +8,8 @@ import {
   type ViewID
 } from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
-import type { URI, WorkspaceCache } from 'langium'
-import { DocumentState, interruptAndCheck, type LangiumDocument, type LangiumDocuments } from 'langium'
+import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
+import { Disposable, DocumentState, interruptAndCheck } from 'langium'
 import {
   filter,
   find,
@@ -26,7 +26,6 @@ import {
   sort,
   values
 } from 'remeda'
-import { type CancellationToken, Disposable } from 'vscode-languageserver-protocol'
 import type {
   ParsedAstElement,
   ParsedAstRelation,
@@ -281,7 +280,7 @@ export class LikeC4ModelBuilder {
     logger.debug(`[ModelBuilder] Created`)
   }
 
-  public async buildModel(cancelToken?: CancellationToken): Promise<c4.LikeC4Model | null> {
+  public async buildModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.LikeC4Model | null> {
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
@@ -301,7 +300,9 @@ export class LikeC4ModelBuilder {
 
   private previousViews: Record<ViewID, c4.ComputedView> = {}
 
-  public async buildComputedModel(cancelToken?: CancellationToken): Promise<c4.LikeC4ComputedModel | null> {
+  public async buildComputedModel(
+    cancelToken?: Cancellation.CancellationToken
+  ): Promise<c4.LikeC4ComputedModel | null> {
     const model = await this.buildModel(cancelToken)
     if (!model) {
       return null
@@ -341,7 +342,10 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  public async computeView(viewId: ViewID, cancelToken?: CancellationToken): Promise<c4.ComputedView | null> {
+  public async computeView(
+    viewId: ViewID,
+    cancelToken?: Cancellation.CancellationToken
+  ): Promise<c4.ComputedView | null> {
     const model = await this.buildModel(cancelToken)
     const view = model?.views[viewId]
     if (!view) {

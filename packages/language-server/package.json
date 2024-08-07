@@ -89,8 +89,9 @@
     "strip-indent": "^4.0.0",
     "type-fest": "^4.21.0",
     "ufo": "^1.5.4",
+    "vscode-jsonrpc": "8.2.0",
     "vscode-languageserver": "9.0.1",
-    "vscode-languageserver-protocol": "3.17.5",
+    "vscode-languageserver-types": "3.17.5",
     "vscode-uri": "3.0.8"
   },
   "devDependencies": {

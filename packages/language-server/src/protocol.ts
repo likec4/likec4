@@ -8,8 +8,8 @@ import type {
   ViewChangeOp,
   ViewID
 } from '@likec4/core'
-import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
+import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
+import type { DocumentUri, Location } from 'vscode-languageserver-types'
 
 // #region From server
 export const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')

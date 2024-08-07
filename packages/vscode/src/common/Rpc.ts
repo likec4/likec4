@@ -9,9 +9,9 @@ import type {
   LocateRequest
 } from '@likec4/language-server/protocol'
 import type * as vscode from 'vscode'
+import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
-import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
+import type { DocumentUri, Location } from 'vscode-languageserver-types'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 

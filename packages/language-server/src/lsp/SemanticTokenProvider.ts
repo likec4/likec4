@@ -1,7 +1,7 @@
 import type { AstNode } from 'langium'
 import { AbstractSemanticTokenProvider, type SemanticTokenAcceptor } from 'langium/lsp'
 import { isTruthy } from 'remeda'
-import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-protocol'
+import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
