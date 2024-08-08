@@ -3,7 +3,7 @@ import { Box } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
-import { useTransparentBackground } from '../useTransparentBackground'
+import { useTransparentBackground } from '../hooks'
 
 export const Route = createFileRoute('/embed/$viewId')({
   component: EmbedPage
@@ -29,9 +29,9 @@ function EmbedPage() {
         boxSizing: 'border-box',
         padding,
         transform: 'translateX(-50%)',
-        aspectRatio: `${diagram.width + padding * 2} / ${diagram.height + padding * 2}`,
+        aspectRatio: `${diagram.bounds.width + padding * 2} / ${diagram.bounds.height + padding * 2}`,
         width: '100vw',
-        maxWidth: diagram.width + padding * 2,
+        maxWidth: diagram.bounds.width + padding * 2,
         height: 'auto',
         maxHeight: '100vh'
       }}

@@ -51,14 +51,18 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
           }
         }
         let path = new URL(view.docUri).pathname
-        if (commonPrefix.length > 0 && path.startsWith(commonPrefix)) {
+        if (commonPrefix.length > 0) {
+          invariant(
+            path.startsWith(commonPrefix),
+            `Expect path "${path}" to start with common prefix: "${commonPrefix}"`
+          )
           path = path.slice(commonPrefix.length)
+        } else {
+          path = path.includes(sep) ? path.slice(path.lastIndexOf(sep) + 1) : path
         }
-        const parts = path.split(sep)
-        parts.pop() // remove filename
         return {
           ...view,
-          parts
+          parts: path.split(sep)
         }
       })
       // Sort views by path segments
@@ -82,13 +86,10 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
       })
       // Build relativePath from path segments
       .map(({ parts, ...view }) => {
-        if (view.docUri) {
-          return {
-            ...view,
-            relativePath: parts.join(sep)
-          }
+        return {
+          ...view,
+          relativePath: parts.join(sep)
         }
-        return view
       })
   )
 }

@@ -13,11 +13,11 @@ declare module 'virtual:likec4/views' {
 
   export type LikeC4ViewId = Opaque<string, 'LikeC4ViewId'>
 
-  export type DiagramView = CoreDiagramView & {
-    id: LikeC4ViewId
+  export type DiagramView = Omit<CoreDiagramView, 'id'> & {
+    id: ViewId
   }
 
-  export type LikeC4Views = Record<LikeC4ViewId, DiagramView>
+  export type LikeC4Views = Record<LikeC4ViewId, DiagramView<LikeC4ViewId>>
 
   export const LikeC4Views: LikeC4Views
   export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId

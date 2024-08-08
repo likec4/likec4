@@ -67,7 +67,32 @@ export async function bundleApp() {
       assetsInlineLimit: 1_000_000,
       lib: {
         entry: {
-          'main': 'src/main.tsx'
+          'main': 'src/main.tsx',
+          'theme': 'src/theme.ts',
+          'hooks': 'src/hooks.ts',
+          'routeTree.gen': 'src/routeTree.gen.ts',
+          'router': 'src/router.tsx',
+          'routes/__root': 'src/routes/__root.tsx',
+          'routes/-view-lazy-data': 'src/routes/-view-lazy-data.ts',
+          'routes/export.$viewId': 'src/routes/export.$viewId.tsx',
+          'routes/embed.$viewId': 'src/routes/embed.$viewId.tsx',
+          'routes/index': 'src/routes/index.tsx',
+          'routes/index.css': 'src/routes/index.css.ts',
+          'routes/view_viewId_.css': 'src/routes/view_viewId_.css.ts',
+          'routes/view.$viewId.d2': 'src/routes/view.$viewId.d2.tsx',
+          'routes/view.$viewId.dot': 'src/routes/view.$viewId.dot.tsx',
+          'routes/view.$viewId.mmd': 'src/routes/view.$viewId.mmd.tsx',
+          'routes/view.$viewId.editor': 'src/routes/view.$viewId.editor.tsx',
+          'routes/view.$viewId.index': 'src/routes/view.$viewId.index.tsx',
+          'routes/view.$viewId': 'src/routes/view.$viewId.tsx',
+          'routes/view.css': 'src/routes/view.css.ts',
+          'routes/webcomponent.$': 'src/routes/webcomponent.$.tsx',
+          'components/sidebar/Drawer': 'src/components/sidebar/Drawer.tsx',
+          'components/view-page/Header': 'src/components/view-page/Header.tsx',
+          'components/RenderIcon': 'src/components/RenderIcon.tsx',
+          'components/NotFound': 'src/components/NotFound.tsx',
+          'components/CopyToClipboard': 'src/components/CopyToClipboard.tsx',
+          'components/ColorSchemeToggle': 'src/components/ColorSchemeToggle.tsx'
         },
         formats: ['es']
       },
@@ -79,20 +104,8 @@ export async function bundleApp() {
         ignoreTryCatch: 'remove'
       },
       rollupOptions: {
-        // input: {
-        //   main: root + '',
-        //   // 'routes/index': root + '/src/routes/index.tsx',
-        //   // 'routes/export.$viewId': root + '/src/routes/export.$viewId.tsx',
-        //   // 'routes/embed.$viewId': root + '/src/routes/embed.$viewId.tsx',
-        //   // 'routes/view.$viewId.editor': root + '/src/routes/view.$viewId.editor.tsx',
-        //   // 'routes/view.$viewId.index': root + '/src/routes/view.$viewId.index.tsx',
-        //   // 'router': root + '/src/router.tsx',
-        //   // 'routeTree.gen': root + '/src/routeTree.gen.ts',
-        //   // 'components/sidebar/Drawer': root + '/src/components/sidebar/Drawer.tsx',
-        //   'components/RenderIcon': root + '/src/components/RenderIcon.tsx',
-        // },
         treeshake: {
-          preset: 'recommended'
+          preset: 'smallest'
           // moduleSideEffects: false,
         },
         output: {
@@ -100,8 +113,20 @@ export async function bundleApp() {
           interop: 'auto',
           format: 'esm',
           entryFileNames: '[name].js',
-          chunkFileNames: '[name]-[hash].js',
-          assetFileNames: '[name][extname]'
+          assetFileNames: '[name][extname]',
+          chunkFileNames: 'chunks/[name]-[hash].js',
+          manualChunks: (id) => {
+            if (id.includes('@mantine')) {
+              return 'mantine'
+            }
+            if (id.includes('@tanstack')) {
+              return 'tanstack-router'
+            }
+            if (id.includes('@likec4') || id.includes('@xyflow')) {
+              return 'likec4'
+            }
+            return null
+          }
         },
         external: [
           'react/jsx-runtime',

@@ -2,7 +2,7 @@ import { useColorScheme as usePreferredColorScheme } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useEffect, useState } from 'react'
 import { isString } from 'remeda'
-import fontCss from '../../webcomponent/font.css?inline'
+import fontCss from './font.css?inline'
 import { shadowRoot } from './styles.css'
 
 // Also used by MantineProvider as cssVariablesSelector
@@ -37,7 +37,7 @@ const createStyleSheet = () => {
   return bundledCSS
 }
 
-export const useCreateStyleSheet = (injectFontCss: boolean) => {
+export function useCreateStyleSheet(injectFontCss: boolean) {
   useIsomorphicLayoutEffect(() => {
     if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
       const style = document.createElement('style')

@@ -35,8 +35,8 @@ export const EmbedPanel = ({ diagram }: { diagram: DiagramView }) => {
     }).href,
     window.location.href
   )
-  const width = diagram.width + padding * 2
-  const height = diagram.height + padding * 2
+  const width = diagram.bounds.width + padding * 2
+  const height = diagram.bounds.height + padding * 2
   const href = url.href
 
   const code = `
