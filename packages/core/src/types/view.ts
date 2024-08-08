@@ -63,9 +63,8 @@ export interface BasicView<ViewType extends 'element' | 'dynamic'> {
   /**
    * For all views we find common ancestor path.
    * This is used to generate relative paths, i.e.:
-   * - "" for views in the common ancestor directory (or root)
-   * - "subdir" for views in "<root>/subdir"
-   * - "subdir/subdir1" for views in "<root>/subdir/subdir1"
+   * - "/home/project/index.c4" becomes "index.c4"
+   * - "/home/project/subdir/views.c4" becomes "subdir/views.c4"
    *
    * Undefined if the view is auto-generated.
    */
@@ -293,6 +292,8 @@ export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'man
   readonly nodes: DiagramNode[]
   readonly edges: DiagramEdge[]
   readonly bounds: BBox
+
+  // Should not exist in DiagramView
   manualLayout?: never
 }
 

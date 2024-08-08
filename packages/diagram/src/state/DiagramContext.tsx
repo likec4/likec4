@@ -1,6 +1,5 @@
-import { deepEqual } from 'fast-equals'
-import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
-import { hasSubObject, isNonNullish, pickBy } from 'remeda'
+import { deepEqual, shallowEqual } from 'fast-equals'
+import { createContext, type PropsWithChildren, useCallback, useEffect, useRef } from 'react'
 import { useUpdateEffect } from '../hooks'
 import { useXYFlow, useXYStoreApi } from '../xyflow/hooks/useXYFlow'
 import { createDiagramStore, type DiagramInitialState } from './diagramStore'
@@ -9,7 +8,7 @@ export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
 export const DiagramContext = createContext<DiagramZustandStore | null>(null)
 
 export type DiagramContextProviderProps = PropsWithChildren<
-  DiagramInitialState & {
+  Omit<DiagramInitialState, 'xystore' | 'xyflow' | 'getContainer'> & {
     className: string
     keepAspectRatio: boolean
   }
@@ -27,39 +26,33 @@ export function DiagramContextProvider({
   const xyflow = useXYFlow()
   const store = useRef<DiagramZustandStore>()
 
+  const getContainer = useCallback(() => containerRef.current, [containerRef])
+
   if (!store.current) {
     store.current = createDiagramStore({
       xystore,
       xyflow,
       view,
-      getContainer: () => containerRef.current,
+      getContainer,
       ...props
     })
   }
 
-  useEffect(
-    () => {
-      if (!store.current) return
-      const state = store.current.getState()
-      if (state.xyflow !== xyflow || state.xystore !== xystore) {
-        store.current.setState({ xyflow, xystore }, false, 'update xyflow and xystore')
-      }
-    },
-    [xyflow, xystore]
+  useUpdateEffect(
+    () => store.current?.setState({ xyflow, xystore, getContainer }, false, 'update xyflow and xystore'),
+    [xyflow, xystore, getContainer]
   )
 
-  const newProps = pickBy(props, isNonNullish)
   useUpdateEffect(
-    () => store.current?.setState(newProps, false, 'update incoming props'),
-    [newProps]
+    () => store.current?.setState(props, false, 'update incoming props'),
+    [props]
   )
 
   useUpdateEffect(
     () => {
       store.current?.getState().updateView(view)
     },
-    [view],
-    deepEqual
+    [view]
   )
 
   return (

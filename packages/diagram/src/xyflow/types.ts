@@ -13,6 +13,7 @@ import type {
 import { isNode } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isTruthy } from 'remeda'
+import type { Simplify } from 'type-fest'
 
 export type ElementXYFlowNode = Node<{
   fqn: Fqn
@@ -50,10 +51,13 @@ export type RelationshipData = {
   }
 }
 
-export type RelationshipEdge = Edge<RelationshipData, 'relationship'> & {
-  // Make field required
-  data: RelationshipData
-}
+export type RelationshipEdge = Simplify<
+  Edge<RelationshipData, 'relationship'> & {
+    type: 'relationship'
+    // Make field required
+    data: RelationshipData
+  }
+>
 
 export type XYFlowEdge = RelationshipEdge
 
@@ -65,11 +69,6 @@ export namespace XYFlowEdge {
 
 export type XYFlowInstance = ReactFlowInstance<XYFlowNode, XYFlowEdge>
 export type XYFlowState = ReactFlowState<XYFlowNode, XYFlowEdge>
-
-export type XYFlowData = {
-  nodes: XYFlowNode[]
-  edges: XYFlowEdge[]
-}
 
 export type XYFlowEventHandlers = {
   onPanelClick: (event: ReactMouseEvent) => void

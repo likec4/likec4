@@ -11,8 +11,8 @@ import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, hasAtLeast, hasSubObject, isNullish, reduce } from 'remeda'
-import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
+import { entries, hasAtLeast, isNullish, reduce } from 'remeda'
+import type { ConditionalKeys, Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
@@ -28,9 +28,11 @@ import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
 import { bezierControlPoints, isSamePoint, toDomPrecision } from '../xyflow/utils'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
-export type DiagramStore = {
-  readonly storeDevId: string
-  // Incoming props
+type RequiredOrNull<T> = {
+  [P in keyof T]-?: NonNullable<T[P]> | null
+}
+
+export type DiagramInitialState = {
   view: DiagramView
   readonly: boolean
   showElementLinks: boolean
@@ -43,111 +45,97 @@ export type DiagramStore = {
   experimentalEdgeEditing: boolean
   enableFocusMode: boolean
   renderIcon: ElementIconRenderer | null
-  // Diagram Container, see DiagramContainer.tsx
-  getContainer: () => HTMLDivElement | null
-
-  // Internal state
-  xynodes: XYFlowNode[]
-  xyedges: XYFlowEdge[]
-  viewSyncDebounceTimeout: number | null
+  // If Dynamic View
+  enableDynamicViewWalkthrough: boolean
 
   xyflow: XYFlowInstance
   xystore: XYStoreApi
-  initialized: boolean
 
-  // If Dynamic View
-  enableDynamicViewWalkthrough: boolean
-  activeDynamicViewStep: number | null
-
-  // This is XYFlow id's
-  lastClickedNodeId: string | null
-  lastClickedEdgeId: string | null
-  focusedNodeId: string | null
-  hoveredNodeId: string | null
-  hoveredEdgeId: string | null
-
-  // id's of nodes / edges that
-  dimmed: ReadonlySet<string>
-
-  lastOnNavigate: null | {
-    fromView: ViewID
-    toView: ViewID
-    fromNode: NodeId
-  }
-  navigationHistory: Array<{
-    viewId: ViewID
-    nodeId: NodeId | null
-  }>
-  navigationHistoryIndex: number
-
-  // User changed the viewport by dragging or zooming
-  viewportChanged: boolean
-} & Required<LikeC4DiagramEventHandlers>
+  // Diagram Container, for Mantine Portal
+  getContainer: () => HTMLDivElement | null
+} & RequiredOrNull<LikeC4DiagramEventHandlers>
 
 const StringSet = Set<string>
 
-export type DiagramInitialState = // Required properties
-  & Pick<
-    DiagramStore,
-    | 'view'
-    | 'renderIcon'
-    | 'readonly'
-    | 'showElementLinks'
-    | 'fitViewEnabled'
-    | 'fitViewPadding'
-    | 'zoomable'
-    | 'pannable'
-    | 'nodesDraggable'
-    | 'nodesSelectable'
-    | 'experimentalEdgeEditing'
-    | 'enableDynamicViewWalkthrough'
-    | 'enableFocusMode'
-  >
-  & LikeC4DiagramEventHandlers
+export type DiagramState = Simplify<
+  DiagramInitialState & {
+    readonly storeDevId: string
 
-interface DiagramStoreActions {
-  isDynamicView: boolean
+    // Internal state
+    xynodes: XYFlowNode[]
+    xyedges: XYFlowEdge[]
+    viewSyncDebounceTimeout: number | null
+    viewportChanged: boolean
 
-  updateView: (view: DiagramView) => void
+    initialized: boolean
 
-  focusOnNode: (nodeId: string) => void
+    // If Dynamic View
+    isDynamicView: boolean
+    activeDynamicViewStep: number | null
 
-  setHoveredNode: (nodeId: string | null) => void
-  setHoveredEdge: (edgeId: string | null) => void
+    // This is XYFlow id's
+    lastClickedNodeId: string | null
+    lastClickedEdgeId: string | null
+    focusedNodeId: string | null
+    hoveredNodeId: string | null
+    hoveredEdgeId: string | null
 
-  setLastClickedNode: (nodeId: string | null) => void
-  setLastClickedEdge: (edgeId: string | null) => void
+    // id's of nodes / edges that
+    dimmed: ReadonlySet<string>
 
-  resetLastClicked: () => void
+    lastOnNavigate: null | {
+      fromView: ViewID
+      toView: ViewID
+      fromNode: NodeId
+    }
+    navigationHistory: Array<{
+      viewId: ViewID
+      nodeId: NodeId | null
+    }>
+    navigationHistoryIndex: number
 
-  getElement(id: Fqn): DiagramNode | null
-  triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
+    // Actions
+    updateView: (view: DiagramView) => void
 
-  cancelSaveManualLayout: () => void
-  triggerSaveManualLayout: () => void
-  triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
-  fitDiagram: (duration?: number) => void
+    focusOnNode: (nodeId: string) => void
 
-  goBack: () => void
-  goForward: () => void
+    setHoveredNode: (nodeId: string | null) => void
+    setHoveredEdge: (edgeId: string | null) => void
 
-  nextDynamicStep: (increment?: number) => void
-  activateDynamicStep: (step: number) => void
-  stopDynamicView: () => void
+    setLastClickedNode: (nodeId: string | null) => void
+    setLastClickedEdge: (edgeId: string | null) => void
 
-  onNodesChange: OnNodesChange<XYFlowNode>
-  onEdgesChange: OnEdgesChange<XYFlowEdge>
-}
+    resetLastClicked: () => void
 
-export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
+    getElement(id: Fqn): DiagramNode | null
+    triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
+
+    cancelSaveManualLayout: () => void
+    triggerSaveManualLayout: () => void
+    triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
+    fitDiagram: (duration?: number) => void
+
+    goBack: () => void
+    goForward: () => void
+
+    nextDynamicStep: (increment?: number) => void
+    activateDynamicStep: (step: number) => void
+    stopDynamicView: () => void
+
+    onNodesChange: OnNodesChange<XYFlowNode>
+    onEdgesChange: OnEdgesChange<XYFlowEdge>
+  }
+>
 
 const DEFAULT_PROPS: Except<
-  DiagramStore,
-  'xystore' | 'xyedges' | 'xynodes' | 'xyflow' | 'getContainer' | 'storeDevId' | RequiredKeysOf<DiagramInitialState>
+  DiagramState,
+  'storeDevId' | 'navigationHistory' | RequiredKeysOf<DiagramInitialState> | ConditionalKeys<DiagramState, Function>
 > = {
+  xyedges: [],
+  xynodes: [],
+  isDynamicView: false,
   viewSyncDebounceTimeout: null,
   initialized: false,
-  navigationHistory: [],
   navigationHistoryIndex: 0,
   viewportChanged: false,
   activeDynamicViewStep: null,
@@ -157,19 +145,8 @@ const DEFAULT_PROPS: Except<
   lastClickedNodeId: null,
   lastClickedEdgeId: null,
   dimmed: new StringSet(),
-  lastOnNavigate: null,
-  onChange: null,
-  onNavigateTo: null,
-  onNodeClick: null,
-  onNodeContextMenu: null,
-  onCanvasContextMenu: null,
-  onEdgeClick: null,
-  onEdgeContextMenu: null,
-  onCanvasClick: null,
-  onCanvasDblClick: null
+  lastOnNavigate: null
 }
-
-export type CreateDiagramStore = DiagramInitialState & Pick<DiagramStore, 'xystore' | 'xyflow' | 'getContainer'>
 
 const noReplace = false
 
@@ -177,10 +154,12 @@ let StoreDevId = 1
 
 const EmptyStringSet: ReadonlySet<string> = new StringSet()
 
-export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props: T) {
+export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(props: T) {
   const storeDevId = 'DiagramStore' + String(StoreDevId++).padStart(2, '0')
-  const isDynamicView = props.view.__ === 'dynamic'
-  const xyflowdata = diagramViewToXYFlowData(props.view, {
+  const {
+    xynodes,
+    xyedges
+  } = diagramViewToXYFlowData(props.view, {
     draggable: props.nodesDraggable,
     selectable: props.nodesSelectable
   })
@@ -195,11 +174,11 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
       devtools(
         (set, get) => ({
           ...DEFAULT_PROPS,
-          ...(props as CreateDiagramStore),
+          ...(props as DiagramInitialState),
           storeDevId,
-          isDynamicView,
-          xynodes: xyflowdata.nodes,
-          xyedges: xyflowdata.edges,
+          isDynamicView: props.view.__ === 'dynamic',
+          xynodes,
+          xyedges,
           navigationHistory: [{
             viewId: props.view.id,
             nodeId: null as Fqn | null
@@ -343,12 +322,12 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               dimmed = EmptyStringSet
             }
 
-            const { nodes, edges } = diagramViewToXYFlowData(nextView, {
+            const next = diagramViewToXYFlowData(nextView, {
               draggable: nodesDraggable,
               selectable: nodesSelectable
             })
 
-            const _xynodes = nodes.map(update => {
+            const _xynodes = next.xynodes.map(update => {
               const existing = xynodes.find(n => n.id === update.id)
               if (existing && existing.type === update.type && eq(existing.parentId ?? null, update.parentId ?? null)) {
                 if (eq(existing.data.element, update.data.element)) {
@@ -361,7 +340,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
               return update
             })
-            const _xyedges = edges.map((update): XYFlowEdge => {
+            const _xyedges = next.xyedges.map((update): XYFlowEdge => {
               const existing = xyedges.find(n => n.id === update.id)
               if (existing) {
                 if (eq(existing.data.edge, update.data.edge)) {

@@ -11,7 +11,7 @@ import { DiagramContextProvider } from './state/DiagramContext'
 import { useDiagramState } from './state/useDiagramStore'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
-import type { XYFlowData } from './xyflow/types'
+import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
 import { XYFlowInner } from './xyflow/XYFlowInner'
 
@@ -46,24 +46,16 @@ export function LikeC4Diagram({
   onNavigateTo,
   onNodeClick,
   onNodeContextMenu,
+  onEditorCommand,
   renderIcon
 }: LikeC4DiagramProps) {
-  const initialRef = useRef<{
-    defaultNodes: XYFlowData['nodes']
-    defaultEdges: XYFlowData['edges']
-    initialWidth: number
-    initialHeight: number
-  }>()
-  if (!initialRef.current) {
-    initialRef.current = {
-      defaultNodes: [],
-      defaultEdges: [],
-      initialWidth: initialWidth ?? view.bounds.width,
-      initialHeight: initialHeight ?? view.bounds.height
-    }
-  }
+  const initialRef = useRef({
+    defaultNodes: [] as XYFlowNode[],
+    defaultEdges: [] as XYFlowEdge[],
+    initialWidth: initialWidth ?? view.bounds.width,
+    initialHeight: initialHeight ?? view.bounds.height
+  })
   // useLogger('LikeC4Diagram', [{view}])
-
   return (
     <EnsureMantine>
       <LazyMotion features={domAnimation} strict>
@@ -96,6 +88,7 @@ export function LikeC4Diagram({
             onChange={onChange ?? null}
             onNavigateTo={onNavigateTo ?? null}
             onCanvasDblClick={onCanvasDblClick ?? null}
+            onEditorCommand={onEditorCommand ?? null}
           >
             <LikeC4DiagramInnerMemo
               controls={controls}
