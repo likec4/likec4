@@ -40,6 +40,7 @@ type XYFlowWrapperProps = PropsWithChildren<{
 const selector = (s: DiagramState) => ({
   nodes: s.xynodes,
   edges: s.xyedges,
+  onInit: s.onInit,
   onNodesChange: s.onNodesChange,
   onEdgesChange: s.onEdgesChange,
   nodesSelectable: s.nodesSelectable || s.focusedNodeId !== null,
@@ -67,6 +68,7 @@ export function XYFlow({
   const {
     nodes,
     edges,
+    onInit,
     onNodesChange,
     onEdgesChange,
     nodesSelectable,
@@ -136,6 +138,9 @@ export function XYFlow({
       noPanClassName="nopan"
       panOnScroll={pannable}
       panOnDrag={pannable}
+      {...(!pannable && {
+        selectionKeyCode: null
+      })}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable || hasOnNodeClick || hasOnNavigateTo}
       edgesFocusable={false}
@@ -145,14 +150,13 @@ export function XYFlow({
         onNodeDrag: layoutConstraints.onNodeDrag,
         onNodeDragStop: layoutConstraints.onNodeDragStop
       }}
-      nodeDragThreshold={2}
-      zoomOnDoubleClick={false}
+      nodeDragThreshold={3}
+      zoomOnDoubleClick={true}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false} // or weird camera movement
-      selectionKeyCode={null}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      onDoubleClick={handlers.onDoubleClick}
+      // onDoubleClick={handlers.onDoubleClick}
       onPaneClick={handlers.onPaneClick}
       onMoveEnd={handlers.onMoveEnd}
       onNodeMouseEnter={handlers.onNodeMouseEnter}
@@ -163,9 +167,7 @@ export function XYFlow({
       onNodeDoubleClick={handlers.onNodeDoubleClick}
       onEdgeClick={handlers.onEdgeClick}
       onEdgeDoubleClick={handlers.onEdgeDoubleClick}
-      onInit={useCallback(() => {
-        diagramApi.setState({ initialized: true }, false, 'initialized')
-      }, [diagramApi])}
+      onInit={onInit}
       {...(hasOnNodeContextMenu && {
         onNodeContextMenu: handlers.onNodeContextMenu
       })}

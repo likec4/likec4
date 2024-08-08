@@ -122,6 +122,7 @@ export type DiagramState = Simplify<
     activateDynamicStep: (step: number) => void
     stopDynamicView: () => void
 
+    onInit: (xyflow: XYFlowInstance) => void
     onNodesChange: OnNodesChange<XYFlowNode>
     onEdgesChange: OnEdgesChange<XYFlowEdge>
   }
@@ -803,6 +804,20 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
                 'stopDynamicView'
               )
               get().fitDiagram()
+            }
+          },
+
+          onInit: (instance) => {
+            const { xyflow, initialized } = get()
+            if (!initialized || xyflow !== instance) {
+              set(
+                {
+                  xyflow: instance,
+                  initialized: true
+                },
+                noReplace,
+                'onInit'
+              )
             }
           }
         }),
