@@ -58,7 +58,7 @@ export function LikeC4ViewElement<ViewId extends string>({
 }: LikeC4ViewElementProps<ViewId>) {
   const id = useId()
 
-  const isLandscape = view.width > view.height
+  const isLandscape = view.bounds.width > view.bounds.height
 
   const onNavigateTo = useCallbackRef((to: string) => {
     _onNavigateTo?.(to as ViewId)
@@ -87,8 +87,8 @@ export function LikeC4ViewElement<ViewId extends string>({
             isLandscape ? '' : `
     min-height: 100px;`
           }
-    aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-    max-height: var(--likec4-view-max-height, ${Math.ceil(view.height)}px);
+    aspect-ratio: ${Math.ceil(view.bounds.width)} / ${Math.ceil(view.bounds.height)};
+    max-height: var(--likec4-view-max-height, ${Math.ceil(view.bounds.height)}px);
   }
       `
         }} />

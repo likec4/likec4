@@ -20,13 +20,13 @@ describe('resolveRelativePaths', () => {
       d('_b', 'b/file.c4')
     ])
     expect(result).toMatchObject([
-      { id: '_1', relativePath: '' },
-      { id: '_2', relativePath: '' },
-      { id: '_3', relativePath: '' },
-      { id: '_a', relativePath: 'a' },
-      { id: '_a2', relativePath: 'a' },
-      { id: '_b', relativePath: 'b' },
-      { id: '_ab', relativePath: 'a/b' }
+      { id: '_1', relativePath: 'file.c4' },
+      { id: '_2', relativePath: 'file2.c4' },
+      { id: '_3', relativePath: 'file3.c4' },
+      { id: '_a', relativePath: 'a/file.c4' },
+      { id: '_a2', relativePath: 'a/file.c4' },
+      { id: '_b', relativePath: 'b/file.c4' },
+      { id: '_ab', relativePath: 'a/b/file.c4' }
     ])
   })
 
@@ -38,11 +38,11 @@ describe('resolveRelativePaths', () => {
       d('_bc', 'b/c/file.c4')
     ])
     expect(result).toMatchObject([
-      { id: 'virtual' },
-      { id: '_a', relativePath: 'a' },
-      { id: '_b', relativePath: 'b' },
-      { id: '_bc', relativePath: 'b/c' }
+      { id: 'virtual', relativePath: '' },
+      { id: '_a', relativePath: 'a/file.c4' },
+      { id: '_b', relativePath: 'b/file.c4' },
+      { id: '_bc', relativePath: 'b/c/file.c4' }
     ])
-    expect(result[0]!.relativePath).toBeUndefined()
+    // expect(result[0]!.relativePath).toBeUndefined()
   })
 })

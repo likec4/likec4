@@ -1,6 +1,6 @@
 import { createTheme, type MantineTheme } from '@mantine/core'
 import { isString } from 'remeda'
-import fontCss from './font.css?inline'
+import fontCss from '../react/components/font.css?inline'
 
 export const bundledStyles = () => {
   let BundledStyles

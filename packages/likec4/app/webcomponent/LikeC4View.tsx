@@ -3,7 +3,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import { createRoot, type Root } from 'react-dom/client'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
-import { ComponentName } from './const.js'
+import { ComponentName } from './const'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
@@ -27,7 +27,8 @@ export class LikeC4View extends HTMLElement {
 
   updateHostCss() {
     const view = this.view
-    const isLandscape = view.width > view.height
+    const { width, height } = view.bounds
+    const isLandscape = width > height
     const hostCss = this.isKeepAspectRatio
       ? `
     :host {
@@ -49,8 +50,8 @@ export class LikeC4View extends HTMLElement {
         isLandscape ? '' : `
       min-height: 100px;`
       }
-      aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-      max-height: var(--likec4-view-max-height, ${Math.ceil(view.height * 1.05)}px);
+      aspect-ratio: ${Math.ceil(width)} / ${Math.ceil(height)};
+      max-height: var(--likec4-view-max-height, ${Math.ceil(height * 1.05)}px);
     }`
       : `
     :host {

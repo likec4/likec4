@@ -8,4 +8,5 @@ declare module 'likec4/react' {
   export function LikeC4Browser<ViewId extends string>(props: LikeC4BrowserProps<ViewId>): JSX.Element
 
   export function useColorScheme(explicit?: 'light' | 'dark'): 'light' | 'dark'
+  export function useCreateStyleSheet(injectFontCss: boolean): () => CSSStyleSheet
 }

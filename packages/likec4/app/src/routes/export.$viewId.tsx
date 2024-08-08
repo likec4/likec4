@@ -4,7 +4,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
-import { useTransparentBackground } from '../useTransparentBackground'
+import { useTransparentBackground } from '../hooks'
 import * as css from './view.css'
 
 export const Route = createFileRoute('/export/$viewId')({
@@ -28,24 +28,26 @@ function ExportPage() {
     throw notFound()
   }
 
+  const { width, height } = diagram.bounds
+
   return (
     <Box
       className={css.cssExportView}
       role="presentation"
       style={{
-        minWidth: diagram.width + padding * 2,
-        width: diagram.width + padding * 2,
-        minHeight: diagram.height + padding * 2,
-        height: diagram.height + padding * 2,
+        minWidth: width + padding * 2,
+        width: width + padding * 2,
+        minHeight: height + padding * 2,
+        height: height + padding * 2,
         padding
       }}>
       <Box
         className={css.cssExportBox}
         style={{
-          width: diagram.width,
-          minWidth: diagram.width,
-          height: diagram.height,
-          minHeight: diagram.height
+          width: width,
+          minWidth: width,
+          height: height,
+          minHeight: height
         }}>
         <LikeC4Diagram
           view={diagram}
@@ -62,8 +64,8 @@ function ExportPage() {
           nodesSelectable={false}
           nodesDraggable={false}
           renderIcon={RenderIcon}
-          initialWidth={diagram.width}
-          initialHeight={diagram.height} />
+          initialWidth={width}
+          initialHeight={height} />
       </Box>
     </Box>
   )

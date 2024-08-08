@@ -474,12 +474,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(views['index']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: ''
+      relativePath: 'index.c4'
     })
     expect(views['sys2']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir'
+      relativePath: 'subdir/doc2.c4'
     })
   })
 
@@ -570,17 +570,18 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(views['index']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: ''
+      relativePath: 'index.c4'
     })
+    expect(views['index']).not.toHaveProperty('docUri')
     expect(views['sys2']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir'
+      relativePath: 'subdir/doc2.c4'
     })
     expect(views['sys3']).toMatchObject({
       links: ['vscode-vfs://host/virtual/src/a/b/c/sys3/index.html'],
       // docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
-      relativePath: 'a/b/c'
+      relativePath: 'a/b/c/doc3.c4'
     })
   })
 

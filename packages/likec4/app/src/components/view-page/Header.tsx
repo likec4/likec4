@@ -162,8 +162,8 @@ function ExportButton({ diagram }: HeaderProps) {
 
   const onClick = async () => {
     const { toPng } = await import('html-to-image')
-    const imageWidth = diagram.width + 32
-    const imageHeight = diagram.height + 32
+    const imageWidth = diagram.bounds.width + 32
+    const imageHeight = diagram.bounds.height + 32
     const viewPort = document.querySelector<HTMLDivElement>('.react-flow__viewport')
     if (!viewPort) {
       return

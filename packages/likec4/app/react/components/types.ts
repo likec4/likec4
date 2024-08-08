@@ -2,8 +2,10 @@ import type { HTMLAttributes, ReactNode } from 'react'
 
 export type DiagramView<ViewId extends string> = {
   id: ViewId
-  width: number
-  height: number
+  bounds: {
+    width: number
+    height: number
+  }
 }
 
 export type ElementIconRendererProps = {
