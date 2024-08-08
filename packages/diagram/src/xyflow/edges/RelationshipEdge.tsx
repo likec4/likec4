@@ -294,6 +294,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const MarkerStart = markerStartName ? EdgeMarkers[markerStartName] : null
   const MarkerEnd = markerEndName ? EdgeMarkers[markerEndName] : null
 
+  const labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
+
   return (
     <g
       className={clsx([
@@ -365,7 +367,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             selected: selected ?? false,
             stepNum: data.stepNum,
             label: data.label,
-            zIndex: (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge) + 1,
+            zIndex: labelZIndex,
             isHovered,
             isActive,
             isStepEdge

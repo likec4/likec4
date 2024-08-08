@@ -3,17 +3,15 @@ import type {
   DiagramEdge,
   DiagramNode,
   DiagramView,
-  EdgeId,
   ElementShape,
   Fqn,
-  IconUrl,
   NonEmptyArray,
   ThemeColor,
   ViewID,
   ViewManualLayout
 } from '@likec4/core'
-import type { XYPosition } from '@xyflow/system'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { DiagramEditorCommand } from './types'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import type { XYBackground } from './xyflow/XYFlowBackground'
 
@@ -53,6 +51,10 @@ export type OnEdgeClick = (
     xyedge: XYFlowEdge
     event: ReactMouseEvent
   }
+) => void
+
+export type OnEditorCommand = (
+  cmd: DiagramEditorCommand
 ) => void
 
 /**
@@ -207,4 +209,6 @@ export interface LikeC4DiagramEventHandlers {
   onEdgeContextMenu?: OnEdgeClick | null | undefined
   onCanvasClick?: OnCanvasClick | null | undefined
   onCanvasDblClick?: OnCanvasClick | null | undefined
+
+  onEditorCommand?: OnEditorCommand | null | undefined
 }

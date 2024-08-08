@@ -2,7 +2,7 @@ import { extractStep, invariant, nonNullable } from '@likec4/core'
 import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../xyflow/const'
-import type { XYFlowData } from '../xyflow/types'
+import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 
@@ -12,14 +12,14 @@ export function diagramViewToXYFlowData(
     draggable: boolean
     selectable: boolean
   }
-): XYFlowData {
-  const isDynamicView = view.__ === 'dynamic'
-  const editor: XYFlowData = {
-    nodes: [],
-    edges: []
-  }
-
-  const nodeLookup = new Map<Fqn, DiagramNode>()
+): {
+  xynodes: XYFlowNode[]
+  xyedges: XYFlowEdge[]
+} {
+  const isDynamicView = view.__ === 'dynamic',
+    xynodes = [] as XYFlowNode[],
+    xyedges = [] as XYFlowEdge[],
+    nodeLookup = new Map<Fqn, DiagramNode>()
 
   const traverse = view.nodes.reduce(
     (acc, node) => {
@@ -60,7 +60,7 @@ export function diagramViewToXYFlowData(
 
     const id = ns + node.id
     const draggable = opts.draggable && (!parent || parent.children.length > 1)
-    editor.nodes.push({
+    xynodes.push({
       id,
       type: isCompound ? 'compound' : 'element',
       data: {
@@ -102,7 +102,7 @@ export function diagramViewToXYFlowData(
 
     // const level = Math.max(nodeZIndex(nodeById(source)), nodeZIndex(nodeById(target)))
 
-    editor.edges.push({
+    xyedges.push({
       id,
       type: 'relationship',
       source: ns + source,
@@ -112,7 +112,6 @@ export function diagramViewToXYFlowData(
       deletable: false,
       data: {
         edge,
-        // type: 'bezier',
         controlPoints: edge.controlPoints || null,
         stepNum: isDynamicView ? extractStep(edge.id) : null,
         label: !!edge.labelBBox
@@ -126,5 +125,8 @@ export function diagramViewToXYFlowData(
     })
   }
 
-  return editor
+  return {
+    xynodes,
+    xyedges
+  }
 }
