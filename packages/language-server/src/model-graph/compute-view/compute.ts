@@ -27,7 +27,7 @@ import {
   whereOperatorAsPredicate
 } from '@likec4/core'
 import { first, flatMap, hasAtLeast, isTruthy, unique } from 'remeda'
-import { applyViewHash } from '../../view-utils/view-hash'
+import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
@@ -165,7 +165,7 @@ export class ComputeCtx {
     ])
 
     const autoLayoutRule = this.view.rules.findLast(isViewRuleAutoLayout)
-    return applyViewHash({
+    return calcViewLayoutHash({
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
       nodes,

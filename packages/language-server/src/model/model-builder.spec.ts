@@ -791,8 +791,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       views {
         /**
          * @likec4-generated(v1)
-         * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgaRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc
-         * 0NvbXBvdW5kwqVlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBvaW50c5GCoXgKoXkK
+         * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOBpHN5czGCoWKUAABkZKFjwqVlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
          */
         view index {
           include *
@@ -804,7 +803,10 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const indexView = model?.views['index' as ViewID]!
     expect(indexView).toBeDefined()
     expect(indexView).toHaveProperty('manualLayout', {
+      autoLayout: 'TB',
       hash: 'hash',
+      x: -10,
+      y: -20,
       height: 100,
       width: 200,
       nodes: {

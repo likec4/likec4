@@ -1,9 +1,57 @@
 import type { ViewManualLayout } from '@likec4/core/types'
 import { decode, encode } from '@msgpack/msgpack'
 import { fromBase64, toBase64 } from '@smithy/util-base64'
+import { mapValues } from 'remeda'
+
+function pack({
+  nodes,
+  edges,
+  ...rest
+}: ViewManualLayout) {
+  return {
+    ...rest,
+    nodes: mapValues(nodes, ({ x, y, width, height, isCompound, ...n }) => ({
+      ...n,
+      b: [x, y, width, height] as const,
+      c: isCompound
+    })),
+    edges: mapValues(edges, ({ points, controlPoints, labelBBox, dotpos, ...e }) => ({
+      ...!!controlPoints && { cp: controlPoints },
+      ...!!labelBBox && { l: labelBBox },
+      ...!!dotpos && { dp: dotpos },
+      ...e,
+      p: points
+    }))
+  }
+}
+
+function unpack({
+  nodes,
+  edges,
+  ...rest
+}: ReturnType<typeof pack>): ViewManualLayout {
+  return {
+    ...rest,
+    nodes: mapValues(nodes, ({ b, c, ...n }) => ({
+      x: b[0],
+      y: b[1],
+      width: b[2],
+      height: b[3],
+      isCompound: c,
+      ...n
+    })),
+    edges: mapValues(edges, ({ p, cp, l, dp, ...e }) => ({
+      ...!!cp && { controlPoints: cp },
+      ...!!l && { labelBBox: l },
+      ...!!dp && { dotpos: dp },
+      ...e,
+      points: p
+    }))
+  }
+}
 
 export function serializeToComment(layout: ViewManualLayout) {
-  const bytes = encode(layout)
+  const bytes = encode(pack(layout))
   const base64 = toBase64(bytes)
   const lines = [] as string[]
   let offset = 0
@@ -36,5 +84,5 @@ export function deserializeFromComment(comment: string): ViewManualLayout {
     .map(l => l.replaceAll('*', '').trim())
     .join('')
   const decodedb64 = fromBase64(b64)
-  return decode(decodedb64) as ViewManualLayout
+  return unpack(decode(decodedb64) as any) as ViewManualLayout
 }

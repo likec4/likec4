@@ -4,6 +4,12 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
+  "bounds": {
+    "height": 282,
+    "width": 927,
+    "x": 0,
+    "y": 0,
+  },
   "description": null,
   "edges": [
     {
@@ -43,8 +49,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "target": "amazon.s3",
     },
   ],
-  "hash": "b0893852a41efeb3d6e941dbe5221bde3d9a048a",
-  "height": 282,
+  "hash": "b055d95979ca9d13f4baf2c59e474a54d41711fb",
   "id": "amazon",
   "links": null,
   "nodes": [
@@ -182,7 +187,6 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "amazon",
-  "width": 927,
 }
 `;
 
@@ -190,6 +194,12 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
+  "bounds": {
+    "height": 907,
+    "width": 1340,
+    "x": 0,
+    "y": 0,
+  },
   "description": null,
   "edges": [
     {
@@ -424,8 +434,7 @@ with sso authentification",
       "target": "amazon",
     },
   ],
-  "hash": "d251757de7f97a6d12026d6cb711903508a5e227",
-  "height": 907,
+  "hash": "ee03a8a7f2e2116237d6593c84f485fea9239eb2",
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -736,7 +745,6 @@ with sso authentification",
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1340,
 }
 `;
 
@@ -744,6 +752,12 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
+  "bounds": {
+    "height": 539,
+    "width": 1504,
+    "x": 0,
+    "y": 0,
+  },
   "description": null,
   "edges": [
     {
@@ -889,8 +903,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "a2aecd4a69928a2ba4e12c37df5eb263ef503e31",
-  "height": 539,
+  "hash": "c4cb67032cfa3adc3c5ce85bf2feb74c1d7290e3",
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -1096,7 +1109,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1504,
 }
 `;
 
@@ -1104,6 +1116,12 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
+  "bounds": {
+    "height": 493,
+    "width": 1057,
+    "x": 0,
+    "y": 0,
+  },
   "description": null,
   "edges": [
     {
@@ -1213,8 +1231,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "1cb03738dd683e790ee2267d046851d00b0d9c1a",
-  "height": 493,
+  "hash": "df7be1df369eaf45975acfe40df373e53abc493e",
   "id": "index",
   "links": null,
   "nodes": [
@@ -1348,6 +1365,5 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
   ],
   "tags": null,
   "title": "",
-  "width": 1057,
 }
 `;

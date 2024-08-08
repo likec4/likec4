@@ -1,5 +1,5 @@
 import type { DiagramNode, DiagramView, Fqn, NodeId, ViewID } from '@likec4/core'
-import { invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
+import { getBBoxCenter, invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -7,7 +7,7 @@ import {
   type OnEdgesChange,
   type OnNodesChange
 } from '@xyflow/react'
-import { getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
+import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
@@ -311,7 +311,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
               if (!lastOnNavigate || isNullish(elTo) || isNullish(xynodeFrom)) {
                 const zoom = xyflow.getZoom()
-                xyflow.setCenter(nextView.width / 2, nextView.height / 2, { zoom })
+                const { x, y } = getBBoxCenter(nextView.bounds)
+                xyflow.setCenter(x, y, { zoom })
                 lastOnNavigate = null
               }
 
@@ -582,12 +583,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               set({ viewSyncDebounceTimeout: null })
 
               const movedNodes = new StringSet()
-              let bounds = {
-                x: 0,
-                y: 0,
-                width: view.width,
-                height: view.height
-              }
+              let bounds = view.bounds
               const nodes = reduce([...nodeLookup.values()], (acc, node) => {
                 const dimensions = getNodeDimensions(node)
                 if (!isSamePoint(node.internals.positionAbsolute, node.data.element.position)) {
@@ -622,6 +618,17 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 if (!sourceOrTargetMoved && data.edge.dotpos) {
                   _updated.dotpos = data.edge.dotpos
                 }
+                const allX = [...data.edge.points.map(p => p[0]), ...(controlPoints ?? []).map(p => p.x)]
+                const allY = [...data.edge.points.map(p => p[1]), ...(controlPoints ?? []).map(p => p.y)]
+                bounds = getBoundsOfRects(
+                  bounds,
+                  boxToRect({
+                    x: Math.min(...allX),
+                    y: Math.min(...allY),
+                    x2: Math.max(...allX),
+                    y2: Math.max(...allY)
+                  })
+                )
                 return acc
               }, {} as Changes.SaveManualLayout['layout']['edges'])
 
@@ -629,6 +636,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 op: 'save-manual-layout',
                 layout: {
                   hash: view.hash,
+                  autoLayout: view.autoLayout,
+                  x: Math.floor(bounds.x),
+                  y: Math.floor(bounds.y),
                   width: Math.ceil(bounds.width),
                   height: Math.ceil(bounds.height),
                   nodes,
@@ -732,12 +742,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const { fitViewPadding, view, focusedNodeId, activeDynamicViewStep, xystore } = get()
             const { width, height, panZoom, transform } = xystore.getState()
 
-            const bounds = {
-              x: 0,
-              y: 0,
-              width: view.width,
-              height: view.height
-            }
+            const bounds = view.bounds
             const maxZoom = Math.max(1, transform[2])
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, fitViewPadding)
             panZoom?.setViewport(viewport, { duration })

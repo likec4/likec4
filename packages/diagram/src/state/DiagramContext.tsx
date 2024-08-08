@@ -68,8 +68,8 @@ export function DiagramContextProvider({
       className={className}
       {...(keepAspectRatio && {
         style: {
-          aspectRatio: `${Math.ceil(view.width)}/${Math.ceil(view.height)}`,
-          maxHeight: Math.ceil(view.height)
+          aspectRatio: `${Math.ceil(view.bounds.width)}/${Math.ceil(view.bounds.height)}`,
+          maxHeight: Math.ceil(view.bounds.height)
         }
       })}>
       <DiagramContext.Provider value={store.current}>

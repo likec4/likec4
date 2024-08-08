@@ -173,8 +173,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
 
   const diagram: DiagramView = {
     ...view,
-    width: page.x + page.width,
-    height: page.y + page.height,
+    bounds: page,
     nodes: [],
     edges: []
   }

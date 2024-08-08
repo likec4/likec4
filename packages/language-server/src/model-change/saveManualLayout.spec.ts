@@ -7,6 +7,9 @@ vi.mock('../logger')
 
 const layout: ViewManualLayout = {
   hash: 'hash',
+  autoLayout: 'TB',
+  x: -10,
+  y: -20,
   height: 100,
   width: 200,
   nodes: {
@@ -55,7 +58,7 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
     expect(textedit.newText).toMatchInlineSnapshot(`
       "  /**
          * @likec4-generated(v1)
-         * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgaRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqVlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBvaW50c5GCoXgKoXkK
+         * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOBpHN5czGCoWKUAABkZKFjwqVlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
          */
       "
     `)
@@ -91,7 +94,7 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
     expect(textedit.newText).toMatchInlineSnapshot(`
       " /**
         * @likec4-generated(v1)
-        * haRoYXNopGhhc2imaGVpZ2h0ZKV3aWR0aMzIpW5vZGVzgaRzeXMxhaF4AKF5AKV3aWR0aGSmaGVpZ2h0ZKppc0NvbXBvdW5kwqVlZGdlc4GlZWRnZTGCpnBvaW50c5KSAACSZGStY29udHJvbFBvaW50c5GCoXgKoXkK
+        * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOBpHN5czGCoWKUAABkZKFjwqVlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
         */
       "
     `)
