@@ -258,6 +258,18 @@ export type BBox = {
   height: number
 }
 
+export function getBBoxCenter({
+  x,
+  y,
+  width,
+  height
+}: BBox): XYPoint {
+  return {
+    x: x + width / 2,
+    y: y + height / 2
+  }
+}
+
 export interface DiagramNode extends ComputedNode {
   width: number
   height: number
@@ -280,16 +292,18 @@ export interface DiagramEdge extends ComputedEdge {
 export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'manualLayout'> {
   readonly nodes: DiagramNode[]
   readonly edges: DiagramEdge[]
-  readonly width: number
-  readonly height: number
+  readonly bounds: BBox
   manualLayout?: never
 }
 
 export type ViewManualLayout = {
   // Object hash of previous layout
   readonly hash: string
+  readonly x: number
+  readonly y: number
   readonly width: number
   readonly height: number
+  readonly autoLayout: AutoLayoutDirection
   readonly nodes: Record<string, {
     isCompound: boolean
     x: number

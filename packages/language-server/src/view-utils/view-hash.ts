@@ -1,36 +1,19 @@
-import type { ComputedEdge, ComputedNode, ComputedView, ElementStyle } from '@likec4/core/types'
+import type { ComputedView } from '@likec4/core/types'
 import objectHash from 'object-hash'
-import { isString } from 'remeda'
+import { isString, pick } from 'remeda'
 import type { SetOptional } from 'type-fest'
 
-export function applyViewHash<V extends ComputedView>(view: SetOptional<V, 'hash'>): V {
-  const excludedkeys: string[] = [
-    'manualLayout',
-    'docUri',
-    'links',
-    'tags',
-    'navigateTo',
-    'children',
-    'inEdges',
-    'outEdges',
-    'opacity',
-    'border',
-    'hash',
-    'relativePath',
-    'color',
-    'source',
-    'target',
-    'line',
-    'kind',
-    'isCustomized',
-    'relations'
-  ] satisfies Array<keyof ComputedView | keyof ComputedEdge | keyof ComputedNode | keyof ElementStyle>
+export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 'hash'>): V {
   const tohash = {
     id: view.id,
     __: view.__ ?? 'element',
     autoLayout: view.autoLayout,
-    nodes: view.nodes.toSorted((a, b) => a.id.localeCompare(b.id)),
-    edges: view.edges.toSorted((a, b) => a.id.localeCompare(b.id))
+    nodes: view.nodes
+      .map(pick(['id', 'title', 'description', 'technology', 'shape', 'icon', 'children']))
+      .toSorted((a, b) => a.id.localeCompare(b.id)),
+    edges: view.edges
+      .map(pick(['id', 'source', 'target', 'label', 'description', 'technology', 'dir', 'head', 'tail', 'line']))
+      .toSorted((a, b) => a.id.localeCompare(b.id))
   }
   view.hash = objectHash(tohash, {
     ignoreUnknown: true,
@@ -40,13 +23,10 @@ export function applyViewHash<V extends ComputedView>(view: SetOptional<V, 'hash
         return value
       }
       value = value.trim()
-      if (value.match('^(aws|tech|gcp|https|http).+')) {
+      if (value.match('^(aws|tech|gcp|https|http)')) {
         value = 'U' // hide urls
       }
       return value
-    },
-    excludeKeys(key) {
-      return excludedkeys.includes(key)
     }
   })
   return view as V

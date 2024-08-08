@@ -58,8 +58,8 @@ export function LikeC4Diagram({
     initialRef.current = {
       defaultNodes: [],
       defaultEdges: [],
-      initialWidth: initialWidth ?? view.width,
-      initialHeight: initialHeight ?? view.height
+      initialWidth: initialWidth ?? view.bounds.width,
+      initialHeight: initialHeight ?? view.bounds.height
     }
   }
   // useLogger('LikeC4Diagram', [{view}])

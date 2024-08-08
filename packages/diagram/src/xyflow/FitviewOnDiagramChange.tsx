@@ -9,7 +9,13 @@ function selectXYFlowSize(state: { width: number; height: number }): string {
 }
 
 function selectDiagramsize({ view, fitViewPadding }: DiagramState) {
-  return selectXYFlowSize(view) + ':' + fitViewPadding
+  return [
+    view.bounds.x,
+    view.bounds.y,
+    view.bounds.width,
+    view.bounds.height,
+    fitViewPadding
+  ].map(Math.round).join(':')
 }
 
 function FitViewOnViewportResize({ diagramApi }: {

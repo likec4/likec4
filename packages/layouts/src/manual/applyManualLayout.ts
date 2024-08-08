@@ -37,8 +37,12 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
   })
   return {
     ...diagramView,
-    width: Math.max(manualLayout.width, diagramView.width),
-    height: Math.max(manualLayout.height, diagramView.height),
+    bounds: {
+      x: Math.min(manualLayout.x, diagramView.bounds.x),
+      y: Math.min(manualLayout.y, diagramView.bounds.y),
+      width: Math.max(manualLayout.width, diagramView.bounds.width),
+      height: Math.max(manualLayout.height, diagramView.bounds.height)
+    },
     nodes,
     edges
   }
@@ -58,32 +62,25 @@ export function applyManualLayout(
   }
 
   // If the hash is different, we still can safely apply the layout:
+  // - autoLayout is the same
   // - no new nodes
+  // - compound nodes do not become leaf nodes and vice versa
   // - no new edges
   // - leaf nodes do not become larger
   // TODO: - edge labels do not become larger
-
-  const anyBecomeLarger = () =>
-    pipe(
-      entries(manualLayout.nodes),
-      filter(([fqn, n]) => {
-        if (n.isCompound) {
-          return false
-        }
-        const diagramNode = diagramView.nodes.find(n => n.id === fqn)
-        return diagramNode ? hasBecomeLarger(diagramNode, n) : false
-      }),
-      take(1)
-    ).length > 0
-
   if (
-    diagramView.nodes.every(n =>
-      n.id in manualLayout.nodes
-      && (n.children.length > 0 && manualLayout.nodes[n.id]?.isCompound
-        || n.children.length === 0 && !manualLayout.nodes[n.id]?.isCompound)
-    )
+    diagramView.autoLayout === manualLayout.autoLayout
+    && diagramView.nodes.every(n => {
+      const manualNode = manualLayout.nodes[n.id]
+      return !!manualNode
+        && (
+          n.children.length > 0 && manualNode.isCompound
+          || n.children.length === 0 && !manualNode.isCompound
+        )
+        // Only check for leaf nodes
+        && (manualNode.isCompound || hasBecomeLarger(n, manualNode) === false)
+    })
     && diagramView.edges.every(e => e.id in manualLayout.edges)
-    && !anyBecomeLarger()
   ) {
     return {
       diagram: safeApplyLayout(diagramView, manualLayout)
@@ -93,7 +90,7 @@ export function applyManualLayout(
   // Re-layout is required, find nodes where we can pin position
   const pinned = diagramView.nodes.reduce((acc, node) => {
     const manualNode = manualLayout.nodes[node.id]
-    // We can't pin the position of groups
+    // We can't pin the position of compounds
     // Or this is a new node
     if (node.children.length > 0 || !manualNode) {
       return acc
@@ -105,7 +102,7 @@ export function applyManualLayout(
         y: manualNode.y + manualNode.height / 2
       }
     }
-    if (!manualNode.isCompound && !hasBecomeLarger(node, manualNode)) {
+    if (!(manualNode.isCompound || hasBecomeLarger(node, manualNode))) {
       _pinned.fixedsize = {
         width: manualNode.width,
         height: manualNode.height
