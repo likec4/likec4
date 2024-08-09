@@ -12,6 +12,35 @@ describe('inout-expr', () => {
     ])
   })
 
+  it('exclude -> cloud ->', () => {
+    const { nodeIds } = computeView('cloud', [
+      $include('*'),
+      $exclude('-> cloud ->')
+    ])
+    expect(nodeIds).toEqual([
+      'cloud',
+      'cloud.frontend',
+      'cloud.backend'
+    ])
+  })
+
+  it('exclude -> cloud.* ->', () => {
+    const { nodeIds, edgeIds } = computeView('cloud.backend', [
+      $include('*'),
+      // exclude incoming and outgoing edges of cloud
+      // exclude cloud.frontend -> cloud.backend
+      $exclude('-> cloud.* ->')
+    ])
+    expect(nodeIds).toEqual([
+      'cloud.backend',
+      'cloud.backend.graphql',
+      'cloud.backend.storage'
+    ])
+    expect(edgeIds).toEqual([
+      'cloud.backend.graphql:cloud.backend.storage'
+    ])
+  })
+
   it('include -> customer ->', () => {
     const { nodeIds } = computeView('cloud.backend', [
       $include('*'), // we have cloud.frontend from this

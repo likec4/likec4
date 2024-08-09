@@ -33,7 +33,7 @@ export class LikeC4ModelLocator {
     return doc.c4Elements.find(e => e.id === fqn) ?? null
   }
 
-  public locateElement(fqn: c4.Fqn): Location | null {
+  public locateElement(fqn: c4.Fqn, _prop?: string): Location | null {
     const entry = this.fqnIndex.byFqn(fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {

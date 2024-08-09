@@ -71,7 +71,7 @@ describe('incoming-expr', () => {
     })
 
     // exclude outgoing from cloud
-    it.todo('exclude cloud ->', () => {
+    it('exclude cloud ->', () => {
       const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
         $exclude('cloud ->')
@@ -80,8 +80,8 @@ describe('incoming-expr', () => {
         'customer',
         'support',
         'cloud',
-        'cloud.backend',
-        'cloud.frontend'
+        'cloud.frontend',
+        'cloud.backend'
       ])
       expect(edgeIds).toEqual([
         'customer:cloud.frontend',
