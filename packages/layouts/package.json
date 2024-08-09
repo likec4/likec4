@@ -68,13 +68,13 @@
     "@likec4/core": "workspace:*"
   },
   "devDependencies": {
-    "@hpcc-js/wasm": "2.18.0",
+    "@hpcc-js/wasm": "2.18.2",
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.14.13",
     "typescript": "^5.5.4",
-    "vitest": "~2.0.3"
+    "vitest": "~2.0.5"
   },
   "packageManager": "yarn@4.3.1"
 }

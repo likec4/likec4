@@ -32,14 +32,16 @@ const base = {
   metafile: isDev,
   outdir: 'dist',
   outbase: 'src',
-  // logLevel: isDev ? 'debug' : 'info',
-  logLevel: 'info',
+  logLevel: isDev ? 'debug' : 'info',
   color: true,
   bundle: true,
   treeShaking: true,
-  external: [
+  external: isDev ? [
     'vscode',
-    '@hpcc-js/wasm',
+    'langium',
+    '@hpcc-js/wasm'
+  ] : [
+    'vscode'
   ],
   ...(!isDev && {
     define: {

@@ -38,7 +38,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.24.7",
     "@types/node": "^20.14.13",
-    "@vitest/ui": "~2.0.3",
+    "@vitest/ui": "~2.0.5",
     "dprint": "0.47.2",
     "esbuild": "^0.21.5",
     "execa": "^9.3.0",
@@ -49,10 +49,10 @@
     "rimraf": "^6.0.1",
     "shipjs": "^0.26.3",
     "tsx": "~4.9.3",
-    "turbo": "^2.0.9",
+    "turbo": "^2.0.12",
     "typescript": "^5.5.4",
     "vite": "5.3.4",
-    "vitest": "~2.0.3"
+    "vitest": "~2.0.5"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.2.0",
