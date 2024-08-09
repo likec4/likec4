@@ -28,45 +28,37 @@ function ExportPage() {
     throw notFound()
   }
 
-  const { width, height } = diagram.bounds
+  const width = diagram.bounds.width + padding * 2,
+    height = diagram.bounds.height + padding * 2
 
   return (
     <Box
       className={css.cssExportView}
       role="presentation"
       style={{
-        minWidth: width + padding * 2,
-        width: width + padding * 2,
-        minHeight: height + padding * 2,
-        height: height + padding * 2,
-        padding
+        minWidth: width,
+        width: width,
+        minHeight: height,
+        height: height
       }}>
-      <Box
-        className={css.cssExportBox}
-        style={{
-          width: width,
-          minWidth: width,
-          height: height,
-          minHeight: height
-        }}>
-        <LikeC4Diagram
-          view={diagram}
-          readonly
-          fitView={false}
-          fitViewPadding={0}
-          pannable={false}
-          zoomable={false}
-          controls={false}
-          background={'transparent'}
-          enableDynamicViewWalkthrough={false}
-          showElementLinks={false}
-          showDiagramTitle={false}
-          nodesSelectable={false}
-          nodesDraggable={false}
-          renderIcon={RenderIcon}
-          initialWidth={width}
-          initialHeight={height} />
-      </Box>
+      <LikeC4Diagram
+        view={diagram}
+        readonly
+        fitView={true}
+        fitViewPadding={0}
+        pannable={false}
+        zoomable={false}
+        controls={false}
+        background={'transparent'}
+        enableDynamicViewWalkthrough={false}
+        showElementLinks={false}
+        showDiagramTitle={false}
+        nodesSelectable={false}
+        nodesDraggable={false}
+        enableFocusMode={false}
+        renderIcon={RenderIcon}
+        initialWidth={width}
+        initialHeight={height} />
     </Box>
   )
 }

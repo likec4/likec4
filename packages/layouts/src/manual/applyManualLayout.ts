@@ -1,5 +1,5 @@
-import { type DiagramEdge, type DiagramNode, type DiagramView, nonNullable, type ViewManualLayout } from '@likec4/core'
-import { entries, filter, pipe, take } from 'remeda'
+import { type DiagramEdge, type DiagramNode, type DiagramView, type ViewManualLayout } from '@likec4/core'
+import { entries } from 'remeda'
 import type { MergeExclusive, SetRequired } from 'type-fest'
 import type { ApplyManualLayoutData } from '../graphviz/DotPrinter'
 
@@ -38,10 +38,10 @@ function safeApplyLayout(diagramView: DiagramView, manualLayout: ViewManualLayou
   return {
     ...diagramView,
     bounds: {
-      x: Math.min(manualLayout.x, diagramView.bounds.x),
-      y: Math.min(manualLayout.y, diagramView.bounds.y),
-      width: Math.max(manualLayout.width, diagramView.bounds.width),
-      height: Math.max(manualLayout.height, diagramView.bounds.height)
+      x: manualLayout.x,
+      y: manualLayout.y,
+      width: manualLayout.width,
+      height: manualLayout.height
     },
     nodes,
     edges
@@ -67,7 +67,7 @@ export function applyManualLayout(
   // - compound nodes do not become leaf nodes and vice versa
   // - no new edges
   // - leaf nodes do not become larger
-  // TODO: - edge labels do not become larger
+  // - edge labels do not become larger
   if (
     diagramView.autoLayout === manualLayout.autoLayout
     && diagramView.nodes.every(n => {
@@ -80,7 +80,18 @@ export function applyManualLayout(
         // Only check for leaf nodes
         && (manualNode.isCompound || hasBecomeLarger(n, manualNode) === false)
     })
-    && diagramView.edges.every(e => e.id in manualLayout.edges)
+    && diagramView.edges.every(e => {
+      const manualEdge = manualLayout.edges[e.id]
+      return !!manualEdge && (
+        // both edges have no label
+        (!e.labelBBox && !manualEdge.labelBBox) || (
+          // or labelbox has not become larger
+          !!e.labelBBox && !!manualEdge.labelBBox
+          && e.labelBBox.width <= manualEdge.labelBBox.width
+          && e.labelBBox.height <= manualEdge.labelBBox.height
+        )
+      )
+    })
   ) {
     return {
       diagram: safeApplyLayout(diagramView, manualLayout)
@@ -98,8 +109,8 @@ export function applyManualLayout(
     const _pinned: ApplyManualLayoutData['nodes'][number] = {
       id: node.id,
       center: {
-        x: manualNode.x + manualNode.width / 2,
-        y: manualNode.y + manualNode.height / 2
+        x: Math.round(manualNode.x + manualNode.width / 2),
+        y: Math.round(manualNode.y + manualNode.height / 2)
       }
     }
     if (!(manualNode.isCompound || hasBecomeLarger(node, manualNode))) {
@@ -114,6 +125,8 @@ export function applyManualLayout(
 
   return {
     relayout: {
+      x: manualLayout.x,
+      y: manualLayout.y,
       height: manualLayout.height,
       nodes: pinned,
       edges: entries(manualLayout.edges).flatMap(([id, edge]) => {

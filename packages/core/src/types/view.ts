@@ -293,6 +293,11 @@ export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'man
   readonly edges: DiagramEdge[]
   readonly bounds: BBox
 
+  /**
+   * If diagram has manual layout
+   * But was changed and layout should be recalculated
+   */
+  hasLayoutDrift?: boolean
   // Should not exist in DiagramView
   manualLayout?: never
 }

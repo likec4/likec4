@@ -25,7 +25,6 @@ export const exportCmd = {
               type: 'string',
               desc: 'output directory',
               normalize: true,
-              default: '.',
               coerce: resolve
             })
             .option('theme', {

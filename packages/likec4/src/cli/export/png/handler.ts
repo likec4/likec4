@@ -16,7 +16,7 @@ type HandlerParams = {
   /**
    * output directory
    */
-  output: string
+  output: string | undefined
   theme: 'light' | 'dark'
   useDotBin: boolean
   timeoutMs: number
@@ -29,6 +29,8 @@ export async function pngHandler({ path, useDotBin, theme, output, ignore, timeo
   const timer = startTimer()
 
   const languageServices = await LanguageServices.get({ path, useDotBin })
+
+  output ??= languageServices.workspace
 
   const views = await languageServices.views.diagrams()
   if (!hasAtLeast(views, 1)) {

@@ -54,7 +54,11 @@ const selector = (s: DiagramState) => ({
   hasOnEdgeContextMenu: !!s.onEdgeContextMenu,
   hasOnEdgeClick: !!s.onEdgeClick,
   zoomable: s.zoomable,
-  pannable: s.pannable
+  pannable: s.pannable,
+  // If fitView is not enabled
+  // And diagram starts with a negative x or y - we need to translate viewprot
+  translateX: s.fitViewEnabled ? 0 : -Math.min(s.view.bounds.x, 0),
+  translateY: s.fitViewEnabled ? 0 : -Math.min(s.view.bounds.y, 0)
 })
 
 export function XYFlow({
@@ -80,7 +84,9 @@ export function XYFlow({
     hasOnNavigateTo,
     hasOnNodeContextMenu,
     hasOnCanvasContextMenu,
-    hasOnEdgeContextMenu
+    hasOnEdgeContextMenu,
+    translateX,
+    translateY
   } = useDiagramState(selector, shallowEqual)
 
   // useLogger('XYFlow',[
@@ -131,6 +137,13 @@ export function XYFlow({
         padding: fitViewPadding,
         includeHiddenNodes: true
       }), [fitViewPadding])}
+      {...(!fitView && {
+        viewport: {
+          x: translateX,
+          y: translateY,
+          zoom: 1
+        }
+      })}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"

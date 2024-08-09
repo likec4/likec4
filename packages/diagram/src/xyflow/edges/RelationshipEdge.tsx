@@ -7,14 +7,14 @@ import {
   type RelationshipArrowType
 } from '@likec4/core'
 import { Box } from '@mantine/core'
-import { useIsomorphicLayoutEffect } from '@react-hookz/web'
+import { useDebouncedEffect } from '@react-hookz/web'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual, deepEqual as eq } from 'fast-equals'
-import { memo, type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
+import { memo, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../state/useDiagramStore'
 import { ZIndexes } from '../const'
@@ -124,6 +124,7 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && isSame(prev.targetX, next.targetX)
   && isSame(prev.targetY, next.targetY)
   && eq(prev.data.stepNum, next.data.stepNum)
+  && eq(prev.data.label, next.data.label)
   && sameControlPoints(prev.data.controlPoints, next.data.controlPoints)
   && eq(prev.data.edge, next.data.edge)
 )
@@ -170,6 +171,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       points: diagramEdgePoints,
       line = 'dashed',
       color = 'gray',
+      labelBBox,
       ...diagramEdge
     }
   } = data
@@ -187,12 +189,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     strokeDasharray = '8,10'
   }
 
-  let labelX = label?.bbox.x ?? 0,
-    labelY = label?.bbox.y ?? 0
+  let labelX = labelBBox?.x ?? 0,
+    labelY = labelBBox?.y ?? 0
 
   const [labelPos, setLabelPosition] = useState<XYPosition>({
-    x: labelX,
-    y: labelY
+    x: label?.bbox.x ?? labelX,
+    y: label?.bbox.y ?? labelY
   })
 
   let edgePath: string
@@ -225,7 +227,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   }
 
   const svgPathRef = useRef<SVGPathElement>(null)
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     const path = svgPathRef.current
     if (!path) return
     const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
@@ -235,6 +237,26 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     }
     setLabelPosition(current => isSamePoint(current, point) ? current : point)
   }, [edgePath])
+
+  useDebouncedEffect(
+    () => {
+      if (!label || label.bbox.x === labelPos.x && label.bbox.y === labelPos.y) {
+        return
+      }
+      diagramStore.getState().xyflow.updateEdgeData(id, {
+        label: {
+          ...label,
+          bbox: {
+            ...label.bbox,
+            ...labelPos
+          }
+        }
+      })
+    },
+    [labelPos],
+    100,
+    300
+  )
 
   const onControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
     const { domNode } = xyflowStore.getState()
@@ -298,11 +320,11 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   return (
     <g
-      className={clsx([
+      className={clsx(
         edgesCss.container,
         isDimmed && edgesCss.dimmed,
         isControlPointDragging && edgesCss.controlDragging
-      ])}
+      )}
       data-likec4-color={color}
       data-edge-dir={diagramEdge.dir}
       data-edge-active={isActive}

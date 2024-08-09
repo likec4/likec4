@@ -40,6 +40,8 @@ export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 const FontName = Theme.font
 
 export type ApplyManualLayoutData = {
+  x: number
+  y: number
   height: number
 
   nodes: Array<{
@@ -138,12 +140,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
    * Use coordinates from given diagram as initial position for nodes
    * (try to keep existing layout as much as possible)
    */
-  public applyManualLayout(layout: ApplyManualLayoutData): this {
-    const height = Math.max(
-      layout.height,
-      ...layout.nodes.map(({ center: { y }, fixedsize }) => y + (fixedsize?.height ?? 0) / 2)
-    )
-    const isShifted = layout.height !== height
+  public applyManualLayout({ height, ...layout }: ApplyManualLayoutData): this {
+    const offsetX = layout.x < 0 ? -layout.x : 0
+    const offsetY = layout.y < 0 ? -layout.y : 0
+    const isShifted = offsetX > 0 || offsetY > 0
     for (const { id, ...manual } of layout.nodes) {
       // we pin only nodes, not clusters
       const model = this.getGraphNode(id as Fqn)
@@ -152,7 +152,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       }
 
       // Invert Y axis and convert to inches
-      const x = pxToInch(manual.center.x)
+      const x = pxToInch(manual.center.x) + offsetX
       const y = pxToInch(height - manual.center.y)
       if (manual.fixedsize) {
         model.attributes.apply({
@@ -171,11 +171,14 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       edgeModel.attributes.delete(_.weight)
       edgeModel.attributes.delete(_.minlen)
       edgeModel.attributes.delete(_.constraint)
-      if (!isShifted) {
-        const dotpos = layout.edges.find(e => e.id === id)?.dotpos
-        if (dotpos) {
-          edgeModel.attributes.set(_.pos, dotpos)
-        }
+      const dotpos = layout.edges.find(e => e.id === id)?.dotpos
+      if (dotpos && !isShifted) {
+        edgeModel.attributes.set(_.pos, dotpos)
+      }
+      const xlabel = edgeModel.attributes.get(_.xlabel)
+      if (xlabel) {
+        edgeModel.attributes.delete(_.xlabel)
+        edgeModel.attributes.set(_.label, xlabel)
       }
     }
     // TODO: apply manual layout fails when there are edges with compounds

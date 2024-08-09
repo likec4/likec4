@@ -51,10 +51,6 @@ export const cssExportView = style({
   marginBottom: 'auto',
   background: 'transparent'
 })
-export const cssExportBox = style({
-  padding: 0,
-  margin: 0
-})
 
 export const cssWebcomponentView = style({
   position: 'fixed',

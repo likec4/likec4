@@ -38,7 +38,6 @@ const base = {
   treeShaking: true,
   external: isDev ? [
     'vscode',
-    'langium',
     '@hpcc-js/wasm'
   ] : [
     'vscode'
