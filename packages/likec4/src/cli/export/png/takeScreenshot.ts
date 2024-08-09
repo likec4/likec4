@@ -64,7 +64,14 @@ export async function takeScreenshot({
         await waitAllImages(page, timeout)
       }
 
-      const path = resolve(output, view.relativePath ?? '.', `${view.id}.png`)
+      let relativePath = view.relativePath ?? '.'
+      if (relativePath.includes('/')) {
+        relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
+      } else {
+        relativePath = '.'
+      }
+
+      const path = resolve(output, relativePath, `${view.id}.png`)
       await diagramElement.screenshot({
         path,
         omitBackground: true
