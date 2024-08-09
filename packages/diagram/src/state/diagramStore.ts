@@ -110,8 +110,13 @@ export type DiagramState = Simplify<
     getElement(id: Fqn): DiagramNode | null
     triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
 
-    cancelSaveManualLayout: () => void
+    /**
+     * @returns true if there was pending save layout
+     */
+    cancelSaveManualLayout: () => boolean
+    scheduleSaveManualLayout: () => void
     triggerSaveManualLayout: () => void
+
     triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
     fitDiagram: (duration?: number) => void
 
@@ -545,96 +550,102 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
             if (viewSyncDebounceTimeout !== null) {
               clearTimeout(viewSyncDebounceTimeout)
               set({ viewSyncDebounceTimeout: null })
+              return true
             }
+            return false
           },
 
           triggerSaveManualLayout: () => {
-            let { viewSyncDebounceTimeout: debounced, onChange } = get()
+            const { xyflow, view, onChange, xystore, viewSyncDebounceTimeout } = get()
+            if (viewSyncDebounceTimeout !== null) {
+              clearTimeout(viewSyncDebounceTimeout)
+              set({ viewSyncDebounceTimeout: null })
+            }
+            const { nodeLookup } = xystore.getState()
+            const movedNodes = new StringSet()
+            let bounds = view.bounds
+            const nodes = reduce([...nodeLookup.values()], (acc, node) => {
+              const dimensions = getNodeDimensions(node)
+              if (!isSamePoint(node.internals.positionAbsolute, node.data.element.position)) {
+                movedNodes.add(node.id)
+              }
+              const rect = acc[node.data.fqn] = {
+                isCompound: node.data.element.children.length > 0,
+                x: Math.floor(node.internals.positionAbsolute.x),
+                y: Math.floor(node.internals.positionAbsolute.y),
+                width: Math.ceil(dimensions.width),
+                height: Math.ceil(dimensions.height)
+              }
+              bounds = getBoundsOfRects(bounds, rect)
+              return acc
+            }, {} as Changes.SaveManualLayout['layout']['nodes'])
+            const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
+              let controlPoints = data.controlPoints
+              const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
+              // If edge control points are not set, but the source or target node was moved
+              if ((!controlPoints || controlPoints.length === 0) && sourceOrTargetMoved) {
+                controlPoints = bezierControlPoints(data.edge)
+              }
+              const _updated: Changes.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
+                points: data.edge.points
+              }
+              if (data.edge.labelBBox) {
+                _updated.labelBBox = data.edge.labelBBox
+              }
+              if (controlPoints && hasAtLeast(controlPoints, 1)) {
+                _updated.controlPoints = controlPoints
+              }
+              if (!sourceOrTargetMoved && data.edge.dotpos) {
+                _updated.dotpos = data.edge.dotpos
+              }
+              const allX = [...data.edge.points.map(p => p[0]), ...(controlPoints ?? []).map(p => p.x)]
+              const allY = [...data.edge.points.map(p => p[1]), ...(controlPoints ?? []).map(p => p.y)]
+              bounds = getBoundsOfRects(
+                bounds,
+                boxToRect({
+                  x: Math.min(...allX),
+                  y: Math.min(...allY),
+                  x2: Math.max(...allX),
+                  y2: Math.max(...allY)
+                })
+              )
+              return acc
+            }, {} as Changes.SaveManualLayout['layout']['edges'])
+
+            const change: Changes.SaveManualLayout = {
+              op: 'save-manual-layout',
+              layout: {
+                hash: view.hash,
+                autoLayout: view.autoLayout,
+                x: Math.floor(bounds.x),
+                y: Math.floor(bounds.y),
+                width: Math.ceil(bounds.width),
+                height: Math.ceil(bounds.height),
+                nodes,
+                edges
+              }
+            }
+
+            if (DEV) {
+              console.debug('triggerSaveManualLayout', change)
+            }
+
+            onChange?.({ change })
+          },
+          scheduleSaveManualLayout: () => {
+            let { viewSyncDebounceTimeout, onChange } = get()
             if (!onChange) {
               DEV && console.debug('ignore triggerSaveManualLayout, as no onChange handler is set')
               return
             }
-            if (debounced) {
-              clearTimeout(debounced)
+            if (viewSyncDebounceTimeout) {
+              clearTimeout(viewSyncDebounceTimeout)
             }
-            debounced = setTimeout(() => {
-              const { xyflow, view, onChange, xystore } = get()
-              const { nodeLookup } = xystore.getState()
-              set({ viewSyncDebounceTimeout: null })
-
-              const movedNodes = new StringSet()
-              let bounds = view.bounds
-              const nodes = reduce([...nodeLookup.values()], (acc, node) => {
-                const dimensions = getNodeDimensions(node)
-                if (!isSamePoint(node.internals.positionAbsolute, node.data.element.position)) {
-                  movedNodes.add(node.id)
-                }
-                const rect = acc[node.data.fqn] = {
-                  isCompound: node.data.element.children.length > 0,
-                  x: Math.floor(node.internals.positionAbsolute.x),
-                  y: Math.floor(node.internals.positionAbsolute.y),
-                  width: Math.ceil(dimensions.width),
-                  height: Math.ceil(dimensions.height)
-                }
-                bounds = getBoundsOfRects(bounds, rect)
-                return acc
-              }, {} as Changes.SaveManualLayout['layout']['nodes'])
-              const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
-                let controlPoints = data.controlPoints
-                const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
-                // If edge control points are not set, but the source or target node was moved
-                if ((!controlPoints || controlPoints.length === 0) && sourceOrTargetMoved) {
-                  controlPoints = bezierControlPoints(data.edge)
-                }
-                const _updated: Changes.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
-                  points: data.edge.points
-                }
-                if (data.edge.labelBBox) {
-                  _updated.labelBBox = data.edge.labelBBox
-                }
-                if (controlPoints && hasAtLeast(controlPoints, 1)) {
-                  _updated.controlPoints = controlPoints
-                }
-                if (!sourceOrTargetMoved && data.edge.dotpos) {
-                  _updated.dotpos = data.edge.dotpos
-                }
-                const allX = [...data.edge.points.map(p => p[0]), ...(controlPoints ?? []).map(p => p.x)]
-                const allY = [...data.edge.points.map(p => p[1]), ...(controlPoints ?? []).map(p => p.y)]
-                bounds = getBoundsOfRects(
-                  bounds,
-                  boxToRect({
-                    x: Math.min(...allX),
-                    y: Math.min(...allY),
-                    x2: Math.max(...allX),
-                    y2: Math.max(...allY)
-                  })
-                )
-                return acc
-              }, {} as Changes.SaveManualLayout['layout']['edges'])
-
-              const change: Changes.SaveManualLayout = {
-                op: 'save-manual-layout',
-                layout: {
-                  hash: view.hash,
-                  autoLayout: view.autoLayout,
-                  x: Math.floor(bounds.x),
-                  y: Math.floor(bounds.y),
-                  width: Math.ceil(bounds.width),
-                  height: Math.ceil(bounds.height),
-                  nodes,
-                  edges
-                }
-              }
-
-              if (DEV) {
-                console.debug('triggerSaveManualLayout', change)
-              }
-
-              onChange?.({ change })
-            }, 1000) as any as number // explicit typecast to number to suppress TS error in astro build
             set(
               {
-                viewSyncDebounceTimeout: debounced
+                viewSyncDebounceTimeout: setTimeout(() => {
+                  get().triggerSaveManualLayout()
+                }, 1000) as any as number // explicit typecast to number to suppress TS error in astro build
               },
               noReplace,
               'debounce sync state'

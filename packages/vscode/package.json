@@ -9,13 +9,6 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "license": "MIT",
-  "files": [
-    "dist",
-    "data",
-    "./language-configuration.json",
-    "./likec4.tmLanguage.json",
-    "!**/*.map"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",
@@ -24,10 +17,6 @@
   "bugs": {
     "url": "https://github.com/likec4/likec4/issues",
     "email": "denis@davydkov.com"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
   },
   "vsce": {
     "dependencies": false,
@@ -101,11 +90,6 @@
     "configuration": {
       "title": "%ext.title%",
       "properties": {
-        "likec4.experimental.layoutEditor.enabled": {
-          "description": "Enable layout editor (Experimental)",
-          "type": "boolean",
-          "default": true
-        },
         "likec4.graphviz.mode": {
           "title": "Graphviz mode",
           "description": "If you are experiencing issues with the bundled WASM Graphviz, try switch to local binary (\"dot\")",
@@ -195,8 +179,10 @@
   ],
   "main": "dist/node/extension.js",
   "browser": "dist/browser/extension.js",
+  "dependencies": {
+    "@hpcc-js/wasm": "2.18.0"
+  },
   "devDependencies": {
-    "@hpcc-js/wasm": "2.18.0",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",

@@ -2627,7 +2627,6 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/vite-plugin": "npm:^4.0.13"
     "@vitejs/plugin-react": "npm:^4.3.1"
-    "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     esm-env: "npm:1.0.0"
     langium: "npm:3.1.2"
     postcss: "npm:^8.4.40"
@@ -2851,46 +2850,6 @@ __metadata:
   dependencies:
     "@nevware21/ts-utils": "npm:>= 0.10.4 < 2.x"
   checksum: 10c0/3f17ddd5bebd478337038fb307af2570f5c8e0e49652706a3f34ad5bc0ba880114044965d23f8946cc062bb2d7d7a467c482f1323c6e4465f60907f71d018538
-  languageName: node
-  linkType: hard
-
-"@microsoft/fast-element@npm:^1.12.0, @microsoft/fast-element@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "@microsoft/fast-element@npm:1.13.0"
-  checksum: 10c0/c995ea19563a11a090f69f6f41971f620ef4bed7dd35acfdf6c73a19c386ccf70a2fb9b28eb91934f2492d14c6e466a60aa7c9918131fba0ad7976823ee0e546
-  languageName: node
-  linkType: hard
-
-"@microsoft/fast-foundation@npm:^2.49.4, @microsoft/fast-foundation@npm:^2.49.6":
-  version: 2.49.6
-  resolution: "@microsoft/fast-foundation@npm:2.49.6"
-  dependencies:
-    "@microsoft/fast-element": "npm:^1.13.0"
-    "@microsoft/fast-web-utilities": "npm:^5.4.1"
-    tabbable: "npm:^5.2.0"
-    tslib: "npm:^1.13.0"
-  checksum: 10c0/37e60c6f11af800b36fc545d2ed8f6e72d7e849b14d141a3764b4de2bbbb677b7b495a622f38356fa694dc4b0e46358c7fdcac247216e5eceecf17ae2f76c314
-  languageName: node
-  linkType: hard
-
-"@microsoft/fast-react-wrapper@npm:^0.3.22":
-  version: 0.3.24
-  resolution: "@microsoft/fast-react-wrapper@npm:0.3.24"
-  dependencies:
-    "@microsoft/fast-element": "npm:^1.13.0"
-    "@microsoft/fast-foundation": "npm:^2.49.6"
-  peerDependencies:
-    react: ">=16.9.0"
-  checksum: 10c0/8ede8ca2221a92b3bf14bb8c723ad4941526ac2ee8a2d811851ed9e3677725ca4137367fc28421edbbbd341e913f387b3d930c2dbef81a74da39c628750a0132
-  languageName: node
-  linkType: hard
-
-"@microsoft/fast-web-utilities@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "@microsoft/fast-web-utilities@npm:5.4.1"
-  dependencies:
-    exenv-es6: "npm:^1.1.1"
-  checksum: 10c0/12efc658b190b7977f8272f8f5fe1d3388cdc8b919053a50043b15fd8f858d4544dcbc6df7dca3e71f87c7f045b596f9799413f52f9c57e10db5932a5714c5bc
   languageName: node
   linkType: hard
 
@@ -4484,20 +4443,6 @@ __metadata:
   version: 0.0.18
   resolution: "@vscode/l10n@npm:0.0.18"
   checksum: 10c0/d1fc797001f7d508ab3fa91175f7a50ea98516c4e47830ff2be79163cde9279279514a167a3bad15b7ab7fc243e7808d8f32d3eb41f4a7d6721d9dfdbb38d89e
-  languageName: node
-  linkType: hard
-
-"@vscode/webview-ui-toolkit@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "@vscode/webview-ui-toolkit@npm:1.4.0"
-  dependencies:
-    "@microsoft/fast-element": "npm:^1.12.0"
-    "@microsoft/fast-foundation": "npm:^2.49.4"
-    "@microsoft/fast-react-wrapper": "npm:^0.3.22"
-    tslib: "npm:^2.6.2"
-  peerDependencies:
-    react: ">=16.9.0"
-  checksum: 10c0/f36590e9c3989106ef682c058e219ad13ef81e5ece28359d7cf290f2d897a66f5adae786a62d7bec4d4ff68488d3d77689e2c269864cb4fb3fa330fca1c37db6
   languageName: node
   linkType: hard
 
@@ -7078,13 +7023,6 @@ __metadata:
     strip-final-newline: "npm:^4.0.0"
     yoctocolors: "npm:^2.0.0"
   checksum: 10c0/99ae08e7fb9172d25c453c2a9c414b54c7689e72f68263f6da7bc94c7011720dc8129cc64c2e3be44fb0c6ae8e37a08d346a61dbcfe9f1e79ad24364da2c48ce
-  languageName: node
-  linkType: hard
-
-"exenv-es6@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "exenv-es6@npm:1.1.1"
-  checksum: 10c0/66e70b0ceffba2c720fcd4342002c4d3f6908deea7012ca612c97ad115b7cbb2d39030626947883aafd5f05488d32362485934444906db08502bb6c8ada6e130
   languageName: node
   linkType: hard
 
@@ -13579,13 +13517,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tabbable@npm:^5.2.0":
-  version: 5.3.3
-  resolution: "tabbable@npm:5.3.3"
-  checksum: 10c0/c6cb54be76ecff7d0132fed77ff11cedf76a2ce320f55e350f70d8f68998227e72bc3f8b1ee5e7b02dbe4b4c2ef7b6fa43c3aea7cfa82ef06e7d23746df97a35
-  languageName: node
-  linkType: hard
-
 "tabbable@npm:^6.0.0":
   version: 6.2.0
   resolution: "tabbable@npm:6.2.0"
@@ -13821,7 +13752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.10.0, tslib@npm:^1.13.0, tslib@npm:^1.9.0":
+"tslib@npm:^1.10.0, tslib@npm:^1.9.0":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: 10c0/69ae09c49eea644bc5ebe1bca4fa4cc2c82b7b3e02f43b84bd891504edf66dbc6b2ec0eef31a957042de2269139e4acff911e6d186a258fb14069cd7f6febce2

@@ -8,14 +8,11 @@ import * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
 
-import type { ChangeViewRequestParams } from '@likec4/language-server/protocol'
 import type { DotLayoutResult } from '@likec4/layouts'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import { logError, Logger } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
 import type { ExtensionController } from './ExtensionController'
-import { PreviewPanel } from './panel/PreviewPanel'
-import type { Rpc } from './Rpc'
 
 function isNotNullish<T>(x: T): x is NonNullable<T> {
   return x !== undefined && x !== null
@@ -41,7 +38,6 @@ export class C4Model extends AbstractDisposable {
 
   constructor(
     private ctrl: ExtensionController,
-    private rpc: Rpc,
     private telemetry: TelemetryReporter
   ) {
     super()
@@ -51,7 +47,7 @@ export class C4Model extends AbstractDisposable {
           invariant(this.#activeSubscription == null, 'changesStream already started')
           Logger.debug('[Extension.C4Model.changes] subscribe onDidChangeModel')
           let changes = 0
-          const unsubscribe = this.rpc.onDidChangeModel(() => {
+          const unsubscribe = this.ctrl.rpc.onDidChangeModel(() => {
             listener.next(changes++)
           })
           this.#activeSubscription = disposable(() => {
@@ -81,7 +77,7 @@ export class C4Model extends AbstractDisposable {
 
   private fetchView(viewId: ViewID) {
     Logger.debug(`[Extension.C4Model] fetchView ${viewId}`)
-    const promise = this.rpc.computeView(viewId)
+    const promise = this.ctrl.rpc.computeView(viewId)
     return xs
       .fromPromise(pTimeout(promise, {
         milliseconds: 15_000,
@@ -165,31 +161,6 @@ export class C4Model extends AbstractDisposable {
     })
   }
 
-  public async changeView({ viewId, change }: ChangeViewRequestParams) {
-    // Logger.debug(`[Messenger] onChange: ${JSON.stringify(params.changes, null, 4)}`)
-    let loc = await this.rpc.changeView({ viewId, change })
-    if (loc) {
-      const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
-      const previewColumn = PreviewPanel.current?.panel.viewColumn ?? vscode.ViewColumn.One
-
-      const editor = await vscode.window.showTextDocument(location.uri, {
-        viewColumn: previewColumn >= 2 ? previewColumn - 1 : vscode.ViewColumn.Beside,
-        selection: location.range
-      })
-      editor.revealRange(location.range, vscode.TextEditorRevealType.InCenter)
-      await vscode.workspace.save(location.uri)
-
-      if (change.op === 'save-manual-layout' && this.ctrl.shouldInformAboutManualLayout()) {
-        setTimeout(() => {
-          vscode.window.showInformationMessage(
-            'Manual layouts are still experimental and may not work as expected. You can disable experimental features in settings.',
-            'Close'
-          )
-        }, 2000)
-      }
-    }
-  }
-
   public turnOnTelemetry() {
     Logger.debug(`[Extension.C4Model] turnOnTelemetry`)
     const Minute = 60_000
@@ -214,7 +185,7 @@ export class C4Model extends AbstractDisposable {
 
   private async fetchTelemetry() {
     const t0 = performance.now()
-    const model = await this.rpc.fetchModel()
+    const model = await this.ctrl.rpc.fetchModel()
     const t1 = performance.now()
     return {
       metrics: model

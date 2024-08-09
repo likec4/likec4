@@ -6,8 +6,7 @@ import { useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { useDiagramStoreApi } from '../../state/useDiagramStore'
 import type { XYFlowNode } from '../types'
-import { isSamePoint } from '../utils'
-import { useXYStoreApi, type XYStoreApi } from './useXYFlow'
+import { type XYStoreApi } from './useXYFlow'
 
 abstract class Rect {
   id!: string
@@ -240,13 +239,13 @@ function createLayoutConstraints(
     if (rectsToUpdate.length === 0) {
       return
     }
-    const pos = nodeLookup.get(xynode.id)!.internals.positionAbsolute
-    const rect = nonNullable(rects.get(xynode.id))
-    solver.suggestValue(rect.minX, Math.ceil(pos.x))
-    solver.suggestValue(rect.minY, Math.ceil(pos.y))
     animationFrameId ??= requestAnimationFrame(() => {
-      updateXYFlowNodes()
       animationFrameId = null
+      const pos = nodeLookup.get(xynode.id)!.internals.positionAbsolute
+      const rect = nonNullable(rects.get(xynode.id))
+      solver.suggestValue(rect.minX, Math.ceil(pos.x))
+      solver.suggestValue(rect.minY, Math.ceil(pos.y))
+      updateXYFlowNodes()
     })
   }
 
@@ -262,32 +261,20 @@ type LayoutConstraints = Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragSt
  */
 export function useLayoutConstraints(): LayoutConstraints {
   const diagramApi = useDiagramStoreApi()
-  const xyflowApi = useXYStoreApi()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
-
-  const dragStartedAt = useRef({
-    x: 0,
-    y: 0
-  })
-
   return useMemo((): LayoutConstraints => ({
-    onNodeDragStart: (event, xynode) => {
-      dragStartedAt.current = {
-        x: event.clientX,
-        y: event.clientY
-      }
-      diagramApi.getState().cancelSaveManualLayout()
-      solverRef.current = createLayoutConstraints(xyflowApi, xynode.id)
+    onNodeDragStart: (_event, xynode) => {
+      const { cancelSaveManualLayout, xystore } = diagramApi.getState()
+      cancelSaveManualLayout()
+      solverRef.current = createLayoutConstraints(xystore, xynode.id)
     },
     onNodeDrag: (_event, xynode) => {
       invariant(solverRef.current, 'solverRef.current should be defined')
       solverRef.current?.onNodeDrag(xynode)
     },
-    onNodeDragStop: (event, _xynode) => {
-      if (!isSamePoint(dragStartedAt.current, { x: event.clientX, y: event.clientY })) {
-        diagramApi.getState().triggerSaveManualLayout()
-      }
+    onNodeDragStop: (_event, _xynode) => {
+      diagramApi.getState().scheduleSaveManualLayout()
       solverRef.current = undefined
     }
-  }), [xyflowApi, diagramApi])
+  }), [diagramApi])
 }

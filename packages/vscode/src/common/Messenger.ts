@@ -7,7 +7,7 @@ import { type WebviewTypeMessageParticipant } from 'vscode-messenger-common'
 import { cmdLocate } from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
-import type { C4Model } from './C4Model'
+import type { ExtensionController } from './ExtensionController'
 import { PreviewPanel } from './panel/PreviewPanel'
 
 const toPreviewPanel = {
@@ -21,7 +21,7 @@ export default class Messenger extends AbstractDisposable {
   })
 
   constructor(
-    private c4model: C4Model
+    ctrl: ExtensionController
   ) {
     super()
     this.onDispose(
@@ -45,11 +45,38 @@ export default class Messenger extends AbstractDisposable {
       })
     )
     this.onDispose(
-      this.messenger.onNotification(WebviewToExtension.onChange, async (changeReq) => {
+      this.messenger.onNotification(WebviewToExtension.onChange, async ({ viewId, change }) => {
         try {
-          await this.c4model.changeView(changeReq)
+          let loc = await ctrl.rpc.changeView({ viewId, change })
+          if (!loc) {
+            Logger.warn(`[Extension] rpc.changeView returned null`)
+            return
+          }
+          const location = ctrl.rpc.client.protocol2CodeConverter.asLocation(loc)
+          let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
+          if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
+            viewColumn = vscode.ViewColumn.Beside
+          }
+          const editor = await vscode.window.showTextDocument(location.uri, {
+            viewColumn,
+            selection: location.range,
+            preserveFocus: viewColumn === vscode.ViewColumn.Beside
+          })
+          editor.revealRange(location.range)
+
+          await vscode.workspace.save(location.uri)
         } catch (e) {
           Logger.error(`[Messenger] onChange error: ${e}`)
+        }
+      })
+    )
+
+    this.onDispose(
+      this.messenger.onNotification(WebviewToExtension.onWebviewStateChange, (changeReq) => {
+        try {
+          ctrl.setPreviewPanelState(changeReq)
+        } catch (e) {
+          Logger.error(`[Messenger] onWebviewStateChange error: ${e}`)
         }
       })
     )

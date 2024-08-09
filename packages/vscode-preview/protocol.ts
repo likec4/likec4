@@ -1,4 +1,5 @@
 import type { AutoLayoutDirection, DiagramView, Fqn, RelationID, ViewChangeOp, ViewID } from '@likec4/core'
+import type { DiagramEditorCommand } from '@likec4/diagram'
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 
 export namespace ExtensionToPanel {
@@ -13,6 +14,16 @@ export namespace WebviewToExtension {
   export const imReady: NotificationType<never> = { method: 'imReady' }
   export const openView: NotificationType<{ viewId: ViewID }> = { method: 'openView' }
   export const closeMe: NotificationType<never> = { method: 'closeMe' }
+
+  export const onDiagramEditorCommand: NotificationType<{
+    cmd: DiagramEditorCommand
+  }> = { method: 'diagramEditorCommand' }
+
+  export type WebviewState = {
+    nodesDraggable: boolean
+    edgesEditable: boolean
+  }
+  export const onWebviewStateChange: NotificationType<WebviewState> = { method: 'onWebviewStateChange' }
 
   export namespace Changes {
     export interface ChangeAutoLayout {

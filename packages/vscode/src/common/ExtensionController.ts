@@ -1,7 +1,7 @@
 import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 
-import { type ViewID } from '@likec4/core'
+import { nonNullable, type ViewID } from '@likec4/core'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
@@ -22,20 +22,35 @@ import { BuiltInFileSystemProvider } from './BuiltInFileSystemProvider'
 import { C4Model } from './C4Model'
 import { initWorkspace, rebuildWorkspace } from './initWorkspace'
 import Messenger from './Messenger'
-import { PreviewPanel } from './panel/PreviewPanel'
+import { PreviewPanel, type PreviewPanelInternalState } from './panel/PreviewPanel'
 import { Rpc } from './Rpc'
 
-const GlobalStateKeys = {
-  informedAboutManualLayout: 'informedAboutManualLayout'
+const StateKeys = {
+  informedAboutManualLayout: 'informedAboutManualLayout',
+  previewPanelState: 'previewPanelState'
 }
 
 export class ExtensionController extends AbstractDisposable {
   public static extensionUri: vscode.Uri
 
   private _telemetry: TelemetryReporter
-  private _shouldInformAboutManualLayout: boolean
+  private _rpc: Rpc | null = null
+  private _c4model: C4Model | null = null
+  private _messenger: Messenger | null = null
 
   public graphviz: GraphvizLayouter = new GraphvizLayouter(new GraphvizWasmAdapter())
+
+  get c4model() {
+    return nonNullable(this._c4model, 'C4Model not initialized')
+  }
+
+  get rpc() {
+    return nonNullable(this._rpc, 'Rpc not initialized')
+  }
+
+  get messenger() {
+    return nonNullable(this._messenger, 'Messenger not initialized')
+  }
 
   constructor(
     private _context: vscode.ExtensionContext,
@@ -56,13 +71,6 @@ export class ExtensionController extends AbstractDisposable {
     this.onDispose(() => {
       Logger.telemetry = null
     })
-    this._context.globalState.setKeysForSync([GlobalStateKeys.informedAboutManualLayout])
-
-    // If the user has not been informed about manual layout, we should inform them
-    this._shouldInformAboutManualLayout = !this._context.globalState.get<boolean>(
-      GlobalStateKeys.informedAboutManualLayout,
-      false
-    )
   }
 
   /**
@@ -96,21 +104,20 @@ export class ExtensionController extends AbstractDisposable {
         })
       }
 
-      const rpc = new Rpc(this.client)
+      const rpc = this._rpc = new Rpc(this.client)
       this.onDispose(rpc)
 
-      const c4model = new C4Model(this, rpc, this._telemetry)
+      const c4model = this._c4model = new C4Model(this, this._telemetry)
       this.onDispose(c4model)
 
-      const messenger = new Messenger(c4model)
+      const messenger = this._messenger = new Messenger(this)
       this.onDispose(messenger)
 
       this.onDispose(
         vscode.window.registerWebviewPanelSerializer(
           PreviewPanel.ViewType,
           PreviewPanel.Serializer({
-            c4model,
-            messenger
+            ctrl: this
           })
         )
       )
@@ -133,8 +140,7 @@ export class ExtensionController extends AbstractDisposable {
       this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
         PreviewPanel.createOrShow({
           viewId: viewId ?? ('index' as ViewID),
-          c4model,
-          messenger
+          ctrl: this
         })
         this._telemetry.sendTelemetryEvent('open-preview')
       })
@@ -143,14 +149,15 @@ export class ExtensionController extends AbstractDisposable {
         if (!loc) return
         const location = this.client.protocol2CodeConverter.asLocation(loc)
         let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
-        if (PreviewPanel.current?.panel.viewColumn === vscode.ViewColumn.One) {
+        if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
           viewColumn = vscode.ViewColumn.Beside
         }
         const editor = await vscode.window.showTextDocument(location.uri, {
           viewColumn,
-          selection: location.range
+          selection: location.range,
+          preserveFocus: viewColumn === vscode.ViewColumn.Beside
         })
-        editor.revealRange(location.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport)
+        editor.revealRange(location.range)
       })
 
       this.onDispose(() => {
@@ -194,17 +201,20 @@ Restart VSCode. Please report this issue, if it persists.`)
     }
   }
 
-  public shouldInformAboutManualLayout() {
-    if (this._shouldInformAboutManualLayout || isDev) {
-      this._shouldInformAboutManualLayout = false
-      this._context.globalState.update(GlobalStateKeys.informedAboutManualLayout, true)
-      return true
-    }
-    return false
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private registerCommand(command: string, callback: (...args: any[]) => any) {
     this.onDispose(vscode.commands.registerCommand(command, callback))
+  }
+
+  public getPreviewPanelState(): PreviewPanelInternalState {
+    const state = this._context.workspaceState.get<Partial<PreviewPanelInternalState>>(StateKeys.previewPanelState)
+    return {
+      edgesEditable: state?.edgesEditable ?? true,
+      nodesDraggable: state?.nodesDraggable ?? true
+    }
+  }
+
+  public setPreviewPanelState(state: PreviewPanelInternalState) {
+    this._context.workspaceState.update(StateKeys.previewPanelState, state)
   }
 }

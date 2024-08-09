@@ -8,13 +8,6 @@ export default defineConfig(({ mode }) => {
   const isDev = isWatchDev || mode === 'development'
   return {
     resolve: {
-      dedupe: [
-        'react',
-        'react-dom',
-        'react-dom/client',
-        '@mantine/hooks',
-        '@mantine/core'
-      ],
       alias: {
         '@likec4/core': resolve(__dirname, '../core/src/index.ts'),
         '@likec4/diagram': resolve(__dirname, '../diagram/src/index.ts')

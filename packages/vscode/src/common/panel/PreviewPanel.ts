@@ -5,17 +5,19 @@ import * as vscode from 'vscode'
 import { type Disposable, ViewColumn, type Webview, type WebviewPanel } from 'vscode'
 import { Logger } from '../../logger'
 import { AbstractDisposable, disposable, getNonce } from '../../util'
-import type { C4Model } from '../C4Model'
 import { ExtensionController } from '../ExtensionController'
-import type Messenger from '../Messenger'
 
 function getUri(webview: Webview, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(ExtensionController.extensionUri, ...pathList))
 }
 type Props = {
   viewId: ViewID
-  messenger: Messenger
-  c4model: C4Model
+  ctrl: ExtensionController
+}
+
+export type PreviewPanelInternalState = {
+  nodesDraggable: boolean
+  edgesEditable: boolean
 }
 
 export class PreviewPanel extends AbstractDisposable {
@@ -25,7 +27,9 @@ export class PreviewPanel extends AbstractDisposable {
   public static current: PreviewPanel | undefined
   static ViewType = 'likec4-preview' as const
 
-  public static Serializer = (props: Omit<Props, 'viewId'>): vscode.WebviewPanelSerializer => ({
+  public static Serializer = (props: {
+    ctrl: ExtensionController
+  }): vscode.WebviewPanelSerializer => ({
     deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Thenable<void> {
       let viewId: ViewID
       if (
@@ -47,7 +51,7 @@ export class PreviewPanel extends AbstractDisposable {
     }
   })
 
-  public static createOrShow({ viewId, messenger, c4model }: Props) {
+  public static createOrShow({ viewId, ctrl }: Props) {
     Logger.debug(`[Extension.PreviewPanel] createOrShow viewId=${viewId}`)
     // If we already have a panel, show it.
     if (PreviewPanel.current) {
@@ -60,21 +64,23 @@ export class PreviewPanel extends AbstractDisposable {
     const panel = vscode.window.createWebviewPanel(PreviewPanel.ViewType, 'Diagram preview', {
       viewColumn: ViewColumn.Beside,
       preserveFocus: true
+    }, {
+      enableScripts: true
+      // retainContextWhenHidden: true
     })
-    messenger.registerWebViewPanel(panel)
-    PreviewPanel.current = new PreviewPanel(viewId, panel, messenger, c4model)
+    ctrl.messenger.registerWebViewPanel(panel)
+    PreviewPanel.current = new PreviewPanel(viewId, panel, ctrl)
   }
 
   public static revive({
     viewId,
-    panel,
-    messenger,
-    c4model
+    ctrl,
+    panel
   }: Props & { panel: vscode.WebviewPanel }) {
     Logger.debug(`[Extension.PreviewPanel] revive viewId=${viewId}`)
     invariant(!PreviewPanel.current, 'PreviewPanel is already initialized')
-    messenger.registerWebViewPanel(panel)
-    PreviewPanel.current = new PreviewPanel(viewId, panel, messenger, c4model)
+    ctrl.messenger.registerWebViewPanel(panel)
+    PreviewPanel.current = new PreviewPanel(viewId, panel, ctrl)
   }
 
   private _listener: Disposable | null = null
@@ -82,10 +88,10 @@ export class PreviewPanel extends AbstractDisposable {
   private constructor(
     private _viewId: ViewID,
     private readonly _panel: vscode.WebviewPanel,
-    private readonly messenger: Messenger,
-    private readonly c4model: C4Model
+    private readonly ctrl: ExtensionController
   ) {
     super()
+    Logger.debug(`[Extension.PreviewPanel] New panel viewId=${_viewId}`)
     // Set the webview's initial html content
     this._update()
 
@@ -110,8 +116,9 @@ export class PreviewPanel extends AbstractDisposable {
         Logger.debug(
           `[Extension.PreviewPanel.panel.onDidChangeViewState] visible=${webviewPanel.visible}`
         )
-        if (!webviewPanel.visible && this._listener) {
+        if (!webviewPanel.visible && this._listener != null) {
           this._deactivate()
+          return
         }
       },
       this,
@@ -122,15 +129,6 @@ export class PreviewPanel extends AbstractDisposable {
       this._deactivate()
       this._panel.dispose()
     })
-
-    this.onDispose(
-      vscode.workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration('likec4.experimental.layoutEditor')) {
-          Logger.debug(`[PreviewPanel] onDidChangeConfiguration`)
-          this._update()
-        }
-      })
-    )
   }
 
   get panel() {
@@ -143,8 +141,10 @@ export class PreviewPanel extends AbstractDisposable {
   }
 
   public open(viewId?: ViewID) {
+    Logger.debug(`[Extension.PreviewPanel.panel] Open viewId=${viewId} (this.viewId=${this._viewId})`)
     if (viewId && viewId !== this._viewId) {
       this._viewId = viewId
+      this._deactivate()
     }
     this._activate()
   }
@@ -155,12 +155,12 @@ export class PreviewPanel extends AbstractDisposable {
     }
     const id = randomString(5) + '_' + this._viewId
     Logger.debug(`[Extension.PreviewPanel.listener.${id}] activating...`)
-    const subscribeToView = this.c4model.subscribeToView(this._viewId, result => {
+    const subscribeToView = this.ctrl.c4model.subscribeToView(this._viewId, result => {
       if (result.success) {
         this._panel.title = result.diagram.title || 'Untitled'
-        this.messenger.diagramUpdate(result.diagram)
+        this.ctrl.messenger.diagramUpdate(result.diagram)
       } else {
-        this.messenger.sendError(result.error)
+        this.ctrl.messenger.sendError(result.error)
       }
     })
     this._listener = disposable(() => {
@@ -174,8 +174,8 @@ export class PreviewPanel extends AbstractDisposable {
   private _deactivate() {
     if (this._listener) {
       this._listener.dispose()
-      Logger.debug(`[Extension.PreviewPanel] _deactivated`)
     }
+    Logger.debug(`[Extension.PreviewPanel] _deactivated`)
   }
 
   private _update() {
@@ -189,9 +189,7 @@ export class PreviewPanel extends AbstractDisposable {
       //   vscode.Uri.joinPath(this.context.extensionUri, 'dist')
       // ]
     }
-    const conf = vscode.workspace.getConfiguration('likec4.experimental.layoutEditor')
-    const isEditorEnabled = conf.get<boolean>('enabled', true)
-    Logger.debug(`[Extension.PreviewPanel._update] isEditorEnabled=${isEditorEnabled}`)
+    const internalState = this.ctrl.getPreviewPanelState()
     const nonce = getNonce()
 
     const stylesUri = getUri(webview, ['dist', 'preview', 'style.css'])
@@ -215,7 +213,7 @@ export class PreviewPanel extends AbstractDisposable {
   </head>
   <body class="${theme}">
     <script nonce="${nonce}">
-      var __EDITOR_ENABLED = ${isEditorEnabled};
+      var __INTERNAL_STATE = ${JSON.stringify({ internalState })};
     </script>
     <div id="root"></div>
     <script src="${scriptUri}"></script>

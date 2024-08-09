@@ -1,1 +1,6 @@
-declare const __EDITOR_ENABLED: boolean | string
+declare const __INTERNAL_STATE:
+  | Partial<{
+    nodesDraggable: boolean
+    edgesEditable: boolean
+  }>
+  | undefined

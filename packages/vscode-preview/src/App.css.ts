@@ -8,13 +8,6 @@ globalStyle('*, :before, :after', {
   borderColor: 'transparent'
 })
 
-globalStyle(':root', {
-  vars: {
-    '--likec4-default-font-family':
-      `"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`
-  }
-})
-
 globalStyle('html, body, #root', {
   width: '100%',
   height: '100%',
@@ -24,6 +17,8 @@ globalStyle('html, body, #root', {
 })
 globalStyle('body', {
   vars: {
+    '--likec4-default-font-family':
+      `"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
     '--mantine-default-font-family': 'var(--likec4-default-font-family)',
     '--mantine-font-family': 'var(--likec4-default-font-family)',
     '--mantine-color-body': 'var(--vscode-editor-background )',
@@ -57,28 +52,6 @@ globalStyle(`:where([data-mantine-color-scheme='dark']) ${likec4Container} .reac
   vars: {
     '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
   }
-})
-
-export const likec4DiagramLoading = style({
-  position: 'absolute',
-  top: '0',
-  left: '0',
-  right: '0',
-  bottom: '0',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexDirection: 'column'
-})
-
-export const likec4DiagramLoadingOverlay = style({
-  position: 'absolute',
-  top: '0',
-  left: '0',
-  right: '0',
-  bottom: '0',
-  backgroundColor: 'var(--vscode-editor-background)',
-  opacity: '0.7'
 })
 
 export const likec4error = style({
