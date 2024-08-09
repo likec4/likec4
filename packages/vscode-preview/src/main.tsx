@@ -22,7 +22,7 @@ const root = document.getElementById('root') as HTMLDivElement
 const scheme = document.body.classList.contains('dark') ? 'dark' : 'light'
 // const reactRoot = ReactDOM.createRoot(root)
 ReactDOM.createRoot(root).render(
-  <MantineProvider theme={theme} defaultColorScheme={scheme}>
+  <MantineProvider theme={theme} forceColorScheme={scheme}>
     <App />
   </MantineProvider>
 )

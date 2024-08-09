@@ -33,18 +33,15 @@ export class LikeC4ModelLocator {
     return doc.c4Elements.find(e => e.id === fqn) ?? null
   }
 
-  public locateElement(fqn: c4.Fqn, _property = 'name'): Location | null {
+  public locateElement(fqn: c4.Fqn): Location | null {
     const entry = this.fqnIndex.byFqn(fqn).head()
-    if (!entry) {
+    const docsegment = entry?.nameSegment ?? entry?.selectionSegment
+    if (!entry || !docsegment) {
       return null
     }
-    // const propertyNode = findNodeForProperty(entry.el.$cstNode, property) ?? entry.el.$cstNode
-    // if (!propertyNode) {
-    //   return null
-    // }
     return {
       uri: entry.documentUri.toString(),
-      range: entry.nameSegment?.range!
+      range: docsegment.range
     }
   }
 
@@ -61,20 +58,14 @@ export class LikeC4ModelLocator {
       if (!ast.isRelation(node)) {
         continue
       }
-      if (node.title) {
-        const targetNode = findNodeForProperty(node.$cstNode, 'title')
-        if (targetNode) {
-          return {
-            uri: doc.uri.toString(),
-            range: targetNode.range
-          }
-        }
-      }
-      let targetNode = node.kind ? findNodeForProperty(node.$cstNode, 'kind') : findNodeForKeyword(node.$cstNode, '->')
+
+      let targetNode = node.title ? findNodeForProperty(node.$cstNode, 'title') : undefined
+      targetNode ??= node.kind ? findNodeForProperty(node.$cstNode, 'kind') : undefined
       targetNode ??= findNodeForProperty(node.$cstNode, 'target')
+      targetNode ??= node.$cstNode
 
       if (!targetNode) {
-        return null
+        continue
       }
 
       return {
@@ -112,13 +103,9 @@ export class LikeC4ModelLocator {
       return null
     }
     const node = res.viewAst
-    let targetNode = node.$cstNode
-    if (node.name) {
-      targetNode = findNodeForProperty(node.$cstNode, 'name') ?? targetNode
-    } else if ('viewOf' in node) {
-      targetNode = findNodeForProperty(node.$cstNode, 'viewOf') ?? targetNode
-    }
+    let targetNode = node.name ? findNodeForProperty(node.$cstNode, 'name') : undefined
     targetNode ??= findNodeForKeyword(node.$cstNode, 'view')
+    targetNode ??= node.$cstNode
     if (!targetNode) {
       return null
     }

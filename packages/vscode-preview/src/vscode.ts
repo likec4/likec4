@@ -1,14 +1,16 @@
-import { type DiagramView, type Fqn, type RelationID, type ViewID } from '@likec4/core'
+import { type DiagramView, type Fqn, nonexhaustive, type RelationID, type ViewID } from '@likec4/core'
+import type { DiagramEditorCommand } from '@likec4/diagram'
 import { useEffect, useRef } from 'react'
 import { HOST_EXTENSION, isMessage } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
 import { ExtensionToPanel, WebviewToExtension } from '../protocol'
 
-export const isEditorEnabled = __EDITOR_ENABLED === true || __EDITOR_ENABLED === 'true'
-
-const vscode = acquireVsCodeApi<{
+type State = {
   view: DiagramView
-}>()
+  nodesDraggable: boolean
+  edgesEditable: boolean
+}
+const vscode = acquireVsCodeApi<State>()
 
 class Likec4Messenger extends Messenger {
   override start() {
@@ -48,6 +50,22 @@ export const extensionApi = {
   },
   change: (viewId: ViewID, change: WebviewToExtension.ChangeCommand) => {
     messenger.sendNotification(WebviewToExtension.onChange, HOST_EXTENSION, { viewId, change })
+  },
+  updateWebviewState: (state: WebviewToExtension.WebviewState) => {
+    messenger.sendNotification(WebviewToExtension.onWebviewStateChange, HOST_EXTENSION, state)
+  },
+
+  sendDiagramEditorCommand: (cmd: DiagramEditorCommand) => {
+    switch (cmd.type) {
+      case 'showElement':
+        return extensionApi.locate({ element: cmd.element })
+      case 'showRelation':
+        return extensionApi.locate({ relation: cmd.relation })
+      case 'showView':
+        return extensionApi.locate({ view: cmd.view })
+      default:
+        nonexhaustive(cmd)
+    }
   },
 
   goToElement: (element: Fqn) => {
@@ -95,12 +113,22 @@ export function useMessenger(callbacks: OnExtensionToPanel) {
   return extensionApi
 }
 
-export const getPreviewWindowState = () => {
-  return vscode.getState()?.view ?? null
+export const getPreviewWindowState = (): {
+  view: DiagramView | null
+  nodesDraggable: boolean
+  edgesEditable: boolean
+} => {
+  const state = vscode.getState()
+  return {
+    view: state?.view ?? null,
+    nodesDraggable: state?.nodesDraggable ?? __INTERNAL_STATE?.nodesDraggable ?? true,
+    edgesEditable: state?.edgesEditable ?? __INTERNAL_STATE?.edgesEditable ?? true
+  }
 }
 
-export const savePreviewWindowState = (view: DiagramView) => {
+export const savePreviewWindowState = (state: Partial<State> & { view: DiagramView }) => {
   vscode.setState({
-    view
+    ...getPreviewWindowState(),
+    ...state
   })
 }

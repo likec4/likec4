@@ -1,17 +1,12 @@
 import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
-import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
+import { type ElementIconRenderer, LikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
 import Icon from '@likec4/icons/all'
-import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  likec4Container,
-  likec4DiagramLoading,
-  likec4DiagramLoadingOverlay,
-  likec4error,
-  likec4ParsingScreen
-} from './App.css'
+import { Button, Loader, LoadingOverlay } from '@mantine/core'
+import { useDebouncedEffect } from '@react-hookz/web'
+import { useCallback, useRef, useState } from 'react'
+import { likec4Container, likec4error, likec4ParsingScreen } from './App.css'
 import { Toolbar } from './Toolbar'
-import { extensionApi, getPreviewWindowState, isEditorEnabled, savePreviewWindowState, useMessenger } from './vscode'
+import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
   <div className={likec4error}>
@@ -31,6 +26,22 @@ const IconRenderer: ElementIconRenderer = ({ node }) => {
   return <Icon name={(node.icon ?? '') as any} />
 }
 
+type RpcState = {
+  state: 'loading'
+} | {
+  state: 'ready'
+  // view: DiagramView
+} | {
+  state: 'error'
+  error: string
+}
+
+type InternalState = {
+  view: DiagramView | null
+  nodesDraggable: boolean
+  edgesEditable: boolean
+}
+
 const App = () => {
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
 
@@ -38,66 +49,71 @@ const App = () => {
     lastNodeContextMenuRef.current = null
   }
 
-  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
-  const [view, setView] = useState(getPreviewWindowState)
-  const [error, setError] = useState<string | null>(null)
+  const [rpcState, setRpcState] = useState<RpcState>({ state: 'loading' })
+  const [{ view, edgesEditable, nodesDraggable }, setInternalState] = useState<InternalState>(getPreviewWindowState)
 
   const updateView = useCallback((view: DiagramView | null) => {
     resetLastClickedNd()
     if (view) {
-      savePreviewWindowState(view)
-      setState('ready')
-      setView(view)
-      setError(null)
+      savePreviewWindowState({
+        view
+      })
+      setRpcState(s => s.state === 'ready' ? s : { state: 'ready' })
+      setInternalState(s => ({ ...s, view }))
     } else {
-      setState('error')
-      setError('View not found')
+      setRpcState({ state: 'error', error: 'View not found' })
     }
   }, [])
 
   useMessenger({
     onDiagramUpdate: updateView,
     onError: error => {
-      setState('error')
-      setError(error)
+      setRpcState({
+        state: 'error',
+        error
+      })
     },
     onGetHoveredElement: () => {
       return lastNodeContextMenuRef.current?.id ?? null
     }
   })
 
-  useEffect(() => {
-    extensionApi.imReady()
-  }, [])
+  useDebouncedEffect(
+    () => extensionApi.imReady(),
+    [],
+    100
+  )
+
+  useUpdateEffect(() => {
+    extensionApi.updateWebviewState({
+      nodesDraggable,
+      edgesEditable
+    })
+  }, [nodesDraggable, edgesEditable])
 
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
-        {state === 'error' && (
+        {rpcState.state === 'error' && (
           <section>
             <h3>Oops, invalid view</h3>
             <p>
-              Failed to parse your model:
-              {error && (
-                <>
-                  <br />
-                  {error}
-                </>
-              )}
+              Failed to parse your model:<br />
+              {rpcState.error}
             </p>
           </section>
         )}
-        {state !== 'error' && (
+        {rpcState.state !== 'error' && (
           <section>
             <p>Parsing your model...</p>
-            <VSCodeProgressRing />
+            <Loader />
           </section>
         )}
         <section>
           <p>
-            <VSCodeButton appearance="secondary" onClick={extensionApi.closeMe}>
+            <Button onClick={extensionApi.closeMe}>
               Close
-            </VSCodeButton>
+            </Button>
           </p>
         </section>
       </div>
@@ -106,14 +122,20 @@ const App = () => {
   return (
     <>
       <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
+        <LoadingOverlay
+          visible={rpcState.state === 'loading'}
+          zIndex={1000}
+          overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
           fitViewPadding={0.08}
           readonly={false}
           controls={false}
-          nodesDraggable={isEditorEnabled}
-          experimentalEdgeEditing={isEditorEnabled}
+          nodesDraggable={nodesDraggable}
+          experimentalEdgeEditing={edgesEditable}
+          enableFocusMode={!nodesDraggable && !edgesEditable}
           showNavigationButtons
+          showElementLinks
           renderIcon={IconRenderer}
           onNavigateTo={(to) => {
             resetLastClickedNd()
@@ -156,16 +178,7 @@ const App = () => {
           }}
         />
       </div>
-      {state === 'error' && <ErrorMessage error={error} />},
-      {state === 'loading' && (
-        <>
-          <div className={likec4DiagramLoadingOverlay}></div>
-          <div className={likec4DiagramLoading}>
-            <p>Updating...</p>
-            <VSCodeProgressRing />
-          </div>
-        </>
-      )}
+      {rpcState.state === 'error' && <ErrorMessage error={rpcState.error} />},
       <Toolbar view={view} />
     </>
   )

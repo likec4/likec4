@@ -36,11 +36,10 @@ const base = {
   logLevel: 'info',
   color: true,
   bundle: true,
-  external: isDev ? [
+  treeShaking: true,
+  external: [
     'vscode',
     '@hpcc-js/wasm',
-  ] : [
-    'vscode',
   ],
   ...(!isDev && {
     define: {
@@ -59,10 +58,13 @@ const configs = [] as BuildOptions[]
 
 configs.push({
   ...base,
-  entryPoints: [
-    'src/node/extension.ts',
-    'src/node/language-server.ts'
-  ],
+  entryPoints: ['src/node/language-server.ts'],
+  format: 'iife',
+  target: 'node18',
+  platform: 'node'
+}, {
+  ...base,
+  entryPoints: ['src/node/extension.ts'],
   format: 'cjs',
   target: 'node18',
   platform: 'node'
@@ -77,9 +79,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()]
-})
-
-configs.push({
+},{
   ...base,
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',

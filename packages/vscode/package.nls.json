@@ -1,7 +1,7 @@
 {
   "ext.title": "LikeC4",
   "ext.cmd.open-preview": "Open Preview",
-  "ext.cmd.rebuild": "Rebuild",
+  "ext.cmd.rebuild": "Reparse and rebuild (reset)",
   "ext.cmd.locate": "Locate element",
   "ext.cmd.preview-context-open-source": "Open source"
 }

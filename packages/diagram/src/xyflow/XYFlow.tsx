@@ -64,7 +64,6 @@ export function XYFlow({
   style
 }: XYFlowWrapperProps) {
   const xyflowApi = useXYStoreApi()
-  const diagramApi = useDiagramStoreApi()
   const {
     nodes,
     edges,
@@ -151,12 +150,12 @@ export function XYFlow({
         onNodeDragStop: layoutConstraints.onNodeDragStop
       }}
       nodeDragThreshold={3}
-      zoomOnDoubleClick={true}
+      zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false} // or weird camera movement
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      // onDoubleClick={handlers.onDoubleClick}
+      onDoubleClick={handlers.onDoubleClick}
       onPaneClick={handlers.onPaneClick}
       onMoveEnd={handlers.onMoveEnd}
       onNodeMouseEnter={handlers.onNodeMouseEnter}

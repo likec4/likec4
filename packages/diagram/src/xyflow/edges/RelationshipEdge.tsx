@@ -255,7 +255,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     if (e.button !== 0) {
       return
     }
-    diagramStore.getState().cancelSaveManualLayout()
+    const wasCanceled = diagramStore.getState().cancelSaveManualLayout()
     e.stopPropagation()
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
@@ -276,8 +276,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     const onPointerUp = () => {
       domNode.removeEventListener('pointermove', onPointerMove)
       domNode.removeEventListener('pointerup', onPointerUp)
-      if (hasMoved) {
-        diagramStore.getState().triggerSaveManualLayout()
+      if (hasMoved || wasCanceled) {
+        diagramStore.getState().scheduleSaveManualLayout()
       }
       setIsControlPointDragging(false)
     }
