@@ -57,7 +57,6 @@ export async function buildReact(_isDev = false) {
       cssCodeSplit: false,
       cssMinify: true,
       sourcemap: false,
-      target: 'es2022',
       minify: true,
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,
@@ -77,12 +76,14 @@ export async function buildReact(_isDev = false) {
       },
       rollupOptions: {
         treeshake: {
-          preset: 'recommended'
+          preset: 'smallest'
         },
         output: {
+          esModule: true,
+          exports: 'named',
           hoistTransitiveImports: false,
-          compact: true,
-          interop: 'auto'
+          compact: true
+          // interop: 'auto'
         },
         external: [
           'react',

@@ -30,10 +30,11 @@
     "build": "tsx scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf contrib dist src/generated",
+    "vsce:pack": "yarn dlx vsce package",
     "vsce:publish": "yarn dlx vsce publish --skip-duplicate"
   },
   "engines": {
-    "vscode": "^1.88.0"
+    "vscode": "^1.90.0"
   },
   "keywords": [
     "architecture",
@@ -179,10 +180,8 @@
   ],
   "main": "dist/node/extension.js",
   "browser": "dist/browser/extension.js",
-  "dependencies": {
-    "@hpcc-js/wasm": "2.18.0"
-  },
   "devDependencies": {
+    "@hpcc-js/wasm": "2.18.2",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
@@ -190,7 +189,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^20.14.13",
-    "@types/vscode": "~1.88.0",
+    "@types/vscode": "~1.92.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.6",
     "consola": "^3.2.3",
