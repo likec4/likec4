@@ -27,7 +27,7 @@ export class Rpc implements Disposable {
     const modelEditor = this.services.likec4.ModelChanges
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
-      logger.warn(`[ServerRpc] no connection, not initializing`)
+      logger.info(`[ServerRpc] no connection, not initializing`)
       return
     }
     logger.info(`[ServerRpc] init`)

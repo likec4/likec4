@@ -1,6 +1,6 @@
 import type { Element, Relation } from '@likec4/core'
-import { Expr, invariant, nonexhaustive, parentFqn } from '@likec4/core'
-import { allPass, filter as remedaFilter, flatMap, identity, isNullish as isNil, map, pipe, unique } from 'remeda'
+import { Expr, isAncestor, nonexhaustive, parentFqn } from '@likec4/core'
+import { allPass, filter as remedaFilter, flatMap, isNullish as isNil, map, pipe } from 'remeda'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import type { ComputeCtx } from './compute'
 
@@ -291,11 +291,19 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   if (targets.length === 0) {
     return []
   }
-  const currentElements = [...this.resolvedElements]
-  if (currentElements.length === 0) {
-    currentElements.push(...resolveNeighbours.call(this, expr))
+  let sources = [...this.resolvedElements]
+  if (Expr.isElementRef(expr) || Expr.isExpandedElementExpr(expr)) {
+    const exprElement = expr.element ?? expr.expanded
+    const isDescedants = expr.isDescedants ?? false
+    sources = sources.filter(el =>
+      // allow elements, that are not nested or are direct children
+      !isAncestor(exprElement, el.id) || (isDescedants && parentFqn(el.id) === exprElement)
+    )
   }
-  return this.graph.edgesBetween(currentElements, targets)
+  if (sources.length === 0) {
+    sources = resolveNeighbours.call(this, expr)
+  }
+  return this.graph.edgesBetween(sources, targets)
 }
 
 const filterEdges = (edges: ComputeCtx.Edge[], where?: RelationPredicateFn) => {
@@ -349,9 +357,17 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   if (sources.length === 0) {
     return []
   }
-  const targets = [...this.resolvedElements]
+  let targets = [...this.resolvedElements]
+  if (Expr.isElementRef(expr) || Expr.isExpandedElementExpr(expr)) {
+    const sourceElement = expr.element ?? expr.expanded
+    const isDescedants = expr.isDescedants ?? false
+    targets = targets.filter(el =>
+      // allow elements, that are not nested or are direct children
+      !isAncestor(sourceElement, el.id) || (isDescedants && parentFqn(el.id) === sourceElement)
+    )
+  }
   if (targets.length === 0) {
-    targets.push(...resolveNeighbours.call(this, expr))
+    targets = resolveNeighbours.call(this, expr)
   }
   return this.graph.edgesBetween(sources, targets)
 }
@@ -382,8 +398,8 @@ namespace EdgePredicateResult {
     edges: []
   }
 }
-function edgesInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr, where?: RelationPredicateFn): EdgePredicateResult {
-  if (Expr.isWildcard(expr.inout)) {
+function edgesInOutExpr(this: ComputeCtx, { inout }: Expr.InOutExpr, where?: RelationPredicateFn): EdgePredicateResult {
+  if (Expr.isWildcard(inout)) {
     if (!this.root) {
       return EdgePredicateResult.Empty
     }
@@ -393,13 +409,22 @@ function edgesInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr, where?: Relation
       implicits: []
     }
   }
-  const elements = resolveElements.call(this, expr.inout)
+  const elements = resolveElements.call(this, inout)
   if (elements.length === 0) {
     return EdgePredicateResult.Empty
   }
-  const currentElements = [...this.resolvedElements]
+  let currentElements = [...this.resolvedElements]
+
+  if (Expr.isElementRef(inout) || Expr.isExpandedElementExpr(inout)) {
+    const exprElement = inout.element ?? inout.expanded
+    const isDescedants = inout.isDescedants ?? false
+    currentElements = currentElements.filter(el =>
+      // allow elements, that are not nested or are direct children
+      !isAncestor(exprElement, el.id) || (isDescedants && parentFqn(el.id) === exprElement)
+    )
+  }
   if (currentElements.length === 0) {
-    currentElements.push(...resolveNeighbours.call(this, expr.inout))
+    currentElements = resolveNeighbours.call(this, inout)
   }
   return elements.reduce<EdgePredicateResult>((acc, el) => {
     const edges = filterEdges(this.graph.anyEdgesBetween(el, currentElements), where)
@@ -439,6 +464,9 @@ function resolveRelationExprElements(this: ComputeCtx, expr: Expr.ElementExpress
   if (Expr.isElementRef(expr) && this.root === expr.element && expr.isDescedants !== true) {
     return [...this.graph.children(expr.element), this.graph.element(expr.element)]
   }
+  if (Expr.isExpandedElementExpr(expr) && this.root === expr.expanded) {
+    return [...this.graph.children(expr.expanded), this.graph.element(expr.expanded)]
+  }
   return resolveElements.call(this, expr)
 }
 
@@ -475,21 +503,3 @@ export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr, w
   const relations = filterRelations(edges, where)
   this.excludeRelation(...relations)
 }
-
-// export function includeCustomElement(this: ComputeCtx, expr: Expr.CustomElementExpr) {
-//   // Get the elements that are already in the Ctx before any mutations
-//   // Because we need to add edges between them and the new elements
-//   const currentElements = [...this.resolvedElements]
-
-//   const el = this.graph.element(expr.custom.element)
-
-//   this.addElement(el)
-
-//   if (currentElements.length > 0) {
-//     this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
-//   }
-// }
-
-// export function includeCustomRelation(this: ComputeCtx, expr: Expr.CustomRelationExpr) {
-//   includeRelationExpr.call(this, expr.customRelation.relation)
-// }

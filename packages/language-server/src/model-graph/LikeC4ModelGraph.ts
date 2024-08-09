@@ -11,7 +11,6 @@ import {
   type Relation,
   type RelationID
 } from '@likec4/core'
-import { filter, isIncludedIn } from 'remeda'
 
 type Params = {
   elements: Record<Fqn, Element>
@@ -32,6 +31,9 @@ const RelationsSet = Set<Relation>
 const MapRelations = Map<Fqn, Set<Relation>>
 
 function intersection<T>(a: Set<T>, b: Set<T>) {
+  if (a.size === 0 || b.size === 0) {
+    return new Set<T>()
+  }
   return new Set([...a].filter(value => b.has(value)))
 }
 
@@ -209,10 +211,6 @@ export class LikeC4ModelGraph {
           continue
         }
         const incoming = this._incomingTo(target.id)
-        if (incoming.size === 0) {
-          continue
-        }
-
         const relations = intersection(outcoming, incoming)
         if (relations.size > 0) {
           result.push({
