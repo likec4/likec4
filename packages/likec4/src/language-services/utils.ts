@@ -1,4 +1,4 @@
-import consola from '@likec4/log'
+import { consola } from '@likec4/log'
 import k from 'picocolors'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'

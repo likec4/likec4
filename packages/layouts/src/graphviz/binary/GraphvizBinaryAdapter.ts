@@ -1,4 +1,4 @@
-import logger from '@likec4/log'
+import { logger } from '@likec4/log'
 import { execa } from 'execa'
 import pLimit from 'p-limit'
 import type { GraphvizPort } from '../GraphvizLayoter'

@@ -17,7 +17,7 @@ import type {
   RelationshipLineType,
   XYPoint
 } from '@likec4/core/types'
-import logger from '@likec4/log'
+import { logger } from '@likec4/log'
 import { filter, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
 import {
   attribute as _,

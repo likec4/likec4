@@ -1,6 +1,6 @@
 import type { LanguageServices } from '@/language-services'
 import { createLikeC4Logger } from '@/logger'
-import consola from '@likec4/log'
+import { consola } from '@likec4/log'
 import react from '@vitejs/plugin-react'
 import { existsSync } from 'node:fs'
 import { extname, resolve } from 'node:path'

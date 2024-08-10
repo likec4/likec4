@@ -1,5 +1,5 @@
 import { invariant, nonexhaustive } from '@likec4/core'
-import { generateD2, generateMermaid, generateReact, generateViewsDataTs } from '@likec4/generators'
+import { generateD2, generateMermaid, generateViewsDataTs } from '@likec4/generators'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import k from 'picocolors'
@@ -28,11 +28,11 @@ type HandlerParams =
 
 async function singleFileCodegenAction(
   languageServices: LanguageServices,
-  format: 'react' | 'views',
+  format: 'views',
   outfile: string | undefined,
   logger: Logger
 ) {
-  const expectedExt = format === 'react' ? '.tsx' : '.ts'
+  const expectedExt = '.ts'
   outfile = outfile ?? resolve(languageServices.workspace, 'likec4.generated' + expectedExt)
   if (extname(outfile) !== expectedExt) {
     outfile = outfile + expectedExt
@@ -40,9 +40,8 @@ async function singleFileCodegenAction(
   await mkdir(dirname(outfile), { recursive: true })
 
   const views = await languageServices.views.diagrams()
-  const generator = format === 'react' ? generateReact : generateViewsDataTs
 
-  const generatedSource = generator([...views])
+  const generatedSource = generateViewsDataTs([...views])
 
   await writeFile(outfile, generatedSource)
 
@@ -115,7 +114,12 @@ async function multipleFilesCodegenAction(
   let succeeded = 0
   for (const view of views) {
     try {
-      const relativePath = view.relativePath ?? ''
+      let relativePath = view.relativePath ?? '.'
+      if (relativePath.includes('/')) {
+        relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
+      } else {
+        relativePath = '.'
+      }
       if (relativePath !== '' && !createdDirs.has(relativePath)) {
         await mkdir(resolve(outdir, relativePath), { recursive: true })
         createdDirs.add(relativePath)

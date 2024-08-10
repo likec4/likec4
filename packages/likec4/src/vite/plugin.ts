@@ -1,5 +1,5 @@
 import { generateViewsDataJs } from '@likec4/generators'
-import consola from '@likec4/log'
+import { consola } from '@likec4/log'
 import pLimit from 'p-limit'
 import k from 'picocolors'
 import { mapToObj } from 'remeda'

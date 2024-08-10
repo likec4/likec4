@@ -1,4 +1,4 @@
-import consola from '@likec4/log'
+import { consola } from '@likec4/log'
 import { isCI } from 'ci-info'
 import { hrtime } from 'node:process'
 import k from 'picocolors'

@@ -1,5 +1,5 @@
 import { viteReactConfig } from '@/vite/config-react'
-import consola from '@likec4/log'
+import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
@@ -28,7 +28,6 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
 
   const diagrams = await languageServices.views.diagrams()
   if (diagrams.length === 0) {
-    logger.warn('no views found')
     process.exitCode = 1
     throw new Error('no views found')
   }
@@ -51,7 +50,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   consola.debug(`${k.dim('filename')} ${filename}`)
 
   const ext = extname(filename).toLocaleLowerCase()
-  if (ext !== '.js' && ext !== '.mjs' && ext !== '.jsx') {
+  if (!['.js', '.mjs', '.jsx'].includes(ext)) {
     consola.warn(`output file ${outfile} has extension "${ext}"`)
     throw new Error(`output file ${outfile} must be a .js, .jsx or .mjs`)
   }

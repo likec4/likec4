@@ -1,5 +1,5 @@
 import { createLikeC4Logger } from '@/logger'
-import consola from '@likec4/log'
+import { consola } from '@likec4/log'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'

@@ -8,7 +8,7 @@ import type {
   Point
 } from '@likec4/core'
 import { invariant, nonNullable } from '@likec4/core'
-import logger from '@likec4/log'
+import { logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import { EDGE_LABEL_MAX_CHARS, wrap } from './dot-labels'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'

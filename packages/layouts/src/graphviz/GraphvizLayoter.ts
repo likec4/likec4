@@ -1,5 +1,5 @@
 import { type ComputedView, type DiagramView, isComputedDynamicView } from '@likec4/core'
-import logger from '@likec4/log'
+import { logger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
