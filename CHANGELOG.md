@@ -1,22 +1,54 @@
 # [1.7.0](https://github.com/likec4/likec4/compare/v1.6.1...v1.7.0) (2024-08-10)
 
+### 🚀 Features  
 
-### Bug Fixes
+* `where` in predicates
 
-* **cli:** failing first export to png (due to page reload on vite optimizeDeps) ([43a34ca](https://github.com/likec4/likec4/commit/43a34caa75fab785f4141906c0dea1d4e85c274b))
-* **deps:** update dependency @astrojs/check to ^0.8.3 ([#845](https://github.com/likec4/likec4/issues/845)) ([8d4bc59](https://github.com/likec4/likec4/commit/8d4bc59dddad8410cb556d51962e16f3f5bf940c))
-* icons renderer ([48624a9](https://github.com/likec4/likec4/commit/48624a9607e28cd0cb0f29f040adc7cf1983b925))
-* improve relationships predicates ([8a3e197](https://github.com/likec4/likec4/commit/8a3e197d61c19aebfa5a7c121700a3ce45d6a69f))
-* **lsp:** allow wildcard predicate together with `with` ([8825acc](https://github.com/likec4/likec4/commit/8825accd760e5f9b0b7227e435f395ee0d204abb))
-* **preview:** `auto` color scheme by default ([8f84092](https://github.com/likec4/likec4/commit/8f8409262e8eaf59d4b11d5e7da80085fd87eecd))
+  ```zig
+  // include only microservices from nested
+  include cloud.*
+    where kind is microservice
+  
+  // only microservices and not deprecated
+  include cloud.*
+    where
+       kind == microservice and // possible to use 'is' or '=='
+       tag != #deprecated       // possible to use 'is not' or '!='
+  
+  // Use logical operators
+  include cloud.*
+    where
+       not (kind is microservice or kind is webapp)
+       and tag is not #legacy
+       and (tag is #v1 or tag is #v2)
+  ```
 
+  This also applies to relationship predicates (Resolves [#593](https://github.com/likec4/likec4/issues/593))
 
-### Features
+  ```zig
+  include
+    // only relationships with tag #messaging
+    cloud.* <-> amazon.*
+      where tag is #messaging,
+  
+    // only incoming http-requests
+    -> backend
+      where kind is http-request
+  ```
+
+  [Documentation](https://likec4.dev/dsl/views/#filter)
+
+### Improvements  
 
 * **diagram:** enable dynamic walkthrough on edge double click ([7d5c2c4](https://github.com/likec4/likec4/commit/7d5c2c44b042c1540865462b5bbc313f59e5ac60))
-* **dsl:** `where` clause ([349f672](https://github.com/likec4/likec4/commit/349f6729ad1b6cd27a4cc88b80f05db89e58772b))
-* **dsl:** add `description` and `technology` to relationships (not yet rendered) ([ccdcdfd](https://github.com/likec4/likec4/commit/ccdcdfd5680ed922d19cc40c8338d94817e8728c))
 
+* Improve manual layouts
+  ...
+  
+* Add `description` and `technology` to relationship (not yet rendered) ([ccdcdfd](https://github.com/likec4/likec4/commit/ccdcdfd5680ed922d19cc40c8338d94817e8728c))
+  ...
+
+* **lsp:** allow wildcard predicate together with `with` ([8825acc](https://github.com/likec4/likec4/commit/8825accd760e5f9b0b7227e435f395ee0d204abb))
 
 
 ## [1.6.1](https://github.com/likec4/likec4/compare/v1.6.0...v1.6.1) (2024-07-24)
