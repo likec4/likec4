@@ -27,6 +27,7 @@
     "@codingame/monaco-vscode-theme-service-override": "6.0.3",
     "@hpcc-js/wasm": "2.18.2",
     "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",

@@ -91,6 +91,7 @@ export function DiagramPanel() {
             experimentalEdgeEditing
             nodesDraggable
             showNavigationButtons
+            enableFocusMode={false}
             renderIcon={RendererIcon}
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
