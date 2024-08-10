@@ -1,3 +1,12 @@
+## [1.7.2](https://github.com/likec4/likec4/compare/v1.7.1...v1.7.2) (2024-08-10)
+
+
+### Bug Fixes
+
+* **vscode:** regression with preview panel ([ba61a7b](https://github.com/likec4/likec4/commit/ba61a7b7064150d3bc3ed69444b201991a9bfa84))
+
+
+
 ## [1.7.1](https://github.com/likec4/likec4/compare/v1.7.0...v1.7.1) (2024-08-10)
 
 ### Bug Fixes
