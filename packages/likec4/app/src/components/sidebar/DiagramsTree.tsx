@@ -1,10 +1,29 @@
-import { Box, Button, Tree, useComputedColorScheme, useTree } from '@mantine/core'
-import { IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
+import { Box, Button, ThemeIcon, Tree, type TreeNodeData, useComputedColorScheme, useTree } from '@mantine/core'
+import { IconFile, IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
 import { Link, useParams } from '@tanstack/react-router'
 import { memo } from 'react'
 import { isTruthy } from 'remeda'
 import { useLikeC4View } from 'virtual:likec4/store'
-import { useDiagramsTreeData } from './data'
+import { isTreeNodeData, useDiagramsTreeData } from './data'
+
+const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
+
+const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean }) => {
+  if (isFile(node)) {
+    return (
+      <ThemeIcon size={'sm'} variant="transparent" color="indigo">
+        <IconFileCode size={16} />
+      </ThemeIcon>
+    )
+  }
+  return <ThemeIcon size={'sm'} variant="transparent" color="violet">
+    {expanded ? <IconFolderOpen size={16} /> : <IconFolderFilled size={16} />}
+  </ThemeIcon>
+  // if (expanded) {
+  //   return <IconFolderOpen size={16} />
+  // }
+  // return <IconFolderFilled size={16} />
+}
 
 export const DiagramsTree = /* @__PURE__ */ memo(() => {
   const data = useDiagramsTreeData()
@@ -28,11 +47,6 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
     multiple: false
   })
   const theme = useComputedColorScheme()
-  // const mantine = useMantineTheme()
-
-  // const router = useRouter()
-  // const routerState = useRouterState()
-  // const selectedId = viewId && inTree(viewId, data) ? [viewId] : []
 
   return (
     <Box>
@@ -45,6 +59,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
             marginBottom: 2
           }
         }}
+        levelOffset={'md'}
         renderNode={({ node, expanded, elementProps, hasChildren }) => (
           <Box {...elementProps}>
             <Button
@@ -62,9 +77,8 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
               }}
               leftSection={
                 <>
-                  {!hasChildren && <IconLayoutDashboard size={15} opacity={0.7} />}
-                  {hasChildren && expanded && <IconFolderOpen size={15} />}
-                  {hasChildren && !expanded && <IconFolderFilled size={15} />}
+                  {!hasChildren && <IconLayoutDashboard size={16} opacity={0.7} />}
+                  {hasChildren && <FolderIcon node={node} expanded={expanded} />}
                 </>
               }
               {...(!hasChildren && {
