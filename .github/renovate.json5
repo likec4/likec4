@@ -8,7 +8,7 @@
     "helpers:disableTypesNodeMajor"
   ],
   prHourlyLimit: 5,
-  prConcurrentLimit: 10,
+  prConcurrentLimit: 5,
   rangeStrategy: 'bump',
   updateInternalDeps: true,
   labels: ['dependencies'],

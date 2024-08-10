@@ -1,13 +1,13 @@
-import { consola } from '@likec4/log'
 import { beforeAll, beforeEach, vi } from 'vitest'
+import { logger } from '../logger'
 
 beforeAll(() => {
   // Redirect std and console to consola too
   // Calling this once is sufficient
-  consola.wrapAll()
+  logger.wrapAll()
 })
 
 beforeEach(() => {
   // Vitest
-  consola.mockTypes(() => vi.fn())
+  logger.mockTypes(() => vi.fn())
 })
