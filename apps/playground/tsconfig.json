@@ -11,7 +11,8 @@
       "#monaco/*": [
         "./src/monaco/*"
       ],
-    }
+    },
+    "noUnusedParameters": false
   },
   "include": [
     "./src",
