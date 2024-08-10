@@ -1,3 +1,11 @@
+## [1.7.1](https://github.com/likec4/likec4/compare/v1.7.0...v1.7.1) (2024-08-10)
+
+### Bug Fixes
+
+* **cli:** regression on `build` command ([5ebb251](https://github.com/likec4/likec4/commit/5ebb251d76ff4a68c200d91f9bde4b2d8f11a6fa))
+
+
+
 # [1.7.0](https://github.com/likec4/likec4/compare/v1.6.1...v1.7.0) (2024-08-10)
 
 ### 🚀 Features  
