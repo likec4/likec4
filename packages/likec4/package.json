@@ -128,7 +128,7 @@
     "ci-info": "^3.9.0",
     "classnames": "^2.3.2",
     "clsx": "^2.1.1",
-    "esbuild": "^0.21.5",
+    "esbuild": "^0.23.0",
     "esbuild-node-externals": "^1.14.0",
     "esm-env": "^1.0.0",
     "execa": "^9.3.0",

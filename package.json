@@ -40,7 +40,7 @@
     "@types/node": "^20.14.13",
     "@vitest/ui": "~2.0.5",
     "dprint": "0.47.2",
-    "esbuild": "^0.21.5",
+    "esbuild": "^0.23.0",
     "execa": "^9.3.0",
     "global": "^4.4.0",
     "husky": "^8.0.3",

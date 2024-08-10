@@ -193,7 +193,7 @@
     "@types/vscode": "~1.92.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.6",
-    "esbuild": "^0.21.5",
+    "esbuild": "^0.23.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.4",
     "execa": "^9.3.0",
     "langium": "3.1.3",
