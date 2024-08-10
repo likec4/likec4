@@ -3,9 +3,11 @@ import type {
   ComputedEdge,
   DynamicView,
   Element,
+  NonEmptyArray,
   RelationID,
   RelationshipArrowType,
   RelationshipLineType,
+  Tag,
   ThemeColor
 } from '@likec4/core'
 import {
@@ -20,7 +22,7 @@ import {
   parentFqn,
   StepEdgeId
 } from '@likec4/core'
-import { isTruthy, unique } from 'remeda'
+import { hasAtLeast, isTruthy, map, unique } from 'remeda'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -41,6 +43,7 @@ export namespace DynamicViewComputeCtx {
     tail?: RelationshipArrowType
     relations: RelationID[]
     isBackward: boolean
+    tags?: NonEmptyArray<Tag>
   }
 }
 
@@ -81,15 +84,16 @@ export class DynamicViewComputeCtx {
       this.explicits.add(source)
       this.explicits.add(target)
 
-      const { title, relations } = this.findRelations(source, target)
+      const { title, relations, tags } = this.findRelations(source, target)
 
       this.steps.push({
         ...step,
         source,
         target,
         title: isTruthy(stepTitle) ? stepTitle : title,
-        relations,
-        isBackward: isBackward ?? false
+        relations: relations ?? [],
+        isBackward: isBackward ?? false,
+        ...(tags ? { tags } : {})
       })
     }
 
@@ -168,12 +172,20 @@ export class DynamicViewComputeCtx {
 
   private findRelations(source: Element, target: Element): {
     title: string | null
-    relations: RelationID[]
+    tags: NonEmptyArray<Tag> | null
+    relations: NonEmptyArray<RelationID> | null
   } {
-    const relationships = this.graph.edgesBetween(source, target).flatMap(e => e.relations)
-    const relations = unique(relationships.map(r => r.id))
+    const relationships = unique(this.graph.edgesBetween(source, target).flatMap(e => e.relations))
+    const alltags = unique(relationships.flatMap(r => r.tags ?? []))
+    const tags = hasAtLeast(alltags, 1) ? alltags : null
+
+    const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
     if (relationships.length === 0) {
-      return { title: null, relations }
+      return {
+        title: null,
+        tags,
+        relations
+      }
     }
     let relation
     if (relationships.length === 1) {
@@ -185,6 +197,7 @@ export class DynamicViewComputeCtx {
     if (relation && isTruthy(relation.title)) {
       return {
         title: relation.title,
+        tags,
         relations
       }
     }
@@ -195,12 +208,14 @@ export class DynamicViewComputeCtx {
     if (labels.length === 1) {
       return {
         title: labels[0]!,
+        tags,
         relations
       }
     }
 
     return {
       title: null,
+      tags,
       relations
     }
   }

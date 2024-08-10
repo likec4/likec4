@@ -1,4 +1,3 @@
-import { title } from 'process'
 import { describe, expect, it } from 'vitest'
 import { $customRelation, $include, $style, computeView } from './fixture'
 
@@ -22,6 +21,11 @@ describe('custom-relation-expr', () => {
     ])
     expect(edgeIds).toEqual(['customer:cloud.frontend', 'cloud.frontend:cloud.backend'])
     const edge = edges[1]!
+    // Should merge tags
+    expect(edge).toHaveProperty('tags', [
+      'next',
+      'old'
+    ])
     expect(edge).toMatchInlineSnapshot(`
       {
         "color": "red",
@@ -36,6 +40,10 @@ describe('custom-relation-expr', () => {
           "cloud.frontend.adminPanel:cloud.backend.graphql",
         ],
         "source": "cloud.frontend",
+        "tags": [
+          "next",
+          "old",
+        ],
         "target": "cloud.backend",
       }
     `)
@@ -70,6 +78,9 @@ describe('custom-relation-expr', () => {
           "cloud.frontend.adminPanel:cloud.backend.graphql",
         ],
         "source": "cloud.frontend.adminPanel",
+        "tags": [
+          "old",
+        ],
         "tail": "odiamond",
         "target": "cloud.backend.graphql",
       }
@@ -87,6 +98,9 @@ describe('custom-relation-expr', () => {
           "cloud.frontend.dashboard:cloud.backend.graphql",
         ],
         "source": "cloud.frontend.dashboard",
+        "tags": [
+          "next",
+        ],
         "target": "cloud.backend.graphql",
       }
     `)
@@ -118,6 +132,11 @@ describe('custom-relation-expr', () => {
           "cloud.backend.storage:amazon.s3",
         ],
         "source": "cloud.backend",
+        "tags": [
+          "aws",
+          "storage",
+          "legacy",
+        ],
         "target": "amazon.s3",
       }
     `)

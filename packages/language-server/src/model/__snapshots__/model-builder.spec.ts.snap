@@ -503,6 +503,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
             "p2bxx1",
           ],
           "source": "user1",
+          "tags": [
+            "next",
+          ],
           "target": "user2",
         },
       ],

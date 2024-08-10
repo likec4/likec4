@@ -1,4 +1,14 @@
-import type { Element, ElementKind, ElementView, Fqn, IconUrl, Opaque, Relation, RelationID } from '@likec4/core'
+import type {
+  Element,
+  ElementKind,
+  ElementView,
+  Fqn,
+  IconUrl,
+  NonEmptyArray,
+  Opaque,
+  Relation,
+  RelationID
+} from '@likec4/core'
 import { LikeC4ModelGraph } from '@likec4/language-server/model-graph'
 
 /**
@@ -79,18 +89,26 @@ const el = ({
   id,
   kind,
   title,
+  style,
+  tags,
   ...props
-}: Partial<Omit<Element, 'id' | 'kind'>> & { id: string; kind: string }): Element => ({
+}: Partial<Omit<Element, 'id' | 'kind' | 'tags'>> & {
+  id: string
+  kind: string
+  tags?: NonEmptyArray<string>
+}): Element => ({
   id: id as Fqn,
   kind: kind as ElementKind,
   title: title ?? id,
   description: null,
   technology: null,
-  tags: null,
+  tags: tags as NonEmptyArray<any> ?? null,
   links: null,
+  style: {
+    ...style
+  },
   ...props
 })
-
 export const fakeElements = {
   'cloud': el({
     id: 'cloud',

@@ -56,4 +56,9 @@ specification {
     tail onormal
   }
 
+  tag next
+  tag deprecated
+  tag v1
+  tag v2
+
 }

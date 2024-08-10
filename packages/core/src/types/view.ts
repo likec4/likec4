@@ -200,6 +200,7 @@ export interface ComputedEdge {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
+  tags?: NonEmptyArray<Tag>
   /**
    * If this edge is derived from custom relationship predicate
    */

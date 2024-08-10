@@ -5,10 +5,12 @@ import type {
   Element,
   ElementPredicateExpression,
   ElementView,
+  NonEmptyArray,
   Relation,
   RelationPredicateExpression,
   RelationshipArrowType,
   RelationshipLineType,
+  Tag,
   ThemeColor,
   ViewRulePredicate
 } from '@likec4/core'
@@ -193,16 +195,20 @@ export class ComputeCtx {
         relations: relations.map(r => r.id)
       }
 
-      let relation: Pick<Relation, 'title' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail'> | {
-        // TODO refactor with type-fest
-        title: string
-        description?: string | undefined
-        technology?: string | undefined
-        color?: ThemeColor | undefined
-        line?: RelationshipLineType | undefined
-        head?: RelationshipArrowType | undefined
-        tail?: RelationshipArrowType | undefined
-      } | undefined
+      let relation:
+        | Pick<Relation, 'title' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail' | 'tags'>
+        | {
+          // TODO refactor with type-fest
+          title: string
+          description?: string | undefined
+          technology?: string | undefined
+          color?: ThemeColor | undefined
+          line?: RelationshipLineType | undefined
+          head?: RelationshipArrowType | undefined
+          tail?: RelationshipArrowType | undefined
+          tags?: NonEmptyArray<Tag>
+        }
+        | undefined
       if (relations.length === 1) {
         relation = relations[0]
       } else {
@@ -245,17 +251,9 @@ export class ComputeCtx {
           color: first(flatMap(relations, r => isTruthy(r.color) ? r.color : [])),
           line: first(flatMap(relations, r => isTruthy(r.line) ? r.line : []))
         })
-        // return Object.assign(
-        //   edge,
-        //   isTruthy(shared.title) && { label: shared.title },
-        //   isTruthy(shared.description) && { description: shared.description },
-        //   isTruthy(shared.technology) && { technology: shared.technology },
-        //   shared.color && { color: shared.color },
-        //   shared.line && { line: shared.line },
-        //   shared.head && { head: shared.head },
-        //   shared.tail && { tail: shared.tail }
-        // )
       }
+
+      const tags = unique(flatMap(relations, r => r.tags ?? []))
 
       return Object.assign(
         edge,
@@ -265,7 +263,8 @@ export class ComputeCtx {
         relation.color && { color: relation.color },
         relation.line && { line: relation.line },
         relation.head && { head: relation.head },
-        relation.tail && { tail: relation.tail }
+        relation.tail && { tail: relation.tail },
+        hasAtLeast(tags, 1) && { tags }
       )
     })
   }

@@ -36,6 +36,10 @@ exports[`compute-element-view > view of cloud 1`] = `
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
       "source": "cloud.frontend",
+      "tags": [
+        "next",
+        "old",
+      ],
       "target": "cloud.backend",
     },
     {
@@ -46,6 +50,11 @@ exports[`compute-element-view > view of cloud 1`] = `
         "cloud.backend.storage:amazon.s3",
       ],
       "source": "cloud.backend",
+      "tags": [
+        "aws",
+        "storage",
+        "legacy",
+      ],
       "target": "amazon",
     },
     {
@@ -56,6 +65,9 @@ exports[`compute-element-view > view of cloud 1`] = `
         "cloud.backend:email",
       ],
       "source": "cloud.backend",
+      "tags": [
+        "communication",
+      ],
       "target": "email",
     },
   ],
@@ -257,6 +269,9 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
       "source": "cloud.frontend.adminPanel",
+      "tags": [
+        "old",
+      ],
       "tail": "odiamond",
       "target": "cloud.backend",
     },
@@ -269,6 +284,9 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
         "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
       "source": "cloud.frontend.dashboard",
+      "tags": [
+        "next",
+      ],
       "target": "cloud.backend",
     },
   ],

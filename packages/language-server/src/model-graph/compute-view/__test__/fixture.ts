@@ -1,27 +1,28 @@
-import type {
-  BorderStyle,
-  ComputedView,
-  CustomElementExpr as C4CustomElementExpr,
-  CustomRelationExpr as C4CustomRelationExpr,
-  Element,
-  ElementExpression as C4ElementExpression,
-  ElementKind,
-  ElementShape,
-  ElementWhereExpr,
-  Expression as C4Expression,
-  Fqn,
-  Relation,
-  RelationID,
-  RelationshipArrowType,
-  RelationshipLineType,
-  RelationWhereExpr,
-  Tag,
-  ThemeColor,
-  ViewID,
-  ViewRule,
-  ViewRulePredicate,
-  ViewRuleStyle,
-  WhereOperator
+import {
+  type BorderStyle,
+  type ComputedView,
+  type CustomElementExpr as C4CustomElementExpr,
+  type CustomRelationExpr as C4CustomRelationExpr,
+  type Element,
+  type ElementExpression as C4ElementExpression,
+  type ElementKind,
+  type ElementShape,
+  type ElementWhereExpr,
+  type Expression as C4Expression,
+  type Fqn,
+  type NonEmptyArray,
+  type Relation,
+  type RelationID,
+  type RelationshipArrowType,
+  type RelationshipLineType,
+  type RelationWhereExpr,
+  type Tag,
+  type ThemeColor,
+  type ViewID,
+  type ViewRule,
+  type ViewRulePredicate,
+  type ViewRuleStyle,
+  type WhereOperator
 } from '@likec4/core'
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
@@ -112,14 +113,19 @@ const el = ({
   kind,
   title,
   style,
+  tags,
   ...props
-}: Partial<Omit<Element, 'id' | 'kind'>> & { id: string; kind: string }): Element => ({
+}: Partial<Omit<Element, 'id' | 'kind' | 'tags'>> & {
+  id: string
+  kind: string
+  tags?: NonEmptyArray<string>
+}): Element => ({
   id: id as Fqn,
   kind: kind as ElementKind,
   title: title ?? id,
   description: null,
   technology: null,
-  tags: null,
+  tags: tags as NonEmptyArray<Tag> ?? null,
   links: null,
   style: {
     ...style
@@ -144,7 +150,7 @@ export const fakeElements = {
     id: 'cloud',
     kind: 'system',
     title: 'cloud',
-    tags: ['next' as Tag, 'old' as Tag]
+    tags: ['next', 'old']
   }),
   'cloud.backend': el({
     id: 'cloud.backend',
@@ -171,32 +177,32 @@ export const fakeElements = {
     id: 'cloud.backend.storage',
     kind: 'component',
     title: 'storage',
-    tags: ['old' as Tag]
+    tags: ['storage', 'old']
   }),
   'cloud.frontend.adminPanel': el({
     id: 'cloud.frontend.adminPanel',
     kind: 'component',
     title: 'adminPanel',
-    tags: ['old' as Tag]
+    tags: ['old']
   }),
   'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'dashboard',
-    tags: ['next' as Tag]
+    tags: ['next']
   }),
   'amazon': el({
     id: 'amazon',
     kind: 'system',
     title: 'amazon',
-    tags: ['aws' as Tag]
+    tags: ['aws']
   }),
   'amazon.s3': el({
     id: 'amazon.s3',
     kind: 'component',
     title: 's3',
     shape: 'storage',
-    tags: ['aws' as Tag]
+    tags: ['aws', 'storage']
   })
 } satisfies Record<string, Element>
 
@@ -216,6 +222,7 @@ const rel = ({
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
+  tags?: NonEmptyArray<string>
 }): Relation => ({
   id: `${source}:${target}` as RelationID,
   title: title ?? '',
@@ -238,7 +245,8 @@ export const fakeRelations = [
   rel({
     source: 'cloud.backend.storage',
     target: 'amazon.s3',
-    title: 'uploads'
+    title: 'uploads',
+    tags: ['aws', 'storage', 'legacy']
   }),
   rel({
     source: 'customer',
@@ -248,7 +256,8 @@ export const fakeRelations = [
   rel({
     source: 'cloud.backend.graphql',
     target: 'cloud.backend.storage',
-    title: 'stores'
+    title: 'stores',
+    tags: ['old', 'storage']
   }),
   // rel({
   //   source: 'cloud.backend',
@@ -270,7 +279,8 @@ export const fakeRelations = [
     target: 'cloud.backend.graphql',
     kind: 'graphlql',
     title: 'requests',
-    line: 'solid'
+    line: 'solid',
+    tags: ['next']
   }),
   rel({
     source: 'cloud.frontend.adminPanel',
@@ -278,29 +288,34 @@ export const fakeRelations = [
     kind: 'graphlql',
     title: 'fetches',
     line: 'dashed',
-    tail: 'odiamond'
+    tail: 'odiamond',
+    tags: ['old']
   }),
   rel({
     source: 'cloud',
     target: 'amazon',
     title: 'uses',
     head: 'diamond',
-    tail: 'odiamond'
+    tail: 'odiamond',
+    tags: ['aws']
   }),
   rel({
     source: 'cloud.backend',
     target: 'email',
-    title: 'schedule'
+    title: 'schedule',
+    tags: ['communication']
   }),
   rel({
     source: 'cloud',
     target: 'email',
-    title: 'uses'
+    title: 'uses',
+    tags: ['communication']
   }),
   rel({
     source: 'email',
     target: 'cloud',
-    title: 'notifies'
+    title: 'notifies',
+    tags: ['communication']
   })
 ]
 

@@ -13,6 +13,7 @@ model {
     link https://github.com/likec4/likec4
 
     ui = container 'Frontend' {
+      #v1
       description '
         All the frontend applications
         of the cloud system
@@ -30,14 +31,14 @@ model {
         }
 
         -> amazon.cognito 'authenticate'
-        -> backend.graphql 'fetch data'
+        -> backend.graphql 'fetch data' #v1 #v2
       }
       customer -> dashboard 'open in browser'
 
       mobile = mobile 'Mobile App' {
         description 'The mobile app of the cloud system'
         -> amazon.cognito 'authenticate'
-        -> backend.graphql 'fetch data'
+        -> backend.graphql 'fetch data' #v2
       }
       customer -> mobile 'open on mobile device'
     }
@@ -55,6 +56,7 @@ model {
     }
 
     data = container 'Data Services' {
+      #next #v2
       description '
         Data storage
         and data processing

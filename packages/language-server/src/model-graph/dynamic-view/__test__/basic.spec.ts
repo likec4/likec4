@@ -36,14 +36,19 @@ describe('dynamic-view', () => {
         id: 'step-002',
         source: 'cloud.frontend.dashboard',
         target: 'cloud.backend.graphql',
-        label: 'requests' // inferred from relations
+        label: 'requests', // inferred from relations,
+        tags: ['next'],
+        relations: [
+          'cloud.frontend.dashboard:cloud.backend.graphql'
+        ]
       },
       {
         id: 'step-003',
         source: 'cloud.backend.graphql',
         target: 'cloud.frontend.dashboard',
         dir: 'back',
-        label: 'return data'
+        label: 'return data',
+        relations: []
       }
     ])
     expect([edges[0], edges[1]]).have.not.a.property('dir')
@@ -373,7 +378,7 @@ describe('dynamic-view', () => {
         parent: 'amazon',
         inEdges: [],
         outEdges: [],
-        tags: ['aws']
+        tags: ['aws', 'storage']
       }
     ])
   })
