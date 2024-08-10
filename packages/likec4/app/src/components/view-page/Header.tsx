@@ -1,8 +1,6 @@
 import { type DiagramView } from '@likec4/core'
 import {
-  Badge,
   Button,
-  Center,
   Divider,
   Group,
   Menu,

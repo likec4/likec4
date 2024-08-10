@@ -1,3 +1,5 @@
+import '@xyflow/react/dist/style.css'
+
 import { defaultTheme } from '@likec4/core'
 import { createGlobalTheme, globalStyle } from '@vanilla-extract/css'
 import { scale, toHex } from 'khroma'

@@ -15,7 +15,7 @@ export const Route = createFileRoute('/')({
   component: IndexPage
 })
 
-export function IndexPage() {
+function IndexPage() {
   const views = keys(useLikeC4Views())
 
   return (

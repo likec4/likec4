@@ -45,7 +45,6 @@ export async function bundleApp() {
       minifyIdentifiers: false,
       minifyWhitespace: true,
       minifySyntax: true,
-      lineLimit: 150,
       tsconfigRaw: {
         compilerOptions: {
           useDefineForClassFields: true,
@@ -60,39 +59,16 @@ export async function bundleApp() {
       outDir,
       chunkSizeWarningLimit: 2000,
       cssCodeSplit: false,
-      cssMinify: true,
+      cssMinify: 'esbuild',
       minify: 'esbuild',
-      target: 'es2022',
+      target: 'esnext',
       sourcemap: false,
       assetsInlineLimit: 1_000_000,
       lib: {
         entry: {
           'main': 'src/main.tsx',
-          'theme': 'src/theme.ts',
-          'hooks': 'src/hooks.ts',
-          'routeTree.gen': 'src/routeTree.gen.ts',
-          'router': 'src/router.tsx',
-          'routes/__root': 'src/routes/__root.tsx',
-          'routes/-view-lazy-data': 'src/routes/-view-lazy-data.ts',
-          'routes/export.$viewId': 'src/routes/export.$viewId.tsx',
-          'routes/embed.$viewId': 'src/routes/embed.$viewId.tsx',
-          'routes/index': 'src/routes/index.tsx',
-          'routes/index.css': 'src/routes/index.css.ts',
-          'routes/view_viewId_.css': 'src/routes/view_viewId_.css.ts',
-          'routes/view.$viewId.d2': 'src/routes/view.$viewId.d2.tsx',
-          'routes/view.$viewId.dot': 'src/routes/view.$viewId.dot.tsx',
-          'routes/view.$viewId.mmd': 'src/routes/view.$viewId.mmd.tsx',
-          'routes/view.$viewId.editor': 'src/routes/view.$viewId.editor.tsx',
-          'routes/view.$viewId.index': 'src/routes/view.$viewId.index.tsx',
-          'routes/view.$viewId': 'src/routes/view.$viewId.tsx',
-          'routes/view.css': 'src/routes/view.css.ts',
-          'routes/webcomponent.$': 'src/routes/webcomponent.$.tsx',
-          'components/sidebar/Drawer': 'src/components/sidebar/Drawer.tsx',
-          'components/view-page/Header': 'src/components/view-page/Header.tsx',
-          'components/RenderIcon': 'src/components/RenderIcon.tsx',
-          'components/NotFound': 'src/components/NotFound.tsx',
-          'components/CopyToClipboard': 'src/components/CopyToClipboard.tsx',
-          'components/ColorSchemeToggle': 'src/components/ColorSchemeToggle.tsx'
+          'lazy-data': 'src/routes/-view-lazy-data.ts',
+          'icons': 'src/components/RenderIcon.tsx'
         },
         formats: ['es']
       },
@@ -106,7 +82,6 @@ export async function bundleApp() {
       rollupOptions: {
         treeshake: {
           preset: 'smallest'
-          // moduleSideEffects: false,
         },
         output: {
           hoistTransitiveImports: false,
@@ -116,6 +91,9 @@ export async function bundleApp() {
           assetFileNames: '[name][extname]',
           chunkFileNames: 'chunks/[name]-[hash].js',
           manualChunks: (id) => {
+            if (id.includes('.css')) {
+              return null
+            }
             if (id.includes('@mantine')) {
               return 'mantine'
             }
@@ -143,10 +121,11 @@ export async function bundleApp() {
       }
     },
     css: {
+      modules: false,
       postcss: {
         plugins: [
-          autoprefixer(),
-          postcssPresetMantine()
+          postcssPresetMantine(),
+          autoprefixer()
         ]
       }
     },

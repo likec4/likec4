@@ -1,5 +1,4 @@
 import { createLikeC4Logger } from '@/logger'
-import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import k from 'picocolors'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
@@ -56,6 +55,7 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
         'react',
         'react-dom',
         'react/jsx-runtime',
+        'react/jsx-dev-runtime',
         'react-dom/client',
         'nanostores',
         '@nanostores/react'
@@ -70,6 +70,7 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
     },
     build: {
       outDir,
+      modulePreload: false,
       emptyOutDir: false,
       cssCodeSplit: false,
       sourcemap: false,
@@ -83,22 +84,16 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
             return true
           }
           return 'auto'
-        },
-        requireReturnsDefault: 'auto'
+        }
       },
       rollupOptions: {
-        treeshake: {
-          preset: 'smallest'
-        },
         output: {
-          interop: 'auto',
-          hoistTransitiveImports: false
+          compact: true
         }
       }
     },
     customLogger,
     plugins: [
-      react(),
       likec4Plugin({ languageServices })
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }

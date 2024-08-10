@@ -1,6 +1,6 @@
+import { useUpdateEffect } from '@likec4/diagram'
 import { Alert, Box, Burger, Button, Code, Container, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { useUpdateEffect } from '@react-hookz/web'
 import { createFileRoute, isNotFound, Outlet, useRouter } from '@tanstack/react-router'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import { useLikeC4View } from 'virtual:likec4/store'

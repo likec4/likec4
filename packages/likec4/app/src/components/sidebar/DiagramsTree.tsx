@@ -1,5 +1,5 @@
 import { Box, Button, ThemeIcon, Tree, type TreeNodeData, useComputedColorScheme, useTree } from '@mantine/core'
-import { IconFile, IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
+import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
 import { Link, useParams } from '@tanstack/react-router'
 import { memo } from 'react'
 import { isTruthy } from 'remeda'

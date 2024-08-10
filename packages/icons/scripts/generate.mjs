@@ -1,6 +1,5 @@
 import consola from 'consola'
 import { build } from 'esbuild'
-import { $ } from 'execa'
 import { globSync } from 'glob'
 import { writeFile } from 'node:fs/promises'
 
@@ -65,14 +64,14 @@ export default function BundledIcon({ name, ...props }: IconProps): JSX.Element;
 await writeFile(
   'all.js',
   `
-import { jsx as _jsx } from "react/jsx-runtime";
+import { jsx} from "react/jsx-runtime";
 ${imports.join('\n')}
 export const Icons = {
 ${icons.join('\n')}
 }
 export default function BundledIcon({ name, ...props }) {
   const IconComponent = Icons[name];
-  return IconComponent ? _jsx(IconComponent, { ...props }) : null;
+  return IconComponent ? jsx(IconComponent, { ...props }) : null;
 }
 `
 )
@@ -84,6 +83,7 @@ await build({
     '**/*.tsx',
     '**/index.ts'
   ],
+  jsxSideEffects: true,
   sourceRoot: '.',
   outdir: '.',
   format: 'esm',
