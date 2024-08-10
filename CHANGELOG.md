@@ -1,3 +1,52 @@
+# [1.7.0](https://github.com/likec4/likec4/compare/v1.6.1...v1.7.0) (2024-08-10)
+
+### 🚀 Features  
+
+* `where` in predicates
+
+  ```zig
+  // include only microservices from nested
+  include cloud.*
+    where kind is microservice
+  
+  // only microservices and not deprecated
+  include cloud.*
+    where
+       kind == microservice and // possible to use 'is' or '=='
+       tag != #deprecated       // possible to use 'is not' or '!='
+  
+  // Use logical operators
+  include cloud.*
+    where
+       not (kind is microservice or kind is webapp)
+       and tag is not #legacy
+       and (tag is #v1 or tag is #v2)
+  ```
+
+  This also applies to relationship predicates (Resolves [#593](https://github.com/likec4/likec4/issues/593))
+
+  ```zig
+  include
+    // only relationships with tag #messaging
+    cloud.* <-> amazon.*
+      where tag is #messaging,
+  
+    // only incoming http-requests
+    -> backend
+      where kind is http-request
+  ```
+
+  [Documentation](https://likec4.dev/dsl/views/#filter)
+
+### Improvements  
+
+* activate dynamic walkthrough on edge double click
+* improve manual layouts
+* add `description` and `technology` to relationship (not yet rendered)
+* allow wildcard predicate together with `with`
+
+
+
 ## [1.6.1](https://github.com/likec4/likec4/compare/v1.6.0...v1.6.1) (2024-07-24)
 
 
