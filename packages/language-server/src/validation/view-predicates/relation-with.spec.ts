@@ -1,8 +1,6 @@
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
-vi.mock('../../logger')
-
 describe.concurrent('relationPredicateWithChecks', () => {
   it('should not warn', async ({ expect }) => {
     const { validate } = createTestServices()

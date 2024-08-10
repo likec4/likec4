@@ -2,7 +2,7 @@ import { delay } from '@likec4/core/utils'
 import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'
-import { logError, Logger } from '../logger'
+import { logError, logger } from '../logger'
 import type { Rpc } from './Rpc'
 
 // LSP web extensions does not have access to the file system (even virtual)
@@ -11,16 +11,16 @@ export async function initWorkspace(rpc: Rpc) {
   try {
     const docs = await findSources(rpc.client)
     if (docs.length <= 0) {
-      Logger.info(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
+      logger.info(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
       return
     }
-    Logger.debug(
+    logger.debug(
       `[InitWorkspace] with pattern "${globPattern}" found:\n`
         + docs.map(s => '  - ' + s).join('\n')
     )
     const isweb = isWebUi() || isVirtual()
     await delay(isweb ? 2000 : 500)
-    Logger.info(`[InitWorkspace] Send request buildDocuments`)
+    logger.info(`[InitWorkspace] Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
     logError(e)
@@ -30,7 +30,7 @@ export async function initWorkspace(rpc: Rpc) {
 export async function rebuildWorkspace(rpc: Rpc) {
   try {
     const docs = await findSources(rpc.client)
-    Logger.debug(
+    logger.debug(
       `rebuild workspace, found ${docs.length} docs:\n` + docs.map(s => '  - ' + s).join('\n')
     )
     await delay(500)
@@ -61,7 +61,7 @@ async function findSources(client: LanguageClient) {
 }
 
 async function findFiles() {
-  Logger.info(`call vscode.workspace.findFiles`)
+  logger.info(`call vscode.workspace.findFiles`)
   return await vscode.workspace.findFiles(globPattern)
 }
 
@@ -71,7 +71,7 @@ const isSource = (path: string) => {
 }
 
 async function recursiveSearchSources() {
-  Logger.info(`recursiveSearchSources`)
+  logger.info(`recursiveSearchSources`)
   const uris = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
   let folder

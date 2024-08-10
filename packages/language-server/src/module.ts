@@ -1,4 +1,3 @@
-import { normalizeError } from '@likec4/core'
 import { EmptyFileSystem, inject, type Module, WorkspaceCache } from 'langium'
 import {
   createDefaultModule,
@@ -10,7 +9,7 @@ import {
   type PartialLangiumSharedServices
 } from 'langium/lsp'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { logger } from './logger'
+import { logErrorToTelemetry } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
@@ -142,25 +141,12 @@ export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 
 }
 
 export function createSharedServices(context: LanguageServicesContext = {}): LikeC4SharedServices {
-  const connection = context.connection
-  if (connection) {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    const original = logger.error.bind(logger)
-    logger.error = (arg: unknown) => {
-      if (typeof arg === 'string') {
-        original(arg)
-        connection.telemetry.logEvent({ eventName: 'error', error: arg })
-        return
-      }
-      const error = normalizeError(arg)
-      original(error)
-      connection.telemetry.logEvent({ eventName: 'error', error: error.stack ?? error.message })
-    }
-  }
-
   const moduleContext: DefaultSharedModuleContext = {
     ...EmptyFileSystem,
     ...context
+  }
+  if (context.connection) {
+    logErrorToTelemetry(context.connection)
   }
 
   return inject(

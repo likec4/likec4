@@ -1,8 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 describe('property-checks', () => {
   describe('icon', () => {
     it('should error duplicate icon inside style', async ({ expect }) => {

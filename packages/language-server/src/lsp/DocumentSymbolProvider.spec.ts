@@ -3,8 +3,6 @@ import { describe, it, vi } from 'vitest'
 import { SymbolKind } from 'vscode-languageserver-types'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 describe('LikeC4DocumentSymbolProvider', () => {
   it('should show all specification symbols', async ({ expect }) => {
     const { validate, services } = createTestServices()

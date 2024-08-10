@@ -4,8 +4,6 @@ import type { LikeC4Services } from '../module'
 import { createTestServices } from '../test'
 import type { LikeC4DocumentLinkProvider } from './DocumentLinkProvider'
 
-vi.mock('../logger')
-
 describe('DocumentLinkProvider', () => {
   let services: LikeC4Services
   let doc: LikeC4LangiumDocument

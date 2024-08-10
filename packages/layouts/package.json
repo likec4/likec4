@@ -52,6 +52,9 @@
     "clean": "run -T rimraf -g 'dist/**'"
   },
   "dependencies": {
+    "@hpcc-js/wasm": "2.18.2",
+    "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
     "esm-env": "^1.0.0",
     "execa": "^9.3.0",
     "indent-string": "^5.0.0",
@@ -63,13 +66,7 @@
     "type-fest": "^4.21.0",
     "word-wrap": "^1.2.5"
   },
-  "peerDependencies": {
-    "@hpcc-js/wasm": "^2.18.0",
-    "@likec4/core": "workspace:*"
-  },
   "devDependencies": {
-    "@hpcc-js/wasm": "2.18.2",
-    "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.14.13",

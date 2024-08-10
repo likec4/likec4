@@ -36,13 +36,29 @@ export class CliWorkspace {
       throw new Error(`no LikeC4 sources found`)
     }
 
-    logger.info(`${k.dim('workspace:')} found ${documents.length} sources`)
+    logger.info(`${k.dim('workspace:')} found ${documents.length} source files`)
 
     await DocumentBuilder.build(documents, { validation: true })
 
     const model = await modelBuilder.buildComputedModel()
     const viewsCount = values(model?.views ?? {}).length
 
-    logger.info(`${k.dim('workspace:')} ${k.green(`✓ built ${viewsCount} views`)}`)
+    if (viewsCount === 0) {
+      logger.warn(`${k.dim('workspace:')} no views found`)
+      return
+    }
+
+    logger.info(`${k.dim('workspace:')} ${k.green(`✓ computed ${viewsCount} views`)}`)
+
+    if (viewsCount < 5) {
+      return
+    }
+
+    const diagrams = await this.services.likec4.Views.diagrams()
+    if (diagrams.length === viewsCount) {
+      logger.info(`${k.dim('workspace:')} ${k.green(`✓ all views layouted`)}`)
+    } else {
+      logger.warn(`${k.dim('workspace:')} ${k.yellow(`✗ layouted ${diagrams.length} views`)}`)
+    }
   }
 }

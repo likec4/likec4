@@ -3,8 +3,6 @@ import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { saveManualLayout } from './saveManualLayout'
 
-vi.mock('../logger')
-
 const layout: ViewManualLayout = {
   hash: 'hash',
   autoLayout: 'TB',

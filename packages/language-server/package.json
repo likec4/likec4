@@ -24,9 +24,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./likec4lib": "./src/likec4lib.ts",
-    "./browser": "./src/browser/index.ts",
+    "./browser": "./src/browser.ts",
     "./protocol": "./src/protocol.ts",
-    "./node": "./src/node/index.ts",
+    "./node": "./src/node.ts",
     "./model-graph": "./src/model-graph/index.ts"
   },
   "publishConfig": {
@@ -42,16 +42,16 @@
         "default": "./dist/likec4lib.js"
       },
       "./browser": {
-        "types": "./dist/browser/index.d.ts",
-        "default": "./dist/browser/index.js"
+        "types": "./dist/browser.d.ts",
+        "default": "./dist/browser.js"
       },
       "./protocol": {
         "types": "./dist/protocol.d.ts",
         "default": "./dist/protocol.js"
       },
       "./node": {
-        "types": "./dist/node/index.d.ts",
-        "default": "./dist/node/index.js"
+        "types": "./dist/node.d.ts",
+        "default": "./dist/node.js"
       },
       "./model-graph": {
         "types": "./dist/model-graph/index.d.ts",
@@ -75,6 +75,7 @@
   "dependencies": {
     "@dagrejs/graphlib": "^2.2.2",
     "@likec4/core": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@msgpack/msgpack": "^3.0.0-beta2",
     "@smithy/util-base64": "^3.0.0",
     "@total-typescript/ts-reset": "^0.5.1",

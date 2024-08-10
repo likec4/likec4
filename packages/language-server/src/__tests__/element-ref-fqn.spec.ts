@@ -1,7 +1,5 @@
-import { describe, vi } from 'vitest'
+import { describe } from 'vitest'
 import { test } from './asserts'
-
-vi.mock('../logger')
 
 describe.concurrent('FqnElementRef', () => {
   test('valid').valid`

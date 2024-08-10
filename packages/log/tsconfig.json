@@ -1,0 +1,14 @@
+{
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/",
+    "build.config.ts"
+  ]
+}

@@ -99,6 +99,7 @@
   },
   "devDependencies": {
     "@fontsource/ibm-plex-sans": "^5.0.20",
+    "@likec4/log": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -127,7 +128,6 @@
     "ci-info": "^3.9.0",
     "classnames": "^2.3.2",
     "clsx": "^2.1.1",
-    "consola": "^3.2.3",
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.14.0",
     "esm-env": "^1.0.0",

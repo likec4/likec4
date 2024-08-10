@@ -3,8 +3,6 @@ import { keys, values } from 'remeda'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 describe.concurrent('LikeC4ModelBuilder', () => {
   it('builds model with colors and shapes', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()

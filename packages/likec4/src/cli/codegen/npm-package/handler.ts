@@ -1,4 +1,4 @@
-import { consola } from 'consola'
+import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, relative, resolve } from 'node:path'

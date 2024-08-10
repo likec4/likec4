@@ -72,7 +72,7 @@ export async function viteWebcomponentConfig({
       },
       rollupOptions: {
         treeshake: {
-          preset: 'recommended'
+          preset: 'smallest'
         },
         output: {
           format: 'iife',

@@ -16,7 +16,7 @@ import {
   isProd,
   telemetryKey
 } from '../const'
-import { Logger } from '../logger'
+import { logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { BuiltInFileSystemProvider } from './BuiltInFileSystemProvider'
 import { C4Model } from './C4Model'
@@ -62,15 +62,15 @@ export class ExtensionController extends AbstractDisposable {
 
     this.onDispose(() => {
       client.dispose()
-      Logger.info(`[Extension] Language client disposed`)
+      logger.info(`Language client disposed`)
     })
     this._telemetry = new TelemetryReporter(telemetryKey)
     this.onDispose(this._telemetry)
 
-    Logger.telemetry = this._telemetry
-    this.onDispose(() => {
-      Logger.telemetry = null
-    })
+    // Logger.telemetry = this._telemetry
+    // this.onDispose(() => {
+    //   Logger.telemetry = null
+    // })
   }
 
   /**
@@ -79,23 +79,23 @@ export class ExtensionController extends AbstractDisposable {
   public async activate() {
     try {
       const workspaceFolders = vscode.workspace.workspaceFolders ?? []
-      Logger.info(
-        `[Extension] Activate in ${workspaceFolders.length} workspace folders${
+      logger.info(
+        `Activate in ${workspaceFolders.length} workspace folders${
           workspaceFolders
             .map(w => `\n  ${w.name}: ${w.uri}`)
             .join('')
         }`
       )
-      Logger.info(`[Extension] LanguageClient.needsStart: ${this.client.needsStart()}`)
-      Logger.info(`[Extension] LanguageClient.state = ${this.client.state}`)
-      Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
+      logger.info(`LanguageClient.needsStart: ${this.client.needsStart()}`)
+      logger.info(`LanguageClient.state = ${this.client.state}`)
+      logger.info(`telemetryLevel=${this._telemetry.telemetryLevel}`)
 
       let startingPromise = Promise.resolve<boolean | undefined>(true)
       if (this.client.needsStart()) {
         const startClient = async () => {
-          Logger.info(`[Extension] Starting LanguageClient...`)
+          logger.info(`Starting LanguageClient...`)
           await this.client.start()
-          Logger.info(`[Extension] LanguageClient started`)
+          logger.info(`LanguageClient started`)
           return true
         }
         startingPromise = pTimeout(startClient(), {
@@ -125,6 +125,11 @@ export class ExtensionController extends AbstractDisposable {
       this.registerCommand(cmdRebuild, () => {
         void rebuildWorkspace(rpc)
         this._telemetry.sendTelemetryEvent('rebuild')
+        try {
+          throw new Error('rebuild')
+        } catch (e) {
+          logger.error(e)
+        }
       })
       this.registerCommand(cmdPreviewContextOpenSource, async () => {
         const { elementId } = await messenger.getHoveredElement()
@@ -166,7 +171,7 @@ export class ExtensionController extends AbstractDisposable {
 
       this.onDispose(
         vscode.workspace.onDidDeleteFiles(_ => {
-          Logger.debug(`[Extension] onDidDeleteFiles`)
+          logger.debug(`onDidDeleteFiles`)
           void rebuildWorkspace(rpc)
         })
       )
@@ -190,12 +195,12 @@ Restart VSCode. Please report this issue, if it persists.`)
           }
         )
       }
-      Logger.info(`[Extension] activated`)
+      logger.info(`activated`)
       //
     } catch (e) {
       if (e instanceof Error) {
         void vscode.window.showErrorMessage(e.message)
-        Logger.error(e)
+        logger.error(e)
       }
       return Promise.reject(e)
     }

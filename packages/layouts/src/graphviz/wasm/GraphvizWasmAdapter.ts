@@ -1,5 +1,6 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
 import { delay } from '@likec4/core'
+import { logger } from '@likec4/log'
 import pLimit from 'p-limit'
 import type { GraphvizPort } from '../GraphvizLayoter'
 import type { DotSource } from '../types'
@@ -18,12 +19,12 @@ export class GraphvizWasmAdapter implements GraphvizPort {
       try {
         return await fn()
       } catch (e) {
-        console.error(e)
-        console.error(`FAILED GraphvizWasmAdapter: ${logMessage}`)
+        logger.error(e)
+        logger.error(`FAILED GraphvizWasmAdapter: ${logMessage}`)
         Graphviz.unload()
         GraphvizWasmAdapter._graphviz = null
       }
-      console.warn('Retrying...')
+      logger.warn('Retrying...')
       await delay(50)
       try {
         return await fn()

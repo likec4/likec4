@@ -1,5 +1,5 @@
 import type { LikeC4Services, LikeC4SharedServices } from '@likec4/language-server'
-import { createCustomLanguageServices, logger as lspLogger } from '@likec4/language-server'
+import { createCustomLanguageServices, setLogLevel } from '@likec4/language-server'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
@@ -57,6 +57,6 @@ export function createServices({
       Layouter: () => new GraphvizLayouter(useDotBin === true ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter())
     }
   } satisfies Module<CliServices, DeepPartial<CliAddedServices>>
-  lspLogger.silent(true)
+  setLogLevel('warn')
   return createCustomLanguageServices(NodeFileSystem, CliModule, module)
 }

@@ -10,7 +10,7 @@ import xs from 'xstream'
 
 import type { DotLayoutResult } from '@likec4/layouts'
 import dropRepeats from 'xstream/extra/dropRepeats'
-import { logError, Logger } from '../logger'
+import { logError, logger } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
 import type { ExtensionController } from './ExtensionController'
 
@@ -45,7 +45,7 @@ export class C4Model extends AbstractDisposable {
       .create<number>({
         start: listener => {
           invariant(this.#activeSubscription == null, 'changesStream already started')
-          Logger.debug('[Extension.C4Model.changes] subscribe onDidChangeModel')
+          logger.debug('[C4Model.changes] subscribe onDidChangeModel')
           let changes = 0
           const unsubscribe = this.ctrl.rpc.onDidChangeModel(() => {
             listener.next(changes++)
@@ -54,11 +54,11 @@ export class C4Model extends AbstractDisposable {
             this.#activeSubscription = null
             unsubscribe.dispose()
             listener.complete()
-            Logger.debug('[Extension.C4Model.changes] unsubscribe onDidChangeModel')
+            logger.debug('[C4Model.changes] unsubscribe onDidChangeModel')
           })
         },
         stop: () => {
-          Logger.debug('[Extension.C4Model.changes] stop')
+          logger.debug('[C4Model.changes] stop')
           this.#activeSubscription?.dispose()
         }
       })
@@ -67,16 +67,16 @@ export class C4Model extends AbstractDisposable {
     this.onDispose(() => {
       this.#activeSubscription?.dispose()
     })
-    Logger.debug(`[Extension.C4Model] created`)
+    logger.debug(`[C4Model] created`)
   }
 
   override dispose() {
     super.dispose()
-    Logger.debug(`[Extension.C4Model] disposed`)
+    logger.debug(`[C4Model] disposed`)
   }
 
   private fetchView(viewId: ViewID) {
-    Logger.debug(`[Extension.C4Model] fetchView ${viewId}`)
+    logger.debug(`[C4Model] fetchView ${viewId}`)
     const promise = this.ctrl.rpc.computeView(viewId)
     return xs
       .fromPromise(pTimeout(promise, {
@@ -86,7 +86,7 @@ export class C4Model extends AbstractDisposable {
   }
 
   private layoutView(view: ComputedView) {
-    Logger.debug(`[Extension.C4Model] layoutView ${view.id}`)
+    logger.debug(`[C4Model] layoutView ${view.id}`)
     const promise = Promise.resolve().then(() => this.ctrl.graphviz.layout(view))
     return xs.fromPromise(pTimeout(promise, {
       milliseconds: 15_000,
@@ -96,7 +96,7 @@ export class C4Model extends AbstractDisposable {
 
   public subscribeToView(viewId: ViewID, callback: (result: Callback) => void) {
     this.viewsWithReportedErrors.delete(viewId)
-    Logger.debug(`[Extension.C4Model.subscribe] >> ${viewId}`)
+    logger.debug(`[C4Model.subscribe] >> ${viewId}`)
     let t1 = null as null | number
     const subscription = this.changesStream
       .map(() => this.fetchView(viewId))
@@ -121,7 +121,7 @@ export class C4Model extends AbstractDisposable {
         next: ({ diagram }: DotLayoutResult) => {
           if (t1) {
             const ms = (performance.now() - t1).toFixed(3)
-            Logger.debug(`[Extension.C4Model.layoutView] ${viewId} in ${ms}ms`)
+            logger.debug(`[C4Model.layoutView] ${viewId} in ${ms}ms`)
             t1 = null
           }
           this.viewsWithReportedErrors.delete(viewId)
@@ -136,8 +136,8 @@ export class C4Model extends AbstractDisposable {
             : '' + err
           if (t1) {
             const ms = (performance.now() - t1).toFixed(3)
-            Logger.warn(
-              `[Extension.C4Model.layoutView] failed ${viewId} in ${ms}ms\n${errMessage}`
+            logger.warn(
+              `[C4Model.layoutView] failed ${viewId} in ${ms}ms\n${errMessage}`
             )
             t1 = null
           } else {
@@ -156,13 +156,13 @@ export class C4Model extends AbstractDisposable {
       })
 
     return disposable(() => {
-      Logger.debug(`[Extension.C4Model.unsubscribe] -- ${viewId}`)
+      logger.debug(`[C4Model.unsubscribe] -- ${viewId}`)
       subscription.unsubscribe()
     })
   }
 
   public turnOnTelemetry() {
-    Logger.debug(`[Extension.C4Model] turnOnTelemetry`)
+    logger.debug(`[C4Model] turnOnTelemetry`)
     const Minute = 60_000
     const telemetry = xs
       .periodic(30 * Minute)
@@ -202,7 +202,7 @@ export class C4Model extends AbstractDisposable {
   private sendTelemetry(measurements: TelemetryEventMeasurements) {
     try {
       this.telemetry.sendTelemetryEvent('model-metrics', {}, measurements)
-      Logger.debug(`[Extension.C4Model] send telemetry`)
+      logger.debug(`[C4Model] send telemetry`)
     } catch (e) {
       logError(e)
     }

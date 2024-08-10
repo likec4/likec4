@@ -1,8 +1,6 @@
 import { describe, test as viTest, vi } from 'vitest'
 import { invalid, likec4, valid } from './asserts'
 
-vi.mock('../logger')
-
 const spec = `
 specification {
   element person

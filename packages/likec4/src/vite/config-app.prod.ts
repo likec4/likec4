@@ -88,7 +88,7 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
       },
       rollupOptions: {
         treeshake: {
-          preset: 'recommended'
+          preset: 'smallest'
         },
         output: {
           interop: 'auto',

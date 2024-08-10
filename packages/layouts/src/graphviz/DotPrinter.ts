@@ -17,6 +17,7 @@ import type {
   RelationshipLineType,
   XYPoint
 } from '@likec4/core/types'
+import logger from '@likec4/log'
 import { filter, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
 import {
   attribute as _,
@@ -496,7 +497,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
           sourceNode.attributes.set(_.group, group.id)
           targetNode.attributes.set(_.group, group.id)
         } catch (e) {
-          console.error(e)
+          logger.error(e)
         }
       }
     }

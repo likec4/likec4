@@ -1,4 +1,4 @@
-import { consola } from 'consola'
+import { consola } from '@likec4/log'
 import k from 'picocolors'
 import type { PreviewServer, ViteDevServer } from 'vite'
 

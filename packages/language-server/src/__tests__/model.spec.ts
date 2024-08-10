@@ -1,8 +1,6 @@
 import { describe, vi } from 'vitest'
 import { test } from './asserts'
 
-vi.mock('../logger')
-
 describe.concurrent('model', () => {
   test('name on the right side').valid`
     specification {
