@@ -27,7 +27,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.1",
     "@astrojs/react": "^3.6.1",
-    "@astrojs/starlight": "^0.25.3",
+    "@astrojs/starlight": "^0.25.4",
     "@expressive-code/plugin-collapsible-sections": "^0.35.3",
     "@expressive-code/plugin-line-numbers": "^0.35.3",
     "@fontsource/ibm-plex-sans": "^5.0.20",
