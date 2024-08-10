@@ -2411,6 +2411,7 @@ __metadata:
     "@likec4/icons": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
+    "@likec4/log": "workspace:*"
     "@mantine/core": "npm:7.11.2"
     "@mantine/hooks": "npm:7.11.2"
     "@mantine/vanilla-extract": "npm:7.11.2"
