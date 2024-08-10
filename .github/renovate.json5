@@ -1,80 +1,84 @@
 {
-  "$schema": 'https://docs.renovatebot.com/renovate-schema.json',
-  "configMigration": true,
-  "extends": [
-    "config:recommended",
-    "group:monorepos",
-    "npm:unpublishSafe",
-    "helpers:disableTypesNodeMajor"
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  configMigration: true,
+  extends: [
+    'config:recommended',
+    'group:monorepos',
+    'npm:unpublishSafe',
+    'helpers:disableTypesNodeMajor',
   ],
   prHourlyLimit: 5,
   prConcurrentLimit: 5,
   rangeStrategy: 'bump',
   updateInternalDeps: true,
-  labels: ['dependencies'],
-  "lockFileMaintenance": {
-     "enabled": true
+  labels: [
+    'dependencies',
+  ],
+  lockFileMaintenance: {
+    enabled: true,
   },
   packageRules: [
-    // Disable pin digest for CI Actions
     {
-      "matchDepTypes": [
-        "action"
+      matchDepTypes: [
+        'action',
       ],
-      "pinDigests": false
+      pinDigests: false,
     },
     {
-      "groupName": "linters",
-      "matchDepNames": [
-        "@types/eslint",
-        "prettier",
-        "lint-staged",
-        "dprint"
+      groupName: 'linters',
+      matchDepNames: [
+        '@types/eslint',
+        'prettier',
+        'lint-staged',
+        'dprint',
       ],
-      "matchPackagePrefixes": [
-        "@commitlint",
-        "@typescript-eslint/",
-        "eslint"
-      ],
-      automerge: true
-    },
-    {
-      groupName: "@langium",
-      matchDepPatterns: ['langium']
-    },
-    {
-      groupName: "@vanilla-extract",
-      matchPackagePrefixes: [
-        "@vanilla-extract"
+      automerge: true,
+      matchPackageNames: [
+        '@commitlint{/,}**',
+        '@typescript-eslint/{/,}**',
+        'eslint{/,}**',
       ],
     },
     {
-      groupName: "@xyflow",
-      matchPackagePrefixes: [
-        "@xyflow"
+      groupName: '@langium',
+      matchDepNames: [
+        '/langium/',
       ],
     },
-    // Auto merge
     {
-      matchPackagePrefixes: [
-        "@tabler",
-        "@fontsource",
+      groupName: '@vanilla-extract',
+      matchPackageNames: [
+        '@vanilla-extract{/,}**',
       ],
-      automerge: true
     },
-    // Update manually
     {
-      enabled: false,
-      matchDepPatterns: [
-        '^monaco',
-        '^@monaco',
-        '^@codingame'
-      ]
+      groupName: '@xyflow',
+      matchPackageNames: [
+        '@xyflow{/,}**',
+      ],
+    },
+    {
+      automerge: true,
+      matchPackageNames: [
+        '@tabler{/,}**',
+        '@fontsource{/,}**',
+      ],
     },
     {
       enabled: false,
-      matchDepNames: ['@types/vscode', 'vscode'],
-      matchDepPatterns: ['^vscode-']
-    }
-  ]
+      matchDepNames: [
+        '/^monaco/',
+        '/^@monaco/',
+        '/^@codingame/',
+      ],
+    },
+    {
+      enabled: false,
+      matchDepNames: [
+        '@types/vscode',
+        'vscode',
+        '/^vscode-/',
+      ],
+    },
+  ],
 }
