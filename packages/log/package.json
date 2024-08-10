@@ -41,10 +41,10 @@
     "consola": "^3.2.3"
   },
   "devDependencies": {
-    "unbuild": "^2.0.0",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.14.13",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "unbuild": "^2.0.0"
   },
   "packageManager": "yarn@4.3.1"
 }

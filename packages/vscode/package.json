@@ -183,10 +183,10 @@
   "devDependencies": {
     "@hpcc-js/wasm": "2.18.2",
     "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^20.14.13",
