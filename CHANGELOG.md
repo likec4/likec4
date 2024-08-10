@@ -40,15 +40,11 @@
 
 ### Improvements  
 
-* **diagram:** enable dynamic walkthrough on edge double click ([7d5c2c4](https://github.com/likec4/likec4/commit/7d5c2c44b042c1540865462b5bbc313f59e5ac60))
+* activate dynamic walkthrough on edge double click
+* improve manual layouts
+* add `description` and `technology` to relationship (not yet rendered)
+* allow wildcard predicate together with `with`
 
-* Improve manual layouts
-  ...
-  
-* Add `description` and `technology` to relationship (not yet rendered) ([ccdcdfd](https://github.com/likec4/likec4/commit/ccdcdfd5680ed922d19cc40c8338d94817e8728c))
-  ...
-
-* **lsp:** allow wildcard predicate together with `with` ([8825acc](https://github.com/likec4/likec4/commit/8825accd760e5f9b0b7227e435f395ee0d204abb))
 
 
 ## [1.6.1](https://github.com/likec4/likec4/compare/v1.6.0...v1.6.1) (2024-07-24)
