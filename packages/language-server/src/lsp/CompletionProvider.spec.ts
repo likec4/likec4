@@ -3,8 +3,6 @@ import { map, prop, take } from 'remeda'
 import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
   return map(list, prop(property))
 }

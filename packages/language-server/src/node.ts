@@ -1,7 +1,7 @@
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { NodeFileSystem } from 'langium/node'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
-import { createLanguageServices } from '../module'
+import { createLanguageServices } from './module'
 
 export function startLanguageServer() {
   /* browser specific setup code */

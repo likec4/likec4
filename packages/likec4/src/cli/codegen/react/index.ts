@@ -1,5 +1,5 @@
 import { viteReactConfig } from '@/vite/config-react'
-import consola from 'consola'
+import consola from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
@@ -52,7 +52,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
 
   const ext = extname(filename).toLocaleLowerCase()
   if (ext !== '.js' && ext !== '.mjs' && ext !== '.jsx') {
-    console.warn(`output file ${outfile} has extension "${ext}"`)
+    consola.warn(`output file ${outfile} has extension "${ext}"`)
     throw new Error(`output file ${outfile} must be a .js, .jsx or .mjs`)
   }
 

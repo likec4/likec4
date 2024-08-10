@@ -1,7 +1,10 @@
-import { defineConfig, defineProject, mergeConfig } from 'vitest/config'
+import { defineProject } from 'vitest/config'
 
 export default defineProject({
   test: {
-    name: 'language-server'
+    name: 'language-server',
+    setupFiles: [
+      'src/test/setup.ts'
+    ]
   }
 })

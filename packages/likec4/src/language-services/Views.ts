@@ -29,7 +29,9 @@ export class Views {
 
   async computedViews(): Promise<ComputedView[]> {
     try {
-      this.inflightRequest ??= this.services.likec4.ModelBuilder.buildComputedModel()
+      this.inflightRequest ??= Promise.resolve().then(async () =>
+        await this.services.likec4.ModelBuilder.buildComputedModel()
+      )
       const model = await Promise.resolve(this.inflightRequest)
       return Object.values(model?.views ?? {})
     } finally {

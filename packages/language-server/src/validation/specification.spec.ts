@@ -1,8 +1,6 @@
 import { afterEach, expect, test, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 const { validate, parse, validateAll, resetState } = createTestServices()
 
 afterEach(async () => {

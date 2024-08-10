@@ -1,8 +1,6 @@
 import { expect, test, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 const document1 = `
 specification {
   element component

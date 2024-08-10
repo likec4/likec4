@@ -2,8 +2,6 @@ import type { ViewID } from '@likec4/core'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
-vi.mock('../../logger')
-
 describe('LikeC4ModelBuilder -- caches', () => {
   it.concurrent('build model returns cached result', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()

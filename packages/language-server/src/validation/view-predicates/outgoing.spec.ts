@@ -1,8 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
-vi.mock('../../logger')
-
 describe('outgoingExpressionChecks', () => {
   it('should not warn if view of', async () => {
     const { validate } = createTestServices()

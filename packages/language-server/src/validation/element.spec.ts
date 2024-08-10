@@ -1,8 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 describe('elementChecks', () => {
   it('should report duplicate element names', async () => {
     const { validate } = createTestServices()

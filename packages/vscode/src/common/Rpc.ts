@@ -12,7 +12,7 @@ import type * as vscode from 'vscode'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
-import { Logger } from '../logger'
+import { logger } from '../logger'
 import { AbstractDisposable } from '../util'
 
 // #region From server
@@ -35,7 +35,7 @@ export class Rpc extends AbstractDisposable {
 
   override dispose() {
     super.dispose()
-    Logger.info(`[Extension.Rpc] disposed`)
+    logger.info(`[Rpc] disposed`)
   }
 
   onDidChangeModel(cb: () => void): vscode.Disposable {

@@ -3,6 +3,7 @@ import type { Options, PositionalOptions } from 'yargs'
 
 export const path = {
   type: 'string',
+  description: '<directory> with LikeC4 sources (default is current directory)',
   desc: '<directory> with LikeC4 sources (default is current directory)',
   normalize: true,
   default: '.',
@@ -13,6 +14,7 @@ export const useDotBin = {
   alias: 'use-dot-bin',
   boolean: true,
   type: 'boolean',
+  description: 'use local binaries of graphviz ("dot")',
   desc: 'use local binaries of graphviz ("dot")',
   default: false
 } as const satisfies Options

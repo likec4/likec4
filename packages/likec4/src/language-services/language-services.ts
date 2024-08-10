@@ -4,6 +4,7 @@ import { type LikeC4Services } from '@likec4/language-server'
 import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
 import { DocumentState } from 'langium'
 import { resolve } from 'node:path'
+import { hrtime } from 'node:process'
 import k from 'picocolors'
 import type { Logger } from 'vite'
 import pkg from '../../package.json' assert { type: 'json' }
@@ -35,17 +36,17 @@ function mkPrintValidationErrors(services: LikeC4Services, logger: Logger) {
       const errors = doc.diagnostics?.filter(e => e.severity === 1)
       if (errors && errors.length > 0) {
         if (cleanScreenIfError) {
-          logger.clearScreen('error')
+          logger.clearScreen('info')
           cleanScreenIfError = false
         }
         const messages = errors
           .map(validationError => {
             // const errorRange = doc.textDocument.getText(validationError.range)
             const line = validationError.range.start.line
-            return '     ' + k.dim(`Line ${line}: `) + k.gray(validationError.message)
+            return '     ' + k.dim(`Line ${line}: `) + k.red(validationError.message)
           })
           .join('\n')
-        logger.error(`invalid ${doc.uri.fsPath}\n${messages}`)
+        logger.error(`Invalid ${doc.uri.fsPath}\n${messages}`)
       }
     }
     return cleanScreenIfError !== true

@@ -1,8 +1,6 @@
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 describe.concurrent('viewChecks', () => {
   it('should report duplicate view names', async ({ expect }) => {
     const { validate } = createTestServices()

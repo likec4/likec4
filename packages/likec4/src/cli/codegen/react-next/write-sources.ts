@@ -1,6 +1,6 @@
 import type { DiagramView } from '@likec4/core'
 import { generateReactNext } from '@likec4/generators'
-import { consola } from 'consola'
+import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'

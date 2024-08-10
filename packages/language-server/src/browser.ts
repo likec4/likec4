@@ -1,6 +1,7 @@
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser'
-import { createLanguageServices } from '../module'
+import { logToLspConnection } from './logger'
+import { createLanguageServices } from './module'
 
 // This is an example copied as is from here:
 // https://github.com/microsoft/vscode-extension-samples/blob/main/lsp-web-extension-sample/server/src/browserServerMain.ts
@@ -20,6 +21,8 @@ export function startLanguageServer() {
 
   // Start the language server with the shared services
   startLanguim(services.shared)
+
+  logToLspConnection(connection)
 
   return {
     ...services,

@@ -1,5 +1,5 @@
+import consola from '@likec4/log'
 import { isCI } from 'ci-info'
-import consola from 'consola'
 import { hrtime } from 'node:process'
 import k from 'picocolors'
 import prettyMilliseconds from 'pretty-ms'
@@ -11,7 +11,7 @@ const WARN = k.bold(k.yellow('WARN'))
 const INFO = k.bold(k.green('INFO'))
 
 export function createLikeC4Logger(prefix: string) {
-  const logger = createLogger(undefined, {
+  const logger = createLogger('info', {
     prefix,
     allowClearScreen: !isCI
   })

@@ -1,3 +1,4 @@
+import logger from '@likec4/log'
 import { execa } from 'execa'
 import pLimit from 'p-limit'
 import type { GraphvizPort } from '../GraphvizLayoter'
@@ -23,11 +24,11 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
       })
       if (unflatten instanceof Error) {
         if (unflatten.stdout) {
-          console.warn(
+          logger.warn(
             `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nbut returned\n${unflatten.stdout}`
           )
         } else {
-          console.error(
+          logger.error(
             `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nnothing returned, ignoring...`
           )
         }
@@ -51,12 +52,12 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
       })
       if (dotcmd instanceof Error) {
         if (!dotcmd.stdout) {
-          console.error(
+          logger.error(
             `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' nothing returned and failed: ${dotcmd.stderr}`
           )
           throw dotcmd
         }
-        console.warn(
+        logger.warn(
           `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' returned result but also failed ${dotcmd.stderr}`
         )
       }
@@ -80,12 +81,12 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
 
       if (result instanceof Error) {
         if (!result.stdout) {
-          console.error(
+          logger.error(
             `[BinaryGraphvizLayouter.layout] '${result.command}' nothing returned and failed: ${result.stderr}`
           )
           throw result
         }
-        console.warn(
+        logger.warn(
           `[BinaryGraphvizLayouter.layout] '${result.command}' returned result but also failed ${result.stderr}`
         )
       }

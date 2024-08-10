@@ -9,6 +9,7 @@ module.exports = {
     packagesToPublish: [
       'packages/core',
       'packages/diagram',
+      'packages/log',
       'packages/language-server',
       'packages/layouts',
       'packages/create-likec4',

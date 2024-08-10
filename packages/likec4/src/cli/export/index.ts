@@ -23,6 +23,7 @@ export const exportCmd = {
             .option('output', {
               alias: 'o',
               type: 'string',
+              describe: 'output directory',
               desc: 'output directory',
               normalize: true,
               coerce: resolve

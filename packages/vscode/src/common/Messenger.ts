@@ -5,7 +5,7 @@ import { ExtensionToPanel, WebviewToExtension } from '@likec4/vscode-preview/pro
 import { Messenger as VsCodeMessenger } from 'vscode-messenger'
 import { type WebviewTypeMessageParticipant } from 'vscode-messenger-common'
 import { cmdLocate } from '../const'
-import { Logger } from '../logger'
+import { logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import type { ExtensionController } from './ExtensionController'
 import { PreviewPanel } from './panel/PreviewPanel'
@@ -49,7 +49,7 @@ export default class Messenger extends AbstractDisposable {
         try {
           let loc = await ctrl.rpc.changeView({ viewId, change })
           if (!loc) {
-            Logger.warn(`[Extension] rpc.changeView returned null`)
+            logger.warn(`rpc.changeView returned null`)
             return
           }
           const location = ctrl.rpc.client.protocol2CodeConverter.asLocation(loc)
@@ -66,7 +66,7 @@ export default class Messenger extends AbstractDisposable {
 
           await vscode.workspace.save(location.uri)
         } catch (e) {
-          Logger.error(`[Messenger] onChange error: ${e}`)
+          logger.error(`[Messenger] onChange error: ${e}`)
         }
       })
     )
@@ -76,7 +76,7 @@ export default class Messenger extends AbstractDisposable {
         try {
           ctrl.setPreviewPanelState(changeReq)
         } catch (e) {
-          Logger.error(`[Messenger] onWebviewStateChange error: ${e}`)
+          logger.error(`[Messenger] onWebviewStateChange error: ${e}`)
         }
       })
     )
@@ -89,7 +89,7 @@ export default class Messenger extends AbstractDisposable {
   }
 
   diagramUpdate(view: DiagramView) {
-    Logger.info(`[Extension.Messenger] diagramUpdate`)
+    logger.info(`[Messenger] diagramUpdate`)
     this.messenger.sendNotification(ExtensionToPanel.diagramUpdate, toPreviewPanel, { view })
   }
 
@@ -103,6 +103,6 @@ export default class Messenger extends AbstractDisposable {
 
   public override dispose() {
     super.dispose()
-    Logger.debug(`[Extension.Messenger] disposed`)
+    logger.debug(`[Messenger] disposed`)
   }
 }

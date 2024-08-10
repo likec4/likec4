@@ -8,6 +8,7 @@ import type {
   Point
 } from '@likec4/core'
 import { invariant, nonNullable } from '@likec4/core'
+import logger from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import { EDGE_LABEL_MAX_CHARS, wrap } from './dot-labels'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
@@ -37,7 +38,7 @@ function parsePos(pos: string): GVPos {
       y: pointToPx(parseFloat(y))
     }
   } catch (e) {
-    console.error(`failed on parsing pos: ${pos}`, e)
+    logger.error(`failed on parsing pos: ${pos}`, e)
     throw e
   }
 }
@@ -96,7 +97,7 @@ function parseLabelBbox(
       }
     }
   } catch (e) {
-    console.error(`failed on parsing _ldraw_:\n${JSON.stringify(_ldraw_, null, 2)}`, e)
+    logger.error(`failed on parsing _ldraw_:\n${JSON.stringify(_ldraw_, null, 2)}`, e)
     return null
   }
 
@@ -125,13 +126,13 @@ function parseEdgePoints(
     const bezierOps = _draw_.filter((v): v is GraphvizJson.DrawOps.BSpline => v.op.toLowerCase() === 'b')
     invariant(hasAtLeast(bezierOps, 1), `view ${viewId} edge ${likec4_id} should have at least one bezier draw op`)
     if (bezierOps.length > 1) {
-      console.warn(`view ${viewId} edge ${likec4_id} has more than one bezier draw op, using the first one only`)
+      logger.warn(`view ${viewId} edge ${likec4_id} has more than one bezier draw op, using the first one only`)
     }
     const points = bezierOps[0].points.map(p => pointToPx(p))
     invariant(hasAtLeast(points, 2), `view ${viewId} edge ${likec4_id} should have at least two points`)
     return points
   } catch (e) {
-    console.error(`failed on parsing view ${viewId} edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
+    logger.error(`failed on parsing view ${viewId} edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
     throw e
   }
 }
@@ -200,7 +201,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   for (const computedEdge of computedEdges) {
     const graphvizEdge = graphvizEdges.find(e => e.likec4_id === computedEdge.id)
     if (!graphvizEdge) {
-      console.warn(`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`)
+      logger.warn(`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`)
       continue
     }
     diagram.edges.push(

@@ -1,8 +1,6 @@
 import { describe, vi } from 'vitest'
 import { test } from './asserts'
 
-vi.mock('../logger')
-
 const model = `
   specification {
     element component

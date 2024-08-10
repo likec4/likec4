@@ -1,8 +1,6 @@
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 describe.concurrent('dynamicViewStepChecks', () => {
   it('should not report invalid relations', async ({ expect }) => {
     const { validate } = createTestServices()

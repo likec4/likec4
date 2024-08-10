@@ -3,7 +3,7 @@ import { invariant, type ViewID } from '@likec4/core'
 import { randomString } from 'remeda'
 import * as vscode from 'vscode'
 import { type Disposable, ViewColumn, type Webview, type WebviewPanel } from 'vscode'
-import { Logger } from '../../logger'
+import { logger } from '../../logger'
 import { AbstractDisposable, disposable, getNonce } from '../../util'
 import { ExtensionController } from '../ExtensionController'
 
@@ -45,14 +45,14 @@ export class PreviewPanel extends AbstractDisposable {
       } else {
         viewId = 'index' as ViewID
       }
-      Logger.info(`[Extension.PreviewPanel.Serializer] deserializeWebviewPanel viewId=${viewId}`)
+      logger.info(`[PreviewPanel.Serializer] deserializeWebviewPanel viewId=${viewId}`)
       PreviewPanel.revive({ ...props, panel, viewId })
       return Promise.resolve()
     }
   })
 
   public static createOrShow({ viewId, ctrl }: Props) {
-    Logger.debug(`[Extension.PreviewPanel] createOrShow viewId=${viewId}`)
+    logger.debug(`[PreviewPanel] createOrShow viewId=${viewId}`)
     // If we already have a panel, show it.
     if (PreviewPanel.current) {
       PreviewPanel.current.open(viewId)
@@ -77,7 +77,7 @@ export class PreviewPanel extends AbstractDisposable {
     ctrl,
     panel
   }: Props & { panel: vscode.WebviewPanel }) {
-    Logger.debug(`[Extension.PreviewPanel] revive viewId=${viewId}`)
+    logger.debug(`[PreviewPanel] revive viewId=${viewId}`)
     invariant(!PreviewPanel.current, 'PreviewPanel is already initialized')
     ctrl.messenger.registerWebViewPanel(panel)
     PreviewPanel.current = new PreviewPanel(viewId, panel, ctrl)
@@ -91,7 +91,7 @@ export class PreviewPanel extends AbstractDisposable {
     private readonly ctrl: ExtensionController
   ) {
     super()
-    Logger.debug(`[Extension.PreviewPanel] New panel viewId=${_viewId}`)
+    logger.debug(`[PreviewPanel] New panel viewId=${_viewId}`)
     // Set the webview's initial html content
     this._update()
 
@@ -103,7 +103,7 @@ export class PreviewPanel extends AbstractDisposable {
     // This happens when the user closes the panel or when the panel is closed programmatically
     this._panel.onDidDispose(
       () => {
-        Logger.debug(`[Extension.PreviewPanel.panel.onDidDispose]`)
+        logger.debug(`[PreviewPanel.panel.onDidDispose]`)
         this.dispose()
       },
       this,
@@ -113,8 +113,8 @@ export class PreviewPanel extends AbstractDisposable {
     // Update the content based on view changes
     this._panel.onDidChangeViewState(
       ({ webviewPanel }) => {
-        Logger.debug(
-          `[Extension.PreviewPanel.panel.onDidChangeViewState] visible=${webviewPanel.visible}`
+        logger.debug(
+          `[PreviewPanel.panel.onDidChangeViewState] visible=${webviewPanel.visible}`
         )
         if (!webviewPanel.visible && this._listener != null) {
           this._deactivate()
@@ -137,11 +137,11 @@ export class PreviewPanel extends AbstractDisposable {
 
   public override dispose() {
     super.dispose()
-    Logger.debug(`[Extension.PreviewPanel] disposed`)
+    logger.debug(`[PreviewPanel] disposed`)
   }
 
   public open(viewId?: ViewID) {
-    Logger.debug(`[Extension.PreviewPanel.panel] Open viewId=${viewId} (this.viewId=${this._viewId})`)
+    logger.debug(`[PreviewPanel.panel] Open viewId=${viewId} (this.viewId=${this._viewId})`)
     if (viewId && viewId !== this._viewId) {
       this._viewId = viewId
       this._deactivate()
@@ -154,7 +154,7 @@ export class PreviewPanel extends AbstractDisposable {
       this._deactivate()
     }
     const id = randomString(5) + '_' + this._viewId
-    Logger.debug(`[Extension.PreviewPanel.listener.${id}] activating...`)
+    logger.debug(`[PreviewPanel.listener.${id}] activating...`)
     const subscribeToView = this.ctrl.c4model.subscribeToView(this._viewId, result => {
       if (result.success) {
         this._panel.title = result.diagram.title || 'Untitled'
@@ -166,16 +166,16 @@ export class PreviewPanel extends AbstractDisposable {
     this._listener = disposable(() => {
       subscribeToView.dispose()
       this._listener = null
-      Logger.debug(`[Extension.PreviewPanel.listener.${id}] disposed`)
+      logger.debug(`[PreviewPanel.listener.${id}] disposed`)
     })
-    Logger.debug(`[Extension.PreviewPanel.listener.${id}] activated`)
+    logger.debug(`[PreviewPanel.listener.${id}] activated`)
   }
 
   private _deactivate() {
     if (this._listener) {
       this._listener.dispose()
     }
-    Logger.debug(`[Extension.PreviewPanel] _deactivated`)
+    logger.debug(`[PreviewPanel] _deactivated`)
   }
 
   private _update() {

@@ -2321,6 +2321,7 @@ __metadata:
     "@dagrejs/graphlib": "npm:^2.2.2"
     "@likec4/core": "workspace:*"
     "@likec4/icons": "workspace:*"
+    "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@msgpack/msgpack": "npm:^3.0.0-beta2"
     "@smithy/util-base64": "npm:^3.0.0"
@@ -2360,6 +2361,7 @@ __metadata:
     "@hpcc-js/wasm": "npm:2.18.2"
     "@likec4/core": "workspace:*"
     "@likec4/language-server": "workspace:*"
+    "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.14.13"
     esm-env: "npm:^1.0.0"
@@ -2374,9 +2376,18 @@ __metadata:
     typescript: "npm:^5.5.4"
     vitest: "npm:~2.0.5"
     word-wrap: "npm:^1.2.5"
-  peerDependencies:
-    "@hpcc-js/wasm": ^2.18.0
-    "@likec4/core": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@likec4/log@workspace:*, @likec4/log@workspace:packages/log":
+  version: 0.0.0-use.local
+  resolution: "@likec4/log@workspace:packages/log"
+  dependencies:
+    "@likec4/tsconfig": "workspace:*"
+    "@types/node": "npm:^20.14.13"
+    consola: "npm:^3.2.3"
+    typescript: "npm:^5.5.4"
+    unbuild: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 

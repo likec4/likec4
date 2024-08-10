@@ -2,13 +2,13 @@ import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import * as vscode from 'vscode'
 import which from 'which'
 import type { ExtensionController } from '../common/ExtensionController'
-import { Logger } from '../logger'
+import { logger } from '../logger'
 
 function graphvizBinPath() {
   try {
     return which.sync('dot')
   } catch (error) {
-    console.error('Error checking for native Graphviz:', error)
+    logger.error('Error checking for native Graphviz:', error)
     return null
   }
 }
@@ -33,14 +33,14 @@ export function configureGraphviz(ctrl: ExtensionController) {
   function configureGraphviz({ mode, path }: GraphvizConfig) {
     if (mode === 'wasm') {
       showedWarning = false
-      Logger.info(`[Extension] Graphviz wasm`)
+      logger.info(`Graphviz wasm`)
       ctrl.graphviz = wasmGraphviz
       return
     }
     let binaryPath = path ?? graphvizBinPath()
 
     if (binaryPath === null) {
-      Logger.info(`[Extension] Graphviz wasm`)
+      logger.info(`Graphviz wasm`)
       ctrl.graphviz = wasmGraphviz
       if (!showedWarning) {
         showedWarning = true
@@ -54,18 +54,18 @@ export function configureGraphviz(ctrl: ExtensionController) {
 
     ctrl.graphviz.changePort(new GraphvizBinaryAdapter(binaryPath))
 
-    Logger.info(`[Extension] Graphviz binary ${binaryPath}`)
+    logger.info(`Graphviz binary ${binaryPath}`)
   }
 
   ctrl.onDispose(
     vscode.workspace.onDidChangeConfiguration(event => {
       if (event.affectsConfiguration('likec4.graphviz')) {
-        Logger.debug(`[Extension] onDidChangeConfiguration`)
+        logger.debug(`onDidChangeConfiguration`)
         const nextCfg = graphvizConfig()
         configureGraphviz(nextCfg)
       }
     })
   )
 
-  Logger.info(`[Extension] Graphviz configured`)
+  logger.info(`Graphviz configured`)
 }

@@ -1,8 +1,6 @@
 import { describe, it, type TestContext, vi } from 'vitest'
 import { createTestServices } from '../test'
 
-vi.mock('../logger')
-
 const model = `
   specification {
     element component
