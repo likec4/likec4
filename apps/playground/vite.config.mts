@@ -13,25 +13,13 @@ const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
   '@likec4/core/types': resolve('../../packages/core/src/types/index.ts'),
-  '@likec4/core': resolve('../../packages/core/src/index.ts'),
-  '@likec4/language-server/protocol': resolve('../../packages/language-server/src/protocol.ts'),
-  '@likec4/language-server/browser': resolve('../../packages/language-server/src/browser/index.ts'),
-  '@likec4/language-server': resolve('../../packages/language-server/src/index.ts'),
-  '@likec4/layouts': resolve('../../packages/layouts/src/index.ts'),
-  '@likec4/diagram': resolve('../../packages/diagram/src/index.ts')
+  '@likec4/core': resolve('../../packages/core/src/index.ts')
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
   return {
     root,
     resolve: {
-      dedupe: [
-        'react',
-        'react-dom',
-        'react-dom/client',
-        '@mantine/core',
-        '@mantine/hooks'
-      ],
       alias
     },
     css: {
@@ -92,8 +80,6 @@ export default defineConfig((env) => {
               'react-dom',
               'react-dom/client',
               '@typefox/monaco-editor-react',
-              '@mantine/core',
-              '@mantine/hooks',
               'monaco-editor',
               'monaco-editor-wrapper',
               'monaco-languageclient',
@@ -118,7 +104,6 @@ export default defineConfig((env) => {
           vanillaExtractPlugin({
             identifiers: 'short'
           }),
-          TanStackRouterVite(tanStackRouterViteCfg),
           react({
             // jsxRuntime: 'classic'
           })
