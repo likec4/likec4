@@ -1,3 +1,5 @@
+import '@xyflow/react/dist/style.css'
+
 export { LikeC4Diagram } from './LikeC4Diagram'
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
 

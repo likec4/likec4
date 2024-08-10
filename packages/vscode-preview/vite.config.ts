@@ -16,34 +16,33 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production')
     },
-    esbuild: {
-      // treeShaking: true,
-      jsxInject: `import React from 'react'`
-    },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
       cssCodeSplit: false,
-      // in bytes
+      cssMinify: true,
       assetsInlineLimit: 1_000_000,
-      /**
-       * Adjust chunk size warning limit (in kB).
-       */
       chunkSizeWarningLimit: 10_000,
       assetsDir: '',
+      modulePreload: false,
+      commonjsOptions: {
+        defaultIsModuleExports: 'auto',
+        requireReturnsDefault: 'auto',
+        extensions: ['.mjs', '.js'],
+        transformMixedEsModules: true,
+        ignoreTryCatch: 'remove'
+      },
       rollupOptions: {
-        // treeshake: 'recommended',
+        treeshake: {
+          preset: 'recommended'
+        },
         external: ['vscode'],
         output: {
-          strict: true,
+          hoistTransitiveImports: false,
+          compact: true,
           entryFileNames: `[name].js`,
           assetFileNames: `[name].[ext]`
         }
-      },
-      commonjsOptions: {
-        // extensions: ['.js', '.cjs'],
-        esmExternals: true
-        //   requireReturnsDefault: true
       }
     },
     plugins: [
