@@ -5,6 +5,7 @@ import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { DEV } from 'esm-env'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
+import { SidebarDrawerOps } from '../components/sidebar/Drawer'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
   component: ViewEditor
@@ -36,6 +37,8 @@ function ViewEditor() {
     <LikeC4Diagram
       view={view}
       readonly={false}
+      zoomable
+      pannable
       nodesDraggable
       experimentalEdgeEditing
       fitViewPadding={0.08}
@@ -43,9 +46,10 @@ function ViewEditor() {
       showElementLinks
       showNavigationButtons
       enableDynamicViewWalkthrough
+      enableFocusMode={false}
       onNavigateTo={onNavigateTo}
       renderIcon={RenderIcon}
-      {...(DEV && { onChange })}
+      onBurgerMenuClick={SidebarDrawerOps.open}
     />
   )
 }

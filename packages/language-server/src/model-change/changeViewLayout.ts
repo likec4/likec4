@@ -35,7 +35,7 @@ export function changeViewLayout(_services: LikeC4Services, {
 
   const insertPos = findNodeForKeyword(viewAst.body.$cstNode, '}')?.range.start
   invariant(insertPos, 'Closing brace not found')
-  const insert = `\n  autoLayout ${newlayout}\n`
+  const insert = `  autoLayout ${newlayout}\n`
 
   return TextEdit.insert(insertPos, insert)
 }

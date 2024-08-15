@@ -73,17 +73,7 @@ function ViewLayout() {
         </ErrorBoundary>
       </Box>
       <ViewHeader />
-      <SidebarDrawer opened={opened} onClose={close} />
-      <Box
-        pos={'fixed'}
-        top={14}
-        left={10}>
-        <Burger
-          size={'sm'}
-          opened={opened}
-          onClick={toggle}
-          aria-label="Toggle navigation" />
-      </Box>
+      <SidebarDrawer />
     </>
   )
 }

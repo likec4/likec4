@@ -1,18 +1,29 @@
 import { Button, Drawer as MantineDrawer, ScrollArea } from '@mantine/core'
+import { useStore } from '@nanostores/react'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
+import { atom, onMount } from 'nanostores'
 import { DiagramsTree } from './DiagramsTree'
 
-type SidebarDrawerProps = {
-  opened: boolean
-  onClose: () => void
+const drawerOpenedAtom = atom(false)
+
+onMount(drawerOpenedAtom, () => {
+  drawerOpenedAtom.set(false)
+})
+
+export const SidebarDrawerOps = {
+  open: () => drawerOpenedAtom.set(true),
+  close: () => drawerOpenedAtom.set(false)
 }
-export function SidebarDrawer({ opened, onClose }: SidebarDrawerProps) {
+
+export function SidebarDrawer() {
+  const opened = useStore(drawerOpenedAtom)
+
   return (
     <MantineDrawer
       size={'sm'}
       opened={opened}
-      onClose={onClose}
+      onClose={() => drawerOpenedAtom.set(false)}
       title={
         <Button
           component={Link}

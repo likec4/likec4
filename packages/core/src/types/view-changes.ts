@@ -1,9 +1,9 @@
-import type { NonEmptyArray, XYPoint } from './_common'
+import type { NonEmptyArray } from './_common'
 import type { BorderStyle, ElementShape, Fqn } from './element'
 import type { ThemeColor } from './theme'
-import type { EdgeId, ViewManualLayout } from './view'
+import type { AutoLayoutDirection, ViewManualLayout } from './view'
 
-export namespace ViewChanges {
+export namespace ViewChange {
   export interface ChangeElementStyle {
     op: 'change-element-style'
     style: {
@@ -19,5 +19,10 @@ export namespace ViewChanges {
     op: 'save-manual-layout'
     layout: ViewManualLayout
   }
+
+  export interface ChangeAutoLayout {
+    op: 'change-autolayout'
+    layout: AutoLayoutDirection
+  }
 }
-export type ViewChangeOp = ViewChanges.ChangeElementStyle | ViewChanges.SaveManualLayout
+export type ViewChange = ViewChange.ChangeElementStyle | ViewChange.SaveManualLayout | ViewChange.ChangeAutoLayout

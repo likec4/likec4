@@ -1,4 +1,4 @@
-import { invariant, type ViewChanges } from '@likec4/core'
+import { invariant, type ViewChange } from '@likec4/core'
 import indentString from 'indent-string'
 import { CstUtils, GrammarUtils } from 'langium'
 import { TextEdit } from 'vscode-languageserver-types'
@@ -12,7 +12,7 @@ export type ManualLayoutArg = {
   view: ParsedAstView
   doc: ParsedLikeC4LangiumDocument
   viewAst: ast.LikeC4View
-  layout: ViewChanges.SaveManualLayout['layout']
+  layout: ViewChange.SaveManualLayout['layout']
 }
 
 export function saveManualLayout(_services: LikeC4Services, {

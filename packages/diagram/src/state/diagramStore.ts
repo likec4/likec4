@@ -1,4 +1,4 @@
-import type { DiagramNode, DiagramView, Fqn, NodeId, ViewID } from '@likec4/core'
+import type { DiagramNode, DiagramView, Fqn, NodeId, ViewChange, ViewID } from '@likec4/core'
 import { getBBoxCenter, invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
 import {
   applyEdgeChanges,
@@ -16,16 +16,11 @@ import type { ConditionalKeys, Exact, Except, RequiredKeysOf, Simplify } from 't
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
-import type {
-  Changes,
-  DiagramNodeWithNavigate,
-  ElementIconRenderer,
-  LikeC4DiagramEventHandlers
-} from '../LikeC4Diagram.props'
+import type { XYStoreApi } from '../hooks/useXYFlow'
+import type { DiagramNodeWithNavigate, ElementIconRenderer, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 import { MinZoom } from '../xyflow/const'
-import type { XYStoreApi } from '../xyflow/hooks'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
-import { bezierControlPoints, isSamePoint, toDomPrecision } from '../xyflow/utils'
+import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
 type RequiredOrNull<T> = {
@@ -36,6 +31,7 @@ export type DiagramInitialState = {
   view: DiagramView
   readonly: boolean
   showElementLinks: boolean
+  showNavigationButtons: boolean
   fitViewEnabled: boolean
   fitViewPadding: number
   zoomable: boolean
@@ -108,7 +104,7 @@ export type DiagramState = Simplify<
     resetLastClicked: () => void
 
     getElement(id: Fqn): DiagramNode | null
-    triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
+    triggerChangeElementStyle: (change: ViewChange.ChangeElementStyle) => void
 
     /**
      * @returns true if there was pending save layout
@@ -351,21 +347,12 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
             if (isSameView && !nextView.hasLayoutDrift) {
               update.xyedges = update.xyedges.map((update): XYFlowEdge => {
                 const existing = xyedges.find(n => n.id === update.id)
-                if (existing) {
-                  if (eq(existing.data, update.data)) {
-                    return existing
-                  }
-                  return {
-                    ...existing,
-                    ...update
-                  }
+                if (existing && eq(existing.data.edge, update.data.edge)) {
+                  return existing
                 }
                 return update
               })
             }
-
-            const hasChanges = !isSameView || !shallowEqual(update.xynodes, xynodes)
-              || !shallowEqual(update.xyedges, xyedges)
 
             set(
               {
@@ -382,8 +369,8 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
                 navigationHistory,
                 navigationHistoryIndex,
                 dimmed,
-                xynodes: hasChanges ? update.xynodes : xynodes,
-                xyedges: hasChanges ? update.xyedges : xyedges
+                xynodes: !isSameView || !shallowEqual(update.xynodes, xynodes) ? update.xynodes : xynodes,
+                xyedges: !isSameView || !shallowEqual(update.xyedges, xyedges) ? update.xyedges : xyedges
               },
               noReplace,
               isSameView ? 'update-view [same]' : 'update-view [another]'
@@ -563,10 +550,6 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               clearTimeout(viewSyncDebounceTimeout)
               set({ viewSyncDebounceTimeout: null })
             }
-            if (!onChange) {
-              DEV && console.debug('ignore triggerSaveManualLayout, as no onChange handler is set')
-              return
-            }
             const { nodeLookup } = xystore.getState()
             const movedNodes = new StringSet()
             let bounds = {
@@ -575,6 +558,7 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               width: 1,
               height: 1
             }
+
             const nodes = reduce([...nodeLookup.values()], (acc, node) => {
               const dimensions = getNodeDimensions(node)
               if (!isSamePoint(node.internals.positionAbsolute, node.data.element.position)) {
@@ -589,7 +573,8 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               }
               bounds = getBoundsOfRects(bounds, rect)
               return acc
-            }, {} as Changes.SaveManualLayout['layout']['nodes'])
+            }, {} as ViewChange.SaveManualLayout['layout']['nodes'])
+
             const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
               let controlPoints = data.controlPoints
               const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
@@ -600,7 +585,7 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               if (data.edge.points.length === 0 && (!controlPoints || controlPoints.length === 0)) {
                 return acc
               }
-              const _updated: Changes.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
+              const _updated: ViewChange.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
                 points: data.edge.points
               }
               if (data.label?.bbox) {
@@ -615,8 +600,16 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               if (!sourceOrTargetMoved && data.edge.dotpos) {
                 _updated.dotpos = data.edge.dotpos
               }
-              const allX = [...data.edge.points.map(p => p[0]), ...(controlPoints ?? []).map(p => p.x)]
-              const allY = [...data.edge.points.map(p => p[1]), ...(controlPoints ?? []).map(p => p.y)]
+              const allX = [
+                ...data.edge.points.map(p => p[0]),
+                ...(controlPoints ?? []).map(p => p.x),
+                ...(_updated.labelBBox ? [_updated.labelBBox.x, _updated.labelBBox.x + _updated.labelBBox.width] : [])
+              ]
+              const allY = [
+                ...data.edge.points.map(p => p[1]),
+                ...(controlPoints ?? []).map(p => p.y),
+                ...(_updated.labelBBox ? [_updated.labelBBox.y, _updated.labelBBox.y + _updated.labelBBox.height] : [])
+              ]
               const rect = boxToRect({
                 x: Math.floor(Math.min(...allX)),
                 y: Math.floor(Math.min(...allY)),
@@ -625,14 +618,13 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               })
               bounds = getBoundsOfRects(bounds, rect)
               return acc
-            }, {} as Changes.SaveManualLayout['layout']['edges'])
+            }, {} as ViewChange.SaveManualLayout['layout']['edges'])
 
-            const change: Changes.SaveManualLayout = {
+            const change: ViewChange.SaveManualLayout = {
               op: 'save-manual-layout',
               layout: {
                 hash: view.hash,
                 autoLayout: view.autoLayout,
-
                 nodes,
                 edges,
                 ...bounds
@@ -643,14 +635,24 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               console.debug('triggerSaveManualLayout', change)
             }
 
-            onChange({ change })
+            // If new view bounds are outside of the diagram bounds, update the view bounds
+            // and update edges, as
+            if (!isInside(bounds, view.bounds)) {
+              set(
+                {
+                  view: {
+                    ...view,
+                    bounds
+                  }
+                },
+                noReplace,
+                'update view bounds'
+              )
+            }
+            onChange?.({ change })
           },
           scheduleSaveManualLayout: () => {
-            let { viewSyncDebounceTimeout, onChange } = get()
-            if (!onChange) {
-              DEV && console.debug('ignore triggerSaveManualLayout, as no onChange handler is set')
-              return
-            }
+            let { viewSyncDebounceTimeout } = get()
             if (viewSyncDebounceTimeout) {
               clearTimeout(viewSyncDebounceTimeout)
             }
@@ -666,7 +668,7 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
           },
 
           triggerOnNavigateTo: (xynodeId, event) => {
-            const { view, xynodes, onNavigateTo } = get()
+            const { view, xynodes, onNavigateTo, cancelSaveManualLayout } = get()
             if (!onNavigateTo) {
               return
             }
@@ -674,6 +676,7 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
             invariant(xynode, `xynode not found: ${xynodeId}`)
             const element = view.nodes.find(({ id }) => id === xynodeId)
             invariant(element?.navigateTo, `node is not navigable: ${xynodeId}`)
+            cancelSaveManualLayout()
             set(
               {
                 lastClickedNodeId: xynodeId,
@@ -857,3 +860,6 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
     shallow
   )
 }
+
+export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
+export type DiagramStoreApi = Readonly<Pick<DiagramZustandStore, 'getState' | 'setState' | 'subscribe'>>

@@ -1,8 +1,8 @@
 import { useDebouncedEffect } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { useRef, useState } from 'react'
-import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state/hooks'
-import { useXYStore } from './hooks/useXYFlow'
+import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
+import { useXYStore } from '../hooks/useXYFlow'
 
 function selectXYFlowSize(state: { width: number; height: number }): string {
   return `${Math.round(state.width)}:${Math.round(state.height)}`

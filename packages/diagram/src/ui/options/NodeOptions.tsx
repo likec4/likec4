@@ -5,14 +5,17 @@ import {
   ElementShapes,
   invariant,
   type NonEmptyArray,
-  type ThemeColor
+  type ThemeColor,
+  type ViewChange
 } from '@likec4/core'
 import {
+  ActionIcon,
   Box,
   CheckIcon,
   ColorSwatch,
   Divider,
   Flex,
+  Group,
   rem,
   SegmentedControl,
   Select,
@@ -23,13 +26,12 @@ import {
   Tooltip,
   TooltipGroup
 } from '@mantine/core'
+import { IconFileSymlink } from '@tabler/icons-react'
 import { shallowEqual } from 'fast-equals'
 import { memo, useState } from 'react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
+import { useDiagramStoreApi, useXYNodesData } from '../../hooks'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
-import type { Changes } from '../../LikeC4Diagram.props'
-import { useDiagramStoreApi } from '../../state/hooks'
-import { useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
 
 const {
@@ -71,11 +73,13 @@ export const NodeOptions = memo<{ selectedNodeIds: string[] }>(({ selectedNodeId
 
   const [firstNode, ...rest] = nodes
 
+  const showGoToSource = rest.length === 0 && diagramApi.getState().onOpenSourceElement!!
+
   // Makes sense to show opacity option only if there is at least one compound node
   const showOpacityOption = firstNode.type === 'compound'
     && (rest.length === 0 || rest.every(node => node.type === 'compound'))
 
-  const triggerChange = (style: Changes.ChangeElementStyle['style']) => {
+  const triggerChange = (style: ViewChange.ChangeElementStyle['style']) => {
     const targets = nodes.map(node => node.data.element.id)
     invariant(hasAtLeast(targets, 1), 'At least one target is required')
     diagramApi.getState().triggerChangeElementStyle({
@@ -87,14 +91,35 @@ export const NodeOptions = memo<{ selectedNodeIds: string[] }>(({ selectedNodeId
 
   return (
     <Stack gap={'xs'}>
-      <div>
-        <Text fz={rem(9)} fw={'500'} c={'dimmed'}>
-          ELEMENT{rest.length > 0 ? 'S' : ``}
-        </Text>
-        <Text size="xs" c={rest.length > 0 ? 'dimmed' : ''} truncate>
-          {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
-        </Text>
-      </div>
+      <Group wrap="nowrap" align="flex-start">
+        <Box flex={1}>
+          <Text fz={rem(9)} fw={'500'} c={'dimmed'}>
+            ELEMENT{rest.length > 0 ? 'S' : ``}
+          </Text>
+          <Text size="xs" c={rest.length > 0 ? 'dimmed' : ''} truncate>
+            {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
+          </Text>
+        </Box>
+        {showGoToSource && (
+          <Box flex={0}>
+            <ActionIcon
+              size={'sm'}
+              variant="light"
+              color="gray"
+              onClick={e => {
+                e.stopPropagation()
+                diagramApi.getState().onOpenSourceElement?.(firstNode.data.element.id)
+              }}>
+              <IconFileSymlink
+                stroke={1.2}
+                style={{
+                  width: '70%',
+                  height: '70%'
+                }} />
+            </ActionIcon>
+          </Box>
+        )}
+      </Group>
       {showShapeOption && (
         <ShapeOption
           nodes={nodes}

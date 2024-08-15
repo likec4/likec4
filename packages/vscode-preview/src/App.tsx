@@ -5,7 +5,6 @@ import { Button, Loader, LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useCallback, useRef, useState } from 'react'
 import { likec4Container, likec4error, likec4ParsingScreen } from './App.css'
-import { Toolbar } from './Toolbar'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
@@ -142,10 +141,6 @@ const App = () => {
             extensionApi.goToViewSource(to)
             extensionApi.openView(to)
           }}
-          onNodeClick={({ element, xynode, event }) => {
-            extensionApi.goToElement(element.id)
-            event.stopPropagation()
-          }}
           onNodeContextMenu={({ element, xynode, event }) => {
             lastNodeContextMenuRef.current = element
           }}
@@ -159,27 +154,34 @@ const App = () => {
             event.stopPropagation()
             event.preventDefault()
           }}
-          onEdgeClick={({ edge, event }) => {
-            resetLastClickedNd()
-            if (hasAtLeast(edge.relations, 1)) {
-              extensionApi.goToRelation(edge.relations[0])
-              event.stopPropagation()
-            }
-          }}
+          // onEdgeClick={({ edge, event }) => {
+          //   resetLastClickedNd()
+          //   if (hasAtLeast(edge.relations, 1)) {
+          //     extensionApi.goToRelation(edge.relations[0])
+          //     event.stopPropagation()
+          //   }
+          // }}
           onChange={({ change }) => {
             extensionApi.change(view.id, change)
           }}
           onCanvasClick={() => {
             resetLastClickedNd()
           }}
-          onCanvasDblClick={() => {
+          onOpenSourceView={() => {
             resetLastClickedNd()
             extensionApi.goToViewSource(view.id)
           }}
+          onOpenSourceElement={fqn => {
+            resetLastClickedNd()
+            extensionApi.goToElement(fqn)
+          }}
+          onOpenSourceRelation={id => {
+            resetLastClickedNd()
+            extensionApi.goToRelation(id)
+          }}
         />
       </div>
-      {rpcState.state === 'error' && <ErrorMessage error={rpcState.error} />},
-      <Toolbar view={view} />
+      {rpcState.state === 'error' && <ErrorMessage error={rpcState.error} />}
     </>
   )
 }

@@ -1,17 +1,5 @@
-import type {
-  BorderStyle,
-  DiagramEdge,
-  DiagramNode,
-  DiagramView,
-  ElementShape,
-  Fqn,
-  NonEmptyArray,
-  ThemeColor,
-  ViewID,
-  ViewManualLayout
-} from '@likec4/core'
+import type { DiagramEdge, DiagramNode, DiagramView, Fqn, RelationID, ViewChange, ViewID } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { DiagramEditorCommand } from './types'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import type { XYBackground } from './xyflow/XYFlowBackground'
 
@@ -53,37 +41,13 @@ export type OnEdgeClick = (
   }
 ) => void
 
-export type OnEditorCommand = (
-  cmd: DiagramEditorCommand
-) => void
-
 /**
  * On pane/canvas click (not on any node or edge)
  */
 export type OnCanvasClick = (event: ReactMouseEvent) => void
 
-export namespace Changes {
-  export interface ChangeElementStyle {
-    op: 'change-element-style'
-    style: {
-      border?: BorderStyle
-      opacity?: number
-      shape?: ElementShape
-      color?: ThemeColor
-    }
-    targets: NonEmptyArray<Fqn>
-  }
-
-  export interface SaveManualLayout {
-    op: 'save-manual-layout'
-    layout: ViewManualLayout
-  }
-}
-
-export type Change = Changes.ChangeElementStyle | Changes.SaveManualLayout
-
 export type ChangeEvent = {
-  change: Change
+  change: ViewChange
 }
 export type OnChange = {
   (event: ChangeEvent): void
@@ -210,5 +174,8 @@ export interface LikeC4DiagramEventHandlers {
   onCanvasClick?: OnCanvasClick | null | undefined
   onCanvasDblClick?: OnCanvasClick | null | undefined
 
-  onEditorCommand?: OnEditorCommand | null | undefined
+  onBurgerMenuClick?: null | undefined | (() => void)
+  onOpenSourceView?: null | undefined | (() => void)
+  onOpenSourceElement?: null | undefined | ((fqn: Fqn) => void)
+  onOpenSourceRelation?: null | undefined | ((id: RelationID) => void)
 }

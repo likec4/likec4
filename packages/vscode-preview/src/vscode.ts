@@ -1,5 +1,4 @@
-import { type DiagramView, type Fqn, nonexhaustive, type RelationID, type ViewID } from '@likec4/core'
-import type { DiagramEditorCommand } from '@likec4/diagram'
+import { type DiagramView, type Fqn, type RelationID, type ViewChange, type ViewID } from '@likec4/core'
 import { useEffect, useRef } from 'react'
 import { HOST_EXTENSION, isMessage } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
@@ -48,24 +47,11 @@ export const extensionApi = {
   locate: (params: WebviewToExtension.LocateParams) => {
     messenger.sendNotification(WebviewToExtension.locate, HOST_EXTENSION, params)
   },
-  change: (viewId: ViewID, change: WebviewToExtension.ChangeCommand) => {
+  change: (viewId: ViewID, change: ViewChange) => {
     messenger.sendNotification(WebviewToExtension.onChange, HOST_EXTENSION, { viewId, change })
   },
   updateWebviewState: (state: WebviewToExtension.WebviewState) => {
     messenger.sendNotification(WebviewToExtension.onWebviewStateChange, HOST_EXTENSION, state)
-  },
-
-  sendDiagramEditorCommand: (cmd: DiagramEditorCommand) => {
-    switch (cmd.type) {
-      case 'showElement':
-        return extensionApi.locate({ element: cmd.element })
-      case 'showRelation':
-        return extensionApi.locate({ relation: cmd.relation })
-      case 'showView':
-        return extensionApi.locate({ view: cmd.view })
-      default:
-        nonexhaustive(cmd)
-    }
   },
 
   goToElement: (element: Fqn) => {

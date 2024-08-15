@@ -5,7 +5,7 @@ import type {
   LikeC4ComputedModel,
   LikeC4Model,
   RelationID,
-  ViewChangeOp,
+  ViewChange,
   ViewID
 } from '@likec4/core'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
@@ -53,20 +53,9 @@ export const locate = new RequestType<LocateParams, Location | null, void>('like
 export type LocateRequest = typeof locate
 // #endregion
 
-export namespace ChangeView {
-  export interface ChangeAutoLayout {
-    op: 'change-autolayout'
-    layout: AutoLayoutDirection
-  }
-}
-
-export type ChangeView =
-  | ChangeView.ChangeAutoLayout
-  | ViewChangeOp
-
 export interface ChangeViewRequestParams {
   viewId: ViewID
-  change: ChangeView
+  change: ViewChange
 }
 export const changeView = new RequestType<ChangeViewRequestParams, Location | null, void>('likec4/change-view')
 export type ChangeViewRequest = typeof changeView

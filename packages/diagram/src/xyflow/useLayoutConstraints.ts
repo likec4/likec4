@@ -4,9 +4,9 @@ import type { InternalNode, NodeChange, ReactFlowProps, XYPosition } from '@xyfl
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
-import { useDiagramStoreApi } from '../../state/useDiagramStore'
-import type { XYFlowNode } from '../types'
-import { type XYStoreApi } from './useXYFlow'
+import { useDiagramStoreApi } from '../hooks'
+import { type XYStoreApi } from '../hooks/useXYFlow'
+import type { XYFlowNode } from './types'
 
 abstract class Rect {
   id!: string

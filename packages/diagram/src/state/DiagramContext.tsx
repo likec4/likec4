@@ -1,10 +1,8 @@
-import { deepEqual, shallowEqual } from 'fast-equals'
-import { createContext, type PropsWithChildren, useCallback, useEffect, useRef } from 'react'
-import { useUpdateEffect } from '../hooks'
-import { useXYFlow, useXYStoreApi } from '../xyflow/hooks/useXYFlow'
-import { createDiagramStore, type DiagramInitialState } from './diagramStore'
+import { createContext, type PropsWithChildren, useCallback, useRef } from 'react'
+import { useUpdateEffect } from '../hooks/useUpdateEffect'
+import { useXYFlow, useXYStoreApi } from '../hooks/useXYFlow'
+import { createDiagramStore, type DiagramInitialState, type DiagramZustandStore } from './diagramStore'
 
-export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
 export const DiagramContext = createContext<DiagramZustandStore | null>(null)
 
 export type DiagramContextProviderProps = PropsWithChildren<

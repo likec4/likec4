@@ -31,16 +31,9 @@ export const likec4Container = style({
   inset: '0',
   overflow: 'hidden',
   vars: {
-    // '--likec4-background-color': 'var(--vscode-editor-background )',
-    '--likec4-options-panel-top': '2.5rem'
+    '--likec4-options-panel-top': '1rem',
+    '--likec4-navigation-panel-top': '0.5rem'
   }
-  // selectors: {
-  //   [`:where([data-mantine-color-scheme='dark']) &`]: {
-  //     vars: {
-  //       '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
-  //     }
-  //   }
-  // }
 })
 
 globalStyle(`${likec4Container} .react-flow`, {
@@ -81,7 +74,8 @@ globalStyle('.react-flow .react-flow__attribution', {
   display: 'none'
 })
 
-globalStyle(`.mantine-ActionIcon-icon .tabler-icon`, {
-  width: '75%',
-  height: '75%'
+globalStyle(`${likec4Container} .likec4-top-left-panel .action-icon`, {
+  vars: {
+    ['--ai-size']: 'var(--ai-size-md)'
+  }
 })
