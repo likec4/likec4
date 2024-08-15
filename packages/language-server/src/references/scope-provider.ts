@@ -85,6 +85,9 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   override getScope(context: ReferenceInfo): Scope {
     try {
       const referenceType = this.reflection.getReferenceType(context)
+      if (referenceType !== ast.Element) {
+        return this.getGlobalScope(referenceType)
+      }
       try {
         const container = context.container
         if (ast.isFqnElementRef(container) && context.property === 'el') {
@@ -102,7 +105,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         }
         return this.computeScope(context)
       } catch (e) {
-        logger.error(e)
+        logger.warn(e)
         return this.getGlobalScope(referenceType)
       }
     } catch (e) {
