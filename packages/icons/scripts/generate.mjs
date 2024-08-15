@@ -2,6 +2,7 @@ import consola from 'consola'
 import { build } from 'esbuild'
 import { globSync } from 'glob'
 import { writeFile } from 'node:fs/promises'
+import { sep } from 'path'
 
 consola.info('Generating all.js and all.d.ts')
 
@@ -20,7 +21,7 @@ const {
    * @returns
    */
   (acc, path) => {
-    const parts = path.split('/')
+    const parts = path.split(sep)
     const icon = (parts.pop() || 'invalid').replace('.tsx', '')
     const group = parts.pop() || 'error'
 
