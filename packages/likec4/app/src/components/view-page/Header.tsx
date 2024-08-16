@@ -146,45 +146,10 @@ function ViewPageButton({
   )
 }
 
-function downloadImage(name: string, dataUrl: string) {
-  const a = document.createElement('a')
-  a.setAttribute('download', `${name}.png`)
-  a.setAttribute('href', dataUrl)
-  a.click()
-}
-
 function ExportButton({ diagram }: HeaderProps) {
   const params = useParams({
     from: '/view/$viewId'
   })
-
-  const onClick = async () => {
-    const { toPng } = await import('html-to-image')
-    const imageWidth = diagram.bounds.width + 32
-    const imageHeight = diagram.bounds.height + 32
-    const viewPort = document.querySelector<HTMLDivElement>('.react-flow__viewport')
-    if (!viewPort) {
-      return
-    }
-    try {
-      const data = await toPng(viewPort, {
-        backgroundColor: 'transparent',
-        width: imageWidth,
-        height: imageHeight,
-        cacheBust: true,
-        imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
-        style: {
-          width: imageWidth + 'px',
-          height: imageHeight + 'px',
-          transform: `translate(16px, 16px) scale(1)`
-        }
-      })
-      downloadImage(diagram.id, data)
-    } catch (err) {
-      console.error(err)
-      window.alert(`Failed to export to PNG, check the console for more details.`)
-    }
-  }
 
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
@@ -202,19 +167,30 @@ function ExportButton({ diagram }: HeaderProps) {
 
       <MenuDropdown>
         <MenuLabel>Current view</MenuLabel>
-        <MenuItem onClick={onClick}>Export as .png</MenuItem>
+        <MenuItem
+          component={Link}
+          to={'/export/$viewId'}
+          target="_blank"
+          search={{
+            download: true
+          }}
+          params={params}>
+          Export as .png
+        </MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/dot'} search params={params}>Export as .dot</MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/d2'} search params={params}>Export as .d2</MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/mmd'} search params={params}>Export as .mmd</MenuItem>
         <MenuItem disabled>Export to Draw.io</MenuItem>
         <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>
-
+        {
+          /*
         <MenuDivider />
         <MenuLabel>All views</MenuLabel>
         <MenuItem disabled>
           Download as ZIP
-        </MenuItem>
+        </MenuItem> */
+        }
       </MenuDropdown>
     </Menu>
   )
