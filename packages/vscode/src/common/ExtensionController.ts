@@ -33,7 +33,7 @@ const StateKeys = {
 export class ExtensionController extends AbstractDisposable {
   public static extensionUri: vscode.Uri
 
-  private _telemetry: TelemetryReporter | null = null
+  public readonly telemetry: TelemetryReporter | null = null
   private _rpc: Rpc | null = null
   private _c4model: C4Model | null = null
   private _messenger: Messenger | null = null
@@ -66,32 +66,32 @@ export class ExtensionController extends AbstractDisposable {
     })
 
     try {
-      this._telemetry = new TelemetryReporter(TelemetryConnectionString)
-      this.onDispose(this._telemetry)
+      const telemetry = this.telemetry = new TelemetryReporter(TelemetryConnectionString)
+      this.onDispose(this.telemetry)
+
+      this.onDispose(addLogReporter(({ level, ...logObj }, ctx) => {
+        if (level !== LogLevels.error && level !== LogLevels.fatal) {
+          return
+        }
+        const tag = logObj.tag || ''
+        const parts = logObj.args.map((arg) => {
+          if (arg && typeof arg.stack === 'string') {
+            return arg.message + '\n' + arg.stack
+          }
+          if (typeof arg === 'string') {
+            return arg
+          }
+          return String(arg)
+        })
+        if (tag) {
+          parts.unshift(`[${tag}]`)
+        }
+        const message = parts.join(' ')
+        telemetry.sendTelemetryErrorEvent('error', { message })
+      }))
     } catch (e) {
       logger.error(e)
     }
-
-    this.onDispose(addLogReporter(({ level, ...logObj }, ctx) => {
-      if (level !== LogLevels.error && level !== LogLevels.fatal) {
-        return
-      }
-      const tag = logObj.tag || ''
-      const parts = logObj.args.map((arg) => {
-        if (arg && typeof arg.stack === 'string') {
-          return arg.message + '\n' + arg.stack
-        }
-        if (typeof arg === 'string') {
-          return arg
-        }
-        return String(arg)
-      })
-      if (tag) {
-        parts.unshift(`[${tag}]`)
-      }
-      const message = parts.join(' ')
-      this._telemetry?.sendTelemetryErrorEvent('error', { message })
-    }))
   }
 
   /**
@@ -109,7 +109,7 @@ export class ExtensionController extends AbstractDisposable {
       )
       logger.info(`LanguageClient.needsStart: ${this.client.needsStart()}`)
       logger.info(`LanguageClient.state = ${this.client.state}`)
-      logger.info(`telemetryLevel=${this._telemetry?.telemetryLevel}`)
+      logger.info(`telemetryLevel=${this.telemetry?.telemetryLevel}`)
 
       let startingPromise = Promise.resolve<boolean | undefined>(true)
       if (this.client.needsStart()) {
@@ -128,7 +128,7 @@ export class ExtensionController extends AbstractDisposable {
       const rpc = this._rpc = new Rpc(this.client)
       this.onDispose(rpc)
 
-      const c4model = this._c4model = new C4Model(this, this._telemetry)
+      const c4model = this._c4model = new C4Model(this)
       this.onDispose(c4model)
 
       const messenger = this._messenger = new Messenger(this)
@@ -145,7 +145,7 @@ export class ExtensionController extends AbstractDisposable {
 
       this.registerCommand(cmdRebuild, () => {
         void rebuildWorkspace(rpc)
-        this._telemetry.sendTelemetryEvent('rebuild')
+        this.telemetry?.sendTelemetryEvent('rebuild')
         try {
           throw new Error('rebuild')
         } catch (e) {
@@ -168,7 +168,7 @@ export class ExtensionController extends AbstractDisposable {
           viewId: viewId ?? ('index' as ViewID),
           ctrl: this
         })
-        this._telemetry.sendTelemetryEvent('open-preview')
+        this.telemetry?.sendTelemetryEvent('open-preview')
       })
       this.registerCommand(cmdLocate, async (params: WebviewToExtension.LocateParams) => {
         const loc = await rpc.locate(params)
@@ -197,7 +197,7 @@ export class ExtensionController extends AbstractDisposable {
         })
       )
       if ((await startingPromise) !== true) {
-        this._telemetry.sendTelemetryErrorEvent('lsp-timedout')
+        this.telemetry?.sendTelemetryErrorEvent('lsp-timedout')
         await vscode.window.showErrorMessage(`Failed to start LikeC4 Language Server.
 Restart VSCode. Please report this issue, if it persists.`)
         return Promise.reject()
@@ -208,7 +208,7 @@ Restart VSCode. Please report this issue, if it persists.`)
       if (isProd) {
         c4model.turnOnTelemetry()
 
-        this._telemetry.sendTelemetryEvent(
+        this.telemetry?.sendTelemetryEvent(
           'activation',
           {},
           {
