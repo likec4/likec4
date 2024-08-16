@@ -40,7 +40,9 @@ export async function pngHandler({ path, useDotBin, theme, output, ignore, timeo
 
   views.forEach(view => {
     if (view.hasLayoutDrift) {
-      logger.warn(k.dim('layout issues') + ' ' + k.cyan(view.id) + ' ' + k.dim('manual layout can not be applied'))
+      logger.warn(
+        k.yellow('layout issues with view') + ' ' + k.red(view.id) + ', ' + k.yellow('manual layout can not be applied')
+      )
     }
   })
 

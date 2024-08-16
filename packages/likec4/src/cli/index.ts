@@ -20,8 +20,6 @@ if (process.env.NODE_ENV !== 'production') {
   consola.warn('running in dev mode')
 }
 
-consola.wrapConsole()
-
 const cli = yargs(hideBin(argv))
   .scriptName('likec4')
   .usage(`Usage: $0 <command>`)

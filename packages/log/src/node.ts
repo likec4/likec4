@@ -7,7 +7,6 @@ const logger = createConsola({
   fancy: true,
   formatOptions: {
     colors: true,
-    compact: true,
     date: false
   }
 })

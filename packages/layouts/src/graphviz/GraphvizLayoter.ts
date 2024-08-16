@@ -49,7 +49,7 @@ export class GraphvizLayouter {
           if (printer.hasEdgesWithCompounds) {
             // edges with coumpoudns are using _.ltail, _.lhead
             // This is not supported by FDP
-            logger.error(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
+            logger.warn(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
           } else {
             printer.applyManualLayout(result.relayout)
             const rawjson = await this.graphviz.layoutJson(printer.print())
