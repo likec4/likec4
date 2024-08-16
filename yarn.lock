@@ -2723,13 +2723,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nanostores/react@npm:0.7.2":
-  version: 0.7.2
-  resolution: "@nanostores/react@npm:0.7.2"
+"@nanostores/react@npm:0.7.3":
+  version: 0.7.3
+  resolution: "@nanostores/react@npm:0.7.3"
   peerDependencies:
-    nanostores: ^0.9.0 || ^0.10.0
+    nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0
     react: ">=18.0.0"
-  checksum: 10c0/3b7dff4b3f662d41030b603b1054d91a527e5454f918e6578eb45369096ea47c5b9d2094a4f1a02cc2af2fce8598c7efd0de1c92e644f61ff0580dc4e180391a
+  checksum: 10c0/fa16a07d822efa0219422fa8a5984104186b5d99d818dc927169ddf9fffe13ff97e6932c3639a8321844c7a2c755be3bc224cf3e15fc8b32149496354cce5f18
   languageName: node
   linkType: hard
 
@@ -8829,7 +8829,7 @@ __metadata:
     "@mantine/core": "npm:7.11.2"
     "@mantine/hooks": "npm:7.11.2"
     "@mantine/vanilla-extract": "npm:7.11.2"
-    "@nanostores/react": "npm:0.7.2"
+    "@nanostores/react": "npm:0.7.3"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.11.0"
     "@tanstack/react-router": "npm:1.45.13"
