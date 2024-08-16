@@ -81,7 +81,7 @@ export async function bundleApp() {
       },
       rollupOptions: {
         treeshake: {
-          preset: 'smallest'
+          preset: 'safest'
         },
         output: {
           hoistTransitiveImports: false,

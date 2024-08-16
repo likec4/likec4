@@ -76,7 +76,7 @@ export async function buildReact(_isDev = false) {
       },
       rollupOptions: {
         treeshake: {
-          preset: 'smallest'
+          preset: 'safest'
         },
         output: {
           esModule: true,

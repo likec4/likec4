@@ -76,7 +76,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
       },
       rollupOptions: {
         treeshake: {
-          preset: 'smallest'
+          preset: 'safest'
         },
         output: {
           hoistTransitiveImports: false,
