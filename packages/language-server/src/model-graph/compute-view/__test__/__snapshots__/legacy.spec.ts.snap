@@ -262,6 +262,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
     },
     {
       "id": "cloud.frontend.adminPanel:cloud.backend",
+      "kind": "graphlql",
       "label": "fetches",
       "line": "dashed",
       "parent": null,
@@ -277,6 +278,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
     },
     {
       "id": "cloud.frontend.dashboard:cloud.backend",
+      "kind": "graphlql",
       "label": "requests",
       "line": "solid",
       "parent": null,

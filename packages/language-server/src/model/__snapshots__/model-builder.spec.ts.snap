@@ -497,6 +497,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       "edges": [
         {
           "id": "user1:user2",
+          "kind": "async",
           "label": null,
           "parent": null,
           "relations": [
