@@ -183,7 +183,7 @@ export class LikeC4ModelParser {
     const source = this.resolveFqn(coupling.source)
     const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
     const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
-    const kind = astNode.kind?.ref?.name as c4.RelationshipKind
+    const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
     const astPath = this.getAstNodePath(astNode)
 
     const bodyProps = mapToObj(

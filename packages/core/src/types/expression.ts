@@ -96,7 +96,7 @@ export function isElement(expr: Expression): expr is ElementExpression {
 export interface ElementWhereExpr extends Omit<BaseExpr, 'where'> {
   where: {
     expr: ElementExpression
-    condition: WhereOperator
+    condition: WhereOperator<string, string>
   }
 }
 export function isElementWhere(expr: Expression): expr is ElementWhereExpr {
@@ -146,7 +146,7 @@ export function isRelationExpression(expr: Expression): expr is RelationExpressi
 export interface RelationWhereExpr extends Omit<BaseExpr, 'where'> {
   where: {
     expr: RelationExpression
-    condition: WhereOperator
+    condition: WhereOperator<string, string>
   }
 }
 export function isRelationWhere(expr: Expression): expr is RelationWhereExpr {

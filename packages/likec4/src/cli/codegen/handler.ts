@@ -28,7 +28,6 @@ type HandlerParams =
 
 async function singleFileCodegenAction(
   languageServices: LanguageServices,
-  format: 'views',
   outfile: string | undefined,
   logger: Logger
 ) {
@@ -153,7 +152,7 @@ export async function reactLegacyHandler({ path, useDotBin, ...outparams }: Hand
 
   switch (outparams.format) {
     case 'views': {
-      await singleFileCodegenAction(languageServices, outparams.format, outparams.outfile, logger)
+      await singleFileCodegenAction(languageServices, outparams.outfile, logger)
       break
     }
     case 'dot': {

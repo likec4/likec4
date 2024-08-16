@@ -1,6 +1,7 @@
-import { extractStep, invariant, nonNullable } from '@likec4/core'
-import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
+import { extractStep, invariant, nonNullable, whereOperatorAsPredicate } from '@likec4/core'
+import type { DiagramEdge, DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
+import type { WhereOperator } from '../LikeC4Diagram.props'
 import { ZIndexes } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
 
@@ -9,6 +10,7 @@ import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
 export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>,
   opts: {
+    where: WhereOperator<string, string> | null
     draggable: boolean
     selectable: boolean
   }
@@ -34,6 +36,17 @@ export function diagramViewToXYFlowData(
       parent: DiagramNode | null
     }>()
   )
+
+  let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
+  if (opts.where) {
+    try {
+      visiblePredicate = whereOperatorAsPredicate(opts.where)
+    } catch (e) {
+      console.error('Error in where filter:', e)
+    }
+  }
+
+  // const visiblePredicate = opts.where ? whereOperatorAsPredicate(opts.where) : () => true
 
   // namespace to force unique ids
   const ns = ''
@@ -72,9 +85,9 @@ export function diagramViewToXYFlowData(
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
-      hidden: false,
       width: node.width,
       height: node.height,
+      hidden: !visiblePredicate(node),
       // parentId: parent ? ns + parent.id : null,
       ...(parent && {
         parentId: ns + parent.id
@@ -109,6 +122,7 @@ export function diagramViewToXYFlowData(
       target: ns + target,
       zIndex: ZIndexes.Edge,
       selectable: opts.selectable,
+      hidden: !visiblePredicate(edge),
       deletable: false,
       data: {
         edge,

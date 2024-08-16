@@ -13,6 +13,10 @@ declare module 'virtual:likec4/views' {
 
   export type LikeC4ViewId = Opaque<string, 'LikeC4ViewId'>
 
+  export type LikeC4Tag = Opaque<string, 'LikeC4Tag'>
+
+  export type LikeC4ElementKind = Opaque<string, 'LikeC4ElementKind'>
+
   export type DiagramView = Omit<CoreDiagramView, 'id'> & {
     id: ViewId
   }

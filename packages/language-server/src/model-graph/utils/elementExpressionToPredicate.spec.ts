@@ -74,18 +74,18 @@ describe('elementExprToPredicate', () => {
 
   it('returns a function that checks if the node id matches WHERE tag == clause', () => {
     const { yes, no } = test$expr($where('*', {
-      tag: { eq: 'cloud' }
+      tag: { eq: 'aws' }
     }))
     no({ id: 'amazon' })
-    yes({ id: 'customer', tags: ['cloud'] })
+    yes({ id: 'customer', tags: ['aws'] })
   })
 
   it('returns a function that checks if the node id matches WHERE tag != clause', () => {
     const { yes, no } = test$expr($where('*', {
-      tag: { neq: 'cloud' }
+      tag: { neq: 'next' }
     }))
     yes({ id: 'amazon' })
     yes({ id: 'amazon.s3', tags: ['aws'] })
-    no({ id: 'customer', tags: ['cloud'] })
+    no({ id: 'customer', tags: ['next'] })
   })
 })

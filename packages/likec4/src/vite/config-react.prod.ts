@@ -35,9 +35,8 @@ export async function viteReactConfig({
       jsx: 'transform',
       jsxDev: false,
       minifyIdentifiers: false,
-      lineLimit: 150,
       minifySyntax: true,
-      minifyWhitespace: false,
+      minifyWhitespace: true,
       tsconfigRaw: {
         compilerOptions: {
           target: 'ES2020',

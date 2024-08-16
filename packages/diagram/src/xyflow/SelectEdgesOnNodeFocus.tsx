@@ -1,11 +1,9 @@
 import { nonNullable } from '@likec4/core'
 import { useHotkeys } from '@mantine/hooks'
 import type { EdgeChange, NodeChange } from '@xyflow/react'
-import { boxToRect, getBoundsOfRects, getViewportForBounds } from '@xyflow/system'
-import { useEffect } from 'react'
+import { getBoundsOfRects, getViewportForBounds } from '@xyflow/system'
 import { useUpdateEffect } from '../hooks'
 import { useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
-import { MinZoom } from './const'
 import type { XYFlowEdge, XYFlowNode } from './types'
 import { nodeToRect } from './utils'
 
@@ -18,14 +16,17 @@ export function SelectEdgesOnNodeFocus() {
       diagramStore.getState().xystore.getState().resetSelectedElements()
       return
     }
+    const container = diagramStore.getState().getContainer()
+    if (!container) {
+      return
+    }
+    const { width, height } = container.getBoundingClientRect()
 
     const edgeChanges = [] as EdgeChange<XYFlowEdge>[]
     const nodeChanges = [] as NodeChange<XYFlowNode>[]
     const {
       edgeLookup,
       nodeLookup,
-      width,
-      height,
       panZoom,
       transform,
       triggerNodeChanges,
@@ -39,23 +40,6 @@ export function SelectEdgesOnNodeFocus() {
         const anotherNodeId = edge.source === focusedNodeId ? edge.target : edge.source
         const nd = nonNullable(nodeLookup.get(anotherNodeId))
         focusBounds = getBoundsOfRects(focusBounds, nodeToRect(nd))
-
-        const edgeX = [
-          ...edge.data.controlPoints?.map(p => p.x) ?? [],
-          ...edge.data.edge.points.map(p => p[0])
-        ]
-        const edgeY = [
-          ...edge.data.controlPoints?.map(p => p.y) ?? [],
-          ...edge.data.edge.points.map(p => p[1])
-        ]
-
-        const edgeBox = {
-          x: Math.min(...edgeX),
-          y: Math.min(...edgeY),
-          x2: Math.max(...edgeX),
-          y2: Math.max(...edgeY)
-        }
-        focusBounds = getBoundsOfRects(focusBounds, boxToRect(edgeBox))
       }
       if (edge.selected) {
         edgeChanges.push({
@@ -85,7 +69,19 @@ export function SelectEdgesOnNodeFocus() {
     triggerNodeChanges(nodeChanges)
 
     const maxZoom = Math.max(1, transform[2])
-    const viewport = getViewportForBounds(focusBounds, width, height, MinZoom, maxZoom, 0.2)
+    const viewport = getViewportForBounds(
+      {
+        x: focusBounds.x - 16,
+        y: focusBounds.y - 16,
+        width: focusBounds.width + 32,
+        height: focusBounds.height + 32
+      },
+      width,
+      height,
+      0.1,
+      maxZoom,
+      0
+    )
     panZoom?.setViewport(viewport, {
       duration: 350
     })

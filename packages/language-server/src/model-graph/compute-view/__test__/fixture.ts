@@ -108,6 +108,8 @@ model {
 }
 
  */
+type TestTag = 'old' | 'next' | 'aws' | 'storage' | 'communication' | 'legacy'
+
 const el = ({
   id,
   kind,
@@ -118,7 +120,7 @@ const el = ({
 }: Partial<Omit<Element, 'id' | 'kind' | 'tags'>> & {
   id: string
   kind: string
-  tags?: NonEmptyArray<string>
+  tags?: NonEmptyArray<TestTag>
 }): Element => ({
   id: id as Fqn,
   kind: kind as ElementKind,
@@ -222,7 +224,7 @@ const rel = ({
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
-  tags?: NonEmptyArray<string>
+  tags?: NonEmptyArray<TestTag>
 }): Relation => ({
   id: `${source}:${target}` as RelationID,
   title: title ?? '',
@@ -395,7 +397,10 @@ export function $customRelation(
   }
 }
 
-export function $where(expr: Expression | C4Expression, operator: WhereOperator): ElementWhereExpr | RelationWhereExpr {
+export function $where(
+  expr: Expression | C4Expression,
+  operator: WhereOperator<TestTag, string>
+): ElementWhereExpr | RelationWhereExpr {
   return {
     where: {
       expr: $expr(expr) as any,

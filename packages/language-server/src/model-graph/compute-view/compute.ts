@@ -9,6 +9,7 @@ import type {
   Relation,
   RelationPredicateExpression,
   RelationshipArrowType,
+  RelationshipKind,
   RelationshipLineType,
   Tag,
   ThemeColor,
@@ -196,12 +197,13 @@ export class ComputeCtx {
       }
 
       let relation:
-        | Pick<Relation, 'title' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail' | 'tags'>
+        | Pick<Relation, 'title' | 'kind' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail' | 'tags'>
         | {
           // TODO refactor with type-fest
           title: string
           description?: string | undefined
           technology?: string | undefined
+          kind?: RelationshipKind | undefined
           color?: ThemeColor | undefined
           line?: RelationshipLineType | undefined
           head?: RelationshipArrowType | undefined
@@ -223,10 +225,13 @@ export class ComputeCtx {
           if (r.color && acc.color !== r.color) {
             acc.color = undefined
           }
-          if (r.head && acc.head !== r.kind) {
+          if (r.kind && acc.kind !== r.kind) {
+            acc.kind = undefined
+          }
+          if (r.head && acc.head !== r.head) {
             acc.head = undefined
           }
-          if (r.tail && acc.tail !== r.kind) {
+          if (r.tail && acc.tail !== r.tail) {
             acc.tail = undefined
           }
           if (r.line && acc.line !== r.line) {
@@ -246,6 +251,7 @@ export class ComputeCtx {
           title: first(flatMap(relations, r => isTruthy(r.title) ? r.title : [])) ?? '[...]',
           description: first(flatMap(relations, r => isTruthy(r.description) ? r.description : [])),
           technology: first(flatMap(relations, r => isTruthy(r.technology) ? r.technology : [])),
+          kind: first(flatMap(relations, r => isTruthy(r.kind) ? r.kind : [])),
           head: first(flatMap(relations, r => isTruthy(r.head) ? r.head : [])),
           tail: first(flatMap(relations, r => isTruthy(r.tail) ? r.tail : [])),
           color: first(flatMap(relations, r => isTruthy(r.color) ? r.color : [])),
@@ -260,6 +266,7 @@ export class ComputeCtx {
         isTruthy(relation.title) && { label: relation.title },
         isTruthy(relation.description) && { description: relation.description },
         isTruthy(relation.technology) && { description: relation.technology },
+        isTruthy(relation.kind) && { kind: relation.kind },
         relation.color && { color: relation.color },
         relation.line && { line: relation.line },
         relation.head && { head: relation.head },

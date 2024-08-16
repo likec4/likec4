@@ -1,6 +1,6 @@
 ---
 title: Code generation
-description: LikeC4 generates React components, Webcomponents, and TypeScript models from the architecture model
+description: LikeC4 generates React components, WebComponents, and TypeScript models from the architecture model
 sidebar:
   order: 2
 tableOfContents:
@@ -18,14 +18,13 @@ Ensure you have the `likec4` in your dependencies (and `react` if you haven't al
 npm add likec4
 ```
 
-The following commands generates a JavaScript file with React component (and type definitions `.d.ts`):
+This command generates a JavaScript file (and type definitions `.d.ts`) with React component:
 
 ```sh
 likec4 codegen react --outfile ./src/likec4.generated.js
 ```
 
-Components are ready to be embedded.  
-The examples on this website are embedded in MDX.
+To use the component:
 
 ```tsx
 import { LikeC4View } from './likec4.generated'
@@ -46,6 +45,7 @@ const App = () => {
 | `injectFontCss`     | Injects CSS to load <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans</a> font from CDN.<br/>Default value is `true` |
 | `background`        | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default value is `transparent`. |
 | `browserBackground` | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default value is `dots`. |
+| `where`             | Optional filter, like [in view predicates](/dsl/views#filter) |
 
 Any other property will be passed to the underlying `div` element.
 
@@ -56,6 +56,43 @@ Check `likec4 codegen react --help` for available options.
 :::caution
 React component does not rehydrate correctly if rendered on the server (if you use Server-side-rendering), better to use it only on the client-side.
 :::
+
+##### Filter
+
+`where` hides elements and relationships, that are not matching the filter  
+(Layout stays the same, i.e. elements are not rearranged, just hidden).
+
+`where` is an object with predicates. For example:
+
+```tsx
+import { LikeC4View } from './likec4.generated'
+
+// Keeps elements and relationships where:
+// - tag is not 'legacy'
+// - and 
+// - tag is 'v1' or 'v2'
+const App = () => {
+  return (
+    <div>
+      <LikeC4View
+        viewId="index"
+        where={{
+          and: [
+            { tag: { neq: 'legacy' } },
+            { 
+              or: [
+                { tag: { eq: 'v1' } },
+                { tag: { eq: 'v2' } }
+              ] 
+            }
+          ]
+        }}/>
+    </div>
+  )
+}
+```
+
+Keep in mind that `where` applies to elements and to relationships.
 
 #### Webcomponent
 

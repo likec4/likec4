@@ -50,6 +50,7 @@ export function LikeC4Diagram({
   onOpenSourceRelation,
   onBurgerMenuClick,
   renderIcon,
+  where,
   showNavigationButtons = !!onNavigateTo
 }: LikeC4DiagramProps) {
   const initialRef = useRef({
@@ -58,7 +59,9 @@ export function LikeC4Diagram({
     initialWidth: initialWidth ?? view.bounds.width,
     initialHeight: initialHeight ?? view.bounds.height
   })
-  // useLogger('LikeC4Diagram', [{view}])
+  if (readonly !== true && !!where) {
+    console.warn('where filter is only supported in readonly mode')
+  }
   return (
     <EnsureMantine>
       <LazyMotion features={domAnimation} strict>
@@ -82,6 +85,7 @@ export function LikeC4Diagram({
             experimentalEdgeEditing={experimentalEdgeEditing}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableFocusMode={enableFocusMode}
+            whereFilter={where ?? null}
             renderIcon={renderIcon ?? null}
             onCanvasClick={onCanvasClick ?? null}
             onCanvasContextMenu={onCanvasContextMenu ?? null}

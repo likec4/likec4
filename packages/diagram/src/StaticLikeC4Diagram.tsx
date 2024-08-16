@@ -12,6 +12,7 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'initialWidth'
   | 'initialHeight'
   | 'renderIcon'
+  | 'where'
 >
 
 export function StaticLikeC4Diagram({

@@ -2,7 +2,13 @@ import type { LikeC4ViewBaseProps } from 'likec4/react'
 import { LikeC4Browser, LikeC4ViewElement, useColorScheme } from 'likec4/react'
 import { memo, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
-import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+import {
+  isLikeC4ViewId,
+  type LikeC4ElementKind,
+  type LikeC4Tag,
+  type LikeC4ViewId,
+  LikeC4Views
+} from 'virtual:likec4/views'
 
 type IconRendererProps = {
   node: {
@@ -19,7 +25,7 @@ const RenderIcon = ({ node }: IconRendererProps) => {
 
 export { isLikeC4ViewId }
 
-export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
+export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 
 export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4ViewComponent({
   viewId,
@@ -28,6 +34,7 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
   injectFontCss = true,
   background = 'transparent',
   browserBackground = 'dots',
+  where,
   ...props
 }) {
   const view = LikeC4Views[viewId]
@@ -52,7 +59,7 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
 
   return (
     <>
-      <LikeC4ViewElement<LikeC4ViewId>
+      <LikeC4ViewElement<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
         view={view}
         colorScheme={colorScheme}
         injectFontCss={injectFontCss}
@@ -60,10 +67,11 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
         background={background}
         renderIcon={RenderIcon}
         showElementLinks={interactive}
+        where={where}
         {...props}
       />
       {browserView && (
-        <LikeC4Browser<LikeC4ViewId>
+        <LikeC4Browser<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
           view={browserView}
           injectFontCss={false}
           colorScheme={colorScheme}
@@ -71,6 +79,7 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
           background={browserBackground}
           onClose={closeBrowser}
           renderIcon={RenderIcon}
+          where={where}
         />
       )}
     </>

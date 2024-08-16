@@ -17,7 +17,12 @@ import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 import type { XYStoreApi } from '../hooks/useXYFlow'
-import type { DiagramNodeWithNavigate, ElementIconRenderer, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
+import type {
+  DiagramNodeWithNavigate,
+  ElementIconRenderer,
+  LikeC4DiagramEventHandlers,
+  WhereOperator
+} from '../LikeC4Diagram.props'
 import { MinZoom } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
@@ -41,6 +46,7 @@ export type DiagramInitialState = {
   experimentalEdgeEditing: boolean
   enableFocusMode: boolean
   renderIcon: ElementIconRenderer | null
+  whereFilter: WhereOperator<string, string> | null
   // If Dynamic View
   enableDynamicViewWalkthrough: boolean
 
@@ -162,6 +168,7 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
     xynodes,
     xyedges
   } = diagramViewToXYFlowData(props.view, {
+    where: props.whereFilter,
     draggable: props.nodesDraggable,
     selectable: props.nodesSelectable
   })
@@ -204,6 +211,7 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               xyflow,
               xystore,
               dimmed,
+              whereFilter,
               view: current,
               lastOnNavigate,
               navigationHistory,
@@ -219,11 +227,6 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               xyedges,
               xynodes
             } = get()
-
-            if (shallowEqual(current, nextView)) {
-              DEV && console.debug('store: skip updateView')
-              return
-            }
 
             if (viewSyncDebounceTimeout !== null) {
               clearTimeout(viewSyncDebounceTimeout)
@@ -325,20 +328,24 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
             }
 
             const update = diagramViewToXYFlowData(nextView, {
+              where: whereFilter,
               draggable: nodesDraggable,
               selectable: nodesSelectable
             })
 
             update.xynodes = update.xynodes.map(update => {
               const existing = xynodes.find(n => n.id === update.id)
-              if (existing && existing.type === update.type && eq(existing.parentId ?? null, update.parentId ?? null)) {
-                if (eq(existing.data.element, update.data.element)) {
-                  return existing
-                }
-                return {
-                  ...existing,
-                  ...update
-                }
+              if (
+                existing
+                && existing.type === update.type
+                && existing.hidden === update.hidden
+                && existing.width === update.width
+                && existing.height === update.height
+                && eq(existing.parentId ?? null, update.parentId ?? null)
+                && eq(existing.position, update.position)
+                && eq(existing.data.element, update.data.element)
+              ) {
+                return existing
               }
               return update
             })
@@ -347,7 +354,7 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
             if (isSameView && !nextView.hasLayoutDrift) {
               update.xyedges = update.xyedges.map((update): XYFlowEdge => {
                 const existing = xyedges.find(n => n.id === update.id)
-                if (existing && eq(existing.data.edge, update.data.edge)) {
+                if (existing && existing.hidden === update.hidden && eq(existing.data.edge, update.data.edge)) {
                   return existing
                 }
                 return update
