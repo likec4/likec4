@@ -1,7 +1,7 @@
 import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
-import { isTruthy, mapToObj } from 'remeda'
+import { isDefined, isTruthy, mapToObj } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Writable } from 'type-fest'
 import type {
@@ -354,31 +354,41 @@ export class LikeC4ModelParser {
           return acc
         }
         if (ast.isElementStringProperty(prop)) {
-          const value = prop.key === 'description' ? removeIndent(prop.value) : toSingleLine(prop.value)
-          acc.custom[prop.key] = value.trim()
+          if (isDefined(prop.value)) {
+            let value = prop.key === 'description' ? removeIndent(prop.value) : toSingleLine(prop.value)
+            acc.custom[prop.key] = value || ''
+          }
           return acc
         }
         if (ast.isIconProperty(prop)) {
           const value = prop.libicon?.ref?.name ?? prop.value
-          if (isTruthy(value)) {
+          if (isDefined(value)) {
             acc.custom[prop.key] = value as c4.IconUrl
           }
           return acc
         }
         if (ast.isColorProperty(prop)) {
-          acc.custom[prop.key] = prop.value
+          if (isDefined(prop.value)) {
+            acc.custom[prop.key] = prop.value
+          }
           return acc
         }
         if (ast.isShapeProperty(prop)) {
-          acc.custom[prop.key] = prop.value
+          if (isDefined(prop.value)) {
+            acc.custom[prop.key] = prop.value
+          }
           return acc
         }
         if (ast.isBorderProperty(prop)) {
-          acc.custom[prop.key] = prop.value
+          if (isDefined(prop.value)) {
+            acc.custom[prop.key] = prop.value
+          }
           return acc
         }
         if (ast.isOpacityProperty(prop)) {
-          acc.custom[prop.key] = parseAstOpacityProperty(prop)
+          if (isDefined(prop.value)) {
+            acc.custom[prop.key] = parseAstOpacityProperty(prop)
+          }
           return acc
         }
 
@@ -442,22 +452,27 @@ export class LikeC4ModelParser {
     return props.reduce(
       (acc, prop) => {
         if (ast.isRelationStringProperty(prop)) {
-          const value = removeIndent(prop.value)
-          if (isTruthy(value)) {
-            acc.customRelation[prop.key] = value
+          if (isDefined(prop.value)) {
+            acc.customRelation[prop.key] = removeIndent(prop.value) ?? ''
           }
           return acc
         }
         if (ast.isArrowProperty(prop)) {
-          acc.customRelation[prop.key] = prop.value
+          if (isTruthy(prop.value)) {
+            acc.customRelation[prop.key] = prop.value
+          }
           return acc
         }
         if (ast.isColorProperty(prop)) {
-          acc.customRelation[prop.key] = prop.value
+          if (isTruthy(prop.value)) {
+            acc.customRelation[prop.key] = prop.value
+          }
           return acc
         }
         if (ast.isLineProperty(prop)) {
-          acc.customRelation[prop.key] = prop.value
+          if (isTruthy(prop.value)) {
+            acc.customRelation[prop.key] = prop.value
+          }
           return acc
         }
         nonexhaustive(prop)

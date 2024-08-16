@@ -108,6 +108,22 @@ describe('custom-relation-expr', () => {
     `)
   })
 
+  it('set edge title to empty string', () => {
+    const { edges, edgeIds } = computeView([
+      $include($customRelation(
+        'cloud.frontend.adminPanel -> cloud.backend',
+        {
+          title: ''
+        }
+      ))
+    ])
+    expect(edgeIds).toEqual([
+      'cloud.frontend.adminPanel:cloud.backend'
+    ])
+    const [edge1] = edges
+    expect(edge1).toHaveProperty('label', '')
+  })
+
   it('handles <->', () => {
     // in model we have cloud -> amazon
     const { edges, edgeIds } = computeView([

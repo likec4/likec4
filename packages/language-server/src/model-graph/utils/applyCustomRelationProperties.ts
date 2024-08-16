@@ -1,6 +1,6 @@
 import type { ComputedEdge, ComputedNode, Element, ViewRule } from '@likec4/core'
 import { Expr, nonexhaustive } from '@likec4/core'
-import { isEmpty } from 'remeda'
+import { isEmpty, isNullish, omitBy } from 'remeda'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 function relationExpressionToPredicates(
@@ -46,27 +46,11 @@ export function applyCustomRelationProperties(
   }
   for (
     const {
-      customRelation: { relation, title, ...props }
+      customRelation: { relation, title, ...customprops }
     } of rules
   ) {
-    if (isEmpty(props) && !title) {
-      continue
-    }
+    const props = omitBy(customprops, isNullish)
     const satisfies = relationExpressionToPredicates(relation)
-    // const isSource = elementExprToPredicate(relation.source)
-    // const isTarget = elementExprToPredicate(relation.target)
-    // const satisfies = (edge: ComputedEdge) => {
-    //   const source = nodes.find(n => n.id === edge.source)
-    //   const target = nodes.find(n => n.id === edge.target)
-    //   if (!source || !target) {
-    //     return false
-    //   }
-    //   let result = isSource(source) && isTarget(target)
-    //   if (!result && relation.isBidirectional) {
-    //     result = isSource(target) && isTarget(source)
-    //   }
-    //   return result
-    // }
     edges.forEach((edge, i) => {
       const source = nodes.find(n => n.id === edge.source)
       const target = nodes.find(n => n.id === edge.target)

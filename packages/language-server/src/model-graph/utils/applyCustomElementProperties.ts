@@ -1,6 +1,6 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { Expr, nonNullable } from '@likec4/core'
-import { isEmpty, isNonNullish, pickBy } from 'remeda'
+import { isEmpty, isNonNullish, isNullish, omitBy, pickBy } from 'remeda'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 export function applyCustomElementProperties(_rules: ViewRule[], _nodes: ComputedNode[]) {
@@ -14,13 +14,12 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
       custom: { expr, ...props }
     } of rules
   ) {
+    const { border, opacity, ...rest } = omitBy(props, isNullish)
     const satisfies = elementExprToPredicate(expr)
     nodes.forEach((node, i) => {
       if (!satisfies(node)) {
         return
       }
-
-      const { border, opacity, ...rest } = pickBy(props, isNonNullish)
       if (!isEmpty(rest)) {
         node = {
           ...node,
