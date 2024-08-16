@@ -43,7 +43,7 @@ export async function webcomponentHandler({
 
   diagrams.forEach(view => {
     if (view.hasLayoutDrift) {
-      logger.warn(k.dim('layout issues') + ' ' + k.cyan(view.id) + ' ' + k.dim('manual layout can not be applied'))
+      logger.warn(k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id))
     }
   })
 

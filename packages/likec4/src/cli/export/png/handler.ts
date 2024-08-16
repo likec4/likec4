@@ -17,6 +17,10 @@ type HandlerParams = {
    * output directory
    */
   output: string | undefined
+  /**
+   * If 'relative' png are exported keeping the same directory structure as source files.
+   */
+  outputType: 'relative' | 'flat'
   theme: 'light' | 'dark'
   useDotBin: boolean
   timeoutMs: number
@@ -24,7 +28,9 @@ type HandlerParams = {
   ignore: boolean
 }
 
-export async function pngHandler({ path, useDotBin, theme, output, ignore, timeoutMs, maxAttempts }: HandlerParams) {
+export async function pngHandler(
+  { path, useDotBin, theme, output, outputType, ignore, timeoutMs, maxAttempts }: HandlerParams
+) {
   const logger = createLikeC4Logger('c4:export')
   const timer = startTimer()
 
@@ -41,7 +47,7 @@ export async function pngHandler({ path, useDotBin, theme, output, ignore, timeo
   views.forEach(view => {
     if (view.hasLayoutDrift) {
       logger.warn(
-        k.yellow('layout issues with view') + ' ' + k.red(view.id) + ', ' + k.yellow('manual layout can not be applied')
+        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id)
       )
     }
   })
@@ -83,6 +89,7 @@ export async function pngHandler({ path, useDotBin, theme, output, ignore, timeo
     browserContext,
     views,
     output,
+    outputType,
     logger,
     maxAttempts,
     timeout: timeoutMs,

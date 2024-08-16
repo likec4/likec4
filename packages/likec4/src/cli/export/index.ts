@@ -32,6 +32,11 @@ export const exportCmd = {
               choices: ['light', 'dark'] as const,
               desc: 'color-scheme to use, default is light'
             })
+            .option('flat', {
+              boolean: true,
+              type: 'boolean',
+              description: 'ignore relative paths and export all PNGs in output directory'
+            })
             .option('use-dot', useDotBin)
             .options({
               'ignore': {
@@ -71,6 +76,7 @@ export const exportCmd = {
             timeoutMs: args.timeout * 1000,
             maxAttempts: args.maxAttempts,
             ignore: args.ignore,
+            outputType: args.flat ? 'flat' : 'relative',
             theme: args.theme ?? 'light'
           })
         }

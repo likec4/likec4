@@ -41,7 +41,7 @@ export const viteBuild = async ({
   diagrams.forEach(view => {
     if (view.hasLayoutDrift) {
       config.customLogger.warn(
-        k.yellow('layout issues with view') + ' ' + k.red(view.id) + ', ' + k.yellow('manual layout can not be applied')
+        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id)
       )
     }
   })

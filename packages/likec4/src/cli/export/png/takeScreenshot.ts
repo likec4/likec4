@@ -14,6 +14,7 @@ type TakeScreenshotParams = {
   logger: Logger
   timeout: number
   maxAttempts: number
+  outputType: 'relative' | 'flat'
   theme: 'light' | 'dark'
 }
 
@@ -24,6 +25,7 @@ export async function takeScreenshot({
   logger,
   timeout,
   maxAttempts,
+  outputType,
   theme
 }: TakeScreenshotParams) {
   const padding = 20
@@ -64,11 +66,14 @@ export async function takeScreenshot({
         await waitAllImages(page, timeout)
       }
 
-      let relativePath = view.relativePath ?? '.'
-      if (relativePath.includes('/')) {
-        relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
-      } else {
-        relativePath = '.'
+      let relativePath = '.'
+      if (outputType === 'relative') {
+        relativePath = view.relativePath ?? '.'
+        if (relativePath.includes('/')) {
+          relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
+        } else {
+          relativePath = '.'
+        }
       }
 
       const path = resolve(output, relativePath, `${view.id}.png`)
@@ -83,7 +88,7 @@ export async function takeScreenshot({
       // With runBeforeUnload doesn't wait for page to be closed
       page?.close({ runBeforeUnload: true }).catch(e => logger.error(`failed to close page: ${e}`))
 
-      logger.error(`${k.red('failed ' + url)}\n${error}`)
+      logger.error(k.red('failed ' + url + '\n' + error))
       if (attempt < maxAttempts) {
         pending.push({ view, attempt: attempt + 1 })
         logger.info(k.dim(`retry ${url}`))
