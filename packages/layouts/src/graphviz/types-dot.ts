@@ -153,7 +153,11 @@ export namespace GraphvizJson {
     _hdraw_?: DrawOp[]
     // tail arrow
     _tdraw_?: DrawOp[]
+    // label/xlabel
     _ldraw_?: LabelDrawOps[]
+    // tail label
+    _tldraw_?: LabelDrawOps[]
+    _hldraw_?: LabelDrawOps[]
     fontname: string
     fontsize: string
     likec4_id?: EdgeId

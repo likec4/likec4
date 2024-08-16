@@ -57,10 +57,10 @@ function parseNode({ pos, width, height }: GraphvizJson.GvNodeObject): BoundingB
 }
 
 function parseLabelBbox(
-  { _ldraw_ = [] }: GraphvizJson.GvObject | GraphvizJson.Edge,
+  labelDrawOps: GraphvizJson.LabelDrawOps[] | undefined,
   [containerX, containerY]: Point = [0, 0]
 ): LabelBBox | null {
-  if (_ldraw_.length === 0) {
+  if (!labelDrawOps || labelDrawOps.length === 0) {
     return null
   }
   let minX = Infinity,
@@ -71,7 +71,7 @@ function parseLabelBbox(
   let fontSize = 13
 
   try {
-    for (const draw of _ldraw_) {
+    for (const draw of labelDrawOps) {
       if (draw.op === 'F') {
         fontSize = pointToPx(draw.size)
         continue
@@ -97,7 +97,7 @@ function parseLabelBbox(
       }
     }
   } catch (e) {
-    logger.error(`failed on parsing _ldraw_:\n${JSON.stringify(_ldraw_, null, 2)}`, e)
+    logger.error(`Failed on parsing label draw ops: ${e}\n${JSON.stringify(labelDrawOps, null, 2)}`)
     return null
   }
 
@@ -142,7 +142,7 @@ function parseGraphvizEdge(
   { id, source, target, dir, label, description, ...computedEdge }: ComputedEdge,
   viewId: string
 ): DiagramEdge {
-  const labelBBox = parseLabelBbox(graphvizEdge)
+  const labelBBox = parseLabelBbox(graphvizEdge._ldraw_ ?? graphvizEdge._tldraw_ ?? graphvizEdge._hldraw_)
   const isBack = graphvizEdge.dir === 'back' || dir === 'back'
   label = label ? wrap(label, EDGE_LABEL_MAX_CHARS).join('\n') : null
   description = description ? wrap(description, EDGE_LABEL_MAX_CHARS).join('\n') : undefined
@@ -193,7 +193,10 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
       position,
       width,
       height,
-      labelBBox: nonNullable(parseLabelBbox(obj, position), `View ${view.id} Node ${computed.id} label bbox not found`)
+      labelBBox: nonNullable(
+        parseLabelBbox(obj._ldraw_, position),
+        `View ${view.id} Node ${computed.id} label bbox not found`
+      )
     })
   }
 
