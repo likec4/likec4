@@ -32,6 +32,12 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     throw new Error('no views found')
   }
 
+  diagrams.forEach(view => {
+    if (view.hasLayoutDrift) {
+      logger.warn(k.dim('layout issues') + ' ' + k.cyan(view.id) + ' ' + k.dim('manual layout can not be applied'))
+    }
+  })
+
   let outfilepath = resolve(languageServices.workspace, 'likec4-views.mjs')
   if (outfile) {
     outfilepath = isAbsolute(outfile) ? outfile : resolve(outfile)

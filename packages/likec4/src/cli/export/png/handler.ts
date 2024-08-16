@@ -38,6 +38,12 @@ export async function pngHandler({ path, useDotBin, theme, output, ignore, timeo
     throw new Error('no views found')
   }
 
+  views.forEach(view => {
+    if (view.hasLayoutDrift) {
+      logger.warn(k.dim('layout issues') + ' ' + k.cyan(view.id) + ' ' + k.dim('manual layout can not be applied'))
+    }
+  })
+
   logger.info(k.cyan(`start preview server`))
   const server = await viteDev({
     languageServices,

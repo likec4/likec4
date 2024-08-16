@@ -2,6 +2,7 @@ import { viteConfig } from '@/vite/config-app'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
 import { copyFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import k from 'picocolors'
 import { build } from 'vite'
 import type { LikeC4ViteConfig } from './config-app.prod'
 import { mkTempPublicDir } from './utils'
@@ -30,6 +31,20 @@ export const viteBuild = async ({
       copyFileSync(origin, resolve(publicDir, asset))
     }
   }
+
+  const diagrams = await config.languageServices.views.diagrams()
+  if (diagrams.length === 0) {
+    process.exitCode = 1
+    throw new Error('no views found')
+  }
+
+  diagrams.forEach(view => {
+    if (view.hasLayoutDrift) {
+      config.customLogger.warn(
+        k.dim('layout issues') + ' ' + k.cyan(view.id) + ' ' + k.dim('manual layout can not be applied')
+      )
+    }
+  })
 
   if (buildWebcomponent) {
     const webcomponentConfig = await viteWebcomponentConfig({
