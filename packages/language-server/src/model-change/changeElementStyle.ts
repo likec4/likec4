@@ -116,7 +116,7 @@ export function changeElementStyle(services: LikeC4Services, {
     )
     modifiedRange.start = {
       line: insertPos.line + 1,
-      character: indent + 1
+      character: indent
     }
     modifiedRange.end = {
       line: insertPos.line + linesToInsert.length,
@@ -133,18 +133,12 @@ export function changeElementStyle(services: LikeC4Services, {
         const ruleProp = rule.props.find(p => p.key === key)
         // replace existing  property
         if (ruleProp && ruleProp.$cstNode) {
-          const { range: { start, end } } = nonNullable(
-            findNodeForProperty(ruleProp.$cstNode, 'value'),
-            'cant find value cst node'
-          )
+          const { range: { start, end } } = ruleProp.$cstNode
           includeRange({
             start,
-            end: {
-              line: start.line,
-              character: start.character + value.length
-            }
+            end
           })
-          edits.push(TextEdit.replace({ start, end }, value))
+          edits.push(TextEdit.replace({ start, end }, key + ' ' + value))
           continue
         }
         // insert new style property right after the opening brace

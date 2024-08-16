@@ -118,7 +118,7 @@
             "messages",
             "verbose"
           ],
-          "default": "messages",
+          "default": "off",
           "description": "Enable trace logging for the LikeC4 extension."
         },
         "likec4.trace.server": {

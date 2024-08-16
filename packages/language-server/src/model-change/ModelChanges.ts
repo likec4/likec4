@@ -1,4 +1,5 @@
 import { invariant, nonexhaustive } from '@likec4/core'
+import { logger } from '@likec4/log'
 import { Location, Range, TextEdit } from 'vscode-languageserver-types'
 import { type ParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4ModelLocator } from '../model'
@@ -47,32 +48,36 @@ export class LikeC4ModelChanges {
     const lspConnection = this.services.shared.lsp.Connection
     invariant(lspConnection, 'LSP Connection not available')
     let result: Location | null = null
-    await this.services.shared.workspace.WorkspaceLock.write(async () => {
-      const { doc, edits, modifiedRange } = this.convertToTextEdit(changeView)
-      const textDocument = {
-        uri: doc.textDocument.uri,
-        version: doc.textDocument.version
-      }
-      if (!edits.length) {
-        return
-      }
-      const applyResult = await lspConnection.workspace.applyEdit({
-        label: `LikeC4 - change view ${changeView.viewId}`,
-        edit: {
-          changes: {
-            [textDocument.uri]: edits
+    try {
+      await this.services.shared.workspace.WorkspaceLock.write(async () => {
+        const { doc, edits, modifiedRange } = this.convertToTextEdit(changeView)
+        const textDocument = {
+          uri: doc.textDocument.uri,
+          version: doc.textDocument.version
+        }
+        if (!edits.length) {
+          return
+        }
+        const applyResult = await lspConnection.workspace.applyEdit({
+          label: `LikeC4 - change view ${changeView.viewId}`,
+          edit: {
+            changes: {
+              [textDocument.uri]: edits
+            }
           }
+        })
+        if (!applyResult.applied) {
+          lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
+          return
+        }
+        result = {
+          uri: textDocument.uri,
+          range: modifiedRange
         }
       })
-      if (!applyResult.applied) {
-        lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
-        return
-      }
-      result = {
-        uri: textDocument.uri,
-        range: modifiedRange
-      }
-    })
+    } catch (e) {
+      logger.error(`Failed to apply change ${changeView.change.op} ${changeView.viewId}`, e)
+    }
     return result
   }
 
@@ -83,7 +88,7 @@ export class LikeC4ModelChanges {
   } {
     const lookup = this.locator.locateViewAst(viewId)
     if (!lookup) {
-      throw new Error(`View not found: ${viewId}`)
+      throw new Error(`LikeC4ModelChanges: view not found: ${viewId}`)
     }
     switch (change.op) {
       case 'change-element-style': {
