@@ -338,14 +338,21 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
               if (
                 existing
                 && existing.type === update.type
-                && existing.hidden === update.hidden
-                && existing.width === update.width
-                && existing.height === update.height
                 && eq(existing.parentId ?? null, update.parentId ?? null)
-                && eq(existing.position, update.position)
-                && eq(existing.data.element, update.data.element)
               ) {
-                return existing
+                if (
+                  existing.hidden === update.hidden
+                  && existing.width === update.width
+                  && existing.height === update.height
+                  && eq(existing.position, update.position)
+                  && eq(existing.data.element, update.data.element)
+                ) {
+                  return existing
+                }
+                return {
+                  ...existing,
+                  ...update
+                }
               }
               return update
             })
@@ -354,8 +361,23 @@ export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(prop
             if (isSameView && !nextView.hasLayoutDrift) {
               update.xyedges = update.xyedges.map((update): XYFlowEdge => {
                 const existing = xyedges.find(n => n.id === update.id)
-                if (existing && existing.hidden === update.hidden && eq(existing.data.edge, update.data.edge)) {
-                  return existing
+                if (existing) {
+                  if (
+                    existing.hidden === update.hidden
+                    && eq(existing.data.label, update.data.label)
+                    && eq(existing.data.controlPoints, update.data.controlPoints)
+                    && eq(existing.data.edge, update.data.edge)
+                  ) {
+                    return existing
+                  }
+                  return {
+                    ...existing,
+                    ...update,
+                    data: {
+                      ...existing.data,
+                      ...update.data
+                    }
+                  }
                 }
                 return update
               })

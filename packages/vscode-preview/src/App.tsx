@@ -127,12 +127,13 @@ const App = () => {
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
-          fitViewPadding={0.08}
+          fitViewPadding={0.05}
           readonly={false}
           controls={false}
           nodesDraggable={nodesDraggable}
           experimentalEdgeEditing={edgesEditable}
-          enableFocusMode={!nodesDraggable && !edgesEditable}
+          enableFocusMode
+          enableDynamicViewWalkthrough
           showNavigationButtons
           showElementLinks
           renderIcon={IconRenderer}
@@ -154,13 +155,6 @@ const App = () => {
             event.stopPropagation()
             event.preventDefault()
           }}
-          // onEdgeClick={({ edge, event }) => {
-          //   resetLastClickedNd()
-          //   if (hasAtLeast(edge.relations, 1)) {
-          //     extensionApi.goToRelation(edge.relations[0])
-          //     event.stopPropagation()
-          //   }
-          // }}
           onChange={({ change }) => {
             extensionApi.change(view.id, change)
           }}

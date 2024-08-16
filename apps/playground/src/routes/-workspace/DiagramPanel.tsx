@@ -89,10 +89,11 @@ export function DiagramPanel() {
             fitView
             fitViewPadding={0.07}
             experimentalEdgeEditing
+            nodesSelectable
             nodesDraggable
             showNavigationButtons
             enableDynamicViewWalkthrough
-            enableFocusMode={false}
+            enableFocusMode
             renderIcon={RendererIcon}
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
