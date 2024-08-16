@@ -1,3 +1,30 @@
+## [1.7.3](https://github.com/likec4/likec4/compare/v1.7.2...v1.7.3) (2024-08-16)
+
+
+### Bug Fixes
+
+* **cli:** warn layout drifts ([49c1100](https://github.com/likec4/likec4/commit/49c1100fa09d15a10913e76f41f8d83730515577))
+* **deps:** update astro monorepo ([#903](https://github.com/likec4/likec4/issues/903)) ([b295d48](https://github.com/likec4/likec4/commit/b295d48eefad198239dac58866f6725856f22809))
+* **deps:** update dependency @astrojs/check to ^0.9.2 ([#904](https://github.com/likec4/likec4/issues/904)) ([c7e5ef0](https://github.com/likec4/likec4/commit/c7e5ef08e6e68a6c5c19873aa79164b7f58eac38))
+* **deps:** update dependency @astrojs/starlight to ^0.25.4 ([#841](https://github.com/likec4/likec4/issues/841)) ([8ebd37b](https://github.com/likec4/likec4/commit/8ebd37b30919dcc43824ad019ffd8d4ad01cb661))
+* **deps:** update dependency @dagrejs/graphlib to ^2.2.3 ([#880](https://github.com/likec4/likec4/issues/880)) ([5236d75](https://github.com/likec4/likec4/commit/5236d751911bbe130c4cc8c9ffb74067f11a6305))
+* **deps:** update dependency @xyflow/react to v12.0.4 ([#881](https://github.com/likec4/likec4/issues/881)) ([a07d5da](https://github.com/likec4/likec4/commit/a07d5da124bc85c3d469c1828138b5c860832c1c))
+* **deps:** update dependency astro to ^4.13.2 ([#879](https://github.com/likec4/likec4/issues/879)) ([79d28bf](https://github.com/likec4/likec4/commit/79d28bf1a8183b0181ae172bf28ce5e04b32b557))
+* **deps:** update dependency playwright to v1.46.0 ([#882](https://github.com/likec4/likec4/issues/882)) ([36d2405](https://github.com/likec4/likec4/commit/36d2405e414d4d5f5aaee6b77eace6755c301803))
+* improve `getScope` ([6fee98d](https://github.com/likec4/likec4/commit/6fee98d700848110e54efd4058a7ad51592aecf6))
+* improvement diagram editor ([f05219c](https://github.com/likec4/likec4/commit/f05219c2ffe3965d4a50657793b7d5b69bfa68ac))
+* log layout drifts in CLI ([ad09bcc](https://github.com/likec4/likec4/commit/ad09bccce3f8f4d5e851f5fd8a40ec20e39cafeb))
+
+
+### Features
+
+* `where` filter on react components ([ccfc071](https://github.com/likec4/likec4/commit/ccfc07183e44138b6e1b0d7353e3ecc50e65950a)), closes [#872](https://github.com/likec4/likec4/issues/872)
+* **cli:** flat png export ([bcd23dd](https://github.com/likec4/likec4/commit/bcd23ddf46359a354d262c1adf47b60fd46bde61))
+* export to png opens new tab ([198d79e](https://github.com/likec4/likec4/commit/198d79e19d99a8e68393dad76ee6f670e44e491e))
+* hiding relationship titles in views ([f9d6c74](https://github.com/likec4/likec4/commit/f9d6c747d00a9e9dffce64a8fac12074f54e883f)), closes [#910](https://github.com/likec4/likec4/issues/910)
+
+
+
 ## [1.7.2](https://github.com/likec4/likec4/compare/v1.7.1...v1.7.2) (2024-08-10)
 
 
