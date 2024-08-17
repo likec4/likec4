@@ -1,3 +1,12 @@
+## [1.7.4](https://github.com/likec4/likec4/compare/v1.7.3...v1.7.4) (2024-08-17)
+
+### Bug Fixes
+
+* broken export to png
+* add downloadedRef to track if download has already occurred
+* compact diagram title panel and zoom out on double click
+
+
 ## [1.7.3](https://github.com/likec4/likec4/compare/v1.7.2...v1.7.3) (2024-08-16)
 
 ### Improvements
