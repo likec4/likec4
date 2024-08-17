@@ -4,20 +4,17 @@ import {
   Divider,
   Group,
   Menu,
-  MenuDivider,
   MenuDropdown,
   MenuItem,
   MenuLabel,
   MenuTarget,
   Paper,
-  Text,
+  Space,
   useMantineTheme
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
-import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
+import { IconChevronDown, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
-import type { ReactNode } from 'react'
-import { findLast } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as css from './Header.css'
 import { ShareModal } from './ShareModal'
@@ -29,6 +26,11 @@ type HeaderProps = {
 }
 
 export function Header({ diagram }: HeaderProps) {
+  const routerState = useRouterState()
+  const isReactDiagramRoute = routerState.matches.some(({ routeId }) =>
+    routeId === '/view/$viewId/' || routeId === '/view/$viewId/editor'
+  )
+
   const { breakpoints } = useMantineTheme()
   const isTablet = useMediaQuery(`(min-width: ${breakpoints.md})`) ?? false
   const [opened, { open, close }] = useDisclosure(false)
@@ -38,18 +40,35 @@ export function Header({ diagram }: HeaderProps) {
       pos={'fixed'}
       top={'0.5rem'}
       right={'0.5rem'}
-      py={5}
-      px={'xs'}
+      p={4}
       radius={'sm'}
       shadow="xl">
       <Group gap={isTablet ? 6 : 4} wrap="nowrap">
-        <ViewPageButton isTablet={isTablet} />
-        <ColorSchemeToggle />
+        {isReactDiagramRoute
+          ? (
+            <>
+              {/* <ViewPageButton isTablet={isTablet} /> */}
+
+              <Button size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
+                Share
+              </Button>
+              <ExportButton />
+            </>
+          )
+          : (
+            <Button
+              component={Link}
+              to={'/view/$viewId/'}
+              size={isTablet ? 'sm' : 'xs'}
+              variant="subtle"
+              color="gray">
+              Back to diagram
+            </Button>
+          )}
+
         <Divider orientation="vertical" mr={isTablet ? 4 : 'xs'} />
-        <Button size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
-          Share
-        </Button>
-        <ExportButton diagram={diagram} />
+        <ColorSchemeToggle />
+        <Space />
       </Group>
       <ShareModal
         opened={opened}
@@ -59,94 +78,94 @@ export function Header({ diagram }: HeaderProps) {
   )
 }
 
-const viewPages = [
-  {
-    route: '/view/$viewId',
-    icon: <IconBrandReact opacity={0.7} size={16} />,
-    title: <>React</>
-  },
-  {
-    route: '/view/$viewId/editor',
-    icon: <IconBrandReact opacity={0.7} size={16} />,
-    title: (
-      <Text size="sm" fw={'500'} variant="gradient" gradient={{ from: 'pink', to: 'violet', deg: 90 }}>
-        Editor
-      </Text>
-    )
-  },
-  {
-    route: '/view/$viewId/dot',
-    icon: <IconFile opacity={0.7} size={16} />,
-    title: (
-      <>
-        Graphviz <Text component="span" size="xs" c={'dimmed'} ml={4}>.dot</Text>
-      </>
-    )
-  },
-  {
-    route: '/view/$viewId/d2',
-    icon: <IconFile opacity={0.7} size={16} />,
-    title: <>D2</>
-  },
-  {
-    route: '/view/$viewId/mmd',
-    icon: <IconFile opacity={0.7} size={16} />,
-    title: <>Mermaid</>
-  }
-] as const satisfies Array<{ route: RegisteredRoute; icon: ReactNode; title: ReactNode }>
+// const viewPages = [
+//   {
+//     route: '/view/$viewId',
+//     icon: <IconBrandReact opacity={0.7} size={16} />,
+//     title: <>React</>
+//   },
+//   {
+//     route: '/view/$viewId/editor',
+//     icon: <IconBrandReact opacity={0.7} size={16} />,
+//     title: (
+//       <Text size="sm" fw={'500'} variant="gradient" gradient={{ from: 'pink', to: 'violet', deg: 90 }}>
+//         Editor
+//       </Text>
+//     )
+//   },
+//   {
+//     route: '/view/$viewId/dot',
+//     icon: <IconFile opacity={0.7} size={16} />,
+//     title: (
+//       <>
+//         Graphviz <Text component="span" size="xs" c={'dimmed'} ml={4}>.dot</Text>
+//       </>
+//     )
+//   },
+//   {
+//     route: '/view/$viewId/d2',
+//     icon: <IconFile opacity={0.7} size={16} />,
+//     title: <>D2</>
+//   },
+//   {
+//     route: '/view/$viewId/mmd',
+//     icon: <IconFile opacity={0.7} size={16} />,
+//     title: <>Mermaid</>
+//   }
+// ] as const satisfies Array<{ route: RegisteredRoute; icon: ReactNode; title: ReactNode }>
 
-const routeIds = viewPages.map(({ route }) => route as string)
+// const routeIds = viewPages.map(({ route }) => route as string)
 
-function ViewPageButton({
-  isTablet
-}: {
-  isTablet: boolean
-}) {
-  const { viewId } = useParams({
-    from: '/view/$viewId'
-  })
-  const routerState = useRouterState()
-  const matchedRoute = findLast(routerState.matches, ({ routeId }) => routeIds.includes(routeId))
-  const matched = (matchedRoute && viewPages.find(({ route }) => route === matchedRoute.routeId)) ?? viewPages[0]
-  return (
-    <>
-      <Menu shadow="md" width={200} trigger="click-hover" openDelay={100}>
-        <MenuTarget>
-          <Button
-            leftSection={matched.icon}
-            variant="subtle"
-            size={isTablet ? 'sm' : 'xs'}
-            color="gray"
-            px={'xs'}
-            rightSection={<IconChevronDown opacity={0.5} size={14} />}>
-            {matched.title}
-          </Button>
-        </MenuTarget>
+// function ViewPageButton({
+//   isTablet
+// }: {
+//   isTablet: boolean
+// }) {
+//   const { viewId } = useParams({
+//     from: '/view/$viewId'
+//   })
+//   const routerState = useRouterState()
+//   const matchedRoute = findLast(routerState.matches, ({ routeId }) => routeIds.includes(routeId))
+//   const matched = (matchedRoute && viewPages.find(({ route }) => route === matchedRoute.routeId)) ?? viewPages[0]
+//   return (
+//     <>
+//       <Menu shadow="md" width={200} trigger="click-hover" openDelay={100}>
+//         <MenuTarget>
+//           <Button
+//             leftSection={matched.icon}
+//             variant="subtle"
+//             size={isTablet ? 'sm' : 'xs'}
+//             color="gray"
+//             px={'xs'}
+//             rightSection={<IconChevronDown opacity={0.5} size={14} />}>
+//             {matched.title}
+//           </Button>
+//         </MenuTarget>
 
-        <MenuDropdown>
-          {viewPages.map(({ route, icon, title }) => (
-            <MenuItem
-              key={route}
-              component={Link}
-              to={route}
-              search
-              params={{ viewId }}
-              leftSection={icon}
-              {...(route === matched.route ? { bg: 'gray' } : {})}
-              style={{
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {title}
-            </MenuItem>
-          ))}
-        </MenuDropdown>
-      </Menu>
-    </>
-  )
-}
+//         <MenuDropdown>
+//           {viewPages.map(({ route, icon, title }) => (
+//             <MenuItem
+//               key={route}
+//               component={Link}
+//               to={route}
+//               search
+//               params={{ viewId }}
+//               leftSection={icon}
+//               {...(route === matched.route ? { bg: 'gray' } : {})}
+//               style={{
+//                 whiteSpace: 'nowrap'
+//               }}
+//             >
+//               {title}
+//             </MenuItem>
+//           ))}
+//         </MenuDropdown>
+//       </Menu>
+//     </>
+//   )
+// }
 
-function ExportButton({ diagram }: HeaderProps) {
+function ExportButton() {
   const params = useParams({
     from: '/view/$viewId'
   })

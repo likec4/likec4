@@ -59,11 +59,21 @@ async function downloadAsPng({
   }
 }
 
+const asBoolean = (v: unknown): boolean | undefined => {
+  if (typeof v === 'boolean') {
+    return v
+  }
+  if (typeof v === 'string') {
+    return v === 'true'
+  }
+  return undefined
+}
+
 export const Route = createFileRoute('/export/$viewId')({
   component: ExportPage,
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      download: 'download' in search
+      download: asBoolean(search.download)
     }
   }
 })
@@ -71,7 +81,7 @@ export const Route = createFileRoute('/export/$viewId')({
 function ExportPage() {
   const {
     padding = 20,
-    download
+    download = false
   } = Route.useSearch()
   const { viewId } = Route.useParams()
   const diagram = useLikeC4View(viewId)
@@ -92,7 +102,11 @@ function ExportPage() {
       if (!download || !viewport || !diagram) {
         return
       }
-      loadingOverlayRef.current!.style.display = 'none'
+      const loadingOverlay = loadingOverlayRef.current
+      if (loadingOverlay) {
+        loadingOverlay.style.display = 'none'
+        return
+      }
       downloadAsPng({
         pngFilename: viewId,
         viewport
