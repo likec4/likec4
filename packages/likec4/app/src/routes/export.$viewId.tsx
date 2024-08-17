@@ -88,6 +88,9 @@ function ExportPage() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
 
+  // to track if download has already occurred
+  const downloadedRef = useRef(false)
+
   useTransparentBackground()
 
   useEffect(() => {
@@ -105,8 +108,11 @@ function ExportPage() {
       const loadingOverlay = loadingOverlayRef.current
       if (loadingOverlay) {
         loadingOverlay.style.display = 'none'
+      }
+      if (downloadedRef.current) {
         return
       }
+      downloadedRef.current = true
       downloadAsPng({
         pngFilename: viewId,
         viewport
