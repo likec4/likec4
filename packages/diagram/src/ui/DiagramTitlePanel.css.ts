@@ -18,11 +18,11 @@ export const card = style({
   backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   '@media': {
     [mantine.largerThan('sm')]: {
-      minWidth: 300,
+      minWidth: 250,
       maxWidth: '90vw'
     },
     [mantine.largerThan('md')]: {
-      minWidth: 400,
+      minWidth: 350,
       maxWidth: '70vw'
     }
   },

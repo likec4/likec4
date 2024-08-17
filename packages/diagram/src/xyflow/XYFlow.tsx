@@ -1,10 +1,10 @@
 import { ReactFlow, useOnViewportChange } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type CSSProperties, type PropsWithChildren, useMemo } from 'react'
+import { type CSSProperties, type PropsWithChildren, useMemo, useState } from 'react'
 import { useDiagramState } from '../hooks/useDiagramState'
 import { useXYStoreApi } from '../hooks/useXYFlow'
 import type { DiagramState } from '../state/diagramStore'
-import { MinZoom } from './const'
+import { MaxZoom, MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
@@ -87,6 +87,7 @@ export function XYFlow({
     translateX,
     translateY
   } = useDiagramState(selector, shallowEqual)
+  const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(zoomable)
 
   // useLogger('XYFlow',[
   //   nodes,
@@ -110,6 +111,7 @@ export function XYFlow({
       if (x !== roundedX || y !== roundedY) {
         xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
       }
+      setZoomOnDoubleClick(zoomable && zoom < 1.1)
     }
   })
 
@@ -127,7 +129,7 @@ export function XYFlow({
       {...(!zoomable && {
         zoomActivationKeyCode: null
       })}
-      maxZoom={zoomable ? 1.9 : 1}
+      maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
       fitViewOptions={useMemo(() => ({
@@ -162,7 +164,7 @@ export function XYFlow({
         onNodeDragStop: layoutConstraints.onNodeDragStop
       }}
       nodeDragThreshold={3}
-      zoomOnDoubleClick={zoomable}
+      zoomOnDoubleClick={zoomOnDoubleClick}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
       onNodesChange={onNodesChange}

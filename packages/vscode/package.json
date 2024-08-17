@@ -9,6 +9,9 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "license": "MIT",
+  "sponsor": {
+    "url": "https://github.com/sponsors/davydkov"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",

@@ -58,13 +58,19 @@ export function useXYFlowEvents() {
       onDoubleClick: (event) => {
         const {
           onCanvasDblClick,
+          zoomable,
           xystore,
+          viewportChanged,
+          fitDiagram,
           resetLastClicked
         } = diagramApi.getState()
         resetLastClicked()
         xystore.getState().resetSelectedElements()
         if (!onCanvasDblClick) {
           event.stopPropagation()
+        }
+        if (zoomable && viewportChanged) {
+          fitDiagram()
         }
         onCanvasDblClick?.(event)
       },
