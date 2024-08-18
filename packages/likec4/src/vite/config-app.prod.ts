@@ -1,6 +1,6 @@
-import { createLikeC4Logger } from '@/logger'
+import { createLikeC4Logger, type Logger } from '@/logger'
 import { resolve } from 'node:path'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
@@ -8,16 +8,20 @@ import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, viteAppRoot } from './utils'
 
 export type LikeC4ViteConfig = {
+  customLogger?: Logger
   languageServices: LanguageServices
   outputDir?: string | undefined
   base?: string | undefined
   webcomponentPrefix?: string | undefined
   useHashHistory?: boolean | undefined
+  useOverviewGraph?: boolean | undefined
+  likec4AssetsDir: string
 }
 
-export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig) => {
-  const customLogger = createLikeC4Logger('c4:vite')
+export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
+  const customLogger = cfg.customLogger ?? createLikeC4Logger('c4:vite')
   const root = viteAppRoot()
+  const useOverviewGraph = cfg?.useOverviewGraph === true
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
 
   const outDir = cfg.outputDir ?? resolve(languageServices.workspace, 'dist')
@@ -38,6 +42,7 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
 
   return {
     isDev: false,
+    likec4AssetsDir,
     webcomponentPrefix,
     root,
     languageServices,
@@ -45,7 +50,8 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
     base,
     resolve: {
       alias: {
-        'likec4/icons': resolve(root, '../../icons')
+        'likec4/previews': likec4AssetsDir
+        // 'likec4/icons': resolve(root, '../../icons')
       }
     },
     configFile: false,
@@ -65,6 +71,7 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'false',
+      __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"production"'
     },
@@ -94,7 +101,10 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
     },
     customLogger,
     plugins: [
-      likec4Plugin({ languageServices })
+      likec4Plugin({
+        languageServices,
+        generatePreviews: useOverviewGraph
+      })
     ]
-  } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
+  } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }
 }

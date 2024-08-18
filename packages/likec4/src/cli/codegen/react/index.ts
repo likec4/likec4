@@ -1,14 +1,14 @@
+import { LanguageServices } from '@/language-services'
+import { createLikeC4Logger, startTimer } from '@/logger'
 import { viteReactConfig } from '@/vite/config-react'
 import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
-import k from 'picocolors'
 import stripIndent from 'strip-indent'
+import k from 'tinyrainbow'
 import { build } from 'vite'
-import { LanguageServices } from '../../../language-services'
-import { createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
   /**
@@ -104,7 +104,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   }
 
   await writeFile(
-    resolve(outDir, basename(outfilepath, ext) + '.d.ts'),
+    resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts')),
     `
 import type { JSX } from 'react'
 import type { LikeC4ViewBaseProps } from 'likec4/react'

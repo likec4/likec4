@@ -15,6 +15,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconChevronDown, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
+import { usePreviewUrl } from 'virtual:likec4/previews'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as css from './Header.css'
 import { ShareModal } from './ShareModal'
@@ -169,6 +170,7 @@ function ExportButton() {
   const params = useParams({
     from: '/view/$viewId'
   })
+  const previewUrl = usePreviewUrl(params.viewId)
 
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
@@ -186,16 +188,29 @@ function ExportButton() {
 
       <MenuDropdown>
         <MenuLabel>Current view</MenuLabel>
-        <MenuItem
-          component={Link}
-          to={'/export/$viewId'}
-          target="_blank"
-          search={{
-            download: true
-          }}
-          params={params}>
-          Export as .png
-        </MenuItem>
+        {previewUrl
+          ? (
+            <MenuItem
+              component={'a'}
+              href={previewUrl}
+              download={`${params.viewId}.png`}
+              target="_blank">
+              Export as .png
+            </MenuItem>
+          )
+          : (
+            <MenuItem
+              component={Link}
+              to={'/export/$viewId'}
+              target="_blank"
+              search={{
+                download: true
+              }}
+              params={params}>
+              Export as .png
+            </MenuItem>
+          )}
+
         <MenuItem component={Link} to={'/view/$viewId/dot'} search params={params}>Export as .dot</MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/d2'} search params={params}>Export as .d2</MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/mmd'} search params={params}>Export as .mmd</MenuItem>

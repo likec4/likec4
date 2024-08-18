@@ -5,7 +5,7 @@ React SVG icons from these packs:
 - [aws-icons.com](https://aws-icons.com/)
 - [gcpicons.com](https://gcpicons.com/)
 
-```jsx
+```ts
 import { ArgoCd, Astro } from '@likec4/icons'
 // or
 import { ArgoCd, Astro } from '@likec4/icons/tech'

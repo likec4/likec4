@@ -27,11 +27,11 @@ export function pointToPx(pt: number | [number, number]) {
     return [pointToPx(pt[0]), pointToPx(pt[1])] as const
   }
   invariant(isFinite(pt), `Invalid not finite point value ${pt}`)
-  return Math.ceil(pt)
+  return Math.round(pt)
 }
 export const inchToPx = (inch: number) => {
   invariant(isFinite(inch), `Invalid not finite inch value ${inch}`)
-  return Math.ceil(inch * 72)
+  return Math.floor(inch * 72)
 }
 export const pxToInch = (px: number) => Math.ceil((px / 72) * 1000) / 1000
 export const pxToPoints = (px: number) => Math.ceil(px)

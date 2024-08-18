@@ -43,6 +43,16 @@ declare module 'virtual:likec4/icons' {
   export const Icons: Record<string, () => JSX.Element>
 }
 
+declare module 'virtual:likec4/overview-graph' {
+  import type { OverviewGraph as CoreOverviewGraph } from '@likec4/core'
+  export type OverviewGraph = CoreOverviewGraph
+  export function useOverviewGraph(): OverviewGraph
+}
+
+declare module 'virtual:likec4/previews' {
+  export function usePreviewUrl(viewId: string): string | null
+}
+
 declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {
   import mermaid from 'mermaid'
   export default mermaid

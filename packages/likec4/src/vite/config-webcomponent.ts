@@ -4,8 +4,8 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { resolve } from 'node:path'
-import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
+import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
 import type { LikeC4ViteWebcomponentConfig } from './config-webcomponent.prod'
@@ -47,6 +47,7 @@ export async function viteWebcomponentConfig({
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'true',
       __USE_HASH_HISTORY__: 'false',
+      __USE_OVERVIEW_GRAPH__: 'false',
       'process.env.NODE_ENV': '"development"'
     },
     build: {

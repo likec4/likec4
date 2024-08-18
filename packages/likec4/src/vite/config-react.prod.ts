@@ -1,7 +1,7 @@
 import type { LanguageServices } from '@/language-services'
 import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, JsBanners, viteAppRoot } from './utils'

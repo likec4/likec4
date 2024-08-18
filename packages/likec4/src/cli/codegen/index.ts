@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import type { CommandModule } from 'yargs'
 import { outdir, path, useDotBin, webcomponentPrefix } from '../options'
 import { reactLegacyHandler } from './handler'
@@ -50,7 +50,7 @@ export const codegenCmd = {
       // react-next command
       .command(
         'react [path]',
-        'generate react component to embed likec4 views',
+        'generate react component to render likec4 view',
         yargs =>
           yargs
             .option('outfile', {
@@ -80,7 +80,7 @@ export const codegenCmd = {
             .option('outfile', {
               alias: 'o',
               type: 'string',
-              desc: '<file> output .js file',
+              desc: '<file> path to output file (.mjs or .js)',
               normalize: true,
               coerce: resolve
             })

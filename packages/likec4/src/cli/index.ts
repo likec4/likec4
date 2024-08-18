@@ -2,8 +2,8 @@
 
 import { consola, LogLevels } from '@likec4/log'
 import { argv, exit, stdout } from 'node:process'
-import k from 'picocolors'
 import { clamp } from 'remeda'
+import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import pkg from '../../package.json' assert { type: 'json' }
@@ -46,3 +46,7 @@ const cli = yargs(hideBin(argv))
   .parseAsync()
 
 cli.catch(() => exit(1))
+
+process.on('unhandledRejection', (err) => {
+  consola.error(err)
+})

@@ -1,5 +1,13 @@
 import { LanguageServices } from '@/language-services'
+import { createLikeC4Logger } from '@/logger'
 import { viteBuild } from '@/vite/vite-build'
+import { rmSync } from 'node:fs'
+import { mkdir } from 'node:fs/promises'
+import { resolve } from 'node:path'
+import k from 'tinyrainbow'
+import { pngHandler } from '../export/png/handler'
+
+const { cyan, dim } = k
 
 type HandlerParams = {
   /**
@@ -16,6 +24,11 @@ type HandlerParams = {
    */
   base?: string | undefined
 
+  /**
+   * Do not generate diagram previews
+   */
+  skipPreviews?: boolean | undefined
+
   useDotBin: boolean
 
   useHashHistory: boolean | undefined
@@ -28,15 +41,52 @@ export async function buildHandler({
   useDotBin,
   useHashHistory,
   webcomponentPrefix,
+  skipPreviews = false,
   output: outputDir,
   base
 }: HandlerParams) {
+  const logger = createLikeC4Logger('c4:build')
+
+  let useOverviewGraph = skipPreviews !== true
   const languageServices = await LanguageServices.get({ path, useDotBin })
+
+  const outDir = outputDir ?? resolve(languageServices.workspace, 'dist')
+  let likec4AssetsDir = resolve(outDir, 'assets')
+
+  if (useOverviewGraph) {
+    try {
+      likec4AssetsDir = resolve(outDir, 'assets', 'previews')
+      await mkdir(likec4AssetsDir, { recursive: true })
+      logger.info(`${cyan('Generate previews')} ${dim(likec4AssetsDir)}\n`)
+
+      await pngHandler({
+        path,
+        useDotBin,
+        output: likec4AssetsDir,
+        outputType: 'flat',
+        ignore: true
+      })
+    } catch (error) {
+      logger.error(k.red('Failed to generate previews'))
+      logger.error(error)
+      logger.warn(k.yellow('Ignore previews and continue build'))
+      rmSync(likec4AssetsDir, { recursive: true, force: true })
+      useOverviewGraph = false
+    }
+  }
   await viteBuild({
     base,
     useHashHistory,
+    customLogger: logger,
+    useOverviewGraph,
     webcomponentPrefix,
     languageServices,
+    likec4AssetsDir,
     outputDir
   })
+
+  if (useOverviewGraph) {
+    logger.info(`${cyan('clean previews')} ${dim(likec4AssetsDir)}`)
+    rmSync(likec4AssetsDir, { recursive: true, force: true })
+  }
 }
