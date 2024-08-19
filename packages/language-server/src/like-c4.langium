@@ -92,7 +92,7 @@ ElementBody: '{'
 ;
 
 ElementProperty:
-  ElementStringProperty | StyleProperties | LinkProperty | IconProperty;
+  ElementStringProperty | StyleProperties | LinkProperty | IconProperty | MetadataProperty;
 
 ElementStringProperty:
   key=('title' | 'technology' | 'description') ':'? value=String ';'?;
@@ -144,7 +144,7 @@ RelationBody: '{'
 ;
 
 RelationProperty:
-  RelationStringProperty | RelationStyleProperty |  LinkProperty;
+  RelationStringProperty | RelationStyleProperty |  LinkProperty | MetadataProperty;
 
 RelationStringProperty:
   key=('title' | 'technology' | 'description') ':'? value=String ';'?;
@@ -155,6 +155,18 @@ RelationStyleProperty:
   '}'
 ;
 
+MetadataProperty:
+  'metadata' MetadataBody
+;
+
+MetadataBody: '{'
+  props+=(MetadataAttributes)*
+'}'
+;
+
+MetadataAttributes: 
+  key=IdTerminal value=String
+;
 
 // Views -------------------------------------
 

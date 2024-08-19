@@ -18,6 +18,9 @@ model {
         All the frontend applications
         of Cloud System
       '
+      metadata {
+        test '1234512'
+      }
     }
 
     legacy = container 'Cloud Legacy' {

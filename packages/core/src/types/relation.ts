@@ -39,4 +39,5 @@ export interface Relation {
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
   readonly links?: NonEmptyArray<string>
+  readonly metadata?: { [key: string]: string }
 }

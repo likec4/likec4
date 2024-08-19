@@ -64,6 +64,7 @@ export interface ParsedAstElement {
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<string>
   style: ParsedElementStyle
+  metadata?: { [key: string]: string }
 }
 
 export interface ParsedAstRelation {
@@ -81,6 +82,7 @@ export interface ParsedAstRelation {
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
   links?: c4.NonEmptyArray<string>
+  metadata?: { [key: string]: string }
 }
 
 export interface ParsedAstElementView {

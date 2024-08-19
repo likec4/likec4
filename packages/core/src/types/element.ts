@@ -53,4 +53,5 @@ export interface Element {
   readonly shape?: ElementShape
   readonly color?: ThemeColor
   readonly style?: ElementStyle
+  readonly metadata?: { [key: string]: string } | null
 }
