@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.24.7",
-    "@types/node": "^20.14.14",
+    "@types/node": "^20.16.1",
     "@vitest/ui": "~2.0.5",
     "dprint": "0.47.2",
     "esbuild": "^0.21.5",
