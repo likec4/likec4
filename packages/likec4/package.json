@@ -138,7 +138,7 @@
     "esm-env": "^1.0.0",
     "execa": "^9.3.0",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.3.24",
+    "framer-motion": "^11.3.28",
     "get-port": "^7.1.0",
     "glob": "^11.0.0",
     "html-to-image": "^1.11.11",
