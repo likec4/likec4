@@ -1,7 +1,7 @@
 import { createLikeC4Logger } from '@/logger'
 import { resolve } from 'node:path'
 
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'

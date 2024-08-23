@@ -1,4 +1,4 @@
-import type { ComputedView, DiagramView, LikeC4ComputedModel, ViewID } from '@likec4/core'
+import type { ComputedView, DiagramView, LikeC4ComputedModel, OverviewGraph, ViewID } from '@likec4/core'
 import type { DotLayoutResult, DotSource, GraphvizLayouter } from '@likec4/layouts'
 import type { WorkspaceCache } from 'langium'
 import { SimpleCache } from 'langium'
@@ -95,5 +95,17 @@ export class Views {
     const results = await Promise.all(tasks)
     cache.set(KEY, results)
     return results
+  }
+
+  async overviewGraph(): Promise<OverviewGraph> {
+    const KEY = 'OverviewGraph'
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, OverviewGraph>
+    if (cache.has(KEY)) {
+      return await Promise.resolve(cache.get(KEY)!)
+    }
+    const views = await this.computedViews()
+    const overviewGraph = await this.layouter.layoutOverviewGraph(views)
+    cache.set(KEY, overviewGraph)
+    return overviewGraph
   }
 }

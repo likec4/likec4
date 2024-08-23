@@ -2,10 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { type LikeC4Services } from '@likec4/language-server'
 import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
+import { logger } from '@likec4/log'
 import { DocumentState } from 'langium'
 import { resolve } from 'node:path'
-import { hrtime } from 'node:process'
-import k from 'picocolors'
+import { cwd, hrtime } from 'node:process'
+import k from 'tinyrainbow'
 import type { Logger } from 'vite'
 import pkg from '../../package.json' assert { type: 'json' }
 import { createServices } from './module'
@@ -101,9 +102,10 @@ export type LanguageServices = Awaited<ReturnType<typeof mkLanguageServices>>
 export namespace LanguageServices {
   export async function get(opts?: Partial<LanguageServicesOptions>) {
     let instance = (globalThis as any)['LikeC4LanguageServices'] as LanguageServices | undefined
+    const path = opts?.path ?? cwd()
     if (!instance) {
       instance = await mkLanguageServices({
-        path: opts?.path ?? process.cwd(),
+        path,
         logValidationErrors: opts?.logValidationErrors ?? true,
         useDotBin: opts?.useDotBin ?? false
       })
@@ -114,6 +116,14 @@ export namespace LanguageServices {
         // return Promise.reject(new Error('validation failed'))
       }
       ;(globalThis as any)['LikeC4LanguageServices'] = instance
+    } else {
+      if (instance.workspace !== path) {
+        logger.error([
+          'workspace path has changed.',
+          '  instance: ' + instance.workspace,
+          '  requested: ' + path
+        ])
+      }
     }
     return instance
   }

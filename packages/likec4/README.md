@@ -33,25 +33,22 @@ You can reference it directly in the `package.json#scripts` object:
 }
 ```
 
-To use the binary, you can call it with [`npx`](https://docs.npmjs.com/cli/v10/commands/npx) while in the project directory:
+### Global installation
+
+To use the CLI globally, you can call it with [`npx`](https://docs.npmjs.com/cli/v10/commands/npx):
 
 ```sh
-npx likec4 ...
+npx likec4 [command]
 ```
-
-### Global installation
 
 If you want to use it in any arbitrary project without [`npx`](https://docs.npmjs.com/cli/v10/commands/npx), install it globally:
 
 ```sh
 npm install --global likec4
-```
 
-Then, you can call `likec4` directly:
-
-```sh
-likec4 ...
-```
+# Then, you can call `likec4` directly:
+likec4 [command]
+```                                                     
 
 ## Usage
 

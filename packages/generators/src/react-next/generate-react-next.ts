@@ -2,6 +2,9 @@ import type { DiagramView } from '@likec4/core'
 import { CompositeGeneratorNode, toString } from 'langium/generate'
 import { generateViewsDataDTs, generateViewsDataJs } from '../views-data-ts/generate-views-data'
 
+/**
+ * @deprecated in favor packages/likec4/src/cli/codegen/react/index.ts
+ */
 export function generateReactNext(views: Iterable<DiagramView>) {
   return {
     viewsData: {

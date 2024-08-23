@@ -5,26 +5,28 @@ import type {
   DiagramEdge,
   DiagramView,
   EdgeId,
-  Point
+  OverviewGraph,
+  Point,
+  ViewID
 } from '@likec4/core'
 import { invariant, nonNullable } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import { EDGE_LABEL_MAX_CHARS, wrap } from './dot-labels'
-import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
+import type { BoundingBox, GraphvizJson, GvId, GVPos } from './types-dot'
 import { inchToPx, pointToPx } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
   const [llx, lly, urx, ury] = bb
     ? (bb.split(',').map(p => pointToPx(+p)) as [number, number, number, number])
     : [0, 0, 0, 0]
-  const width = Math.ceil(urx - llx)
-  const height = Math.ceil(lly - ury)
+  const width = Math.round(urx - llx)
+  const height = Math.round(lly - ury)
   return {
     // x: llx - width / 2,
     // y: lly - height / 2,
-    x: Math.ceil(llx),
-    y: Math.ceil(ury),
+    x: Math.round(llx),
+    y: Math.round(ury),
     width,
     height
   }
@@ -49,8 +51,8 @@ function parseNode({ pos, width, height }: GraphvizJson.GvNodeObject): BoundingB
   const w = inchToPx(+width)
   const h = inchToPx(+height)
   return {
-    x: x - Math.ceil(w / 2),
-    y: y - Math.ceil(h / 2),
+    x: x - Math.round(w / 2),
+    y: y - Math.round(h / 2),
     width: w,
     height: h
   }
@@ -120,7 +122,7 @@ function parseLabelBbox(
 //   https://github.com/hpcc-systems/Visualization/blob/trunk/packages/graph/workers/src/graphviz.ts#L38-L93
 function parseEdgePoints(
   { _draw_, likec4_id = '???' as EdgeId }: GraphvizJson.Edge,
-  viewId: string
+  viewId: string = '<unknown view>'
 ): DiagramEdge['points'] {
   try {
     const bezierOps = _draw_.filter((v): v is GraphvizJson.DrawOps.BSpline => v.op.toLowerCase() === 'b')
@@ -213,4 +215,79 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   }
 
   return diagram
+}
+
+const idFromGvId = (id: GvId) => String(id + 1).padStart(2, '0')
+
+export function parseOverviewGraphvizJson(json: string): OverviewGraph {
+  const graphvizJson = JSON.parse(json) as GraphvizJson
+  const page = parseBB(graphvizJson.bb)
+  const overviewGraph: OverviewGraph = {
+    nodes: [],
+    edges: [],
+    bounds: page
+  }
+
+  const childToParent = new Map<GvId, OverviewGraph.Node>()
+
+  const graphvizObjects = graphvizJson.objects ?? []
+  for (const obj of graphvizObjects) {
+    if (!obj.likec4_type) {
+      continue
+    }
+    const id = idFromGvId(obj._gvid)
+    const path = obj.likec4_path ?? ''
+    const parent = childToParent.get(obj._gvid)
+    const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
+    const position = { x, y }
+    if (obj.likec4_type === 'view') {
+      invariant(obj.likec4_id, `View ${obj} has no likec4_id`)
+      overviewGraph.nodes.push({
+        id,
+        type: 'view',
+        parentId: parent?.id ?? null,
+        height,
+        width,
+        position,
+        label: obj.label ?? '',
+        viewId: obj.likec4_id as any as ViewID
+      })
+    } else {
+      const node: OverviewGraph.Node = {
+        id,
+        type: obj.likec4_type,
+        parentId: parent?.id ?? null,
+        height,
+        width,
+        position,
+        path,
+        label: obj.label ?? ''
+      }
+      const children = [
+        ...('subgraphs' in obj ? obj.subgraphs : []),
+        ...('nodes' in obj ? obj.nodes : [])
+      ]
+      for (const childId of children) {
+        childToParent.set(childId, node)
+      }
+      overviewGraph.nodes.push(node)
+    }
+  }
+
+  for (const edge of graphvizJson.edges ?? []) {
+    try {
+      const source = idFromGvId(edge.tail)
+      const target = idFromGvId(edge.head)
+      overviewGraph.edges.push({
+        id: `link${idFromGvId(edge._gvid)}`,
+        source,
+        target,
+        points: parseEdgePoints(edge)
+      })
+    } catch (e) {
+      logger.warn(e)
+    }
+  }
+
+  return overviewGraph
 }

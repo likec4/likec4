@@ -2,10 +2,10 @@ import type { ViewID } from '@likec4/core'
 import { type ChangeEvent, LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
-import { DEV } from 'esm-env'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
 import { SidebarDrawerOps } from '../components/sidebar/Drawer'
+import { withOverviewGraph } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
   component: ViewEditor
@@ -23,10 +23,6 @@ function ViewEditor() {
       startTransition: true,
       search: true
     })
-  })
-
-  const onChange = useCallbackRef((event: ChangeEvent) => {
-    console.log('onChange', event)
   })
 
   if (!view) {
@@ -49,7 +45,14 @@ function ViewEditor() {
       enableFocusMode={false}
       onNavigateTo={onNavigateTo}
       renderIcon={RenderIcon}
-      onBurgerMenuClick={SidebarDrawerOps.open}
+      onBurgerMenuClick={withOverviewGraph
+        ? () => {
+          router.navigate({
+            to: '/',
+            search: true
+          })
+        }
+        : SidebarDrawerOps.open}
     />
   )
 }

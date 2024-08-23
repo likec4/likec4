@@ -1,11 +1,11 @@
 import { useUpdateEffect } from '@likec4/diagram'
-import { Alert, Box, Burger, Button, Code, Container, Text } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { Alert, Box, Button, Code, Container, Text } from '@mantine/core'
 import { createFileRoute, isNotFound, Outlet, useRouter } from '@tanstack/react-router'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { SidebarDrawer } from '../components/sidebar/Drawer'
 import { Header } from '../components/view-page/Header'
+import { withOverviewGraph } from '../const'
 import * as css from './view.css'
 
 export const Route = createFileRoute('/view/$viewId')({
@@ -62,9 +62,6 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
 }
 
 function ViewLayout() {
-  // use disclosure
-  const [opened, { toggle, close }] = useDisclosure(false)
-
   return (
     <>
       <Box className={css.cssViewOutlet}>
@@ -73,7 +70,7 @@ function ViewLayout() {
         </ErrorBoundary>
       </Box>
       <ViewHeader />
-      <SidebarDrawer />
+      {!withOverviewGraph && <SidebarDrawer />}
     </>
   )
 }

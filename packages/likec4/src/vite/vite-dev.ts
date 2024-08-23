@@ -3,12 +3,16 @@ import type { LikeC4ViteConfig } from '@/vite/config-app.prod'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
 import { consola } from '@likec4/log'
 import getPort, { portNumbers } from 'get-port'
+import { mkdtemp } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import type { SetOptional } from 'type-fest'
 import type { ViteDevServer } from 'vite'
 import { build, createServer } from 'vite'
 import { printServerUrls } from './printServerUrls'
 import { mkTempPublicDir } from './utils'
 
-type Config = LikeC4ViteConfig & {
+type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   buildWebcomponent?: boolean
   openBrowser?: boolean
   hmr?: boolean
@@ -18,11 +22,17 @@ export async function viteDev({
   buildWebcomponent = true,
   hmr = true,
   webcomponentPrefix = 'likec4',
+  languageServices,
+  likec4AssetsDir,
   openBrowser,
   ...cfg
 }: Config): Promise<ViteDevServer> {
-  const { isDev, languageServices, ...config } = await viteConfig({
+  likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
+
+  const { isDev, ...config } = await viteConfig({
     ...cfg,
+    languageServices,
+    likec4AssetsDir,
     webcomponentPrefix
   })
   const port = await getPort({
@@ -85,9 +95,6 @@ export async function viteDev({
   })
 
   await server.listen()
-
-  server.config.logger.clearScreen('info')
-  printServerUrls(server)
 
   if (webcomponentPromise) {
     await webcomponentPromise

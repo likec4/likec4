@@ -5,6 +5,7 @@ import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
 import { SidebarDrawerOps } from '../components/sidebar/Drawer'
+import { withOverviewGraph } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/')({
   component: ViewReact
@@ -45,7 +46,14 @@ function ViewReact() {
       nodesSelectable={false}
       renderIcon={RenderIcon}
       onNavigateTo={onNavigateTo}
-      onBurgerMenuClick={SidebarDrawerOps.open}
+      onBurgerMenuClick={withOverviewGraph
+        ? () => {
+          router.navigate({
+            to: '/',
+            search: true
+          })
+        }
+        : SidebarDrawerOps.open}
     />
   )
 }

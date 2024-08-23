@@ -1,5 +1,5 @@
 import { consola } from '@likec4/log'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
 import type { CliServices } from './module'

@@ -19,7 +19,7 @@ export function NotFound() {
             another URL. If you think this is an error contact support.
           </Text>
           <Group justify="center">
-            <Button component={Link} to="/" search startTransition size="md">Take me back to home page</Button>
+            <Button component={Link} to="/" search size="md">Take me back to home page</Button>
           </Group>
         </div>
       </div>

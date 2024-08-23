@@ -55,10 +55,11 @@ export function diagramViewToXYFlowData(
   let next: typeof traverse[0] | undefined
   while ((next = traverse.shift())) {
     const { node, parent } = next
-    if (node.children.length > 0) {
+    const isCompound = hasAtLeast(node.children, 1)
+    if (isCompound) {
       traverse.push(...node.children.map(child => ({ node: nodeById(child), parent: node })))
     }
-    const isCompound = hasAtLeast(node.children, 1)
+
     const position = {
       x: node.position[0],
       y: node.position[1]
@@ -102,18 +103,11 @@ export function diagramViewToXYFlowData(
     const source = edge.source
     const target = edge.target
     const id = ns + edge.id
-    // const points = isElkEdge(edge) ? edge.points : deriveEdgePoints(edge.points)
-    // const controlPoints = deriveEdgePoints(edge.points)
-    // if (edge.tailArrowPoint) {
-    //   controlPoints.unshift([...edge.tailArrowPoint])
-    // }
-    // if (edge.headArrowPoint) {
-    //   controlPoints.push([...edge.headArrowPoint])
-    // }
-    invariant(hasAtLeast(edge.points, 2), 'edge should have at least 2 points')
-    // invariant(hasAtLeast(controlPoints, 2), 'edge controlPoints should have at least 2 points')
 
-    // const level = Math.max(nodeZIndex(nodeById(source)), nodeZIndex(nodeById(target)))
+    if (!hasAtLeast(edge.points, 2)) {
+      console.error('edge should have at least 2 points', edge)
+      continue
+    }
 
     xyedges.push({
       id,
