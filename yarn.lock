@@ -1823,12 +1823,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-line-numbers@npm:^0.35.3":
-  version: 0.35.3
-  resolution: "@expressive-code/plugin-line-numbers@npm:0.35.3"
+"@expressive-code/plugin-line-numbers@npm:^0.35.6":
+  version: 0.35.6
+  resolution: "@expressive-code/plugin-line-numbers@npm:0.35.6"
   dependencies:
-    "@expressive-code/core": "npm:^0.35.3"
-  checksum: 10c0/3596c461fa9c03b439529d61840e8b53e1fa94a8bc7d3ef18297e7df966aa528c026da19edbcebde1b81d55d0c9fbf737c5768b9906832f89bf98a79faae699c
+    "@expressive-code/core": "npm:^0.35.6"
+  checksum: 10c0/b967d12c8ae1b0b4b81f6e2b1da1fca97ae9314a16555d95c747f004b4bd307d925eba068c1993a0048acfaf7b18bdd874f9546a6ddb46a27a4f1e582dd13589
   languageName: node
   linkType: hard
 
@@ -2248,7 +2248,7 @@ __metadata:
     "@astrojs/react": "npm:^3.6.2"
     "@astrojs/starlight": "npm:^0.25.4"
     "@expressive-code/plugin-collapsible-sections": "npm:^0.35.3"
-    "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
+    "@expressive-code/plugin-line-numbers": "npm:^0.35.6"
     "@fontsource/ibm-plex-sans": "npm:^5.0.20"
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.3"
