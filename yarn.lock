@@ -8866,7 +8866,7 @@ __metadata:
     playwright: "npm:1.46.0"
     postcss: "npm:^8.4.41"
     postcss-preset-mantine: "npm:^1.17.0"
-    pretty-ms: "npm:^9.0.0"
+    pretty-ms: "npm:^9.1.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-error-boundary: "npm:^4.0.13"
@@ -11630,6 +11630,15 @@ __metadata:
   dependencies:
     parse-ms: "npm:^4.0.0"
   checksum: 10c0/ba4a2acd1fe92a1c629e5cdeb555d7fa344ae9920e20fa00e8ac1db61b8d3dff8638ffc70c7569f681e375df68c9f31291c2c1912cefd02ef1b1bdd0861a4aed
+  languageName: node
+  linkType: hard
+
+"pretty-ms@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "pretty-ms@npm:9.1.0"
+  dependencies:
+    parse-ms: "npm:^4.0.0"
+  checksum: 10c0/fd111aad8800a04dfd654e6016da69bdaa6fc6a4c280f8e727cffd8b5960558e94942f1a94d4aa6e4d179561a0fbb0366a9ebe0ccefbbb0f8ff853b129cdefb9
   languageName: node
   linkType: hard
 
