@@ -154,6 +154,29 @@ model {
 }
 ```
 
+#### Element Metadata
+
+Element metadata is a set of key-value pairs, defined in a nested block:
+
+```likec4 copy
+model {
+  app = application 'App' {
+    metadata {
+      prop1 'value1'
+      prop2 '
+        apiVersion: apps/v1
+        kind: StatefulSet
+        metadata:
+          name: app-statefulset
+        spec: {}        
+      '
+    }
+  }
+}
+```
+
+Only string values are allowed, but you can use JSON or YAML format for complex data.
+
 ### Structure
 
 Any element is a container and can contain other elements.  

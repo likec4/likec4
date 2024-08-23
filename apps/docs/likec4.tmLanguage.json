@@ -148,7 +148,7 @@
       }
     },
     {
-      "match": "\\b(title|description|technology|style):?\\b",
+      "match": "\\b(title|description|technology|prop\\d+):?\\b",
       "name": "variable.parameter.function.likec4"
     },
     {
@@ -270,12 +270,12 @@
       "match": "(<-|<?->)"
     },
     {
-      "name": "keyword.control.likec4",
-      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|element|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|mobile|model|navigateTo|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|where|with)\\b"
-    },
-    {
       "name": "variable.other.constant.likec4",
       "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|auth|web|frontend|api|webApp|authService|messageBroker|system)\\b"
+    },
+    {
+      "name": "keyword.control.likec4",
+      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|element|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|where|with)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",

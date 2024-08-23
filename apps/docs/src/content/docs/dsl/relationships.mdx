@@ -5,8 +5,8 @@ sidebar:
   label: Relationships
   order: 4
 tableOfContents:
-  minHeadingLevel: 3
-  maxHeadingLevel: 4
+  minHeadingLevel: 4
+  maxHeadingLevel: 6
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -23,7 +23,7 @@ model {
 }
 ```
 
-### Relationship kinds
+#### Relationship kinds
 
 Relationships can be "kinded":
 
@@ -53,7 +53,7 @@ It's up to you to define the relationship kinds that make sense for your context
   The relationship kinds allow to customize the styling of the relationships, see [styling](/dsl/styling#relationship)
 </Aside>
 
-### Examples
+#### Relationship definition
 
 Relationships may be nested
 
@@ -70,16 +70,64 @@ model {
 }
 ```
 
-Relationships may have a title (and better to have one)
+Nested relationships may be _"sourceless"_, then the source is the parent element
 
 ```likec4
+specification {
+  relationship graphql
+}
+model {
+  customer = actor {
+    // same as customer -> frontend
+    -> frontend 'opens in browser' 
+  }
+  service cloud {
+    component backend
+    component frontend {
+      // same as frontend -[graphql]-> backend
+      -[graphql]-> backend 'requests data'  
+    }
+  }
+}
+```
+
+Or use `it` or `this` to refer to the source element:
+
+```likec4
+model {
+  customer = actor {
+    it -> frontend 'opens in browser'
+    this -> frontend 'opens in browser'
+  }
+}
+```
+
+:::caution
+
+_"sourceless"_ relationships must be nested:
+
+```likec4
+model {  
+  -> backend // ⛔️ Error: model can't be a source
+}
+```
+:::
+
+#### Relationship Properties
+
+##### Title
+
+Relationships may have a title (and better to have one):
+
+```likec4 {7-8, 12}
 model {
   actor customer
   service cloud {
     component backend
     component frontend
 
-    frontend -> backend 'requests data'
+    // Title can be inlined
+    frontend -> backend 'requests data to display'
   }
 
   customer -> frontend {
@@ -87,6 +135,42 @@ model {
   }
 }
 ```
+
+##### Description and technology
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    description 'Customer opens the frontend in the browser to interact with the system'
+    technology 'HTTPS'
+  }
+}
+```
+
+:::caution
+
+Description and technology are not displayed in the diagrams yet  
+In progress
+
+:::
+
+##### Metadata
+
+Same as [elements metadata](/dsl/model/#element-metadata):
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    metadata {
+      prop1 'value1'
+      prop2 'value2'
+    }
+  }
+}
+```
+
+
+##### Tags
 
 Relationships may be tagged
 
@@ -102,6 +186,8 @@ model {
 }
 ```
 
+##### Links
+
 Relationships may have multiple links:
 
 ```likec4 copy
@@ -116,32 +202,5 @@ model {
     // or relative link to navigate to sources
     link ../src/index.ts#L1-L10
   }
-}
-```
-
-Nested relationships may be _"sourceless"_, then the source is the parent element
-
-```likec4
-specification {
-  relationship graphql
-}
-model {
-  customer = actor {
-    -> frontend 'opens in browser' // same as customer -> frontend
-  }
-  service cloud {
-    component backend
-    component frontend {
-      -[graphql]-> backend 'requests data'  // same as frontend -[graphql]-> backend
-    }
-  }
-
-  // or use 'it' or 'this'
-  customer = actor {
-    it -> frontend 'opens in browser'
-    this -> frontend 'opens in browser'
-  }
-
-  -> backend 'requests data' // ⛔️ Error: model can't be a source
 }
 ```
