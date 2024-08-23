@@ -73,7 +73,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@dagrejs/graphlib": "^2.2.3",
+    "@dagrejs/graphlib": "^2.2.4",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "@msgpack/msgpack": "^3.0.0-beta2",
