@@ -1,4 +1,4 @@
-import { Graphviz } from '@hpcc-js/wasm/graphviz'
+import { Graphviz } from '@hpcc-js/wasm-graphviz'
 import { delay } from '@likec4/core'
 import { logger } from '@likec4/log'
 import pLimit from 'p-limit'

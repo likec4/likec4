@@ -52,7 +52,7 @@
     "clean": "run -T rimraf -g 'dist/**'"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "2.18.2",
+    "@hpcc-js/wasm-graphviz": "1.2.0",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "esm-env": "^1.0.0",
