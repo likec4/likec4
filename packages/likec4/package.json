@@ -136,7 +136,7 @@
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.14.0",
     "esm-env": "^1.0.0",
-    "execa": "^9.3.0",
+    "execa": "^9.3.1",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.3.24",
     "get-port": "^7.1.0",
