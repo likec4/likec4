@@ -19,7 +19,7 @@ model {
         of Cloud System
       '
       metadata {
-        test '1234512'
+        version '2.1.1'
       }
     }
 
@@ -41,7 +41,11 @@ model {
         Has limited access to the system
       '
 
-      -> customer 'helps with questions'
+      -> customer 'helps with questions' {
+        metadata {
+          rps '1000'
+        }
+      }
     }
   }
   customer .uses cloud 'uses and pays'
