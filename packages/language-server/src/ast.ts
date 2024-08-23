@@ -4,6 +4,7 @@ import {
   DefaultLineStyle,
   DefaultRelationshipColor,
   nonexhaustive,
+  NullableError,
   RelationRefError
 } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'

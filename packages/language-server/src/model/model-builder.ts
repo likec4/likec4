@@ -86,6 +86,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...(color && { color }),
           ...(shape && { shape }),
           ...(icon && { icon }),
+          ...(metadata && { metadata }),
           style: {
             ...(border && { border }),
             ...(isNumber(opacity) && { opacity })
@@ -96,8 +97,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           description: description ?? null,
           title,
           kind,
-          id,
-          metadata: metadata ?? null
+          id
         }
       } catch (e) {
         logWarnError(e)
@@ -155,7 +155,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           source,
           target,
           kind,
-          id
+          id          
         }
       }
       return {
