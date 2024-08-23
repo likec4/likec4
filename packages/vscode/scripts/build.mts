@@ -36,10 +36,7 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: isDev ? [
-    'vscode',
-    '@hpcc-js/wasm-graphviz'
-  ] : [
+  external: [
     'vscode'
   ],
   ...(!isDev && {
