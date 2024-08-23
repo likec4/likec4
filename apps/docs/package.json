@@ -30,7 +30,7 @@
     "@astrojs/starlight": "^0.25.4",
     "@expressive-code/plugin-collapsible-sections": "^0.35.6",
     "@expressive-code/plugin-line-numbers": "^0.35.6",
-    "@fontsource/ibm-plex-sans": "^5.0.20",
+    "@fontsource/ibm-plex-sans": "^5.0.21",
     "astro": "^4.13.3",
     "astro-og-canvas": "^0.5.3",
     "react": "18.3.1",
