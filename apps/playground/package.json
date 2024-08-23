@@ -75,7 +75,7 @@
     "vscode-languageserver": "~9.0.1",
     "vscode-languageserver-types": "~3.17.5",
     "vscode-uri": "~3.0.8",
-    "zustand": "^4.5.4"
+    "zustand": "^4.5.5"
   },
   "packageManager": "yarn@4.3.1"
 }

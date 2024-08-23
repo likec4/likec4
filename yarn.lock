@@ -2226,7 +2226,7 @@ __metadata:
     typescript: "npm:^5.5.4"
     vite: "npm:5.3.4"
     vite-plugin-dts: "npm:^3.9.1"
-    zustand: "npm:^4.5.4"
+    zustand: "npm:^4.5.5"
   peerDependencies:
     "@likec4/core": "workspace:*"
     "@mantine/core": ^7.11.2
@@ -2436,7 +2436,7 @@ __metadata:
     vscode-languageserver: "npm:~9.0.1"
     vscode-languageserver-types: "npm:~3.17.5"
     vscode-uri: "npm:~3.0.8"
-    zustand: "npm:^4.5.4"
+    zustand: "npm:^4.5.5"
   languageName: unknown
   linkType: soft
 
@@ -14215,7 +14215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.2.2":
+"use-sync-external-store@npm:1.2.2, use-sync-external-store@npm:^1.2.2":
   version: 1.2.2
   resolution: "use-sync-external-store@npm:1.2.2"
   peerDependencies:
@@ -15171,7 +15171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.4.0, zustand@npm:^4.5.4":
+"zustand@npm:^4.4.0":
   version: 4.5.4
   resolution: "zustand@npm:4.5.4"
   dependencies:
@@ -15188,6 +15188,26 @@ __metadata:
     react:
       optional: true
   checksum: 10c0/479af491ffa1f1eb2c38b3ba25dc4e14339e8b35a60033d3f6c165b22f8be8163f7e1370015ded9c6e28548cd25af84a73fb40b5fad0bd7882d16ddd5ed613c6
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^4.5.5":
+  version: 4.5.5
+  resolution: "zustand@npm:4.5.5"
+  dependencies:
+    use-sync-external-store: "npm:1.2.2"
+  peerDependencies:
+    "@types/react": ">=16.8"
+    immer: ">=9.0.6"
+    react: ">=16.8"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    immer:
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/d04469d76b29c7e4070da269886de4efdadedd3d3824dc2a06ac4ff62e3b5877f925e927afe7382de651829872b99adec48082f1bd69fe486149be666345e626
   languageName: node
   linkType: hard
 
