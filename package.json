@@ -47,7 +47,7 @@
     "lint-staged": "15.2.8",
     "npm-run-all2": "^6.2.2",
     "rimraf": "^6.0.1",
-    "shipjs": "^0.26.3",
+    "shipjs": "^0.26.4",
     "tsx": "~4.9.3",
     "turbo": "^2.0.14",
     "typescript": "^5.5.4",
