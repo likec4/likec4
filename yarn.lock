@@ -1788,7 +1788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/core@npm:^0.35.3, @expressive-code/core@npm:^0.35.6":
+"@expressive-code/core@npm:^0.35.6":
   version: 0.35.6
   resolution: "@expressive-code/core@npm:0.35.6"
   dependencies:
@@ -1805,12 +1805,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-collapsible-sections@npm:^0.35.3":
-  version: 0.35.3
-  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.35.3"
+"@expressive-code/plugin-collapsible-sections@npm:^0.35.6":
+  version: 0.35.6
+  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.35.6"
   dependencies:
-    "@expressive-code/core": "npm:^0.35.3"
-  checksum: 10c0/ba5146e27a4c879ca8b2520419e264c20e9c136026cc5327432e25a25ea8c48bee7cf618923c23158b916d77bcc1990714913604270641e4056b35098a2bfbcc
+    "@expressive-code/core": "npm:^0.35.6"
+  checksum: 10c0/661e7d31b4a2677c08c634e1f8da2ca86f9e49331da600c298f6e223a6e0f6271a140c30a5bd83a32119f24ad1d4615a2a4e66f78cb315c0ef6fc1870d0601fa
   languageName: node
   linkType: hard
 
@@ -2247,7 +2247,7 @@ __metadata:
     "@astrojs/check": "npm:^0.9.2"
     "@astrojs/react": "npm:^3.6.2"
     "@astrojs/starlight": "npm:^0.25.4"
-    "@expressive-code/plugin-collapsible-sections": "npm:^0.35.3"
+    "@expressive-code/plugin-collapsible-sections": "npm:^0.35.6"
     "@expressive-code/plugin-line-numbers": "npm:^0.35.6"
     "@fontsource/ibm-plex-sans": "npm:^5.0.20"
     "@types/picomatch": "npm:^2.3.4"
