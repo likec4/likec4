@@ -38,7 +38,7 @@ const base = {
   treeShaking: true,
   external: isDev ? [
     'vscode',
-    '@hpcc-js/wasm'
+    '@hpcc-js/wasm-graphviz'
   ] : [
     'vscode'
   ],

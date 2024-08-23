@@ -1910,14 +1910,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm@npm:2.20.0":
-  version: 2.20.0
-  resolution: "@hpcc-js/wasm@npm:2.20.0"
-  dependencies:
-    yargs: "npm:17.7.2"
-  bin:
-    dot-wasm: node ./node_modules/@hpcc-js/wasm-graphviz-cli/bin/index.js
-  checksum: 10c0/925ce14d47389a99837b4fc7d97d270cd401a72e089c55d5fac62212ae652830c4f3f54475e46685a4fed0658c39598a82dd182468bfa603d29d647c419f1ea5
+"@hpcc-js/wasm-graphviz@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@hpcc-js/wasm-graphviz@npm:1.2.0"
+  checksum: 10c0/c163ae0a3fb07ab5549d7b6b091c75742de9a51016a60b073fb8892a0306bd03e888580cb7d790fa61b24b97d9c726fe1b0c3eaab0c03fe77edd88cb497d3f78
   languageName: node
   linkType: hard
 
@@ -2343,7 +2339,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
-    "@hpcc-js/wasm": "npm:2.20.0"
+    "@hpcc-js/wasm-graphviz": "npm:1.2.0"
     "@likec4/core": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/log": "workspace:*"
@@ -2390,7 +2386,7 @@ __metadata:
     "@codingame/monaco-vscode-textmate-service-override": "npm:6.0.3"
     "@codingame/monaco-vscode-theme-defaults-default-extension": "npm:6.0.3"
     "@codingame/monaco-vscode-theme-service-override": "npm:6.0.3"
-    "@hpcc-js/wasm": "npm:2.20.0"
+    "@hpcc-js/wasm-graphviz": "npm:1.2.0"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/icons": "workspace:*"
@@ -8789,7 +8785,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4-vscode@workspace:packages/vscode"
   dependencies:
-    "@hpcc-js/wasm": "npm:2.20.0"
+    "@hpcc-js/wasm-graphviz": "npm:1.2.0"
     "@likec4/core": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
@@ -8826,7 +8822,7 @@ __metadata:
   resolution: "likec4@workspace:packages/likec4"
   dependencies:
     "@fontsource/ibm-plex-sans": "npm:^5.0.21"
-    "@hpcc-js/wasm": "npm:2.20.0"
+    "@hpcc-js/wasm-graphviz": "npm:1.2.0"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/generators": "workspace:*"
