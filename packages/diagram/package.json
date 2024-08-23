@@ -60,7 +60,7 @@
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.3.28",
     "remeda": "^2.11.0",
-    "zustand": "^4.5.4"
+    "zustand": "^4.5.5"
   },
   "peerDependencies": {
     "@likec4/core": "workspace:*",
