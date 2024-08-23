@@ -1000,10 +1000,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/graphlib@npm:^2.2.3":
-  version: 2.2.3
-  resolution: "@dagrejs/graphlib@npm:2.2.3"
-  checksum: 10c0/9078631d271dbfa89eaeb7f0a1b2d233d69b3367b723b4bb41a25c7c4369c51df6df493fad81e5c96b4de01b7e525b4e5f8a160ac60600bdc655778c2d93c235
+"@dagrejs/graphlib@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@dagrejs/graphlib@npm:2.2.4"
+  checksum: 10c0/14597ea9294c46b2571aee78bcaad3a24e3e5e0ebcdf198b6eae5b3805f99af727ac54a477dd9152e8b0a576efea0528fb7d4919c74801e9f669c90e5e6f5bd9
   languageName: node
   linkType: hard
 
@@ -2299,7 +2299,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
-    "@dagrejs/graphlib": "npm:^2.2.3"
+    "@dagrejs/graphlib": "npm:^2.2.4"
     "@likec4/core": "workspace:*"
     "@likec4/icons": "workspace:*"
     "@likec4/log": "workspace:*"
