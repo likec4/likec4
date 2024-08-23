@@ -160,11 +160,11 @@ MetadataProperty:
 ;
 
 MetadataBody: '{'
-  props+=(MetadataAttributes)*
+  props+=(MetadataAttribute)*
 '}'
 ;
 
-MetadataAttributes: 
+MetadataAttribute:
   key=IdTerminal value=String
 ;
 
@@ -212,7 +212,7 @@ DynamicViewBody: '{'
 ;
 
 
-type StringProperty = ElementStringProperty | ViewStringProperty | RelationStringProperty;
+type StringProperty = ElementStringProperty | ViewStringProperty | RelationStringProperty | MetadataAttribute;
 
 ViewProperty:
   ViewStringProperty | LinkProperty
