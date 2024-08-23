@@ -90,7 +90,7 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "2.18.2",
+    "@hpcc-js/wasm": "2.20.0",
     "@nanostores/react": "0.7.3",
     "@vitejs/plugin-react": "4.3.1",
     "nanostores": "0.10.3",
