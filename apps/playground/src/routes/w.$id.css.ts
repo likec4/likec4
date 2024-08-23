@@ -15,7 +15,7 @@ export const resize = style({
   transition: 'all 175ms ease-in-out',
   backgroundColor: mantine.colors.defaultBorder,
   backgroundClip: 'content-box',
-  flex: '0 0 5px',
+  flex: '0 0 6px',
   // position: 'relative',
   // vars: {
   //   [bg]: mantine.colors.defaultBorder
