@@ -3784,12 +3784,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
-  version: 20.14.15
-  resolution: "@types/node@npm:20.14.15"
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.16.1":
+  version: 20.16.1
+  resolution: "@types/node@npm:20.16.1"
   dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10c0/093713db52dc544f3931a3dec9d7d8ef661f323e57becd083a7918c778cef1eb6ec32d1017bf5ade06bb06dc5c7551f4f4d749a14e40868cce44d51e54acd8ed
+    undici-types: "npm:~6.19.2"
+  checksum: 10c0/cac13c0f42467df3254805a671ca9e74a6eb7c41568de972e26b10dcc448a45743aaf00e9e5fce4a9214da5bc8444fe902918e105dac5a224e24e83fd9989a97
   languageName: node
   linkType: hard
 
@@ -3797,15 +3797,6 @@ __metadata:
   version: 17.0.45
   resolution: "@types/node@npm:17.0.45"
   checksum: 10c0/0db377133d709b33a47892581a21a41cd7958f22723a3cc6c71d55ac018121382de42fbfc7970d5ae3e7819dbe5f40e1c6a5174aedf7e7964e9cb8fa72b580b0
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.16.1":
-  version: 20.16.1
-  resolution: "@types/node@npm:20.16.1"
-  dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: 10c0/cac13c0f42467df3254805a671ca9e74a6eb7c41568de972e26b10dcc448a45743aaf00e9e5fce4a9214da5bc8444fe902918e105dac5a224e24e83fd9989a97
   languageName: node
   linkType: hard
 
@@ -12519,7 +12510,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     shipjs: "npm:^0.26.3"
     tsx: "npm:~4.9.3"
-    turbo: "npm:^2.0.12"
+    turbo: "npm:^2.0.14"
     typescript: "npm:^5.5.4"
     vite: "npm:5.3.4"
     vitest: "npm:~2.0.5"
@@ -13666,58 +13657,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.0.12":
-  version: 2.0.12
-  resolution: "turbo-darwin-64@npm:2.0.12"
+"turbo-darwin-64@npm:2.0.14":
+  version: 2.0.14
+  resolution: "turbo-darwin-64@npm:2.0.14"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.0.12":
-  version: 2.0.12
-  resolution: "turbo-darwin-arm64@npm:2.0.12"
+"turbo-darwin-arm64@npm:2.0.14":
+  version: 2.0.14
+  resolution: "turbo-darwin-arm64@npm:2.0.14"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.0.12":
-  version: 2.0.12
-  resolution: "turbo-linux-64@npm:2.0.12"
+"turbo-linux-64@npm:2.0.14":
+  version: 2.0.14
+  resolution: "turbo-linux-64@npm:2.0.14"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.0.12":
-  version: 2.0.12
-  resolution: "turbo-linux-arm64@npm:2.0.12"
+"turbo-linux-arm64@npm:2.0.14":
+  version: 2.0.14
+  resolution: "turbo-linux-arm64@npm:2.0.14"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.0.12":
-  version: 2.0.12
-  resolution: "turbo-windows-64@npm:2.0.12"
+"turbo-windows-64@npm:2.0.14":
+  version: 2.0.14
+  resolution: "turbo-windows-64@npm:2.0.14"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.0.12":
-  version: 2.0.12
-  resolution: "turbo-windows-arm64@npm:2.0.12"
+"turbo-windows-arm64@npm:2.0.14":
+  version: 2.0.14
+  resolution: "turbo-windows-arm64@npm:2.0.14"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.0.12":
-  version: 2.0.12
-  resolution: "turbo@npm:2.0.12"
+"turbo@npm:^2.0.14":
+  version: 2.0.14
+  resolution: "turbo@npm:2.0.14"
   dependencies:
-    turbo-darwin-64: "npm:2.0.12"
-    turbo-darwin-arm64: "npm:2.0.12"
-    turbo-linux-64: "npm:2.0.12"
-    turbo-linux-arm64: "npm:2.0.12"
-    turbo-windows-64: "npm:2.0.12"
-    turbo-windows-arm64: "npm:2.0.12"
+    turbo-darwin-64: "npm:2.0.14"
+    turbo-darwin-arm64: "npm:2.0.14"
+    turbo-linux-64: "npm:2.0.14"
+    turbo-linux-arm64: "npm:2.0.14"
+    turbo-windows-64: "npm:2.0.14"
+    turbo-windows-arm64: "npm:2.0.14"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -13733,7 +13724,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10c0/2a6d90897cc2f49e745e389d044278d56a3579cfafaacb9a1ec41a5c4ed41d5f2560254d732a146c3e39ff18c3a79a46ae3153fab4ad85d9fbf59eb0fa0c0719
+  checksum: 10c0/0db61fa0e331b776ff734e15a0dbcf74063d2644cd84b53b48a917903deda0671d2594eb98b4848075c1376e6fae1cfdef670165b461bd27bcd8e78fd1a821a3
   languageName: node
   linkType: hard
 
@@ -13894,13 +13885,6 @@ __metadata:
   bin:
     unbuild: dist/cli.mjs
   checksum: 10c0/47169daf1d76911c2501b6d2bccf43e96948795276cb072970e9c7f20457b4fcfa35ffe39e2bb0d307c8149064d033d25be38915340724d479dda49be57aa945
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~5.26.4":
-  version: 5.26.5
-  resolution: "undici-types@npm:5.26.5"
-  checksum: 10c0/bb673d7876c2d411b6eb6c560e0c571eef4a01c1c19925175d16e3a30c4c428181fb8d7ae802a261f283e4166a0ac435e2f505743aa9e45d893f9a3df017b501
   languageName: node
   linkType: hard
 
