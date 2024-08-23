@@ -258,4 +258,23 @@ describe.concurrent('model', () => {
         }
       }
     }`
+
+  test('element with metada').valid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        metadata {
+          arch 'x64'
+          platform 'winodws'
+        }
+      }
+      component system2 {
+        metadata {
+          arch 'x64'
+          platform 'linux'
+        }
+      }
+    }`
 })
