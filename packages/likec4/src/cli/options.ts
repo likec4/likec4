@@ -44,8 +44,9 @@ export const base = {
   desc: 'base url the app is being served from, e.g. "/" or "/pages/"'
 } as const satisfies Options
 
-export const skipPreviews = {
+export const useOverview = {
   boolean: true,
   type: 'boolean',
-  desc: 'do not generate diagram PNGs for the overview, useful for faster builds'
+  desc: 'overview all diagrams as graph [experimental]',
+  default: false
 } as const satisfies Options

@@ -24,7 +24,10 @@ type HandlerParams = {
 
   useHashHistory: boolean | undefined
 
-  skipPreviews: boolean | undefined
+  /**
+   * overview all diagrams as graph
+   */
+  useOverview?: boolean | undefined
 
   webcomponentPrefix: string
 }
@@ -34,10 +37,9 @@ export async function handler({
   useDotBin,
   webcomponentPrefix,
   useHashHistory,
-  skipPreviews = false,
+  useOverview = false,
   base
 }: HandlerParams) {
-  const useOverviewGraph = skipPreviews !== true
   const languageServices = await LanguageServices.get({ path, useDotBin })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
@@ -50,14 +52,14 @@ export async function handler({
     webcomponentPrefix,
     languageServices,
     useHashHistory,
-    useOverviewGraph,
+    useOverviewGraph: useOverview,
     likec4AssetsDir
   })
 
   server.config.logger.clearScreen('info')
   printServerUrls(server)
 
-  if (useOverviewGraph !== true) {
+  if (!useOverview) {
     return
   }
   const views = await languageServices.views.diagrams()

@@ -25,9 +25,9 @@ type HandlerParams = {
   base?: string | undefined
 
   /**
-   * Do not generate diagram previews
+   * overview all diagrams as graph
    */
-  skipPreviews?: boolean | undefined
+  useOverview?: boolean | undefined
 
   useDotBin: boolean
 
@@ -41,19 +41,18 @@ export async function buildHandler({
   useDotBin,
   useHashHistory,
   webcomponentPrefix,
-  skipPreviews = false,
+  useOverview = false,
   output: outputDir,
   base
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:build')
 
-  let useOverviewGraph = skipPreviews !== true
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
   const outDir = outputDir ?? resolve(languageServices.workspace, 'dist')
   let likec4AssetsDir = resolve(outDir, 'assets')
 
-  if (useOverviewGraph) {
+  if (useOverview) {
     try {
       likec4AssetsDir = resolve(outDir, 'assets', 'previews')
       await mkdir(likec4AssetsDir, { recursive: true })
@@ -71,21 +70,21 @@ export async function buildHandler({
       logger.error(error)
       logger.warn(k.yellow('Ignore previews and continue build'))
       rmSync(likec4AssetsDir, { recursive: true, force: true })
-      useOverviewGraph = false
+      useOverview = false
     }
   }
   await viteBuild({
     base,
     useHashHistory,
     customLogger: logger,
-    useOverviewGraph,
+    useOverviewGraph: useOverview,
     webcomponentPrefix,
     languageServices,
     likec4AssetsDir,
     outputDir
   })
 
-  if (useOverviewGraph) {
+  if (useOverview) {
     logger.info(`${cyan('clean previews')} ${dim(likec4AssetsDir)}`)
     rmSync(likec4AssetsDir, { recursive: true, force: true })
   }
