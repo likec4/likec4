@@ -94,7 +94,7 @@
     "@nanostores/react": "0.7.3",
     "@vitejs/plugin-react": "4.3.1",
     "nanostores": "0.11.2",
-    "playwright": "1.46.0",
+    "playwright": "1.46.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "vite": "5.3.4",
