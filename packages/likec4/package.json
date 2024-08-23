@@ -93,7 +93,7 @@
     "@hpcc-js/wasm-graphviz": "1.2.0",
     "@nanostores/react": "0.7.3",
     "@vitejs/plugin-react": "4.3.1",
-    "nanostores": "0.10.3",
+    "nanostores": "0.11.2",
     "playwright": "1.46.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
