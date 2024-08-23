@@ -12,6 +12,7 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'initialWidth'
   | 'initialHeight'
   | 'renderIcon'
+  | 'where'
 >
 
 export function StaticLikeC4Diagram({
@@ -34,6 +35,7 @@ export function StaticLikeC4Diagram({
       showElementLinks
       showDiagramTitle={false}
       enableDynamicViewWalkthrough={false}
+      enableFocusMode={false}
       nodesSelectable={false}
       nodesDraggable={false}
       {...rest}

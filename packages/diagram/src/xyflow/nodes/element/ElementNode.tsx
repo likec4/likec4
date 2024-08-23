@@ -1,12 +1,13 @@
 import type { DiagramNode } from '@likec4/core/types'
-import { Text as MantineText } from '@mantine/core'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { ActionIcon, Text as MantineText, Tooltip } from '@mantine/core'
+import { IconFileSymlink } from '@tabler/icons-react'
+import { Handle, type NodeProps, NodeToolbar, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo } from 'react'
 import { isNumber, isTruthy } from 'remeda'
-import { type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../../../state/useDiagramStore'
+import { type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../../../hooks/useDiagramState'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -89,12 +90,13 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   height
 }) {
   const store = useDiagramStoreApi()
-  const { isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
+  const { isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive, hasGoToSource } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
     isInteractive: s.nodesDraggable || s.nodesSelectable || !!s.onNavigateTo,
     isHovercards: s.showElementLinks,
-    hasOnNavigateTo: !!s.onNavigateTo
+    hasOnNavigateTo: !!s.onNavigateTo,
+    hasGoToSource: !!s.onOpenSourceElement
   }))
   const isNavigable = hasOnNavigateTo && !!element.navigateTo
 

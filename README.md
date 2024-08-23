@@ -54,10 +54,10 @@ Check [Tutorial](https://likec4.dev/tutorial/) - for a quick overview of LikeC4.
 
 ### Top-level layout
 
-This repository's contents are divided into four primary sections:
+This repository's contents are:
 
-- `/apps/docs` contains the content for our docs site at [likec4.dev](https://likec4.dev)
-- `/apps/playground` - site [playground.likec4.dev](https://playground.likec4.dev)
+- `/apps/docs` Astro-app, contains the content for our docs site at [likec4.dev](https://likec4.dev)
+- `/apps/playground` - Vite SPA, site [playground.likec4.dev](https://playground.likec4.dev)
 - `/packages` contains the source for packages
 
 ### Packages
@@ -66,25 +66,36 @@ This repository's contents are divided into four primary sections:
 - `create-likec4`: scaffolding tool
 - `diagram`: react components rendering diagrams
 - `generators`: _LikeC4 -> Other formats_
+- `icons`: prebundled icons
 - `language-server`: parser and language server
 - `layouts`: layout algorithms for views
 - `likec4`: CLI, published to npm as `likec4`
+- `log`: Shared instance of [consola](https://github.com/unjs/consola)
 - `tsconfig`: typescript configuration
 - `vscode`: vscode extension
 - `vscode-preview`: preview panel in vscode extension
 
-### Local development
+### Development
 
-Development tasks:
+1. Ensure you have all required [tools](./.tool-versions)  
+   Use [asdf](https://asdf-vm.com/) or install manually:
+   ```sh
+   asdf install
+   ```
 
-- `yarn build`: Build packages (without typecheck)
-- `yarn typecheck`: TypeScript compilation
-- `yarn test`: Test packages
-- `yarn vitest:ui`: Opens Vitest UI
+2. Generate sources by running build in root:
+   ```sh
+   yarn build
+   ```
 
-For VSCode:
+3. Mostly used dev tasks:
+   1. `yarn dev` in `apps/playground`
+   2. `yarn dev` (or any `yarn dev:*`) in `package/likec4`
+   3. `yarn vitest:ui` in root
 
-- Task `Run Extension` to start a new VSCode instance with the extension loaded.
+To work on VSCode extension:
+
+- Launch [`Run Extension`](https://github.com/likec4/likec4/blob/c88cfdb3856aff4b28c5f72da7ded8caf8c47c62/.vscode/launch.json#L18) to start a new VSCode instance with the extension loaded.
 
 ## License
 

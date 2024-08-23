@@ -13,6 +13,10 @@ declare module 'virtual:likec4/views' {
 
   export type LikeC4ViewId = Opaque<string, 'LikeC4ViewId'>
 
+  export type LikeC4Tag = Opaque<string, 'LikeC4Tag'>
+
+  export type LikeC4ElementKind = Opaque<string, 'LikeC4ElementKind'>
+
   export type DiagramView = Omit<CoreDiagramView, 'id'> & {
     id: ViewId
   }
@@ -37,6 +41,16 @@ declare module 'virtual:likec4/mmd-sources' {
 declare module 'virtual:likec4/icons' {
   import type { JSX } from 'react'
   export const Icons: Record<string, () => JSX.Element>
+}
+
+declare module 'virtual:likec4/overview-graph' {
+  import type { OverviewGraph as CoreOverviewGraph } from '@likec4/core'
+  export type OverviewGraph = CoreOverviewGraph
+  export function useOverviewGraph(): OverviewGraph
+}
+
+declare module 'virtual:likec4/previews' {
+  export function usePreviewUrl(viewId: string): string | null
 }
 
 declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {

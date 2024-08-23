@@ -10,7 +10,7 @@ export const container = style({
     [mixColor]: `black`,
     [xyvars.edge.stroke]: vars.relation.lineColor,
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
-    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 20%)`,
+    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 40%)`,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 40%)`,
     [xyvars.edge.strokeWidth]: '3'
   }
@@ -159,6 +159,24 @@ export const cssEdgePath = style({
   }
 })
 
+const labelBorderRadius = 2
+export const stepEdgeNumber = style({
+  flex: '0 0 auto',
+  fontWeight: 600,
+  fontSize: rem(14),
+  lineHeight: 1,
+  padding: '5px 5px',
+  textAlign: 'center',
+  minWidth: 22,
+  borderTopLeftRadius: labelBorderRadius,
+  borderBottomLeftRadius: labelBorderRadius,
+  backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 5%)`,
+  fontVariantNumeric: 'tabular-nums'
+})
+globalStyle(`:where([data-mantine-color-scheme="dark"]) :where([data-likec4-color="gray"]) ${stepEdgeNumber}`, {
+  backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`
+})
+
 export const varLabelX = createVar('label-x')
 export const varLabelY = createVar('label-y')
 
@@ -169,6 +187,7 @@ export const edgeLabel = style({
   left: 0,
   padding: '2px 4px 4px 4px',
   fontFamily: vars.likec4.font,
+  display: 'flex',
   position: 'absolute',
   pointerEvents: 'all',
   cursor: 'pointer',
@@ -177,7 +196,7 @@ export const edgeLabel = style({
   mixBlendMode: 'plus-lighter',
   color: xyvars.edge.labelColor,
   backgroundColor: xyvars.edge.labelBgColor,
-  borderRadius: 3,
+  borderRadius: labelBorderRadius,
   transform: varTranslate,
   vars: {
     [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`
@@ -186,6 +205,10 @@ export const edgeLabel = style({
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-in-out',
       transform: `${varTranslate} scale(1.12)`
+    },
+    [`&:has(${stepEdgeNumber})`]: {
+      padding: 0,
+      gap: 2
     },
     [`&:is(${dimmed})`]: {
       opacity: 0.3,
@@ -197,32 +220,13 @@ export const edgeLabel = style({
   }
 })
 
-export const stepEdgeNumber = style({
-  position: 'absolute',
-  top: -2,
-  left: -2,
-  fontWeight: 500,
-  fontSize: rem(16),
-  lineHeight: 0.9,
-  padding: '4px 6px',
-  borderRadius: 99999,
-  textAlign: 'center',
-  minWidth: 22,
-  backgroundColor: xyvars.edge.labelBgColor,
-  transition: 'all 120ms ease-out',
-  transform: 'translateX(-100%)',
-  fontVariantNumeric: 'tabular-nums',
-  selectors: {
-    ':where([data-edge-hovered="true"],[data-edge-active="true"]) &': {
-      fontWeight: 600,
-      backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 5%)`
-    }
-  }
-})
-
 export const edgeLabelText = style({
   textAlign: 'left',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
   lineHeight: 1.185
+})
+
+globalStyle(`${edgeLabel}:has(${stepEdgeNumber}) ${edgeLabelText}`, {
+  padding: '2px 5px 4px 2px'
 })

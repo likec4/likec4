@@ -1,7 +1,7 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "1.7.2",
+  "version": "1.7.4",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -52,15 +52,15 @@
     "clean": "run -T rimraf -g 'dist/**'"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "2.18.2",
+    "@hpcc-js/wasm-graphviz": "1.2.0",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "esm-env": "^1.0.0",
-    "execa": "^9.3.0",
+    "execa": "^9.3.1",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
     "p-limit": "^6.1.0",
-    "remeda": "^2.3.0",
+    "remeda": "^2.11.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
     "type-fest": "^4.21.0",
@@ -69,7 +69,7 @@
   "devDependencies": {
     "@likec4/language-server": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.14.14",
+    "@types/node": "^20.16.1",
     "typescript": "^5.5.4",
     "vitest": "~2.0.5"
   },

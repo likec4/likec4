@@ -2,7 +2,7 @@ import { defaultTheme } from '@likec4/core'
 import { createGlobalTheme, globalStyle } from '@vanilla-extract/css'
 import { scale, toHex } from 'khroma'
 import { keys, omit } from 'remeda'
-import { mantine } from './mantine.css'
+import { mantine, whereDark } from './mantine.css'
 import { vars } from './theme.css'
 
 export const rootClassName = 'likec4-diagram-root'
@@ -28,7 +28,7 @@ createGlobalTheme(`.${rootClassName}`, {
     background: {
       color: mantine.colors.body,
       pattern: {
-        color: mantine.colors.dark[3]
+        color: mantine.colors.gray[4]
       }
     }
   },
@@ -43,33 +43,9 @@ createGlobalTheme(`.${rootClassName}`, {
   relation: {
     ...defaultTheme.relationships.slate
   }
-  // likec4: {
-  //   font: `var(--likec4-font-family,'ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"')`,
-  //   backgroundColor: fallbackVar(globalvars.likec4.backgroundColor, mantine.colors.body)
-  // },
-  // compound: {
-  //   font: fallbackVar(vars.compound.font, vars.likec4.font),
-  //   titleColor: fallbackVar(globalvars.compound.titleColor, globalvars.element.loContrast),
-  // },
-  // element: {
-  //   font: fallbackVar(globalvars.element.font, vars.likec4.font),
-  //   fill: fallbackVar(globalvars.element.fill, defaultTheme.elements.primary.fill),
-  //   stroke: fallbackVar(globalvars.element.stroke, defaultTheme.elements.primary.stroke),
-  //   hiContrast: fallbackVar(globalvars.element.hiContrast, defaultTheme.elements.primary.hiContrast),
-  //   loContrast: fallbackVar(globalvars.element.loContrast, defaultTheme.elements.primary.loContrast),
-  // },
-  // relation: {
-  //   lineColor: fallbackVar(globalvars.relation.lineColor, defaultTheme.relationships.slate.lineColor),
-  //   labelColor: fallbackVar(globalvars.relation.labelColor, defaultTheme.relationships.slate.labelColor),
-  //   labelBgColor: fallbackVar(globalvars.relation.labelBgColor, defaultTheme.relationships.slate.labelBgColor),
-  // },
-  // optionsPanel: {
-  //   top: globalvars.optionsPanel.top,
-  //   right: globalvars.optionsPanel.right
-  // }
 })
 
-createGlobalTheme(`:where([data-mantine-color-scheme='light']) .${rootClassName}`, {
+createGlobalTheme(`${whereDark} .${rootClassName}`, {
   likec4: {
     background: {
       pattern: {
@@ -81,7 +57,7 @@ createGlobalTheme(`:where([data-mantine-color-scheme='light']) .${rootClassName}
   likec4: {
     background: {
       pattern: {
-        color: mantine.colors.gray[6]
+        color: mantine.colors.dark[5]
       }
     }
   }
@@ -138,7 +114,7 @@ for (const color of keys(defaultTheme.elements)) {
     )
 
     createGlobalTheme(
-      `:where([data-mantine-color-scheme='dark']) :where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`,
+      `${whereDark} :where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`,
       compounds,
       {
         fill: compoundDarkColor(defaultTheme.elements[color].fill, depth),

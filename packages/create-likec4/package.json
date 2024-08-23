@@ -1,6 +1,6 @@
 {
   "name": "create-likec4",
-  "version": "1.7.2",
+  "version": "1.7.4",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -31,9 +31,9 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.14.14",
+    "@types/node": "^20.16.1",
     "@types/prompts": "^2.4.8",
-    "execa": "^9.3.0",
+    "execa": "^9.3.1",
     "prompts": "^2.4.2",
     "tsx": "~4.9.3",
     "typescript": "^5.5.4",

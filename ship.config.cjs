@@ -10,6 +10,7 @@ module.exports = {
       'packages/core',
       'packages/diagram',
       'packages/log',
+      'packages/icons',
       'packages/language-server',
       'packages/layouts',
       'packages/create-likec4',

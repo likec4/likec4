@@ -19,7 +19,7 @@ const parseEquals = (
   return not ? { neq: value } : { eq: value }
 }
 
-export function parseWhereClause(astNode: ast.WhereExpression): c4.WhereOperator {
+export function parseWhereClause(astNode: ast.WhereExpression): c4.WhereOperator<string, string> {
   switch (true) {
     case ast.isWhereTagEqual(astNode): {
       const tag = astNode.value?.ref?.name

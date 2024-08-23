@@ -9,10 +9,6 @@ export const dynamicViewRulePredicate = (
   return (predicate, accept) => {
     const expr = elementExpressionFromPredicate(predicate.value)
     switch (true) {
-      case ast.isElementRef(expr):
-      case ast.isElementDescedantsExpression(expr):
-      case ast.isExpandElementExpression(expr):
-        return
       case ast.isElementKindExpression(expr):
       case ast.isElementTagExpression(expr):
       case ast.isWildcardExpression(expr): {
@@ -21,8 +17,6 @@ export const dynamicViewRulePredicate = (
         })
         return
       }
-      default:
-        nonexhaustive(expr)
     }
   }
 }

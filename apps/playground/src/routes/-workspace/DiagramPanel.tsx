@@ -89,25 +89,24 @@ export function DiagramPanel() {
             fitView
             fitViewPadding={0.07}
             experimentalEdgeEditing
+            nodesSelectable
             nodesDraggable
             showNavigationButtons
-            enableFocusMode={false}
+            enableDynamicViewWalkthrough
+            enableFocusMode
             renderIcon={RendererIcon}
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
-            onNodeClick={({ element, event }) => {
-              showLocation({ element: element.id })
-              event.stopPropagation()
+            onOpenSourceElement={fqn => {
+              showLocation({ element: fqn })
             }}
-            onEdgeClick={({ edge, event }) => {
-              if (hasAtLeast(edge.relations, 1)) {
-                showLocation({ relation: edge.relations[0] })
-                event.stopPropagation()
-              }
+            onOpenSourceRelation={id => {
+              showLocation({ relation: id })
             }}
-            onCanvasDblClick={(event) => {
-              showLocation({ view: diagram.id })
-              event.stopPropagation()
+            onOpenSourceView={() => {
+              showLocation({
+                view: diagram.id
+              })
             }}
           />
           {message && (

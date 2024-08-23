@@ -5,8 +5,8 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { resolve } from 'node:path'
-import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
+import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
@@ -14,9 +14,10 @@ import type { LikeC4ViteConfig } from './config-app.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
 
-export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig) => {
+export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
-  const customLogger = createLikeC4Logger('c4:vite')
+  const useOverviewGraph = cfg?.useOverviewGraph === true
+  const customLogger = cfg.customLogger ?? createLikeC4Logger('c4:vite')
 
   const root = resolve('app')
   if (!fs.existsSync(root)) {
@@ -45,6 +46,7 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
 
   return {
     isDev: true,
+    likec4AssetsDir,
     webcomponentPrefix,
     root,
     languageServices,
@@ -53,11 +55,13 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'false',
+      __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"development"'
     },
     resolve: {
       alias: {
+        'likec4/previews': likec4AssetsDir,
         'likec4/icons': resolve('../icons'),
         'likec4/react': resolve('app/react/components/index.ts'),
         '@likec4/core': resolve('../core/src/index.ts'),
@@ -85,7 +89,7 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
       sourcemap: false,
       minify: false,
       copyPublicDir: true,
-      assetsInlineLimit: 1_000_000,
+      assetsInlineLimit: (path, content) => !path.endsWith('.png') && content.length < 1_000_000,
       chunkSizeWarningLimit
       // commonjsOptions: {
       //       defaultIsModuleExports: (id: string) => {
@@ -129,7 +133,10 @@ export const viteConfig = async ({ languageServices, ...cfg }: LikeC4ViteConfig)
       vanillaExtractPlugin({
         unstable_mode: 'transform'
       }),
-      likec4Plugin({ languageServices }),
+      likec4Plugin({
+        languageServices,
+        generatePreviews: useOverviewGraph
+      }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',
         generatedRouteTree: resolve(root, 'src/routeTree.gen.ts'),

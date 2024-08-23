@@ -2,8 +2,8 @@ import { shallowEqual } from 'fast-equals'
 import { useContext } from 'react'
 import { useStoreWithEqualityFn as useZustandStore } from 'zustand/traditional'
 
-import { DiagramContext, type DiagramZustandStore } from './DiagramContext'
-import type { DiagramState } from './diagramStore'
+import { DiagramContext } from '../state/DiagramContext'
+import type { DiagramState, DiagramStoreApi } from '../state/diagramStore'
 
 function useDiagramState<StateSlice = unknown>(
   selector: (state: DiagramState) => StateSlice,
@@ -18,7 +18,6 @@ function useDiagramState<StateSlice = unknown>(
   return useZustandStore(store, selector, equalityFn ?? shallowEqual)
 }
 
-export type DiagramStoreApi = Readonly<Pick<DiagramZustandStore, 'getState' | 'setState' | 'subscribe'>>
 function useDiagramStoreApi(): DiagramStoreApi {
   const store = useContext(DiagramContext)
 
@@ -28,5 +27,5 @@ function useDiagramStoreApi(): DiagramStoreApi {
 
   return store
 }
-
+export type { DiagramState, DiagramStoreApi }
 export { useDiagramState, useDiagramStoreApi }

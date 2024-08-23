@@ -1,7 +1,7 @@
 import { useNodesData, useReactFlow, useStore, useStoreApi } from '@xyflow/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { useCallback } from 'react'
-import type { XYFlowEdge, XYFlowNode, XYFlowState } from '../types'
+import type { XYFlowEdge, XYFlowNode, XYFlowState } from '../xyflow/types'
 
 export const useXYFlow = useReactFlow<XYFlowNode, XYFlowEdge>
 

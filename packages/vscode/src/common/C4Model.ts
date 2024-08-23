@@ -1,6 +1,5 @@
 import type { ComputedView, DiagramView as LayoutedView, ViewID } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import type TelemetryReporter from '@vscode/extension-telemetry'
 import type { TelemetryEventMeasurements } from '@vscode/extension-telemetry'
 import { deepEqual as equals } from 'fast-equals'
 import pTimeout from 'p-timeout'
@@ -13,6 +12,7 @@ import dropRepeats from 'xstream/extra/dropRepeats'
 import { logError, logger } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
 import type { ExtensionController } from './ExtensionController'
+import { rebuildWorkspace } from './initWorkspace'
 
 function isNotNullish<T>(x: T): x is NonNullable<T> {
   return x !== undefined && x !== null
@@ -37,8 +37,7 @@ export class C4Model extends AbstractDisposable {
   private viewsWithReportedErrors = new Set<ViewID>()
 
   constructor(
-    private ctrl: ExtensionController,
-    private telemetry: TelemetryReporter
+    private ctrl: ExtensionController
   ) {
     super()
     this.changesStream = xs
@@ -184,8 +183,9 @@ export class C4Model extends AbstractDisposable {
   }
 
   private async fetchTelemetry() {
+    await rebuildWorkspace(this.ctrl.rpc)
     const t0 = performance.now()
-    const model = await this.ctrl.rpc.fetchModel()
+    const model = await this.ctrl.rpc.fetchComputedModel()
     const t1 = performance.now()
     return {
       metrics: model
@@ -201,7 +201,7 @@ export class C4Model extends AbstractDisposable {
 
   private sendTelemetry(measurements: TelemetryEventMeasurements) {
     try {
-      this.telemetry.sendTelemetryEvent('model-metrics', {}, measurements)
+      this.ctrl.telemetry?.sendTelemetryEvent('model-metrics', {}, measurements)
       logger.debug(`[C4Model] send telemetry`)
     } catch (e) {
       logError(e)

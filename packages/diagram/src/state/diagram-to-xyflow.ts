@@ -1,6 +1,7 @@
-import { extractStep, invariant, nonNullable } from '@likec4/core'
-import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
+import { extractStep, invariant, nonNullable, whereOperatorAsPredicate } from '@likec4/core'
+import type { DiagramEdge, DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
+import type { WhereOperator } from '../LikeC4Diagram.props'
 import { ZIndexes } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
 
@@ -9,6 +10,7 @@ import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
 export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>,
   opts: {
+    where: WhereOperator<string, string> | null
     draggable: boolean
     selectable: boolean
   }
@@ -35,6 +37,17 @@ export function diagramViewToXYFlowData(
     }>()
   )
 
+  let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
+  if (opts.where) {
+    try {
+      visiblePredicate = whereOperatorAsPredicate(opts.where)
+    } catch (e) {
+      console.error('Error in where filter:', e)
+    }
+  }
+
+  // const visiblePredicate = opts.where ? whereOperatorAsPredicate(opts.where) : () => true
+
   // namespace to force unique ids
   const ns = ''
   const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
@@ -42,10 +55,11 @@ export function diagramViewToXYFlowData(
   let next: typeof traverse[0] | undefined
   while ((next = traverse.shift())) {
     const { node, parent } = next
-    if (node.children.length > 0) {
+    const isCompound = hasAtLeast(node.children, 1)
+    if (isCompound) {
       traverse.push(...node.children.map(child => ({ node: nodeById(child), parent: node })))
     }
-    const isCompound = hasAtLeast(node.children, 1)
+
     const position = {
       x: node.position[0],
       y: node.position[1]
@@ -72,9 +86,9 @@ export function diagramViewToXYFlowData(
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
-      hidden: false,
       width: node.width,
       height: node.height,
+      hidden: !visiblePredicate(node),
       // parentId: parent ? ns + parent.id : null,
       ...(parent && {
         parentId: ns + parent.id
@@ -89,18 +103,11 @@ export function diagramViewToXYFlowData(
     const source = edge.source
     const target = edge.target
     const id = ns + edge.id
-    // const points = isElkEdge(edge) ? edge.points : deriveEdgePoints(edge.points)
-    // const controlPoints = deriveEdgePoints(edge.points)
-    // if (edge.tailArrowPoint) {
-    //   controlPoints.unshift([...edge.tailArrowPoint])
-    // }
-    // if (edge.headArrowPoint) {
-    //   controlPoints.push([...edge.headArrowPoint])
-    // }
-    invariant(hasAtLeast(edge.points, 2), 'edge should have at least 2 points')
-    // invariant(hasAtLeast(controlPoints, 2), 'edge controlPoints should have at least 2 points')
 
-    // const level = Math.max(nodeZIndex(nodeById(source)), nodeZIndex(nodeById(target)))
+    if (!hasAtLeast(edge.points, 2)) {
+      console.error('edge should have at least 2 points', edge)
+      continue
+    }
 
     xyedges.push({
       id,
@@ -109,6 +116,7 @@ export function diagramViewToXYFlowData(
       target: ns + target,
       zIndex: ZIndexes.Edge,
       selectable: opts.selectable,
+      hidden: !visiblePredicate(edge),
       deletable: false,
       data: {
         edge,

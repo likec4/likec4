@@ -8,8 +8,9 @@ import { ShadowRoot } from './ShadowRoot'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import * as css from './styles.css'
 import type { DiagramView, ElementIconRenderer } from './types'
+import type { WhereOperator } from './types-filter'
 
-export type LikeC4BrowserProps<ViewId extends string> = {
+export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind extends string> = {
   view: DiagramView<ViewId>
 
   /**
@@ -40,17 +41,20 @@ export type LikeC4BrowserProps<ViewId extends string> = {
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
+
+  where?: WhereOperator<Tag, Kind> | undefined
 }
 
-export function LikeC4Browser<ViewId extends string>({
+export function LikeC4Browser<ViewId extends string, Tag extends string, Kind extends string>({
   colorScheme,
   view,
   injectFontCss,
   onNavigateTo,
   onClose,
   renderIcon,
+  where,
   background = 'dots'
-}: LikeC4BrowserProps<ViewId>) {
+}: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const id = useId()
@@ -181,6 +185,7 @@ export function LikeC4Browser<ViewId extends string>({
                 nodesDraggable={false}
                 keepAspectRatio={false}
                 renderIcon={renderIcon}
+                where={where}
                 // @ts-expect-error string cast to ViewId
                 onNavigateTo={onNavigateTo}
               />

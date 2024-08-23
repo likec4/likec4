@@ -108,7 +108,6 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
 
     const label = edgelabel(edge)
     if (label) {
-      // const label = edgeLabel(edge.label)
       if (hasCompoundEndpoint) {
         e.attributes.set(_.xlabel, label)
       } else {
@@ -222,7 +221,7 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       if (edgeParentId === null || this.leafElements(edgeParentId).length <= 3) {
         // don't rank the edge
         e.attributes.set(_.minlen, 0)
-        e.attributes.set(_.constraint, false)
+        // e.attributes.set(_.constraint, false)
       }
     }
 

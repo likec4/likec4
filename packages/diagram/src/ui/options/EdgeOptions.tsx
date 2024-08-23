@@ -3,8 +3,7 @@ import { CheckIcon, ColorSwatch, Divider, Flex, rem, Stack, Text, Tooltip, Toolt
 import { shallowEqual } from 'fast-equals'
 import { memo } from 'react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
-import { useDiagramStoreApi } from '../../state/hooks'
-import { useXYEdgesData } from '../../xyflow/hooks/useXYFlow'
+import { useDiagramStoreApi, useXYEdgesData } from '../../hooks'
 import { type XYFlowEdge } from '../../xyflow/types'
 
 const {
@@ -40,20 +39,6 @@ export const EdgeOptions = memo<{ selectedEdgeIds: string[] }>(({ selectedEdgeId
     throw new Error('EdgeOptions: edges and props.edges should have the same length')
   }
   const [firstEdge, ...rest] = edges
-
-  // // Makes sense to show opacity option only if there is at least one compound node
-  // const showOpacityOption = firstNode.type === 'compound'
-  //   && (rest.length === 0 || rest.every(node => node.type === 'compound'))
-
-  // const triggerChange = (style: Changes.ChangeElementStyle['style']) => {
-  //   const targets = edges.map(node => node.data.element.id)
-  //   invariant(hasAtLeast(targets, 1), 'At least one target is required')
-  //   diagramApi.getState().triggerChangeElementStyle({
-  //     op: 'change-element-style',
-  //     style,
-  //     targets
-  //   })
-  // }
 
   return (
     <Stack gap={'xs'}>

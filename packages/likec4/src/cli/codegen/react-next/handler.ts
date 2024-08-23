@@ -1,7 +1,7 @@
 import { mkdir } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 import { writeSources } from './write-sources'

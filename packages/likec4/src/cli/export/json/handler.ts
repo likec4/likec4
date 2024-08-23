@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative } from 'node:path'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 

@@ -8,6 +8,8 @@ if (!BASE.endsWith('/')) {
   BASE = BASE + '/'
 }
 
-export const useHashHistory = __USE_HASH_HISTORY__
+export const useHashHistory = __USE_HASH_HISTORY__ === true
 
 export const basepath = useHashHistory ? '/' : BASE
+
+export const withOverviewGraph = __USE_OVERVIEW_GRAPH__ === true

@@ -16,10 +16,10 @@ import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual, deepEqual as eq } from 'fast-equals'
 import { memo, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
-import { useDiagramState, useDiagramStoreApi } from '../../state/useDiagramStore'
+import { useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
+import { useXYStoreApi } from '../../hooks/useXYFlow'
 import { ZIndexes } from '../const'
 import { EdgeMarkers, type EdgeMarkerType } from '../EdgeMarkers'
-import { useXYStoreApi } from '../hooks/useXYFlow'
 import { type RelationshipData, type XYFlowEdge } from '../types'
 import { bezierControlPoints } from '../utils'
 import * as edgesCss from './edges.css'
@@ -97,9 +97,9 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
-// If points are within 3px, consider them the same
+// If points are within 1px, consider them the same
 const isSame = (a: number, b: number) => {
-  return Math.abs(a - b) < 3.1
+  return Math.abs(a - b) < 2.5
 }
 
 const isSamePoint = (a: XYPosition | Point, b: XYPosition | Point) => {
@@ -150,12 +150,14 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
-  const { isActive, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
-    isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true,
+  const { isActive, isEdgePathEditable, isHovered, isDimmed, hasOpenSourceRelation } = useDiagramState(s => ({
+    isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true && s.focusedNodeId === null
+      && s.activeDynamicViewStep === null,
     isActive: s.focusedNodeId === source || s.focusedNodeId === target
       || (s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum),
     isHovered: s.hoveredEdgeId === id,
-    isDimmed: s.dimmed.has(id)
+    isDimmed: s.dimmed.has(id),
+    hasOpenSourceRelation: !!s.onOpenSourceRelation
   }))
   const { nodeLookup, edgeLookup } = xyflowStore.getState()
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
@@ -200,8 +202,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   let edgePath: string
 
   if (isModified) {
-    labelX = labelPos.x
-    labelY = labelPos.y
     const sourceCenterPos = { x: sourceX, y: sourceY }
     const targetCenterPos = { x: targetX, y: targetY }
 
@@ -254,9 +254,14 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       })
     },
     [labelPos],
-    100,
+    50,
     300
   )
+
+  if (isModified || isControlPointDragging) {
+    labelX = labelPos.x
+    labelY = labelPos.y
+  }
 
   const onControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
     const { domNode } = xyflowStore.getState()
@@ -281,30 +286,47 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     e.stopPropagation()
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
+
     const onPointerMove = (e: PointerEvent) => {
-      if (!isSamePoint(pointer, [e.clientX, e.clientY])) {
+      if (hasMoved || !isSamePoint(pointer, [e.clientX, e.clientY])) {
         setIsControlPointDragging(true)
         hasMoved = true
         pointer = { x: e.clientX, y: e.clientY }
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
-        const newControlPoints = controlPoints.slice()
-        newControlPoints[index] = {
-          x: Math.round(x),
-          y: Math.round(y)
-        }
-        xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+        xyflow.updateEdgeData(id, xyedge => {
+          const cp = (xyedge.data.controlPoints ?? controlPoints).slice()
+          cp[index] = {
+            x: Math.round(x),
+            y: Math.round(y)
+          }
+          return {
+            controlPoints: cp
+          }
+        })
       }
+      e.stopPropagation()
     }
-    const onPointerUp = () => {
-      domNode.removeEventListener('pointermove', onPointerMove)
-      domNode.removeEventListener('pointerup', onPointerUp)
+
+    const onPointerUp = (e: PointerEvent) => {
+      domNode.removeEventListener('pointermove', onPointerMove, {
+        capture: true
+      })
+      if (hasMoved) {
+        e.stopPropagation()
+      }
       if (hasMoved || wasCanceled) {
         diagramStore.getState().scheduleSaveManualLayout()
       }
       setIsControlPointDragging(false)
     }
-    domNode.addEventListener('pointermove', onPointerMove)
-    domNode.addEventListener('pointerup', onPointerUp, { once: true })
+
+    domNode.addEventListener('pointermove', onPointerMove, {
+      capture: true
+    })
+    domNode.addEventListener('pointerup', onPointerUp, {
+      once: true,
+      capture: true
+    })
   }
 
   let markerStartName = toMarker(diagramEdge.tail)
@@ -317,6 +339,9 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const MarkerEnd = markerEndName ? EdgeMarkers[markerEndName] : null
 
   const labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
+
+  const relationId = first(data.edge.relations)
+  const showOpenSourceRelation = hasOpenSourceRelation && relationId !== undefined
 
   return (
     <g
@@ -393,7 +418,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             isHovered,
             isActive,
             isStepEdge
-          })} />
+          })}
+          onClick={showOpenSourceRelation && ((e) => {
+            e.stopPropagation()
+            diagramStore.getState().onOpenSourceRelation?.(relationId)
+          })}
+        />
       )}
     </g>
   )
@@ -412,9 +442,10 @@ type EdgeLabelProps = {
   isHovered: boolean
   isActive: boolean
   zIndex: number
+  onClick: false | ((e: ReactPointerEvent<HTMLDivElement>) => void)
 }
 
-const EdgeLabel = memo<EdgeLabelProps>(({
+const EdgeLabel = ({
   isDimmed,
   color,
   isModified,
@@ -426,8 +457,9 @@ const EdgeLabel = memo<EdgeLabelProps>(({
   stepNum,
   isHovered,
   isActive,
-  zIndex
-}) => {
+  zIndex,
+  onClick
+}: EdgeLabelProps) => {
   return (
     <EdgeLabelRenderer>
       <Box
@@ -455,6 +487,7 @@ const EdgeLabel = memo<EdgeLabelProps>(({
           'data-edge-hovered': isHovered,
           'data-edge-active': isActive
         }}
+        onClick={onClick || undefined}
       >
         {stepNum !== null && (
           <Box className={edgesCss.stepEdgeNumber}>
@@ -469,4 +502,4 @@ const EdgeLabel = memo<EdgeLabelProps>(({
       </Box>
     </EdgeLabelRenderer>
   )
-}, deepEqual)
+}

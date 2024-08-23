@@ -71,6 +71,7 @@ describe('custom-relation-expr', () => {
         "head": "crow",
         "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
         "isCustomized": true,
+        "kind": "graphlql",
         "label": "custom label",
         "line": "dashed",
         "parent": null,
@@ -91,6 +92,7 @@ describe('custom-relation-expr', () => {
         "head": "crow",
         "id": "cloud.frontend.dashboard:cloud.backend.graphql",
         "isCustomized": true,
+        "kind": "graphlql",
         "label": "custom label",
         "line": "solid",
         "parent": null,
@@ -104,6 +106,22 @@ describe('custom-relation-expr', () => {
         "target": "cloud.backend.graphql",
       }
     `)
+  })
+
+  it('set edge title to empty string', () => {
+    const { edges, edgeIds } = computeView([
+      $include($customRelation(
+        'cloud.frontend.adminPanel -> cloud.backend',
+        {
+          title: ''
+        }
+      ))
+    ])
+    expect(edgeIds).toEqual([
+      'cloud.frontend.adminPanel:cloud.backend'
+    ])
+    const [edge1] = edges
+    expect(edge1).toHaveProperty('label', '')
   })
 
   it('handles <->', () => {

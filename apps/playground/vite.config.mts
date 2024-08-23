@@ -69,6 +69,7 @@ export default defineConfig((env) => {
           },
           rollupOptions: {
             output: {
+              hoistTransitiveImports: false,
               preserveModules: true,
               preserveModulesRoot: resolve('src'),
               entryFileNames: '[name].mjs'
@@ -88,6 +89,7 @@ export default defineConfig((env) => {
               '#monaco/bootstrap',
               '#monaco/config',
               /@likec4\/(icons|layouts|language-server).*/,
+              /d3-/,
               /hpcc-js/,
               /node_modules.*vscode/,
               /node_modules.*monaco/
@@ -123,11 +125,6 @@ export default defineConfig((env) => {
         },
         build: {
           copyPublicDir: true,
-          // modulePreload: false,
-          commonjsOptions: {
-            transformMixedEsModules: true,
-            esmExternals: true
-          },
           rollupOptions: {
             output: {
               compact: true,

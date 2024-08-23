@@ -7,44 +7,49 @@ import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { DiagramView, ElementIconRenderer } from './types'
+import type { WhereOperator } from './types-filter'
 
-export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
-  view: DiagramView<ViewId>
+export type LikeC4ViewElementProps<ViewId extends string, Tag extends string, Kind extends string> =
+  & Omit<HTMLAttributes<HTMLDivElement>, 'children'>
+  & {
+    view: DiagramView<ViewId>
 
-  /**
-   * By default determined by the user's system preferences.
-   */
-  colorScheme?: 'light' | 'dark'
+    /**
+     * By default determined by the user's system preferences.
+     */
+    colorScheme?: 'light' | 'dark'
 
-  /**
-   * LikeC4 views are using 'IBM Plex Sans' font.
-   * By default, component injects the CSS to document head.
-   * Set to false if you want to handle the font yourself.
-   *
-   * @default true
-   */
-  injectFontCss?: boolean | undefined
+    /**
+     * LikeC4 views are using 'IBM Plex Sans' font.
+     * By default, component injects the CSS to document head.
+     * Set to false if you want to handle the font yourself.
+     *
+     * @default true
+     */
+    injectFontCss?: boolean | undefined
 
-  /**
-   * Background pattern
-   * @default 'transparent'
-   */
-  background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
+    /**
+     * Background pattern
+     * @default 'transparent'
+     */
+    background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
 
-  onNavigateTo?: ((to: ViewId) => void) | undefined
+    onNavigateTo?: ((to: ViewId) => void) | undefined
 
-  /**
-   * Render custom icon for a node
-   * By default, if icon is http:// or https://, it will be rendered as an image
-   */
-  renderIcon?: ElementIconRenderer | undefined
+    /**
+     * Render custom icon for a node
+     * By default, if icon is http:// or https://, it will be rendered as an image
+     */
+    renderIcon?: ElementIconRenderer | undefined
 
-  showElementLinks?: boolean | undefined
+    showElementLinks?: boolean | undefined
 
-  enableFocusMode?: boolean | undefined
-}
+    enableFocusMode?: boolean | undefined
 
-export function LikeC4ViewElement<ViewId extends string>({
+    where?: WhereOperator<Tag, Kind> | undefined
+  }
+
+export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kind extends string>({
   onNavigateTo: _onNavigateTo,
   className,
   view,
@@ -54,8 +59,9 @@ export function LikeC4ViewElement<ViewId extends string>({
   renderIcon,
   showElementLinks = true,
   enableFocusMode = true,
+  where,
   ...props
-}: LikeC4ViewElementProps<ViewId>) {
+}: LikeC4ViewElementProps<ViewId, Tag, Kind>) {
   const id = useId()
 
   const isLandscape = view.bounds.width > view.bounds.height
@@ -126,6 +132,7 @@ export function LikeC4ViewElement<ViewId extends string>({
             nodesSelectable={false}
             keepAspectRatio={false}
             renderIcon={renderIcon}
+            where={where}
             {...(_onNavigateTo && {
               onNavigateTo
             })}

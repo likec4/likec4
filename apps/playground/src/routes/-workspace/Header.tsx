@@ -68,7 +68,7 @@ export const Header = memo(() => {
         <PlaygroundsMenu />
         <Button
           component="a"
-          href="https://docs.likec4.dev/tutorial"
+          href="https://likec4.dev/tutorial/"
           target="_blank"
           variant="subtle"
           px={'xs'}
@@ -87,20 +87,7 @@ export const Header = memo(() => {
           color="gray">
           GitHub
         </Button>
-        {import.meta.env.DEV && <ColorSchemeToggle />}
-
-        {
-          /* <ActionIcon
-          component="a"
-          href="https://github.com/likec4/likec4"
-          target="_blank"
-          variant="light"
-          color="gray"
-          radius={'sm'}
-          size="md">
-          <IconBrandGithubFilled size={16} />
-        </ActionIcon> */
-        }
+        <ColorSchemeToggle />
       </Group>
     </Group>
   )

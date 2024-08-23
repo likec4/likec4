@@ -8,11 +8,13 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   rankdir = "TB";
   TBbalance = "min";
   splines = "spline";
+  outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;
@@ -97,11 +99,13 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   rankdir = "TB";
   TBbalance = "min";
   splines = "spline";
+  outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;
@@ -219,7 +223,6 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
         style = "dashed";
         weight = 4;
         minlen = 0;
-        constraint = false;
       ];
     }
     "adminpanel" -> "graphql" [
@@ -268,11 +271,13 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   rankdir = "TB";
   TBbalance = "min";
   splines = "spline";
+  outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;
@@ -358,7 +363,6 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
       weight = 4;
       label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
       minlen = 0;
-      constraint = false;
     ];
   }
   "customer" -> "frontend" [
@@ -394,11 +398,13 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   rankdir = "TB";
   TBbalance = "min";
   splines = "spline";
+  outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;

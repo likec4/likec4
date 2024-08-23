@@ -1,17 +1,16 @@
 import { ReactFlow, useOnViewportChange } from '@xyflow/react'
-import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import { type CSSProperties, type PropsWithChildren, useCallback, useMemo } from 'react'
+import { shallowEqual } from 'fast-equals'
+import { type CSSProperties, type PropsWithChildren, useMemo, useState } from 'react'
+import { useDiagramState } from '../hooks/useDiagramState'
+import { useXYStoreApi } from '../hooks/useXYFlow'
 import type { DiagramState } from '../state/diagramStore'
-import { useDiagramState, useDiagramStoreApi } from '../state/useDiagramStore'
-import { MinZoom } from './const'
+import { MaxZoom, MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
-import { useLayoutConstraints } from './hooks/useLayoutConstraints'
-import { useXYStoreApi } from './hooks/useXYFlow'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
 import { XYFlowEdge, XYFlowNode } from './types'
+import { useLayoutConstraints } from './useLayoutConstraints'
 import { useXYFlowEvents } from './XYFlowEvents'
-// import { useLogger } from '@mantine/hooks'
 
 const nodeTypes = {
   element: ElementNode,
@@ -88,6 +87,7 @@ export function XYFlow({
     translateX,
     translateY
   } = useDiagramState(selector, shallowEqual)
+  const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(zoomable)
 
   // useLogger('XYFlow',[
   //   nodes,
@@ -111,6 +111,7 @@ export function XYFlow({
       if (x !== roundedX || y !== roundedY) {
         xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
       }
+      setZoomOnDoubleClick(zoomable && zoom < 1.1)
     }
   })
 
@@ -128,7 +129,7 @@ export function XYFlow({
       {...(!zoomable && {
         zoomActivationKeyCode: null
       })}
-      maxZoom={zoomable ? 1.9 : 1}
+      maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
       fitViewOptions={useMemo(() => ({
@@ -163,9 +164,9 @@ export function XYFlow({
         onNodeDragStop: layoutConstraints.onNodeDragStop
       }}
       nodeDragThreshold={3}
-      zoomOnDoubleClick={false}
+      zoomOnDoubleClick={zoomOnDoubleClick}
       elevateNodesOnSelect={false} // or edges are not visible after select\
-      selectNodesOnDrag={false} // or weird camera movement
+      selectNodesOnDrag={false}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onDoubleClick={handlers.onDoubleClick}

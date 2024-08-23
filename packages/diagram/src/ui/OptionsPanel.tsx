@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { AnimatePresence, m } from 'framer-motion'
 import { useState } from 'react'
-import { useDiagramState } from '../state/hooks'
+import { useDiagramState } from '../hooks/useDiagramState'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 

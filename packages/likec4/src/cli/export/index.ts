@@ -1,8 +1,8 @@
 import { invariant } from '@likec4/core'
 import { resolve } from 'node:path'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import type { CommandModule } from 'yargs'
-import { path, useDotBin } from '../options'
+import { outdir, path, useDotBin } from '../options'
 import { handler as jsonHandler } from './json/handler'
 import { pngHandler } from './png/handler'
 
@@ -20,25 +20,22 @@ export const exportCmd = {
         describe: 'export views to PNG',
         builder: yargs =>
           yargs
-            .option('output', {
-              alias: 'o',
-              type: 'string',
-              describe: 'output directory',
-              desc: 'output directory',
-              normalize: true,
-              coerce: resolve
-            })
+            .option('output', outdir)
             .option('theme', {
               choices: ['light', 'dark'] as const,
               desc: 'color-scheme to use, default is light'
+            })
+            .option('flat', {
+              boolean: true,
+              type: 'boolean',
+              desc: 'ignore sources structure and export all PNGs in output directory'
             })
             .option('use-dot', useDotBin)
             .options({
               'ignore': {
                 boolean: true,
                 alias: 'i',
-                desc: 'continue if some views failed to export',
-                default: false
+                desc: 'continue if some views failed to export'
               },
               timeout: {
                 type: 'number',
@@ -49,8 +46,12 @@ export const exportCmd = {
               'max-attempts': {
                 type: 'number',
                 describe: '',
-                desc: '(number) if export failed, retry N times',
+                desc: '(number) max attempts to export failing view',
                 default: 3
+              },
+              'server-url': {
+                type: 'string',
+                desc: 'use this url instead of starting new likec4 server'
               }
             })
             .epilog(`${k.bold('Examples:')}
@@ -70,7 +71,9 @@ export const exportCmd = {
             output: args.output,
             timeoutMs: args.timeout * 1000,
             maxAttempts: args.maxAttempts,
-            ignore: args.ignore,
+            ignore: args.ignore === true,
+            outputType: args.flat ? 'flat' : 'relative',
+            serverUrl: args.serverUrl,
             theme: args.theme ?? 'light'
           })
         }

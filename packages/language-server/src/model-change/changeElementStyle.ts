@@ -1,4 +1,4 @@
-import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable, type ViewChanges } from '@likec4/core'
+import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable, type ViewChange } from '@likec4/core'
 import { GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-types'
@@ -8,7 +8,7 @@ import type { LikeC4Services } from '../module'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
 
-const asViewStyleRule = (target: string, style: ViewChanges.ChangeElementStyle['style'], indent = 0) => {
+const asViewStyleRule = (target: string, style: ViewChange.ChangeElementStyle['style'], indent = 0) => {
   const indentStr = indent > 0 ? ' '.repeat(indent) : ''
   return [
     indentStr + `style ${target} {`,
@@ -24,7 +24,7 @@ type ChangeElementStyleArg = {
   doc: ParsedLikeC4LangiumDocument
   viewAst: ast.LikeC4View
   targets: NonEmptyArray<Fqn>
-  style: ViewChanges.ChangeElementStyle['style']
+  style: ViewChange.ChangeElementStyle['style']
 }
 
 /**
@@ -116,7 +116,7 @@ export function changeElementStyle(services: LikeC4Services, {
     )
     modifiedRange.start = {
       line: insertPos.line + 1,
-      character: indent + 1
+      character: indent
     }
     modifiedRange.end = {
       line: insertPos.line + linesToInsert.length,
@@ -133,18 +133,12 @@ export function changeElementStyle(services: LikeC4Services, {
         const ruleProp = rule.props.find(p => p.key === key)
         // replace existing  property
         if (ruleProp && ruleProp.$cstNode) {
-          const { range: { start, end } } = nonNullable(
-            findNodeForProperty(ruleProp.$cstNode, 'value'),
-            'cant find value cst node'
-          )
+          const { range: { start, end } } = ruleProp.$cstNode
           includeRange({
             start,
-            end: {
-              line: start.line,
-              character: start.character + value.length
-            }
+            end
           })
-          edits.push(TextEdit.replace({ start, end }, value))
+          edits.push(TextEdit.replace({ start, end }, key + ' ' + value))
           continue
         }
         // insert new style property right after the opening brace

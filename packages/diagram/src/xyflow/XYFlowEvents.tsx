@@ -3,7 +3,7 @@ import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
 import { isNonNullish, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
-import { useDiagramStoreApi } from '../state/useDiagramStore'
+import { useDiagramStoreApi } from '../hooks/useDiagramState'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
 export type XYFlowEventHandlers = Simplify<
@@ -57,18 +57,21 @@ export function useXYFlowEvents() {
     return ({
       onDoubleClick: (event) => {
         const {
-          fitViewEnabled,
           onCanvasDblClick,
-          resetLastClicked,
-          fitDiagram
+          zoomable,
+          xystore,
+          viewportChanged,
+          fitDiagram,
+          resetLastClicked
         } = diagramApi.getState()
-        if (fitViewEnabled) {
-          fitDiagram()
-          if (!onCanvasDblClick) {
-            event.stopPropagation()
-          }
-        }
         resetLastClicked()
+        xystore.getState().resetSelectedElements()
+        if (!onCanvasDblClick) {
+          event.stopPropagation()
+        }
+        if (zoomable && viewportChanged) {
+          fitDiagram()
+        }
         onCanvasDblClick?.(event)
       },
       onPaneClick: (event) => {
@@ -80,6 +83,7 @@ export function useXYFlowEvents() {
           activeDynamicViewStep,
           fitDiagram,
           onCanvasClick,
+          xystore,
           resetLastClicked
         } = diagramApi.getState()
         if ((focusedNodeId ?? activeDynamicViewStep) !== null) {
@@ -89,6 +93,7 @@ export function useXYFlowEvents() {
           }
         }
         resetLastClicked()
+        xystore.getState().resetSelectedElements()
         onCanvasClick?.(event)
       },
       onNodeContextMenu: (event, xynode) => {
@@ -117,27 +122,42 @@ export function useXYFlowEvents() {
           fitDiagram,
           focusOnNode,
           onNodeClick,
+          xystore,
           enableFocusMode,
           lastClickedNodeId,
-          setLastClickedNode
+          nodesSelectable,
+          setLastClickedNode,
+          onOpenSourceElement
         } = diagramApi.getState()
         setLastClickedNode(xynode.id)
         // if we focused on a node, and clicked on another node - focus on the clicked node
         const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
         // if user clicked on the same node twice in a short time, focus on it
         const clickedRecently = lastClickedNodeId === xynode.id && lastClickWasRecent()
-        if (enableFocusMode) {
-          let stopPropagation = false
+
+        if (clickedRecently && !!onOpenSourceElement) {
+          onOpenSourceElement(xynode.data.element.id)
+        }
+
+        if (enableFocusMode || nodesSelectable) {
+          let stopPropagation = true
           switch (true) {
-            case !focusedNodeId && clickedRecently:
-            case shallChangeFocus:
-              stopPropagation = true
+            case enableFocusMode && !focusedNodeId && clickedRecently:
+            case enableFocusMode && shallChangeFocus: {
               focusOnNode(xynode.id)
               break
-            case focusedNodeId === xynode.id && clickedRecently:
-              stopPropagation = true
+            }
+            case enableFocusMode && focusedNodeId === xynode.id && clickedRecently: {
               fitDiagram()
               break
+            }
+            case nodesSelectable: {
+              xystore.getState().addSelectedNodes([xynode.id])
+              break
+            }
+            default: {
+              stopPropagation = false
+            }
           }
           if (!onNodeClick && stopPropagation) {
             // user did not provide a custom handler, stop propagation
@@ -179,6 +199,8 @@ export function useXYFlowEvents() {
           activateDynamicStep,
           activeDynamicViewStep,
           focusedNodeId,
+          xystore,
+          nodesSelectable,
           focusOnNode,
           onEdgeClick,
           setLastClickedEdge
@@ -204,7 +226,11 @@ export function useXYFlowEvents() {
         if (isEdgeOfFocusedNode) {
           focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
           if (!onEdgeClick) {
-            // user did not provide a custom handler, stop propagation
+            event.stopPropagation()
+          }
+        } else if (nodesSelectable) {
+          xystore.getState().addSelectedEdges([xyedge.id])
+          if (!onEdgeClick) {
             event.stopPropagation()
           }
         }

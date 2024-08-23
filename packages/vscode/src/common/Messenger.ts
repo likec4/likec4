@@ -57,12 +57,14 @@ export default class Messenger extends AbstractDisposable {
           if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
             viewColumn = vscode.ViewColumn.Beside
           }
+          const selection = location.range
+          const preserveFocus = viewColumn === vscode.ViewColumn.Beside
           const editor = await vscode.window.showTextDocument(location.uri, {
             viewColumn,
-            selection: location.range,
-            preserveFocus: viewColumn === vscode.ViewColumn.Beside
+            selection,
+            preserveFocus
           })
-          editor.revealRange(location.range)
+          editor.revealRange(selection)
 
           await vscode.workspace.save(location.uri)
         } catch (e) {

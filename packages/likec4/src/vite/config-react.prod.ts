@@ -1,7 +1,7 @@
 import type { LanguageServices } from '@/language-services'
 import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, JsBanners, viteAppRoot } from './utils'
@@ -35,9 +35,8 @@ export async function viteReactConfig({
       jsx: 'transform',
       jsxDev: false,
       minifyIdentifiers: false,
-      lineLimit: 150,
       minifySyntax: true,
-      minifyWhitespace: false,
+      minifyWhitespace: true,
       tsconfigRaw: {
         compilerOptions: {
           target: 'ES2020',

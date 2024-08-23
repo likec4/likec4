@@ -4,7 +4,7 @@ import type {
   ChangeViewRequest,
   ChangeViewRequestParams,
   ComputeViewRequest,
-  FetchModelRequest,
+  FetchComputedModelRequest,
   LocateParams,
   LocateRequest
 } from '@likec4/language-server/protocol'
@@ -20,8 +20,8 @@ const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 // #endregion
 
 // #region To server
-const fetchModel: FetchModelRequest = new RequestType0('likec4/fetchModel')
 const computeView: ComputeViewRequest = new RequestType('likec4/computeView')
+const fetchComputedModel: FetchComputedModelRequest = new RequestType0('likec4/fetchComputedModel')
 const buildDocuments: BuildDocumentsRequest = new RequestType('likec4/build')
 const locate: LocateRequest = new RequestType('likec4/locate')
 const changeView: ChangeViewRequest = new RequestType('likec4/change-view')
@@ -44,8 +44,8 @@ export class Rpc extends AbstractDisposable {
     return disposable
   }
 
-  async fetchModel() {
-    const { model } = await this.client.sendRequest(fetchModel)
+  async fetchComputedModel() {
+    const { model } = await this.client.sendRequest(fetchComputedModel)
     return model
   }
 

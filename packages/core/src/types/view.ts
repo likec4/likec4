@@ -3,7 +3,7 @@ import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { Opaque } from './opaque'
-import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
+import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
 
 // Full-qualified-name
@@ -196,6 +196,7 @@ export interface ComputedEdge {
   description?: string
   technology?: string
   relations: RelationID[]
+  kind?: RelationshipKind
   color?: ThemeColor
   line?: RelationshipLineType
   head?: RelationshipArrowType

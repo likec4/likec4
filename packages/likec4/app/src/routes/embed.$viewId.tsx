@@ -1,4 +1,4 @@
-import { StaticLikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, StaticLikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useLikeC4View } from 'virtual:likec4/store'
@@ -36,12 +36,24 @@ function EmbedPage() {
         maxHeight: '100vh'
       }}
     >
-      <StaticLikeC4Diagram
+      <LikeC4Diagram
         view={diagram}
+        readonly
+        fitView={true}
         fitViewPadding={0}
+        pannable={false}
+        zoomable={false}
+        controls={false}
         background={'transparent'}
+        enableDynamicViewWalkthrough={false}
+        showElementLinks={false}
+        showDiagramTitle={false}
+        nodesSelectable={false}
+        nodesDraggable={false}
+        enableFocusMode={false}
         renderIcon={RenderIcon}
-      />
+        initialWidth={diagram.bounds.width}
+        initialHeight={diagram.bounds.height} />
     </Box>
   )
 }

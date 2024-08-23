@@ -1,9 +1,10 @@
-import { type ComputedView, type DiagramView, isComputedDynamicView } from '@likec4/core'
+import { type ComputedView, type DiagramView, isComputedDynamicView, type OverviewGraph } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
-import { parseGraphvizJson } from './GraphvizParser'
+import { parseGraphvizJson, parseOverviewGraphvizJson } from './GraphvizParser'
+import { OverviewDiagramsPrinter } from './OverviewDiagramsPrinter'
 import type { DotSource } from './types'
 
 export interface GraphvizPort {
@@ -49,7 +50,7 @@ export class GraphvizLayouter {
           if (printer.hasEdgesWithCompounds) {
             // edges with coumpoudns are using _.ltail, _.lhead
             // This is not supported by FDP
-            logger.error(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
+            logger.warn(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
           } else {
             printer.applyManualLayout(result.relayout)
             const rawjson = await this.graphviz.layoutJson(printer.print())
@@ -92,5 +93,11 @@ export class GraphvizLayouter {
       logger.warn(`Error during unflatten: ${computedView.id}`, e)
       return dot
     }
+  }
+
+  async layoutOverviewGraph(views: ComputedView[]): Promise<OverviewGraph> {
+    const dot = OverviewDiagramsPrinter.toDot(views)
+    const rawjson = await this.graphviz.layoutJson(dot)
+    return parseOverviewGraphvizJson(rawjson)
   }
 }

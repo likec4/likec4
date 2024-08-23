@@ -1,0 +1,1016 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`OverviewDiagramsPrinter > dot without subgraph if single relativePath 1`] = `
+"strict graph {
+  layout = "osage";
+  pack = 100;
+  packmode = "array_ltc";
+  pad = 0.209;
+  fontname = "Arial";
+  splines = "polyline";
+  esep = "+20";
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+  ];
+  edge [
+    penwidth = 2;
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    width = 5.556;
+    height = 4.167;
+    fixedsize = true;
+    fontsize = 10;
+  ];
+  "index" [
+    likec4_type = "view";
+    likec4_id = "index";
+    sortv = 0;
+    label = "Untitled";
+  ];
+  "cloudView" [
+    likec4_type = "view";
+    likec4_id = "cloudView";
+    sortv = 1;
+    label = "Untitled";
+  ];
+}"
+`;
+
+exports[`OverviewDiagramsPrinter > parse 1`] = `
+{
+  "bounds": {
+    "height": 4288,
+    "width": 2700,
+    "x": 0,
+    "y": 0,
+  },
+  "edges": [],
+  "nodes": [
+    {
+      "height": 3356,
+      "id": "01",
+      "label": "subdirectory",
+      "parentId": null,
+      "path": "subdirectory",
+      "position": {
+        "x": 0,
+        "y": 0,
+      },
+      "type": "folder",
+      "width": 2700,
+    },
+    {
+      "height": 1892,
+      "id": "02",
+      "label": "sub1",
+      "parentId": "01",
+      "path": "subdirectory/sub1",
+      "position": {
+        "x": 50,
+        "y": 82,
+      },
+      "type": "folder",
+      "width": 1400,
+    },
+    {
+      "height": 1760,
+      "id": "03",
+      "label": "sub2",
+      "parentId": "02",
+      "path": "subdirectory/sub1/sub2",
+      "position": {
+        "x": 100,
+        "y": 164,
+      },
+      "type": "folder",
+      "width": 1300,
+    },
+    {
+      "height": 1628,
+      "id": "04",
+      "label": "sub3",
+      "parentId": "03",
+      "path": "subdirectory/sub1/sub2/sub3",
+      "position": {
+        "x": 150,
+        "y": 246,
+      },
+      "type": "folder",
+      "width": 1200,
+    },
+    {
+      "height": 432,
+      "id": "05",
+      "label": "index.c4",
+      "parentId": "04",
+      "path": "subdirectory/sub1/sub2/sub3/index.c4",
+      "position": {
+        "x": 200,
+        "y": 328,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 432,
+      "id": "06",
+      "label": "index1.c4",
+      "parentId": "04",
+      "path": "subdirectory/sub1/sub2/sub3/index1.c4",
+      "position": {
+        "x": 200,
+        "y": 860,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 432,
+      "id": "07",
+      "label": "index2.c4",
+      "parentId": "04",
+      "path": "subdirectory/sub1/sub2/sub3/index2.c4",
+      "position": {
+        "x": 200,
+        "y": 1392,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 432,
+      "id": "08",
+      "label": "index3.c4",
+      "parentId": "04",
+      "path": "subdirectory/sub1/sub2/sub3/index3.c4",
+      "position": {
+        "x": 800,
+        "y": 328,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 432,
+      "id": "09",
+      "label": "index4.c4",
+      "parentId": "04",
+      "path": "subdirectory/sub1/sub2/sub3/index4.c4",
+      "position": {
+        "x": 800,
+        "y": 860,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 1232,
+      "id": "10",
+      "label": "index.c4",
+      "parentId": "01",
+      "path": "subdirectory/index.c4",
+      "position": {
+        "x": 50,
+        "y": 2074,
+      },
+      "type": "file",
+      "width": 1500,
+    },
+    {
+      "height": 832,
+      "id": "11",
+      "label": "views.c4",
+      "parentId": "01",
+      "path": "subdirectory/views.c4",
+      "position": {
+        "x": 1650,
+        "y": 82,
+      },
+      "type": "file",
+      "width": 1000,
+    },
+    {
+      "height": 832,
+      "id": "12",
+      "label": "index.c4",
+      "parentId": null,
+      "path": "index.c4",
+      "position": {
+        "x": 0,
+        "y": 3456,
+      },
+      "type": "file",
+      "width": 1000,
+    },
+    {
+      "height": 300,
+      "id": "13",
+      "label": "Untitled",
+      "parentId": "05",
+      "position": {
+        "x": 250,
+        "y": 410,
+      },
+      "type": "view",
+      "viewId": "016",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "14",
+      "label": "Untitled",
+      "parentId": "06",
+      "position": {
+        "x": 250,
+        "y": 942,
+      },
+      "type": "view",
+      "viewId": "017",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "15",
+      "label": "Untitled",
+      "parentId": "07",
+      "position": {
+        "x": 250,
+        "y": 1474,
+      },
+      "type": "view",
+      "viewId": "018",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "16",
+      "label": "Untitled",
+      "parentId": "08",
+      "position": {
+        "x": 850,
+        "y": 410,
+      },
+      "type": "view",
+      "viewId": "019",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "17",
+      "label": "Untitled",
+      "parentId": "09",
+      "position": {
+        "x": 850,
+        "y": 942,
+      },
+      "type": "view",
+      "viewId": "020",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "18",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 100,
+        "y": 2156,
+      },
+      "type": "view",
+      "viewId": "008",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "19",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 100,
+        "y": 2556,
+      },
+      "type": "view",
+      "viewId": "009",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "20",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 100,
+        "y": 2956,
+      },
+      "type": "view",
+      "viewId": "010",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "21",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 600,
+        "y": 2156,
+      },
+      "type": "view",
+      "viewId": "011",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "22",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 600,
+        "y": 2556,
+      },
+      "type": "view",
+      "viewId": "012",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "23",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 600,
+        "y": 2956,
+      },
+      "type": "view",
+      "viewId": "013",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "24",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 1100,
+        "y": 2156,
+      },
+      "type": "view",
+      "viewId": "014",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "25",
+      "label": "Untitled",
+      "parentId": "10",
+      "position": {
+        "x": 1100,
+        "y": 2556,
+      },
+      "type": "view",
+      "viewId": "015",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "26",
+      "label": "Untitled",
+      "parentId": "11",
+      "position": {
+        "x": 1700,
+        "y": 164,
+      },
+      "type": "view",
+      "viewId": "004",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "27",
+      "label": "Untitled",
+      "parentId": "11",
+      "position": {
+        "x": 1700,
+        "y": 564,
+      },
+      "type": "view",
+      "viewId": "005",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "28",
+      "label": "Untitled",
+      "parentId": "11",
+      "position": {
+        "x": 2200,
+        "y": 164,
+      },
+      "type": "view",
+      "viewId": "006",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "29",
+      "label": "Untitled",
+      "parentId": "11",
+      "position": {
+        "x": 2200,
+        "y": 564,
+      },
+      "type": "view",
+      "viewId": "007",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "30",
+      "label": "Untitled",
+      "parentId": "12",
+      "position": {
+        "x": 50,
+        "y": 3538,
+      },
+      "type": "view",
+      "viewId": "000",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "31",
+      "label": "Untitled",
+      "parentId": "12",
+      "position": {
+        "x": 50,
+        "y": 3938,
+      },
+      "type": "view",
+      "viewId": "001",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "32",
+      "label": "Untitled",
+      "parentId": "12",
+      "position": {
+        "x": 550,
+        "y": 3538,
+      },
+      "type": "view",
+      "viewId": "002",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "33",
+      "label": "Untitled",
+      "parentId": "12",
+      "position": {
+        "x": 550,
+        "y": 3938,
+      },
+      "type": "view",
+      "viewId": "003",
+      "width": 400,
+    },
+  ],
+}
+`;
+
+exports[`OverviewDiagramsPrinter > parse edges 1`] = `
+"strict graph {
+  layout = "osage";
+  pack = 100;
+  packmode = "array_ltc";
+  pad = 0.209;
+  fontname = "Arial";
+  splines = "polyline";
+  esep = "+20";
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+  ];
+  edge [
+    penwidth = 2;
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    width = 5.556;
+    height = 4.167;
+    fixedsize = true;
+    fontsize = 10;
+  ];
+  subgraph "cluster1" {
+    likec4_type = "folder";
+    likec4_path = "sub1";
+    sortv = 0;
+    label = "sub1";
+    subgraph "cluster2" {
+      likec4_type = "folder";
+      likec4_path = "sub1/sub2";
+      sortv = 1;
+      label = "sub2";
+      subgraph "cluster3" {
+        likec4_type = "file";
+        likec4_path = "sub1/sub2/doc1.c4";
+        sortv = 2;
+        label = "doc1.c4";
+        "index" [
+          likec4_type = "view";
+          likec4_id = "index";
+          sortv = 4;
+          label = "Untitled";
+        ];
+      }
+    }
+  }
+  subgraph "cluster4" {
+    likec4_type = "folder";
+    likec4_path = "amazon";
+    sortv = 3;
+    label = "amazon";
+    subgraph "cluster5" {
+      likec4_type = "file";
+      likec4_path = "amazon/doc3.c4";
+      sortv = 4;
+      label = "doc3.c4";
+      "amazon" [
+        likec4_type = "view";
+        likec4_id = "amazon";
+        sortv = 5;
+        label = "Untitled";
+      ];
+    }
+  }
+  subgraph "cluster6" {
+    likec4_type = "folder";
+    likec4_path = "cloud";
+    sortv = 5;
+    label = "cloud";
+    subgraph "cluster7" {
+      likec4_type = "file";
+      likec4_path = "cloud/doc2.c4";
+      sortv = 6;
+      label = "doc2.c4";
+      "cloudView" [
+        likec4_type = "view";
+        likec4_id = "cloudView";
+        sortv = 6;
+        label = "Untitled";
+      ];
+    }
+  }
+  "index" -- "cloudView";
+  "index" -- "amazon";
+  "amazon" -- "index";
+  "cloudView" -- "amazon";
+}"
+`;
+
+exports[`OverviewDiagramsPrinter > parse edges 2`] = `
+{
+  "bounds": {
+    "height": 1360,
+    "width": 1400,
+    "x": 0,
+    "y": 0,
+  },
+  "edges": [
+    {
+      "id": "link02",
+      "points": [
+        [
+          551,
+          374,
+        ],
+        [
+          659,
+          362,
+        ],
+        [
+          791,
+          348,
+        ],
+        [
+          900,
+          336,
+        ],
+      ],
+      "source": "08",
+      "target": "10",
+    },
+    {
+      "id": "link01",
+      "points": [
+        [
+          340,
+          546,
+        ],
+        [
+          331,
+          668,
+        ],
+        [
+          319,
+          838,
+        ],
+        [
+          311,
+          960,
+        ],
+      ],
+      "source": "08",
+      "target": "09",
+    },
+    {
+      "id": "link03",
+      "points": [
+        [
+          949,
+          464,
+        ],
+        [
+          806,
+          606,
+        ],
+        [
+          594,
+          818,
+        ],
+        [
+          451,
+          960,
+        ],
+      ],
+      "source": "10",
+      "target": "09",
+    },
+  ],
+  "nodes": [
+    {
+      "height": 696,
+      "id": "01",
+      "label": "sub1",
+      "parentId": null,
+      "path": "sub1",
+      "position": {
+        "x": 0,
+        "y": 0,
+      },
+      "type": "folder",
+      "width": 700,
+    },
+    {
+      "height": 564,
+      "id": "02",
+      "label": "sub2",
+      "parentId": "01",
+      "path": "sub1/sub2",
+      "position": {
+        "x": 50,
+        "y": 82,
+      },
+      "type": "folder",
+      "width": 600,
+    },
+    {
+      "height": 432,
+      "id": "03",
+      "label": "doc1.c4",
+      "parentId": "02",
+      "path": "sub1/sub2/doc1.c4",
+      "position": {
+        "x": 100,
+        "y": 164,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 564,
+      "id": "04",
+      "label": "amazon",
+      "parentId": null,
+      "path": "amazon",
+      "position": {
+        "x": 0,
+        "y": 796,
+      },
+      "type": "folder",
+      "width": 600,
+    },
+    {
+      "height": 432,
+      "id": "05",
+      "label": "doc3.c4",
+      "parentId": "04",
+      "path": "amazon/doc3.c4",
+      "position": {
+        "x": 50,
+        "y": 878,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 564,
+      "id": "06",
+      "label": "cloud",
+      "parentId": null,
+      "path": "cloud",
+      "position": {
+        "x": 800,
+        "y": 0,
+      },
+      "type": "folder",
+      "width": 600,
+    },
+    {
+      "height": 432,
+      "id": "07",
+      "label": "doc2.c4",
+      "parentId": "06",
+      "path": "cloud/doc2.c4",
+      "position": {
+        "x": 850,
+        "y": 82,
+      },
+      "type": "file",
+      "width": 500,
+    },
+    {
+      "height": 300,
+      "id": "08",
+      "label": "Untitled",
+      "parentId": "03",
+      "position": {
+        "x": 150,
+        "y": 246,
+      },
+      "type": "view",
+      "viewId": "index",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "09",
+      "label": "Untitled",
+      "parentId": "05",
+      "position": {
+        "x": 100,
+        "y": 960,
+      },
+      "type": "view",
+      "viewId": "amazon",
+      "width": 400,
+    },
+    {
+      "height": 300,
+      "id": "10",
+      "label": "Untitled",
+      "parentId": "07",
+      "position": {
+        "x": 900,
+        "y": 164,
+      },
+      "type": "view",
+      "viewId": "cloudView",
+      "width": 400,
+    },
+  ],
+}
+`;
+
+exports[`OverviewDiagramsPrinter > toDot 1`] = `
+"strict graph {
+  layout = "osage";
+  pack = 100;
+  packmode = "array_ltc";
+  pad = 0.209;
+  fontname = "Arial";
+  splines = "polyline";
+  esep = "+20";
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+  ];
+  edge [
+    penwidth = 2;
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    width = 5.556;
+    height = 4.167;
+    fixedsize = true;
+    fontsize = 10;
+  ];
+  subgraph "cluster1" {
+    likec4_type = "folder";
+    likec4_path = "subdirectory";
+    sortv = 0;
+    label = "subdirectory";
+    subgraph "cluster2" {
+      likec4_type = "folder";
+      likec4_path = "subdirectory/sub1";
+      sortv = 1;
+      label = "sub1";
+      subgraph "cluster3" {
+        likec4_type = "folder";
+        likec4_path = "subdirectory/sub1/sub2";
+        sortv = 2;
+        label = "sub2";
+        subgraph "cluster4" {
+          likec4_type = "folder";
+          likec4_path = "subdirectory/sub1/sub2/sub3";
+          sortv = 3;
+          label = "sub3";
+          subgraph "cluster5" {
+            likec4_type = "file";
+            likec4_path = "subdirectory/sub1/sub2/sub3/index.c4";
+            sortv = 4;
+            label = "index.c4";
+            "016" [
+              likec4_type = "view";
+              likec4_id = "016";
+              sortv = 6;
+              label = "Untitled";
+            ];
+          }
+          subgraph "cluster6" {
+            likec4_type = "file";
+            likec4_path = "subdirectory/sub1/sub2/sub3/index1.c4";
+            sortv = 5;
+            label = "index1.c4";
+            "017" [
+              likec4_type = "view";
+              likec4_id = "017";
+              sortv = 7;
+              label = "Untitled";
+            ];
+          }
+          subgraph "cluster7" {
+            likec4_type = "file";
+            likec4_path = "subdirectory/sub1/sub2/sub3/index2.c4";
+            sortv = 6;
+            label = "index2.c4";
+            "018" [
+              likec4_type = "view";
+              likec4_id = "018";
+              sortv = 8;
+              label = "Untitled";
+            ];
+          }
+          subgraph "cluster8" {
+            likec4_type = "file";
+            likec4_path = "subdirectory/sub1/sub2/sub3/index3.c4";
+            sortv = 7;
+            label = "index3.c4";
+            "019" [
+              likec4_type = "view";
+              likec4_id = "019";
+              sortv = 9;
+              label = "Untitled";
+            ];
+          }
+          subgraph "cluster9" {
+            likec4_type = "file";
+            likec4_path = "subdirectory/sub1/sub2/sub3/index4.c4";
+            sortv = 8;
+            label = "index4.c4";
+            "020" [
+              likec4_type = "view";
+              likec4_id = "020";
+              sortv = 10;
+              label = "Untitled";
+            ];
+          }
+        }
+      }
+    }
+    subgraph "cluster10" {
+      likec4_type = "file";
+      likec4_path = "subdirectory/index.c4";
+      sortv = 9;
+      label = "index.c4";
+      "008" [
+        likec4_type = "view";
+        likec4_id = "008";
+        sortv = 11;
+        label = "Untitled";
+      ];
+      "009" [
+        likec4_type = "view";
+        likec4_id = "009";
+        sortv = 12;
+        label = "Untitled";
+      ];
+      "010" [
+        likec4_type = "view";
+        likec4_id = "010";
+        sortv = 13;
+        label = "Untitled";
+      ];
+      "011" [
+        likec4_type = "view";
+        likec4_id = "011";
+        sortv = 14;
+        label = "Untitled";
+      ];
+      "012" [
+        likec4_type = "view";
+        likec4_id = "012";
+        sortv = 15;
+        label = "Untitled";
+      ];
+      "013" [
+        likec4_type = "view";
+        likec4_id = "013";
+        sortv = 16;
+        label = "Untitled";
+      ];
+      "014" [
+        likec4_type = "view";
+        likec4_id = "014";
+        sortv = 17;
+        label = "Untitled";
+      ];
+      "015" [
+        likec4_type = "view";
+        likec4_id = "015";
+        sortv = 18;
+        label = "Untitled";
+      ];
+    }
+    subgraph "cluster11" {
+      likec4_type = "file";
+      likec4_path = "subdirectory/views.c4";
+      sortv = 10;
+      label = "views.c4";
+      "004" [
+        likec4_type = "view";
+        likec4_id = "004";
+        sortv = 19;
+        label = "Untitled";
+      ];
+      "005" [
+        likec4_type = "view";
+        likec4_id = "005";
+        sortv = 20;
+        label = "Untitled";
+      ];
+      "006" [
+        likec4_type = "view";
+        likec4_id = "006";
+        sortv = 21;
+        label = "Untitled";
+      ];
+      "007" [
+        likec4_type = "view";
+        likec4_id = "007";
+        sortv = 22;
+        label = "Untitled";
+      ];
+    }
+  }
+  subgraph "cluster12" {
+    likec4_type = "file";
+    likec4_path = "index.c4";
+    sortv = 11;
+    label = "index.c4";
+    "000" [
+      likec4_type = "view";
+      likec4_id = "000";
+      sortv = 23;
+      label = "Untitled";
+    ];
+    "001" [
+      likec4_type = "view";
+      likec4_id = "001";
+      sortv = 24;
+      label = "Untitled";
+    ];
+    "002" [
+      likec4_type = "view";
+      likec4_id = "002";
+      sortv = 25;
+      label = "Untitled";
+    ];
+    "003" [
+      likec4_type = "view";
+      likec4_id = "003";
+      sortv = 26;
+      label = "Untitled";
+    ];
+  }
+}"
+`;

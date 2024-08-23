@@ -1,8 +1,8 @@
 import { consola } from '@likec4/log'
 import { isCI } from 'ci-info'
 import { hrtime } from 'node:process'
-import k from 'picocolors'
 import prettyMilliseconds from 'pretty-ms'
+import k from 'tinyrainbow'
 import type { LogErrorOptions, LogOptions } from 'vite'
 import { createLogger } from 'vite'
 
@@ -34,7 +34,7 @@ export function createLikeC4Logger(prefix: string) {
     },
     error(err: unknown, options?: LogErrorOptions) {
       if (err instanceof Error) {
-        logger.error(`${ERROR} ${err.stack ?? err.message}`, {
+        logger.error(`${ERROR} ${k.red(err.stack ?? err.name + ' ' + err.message)}`, {
           timestamp,
           error: err,
           ...options

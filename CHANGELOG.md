@@ -1,5 +1,45 @@
-## [1.7.2](https://github.com/likec4/likec4/compare/v1.7.1...v1.7.2) (2024-08-10)
+## [1.7.4](https://github.com/likec4/likec4/compare/v1.7.3...v1.7.4) (2024-08-17)
 
+### Bug Fixes
+
+* broken export to png
+* add downloadedRef to track if download has already occurred
+* compact diagram title panel and zoom out on double click
+
+
+## [1.7.3](https://github.com/likec4/likec4/compare/v1.7.2...v1.7.3) (2024-08-16)
+
+### Improvements
+
+* **dsl:** hiding relationship titles in views (closes [#910](https://github.com/likec4/likec4/issues/910))
+* **react:** `where` filter on react components (closes [#872](https://github.com/likec4/likec4/issues/872), [documentation](https://likec4.dev/tooling/codegen/#filter))
+  
+  ```jsx
+  // Display elements and relationships where:
+  // - tag is not 'legacy'
+  // - and
+  // - tag is 'v1' or 'v2'
+  <LikeC4View
+    viewId="index"
+    where={{
+      and: [
+        { tag: { neq: 'legacy' } },
+        {
+          or: [
+            { tag: { eq: 'v1' } },
+            { tag: { eq: 'v2' } }
+          ]
+        }
+      ]
+    }}/>
+  ```
+* **react:** export to png in new tab ([198d79e](https://github.com/likec4/likec4/commit/198d79e19d99a8e68393dad76ee6f670e44e491e))
+* **cli:** export png to flat directory ([bcd23dd](https://github.com/likec4/likec4/commit/bcd23ddf46359a354d262c1adf47b60fd46bde61))
+* **cli:** warn layout drifts ([49c1100](https://github.com/likec4/likec4/commit/49c1100fa09d15a10913e76f41f8d83730515577))
+
+
+
+## [1.7.2](https://github.com/likec4/likec4/compare/v1.7.1...v1.7.2) (2024-08-10)
 
 ### Bug Fixes
 

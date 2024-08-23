@@ -4,58 +4,61 @@ import type { NonEmptyArray } from './_common'
 
 export type EqualOperator<V> = {
   eq: V
+  neq?: never
 } | {
+  eq?: never
   neq: V
 }
 
-export interface TagEqual {
-  tag: EqualOperator<string>
+type AllNever = {
+  not?: never
+  and?: never
+  or?: never
+  tag?: never
+  kind?: never
 }
-export const isTagEqual = (operator: WhereOperator): operator is TagEqual => {
+
+export type TagEqual<Tag> = Omit<AllNever, 'tag'> & {
+  tag: EqualOperator<Tag>
+}
+export const isTagEqual = <Tag>(operator: WhereOperator<Tag, any>): operator is TagEqual<Tag> => {
   return 'tag' in operator
 }
 
-export interface KindEqual {
-  kind: EqualOperator<string>
+export type KindEqual<Kind> = Omit<AllNever, 'kind'> & {
+  kind: EqualOperator<Kind>
 }
-export const isKindEqual = (operator: WhereOperator): operator is KindEqual => {
+export const isKindEqual = <Kind>(operator: WhereOperator<any, Kind>): operator is KindEqual<Kind> => {
   return 'kind' in operator
 }
 
-export interface NotOperator<T> {
-  not: T
+export type NotOperator<Tag, Kind> = Omit<AllNever, 'not'> & {
+  not: WhereOperator<Tag, Kind>
 }
-export const isNotOperator = (operator: WhereOperator): operator is NotOperator<WhereOperator> => {
+export const isNotOperator = <Tag, Kind>(operator: WhereOperator<Tag, Kind>): operator is NotOperator<Tag, Kind> => {
   return 'not' in operator
 }
 
-export interface AndOperator<T> {
-  and: NonEmptyArray<T>
+export type AndOperator<Tag, Kind> = Omit<AllNever, 'and'> & {
+  and: NonEmptyArray<WhereOperator<Tag, Kind>>
 }
-export const isAndOperator = (operator: WhereOperator): operator is AndOperator<WhereOperator> => {
+export const isAndOperator = <Tag, Kind>(operator: WhereOperator<Tag, Kind>): operator is AndOperator<Tag, Kind> => {
   return 'and' in operator
 }
 
-export interface OrOperator<T> {
-  or: NonEmptyArray<T>
+export type OrOperator<Tag, Kind> = Omit<AllNever, 'or'> & {
+  or: NonEmptyArray<WhereOperator<Tag, Kind>>
 }
-export const isOrOperator = (operator: WhereOperator): operator is OrOperator<WhereOperator> => {
+export const isOrOperator = <Tag, Kind>(operator: WhereOperator<Tag, Kind>): operator is OrOperator<Tag, Kind> => {
   return 'or' in operator
 }
 
-export type WhereOperator =
-  | TagEqual
-  | KindEqual
-  | NotOperator<WhereOperator>
-  | AndOperator<WhereOperator>
-  | OrOperator<WhereOperator>
-// type Ops<T> = UnionToIntersection<Op<T>>
-// type Op1<T> = RequireExactlyOne<T>
-
-// export type Operator1<T> = T extends Op<T> ? Op1<Ops<T>> : never
-// export type Operator = Operator1<any>
-
-// type L = keyof UnionToIntersection<Op<any>>
+export type WhereOperator<Tag, Kind> =
+  | TagEqual<Tag>
+  | KindEqual<Kind>
+  | NotOperator<Tag, Kind>
+  | AndOperator<Tag, Kind>
+  | OrOperator<Tag, Kind>
 
 type Filterable<
   FTag extends string = string,
@@ -70,7 +73,7 @@ type OperatorPredicate<V extends Filterable> = (value: V) => boolean
 export function whereOperatorAsPredicate<
   FTag extends string = string,
   FKind extends string = string
->(operator: WhereOperator): OperatorPredicate<Filterable<FTag, FKind>> {
+>(operator: WhereOperator<FTag, FKind>): OperatorPredicate<Filterable<FTag, FKind>> {
   switch (true) {
     case isTagEqual(operator): {
       if ('eq' in operator.tag) {

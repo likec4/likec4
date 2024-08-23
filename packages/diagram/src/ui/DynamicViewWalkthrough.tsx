@@ -8,8 +8,7 @@ import {
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { isNullish, isNumber } from 'remeda'
-import { useDiagramState } from '../state/hooks'
-import { useXYStore } from '../xyflow/hooks/useXYFlow'
+import { useDiagramState, useXYStore } from '../hooks'
 import * as css from './DynamicViewWalkthrough.css'
 
 export function DynamicViewWalkthrough() {

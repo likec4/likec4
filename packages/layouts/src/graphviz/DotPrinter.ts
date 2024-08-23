@@ -137,92 +137,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     }) as DotSource
   }
 
-  /**
-   * Use coordinates from given diagram as initial position for nodes
-   * (try to keep existing layout as much as possible)
-   */
-  public applyManualLayout({ height, ...layout }: ApplyManualLayoutData): this {
-    const offsetX = layout.x < 0 ? -layout.x : 0
-    const offsetY = layout.y < 0 ? -layout.y : 0
-    const isShifted = offsetX > 0 || offsetY > 0
-    for (const { id, ...manual } of layout.nodes) {
-      // we pin only nodes, not clusters
-      const model = this.getGraphNode(id as Fqn)
-      if (!model) {
-        continue
-      }
-
-      // Invert Y axis and convert to inches
-      const x = pxToInch(manual.center.x) + offsetX
-      const y = pxToInch(height - manual.center.y)
-      if (manual.fixedsize) {
-        model.attributes.apply({
-          [_.pos]: `${x},${y}!`,
-          [_.pin]: true,
-          [_.width]: pxToInch(manual.fixedsize.width),
-          [_.height]: pxToInch(manual.fixedsize.height),
-          [_.fixedsize]: true
-        })
-      } else {
-        // Not pinned, but suggested position
-        model.attributes.set(_.pos, `${x},${y}`)
-      }
-    }
-    for (const [id, edgeModel] of this.edges.entries()) {
-      edgeModel.attributes.delete(_.weight)
-      edgeModel.attributes.delete(_.minlen)
-      edgeModel.attributes.delete(_.constraint)
-      const dotpos = layout.edges.find(e => e.id === id)?.dotpos
-      if (dotpos && !isShifted) {
-        edgeModel.attributes.set(_.pos, dotpos)
-      }
-      const xlabel = edgeModel.attributes.get(_.xlabel)
-      if (xlabel) {
-        edgeModel.attributes.delete(_.xlabel)
-        edgeModel.attributes.set(_.label, xlabel)
-      }
-    }
-    // TODO: apply manual layout fails when there are edges with compounds
-    // Array.from(this.edgesWithCompounds.values()).forEach(edgeId => {
-    //   const edge = this.edges.get(edgeId)!
-    //   if (!edge) {
-    //     return
-    //   }
-    //   const source = edge.attributes.get(_.ltail) ?? edge.targets[0]
-    //   const target = edge.attributes.get(_.lhead) ?? edge.targets[1]
-
-    //   edge.attributes.delete(_.ltail)
-    //   edge.attributes.delete(_.lhead)
-
-    //   const xlabel = edge.attributes.get(_.xlabel)
-    //   if (xlabel) {
-    //     edge.attributes.delete(_.xlabel)
-    //     edge.attributes.set(_.label, xlabel)
-    //   }
-    //   this.graphvizModel.edge([source, target]).attributes.apply(edge.attributes.values)
-    //   this.graphvizModel.removeEdge(edge)
-    // })
-
-    this.graphvizModel.apply({
-      [_.layout]: 'fdp',
-      // [_.scale]: 72.0,
-      [_.overlap]: 'vpsc',
-      [_.sep]: '+50,50',
-      [_.esep]: '+10,10',
-      [_.start]: 'random2',
-      [_.splines]: 'compound'
-    })
-    this.graphvizModel.delete(_.compound)
-    this.graphvizModel.delete(_.rankdir)
-    this.graphvizModel.delete(_.nodesep)
-    this.graphvizModel.delete(_.ranksep)
-    this.graphvizModel.delete(_.pack)
-    this.graphvizModel.delete(_.pad)
-    this.graphvizModel.delete(_.packmode)
-    this.graphvizModel.attributes.graph.delete(_.margin)
-    return this
-  }
-
   protected createGraph(): RootGraphModel {
     const isVertical = this.view.autoLayout === 'TB' || this.view.autoLayout === 'BT'
     const G = digraph({
@@ -232,14 +146,17 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.rankdir]: this.view.autoLayout,
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
+      [_.outputorder]: 'nodesfirst',
       // [_.mclimit]: 5,
       // [_.nslimit]: 5,
       // [_.nslimit1]: 5,
+      // [_.ratio]
       [_.nodesep]: pxToInch(100),
       [_.ranksep]: pxToInch(110),
       [_.pack]: pxToPoints(100),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15),
+      [_.forcelabels]: true,
       [_.fontname]: FontName
     })
     G.attributes.graph.apply({
@@ -501,5 +418,86 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         }
       }
     }
+  }
+
+  /**
+   * Use coordinates from given diagram as initial position for nodes
+   * (try to keep existing layout as much as possible)
+   */
+  public applyManualLayout({ height, ...layout }: ApplyManualLayoutData): this {
+    const offsetX = layout.x < 0 ? -layout.x : 0
+    const offsetY = layout.y < 0 ? -layout.y : 0
+    const isShifted = offsetX > 0 || offsetY > 0
+    for (const { id, ...manual } of layout.nodes) {
+      // we pin only nodes, not clusters
+      const model = this.getGraphNode(id as Fqn)
+      if (!model) {
+        continue
+      }
+
+      // Invert Y axis and convert to inches
+      const x = pxToInch(manual.center.x) + offsetX
+      const y = pxToInch(height - manual.center.y)
+      if (manual.fixedsize) {
+        model.attributes.apply({
+          [_.pos]: `${x},${y}!`,
+          [_.pin]: true,
+          [_.width]: pxToInch(manual.fixedsize.width),
+          [_.height]: pxToInch(manual.fixedsize.height),
+          [_.fixedsize]: true
+        })
+      } else {
+        // Not pinned, but suggested position
+        model.attributes.set(_.pos, `${x},${y}`)
+      }
+    }
+    for (const [id, edgeModel] of this.edges.entries()) {
+      edgeModel.attributes.delete(_.weight)
+      edgeModel.attributes.delete(_.minlen)
+      edgeModel.attributes.delete(_.constraint)
+      const dotpos = layout.edges.find(e => e.id === id)?.dotpos
+      if (dotpos && !isShifted) {
+        edgeModel.attributes.set(_.pos, dotpos)
+      }
+    }
+    // TODO: apply manual layout fails when there are edges with compounds
+    // Array.from(this.edgesWithCompounds.values()).forEach(edgeId => {
+    //   const edge = this.edges.get(edgeId)!
+    //   if (!edge) {
+    //     return
+    //   }
+    //   const source = edge.attributes.get(_.ltail) ?? edge.targets[0]
+    //   const target = edge.attributes.get(_.lhead) ?? edge.targets[1]
+
+    //   edge.attributes.delete(_.ltail)
+    //   edge.attributes.delete(_.lhead)
+
+    //   const xlabel = edge.attributes.get(_.xlabel)
+    //   if (xlabel) {
+    //     edge.attributes.delete(_.xlabel)
+    //     edge.attributes.set(_.label, xlabel)
+    //   }
+    //   this.graphvizModel.edge([source, target]).attributes.apply(edge.attributes.values)
+    //   this.graphvizModel.removeEdge(edge)
+    // })
+
+    this.graphvizModel.apply({
+      [_.layout]: 'fdp',
+      // [_.scale]: 72.0,
+      [_.overlap]: 'vpsc',
+      [_.sep]: '+50,50',
+      [_.esep]: '+10,10',
+      [_.start]: 'random2',
+      [_.splines]: 'compound'
+    })
+    this.graphvizModel.delete(_.compound)
+    this.graphvizModel.delete(_.rankdir)
+    this.graphvizModel.delete(_.nodesep)
+    this.graphvizModel.delete(_.ranksep)
+    this.graphvizModel.delete(_.pack)
+    this.graphvizModel.delete(_.pad)
+    this.graphvizModel.delete(_.packmode)
+    this.graphvizModel.attributes.graph.delete(_.margin)
+    return this
   }
 }

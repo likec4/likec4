@@ -2,7 +2,7 @@ import { invariant, nonexhaustive } from '@likec4/core'
 import { generateD2, generateMermaid, generateViewsDataTs } from '@likec4/generators'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
-import k from 'picocolors'
+import k from 'tinyrainbow'
 import type { Logger } from 'vite'
 import { LanguageServices } from '../../language-services'
 import { createLikeC4Logger, startTimer } from '../../logger'
@@ -28,7 +28,6 @@ type HandlerParams =
 
 async function singleFileCodegenAction(
   languageServices: LanguageServices,
-  format: 'views',
   outfile: string | undefined,
   logger: Logger
 ) {
@@ -153,7 +152,7 @@ export async function reactLegacyHandler({ path, useDotBin, ...outparams }: Hand
 
   switch (outparams.format) {
     case 'views': {
-      await singleFileCodegenAction(languageServices, outparams.format, outparams.outfile, logger)
+      await singleFileCodegenAction(languageServices, outparams.outfile, logger)
       break
     }
     case 'dot': {

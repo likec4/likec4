@@ -1,5 +1,5 @@
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../mantine.css'
+import { mantine, whereDark } from '../mantine.css'
 import { vars } from '../theme.css'
 
 export const container = style({
@@ -18,16 +18,16 @@ export const card = style({
   backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   '@media': {
     [mantine.largerThan('sm')]: {
-      minWidth: 300,
+      minWidth: 250,
       maxWidth: '90vw'
     },
     [mantine.largerThan('md')]: {
-      minWidth: 400,
+      minWidth: 350,
       maxWidth: '70vw'
     }
   },
   selectors: {
-    [`:where([data-mantine-color-scheme='dark']) &`]: {
+    [`${whereDark} &`]: {
       backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`
     }
   }
@@ -37,8 +37,10 @@ export const title = style({})
 
 export const description = style({
   whiteSpaceCollapse: 'preserve-breaks',
-  color: mantine.colors.gray[7]
-})
-globalStyle(`:where([data-mantine-color-scheme="dark"]) ${description}`, {
-  color: mantine.colors.gray[5]
+  color: mantine.colors.gray[7],
+  selectors: {
+    [`${whereDark} &`]: {
+      color: mantine.colors.gray[5]
+    }
+  }
 })

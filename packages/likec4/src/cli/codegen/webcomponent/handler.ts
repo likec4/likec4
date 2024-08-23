@@ -5,9 +5,9 @@ import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
-import k from 'picocolors'
 import { hasAtLeast } from 'remeda'
 import stripIndent from 'strip-indent'
+import k from 'tinyrainbow'
 import { build } from 'vite'
 import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
@@ -40,6 +40,12 @@ export async function webcomponentHandler({
     process.exitCode = 1
     throw new Error('no views found')
   }
+
+  diagrams.forEach(view => {
+    if (view.hasLayoutDrift) {
+      logger.warn(k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id))
+    }
+  })
 
   let outfilepath = resolve(languageServices.workspace, 'likec4-views.js')
   if (outfile) {

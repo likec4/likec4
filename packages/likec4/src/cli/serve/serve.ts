@@ -1,5 +1,14 @@
+import { exportViewsToPNG } from '@/cli/export/png/handler'
 import { LanguageServices } from '@/language-services'
+import { createLikeC4Logger } from '@/logger'
+import { printServerUrls, resolveServerUrl } from '@/vite/printServerUrls'
 import { viteDev } from '@/vite/vite-dev'
+import { delay } from '@likec4/core'
+import { mkdtemp } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { hasAtLeast } from 'remeda'
+import k from 'tinyrainbow'
 
 type HandlerParams = {
   /**
@@ -15,6 +24,11 @@ type HandlerParams = {
 
   useHashHistory: boolean | undefined
 
+  /**
+   * overview all diagrams as graph
+   */
+  useOverview?: boolean | undefined
+
   webcomponentPrefix: string
 }
 
@@ -23,16 +37,55 @@ export async function handler({
   useDotBin,
   webcomponentPrefix,
   useHashHistory,
+  useOverview = false,
   base
 }: HandlerParams) {
   const languageServices = await LanguageServices.get({ path, useDotBin })
+  const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
+  // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
+  // await mkdir(likec4AssetsDir, { recursive: true })
 
-  await viteDev({
+  const server = await viteDev({
     buildWebcomponent: false,
     hmr: true,
     base,
     webcomponentPrefix,
     languageServices,
-    useHashHistory
+    useHashHistory,
+    useOverviewGraph: useOverview,
+    likec4AssetsDir
   })
+
+  server.config.logger.clearScreen('info')
+  printServerUrls(server)
+
+  if (!useOverview) {
+    return
+  }
+  const views = await languageServices.views.diagrams()
+
+  if (hasAtLeast(views, 1)) {
+    const logger = createLikeC4Logger('c4:export')
+    const serverUrl = resolveServerUrl(server)
+    if (!serverUrl) {
+      logger.error('no preview server url')
+      return
+    }
+    logger.info(k.cyan(`wait 5sec before generating previews`))
+    await delay(5000)
+
+    try {
+      await exportViewsToPNG({
+        serverUrl,
+        logger,
+        views,
+        theme: 'light',
+        output: likec4AssetsDir,
+        outputType: 'flat'
+      })
+    } catch (error) {
+      logger.error(k.red('Failed to generate previews'))
+      logger.error(error)
+    }
+  }
 }

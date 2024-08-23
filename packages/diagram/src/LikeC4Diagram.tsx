@@ -4,11 +4,11 @@ import { shallowEqual } from 'fast-equals'
 import { domAnimation, LazyMotion } from 'framer-motion'
 import { memo, useRef } from 'react'
 import { rootClassName } from './globals.css'
+import { useDiagramState } from './hooks/useDiagramState'
 import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
-import { useDiagramState } from './state/useDiagramStore'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
@@ -30,9 +30,8 @@ export function LikeC4Diagram({
   controls = false,
   showElementLinks = true,
   showDiagramTitle = true,
-  showNavigationButtons = false,
   enableDynamicViewWalkthrough = false,
-  enableFocusMode = readonly,
+  enableFocusMode = false,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -46,8 +45,13 @@ export function LikeC4Diagram({
   onNavigateTo,
   onNodeClick,
   onNodeContextMenu,
-  onEditorCommand,
-  renderIcon
+  onOpenSourceElement,
+  onOpenSourceView,
+  onOpenSourceRelation,
+  onBurgerMenuClick,
+  renderIcon,
+  where,
+  showNavigationButtons = !!onNavigateTo
 }: LikeC4DiagramProps) {
   const initialRef = useRef({
     defaultNodes: [] as XYFlowNode[],
@@ -55,7 +59,9 @@ export function LikeC4Diagram({
     initialWidth: initialWidth ?? view.bounds.width,
     initialHeight: initialHeight ?? view.bounds.height
   })
-  // useLogger('LikeC4Diagram', [{view}])
+  if (readonly !== true && !!where) {
+    console.warn('where filter is only supported in readonly mode')
+  }
   return (
     <EnsureMantine>
       <LazyMotion features={domAnimation} strict>
@@ -73,11 +79,13 @@ export function LikeC4Diagram({
             fitViewEnabled={fitView}
             fitViewPadding={fitViewPadding}
             showElementLinks={showElementLinks}
+            showNavigationButtons={showNavigationButtons}
             nodesDraggable={nodesDraggable}
             nodesSelectable={nodesSelectable}
             experimentalEdgeEditing={experimentalEdgeEditing}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableFocusMode={enableFocusMode}
+            whereFilter={where ?? null}
             renderIcon={renderIcon ?? null}
             onCanvasClick={onCanvasClick ?? null}
             onCanvasContextMenu={onCanvasContextMenu ?? null}
@@ -88,13 +96,15 @@ export function LikeC4Diagram({
             onChange={onChange ?? null}
             onNavigateTo={onNavigateTo ?? null}
             onCanvasDblClick={onCanvasDblClick ?? null}
-            onEditorCommand={onEditorCommand ?? null}
+            onOpenSourceView={onOpenSourceView ?? null}
+            onOpenSourceElement={onOpenSourceElement ?? null}
+            onOpenSourceRelation={onOpenSourceRelation ?? null}
+            onBurgerMenuClick={onBurgerMenuClick ?? null}
           >
             <LikeC4DiagramInnerMemo
               controls={controls}
               background={background}
               showDiagramTitle={showDiagramTitle}
-              showNavigationButtons={showNavigationButtons}
             />
           </DiagramContextProvider>
         </XYFlowProvider>
@@ -107,13 +117,11 @@ type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
   controls: boolean
   showDiagramTitle: boolean
-  showNavigationButtons: boolean
 }
 const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
   controls,
-  showDiagramTitle,
-  showNavigationButtons
+  showDiagramTitle
 }) {
   const {
     isInitialized,
@@ -140,7 +148,6 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
         )}
       >
         <XYFlowInner
-          showNavigationButtons={showNavigationButtons}
           showDiagramTitle={showDiagramTitle}
           background={background}
           controls={controls}

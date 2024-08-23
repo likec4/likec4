@@ -5,3 +5,4 @@ export const ZIndexes = {
 } as const
 
 export const MinZoom = 0.1
+export const MaxZoom = 2

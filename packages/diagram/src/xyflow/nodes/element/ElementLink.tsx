@@ -7,7 +7,6 @@ import {
   Group,
   HoverCard,
   HoverCardDropdown,
-  type HoverCardProps,
   HoverCardTarget,
   Stack,
   UnstyledButton
@@ -16,8 +15,8 @@ import { IconLink } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { useId } from 'react'
 import { clamp } from 'remeda'
+import { useDiagramState } from '../../../hooks/useDiagramState'
 import { type DiagramState } from '../../../state/diagramStore'
-import { useDiagramState } from '../../../state/useDiagramStore'
 import type { XYFlowNode } from '../../types'
 import { elementLink, trigger } from './ElementLink.css'
 

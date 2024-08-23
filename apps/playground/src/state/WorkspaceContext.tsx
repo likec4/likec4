@@ -1,3 +1,4 @@
+import { logger } from '@likec4/log'
 import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
 import { createWorkspaceStore } from './store'
 
@@ -23,6 +24,21 @@ export function WorkspaceContextProvider({ children, ...props }: PropsWithChildr
     },
     [name]
   )
+
+  /**
+   * This is a temporary hack to expose the diagram as DOT
+   * to the global scope for debugging purposes
+   */
+  useEffect(() => {
+    // @ts-ignore
+    globalThis['printDiagramDot'] = () => {
+      logger.info(store.current?.getState().diagramAsDot)
+    }
+    return () => {
+      // @ts-ignore
+      delete globalThis['printDiagramDot']
+    }
+  }, [])
 
   return (
     <WorkspaceContext.Provider value={store.current}>

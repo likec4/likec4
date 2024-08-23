@@ -2,9 +2,9 @@
 import type { DiagramView, NonEmptyArray } from '@likec4/core'
 import { resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
-import k from 'picocolors'
 import type { BrowserContext, Page } from 'playwright'
 import { clamp, isString, isTruthy } from 'remeda'
+import k from 'tinyrainbow'
 import type { Logger } from 'vite'
 
 type TakeScreenshotParams = {
@@ -14,6 +14,7 @@ type TakeScreenshotParams = {
   logger: Logger
   timeout: number
   maxAttempts: number
+  outputType: 'relative' | 'flat'
   theme: 'light' | 'dark'
 }
 
@@ -24,6 +25,7 @@ export async function takeScreenshot({
   logger,
   timeout,
   maxAttempts,
+  outputType,
   theme
 }: TakeScreenshotParams) {
   const padding = 20
@@ -49,6 +51,11 @@ export async function takeScreenshot({
         logger.info(k.cyan(url) + k.dim(` attempt ${attempt} of ${maxAttempts} after ${sleepMs}ms`))
         await sleep(sleepMs)
       } else {
+        if (view.hasLayoutDrift) {
+          logger.warn(
+            k.yellow('Drift detected, manual layout can not be applied, view may be invalid: ') + k.red(view.id)
+          )
+        }
         logger.info(k.cyan(url))
       }
 
@@ -64,11 +71,14 @@ export async function takeScreenshot({
         await waitAllImages(page, timeout)
       }
 
-      let relativePath = view.relativePath ?? '.'
-      if (relativePath.includes('/')) {
-        relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
-      } else {
-        relativePath = '.'
+      let relativePath = '.'
+      if (outputType === 'relative') {
+        relativePath = view.relativePath ?? '.'
+        if (relativePath.includes('/')) {
+          relativePath = relativePath.slice(0, relativePath.lastIndexOf('/'))
+        } else {
+          relativePath = '.'
+        }
       }
 
       const path = resolve(output, relativePath, `${view.id}.png`)
@@ -83,7 +93,7 @@ export async function takeScreenshot({
       // With runBeforeUnload doesn't wait for page to be closed
       page?.close({ runBeforeUnload: true }).catch(e => logger.error(`failed to close page: ${e}`))
 
-      logger.error(`${k.red('failed ' + url)}\n${error}`)
+      logger.error(k.red('failed ' + url + '\n' + error))
       if (attempt < maxAttempts) {
         pending.push({ view, attempt: attempt + 1 })
         logger.info(k.dim(`retry ${url}`))

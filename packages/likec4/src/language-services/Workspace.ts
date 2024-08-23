@@ -2,8 +2,8 @@ import { basename } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { CliServices } from './module'
 
-import k from 'picocolors'
 import { values } from 'remeda'
+import k from 'tinyrainbow'
 
 export class CliWorkspace {
   private isInitialized = false

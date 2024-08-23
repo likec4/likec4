@@ -1,28 +1,35 @@
 import { generateViewsDataJs } from '@likec4/generators'
 import { consola } from '@likec4/log'
 import pLimit from 'p-limit'
-import k from 'picocolors'
 import { mapToObj } from 'remeda'
+import k from 'tinyrainbow'
 import type { PluginOption } from 'vite'
 import type { LanguageServices } from '../language-services'
 import type { Logger } from '../logger'
 import {
+  diagramPreviewsSources,
   generateD2Sources,
   generateDotSources,
   generateIconRendererSource,
   generateMmdSources,
+  generateOverviewGraphSource,
   storeSource
 } from './generators'
 
 export type LikeC4PluginOptions = {
   languageServices: LanguageServices
+  generatePreviews?: boolean
 }
 
 interface Module {
   id: string
   virtualId: string
 
-  load(opts: { logger: Logger; likec4: LanguageServices }): Promise<string>
+  load(opts: {
+    logger: Logger
+    likec4: LanguageServices
+    assetsDir: string
+  }): Promise<string>
 }
 
 const generatedStore = {
@@ -85,12 +92,34 @@ const iconsModule = {
   }
 } satisfies Module
 
+const overviewGraphModule = {
+  id: 'virtual:likec4/overview-graph',
+  virtualId: '\0likec4-plugin/overview-graph.js',
+  async load({ likec4, logger }) {
+    logger.info(k.dim('generating virtual:likec4/overview-graph'))
+    const overview = await likec4.views.overviewGraph()
+    return generateOverviewGraphSource(overview)
+  }
+} satisfies Module
+
+const previewsModule = {
+  id: 'virtual:likec4/previews',
+  virtualId: '\0likec4-plugin/previews.js',
+  async load({ likec4, logger, assetsDir }) {
+    logger.info(k.dim('generating virtual:likec4/previews'))
+    const views = await likec4.views.computedViews()
+    return diagramPreviewsSources(views, assetsDir)
+  }
+} satisfies Module
+
 const hmrmodules = [
   iconsModule,
   dotSourcesModule,
   d2SourcesModule,
   mmdSourcesModule,
-  generatedViews
+  generatedViews,
+  overviewGraphModule,
+  previewsModule
 ]
 
 export const modules = [
@@ -103,14 +132,27 @@ const isTarget = (path: string) => {
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
 }
 
-export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions): PluginOption {
+export function likec4Plugin({
+  generatePreviews = true,
+  languageServices: likec4
+}: LikeC4PluginOptions): PluginOption {
   let logger: Logger
+  let assetsDir = likec4.workspace
 
   return {
     name: 'vite-plugin-likec4',
 
     configResolved(config) {
       logger = config.logger
+      if (generatePreviews) {
+        const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
+        if (resolvedAlias) {
+          assetsDir = resolvedAlias
+          logger.info(k.dim('likec4/previews alias') + ' ' + k.dim(assetsDir))
+        } else {
+          logger.warn('likec4/previews alias not found')
+        }
+      }
     },
 
     resolveId(id) {
@@ -124,7 +166,7 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
     async load(id) {
       const module = modules.find(m => m.virtualId === id)
       if (module) {
-        return await module.load({ logger, likec4 })
+        return await module.load({ logger, likec4, assetsDir })
       }
       return null
     },
@@ -169,24 +211,30 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
 
       const pattern = likec4.workspace
       logger.info(`${k.dim('watch')} ${pattern}`)
-
+      const notifyUpdate = (updated: 'changed' | 'removed') => (path: string) => {
+        if (isTarget(path)) {
+          likec4.notifyUpdate({ [updated]: path })
+        }
+      }
       server.watcher
         .add(pattern)
-        .on('add', path => {
-          if (isTarget(path)) {
-            likec4.notifyUpdate({ changed: path })
+        .on('add', notifyUpdate('changed'))
+        .on('change', notifyUpdate('changed'))
+        .on('unlink', notifyUpdate('removed'))
+
+      if (generatePreviews && !assetsDir.startsWith(likec4.workspace)) {
+        logger.info(`${k.dim('watch')} ${assetsDir}`)
+        const reloadPreviews = () => {
+          const md = server.moduleGraph.getModuleById(previewsModule.virtualId)
+          if (md && md.importers.size > 0) {
+            server.reloadModule(md)
           }
-        })
-        .on('change', path => {
-          if (isTarget(path)) {
-            likec4.notifyUpdate({ changed: path })
-          }
-        })
-        .on('unlink', path => {
-          if (isTarget(path)) {
-            likec4.notifyUpdate({ removed: path })
-          }
-        })
+        }
+        server.watcher.add(assetsDir)
+          .on('add', reloadPreviews)
+          .on('change', reloadPreviews)
+          .on('unlink', reloadPreviews)
+      }
 
       likec4.onModelUpdate(() => {
         consola.debug('likec4 model update')

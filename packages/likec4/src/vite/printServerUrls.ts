@@ -1,6 +1,14 @@
 import { consola } from '@likec4/log'
-import k from 'picocolors'
+import { first } from 'remeda'
+import k from 'tinyrainbow'
 import type { PreviewServer, ViteDevServer } from 'vite'
+
+export function resolveServerUrl(server: ViteDevServer | PreviewServer) {
+  if (!server.resolvedUrls) {
+    return undefined
+  }
+  return first(server.resolvedUrls.network) ?? first(server.resolvedUrls.local)
+}
 
 export function printServerUrls(server: ViteDevServer | PreviewServer) {
   if (!server.resolvedUrls) {

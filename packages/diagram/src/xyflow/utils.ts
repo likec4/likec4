@@ -1,8 +1,9 @@
 import { hasAtLeast, invariant } from '@likec4/core'
 import type { DiagramEdge, Point } from '@likec4/core/types'
-import type { XYPosition } from '@xyflow/react'
+import type { Rect, XYPosition } from '@xyflow/react'
 import { Bezier } from 'bezier-js'
 import { isArray } from 'remeda'
+import type { InternalXYFlowNode } from './types'
 
 export function toDomPrecision(v: number | null) {
   if (v === null) {
@@ -13,6 +14,29 @@ export function toDomPrecision(v: number | null) {
 
 export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
+}
+
+export const nodeToRect = (nd: InternalXYFlowNode): Rect => ({
+  x: nd.internals.positionAbsolute.x,
+  y: nd.internals.positionAbsolute.y,
+  width: nd.width ?? nd.data.element.width,
+  height: nd.height ?? nd.data.element.height
+})
+
+/**
+ * Checks if a rectangle is completely inside another rectangle.
+ *
+ * @param test - The rectangle to test.
+ * @param target - The target rectangle.
+ * @returns `true` if the `test` rectangle is completely inside the `target` rectangle, otherwise `false`.
+ */
+export const isInside = (test: Rect, target: Rect) => {
+  return (
+    test.x >= target.x
+    && test.y >= target.y
+    && test.x + test.width <= target.x + target.width
+    && test.y + test.height <= target.y + target.height
+  )
 }
 
 export function bezierControlPoints(diagramEdge: DiagramEdge) {

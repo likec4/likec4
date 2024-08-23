@@ -28,7 +28,7 @@ function literalToEnum(value: XYBackgroundVariant): BackgroundVariant {
 
 export function XYFlowBackground({ background }: XYBackgroundProps) {
   if (typeof background === 'string') {
-    return <Background variant={literalToEnum(background)} />
+    return <Background variant={literalToEnum(background)} size={2} gap={20} />
   }
   const { variant, ...rest } = background
   return <Background variant={literalToEnum(variant)} {...rest} />

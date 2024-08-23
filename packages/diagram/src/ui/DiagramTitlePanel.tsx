@@ -3,7 +3,7 @@ import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
-import { type DiagramState, useDiagramState } from '../state/hooks'
+import { type DiagramState, useDiagramState } from '../hooks'
 import * as css from './DiagramTitlePanel.css'
 
 const selector = (s: DiagramState) => ({
@@ -39,53 +39,70 @@ export default function DiagramTitlePanel() {
         <Card
           radius="sm"
           className={css.card}
-          withBorder
-          p={'md'}
-          pb={isCollapsed ? 'sm' : 'md'}
+          withBorder={!isCollapsed}
+          p={isCollapsed ? 'sm' : 'md'}
           onDoubleClick={e => e.stopPropagation()}>
-          <CardSection mb={isCollapsed ? 10 : 'sm'}>
-            <Button
-              fullWidth
-              size="xs"
-              h={'sm'}
-              py={2}
-              radius={'0'}
-              variant={isCollapsed ? 'light' : 'subtle'}
-              color="gray"
-              onClick={toggle}
-            >
-              <IconMenu size={11} opacity={0.7} />
-            </Button>
-          </CardSection>
-          <Group justify="stretch" wrap="nowrap" mb={isCollapsed ? 0 : 'sm'}>
-            <Text
-              component={'div'}
-              flex={'1'}
-              size={isCollapsed ? 'sm' : 'lg'}
-              fw={500}
-              lh={1.1}
-              className={css.title}
-            >
-              {title}
-            </Text>
-            <Text
-              hidden={isCollapsed}
-              component={'div'}
-              flex={'0 0 auto'}
-              inline
-              size="xs"
-              fz={9}
-              fw={500}
-              c={'dimmed'}
-              style={{
-                userSelect: 'all'
-              }}>
-              <span style={{ userSelect: 'none' }}>id:{' '}</span>
-              {id}
-            </Text>
-          </Group>
+          {isCollapsed && (
+            <CardSection>
+              <Button
+                fullWidth
+                justify="stretch"
+                size="md"
+                radius={'0'}
+                variant={'subtle'}
+                color="gray"
+                onClick={toggle}
+                fw={500}
+                fz={'sm'}
+              >
+                {title}
+              </Button>
+            </CardSection>
+          )}
           {!isCollapsed && (
             <>
+              <CardSection mb={'xs'}>
+                <Button
+                  fullWidth
+                  size="xs"
+                  h={'sm'}
+                  py={2}
+                  radius={'0'}
+                  variant={'subtle'}
+                  color="gray"
+                  onClick={toggle}
+                >
+                  <IconMenu size={11} opacity={0.7} />
+                </Button>
+              </CardSection>
+
+              <Group justify="stretch" wrap="nowrap" mb={'sm'}>
+                <Text
+                  component={'div'}
+                  flex={'1'}
+                  size={'md'}
+                  fw={500}
+                  lh={1.1}
+                  className={css.title}
+                >
+                  {title}
+                </Text>
+                <Text
+                  hidden={isCollapsed}
+                  component={'div'}
+                  flex={'0 0 auto'}
+                  inline
+                  size="xs"
+                  fz={9}
+                  fw={500}
+                  c={'dimmed'}
+                  style={{
+                    userSelect: 'all'
+                  }}>
+                  <span style={{ userSelect: 'none' }}>id:{' '}</span>
+                  {id}
+                </Text>
+              </Group>
               {description && (
                 <Spoiler
                   maxHeight={42}

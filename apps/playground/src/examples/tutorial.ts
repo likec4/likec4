@@ -3,7 +3,7 @@ export const TutorialExample = {
   files: {
     ['tutorial.c4']: `
 // Tutorial:
-// https://docs.likec4.dev/tutorial/
+// https://likec4.dev/tutorial/
 
 specification {
   element actor

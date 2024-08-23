@@ -8,6 +8,8 @@
 .swc/
 
 .turbo
+.idea
+.fleet
 .vscode-test-web
 
 examples/*/.vscode

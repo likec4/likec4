@@ -1,7 +1,7 @@
 {
   "name": "@likec4/log",
   "license": "MIT",
-  "version": "1.7.2",
+  "version": "1.7.4",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.14.14",
+    "@types/node": "^20.16.1",
     "typescript": "^5.5.4",
     "unbuild": "^2.0.0"
   },

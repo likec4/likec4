@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "1.7.2",
+  "version": "1.7.4",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -21,7 +21,7 @@
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
-    "@fontsource/ibm-plex-sans": "^5.0.20",
+    "@fontsource/ibm-plex-sans": "^5.0.21",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
@@ -30,8 +30,8 @@
     "@mantine/hooks": "7.11.2",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
-    "@tabler/icons-react": "^3.11.0",
-    "@types/node": "^20.14.14",
+    "@tabler/icons-react": "^3.12.0",
+    "@types/node": "^20.16.1",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/vscode": "~1.92.0",
@@ -40,7 +40,7 @@
     "@vanilla-extract/vite-plugin": "^4.0.13",
     "@vitejs/plugin-react": "^4.3.1",
     "esm-env": "1.0.0",
-    "postcss": "^8.4.40",
+    "postcss": "^8.4.41",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",

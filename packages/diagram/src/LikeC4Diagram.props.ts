@@ -1,19 +1,72 @@
 import type {
-  BorderStyle,
   DiagramEdge,
   DiagramNode,
   DiagramView,
-  ElementShape,
   Fqn,
   NonEmptyArray,
-  ThemeColor,
-  ViewID,
-  ViewManualLayout
+  RelationID,
+  ViewChange,
+  ViewID
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { DiagramEditorCommand } from './types'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import type { XYBackground } from './xyflow/XYFlowBackground'
+
+type EqualOperator<V> = {
+  eq: V
+  neq?: never
+} | {
+  eq?: never
+  neq: V
+}
+
+type AllNever = {
+  not?: never
+  and?: never
+  or?: never
+  tag?: never
+  kind?: never
+}
+
+type TagKindOperator<Tag, Kind> =
+  & Omit<AllNever, 'tag' | 'kind'>
+  & ({
+    tag: EqualOperator<Tag>
+    kind?: never
+  } | {
+    tag?: never
+    kind: EqualOperator<Kind>
+  })
+
+type NotOperator<Tag, Kind> = Omit<AllNever, 'not'> & {
+  not: TagKindOperator<Tag, Kind> | AndOperator<Tag, Kind> | OrOperator<Tag, Kind>
+}
+
+type AndOperator<Tag, Kind> = Omit<AllNever, 'and'> & {
+  and: NonEmptyArray<
+    | TagKindOperator<Tag, Kind>
+    | OrOperator<Tag, Kind>
+    | NotOperator<Tag, Kind>
+  >
+}
+
+type OrOperator<Tag, Kind> = Omit<AllNever, 'or'> & {
+  or: NonEmptyArray<
+    | TagKindOperator<Tag, Kind>
+    | AndOperator<Tag, Kind>
+    | NotOperator<Tag, Kind>
+  >
+}
+
+// export const isOrOperator = (operator: WhereOperator): operator is OrOperator<WhereOperator> => {
+//   return 'or' in operator
+// }
+
+export type WhereOperator<Tag extends string, Kind extends string> =
+  | TagKindOperator<Tag, Kind>
+  | NotOperator<Tag, Kind>
+  | AndOperator<Tag, Kind>
+  | OrOperator<Tag, Kind>
 
 export type DiagramNodeWithNavigate = Omit<DiagramNode, 'navigateTo'> & {
   navigateTo: ViewID
@@ -53,37 +106,13 @@ export type OnEdgeClick = (
   }
 ) => void
 
-export type OnEditorCommand = (
-  cmd: DiagramEditorCommand
-) => void
-
 /**
  * On pane/canvas click (not on any node or edge)
  */
 export type OnCanvasClick = (event: ReactMouseEvent) => void
 
-export namespace Changes {
-  export interface ChangeElementStyle {
-    op: 'change-element-style'
-    style: {
-      border?: BorderStyle
-      opacity?: number
-      shape?: ElementShape
-      color?: ThemeColor
-    }
-    targets: NonEmptyArray<Fqn>
-  }
-
-  export interface SaveManualLayout {
-    op: 'save-manual-layout'
-    layout: ViewManualLayout
-  }
-}
-
-export type Change = Changes.ChangeElementStyle | Changes.SaveManualLayout
-
 export type ChangeEvent = {
-  change: Change
+  change: ViewChange
 }
 export type OnChange = {
   (event: ChangeEvent): void
@@ -197,6 +226,8 @@ export interface LikeC4DiagramProperties {
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
+
+  where?: WhereOperator<string, string> | undefined
 }
 
 export interface LikeC4DiagramEventHandlers {
@@ -210,5 +241,8 @@ export interface LikeC4DiagramEventHandlers {
   onCanvasClick?: OnCanvasClick | null | undefined
   onCanvasDblClick?: OnCanvasClick | null | undefined
 
-  onEditorCommand?: OnEditorCommand | null | undefined
+  onBurgerMenuClick?: null | undefined | (() => void)
+  onOpenSourceView?: null | undefined | (() => void)
+  onOpenSourceElement?: null | undefined | ((fqn: Fqn) => void)
+  onOpenSourceRelation?: null | undefined | ((id: RelationID) => void)
 }

@@ -1,10 +1,10 @@
+import { invariant } from '@likec4/core'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { createContext, type PropsWithChildren, useCallback, useEffect, useRef } from 'react'
-import { useUpdateEffect } from '../hooks'
-import { useXYFlow, useXYStoreApi } from '../xyflow/hooks/useXYFlow'
-import { createDiagramStore, type DiagramInitialState } from './diagramStore'
+import { createContext, type PropsWithChildren, useCallback, useRef } from 'react'
+import { useUpdateEffect } from '../hooks/useUpdateEffect'
+import { useXYFlow, useXYStoreApi } from '../hooks/useXYFlow'
+import { createDiagramStore, type DiagramInitialState, type DiagramZustandStore } from './diagramStore'
 
-export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
 export const DiagramContext = createContext<DiagramZustandStore | null>(null)
 
 export type DiagramContextProviderProps = PropsWithChildren<
@@ -19,6 +19,7 @@ export function DiagramContextProvider({
   view,
   className,
   keepAspectRatio,
+  whereFilter,
   ...props
 }: DiagramContextProviderProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -34,6 +35,7 @@ export function DiagramContextProvider({
       xyflow,
       view,
       getContainer,
+      whereFilter: structuredClone(whereFilter),
       ...props
     })
   }
@@ -50,9 +52,15 @@ export function DiagramContextProvider({
 
   useUpdateEffect(
     () => {
-      store.current?.getState().updateView(view)
+      const current = store.current
+      invariant(current, 'DiagramContext.store.current is not defined')
+      if (!deepEqual(whereFilter, current.getState().whereFilter)) {
+        current.setState({ whereFilter: structuredClone(whereFilter) }, false, 'update where filter')
+      }
+      current.getState().updateView(view)
     },
-    [view]
+    [view, whereFilter] as const,
+    (a, b) => shallowEqual(a[0], b[0]) && deepEqual(a[1], b[1])
   )
 
   return (

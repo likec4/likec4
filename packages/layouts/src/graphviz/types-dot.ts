@@ -106,19 +106,25 @@ export namespace GraphvizJson {
   export type GvObject = GvNodeObject | GvSubgraph
   export interface GvSubgraph {
     bb: string
+    label?: string
     compound: 'true'
     _ldraw_?: LabelDrawOps[]
+    likec4_type?: 'folder' | 'file'
+    likec4_path?: string
     likec4_id?: Fqn
     likec4_level?: number
     likec4_depth?: number
     _gvid: GvId
-    nodes: GvId[]
-    edges: GvId[]
+    subgraphs?: GvId[]
+    nodes?: GvId[]
+    edges?: GvId[]
   }
 
   export interface GvNodeObject {
     _draw_: Draw[]
     _ldraw_?: LabelDrawOps[]
+    likec4_type?: 'folder' | 'file' | 'view'
+    likec4_path?: string
     likec4_id?: Fqn
     likec4_level?: number
     _gvid: GvId
@@ -126,6 +132,7 @@ export namespace GraphvizJson {
     pos: string
     shape: 'rect'
     width: string
+    label?: string
   }
 
   export interface Draw3 {
@@ -153,7 +160,11 @@ export namespace GraphvizJson {
     _hdraw_?: DrawOp[]
     // tail arrow
     _tdraw_?: DrawOp[]
+    // label/xlabel
     _ldraw_?: LabelDrawOps[]
+    // tail label
+    _tldraw_?: LabelDrawOps[]
+    _hldraw_?: LabelDrawOps[]
     fontname: string
     fontsize: string
     likec4_id?: EdgeId

@@ -36,9 +36,9 @@ export const cssViewOutlet = style({
     [headerHeight]: '60px',
     // TODO: temporary hack to fix the navigation panel position
     ['--likec4-options-panel-top']: '60px',
-    ['--likec4-options-panel-right']: '10px',
-    ['--likec4-navigation-panel-top']: '0.8rem',
-    ['--likec4-navigation-panel-left']: '3.2rem'
+    ['--likec4-options-panel-right']: '10px'
+    // ['--likec4-navigation-panel-top']: '0.8rem',
+    // ['--likec4-navigation-panel-left']: '3.2rem'
   }
 })
 

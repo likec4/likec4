@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.7.2",
+  "version": "1.7.4",
   "packageManager": "yarn@4.3.1",
   "private": true,
   "scripts": {
@@ -25,13 +25,13 @@
     "clean": "run -T rimraf -v 'dist' '.astro' 'node_modules'"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.1",
-    "@astrojs/react": "^3.6.1",
+    "@astrojs/check": "^0.9.2",
+    "@astrojs/react": "^3.6.2",
     "@astrojs/starlight": "^0.25.4",
-    "@expressive-code/plugin-collapsible-sections": "^0.35.3",
-    "@expressive-code/plugin-line-numbers": "^0.35.3",
-    "@fontsource/ibm-plex-sans": "^5.0.20",
-    "astro": "^4.13.2",
+    "@expressive-code/plugin-collapsible-sections": "^0.35.6",
+    "@expressive-code/plugin-line-numbers": "^0.35.6",
+    "@fontsource/ibm-plex-sans": "^5.0.21",
+    "astro": "^4.13.3",
     "astro-og-canvas": "^0.5.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",

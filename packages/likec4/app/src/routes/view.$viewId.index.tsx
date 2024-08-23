@@ -4,6 +4,8 @@ import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
+import { SidebarDrawerOps } from '../components/sidebar/Drawer'
+import { withOverviewGraph } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/')({
   component: ViewReact
@@ -30,6 +32,8 @@ function ViewReact() {
     <LikeC4Diagram
       view={view}
       readonly
+      zoomable
+      pannable
       controls={false}
       fitViewPadding={0.08}
       showDiagramTitle
@@ -37,8 +41,19 @@ function ViewReact() {
       showNavigationButtons
       enableDynamicViewWalkthrough
       experimentalEdgeEditing={false}
+      enableFocusMode={true}
+      nodesDraggable={false}
+      nodesSelectable={false}
       renderIcon={RenderIcon}
       onNavigateTo={onNavigateTo}
+      onBurgerMenuClick={withOverviewGraph
+        ? () => {
+          router.navigate({
+            to: '/',
+            search: true
+          })
+        }
+        : SidebarDrawerOps.open}
     />
   )
 }
