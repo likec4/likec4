@@ -162,7 +162,7 @@ let StoreDevId = 1
 
 const EmptyStringSet: ReadonlySet<string> = new StringSet()
 
-export function createDiagramStore<T extends Exact<DiagramInitialState, T>>(props: T) {
+export function createDiagramStore(props: DiagramInitialState) {
   const storeDevId = 'DiagramStore' + String(StoreDevId++).padStart(2, '0')
   const {
     xynodes,

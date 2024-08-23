@@ -1,4 +1,4 @@
-type NonEmptyArray<T> = [T, ...T[]] | [...T[], T]
+type NonEmptyArray<T> = [T, ...T[]]
 
 type EqualOperator<V> = {
   eq: V
