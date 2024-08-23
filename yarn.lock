@@ -6370,16 +6370,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-plugins-node-modules-polyfill@npm:^1.6.4":
-  version: 1.6.4
-  resolution: "esbuild-plugins-node-modules-polyfill@npm:1.6.4"
+"esbuild-plugins-node-modules-polyfill@npm:^1.6.5":
+  version: 1.6.5
+  resolution: "esbuild-plugins-node-modules-polyfill@npm:1.6.5"
   dependencies:
     "@jspm/core": "npm:^2.0.1"
     local-pkg: "npm:^0.5.0"
     resolve.exports: "npm:^2.0.2"
   peerDependencies:
-    esbuild: ^0.14.0 || ^0.15.0 || ^0.16.0 || ^0.17.0 || ^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0
-  checksum: 10c0/e8050dccebaff9dc09e1ad471d3ce7b75daebc93e4fc2c01ca9691b8f112cd430d3f1a6250764f438bce81ccdecd016f8b3cd9a6b6d17b3b3d0fb0a3230b7e5f
+    esbuild: ">=0.14.0 <=0.23.0"
+  checksum: 10c0/b69d3937b5f6f1d84f0918489eb7dfd3253d766494642626a5c8f6cb736d16fd66040de1c26cff09e35f63667e2c7bbac4505df1540778ed0954cec4c57625db
   languageName: node
   linkType: hard
 
@@ -8802,7 +8802,7 @@ __metadata:
     "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.7"
     esbuild: "npm:^0.21.5"
-    esbuild-plugins-node-modules-polyfill: "npm:^1.6.4"
+    esbuild-plugins-node-modules-polyfill: "npm:^1.6.5"
     execa: "npm:^9.3.0"
     langium: "npm:3.1.3"
     p-timeout: "npm:^6.1.2"
