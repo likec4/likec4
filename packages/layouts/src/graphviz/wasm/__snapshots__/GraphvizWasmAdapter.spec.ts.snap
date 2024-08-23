@@ -309,35 +309,35 @@ with sso authentification",
       "target": "cloud.backend.graphql",
     },
     {
-      "dotpos": "e,354.67,654.86 566.43,498.82 536.34,531.68 499.48,567.29 461,593.6 453.44,598.77 450.05,597.23 442,601.6 415.83,615.79 388.84,632.4 363.28,649.17",
+      "dotpos": "e,353.9,654.84 567.59,498.73 537.63,531.77 500.76,567.53 462,593.6 454.06,598.94 450.46,597.11 442,601.6 415.53,615.65 388.29,632.27 362.57,649.12",
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
       "labelBBox": {
         "height": 18,
         "width": 80,
-        "x": 511,
+        "x": 512,
         "y": 562,
       },
       "parent": "cloud",
       "points": [
         [
-          566,
+          568,
           499,
         ],
         [
-          536,
+          538,
           532,
         ],
         [
-          499,
-          567,
+          501,
+          568,
         ],
         [
-          461,
+          462,
           594,
         ],
         [
-          453,
+          454,
           599,
         ],
         [
@@ -353,7 +353,7 @@ with sso authentification",
           616,
         ],
         [
-          389,
+          388,
           632,
         ],
         [
@@ -1131,7 +1131,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 111,
-        "x": 273,
+        "x": 272,
         "y": 235,
       },
       "parent": null,
