@@ -83,6 +83,7 @@ export function diagramViewToXYFlowData(
       },
       draggable,
       selectable: opts.selectable,
+      focusable: opts.selectable && !isCompound,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,

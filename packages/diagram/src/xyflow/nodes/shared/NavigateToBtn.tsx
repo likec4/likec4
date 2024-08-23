@@ -19,6 +19,7 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
         event.stopPropagation()
         diagramApi.getState().triggerOnNavigateTo(xynodeId, event)
       }}
+      role="button"
       onDoubleClick={event => event.stopPropagation()}
     >
       <IconZoomScan
