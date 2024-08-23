@@ -136,6 +136,7 @@ const App = () => {
           enableDynamicViewWalkthrough
           showNavigationButtons
           showElementLinks
+          showNotations
           renderIcon={IconRenderer}
           onNavigateTo={(to) => {
             resetLastClickedNd()

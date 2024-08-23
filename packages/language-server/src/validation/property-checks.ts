@@ -28,7 +28,7 @@ export const iconPropertyRuleChecks = (
       })
     }
     if (
-      ast.isStyleProperties(container) && ast.isElementBody(container.$container)
+      ast.isElementStyleProperty(container) && ast.isElementBody(container.$container)
       && container.$container.props.some(p => ast.isIconProperty(p))
     ) {
       accept('warning', `Redundant as icon defined on element`, {

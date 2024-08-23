@@ -1,3 +1,4 @@
+import type { DiagramView as CoreDiagramView } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { ActionIcon } from '@mantine/core'
 import { useMountEffect } from '@react-hookz/web'
@@ -72,6 +73,9 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
   }
 
   const backdropRgb = colorScheme === 'dark' ? '36 36 36' : '255 255 255'
+
+  const notations = (view as any as CoreDiagramView).notation?.elements
+  const hasNotations = notations && notations.length > 0
 
   return (
     <>
@@ -179,6 +183,7 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
                 enableDynamicViewWalkthrough
                 enableFocusMode
                 showNavigationButtons
+                showNotations={hasNotations}
                 background={background}
                 controls={false}
                 nodesSelectable={false}

@@ -18,6 +18,10 @@ globalStyle(`.${rootClassName}`, {
   WebkitFontSmoothing: mantine.webkitFontSmoothing,
   MozOsxFontSmoothing: mantine.mozFontSmoothing
 })
+globalStyle(`.${rootClassName} .mantine-ActionIcon-icon .tabler-icon`, {
+  width: '75%',
+  height: '75%'
+})
 
 createGlobalTheme(`.${rootClassName}`, {
   ...omit(vars, ['optionsPanel', 'navigationPanel', 'safariAnimationHook', 'default'])

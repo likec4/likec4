@@ -146,7 +146,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     }
     if (
       ast.isRelationStyleProperty(node)
-      || (ast.isStyleProperties(node) && ast.isElementBody(node.$container))
+      || (ast.isElementStyleProperty(node) && ast.isElementBody(node.$container))
     ) {
       acceptor({
         node,
@@ -177,7 +177,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'key',
         type: SemanticTokenTypes.property
       })
-      if ('value' in node) {
+      if ('value' in node && node.value) {
         acceptor({
           node,
           property: 'value',

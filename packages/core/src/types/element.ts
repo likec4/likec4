@@ -58,5 +58,19 @@ export interface Element {
   readonly shape?: ElementShape
   readonly color?: ThemeColor
   readonly style?: ElementStyle
+  readonly notation?: string
   readonly metadata?: { [key: string]: string }
+}
+
+export interface ElementKindSpecificationStyle {
+  shape?: ElementShape
+  icon?: IconUrl
+  color?: ThemeColor
+  border?: BorderStyle
+  opacity?: number
+}
+export interface ElementKindSpecification {
+  readonly technology?: string
+  readonly notation?: string
+  readonly style: ElementKindSpecificationStyle
 }

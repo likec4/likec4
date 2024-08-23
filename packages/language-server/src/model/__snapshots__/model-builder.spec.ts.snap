@@ -83,7 +83,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "target": "system",
         },
       ],
-      "hash": "9b4dbfe60393ee797e2631139727b31fc2f51fd3",
+      "hash": "ac469a54751528fb8dabc034a32c9ca081503229",
       "id": "index",
       "links": null,
       "nodes": [
@@ -230,7 +230,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend",
         },
       ],
-      "hash": "d2e79fe1ec9ef028cb8b08452e88517b2c06e536",
+      "hash": "79faa703342209c445f10cc39cb15618fc4bba64",
       "id": "frontend",
       "links": null,
       "nodes": [
@@ -315,7 +315,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system",
         },
       ],
-      "hash": "341467ec3464ebc0ef80efb0193e3a4d2f268b90",
+      "hash": "cc748ca08ef32c6b15850602f25c38ad1e749497",
       "id": "index",
       "links": null,
       "nodes": [
@@ -378,7 +378,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend.api",
         },
       ],
-      "hash": "281b59ff3d3869b8dd9b7501df28f3424de9f443",
+      "hash": "e37913cdeecf2c10f83c4311ac7cde84821b37b2",
       "id": "v1",
       "links": null,
       "nodes": [
@@ -510,7 +510,110 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "target": "user2",
         },
       ],
-      "hash": "07e2e87678742772b04bdb3c71980f9ed475094d",
+      "hash": "2e3fd594e686a7aa420adcf9280bf544bb4cde6d",
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user1",
+          "inEdges": [],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "user1:user2",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {},
+          "tags": null,
+          "technology": null,
+          "title": "user1",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user2",
+          "inEdges": [
+            "user1:user2",
+          ],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "style": {},
+          "tags": null,
+          "technology": null,
+          "title": "user2",
+        },
+      ],
+      "tags": null,
+      "title": "Landscape",
+    },
+  },
+}
+`;
+
+exports[`LikeC4ModelBuilder > builds model with relationship spec with technology 1`] = `
+{
+  "elements": {
+    "user1": {
+      "description": null,
+      "id": "user1",
+      "kind": "person",
+      "links": null,
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "user1",
+    },
+    "user2": {
+      "description": null,
+      "id": "user2",
+      "kind": "person",
+      "links": null,
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "user2",
+    },
+  },
+  "relations": {
+    "p2bxx1": {
+      "id": "p2bxx1",
+      "kind": "async",
+      "source": "user1",
+      "target": "user2",
+      "technology": "Async",
+      "title": "",
+    },
+  },
+  "views": {
+    "index": {
+      "__": "element",
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "description": "Async",
+          "id": "user1:user2",
+          "kind": "async",
+          "label": null,
+          "parent": null,
+          "relations": [
+            "p2bxx1",
+          ],
+          "source": "user1",
+          "target": "user2",
+        },
+      ],
+      "hash": "f9a79b50d0467e24a679bd458bf989f11adf284d",
       "id": "index",
       "links": null,
       "nodes": [
@@ -617,7 +720,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "target": "user2",
         },
       ],
-      "hash": "5fdd1b51c91555fcebd0ac97ec8603d80971da0e",
+      "hash": "c39ac45d66eb3f057ec9e3d802f4d09093a371b2",
       "id": "index",
       "links": null,
       "nodes": [

@@ -25,6 +25,9 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
       if (isDefined(rule.style.icon)) {
         n.icon = rule.style.icon
       }
+      if (isDefined(rule.notation)) {
+        n.notation = rule.notation
+      }
       let styleOverride: ComputedNode['style'] | undefined
       if (isDefined(rule.style.border)) {
         styleOverride = { border: rule.style.border }

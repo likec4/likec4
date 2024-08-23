@@ -71,7 +71,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "email",
     },
   ],
-  "hash": "8acbc9387f9d686aaa812211a5462dd611e02f01",
+  "hash": "a448d3fb77d6cbb26282f7f99e33304c7fdb633d",
   "id": "index",
   "links": null,
   "nodes": [
@@ -292,7 +292,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.backend",
     },
   ],
-  "hash": "4f376610868507ddc50205b07b35736169bb4f4e",
+  "hash": "3902ffc12305b912ee16877f601c0a84465b5204",
   "id": "index",
   "links": null,
   "nodes": [

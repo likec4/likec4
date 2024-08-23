@@ -42,17 +42,29 @@ SpecificationRule:
 
 SpecificationElementKind:
   'element' kind=ElementKind ('{'
-    style=StyleProperties?
+    props+=(
+      SpecificationElementStringProperty |
+      ElementStyleProperty
+    )*
   '}')?;
+
+SpecificationElementStringProperty:
+  key=('technology' | 'notation') ':'? value=String ';'?;
 
 SpecificationTag:
   'tag' tag=Tag;
 
 SpecificationRelationshipKind:
   'relationship' kind=RelationshipKind ('{'
-    props+=RelationshipStyleProperty*
+    props+=(
+      RelationshipStyleProperty |
+      SpecificationRelationshipStringProperty
+    )*
   '}')?
 ;
+
+SpecificationRelationshipStringProperty:
+  key=('technology' | 'notation') ':'? value=String ';'?;
 
 // Model -------------------------------------
 
@@ -92,7 +104,7 @@ ElementBody: '{'
 ;
 
 ElementProperty:
-  ElementStringProperty | StyleProperties | LinkProperty | IconProperty | MetadataProperty;
+  ElementStringProperty | ElementStyleProperty | LinkProperty | IconProperty | MetadataProperty;
 
 ElementStringProperty:
   key=('title' | 'technology' | 'description') ':'? value=String ';'?;
@@ -213,7 +225,15 @@ DynamicViewBody: '{'
 ;
 
 
-type StringProperty = ElementStringProperty | ViewStringProperty | RelationStringProperty | MetadataAttribute;
+type StringProperty =
+  ElementStringProperty |
+  ViewStringProperty |
+  RelationStringProperty |
+  MetadataAttribute |
+  SpecificationElementStringProperty |
+  SpecificationRelationshipStringProperty |
+  NotationProperty
+;
 
 ViewProperty:
   ViewStringProperty | LinkProperty
@@ -389,16 +409,24 @@ DynamicViewPredicateIterator:
 
 ViewRuleStyle:
   'style' target=ElementExpressionsIterator '{'
-    props+=StyleProperty*
+    props+=(
+      StyleProperty |
+      NotationProperty
+    )*
   '}';
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
+NotationProperty:
+  key='notation' ':'? value=String ';'?
+;
+
 CustomElementProperties: '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
+    NotationProperty |
     StyleProperty
   )*
 '}'
@@ -407,6 +435,7 @@ CustomElementProperties: '{'
 CustomRelationProperties: '{'
   props+=(
     RelationStringProperty |
+    NotationProperty |
     RelationshipStyleProperty
   )*
 '}'
@@ -446,7 +475,7 @@ StyleProperty:
   OpacityProperty |
   IconProperty;
 
-StyleProperties:
+ElementStyleProperty:
   key='style' '{'
     props+=StyleProperty*
   '}';

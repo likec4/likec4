@@ -6,6 +6,7 @@ import { useDiagramState } from '../hooks/useDiagramState'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import DiagramTitlePanel from '../ui/DiagramTitlePanel'
 import { DynamicViewWalkthrough } from '../ui/DynamicViewWalkthrough'
+import NotationPanel from '../ui/notation'
 import OptionsPanel from '../ui/OptionsPanel'
 import { TopLeftPanel } from '../ui/top-left/TopLeftPanel'
 import { XYFlowBackground } from './XYFlowBackground'
@@ -23,11 +24,13 @@ export const XYFlowInner = memo(function XYFlowInnerR({
   showDiagramTitle
 }: XYFlowInnerProps) {
   const {
+    showNotations,
     isDynamicView,
     isDynamicViewActive,
     readonly,
     enableDynamicViewWalkthrough
   } = useDiagramState(s => ({
+    showNotations: s.showNotations && !!s.view.notation,
     isDynamicView: s.isDynamicView,
     readonly: s.readonly,
     enableDynamicViewWalkthrough: s.enableDynamicViewWalkthrough,
@@ -37,7 +40,6 @@ export const XYFlowInner = memo(function XYFlowInnerR({
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
 
   const isDiagramTitleVisible = showDiagramTitle === true && !isDynamicViewActive
-
   return (
     <>
       {isBgWithPattern && <XYFlowBackground background={background} />}
@@ -46,6 +48,7 @@ export const XYFlowInner = memo(function XYFlowInnerR({
       {readonly !== true && <OptionsPanel />}
       {isDiagramTitleVisible && <DiagramTitlePanel />}
       {isDynamicView && enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
+      {showNotations && <NotationPanel />}
       {children}
     </>
   )

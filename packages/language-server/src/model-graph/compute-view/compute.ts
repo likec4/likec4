@@ -29,13 +29,14 @@ import {
   parentFqn,
   whereOperatorAsPredicate
 } from '@likec4/core'
-import { first, flatMap, hasAtLeast, isTruthy, unique } from 'remeda'
+import { first, flatMap, hasAtLeast, isTruthy, map, omit, unique } from 'remeda'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
+import { buildElementNotations } from '../utils/buildElementNotations'
 import { sortNodes } from '../utils/sortNodes'
 import {
   type ElementPredicateFn,
@@ -161,18 +162,25 @@ export class ComputeCtx {
         })
       )
     )
-
     const sortedEdges = new Set([
       ...nodes.flatMap(n => n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []),
       ...edges
     ])
 
     const autoLayoutRule = this.view.rules.findLast(isViewRuleAutoLayout)
+
+    const elementNotations = buildElementNotations(nodes)
+
     return calcViewLayoutHash({
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
-      nodes,
-      edges: applyCustomRelationProperties(rules, nodes, sortedEdges)
+      nodes: map(nodes, omit(['notation'])),
+      edges: applyCustomRelationProperties(rules, nodes, sortedEdges),
+      ...(elementNotations.length > 0 && {
+        notation: {
+          elements: elementNotations
+        }
+      })
     })
   }
 

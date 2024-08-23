@@ -1,27 +1,39 @@
 specification {
 
   element actor {
+    notation "Person that interacts with software system"
     style {
       shape person
     }
   }
 
   element softwareSystem {
+    notation "Software System"
     style {
       opacity 25%
     }
   }
   element container {
+    notation "Service"
     style {
       opacity 25%
     }
   }
-  element component
-  element service
-  element app
-  element lambdaFn
+  element component {
+    notation "Component"
+  }
+  element service {
+    notation "Service without public access Service without public access Service without public access Service without public access"
+  }
+  element app {
+    notation "Application, with public access"
+  }
+  element lambdaFn {
+    notation "Serverless Function"
+  }
 
   element externalSystem {
+    notation "External System"
     style {
       opacity 25%
       color gray
@@ -29,23 +41,27 @@ specification {
   }
 
   element mobile {
+    notation "Mobile device"
     style {
       shape mobile
       icon tech:swift
     }
   }
   element database {
+    notation "Database"
     style {
       shape storage
     }
   }
   element stream {
+    notation "DataStream"
     style {
       shape queue
       icon https://icon.icepanel.io/AWS/svg/Analytics/Kinesis.svg
     }
   }
   element queue {
+    notation "Message queue"
     style {
       shape queue
       icon https://icon.icepanel.io/AWS/svg/App-Integration/Simple-Queue-Service.svg

@@ -9,5 +9,6 @@ export * from './relation'
 export * from './theme'
 export * from './view'
 export * from './view-changes'
+export * from './view-notation'
 
 export * as Expr from './expression'

@@ -204,6 +204,12 @@ export interface LikeC4DiagramProperties {
   showNavigationButtons?: undefined | boolean
 
   /**
+   * Display notations of the view
+   * @default true
+   */
+  showNotations?: boolean | undefined
+
+  /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
    * @default true
    */

@@ -43,10 +43,16 @@ type ParsedElementStyle = {
 }
 
 export interface ParsedAstSpecification {
-  kinds: Record<c4.ElementKind, ParsedElementStyle>
+  kinds: Record<c4.ElementKind, {
+    technology?: string
+    notation?: string
+    style: ParsedElementStyle
+  }>
   relationships: Record<
     c4.RelationshipKind,
     {
+      technology?: string
+      notation?: string
       color?: c4.ThemeColor
       line?: c4.RelationshipLineType
       head?: c4.RelationshipArrowType
@@ -346,15 +352,21 @@ export function toElementStyle(props?: Array<ast.StyleProperty>) {
   for (const prop of props) {
     switch (true) {
       case ast.isBorderProperty(prop): {
-        result.border = prop.value
+        if (isTruthy(prop.value)) {
+          result.border = prop.value
+        }
         break
       }
       case ast.isColorProperty(prop): {
-        result.color = prop.value
+        if (isTruthy(prop.value)) {
+          result.color = prop.value
+        }
         break
       }
       case ast.isShapeProperty(prop): {
-        result.shape = prop.value
+        if (isTruthy(prop.value)) {
+          result.shape = prop.value
+        }
         break
       }
       case ast.isIconProperty(prop): {
@@ -376,7 +388,7 @@ export function toElementStyle(props?: Array<ast.StyleProperty>) {
   return result
 }
 
-export function toRelationshipStyle(props?: ast.SpecificationRelationshipKind['props']) {
+export function toRelationshipStyle(props?: ast.RelationshipStyleProperty[]) {
   const result = {} as {
     color?: c4.ThemeColor
     line?: c4.RelationshipLineType
@@ -419,7 +431,7 @@ export function toRelationshipStyle(props?: ast.SpecificationRelationshipKind['p
 export function toRelationshipStyleExcludeDefaults(
   props?: ast.SpecificationRelationshipKind['props']
 ) {
-  const { color, line, head, tail } = toRelationshipStyle(props)
+  const { color, line, head, tail } = toRelationshipStyle(props?.filter(ast.isRelationshipStyleProperty))
   return {
     ...(color && color !== DefaultRelationshipColor ? { color } : {}),
     ...(line && line !== DefaultLineStyle ? { line } : {}),

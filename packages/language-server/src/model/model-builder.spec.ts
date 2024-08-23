@@ -642,6 +642,34 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toMatchSnapshot()
   })
 
+  it('builds model with relationship spec with technology', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+      relationship async {
+        technology "Async"
+      }
+    }
+    model {
+      person user1
+      person user2
+
+      user1 .async user2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(values(model.relations)[0]).toMatchObject({
+      source: 'user1',
+      target: 'user2',
+      kind: 'async',
+      technology: 'Async'
+    })
+    expect(model).toMatchSnapshot()
+  })
+
   it('builds model with styled relationship', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
