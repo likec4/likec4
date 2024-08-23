@@ -156,6 +156,37 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       }
     })
   })
+  
+  it('builds model with metadata', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        metadata {
+          version '1.1.1'
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'component',
+      },
+      system2: {
+        kind: 'component',
+        metadata: {
+          version: '1.1.1'
+        }
+      }
+    })
+  })
 
   it('builds model with icon', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
@@ -772,6 +803,39 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         'file:///test/workspace/src/samefolder.html',
         'https://example1.com'
       ]
+    })
+  })
+
+  it('builds relations with metadata', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        -> system1 {
+          metadata {
+            rps '100'
+            messageSize '10'
+          }
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    const relations = values(model.relations)
+    expect(relations).toHaveLength(1)
+    expect(relations[0]).toMatchObject({
+      source: 'system2',
+      target: 'system1',
+      metadata: {
+        rps: '100',
+        messageSize: '10'
+      }
     })
   })
 

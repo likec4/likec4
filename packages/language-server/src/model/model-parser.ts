@@ -140,6 +140,7 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(astNode.body)
     const stylePropsAst = astNode.body?.props.find(ast.isStyleProperties)?.props
     const style = toElementStyle(stylePropsAst)
+    const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty));
     const astPath = this.getAstNodePath(astNode)
 
     let [title, description, technology] = astNode.props ?? []
@@ -169,6 +170,7 @@ export class LikeC4ModelParser {
       kind,
       astPath,
       title: title ?? astNode.name,
+      ...(metadata && { metadata }),
       ...(tags && { tags }),
       ...(links && isNonEmptyArray(links) && { links }),
       ...(isTruthy(technology) && { technology }),
@@ -184,6 +186,7 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
     const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
     const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
+    const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty));
     const astPath = this.getAstNodePath(astNode)
 
     const bodyProps = mapToObj(
@@ -207,6 +210,7 @@ export class LikeC4ModelParser {
       source,
       target,
       title,
+      ...(metadata && { metadata }),
       ...(isTruthy(technology) && { technology }),
       ...(isTruthy(description) && { description }),
       ...(kind && { kind }),
@@ -783,6 +787,12 @@ export class LikeC4ModelParser {
 
   private getAstNodePath(node: AstNode) {
     return this.services.workspace.AstNodeLocator.getAstNodePath(node)
+  }
+
+  private getMetadata(metadataAstNode: ast.MetadataProperty | undefined): { [key: string]: string } | undefined {
+    return metadataAstNode?.props != null 
+      ? mapToObj(metadataAstNode?.props, (p) => [p.key, p.value]) 
+      : undefined;
   }
 
   private convertTags<E extends { tags?: ast.Tags }>(withTags?: E) {

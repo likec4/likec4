@@ -68,7 +68,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       kind,
       title,
       description,
-      technology
+      technology,
+      metadata
     }: ParsedAstElement): c4.Element | null => {
       try {
         const __kind = c4Specification.kinds[kind]
@@ -85,6 +86,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...(color && { color }),
           ...(shape && { shape }),
           ...(icon && { icon }),
+          ...(metadata && { metadata }),
           style: {
             ...(border && { border }),
             ...(isNumber(opacity) && { opacity })
@@ -153,7 +155,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           source,
           target,
           kind,
-          id
+          id          
         }
       }
       return {

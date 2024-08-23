@@ -18,6 +18,9 @@ model {
         All the frontend applications
         of Cloud System
       '
+      metadata {
+        version '2.1.1'
+      }
     }
 
     legacy = container 'Cloud Legacy' {
@@ -38,7 +41,11 @@ model {
         Has limited access to the system
       '
 
-      -> customer 'helps with questions'
+      -> customer 'helps with questions' {
+        metadata {
+          rps '1000'
+        }
+      }
     }
   }
   customer .uses cloud 'uses and pays'

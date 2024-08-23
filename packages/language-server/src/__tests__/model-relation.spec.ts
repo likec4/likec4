@@ -226,4 +226,22 @@ describe.concurrent('model relation', () => {
       }
     }`
   )
+
+  test(
+    'relationship with metadata',
+    valid`
+    specification {
+      element component
+    }
+    model {
+      component client
+      component server
+      client -> server {
+        metadata {
+          httpVerb 'GET'
+          path '/users/:id'
+        }
+      }
+    }`
+  )
 })
