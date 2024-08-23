@@ -1,5 +1,5 @@
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../mantine.css'
+import { mantine, whereDark } from '../mantine.css'
 import { vars } from '../theme.css'
 
 export const container = style({
@@ -27,7 +27,7 @@ export const card = style({
     }
   },
   selectors: {
-    [`:where([data-mantine-color-scheme='dark']) &`]: {
+    [`${whereDark} &`]: {
       backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`
     }
   }
@@ -37,8 +37,10 @@ export const title = style({})
 
 export const description = style({
   whiteSpaceCollapse: 'preserve-breaks',
-  color: mantine.colors.gray[7]
-})
-globalStyle(`:where([data-mantine-color-scheme="dark"]) ${description}`, {
-  color: mantine.colors.gray[5]
+  color: mantine.colors.gray[7],
+  selectors: {
+    [`${whereDark} &`]: {
+      color: mantine.colors.gray[5]
+    }
+  }
 })

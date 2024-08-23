@@ -43,7 +43,7 @@ export function Header({ diagram }: HeaderProps) {
       right={'0.5rem'}
       p={4}
       radius={'sm'}
-      shadow="xl">
+      shadow="lg">
       <Group gap={isTablet ? 6 : 4} wrap="nowrap">
         {isReactDiagramRoute
           ? (
@@ -67,7 +67,7 @@ export function Header({ diagram }: HeaderProps) {
             </Button>
           )}
 
-        <Divider orientation="vertical" mr={isTablet ? 4 : 'xs'} />
+        <Divider orientation="vertical" visibleFrom="md" />
         <ColorSchemeToggle />
         <Space />
       </Group>

@@ -39,7 +39,7 @@ export default function DiagramTitlePanel() {
         <Card
           radius="sm"
           className={css.card}
-          withBorder
+          withBorder={!isCollapsed}
           p={isCollapsed ? 'sm' : 'md'}
           onDoubleClick={e => e.stopPropagation()}>
           {isCollapsed && (
@@ -47,22 +47,21 @@ export default function DiagramTitlePanel() {
               <Button
                 fullWidth
                 justify="stretch"
-                size="sm"
-                py={2}
+                size="md"
                 radius={'0'}
                 variant={'subtle'}
-                color="dark"
+                color="gray"
                 onClick={toggle}
+                fw={500}
+                fz={'sm'}
               >
-                <Text inline fw={500} fz={'xs'} c="gray">
-                  {title}
-                </Text>
+                {title}
               </Button>
             </CardSection>
           )}
           {!isCollapsed && (
             <>
-              <CardSection mb={'sm'}>
+              <CardSection mb={'xs'}>
                 <Button
                   fullWidth
                   size="xs"
