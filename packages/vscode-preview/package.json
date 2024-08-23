@@ -21,7 +21,7 @@
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
-    "@fontsource/ibm-plex-sans": "^5.0.20",
+    "@fontsource/ibm-plex-sans": "^5.0.21",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",
