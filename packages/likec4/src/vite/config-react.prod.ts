@@ -30,7 +30,7 @@ export async function viteReactConfig({
     publicDir: false,
     mode: 'production',
     esbuild: {
-      banner: `'use client'\n\n` + JsBanners.banner,
+      banner: JsBanners.banner,
       footer: JsBanners.footer,
       jsx: 'transform',
       jsxDev: false,

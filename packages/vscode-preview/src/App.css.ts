@@ -21,7 +21,7 @@ globalStyle('body', {
       `"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
     '--mantine-default-font-family': 'var(--likec4-default-font-family)',
     '--mantine-font-family': 'var(--likec4-default-font-family)',
-    '--mantine-color-body': 'var(--vscode-editor-background )',
+    '--mantine-color-body': 'var(--vscode-editor-background)',
     '--likec4-background-color': 'var(--vscode-editor-background )'
   }
 })
@@ -33,17 +33,6 @@ export const likec4Container = style({
   vars: {
     '--likec4-options-panel-top': '1rem',
     '--likec4-navigation-panel-top': '0.5rem'
-  }
-})
-
-globalStyle(`${likec4Container} .react-flow`, {
-  vars: {
-    '--xy-background-pattern-color': 'var(--mantine-color-dark-8 )'
-  }
-})
-globalStyle(`:where([data-mantine-color-scheme='dark']) ${likec4Container} .react-flow`, {
-  vars: {
-    '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
   }
 })
 
