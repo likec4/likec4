@@ -1,0 +1,14 @@
+{
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "noUnusedParameters": false,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "noEmit": true
+  },
+  "include": [
+    "src/"
+  ]
+}

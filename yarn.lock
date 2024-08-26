@@ -8656,6 +8656,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"likec4-vscode-formatter@workspace:packages/vscode-formatter":
+  version: 0.0.0-use.local
+  resolution: "likec4-vscode-formatter@workspace:packages/vscode-formatter"
+  dependencies:
+    "@types/node": "npm:^20.16.1"
+    "@types/vscode": "npm:^1.90.0"
+    esbuild: "npm:^0.21.5"
+    esbuild-plugins-node-modules-polyfill: "npm:^1.6.5"
+    tslib: "npm:^2.6.3"
+    tsx: "npm:~4.9.3"
+    typescript: "npm:^5.5.4"
+    vitest: "npm:^2.0.5"
+  languageName: unknown
+  linkType: soft
+
 "likec4-vscode@workspace:packages/vscode":
   version: 0.0.0-use.local
   resolution: "likec4-vscode@workspace:packages/vscode"
@@ -14328,7 +14343,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:~2.0.5":
+"vitest@npm:^2.0.5, vitest@npm:~2.0.5":
   version: 2.0.5
   resolution: "vitest@npm:2.0.5"
   dependencies:

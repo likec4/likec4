@@ -26,5 +26,25 @@
         "clear": true,
       }
     },
+    {
+      "label": "build_extensions_vscode",
+      "type": "npm",
+      "script": "build:turbo",
+      "path": "packages/vscode"
+    },
+    {
+      "label": "build_extensions_vscode-formatter",
+      "type": "npm",
+      "script": "build:turbo",
+      "path": "packages/vscode-formatter"
+    },
+    {
+      "label": "build_extensions",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "build_extensions_vscode",
+        "build_extensions_vscode-formatter"
+      ]
+    }
   ]
 }

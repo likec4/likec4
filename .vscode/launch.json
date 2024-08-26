@@ -22,10 +22,12 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-formatter",
         "${workspaceFolder}/examples/cloud-system",
       ],
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*.js",
+        "${workspaceFolder}/packages/vscode-formatter/dist/**/*.js",
       ],
       "sourceMaps": true,
       "resolveSourceMapLocations": [
@@ -33,11 +35,7 @@
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,
-      "preLaunchTask": {
-        "type": "npm",
-        "script": "build:turbo",
-        "path": "packages/vscode"
-      }
+      "preLaunchTask": "build_extensions",
     },
     {
       "name": "Attach to Extension",
@@ -56,6 +54,7 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-formatter",
         "--extensionDevelopmentKind=web",
         "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
@@ -66,11 +65,7 @@
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,
-      "preLaunchTask": {
-        "type": "npm",
-        "script": "build:turbo",
-        "path": "packages/vscode"
-      }
+      "preLaunchTask": "build_extensions"
     }
-  ]
+  ]  
 }
