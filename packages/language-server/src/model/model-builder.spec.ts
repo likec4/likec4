@@ -2,6 +2,7 @@ import type { EdgeId, Element, Fqn, ViewID } from '@likec4/core'
 import { keys, values } from 'remeda'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
+import { title } from 'process'
 
 describe.concurrent('LikeC4ModelBuilder', () => {
   it('builds model with colors and shapes', async ({ expect }) => {
@@ -836,6 +837,32 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         rps: '100',
         messageSize: '10'
       }
+    })
+  })
+
+  it('builds relations with technology', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        -> system1 'uses' 'http'
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    const relations = values(model.relations)
+    expect(relations).toHaveLength(1)
+    expect(relations[0]).toMatchObject({
+      source: 'system2',
+      target: 'system1',
+      title: 'uses',
+      technology: 'http'
     })
   })
 

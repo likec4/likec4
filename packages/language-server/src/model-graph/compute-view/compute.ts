@@ -263,7 +263,7 @@ export class ComputeCtx {
 
       return Object.assign(
         edge,
-        isTruthy(relation.title) && { label: relation.title },
+        this.getEdgeLabel(relation),
         isTruthy(relation.description) && { description: relation.description },
         isTruthy(relation.technology) && { description: relation.technology },
         isTruthy(relation.kind) && { kind: relation.kind },
@@ -529,5 +529,19 @@ export class ComputeCtx {
       return this
     }
     nonexhaustive(expr)
+  }  
+
+  protected getEdgeLabel(relation: { title: String | undefined, technology?: String | undefined }): { label: String } | false {
+    const labelParts: String[] = []
+
+    if(isTruthy(relation.title)) {
+      labelParts.push(relation.title)
+    }
+
+    if(isTruthy(relation.technology)) {
+      labelParts.push(`[${relation.technology}]`)
+    }
+
+    return labelParts.length > 0 && { label: labelParts.join('\n') }
   }
 }

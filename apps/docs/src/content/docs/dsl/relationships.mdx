@@ -136,23 +136,34 @@ model {
 }
 ```
 
-##### Description and technology
+##### Description
 
 ```likec4
 model {
   customer -> frontend 'opens in browser' {
     description 'Customer opens the frontend in the browser to interact with the system'
-    technology 'HTTPS'
   }
 }
 ```
 
 :::caution
 
-Description and technology are not displayed in the diagrams yet  
+Description is not displayed in the diagrams yet  
 In progress
 
 :::
+
+##### Technology
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    technology 'HTTPS'
+  }
+
+  // Or in a shorter way
+  customer -> frontend 'opens in browser' 'HTTPS'
+}
 
 ##### Metadata
 

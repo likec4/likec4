@@ -133,6 +133,7 @@ fragment RelationFragment:
   ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
   target=ElementRef
   title=String?
+  technology=String?
   tags=Tags?
   body=RelationBody?
 ;

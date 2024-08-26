@@ -244,4 +244,24 @@ describe.concurrent('model relation', () => {
       }
     }`
   )
+
+  test(
+    'relationship with technology',
+    valid`
+    specification {
+      element component
+
+      tag asIs
+    }
+    model {
+      component client1
+      component client2
+      component server
+
+      client1 -> server 'uses' 'graphql' #asIs
+      client2 -> server {
+        technology 'graphql'
+      }
+    }`
+  )
 })
