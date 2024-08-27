@@ -30,7 +30,7 @@ export const XYFlowInner = memo(function XYFlowInnerR({
     readonly,
     enableDynamicViewWalkthrough
   } = useDiagramState(s => ({
-    showNotations: s.showNotations && !!s.view.notation,
+    showNotations: s.showNotations,
     isDynamicView: s.isDynamicView,
     readonly: s.readonly,
     enableDynamicViewWalkthrough: s.enableDynamicViewWalkthrough,

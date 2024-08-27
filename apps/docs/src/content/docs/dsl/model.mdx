@@ -110,6 +110,19 @@ model {
 }
 ```
 
+:::tip
+
+You may define technology in [specification](/dsl/specification#element-kind), if it is common for all of the kind:
+
+```likec4
+specification {
+  element mobileApp {
+    technology 'React Native'
+  }
+}
+```
+:::
+
 #### Element Tags
 
 Tags are defined in nested block and before any properties:
@@ -244,4 +257,4 @@ model {
 
   component backend // ✅ This is OK - 'backend'
 }
-```
+```import type { technology } from '../../../../../../packages/diagram/src/xyflow/nodes/element/element.css';
