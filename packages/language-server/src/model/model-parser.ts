@@ -241,7 +241,7 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const views = doc.parseResult.value.views.flatMap(v => isValid(v) && v.body ? v.body.views : [])
+    const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views : [])
     for (const view of views) {
       try {
         if (!isValid(view)) {

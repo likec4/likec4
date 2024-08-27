@@ -1,7 +1,7 @@
 grammar LikeC4
 
 entry LikeC4Grammar:
-  likec4lib=LikeC4Lib |
+  likec4lib+=LikeC4Lib |
   (
     specifications+=SpecificationRule |
     models+=Model  |

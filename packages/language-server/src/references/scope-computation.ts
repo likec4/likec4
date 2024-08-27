@@ -78,19 +78,19 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   }
 
   private exportLibrary(
-    likec4lib: ast.LikeC4Lib | undefined,
+    likec4lib: ast.LikeC4Lib[] | undefined,
     docExports: AstNodeDescription[],
     document: LikeC4LangiumDocument
   ) {
     if (isNullish(likec4lib)) {
       return
     }
-    for (const iconAst of likec4lib.icons) {
-      try {
+    try {
+      for (const iconAst of likec4lib.flatMap(l => l.icons)) {
         docExports.push(this.descriptions.createDescription(iconAst, iconAst.name, document))
-      } catch (e) {
-        logError(e)
       }
+    } catch (e) {
+      logError(e)
     }
   }
 
