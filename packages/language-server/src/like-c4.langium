@@ -1,11 +1,11 @@
 grammar LikeC4
 
 entry LikeC4Grammar:
+  likec4lib=LikeC4Lib |
   (
     specifications+=SpecificationRule |
     models+=Model  |
-    views+=ModelViews |
-    likec4lib+=LikeC4Lib
+    views+=ModelViews
   )*
 ;
 
