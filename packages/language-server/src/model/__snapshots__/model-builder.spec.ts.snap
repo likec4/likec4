@@ -604,7 +604,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "description": "Async",
           "id": "user1:user2",
           "kind": "async",
-          "label": null,
+          "label": "[Async]",
           "parent": null,
           "relations": [
             "p2bxx1",
@@ -613,7 +613,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "target": "user2",
         },
       ],
-      "hash": "f9a79b50d0467e24a679bd458bf989f11adf284d",
+      "hash": "3c64a791007eb7e1459946f2b6924b2867c29171",
       "id": "index",
       "links": null,
       "nodes": [
