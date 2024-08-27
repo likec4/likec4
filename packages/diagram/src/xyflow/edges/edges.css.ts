@@ -221,7 +221,7 @@ export const edgeLabel = style({
 })
 
 export const edgeLabelText = style({
-  textAlign: 'left',
+  textAlign: 'center',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
   lineHeight: 1.185
