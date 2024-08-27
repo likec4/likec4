@@ -24,6 +24,10 @@ export function logToChannel(channel: LogOutputChannel): Disposable {
     })
     const msg = tag ? `${tag} ${parts[0]}` : parts[0]
     switch (true) {
+      case level === LogLevels.fail: {
+        channel.error(msg, ...parts.slice(1))
+        break
+      }
       case level >= LogLevels.trace: {
         channel.trace(msg, ...parts.slice(1))
         break
