@@ -1,26 +1,36 @@
 # [1.8.0](https://github.com/likec4/likec4/compare/v1.7.4...v1.8.0) (2024-08-27)
 
+### 🚀 Features  
 
-### Bug Fixes
+* View notations
+  
+  ```zig
+  specification {
+  
+    element customer {
+      notation "Person, Customer"
+      style {
+        shape person
+        color green
+      }
+    }
+  
+    element staff {
+      notation "Person, Staff"
+      style {
+        shape person
+      }
+    }
+  }
+  ```
 
-* `@hpcc-js/wasm` to `@hpcc-js/wasm-graphviz` ([94bebb9](https://github.com/likec4/likec4/commit/94bebb907cfb423a4b845425533b83fcd6da1f98))
-* **deps:** update dependency @dagrejs/graphlib to ^2.2.4 ([d148f65](https://github.com/likec4/likec4/commit/d148f6536e18f9cd5aaf6364e906ee8505a5ef8d))
-* **deps:** update dependency @expressive-code/plugin-collapsible-sections to ^0.35.6 ([731cec7](https://github.com/likec4/likec4/commit/731cec723e3ab3bb85bfb5839fb28525dc333735))
-* **deps:** update dependency @expressive-code/plugin-line-numbers to ^0.35.6 ([3fc19e2](https://github.com/likec4/likec4/commit/3fc19e20ec347e23764ce42e693ce999521f99a8))
-* **deps:** update dependency @nanostores/react to v0.7.3 ([5cb8a5e](https://github.com/likec4/likec4/commit/5cb8a5e885580c52e54a717e7ee79d71b136d418))
-* **deps:** update dependency nanostores to v0.11.2 ([9122a2e](https://github.com/likec4/likec4/commit/9122a2e63759a65f120866236e8f8bfe95be8035))
-* **deps:** update dependency playwright to v1.46.1 ([9b5c1bf](https://github.com/likec4/likec4/commit/9b5c1bf0cb1530fef34fa776a542119b414b9af9))
-* **deps:** update dependency zustand to ^4.5.5 ([fbf1895](https://github.com/likec4/likec4/commit/fbf18955f88f9f9293f5bd1deee3cf9edec45d40))
-* **lsp:** add MetadataAttribute to StringProperty type for Symantic Hightlights ([e8db9bd](https://github.com/likec4/likec4/commit/e8db9bd9e947360bcc39622d0a715537e4ff115e))
+  [Documentation](https://likec4.dev/dsl/notations/)
+  
+  <img width="436" alt="SCR-20240827-nhav" src="https://github.com/user-attachments/assets/bcc151e2-6c31-4b72-8651-a39ba79351d0">
 
-
-### Features
-
-* `use-overview` flag in cli ([ee027cf](https://github.com/likec4/likec4/commit/ee027cf6e02d236a8c0e89944486c0eb73622cb4))
-* notations ([c3c892e](https://github.com/likec4/likec4/commit/c3c892e1659e078fa440fe4286b0bb817d2ffb9c))
-* overview all diagrams ([50857ee](https://github.com/likec4/likec4/commit/50857eef93e2884e9bd5c9677347db03f60990c1))
-
-
+* `technology` for relationships  (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#576](https://github.com/likec4/likec4/issues/576))
+* `title` for links  (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#871](https://github.com/likec4/likec4/issues/871))
+* [experimental] overview all views with `use-overview` flag in cli
 
 ## [1.7.4](https://github.com/likec4/likec4/compare/v1.7.3...v1.7.4) (2024-08-17)
 
