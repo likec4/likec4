@@ -1,15 +1,7 @@
-import {
-  type c4,
-  DefaultElementShape,
-  DefaultThemeColor,
-  InvalidModelError,
-  invariant,
-  isNonEmptyArray,
-  nonexhaustive
-} from '@likec4/core'
+import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
-import { find, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
+import { filter, flatMap, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Writable } from 'type-fest'
 import type {
@@ -42,7 +34,6 @@ import { stringHash } from '../utils'
 import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
-import type { LinkProperty } from '../generated/ast'
 
 const { getDocument } = AstUtils
 
@@ -183,7 +174,7 @@ export class LikeC4ModelParser {
     description = removeIndent(bodyProps.description ?? description)
     technology = toSingleLine(bodyProps.technology ?? technology)
 
-    const links = this.convertLinks(astNode)
+    const links = this.convertLinks(astNode.body)
 
     // Property has higher priority than from style
     const iconProp = astNode.body?.props.find(ast.isIconProperty)
@@ -213,7 +204,7 @@ export class LikeC4ModelParser {
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
     const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
-    const links = this.convertLinks(astNode)
+    const links = this.convertLinks(astNode.body)
     const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
     const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
     const astPath = this.getAstNodePath(astNode)
@@ -250,7 +241,7 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views : [])
+    const views = doc.parseResult.value.views.flatMap(v => isValid(v) && v.body ? v.body.views : [])
     for (const view of views) {
       try {
         if (!isValid(view)) {
@@ -693,7 +684,7 @@ export class LikeC4ModelParser {
     const description = removeIndent(body.props.find(p => p.key === 'description')?.value) ?? null
 
     const tags = this.convertTags(body)
-    const links = this.convertLinks(astNode)
+    const links = this.convertLinks(body)
 
     const manualLayout = this.parseViewManualLaout(astNode)
 
@@ -748,7 +739,7 @@ export class LikeC4ModelParser {
     const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
 
     const tags = this.convertTags(body)
-    const links = this.convertLinks(astNode)
+    const links = this.convertLinks(body)
 
     ViewOps.writeId(astNode, id as c4.ViewID)
 
@@ -866,9 +857,21 @@ export class LikeC4ModelParser {
     return isNonEmptyArray(tags) ? tags : null
   }
 
-  private convertLinks<E extends {body?: { props?: any[] }}>(source: E | undefined): ParsedLink[] | undefined {
-    return source?.body?.props
-      ?.filter(ast.isLinkProperty)
-      .map(p => ({ url: p.value, title: p.title }) as ParsedLink)
+  private convertLinks(source?: ast.LinkProperty['$container']): ParsedLink[] | undefined {
+    if (!source?.props || source.props.length === 0) {
+      return undefined
+    }
+    return pipe(
+      source.props,
+      filter(ast.isLinkProperty),
+      flatMap(p => {
+        const url = p.value
+        if (isTruthy(url)) {
+          const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
+          return title ? { url, title } : { url }
+        }
+        return []
+      })
+    )
   }
 }
