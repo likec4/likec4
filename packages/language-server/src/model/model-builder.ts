@@ -49,8 +49,11 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     Object.assign(c4Specification.kinds, spec.kinds)
     Object.assign(c4Specification.relationships, spec.relationships)
   })
-  const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
-    return links.map(l => services.lsp.DocumentLinkProvider.resolveLink(doc, l)) as c4.NonEmptyArray<string>
+  const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<c4.Link>) => {
+    return links.map(l => ({
+      url: services.lsp.DocumentLinkProvider.resolveLink(doc, l.url),
+      ...(l.title && { title: l.title })
+    })) as c4.NonEmptyArray<c4.Link>
   }
 
   const toModelElement = (doc: LangiumDocument) => {

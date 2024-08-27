@@ -90,6 +90,12 @@ describe('Model Links', () => {
       }
     `
 
+    test('with title').valid`
+      component tst1 {
+        link https://sub.domain.com/?query=1&query2=%20#hash 'some title'
+      }
+    `
+
     test('not interfere with comments').valid`
       // Here is a comment
       component tst1 {

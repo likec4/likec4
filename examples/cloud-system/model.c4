@@ -28,7 +28,7 @@ model {
         The legacy version of our SaaS
         MVP as was presented to the first customers
       '
-      link ./.github/workflows/update-diagrams.yml#L19-L25
+      link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
     }
 
     next = container 'Cloud Next' {
@@ -77,7 +77,7 @@ views {
   dynamic view dynamic-view-1 {
     title 'Dynamic View Example'
 
-    link https://docs.likec4.dev/dsl/dynamic-views/
+    link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
 
     customer -> ui.dashboard 'opens'
     ui.dashboard -> cloud.graphql 'requests'
