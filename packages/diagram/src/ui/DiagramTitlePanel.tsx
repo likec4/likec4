@@ -130,19 +130,19 @@ export default function DiagramTitlePanel() {
                   justify="stretch"
                   align="stretch">
                   {links.map((link) => (
-                    <Group key={link} wrap="nowrap" align="center" gap={'sm'}>
+                    <Group key={link.url} wrap="nowrap" align="center" gap={'sm'}>
                       <Box flex={'1'} style={{ overflow: 'hidden' }}>
                         <Anchor
-                          href={link}
+                          href={link.url}
                           target="_blank"
                           fz="xs"
                           truncate="end"
                           display={'inline-block'}
                           w={'100%'}>
-                          {link}
+                          {link.title || link.url}
                         </Anchor>
                       </Box>
-                      <CopyButton value={link}>
+                      <CopyButton value={link.url}>
                         {({ copied, copy }) => (
                           <Button
                             size="compact-xs"

@@ -11,7 +11,8 @@ import type {
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
-  ParsedLikeC4LangiumDocument
+  ParsedLikeC4LangiumDocument,
+  ParsedLink
 } from '../ast'
 import {
   ast,
@@ -33,6 +34,7 @@ import { stringHash } from '../utils'
 import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
+import type { LinkProperty } from '../generated/ast'
 
 const { getDocument } = AstUtils
 
@@ -154,7 +156,7 @@ export class LikeC4ModelParser {
     description = removeIndent(bodyProps.description ?? description)
     technology = toSingleLine(bodyProps.technology ?? technology)
 
-    const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
+    const links = this.convertLinks(astNode)
 
     // Property has higher priority than from style
     const iconProp = astNode.body?.props.find(ast.isIconProperty)
@@ -184,7 +186,7 @@ export class LikeC4ModelParser {
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
     const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
-    const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
+    const links = this.convertLinks(astNode)
     const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
     const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
     const astPath = this.getAstNodePath(astNode)
@@ -644,7 +646,7 @@ export class LikeC4ModelParser {
     const description = removeIndent(body.props.find(p => p.key === 'description')?.value) ?? null
 
     const tags = this.convertTags(body)
-    const links = body.props.filter(ast.isLinkProperty).map(p => p.value)
+    const links = this.convertLinks(astNode)
 
     const manualLayout = this.parseViewManualLaout(astNode)
 
@@ -699,7 +701,7 @@ export class LikeC4ModelParser {
     const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
 
     const tags = this.convertTags(body)
-    const links = props.filter(ast.isLinkProperty).map(p => p.value)
+    const links = this.convertLinks(astNode)
 
     ViewOps.writeId(astNode, id as c4.ViewID)
 
@@ -813,5 +815,11 @@ export class LikeC4ModelParser {
       iter = iter.prev
     }
     return isNonEmptyArray(tags) ? tags : null
+  }
+
+  private convertLinks<E extends {body?: { props?: any[] }}>(source: E | undefined): ParsedLink[] | undefined {
+    return source?.body?.props
+      ?.filter(ast.isLinkProperty)
+      .map(p => ({ url: p.value, title: p.title }) as ParsedLink)
   }
 }

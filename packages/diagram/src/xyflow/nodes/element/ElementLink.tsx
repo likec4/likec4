@@ -69,13 +69,13 @@ export function ElementLink({
           p={'xs'}>
           <Stack gap={'xs'}>
             {element.links.map((link) => (
-              <Group key={link} wrap="nowrap" gap={'sm'}>
+              <Group key={link.url} wrap="nowrap" gap={'sm'}>
                 <Box flex={'1'} style={{ overflow: 'clip', maxWidth: clamp(element.width, { min: 200, max: 400 }) }}>
-                  <Anchor href={link} target="_blank" fz="13" truncate="end">
-                    {link}
+                  <Anchor href={link.url} target="_blank" fz="13" truncate="end">
+                    {link.title || link.url}
                   </Anchor>
                 </Box>
-                <CopyButton value={link}>
+                <CopyButton value={link.url}>
                   {({ copied, copy }) => (
                     <Button
                       size="compact-xs"

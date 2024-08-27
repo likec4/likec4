@@ -41,6 +41,11 @@ export interface TagSpec {
   readonly style: ElementStyle
 }
 
+export interface Link {
+  readonly title?: string,
+  readonly url: string
+}
+
 export interface Element {
   readonly id: Fqn
   readonly kind: ElementKind
@@ -48,7 +53,7 @@ export interface Element {
   readonly description: string | null
   readonly technology: string | null
   readonly tags: NonEmptyArray<Tag> | null
-  readonly links: NonEmptyArray<string> | null
+  readonly links: NonEmptyArray<Link> | null
   readonly icon?: IconUrl
   readonly shape?: ElementShape
   readonly color?: ThemeColor

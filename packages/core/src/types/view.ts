@@ -1,6 +1,6 @@
 import { isNullish } from 'remeda'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
+import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { Opaque } from './opaque'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
@@ -53,7 +53,7 @@ export interface BasicView<ViewType extends 'element' | 'dynamic'> {
   readonly title: string | null
   readonly description: string | null
   readonly tags: NonEmptyArray<Tag> | null
-  readonly links: NonEmptyArray<string> | null
+  readonly links: NonEmptyArray<Link> | null
 
   /**
    * URI to the source file of this view.
@@ -163,7 +163,7 @@ export interface ComputedNode {
   description: string | null
   technology: string | null
   tags: NonEmptyArray<Tag> | null
-  links: NonEmptyArray<string> | null
+  links: NonEmptyArray<Link> | null
   children: NodeId[]
   inEdges: EdgeId[]
   outEdges: EdgeId[]

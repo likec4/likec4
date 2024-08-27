@@ -417,7 +417,7 @@ NavigateToProperty:
 // Common properties -------------------------------------
 
 LinkProperty:
-  key='link' ':'? value=Uri ';'?;
+  key='link' ':'? value=Uri title=String? ';'?;
 ColorProperty:
   key='color' ':'? value=ThemeColor ';'?;
 

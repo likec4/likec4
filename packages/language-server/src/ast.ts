@@ -63,7 +63,7 @@ export interface ParsedAstElement {
   description?: string
   technology?: string
   tags?: c4.NonEmptyArray<c4.Tag>
-  links?: c4.NonEmptyArray<string>
+  links?: c4.NonEmptyArray<ParsedLink>
   style: ParsedElementStyle
   metadata?: { [key: string]: string }
 }
@@ -82,7 +82,7 @@ export interface ParsedAstRelation {
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
-  links?: c4.NonEmptyArray<string>
+  links?: c4.NonEmptyArray<ParsedLink>
   metadata?: { [key: string]: string }
 }
 
@@ -95,7 +95,7 @@ export interface ParsedAstElementView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<string> | null
+  links: c4.NonEmptyArray<ParsedLink> | null
   rules: c4.ViewRule[]
   manualLayout?: c4.ViewManualLayout
 }
@@ -107,7 +107,7 @@ export interface ParsedAstDynamicView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<string> | null
+  links: c4.NonEmptyArray<ParsedLink> | null
   steps: c4.DynamicViewStep[]
   rules: Array<c4.DynamicViewRule>
   manualLayout?: c4.ViewManualLayout
@@ -122,6 +122,11 @@ export const ViewOps = {
   readId(node: ast.LikeC4View): c4.ViewID | undefined {
     return node[idattr]
   }
+}
+
+export interface ParsedLink {
+  title?: string
+  url: string
 }
 
 export const ElementOps = {

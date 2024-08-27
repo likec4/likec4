@@ -1,5 +1,5 @@
 import type { NonEmptyArray } from './_common'
-import type { Fqn, Tag } from './element'
+import type { Fqn, Link, Tag } from './element'
 import type { Opaque } from './opaque'
 import type { ThemeColor } from './theme'
 
@@ -38,6 +38,6 @@ export interface Relation {
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
-  readonly links?: NonEmptyArray<string>
+  readonly links?: NonEmptyArray<Link>
   readonly metadata?: { [key: string]: string }
 }

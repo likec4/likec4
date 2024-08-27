@@ -365,7 +365,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         link /workspace-root
         link /root/another.js#L2
 
-        link https://example1.com
+        link https://example1.com 'component link title'
 
         -> system1
       }
@@ -379,7 +379,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         #v2
         description 'View with links'
         link https://example1.com
-        link https://example2.com/
+        link https://example2.com/ 'view link title'
         link ./samefolder.html
         include *
       }
@@ -398,12 +398,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         kind: 'component',
         tags: null,
         links: [
-          'file:///test/workspace/src/samefolder.js',
-          'file:///test/workspace/src/sub/folder.js#L1-2',
-          'file:///test/workspace/dir/another.js?query=1',
-          'file:///test/workspace/workspace-root',
-          'file:///test/workspace/root/another.js#L2',
-          'https://example1.com'
+          { url: 'file:///test/workspace/src/samefolder.js' },
+          { url: 'file:///test/workspace/src/sub/folder.js#L1-2' },
+          { url: 'file:///test/workspace/dir/another.js?query=1' },
+          { url: 'file:///test/workspace/workspace-root' },
+          { url: 'file:///test/workspace/root/another.js#L2' },
+          { url: 'https://example1.com', title: 'component link title' }
         ]
       }
     })
@@ -422,9 +422,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         description: 'View with links',
         tags: ['v2'],
         links: [
-          'https://example1.com',
-          'https://example2.com/',
-          'file:///test/workspace/src/samefolder.html'
+          { url: 'https://example1.com' },
+          { url: 'https://example2.com/', title: 'view link title' },
+          { url: 'file:///test/workspace/src/samefolder.html' }
         ]
         // docUri: 'file:///test/workspace/src/1.c4'
       }
@@ -485,28 +485,28 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       sys1: {
         links: [
-          'vscode-vfs://host/virtual/src/samefolder.js',
-          'vscode-vfs://host/virtual/src/sub/folder.js#L1-2',
-          'vscode-vfs://host/virtual/dir/another.js',
-          'vscode-vfs://host/virtual/workspace-root'
+          { url: 'vscode-vfs://host/virtual/src/samefolder.js' },
+          { url: 'vscode-vfs://host/virtual/src/sub/folder.js#L1-2' },
+          { url: 'vscode-vfs://host/virtual/dir/another.js' },
+          { url: 'vscode-vfs://host/virtual/workspace-root' }
         ]
       },
       sys2: {
         links: [
-          'vscode-vfs://host/virtual/src/subdir/samefolder.c4',
-          'vscode-vfs://host/virtual/src/sys2.c4',
-          'vscode-vfs://host/virtual/workspace-root'
+          { url: 'vscode-vfs://host/virtual/src/subdir/samefolder.c4' },
+          { url: 'vscode-vfs://host/virtual/src/sys2.c4' },
+          { url: 'vscode-vfs://host/virtual/workspace-root' }
         ]
       }
     })
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
-      links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
+      links: [{ url: 'vscode-vfs://host/virtual/src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
       relativePath: 'index.c4'
     })
     expect(views['sys2']).toMatchObject({
-      links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
+      links: [{ url: 'vscode-vfs://host/virtual/src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
       relativePath: 'subdir/doc2.c4'
     })
@@ -580,35 +580,35 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       sys1: {
-        links: ['vscode-vfs://host/virtual/src/samefolder.c4']
+        links: [{ url: 'vscode-vfs://host/virtual/src/samefolder.c4' }]
       },
       sys2: {
         links: [
-          'vscode-vfs://host/virtual/src/subdir/samefolder.c4',
-          'vscode-vfs://host/virtual/src/sys2.c4'
+          { url: 'vscode-vfs://host/virtual/src/subdir/samefolder.c4' },
+          { url: 'vscode-vfs://host/virtual/src/sys2.c4' }
         ]
       },
       sys3: {
         links: [
-          'vscode-vfs://host/virtual/src/a/b/c/samefolder.c4',
-          'vscode-vfs://host/virtual/src/sys3.c4'
+          { url: 'vscode-vfs://host/virtual/src/a/b/c/samefolder.c4' },
+          { url: 'vscode-vfs://host/virtual/src/sys3.c4' }
         ]
       }
     })
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
-      links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
+      links: [{ url: 'vscode-vfs://host/virtual/src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
       relativePath: 'index.c4'
     })
     expect(views['index']).not.toHaveProperty('docUri')
     expect(views['sys2']).toMatchObject({
-      links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
+      links: [{ url: 'vscode-vfs://host/virtual/src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
       relativePath: 'subdir/doc2.c4'
     })
     expect(views['sys3']).toMatchObject({
-      links: ['vscode-vfs://host/virtual/src/a/b/c/sys3/index.html'],
+      links: [{ url: 'vscode-vfs://host/virtual/src/a/b/c/sys3/index.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
       relativePath: 'a/b/c/doc3.c4'
     })
@@ -786,7 +786,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       component system2 {
         -> system1 {
           link ./samefolder.html
-          link https://example1.com
+          link https://example1.com 'example 1'
         }
       }
     }
@@ -800,8 +800,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       source: 'system2',
       target: 'system1',
       links: [
-        'file:///test/workspace/src/samefolder.html',
-        'https://example1.com'
+        { url: 'file:///test/workspace/src/samefolder.html' },
+        { url:'https://example1.com', title: 'example 1' }
       ]
     })
   })
