@@ -1,3 +1,38 @@
+# [1.8.0](https://github.com/likec4/likec4/compare/v1.7.4...v1.8.0) (2024-08-27)
+
+### 🚀 Features  
+
+* View notations
+  
+  ```zig
+  specification {
+  
+    element customer {
+      notation "Person, Customer"
+      style {
+        shape person
+        color green
+      }
+    }
+  
+    element staff {
+      notation "Person, Staff"
+      style {
+        shape person
+      }
+    }
+  }
+  ```
+
+  [Documentation](https://likec4.dev/dsl/notations/)
+  
+  <img width="436" alt="SCR-20240827-nhav" src="https://github.com/user-attachments/assets/bcc151e2-6c31-4b72-8651-a39ba79351d0">
+
+* `technology` for relationships  (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#576](https://github.com/likec4/likec4/issues/576))
+* `title` for links  (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#871](https://github.com/likec4/likec4/issues/871))
+* `metadata` in DSL (Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin))
+* [experimental] overview all views with `use-overview` flag in cli
+
 ## [1.7.4](https://github.com/likec4/likec4/compare/v1.7.3...v1.7.4) (2024-08-17)
 
 ### Bug Fixes
