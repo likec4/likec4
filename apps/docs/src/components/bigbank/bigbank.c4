@@ -6,48 +6,39 @@ model {
 
   bigbank = enterprise "Big Bank plc" {
 
-    supportStaff = person "Customer Service Staff" {
+    supportStaff = staff "Customer Service Staff" {
       description: "Customer service staff within the bank."
     }
 
-    backoffice = person "Back Office Staff" {
+    backoffice = staff "Back Office Staff" {
       description: "Administration and support staff within the bank."
     }
 
-    mainframe = softwaresystem "Mainframe Banking System" {
+    mainframe = existingsystem "Mainframe Banking System" {
       description: "Stores all of the core banking information about customers, accounts, transactions, etc."
-      style {
-        color: secondary
-      }
     }
 
-    email = softwaresystem "E-mail System" {
+    email = existingsystem "E-mail System" {
       description: "The internal Microsoft Exchange e-mail system."
-      style {
-        color: muted
-      }
     }
 
-    atm = softwaresystem "ATM" {
+    atm = existingsystem "ATM" {
       description: "Allows customers to withdraw cash."
     }
 
     internetBankingSystem = softwaresystem "Internet Banking System" {
       description: "Allows customers to view information about their bank accounts, and make payments."
 
-      singlePageApplication = container "Single-Page Application" {
+      singlePageApplication = spa "Single-Page Application" {
         description: "Provides all of the Internet banking functionality to customers via their web browser."
         technology: "JavaScript and Angular"
         style {
           shape browser
         }
       }
-      mobileApp = container "Mobile App" {
+      mobileApp = mobileApp "Mobile App" {
         description: "Provides a limited subset of the Internet banking functionality to customers via their mobile device."
         technology: "Xamarin"
-        style {
-          shape mobile
-        }
       }
       webApplication = container "Web Application" {
         description: "Delivers the static content and the Internet banking single page application."
@@ -140,13 +131,6 @@ views {
       internetBankingSystem,
       email,
       customer
-
-    style * {
-      color secondary
-    }
-    style bigbank, internetBankingSystem {
-      color primary
-    }
   }
 
   view ibsContainers of internetBankingSystem {
@@ -163,13 +147,6 @@ views {
       customer -> internetBankingSystem.*,
       customer -> bigbank.*
     exclude webApplication
-
-    style bigbank {
-      color muted
-    }
-    style customer {
-      color green
-    }
   }
 
   view spa of singlePageApplication {
@@ -179,9 +156,6 @@ views {
       internetBankingSystem,
       -> singlePageApplication ->
 
-    style * {
-      color secondary
-    }
     style internetBankingSystem {
       color muted
     }
@@ -223,6 +197,9 @@ views {
 
     style bigbank {
       color muted
+    }
+    style internetBankingSystem.* {
+      color secondary
     }
   }
 

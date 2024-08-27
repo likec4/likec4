@@ -133,21 +133,20 @@ export const TopLeftPanel = () => {
     showFitDiagram,
     showLayoutDriftWarning,
     showChangeAutoLayout,
-    portalProps: _portalProps,
+    target,
     showGoToSource
   } = useDiagramState(s => {
     const isNotActive = s.activeDynamicViewStep === null && s.focusedNodeId === null
-    const target = s.getContainer()
     return ({
       showNavigationButtons: !!s.onBurgerMenuClick || s.showNavigationButtons && !!s.onNavigateTo,
       showFitDiagram: s.fitViewEnabled && s.zoomable && s.viewportChanged,
       showLayoutDriftWarning: s.readonly !== true && s.view.hasLayoutDrift === true && isNotActive,
       showChangeAutoLayout: s.readonly !== true && !!s.onChange && isNotActive,
       showGoToSource: !!s.onOpenSourceView,
-      portalProps: target ? { target } : undefined
+      target: s.getContainer()
     })
   })
-  const portalProps = _portalProps ? { portalProps: _portalProps } : undefined
+  const portalProps = target ? { portalProps: { target } } : undefined
 
   return (
     <Stack

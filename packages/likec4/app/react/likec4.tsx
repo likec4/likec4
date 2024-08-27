@@ -35,6 +35,11 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
   background = 'transparent',
   browserBackground = 'dots',
   where,
+  showElementLinks = true,
+  showDiagramTitle = false,
+  showNavigationButtons = false,
+  showNotations = false,
+  enableFocusMode = false,
   ...props
 }) {
   const view = LikeC4Views[viewId]
@@ -55,6 +60,10 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
     throw new Error(`View with id ${browserViewId} not found`)
   }
 
+  if (interactive && enableFocusMode) {
+    console.warn('Focus mode is not supported in interactive mode')
+  }
+
   const colorScheme = useColorScheme(explicitColorScheme)
 
   return (
@@ -66,7 +75,11 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
         onNavigateTo={interactive ? onNavigateTo : undefined}
         background={background}
         renderIcon={RenderIcon}
-        showElementLinks={interactive}
+        showElementLinks={showElementLinks}
+        showDiagramTitle={showDiagramTitle}
+        showNavigationButtons={showNavigationButtons}
+        showNotations={showNotations}
+        enableFocusMode={enableFocusMode}
         where={where}
         {...props}
       />

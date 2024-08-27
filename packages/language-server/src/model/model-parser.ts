@@ -1,7 +1,15 @@
-import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import {
+  type c4,
+  DefaultElementShape,
+  DefaultThemeColor,
+  InvalidModelError,
+  invariant,
+  isNonEmptyArray,
+  nonexhaustive
+} from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
-import { isDefined, isTruthy, mapToObj } from 'remeda'
+import { find, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Writable } from 'type-fest'
 import type {
@@ -40,12 +48,12 @@ const { getDocument } = AstUtils
 
 export type ModelParsedListener = () => void
 
-function toSingleLine<T extends string | undefined>(str: T): T {
-  return (isTruthy(str) ? removeIndent(str).split('\n').join(' ') : undefined) as T
+function toSingleLine<T extends string | undefined | null>(str: T): T {
+  return (isNonNullish(str) ? removeIndent(str).split('\n').join(' ') : undefined) as T
 }
 
-function removeIndent<T extends string | undefined>(str: T): T {
-  return (isTruthy(str) ? stripIndent(str).trim() : undefined) as T
+function removeIndent<T extends string | undefined | null>(str: T): T {
+  return (isNonNullish(str) ? stripIndent(str).trim() : undefined) as T
 }
 
 export type IsValidFn = ChecksFromDiagnostics['isValid']
@@ -88,12 +96,23 @@ export class LikeC4ModelParser {
 
     const specifications = parseResult.value.specifications.filter(isValid)
     const element_specs = specifications.flatMap(s => s.elements.filter(isValid))
-    for (const { kind, style } of element_specs) {
+    for (const { kind, props } of element_specs) {
       try {
+        const style = props.find(ast.isElementStyleProperty)
         const kindName = kind.name as c4.ElementKind
+        if (kindName in c4Specification.kinds) {
+          logger.warn(`Element kind "${kindName}" is already defined`)
+          continue
+        }
+        const bodyProps = mapToObj(
+          props.filter(ast.isSpecificationElementStringProperty).filter(p => isNonNullish(p.value)) ?? [],
+          p => [p.key, removeIndent(p.value)]
+        )
         c4Specification.kinds[kindName] = {
-          ...c4Specification.kinds[kindName],
-          ...toElementStyle(style?.props)
+          ...bodyProps,
+          style: {
+            ...toElementStyle(style?.props)
+          }
         }
       } catch (e) {
         logWarnError(e)
@@ -104,8 +123,16 @@ export class LikeC4ModelParser {
     for (const { kind, props } of relations_specs) {
       try {
         const kindName = kind.name as c4.RelationshipKind
+        if (kindName in c4Specification.relationships) {
+          logger.warn(`Relationship kind "${kindName}" is already defined`)
+          continue
+        }
+        const bodyProps = mapToObj(
+          props.filter(ast.isSpecificationRelationshipStringProperty).filter(p => isNonNullish(p.value)) ?? [],
+          p => [p.key, p.value]
+        )
         c4Specification.relationships[kindName] = {
-          ...c4Specification.relationships[kindName],
+          ...bodyProps,
           ...toRelationshipStyleExcludeDefaults(props)
         }
       } catch (e) {
@@ -140,7 +167,7 @@ export class LikeC4ModelParser {
     const id = this.resolveFqn(astNode)
     const kind = astNode.kind.$refText as c4.ElementKind
     const tags = this.convertTags(astNode.body)
-    const stylePropsAst = astNode.body?.props.find(ast.isStyleProperties)?.props
+    const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
     const style = toElementStyle(stylePropsAst)
     const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
     const astPath = this.getAstNodePath(astNode)
@@ -192,8 +219,8 @@ export class LikeC4ModelParser {
     const astPath = this.getAstNodePath(astNode)
 
     const bodyProps = mapToObj(
-      astNode.body?.props.filter(ast.isRelationStringProperty) ?? [],
-      p => [p.key, p.value || undefined]
+      astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
+      p => [p.key, p.value]
     )
 
     const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
@@ -397,7 +424,12 @@ export class LikeC4ModelParser {
           }
           return acc
         }
-
+        if (ast.isNotationProperty(prop)) {
+          if (isTruthy(prop.value)) {
+            acc.custom[prop.key] = removeIndent(prop.value)
+          }
+          return acc
+        }
         nonexhaustive(prop)
       },
       {
@@ -481,6 +513,12 @@ export class LikeC4ModelParser {
           }
           return acc
         }
+        if (ast.isNotationProperty(prop)) {
+          if (isTruthy(prop.value)) {
+            acc.customRelation[prop.key] = removeIndent(prop.value)
+          }
+          return acc
+        }
         nonexhaustive(prop)
       },
       {
@@ -522,9 +560,12 @@ export class LikeC4ModelParser {
       return this.parseViewRulePredicate(astRule, isValid)
     }
     if (ast.isViewRuleStyle(astRule)) {
-      const styleProps = toElementStyle(astRule.props)
+      const styleProps = toElementStyle(astRule.props.filter(ast.isStyleProperty))
+      const notation = removeIndent(astRule.props.find(ast.isNotationProperty)?.value)
+      const targets = this.parseElementExpressionsIterator(astRule.target)
       return {
-        targets: this.parseElementExpressionsIterator(astRule.target),
+        targets,
+        ...(notation && { notation }),
         style: {
           ...styleProps
         }
@@ -605,6 +646,12 @@ export class LikeC4ModelParser {
           }
           if (ast.isLineProperty(prop)) {
             step[prop.key] = prop.value
+            continue
+          }
+          if (ast.isNotationProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              step[prop.key] = prop.value
+            }
             continue
           }
           nonexhaustive(prop)
@@ -740,11 +787,13 @@ export class LikeC4ModelParser {
             return acc
           }
           if (ast.isViewRuleStyle(n)) {
-            const styleProps = toElementStyle(n.props)
+            const styleProps = toElementStyle(n.props.filter(ast.isStyleProperty))
+            const notation = removeIndent(n.props.find(ast.isNotationProperty)?.value)
             const targets = this.parseElementExpressionsIterator(n.target)
             if (targets.length > 0) {
               acc.push({
                 targets,
+                ...(notation && { notation }),
                 style: {
                   ...styleProps
                 }

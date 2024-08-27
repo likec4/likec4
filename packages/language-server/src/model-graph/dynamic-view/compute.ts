@@ -22,12 +22,13 @@ import {
   parentFqn,
   StepEdgeId
 } from '@likec4/core'
-import { hasAtLeast, isTruthy, map, unique } from 'remeda'
+import { hasAtLeast, isTruthy, map, omit, unique } from 'remeda'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
+import { buildElementNotations } from '../utils/buildElementNotations'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 
 export namespace DynamicViewComputeCtx {
@@ -162,11 +163,18 @@ export class DynamicViewComputeCtx {
 
     const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)
 
+    const elementNotations = buildElementNotations(nodes)
+
     return calcViewLayoutHash({
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'LR',
-      nodes,
-      edges
+      nodes: map(nodes, omit(['notation'])),
+      edges,
+      ...(elementNotations.length > 0 && {
+        notation: {
+          elements: elementNotations
+        }
+      })
     })
   }
 

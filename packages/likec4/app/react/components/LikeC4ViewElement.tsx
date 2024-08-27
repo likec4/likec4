@@ -1,6 +1,6 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
-import { type HTMLAttributes, type ReactNode, useId } from 'react'
+import { type HTMLAttributes, useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
 import { useCallbackRef } from '@mantine/hooks'
@@ -42,8 +42,34 @@ export type LikeC4ViewElementProps<ViewId extends string, Tag extends string, Ki
      */
     renderIcon?: ElementIconRenderer | undefined
 
+    /**
+     * Display hovercards with element links
+     * @default true
+     */
     showElementLinks?: boolean | undefined
 
+    /**
+     * Display panel with diagram title / description
+     * @default false
+     */
+    showDiagramTitle?: boolean | undefined
+
+    /**
+     * Show back/forward navigation buttons
+     * @default false
+     */
+    showNavigationButtons?: undefined | boolean
+
+    /**
+     * Display notations of the view
+     * @default false
+     */
+    showNotations?: boolean | undefined
+
+    /**
+     * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
+     * @default false
+     */
     enableFocusMode?: boolean | undefined
 
     where?: WhereOperator<Tag, Kind> | undefined
@@ -57,8 +83,11 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
   colorScheme,
   background = 'transparent',
   renderIcon,
+  showDiagramTitle = false,
   showElementLinks = true,
-  enableFocusMode = true,
+  showNavigationButtons = false,
+  enableFocusMode = false,
+  showNotations = false,
   where,
   ...props
 }: LikeC4ViewElementProps<ViewId, Tag, Kind>) {
@@ -123,9 +152,10 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
             fitView
             fitViewPadding={0}
             showElementLinks={showElementLinks}
-            showDiagramTitle={false}
-            enableDynamicViewWalkthrough={false}
-            showNavigationButtons={false}
+            showDiagramTitle={showDiagramTitle}
+            showNotations={showNotations}
+            enableDynamicViewWalkthrough={enableFocusMode}
+            showNavigationButtons={showNavigationButtons}
             experimentalEdgeEditing={false}
             enableFocusMode={enableFocusMode}
             controls={false}

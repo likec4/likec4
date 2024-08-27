@@ -117,7 +117,6 @@ export function OverviewDiagrams({
 }: OverviewDiagramsProps) {
   const router = useRouter()
   const xyflowRef = useRef<OverviewXYFlowInstance>()
-  // const [focusedNodeId, setFocusedNode] = useState<string | null>(null)
   const { colorScheme } = useMantineColorScheme()
 
   const xyflowdata = useMemo(() => overviewGraphToXYFlowData(graph), [graph])

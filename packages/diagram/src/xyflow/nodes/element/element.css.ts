@@ -41,8 +41,8 @@ export const dimmed = style({})
 
 globalStyle(`.react-flow__node-element:has(${dimmed})`, {
   opacity: 0.25,
-  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-  transitionDelay: '200ms',
+  transition: 'opacity 400ms ease-in-out, filter 500ms ease-in-out',
+  transitionDelay: '50ms',
   filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
   willChange: 'opacity, filter'
 })

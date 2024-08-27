@@ -1,0 +1,58 @@
+specification {
+  element customer {
+    notation "Person, Customer"
+    style {
+      shape person
+      color green
+    }
+  }
+
+  element staff {
+    notation "Person, Staff"
+    style {
+      shape person
+    }
+  }
+
+  element enterprise {
+    style {
+      opacity 25%
+    }
+  }
+
+  element mobile-app {
+    notation 'Mobile Application'
+    style {
+      shape mobile
+    }
+  }
+}
+model {
+  customer = customer 'Customer' {
+    description 'A user of our product with active subscription'
+  }
+
+  enterprise = enterprise 'Company' {
+    staff = staff 'Support' {
+      description 'Staff, Customer support team'
+    }
+
+    mobile = mobile-app "Mobile Application" {
+      technology "iOS, Android"
+    }
+  }
+
+
+  customer -> mobile 'uses on personal device'
+  customer -> staff 'asks questions to'
+
+}
+
+views {
+
+  view notations_example of enterprise {
+    title 'Notations example'
+    include *
+  }
+
+}

@@ -148,7 +148,7 @@
       }
     },
     {
-      "match": "\\b(title|description|technology|prop\\d+):?\\b",
+      "match": "\\b(title|description|technology|notation|prop\\d*):?\\b",
       "name": "variable.parameter.function.likec4"
     },
     {
@@ -271,7 +271,7 @@
     },
     {
       "name": "variable.other.constant.likec4",
-      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|auth|web|frontend|api|webApp|authService|messageBroker|system)\\b"
+      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|auth|web|frontend|api|webApp|authService|messageBroker|system)\\d*\\b"
     },
     {
       "name": "keyword.control.likec4",

@@ -56,7 +56,7 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 4,
-      expectedItems: ['style']
+      expectedItems: ['technology', 'notation', 'style']
     })
     await completion({
       text,
@@ -475,6 +475,7 @@ describe('LikeC4CompletionProvider', () => {
         'title',
         'technology',
         'description',
+        'notation',
         'color',
         'shape',
         'border',

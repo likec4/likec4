@@ -143,6 +143,51 @@ describe.concurrent('specification', () => {
       specification {
         element -service
       }`
+
+    test('with technology').valid`
+      specification {
+        element Container {
+          technology "docker"
+        }
+        element softwareSystem {
+          technology: "docker";
+        }
+      }`
+
+    test('with notation and technology').valid`
+      specification {
+        element Container {
+          technology "docker"
+          notation "C4 Container"
+        }
+      }`
+
+    test('invalid with empty notation').invalid`
+      specification {
+        element Container {
+          notation
+          technology "docker"
+        }
+      }`
+
+    test('with notation, technology and style').valid`
+      specification {
+        element Container {
+          technology "docker"
+          notation "C4 Container"
+          style {
+            shape storage
+          }
+        }
+        // Different order
+        element SoftwareSystem {
+          technology "docker"
+          style {
+            shape storage
+          }
+          notation "C4 Container"
+        }
+      }`
   })
 
   describe('for tags', () => {
@@ -229,6 +274,21 @@ describe.concurrent('specification', () => {
       specification {
         relationship async {
           tail normal
+        }
+      }`
+
+    test('spec with relationshipkind defining technology').valid`
+      specification {
+        relationship async {
+          technology "http"
+        }
+      }`
+
+    test('spec with relationshipkind defining technology and notation').valid`
+      specification {
+        relationship async {
+          technology "http"
+          notation "HTTP Request"
         }
       }`
 

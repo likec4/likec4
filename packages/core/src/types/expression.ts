@@ -44,6 +44,7 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
     title?: string
     description?: string
     technology?: string
+    notation?: string
     shape?: ElementShape
     color?: ThemeColor
     icon?: IconUrl
@@ -159,6 +160,7 @@ export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
     title?: string
     description?: string
     technology?: string
+    notation?: string
     color?: ThemeColor
     line?: RelationshipLineType
     head?: RelationshipArrowType

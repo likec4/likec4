@@ -90,7 +90,7 @@
     },
     {
       "name": "variable.other.property.likec4",
-      "match": "\\b(title|description|technology|navigateTo)\\b"
+      "match": "\\b(title|description|technology|navigateTo|notation)\\b"
     },
     {
       "name": "keyword.control.likec4",

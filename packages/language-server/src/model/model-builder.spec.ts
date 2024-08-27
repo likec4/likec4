@@ -1,8 +1,7 @@
-import type { EdgeId, Element, Fqn, ViewID } from '@likec4/core'
+import type { Element, ViewID } from '@likec4/core'
 import { keys, values } from 'remeda'
-import { describe, it, vi } from 'vitest'
+import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
-import { title } from 'process'
 
 describe.concurrent('LikeC4ModelBuilder', () => {
   it('builds model with colors and shapes', async ({ expect }) => {
@@ -157,7 +156,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       }
     })
   })
-  
+
   it('builds model with metadata', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
@@ -178,7 +177,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       system1: {
-        kind: 'component',
+        kind: 'component'
       },
       system2: {
         kind: 'component',
@@ -642,6 +641,34 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toMatchSnapshot()
   })
 
+  it('builds model with relationship spec with technology', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+      relationship async {
+        technology "Async"
+      }
+    }
+    model {
+      person user1
+      person user2
+
+      user1 .async user2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(values(model.relations)[0]).toMatchObject({
+      source: 'user1',
+      target: 'user2',
+      kind: 'async',
+      technology: 'Async'
+    })
+    expect(model).toMatchSnapshot()
+  })
+
   it('builds model with styled relationship', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
@@ -802,7 +829,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       target: 'system1',
       links: [
         { url: 'file:///test/workspace/src/samefolder.html' },
-        { url:'https://example1.com', title: 'example 1' }
+        { url: 'https://example1.com', title: 'example 1' }
       ]
     })
   })

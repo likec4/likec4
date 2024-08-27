@@ -1,4 +1,13 @@
-import type { DiagramNode, DiagramView, Fqn, NodeId, ViewChange, ViewID } from '@likec4/core'
+import type {
+  DiagramNode,
+  DiagramView,
+  ElementKind,
+  ElementNotation,
+  Fqn,
+  NodeId,
+  ViewChange,
+  ViewID
+} from '@likec4/core'
 import { getBBoxCenter, invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
 import {
   applyEdgeChanges,
@@ -11,8 +20,8 @@ import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, hasAtLeast, isNullish, reduce } from 'remeda'
-import type { ConditionalKeys, Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
+import { entries, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
+import type { ConditionalKeys, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
@@ -37,6 +46,7 @@ export type DiagramInitialState = {
   readonly: boolean
   showElementLinks: boolean
   showNavigationButtons: boolean
+  showNotations: boolean
   fitViewEnabled: boolean
   fitViewPadding: number
   zoomable: boolean
@@ -132,6 +142,8 @@ export type DiagramState = Simplify<
     onInit: (xyflow: XYFlowInstance) => void
     onNodesChange: OnNodesChange<XYFlowNode>
     onEdgesChange: OnEdgesChange<XYFlowEdge>
+
+    highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => void
   }
 >
 
@@ -878,6 +890,21 @@ export function createDiagramStore(props: DiagramInitialState) {
                 'onInit'
               )
             }
+          },
+
+          highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => {
+            const { xynodes, xyedges } = get()
+            const dimmed = new StringSet(map(xyedges, prop('id')))
+            xynodes.forEach(({ id, data }) => {
+              const node = data.element
+              if (
+                node.shape !== notation.shape || node.color !== notation.color || !notation.kinds.includes(node.kind)
+                || (onlyOfKind && node.kind !== onlyOfKind)
+              ) {
+                dimmed.add(id)
+              }
+            })
+            set({ dimmed }, noReplace, 'highlightByElementNotation')
           }
         }),
         {

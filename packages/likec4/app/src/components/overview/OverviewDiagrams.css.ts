@@ -39,7 +39,7 @@ globalStyle(`.react-flow.${root}`, {
 })
 globalStyle(`${whereLight} .react-flow.${root}`, {
   vars: {
-    [xyvars.background.pattern.color]: mantine.colors.gray[3]
+    [xyvars.background.pattern.color]: mantine.colors.gray[4]
   }
 })
 globalStyle(`.react-flow.${root} .react-flow__attribution`, {

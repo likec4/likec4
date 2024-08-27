@@ -153,6 +153,7 @@ function ExportPage() {
         enableDynamicViewWalkthrough={false}
         showElementLinks={false}
         showDiagramTitle={false}
+        showNotations={false}
         nodesSelectable={false}
         nodesDraggable={false}
         enableFocusMode={false}

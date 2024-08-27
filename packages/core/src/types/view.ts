@@ -5,6 +5,7 @@ import type { ElementExpression, ElementPredicateExpression, Expression } from '
 import type { Opaque } from './opaque'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
+import type { ElementNotation } from './view-notation'
 
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>
@@ -27,6 +28,7 @@ export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate {
 
 export interface ViewRuleStyle {
   targets: ElementExpression[]
+  notation?: string
   style: ElementStyle & {
     color?: ThemeColor
     shape?: ElementShape
@@ -95,6 +97,7 @@ export interface DynamicViewStep {
   readonly title: string | null
   readonly description?: string
   readonly technology?: string
+  readonly notation?: string
   readonly color?: ThemeColor
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
@@ -162,6 +165,7 @@ export interface ComputedNode {
   title: string
   description: string | null
   technology: string | null
+  notation?: string
   tags: NonEmptyArray<Tag> | null
   links: NonEmptyArray<Link> | null
   children: NodeId[]
@@ -213,33 +217,37 @@ export interface ComputedEdge {
   dir?: 'forward' | 'back'
 }
 
-export interface ComputedElementView extends Omit<ElementView, 'rules' | 'docUri'> {
-  readonly extends?: ViewID
-  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
-  readonly nodes: ComputedNode[]
-  readonly edges: ComputedEdge[]
-  rules?: never
-  docUri?: never
-
+export interface ViewWithHash {
   /**
    * Hash of the view object.
    * This is used to detect changes in layout
    */
   hash: string
 }
-export interface ComputedDynamicView extends Omit<DynamicView, 'rules' | 'steps' | 'docUri'> {
+
+export interface ViewWithNotation {
+  notation?: {
+    elements: ElementNotation[]
+  }
+}
+
+export interface ComputedElementView extends Omit<ElementView, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
+  readonly extends?: ViewID
+  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
+  readonly nodes: ComputedNode[]
+  readonly edges: ComputedEdge[]
+  rules?: never
+  docUri?: never
+}
+export interface ComputedDynamicView
+  extends Omit<DynamicView, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation
+{
   readonly autoLayout: ViewRuleAutoLayout['autoLayout']
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
   steps?: never
   rules?: never
   docUri?: never
-
-  /**
-   * Hash of the view object.
-   * This is used to detect changes in layout
-   */
-  hash: string
 }
 export function isComputedDynamicView(view: ComputedView): view is ComputedDynamicView {
   return view.__ === 'dynamic'

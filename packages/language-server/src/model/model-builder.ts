@@ -40,7 +40,7 @@ import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils/printDocs'
 import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
 
-function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]) {
+function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.LikeC4Model {
   const c4Specification: ParsedAstSpecification = {
     kinds: {},
     relationships: {}
@@ -80,16 +80,18 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           logger.warn(`No kind '${kind}' found for ${id}`)
           return null
         }
-        color ??= __kind.color
-        shape ??= __kind.shape
-        icon ??= __kind.icon
-        opacity ??= __kind.opacity
-        border ??= __kind.border
+        color ??= __kind.style.color
+        shape ??= __kind.style.shape
+        icon ??= __kind.style.icon
+        opacity ??= __kind.style.opacity
+        border ??= __kind.style.border
+        technology ??= __kind.technology
         return {
           ...(color && { color }),
           ...(shape && { shape }),
           ...(icon && { icon }),
           ...(metadata && { metadata }),
+          ...(__kind.notation && { notation: __kind.notation }),
           style: {
             ...(border && { border }),
             ...(isNumber(opacity) && { opacity })
@@ -158,7 +160,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           source,
           target,
           kind,
-          id          
+          id
         }
       }
       return {
@@ -286,11 +288,14 @@ export class LikeC4ModelBuilder {
   }
 
   public async buildModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.LikeC4Model | null> {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
+    if (cache.has(RAW_MODEL_CACHE)) {
+      return cache.get(RAW_MODEL_CACHE)!
+    }
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
       return cache.get(RAW_MODEL_CACHE, () => {
         const docs = this.documents()
         if (docs.length === 0) {
@@ -308,6 +313,10 @@ export class LikeC4ModelBuilder {
   public async buildComputedModel(
     cancelToken?: Cancellation.CancellationToken
   ): Promise<c4.LikeC4ComputedModel | null> {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
+    if (cache.has(MODEL_CACHE)) {
+      return cache.get(MODEL_CACHE)!
+    }
     const model = await this.buildModel(cancelToken)
     if (!model) {
       return null
@@ -316,7 +325,6 @@ export class LikeC4ModelBuilder {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
       const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
       return cache.get(MODEL_CACHE, () => {
         const index = new LikeC4ModelGraph(model)
@@ -351,6 +359,11 @@ export class LikeC4ModelBuilder {
     viewId: ViewID,
     cancelToken?: Cancellation.CancellationToken
   ): Promise<c4.ComputedView | null> {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+    const cacheKey = computedViewKey(viewId)
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey)!
+    }
     const model = await this.buildModel(cancelToken)
     const view = model?.views[viewId]
     if (!view) {
@@ -361,8 +374,7 @@ export class LikeC4ModelBuilder {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
-      return cache.get(computedViewKey(viewId), () => {
+      return cache.get(cacheKey, () => {
         const index = new LikeC4ModelGraph(model)
         const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
         if (!result.isSuccess) {

@@ -432,6 +432,12 @@ describe.concurrent('views2', () => {
         }
       `)
       await valid(`
+        include * -> * with {
+          title 'aa'
+          notation 'bb'
+        }
+      `)
+      await valid(`
         include system -> infra
       `)
       await invalid(`
@@ -640,6 +646,22 @@ describe.concurrent('views2', () => {
       await valid(`
         style element.tag != #epic-123 {
           color secondary
+        }
+      `)
+    })
+
+    it('with notation', async ctx => {
+      const { valid, invalid } = await mkTestServices(ctx)
+      await invalid(`
+        style * {
+          notation
+          color secondary
+        }
+      `)
+      await valid(`
+        style * {
+          color secondary
+          notation 'dev'
         }
       `)
     })

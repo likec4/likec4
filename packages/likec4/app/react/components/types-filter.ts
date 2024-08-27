@@ -46,10 +46,6 @@ type OrOperator<Tag, Kind> = Omit<AllNever, 'or'> & {
   >
 }
 
-// export const isOrOperator = (operator: WhereOperator): operator is OrOperator<WhereOperator> => {
-//   return 'or' in operator
-// }
-
 export type WhereOperator<Tag extends string, Kind extends string> =
   | TagKindOperator<Tag, Kind>
   | NotOperator<Tag, Kind>

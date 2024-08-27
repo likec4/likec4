@@ -60,5 +60,37 @@ export type LikeC4ViewBaseProps<ViewId extends string, Tag extends string, Kind 
      */
     injectFontCss?: boolean | undefined
 
+    /**
+     * Display hovercards with element links
+     * @default true
+     */
+    showElementLinks?: boolean | undefined
+
+    /**
+     * Display panel with diagram title / description
+     * @default false
+     */
+    showDiagramTitle?: boolean | undefined
+
+    /**
+     * Show back/forward navigation buttons
+     * @default false
+     */
+    showNavigationButtons?: undefined | boolean
+
+    /**
+     * Display notations of the view
+     * @default false
+     */
+    showNotations?: boolean | undefined
+
+    /**
+     * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
+     * Conflicts with `interactive`
+     *
+     * @default false
+     */
+    enableFocusMode?: boolean | undefined
+
     where?: WhereOperator<Tag, Kind> | undefined
   }
