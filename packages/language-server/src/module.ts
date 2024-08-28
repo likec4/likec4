@@ -25,6 +25,7 @@ import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
 import { registerValidationChecks } from './validation'
+import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
@@ -109,7 +110,8 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),
     HoverProvider: bind(LikeC4HoverProvider),
     CodeLensProvider: bind(LikeC4CodeLensProvider),
-    DocumentLinkProvider: bind(LikeC4DocumentLinkProvider)
+    DocumentLinkProvider: bind(LikeC4DocumentLinkProvider),
+    Formatter: bind(LikeC4Formatter)
   },
   references: {
     ScopeComputation: bind(LikeC4ScopeComputation),

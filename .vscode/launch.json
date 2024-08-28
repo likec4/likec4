@@ -22,7 +22,7 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-formatter",
+        
         "${workspaceFolder}/examples/cloud-system",
       ],
       "outFiles": [
