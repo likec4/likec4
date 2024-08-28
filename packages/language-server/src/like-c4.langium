@@ -144,6 +144,10 @@ ImplicitRelation:
 fragment RelationFragment:
   ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
   target=ElementRef
+  (
+    title=String  // title
+    technology=String? // technology is possible only if threre is title
+  )?
   title=String?
   technology=String?
   tags=Tags?
