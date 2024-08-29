@@ -62,11 +62,16 @@ export function inMillis(start: [number, number]) {
   }
 }
 
-export function startTimer() {
+export function startTimer(logger?: Logger) {
   const start = hrtime()
   return {
     stopAndLog(msg = 'done in ') {
-      consola.success(k.green(`${msg}${inMillis(start).pretty}`))
+      msg = k.green(`${msg}${inMillis(start).pretty}`)
+      if (logger) {
+        logger.info(msg)
+      } else {
+        consola.success(msg)
+      }
     }
   }
 }

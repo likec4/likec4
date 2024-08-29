@@ -1,6 +1,7 @@
 import { type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { RESERVED_WORDS } from './_shared'
 
 export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4View> => {
   const index = services.shared.workspace.IndexManager
@@ -14,6 +15,12 @@ export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4
     // }
     if (!el.name) {
       return
+    }
+    if (RESERVED_WORDS.includes(el.name)) {
+      accept('error', `Reserved word: ${el.name}`, {
+        node: el,
+        property: 'name'
+      })
     }
     const anotherViews = index
       .allElements(ast.LikeC4View)

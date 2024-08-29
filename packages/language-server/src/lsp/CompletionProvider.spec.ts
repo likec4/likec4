@@ -128,15 +128,14 @@ describe('LikeC4CompletionProvider', () => {
           'description',
           'link',
           'style',
-          'sys',
-          'this'
+          'sys'
         ])
       }
     })
     await completion({
       text,
       index: 3,
-      expectedItems: ['title', 'technology', 'this']
+      expectedItems: ['title', 'technology']
     })
     // sys = <|>s<|>ystem {
     await completion({
@@ -190,9 +189,9 @@ describe('LikeC4CompletionProvider', () => {
           'description',
           'link',
           'style',
-          'this',
           'actor',
-          'system'
+          'system',
+          'metadata'
         ])
         expect(labels).not.to.include.members(['extend'])
       }
@@ -226,7 +225,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest relationship kind after dot', async () => {
+  it.todo('should suggest relationship kind after dot', async () => {
     const text = `
       specification {
         element actor

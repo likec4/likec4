@@ -58,6 +58,37 @@ describe.concurrent('model', () => {
       element tech
     }`
 
+  test('disallow element with name "this"').invalid`
+    specification {
+      element person
+    }
+    model {
+      person this ""
+    }`
+  test('disallow element with name "this" via =').invalid`
+    specification {
+      element person
+    }
+    model {
+      this = person ""
+    }`
+
+  test('disallow element with name "it"').invalid`
+    specification {
+      element person
+    }
+    model {
+      person it ""
+    }`
+
+  test('disallow element with name "it" via =').invalid`
+    specification {
+      element person
+    }
+    model {
+      it = person ""
+    }`
+
   test('allow element with kind "solid" (reserved for line style)').valid`
     specification {
       element solid

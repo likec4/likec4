@@ -73,6 +73,7 @@ export async function viteWebcomponentConfig({
         output: {
           format: 'iife',
           compact: true,
+          hoistTransitiveImports: false,
           entryFileNames: filename
         },
         plugins: [
@@ -85,7 +86,10 @@ export async function viteWebcomponentConfig({
       vanillaExtractPlugin({
         unstable_mode: 'transform'
       }),
-      likec4Plugin({ languageServices })
+      likec4Plugin({
+        languageServices,
+        generatePreviews: false
+      })
     ],
     css: {
       postcss: {

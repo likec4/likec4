@@ -1,4 +1,4 @@
-import type { likec4 as c4 } from '@likec4/core'
+import { invariant, type likec4 as c4 } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
@@ -7,6 +7,7 @@ import {
   DONE_RESULT,
   EMPTY_SCOPE,
   EMPTY_STREAM,
+  MapScope,
   type ReferenceInfo,
   type Scope,
   type Stream,
@@ -102,6 +103,17 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (parent) {
             return new StreamScope(this.scopeElementRef(parent))
           }
+          // if we have elementRef "this" or "it" we resolve it to the closest element
+          if (context.reference.$refText === 'this' || context.reference.$refText === 'it') {
+            const closestElement = AstUtils.getContainerOfType(container, ast.isElement)
+            if (closestElement) {
+              return new MapScope([
+                this.descriptions.createDescription(closestElement, context.reference.$refText)
+              ])
+            } else {
+              return EMPTY_SCOPE
+            }
+          }
         }
         return this.computeScope(context)
       } catch (e) {
@@ -116,26 +128,26 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
   protected computeScope(context: ReferenceInfo) {
     const referenceType = this.reflection.getReferenceType(context)
+    // computeScope is called only for elements
+    invariant(referenceType === ast.Element, 'Invalid reference type')
     const scopes: Stream<AstNodeDescription>[] = []
     const doc = getDocument(context.container)
     const precomputed = doc.precomputedScopes
 
     if (precomputed) {
       const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
-
       let container: AstNode | undefined = context.container
       while (container) {
         const elements = precomputed.get(container).filter(byReferenceType)
         if (elements.length > 0) {
           scopes.push(stream(elements))
         }
-        if (referenceType === ast.Element) {
-          if (ast.isExtendElementBody(container)) {
-            scopes.push(this.scopeExtendElement(container.$container))
-          }
-          if (ast.isElementViewBody(container)) {
-            scopes.push(this.scopeElementView(container.$container))
-          }
+
+        if (ast.isExtendElementBody(container)) {
+          scopes.push(this.scopeExtendElement(container.$container))
+        }
+        if (ast.isElementViewBody(container)) {
+          scopes.push(this.scopeElementView(container.$container))
         }
         container = container.$container
       }

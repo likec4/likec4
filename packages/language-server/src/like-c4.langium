@@ -72,7 +72,7 @@ Model:
   name='model' '{'
     elements+=(
       ExtendElement |
-      ExplicitRelation |
+      Relation<true> |
       Element
     )*
   '}'
@@ -97,7 +97,7 @@ ElementBody: '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
-    Relation |
+    Relation<false> |
     Element
   )*
 '}'
@@ -115,7 +115,7 @@ ExtendElement:
 
 ExtendElementBody:  '{'
   elements+=(
-    ExplicitRelation |
+    Relation<true> |
     Element
   )*
 '}'
@@ -132,20 +132,18 @@ Tags:
   (values+=[Tag:TagId])+ ({infer Tags.prev=current} ',' (values+=[Tag:TagId])*)* ';'?
 ;
 
-Relation:
-  ExplicitRelation | ImplicitRelation;
-
-ExplicitRelation:
-  source=ElementRef RelationFragment;
-
-ImplicitRelation:
-  ('this' | 'it')? RelationFragment;
-
-fragment RelationFragment:
-  ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
+Relation<isExplicit>:
+  (<isExplicit> source=ElementRef | <!isExplicit> source=ElementRef?)
+  (
+    kind=[RelationshipKind:DotId] |
+    '-[' kind=[RelationshipKind] ']->' |
+    '->'
+  )
   target=ElementRef
-  title=String?
-  technology=String?
+  (
+    title=String
+    technology=String?
+  )?
   tags=Tags?
   body=RelationBody?
 ;

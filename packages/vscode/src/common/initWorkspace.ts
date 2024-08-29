@@ -2,7 +2,7 @@ import { delay } from '@likec4/core/utils'
 import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'
-import { logError, logger } from '../logger'
+import { logger, logWarn } from '../logger'
 import type { Rpc } from './Rpc'
 
 // LSP web extensions does not have access to the file system (even virtual)
@@ -11,32 +11,39 @@ export async function initWorkspace(rpc: Rpc) {
   try {
     const docs = await findSources(rpc.client)
     if (docs.length <= 0) {
-      logger.info(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
-      return
+      logger.warn(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
+    } else {
+      logger.info(
+        `[InitWorkspace] with pattern "${globPattern}" found:\n`
+          + docs.map(s => '  - ' + s).join('\n')
+      )
     }
-    logger.debug(
-      `[InitWorkspace] with pattern "${globPattern}" found:\n`
-        + docs.map(s => '  - ' + s).join('\n')
-    )
     const isweb = isWebUi() || isVirtual()
     await delay(isweb ? 2000 : 500)
     logger.info(`[InitWorkspace] Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
-    logError(e)
+    logWarn(e)
   }
 }
 
 export async function rebuildWorkspace(rpc: Rpc) {
   try {
+    logger.info(`Rebuilding...`)
     const docs = await findSources(rpc.client)
-    logger.debug(
-      `rebuild workspace, found ${docs.length} docs:\n` + docs.map(s => '  - ' + s).join('\n')
-    )
-    await delay(500)
+    if (docs.length <= 0) {
+      logger.warn(`[RebuildWorkspace] with pattern "${globPattern}" no docs found`)
+    } else {
+      logger.info(
+        `[RebuildWorkspace] with pattern "${globPattern}" found:\n`
+          + docs.map(s => '  - ' + s).join('\n')
+      )
+    }
+    await delay(800)
+    logger.info(`Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
-    logError(e)
+    logWarn(e)
   }
 }
 
@@ -54,7 +61,7 @@ async function findSources(client: LanguageClient) {
       }
       docs.push(c2pConverter.asUri(uri))
     } catch (e) {
-      logError(e)
+      logWarn(e)
     }
   }
   return docs
@@ -87,7 +94,7 @@ async function recursiveSearchSources() {
         }
       }
     } catch (e) {
-      logError(e)
+      logWarn(e)
     }
   }
   return uris

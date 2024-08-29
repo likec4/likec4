@@ -23,7 +23,8 @@ describe.concurrent('model relation', () => {
         element person
       }
       model {
-        person user1
+        user1 = person "user1" {
+        }
         -> user1
       }`
   )
@@ -35,8 +36,20 @@ describe.concurrent('model relation', () => {
         element person
       }
       model {
-        person user1
+        person user1 {}
         it -> user1
+      }`
+  )
+
+  test(
+    'fail if defined in model with this',
+    invalid`
+      specification {
+        element person
+      }
+      model {
+        person user1 {}
+        this -> user1
       }`
   )
 
@@ -47,11 +60,97 @@ describe.concurrent('model relation', () => {
         element person
       }
       model {
-        person user1
-        person user2
+        person user1 {}
+        person user2 {}
         extend user1 {
           -> user2
         }
+      }`
+  )
+
+  test(
+    'fail if defined in extend with this',
+    invalid`
+      specification {
+        element person
+      }
+      model {
+        person user1 {}
+        person user2 {}
+        extend user1 {
+          user2 -> this
+        }
+      }`
+  )
+
+  test(
+    'fail if defined in extend with it',
+    invalid`
+      specification {
+        element person
+      }
+      model {
+        person user1 {}
+        person user2 {}
+        extend user1 {
+          it -> user2
+        }
+      }`
+  )
+
+  test(
+    'valid it',
+    valid`
+      specification {
+        element person
+      }
+      model {
+        person user1 {
+          it -> user2
+        }
+        person user2
+      }`
+  )
+
+  test(
+    'valid it as target',
+    valid`
+      specification {
+        element person
+      }
+      model {
+        person user1 {
+          user2 -> it
+        }
+        person user2
+      }`
+  )
+
+  test(
+    'valid this',
+    valid`
+      specification {
+        element person
+      }
+      model {
+        person user1 {
+          this -> user2
+        }
+        person user2
+      }`
+  )
+
+  test(
+    'valid this as target',
+    valid`
+      specification {
+        element person
+      }
+      model {
+        person user1 {
+          user2 -> this
+        }
+        person user2
       }`
   )
 
@@ -62,7 +161,7 @@ describe.concurrent('model relation', () => {
         element person
       }
       model {
-        person user1
+        person user1 {}
         person user2 {
           -> user1
         }

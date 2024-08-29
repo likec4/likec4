@@ -1,7 +1,7 @@
 import { describe, vi } from 'vitest'
 import { test } from './asserts'
 
-describe('elementref', () => {
+describe.concurrent('elementref', () => {
   test('valid elementRef').valid`
     specification {
       element component
@@ -15,8 +15,54 @@ describe('elementref', () => {
       }
       user -> sub1.sub2
       component system2 {
-        it -> system.sub2
+        -> system.sub2
       }
+    }
+  `
+
+  test('valid it').valid`
+    specification {
+      element component
+    }
+    model {
+      component user
+      component system {
+        it -> user
+      }
+    }
+  `
+
+  test('valid this').valid`
+    specification {
+      element component
+    }
+    model {
+      component user
+      component system {
+        this -> user
+      }
+    }
+  `
+
+  test('invalid it').invalid`
+    specification {
+      element component
+    }
+    model {
+      component user
+      component system
+      it -> user
+    }
+  `
+
+  test('invalid this').invalid`
+    specification {
+      element component
+    }
+    model {
+      component user
+      component system
+      this -> user
     }
   `
 

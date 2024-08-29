@@ -52,6 +52,20 @@ export function logToChannel(channel: LogOutputChannel): Disposable {
   })
 }
 
+export function logWarn(e: unknown): void {
+  if (e instanceof Error) {
+    logger.warn(e)
+    return
+  }
+  const error = new Error(`Unknown error: ${e}`)
+  try {
+    Error.captureStackTrace(error, logWarn)
+  } catch {
+    // ignore
+  }
+  logger.warn(error)
+}
+
 export function logError(e: unknown): void {
   if (e instanceof Error) {
     logger.error(e)

@@ -1,13 +1,14 @@
 import { AstUtils, type ValidationCheck } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
 
 export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Element> => {
   const fqnIndex = services.likec4.FqnIndex
   const locator = services.workspace.AstNodeLocator
-  return (el, accept) => {
+  return tryOrLog((el, accept) => {
     const fqn = fqnIndex.getFqn(el)
     if (!fqn) {
       accept('error', 'Not indexed element', {
@@ -15,6 +16,12 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
         property: 'name'
       })
       return
+    }
+    if (RESERVED_WORDS.includes(el.name)) {
+      accept('error', `Reserved word: ${el.name}`, {
+        node: el,
+        property: 'name'
+      })
     }
     const doc = getDocument(el)
     const docUri = doc.uri
@@ -45,12 +52,5 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
         }
       )
     }
-    // for (let i = 3; i < el.props.length; i++) {
-    //   accept('error', `Too many properties, max 3 allowed`, {
-    //     node: el,
-    //     property: 'props',
-    //     index: i
-    //   })
-    // }
-  }
+  })
 }
