@@ -9167,9 +9167,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:15.2.8":
-  version: 15.2.8
-  resolution: "lint-staged@npm:15.2.8"
+"lint-staged@npm:15.2.9":
+  version: 15.2.9
+  resolution: "lint-staged@npm:15.2.9"
   dependencies:
     chalk: "npm:~5.3.0"
     commander: "npm:~12.1.0"
@@ -9183,7 +9183,7 @@ __metadata:
     yaml: "npm:~2.5.0"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10c0/7d43f11f493d27951c746b4c077fed16ba954c0517cf2fd999034e9e7bf86fde506a797b23531a56a1fde4c24846e0f6583ce6db3bdfd42e92335b1aab367737
+  checksum: 10c0/820c622378b62b826974af17f1747e2a4b0556e4fb99d101af89ad298d392ff079f580fdc576f16a27e975d726b95d73495fd524139402ff654c4649ef2f1a6a
   languageName: node
   linkType: hard
 
@@ -12774,7 +12774,7 @@ __metadata:
     execa: "npm:^9.3.1"
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
-    lint-staged: "npm:15.2.8"
+    lint-staged: "npm:15.2.9"
     npm-run-all2: "npm:^6.2.2"
     rimraf: "npm:^6.0.1"
     shipjs: "npm:^0.26.4"
