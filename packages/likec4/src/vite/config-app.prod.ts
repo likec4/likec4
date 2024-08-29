@@ -94,7 +94,11 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         }
       },
       rollupOptions: {
+        treeshake: {
+          preset: 'recommended'
+        },
         output: {
+          hoistTransitiveImports: false,
           compact: true
         }
       }

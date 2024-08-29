@@ -29,7 +29,7 @@ export async function webcomponentHandler({
   outfile
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
-  const timer = startTimer()
+  const timer = startTimer(logger)
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
@@ -103,7 +103,7 @@ export async function webcomponentHandler({
 
     ${k.dim('Setup and usage instructions:')}
      ${k.blue('https://likec4.dev/tooling/codegen/#webcomponent')}
-  `).trim()
+  `)
   )
 
   timer.stopAndLog()

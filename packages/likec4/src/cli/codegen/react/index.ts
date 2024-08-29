@@ -21,7 +21,7 @@ type HandlerParams = {
 
 export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
-  const timer = startTimer()
+  const timer = startTimer(logger)
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
   logger.info(`${k.dim('format')} ${k.green('react')}`)
@@ -50,16 +50,16 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
       }
     }
   }
-  consola.debug(`${k.dim('outfilepath')} ${outfilepath}`)
+  logger.info(`${k.dim('outfilepath')} ${outfilepath}`)
 
   const outDir = dirname(outfilepath)
-  consola.debug(`${k.dim('outdir')} ${outDir}`)
+  logger.info(`${k.dim('outdir')} ${outDir}`)
   const filename = basename(outfilepath)
-  consola.debug(`${k.dim('filename')} ${filename}`)
+  logger.info(`${k.dim('filename')} ${filename}`)
 
   const ext = extname(filename).toLocaleLowerCase()
   if (!['.js', '.mjs', '.jsx'].includes(ext)) {
-    consola.warn(`output file ${outfile} has extension "${ext}"`)
+    logger.error(`output file ${outfile} has extension "${ext}"`)
     throw new Error(`output file ${outfile} must be a .js, .jsx or .mjs`)
   }
 
@@ -134,7 +134,7 @@ export declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Ele
 
     ${k.dim('How to use:')}
      ${k.blue('https://likec4.dev/tooling/codegen/#react')}
-  `).trim()
+  `)
   )
 
   timer.stopAndLog()

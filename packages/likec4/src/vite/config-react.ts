@@ -95,7 +95,10 @@ export async function viteReactConfig({
     },
     plugins: [
       react(),
-      likec4Plugin({ languageServices })
+      likec4Plugin({
+        languageServices,
+        generatePreviews: false
+      })
     ]
   }
 }

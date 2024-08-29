@@ -72,17 +72,21 @@ export async function viteWebcomponentConfig({
       },
       rollupOptions: {
         treeshake: {
-          preset: 'smallest'
+          preset: 'recommended'
         },
         output: {
           format: 'iife',
+          hoistTransitiveImports: false,
           compact: true
         }
       }
     },
     customLogger,
     plugins: [
-      likec4Plugin({ languageServices })
+      likec4Plugin({
+        languageServices,
+        generatePreviews: false
+      })
     ]
   } satisfies InlineConfig
 }

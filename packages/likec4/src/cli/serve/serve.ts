@@ -83,9 +83,13 @@ export async function handler({
         output: likec4AssetsDir,
         outputType: 'flat'
       })
+
+      logger.warn(k.cyan(`Previews are not updated automatically, restart is required`))
     } catch (error) {
       logger.error(k.red('Failed to generate previews'))
       logger.error(error)
     }
+  } else {
+    server.config.logger.warn('no views found, no previews generated')
   }
 }
