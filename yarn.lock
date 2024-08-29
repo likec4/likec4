@@ -2217,7 +2217,7 @@ __metadata:
     esm-env: "npm:^1.0.0"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
-    framer-motion: "npm:^11.3.28"
+    framer-motion: "npm:^11.3.30"
     khroma: "npm:^2.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -2414,7 +2414,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.0.0"
     fast-equals: "npm:^5.0.1"
-    framer-motion: "npm:^11.3.28"
+    framer-motion: "npm:^11.3.30"
     monaco-editor: "npm:@codingame/monaco-vscode-editor-api@6.0.3"
     monaco-editor-wrapper: "npm:5.3.1"
     monaco-languageclient: "npm:8.6.0"
@@ -7099,9 +7099,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.3.28":
-  version: 11.3.29
-  resolution: "framer-motion@npm:11.3.29"
+"framer-motion@npm:^11.3.30":
+  version: 11.3.31
+  resolution: "framer-motion@npm:11.3.31"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -7115,7 +7115,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/f60d9bbeca70a803f80d390bd7db42c2b7cb497d24bc788719dc46325ce81c629a0c92260aea0a25747b39b6dee889203a1c44710e0741cfc4d83441ba32a763
+  checksum: 10c0/89e57c9a0f4439a9378461151be49ddf98ad628f21a7c89f0242c54c3f77876f65c574bb0fcac5e0ee5ab5153e9c4892115653b2f242646ab0b24ff24d25f087
   languageName: node
   linkType: hard
 
@@ -8853,7 +8853,7 @@ __metadata:
     esm-env: "npm:^1.0.0"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
-    framer-motion: "npm:^11.3.28"
+    framer-motion: "npm:^11.3.30"
     get-port: "npm:^7.1.0"
     glob: "npm:^11.0.0"
     html-to-image: "npm:^1.11.11"
