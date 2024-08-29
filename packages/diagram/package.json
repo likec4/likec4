@@ -47,7 +47,7 @@
   "dependencies": {
     "@lume/kiwi": "^0.4.3",
     "@react-hookz/web": "^24.0.4",
-    "@tabler/icons-react": "^3.12.0",
+    "@tabler/icons-react": "^3.14.0",
     "@vanilla-extract/css": "^1.15.5",
     "@vanilla-extract/css-utils": "^0.1.4",
     "@vanilla-extract/dynamic": "^2.1.2",

@@ -107,7 +107,8 @@ export default defineConfig({
       pagination: false,
       credits: false,
       components: {
-        SiteTitle: './src/components/starlight/SiteTitle.astro'
+        SiteTitle: './src/components/starlight/SiteTitle.astro',
+        Head: './src/components/starlight/Head.astro'
       },
       plugins: [
         starlightLinksValidator({
