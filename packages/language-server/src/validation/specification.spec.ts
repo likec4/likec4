@@ -60,6 +60,19 @@ test('elementKindChecks in one doc', async () => {
   }
 })
 
+test('elementKindChecks is not reserved word', async () => {
+  const { diagnostics } = await validate(`
+    specification {
+      element this
+    }
+  `)
+  expect(diagnostics).toHaveLength(1)
+  for (const diagnostic of diagnostics) {
+    expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+    expect(diagnostic.message, 'diagnostic message').toBe('Reserved word: this')
+  }
+})
+
 test('elementKindChecks among docs', async () => {
   await parse(`
     specification {
@@ -129,5 +142,17 @@ test('relationshipChecks', async () => {
   for (const diagnostic of diagnostics) {
     expect(diagnostic.severity, 'diagnostic severity').toBe(1)
     expect(diagnostic.message, 'diagnostic message').toBe('Duplicate RelationshipKind \'async\'')
+  }
+})
+test('relationshipChecks is not reserved', async () => {
+  const { diagnostics } = await validate(`
+    specification {
+      relationship this
+    }
+  `)
+  expect(diagnostics).toHaveLength(1)
+  for (const diagnostic of diagnostics) {
+    expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+    expect(diagnostic.message, 'diagnostic message').toBe('Reserved word: this')
   }
 })

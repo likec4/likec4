@@ -77,9 +77,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       }
     }
     model {
-      user client {
-        -> frontend
-      }
+      user client
       component system {
         backend = component 'Backend' {
           technology 'NodeJS'
@@ -97,7 +95,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
             shape: browser
           }
 
-          -> backend 'requests'
+          this -> backend 'requests'
+
+          client -> it
         }
       }
     }

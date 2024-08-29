@@ -1,6 +1,7 @@
 import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 export const specificationRuleChecks = (
   _: LikeC4Services
@@ -39,7 +40,13 @@ export const modelViewsChecks = (_: LikeC4Services): ValidationCheck<ast.ModelVi
 
 export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast.ElementKind> => {
   const index = services.shared.workspace.IndexManager
-  return (node, accept) => {
+  return tryOrLog((node, accept) => {
+    if (RESERVED_WORDS.includes(node.name)) {
+      accept('error', `Reserved word: ${node.name}`, {
+        node: node,
+        property: 'name'
+      })
+    }
     const sameKind = index
       .allElements(ast.ElementKind)
       .filter(n => n.name === node.name && n.node !== node)
@@ -62,7 +69,7 @@ export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast
         }
       })
     }
-  }
+  })
 }
 
 export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> => {
@@ -103,6 +110,12 @@ export const relationshipChecks = (
 ): ValidationCheck<ast.RelationshipKind> => {
   const index = services.shared.workspace.IndexManager
   return (node, accept) => {
+    if (RESERVED_WORDS.includes(node.name)) {
+      accept('error', `Reserved word: ${node.name}`, {
+        node: node,
+        property: 'name'
+      })
+    }
     const sameKinds = index
       .allElements(ast.RelationshipKind)
       .filter(n => n.name === node.name)

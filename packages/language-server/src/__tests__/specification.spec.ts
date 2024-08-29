@@ -61,6 +61,16 @@ describe.concurrent('specification', () => {
         element 1container
       }`
 
+    test('fail if element kind is "this"').invalid`
+      specification {
+        element this
+      }`
+
+    test('fail if element kind is "it"').invalid`
+      specification {
+        element it
+      }`
+
     test('allow element with kind "element"').valid`
       specification {
         element element
@@ -323,6 +333,16 @@ describe.concurrent('specification', () => {
     test('fail if relationshipkind starts with dash').invalid`
       specification {
         relationship -async
+      }`
+
+    test('fail if relationshipkind is "this"').invalid`
+      specification {
+        relationship this
+      }`
+
+    test('fail if relationshipkind is "it"').invalid`
+      specification {
+        relationship it
       }`
   })
 })

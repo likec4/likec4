@@ -5,7 +5,7 @@ import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
 import { iconPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
-import { relationChecks } from './relation'
+import { relationBodyChecks, relationChecks } from './relation'
 import {
   elementKindChecks,
   modelRuleChecks,
@@ -37,6 +37,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     Element: elementChecks(services),
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),
+    RelationBody: relationBodyChecks(services),
     Tag: tagChecks(services),
     DynamicViewPredicateIterator: dynamicViewRulePredicate(services),
     ElementPredicateWith: elementPredicateWithChecks(services),

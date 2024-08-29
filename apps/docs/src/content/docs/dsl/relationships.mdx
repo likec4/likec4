@@ -1,6 +1,6 @@
 ---
 title: Relationships
-description: Relationships describe the connections, data flows and interactions inside your architecture.
+description: How to define connections, data flows and interactions inside your architecture with LikeC4
 sidebar: 
   label: Relationships
   order: 4
@@ -46,11 +46,14 @@ model {
 }
 ```
 
-This allows us to express and add more semantics to the interactions between the elements, for instance, from a technology perspective (REST, GRPC, GraphQL, Sync/Async, etc.) or from a business perspective (delegation, inform, accountability, etc.).  
+This allows us to express and add more semantics to the interactions between the elements,
+for instance, from a technology perspective (REST, GRPC, GraphQL, Sync/Async, etc.)
+or from a business perspective (delegation, inform, accountability, etc.).
+
 It's up to you to define the relationship kinds that make sense for your context.
 
 <Aside type='tip'>
-  The relationship kinds allow to customize the styling of the relationships, see [styling](/dsl/styling#relationship)
+  With kinds you can customize the styling of the relationships, see [styling](/dsl/styling#relationship)
 </Aside>
 
 #### Relationship definition
@@ -66,6 +69,28 @@ model {
 
     frontend -> backend
     customer -> frontend
+  }
+}
+```
+
+Use `it` or `this` to refer parent as the source:
+
+```likec4
+model {
+  customer = actor {
+    it -> frontend 'opens in browser'
+    this -> frontend 'opens in browser'
+  }
+}
+```
+
+or to refer as the target:
+
+```likec4
+model {
+  component frontend {
+    customer -> it 'opens in browser'
+    customer -> this 'opens in browser'
   }
 }
 ```
@@ -87,17 +112,6 @@ model {
       // same as frontend -[graphql]-> backend
       -[graphql]-> backend 'requests data'  
     }
-  }
-}
-```
-
-Or use `it` or `this` to refer to the source element:
-
-```likec4
-model {
-  customer = actor {
-    it -> frontend 'opens in browser'
-    this -> frontend 'opens in browser'
   }
 }
 ```
@@ -136,6 +150,19 @@ model {
 }
 ```
 
+##### Technology
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    technology 'HTTPS'
+  }
+
+  // Or in a shorter way
+  customer -> frontend 'opens in browser' 'HTTPS'
+}
+```
+
 ##### Description
 
 ```likec4
@@ -152,19 +179,6 @@ Description is not displayed in the diagrams yet
 In progress
 
 :::
-
-##### Technology
-
-```likec4
-model {
-  customer -> frontend 'opens in browser' {
-    technology 'HTTPS'
-  }
-
-  // Or in a shorter way
-  customer -> frontend 'opens in browser' 'HTTPS'
-}
-```
 
 ##### Metadata
 

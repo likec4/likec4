@@ -35,7 +35,21 @@ describe.concurrent('relationChecks', () => {
         c1 -> c2
       }
     `)
-    expect(errors).to.include.members(['Target not found (not parsed/indexed yet)'])
+    expect(errors).to.include.members(['Target not resolved'])
+  })
+
+  it('should report invalid this inside model', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {}
+        this -> c1
+      }
+    `)
+    expect(errors).to.include.members(['Source not resolved'])
   })
 
   it('should report invalid relation of source', async ({ expect }) => {
@@ -50,7 +64,7 @@ describe.concurrent('relationChecks', () => {
         c2 -> c1
       }
     `)
-    expect(errors).to.include.members(['Source not found (not parsed/indexed yet)'])
+    expect(errors).to.include.members(['Source not resolved'])
   })
 
   it('should report invalid relation: parent -> child', async ({ expect }) => {

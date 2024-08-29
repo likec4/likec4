@@ -53,17 +53,17 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     },
   },
   "relations": {
+    "1phfte1": {
+      "id": "1phfte1",
+      "source": "client",
+      "target": "system.frontend",
+      "title": "",
+    },
     "1txa8xq": {
       "id": "1txa8xq",
       "source": "system.frontend",
       "target": "system.backend",
       "title": "requests",
-    },
-    "sx3jc5": {
-      "id": "sx3jc5",
-      "source": "client",
-      "target": "system.frontend",
-      "title": "",
     },
   },
   "views": {
@@ -77,7 +77,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "label": null,
           "parent": null,
           "relations": [
-            "sx3jc5",
+            "1phfte1",
           ],
           "source": "client",
           "target": "system",
