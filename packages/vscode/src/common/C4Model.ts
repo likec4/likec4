@@ -9,7 +9,7 @@ import xs from 'xstream'
 
 import type { DotLayoutResult } from '@likec4/layouts'
 import dropRepeats from 'xstream/extra/dropRepeats'
-import { logError, logger } from '../logger'
+import { logError, logger, logWarn } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
 import type { ExtensionController } from './ExtensionController'
 import { rebuildWorkspace } from './initWorkspace'
@@ -176,15 +176,15 @@ export class C4Model extends AbstractDisposable {
           this.sendTelemetry(metrics)
         },
         error: err => {
-          logError(err)
+          logWarn(err)
         }
       })
     this.onDispose(() => telemetry.unsubscribe())
   }
 
   private async fetchTelemetry() {
-    await rebuildWorkspace(this.ctrl.rpc)
     const t0 = performance.now()
+    await rebuildWorkspace(this.ctrl.rpc)
     const model = await this.ctrl.rpc.fetchComputedModel()
     const t1 = performance.now()
     return {
@@ -204,7 +204,7 @@ export class C4Model extends AbstractDisposable {
       this.ctrl.telemetry?.sendTelemetryEvent('model-metrics', {}, measurements)
       logger.debug(`[C4Model] send telemetry`)
     } catch (e) {
-      logError(e)
+      logWarn(e)
     }
   }
 }
