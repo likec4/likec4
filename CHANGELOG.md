@@ -1,3 +1,21 @@
+## [1.8.1](https://github.com/likec4/likec4/compare/v1.8.0...v1.8.1) (2024-08-30)
+
+### Bug Fixes
+
+* **dsl:** warn message about ambiguous alternatives
+
+### Improvements
+
+* **dsl:** allow `this` and `it` as target
+  ```zig
+  model {
+    frontend = component  {
+      customer -> it 'opens in browser'
+    }
+  }
+  ```
+
+
 # [1.8.0](https://github.com/likec4/likec4/compare/v1.7.4...v1.8.0) (2024-08-27)
 
 ### 🚀 Features  
