@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Fqn, Relation, RelationID } from '../types'
-import { compareRelations, Relations } from './relations'
-
-const { isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } = Relations
+import { compareRelations, isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from './relations'
 
 const relations = [
   {

@@ -39,7 +39,10 @@ function intersection<T>(a: Set<T>, b: Set<T>) {
 
 export class LikeC4ModelGraph {
   #elements = new Map<Fqn, Element>()
-  #children = new Map<Fqn, Fqn[]>()
+  // Parent element for given FQN
+  #parents = new Map<Fqn, Element>()
+  // Children elements for given FQN
+  #children = new Map<Fqn, Element[]>()
   #rootElements = new Set<Element>()
 
   #relations = new Map<RelationID, Relation>()
@@ -47,7 +50,7 @@ export class LikeC4ModelGraph {
   #incoming = new MapRelations()
   // Outgoing from an element or its descendants
   #outgoing = new MapRelations()
-  // Relationships inside the element descendants
+  // Relationships inside the element, among descendants
   #internal = new MapRelations()
 
   #cacheAscendingSiblings = new Map<Fqn, Element[]>()
@@ -61,11 +64,11 @@ export class LikeC4ModelGraph {
     }
   }
 
-  get rootElements() {
+  get rootElements(): ReadonlyArray<Element> {
     return [...this.#rootElements]
   }
 
-  get elements() {
+  get elements(): ReadonlyArray<Element> {
     return [...this.#elements.values()]
   }
 
@@ -79,33 +82,44 @@ export class LikeC4ModelGraph {
     return [...this._incomingTo(id), ...this._outgoingFrom(id), ...this._internalOf(id)]
   }
 
-  public children(id: Fqn) {
-    return this._childrenOf(id).flatMap(id => this.#elements.get(id) ?? [])
+  public children(id: Fqn): ReadonlyArray<Element> {
+    return this._childrenOf(id).slice()
   }
 
   // Get children or element itself if no children
-  public childrenOrElement(id: Fqn) {
+  public childrenOrElement(id: Fqn): ReadonlyArray<Element> {
     const children = this.children(id)
     return children.length > 0 ? children : [this.element(id)]
   }
 
   // Get all sibling (i.e. same parent)
-  public siblings(element: Fqn | Element) {
+  public siblings(element: Fqn | Element): ReadonlyArray<Element> {
     const id = isString(element) ? element : element.id
     const parent = parentFqn(id)
-    const fqns = parent ? this._childrenOf(parent) : [...this.#rootElements].map(e => e.id)
-    return fqns.flatMap(fqn => (fqn !== id && this.#elements.get(fqn)) || [])
+    const siblings = parent ? this._childrenOf(parent) : this.rootElements
+    return siblings.filter(e => e.id !== id)
   }
 
-  public ancestors(element: Fqn | Element) {
-    const id = isString(element) ? element : element.id
-    return ancestorsFqn(id).flatMap(id => this.#elements.get(id) ?? [])
+  /**
+   * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+   * (from closest to root)
+   */
+  public ancestors(element: Fqn | Element): ReadonlyArray<Element> {
+    let id = isString(element) ? element : element.id
+    const result = [] as Element[]
+    let parent
+    while (parent = this.#parents.get(id)) {
+      result.push(parent)
+      id = parent.id
+    }
+    return result as ReadonlyArray<Element>
   }
 
   /**
    * Resolve siblings of the element and its ancestors
+   *  (from closest to root)
    */
-  public ascendingSiblings(element: Fqn | Element) {
+  public ascendingSiblings(element: Fqn | Element): ReadonlyArray<Element> {
     const id = isString(element) ? element : element.id
     let siblings = this.#cacheAscendingSiblings.get(id)
     if (!siblings) {
@@ -121,7 +135,7 @@ export class LikeC4ModelGraph {
   /**
    * Resolve all RelationEdges between element and others (any direction)
    */
-  public anyEdgesBetween(_element: Fqn | Element, others: Fqn[] | Element[]): RelationEdge[] {
+  public anyEdgesBetween(_element: Fqn | Element, others: Fqn[] | Element[]): ReadonlyArray<RelationEdge> {
     if (others.length === 0) {
       return []
     }
@@ -169,7 +183,7 @@ export class LikeC4ModelGraph {
   /**
    * Resolve all RelationEdges between elements (any direction)
    */
-  public edgesWithin<T extends Fqn[] | Element[]>(elements: T): RelationEdge[] {
+  public edgesWithin<T extends Fqn[] | Element[]>(elements: T): ReadonlyArray<RelationEdge> {
     if (elements.length < 2) {
       return []
     }
@@ -229,9 +243,10 @@ export class LikeC4ModelGraph {
       throw new InvalidModelError(`Element ${el.id} already exists`)
     }
     this.#elements.set(el.id, el)
-    const parent = parentFqn(el.id)
-    if (parent) {
-      this._childrenOf(parent).push(el.id)
+    const parentId = parentFqn(el.id)
+    if (parentId) {
+      this.#parents.set(el.id, this.element(parentId))
+      this._childrenOf(parentId).push(el)
     } else {
       this.#rootElements.add(el)
     }

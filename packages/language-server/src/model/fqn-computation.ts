@@ -1,8 +1,9 @@
 import { AsFqn, type c4, nonexhaustive } from '@likec4/core'
 import { type AstNodeDescription, type AstNodeLocator, AstUtils, CstUtils, GrammarUtils, MultiMap } from 'langium'
-import { isEmpty, isNullish as isNil } from 'remeda'
+import { isDefined, isEmpty } from 'remeda'
 import { ast, ElementOps, type LikeC4LangiumDocument } from '../ast'
 import { getFqnElementRef } from '../elementRef'
+import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 const { findNodeForProperty } = GrammarUtils
@@ -41,29 +42,37 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
   const traverseStack: TraversePair[] = elements.map(el => [el, null])
   let pair
   while ((pair = traverseStack.shift())) {
-    const [el, parent] = pair
-    if (ast.isRelation(el)) {
-      continue
-    }
-    if (ast.isExtendElement(el)) {
-      if (!isNil(el.body) && !isEmpty(el.body.elements)) {
-        const fqn = getFqnElementRef(el.element)
-        el.body.elements.forEach(child => traverseStack.push([child, fqn]))
+    try {
+      const [el, parent] = pair
+      if (ast.isRelation(el)) {
+        continue
       }
-      continue
-    }
-    if (ast.isElement(el)) {
-      const fqn = AsFqn(el.name, parent)
-      c4fqnIndex.add(fqn, {
-        ...toAstNodeDescription(locator, el, document),
-        fqn
-      })
-      ElementOps.writeId(el, fqn)
-      if (!isNil(el.body) && !isEmpty(el.body.elements)) {
-        el.body.elements.forEach(child => traverseStack.push([child, fqn]))
+      if (ast.isExtendElement(el)) {
+        if (isDefined(el.body) && !isEmpty(el.body.elements)) {
+          const fqn = getFqnElementRef(el.element)
+          for (const child of el.body.elements) {
+            traverseStack.push([child, fqn])
+          }
+        }
+        continue
       }
-      continue
+      if (ast.isElement(el)) {
+        const fqn = AsFqn(el.name, parent)
+        c4fqnIndex.add(fqn, {
+          ...toAstNodeDescription(locator, el, document),
+          fqn
+        })
+        ElementOps.writeId(el, fqn)
+        if (isDefined(el.body) && !isEmpty(el.body.elements)) {
+          for (const child of el.body.elements) {
+            traverseStack.push([child, fqn])
+          }
+        }
+        continue
+      }
+      nonexhaustive(el)
+    } catch (e) {
+      logError(e)
     }
-    nonexhaustive(el)
   }
 }

@@ -61,7 +61,7 @@ export function commonAncestor(first: Fqn, second: Fqn) {
 export function parentFqn(fqn: Fqn): Fqn | null {
   const lastDot = fqn.lastIndexOf('.')
   if (lastDot > 0) {
-    return fqn.substring(0, lastDot) as Fqn
+    return fqn.slice(0, lastDot) as Fqn
   }
   return null
 }
@@ -81,9 +81,12 @@ export function ancestorsFqn(fqn: Fqn): Fqn[] {
   if (path.length === 0) {
     return []
   }
-  return path.reduce((acc, _, idx) => {
-    const ancestor = path.slice(0, idx + 1).join('.')
-    acc.unshift(ancestor as Fqn)
+  return path.reduce((acc, part, idx) => {
+    if (idx === 0) {
+      acc.push(part as Fqn)
+      return acc
+    }
+    acc.unshift(`${acc[0]}.${part}` as Fqn)
     return acc
   }, [] as Fqn[])
 }

@@ -274,9 +274,13 @@ export class LikeC4ModelBuilder {
       DocumentState.Validated,
       async (docs, _cancelToken) => {
         let parsed = [] as URI[]
-        logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
-        for (const doc of parser.parse(docs)) {
-          parsed.push(doc.uri)
+        try {
+          logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+          for (const doc of parser.parse(docs)) {
+            parsed.push(doc.uri)
+          }
+        } catch (e) {
+          logWarnError(e)
         }
         if (parsed.length > 0) {
           this.notifyListeners(parsed)

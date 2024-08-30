@@ -4,7 +4,7 @@ import type { AstNodeDescription, LangiumDocuments, Stream } from 'langium'
 import { DocumentState, DONE_RESULT, MultiMap, stream, StreamImpl } from 'langium'
 import type { ast, DocFqnIndexAstNodeDescription, FqnIndexedDocument } from '../ast'
 import { ElementOps, isFqnIndexedDocument, isLikeC4LangiumDocument } from '../ast'
-import { logError, logger } from '../logger'
+import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils/printDocs'
 import { computeDocumentFqn } from './fqn-computation'
@@ -37,11 +37,11 @@ export class FqnIndex {
             try {
               computeDocumentFqn(doc, services)
             } catch (e) {
-              logError(e)
+              logWarnError(e)
             }
           }
         }
-        return Promise.resolve()
+        return await Promise.resolve()
       }
     )
     logger.debug(`[FqnIndex] Created`)
@@ -51,29 +51,14 @@ export class FqnIndex {
     return this.langiumDocuments.all.filter(isFqnIndexedDocument)
   }
 
-  private entries(filterByFqn?: (fqn: Fqn) => boolean): Stream<DocFqnIndexAstNodeDescription> {
+  private entries(filterByFqn: (fqn: Fqn) => boolean): Stream<DocFqnIndexAstNodeDescription> {
     return this.documents.flatMap(doc => {
-      if (filterByFqn) {
-        return doc.c4fqnIndex.keys().filter(filterByFqn).flatMap(fqn => doc.c4fqnIndex.get(fqn))
-      }
-      return doc.c4fqnIndex.values()
+      return doc.c4fqnIndex.keys().filter(filterByFqn).flatMap(fqn => doc.c4fqnIndex.get(fqn))
     })
   }
 
   public getFqn(el: ast.Element): Fqn | null {
     return ElementOps.readId(el) ?? null
-    // let fqn = ElementOps.readId(el) ?? null
-    // if (fqn) {
-    //   const doc = getDocument(el)
-    //   if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
-    //     return fqn
-    //   }
-    //   const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
-    //   logError(`Clean cached FQN ${fqn} at ${path}`)
-    //   ElementOps.writeId(el, null)
-    //   fqn = null
-    // }
-    // return fqn
   }
 
   public byFqn(fqn: Fqn): Stream<AstNodeDescription> {
