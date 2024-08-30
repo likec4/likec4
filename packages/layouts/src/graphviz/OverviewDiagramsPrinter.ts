@@ -106,9 +106,10 @@ export class OverviewDiagramsPrinter {
     if (path === '') {
       return this.graphvizModel
     }
-    let subgraph = this.subgraphs.get(path)
-    const isFile = path.endsWith('.c4') || path.endsWith('.likec4')
+    const pathlowercase = path.toLowerCase()
+    let subgraph = this.subgraphs.get(pathlowercase)
     if (!subgraph) {
+      const isFile = pathlowercase.endsWith('.c4') || pathlowercase.endsWith('.likec4')
       const parentPath = path.includes(Sep) ? path.slice(0, path.lastIndexOf(Sep)) : ''
       const parent = this.getParentForPath(parentPath)
       subgraph = parent.subgraph('cluster' + String(this.subgraphs.size + 1), {
@@ -117,7 +118,7 @@ export class OverviewDiagramsPrinter {
         [_.sortv]: this.subgraphs.size,
         [_.label]: isTruthy(parentPath) ? path.slice(parentPath.length + 1) : path
       })
-      this.subgraphs.set(path, subgraph)
+      this.subgraphs.set(pathlowercase, subgraph)
     }
     return subgraph
   }
