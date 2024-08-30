@@ -194,5 +194,6 @@ export function XYFlow({
     </ReactFlow>
   )
 }
+XYFlow.displayName = 'XYFlow'
 
 // export const XYFlow = memo(XYFlowWrapper) as typeof XYFlowWrapper

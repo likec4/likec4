@@ -12,3 +12,4 @@ export function EnsureMantine({ children }: EnsureMantineProps) {
 
   return <>{children}</>
 }
+EnsureMantine.displayName = 'EnsureMantine'

@@ -141,7 +141,7 @@ export function NotationPanel() {
 
   return (
     <AnimatePresence>
-      {!hasNotations && (
+      {!hasNotations && isVisible && (
         <m.div
           key={'empty'}
           initial={{ opacity: 0.75, translateX: '50%' }}
@@ -151,7 +151,7 @@ export function NotationPanel() {
             opacity: 0.6
           }}
           className={clsx('react-flow__panel', css.container)}>
-          <Tooltip label="Diagram has no notations" color="orange" {...portalProps}>
+          <Tooltip label="View has no notations" color="orange" {...portalProps}>
             <ThemeIcon
               size={'xl'}
               variant="light"

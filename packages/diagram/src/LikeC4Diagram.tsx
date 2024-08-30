@@ -114,6 +114,7 @@ export function LikeC4Diagram({
     </EnsureMantine>
   )
 }
+LikeC4Diagram.displayName = 'LikeC4Diagram'
 
 type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
@@ -164,3 +165,4 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
     </>
   )
 }, shallowEqual)
+LikeC4DiagramInnerMemo.displayName = 'LikeC4DiagramInnerMemo'

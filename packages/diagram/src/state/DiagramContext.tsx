@@ -79,3 +79,4 @@ export function DiagramContextProvider({
     </div>
   )
 }
+DiagramContextProvider.displayName = 'DiagramContextProvider'
