@@ -66,6 +66,21 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "title": "requests",
     },
   },
+  "specification": {
+    "elements": {
+      "component": {
+        "style": {},
+      },
+      "user": {
+        "style": {
+          "opacity": 40,
+          "shape": "person",
+        },
+      },
+    },
+    "relationships": {},
+    "tags": [],
+  },
   "views": {
     "index": {
       "__": "element",
@@ -128,8 +143,9 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "title": "system",
         },
       ],
+      "relativePath": "",
       "tags": null,
-      "title": "Landscape",
+      "title": "Landscape view",
     },
   },
 }
@@ -202,6 +218,20 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "target": "system.backend.api",
       "title": "requests",
     },
+  },
+  "specification": {
+    "elements": {
+      "component": {
+        "style": {},
+      },
+      "user": {
+        "style": {},
+      },
+    },
+    "relationships": {},
+    "tags": [
+      "deprecated",
+    ],
   },
   "views": {
     "frontend": {
@@ -489,6 +519,19 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       "title": "",
     },
   },
+  "specification": {
+    "elements": {
+      "person": {
+        "style": {},
+      },
+    },
+    "relationships": {
+      "async": {},
+    },
+    "tags": [
+      "next",
+    ],
+  },
   "views": {
     "index": {
       "__": "element",
@@ -553,8 +596,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "title": "user2",
         },
       ],
+      "relativePath": "",
       "tags": null,
-      "title": "Landscape",
+      "title": "Landscape view",
     },
   },
 }
@@ -593,6 +637,19 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
       "technology": "Async",
       "title": "",
     },
+  },
+  "specification": {
+    "elements": {
+      "person": {
+        "style": {},
+      },
+    },
+    "relationships": {
+      "async": {
+        "technology": "Async",
+      },
+    },
+    "tags": [],
   },
   "views": {
     "index": {
@@ -656,8 +713,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "title": "user2",
         },
       ],
+      "relativePath": "",
       "tags": null,
-      "title": "Landscape",
+      "title": "Landscape view",
     },
   },
 }
@@ -698,6 +756,15 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
       "target": "user2",
       "title": "",
     },
+  },
+  "specification": {
+    "elements": {
+      "person": {
+        "style": {},
+      },
+    },
+    "relationships": {},
+    "tags": [],
   },
   "views": {
     "index": {
@@ -763,8 +830,9 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "title": "user2",
         },
       ],
+      "relativePath": "",
       "tags": null,
-      "title": "Landscape",
+      "title": "Landscape view",
     },
   },
 }

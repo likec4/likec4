@@ -42,7 +42,8 @@ type ParsedElementStyle = {
 }
 
 export interface ParsedAstSpecification {
-  kinds: Record<c4.ElementKind, {
+  tags: Set<c4.Tag>
+  elements: Record<c4.ElementKind, {
     technology?: string
     notation?: string
     style: ParsedElementStyle
@@ -181,7 +182,8 @@ export interface ParsedLikeC4LangiumDocument
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
     c4Specification: {
-      kinds: {},
+      tags: new Set(),
+      elements: {},
       relationships: {}
     },
     c4Elements: [],
@@ -279,8 +281,9 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   }
 }
 export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
+export type IsValidFn = ChecksFromDiagnostics['isValid']
 
-export function* streamModel(doc: LikeC4LangiumDocument, isValid: ChecksFromDiagnostics['isValid']) {
+export function* streamModel(doc: LikeC4LangiumDocument, isValid: IsValidFn) {
   const traverseStack = doc.parseResult.value.models.flatMap(m => (isValid(m) ? m.elements : []))
   const relations = [] as ast.Relation[]
   let el
@@ -299,13 +302,7 @@ export function* streamModel(doc: LikeC4LangiumDocument, isValid: ChecksFromDiag
       continue
     }
     if (el.body && el.body.elements.length > 0) {
-      for (const nested of el.body.elements) {
-        if (ast.isRelation(nested)) {
-          relations.push(nested)
-        } else {
-          traverseStack.push(nested)
-        }
-      }
+      traverseStack.push(...el.body.elements)
     }
     yield el
   }
@@ -346,12 +343,15 @@ export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number 
   return isNaN(opacity) ? 100 : clamp(opacity, { min: 0, max: 100 })
 }
 
-export function toElementStyle(props?: Array<ast.StyleProperty>) {
+export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isValid: IsValidFn) {
   const result = {} as ParsedElementStyle
   if (!props || props.length === 0) {
     return result
   }
   for (const prop of props) {
+    if (!isValid(prop)) {
+      continue
+    }
     switch (true) {
       case ast.isBorderProperty(prop): {
         if (isTruthy(prop.value)) {

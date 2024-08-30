@@ -1,6 +1,7 @@
 import type { LikeC4View } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import { filter, hasAtLeast, isTruthy, map, pipe, unique, zip } from 'remeda'
+import { parsePath } from 'ufo'
 
 function commonAncestorPath(views: LikeC4View[], sep = '/') {
   const uniqURIs = pipe(
@@ -11,20 +12,20 @@ function commonAncestorPath(views: LikeC4View[], sep = '/') {
   )
   if (uniqURIs.length === 0) return ''
   if (hasAtLeast(uniqURIs, 1) && uniqURIs.length === 1) {
-    const parts = new URL(uniqURIs[0]).pathname.split(sep)
+    const parts = parsePath(uniqURIs[0]).pathname.split(sep)
     if (parts.length <= 1) return sep
     parts.pop() // remove filename
     return parts.join(sep) + sep
   }
   invariant(hasAtLeast(uniqURIs, 2), 'Expected at least 2 unique URIs')
   const [baseUri, ...tail] = uniqURIs
-  const parts = new URL(baseUri).pathname.split(sep)
+  const parts = parsePath(baseUri).pathname.split(sep)
   let endOfPrefix = parts.length
   for (const uri of tail) {
     if (uri === baseUri) {
       continue
     }
-    const compare = new URL(uri).pathname.split(sep)
+    const compare = parsePath(uri).pathname.split(sep)
     for (let i = 0; i < endOfPrefix; i++) {
       if (compare[i] !== parts[i]) {
         endOfPrefix = i
@@ -50,7 +51,7 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
             parts: []
           }
         }
-        let path = new URL(view.docUri).pathname
+        let path = parsePath(view.docUri).pathname
         if (commonPrefix.length > 0) {
           invariant(
             path.startsWith(commonPrefix),

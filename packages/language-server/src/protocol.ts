@@ -1,9 +1,8 @@
 import type {
-  AutoLayoutDirection,
+  ComputedLikeC4Model,
   ComputedView,
   Fqn,
-  LikeC4ComputedModel,
-  LikeC4Model,
+  ParsedLikeC4Model,
   RelationID,
   ViewChange,
   ViewID
@@ -17,12 +16,12 @@ export type OnDidChangeModelNotification = typeof onDidChangeModel
 // #endregion
 
 // #region To server
-export const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>(
+export const fetchModel = new RequestType0<{ model: ParsedLikeC4Model | null }, void>(
   'likec4/fetchModel'
 )
 export type FetchModelRequest = typeof fetchModel
 
-export const fetchComputedModel = new RequestType0<{ model: LikeC4ComputedModel | null }, void>(
+export const fetchComputedModel = new RequestType0<{ model: ComputedLikeC4Model | null }, void>(
   'likec4/fetchComputedModel'
 )
 export type FetchComputedModelRequest = typeof fetchComputedModel

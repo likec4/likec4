@@ -25,6 +25,7 @@ export const DefaultLineStyle = 'dashed' satisfies RelationshipLineType
 export const DefaultArrowType = 'normal' satisfies RelationshipArrowType
 export const DefaultRelationshipColor = 'gray' satisfies ThemeColor
 
+// TODO: rename to Relationship
 export interface Relation {
   readonly id: RelationID
   readonly source: Fqn
@@ -40,4 +41,13 @@ export interface Relation {
   readonly tail?: RelationshipArrowType
   readonly links?: NonEmptyArray<Link>
   readonly metadata?: { [key: string]: string }
+}
+
+export interface RelationshipKindSpecification {
+  readonly technology?: string
+  readonly notation?: string
+  readonly color?: ThemeColor
+  readonly line?: RelationshipLineType
+  readonly head?: RelationshipArrowType
+  readonly tail?: RelationshipArrowType
 }
