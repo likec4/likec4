@@ -1,4 +1,5 @@
 import type {
+  Color,
   ComputedEdge,
   ComputedElementView,
   EdgeId,
@@ -212,7 +213,7 @@ export class ComputeCtx {
           description?: string | undefined
           technology?: string | undefined
           kind?: RelationshipKind | undefined
-          color?: ThemeColor | undefined
+          color?: Color | undefined
           line?: RelationshipLineType | undefined
           head?: RelationshipArrowType | undefined
           tail?: RelationshipArrowType | undefined

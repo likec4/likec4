@@ -14,6 +14,7 @@ import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
 import { XYFlowInner } from './xyflow/XYFlowInner'
+import {LikeC4CustomColors } from './LikeC4CustomColors'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
 export function LikeC4Diagram({
@@ -70,6 +71,7 @@ export function LikeC4Diagram({
           fitView={fitView}
           {...initialRef.current}
         >
+          <LikeC4CustomColors customColors={view.customColorDefinitions}></LikeC4CustomColors>
           <DiagramContextProvider
             view={view}
             keepAspectRatio={keepAspectRatio}

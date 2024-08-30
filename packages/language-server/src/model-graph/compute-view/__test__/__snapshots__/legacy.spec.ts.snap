@@ -4,6 +4,7 @@ exports[`compute-element-view > view of cloud 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
+  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -238,6 +239,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
+  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {

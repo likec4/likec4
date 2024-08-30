@@ -45,6 +45,7 @@
     "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
   },
   "dependencies": {
+    "@ant-design/colors": "^7.1.0",
     "@lume/kiwi": "^0.4.3",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.14.0",

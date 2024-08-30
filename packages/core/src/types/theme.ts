@@ -1,19 +1,30 @@
-export type ThemeColor =
-  | 'amber'
-  | 'blue'
-  | 'gray'
-  | 'slate'
-  | 'green'
-  | 'indigo'
-  | 'muted'
-  | 'primary'
-  | 'red'
-  | 'secondary'
-  | 'sky'
+const ThemeColors = [
+  'amber',
+  'blue',
+  'gray',
+  'slate',
+  'green',
+  'indigo',
+  'muted',
+  'primary',
+  'red',
+  'secondary',
+  'sky'] as const
+export type ThemeColor = typeof ThemeColors[number]
 
 export type HexColorLiteral = `#${string}`
 
 export type ColorLiteral = HexColorLiteral
+
+export type Color = ThemeColor | ColorLiteral
+
+export function isThemeColor(color: Color): color is ThemeColor {
+  return color in ThemeColors
+}
+
+export function isColorLiteral(color: Color): color is ColorLiteral {
+  return !(color in ThemeColors)
+}
 
 export interface ElementThemeColorValues {
   fill: ColorLiteral
@@ -32,6 +43,11 @@ export interface RelationshipThemeColorValues {
   lineColor: ColorLiteral
   labelBgColor: ColorLiteral
   labelColor: ColorLiteral
+}
+
+export interface ThemeColorValues {
+  elements: ElementThemeColorValues
+  relationships: RelationshipThemeColorValues
 }
 
 export type RelationshipThemeColors = {

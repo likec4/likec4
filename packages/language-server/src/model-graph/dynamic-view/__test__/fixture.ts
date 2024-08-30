@@ -10,6 +10,7 @@ const emptyView = {
   description: null,
   tags: null,
   links: null,
+  customColorDefinitions: {},
   rules: []
 }
 

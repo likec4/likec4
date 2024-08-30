@@ -42,6 +42,9 @@ model {
       '
 
       -> customer 'helps with questions' {
+        style {
+          color custom
+        }
         metadata {
           rps '1000'
         }

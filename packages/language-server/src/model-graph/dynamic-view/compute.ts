@@ -1,4 +1,5 @@
 import type {
+  Color,
   ComputedDynamicView,
   ComputedEdge,
   DynamicView,
@@ -38,7 +39,7 @@ export namespace DynamicViewComputeCtx {
     title: string | null
     description?: string
     technology?: string
-    color?: ThemeColor
+    color?: Color
     line?: RelationshipLineType
     head?: RelationshipArrowType
     tail?: RelationshipArrowType

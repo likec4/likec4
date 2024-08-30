@@ -302,6 +302,20 @@ describe.concurrent('specification', () => {
         }
       }`
 
+    test('spec with custom colors').valid`
+      specification {
+        relationship async {
+          color custom-color
+        }
+        element person {
+          style {
+            color custom-color
+          }
+        }
+
+        color custom-color #ffffff
+      }`
+
     test('spec with invalid relationshipkind color').invalid`
       specification {
         relationship async {

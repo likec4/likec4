@@ -4,7 +4,7 @@ import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
-import type { ThemeColor } from './theme'
+import type { Color, HexColorLiteral, ThemeColor, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
 // Full-qualified-name
@@ -30,7 +30,7 @@ export interface ViewRuleStyle {
   targets: ElementExpression[]
   notation?: string
   style: ElementStyle & {
-    color?: ThemeColor
+    color?: Color
     shape?: ElementShape
     icon?: IconUrl
   }
@@ -76,6 +76,8 @@ export interface BasicView<ViewType extends 'element' | 'dynamic'> {
    * If the view is changed manually this field contains the layout data.
    */
   readonly manualLayout?: ViewManualLayout | undefined
+
+  readonly customColorDefinitions: CustomColorDefinitions
 }
 
 export interface BasicElementView extends BasicView<'element'> {
@@ -98,7 +100,7 @@ export interface DynamicViewStep {
   readonly description?: string
   readonly technology?: string
   readonly notation?: string
-  readonly color?: ThemeColor
+  readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
@@ -121,6 +123,8 @@ export interface DynamicView extends BasicView<'dynamic'> {
 
   readonly rules: DynamicViewRule[]
 }
+
+export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
 export type LikeC4View = ElementView | DynamicView
 
@@ -175,7 +179,7 @@ export interface ComputedNode {
   /**
    * @deprecated Use `style` instead
    */
-  color: ThemeColor
+  color: Color
   /**
    * @deprecated Use `style` instead
    */
@@ -201,7 +205,7 @@ export interface ComputedEdge {
   technology?: string
   relations: RelationID[]
   kind?: RelationshipKind
-  color?: ThemeColor
+  color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType

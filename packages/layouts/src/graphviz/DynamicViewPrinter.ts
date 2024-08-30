@@ -34,9 +34,10 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     ltail && e.attributes.set(_.ltail, ltail)
 
     if (edge.color && edge.color !== DefaultRelationshipColor) {
+      const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
-        [_.color]: Theme.relationships[edge.color].lineColor,
-        [_.fontcolor]: Theme.relationships[edge.color].labelColor
+        [_.color]: colorValues.lineColor,
+        [_.fontcolor]: colorValues.labelColor
       })
     }
 

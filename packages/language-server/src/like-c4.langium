@@ -31,12 +31,16 @@ Tag:
 RelationshipKind:
   name=Id;
 
+CustomColor:
+  name=Id;
+
 SpecificationRule:
   name='specification' '{'
     (
       elements+=SpecificationElementKind |
       tags+=SpecificationTag |
-      relationships+=SpecificationRelationshipKind
+      relationships+=SpecificationRelationshipKind |
+      colors+=SpecificationColor
     )*
   '}';
 
@@ -53,6 +57,9 @@ SpecificationElementStringProperty:
 
 SpecificationTag:
   'tag' tag=Tag;
+
+SpecificationColor:
+  'color' name=CustomColor color=CustomColorValue;
 
 SpecificationRelationshipKind:
   'relationship' kind=RelationshipKind ('{'
@@ -447,7 +454,7 @@ NavigateToProperty:
 LinkProperty:
   key='link' ':'? value=Uri title=String? ';'?;
 ColorProperty:
-  key='color' ':'? value=ThemeColor ';'?;
+  key='color' ':'? (themeColor=ThemeColor | customColor=[CustomColor:Id]) ';'?;
 
 OpacityProperty:
   key='opacity' ':'? value=Percent ';'?;
@@ -512,6 +519,9 @@ ThemeColor returns string:
   'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string:
   'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
+
+CustomColorValue returns string:
+  Hash (Id | Hex);
 
 IconId returns string:
   LIB_ICON;
@@ -580,3 +590,4 @@ terminal String: /"[^"]*"|'[^']*'/;
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;
+terminal Hex: /[a-zA-Z0-9]+/;

@@ -3,7 +3,8 @@ import {
   type ComputedNode,
   DefaultRelationshipColor,
   defaultTheme as Theme,
-  ElementColors as Colors
+  ElementColors as Colors,
+  type ElementThemeColorValues
 } from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
@@ -51,7 +52,7 @@ export function nodeIcon() {
   return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#112233" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
-export function nodeLabel(node: ComputedNode) {
+export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValues) {
   const hasIcon = isTruthy(node.icon)
   const lines = [
     wrapWithFont({
@@ -66,7 +67,7 @@ export function nodeLabel(node: ComputedNode) {
         text: node.technology,
         fontsize: 12,
         maxchars: hasIcon ? 35 : 45,
-        color: Colors[node.color].loContrast
+        color: colorValues.loContrast
       })
     )
   }
@@ -76,7 +77,7 @@ export function nodeLabel(node: ComputedNode) {
         text: node.description,
         fontsize: 14,
         maxchars: hasIcon ? 35 : 45,
-        color: Colors[node.color].loContrast
+        color: colorValues.loContrast
       })
     )
   }

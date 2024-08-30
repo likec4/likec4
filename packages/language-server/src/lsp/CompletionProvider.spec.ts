@@ -22,6 +22,7 @@ describe('LikeC4CompletionProvider', () => {
             color <|>secondary
           }
         }
+        color custom-color #ff0000
       }
     `
     const completion = expectCompletion()
@@ -46,7 +47,7 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 2,
-      expectedItems: ['element', 'tag', 'relationship']
+      expectedItems: ['element', 'tag', 'relationship', 'color']
     })
     await completion({
       text,
@@ -72,6 +73,7 @@ describe('LikeC4CompletionProvider', () => {
       text,
       index: 7,
       expectedItems: [
+        'custom-color',
         'primary',
         'secondary',
         'muted',
