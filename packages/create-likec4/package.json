@@ -25,9 +25,8 @@
   },
   "type": "module",
   "scripts": {
-    "build": "unbuild",
-    "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepack": "unbuild",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

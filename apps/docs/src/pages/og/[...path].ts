@@ -15,13 +15,14 @@ export const { getStaticPaths, GET } = OGImageRoute({
 
   getImageOptions: (_, page) => {
     return {
+      cacheDir: false,
       title: page.title,
       description: page.description,
       logo: {
-        path: './public/img/og-logo.png',
+        path: './src/assets/og/og-logo.png',
       },
       bgImage: {
-        path: './src/assets/og-bg.png',
+        path: './src/assets/og/og-bg.png',
         fit: 'cover'
       },
       font: {

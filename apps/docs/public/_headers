@@ -3,6 +3,16 @@
   X-Robots-Tag: nosnippet
   Cache-Control: public,max-age=604800
 
+/og/*
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: nosnippet
+  Cache-Control: public,max-age=604800
+
+/img/*
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: nosnippet
+  Cache-Control: public,max-age=604800
+
 /pagefind/*
   Access-Control-Allow-Origin: *
   X-Robots-Tag: nosnippet

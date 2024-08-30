@@ -5,8 +5,8 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
 import starlightLinksValidator from 'starlight-links-validator'
 import { searchForWorkspaceRoot } from 'vite'
-import likec4grammar from './likec4.tmLanguage.json' assert { type: 'json' }
-import structurizr from './structurizr.tmLanguage.json' assert { type: 'json' }
+import likec4grammar from './likec4.tmLanguage.json' with { type: 'json' }
+import structurizr from './structurizr.tmLanguage.json' with { type: 'json' }
 
 // https://astro.build/config
 export default defineConfig({

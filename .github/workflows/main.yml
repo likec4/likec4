@@ -34,6 +34,9 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
+      - name: build
+        run: yarn ci:build
+
       - name: typecheck
         run: yarn typecheck:all
 
@@ -41,9 +44,6 @@ jobs:
         env:
           NODE_ENV: test
         run: yarn ci:test
-
-      - name: build
-        run: yarn build:all
 
   release:
     uses: ./.github/workflows/release.yaml
