@@ -1,3 +1,17 @@
+## [1.8.1](https://github.com/likec4/likec4/compare/v1.8.0...v1.8.1) (2024-08-30)
+
+
+### Bug Fixes
+
+* handle empty image path in getOgImageUrl function ([41edd07](https://github.com/likec4/likec4/commit/41edd07faf6c6d0cbeac24233afebe2d70d6ba41))
+
+
+### Features
+
+* **dsl:** allow `this` and `it` as target ([1e5e0e5](https://github.com/likec4/likec4/commit/1e5e0e57af0d1482a6a01aa70f6d978085b52aae))
+
+
+
 # [1.8.0](https://github.com/likec4/likec4/compare/v1.7.4...v1.8.0) (2024-08-27)
 
 ### 🚀 Features  
