@@ -8873,7 +8873,7 @@ __metadata:
     remeda: "npm:^2.11.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
-    terser: "npm:^5.31.5"
+    terser: "npm:^5.31.6"
     tinyrainbow: "npm:^1.2.0"
     tsx: "npm:~4.9.3"
     type-fest: "npm:^4.21.0"
@@ -13438,7 +13438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.31.5":
+"terser@npm:^5.31.6":
   version: 5.31.6
   resolution: "terser@npm:5.31.6"
   dependencies:
