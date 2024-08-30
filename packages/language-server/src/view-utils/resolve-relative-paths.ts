@@ -72,9 +72,6 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
           if (a.parts.length === 0) {
             return 0
           }
-          if (a.parts.length === 1 && hasAtLeast(a.parts, 1) && hasAtLeast(b.parts, 1)) {
-            return a.parts[0].localeCompare(b.parts[0])
-          }
           for (const [_a, _b] of zip(a.parts, b.parts)) {
             const compare = _a.localeCompare(_b)
             if (compare !== 0) {

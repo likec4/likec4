@@ -1,6 +1,7 @@
 import {
   type c4,
   compareByFqnHierarchically,
+  compareRelations,
   isElementView,
   isScopedElementView,
   parentFqn,
@@ -15,6 +16,7 @@ import {
   find,
   flatMap,
   forEach,
+  indexBy,
   isNonNullish,
   isNullish,
   isNumber,
@@ -24,6 +26,7 @@ import {
   pipe,
   prop,
   reduce,
+  reverse,
   sort,
   values
 } from 'remeda'
@@ -183,7 +186,9 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     docs,
     flatMap(d => map(d.c4Relations, toModelRelation(d))),
     filter(isTruthy),
-    mapToObj(r => [r.id, r])
+    sort(compareRelations),
+    reverse(),
+    indexBy(prop('id'))
   )
 
   const toC4View = (doc: LangiumDocument) => {
@@ -250,7 +255,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   const views = pipe(
     parsedViews,
     resolveRelativePaths,
-    mapToObj(v => [v.id, v]),
+    indexBy(prop('id')),
     resolveRulesExtendedViews
   )
 

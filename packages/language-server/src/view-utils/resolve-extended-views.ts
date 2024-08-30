@@ -1,5 +1,7 @@
 import graphlib from '@dagrejs/graphlib'
 import { isExtendsElementView, type LikeC4View } from '@likec4/core'
+import { logger } from '@likec4/log'
+import { first, last, values } from 'remeda'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it
@@ -18,18 +20,28 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
     multigraph: false,
     compound: false
   })
-  for (const view of Object.values(unresolvedViews)) {
+  for (const view of values(unresolvedViews)) {
     g.setNode(view.id)
     if (isExtendsElementView(view)) {
       // view -> parent
       g.setEdge(view.id, view.extends)
     }
   }
+  if (g.edgeCount() === 0) {
+    return unresolvedViews
+  }
 
   // Remove circular dependencies
-  const cycles = alg.findCycles(g)
-  if (cycles.length > 0) {
-    cycles.flat().forEach(id => g.removeNode(id))
+  while (!alg.isAcyclic(g)) {
+    const firstCycle = first(alg.findCycles(g))
+    if (!firstCycle) {
+      break
+    }
+    const cycledNode = last(firstCycle)
+    if (!cycledNode) {
+      break
+    }
+    g.removeNode(cycledNode)
   }
 
   const ordered = alg.postorder(g, g.sources())
@@ -42,6 +54,7 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
     if (isExtendsElementView(view)) {
       const extendsFrom = acc[view.extends]
       if (!extendsFrom) {
+        logger.debug(`View "${view.id}" extends from "${view.extends}" which does not exist`)
         return acc
       }
       return Object.assign(acc, {
