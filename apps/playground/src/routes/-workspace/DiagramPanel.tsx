@@ -93,6 +93,7 @@ export function DiagramPanel() {
             nodesDraggable
             showNavigationButtons
             enableDynamicViewWalkthrough
+            showNotations
             enableFocusMode
             renderIcon={RendererIcon}
             onNavigateTo={id => store.getState().fetchDiagram(id)}

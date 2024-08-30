@@ -5,7 +5,7 @@ import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
 import { SidebarDrawerOps } from '../components/sidebar/Drawer'
-import { withOverviewGraph } from '../const'
+import { isDevelopment, withOverviewGraph } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/')({
   component: ViewReact
@@ -28,6 +28,9 @@ function ViewReact() {
     throw notFound()
   }
 
+  const notations = view.notation?.elements ?? []
+  const hasNotations = notations.length > 0
+
   return (
     <LikeC4Diagram
       view={view}
@@ -41,6 +44,7 @@ function ViewReact() {
       showNavigationButtons
       enableDynamicViewWalkthrough
       experimentalEdgeEditing={false}
+      showNotations={isDevelopment || hasNotations}
       enableFocusMode={true}
       nodesDraggable={false}
       nodesSelectable={false}

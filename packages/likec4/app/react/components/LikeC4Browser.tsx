@@ -74,8 +74,8 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
 
   const backdropRgb = colorScheme === 'dark' ? '36 36 36' : '255 255 255'
 
-  const notations = (view as any as CoreDiagramView).notation?.elements
-  const hasNotations = notations && notations.length > 0
+  const notations = (view as any as CoreDiagramView).notation?.elements ?? []
+  const hasNotations = notations.length > 0
 
   return (
     <>

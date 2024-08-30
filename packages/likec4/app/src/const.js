@@ -13,3 +13,5 @@ export const useHashHistory = __USE_HASH_HISTORY__ === true
 export const basepath = useHashHistory ? '/' : BASE
 
 export const withOverviewGraph = __USE_OVERVIEW_GRAPH__ === true
+
+export const isDevelopment = import.meta.env.DEV

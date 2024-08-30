@@ -31,8 +31,8 @@ const BrowserModal = memo<{
     setVisible(true)
   }, 20)
 
-  const notations = (view as any as CoreDiagramView).notation?.elements
-  const hasNotations = notations && notations.length > 0
+  const notations = (view as any as CoreDiagramView).notation?.elements ?? []
+  const hasNotations = notations.length > 0
 
   return (
     (
