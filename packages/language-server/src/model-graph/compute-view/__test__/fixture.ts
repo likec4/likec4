@@ -17,12 +17,12 @@ import {
   type RelationshipLineType,
   type RelationWhereExpr,
   type Tag,
-  type ThemeColor,
   type ViewID,
   type ViewRule,
   type ViewRulePredicate,
   type ViewRuleStyle,
-  type WhereOperator
+  type WhereOperator,
+  type Color
 } from '@likec4/core'
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
@@ -220,7 +220,7 @@ const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
   target: Target
   title?: string
   kind?: string
-  color?: ThemeColor
+  color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
@@ -372,7 +372,7 @@ export function $custom(
     description?: string
     technology?: string
     shape?: ElementShape
-    color?: ThemeColor
+    color?: Color
     border?: BorderStyle
     icon?: string
     opacity?: number

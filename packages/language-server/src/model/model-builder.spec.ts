@@ -1066,7 +1066,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         sys1 -> sys2
       }
       views {
-        view {
+        view index {
           include sys1 with {
             color custom-color1
           }

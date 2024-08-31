@@ -4,7 +4,7 @@ export type NonEmptyArray<T> = [T, ...T[]]
 
 export type IconUrl = Tagged<string, 'IconUrl'>
 
-export type CustomColor = Opaque<string, 'CustomColor'>
+export type CustomColor = string
 
 export type Point = readonly [x: number, y: number]
 

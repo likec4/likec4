@@ -4,7 +4,7 @@ import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
-import type { Color, HexColorLiteral, ThemeColor, ThemeColorValues } from './theme'
+import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
 // Full-qualified-name

@@ -1,3 +1,5 @@
+import type { CustomColor } from "./_common"
+
 const ThemeColors = [
   'amber',
   'blue',
@@ -16,14 +18,10 @@ export type HexColorLiteral = `#${string}`
 
 export type ColorLiteral = HexColorLiteral
 
-export type Color = ThemeColor | ColorLiteral
+export type Color = ThemeColor | CustomColor
 
 export function isThemeColor(color: Color): color is ThemeColor {
   return color in ThemeColors
-}
-
-export function isColorLiteral(color: Color): color is ColorLiteral {
-  return !(color in ThemeColors)
 }
 
 export interface ElementThemeColorValues {

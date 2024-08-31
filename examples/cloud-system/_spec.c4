@@ -1,6 +1,4 @@
 specification {
-  color custom #f0882e
-
   element actor {
     notation "Person"
     style {
