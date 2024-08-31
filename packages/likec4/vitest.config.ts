@@ -5,6 +5,9 @@ export default defineProject({
     name: 'likec4',
     chaiConfig: {
       truncateThreshold: 300
-    }
+    },
+    setupFiles: [
+      'test/setup.ts'
+    ]
   }
 })
