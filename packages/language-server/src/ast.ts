@@ -1,4 +1,5 @@
-import { type c4, DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
+import type * as c4 from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isDefined, isNullish, isTruthy } from 'remeda'

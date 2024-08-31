@@ -1,4 +1,4 @@
-import type { likec4 as c4 } from '@likec4/core'
+import type * as c4 from '@likec4/core/types'
 import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
 import type { Location } from 'vscode-languageserver-types'

@@ -1,4 +1,5 @@
-import { type c4, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import type * as c4 from '@likec4/core/types'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
 import { filter, flatMap, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'

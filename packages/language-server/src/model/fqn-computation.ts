@@ -1,4 +1,5 @@
-import { AsFqn, type c4, nonexhaustive } from '@likec4/core'
+import { AsFqn, nonexhaustive } from '@likec4/core'
+import type * as c4 from '@likec4/core/types'
 import { type AstNodeDescription, type AstNodeLocator, AstUtils, CstUtils, GrammarUtils, MultiMap } from 'langium'
 import { isDefined, isEmpty } from 'remeda'
 import { ast, ElementOps, type LikeC4LangiumDocument } from '../ast'

@@ -1,4 +1,5 @@
-import { invariant, type likec4 as c4 } from '@likec4/core'
+import { invariant } from '@likec4/core'
+import type * as c4 from '@likec4/core/types'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
