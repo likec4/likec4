@@ -44,6 +44,8 @@ export async function buildCli(isDev = !isProd) {
     target: 'node20',
     platform: 'node',
     alias: {
+      '@likec4/core/model': resolve('../core/src/model/index.ts'),
+      '@likec4/core/types': resolve('../core/src/types/index.ts'),
       '@likec4/core': resolve('../core/src/index.ts'),
       '@/vite/config-app': '@/vite/config-app.prod',
       '@/vite/config-react': '@/vite/config-react.prod',
