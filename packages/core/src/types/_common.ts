@@ -1,8 +1,8 @@
-import type { Opaque } from './opaque'
+import type { Tagged } from 'type-fest'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
-export type IconUrl = Opaque<string, 'IconUrl'>
+export type IconUrl = Tagged<string, 'IconUrl'>
 
 export type Point = readonly [x: number, y: number]
 

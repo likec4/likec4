@@ -1,14 +1,14 @@
 import { isNullish } from 'remeda'
+import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
-import type { Opaque } from './opaque'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
 import type { ElementNotation } from './view-notation'
 
 // Full-qualified-name
-export type ViewID = Opaque<string, 'ViewID'>
+export type ViewID = Tagged<string, 'ViewID'>
 
 export type ViewRulePredicate =
   | {
@@ -139,11 +139,11 @@ export function isScopedElementView(view: LikeC4View): view is ScopedElementView
   return isElementView(view) && 'viewOf' in view
 }
 
-export type NodeId = Fqn
+export type NodeId = Tagged<string, 'Fqn'>
 
-export type EdgeId = Opaque<string, 'EdgeId'>
+export type EdgeId = Tagged<string, 'EdgeId'>
 export type StepEdgeIdLiteral = `step-${number}`
-export type StepEdgeId = Opaque<StepEdgeIdLiteral, 'EdgeId'>
+export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
 export function StepEdgeId(step: number): StepEdgeId {
   return `step-${String(step).padStart(3, '0')}` as StepEdgeId
 }

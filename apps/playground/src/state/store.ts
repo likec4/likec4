@@ -1,4 +1,4 @@
-import { type ComputedView, type DiagramView, invariant, type LikeC4Model, type ViewID } from '@likec4/core'
+import { type ComputedView, type DiagramView, invariant, type ParsedLikeC4Model, type ViewID } from '@likec4/core'
 import { changeView, computeView, fetchModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import { deepEqual } from 'fast-equals'
@@ -47,7 +47,7 @@ export type WorkspaceStore = {
     [filename: string]: string
   }
 
-  likeC4Model: LikeC4Model | null
+  likeC4Model: ParsedLikeC4Model | null
   modelFetched: boolean
 
   /**

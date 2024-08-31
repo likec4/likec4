@@ -1,9 +1,9 @@
+import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
-import type { Opaque } from './opaque'
 import type { ThemeColor } from './theme'
 
 // Full-qualified-name
-export type Fqn = Opaque<string, 'Fqn'>
+export type Fqn = Tagged<string, 'Fqn'>
 
 export function AsFqn(name: string, parent?: Fqn | null) {
   return (parent ? parent + '.' + name : name) as Fqn
@@ -13,7 +13,7 @@ export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 
 export type BorderStyle = typeof BorderStyles[number]
 
-export type ElementKind = Opaque<string, 'ElementKind'>
+export type ElementKind = Tagged<string, 'ElementKind'>
 export const ElementShapes = [
   'rectangle',
   'person',
@@ -34,7 +34,7 @@ export interface ElementStyle {
   opacity?: number
 }
 
-export type Tag = Opaque<string, 'Tag'>
+export type Tag = Tagged<string, 'Tag'>
 
 export interface TagSpec {
   readonly id: Tag
@@ -42,7 +42,7 @@ export interface TagSpec {
 }
 
 export interface Link {
-  readonly title?: string,
+  readonly title?: string
   readonly url: string
 }
 

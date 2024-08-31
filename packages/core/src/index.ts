@@ -1,5 +1,6 @@
 export * from './colors'
 export * from './errors'
+export * from './model'
 export * from './types'
 export * from './utils/fqn'
 export * from './utils/guards'

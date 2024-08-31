@@ -1,5 +1,6 @@
+import type { UnwrapTagged } from 'type-fest'
 import type { Element, ElementKind, ElementKindSpecification, Fqn, Tag } from './element'
-import type { Relation, RelationID, RelationshipKind, RelationshipKindSpecification } from './relation'
+import type { Relation, RelationID, RelationshipKindSpecification } from './relation'
 import type { ComputedView, LikeC4View, ViewID } from './view'
 
 /**
@@ -8,8 +9,8 @@ import type { ComputedView, LikeC4View, ViewID } from './view'
 export interface ParsedLikeC4Model {
   specification: {
     tags: Tag[]
-    elements: Record<ElementKind, ElementKindSpecification>
-    relationships: Record<RelationshipKind, RelationshipKindSpecification>
+    elements: Record<UnwrapTagged<ElementKind>, ElementKindSpecification>
+    relationships: Record<UnwrapTagged<ElementKind>, RelationshipKindSpecification>
   }
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>

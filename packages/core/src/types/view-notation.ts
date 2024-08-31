@@ -1,5 +1,4 @@
-import type { RequireAtLeastOne } from 'type-fest'
-import type { BorderStyle, ElementKind, ElementShape } from './element'
+import type { ElementKind, ElementShape } from './element'
 import type { ThemeColor } from './theme'
 
 export type ElementNotation = {

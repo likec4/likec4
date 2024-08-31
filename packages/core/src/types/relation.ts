@@ -1,10 +1,10 @@
+import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { Fqn, Link, Tag } from './element'
-import type { Opaque } from './opaque'
 import type { ThemeColor } from './theme'
 
-export type RelationID = Opaque<string, 'RelationID'>
-export type RelationshipKind = Opaque<string, 'RelationshipKind'>
+export type RelationID = Tagged<string, 'RelationID'>
+export type RelationshipKind = Tagged<string, 'RelationshipKind'>
 
 export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
 
