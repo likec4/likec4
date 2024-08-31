@@ -1,17 +1,17 @@
 /// <reference lib="DOM" />
+import type { ViteLogger } from '@/logger'
 import type { DiagramView, NonEmptyArray } from '@likec4/core'
 import { resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import type { BrowserContext, Page } from 'playwright'
-import { clamp, isString, isTruthy } from 'remeda'
+import { clamp, isTruthy } from 'remeda'
 import k from 'tinyrainbow'
-import type { Logger } from 'vite'
 
 type TakeScreenshotParams = {
   browserContext: BrowserContext
   views: NonEmptyArray<DiagramView>
   output: string
-  logger: Logger
+  logger: ViteLogger
   timeout: number
   maxAttempts: number
   outputType: 'relative' | 'flat'

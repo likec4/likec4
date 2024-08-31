@@ -1,16 +1,16 @@
-import type { LanguageServices } from '@/language-services'
 import { createLikeC4Logger } from '@/logger'
 import { consola } from '@likec4/log'
 import react from '@vitejs/plugin-react'
 import { existsSync } from 'node:fs'
-import { extname, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
+import type { LikeC4 } from '../LikeC4'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, JsBanners } from './utils'
 
 type LikeC4ViteReactConfig = {
-  languageServices: LanguageServices
+  languageServices: LikeC4
   outDir: string
   filename?: string
 }

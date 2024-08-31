@@ -1,12 +1,9 @@
-import type { ComputedView, DiagramView, LikeC4ComputedModel, OverviewGraph, ViewID } from '@likec4/core'
+import type { ComputedLikeC4Model, ComputedView, DiagramView, OverviewGraph, ViewID } from '@likec4/core'
 import type { DotLayoutResult, DotSource, GraphvizLayouter } from '@likec4/layouts'
 import type { WorkspaceCache } from 'langium'
-import { SimpleCache } from 'langium'
 import pLimit from 'p-limit'
 import { isTruthy } from 'remeda'
 import type { CliServices } from './module'
-
-const limit = pLimit(2)
 
 type GraphvizOut = {
   id: ViewID
@@ -21,11 +18,13 @@ export class Views {
 
   private previousAction = Promise.resolve() as Promise<unknown>
 
+  private limit = pLimit(2)
+
   constructor(private services: CliServices) {
     this.layouter = services.likec4.Layouter
   }
 
-  private inflightRequest: Promise<LikeC4ComputedModel | null> | undefined
+  private inflightRequest: Promise<ComputedLikeC4Model | null> | undefined
 
   async computedViews(): Promise<ComputedView[]> {
     try {
@@ -45,19 +44,21 @@ export class Views {
       .then(async () => {
         const views = await this.computedViews()
 
-        const tasks = views.map(async view => {
-          try {
-            let result = this.cache.get(view)
-            if (!result) {
-              result = await this.layouter.layout(view)
-              this.cache.set(view, result)
+        const tasks = views.map(view =>
+          this.limit(async () => {
+            try {
+              let result = this.cache.get(view)
+              if (!result) {
+                result = await this.layouter.layout(view)
+                this.cache.set(view, result)
+              }
+              return result
+            } catch (e) {
+              logger.error(e)
+              return null
             }
-            return result
-          } catch (e) {
-            logger.error(e)
-            return null
-          }
-        })
+          })
+        )
 
         return (await Promise.all(tasks)).filter(isTruthy)
       })
@@ -83,7 +84,7 @@ export class Views {
     }
     const views = await this.computedViews()
     const tasks = views.map(l =>
-      limit(async (): Promise<GraphvizOut> => {
+      this.limit(async (): Promise<GraphvizOut> => {
         const { dot, svg } = await this.layouter.svg(l)
         return {
           id: l.id,

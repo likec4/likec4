@@ -5,8 +5,8 @@ import { hrtime } from 'node:process'
 import { chromium } from 'playwright'
 import k from 'tinyrainbow'
 import type { ViteDevServer } from 'vite'
-import { LanguageServices } from '../../../language-services'
-import { createLikeC4Logger, inMillis, type Logger } from '../../../logger'
+import { LikeC4 } from '../../../LikeC4'
+import { createLikeC4Logger, inMillis, type Logger, type ViteLogger } from '../../../logger'
 import { viteDev } from '../../../vite/vite-dev'
 import { takeScreenshot } from './takeScreenshot'
 
@@ -46,7 +46,7 @@ export async function exportViewsToPNG(
     outputType = 'relative',
     maxAttempts = 3
   }: {
-    logger: Logger
+    logger: ViteLogger
     serverUrl: string
     theme?: 'light' | 'dark'
     timeoutMs?: number
@@ -104,7 +104,10 @@ export async function pngHandler({
   const logger = createLikeC4Logger('c4:export')
   const startTakeScreenshot = hrtime()
 
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.initForWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   output ??= languageServices.workspace
 

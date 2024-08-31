@@ -311,6 +311,19 @@ export class LikeC4ModelBuilder {
     logger.debug(`[ModelBuilder] Created`)
   }
 
+  public syncBuildModel(): c4.ParsedLikeC4Model | null {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
+    return cache.get(CACHE_KEY_PARSED_MODEL, () => {
+      const docs = this.documents()
+      if (docs.length === 0) {
+        logger.debug('[ModelBuilder] No documents to build model from')
+        return null
+      }
+      logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
+      return buildModel(this.services, docs)
+    })
+  }
+
   public async buildModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.ParsedLikeC4Model | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
     if (cache.has(CACHE_KEY_PARSED_MODEL)) {
@@ -320,19 +333,43 @@ export class LikeC4ModelBuilder {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      return cache.get(CACHE_KEY_PARSED_MODEL, () => {
-        const docs = this.documents()
-        if (docs.length === 0) {
-          logger.debug('[ModelBuilder] No documents to build model from')
-          return null
-        }
-        logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
-        return buildModel(this.services, docs)
-      })
+      return this.syncBuildModel()
     })
   }
 
   private previousViews: Record<ViewID, c4.ComputedView> = {}
+
+  public syncBuildComputedModel(model: c4.ParsedLikeC4Model): c4.ComputedLikeC4Model {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model>
+    const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+    return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
+      const index = new LikeC4ModelGraph(model)
+
+      const allViews = [] as c4.ComputedView[]
+      for (const view of values(model.views)) {
+        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
+        if (!result.isSuccess) {
+          logWarnError(result.error)
+          continue
+        }
+        allViews.push(result.view)
+      }
+      assignNavigateTo(allViews)
+      const views = mapToObj(allViews, v => {
+        const previous = this.previousViews[v.id]
+        const view = previous && eq(v, previous) ? previous : v
+        viewsCache.set(computedViewKey(v.id), view)
+        return [v.id, view] as const
+      })
+      this.previousViews = { ...views }
+      return {
+        specification: model.specification,
+        elements: model.elements,
+        relations: model.relations,
+        views
+      }
+    })
+  }
 
   public async buildComputedModel(
     cancelToken?: Cancellation.CancellationToken
@@ -349,34 +386,7 @@ export class LikeC4ModelBuilder {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
-      return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
-        const index = new LikeC4ModelGraph(model)
-
-        const allViews = [] as c4.ComputedView[]
-        for (const view of values(model.views)) {
-          const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
-          if (!result.isSuccess) {
-            logWarnError(result.error)
-            continue
-          }
-          allViews.push(result.view)
-        }
-        assignNavigateTo(allViews)
-        const views = mapToObj(allViews, v => {
-          const previous = this.previousViews[v.id]
-          const view = previous && eq(v, previous) ? previous : v
-          viewsCache.set(computedViewKey(v.id), view)
-          return [v.id, view] as const
-        })
-        this.previousViews = { ...views }
-        return {
-          specification: model.specification,
-          elements: model.elements,
-          relations: model.relations,
-          views
-        }
-      })
+      return this.syncBuildComputedModel(model)
     })
   }
 

@@ -1,10 +1,10 @@
-import { LanguageServices } from '@/language-services'
-import { createLikeC4Logger } from '@/logger'
-import { viteBuild } from '@/vite/vite-build'
 import { rmSync } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
+import { LikeC4 } from '../../LikeC4'
+import { createLikeC4Logger } from '../../logger'
+import { viteBuild } from '../../vite/vite-build'
 import { pngHandler } from '../export/png/handler'
 
 const { cyan, dim } = k
@@ -47,7 +47,10 @@ export async function buildHandler({
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:build')
 
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.initForWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   const outDir = outputDir ?? resolve(languageServices.workspace, 'dist')
   let likec4AssetsDir = resolve(outDir, 'assets')

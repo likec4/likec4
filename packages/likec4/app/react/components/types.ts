@@ -1,12 +1,9 @@
+import type { DiagramView as OriginDiagramView } from '@likec4/core'
 import type { HTMLAttributes, ReactNode } from 'react'
 import type { WhereOperator } from './types-filter'
 
-export type DiagramView<ViewId extends string> = {
+export type DiagramView<ViewId extends string> = Omit<OriginDiagramView, 'id'> & {
   id: ViewId
-  bounds: {
-    width: number
-    height: number
-  }
 }
 
 export type ElementIconRendererProps = {

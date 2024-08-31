@@ -1,3 +1,4 @@
+import { LikeC4 } from '@/LikeC4'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
 import { mkTempPublicDir } from '@/vite/utils'
 import { consola } from '@likec4/log'
@@ -9,7 +10,6 @@ import { hasAtLeast } from 'remeda'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
-import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
@@ -30,7 +30,10 @@ export async function webcomponentHandler({
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.initForWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 

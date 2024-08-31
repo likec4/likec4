@@ -1,4 +1,4 @@
-import { LanguageServices } from '../../language-services'
+import { LikeC4 } from '../../LikeC4'
 import { printServerUrls } from '../../vite/printServerUrls'
 import { vitePreview } from '../../vite/vite-preview'
 
@@ -23,7 +23,9 @@ export async function handler({
   output: outputDir,
   base
 }: HandlerParams) {
-  const languageServices = await LanguageServices.get({ path, useDotBin: false })
+  const languageServices = await LikeC4.initForWorkspace(path, {
+    logger: 'vite'
+  })
 
   const server = await vitePreview({ base, languageServices, outputDir, open: true })
 

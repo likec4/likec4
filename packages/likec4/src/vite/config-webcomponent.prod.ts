@@ -1,15 +1,15 @@
-import { createLikeC4Logger } from '@/logger'
 import { resolve } from 'node:path'
+import { createLikeC4Logger } from '../logger'
 
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
-import type { LanguageServices } from '../language-services'
+import type { LikeC4 } from '../LikeC4'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, JsBanners, viteAppRoot } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
   webcomponentPrefix: string | undefined
-  languageServices: LanguageServices
+  languageServices: LikeC4
   outDir: string
   base: string
   filename?: string

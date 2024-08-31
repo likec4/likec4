@@ -1,4 +1,4 @@
-import { delay } from '@likec4/core/utils'
+import { delay } from '@likec4/core'
 import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'

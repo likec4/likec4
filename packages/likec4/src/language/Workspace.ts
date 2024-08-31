@@ -11,18 +11,12 @@ export class CliWorkspace {
   constructor(private services: CliServices) {
   }
 
-  async init(workspacePath: string): Promise<void> {
+  async initForWorkspace(workspacePath: string): Promise<void> {
     if (this.isInitialized) {
       throw new Error('Workspace already initialized')
     }
-    this.isInitialized = true
     const logger = this.services.logger
-    const modelBuilder = this.services.likec4.ModelBuilder
-    const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
-
     const WorkspaceManager = this.services.shared.workspace.WorkspaceManager
-    const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
-
     logger.info(`${k.dim('workspace:')} ${workspacePath}`)
     await WorkspaceManager.initializeWorkspace([
       {
@@ -30,6 +24,19 @@ export class CliWorkspace {
         uri: pathToFileURL(workspacePath).toString()
       }
     ])
+    return await this.init()
+  }
+
+  async init() {
+    if (this.isInitialized) {
+      throw new Error('Workspace already initialized')
+    }
+    this.isInitialized = true
+    const logger = this.services.logger
+    const modelBuilder = this.services.likec4.ModelBuilder
+    const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
+    const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
+
     const documents = LangiumDocuments.all.toArray()
     if (documents.length === 0) {
       logger.error(`no LikeC4 sources found`)
@@ -49,10 +56,6 @@ export class CliWorkspace {
     }
 
     logger.info(`${k.dim('workspace:')} ${k.green(`✓ computed ${viewsCount} views`)}`)
-
-    if (viewsCount < 5) {
-      return
-    }
 
     const diagrams = await this.services.likec4.Views.diagrams()
     if (diagrams.length === viewsCount) {

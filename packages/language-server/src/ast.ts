@@ -1,11 +1,4 @@
-import {
-  type c4,
-  DefaultArrowType,
-  DefaultLineStyle,
-  DefaultRelationshipColor,
-  nonexhaustive,
-  RelationRefError
-} from '@likec4/core'
+import { type c4, DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
@@ -317,12 +310,12 @@ export function resolveRelationPoints(node: ast.Relation): {
 } {
   const target = elementRef(node.target)
   if (!target) {
-    throw new RelationRefError('Invalid reference to target')
+    throw new Error('RelationRefError: Invalid reference to target')
   }
   if (isDefined(node.source)) {
     const source = elementRef(node.source)
     if (!source) {
-      throw new RelationRefError('Invalid reference to source')
+      throw new Error('RelationRefError: Invalid reference to source')
     }
     return {
       source,
@@ -330,7 +323,7 @@ export function resolveRelationPoints(node: ast.Relation): {
     }
   }
   if (!ast.isElementBody(node.$container)) {
-    throw new RelationRefError('Invalid container for sourceless relation')
+    throw new Error('RelationRefError: Invalid container for sourceless relation')
   }
   return {
     source: node.$container.$container,

@@ -136,7 +136,15 @@ export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 
   const likec4 = inject(modules)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
-  likec4.Rpc.init()
+
+  if (!context.connection) {
+    // We don't run inside a language server
+    // Therefore, initialize the configuration provider instantly
+    shared.workspace.ConfigurationProvider.initialized({})
+  } else {
+    likec4.Rpc.init()
+  }
+
   return { shared, likec4 }
 }
 
@@ -164,7 +172,15 @@ export function createLanguageServices(context: LanguageServicesContext = {}): {
   const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
-  likec4.Rpc.init()
+
+  if (!context.connection) {
+    // We don't run inside a language server
+    // Therefore, initialize the configuration provider instantly
+    shared.workspace.ConfigurationProvider.initialized({})
+  } else {
+    likec4.Rpc.init()
+  }
+
   return { shared, likec4 }
 }
 

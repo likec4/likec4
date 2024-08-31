@@ -1,8 +1,8 @@
+import { LikeC4 } from '@/LikeC4'
 import { mkdir } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
 import k from 'tinyrainbow'
-import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 import { writeSources } from './write-sources'
 
@@ -18,7 +18,10 @@ type HandlerParams = {
 export async function reactNexthandler({ path, useDotBin, outdir }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer()
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.initForWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   logger.info(`${k.dim('format')} ${k.green('react-next')}`)
 

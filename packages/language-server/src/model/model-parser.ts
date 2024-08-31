@@ -1,4 +1,4 @@
-import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { type c4, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
 import { filter, flatMap, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
@@ -67,7 +67,7 @@ export class LikeC4ModelParser {
       try {
         result.push(this.parseLikeC4Document(doc))
       } catch (cause) {
-        logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
+        logError(new Error(`Error parsing document ${doc.uri.toString()}`, { cause }))
       }
     }
     return result

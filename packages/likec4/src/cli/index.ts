@@ -6,7 +6,7 @@ import { clamp } from 'remeda'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import pkg from '../../package.json' assert { type: 'json' }
+import pkg from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
 import codegenCmd from './codegen'
 import exportCmd from './export'

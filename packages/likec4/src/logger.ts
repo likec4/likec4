@@ -49,7 +49,13 @@ export function createLikeC4Logger(prefix: string) {
     }
   }
 }
-export type Logger = ReturnType<typeof createLikeC4Logger>
+export type ViteLogger = ReturnType<typeof createLikeC4Logger>
+
+export type Logger = {
+  info(msg: string): void
+  warn(msg: string): void
+  error(err: unknown): void
+}
 
 const NS_PER_MS = 1e6
 

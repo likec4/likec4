@@ -88,10 +88,14 @@
     "cli:build": "tsx src/cli/index.ts build -o dev/dist dev",
     "cli:preview": "tsx src/cli/index.ts preview -o dev/dist dev",
     "cli:export": "tsx src/cli/index.ts export png -o dev/export dev",
-    "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
+    "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev",
+    "test": "vitest run --no-isolate",
+    "vitest:ui": "vitest --no-isolate --ui",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "1.2.0",
+    "@likec4/core": "workspace:*",
     "@nanostores/react": "0.7.3",
     "@vitejs/plugin-react": "4.3.1",
     "nanostores": "0.11.3",
@@ -134,6 +138,7 @@
     "ci-info": "^3.9.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
+    "defu": "^6.1.4",
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.14.0",
     "esm-env": "^1.0.0",
