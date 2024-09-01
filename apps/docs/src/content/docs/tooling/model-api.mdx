@@ -1,0 +1,209 @@
+---
+title: LikeC4 Model API
+description: How to access and traverse your architecture model programmatically.
+head:
+  - tag: title
+    content: LikeC4 Model API
+sidebar:
+  label: LikeC4 API
+  order: 3
+  badge:
+    text: new
+    variant: caution
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 5    
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+You can access and traverse your architecture model programmatically using the LikeC4 Model API.
+
+<Aside type='note'>
+API allows to query and traverse the model from DSL, but not to modify or create a new one.
+</Aside>
+
+Ensure you have `likec4` in your dependencies:
+
+```sh
+npm add likec4
+```
+
+### Usage
+
+You can initiate Model API from a directory with source files or from a string with DSL source.
+
+#### From workspace
+
+Recursively searches and parses source files from the wokrkspace directory:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('path to workspace')
+```  
+
+Method also accepts optional properties:
+
+| Property         | Description                                                                                         |
+| -----------------| --------------------------------------------------------------------------------------------------- |
+| `throwIfInvalid` | boolean, If true, initialization will return rejected promise (default `false`) |
+| `logger`         | Whenever to use `vite` logger, `default` (console) or custom implementation  |
+| `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
+
+<Aside type='caution' title="In progress" >
+  Watch mode is not implemented yet  
+  It is possible to notify about changes in the workspace via `likec4.notifyUpdate()` method.
+</Aside>
+
+#### From source
+
+Parses the model from the string:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`
+  specification {
+    element system
+    element user
+  }
+  model {
+    customer = user 'Customer'
+    cloud = system 'System'
+  }
+  views {
+    view index {
+      include *
+    }
+  }
+`)
+```
+
+### API
+
+When the model is initialized, you can use the following methods to query and traverse it.
+
+#### Example
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+
+const model = likec4.model()
+
+model
+  .element('cloud.backend.api')
+  .incoming() // relationships incoming to the element
+  .filter(r => r.tags.includes('http')) // filter by tags
+  .map(r => r.source) // get source elements
+
+
+```  
+
+
+#### LikeC4Model
+
+This API provides methods to query and traverse the whole model.
+
+```ts
+interface LikeC4Model {
+  /**
+   * Returns the root elements of the model.
+   */
+  roots(): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Returns all elements in the model.
+   */
+  elements(): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Returns a specific element by its FQN.
+   */
+  element(id: Fqn): LikeC4Model.Element;
+  /**
+   * Returns all relationships in the model.
+   */
+  relationships(): ReadonlyArray<LikeC4Model.Relationship>;
+  /**
+   * Returns a specific relationship by its ID.
+   */
+  relationship(id: RelationID): LikeC4Model.Relationship;
+  /**
+   * Returns all views in the model.
+   */
+  views(): ReadonlyArray<LikeC4ViewModel>;
+  /**
+   * Returns a specific view by its ID.
+   */
+  view(viewId: ViewID): LikeC4ViewModel;
+  /**
+   * Returns the parent element of a given element.
+   */
+  parent(element: ElementOrFqn): LikeC4Model.Element | null;
+  children(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Get all sibling (i.e. same parent)
+   */
+  siblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+   * (from closest to root)
+   */
+  ancestors(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Get all descendant elements (i.e. children, children’s children, etc.)
+   */
+  descendants(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Incoming relationships to the element and its descendants
+   * @param onlyDirect - only direct incoming relationships, ignore descendants
+   */
+  incoming(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): ReadonlyArray<LikeC4Model.Relationship>;
+  /**
+   * Source elements of incoming relationships
+   */
+  incomers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Outgoing relationships from the element and its descendants
+   */
+  outgoing(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): ReadonlyArray<LikeC4Model.Relationship>;
+  /**
+   * Target elements of outgoing relationships
+   */
+  outgoers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Relationships inside the element, among descendants
+   */
+  internal(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Relationship>;
+  /**
+   * Resolve siblings of the element and its ancestors
+   *  (from closest to root)
+   */
+  ascendingSiblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  /**
+   * Resolve all views that contain the element
+   */
+  viewsWithElement(element: ElementOrFqn): ReadonlyArray<LikeC4ViewModel>;
+}
+```
+
+##### Element
+
+...
+
+##### Relationship
+
+...
+
+#### LikeC4ViewModel
+
+...
+
+##### Element
+
+...
+
+##### Connection
+
+...
