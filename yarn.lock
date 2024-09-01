@@ -2194,7 +2194,6 @@ __metadata:
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@total-typescript/ts-reset": "npm:^0.5.1"
     execa: "npm:^9.3.1"
     remeda: "npm:^2.11.0"
     type-fest: "npm:^4.21.0"
