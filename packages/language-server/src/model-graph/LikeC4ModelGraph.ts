@@ -64,11 +64,11 @@ export class LikeC4ModelGraph {
     }
   }
 
-  get rootElements(): ReadonlyArray<Element> {
+  get rootElements(): Array<Element> {
     return [...this.#rootElements]
   }
 
-  get elements(): ReadonlyArray<Element> {
+  get elements(): Array<Element> {
     return [...this.#elements.values()]
   }
 
@@ -82,18 +82,18 @@ export class LikeC4ModelGraph {
     return [...this._incomingTo(id), ...this._outgoingFrom(id), ...this._internalOf(id)]
   }
 
-  public children(id: Fqn): ReadonlyArray<Element> {
+  public children(id: Fqn): Array<Element> {
     return this._childrenOf(id).slice()
   }
 
   // Get children or element itself if no children
-  public childrenOrElement(id: Fqn): ReadonlyArray<Element> {
+  public childrenOrElement(id: Fqn): Array<Element> {
     const children = this.children(id)
     return children.length > 0 ? children : [this.element(id)]
   }
 
   // Get all sibling (i.e. same parent)
-  public siblings(element: Fqn | Element): ReadonlyArray<Element> {
+  public siblings(element: Fqn | Element): Array<Element> {
     const id = isString(element) ? element : element.id
     const parent = parentFqn(id)
     const siblings = parent ? this._childrenOf(parent) : this.rootElements
@@ -104,7 +104,7 @@ export class LikeC4ModelGraph {
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public ancestors(element: Fqn | Element): ReadonlyArray<Element> {
+  public ancestors(element: Fqn | Element): Array<Element> {
     let id = isString(element) ? element : element.id
     const result = [] as Element[]
     let parent
@@ -112,14 +112,14 @@ export class LikeC4ModelGraph {
       result.push(parent)
       id = parent.id
     }
-    return result as ReadonlyArray<Element>
+    return result as Array<Element>
   }
 
   /**
    * Resolve siblings of the element and its ancestors
    *  (from closest to root)
    */
-  public ascendingSiblings(element: Fqn | Element): ReadonlyArray<Element> {
+  public ascendingSiblings(element: Fqn | Element): Array<Element> {
     const id = isString(element) ? element : element.id
     let siblings = this.#cacheAscendingSiblings.get(id)
     if (!siblings) {
@@ -135,7 +135,7 @@ export class LikeC4ModelGraph {
   /**
    * Resolve all RelationEdges between element and others (any direction)
    */
-  public anyEdgesBetween(_element: Fqn | Element, others: Fqn[] | Element[]): ReadonlyArray<RelationEdge> {
+  public anyEdgesBetween(_element: Fqn | Element, others: Fqn[] | Element[]): Array<RelationEdge> {
     if (others.length === 0) {
       return []
     }
@@ -183,7 +183,7 @@ export class LikeC4ModelGraph {
   /**
    * Resolve all RelationEdges between elements (any direction)
    */
-  public edgesWithin<T extends Fqn[] | Element[]>(elements: T): ReadonlyArray<RelationEdge> {
+  public edgesWithin<T extends Fqn[] | Element[]>(elements: T): Array<RelationEdge> {
     if (elements.length < 2) {
       return []
     }
