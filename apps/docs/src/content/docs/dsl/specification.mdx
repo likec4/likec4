@@ -64,6 +64,23 @@ specification {
 }
 ```
 
+### Color
+
+Custom colors could be defined to extend built in themes. Being defined in specification they could be used later along with the theme colors.
+
+```likec4
+specification {
+  color custom-color #808
+  color another-color #440
+
+  element person {
+    style {
+      color custom-color
+    }
+  }
+}
+``` 
+
 {/*
 
 #### Color
