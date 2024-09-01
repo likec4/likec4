@@ -32,7 +32,7 @@ RelationshipKind:
   name=Id;
 
 CustomColor:
-  name=Id;
+  name=CustomColorId;
 
 SpecificationRule:
   name='specification' '{'
@@ -454,7 +454,7 @@ NavigateToProperty:
 LinkProperty:
   key='link' ':'? value=Uri title=String? ';'?;
 ColorProperty:
-  key='color' ':'? (themeColor=ThemeColor | customColor=[CustomColor:Id]) ';'?;
+  key='color' ':'? (themeColor=ThemeColor | customColor=[CustomColor:CustomColorId]) ';'?;
 
 OpacityProperty:
   key='opacity' ':'? value=Percent ';'?;
@@ -535,8 +535,14 @@ TagId returns string:
 DotId returns string:
   Dot Id;
 
+CustomColorId returns string:
+  IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
+
+// Used to be like bellow but it was ambiguos with CustomColorId rule
+// Id returns string:
+//  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model'
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
+  CustomColorId | ThemeColor;
 
 fragment EqOperator:
   (
