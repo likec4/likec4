@@ -1,5 +1,3 @@
-import { LikeC4 } from '@/LikeC4'
-import { createLikeC4Logger, startTimer } from '@/logger'
 import { viteReactConfig } from '@/vite/config-react'
 import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
@@ -9,6 +7,8 @@ import { cwd } from 'node:process'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
+import { LikeC4 } from '../../../LikeC4'
+import { createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
   /**

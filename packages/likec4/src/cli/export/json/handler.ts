@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LikeC4 } from '@/LikeC4'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative } from 'node:path'
 import k from 'tinyrainbow'
+import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
@@ -26,7 +26,7 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
     graphviz: useDotBin ? 'binary' : 'wasm'
   })
 
-  const model = await languageServices.builder.buildComputedModel()
+  const model = await languageServices.buildComputedModel()
   if (!model) {
     logger.warn('no model parsed')
     throw new Error('no model parsed')

@@ -7,7 +7,7 @@ import {
   type ScopedElementView,
   type ViewID
 } from '@likec4/core'
-import type * as c4 from '@likec4/core/types'
+import type * as c4 from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'

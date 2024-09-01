@@ -8,12 +8,14 @@ export default defineBuildConfig({
   rollup: {
     inlineDependencies: true,
     commonjs: {
-      transformMixedEsModules: true,
       exclude: [
         /\.d\.ts$/,
         /\.d\.cts$/,
         /\.d\.mts$/
       ]
+    },
+    output: {
+      hoistTransitiveImports: false
     },
     dts: {
       respectExternal: true,

@@ -6,7 +6,6 @@ export default defineBuildConfig({
   clean: isProduction,
   stub: !isProduction,
   rollup: {
-    inlineDependencies: true,
     commonjs: {
       transformMixedEsModules: true,
       exclude: [
@@ -15,6 +14,10 @@ export default defineBuildConfig({
         /\.d\.mts$/
       ]
     },
+    output: {
+      hoistTransitiveImports: false
+    },
+    inlineDependencies: true,
     dts: {
       respectExternal: true,
       compilerOptions: {

@@ -20,8 +20,8 @@
   "bin": "./bin/likec4.mjs",
   "exports": {
     ".": {
-      "types": "./app/react/components/index.ts",
-      "default": "./dist/__app__/react/components.mjs"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.mjs"
     },
     "./react": {
       "types": "./app/react/components/index.ts",
@@ -41,8 +41,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./react/index.d.ts",
-        "default": "./react/index.mjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
       },
       "./react": {
         "types": "./react/index.d.ts",
@@ -64,7 +64,7 @@
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.json",
     "typecheck": "run 'typecheck:cli' && run 'typecheck:app'",
     "prebuild": "tsx scripts/prebuild.ts",
-    "build:cli": "tsx scripts/build-cli.ts",
+    "build:cli": "unbuild",
     "build:app": "tsx scripts/bundle-app.ts",
     "build:react": "tsx scripts/bundle-react.ts",
     "build:webcomponent": "tsx scripts/bundle-webcomponent.ts",
@@ -95,7 +95,6 @@
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "1.2.0",
-    "@likec4/core": "workspace:*",
     "@nanostores/react": "0.7.3",
     "@vitejs/plugin-react": "4.3.1",
     "nanostores": "0.11.3",
@@ -169,6 +168,7 @@
     "type-fest": "^4.21.0",
     "typescript": "^5.5.4",
     "ufo": "^1.5.4",
+    "unbuild": "^3.0.0-rc.7",
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-shadow-style": "^1.1.1",
     "vitest": "~2.0.5"

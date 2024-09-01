@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { resolveServerUrl } from '@/vite/printServerUrls'
 import { type DiagramView, hasAtLeast, type NonEmptyArray } from '@likec4/core'
 import { hrtime } from 'node:process'
 import { chromium } from 'playwright'
@@ -7,6 +6,7 @@ import k from 'tinyrainbow'
 import type { ViteDevServer } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, inMillis, type Logger, type ViteLogger } from '../../../logger'
+import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
 import { takeScreenshot } from './takeScreenshot'
 

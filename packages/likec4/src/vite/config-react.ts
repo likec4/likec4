@@ -1,4 +1,3 @@
-import { createLikeC4Logger } from '@/logger'
 import { consola } from '@likec4/log'
 import react from '@vitejs/plugin-react'
 import { existsSync } from 'node:fs'
@@ -6,6 +5,7 @@ import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
+import { createLikeC4Logger } from '../logger'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, JsBanners } from './utils'
 

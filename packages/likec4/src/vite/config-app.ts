@@ -14,6 +14,8 @@ import type { LikeC4ViteConfig } from './config-app.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
 
+export type { LikeC4ViteConfig }
+
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
   const useOverviewGraph = cfg?.useOverviewGraph === true

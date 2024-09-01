@@ -1,4 +1,4 @@
-import type { LikeC4Services, LikeC4SharedServices } from '@likec4/language-server'
+import type { LikeC4Services } from '@likec4/language-server'
 import { createCustomLanguageServices, setLogLevel } from '@likec4/language-server'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'

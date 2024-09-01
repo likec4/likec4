@@ -1,6 +1,4 @@
-import { LikeC4 } from '@/LikeC4'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
-import { mkTempPublicDir } from '@/vite/utils'
 import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
@@ -10,7 +8,9 @@ import { hasAtLeast } from 'remeda'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
+import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../../logger'
+import { mkTempPublicDir } from '../../../vite/utils'
 
 type HandlerParams = {
   /**

@@ -1,5 +1,4 @@
 import { LikeC4Model, type ParsedLikeC4Model } from '@likec4/core'
-import type { LikeC4ModelBuilder } from '@likec4/language-server'
 import { type LangiumDocuments, URI, UriUtils } from 'langium'
 import { resolve } from 'node:path'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
@@ -68,7 +67,6 @@ export class LikeC4 {
   private langiumDocuments: LangiumDocuments
 
   public readonly views: Views
-  public readonly builder: LikeC4ModelBuilder
 
   private constructor(
     public readonly workspace: string,
@@ -77,17 +75,20 @@ export class LikeC4 {
     this.logger = langium.logger
     this.langiumDocuments = langium.shared.workspace.LangiumDocuments
     this.views = langium.likec4.Views
-    this.builder = langium.likec4.ModelBuilder
+  }
+
+  async buildComputedModel() {
+    return await this.langium.likec4.ModelBuilder.buildComputedModel()
   }
 
   model() {
-    const parsedModel = this.builder.syncBuildModel()
+    const parsedModel = this.langium.likec4.ModelBuilder.syncBuildModel()
     if (!parsedModel) {
       throw new Error('Failed to build model')
     }
     let model = this.cache.get(parsedModel)
     if (!model) {
-      const computedModel = this.builder.syncBuildComputedModel(parsedModel)
+      const computedModel = this.langium.likec4.ModelBuilder.syncBuildComputedModel(parsedModel)
       model = LikeC4Model.from(computedModel)
       this.cache.set(parsedModel, model)
     }
@@ -99,8 +100,9 @@ export class LikeC4 {
     return docs.flatMap(doc => {
       return (doc.diagnostics ?? [])
         .filter(d => d.severity === DiagnosticSeverity.Error)
-        .map(d => ({
-          ...d,
+        .map(({ message, range }) => ({
+          message,
+          range,
           sourceFsPath: doc.uri.fsPath
         }))
     })
@@ -136,7 +138,7 @@ export class LikeC4 {
   }
 
   onModelUpdate(listener: () => void) {
-    const sib = this.builder.onModelParsed(() => listener())
+    const sib = this.langium.likec4.ModelBuilder.onModelParsed(() => listener())
     return () => {
       sib.dispose()
     }

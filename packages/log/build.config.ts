@@ -2,6 +2,13 @@ import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
   rollup: {
+    commonjs: {
+      exclude: [
+        /\.d\.ts$/,
+        /\.d\.cts$/,
+        /\.d\.mts$/
+      ]
+    },
     inlineDependencies: true
   }
   // hooks: {

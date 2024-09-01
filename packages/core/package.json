@@ -63,13 +63,13 @@
     "access": "public"
   },
   "dependencies": {
-    "remeda": "^2.11.0",
     "type-fest": "^4.21.0"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@total-typescript/ts-reset": "^0.5.1",
     "execa": "^9.3.1",
+    "remeda": "^2.11.0",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",
     "vitest": "~2.0.5"

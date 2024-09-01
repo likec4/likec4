@@ -1,5 +1,5 @@
 import { hasAtLeast, invariant } from '@likec4/core'
-import type { DiagramEdge, Point } from '@likec4/core/types'
+import type { DiagramEdge, Point } from '@likec4/core'
 import type { Rect, XYPosition } from '@xyflow/react'
 import { Bezier } from 'bezier-js'
 import { isArray } from 'remeda'

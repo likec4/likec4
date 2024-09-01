@@ -1,11 +1,11 @@
 /// <reference lib="DOM" />
-import type { ViteLogger } from '@/logger'
 import type { DiagramView, NonEmptyArray } from '@likec4/core'
 import { resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import type { BrowserContext, Page } from 'playwright'
 import { clamp, isTruthy } from 'remeda'
 import k from 'tinyrainbow'
+import type { ViteLogger } from '../../../logger'
 
 type TakeScreenshotParams = {
   browserContext: BrowserContext

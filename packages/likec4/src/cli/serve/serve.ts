@@ -1,14 +1,14 @@
-import { exportViewsToPNG } from '@/cli/export/png/handler'
-import { LikeC4 } from '@/LikeC4'
-import { createLikeC4Logger } from '@/logger'
-import { printServerUrls, resolveServerUrl } from '@/vite/printServerUrls'
-import { viteDev } from '@/vite/vite-dev'
 import { delay } from '@likec4/core'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
+import { exportViewsToPNG } from '../../cli/export/png/handler'
+import { LikeC4 } from '../../LikeC4'
+import { createLikeC4Logger } from '../../logger'
+import { printServerUrls, resolveServerUrl } from '../../vite/printServerUrls'
+import { viteDev } from '../../vite/vite-dev'
 
 type HandlerParams = {
   /**
