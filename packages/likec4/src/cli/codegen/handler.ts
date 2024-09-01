@@ -141,7 +141,7 @@ async function multipleFilesCodegenAction(
 export async function reactLegacyHandler({ path, useDotBin, ...outparams }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LikeC4.initForWorkspace(path, {
+  const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm'
   })

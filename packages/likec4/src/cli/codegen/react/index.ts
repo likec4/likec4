@@ -22,7 +22,7 @@ type HandlerParams = {
 export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LikeC4.initForWorkspace(path, {
+  const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
     graphviz: useDotBin ? 'binary' : 'wasm'
   })

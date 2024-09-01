@@ -3,7 +3,7 @@ import { LikeC4 } from './LikeC4'
 
 describe('LikeC4', () => {
   it('should parse single source', async () => {
-    const likec4 = await LikeC4.initForSource(`
+    const likec4 = await LikeC4.fromSource(`
       specification {
         element component
         element user {

@@ -8,8 +8,27 @@ import type { Logger } from './logger'
 
 type LikeC4Langium = ReturnType<typeof createLanguageServices>
 
+type LikeC4Options = {
+  /**
+   * If true, initialization will return rejected promise with the LikeC4 instance.
+   * Use `likec4.getErrors()` to get the errors.
+   * @default false
+   */
+  throwIfInvalid?: boolean
+  /**
+   * Logger to use for the language service.
+   * @default 'default'
+   */
+  logger?: Logger | 'vite' | 'default'
+  /**
+   * Whether to use the `dot` binary for layouting or the WebAssembly version.
+   * @default 'wasm'
+   */
+  graphviz?: 'wasm' | 'binary'
+}
+
 export class LikeC4 {
-  static async initForSource(likec4SourceCode: string, opts?: CreateLanguageServiceOptions) {
+  static async fromSource(likec4SourceCode: string, opts?: LikeC4Options) {
     const langium = createLanguageServices({
       useFileSystem: false,
       ...opts
@@ -35,7 +54,13 @@ export class LikeC4 {
 
     await langium.cli.Workspace.init()
 
-    return new LikeC4(workspaceUri.path, langium)
+    const likec4 = new LikeC4(workspaceUri.path, langium)
+
+    if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
+      return Promise.reject(likec4)
+    }
+
+    return likec4
   }
 
   /**
@@ -43,7 +68,7 @@ export class LikeC4 {
    */
   private static likec4Instances = new Map<string, LikeC4>()
 
-  static async initForWorkspace(path: string, opts?: CreateLanguageServiceOptions) {
+  static async fromWorkspace(path: string, opts?: LikeC4Options) {
     const workspace = resolve(path)
     let likec4 = LikeC4.likec4Instances.get(workspace)
     if (!likec4) {
@@ -53,11 +78,14 @@ export class LikeC4 {
       })
 
       await langium.cli.Workspace.initForWorkspace(workspace)
-
       likec4 = new LikeC4(workspace, langium)
-
       LikeC4.likec4Instances.set(workspace, likec4)
     }
+
+    if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
+      return Promise.reject(likec4)
+    }
+
     return likec4
   }
 

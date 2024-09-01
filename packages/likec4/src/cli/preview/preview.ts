@@ -23,7 +23,7 @@ export async function handler({
   output: outputDir,
   base
 }: HandlerParams) {
-  const languageServices = await LikeC4.initForWorkspace(path, {
+  const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite'
   })
 

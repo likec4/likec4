@@ -40,7 +40,7 @@ export async function handler({
   useOverview = false,
   base
 }: HandlerParams) {
-  const languageServices = await LikeC4.initForWorkspace(path, {
+  const languageServices = await LikeC4.fromWorkspace(path, {
     graphviz: useDotBin ? 'binary' : 'wasm'
   })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))

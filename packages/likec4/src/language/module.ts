@@ -54,11 +54,12 @@ export type CreateLanguageServiceOptions = {
   useFileSystem?: boolean
   /**
    * Logger to use for the language service.
+   * @default 'default'
    */
   logger?: Logger | 'vite' | 'default'
   /**
    * Whether to use the `dot` binary for layouting or the WebAssembly version.
-   * Default is `wasm`.
+   * @default 'wasm'
    */
   graphviz?: 'wasm' | 'binary'
 }

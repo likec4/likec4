@@ -3,8 +3,8 @@ import { nonNullable } from '../errors'
 import type * as c4 from '../types'
 import { DefaultElementShape, DefaultThemeColor } from '../types/element'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
+import { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { Fqn, RelationID, ViewID } from './types'
-import { ViewModel } from './view/ViewModel'
 
 const RelationsSet = Set<LikeC4Model.Relationship>
 const MapRelations = Map<Fqn, Set<LikeC4Model.Relationship>>
@@ -35,7 +35,7 @@ export class LikeC4Model {
 
   #cacheAscendingSiblings = new Map<Fqn, LikeC4Model.Element[]>()
 
-  #views: Map<ViewID, ViewModel>
+  #views: Map<ViewID, LikeC4ViewModel>
 
   static from(computed: c4.ComputedLikeC4Model): LikeC4Model {
     return new LikeC4Model(computed)
@@ -49,7 +49,7 @@ export class LikeC4Model {
       this.addRelation(rel)
     }
     this.#views = new Map(
-      values(computed.views).map(v => [v.id, new ViewModel(v, this)])
+      values(computed.views).map(v => [v.id, new LikeC4ViewModel(v, this)])
     )
   }
 
@@ -91,14 +91,14 @@ export class LikeC4Model {
   /**
    * Returns all views in the model.
    */
-  public views(): ReadonlyArray<ViewModel> {
+  public views(): ReadonlyArray<LikeC4ViewModel> {
     return [...this.#views.values()]
   }
 
   /**
    * Returns a specific view by its ID.
    */
-  public view(viewId: ViewID): ViewModel {
+  public view(viewId: ViewID): LikeC4ViewModel {
     return nonNullable(this.#views.get(viewId), `View ${viewId} not found`)
   }
 
@@ -151,7 +151,6 @@ export class LikeC4Model {
 
   /**
    * Incoming relationships to the element and its descendants
-   * @param onlyDirect - only direct incoming relationships, ignore descendants
    */
   public incoming(
     element: ElementOrFqn,
@@ -239,7 +238,7 @@ export class LikeC4Model {
   /**
    * Resolve all views that contain the element
    */
-  public viewsWithElement(element: ElementOrFqn): ReadonlyArray<ViewModel> {
+  public viewsWithElement(element: ElementOrFqn): ReadonlyArray<LikeC4ViewModel> {
     const id = isString(element) ? element : element.id
     return [...this.#views.values()].filter(v => v.hasElement(id))
   }
