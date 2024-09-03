@@ -26,6 +26,19 @@ describe('LikeC4Model', () => {
     expect(children.map(prop('id'))).toEqual(['cloud.backend.graphql', 'cloud.backend.storage'])
   })
 
+  it('ancestors in right order', () => {
+    const ancestors = model.element('cloud.frontend.dashboard').ancestors()
+    expect(ancestors).toHaveLength(2)
+    expect(ancestors[0]).toMatchObject({
+      id: 'cloud.frontend',
+      element: fakeElements['cloud.frontend']
+    })
+    expect(ancestors[1]).toMatchObject({
+      id: 'cloud',
+      element: fakeElements['cloud']
+    })
+  })
+
   it('siblings of root', () => {
     const siblings = model.element('cloud').siblings()
     expect(siblings.map(prop('id'))).toEqual([
@@ -44,7 +57,23 @@ describe('LikeC4Model', () => {
     expect(siblings.map(prop('id'))).toEqual(['cloud.frontend'])
   })
 
+  it('descendants in right order', () => {
+    const descendants = model.element('cloud').descendants().map(prop('id'))
+    expect(descendants).toEqual([
+      'cloud.backend',
+      'cloud.backend.graphql',
+      'cloud.backend.storage',
+      'cloud.frontend',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard'
+    ])
+  })
+
   it('internal relations', () => {
-    model.internal('cloud.backend')
+    expect(
+      model.internal('cloud.backend').map(prop('id'))
+    ).toEqual([
+      'cloud.backend.graphql:cloud.backend.storage'
+    ])
   })
 })
