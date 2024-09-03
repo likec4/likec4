@@ -1,4 +1,4 @@
-import type { ComputedView } from '@likec4/core/types'
+import type { ComputedView } from '@likec4/core'
 import objectHash from 'object-hash'
 import { isTruthy, map, mapToObj, pick, pipe } from 'remeda'
 import type { SetOptional } from 'type-fest'

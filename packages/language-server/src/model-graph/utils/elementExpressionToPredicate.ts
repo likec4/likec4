@@ -1,5 +1,5 @@
 import { Expr, nonexhaustive, parentFqn } from '@likec4/core'
-import { type Element, whereOperatorAsPredicate } from '@likec4/core/types'
+import { type Element, whereOperatorAsPredicate } from '@likec4/core'
 import { isNullish } from 'remeda'
 
 type Predicate<T> = (x: T) => boolean

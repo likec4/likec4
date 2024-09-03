@@ -2,6 +2,7 @@ import consola from 'consola'
 import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
 import { writeFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import { env } from 'node:process'
 import { amIExecuted } from './_utils'
 
@@ -24,12 +25,16 @@ export async function buildCli(isDev = !isProd) {
     },
     color: true,
     bundle: true,
+    splitting: true,
     sourcemap: isDev,
     keepNames: false,
     minify: true,
     treeShaking: true,
     legalComments: 'none',
-    entryPoints: ['src/cli/index.ts'],
+    entryPoints: [
+      'src/cli/index.ts',
+      'src/index.ts'
+    ],
     ...(!isDev && {
       define: {
         'process.env.NODE_ENV': '"production"'
@@ -39,6 +44,9 @@ export async function buildCli(isDev = !isProd) {
     target: 'node20',
     platform: 'node',
     alias: {
+      '@likec4/core/model': resolve('../core/src/model/index.ts'),
+      '@likec4/core/types': resolve('../core/src/types/index.ts'),
+      '@likec4/core': resolve('../core/src/index.ts'),
       '@/vite/config-app': '@/vite/config-app.prod',
       '@/vite/config-react': '@/vite/config-react.prod',
       '@/vite/config-webcomponent': '@/vite/config-webcomponent.prod'
@@ -53,7 +61,10 @@ const require = createRequire_(import.meta.url);
       nodeExternalsPlugin({
         dependencies: true,
         optionalDependencies: true,
-        devDependencies: false
+        devDependencies: false,
+        allowList: [
+          '@likec4/core'
+        ]
       })
     ]
   }
@@ -78,7 +89,7 @@ const require = createRequire_(import.meta.url);
     process.exit(1)
   }
   if (bundle.metafile) {
-    await writeFile('dist/cli/metafile.json', JSON.stringify(bundle.metafile))
+    await writeFile('dist/metafile.json', JSON.stringify(bundle.metafile))
   }
 }
 

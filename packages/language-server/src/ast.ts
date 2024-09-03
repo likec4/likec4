@@ -1,11 +1,5 @@
-import {
-  type c4,
-  DefaultArrowType,
-  DefaultLineStyle,
-  DefaultRelationshipColor,
-  nonexhaustive,
-  RelationRefError
-} from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
+import type * as c4 from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
@@ -42,7 +36,8 @@ type ParsedElementStyle = {
 }
 
 export interface ParsedAstSpecification {
-  kinds: Record<c4.ElementKind, {
+  tags: Set<c4.Tag>
+  elements: Record<c4.ElementKind, {
     technology?: string
     notation?: string
     style: ParsedElementStyle
@@ -181,7 +176,8 @@ export interface ParsedLikeC4LangiumDocument
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
     c4Specification: {
-      kinds: {},
+      tags: new Set(),
+      elements: {},
       relationships: {}
     },
     c4Elements: [],
@@ -279,8 +275,9 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   }
 }
 export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
+export type IsValidFn = ChecksFromDiagnostics['isValid']
 
-export function* streamModel(doc: LikeC4LangiumDocument, isValid: ChecksFromDiagnostics['isValid']) {
+export function* streamModel(doc: LikeC4LangiumDocument, isValid: IsValidFn) {
   const traverseStack = doc.parseResult.value.models.flatMap(m => (isValid(m) ? m.elements : []))
   const relations = [] as ast.Relation[]
   let el
@@ -299,13 +296,7 @@ export function* streamModel(doc: LikeC4LangiumDocument, isValid: ChecksFromDiag
       continue
     }
     if (el.body && el.body.elements.length > 0) {
-      for (const nested of el.body.elements) {
-        if (ast.isRelation(nested)) {
-          relations.push(nested)
-        } else {
-          traverseStack.push(nested)
-        }
-      }
+      traverseStack.push(...el.body.elements)
     }
     yield el
   }
@@ -320,12 +311,12 @@ export function resolveRelationPoints(node: ast.Relation): {
 } {
   const target = elementRef(node.target)
   if (!target) {
-    throw new RelationRefError('Invalid reference to target')
+    throw new Error('RelationRefError: Invalid reference to target')
   }
   if (isDefined(node.source)) {
     const source = elementRef(node.source)
     if (!source) {
-      throw new RelationRefError('Invalid reference to source')
+      throw new Error('RelationRefError: Invalid reference to source')
     }
     return {
       source,
@@ -333,7 +324,7 @@ export function resolveRelationPoints(node: ast.Relation): {
     }
   }
   if (!ast.isElementBody(node.$container)) {
-    throw new RelationRefError('Invalid container for sourceless relation')
+    throw new Error('RelationRefError: Invalid container for sourceless relation')
   }
   return {
     source: node.$container.$container,
@@ -346,12 +337,15 @@ export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number 
   return isNaN(opacity) ? 100 : clamp(opacity, { min: 0, max: 100 })
 }
 
-export function toElementStyle(props?: Array<ast.StyleProperty>) {
+export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isValid: IsValidFn) {
   const result = {} as ParsedElementStyle
   if (!props || props.length === 0) {
     return result
   }
   for (const prop of props) {
+    if (!isValid(prop)) {
+      continue
+    }
     switch (true) {
       case ast.isBorderProperty(prop): {
         if (isTruthy(prop.value)) {

@@ -2,7 +2,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative } from 'node:path'
 import k from 'tinyrainbow'
-import { LanguageServices } from '../../../language-services'
+import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
@@ -21,9 +21,12 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
 
   const timer = startTimer(logger)
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.fromWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
-  const model = await languageServices.model.buildComputedModel()
+  const model = await languageServices.buildComputedModel()
   if (!model) {
     logger.warn('no model parsed')
     throw new Error('no model parsed')

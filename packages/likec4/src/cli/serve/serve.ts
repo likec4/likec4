@@ -1,14 +1,14 @@
-import { exportViewsToPNG } from '@/cli/export/png/handler'
-import { LanguageServices } from '@/language-services'
-import { createLikeC4Logger } from '@/logger'
-import { printServerUrls, resolveServerUrl } from '@/vite/printServerUrls'
-import { viteDev } from '@/vite/vite-dev'
 import { delay } from '@likec4/core'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
+import { exportViewsToPNG } from '../../cli/export/png/handler'
+import { LikeC4 } from '../../LikeC4'
+import { createLikeC4Logger } from '../../logger'
+import { printServerUrls, resolveServerUrl } from '../../vite/printServerUrls'
+import { viteDev } from '../../vite/vite-dev'
 
 type HandlerParams = {
   /**
@@ -40,7 +40,9 @@ export async function handler({
   useOverview = false,
   base
 }: HandlerParams) {
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.fromWorkspace(path, {
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
   // await mkdir(likec4AssetsDir, { recursive: true })
@@ -84,7 +86,9 @@ export async function handler({
         outputType: 'flat'
       })
 
-      logger.warn(k.cyan(`Previews are not updated automatically, restart is required`))
+      await delay(1000)
+
+      logger.info(k.yellow(`Note: changes in sources do not trigger preview updates, restart is required`))
     } catch (error) {
       logger.error(k.red('Failed to generate previews'))
       logger.error(error)

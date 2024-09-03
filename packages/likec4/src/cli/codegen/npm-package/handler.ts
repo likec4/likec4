@@ -5,7 +5,7 @@ import { dirname, relative, resolve } from 'node:path'
 import { cwd as cwdFn } from 'node:process'
 import { packageUp as pkgUp, packageUpSync as pkgUpSync } from 'package-up'
 import k from 'tinyrainbow'
-import { LanguageServices } from '../../../language-services'
+import { LikeC4 } from '../../../LikeC4'
 import { startTimer } from '../../../logger'
 import { writeSources } from '../react-next/write-sources'
 import { writePackageJson } from './packageJson'
@@ -56,7 +56,10 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
   const cwd = cwdFn()
   const timer = startTimer()
 
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.fromWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   const diagrams = [...await languageServices.views.diagrams()]
   if (diagrams.length === 0) {

@@ -1,12 +1,13 @@
 import {
-  type c4,
   compareByFqnHierarchically,
+  compareRelations,
   isElementView,
   isScopedElementView,
   parentFqn,
   type ScopedElementView,
   type ViewID
 } from '@likec4/core'
+import type * as c4 from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
@@ -15,6 +16,8 @@ import {
   find,
   flatMap,
   forEach,
+  indexBy,
+  isNonNullish,
   isNullish,
   isNumber,
   isTruthy,
@@ -23,6 +26,7 @@ import {
   pipe,
   prop,
   reduce,
+  reverse,
   sort,
   values
 } from 'remeda'
@@ -40,26 +44,33 @@ import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils/printDocs'
 import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
 
-function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.LikeC4Model {
+function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
   const c4Specification: ParsedAstSpecification = {
-    kinds: {},
+    tags: new Set(),
+    elements: {},
     relationships: {}
   }
   forEach(map(docs, prop('c4Specification')), spec => {
-    Object.assign(c4Specification.kinds, spec.kinds)
+    spec.tags.forEach(t => c4Specification.tags.add(t))
+    Object.assign(c4Specification.elements, spec.elements)
     Object.assign(c4Specification.relationships, spec.relationships)
   })
   const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<c4.Link>) => {
-    return links.map(l => ({
-      url: services.lsp.DocumentLinkProvider.resolveLink(doc, l.url),
-      ...(l.title && { title: l.title })
-    })) as c4.NonEmptyArray<c4.Link>
+    try {
+      return links.map(l => ({
+        ...l,
+        url: services.lsp.DocumentLinkProvider.resolveLink(doc, l.url)
+      })) as c4.NonEmptyArray<c4.Link>
+    } catch (e) {
+      logWarnError(e)
+      return null
+    }
   }
 
   const toModelElement = (doc: LangiumDocument) => {
     return ({
       tags,
-      links,
+      links: unresolvedLinks,
       style: {
         color,
         shape,
@@ -75,11 +86,12 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       metadata
     }: ParsedAstElement): c4.Element | null => {
       try {
-        const __kind = c4Specification.kinds[kind]
+        const __kind = c4Specification.elements[kind]
         if (!__kind) {
           logger.warn(`No kind '${kind}' found for ${id}`)
           return null
         }
+        const links = unresolvedLinks ? resolveLinks(doc, unresolvedLinks) : null
         color ??= __kind.style.color
         shape ??= __kind.style.shape
         icon ??= __kind.style.icon
@@ -96,7 +108,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
             ...(border && { border }),
             ...(isNumber(opacity) && { opacity })
           },
-          links: links ? resolveLinks(doc, links) : null,
+          links,
           tags: tags ?? null,
           technology: technology ?? null,
           description: description ?? null,
@@ -115,6 +127,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     docs,
     flatMap(d => map(d.c4Elements, toModelElement(d))),
     filter(isTruthy),
+    // sort from root elements to nested, so that parent is always present
     sort(compareByFqnHierarchically),
     reduce(
       (acc, el) => {
@@ -123,15 +136,10 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           logWarnError(`No parent found for ${el.id}`)
           return acc
         }
-        if (el.id in acc) {
-          // should not happen, as validated
-          logWarnError(`Duplicate element id: ${el.id}`)
-          return acc
-        }
         acc[el.id] = el
         return acc
       },
-      {} as c4.LikeC4Model['elements']
+      {} as c4.ParsedLikeC4Model['elements']
     )
   )
 
@@ -141,7 +149,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       source,
       target,
       kind,
-      links,
+      links: unresolvedLinks,
       id,
       ...model
     }: ParsedAstRelation): c4.Relation | null => {
@@ -151,12 +159,13 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         )
         return null
       }
+      const links = unresolvedLinks ? resolveLinks(doc, unresolvedLinks) : null
 
-      if (!isNullish(kind) && kind in c4Specification.relationships) {
+      if (isNonNullish(kind) && kind in c4Specification.relationships) {
         return {
-          ...(links && { links: resolveLinks(doc, links) }),
           ...c4Specification.relationships[kind],
           ...model,
+          ...(links && { links }),
           source,
           target,
           kind,
@@ -164,7 +173,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         }
       }
       return {
-        ...(links && { links: resolveLinks(doc, links) }),
+        ...(links && { links }),
         ...model,
         source,
         target,
@@ -177,7 +186,9 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     docs,
     flatMap(d => map(d.c4Relations, toModelRelation(d))),
     filter(isTruthy),
-    mapToObj(r => [r.id, r])
+    sort(compareRelations),
+    reverse(),
+    indexBy(prop('id'))
   )
 
   const toC4View = (doc: LangiumDocument) => {
@@ -188,7 +199,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         title,
         description,
         tags,
-        links,
+        links: unresolvedLinks,
 
         // ignore this property
         astPath: _ignore,
@@ -205,31 +216,27 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         title = 'Landscape view'
       }
 
+      const links = unresolvedLinks ? resolveLinks(doc, unresolvedLinks) : null
+
       return {
-        id,
-        title,
-        description,
+        ...model,
         tags,
-        links: links ? resolveLinks(doc, links) : null,
+        links,
         docUri,
-        ...model
+        description,
+        title,
+        id
       }
     }
   }
 
-  const views = pipe(
-    docs,
-    flatMap(d => map(d.c4Views, toC4View(d))),
-    resolveRelativePaths,
-    mapToObj(v => [v.id, v]),
-    resolveRulesExtendedViews
-  )
-  // add index view if not present
-  if (!('index' in views)) {
-    views['index' as ViewID] = {
+  const parsedViews = docs.flatMap(d => map(d.c4Views, toC4View(d)))
+  // Add index view if not present
+  if (!parsedViews.some(v => v.id === 'index')) {
+    parsedViews.unshift({
       __: 'element',
       id: 'index' as ViewID,
-      title: 'Landscape',
+      title: 'Landscape view',
       description: null,
       tags: null,
       links: null,
@@ -242,17 +249,30 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ]
         }
       ]
-    }
+    })
   }
 
+  const views = pipe(
+    parsedViews,
+    resolveRelativePaths,
+    indexBy(prop('id')),
+    resolveRulesExtendedViews
+  )
+
   return {
+    specification: {
+      tags: Array.from(c4Specification.tags),
+      elements: c4Specification.elements,
+      relationships: c4Specification.relationships
+    },
     elements,
     relations,
     views
   }
 }
-const RAW_MODEL_CACHE = 'LikeC4RawModel'
-const MODEL_CACHE = 'LikeC4Model'
+
+const CACHE_KEY_PARSED_MODEL = 'ParsedLikeC4Model'
+const CACHE_KEY_COMPUTED_MODEL = 'ComputedLikeC4Model'
 
 type ModelParsedListener = (docs: URI[]) => void
 
@@ -291,35 +311,72 @@ export class LikeC4ModelBuilder {
     logger.debug(`[ModelBuilder] Created`)
   }
 
-  public async buildModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.LikeC4Model | null> {
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
-    if (cache.has(RAW_MODEL_CACHE)) {
-      return cache.get(RAW_MODEL_CACHE)!
+  public syncBuildModel(): c4.ParsedLikeC4Model | null {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
+    return cache.get(CACHE_KEY_PARSED_MODEL, () => {
+      const docs = this.documents()
+      if (docs.length === 0) {
+        logger.debug('[ModelBuilder] No documents to build model from')
+        return null
+      }
+      logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
+      return buildModel(this.services, docs)
+    })
+  }
+
+  public async buildModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.ParsedLikeC4Model | null> {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
+    if (cache.has(CACHE_KEY_PARSED_MODEL)) {
+      return cache.get(CACHE_KEY_PARSED_MODEL)!
     }
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      return cache.get(RAW_MODEL_CACHE, () => {
-        const docs = this.documents()
-        if (docs.length === 0) {
-          logger.debug('[ModelBuilder] No documents to build model from')
-          return null
-        }
-        logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
-        return buildModel(this.services, docs)
-      })
+      return this.syncBuildModel()
     })
   }
 
   private previousViews: Record<ViewID, c4.ComputedView> = {}
 
+  public syncBuildComputedModel(model: c4.ParsedLikeC4Model): c4.ComputedLikeC4Model {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model>
+    const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+    return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
+      const index = new LikeC4ModelGraph(model)
+
+      const allViews = [] as c4.ComputedView[]
+      for (const view of values(model.views)) {
+        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
+        if (!result.isSuccess) {
+          logWarnError(result.error)
+          continue
+        }
+        allViews.push(result.view)
+      }
+      assignNavigateTo(allViews)
+      const views = mapToObj(allViews, v => {
+        const previous = this.previousViews[v.id]
+        const view = previous && eq(v, previous) ? previous : v
+        viewsCache.set(computedViewKey(v.id), view)
+        return [v.id, view] as const
+      })
+      this.previousViews = { ...views }
+      return {
+        specification: model.specification,
+        elements: model.elements,
+        relations: model.relations,
+        views
+      }
+    })
+  }
+
   public async buildComputedModel(
     cancelToken?: Cancellation.CancellationToken
-  ): Promise<c4.LikeC4ComputedModel | null> {
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
-    if (cache.has(MODEL_CACHE)) {
-      return cache.get(MODEL_CACHE)!
+  ): Promise<c4.ComputedLikeC4Model | null> {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model | null>
+    if (cache.has(CACHE_KEY_COMPUTED_MODEL)) {
+      return cache.get(CACHE_KEY_COMPUTED_MODEL)!
     }
     const model = await this.buildModel(cancelToken)
     if (!model) {
@@ -329,33 +386,7 @@ export class LikeC4ModelBuilder {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
-      return cache.get(MODEL_CACHE, () => {
-        const index = new LikeC4ModelGraph(model)
-
-        const allViews = [] as c4.ComputedView[]
-        for (const view of values(model.views)) {
-          const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
-          if (!result.isSuccess) {
-            logWarnError(result.error)
-            continue
-          }
-          allViews.push(result.view)
-        }
-        assignNavigateTo(allViews)
-        const views = mapToObj(allViews, v => {
-          const previous = this.previousViews[v.id]
-          const view = previous && eq(v, previous) ? previous : v
-          viewsCache.set(computedViewKey(v.id), view)
-          return [v.id, view] as const
-        })
-        this.previousViews = { ...views }
-        return {
-          elements: model.elements,
-          relations: model.relations,
-          views
-        }
-      })
+      return this.syncBuildComputedModel(model)
     })
   }
 

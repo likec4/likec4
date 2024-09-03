@@ -1,5 +1,4 @@
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
-import { mkTempPublicDir } from '@/vite/utils'
 import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
@@ -9,8 +8,9 @@ import { hasAtLeast } from 'remeda'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
-import { LanguageServices } from '../../../language-services'
+import { LikeC4 } from '../../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../../logger'
+import { mkTempPublicDir } from '../../../vite/utils'
 
 type HandlerParams = {
   /**
@@ -30,7 +30,10 @@ export async function webcomponentHandler({
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.fromWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 

@@ -4,7 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { Logger } from 'vite'
-import { LanguageServices } from '../../language-services'
+import { LikeC4 } from '../../LikeC4'
 import { createLikeC4Logger, startTimer } from '../../logger'
 
 type HandlerParams =
@@ -27,7 +27,7 @@ type HandlerParams =
   )
 
 async function singleFileCodegenAction(
-  languageServices: LanguageServices,
+  languageServices: LikeC4,
   outfile: string | undefined,
   logger: Logger
 ) {
@@ -48,7 +48,7 @@ async function singleFileCodegenAction(
 }
 
 async function dotCodegenAction(
-  languageServices: LanguageServices,
+  languageServices: LikeC4,
   outdir: string,
   logger: Logger
 ) {
@@ -83,7 +83,7 @@ async function dotCodegenAction(
 }
 
 async function multipleFilesCodegenAction(
-  languageServices: LanguageServices,
+  languageServices: LikeC4,
   format: 'd2' | 'mermaid',
   outdir: string,
   logger: Logger
@@ -141,7 +141,10 @@ async function multipleFilesCodegenAction(
 export async function reactLegacyHandler({ path, useDotBin, ...outparams }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.fromWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   const views = await languageServices.views.computedViews()
   if (views.length === 0) {

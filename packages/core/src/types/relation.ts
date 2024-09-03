@@ -1,10 +1,10 @@
+import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { Fqn, Link, Tag } from './element'
-import type { Opaque } from './opaque'
 import type { ThemeColor } from './theme'
 
-export type RelationID = Opaque<string, 'RelationID'>
-export type RelationshipKind = Opaque<string, 'RelationshipKind'>
+export type RelationID = Tagged<string, 'RelationID'>
+export type RelationshipKind = Tagged<string, 'RelationshipKind'>
 
 export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
 
@@ -25,6 +25,7 @@ export const DefaultLineStyle = 'dashed' satisfies RelationshipLineType
 export const DefaultArrowType = 'normal' satisfies RelationshipArrowType
 export const DefaultRelationshipColor = 'gray' satisfies ThemeColor
 
+// TODO: rename to Relationship
 export interface Relation {
   readonly id: RelationID
   readonly source: Fqn
@@ -40,4 +41,13 @@ export interface Relation {
   readonly tail?: RelationshipArrowType
   readonly links?: NonEmptyArray<Link>
   readonly metadata?: { [key: string]: string }
+}
+
+export interface RelationshipKindSpecification {
+  readonly technology?: string
+  readonly notation?: string
+  readonly color?: ThemeColor
+  readonly line?: RelationshipLineType
+  readonly head?: RelationshipArrowType
+  readonly tail?: RelationshipArrowType
 }

@@ -8,15 +8,7 @@ import {
   parentFqn,
   parentFqnPredicate
 } from '@likec4/core'
-import type {
-  ComputedEdge,
-  ComputedNode,
-  ComputedView,
-  EdgeId,
-  Fqn,
-  RelationshipLineType,
-  XYPoint
-} from '@likec4/core/types'
+import type { ComputedEdge, ComputedNode, ComputedView, EdgeId, Fqn, RelationshipLineType, XYPoint } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { filter, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
 import {

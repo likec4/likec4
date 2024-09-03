@@ -1,5 +1,6 @@
-import type { DiagramView, Opaque } from '@likec4/core'
+import type { DiagramView } from '@likec4/core'
 import type { $keywords } from 'ts-graphviz'
+import type { Tagged } from 'type-fest'
 
 // Declare custom attributes.
 declare module 'ts-graphviz' {
@@ -32,7 +33,7 @@ declare module 'ts-graphviz' {
   }
 }
 
-export type DotSource = Opaque<string, 'DotSource'>
+export type DotSource = Tagged<string, 'DotSource'>
 
 export type DotLayoutResult = {
   dot: DotSource

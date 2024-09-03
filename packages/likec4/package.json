@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.8.1",
+  "version": "1.8.2-next.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -20,8 +20,8 @@
   "bin": "./bin/likec4.mjs",
   "exports": {
     ".": {
-      "types": "./app/react/components/index.ts",
-      "default": "./dist/__app__/react/components.mjs"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.mjs"
     },
     "./react": {
       "types": "./app/react/components/index.ts",
@@ -41,8 +41,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./react/index.d.ts",
-        "default": "./react/index.mjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
       },
       "./react": {
         "types": "./react/index.d.ts",
@@ -64,7 +64,7 @@
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.json",
     "typecheck": "run 'typecheck:cli' && run 'typecheck:app'",
     "prebuild": "tsx scripts/prebuild.ts",
-    "build:cli": "tsx scripts/build-cli.ts",
+    "build:cli": "unbuild",
     "build:app": "tsx scripts/bundle-app.ts",
     "build:react": "tsx scripts/bundle-react.ts",
     "build:webcomponent": "tsx scripts/bundle-webcomponent.ts",
@@ -88,7 +88,10 @@
     "cli:build": "tsx src/cli/index.ts build -o dev/dist dev",
     "cli:preview": "tsx src/cli/index.ts preview -o dev/dist dev",
     "cli:export": "tsx src/cli/index.ts export png -o dev/export dev",
-    "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
+    "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev",
+    "test": "vitest run --no-isolate",
+    "vitest:ui": "vitest --no-isolate --ui",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "1.2.0",
@@ -134,6 +137,7 @@
     "ci-info": "^3.9.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
+    "defu": "^6.1.4",
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.14.0",
     "esm-env": "^1.0.0",
@@ -164,6 +168,7 @@
     "type-fest": "^4.21.0",
     "typescript": "^5.5.4",
     "ufo": "^1.5.4",
+    "unbuild": "^3.0.0-rc.7",
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-shadow-style": "^1.1.1",
     "vitest": "~2.0.5"

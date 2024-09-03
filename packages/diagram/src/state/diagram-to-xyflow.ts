@@ -1,5 +1,5 @@
 import { extractStep, invariant, nonNullable, whereOperatorAsPredicate } from '@likec4/core'
-import type { DiagramEdge, DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
+import type { DiagramEdge, DiagramNode, DiagramView, Fqn } from '@likec4/core'
 import { hasAtLeast } from 'remeda'
 import type { WhereOperator } from '../LikeC4Diagram.props'
 import { ZIndexes } from '../xyflow/const'

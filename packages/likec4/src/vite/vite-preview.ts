@@ -1,10 +1,10 @@
-import type { LanguageServices } from '@/language-services'
 import { viteConfig } from '@/vite/config-app'
 import getPort, { portNumbers } from 'get-port'
 import { preview } from 'vite'
+import type { LikeC4 } from '../LikeC4'
 
 type VitePreviewParams = {
-  languageServices: LanguageServices
+  languageServices: LikeC4
   outputDir?: string | undefined
   base?: string | undefined
   open?: boolean

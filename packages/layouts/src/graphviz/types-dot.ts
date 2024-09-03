@@ -1,9 +1,10 @@
-import type { EdgeId, Fqn, Opaque } from '@likec4/core'
+import type { EdgeId, Fqn } from '@likec4/core'
+import type { Tagged } from 'type-fest'
 
-export type GvNodeName = Opaque<string, 'GvNodeName'>
+export type GvNodeName = Tagged<string, 'GvNodeName'>
 
-export type GvId = Opaque<number, 'GvId'>
-export type Inches = Opaque<string, 'Inches'>
+export type GvId = Tagged<number, 'GvId'>
+export type Inches = Tagged<string, 'Inches'>
 
 export type Point = [x: number, y: number]
 

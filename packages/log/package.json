@@ -20,12 +20,12 @@
       "node": {
         "types": "./dist/node.d.ts",
         "import": "./dist/node.mjs",
-        "require": "./lib/node.cjs"
+        "require": "./dist/node.cjs"
       },
       "default": {
-        "types": "./dist/browser.d.ts",
-        "import": "./dist/browser.mjs",
-        "require": "./dist/browser.cjs"
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs"
       }
     }
   },

@@ -306,15 +306,15 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   return this.graph.edgesBetween(sources, targets)
 }
 
-const filterEdges = (edges: ComputeCtx.Edge[], where?: RelationPredicateFn) => {
+const filterEdges = (edges: ReadonlyArray<ComputeCtx.Edge>, where?: RelationPredicateFn) => {
   if (!where) {
-    return edges
+    return edges as ComputeCtx.Edge[]
   }
   return pipe(
     edges,
     map(e => ({ ...e, relations: e.relations.filter(where) })),
     remedaFilter(e => e.relations.length > 0)
-  )
+  ) as ComputeCtx.Edge[]
 }
 
 const filterRelations = (edges: ComputeCtx.Edge[], where?: RelationPredicateFn) => {

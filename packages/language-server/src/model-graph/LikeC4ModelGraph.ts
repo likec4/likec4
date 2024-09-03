@@ -24,7 +24,7 @@ type RelationEdge = {
 }
 
 type FqnOrElement = Fqn | Element
-type FqnsOrElements = Fqn[] | Element[]
+type FqnsOrElements = ReadonlyArray<Fqn> | ReadonlyArray<Element>
 
 const RelationsSet = Set<Relation>
 const MapRelations = Map<Fqn, Set<Relation>>

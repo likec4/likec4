@@ -1,4 +1,4 @@
-import type { ViewManualLayout } from '@likec4/core/types'
+import type { ViewManualLayout } from '@likec4/core'
 import { decode, encode } from '@msgpack/msgpack'
 import { fromBase64, toBase64 } from '@smithy/util-base64'
 import { mapValues } from 'remeda'

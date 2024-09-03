@@ -12,7 +12,7 @@ Features:
 ## Install
 
 > **Compatibility Note:**\
-> LikeC4 requires [Node.js](https://nodejs.org/en/) version 18+, 20+
+> LikeC4 requires [Node.js](https://nodejs.org/en/) version 20+
 
 ### Local installation
 
@@ -153,6 +153,12 @@ likec4 codegen ts ...
 
 > Output file should have `.ts` extension\
 > By default, it generates `likec4.generated.ts` in current directory
+
+## API Usage
+
+LikeC4 model can be accessed 
+
+
 
 ## Development
 

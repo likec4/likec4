@@ -1,15 +1,6 @@
-import type {
-  Element,
-  ElementKind,
-  ElementView,
-  Fqn,
-  IconUrl,
-  NonEmptyArray,
-  Opaque,
-  Relation,
-  RelationID
-} from '@likec4/core'
+import type { Element, ElementKind, ElementView, Fqn, IconUrl, NonEmptyArray, Relation, RelationID } from '@likec4/core'
 import { LikeC4ModelGraph } from '@likec4/language-server/model-graph'
+import type { Tagged } from 'type-fest'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -222,7 +213,7 @@ const fakeRelations = {
 
 export const indexView = {
   __: 'element',
-  id: 'index' as Opaque<'index', 'ViewID'>,
+  id: 'index' as Tagged<'index', 'ViewID'>,
   title: '',
   description: null,
   tags: null,
@@ -240,7 +231,7 @@ export const indexView = {
 
 export const cloudView = {
   __: 'element',
-  id: 'cloudView' as Opaque<'cloudView', 'ViewID'>,
+  id: 'cloudView' as Tagged<'cloudView', 'ViewID'>,
   title: '',
   description: null,
   tags: null,
@@ -255,7 +246,7 @@ export const cloudView = {
 
 export const cloud3levels = {
   __: 'element',
-  id: 'cloud3levels' as Opaque<'cloud3levels', 'ViewID'>,
+  id: 'cloud3levels' as Tagged<'cloud3levels', 'ViewID'>,
   title: '',
   viewOf: 'cloud' as Fqn,
   description: null,
@@ -283,7 +274,7 @@ export const cloud3levels = {
 
 export const amazonView = {
   __: 'element',
-  id: 'amazon' as Opaque<'amazon', 'ViewID'>,
+  id: 'amazon' as Tagged<'amazon', 'ViewID'>,
   title: '',
   viewOf: 'amazon' as Fqn,
   description: null,
@@ -308,7 +299,7 @@ export const amazonView = {
 
 // see https://github.com/likec4/likec4/issues/577
 export const issue577View = (icon: string) => ({
-  id: 'issue577' as Opaque<'issue577', 'ViewID'>,
+  id: 'issue577' as Tagged<'issue577', 'ViewID'>,
   title: '',
   description: null,
   tags: null,

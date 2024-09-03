@@ -210,14 +210,14 @@ export const fakeElements = {
 
 export type FakeElementIds = keyof typeof fakeElements
 
-const rel = ({
+const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
   source,
   target,
   title,
   ...props
 }: {
-  source: FakeElementIds
-  target: FakeElementIds
+  source: Source
+  target: Target
   title?: string
   kind?: string
   color?: ThemeColor
@@ -225,13 +225,14 @@ const rel = ({
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
   tags?: NonEmptyArray<TestTag>
-}): Relation => ({
-  id: `${source}:${target}` as RelationID,
-  title: title ?? '',
-  source: source as Fqn,
-  target: target as Fqn,
-  ...(props as any)
-})
+}) =>
+  ({
+    id: `${source}:${target}` as RelationID,
+    title: title ?? '',
+    source: source as Fqn,
+    target: target as Fqn,
+    ...(props as any)
+  }) as Omit<Relation, 'id'> & { id: `${Source}:${Target}` }
 
 export const fakeRelations = [
   rel({
@@ -321,7 +322,7 @@ export const fakeRelations = [
   })
 ]
 
-export type FakeRelationIds = keyof typeof fakeRelations
+export type FakeRelationIds = (typeof fakeRelations)[number]['id']
 
 export const fakeModel = new LikeC4ModelGraph({
   elements: fakeElements,

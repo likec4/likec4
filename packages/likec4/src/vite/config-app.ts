@@ -1,4 +1,3 @@
-import { createLikeC4Logger } from '@/logger'
 import { consola } from '@likec4/log'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
@@ -10,9 +9,12 @@ import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import { createLikeC4Logger } from '../logger'
 import type { LikeC4ViteConfig } from './config-app.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
+
+export type { LikeC4ViteConfig }
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')

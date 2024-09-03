@@ -1,4 +1,5 @@
-import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import type * as c4 from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
 import { filter, flatMap, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
@@ -67,7 +68,7 @@ export class LikeC4ModelParser {
       try {
         result.push(this.parseLikeC4Document(doc))
       } catch (cause) {
-        logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
+        logError(new Error(`Error parsing document ${doc.uri.toString()}`, { cause }))
       }
     }
     return result
@@ -89,20 +90,23 @@ export class LikeC4ModelParser {
     const element_specs = specifications.flatMap(s => s.elements.filter(isValid))
     for (const { kind, props } of element_specs) {
       try {
-        const style = props.find(ast.isElementStyleProperty)
         const kindName = kind.name as c4.ElementKind
-        if (kindName in c4Specification.kinds) {
+        if (!isTruthy(kindName)) {
+          continue
+        }
+        if (kindName in c4Specification.elements) {
           logger.warn(`Element kind "${kindName}" is already defined`)
           continue
         }
+        const style = props.find(ast.isElementStyleProperty)
         const bodyProps = mapToObj(
           props.filter(ast.isSpecificationElementStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, removeIndent(p.value)]
+          p => [p.key, removeIndent(p.value)] as const
         )
-        c4Specification.kinds[kindName] = {
+        c4Specification.elements[kindName] = {
           ...bodyProps,
           style: {
-            ...toElementStyle(style?.props)
+            ...toElementStyle(style?.props, isValid)
           }
         }
       } catch (e) {
@@ -114,13 +118,16 @@ export class LikeC4ModelParser {
     for (const { kind, props } of relations_specs) {
       try {
         const kindName = kind.name as c4.RelationshipKind
+        if (!isTruthy(kindName)) {
+          continue
+        }
         if (kindName in c4Specification.relationships) {
           logger.warn(`Relationship kind "${kindName}" is already defined`)
           continue
         }
         const bodyProps = mapToObj(
           props.filter(ast.isSpecificationRelationshipStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, p.value]
+          p => [p.key, removeIndent(p.value)]
         )
         c4Specification.relationships[kindName] = {
           ...bodyProps,
@@ -130,13 +137,21 @@ export class LikeC4ModelParser {
         logWarnError(e)
       }
     }
+
+    const tags_specs = specifications.flatMap(s => s.tags.filter(isValid))
+    for (const tagSpec of tags_specs) {
+      const tag = tagSpec.tag.name as c4.Tag
+      if (isTruthy(tag)) {
+        c4Specification.tags.add(tag)
+      }
+    }
   }
 
   private parseModel(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
     for (const el of streamModel(doc, isValid)) {
       if (ast.isElement(el)) {
         try {
-          doc.c4Elements.push(this.parseElement(el))
+          doc.c4Elements.push(this.parseElement(el, isValid))
         } catch (e) {
           logWarnError(e)
         }
@@ -154,12 +169,12 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseElement(astNode: ast.Element): ParsedAstElement {
+  private parseElement(astNode: ast.Element, isValid: IsValidFn): ParsedAstElement {
     const id = this.resolveFqn(astNode)
     const kind = astNode.kind.$refText as c4.ElementKind
     const tags = this.convertTags(astNode.body)
     const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
-    const style = toElementStyle(stylePropsAst)
+    const style = toElementStyle(stylePropsAst, isValid)
     const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
     const astPath = this.getAstNodePath(astNode)
 
@@ -551,7 +566,7 @@ export class LikeC4ModelParser {
       return this.parseViewRulePredicate(astRule, isValid)
     }
     if (ast.isViewRuleStyle(astRule)) {
-      const styleProps = toElementStyle(astRule.props.filter(ast.isStyleProperty))
+      const styleProps = toElementStyle(astRule.props.filter(ast.isStyleProperty), isValid)
       const notation = removeIndent(astRule.props.find(ast.isNotationProperty)?.value)
       const targets = this.parseElementExpressionsIterator(astRule.target)
       return {
@@ -778,7 +793,7 @@ export class LikeC4ModelParser {
             return acc
           }
           if (ast.isViewRuleStyle(n)) {
-            const styleProps = toElementStyle(n.props.filter(ast.isStyleProperty))
+            const styleProps = toElementStyle(n.props.filter(ast.isStyleProperty), isValid)
             const notation = removeIndent(n.props.find(ast.isNotationProperty)?.value)
             const targets = this.parseElementExpressionsIterator(n.target)
             if (targets.length > 0) {
@@ -845,7 +860,7 @@ export class LikeC4ModelParser {
     const tags = [] as c4.Tag[]
     while (iter) {
       try {
-        const values = iter.values.map(t => t.ref?.name).filter(Boolean) as c4.Tag[]
+        const values = iter.values.map(t => t.ref?.name).filter(isTruthy) as c4.Tag[]
         if (values.length > 0) {
           tags.unshift(...values)
         }

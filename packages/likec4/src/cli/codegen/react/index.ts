@@ -1,5 +1,3 @@
-import { LanguageServices } from '@/language-services'
-import { createLikeC4Logger, startTimer } from '@/logger'
 import { viteReactConfig } from '@/vite/config-react'
 import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
@@ -9,6 +7,8 @@ import { cwd } from 'node:process'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
+import { LikeC4 } from '../../../LikeC4'
+import { createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
   /**
@@ -22,7 +22,10 @@ type HandlerParams = {
 export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LanguageServices.get({ path, useDotBin })
+  const languageServices = await LikeC4.fromWorkspace(path, {
+    logger: 'vite',
+    graphviz: useDotBin ? 'binary' : 'wasm'
+  })
 
   logger.info(`${k.dim('format')} ${k.green('react')}`)
 

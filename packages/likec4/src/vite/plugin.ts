@@ -4,8 +4,8 @@ import pLimit from 'p-limit'
 import { mapToObj } from 'remeda'
 import k from 'tinyrainbow'
 import type { PluginOption } from 'vite'
-import type { LanguageServices } from '../language-services'
-import type { Logger } from '../logger'
+import type { LikeC4 } from '../LikeC4'
+import type { ViteLogger } from '../logger'
 import {
   diagramPreviewsSources,
   generateD2Sources,
@@ -17,7 +17,7 @@ import {
 } from './generators'
 
 export type LikeC4PluginOptions = {
-  languageServices: LanguageServices
+  languageServices: LikeC4
   generatePreviews?: boolean
 }
 
@@ -26,8 +26,8 @@ interface Module {
   virtualId: string
 
   load(opts: {
-    logger: Logger
-    likec4: LanguageServices
+    logger: ViteLogger
+    likec4: LikeC4
     assetsDir: string
   }): Promise<string>
 }
@@ -133,10 +133,10 @@ const isTarget = (path: string) => {
 }
 
 export function likec4Plugin({
-  generatePreviews = true,
+  generatePreviews = false,
   languageServices: likec4
 }: LikeC4PluginOptions): PluginOption {
-  let logger: Logger
+  let logger: ViteLogger
   let assetsDir = likec4.workspace
 
   return {

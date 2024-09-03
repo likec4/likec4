@@ -2,6 +2,7 @@
   "name": "@likec4/generators",
   "version": "1.8.1",
   "license": "MIT",
+  "private": true,
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",

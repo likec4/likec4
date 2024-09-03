@@ -1,5 +1,4 @@
-import { viteConfig } from '@/vite/config-app'
-import type { LikeC4ViteConfig } from '@/vite/config-app.prod'
+import { type LikeC4ViteConfig, viteConfig } from '@/vite/config-app'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
 import { consola } from '@likec4/log'
 import getPort, { portNumbers } from 'get-port'
@@ -9,7 +8,6 @@ import { join } from 'node:path'
 import type { SetOptional } from 'type-fest'
 import type { ViteDevServer } from 'vite'
 import { build, createServer } from 'vite'
-import { printServerUrls } from './printServerUrls'
 import { mkTempPublicDir } from './utils'
 
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
