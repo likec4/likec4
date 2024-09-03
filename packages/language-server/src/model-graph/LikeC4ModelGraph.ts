@@ -3,14 +3,13 @@ import {
   commonAncestor,
   type Element,
   type Fqn,
-  InvalidModelError,
   invariant,
   isSameHierarchy,
-  isString,
   parentFqn,
   type Relation,
   type RelationID
 } from '@likec4/core'
+import { isArray, isString } from 'remeda'
 
 type Params = {
   elements: Record<Fqn, Element>
@@ -37,6 +36,10 @@ function intersection<T>(a: Set<T>, b: Set<T>) {
   return new Set([...a].filter(value => b.has(value)))
 }
 
+/**
+ * Used only for views calculations.
+ * Subject to change.
+ */
 export class LikeC4ModelGraph {
   #elements = new Map<Fqn, Element>()
   // Parent element for given FQN
@@ -64,11 +67,11 @@ export class LikeC4ModelGraph {
     }
   }
 
-  get rootElements(): Array<Element> {
+  get rootElements() {
     return [...this.#rootElements]
   }
 
-  get elements(): Array<Element> {
+  get elements() {
     return [...this.#elements.values()]
   }
 
@@ -82,18 +85,18 @@ export class LikeC4ModelGraph {
     return [...this._incomingTo(id), ...this._outgoingFrom(id), ...this._internalOf(id)]
   }
 
-  public children(id: Fqn): Array<Element> {
+  public children(id: Fqn) {
     return this._childrenOf(id).slice()
   }
 
   // Get children or element itself if no children
-  public childrenOrElement(id: Fqn): Array<Element> {
+  public childrenOrElement(id: Fqn) {
     const children = this.children(id)
     return children.length > 0 ? children : [this.element(id)]
   }
 
   // Get all sibling (i.e. same parent)
-  public siblings(element: Fqn | Element): Array<Element> {
+  public siblings(element: Fqn | Element) {
     const id = isString(element) ? element : element.id
     const parent = parentFqn(id)
     const siblings = parent ? this._childrenOf(parent) : this.rootElements
@@ -135,7 +138,10 @@ export class LikeC4ModelGraph {
   /**
    * Resolve all RelationEdges between element and others (any direction)
    */
-  public anyEdgesBetween(_element: Fqn | Element, others: Fqn[] | Element[]): Array<RelationEdge> {
+  public anyEdgesBetween(
+    _element: Fqn | Element,
+    others: ReadonlyArray<Fqn> | ReadonlyArray<Element>
+  ): Array<RelationEdge> {
     if (others.length === 0) {
       return []
     }
@@ -204,8 +210,8 @@ export class LikeC4ModelGraph {
     _sources: FqnOrElement | FqnsOrElements,
     _targets: FqnOrElement | FqnsOrElements
   ) {
-    const sources = Array.isArray(_sources) ? _sources : [_sources]
-    const targets = Array.isArray(_targets) ? _targets : [_targets]
+    const sources = isArray(_sources) ? _sources : [_sources]
+    const targets = isArray(_targets) ? _targets : [_targets]
     if (sources.length === 0 || targets.length === 0) {
       return []
     }
@@ -240,7 +246,7 @@ export class LikeC4ModelGraph {
 
   private addElement(el: Element) {
     if (this.#elements.has(el.id)) {
-      throw new InvalidModelError(`Element ${el.id} already exists`)
+      throw new Error(`Element ${el.id} already exists`)
     }
     this.#elements.set(el.id, el)
     const parentId = parentFqn(el.id)
@@ -254,7 +260,7 @@ export class LikeC4ModelGraph {
 
   private addRelation(rel: Relation) {
     if (this.#relations.has(rel.id)) {
-      throw new InvalidModelError(`Relation ${rel.id} already exists`)
+      throw new Error(`Relation ${rel.id} already exists`)
     }
     this.#relations.set(rel.id, rel)
     this._incomingTo(rel.target).add(rel)
