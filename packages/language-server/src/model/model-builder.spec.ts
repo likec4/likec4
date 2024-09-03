@@ -938,7 +938,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('parses custom color definitions', async ({expect}) => {
+  it('parses custom color definitions', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
       specification {
@@ -959,34 +959,34 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView).toHaveProperty('customColorDefinitions', {
       'custom-color1': {
         elements: {
-          fill: '#FF00FF',
-          hiContrast: '#ffa3f3',
-          loContrast: '#ff7af2',
-          stroke: '#d200d9',
+          fill: '#ff09ff',
+          hiContrast: '#ffe8ff',
+          loContrast: '#ffceff',
+          stroke: '#e400e4'
         },
         relationships: {
-          labelBgColor: '#580066',
-          labelColor: '#ff29f8',
-          lineColor: '#FF00FF',
-        },
+          labelBgColor: '#b100b2',
+          labelColor: '#ff64ff',
+          lineColor: '#fe37fe'
+        }
       },
       'custom-color2': {
         elements: {
-          fill: '#FFFF00',
-          hiContrast: '#fff3a3',
-          loContrast: '#fff27a',
-          stroke: '#d2d900',
+          fill: '#ffff09',
+          hiContrast: '#ffffe1',
+          loContrast: '#ffffcc',
+          stroke: '#e3e300'
         },
         relationships: {
-          labelBgColor: '#586600',
-          labelColor: '#fff829',
-          lineColor: '#FFFF00',
-        },
+          labelBgColor: '#adae00',
+          labelColor: '#ffff64',
+          lineColor: '#ffff38'
+        }
       }
     })
   })
 
-  it('allows custom colors in spec', async ({expect}) => {
+  it('allows custom colors in spec', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
       specification {
@@ -1022,7 +1022,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('custom-color1')
   })
 
-  it('allows custom colors in relationships', async ({expect}) => {
+  it('allows custom colors in relationships', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
       specification {
@@ -1052,7 +1052,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView.edges[0]?.color).toBe('custom-color1')
   })
 
-  it('allows custom colors in include expressions of view', async ({expect}) => {
+  it('allows custom colors in include expressions of view', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
       specification {

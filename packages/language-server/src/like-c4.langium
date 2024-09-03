@@ -538,11 +538,8 @@ DotId returns string:
 CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
-// Used to be like bellow but it was ambiguos with CustomColorId rule
-// Id returns string:
-//  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model'
 Id returns string:
-  CustomColorId | ThemeColor;
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
 
 fragment EqOperator:
   (

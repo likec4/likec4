@@ -40,11 +40,7 @@ model {
         A emploere from the support team
         Has limited access to the system
       '
-
       -> customer 'helps with questions' {
-        style {
-          color custom
-        }
         metadata {
           rps '1000'
         }

@@ -1,4 +1,10 @@
-import { type c4, invariant, isNonEmptyArray, type HexColorLiteral, nonexhaustive } from '@likec4/core'
+import {
+  type c4,
+  type HexColorLiteral,
+  invariant,
+  isNonEmptyArray,
+  nonexhaustive
+} from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
 import { filter, flatMap, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
@@ -154,7 +160,7 @@ export class LikeC4ModelParser {
           logger.warn(`Custom color "${colorName}" is already defined`)
           continue
         }
-        
+
         c4Specification.colors[colorName] = {
           color: color as HexColorLiteral
         }
@@ -667,8 +673,8 @@ export class LikeC4ModelParser {
           }
           if (ast.isColorProperty(prop)) {
             const value = toColor(prop)
-            if(isTruthy(value)) {
-              step[prop.key] = value              
+            if (isTruthy(value)) {
+              step[prop.key] = value
             }
             continue
           }

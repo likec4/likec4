@@ -993,13 +993,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ctrl/tinycolor@npm:^3.6.1":
-  version: 3.6.1
-  resolution: "@ctrl/tinycolor@npm:3.6.1"
-  checksum: 10c0/444d81612cd8c5c802a3d1253df83d5f77d3db87f351861655683a4743990e6b38976bf2e4129591c5a258607b63574b3c7bed702cf6a0eb7912222edf4570e9
-  languageName: node
-  linkType: hard
-
 "@ctrl/tinycolor@npm:^4.0.4":
   version: 4.1.0
   resolution: "@ctrl/tinycolor@npm:4.1.0"
@@ -2201,6 +2194,9 @@ __metadata:
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
+    "@mantine/colors-generator": "npm:^7.12.2"
+    "@total-typescript/ts-reset": "npm:^0.5.1"
+    chroma-js: "npm:^3.0.0"
     execa: "npm:^9.3.1"
     remeda: "npm:^2.11.0"
     type-fest: "npm:^4.21.0"
@@ -2214,7 +2210,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/diagram@workspace:packages/diagram"
   dependencies:
-    "@ant-design/colors": "npm:^7.1.0"
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@lume/kiwi": "npm:^0.4.3"
@@ -2508,6 +2503,15 @@ __metadata:
   version: 0.4.3
   resolution: "@lume/kiwi@npm:0.4.3"
   checksum: 10c0/a8a54e71f4a6a90000db5b195b5d67e3557e816b5a35e3a75e05d34065a9c2143ed70fee5af32ad64540a57667ee286b20b79e6022405d263efdfbc141da6679
+  languageName: node
+  linkType: hard
+
+"@mantine/colors-generator@npm:^7.12.2":
+  version: 7.12.2
+  resolution: "@mantine/colors-generator@npm:7.12.2"
+  peerDependencies:
+    chroma-js: ^2.4.2
+  checksum: 10c0/4c3ed0e72f568b496ec25836214c0154b8436e08e51663ac5191b95767da3983711e17d5ed740adc95d7350aa2fba7ef2e9dd365cba46124eb55314c033f25d5
   languageName: node
   linkType: hard
 
@@ -5339,6 +5343,13 @@ __metadata:
   version: 2.0.0
   resolution: "chownr@npm:2.0.0"
   checksum: 10c0/594754e1303672171cc04e50f6c398ae16128eb134a88f801bf5354fd96f205320f23536a045d9abd8b51024a149696e51231565891d4efdab8846021ecf88e6
+  languageName: node
+  linkType: hard
+
+"chroma-js@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "chroma-js@npm:3.0.0"
+  checksum: 10c0/b7aade3f6e20d5f1f3e07a890fbdc6e6390663affeb0071330d0325368915612b6133124aeb0b29b56d6bcdff489b0223deba8cc86a656bb601c6bc3f06e2c7c
   languageName: node
   linkType: hard
 

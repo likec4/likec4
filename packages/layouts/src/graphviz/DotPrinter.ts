@@ -2,13 +2,13 @@ import {
   compareFqnHierarchically,
   DefaultRelationshipColor,
   defaultTheme as Theme,
+  DefaultThemeColor,
   invariant,
+  isThemeColor,
   nameFromFqn,
   nonNullable,
   parentFqn,
-  parentFqnPredicate,
-  isThemeColor,
-  DefaultThemeColor
+  parentFqnPredicate
 } from '@likec4/core'
 import type {
   Color,
@@ -509,13 +509,13 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     return this
   }
   protected getRelationshipColorValues(color: Color): RelationshipThemeColorValues {
-    return isThemeColor(color) 
-      ? Theme.relationships[color] 
-      : this.view.customColorDefinitions[color]?.relationships ?? Theme.relationships[DefaultThemeColor];
+    return isThemeColor(color)
+      ? Theme.relationships[color]
+      : this.view.customColorDefinitions[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
   }
   protected getElementColorValues(color: Color): ElementThemeColorValues {
-    return isThemeColor(color) 
-      ? Theme.elements[color] 
-      : this.view.customColorDefinitions[color]?.elements ?? Theme.elements[DefaultThemeColor];
+    return isThemeColor(color)
+      ? Theme.elements[color]
+      : this.view.customColorDefinitions[color]?.elements ?? Theme.elements[DefaultThemeColor]
   }
 }

@@ -52,7 +52,7 @@ export interface ParsedAstSpecification {
       head?: c4.RelationshipArrowType
       tail?: c4.RelationshipArrowType
     }
-  >,
+  >
   colors: Record<
     c4.CustomColor,
     {
@@ -253,7 +253,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isSpecificationColor,
   ast.isSpecificationRule,
   ast.isModelViews,
-  ast.isModel,  
+  ast.isModel
 ])
 type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
 
@@ -449,9 +449,9 @@ export function toRelationshipStyleExcludeDefaults(
 }
 
 export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
-  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (HexColorLiteral | undefined));
+  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (HexColorLiteral | undefined))
 }
-    
+
 export function toAutoLayout(
   direction: ast.ViewLayoutDirection
 ): c4.ViewRuleAutoLayout['autoLayout'] {

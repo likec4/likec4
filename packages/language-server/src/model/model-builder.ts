@@ -25,13 +25,13 @@ import {
   isTruthy,
   map,
   mapToObj,
+  mapValues,
   pipe,
   prop,
   reduce,
   reverse,
   sort,
-  values,
-  mapValues
+  values
 } from 'remeda'
 import type {
   ParsedAstElement,
@@ -71,10 +71,11 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       return null
     }
   }
-  
+
   const customColorDefinitions: CustomColorDefinitions = mapValues(
-    c4Specification.colors, 
-    c => computeColorValues(c.color))
+    c4Specification.colors,
+    c => computeColorValues(c.color)
+  )
 
   const toModelElement = (doc: LangiumDocument) => {
     return ({

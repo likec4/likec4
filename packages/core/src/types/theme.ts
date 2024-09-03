@@ -1,4 +1,4 @@
-import type { CustomColor } from "./_common"
+import type { CustomColor } from './_common'
 
 const ThemeColors = [
   'amber',
@@ -11,7 +11,8 @@ const ThemeColors = [
   'primary',
   'red',
   'secondary',
-  'sky'] as const
+  'sky'
+] as const
 export type ThemeColor = typeof ThemeColors[number]
 
 export type HexColorLiteral = `#${string}`

@@ -1,5 +1,6 @@
 import {
   type BorderStyle,
+  type Color,
   type ComputedView,
   type CustomElementExpr as C4CustomElementExpr,
   type CustomRelationExpr as C4CustomRelationExpr,
@@ -21,8 +22,7 @@ import {
   type ViewRule,
   type ViewRulePredicate,
   type ViewRuleStyle,
-  type WhereOperator,
-  type Color
+  type WhereOperator
 } from '@likec4/core'
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
