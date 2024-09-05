@@ -56,7 +56,7 @@ export interface ParsedAstSpecification {
   colors: Record<
     c4.CustomColor,
     {
-      color: HexColorLiteral
+      color: c4.HexColorLiteral
     }
   >
 }
@@ -449,7 +449,7 @@ export function toRelationshipStyleExcludeDefaults(
 }
 
 export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
-  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (HexColorLiteral | undefined))
+  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.HexColorLiteral | undefined))
 }
 
 export function toAutoLayout(

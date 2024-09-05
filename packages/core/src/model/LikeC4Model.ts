@@ -359,7 +359,7 @@ export namespace LikeC4Model {
       return this.element.shape ?? DefaultElementShape
     }
 
-    get color(): c4.ThemeColor {
+    get color(): c4.Color {
       return this.element.color ?? DefaultThemeColor
     }
 

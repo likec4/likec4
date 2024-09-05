@@ -1,6 +1,6 @@
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
-import type { ThemeColor } from './theme'
+import type { Color, ThemeColor } from './theme'
 
 // Full-qualified-name
 export type Fqn = Tagged<string, 'Fqn'>
@@ -65,7 +65,7 @@ export interface Element {
 export interface ElementKindSpecificationStyle {
   shape?: ElementShape
   icon?: IconUrl
-  color?: ThemeColor
+  color?: Color
   border?: BorderStyle
   opacity?: number
 }

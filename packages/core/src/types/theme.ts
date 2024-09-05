@@ -1,3 +1,4 @@
+import type { LiteralUnion } from 'type-fest'
 import type { CustomColor } from './_common'
 
 const ThemeColors = [
@@ -19,7 +20,7 @@ export type HexColorLiteral = `#${string}`
 
 export type ColorLiteral = HexColorLiteral
 
-export type Color = ThemeColor | CustomColor
+export type Color = LiteralUnion<ThemeColor, string>
 
 export function isThemeColor(color: Color): color is ThemeColor {
   return color in ThemeColors

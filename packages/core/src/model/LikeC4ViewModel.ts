@@ -1,7 +1,7 @@
 import { isNullish, isString } from 'remeda'
 import { nonNullable } from '../errors'
 import type { ElementShape, Tag } from '../types/element'
-import type { ThemeColor } from '../types/theme'
+import type { Color } from '../types/theme'
 import type { ComputedEdge, ComputedNode, ComputedView } from '../types/view'
 import type { LikeC4Model } from './LikeC4Model'
 import type { EdgeId, Fqn } from './types'
@@ -218,7 +218,7 @@ export namespace LikeC4ViewModel {
       return this.node.shape
     }
 
-    get color(): ThemeColor {
+    get color(): Color {
       return this.node.color
     }
 

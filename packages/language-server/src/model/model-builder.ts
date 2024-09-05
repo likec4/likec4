@@ -399,30 +399,6 @@ export class LikeC4ModelBuilder {
         await interruptAndCheck(cancelToken)
       }
       return this.syncBuildComputedModel(model)
-        const allViews = [] as c4.ComputedView[]
-        for (const view of values(model.views)) {
-          const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
-
-          if (!result.isSuccess) {
-            logWarnError(result.error)
-            continue
-          }
-          allViews.push(result.view)
-        }
-        assignNavigateTo(allViews)
-        const views = mapToObj(allViews, v => {
-          const previous = this.previousViews[v.id]
-          const view = previous && eq(v, previous) ? previous : v
-          viewsCache.set(computedViewKey(v.id), view)
-          return [v.id, view] as const
-        })
-        this.previousViews = { ...views }
-        return {
-          elements: model.elements,
-          relations: model.relations,
-          views
-        }
-      })
     })
   }
 

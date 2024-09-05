@@ -46,7 +46,7 @@ export interface Relation {
 export interface RelationshipKindSpecification {
   readonly technology?: string
   readonly notation?: string
-  readonly color?: ThemeColor
+  readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
