@@ -2,7 +2,7 @@ import type { IconUrl } from './_common'
 import type { BorderStyle, ElementKind, ElementShape, Fqn, Tag } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import type { ThemeColor } from './theme'
+import type { Color } from './theme'
 import type { ViewID } from './view'
 
 interface BaseExpr {
@@ -46,7 +46,7 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
     technology?: string
     notation?: string
     shape?: ElementShape
-    color?: ThemeColor
+    color?: Color
     icon?: IconUrl
     border?: BorderStyle
     opacity?: number
@@ -161,7 +161,7 @@ export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
     description?: string
     technology?: string
     notation?: string
-    color?: ThemeColor
+    color?: Color
     line?: RelationshipLineType
     head?: RelationshipArrowType
     tail?: RelationshipArrowType

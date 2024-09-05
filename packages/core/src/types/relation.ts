@@ -1,7 +1,7 @@
 import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { Fqn, Link, Tag } from './element'
-import type { ThemeColor } from './theme'
+import type { Color, ThemeColor } from './theme'
 
 export type RelationID = Tagged<string, 'RelationID'>
 export type RelationshipKind = Tagged<string, 'RelationshipKind'>
@@ -35,7 +35,7 @@ export interface Relation {
   readonly technology?: string
   readonly tags?: NonEmptyArray<Tag>
   readonly kind?: RelationshipKind
-  readonly color?: ThemeColor
+  readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType

@@ -10,6 +10,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
     "x": 0,
     "y": 0,
   },
+  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -200,6 +201,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     "x": 0,
     "y": 0,
   },
+  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -758,6 +760,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     "x": 0,
     "y": 0,
   },
+  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {
@@ -1122,6 +1125,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     "x": 0,
     "y": 0,
   },
+  "customColorDefinitions": {},
   "description": null,
   "edges": [
     {

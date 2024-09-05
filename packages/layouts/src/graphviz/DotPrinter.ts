@@ -2,13 +2,27 @@ import {
   compareFqnHierarchically,
   DefaultRelationshipColor,
   defaultTheme as Theme,
+  DefaultThemeColor,
   invariant,
+  isThemeColor,
   nameFromFqn,
   nonNullable,
   parentFqn,
   parentFqnPredicate
 } from '@likec4/core'
-import type { ComputedEdge, ComputedNode, ComputedView, EdgeId, Fqn, RelationshipLineType, XYPoint } from '@likec4/core'
+import type {
+  Color,
+  ComputedEdge,
+  ComputedNode,
+  ComputedView,
+  EdgeId,
+  ElementThemeColorValues,
+  Fqn,
+  RelationshipLineType,
+  RelationshipThemeColorValues,
+  ThemeColorValues,
+  XYPoint
+} from '@likec4/core/types'
 import { logger } from '@likec4/log'
 import { filter, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
 import {
@@ -227,13 +241,14 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {
     invariant(isCompound(compound), 'node should be compound')
     invariant(isNumber(compound.depth), 'node.depth should be defined')
-    const textColor = compoundLabelColor(Theme.elements[compound.color].loContrast)
+    const colorValues = this.getElementColorValues(compound.color)
+    const textColor = compoundLabelColor(colorValues.loContrast)
     subgraph.apply({
       [_.likec4_id]: compound.id,
       [_.likec4_level]: compound.level,
       [_.likec4_depth]: compound.depth,
-      [_.fillcolor]: compoundColor(Theme.elements[compound.color].fill, compound.depth),
-      [_.color]: compoundColor(Theme.elements[compound.color].stroke, compound.depth),
+      [_.fillcolor]: compoundColor(colorValues.fill, compound.depth),
+      [_.color]: compoundColor(colorValues.stroke, compound.depth),
       [_.style]: 'filled',
       [_.margin]: pxToPoints(32),
       [_.label]: compoundLabel(compound, textColor)
@@ -244,12 +259,13 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected elementToNode(element: ComputedNode, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
+    const colorValues = this.getElementColorValues(element.color)
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
-      [_.fillcolor]: Theme.elements[element.color].fill,
-      [_.fontcolor]: Theme.elements[element.color].hiContrast,
-      [_.color]: Theme.elements[element.color].stroke,
+      [_.fillcolor]: colorValues.fill,
+      [_.fontcolor]: colorValues.hiContrast,
+      [_.color]: colorValues.stroke,
       [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(26)}`
     })
     switch (element.shape) {
@@ -286,7 +302,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         break
     }
     // add label to the end
-    node.attributes.set(_.label, nodeLabel(element))
+    node.attributes.set(_.label, nodeLabel(element, colorValues))
     return node
   }
 
@@ -491,5 +507,15 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     this.graphvizModel.delete(_.packmode)
     this.graphvizModel.attributes.graph.delete(_.margin)
     return this
+  }
+  protected getRelationshipColorValues(color: Color): RelationshipThemeColorValues {
+    return isThemeColor(color)
+      ? Theme.relationships[color]
+      : this.view.customColorDefinitions[color]?.relationships ?? Theme.relationships[DefaultThemeColor]
+  }
+  protected getElementColorValues(color: Color): ElementThemeColorValues {
+    return isThemeColor(color)
+      ? Theme.elements[color]
+      : this.view.customColorDefinitions[color]?.elements ?? Theme.elements[DefaultThemeColor]
   }
 }

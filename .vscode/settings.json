@@ -75,5 +75,6 @@
     "webcola",
     "xyflow",
     "zoomable"
-  ]
+  ],
+  "editor.tabSize": 2
 }

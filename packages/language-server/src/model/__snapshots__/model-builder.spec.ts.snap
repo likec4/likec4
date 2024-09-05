@@ -85,6 +85,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     "index": {
       "__": "element",
       "autoLayout": "TB",
+      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -237,6 +238,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "frontend": {
       "__": "element",
       "autoLayout": "TB",
+      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -332,6 +334,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "index": {
       "__": "element",
       "autoLayout": "TB",
+      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -395,6 +398,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "v1": {
       "__": "element",
       "autoLayout": "LR",
+      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -536,6 +540,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     "index": {
       "__": "element",
       "autoLayout": "TB",
+      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -655,6 +660,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     "index": {
       "__": "element",
       "autoLayout": "TB",
+      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {
@@ -770,6 +776,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     "index": {
       "__": "element",
       "autoLayout": "TB",
+      "customColorDefinitions": {},
       "description": null,
       "edges": [
         {

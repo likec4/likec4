@@ -1,5 +1,6 @@
 import {
   type BorderStyle,
+  type Color,
   type ComputedView,
   type CustomElementExpr as C4CustomElementExpr,
   type CustomRelationExpr as C4CustomRelationExpr,
@@ -17,7 +18,6 @@ import {
   type RelationshipLineType,
   type RelationWhereExpr,
   type Tag,
-  type ThemeColor,
   type ViewID,
   type ViewRule,
   type ViewRulePredicate,
@@ -220,7 +220,7 @@ const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
   target: Target
   title?: string
   kind?: string
-  color?: ThemeColor
+  color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
@@ -336,6 +336,7 @@ const emptyView = {
   description: null,
   tags: null,
   links: null,
+  customColorDefinitions: {},
   rules: []
 }
 
@@ -371,7 +372,7 @@ export function $custom(
     description?: string
     technology?: string
     shape?: ElementShape
-    color?: ThemeColor
+    color?: Color
     border?: BorderStyle
     icon?: string
     opacity?: number

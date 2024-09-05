@@ -115,9 +115,10 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       }
     }
     if (edge.color) {
+      const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
-        [_.color]: Theme.relationships[edge.color].lineColor,
-        [_.fontcolor]: Theme.relationships[edge.color].labelColor
+        [_.color]: colorValues.lineColor,
+        [_.fontcolor]: colorValues.labelColor
       })
     }
 

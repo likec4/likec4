@@ -1,3 +1,4 @@
+import type { DiagramView } from '@likec4/core'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
@@ -5,6 +6,7 @@ import { domAnimation, LazyMotion } from 'framer-motion'
 import { memo, useRef } from 'react'
 import { rootClassName } from './globals.css'
 import { useDiagramState } from './hooks/useDiagramState'
+import { LikeC4CustomColors } from './LikeC4CustomColors'
 import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
@@ -70,6 +72,7 @@ export function LikeC4Diagram({
           fitView={fitView}
           {...initialRef.current}
         >
+          {customColorsDefined(view) && <LikeC4CustomColors customColors={view.customColorDefinitions} />}
           <DiagramContextProvider
             view={view}
             keepAspectRatio={keepAspectRatio}
@@ -166,3 +169,7 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
   )
 }, shallowEqual)
 LikeC4DiagramInnerMemo.displayName = 'LikeC4DiagramInnerMemo'
+
+function customColorsDefined(view: DiagramView) {
+  return Object.keys(view.customColorDefinitions).length > 0
+}

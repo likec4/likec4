@@ -218,6 +218,7 @@ export const indexView = {
   description: null,
   tags: null,
   links: null,
+  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -236,6 +237,7 @@ export const cloudView = {
   description: null,
   tags: null,
   links: null,
+  customColorDefinitions: {},
   viewOf: 'cloud' as Fqn,
   rules: [
     {
@@ -252,6 +254,7 @@ export const cloud3levels = {
   description: null,
   tags: null,
   links: null,
+  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -280,6 +283,7 @@ export const amazonView = {
   description: null,
   tags: null,
   links: null,
+  customColorDefinitions: {},
   rules: [
     {
       include: [
@@ -304,6 +308,7 @@ export const issue577View = (icon: string) => ({
   description: null,
   tags: null,
   links: null,
+  customColorDefinitions: {},
   viewOf: 'amazon' as Fqn,
   rules: [
     {

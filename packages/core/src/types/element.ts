@@ -56,7 +56,7 @@ export interface Element {
   readonly links: NonEmptyArray<Link> | null
   readonly icon?: IconUrl
   readonly shape?: ElementShape
-  readonly color?: ThemeColor
+  readonly color?: Color
   readonly style?: ElementStyle
   readonly notation?: string
   readonly metadata?: { [key: string]: string }

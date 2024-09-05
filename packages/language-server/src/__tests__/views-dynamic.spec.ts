@@ -6,6 +6,7 @@ const model = `
     element component
     tag epic-123
     tag next
+    color custom-color #ff0000
   }
   model {
     component user
@@ -77,7 +78,7 @@ describe.concurrent('dynamic views', () => {
         system.frontend <- system.backend
 
         style * {
-          color red
+          color custom-color
         }
         autoLayout BottomTop
       }
