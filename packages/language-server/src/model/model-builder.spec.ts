@@ -647,7 +647,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     specification {
       element person
       relationship async {
-        technology "Async"
+        technology 'Async'
       }
     }
     model {
@@ -936,5 +936,147 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     })
+  })
+
+  it('parses custom color definitions', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        color custom-color1 #FF00FF
+        color custom-color2 #FFFF00
+        
+        element component {
+          style {
+            color custom-color2
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView).toHaveProperty('customColorDefinitions', {
+      'custom-color1': {
+        elements: {
+          fill: '#ff09ff',
+          hiContrast: '#ffe8ff',
+          loContrast: '#ffceff',
+          stroke: '#e400e4'
+        },
+        relationships: {
+          labelBgColor: '#b100b2',
+          labelColor: '#ff64ff',
+          lineColor: '#fe37fe'
+        }
+      },
+      'custom-color2': {
+        elements: {
+          fill: '#ffff09',
+          hiContrast: '#ffffe1',
+          loContrast: '#ffffcc',
+          stroke: '#e3e300'
+        },
+        relationships: {
+          labelBgColor: '#adae00',
+          labelColor: '#ffff64',
+          lineColor: '#ffff38'
+        }
+      }
+    })
+  })
+
+  it('allows custom colors in spec', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component {
+          style {
+            color custom-color1
+          }
+        }
+
+        relationship uses {
+          color custom-color1
+        }
+
+        color custom-color1 #FF00FF
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -[uses]-> sys2
+      }
+      views {
+        view { 
+          include * 
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.edges[0]?.color).toBe('custom-color1')
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
+    expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('custom-color1')
+  })
+
+  it('allows custom colors in relationships', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+
+        color custom-color1 #FF00FF
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2 {
+          style {
+            color custom-color1
+          }
+        }
+      }
+      views {
+        view {
+          include *
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.edges[0]?.color).toBe('custom-color1')
+  })
+
+  it('allows custom colors in include expressions of view', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+
+        color custom-color1 #FF00FF
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1 with {
+            color custom-color1
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
   })
 })

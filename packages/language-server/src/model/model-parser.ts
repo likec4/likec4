@@ -1,5 +1,10 @@
-import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
-import type * as c4 from '@likec4/core'
+import {
+  type c4,
+  type HexColorLiteral,
+  invariant,
+  isNonEmptyArray,
+  nonexhaustive
+} from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
 import { filter, flatMap, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
@@ -24,6 +29,7 @@ import {
   resolveRelationPoints,
   streamModel,
   toAutoLayout,
+  toColor,
   toElementStyle,
   toRelationshipStyleExcludeDefaults,
   ViewOps
@@ -143,6 +149,23 @@ export class LikeC4ModelParser {
       const tag = tagSpec.tag.name as c4.Tag
       if (isTruthy(tag)) {
         c4Specification.tags.add(tag)
+      }
+    }
+
+    const colors_specs = specifications.flatMap(s => s.colors.filter(isValid))
+    for (const { name, color } of colors_specs) {
+      try {
+        const colorName = name.name as c4.CustomColor
+        if (colorName in c4Specification.colors) {
+          logger.warn(`Custom color "${colorName}" is already defined`)
+          continue
+        }
+
+        c4Specification.colors[colorName] = {
+          color: color as HexColorLiteral
+        }
+      } catch (e) {
+        logWarnError(e)
       }
     }
   }
@@ -407,8 +430,9 @@ export class LikeC4ModelParser {
           return acc
         }
         if (ast.isColorProperty(prop)) {
-          if (isDefined(prop.value)) {
-            acc.custom[prop.key] = prop.value
+          const value = toColor(prop)
+          if (isDefined(value)) {
+            acc.custom[prop.key] = value
           }
           return acc
         }
@@ -508,8 +532,9 @@ export class LikeC4ModelParser {
           return acc
         }
         if (ast.isColorProperty(prop)) {
-          if (isTruthy(prop.value)) {
-            acc.customRelation[prop.key] = prop.value
+          const value = toColor(prop)
+          if (isTruthy(value)) {
+            acc.customRelation[prop.key] = value
           }
           return acc
         }
@@ -647,7 +672,10 @@ export class LikeC4ModelParser {
             continue
           }
           if (ast.isColorProperty(prop)) {
-            step[prop.key] = prop.value
+            const value = toColor(prop)
+            if (isTruthy(value)) {
+              step[prop.key] = value
+            }
             continue
           }
           if (ast.isLineProperty(prop)) {

@@ -30,7 +30,7 @@ declare module './generated/ast' {
 type ParsedElementStyle = {
   shape?: c4.ElementShape
   icon?: c4.IconUrl
-  color?: c4.ThemeColor
+  color?: c4.Color
   border?: c4.BorderStyle
   opacity?: number
 }
@@ -47,10 +47,16 @@ export interface ParsedAstSpecification {
     {
       technology?: string
       notation?: string
-      color?: c4.ThemeColor
+      color?: c4.Color
       line?: c4.RelationshipLineType
       head?: c4.RelationshipArrowType
       tail?: c4.RelationshipArrowType
+    }
+  >
+  colors: Record<
+    c4.CustomColor,
+    {
+      color: HexColorLiteral
     }
   >
 }
@@ -78,7 +84,7 @@ export interface ParsedAstRelation {
   title: string
   description?: string
   technology?: string
-  color?: c4.ThemeColor
+  color?: c4.Color
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
@@ -178,7 +184,8 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
     c4Specification: {
       tags: new Set(),
       elements: {},
-      relationships: {}
+      relationships: {},
+      colors: {}
     },
     c4Elements: [],
     c4Relations: [],
@@ -243,6 +250,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isSpecificationElementKind,
   ast.isSpecificationRelationshipKind,
   ast.isSpecificationTag,
+  ast.isSpecificationColor,
   ast.isSpecificationRule,
   ast.isModelViews,
   ast.isModel
@@ -354,8 +362,9 @@ export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isVa
         break
       }
       case ast.isColorProperty(prop): {
-        if (isTruthy(prop.value)) {
-          result.color = prop.value
+        const color = toColor(prop)
+        if (isTruthy(color)) {
+          result.color = color
         }
         break
       }
@@ -386,7 +395,7 @@ export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isVa
 
 export function toRelationshipStyle(props?: ast.RelationshipStyleProperty[]) {
   const result = {} as {
-    color?: c4.ThemeColor
+    color?: c4.Color
     line?: c4.RelationshipLineType
     head?: c4.RelationshipArrowType
     tail?: c4.RelationshipArrowType
@@ -396,7 +405,10 @@ export function toRelationshipStyle(props?: ast.RelationshipStyleProperty[]) {
   }
   for (const prop of props) {
     if (ast.isColorProperty(prop)) {
-      result.color = prop.value
+      const color = toColor(prop)
+      if (isTruthy(color)) {
+        result.color = color
+      }
       continue
     }
     if (ast.isLineProperty(prop)) {
@@ -434,6 +446,10 @@ export function toRelationshipStyleExcludeDefaults(
     ...(head && head !== DefaultArrowType ? { head } : {}),
     ...(tail ? { tail } : {})
   }
+}
+
+export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
+  return astNode?.themeColor ?? (astNode?.customColor?.$refText as (HexColorLiteral | undefined))
 }
 
 export function toAutoLayout(

@@ -106,7 +106,8 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       const spec of specifications.flatMap(s => [
         ...s.elements,
         ...s.relationships,
-        ...s.tags
+        ...s.tags,
+        ...s.colors
       ])
     ) {
       try {
@@ -132,6 +133,14 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
               docExports.push(
                 this.descriptions.createDescription(spec.kind, spec.kind.name, document),
                 this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document)
+              )
+            }
+            continue
+          }
+          case ast.isSpecificationColor(spec): {
+            if (isTruthy(spec.name.name)) {
+              docExports.push(
+                this.descriptions.createDescription(spec.name, spec.name.name, document)
               )
             }
             continue

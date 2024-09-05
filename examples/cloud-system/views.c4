@@ -27,4 +27,14 @@ views {
     }
   }
 
+  view view-with-custom-colors {
+    include *,
+    cloud -> * with {
+      color custom
+    }
+
+    style cloud {
+      color custom
+    }
+  }
 }
