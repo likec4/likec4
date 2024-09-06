@@ -2,6 +2,7 @@ import { hasAtLeast } from '@likec4/core'
 import { Scheme } from '@likec4/language-server/likec4lib'
 import * as vscode from 'vscode'
 import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
+import { BuiltInFileSystemProvider } from '../common/BuiltInFileSystemProvider'
 import { ExtensionController } from '../common/ExtensionController'
 import { extensionName, extensionTitle, languageId } from '../const'
 import { logger, logToChannel } from '../logger'
@@ -11,6 +12,7 @@ let worker: Worker | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
+  BuiltInFileSystemProvider.register(context)
   const ctrl = (controller = new ExtensionController(context, createLanguageClient(context)))
   void ctrl.activate()
 }

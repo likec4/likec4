@@ -10,6 +10,7 @@ import {
   type TextDocumentFilter,
   TransportKind
 } from 'vscode-languageclient/node'
+import { BuiltInFileSystemProvider } from '../common/BuiltInFileSystemProvider'
 import { ExtensionController } from '../common/ExtensionController'
 import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
 import { logger, logToChannel } from '../logger'
@@ -23,6 +24,7 @@ let controller: ExtensionController | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
+  BuiltInFileSystemProvider.register(context)
   const client = createLanguageClient(context)
   const ctrl = (controller = new ExtensionController(context, client))
   ctrl.activate().catch(e => {

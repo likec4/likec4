@@ -18,7 +18,6 @@ import {
 } from '../const'
 import { addLogReporter, logger } from '../logger'
 import { AbstractDisposable } from '../util'
-import { BuiltInFileSystemProvider } from './BuiltInFileSystemProvider'
 import { C4Model } from './C4Model'
 import { initWorkspace, rebuildWorkspace } from './initWorkspace'
 import Messenger from './Messenger'
@@ -58,7 +57,6 @@ export class ExtensionController extends AbstractDisposable {
   ) {
     super()
     ExtensionController.extensionUri = _context.extensionUri
-    BuiltInFileSystemProvider.register(this._context)
 
     this.onDispose(() => {
       client.dispose()
