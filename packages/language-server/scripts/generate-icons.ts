@@ -12,7 +12,7 @@ if (icons.length === 0) {
 }
 
 out
-  .append('export const LibIcons = `likec4lib {')
+  .append('export const LibIcons: string = `likec4lib {')
   .appendNewLine()
   .append('  icons {')
   .appendNewLine()

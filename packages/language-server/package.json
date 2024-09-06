@@ -68,6 +68,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "prepack": "turbo run build",
     "build": "unbuild",
     "pregenerate": "rm -f src/generated/*",
     "watch:langium": "langium generate --watch",
@@ -112,6 +113,7 @@
     "langium-cli": "3.1.1",
     "npm-run-all2": "^6.2.2",
     "tsx": "~4.9.3",
+    "turbo": "^2.1.0",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",
     "vitest": "~2.0.5"

@@ -13,7 +13,6 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "unbuild",
-    "dev": "unbuild --stub",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
@@ -62,6 +61,7 @@
     "chroma-js": "^3.0.0",
     "execa": "^9.3.1",
     "remeda": "^2.11.0",
+    "turbo": "^2.1.0",
     "type-fest": "^4.21.0",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",

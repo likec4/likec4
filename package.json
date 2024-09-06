@@ -22,7 +22,7 @@
     "ci:typecheck": "turbo run typecheck  --filter='!@likec4/docs-astro'",
     "ci:build": "turbo run build  --filter='!@likec4/docs-astro' --filter='!@likec4/playground'",
     "ci:test": "vitest run --reporter=basic --reporter=github-actions --no-isolate",
-    "vscode:typecheck": "turbo run typecheck --filter='!@likec4/docs-astro' --log-prefix=none",
+    "vscode:typecheck": "turbo run typecheck --filter='!@likec4/docs-astro'",
     "release": "shipjs prepare",
     "clean": "turbo run clean",
     "clean:root": "run-p --print-label 'clean:root:*'",
@@ -36,7 +36,6 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.24.7",
     "@types/node": "^20.16.1",
     "@vitest/ui": "~2.0.5",
     "dprint": "0.47.2",

@@ -146,8 +146,13 @@ interface LikeC4Model {
   view(viewId: ViewID): LikeC4ViewModel;
   /**
    * Returns the parent element of given element.
+   * @see ancestors
    */
   parent(element: ElementOrFqn): LikeC4Model.Element | null;
+  /**
+   * Get all children of the element (only direct children),
+   * @see descendants
+   */
   children(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
   /**
    * Get all sibling (i.e. same parent)
@@ -164,7 +169,7 @@ interface LikeC4Model {
   descendants(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
   /**
    * Incoming relationships to the element and its descendants
-   * @param onlyDirect - only direct incoming relationships, ignore descendants
+   * @see incomers
    */
   incoming(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): ReadonlyArray<LikeC4Model.Relationship>;
   /**
@@ -173,6 +178,7 @@ interface LikeC4Model {
   incomers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): ReadonlyArray<LikeC4Model.Element>;
   /**
    * Outgoing relationships from the element and its descendants
+   * @see outgoers
    */
   outgoing(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): ReadonlyArray<LikeC4Model.Relationship>;
   /**
@@ -184,7 +190,7 @@ interface LikeC4Model {
    */
   internal(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Relationship>;
   /**
-   * Resolve siblings of the element and its ancestors
+   * Resolve siblings of the element and siblings of ancestors
    *  (from closest to root)
    */
   ascendingSiblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
