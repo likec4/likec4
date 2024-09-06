@@ -3,7 +3,6 @@ import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconLoader, IconX } from '@tabler/icons-react'
 import React from 'react'
-import { hasAtLeast } from 'remeda'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
 

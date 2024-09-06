@@ -31,11 +31,11 @@ npm add likec4
 
 ### Usage
 
-You can initiate Model API from a directory with source files or from a string with DSL source.
+You can initiate LikeC4 API from a directory with source files or from a string with DSL source.
 
 #### From workspace
 
-Recursively searches and parses source files from the wokrkspace directory:
+Recursively searches and parses source files from workspace:
 
 ```ts
 import { LikeC4 } from 'likec4'
@@ -43,12 +43,13 @@ import { LikeC4 } from 'likec4'
 const likec4 = await LikeC4.fromWorkspace('path to workspace')
 ```  
 
-Method also accepts optional properties:
+Method also accepts options:
 
 | Property         | Description                                                                                         |
 | -----------------| --------------------------------------------------------------------------------------------------- |
-| `throwIfInvalid` | boolean, If true, initialization will return rejected promise (default `false`) |
-| `logger`         | Whenever to use `vite` logger, `default` (console) or custom implementation  |
+| `printErrors`    | if model is invalid, errors are reported to the logger (default `true`) |
+| <span style="text-wrap:nowrap">`throwIfInvalid`</span> | return rejected promise if model is invalid  (default `false`) |
+| `logger`         | Whenever to use `vite` logger, `default` (console) or your custom implementation  |
 | `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
 
 <Aside type='caution' title="In progress" >
@@ -91,13 +92,19 @@ import { LikeC4 } from "likec4"
 
 const likec4 = await LikeC4.fromSource(`....`)
 
-const model = likec4.model()
+// Validation errors
+console.log(likec4.getErrors())
 
+// Traverse the model
+const model = likec4.model()
 model
   .element('cloud.backend.api')
   .incoming() // relationships incoming to the element
   .filter(r => r.tags.includes('http')) // filter by tags
   .map(r => r.source) // get source elements
+
+// Layouted views
+const diagrams = await likec4.diagrams()
 
 
 ```  
@@ -138,7 +145,7 @@ interface LikeC4Model {
    */
   view(viewId: ViewID): LikeC4ViewModel;
   /**
-   * Returns the parent element of a given element.
+   * Returns the parent element of given element.
    */
   parent(element: ElementOrFqn): LikeC4Model.Element | null;
   children(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
@@ -188,6 +195,18 @@ interface LikeC4Model {
 }
 ```
 
+#### LikeC4ViewModel
+
+View model API provides methods to query and traverse elements and relationships that are included in the view:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+const viewModel = likec4.model().view('index')
+``` 
+
+{/* 
 ##### Element
 
 ...
@@ -206,4 +225,4 @@ interface LikeC4Model {
 
 ##### Connection
 
-...
+... */}

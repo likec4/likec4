@@ -156,9 +156,69 @@ likec4 codegen ts ...
 
 ## API Usage
 
-LikeC4 model can be accessed 
+You can access and traverse your architecture model programmatically using the LikeC4 Model API.
+
+### From workspace
+
+Recursively searches and parses source files from the wokrkspace directory:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('path to workspace', opts)
+```  
+
+### From source
+
+Parses the model from the string:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`
+  specification {
+    element system
+    element user
+  }
+  model {
+    customer = user 'Customer'
+    cloud = system 'System'
+  }
+  views {
+    view index {
+      include *
+    }
+  }
+`, opts)
+```
+
+### Example
+
+When the model is initialized, you can use the following methods to query and traverse it.
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+
+// Validation errors
+console.log(likec4.getErrors())
+
+// Traverse the model
+const model = likec4.model()
+model
+  .element('cloud.backend.api')
+  .incoming() // relationships incoming to the element
+  .filter(r => r.tags.includes('http')) // filter by tags
+  .map(r => r.source) // get source elements
+
+// Layouted views
+const diagrams = await likec4.diagrams()
 
 
+```  
+
+Check Typescript definitions for available methods.
 
 ## Development
 

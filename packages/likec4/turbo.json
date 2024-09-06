@@ -26,7 +26,8 @@
         "^build"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "!**/*.tsbuildinfo"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

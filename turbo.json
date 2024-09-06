@@ -16,21 +16,22 @@
       ]
     },
     "generate": {
+      "outputs": [],
       "outputLogs": "new-only"
     },
     "typecheck": {
       "dependsOn": [
+        "@likec4/log#build",
         "generate",
-        "^build",
         "topo"
       ],
-      "outputLogs": "errors-only"
+      "outputs": [],
+      "cache": false
     },
     "build": {
       "dependsOn": [
         "generate",
-        "^build",
-        "topo"
+        "^build"
       ],
       "outputs": [
         "dist/**"

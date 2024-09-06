@@ -64,7 +64,7 @@ export async function handler({
   if (!useOverview) {
     return
   }
-  const views = await languageServices.views.diagrams()
+  const views = await languageServices.diagrams()
 
   if (hasAtLeast(views, 1)) {
     const logger = createLikeC4Logger('c4:export')

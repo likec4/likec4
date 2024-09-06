@@ -12,8 +12,6 @@ const root = dirname(__filename)
 const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
-  '@likec4/core/types': resolve('../../packages/core/src/types/index.ts'),
-  '@likec4/core': resolve('../../packages/core/src/index.ts')
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
@@ -32,6 +30,7 @@ const baseConfig: UserConfigFnObject = () => {
       cssCodeSplit: false
     },
     optimizeDeps: {
+      force: true,
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin as any,
@@ -74,6 +73,9 @@ export default defineConfig((env) => {
               preserveModulesRoot: resolve('src'),
               entryFileNames: '[name].mjs'
             },
+            treeshake: {
+              preset: 'recommended'
+            },
             makeAbsoluteExternalsRelative: 'ifRelativeSource',
             external: [
               'react',
@@ -86,6 +88,7 @@ export default defineConfig((env) => {
               'monaco-languageclient',
               'framer-motion',
               'esm-env',
+              'tslib',
               '#monaco/bootstrap',
               '#monaco/config',
               /@likec4\/(icons|layouts|language-server).*/,
@@ -126,6 +129,9 @@ export default defineConfig((env) => {
         build: {
           copyPublicDir: true,
           rollupOptions: {
+            treeshake: {
+              preset: 'recommended'
+            },
             output: {
               compact: true,
               manualChunks: (id) => {

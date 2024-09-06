@@ -21,35 +21,50 @@
     "directory": "packages/language-server"
   },
   "type": "module",
+  "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.mjs"
-    },
-    "./likec4lib": {
-      "types": "./dist/likec4lib.d.ts",
-      "default": "./dist/likec4lib.mjs"
-    },
-    "./browser": {
-      "types": "./dist/browser.d.ts",
-      "default": "./dist/browser.mjs"
-    },
-    "./protocol": {
-      "types": "./dist/protocol.d.ts",
-      "default": "./dist/protocol.mjs"
-    },
-    "./node": {
-      "types": "./dist/node.d.ts",
-      "default": "./dist/node.mjs"
-    },
-    "./model-graph": {
-      "types": "./dist/model-graph/index.d.ts",
-      "default": "./dist/model-graph/index.mjs"
-    }
+    ".": "./src/index.ts",
+    "./likec4lib": "./src/likec4lib.ts",
+    "./browser": "./src/browser.ts",
+    "./protocol": "./src/protocol.ts",
+    "./node": "./src/node.ts",
+    "./model-graph": "./src/model-graph/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs"
+      },
+      "./likec4lib": {
+        "types": "./dist/likec4lib.d.ts",
+        "import": "./dist/likec4lib.mjs",
+        "require": "./dist/likec4lib.cjs"
+      },
+      "./browser": {
+        "types": "./dist/browser.d.ts",
+        "import": "./dist/browser.mjs",
+        "require": "./dist/browser.cjs"
+      },
+      "./protocol": {
+        "types": "./dist/protocol.d.ts",
+        "import": "./dist/protocol.mjs",
+        "require": "./dist/protocol.cjs"
+      },
+      "./node": {
+        "types": "./dist/node.d.ts",
+        "import": "./dist/node.mjs",
+        "require": "./dist/node.cjs"
+      },
+      "./model-graph": {
+        "types": "./dist/model-graph/index.d.ts",
+        "import": "./dist/model-graph/index.mjs",
+        "require": "./dist/model-graph/index.cjs"
+      }
+    }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

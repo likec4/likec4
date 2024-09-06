@@ -61,7 +61,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
     graphviz: useDotBin ? 'binary' : 'wasm'
   })
 
-  const diagrams = [...await languageServices.views.diagrams()]
+  const diagrams = [...await languageServices.diagrams()]
   if (diagrams.length === 0) {
     consola.error('no views found')
     process.exitCode = 1

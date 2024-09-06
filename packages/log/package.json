@@ -6,8 +6,7 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "dist",
-    "lib"
+    "dist"
   ],
   "repository": {
     "type": "git",
@@ -15,18 +14,17 @@
     "directory": "packages/log"
   },
   "type": "module",
+  "sideEffects": false,
   "exports": {
-    ".": {
-      "node": {
-        "types": "./dist/node.d.ts",
-        "import": "./dist/node.mjs",
-        "require": "./dist/node.cjs"
-      },
-      "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs"
-      }
+    "node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.mjs",
+      "require": "./dist/node.cjs"
+    },
+    "default": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
   "publishConfig": {
@@ -37,12 +35,10 @@
     "typecheck": "tsc --noEmit",
     "build": "unbuild"
   },
-  "dependencies": {
-    "consola": "^3.2.3"
-  },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.16.1",
+    "consola": "^3.2.3",
     "typescript": "^5.5.4",
     "unbuild": "^2.0.0"
   },

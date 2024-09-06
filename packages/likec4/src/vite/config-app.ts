@@ -137,7 +137,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       }),
       likec4Plugin({
         languageServices,
-        generatePreviews: useOverviewGraph
+        useOverviewGraph: useOverviewGraph
       }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',

@@ -26,7 +26,7 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
     graphviz: useDotBin ? 'binary' : 'wasm'
   })
 
-  const model = await languageServices.buildComputedModel()
+  const model = await languageServices.computed()
   if (!model) {
     logger.warn('no model parsed')
     throw new Error('no model parsed')
@@ -37,7 +37,7 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = await languageServices.views.diagrams()
+  const views = await languageServices.diagrams()
 
   const output = {
     ...model,

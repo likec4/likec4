@@ -1,14 +1,22 @@
-import { LikeC4Model, type ParsedLikeC4Model } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core'
 import { type LangiumDocuments, URI, UriUtils } from 'langium'
 import { resolve } from 'node:path'
+import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
-import { type CreateLanguageServiceOptions, createLanguageServices } from './language/module'
+import { createLanguageServices } from './language/module'
 import type { Views } from './language/Views'
 import type { Logger } from './logger'
 
 type LikeC4Langium = ReturnType<typeof createLanguageServices>
 
 type LikeC4Options = {
+  /**
+   * By default, if LikeC4 model is invalid, errors are printed to the console.
+   * Disable this behavior by setting this option to false.
+   *
+   * @default true
+   */
+  printErrors?: boolean
   /**
    * If true, initialization will return rejected promise with the LikeC4 instance.
    * Use `likec4.getErrors()` to get the errors.
@@ -26,6 +34,13 @@ type LikeC4Options = {
    */
   graphviz?: 'wasm' | 'binary'
 }
+
+const validationErrorsToError = (likec4: LikeC4) =>
+  new Error(
+    `Invalid model:\n${
+      likec4.getErrors().map(e => `  ${e.sourceFsPath}:${e.line} ${e.message.slice(0, 200)}`).join('\n')
+    }`
+  )
 
 export class LikeC4 {
   static async fromSource(likec4SourceCode: string, opts?: LikeC4Options) {
@@ -54,10 +69,10 @@ export class LikeC4 {
 
     await langium.cli.Workspace.init()
 
-    const likec4 = new LikeC4(workspaceUri.path, langium)
+    const likec4 = new LikeC4(workspaceUri.path, langium, opts?.printErrors ?? true)
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
-      return Promise.reject(likec4)
+      return Promise.reject(validationErrorsToError(likec4))
     }
 
     return likec4
@@ -78,19 +93,18 @@ export class LikeC4 {
       })
 
       await langium.cli.Workspace.initForWorkspace(workspace)
-      likec4 = new LikeC4(workspace, langium)
+      likec4 = new LikeC4(workspace, langium, opts?.printErrors ?? true)
       LikeC4.likec4Instances.set(workspace, likec4)
     }
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
-      return Promise.reject(likec4)
+      return Promise.reject(validationErrorsToError(likec4))
     }
 
     return likec4
   }
 
-  private cache = new WeakMap<ParsedLikeC4Model, LikeC4Model>()
-
+  private cachedModel: LikeC4Model | undefined
   private logger: Logger
   private langiumDocuments: LangiumDocuments
 
@@ -98,29 +112,40 @@ export class LikeC4 {
 
   private constructor(
     public readonly workspace: string,
-    private langium: LikeC4Langium
+    private langium: LikeC4Langium,
+    private isPrintErrorEnabled: boolean
   ) {
     this.logger = langium.logger
     this.langiumDocuments = langium.shared.workspace.LangiumDocuments
     this.views = langium.likec4.Views
+
+    if (this.isPrintErrorEnabled) {
+      this.printErrors()
+    }
   }
 
-  async buildComputedModel() {
+  async computed() {
     return await this.langium.likec4.ModelBuilder.buildComputedModel()
   }
 
   model() {
-    const parsedModel = this.langium.likec4.ModelBuilder.syncBuildModel()
-    if (!parsedModel) {
-      throw new Error('Failed to build model')
+    if (!this.cachedModel) {
+      const parsedModel = this.langium.likec4.ModelBuilder.unsafeSyncBuildModel()
+      if (!parsedModel) {
+        throw new Error('Failed to build model')
+      }
+      const computedModel = this.langium.likec4.ModelBuilder.unsafeSyncBuildComputedModel(parsedModel)
+      this.cachedModel = LikeC4Model.from(computedModel)
     }
-    let model = this.cache.get(parsedModel)
-    if (!model) {
-      const computedModel = this.langium.likec4.ModelBuilder.syncBuildComputedModel(parsedModel)
-      model = LikeC4Model.from(computedModel)
-      this.cache.set(parsedModel, model)
-    }
-    return model
+    return this.cachedModel
+  }
+
+  /**
+   * Diagram is a computed view, layouted using Graphviz
+   * Used in React components
+   */
+  async diagrams() {
+    return await this.views.diagrams()
   }
 
   getErrors() {
@@ -130,6 +155,7 @@ export class LikeC4 {
         .filter(d => d.severity === DiagnosticSeverity.Error)
         .map(({ message, range }) => ({
           message,
+          line: range.start.line,
           range,
           sourceFsPath: doc.uri.fsPath
         }))
@@ -140,6 +166,37 @@ export class LikeC4 {
     return this.langiumDocuments.all.some(doc => {
       return (doc.diagnostics ?? []).some(d => d.severity === DiagnosticSeverity.Error)
     })
+  }
+
+  /**
+   * @returns true if there are errors
+   */
+  printErrors() {
+    let hasErrors = false
+    for (const doc of this.langiumDocuments.all) {
+      const errors = doc.diagnostics?.filter(e => e.severity === 1)
+      if (errors && errors.length > 0) {
+        hasErrors = true
+        const messages = errors
+          .flatMap(validationError => {
+            const line = validationError.range.start.line
+            const messages = validationError.message.split('\n')
+            if (messages.length > 10) {
+              messages.length = 10
+            }
+            return messages
+              .map((message, i) => {
+                if (i === 0) {
+                  return '    ' + k.dim(`Line ${line}: `) + k.red(message)
+                }
+                return ' '.repeat(10) + k.red(message)
+              })
+          })
+          .join('\n')
+        this.logger.error(`Invalid ${doc.uri.fsPath}\n${messages}`)
+      }
+    }
+    return hasErrors
   }
 
   /**
@@ -155,7 +212,7 @@ export class LikeC4 {
           removed ? [URI.file(removed)] : [],
           token
         )
-        // we come here if only the update was successful (and not cancelled)
+        // we come here if only the update was successful, did not throw and not cancelled
         completed = !token.isCancellationRequested
       })
       return completed

@@ -13,6 +13,8 @@ const $ = $_({
 
 consola.start('Building...')
 
+await $`rm -rf dist`
+
 // Run build
 await $`yarn turbo-build`
 

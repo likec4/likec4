@@ -8,7 +8,7 @@ exports[`generate generateViewsDataDTs 1`] = `
 /* prettier-ignore-start */
 /* eslint-disable */
 
-import type { DiagramView } from '@likec4/core'
+import type { DiagramView } from 'likec4'
 
 
 export type LikeC4ViewId = 'fakeView' | '74f5364fa4b';
@@ -59,7 +59,7 @@ exports[`generate generateViewsDataTs 1`] = `
 
 // @ts-nocheck
 
-import type { DiagramView } from '@likec4/core'
+import type { DiagramView } from 'likec4'
 
 
 export type LikeC4ViewId = 'fakeView' | '74f5364fa4b';

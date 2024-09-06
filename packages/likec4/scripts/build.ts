@@ -1,6 +1,6 @@
-import { startTimer } from '@/logger'
 import { consola } from 'consola'
 import { mkdir } from 'node:fs/promises'
+import { startTimer } from '../src/logger'
 import { buildCli } from './build-cli'
 import { bundleApp } from './bundle-app'
 import { buildReact } from './bundle-react'

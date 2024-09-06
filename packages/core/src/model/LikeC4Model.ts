@@ -103,13 +103,18 @@ export class LikeC4Model {
   }
 
   /**
-   * Returns the parent element of a given element.
+   * Returns the parent element of given element.
+   * @see ancestors
    */
   public parent(element: ElementOrFqn): LikeC4Model.Element | null {
     const id = isString(element) ? element : element.id
     return this.#parents.get(id) || null
   }
 
+  /**
+   * Get all children of the element (only direct children),
+   * @see descendants
+   */
   public children(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element> {
     const id = isString(element) ? element : element.id
     return this._childrenOf(id)
@@ -151,6 +156,7 @@ export class LikeC4Model {
 
   /**
    * Incoming relationships to the element and its descendants
+   * @see incomers
    */
   public incoming(
     element: ElementOrFqn,
@@ -182,6 +188,7 @@ export class LikeC4Model {
 
   /**
    * Outgoing relationships from the element and its descendants
+   * @see outgoers
    */
   public outgoing(
     element: ElementOrFqn,
@@ -219,7 +226,7 @@ export class LikeC4Model {
   }
 
   /**
-   * Resolve siblings of the element and its ancestors
+   * Resolve siblings of the element and siblings of ancestors
    *  (from closest to root)
    */
   public ascendingSiblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element> {

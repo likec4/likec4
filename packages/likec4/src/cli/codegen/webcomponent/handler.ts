@@ -37,7 +37,7 @@ export async function webcomponentHandler({
 
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 
-  const diagrams = await languageServices.views.diagrams()
+  const diagrams = await languageServices.diagrams()
   if (!hasAtLeast(diagrams, 1)) {
     logger.warn('no views found')
     process.exitCode = 1

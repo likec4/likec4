@@ -67,7 +67,7 @@ export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
 
     // @ts-nocheck
 
-    import type { DiagramView } from '@likec4/core'
+    import type { DiagramView } from 'likec4'
     `.append(NL, NL)
 
   if (views.length === 0) {
@@ -126,7 +126,7 @@ export function generateViewsDataDTs(diagrams: Iterable<DiagramView>) {
     /* prettier-ignore-start */
     /* eslint-disable */
 
-    import type { DiagramView } from '@likec4/core'
+    import type { DiagramView } from 'likec4'
     `.append(NL, NL)
 
   if (views.length == 0) {

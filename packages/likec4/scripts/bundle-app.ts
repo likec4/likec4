@@ -31,6 +31,7 @@ export async function bundleApp() {
     clearScreen: false,
     resolve: {
       alias: {
+        '@likec4/core/types': resolve(cwd, '../core/src/types/index.ts'),
         '@likec4/core': resolve(cwd, '../core/src/index.ts'),
         '@likec4/diagram': resolve(cwd, '../diagram/src/index.ts'),
         'react-dom/server': resolve(cwd, 'app/react/react-dom-server-mock.ts')
@@ -67,7 +68,7 @@ export async function bundleApp() {
       lib: {
         entry: {
           'main': 'src/main.tsx',
-          'lazy-data': 'src/routes/-view-lazy-data.ts',
+          // 'lazy-data': 'src/routes/-view-lazy-data.ts',
           'icons': 'src/components/RenderIcon.tsx'
         },
         formats: ['es']
@@ -84,7 +85,7 @@ export async function bundleApp() {
           preset: 'safest'
         },
         output: {
-          hoistTransitiveImports: false,
+          // hoistTransitiveImports: false,
           interop: 'auto',
           format: 'esm',
           entryFileNames: '[name].js',

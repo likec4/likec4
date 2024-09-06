@@ -29,7 +29,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
 
   logger.info(`${k.dim('format')} ${k.green('react')}`)
 
-  const diagrams = await languageServices.views.diagrams()
+  const diagrams = await languageServices.diagrams()
   if (diagrams.length === 0) {
     process.exitCode = 1
     throw new Error('no views found')
@@ -53,7 +53,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
       }
     }
   }
-  logger.info(`${k.dim('outfilepath')} ${outfilepath}`)
+  // logger.info(`${k.dim('outfilepath')} ${outfilepath}`)
 
   const outDir = dirname(outfilepath)
   logger.info(`${k.dim('outdir')} ${outDir}`)
@@ -110,7 +110,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts')),
     `
 import type { JSX } from 'react'
-import type { LikeC4ViewBaseProps } from 'likec4/react'
+import type { LikeC4ViewBaseProps, DiagramView } from 'likec4/react'
 
 export type LikeC4ViewId =
 ${ids.join('\n')}
@@ -120,6 +120,9 @@ ${tags.join('\n')}
 
 export type LikeC4ElementKind =
 ${kinds.join('\n')}
+
+export type LikeC4DiagramView = DiagramView<LikeC4ViewId>
+export const LikeC4Views: Record<LikeC4ViewId, LikeC4DiagramView>
 
 export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 

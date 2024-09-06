@@ -11,7 +11,7 @@
 !README.md
 
 # Exclude the following
-dist/**/*.d.ts
 **/*.map
+**/*.tsbuildinfo
 dist/__app__/react/components.mjs
 dist/**/metafile.json

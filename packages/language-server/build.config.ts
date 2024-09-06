@@ -5,7 +5,16 @@ const isProduction = process.env.NODE_ENV === 'production'
 export default defineBuildConfig({
   clean: isProduction,
   stub: !isProduction,
+  stubOptions: {
+    jiti: {
+      nativeModules: [
+        '@dagrejs/graphlib'
+      ]
+    }
+  },
+  declaration: true,
   rollup: {
+    emitCJS: true,
     inlineDependencies: true,
     commonjs: {
       exclude: [

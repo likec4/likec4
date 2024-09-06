@@ -85,7 +85,7 @@ export async function viteWebcomponentConfig({
     plugins: [
       likec4Plugin({
         languageServices,
-        generatePreviews: false
+        useOverviewGraph: false
       })
     ]
   } satisfies InlineConfig

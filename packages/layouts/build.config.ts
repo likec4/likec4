@@ -5,6 +5,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 export default defineBuildConfig({
   clean: isProduction,
   stub: !isProduction,
+  declaration: isProduction,
   rollup: {
     commonjs: {
       transformMixedEsModules: true,

@@ -1,4 +1,3 @@
-import type { DiagramView as CoreDiagramView } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
 import { type HTMLAttributes, useId } from 'react'
@@ -100,7 +99,7 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
     _onNavigateTo?.(to as ViewId)
   })
 
-  const notations = (view as any as CoreDiagramView).notation?.elements ?? []
+  const notations = view.notation?.elements ?? []
   const hasNotations = notations.length > 0
 
   return (

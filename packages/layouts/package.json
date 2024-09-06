@@ -21,22 +21,27 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.mjs"
-    },
-    "./graphviz/binary": {
-      "types": "./dist/graphviz/binary/index.d.ts",
-      "default": "./dist/graphviz/binary/index.mjs"
-    },
-    "./graphviz/wasm": {
-      "types": "./dist/graphviz/wasm/index.d.ts",
-      "default": "./dist/graphviz/wasm/index.mjs"
-    }
+    ".": "./src/index.ts",
+    "./graphviz/binary": "./src/graphviz/binary/index.ts",
+    "./graphviz/wasm": "./src/graphviz/wasm/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "./graphviz/binary": {
+        "types": "./dist/graphviz/binary/index.d.ts",
+        "default": "./dist/graphviz/binary/index.mjs"
+      },
+      "./graphviz/wasm": {
+        "types": "./dist/graphviz/wasm/index.d.ts",
+        "default": "./dist/graphviz/wasm/index.mjs"
+      }
+    }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -57,17 +62,17 @@
     "p-limit": "^6.1.0",
     "remeda": "^2.11.0",
     "strip-indent": "^4.0.0",
-    "type-fest": "^4.21.0"
+    "ts-graphviz": "^1.8.2",
+    "type-fest": "^4.21.0",
+    "word-wrap": "^1.2.5"
   },
   "devDependencies": {
     "@likec4/language-server": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.16.1",
-    "ts-graphviz": "^1.8.2",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",
-    "vitest": "~2.0.5",
-    "word-wrap": "^1.2.5"
+    "vitest": "~2.0.5"
   },
   "packageManager": "yarn@4.3.1"
 }

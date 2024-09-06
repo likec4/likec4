@@ -23,7 +23,7 @@ const RenderIcon = ({ node }: IconRendererProps) => {
   return IconComponent ? <IconComponent /> : null
 }
 
-export { isLikeC4ViewId }
+export { isLikeC4ViewId, LikeC4Views }
 
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 

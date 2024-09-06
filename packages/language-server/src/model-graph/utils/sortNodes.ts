@@ -1,4 +1,3 @@
-import pkg from '@dagrejs/graphlib'
 import {
   compareByFqnHierarchically,
   compareRelations,
@@ -10,10 +9,7 @@ import {
   nonNullable
 } from '@likec4/core'
 import { difference, filter, map, pipe, sort, take } from 'remeda'
-
-// '@dagrejs/graphlib' is a CommonJS module
-// Here is a workaround to import it
-const { Graph, alg } = pkg
+import { Graph, postorder } from '../../utils/graphlib'
 
 // side effect
 function sortChildren(nodes: readonly ComputedNode[]) {
@@ -92,7 +88,7 @@ export function sortNodes({
       map(n => n.id)
     )
   }
-  const orderedIds = alg.postorder(g, sources).reverse() as Fqn[]
+  const orderedIds = postorder(g, sources).reverse() as Fqn[]
   const sorted = orderedIds.map(getNode)
   if (sorted.length < nodes.length) {
     const unsorted = difference(nodes, sorted)

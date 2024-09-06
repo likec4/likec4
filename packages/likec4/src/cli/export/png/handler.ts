@@ -111,7 +111,7 @@ export async function pngHandler({
 
   output ??= languageServices.workspace
 
-  const views = await languageServices.views.diagrams()
+  const views = await languageServices.diagrams()
   if (!hasAtLeast(views, 1)) {
     logger.warn('no views found')
     throw new Error('no views found')

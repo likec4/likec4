@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { consola, LogLevels } from '@likec4/log'
+import { DEV } from 'esm-env'
 import { argv, exit, stdout } from 'node:process'
 import { clamp } from 'remeda'
 import k from 'tinyrainbow'
@@ -13,11 +14,12 @@ import exportCmd from './export'
 import previewCmd from './preview'
 import serveCmd from './serve'
 
-consola.level = LogLevels.info
-// @ts-expect-error
-if (process.env.NODE_ENV !== 'production') {
+consola.level = LogLevels.debug
+
+// // @ts-expect-error
+if (DEV) {
   consola.level = LogLevels.trace
-  consola.warn('running in dev mode')
+  consola.warn('running cli in dev mode')
 }
 
 const cli = yargs(hideBin(argv))

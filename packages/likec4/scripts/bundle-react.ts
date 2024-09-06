@@ -25,6 +25,7 @@ export async function buildReact(_isDev = false) {
     configFile: false,
     resolve: {
       alias: {
+        '@likec4/core/types': resolve('../core/src/types/index.ts'),
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
@@ -81,7 +82,7 @@ export async function buildReact(_isDev = false) {
         output: {
           esModule: true,
           exports: 'named',
-          hoistTransitiveImports: false,
+          // hoistTransitiveImports: false,
           compact: true
           // interop: 'auto'
         },

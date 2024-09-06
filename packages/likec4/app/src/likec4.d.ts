@@ -8,16 +8,23 @@ declare module 'virtual:likec4/store' {
   export function useLikeC4View(viewId: string): DiagramView | null
 }
 
+declare module 'likec4' {
+  import type { DiagramView } from '@likec4/core'
+
+  export type { DiagramView }
+}
+
 declare module 'virtual:likec4/views' {
-  import type { DiagramView as CoreDiagramView, Opaque } from '@likec4/core'
+  import type { Tagged } from 'type-fest'
+  import type { DiagramView as CoreDiagramView, Tag, ViewID } from '@likec4/core'
 
-  export type LikeC4ViewId = Opaque<string, 'LikeC4ViewId'>
+  export type LikeC4ViewId = Tagged<string, 'ViewID'>
 
-  export type LikeC4Tag = Opaque<string, 'LikeC4Tag'>
+  export type LikeC4Tag = Tagged<string, 'Tag'>
 
-  export type LikeC4ElementKind = Opaque<string, 'LikeC4ElementKind'>
+  export type LikeC4ElementKind = Tagged<string, 'ElementKind'>
 
-  export type DiagramView = Omit<CoreDiagramView, 'id'> & {
+  export type DiagramView<ViewId extends string = LikeC4ViewId> = Omit<CoreDiagramView, 'id'> & {
     id: ViewId
   }
 

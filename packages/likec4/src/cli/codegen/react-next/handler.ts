@@ -25,7 +25,7 @@ export async function reactNexthandler({ path, useDotBin, outdir }: HandlerParam
 
   logger.info(`${k.dim('format')} ${k.green('react-next')}`)
 
-  const diagrams = await languageServices.views.diagrams()
+  const diagrams = await languageServices.diagrams()
   if (diagrams.length === 0) {
     logger.warn('no views found')
     process.exitCode = 1

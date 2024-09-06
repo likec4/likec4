@@ -9,12 +9,13 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       alias: {
+        '@likec4/core/types': resolve(__dirname, '../core/src/types/index.ts'),
         '@likec4/core': resolve(__dirname, '../core/src/index.ts'),
         '@likec4/diagram': resolve(__dirname, '../diagram/src/index.ts')
       }
     },
-    define: {
-      'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production')
+    define: isDev ? {} : {
+      'process.env.NODE_ENV': JSON.stringify('production')
     },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
@@ -34,15 +35,18 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         treeshake: {
-          preset: 'recommended'
+          preset: 'safest'
         },
-        external: ['vscode'],
         output: {
           hoistTransitiveImports: false,
           compact: true,
           entryFileNames: `[name].js`,
           assetFileNames: `[name].[ext]`
-        }
+        },
+        external: [
+          'vscode',
+          '@emotion/is-prop-valid' // dev-only import from framer-motion
+        ]
       }
     },
     plugins: [

@@ -18,7 +18,7 @@ import {
 
 export type LikeC4PluginOptions = {
   languageServices: LikeC4
-  generatePreviews?: boolean
+  useOverviewGraph?: boolean
 }
 
 interface Module {
@@ -29,6 +29,7 @@ interface Module {
     logger: ViteLogger
     likec4: LikeC4
     assetsDir: string
+    useOverviewGraph?: boolean
   }): Promise<string>
 }
 
@@ -95,10 +96,18 @@ const iconsModule = {
 const overviewGraphModule = {
   id: 'virtual:likec4/overview-graph',
   virtualId: '\0likec4-plugin/overview-graph.js',
-  async load({ likec4, logger }) {
-    logger.info(k.dim('generating virtual:likec4/overview-graph'))
-    const overview = await likec4.views.overviewGraph()
-    return generateOverviewGraphSource(overview)
+  async load({ likec4, logger, useOverviewGraph }) {
+    if (useOverviewGraph === true) {
+      logger.info(k.dim('generating virtual:likec4/overview-graph'))
+      const overview = await likec4.views.overviewGraph()
+      return generateOverviewGraphSource(overview)
+    }
+    logger.info(k.dim('generating empty virtual:likec4/overview-graph'))
+    return generateOverviewGraphSource({
+      nodes: [],
+      edges: [],
+      bounds: { x: 0, y: 0, width: 10, height: 10 }
+    })
   }
 } satisfies Module
 
@@ -133,7 +142,7 @@ const isTarget = (path: string) => {
 }
 
 export function likec4Plugin({
-  generatePreviews = false,
+  useOverviewGraph = false,
   languageServices: likec4
 }: LikeC4PluginOptions): PluginOption {
   let logger: ViteLogger
@@ -144,7 +153,7 @@ export function likec4Plugin({
 
     configResolved(config) {
       logger = config.logger
-      if (generatePreviews) {
+      if (useOverviewGraph) {
         const resolvedAlias = config.resolve.alias.find(a => a.find === 'likec4/previews')?.replacement
         if (resolvedAlias) {
           assetsDir = resolvedAlias
@@ -166,7 +175,12 @@ export function likec4Plugin({
     async load(id) {
       const module = modules.find(m => m.virtualId === id)
       if (module) {
-        return await module.load({ logger, likec4, assetsDir })
+        return await module.load({
+          logger,
+          likec4,
+          assetsDir,
+          useOverviewGraph: useOverviewGraph
+        })
       }
       return null
     },
@@ -182,7 +196,7 @@ export function likec4Plugin({
               type: 'error',
               err: {
                 name: 'LikeC4ValidationError',
-                message: 'Validation error:\n\n' + error.message,
+                message: 'Validation error: ' + error.message.slice(0, 500),
                 stack: '',
                 plugin: 'vite-plugin-likec4',
                 loc: {
@@ -222,7 +236,7 @@ export function likec4Plugin({
         .on('change', notifyUpdate('changed'))
         .on('unlink', notifyUpdate('removed'))
 
-      if (generatePreviews && !assetsDir.startsWith(likec4.workspace)) {
+      if (useOverviewGraph && !assetsDir.startsWith(likec4.workspace)) {
         logger.info(`${k.dim('watch')} ${assetsDir}`)
         const reloadPreviews = () => {
           const md = server.moduleGraph.getModuleById(previewsModule.virtualId)

@@ -38,16 +38,18 @@ export function deactivate() {
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
-  const outputChannel = vscode.window.createOutputChannel('LikeC4 - Extension', {
+  const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
+    log: true
+  })
+  const extensionOutputChannel = vscode.window.createOutputChannel('LikeC4 - Extension', {
     log: true
   })
   context.subscriptions.push(
     outputChannel,
-    logToChannel(outputChannel)
+    extensionOutputChannel,
+    logToChannel(extensionOutputChannel)
   )
-  logger.info('active node extension')
-  // Disposed explicitly by the controller
-  // context.subscriptions.push(outputChannel)
+  logger.info('createLanguageClient - node')
 
   const serverModule = path.join(
     context.extensionPath,
@@ -110,7 +112,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     revealOutputChannelOn: RevealOutputChannelOn.Warn,
-    outputChannelName: extensionTitle,
+    outputChannel,
+    traceOutputChannel: outputChannel,
     documentSelector,
     diagnosticCollectionName: 'likec4',
     progressOnInitialization: true

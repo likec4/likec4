@@ -88,7 +88,7 @@ export async function viteWebcomponentConfig({
       }),
       likec4Plugin({
         languageServices,
-        generatePreviews: false
+        useOverviewGraph: false
       })
     ],
     css: {

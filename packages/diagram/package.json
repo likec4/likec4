@@ -45,6 +45,7 @@
     "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
   },
   "dependencies": {
+    "@likec4/core": "workspace:*",
     "@lume/kiwi": "^0.4.3",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.14.0",
@@ -59,23 +60,22 @@
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.3.30",
+    "khroma": "^2.1.0",
     "remeda": "^2.11.0",
     "type-fest": "^4.21.0",
     "zustand": "^4.5.5"
   },
   "peerDependencies": {
-    "@likec4/core": "workspace:*",
     "@mantine/core": "^7.11.2",
     "@mantine/hooks": "^7.11.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/core": "7.11.2",
-    "@mantine/hooks": "7.11.2",
-    "@mantine/vanilla-extract": "7.11.2",
+    "@mantine/core": "7.12.2",
+    "@mantine/hooks": "7.12.2",
+    "@mantine/vanilla-extract": "7.12.2",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/bezier-js": "^4.1.3",
     "@types/d3-shape": "^3.1.6",
@@ -84,7 +84,6 @@
     "@vanilla-extract/esbuild-plugin": "^2.3.10",
     "@vitejs/plugin-react": "^4.3.1",
     "execa": "^9.3.1",
-    "khroma": "^2.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.5.4",

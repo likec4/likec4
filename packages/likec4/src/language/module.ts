@@ -1,5 +1,4 @@
-import type { LikeC4Services } from '@likec4/language-server'
-import { createCustomLanguageServices, setLogLevel } from '@likec4/language-server'
+import { createCustomLanguageServices, type LikeC4Services, setLogLevel } from '@likec4/language-server'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'

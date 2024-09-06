@@ -79,7 +79,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
           preset: 'safest'
         },
         output: {
-          hoistTransitiveImports: false,
+          // hoistTransitiveImports: false,
           compact: true,
           interop: 'auto'
         },

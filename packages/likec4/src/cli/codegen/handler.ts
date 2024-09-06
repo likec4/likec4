@@ -38,7 +38,7 @@ async function singleFileCodegenAction(
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = await languageServices.views.diagrams()
+  const views = await languageServices.diagrams()
 
   const generatedSource = generateViewsDataTs([...views])
 
@@ -109,7 +109,7 @@ async function multipleFilesCodegenAction(
   }
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.views.diagrams()
+  const views = await languageServices.diagrams()
   let succeeded = 0
   for (const view of views) {
     try {

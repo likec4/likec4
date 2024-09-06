@@ -5,10 +5,11 @@ const isProduction = process.env.NODE_ENV === 'production'
 export default defineBuildConfig({
   clean: isProduction,
   stub: !isProduction,
+  declaration: 'node16',
   rollup: {
+    emitCJS: true,
     inlineDependencies: true,
     commonjs: {
-      transformMixedEsModules: true,
       exclude: [
         /\.d\.ts$/,
         /\.d\.cts$/,
@@ -16,7 +17,6 @@ export default defineBuildConfig({
       ]
     },
     dts: {
-      respectExternal: true,
       compilerOptions: {
         noEmitOnError: false,
         strict: false,

@@ -1,9 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { lazy, Suspense } from 'react'
 import { withOverviewGraph } from '../const'
-import { OverviewPage } from './-index-overview'
-import { IndexPage } from './-index-page'
+import IndexPage from './-index-page'
+
+const OverviewGraph = /* @__PURE__ */ lazy(() => import('./-index-overview'))
+
+function WithOverviewGraph() {
+  return (
+    <Suspense>
+      <OverviewGraph />
+    </Suspense>
+  )
+}
 
 export const Route = createFileRoute('/')({
-  component: withOverviewGraph ? OverviewPage : IndexPage
+  component: withOverviewGraph ? WithOverviewGraph : IndexPage
 })

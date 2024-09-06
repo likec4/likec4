@@ -65,12 +65,20 @@ export function logToLspConnection(connection: Connection): void {
       }
       const message = parts.join(' ')
       switch (true) {
+        case level >= LogLevels.trace: {
+          connection.tracer.log(message)
+          break
+        }
         case level >= LogLevels.debug: {
           connection.console.debug(message)
           break
         }
-        case level >= LogLevels.log: {
+        case level >= LogLevels.info: {
           connection.console.info(message)
+          break
+        }
+        case level >= LogLevels.log: {
+          connection.console.log(message)
           break
         }
         case level >= LogLevels.warn: {

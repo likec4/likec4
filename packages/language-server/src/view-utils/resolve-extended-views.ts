@@ -1,11 +1,7 @@
-import graphlib from '@dagrejs/graphlib'
 import { isExtendsElementView, type LikeC4View } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { first, last, values } from 'remeda'
-
-// '@dagrejs/graphlib' is a CommonJS module
-// Here is a workaround to import it
-const { Graph, alg } = graphlib
+import { findCycles, Graph, isAcyclic, postorder } from '../utils/graphlib'
 
 /**
  * Resolve rules of extended views
@@ -32,8 +28,8 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
   }
 
   // Remove circular dependencies
-  while (!alg.isAcyclic(g)) {
-    const firstCycle = first(alg.findCycles(g))
+  while (!isAcyclic(g)) {
+    const firstCycle = first(findCycles(g))
     if (!firstCycle) {
       break
     }
@@ -44,7 +40,7 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
     g.removeNode(cycledNode)
   }
 
-  const ordered = alg.postorder(g, g.sources())
+  const ordered = postorder(g, g.sources())
 
   return ordered.reduce((acc, id) => {
     const view = unresolvedViews[id]

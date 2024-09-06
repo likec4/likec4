@@ -127,7 +127,7 @@ const App = () => {
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
-          fitViewPadding={0.05}
+          fitViewPadding={0.08}
           readonly={false}
           controls={false}
           nodesDraggable={nodesDraggable}

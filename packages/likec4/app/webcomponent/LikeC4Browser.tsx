@@ -1,5 +1,4 @@
 import { invariant } from '@likec4/core'
-import type { DiagramView as CoreDiagramView } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot } from '@mantine/core'
 import { useTimeoutEffect } from '@react-hookz/web'
@@ -31,7 +30,7 @@ const BrowserModal = memo<{
     setVisible(true)
   }, 20)
 
-  const notations = (view as any as CoreDiagramView).notation?.elements ?? []
+  const notations = view.notation?.elements ?? []
   const hasNotations = notations.length > 0
 
   return (

@@ -9,7 +9,7 @@ import {
   type PartialLangiumSharedServices
 } from 'langium/lsp'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { logErrorToTelemetry } from './logger'
+import { logErrorToTelemetry, logToLspConnection } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
@@ -154,6 +154,7 @@ export function createSharedServices(context: LanguageServicesContext = {}): Lik
     ...context
   }
   if (context.connection) {
+    logToLspConnection(context.connection)
     logErrorToTelemetry(context.connection)
   }
 

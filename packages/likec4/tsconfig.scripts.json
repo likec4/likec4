@@ -4,14 +4,19 @@
   "compilerOptions": {
     "noEmit": true,
     "module": "esnext",
-    "lib": [
-      "esnext",
-      "dom",
-      "WebWorker"
-    ],
-    "noUnusedParameters": false
+    "target": "ESNext",
+    "composite": true,
+    "types": [
+      "node"
+    ]
   },
   "include": [
-    "src/"
+    "scripts/",
+    "package.json"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.cli.json"
+    }
   ]
 }

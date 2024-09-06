@@ -323,7 +323,12 @@ export class LikeC4ModelBuilder {
     logger.debug(`[ModelBuilder] Created`)
   }
 
-  public syncBuildModel(): c4.ParsedLikeC4Model | null {
+  /**
+   * WARNING:
+   * This method is internal and should to be called only when all documents are known to be parsed.
+   * Otherwise, the model may be incomplete.
+   */
+  public unsafeSyncBuildModel(): c4.ParsedLikeC4Model | null {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
     return cache.get(CACHE_KEY_PARSED_MODEL, () => {
       const docs = this.documents()
@@ -345,13 +350,18 @@ export class LikeC4ModelBuilder {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      return this.syncBuildModel()
+      return this.unsafeSyncBuildModel()
     })
   }
 
   private previousViews: Record<ViewID, c4.ComputedView> = {}
 
-  public syncBuildComputedModel(model: c4.ParsedLikeC4Model): c4.ComputedLikeC4Model {
+  /**
+   * WARNING:
+   * This method is internal and should to be called only when all documents are known to be parsed.
+   * Otherwise, the model may be incomplete.
+   */
+  public unsafeSyncBuildComputedModel(model: c4.ParsedLikeC4Model): c4.ComputedLikeC4Model {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model>
     const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
@@ -398,7 +408,7 @@ export class LikeC4ModelBuilder {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      return this.syncBuildComputedModel(model)
+      return this.unsafeSyncBuildComputedModel(model)
     })
   }
 

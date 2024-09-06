@@ -107,7 +107,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     plugins: [
       likec4Plugin({
         languageServices,
-        generatePreviews: useOverviewGraph
+        useOverviewGraph
       })
     ]
   } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }

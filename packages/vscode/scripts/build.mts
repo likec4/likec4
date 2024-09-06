@@ -47,6 +47,7 @@ const base = {
   sourcemap: isDev,
   sourcesContent: false,
   minify: !isDev,
+  minifyIdentifiers: false,
   legalComments: 'none'
 } satisfies BuildOptions
 
@@ -77,7 +78,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()]
-},{
+}, {
   ...base,
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',

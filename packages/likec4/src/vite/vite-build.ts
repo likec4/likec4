@@ -41,7 +41,7 @@ export const viteBuild = async ({
     }
   }
 
-  const diagrams = await languageServices.views.diagrams()
+  const diagrams = await languageServices.diagrams()
   if (diagrams.length === 0) {
     process.exitCode = 1
     throw new Error('no views found')

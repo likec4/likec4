@@ -4,6 +4,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { find } from 'remeda'
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -30,10 +31,15 @@ export const JsBanners = {
 }
 
 export function viteAppRoot() {
-  const root = resolve(_dirname, '../__app__')
-  if (!existsSync(root)) {
-    consola.error(`likec4 app root does not exist: ${root}`)
-    throw new Error(`likec4 app root does not exist: ${root}`)
+  const roots = [
+    resolve(_dirname, '../__app__'),
+    resolve(_dirname, '../../__app__'),
+    resolve(_dirname, '../../dist/__app__')
+  ]
+  const root = find(roots, existsSync)
+  if (!root) {
+    consola.error(`likec4 app root does not exist, tried:\n${roots.join('\n')}`)
+    throw new Error(`likec4 app root does not exist`)
   }
   return root
 }
