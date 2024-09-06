@@ -18,29 +18,14 @@ env:
   TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
 
 jobs:
-  check:
+  check-packages:
     # If on pull request, run only if coming from forked repos
     if: |
       !contains(github.event.head_commit.message, 'ci skip') && (
         github.event_name == 'push' || github.event.pull_request.head.repo.fork
       )
     timeout-minutes: 10
-    strategy:
-      fail-fast: true
-      matrix:
-        # os: [ubuntu-latest, windows-latest]
-        os: [ubuntu-latest]
-        # include:
-
-        #   # Build on Windows only with Node 20
-        #   - os: windows-latest
-        #     node-version: '20'
-
-        #   - os: ubuntu-latest
-        #     node-version: '20'
-        #     build-docs: true
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
@@ -76,13 +61,13 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
-        run: |
-          yarn turbo run build --filter='@likec4/playground'
-
       - name: typecheck
         run: |
           yarn turbo run typecheck --filter='@likec4/playground'
+
+      - name: build
+        run: |
+          yarn turbo run build --filter='@likec4/playground'
 
   check-docs-astro:
     # If on pull request, run only if coming from forked repos
@@ -101,33 +86,10 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
+      - name: typecheck
+        run: |
+          yarn turbo run typecheck --filter='@likec4/docs-astro'
+
       - name: build
         run: |
           yarn turbo run build --filter='@likec4/docs-astro'
-
-# check-docs-nextjs:
-#   # If on pull request, run only if coming from forked repos
-#   if: |
-#     !contains(github.event.head_commit.message, 'ci skip') && (
-#       github.event_name == 'push' || github.event.pull_request.head.repo.fork
-#     )
-#   timeout-minutes: 10
-#   runs-on: ubuntu-latest
-#   steps:
-#     - uses: actions/checkout@v4
-#       with:
-#         fetch-depth: 0
-#         ref: ${{ github.ref }}
-
-#     - name: bootstrap
-#       uses: ./.github/actions/bootstrap
-
-#     - name: build docs nextjs
-#       working-directory: docs
-#       run: |
-#         yarn build:turbo
-
-#     - name: typecheck
-#       working-directory: docs
-#       run: |
-#         yarn typecheck:turbo
