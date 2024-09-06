@@ -17,7 +17,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     return await limit(async () => {
       const unflatten = await execa('unflatten', ['-l 1', '-c 3'], {
         reject: false,
-        timeout: 5_000,
+        timeout: 10_000,
         input: dot,
         stdin: 'pipe',
         encoding: 'utf8'
@@ -45,7 +45,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     return await limit(async () => {
       const dotcmd = await execa(this.path, ['-Tjson', '-y'], {
         reject: false,
-        timeout: 5_000,
+        timeout: 10_000,
         input: dot,
         stdin: 'pipe',
         encoding: 'utf8'
@@ -53,12 +53,12 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
       if (dotcmd instanceof Error) {
         if (!dotcmd.stdout) {
           logger.error(
-            `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' nothing returned and failed: ${dotcmd.stderr}`
+            `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' nothing returned and failed: "${dotcmd.stderr}"`
           )
           throw dotcmd
         }
         logger.warn(
-          `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' returned result but also failed ${dotcmd.stderr}`
+          `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' returned result but also failed "${dotcmd.stderr}"`
         )
       }
       return dotcmd.stdout
@@ -73,7 +73,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     return await limit(async () => {
       const result = await execa(this.path, ['-Tsvg', '-y'], {
         reject: false,
-        timeout: 5_000,
+        timeout: 10_000,
         input: dot,
         stdin: 'pipe',
         encoding: 'utf8'

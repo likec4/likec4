@@ -30,18 +30,38 @@ describe('OverviewDiagramsPrinter', () => {
     { ...computedIndexView, relativePath: 'subdirectory/sub1/sub2/sub3/index4.c4' }
   ].map((view, i) => ({ ...view, id: String(i).padStart(3, '0') as ViewID }))
 
-  it('toDot', async () => {
+  it('toDot', async ({ expect }) => {
     const diagram = OverviewDiagramsPrinter.toDot(computedViews)
     expect(diagram).toMatchSnapshot()
   })
 
-  it('parse', async () => {
+  it('should not fail with empty array', async ({ expect }) => {
+    try {
+      const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
+      const overview = await graphviz.layoutOverviewGraph([])
+      expect(overview).toBeDefined()
+    } catch (e) {
+      expect.unreachable(`should not fail: ${e}`)
+    }
+  })
+
+  it('should not fail with views without relativePath', async ({ expect }) => {
+    try {
+      const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
+      const overview = await graphviz.layoutOverviewGraph([])
+      expect(overview).toBeDefined()
+    } catch (e) {
+      expect.unreachable(`should not fail: ${e}`)
+    }
+  })
+
+  it('parse', async ({ expect }) => {
     const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
     const overview = await graphviz.layoutOverviewGraph(computedViews)
     expect(overview).toMatchSnapshot()
   })
 
-  it('dot without subgraph if single relativePath', async () => {
+  it('dot without subgraph if single relativePath', async ({ expect }) => {
     const computedViews = [
       // computedIndexView -> [computedCloudView, computedAmazonView]
       {

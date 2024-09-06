@@ -98,9 +98,13 @@ const overviewGraphModule = {
   virtualId: '\0likec4-plugin/overview-graph.js',
   async load({ likec4, logger, useOverviewGraph }) {
     if (useOverviewGraph === true) {
-      logger.info(k.dim('generating virtual:likec4/overview-graph'))
-      const overview = await likec4.views.overviewGraph()
-      return generateOverviewGraphSource(overview)
+      try {
+        logger.info(k.dim('generating virtual:likec4/overview-graph'))
+        const overview = await likec4.views.overviewGraph()
+        return generateOverviewGraphSource(overview)
+      } catch (e) {
+        logger.error(e)
+      }
     }
     logger.info(k.dim('generating empty virtual:likec4/overview-graph'))
     return generateOverviewGraphSource({

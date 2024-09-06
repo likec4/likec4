@@ -96,6 +96,13 @@ export class GraphvizLayouter {
   }
 
   async layoutOverviewGraph(views: ComputedView[]): Promise<OverviewGraph> {
+    if (views.length === 0) {
+      return Promise.resolve({
+        nodes: [],
+        edges: [],
+        bounds: { x: 0, y: 0, width: 10, height: 10 }
+      })
+    }
     const dot = OverviewDiagramsPrinter.toDot(views)
     const rawjson = await this.graphviz.layoutJson(dot)
     return parseOverviewGraphvizJson(rawjson)
