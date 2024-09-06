@@ -70,7 +70,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   const format = async (input: string | LikeC4LangiumDocument, uri?: string) => {
     const document = typeof input === 'string' ? await parse(input, uri) : input
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-      await documentBuilder.build([document], { validation: true })
+      await documentBuilder.build([document], { validation: false })
     })
 
     const edits = await services.lsp.Formatter?.formatDocument(

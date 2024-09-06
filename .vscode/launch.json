@@ -26,8 +26,7 @@
         "${workspaceFolder}/examples/cloud-system",
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/vscode/dist/**/*.js",
-        "${workspaceFolder}/packages/vscode-formatter/dist/**/*.js",
+        "${workspaceFolder}/packages/vscode/dist/**/*.js"
       ],
       "sourceMaps": true,
       "resolveSourceMapLocations": [
@@ -35,7 +34,7 @@
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,
-      "preLaunchTask": "build_extensions",
+      "preLaunchTask": "build_extension",
     },
     {
       "name": "Attach to Extension",
@@ -54,7 +53,6 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-formatter",
         "--extensionDevelopmentKind=web",
         "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
@@ -65,7 +63,24 @@
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,
-      "preLaunchTask": "build_extensions"
+      "preLaunchTask": "build_extension"
+    },
+    {
+      "name": "Run tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "vitest",
+      "args": [
+        "run",
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/packages/**",
+        "!${workspaceFolder}/packages/*/dist/",
+        "!**/node_modules/**"
+      ],
+      "autoAttachChildProcesses": true,
+      "preLaunchTask": "build_extension"
     }
   ]  
 }
