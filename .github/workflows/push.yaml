@@ -36,11 +36,11 @@ jobs:
         # with:
         #   node-version: ${{ matrix.node-version }}
 
-      - name: build packages
-        run: yarn ci:build
-
       - name: typecheck
         run: yarn ci:typecheck
+
+      - name: build
+        run: yarn ci:build
 
       - name: test
         run: yarn ci:test
