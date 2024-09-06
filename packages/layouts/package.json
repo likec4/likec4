@@ -70,9 +70,9 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.16.1",
+    "turbo": "^2.1.0",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",
-    "turbo": "^2.1.0",
     "vitest": "~2.0.5"
   },
   "packageManager": "yarn@4.3.1"
