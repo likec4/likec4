@@ -186,7 +186,6 @@
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "1.2.0",
     "@likec4/core": "workspace:*",
-    "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",

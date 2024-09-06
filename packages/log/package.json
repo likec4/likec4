@@ -33,7 +33,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "unbuild"
+    "prepack": "unbuild",
+    "generate": "unbuild"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

@@ -12,7 +12,7 @@ export default defineBuildConfig({
       ]
     }
   },
-  declaration: true,
+  declaration: isProduction,
   rollup: {
     emitCJS: true,
     inlineDependencies: true,

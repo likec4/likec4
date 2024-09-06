@@ -6,7 +6,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "^generate"
+        "@likec4/icons#generate"
       ],
       "outputs": [
         "contrib/**",

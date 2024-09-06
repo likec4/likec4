@@ -9,19 +9,10 @@
         "src/routeTree.gen.ts"
       ],
       "inputs": [
-        "scripts/*",
+        "vite.config.mts",
         "src/routes/*.tsx",
         "tsr.config.json",
         "package.json"
-      ]
-    },
-    "build": {
-      "dependsOn": [
-        "generate",
-        "^build"
-      ],
-      "outputs": [
-        "dist/**"
       ]
     }
   }

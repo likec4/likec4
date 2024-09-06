@@ -91,7 +91,7 @@ export default defineConfig((env) => {
               'tslib',
               '#monaco/bootstrap',
               '#monaco/config',
-              /@likec4\/(icons|layouts|language-server).*/,
+              /@likec4\/(icons|log|layouts|language-server).*/,
               /d3-/,
               /hpcc-js/,
               /node_modules.*vscode/,
