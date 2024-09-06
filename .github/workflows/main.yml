@@ -34,11 +34,11 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
-        run: yarn ci:build
-
       - name: typecheck
         run: yarn typecheck:all
+
+      - name: build
+        run: yarn ci:build
 
       - name: test
         env:
