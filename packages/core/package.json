@@ -62,7 +62,7 @@
     "execa": "^9.3.1",
     "remeda": "^2.11.0",
     "turbo": "^2.1.0",
-    "type-fest": "^4.21.0",
+    "type-fest": "^4.26.0",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",
     "vitest": "~2.0.5"
