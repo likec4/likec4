@@ -17,6 +17,7 @@ import {
   LikeC4DocumentLinkProvider,
   LikeC4DocumentSymbolProvider,
   LikeC4HoverProvider,
+  LikeC4RenameProvider,
   LikeC4SemanticTokenProvider
 } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
@@ -69,6 +70,7 @@ export interface LikeC4AddedServices {
     ModelChanges: LikeC4ModelChanges
   }
   lsp: {
+    RenameProvider: LikeC4RenameProvider
     CompletionProvider: LikeC4CompletionProvider
     DocumentHighlightProvider: LikeC4DocumentHighlightProvider
     DocumentSymbolProvider: LikeC4DocumentSymbolProvider
@@ -101,6 +103,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     ModelLocator: bind(LikeC4ModelLocator)
   },
   lsp: {
+    RenameProvider: bind(LikeC4RenameProvider),
     CompletionProvider: bind(LikeC4CompletionProvider),
     DocumentHighlightProvider: bind(LikeC4DocumentHighlightProvider),
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),

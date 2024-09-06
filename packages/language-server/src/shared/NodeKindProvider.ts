@@ -1,4 +1,4 @@
-import { type AstNode, type AstNodeDescription } from 'langium'
+import { type AstNode, type AstNodeDescription, isAstNode } from 'langium'
 import type { LangiumSharedServices, NodeKindProvider as LspNodeKindProvider } from 'langium/lsp'
 import { CompletionItemKind, SymbolKind } from 'vscode-languageserver-types'
 import { ast } from '../ast'
@@ -11,32 +11,44 @@ export class NodeKindProvider implements LspNodeKindProvider {
    */
   // prettier-ignore
   getSymbolKind(node: AstNode | AstNodeDescription): SymbolKind {
-    const hasType = (type: string) => 'type' in node && this.services.AstReflection.isSubtype(node.type, type)
+    const nodeType = isAstNode(node) ? node.$type : node.type
+    const hasType = (...types: string[]) => types.some(t => this.services.AstReflection.isSubtype(nodeType, t))
     switch (true) {
-      case (ast.isElement(node) || hasType(ast.Element))
-        || (ast.isExtendElement(node) || hasType(ast.ExtendElement)): {
+      case hasType(
+        ast.Element,
+        ast.ExtendElement
+      ):
         return SymbolKind.Constructor
-      }
-      case ast.isModel(node) || ast.isModelViews(node) || ast.isSpecificationRule(node)
-        || hasType(ast.Model) || hasType(ast.ModelViews) || hasType(ast.SpecificationRule): {
+
+      case hasType(
+        ast.Model,
+        ast.ModelViews,
+        ast.SpecificationRule
+      ):
         return SymbolKind.Namespace
-      }
-      case (ast.isLikeC4View(node) || hasType(ast.LikeC4View)): {
+
+      case hasType(ast.LikeC4View):
         return SymbolKind.Class
-      }
-      case (ast.isTag(node) || hasType(ast.Tag))
-        || (ast.isLibIcon(node) || hasType(ast.LibIcon))
-        || (ast.isSpecificationTag(node) || hasType(ast.SpecificationTag)): {
+
+      case hasType(
+        ast.Tag,
+        ast.LibIcon,
+        ast.CustomColor,
+        ast.SpecificationTag
+      ):
         return SymbolKind.EnumMember
-      }
-      case (ast.isRelationshipKind(node) || hasType(ast.RelationshipKind))
-        || (ast.isSpecificationRelationshipKind(node) || hasType(ast.SpecificationRelationshipKind)): {
+
+      case hasType(
+        ast.RelationshipKind,
+        ast.SpecificationRelationshipKind
+      ):
         return SymbolKind.Event
-      }
-      case (ast.isElementKind(node) || hasType(ast.ElementKind))
-        || (ast.isSpecificationElementKind(node) || hasType(ast.SpecificationElementKind)): {
+
+      case hasType(
+        ast.ElementKind,
+        ast.SpecificationElementKind
+      ):
         return SymbolKind.TypeParameter
-      }
     }
     return SymbolKind.Field
   }
@@ -44,25 +56,52 @@ export class NodeKindProvider implements LspNodeKindProvider {
    * Returns a `CompletionItemKind` as used by the `CompletionProvider`.
    */
   getCompletionItemKind(node: AstNode | AstNodeDescription): CompletionItemKind {
-    switch (this.getSymbolKind(node)) {
-      case SymbolKind.Constructor:
+    const nodeType = isAstNode(node) ? node.$type : node.type
+    const hasType = (...types: string[]) => types.some(t => this.services.AstReflection.isSubtype(nodeType, t))
+    switch (true) {
+      case hasType(
+        ast.CustomColor
+      ):
+        return CompletionItemKind.Color
+
+      case hasType(
+        ast.Element,
+        ast.ExtendElement
+      ):
         return CompletionItemKind.Constructor
-      case SymbolKind.Namespace:
+
+      case hasType(
+        ast.Model,
+        ast.ModelViews,
+        ast.SpecificationRule
+      ):
         return CompletionItemKind.Module
-      case SymbolKind.Class:
+
+      case hasType(
+        ast.LikeC4View
+      ):
         return CompletionItemKind.Class
-      case SymbolKind.Enum:
-        return CompletionItemKind.Enum
-      case SymbolKind.EnumMember:
+
+      case hasType(
+        ast.Tag,
+        ast.LibIcon,
+        ast.CustomColor,
+        ast.SpecificationTag
+      ):
         return CompletionItemKind.EnumMember
-      case SymbolKind.TypeParameter:
-        return CompletionItemKind.TypeParameter
-      case SymbolKind.Interface:
-        return CompletionItemKind.Interface
-      case SymbolKind.Event:
+
+      case hasType(
+        ast.RelationshipKind,
+        ast.SpecificationRelationshipKind
+      ):
         return CompletionItemKind.Event
-      case SymbolKind.Constant:
-        return CompletionItemKind.Constant
+
+      case hasType(
+        ast.ElementKind,
+        ast.SpecificationElementKind
+      ):
+        return CompletionItemKind.TypeParameter
+
       default:
         return CompletionItemKind.Reference
     }

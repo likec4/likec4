@@ -118,6 +118,23 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return !node.parent ? 'prune' : undefined
     }
+    if (ast.isSpecificationColor(node)) {
+      acceptor({
+        node,
+        keyword: 'color',
+        type: SemanticTokenTypes.keyword
+      })
+      acceptor({
+        node,
+        property: 'name',
+        type: SemanticTokenTypes.type,
+        modifier: [
+          SemanticTokenModifiers.declaration,
+          SemanticTokenModifiers.readonly
+        ]
+      })
+      return
+    }
     if (ast.isSpecificationElementKind(node) || ast.isSpecificationRelationshipKind(node)) {
       acceptor({
         node,
@@ -188,7 +205,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         acceptor({
           node,
           property: 'libicon',
-          type: SemanticTokenTypes.enum
+          type: SemanticTokenTypes.enum,
+          modifier: [SemanticTokenModifiers.defaultLibrary]
         })
       }
       return 'prune'
