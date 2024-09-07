@@ -202,7 +202,7 @@
     "p-timeout": "^6.1.2",
     "remeda": "^2.11.0",
     "tslib": "^2.7.0",
-    "tsx": "~4.9.3",
+    "tsx": "~4.19.0",
     "typescript": "^5.5.4",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",

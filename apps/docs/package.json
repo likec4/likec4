@@ -44,6 +44,6 @@
     "@types/react-dom": "18.3.0",
     "likec4": "workspace:*",
     "npm-run-all2": "^6.2.2",
-    "tsx": "~4.9.3"
+    "tsx": "~4.19.0"
   }
 }

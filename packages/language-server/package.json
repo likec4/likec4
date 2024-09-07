@@ -112,7 +112,7 @@
     "execa": "^9.3.1",
     "langium-cli": "3.1.1",
     "npm-run-all2": "^6.2.2",
-    "tsx": "~4.9.3",
+    "tsx": "~4.19.0",
     "turbo": "^2.1.1",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",

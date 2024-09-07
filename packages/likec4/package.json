@@ -161,7 +161,7 @@
     "strip-indent": "^4.0.0",
     "terser": "^5.31.6",
     "tinyrainbow": "^1.2.0",
-    "tsx": "~4.9.3",
+    "tsx": "~4.19.0",
     "turbo": "^2.1.1",
     "type-fest": "^4.26.0",
     "typescript": "^5.5.4",
