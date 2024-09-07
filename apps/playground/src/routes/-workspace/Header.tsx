@@ -123,6 +123,7 @@ function PlaygroundsMenu() {
         <MenuLabel>Examples</MenuLabel>
         <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'tutorial' }}>Tutorial</MenuItem>
         <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'bigbank' }}>BigBank</MenuItem>
+        <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'dynamic' }}>Dynamic View</MenuItem>
         {workspaces.length > 0 && (
           <>
             <MenuDivider />

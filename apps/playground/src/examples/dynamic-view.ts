@@ -99,7 +99,7 @@ model {
 // What diagrams to generate
 views {
 
-  dynamic view parallel-example {
+  dynamic view index {
     title 'Dynamic View Example'
     ui -> api {
       notes '
@@ -140,7 +140,7 @@ views {
     autoLayout TopBottom
   }
 
-  view index of customer {
+  view customer of customer {
     include
       customer,
       cloud,

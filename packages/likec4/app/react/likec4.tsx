@@ -27,6 +27,24 @@ export { isLikeC4ViewId, LikeC4Views }
 
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 
+const NotFound = ({ viewId }: { viewId: string }) => (
+  <div
+    style={{
+      margin: '1rem 0'
+    }}>
+    <div
+      style={{
+        margin: '0 auto',
+        display: 'inline-block',
+        padding: '2rem',
+        background: 'rgba(250,82,82,.15)',
+        color: '#ffa8a8'
+      }}>
+      View <code>{viewId}</code> not found
+    </div>
+  </div>
+)
+
 export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4ViewComponent({
   viewId,
   interactive = true,
@@ -52,19 +70,19 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
     onNavigateTo(null)
   }, [onNavigateTo])
 
+  const colorScheme = useColorScheme(explicitColorScheme)
+
   if (!view) {
-    throw new Error(`View with id ${viewId} not found`)
+    return <NotFound viewId={viewId} />
   }
 
   if (browserViewId && !browserView) {
-    throw new Error(`View with id ${browserViewId} not found`)
+    return <NotFound viewId={browserViewId} />
   }
 
   if (interactive && enableFocusMode) {
     console.warn('Focus mode is not supported in interactive mode')
   }
-
-  const colorScheme = useColorScheme(explicitColorScheme)
 
   return (
     <>

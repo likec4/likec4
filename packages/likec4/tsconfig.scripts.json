@@ -11,7 +11,7 @@
     ]
   },
   "include": [
-    "scripts/",
+    "./scripts",
     "package.json"
   ],
   "references": [

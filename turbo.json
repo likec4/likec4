@@ -10,13 +10,18 @@
     ".yarnrc.yml"
   ],
   "tasks": {
+    "topo": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
     "generate": {
       "outputs": [],
       "outputLogs": "new-only"
     },
     "typecheck": {
       "dependsOn": [
-        "^generate",
+        "topo",
         "generate"
       ],
       "outputs": [],
@@ -24,7 +29,7 @@
     },
     "build": {
       "dependsOn": [
-        "^generate",
+        "^build",
         "generate"
       ],
       "outputs": [

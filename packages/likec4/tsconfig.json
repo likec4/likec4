@@ -12,6 +12,7 @@
     }
   },
   "files": [],
+  "include": [],
   "references": [
     {
       "path": "./tsconfig.scripts.json"

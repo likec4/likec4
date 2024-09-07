@@ -191,8 +191,7 @@ views {
 
 
     style cloud {
-      color muted
-      opacity 20%
+      opacity 10%
     }
     autoLayout TopBottom
   }

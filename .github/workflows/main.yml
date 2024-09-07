@@ -34,8 +34,11 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
+      - name: generate
+        run: yarn ci:generate
+
       - name: typecheck
-        run: yarn typecheck:all
+        run: yarn ci:typecheck
 
       - name: build
         run: yarn ci:build
@@ -44,6 +47,10 @@ jobs:
         env:
           NODE_ENV: test
         run: yarn ci:test
+
+      - name: typecheck apps
+        run:
+          yarn turbo run typecheck --filter='./apps/*'
 
   release:
     uses: ./.github/workflows/release.yaml

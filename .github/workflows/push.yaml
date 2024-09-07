@@ -36,6 +36,9 @@ jobs:
         # with:
         #   node-version: ${{ matrix.node-version }}
 
+      - name: generate
+        run: yarn ci:generate
+
       - name: typecheck
         run: yarn ci:typecheck
 
