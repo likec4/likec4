@@ -23,6 +23,7 @@ export function SidebarDrawer() {
     <MantineDrawer
       size={'sm'}
       opened={opened}
+      keepMounted
       onClose={() => drawerOpenedAtom.set(false)}
       title={
         <Button

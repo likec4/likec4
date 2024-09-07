@@ -2,6 +2,14 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "React Library",
   "extends": "./base.json",
+  "exclude": [
+    "node_modules",
+    "${configDir}/node_modules",
+    "dist",
+    "${configDir}/dist",
+    "build",
+    "${configDir}/build",
+  ],
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": [

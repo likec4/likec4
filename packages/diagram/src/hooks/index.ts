@@ -1,4 +1,5 @@
 export * from './useDiagramState'
+export * from './useMantinePortalProps'
 export * from './useSetState'
 export * from './useUpdateEffect'
 export * from './useXYFlow'

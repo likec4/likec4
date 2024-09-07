@@ -100,8 +100,8 @@ export interface DynamicViewStep {
   readonly description?: string
   readonly technology?: string
   readonly notation?: string
-  // Comment for walkthrough
-  readonly note?: string
+  // Notes for walkthrough
+  readonly notes?: string
   readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
@@ -162,7 +162,7 @@ export type EdgeId = Tagged<string, 'EdgeId'>
 export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
 export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
 export function StepEdgeId(step: number, parallelStep?: number): StepEdgeId {
-  const id = `step-${String(step).padStart(3, '0')}` as StepEdgeId
+  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
   return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
 }
 
@@ -230,8 +230,8 @@ export interface ComputedEdge {
   relations: RelationID[]
   kind?: RelationshipKind
   notation?: string
-  // Comment for walkthrough
-  note?: string
+  // Notes for walkthrough
+  notes?: string
   color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType

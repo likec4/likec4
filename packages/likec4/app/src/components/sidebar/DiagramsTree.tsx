@@ -1,7 +1,7 @@
 import { Box, Button, ThemeIcon, Tree, type TreeNodeData, useComputedColorScheme, useTree } from '@mantine/core'
 import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
 import { Link, useParams } from '@tanstack/react-router'
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { isTruthy } from 'remeda'
 import { useLikeC4View } from 'virtual:likec4/store'
 import { isTreeNodeData, useDiagramsTreeData } from './data'
@@ -32,20 +32,23 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
   })
   const diagram = useLikeC4View(viewId)
 
-  const initialExpandedState = {} as Record<string, boolean>
-  if (diagram && isTruthy(diagram.relativePath)) {
-    const segments = diagram.relativePath.split('/')
-    let path = '@fs'
-    for (const segment of segments) {
-      path += `/${segment}`
-      initialExpandedState[path] = true
-    }
-  }
-
   const tree = useTree({
-    initialExpandedState,
     multiple: false
   })
+
+  const relativePath = diagram?.relativePath ?? null
+
+  useEffect(() => {
+    if (relativePath) {
+      const segments = relativePath.split('/')
+      let path = '@fs'
+      for (const segment of segments) {
+        path += `/${segment}`
+        tree.expand(path)
+      }
+    }
+  }, [relativePath])
+
   const theme = useComputedColorScheme()
 
   return (

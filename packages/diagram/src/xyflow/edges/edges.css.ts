@@ -235,3 +235,33 @@ export const edgeLabelText = style({
 globalStyle(`${edgeLabel}:has(${stepEdgeNumber}) ${edgeLabelText}`, {
   padding: '2px 5px 4px 2px'
 })
+
+export const edgeNoteCloseButton = style({
+  position: 'absolute',
+  top: 4,
+  right: 4,
+  zIndex: 9
+})
+
+export const edgeNoteText = style({
+  userSelect: 'all',
+  textAlign: 'left',
+  whiteSpaceCollapse: 'preserve-breaks',
+  textWrap: 'pretty',
+  lineHeight: 1.25,
+  vars: {
+    '--text-fz': mantine.fontSizes.xs
+  },
+  '@media': {
+    [mantine.largerThan('sm')]: {
+      vars: {
+        '--text-fz': mantine.fontSizes.sm
+      }
+    },
+    [mantine.largerThan('md')]: {
+      vars: {
+        '--text-fz': mantine.fontSizes.md
+      }
+    }
+  }
+})
