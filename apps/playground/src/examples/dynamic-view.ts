@@ -1,7 +1,7 @@
 export const DynamicViewExample = {
-  currentFilename: 'blank.c4',
+  currentFilename: 'dynamic.c4',
   files: {
-    ['dynamic.c4']: `
+    ['specs.c4']: `
 specification {
   element actor {
     notation "Person, Customer"
@@ -39,7 +39,8 @@ specification {
     }
   }
 }
-
+`.trimStart(),
+    ['dynamic.c4']: `
 model {
   customer = actor 'Customer' {
     description 'Customer of Cloud System'
@@ -85,20 +86,60 @@ model {
     }
 
     db = database 'Database' {
+      description 'PostgreSQL Database'
       icon tech:postgresql
     }
 
-    cache = redis "Cache" {
-      // icon tech:redis
-    // }
+    cache = redis "Redis Cache"
   }
 
   customer -> web 'opens in browser'
-
 }
 
 // What diagrams to generate
 views {
+
+  dynamic view parallel-example {
+    title 'Dynamic View Example'
+    ui -> api {
+      notes '
+        🏛️ - Requests data using predefined GraphQL queries
+        ( ONLY )
+
+        🤖 - Queries regression on CI
+      '
+    }
+    parallel {
+      api -> cache {
+        notes "
+          First, API checks if data is cached already.
+          Second, is it stale?
+        "
+      }
+      api -> db {
+        notes "If no data cached, queries persistent data  (SQL)"
+      }
+
+    }
+    include
+      cloud,
+      ui with {
+        color secondary
+        icon tech:react
+      },
+      api with {
+        color secondary
+        icon tech:graphql
+    }
+
+
+    style cloud {
+      color muted
+      opacity 20%
+    }
+    autoLayout TopBottom
+  }
+
   view index of customer {
     include
       customer,
@@ -161,47 +202,6 @@ views {
     style ui._ {
       color green
     }
-  }
-
-  dynamic view parallel-example {
-    title 'Dynamic View Example'
-    ui -> api {
-      notes '
-        🏛️ - Requests data using predefined GraphQL queries
-        ( ONLY )
-
-        🤖 - Queries regression on CI
-      '
-    }
-    parallel {
-      api -> cache {
-        notes "
-          First, API checks if data is cached already.
-          Second, is it stale?
-        "
-      }
-      api -> db {
-        notes "If no data cached, queries persistent data  (SQL)"
-      }
-
-    }
-    include
-      cloud,
-      ui with {
-        color secondary
-        icon tech:react
-      },
-      api with {
-        color secondary
-        icon tech:graphql
-    }
-
-
-    style cloud {
-      color muted
-      opacity 20%
-    }
-    autoLayout TopBottom
   }
 }
 `.trimStart()

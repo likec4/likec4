@@ -84,13 +84,10 @@ model {
       icon tech:postgresql
     }
 
-    cache = redis "Cache" {
-      // icon tech:redis
-    // }
+    cache = redis "Cache"
   }
 
   customer -> web 'opens in browser'
-
 }
 
 // What diagrams to generate
@@ -159,7 +156,7 @@ views {
     }
   }
 
-  dynamic view parallelexample {
+  dynamic view parallel-example {
     title 'Dynamic View Example'
     ui -> api {
       notes '
