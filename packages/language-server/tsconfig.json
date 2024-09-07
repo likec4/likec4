@@ -12,6 +12,6 @@
     "noUnusedParameters": false
   },
   "include": [
-    "src/"
+    "./src"
   ]
 }
