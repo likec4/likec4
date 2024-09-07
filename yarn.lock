@@ -2359,7 +2359,7 @@ __metadata:
     "@vanilla-extract/vite-plugin": "npm:^4.0.15"
     "@vitejs/plugin-react": "npm:^4.3.1"
     esm-env: "npm:1.0.0"
-    postcss: "npm:^8.4.41"
+    postcss: "npm:^8.4.45"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
@@ -8747,7 +8747,7 @@ __metadata:
     p-limit: "npm:^6.1.0"
     package-up: "npm:^5.0.0"
     playwright: "npm:1.46.1"
-    postcss: "npm:^8.4.41"
+    postcss: "npm:^8.4.45"
     postcss-preset-mantine: "npm:^1.17.0"
     pretty-ms: "npm:^9.1.0"
     react: "npm:^18.3.1"
@@ -11452,6 +11452,17 @@ __metadata:
     picocolors: "npm:^1.0.1"
     source-map-js: "npm:^1.2.0"
   checksum: 10c0/c1828fc59e7ec1a3bf52b3a42f615dba53c67960ed82a81df6441b485fe43c20aba7f4e7c55425762fd99c594ecabbaaba8cf5b30fd79dfec5b52a9f63a2d690
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.45":
+  version: 8.4.45
+  resolution: "postcss@npm:8.4.45"
+  dependencies:
+    nanoid: "npm:^3.3.7"
+    picocolors: "npm:^1.0.1"
+    source-map-js: "npm:^1.2.0"
+  checksum: 10c0/ad6f8b9b1157d678560373696109745ab97a947d449f8a997acac41c7f1e4c0f3ca4b092d6df1387f430f2c9a319987b1780dbdc27e35800a88cde9b606c1e8f
   languageName: node
   linkType: hard
 
