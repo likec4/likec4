@@ -1,19 +1,50 @@
 # [1.9.0](https://github.com/likec4/likec4/compare/v1.8.1...v1.9.0) (2024-09-07)
 
+### 🚀 Features  
 
+* **LikeC4 Model API**
+  Access and traverse your architecture model programmatically using the LikeC4 Model API.
+  ```ts
+  import { LikeC4 } from "likec4"
+
+  const likec4 = await LikeC4.fromWorkspace(`....`)
+  
+  // Validation errors
+  console.log(likec4.getErrors())
+  
+  // Traverse the model
+  const model = likec4.model()
+  model
+    .element('cloud.backend.api')
+    .incoming() // relationships incoming to the element
+    .filter(r => r.tags.includes('http')) // filter by tags
+    .map(r => r.source) // get source elements
+  
+  // Layouted views
+  const diagrams = await likec4.diagrams()
+  ```
+
+  [Documentation](https://likec4.dev/tooling/model-api/)
+  
+* **Custom colors**
+  ```zig
+  specification {
+    color custom #6BD731
+  
+    element customer {
+      notation "Person, Customer"
+      style {
+        shape person
+        color custom
+      }
+    }
+  }
+  ```
+  Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#916](https://github.com/likec4/likec4/issues/916)
+  
 ### Bug Fixes
 
-* **deps:** update dependency astro to ~4.15.2 ([927888a](https://github.com/likec4/likec4/commit/927888a3179ad238fb295afe055ff4b0c1af258e))
-* typo ([3d55404](https://github.com/likec4/likec4/commit/3d5540481ec68ea66f6f49b22407f52ff40c819b))
 * **vite-plugin:** fail-safe `virtual:likec4/overview-graph` ([ed85e5f](https://github.com/likec4/likec4/commit/ed85e5f495db7907854e9c7590535eefed234be0)), closes [#959](https://github.com/likec4/likec4/issues/959)
-* **vscode:** initiate BuiltInFileSystemProvider earlier ([47498fd](https://github.com/likec4/likec4/commit/47498fd520ca27eb0bf25b627ed994304407b5f6))
-
-
-### Features
-
-* LikeC4 API ([ce55797](https://github.com/likec4/likec4/commit/ce557972e891e30bcdfaee30a2389d4fe5435747))
-* LikeC4 API ([8b9c112](https://github.com/likec4/likec4/commit/8b9c112d7b2eb1b8e759c79b419f067183dabc34))
-
 
 
 ## [1.8.1](https://github.com/likec4/likec4/compare/v1.8.0...v1.8.1) (2024-08-30)
