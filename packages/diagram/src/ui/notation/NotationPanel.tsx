@@ -120,7 +120,7 @@ const selector = (s: DiagramState) => ({
   id: s.view.id,
   notations: s.view.notation?.elements ?? [],
   height: s.xystore.getState().height,
-  isVisible: isNullish(s.focusedNodeId ?? s.activeDynamicViewStep),
+  isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
   target: s.getContainer()
 })
 

@@ -43,9 +43,10 @@ function FitViewOnViewportResize({ diagramApi }: {
   return null
 }
 
-function selector({ view, viewportChanged, fitViewPadding }: DiagramState) {
+function selector({ view, activeWalkthrough, viewportChanged, fitViewPadding }: DiagramState) {
   return {
     layoutId: view.id + '_' + view.autoLayout + '_' + fitViewPadding,
+    isActiveWalkthrough: !!activeWalkthrough,
     viewportNotMoved: !viewportChanged
   }
 }
@@ -56,6 +57,7 @@ function selector({ view, viewportChanged, fitViewPadding }: DiagramState) {
 export function FitViewOnDiagramChange() {
   const {
     layoutId,
+    isActiveWalkthrough,
     viewportNotMoved
   } = useDiagramState(selector, shallowEqual)
   const diagramApi = useDiagramStoreApi()
@@ -75,7 +77,7 @@ export function FitViewOnDiagramChange() {
     50
   )
 
-  if (viewportNotMoved && !requiresFit) {
+  if (viewportNotMoved && !isActiveWalkthrough && !requiresFit) {
     return <FitViewOnViewportResize diagramApi={diagramApi} />
   }
   return null

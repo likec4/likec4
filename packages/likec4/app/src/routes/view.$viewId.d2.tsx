@@ -1,9 +1,11 @@
-import { Box, Burger, Code, ScrollArea } from '@mantine/core'
+import { Box, Burger, Button, Code, ScrollArea } from '@mantine/core'
+import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../components/sidebar/Drawer'
-import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
+import { svgContainer } from './view.css'
+import * as css from './view_viewId_.css'
 
 export const Route = createFileRoute('/view/$viewId/d2')({
   component: ViewAsD2,
@@ -20,21 +22,40 @@ export const Route = createFileRoute('/view/$viewId/d2')({
   }
 })
 
+const fetchFromKroki = async (d2: string) => {
+  const res = await fetch('https://kroki.io/d2/svg', {
+    method: 'POST',
+    cache: 'force-cache',
+    body: JSON.stringify({
+      diagram_source: d2,
+      // diagram_options: {
+      //   theme: 'colorblind-clear'
+      // },
+      output_format: 'svg'
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  return await res.text()
+}
+
 function ViewAsD2() {
   const { source } = Route.useLoaderData()
+  const [krokiSvg, { execute }] = useAsync(fetchFromKroki, null)
   return (
     <>
-      <PanelGroup className={viewWithTopPadding} direction="horizontal" autoSaveId="viewAsD2">
+      <PanelGroup className={css.viewWithTopPadding} direction="horizontal" autoSaveId="viewAsD2">
         <Panel>
           <ScrollArea
-            className={cssScrollArea}
+            className={css.cssScrollArea}
             p={5}
             styles={{
               viewport: {
                 borderRadius: 6
               }
             }}>
-            <Code block className={cssCodeBlock}>
+            <Code block className={css.cssCodeBlock}>
               {source}
             </Code>
             <CopyToClipboard text={source} />
@@ -46,7 +67,25 @@ function ViewAsD2() {
           }} />
         <Panel>
           <ScrollArea h={'100%'}>
-            {/* {mmdSvg.result && <div className={svgContainer}  dangerouslySetInnerHTML={{ __html: mmdSvg.result }}></div>} */}
+            {krokiSvg.status !== 'success' && (
+              <>
+                <Button
+                  mt={'xs'}
+                  variant="light"
+                  disabled={krokiSvg.status === 'loading'}
+                  onClick={() => void execute(source)}>
+                  {krokiSvg.status === 'loading' ? 'Loading...' : 'Render with Kroki'}
+                </Button>
+                {krokiSvg.status === 'error' && <Box>{krokiSvg.error?.message}</Box>}
+              </>
+            )}
+            {krokiSvg.status === 'success' && (
+              <Box className={svgContainer}>
+                {!krokiSvg.result
+                  ? <Box>Empty result</Box>
+                  : <div dangerouslySetInnerHTML={{ __html: krokiSvg.result }}></div>}
+              </Box>
+            )}
           </ScrollArea>
         </Panel>
       </PanelGroup>

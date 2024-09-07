@@ -23,6 +23,7 @@ export const bundledStyles = () => {
 }
 
 export const theme = createTheme({
+  autoContrast: true,
   primaryColor: 'indigo',
   cursorType: 'pointer',
   defaultRadius: 'sm',

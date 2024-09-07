@@ -1,5 +1,7 @@
 import {
+  extractStep,
   invariant,
+  isStepEdgeId,
   type NonEmptyArray,
   nonexhaustive,
   nonNullable,
@@ -123,7 +125,6 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && isSame(prev.sourceY, next.sourceY)
   && isSame(prev.targetX, next.targetX)
   && isSame(prev.targetY, next.targetY)
-  && eq(prev.data.stepNum, next.data.stepNum)
   && eq(prev.data.label, next.data.label)
   && sameControlPoints(prev.data.controlPoints, next.data.controlPoints)
   && eq(prev.data.edge, next.data.edge)
@@ -150,14 +151,23 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
-  const { isActive, isEdgePathEditable, isHovered, isDimmed, hasOpenSourceRelation } = useDiagramState(s => ({
+  const {
+    isActive,
+    isEdgePathEditable,
+    isHovered,
+    isDimmed,
+    isActiveAsParallel,
+    hasOnOpenSourceRelation
+  } = useDiagramState(s => ({
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true && s.focusedNodeId === null
-      && s.activeDynamicViewStep === null,
+      && s.activeWalkthrough === null,
     isActive: s.focusedNodeId === source || s.focusedNodeId === target
-      || (s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum),
+      || s.activeWalkthrough?.stepId === data.edge.id,
+    // If activeWalkthrough and this edge is part of the parallel group
+    isActiveAsParallel: !!s.activeWalkthrough?.parallelPrefix && id.startsWith(s.activeWalkthrough.parallelPrefix),
     isHovered: s.hoveredEdgeId === id,
     isDimmed: s.dimmed.has(id),
-    hasOpenSourceRelation: !!s.onOpenSourceRelation
+    hasOnOpenSourceRelation: !!s.onOpenSourceRelation
   }))
   const { nodeLookup, edgeLookup } = xyflowStore.getState()
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
@@ -180,7 +190,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   let controlPoints = data.controlPoints ?? bezierControlPoints(data.edge)
 
-  const isStepEdge = data.stepNum !== null
+  const isStepEdge = isStepEdgeId(data.edge.id)
   const isDotted = line === 'dotted'
   const isDashed = isDotted || line === 'dashed'
 
@@ -341,7 +351,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
 
   const relationId = first(data.edge.relations)
-  const showOpenSourceRelation = hasOpenSourceRelation && relationId !== undefined
+  const showOpenSourceRelation = hasOnOpenSourceRelation && relationId !== undefined
 
   return (
     <g
@@ -353,6 +363,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       data-likec4-color={color}
       data-edge-dir={diagramEdge.dir}
       data-edge-active={isActive}
+      data-edge-animated={isActive || isActiveAsParallel}
       data-edge-hovered={isHovered}>
       <path
         className={clsx('react-flow__edge-interaction')}
@@ -412,7 +423,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             labelY,
             isEdgePathEditable,
             selected: selected ?? false,
-            stepNum: data.stepNum,
+            stepNum: isStepEdge ? extractStep(data.edge.id) : null,
             label: data.label,
             zIndex: labelZIndex,
             isHovered,

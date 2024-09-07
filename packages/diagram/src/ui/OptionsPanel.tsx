@@ -11,7 +11,7 @@ import * as styles from './OptionsPanel.css'
 export default function OptionsPanel() {
   const { isFocused, viewId } = useDiagramState(s => ({
     viewId: s.view.id,
-    isFocused: s.focusedNodeId !== null || s.activeDynamicViewStep !== null
+    isFocused: s.focusedNodeId !== null || s.activeWalkthrough !== null
   }))
   const [selected, setSelected] = useState<{
     nodes: string[]

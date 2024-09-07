@@ -44,7 +44,6 @@ export type RelationshipData = {
   edge: DiagramEdge
   // if set - edge was changed by user
   controlPoints: XYPoint[] | null
-  stepNum: number | null
   label: null | {
     bbox: BBox
     text: string

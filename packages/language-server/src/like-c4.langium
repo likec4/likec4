@@ -225,8 +225,11 @@ ElementViewBody: '{'
 DynamicViewBody: '{'
   tags=Tags?
   props+=ViewProperty*
-  (steps+=DynamicViewStep | rules+=DynamicViewRule)*
-  '}'
+  (
+    steps+=(DynamicViewParallelSteps | DynamicViewStep) |
+    rules+=DynamicViewRule
+  )*
+'}'
 ;
 
 
@@ -237,7 +240,8 @@ type StringProperty =
   MetadataAttribute |
   SpecificationElementStringProperty |
   SpecificationRelationshipStringProperty |
-  NotationProperty
+  NotationProperty |
+  NoteProperty
 ;
 
 ViewProperty:
@@ -260,6 +264,12 @@ DynamicViewRule:
   DynamicViewIncludePredicate |
   ViewRuleStyle |
   ViewRuleAutoLayout
+;
+
+DynamicViewParallelSteps:
+  ('parallel'|'par') '{'
+    (steps+=DynamicViewStep)*
+  '}'
 ;
 
 DynamicViewStep:
@@ -426,6 +436,9 @@ ViewRuleAutoLayout:
 NotationProperty:
   key='notation' ':'? value=String ';'?
 ;
+NoteProperty:
+  key='note' ':'? value=String ';'?
+;
 
 CustomElementProperties: '{'
   props+=(
@@ -441,6 +454,7 @@ CustomRelationProperties: '{'
   props+=(
     RelationStringProperty |
     NotationProperty |
+    NoteProperty |
     RelationshipStyleProperty
   )*
 '}'
@@ -565,7 +579,8 @@ fragment IsEqual:
 // Comments
 hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
-hidden terminal WS: /\s+/;
+hidden terminal WS: /[\t ]+/;
+hidden terminal NL: /[\r\n]+/;
 
 // -----------------------------------
 // Terminals

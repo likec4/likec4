@@ -83,15 +83,15 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
             opacity < 1 && css.transparent,
             'likec4-compound'
           )}
-          style={opacity < 1
-            ? {
+          style={{
+            ...(opacity < 1 && {
               ...assignInlineVars({
                 [css.varBorderTransparency]: `${borderTransparency}%`,
                 [css.varOpacity]: opacity.toFixed(2)
               }),
               borderStyle: style.border ?? 'dashed'
-            }
-            : undefined}
+            })
+          }}
         >
           <Text
             component="div"

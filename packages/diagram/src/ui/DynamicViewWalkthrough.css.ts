@@ -7,7 +7,16 @@ export const container = style({
   left: '50%',
   transform: 'translateX(-50%)',
   padding: 0,
-  margin: 0
+  margin: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.4rem',
+  alignItems: 'center',
+  '@media': {
+    [mantine.largerThan('md')]: {
+      gap: '0.6rem'
+    }
+  }
 })
 
 export const buttons = style({
@@ -44,4 +53,21 @@ export const btn = style({
 globalStyle(`:where(${buttons}, ${btn}) .tabler-icon`, {
   width: '0.85em',
   height: '0.85em'
+})
+
+export const parallelStateFrame = style({
+  position: 'absolute',
+  margin: 0,
+  padding: 0,
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  border: `2px solid ${mantine.colors.orange[6]}`,
+  pointerEvents: 'none',
+  '@media': {
+    [mantine.largerThan('md')]: {
+      borderWidth: 4
+    }
+  }
 })

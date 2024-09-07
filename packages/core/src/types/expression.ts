@@ -161,6 +161,8 @@ export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
     description?: string
     technology?: string
     notation?: string
+    // Comment for walkthrough
+    note?: string
     color?: Color
     line?: RelationshipLineType
     head?: RelationshipArrowType

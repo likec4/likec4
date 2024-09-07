@@ -157,9 +157,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       // [_.nslimit]: 5,
       // [_.nslimit1]: 5,
       // [_.ratio]
-      [_.nodesep]: pxToInch(100),
-      [_.ranksep]: pxToInch(110),
-      [_.pack]: pxToPoints(100),
+      [_.nodesep]: pxToInch(110),
+      [_.ranksep]: pxToInch(120),
+      [_.pack]: pxToPoints(120),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15),
       [_.forcelabels]: true,
@@ -250,7 +250,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fillcolor]: compoundColor(colorValues.fill, compound.depth),
       [_.color]: compoundColor(colorValues.stroke, compound.depth),
       [_.style]: 'filled',
-      [_.margin]: pxToPoints(32),
+      [_.margin]: pxToPoints(compound.children.length > 1 ? 40 : 32),
       [_.label]: compoundLabel(compound, textColor)
     })
     return subgraph

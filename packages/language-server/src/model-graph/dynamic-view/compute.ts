@@ -3,6 +3,7 @@ import type {
   ComputedDynamicView,
   ComputedEdge,
   DynamicView,
+  DynamicViewStep,
   Element,
   NonEmptyArray,
   RelationID,
@@ -18,6 +19,7 @@ import {
   DefaultLineStyle,
   DefaultRelationshipColor,
   isDynamicViewIncludeRule,
+  isDynamicViewParallelSteps,
   isViewRuleAutoLayout,
   nonNullable,
   parentFqn,
@@ -34,6 +36,7 @@ import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 
 export namespace DynamicViewComputeCtx {
   export interface Step {
+    id: StepEdgeId
     source: Element
     target: Element
     title: string | null
@@ -63,6 +66,38 @@ export class DynamicViewComputeCtx {
     protected graph: LikeC4ModelGraph
   ) {}
 
+  private addStep(
+    {
+      source: stepSource,
+      target: stepTarget,
+      title: stepTitle,
+      isBackward,
+      ...step
+    }: DynamicViewStep,
+    index: number,
+    parent?: number
+  ) {
+    const id = parent ? StepEdgeId(parent, index) : StepEdgeId(index)
+    const source = this.graph.element(stepSource)
+    const target = this.graph.element(stepTarget)
+
+    this.explicits.add(source)
+    this.explicits.add(target)
+
+    const { title, relations, tags } = this.findRelations(source, target)
+
+    this.steps.push({
+      id,
+      ...step,
+      source,
+      target,
+      title: isTruthy(stepTitle) ? stepTitle : title,
+      relations: relations ?? [],
+      isBackward: isBackward ?? false,
+      ...(tags ? { tags } : {})
+    })
+  }
+
   protected compute(): ComputedDynamicView {
     const {
       docUri: _docUri, // exclude docUri
@@ -71,32 +106,21 @@ export class DynamicViewComputeCtx {
       ...view
     } = this.view
 
-    for (
-      let {
-        source: stepSource,
-        target: stepTarget,
-        title: stepTitle,
-        isBackward,
-        ...step
-      } of viewSteps
-    ) {
-      const source = this.graph.element(stepSource)
-      const target = this.graph.element(stepTarget)
-
-      this.explicits.add(source)
-      this.explicits.add(target)
-
-      const { title, relations, tags } = this.findRelations(source, target)
-
-      this.steps.push({
-        ...step,
-        source,
-        target,
-        title: isTruthy(stepTitle) ? stepTitle : title,
-        relations: relations ?? [],
-        isBackward: isBackward ?? false,
-        ...(tags ? { tags } : {})
-      })
+    let stepNum = 1
+    for (const step of viewSteps) {
+      if (isDynamicViewParallelSteps(step)) {
+        if (step.__parallel.length === 0) {
+          continue
+        }
+        if (step.__parallel.length === 1) {
+          this.addStep(step.__parallel[0]!, stepNum)
+        } else {
+          step.__parallel.forEach((s, i) => this.addStep(s, i + 1, stepNum))
+        }
+      } else {
+        this.addStep(step, stepNum)
+      }
+      stepNum++
     }
 
     for (const rule of rules) {
@@ -111,12 +135,10 @@ export class DynamicViewComputeCtx {
     const elements = [...this.explicits]
     const nodesMap = buildComputeNodes(elements)
 
-    const edges = this.steps.map(({ source, target, relations, title, isBackward, ...step }, index) => {
+    const edges = this.steps.map(({ source, target, relations, title, isBackward, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id), `Target node ${target.id} not found`)
-      const stepNum = index + 1
       const edge: ComputedEdge = {
-        id: StepEdgeId(stepNum),
         parent: commonAncestor(source.id, target.id),
         source: source.id,
         target: target.id,
