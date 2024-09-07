@@ -1,10 +1,12 @@
 specification {
   element actor {
+    notation "Person, Customer"
     style {
       shape person
     }
   }
   element system {
+    notation "Software system"
     style {
       opacity 35%
       color secondary
@@ -17,9 +19,23 @@ specification {
       color secondary
     }
   }
+  element database {
+    notation "Relational Database"
+    style {
+      shape storage
+      color muted
+    }
+  }
+  element redis {
+    notation "Redis"
+    style {
+      icon tech:redis
+      shape storage
+      color muted
+    }
+  }
 }
 
-// Describe the architecture
 model {
   customer = actor 'Customer' {
     description 'Customer of Cloud System'
@@ -63,6 +79,14 @@ model {
       web -> auth
       web -> api 'requests'
     }
+
+    db = database 'Database' {
+      icon tech:postgresql
+    }
+
+    cache = redis "Cache" {
+      // icon tech:redis
+    // }
   }
 
   customer -> web 'opens in browser'
@@ -133,5 +157,46 @@ views {
     style ui._ {
       color green
     }
+  }
+
+  dynamic view parallelexample {
+    title 'Dynamic View Example'
+    ui -> api {
+      notes '
+        🏛️ - Requests data using predefined GraphQL queries
+        ( ONLY )
+
+        🤖 - Queries regression on CI
+      '
+    }
+    parallel {
+      api -> cache {
+        notes "
+          First, API checks if data is cached already.
+          Second, is it stale?
+        "
+      }
+      api -> db {
+        notes "If no data cached, queries persistent data  (SQL)"
+      }
+
+    }
+    include
+      cloud,
+      ui with {
+        color secondary
+        icon tech:react
+      },
+      api with {
+        color secondary
+        icon tech:graphql
+    }
+
+
+    style cloud {
+      color muted
+      opacity 20%
+    }
+    autoLayout TopBottom
   }
 }
