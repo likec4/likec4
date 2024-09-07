@@ -5,6 +5,7 @@ import { ShadowRootCssSelector } from './styles'
 import { shadowRoot } from './styles.css'
 
 const theme = createTheme({
+  autoContrast: true,
   primaryColor: 'indigo',
   cursorType: 'pointer',
   defaultRadius: 'sm',

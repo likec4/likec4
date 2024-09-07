@@ -1,6 +1,7 @@
 import type {
   DiagramNode,
   DiagramView,
+  EdgeId,
   ElementKind,
   ElementNotation,
   Fqn,
@@ -8,7 +9,15 @@ import type {
   ViewChange,
   ViewID
 } from '@likec4/core'
-import { getBBoxCenter, invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
+import {
+  getBBoxCenter,
+  getParallelStepsPrefix,
+  invariant,
+  isStepEdgeId,
+  nonexhaustive,
+  nonNullable,
+  StepEdgeId
+} from '@likec4/core'
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -20,7 +29,7 @@ import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
+import { entries, first, hasAtLeast, isArray, isNullish, map, prop, reduce } from 'remeda'
 import type { ConditionalKeys, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -83,7 +92,12 @@ export type DiagramState = Simplify<
 
     // If Dynamic View
     isDynamicView: boolean
-    activeDynamicViewStep: number | null
+    activeWalkthrough: null | {
+      stepId: StepEdgeId
+      hasPrevious: boolean
+      hasNext: boolean
+      parallelPrefix: string | null
+    }
 
     // This is XYFlow id's
     lastClickedNodeId: string | null
@@ -136,8 +150,8 @@ export type DiagramState = Simplify<
     goForward: () => void
 
     nextDynamicStep: (increment?: number) => void
-    activateDynamicStep: (step: number) => void
-    stopDynamicView: () => void
+    activateWalkthrough: (step: EdgeId | XYFlowEdge) => void
+    stopWalkthrough: () => void
 
     onInit: (xyflow: XYFlowInstance) => void
     onNodesChange: OnNodesChange<XYFlowNode>
@@ -158,7 +172,7 @@ const DEFAULT_PROPS: Except<
   initialized: false,
   navigationHistoryIndex: 0,
   viewportChanged: false,
-  activeDynamicViewStep: null,
+  activeWalkthrough: null,
   focusedNodeId: null,
   hoveredNodeId: null,
   hoveredEdgeId: null,
@@ -231,7 +245,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               focusedNodeId,
               lastClickedNodeId,
               lastClickedEdgeId,
-              activeDynamicViewStep,
+              activeWalkthrough,
               nodesDraggable,
               nodesSelectable,
               hoveredEdgeId,
@@ -259,6 +273,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               }
               if (focusedNodeId && !nodeIds.has(focusedNodeId)) {
                 focusedNodeId = null
+                dimmed = EmptyStringSet
               }
               if (lastClickedEdgeId && !edgeIds.has(lastClickedEdgeId)) {
                 lastClickedEdgeId = null
@@ -266,8 +281,9 @@ export function createDiagramStore(props: DiagramInitialState) {
               if (hoveredEdgeId && !edgeIds.has(hoveredEdgeId)) {
                 hoveredEdgeId = null
               }
-              if (activeDynamicViewStep && !edgeIds.has(StepEdgeId(activeDynamicViewStep))) {
-                activeDynamicViewStep = null
+              if (activeWalkthrough && !edgeIds.has(activeWalkthrough.stepId)) {
+                activeWalkthrough = null
+                dimmed = EmptyStringSet
               }
               if (dimmed.size > 0) {
                 let nextDimmed = new StringSet([...dimmed].filter(id => nodeIds.has(id) || edgeIds.has(id)))
@@ -335,7 +351,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               hoveredEdgeId = null
               hoveredNodeId = null
               focusedNodeId = null
-              activeDynamicViewStep = null
+              activeWalkthrough = null
               dimmed = EmptyStringSet
             }
 
@@ -400,7 +416,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 isDynamicView: nextView.__ === 'dynamic',
                 viewSyncDebounceTimeout,
                 view: nextView,
-                activeDynamicViewStep,
+                activeWalkthrough,
                 lastOnNavigate,
                 lastClickedNodeId,
                 lastClickedEdgeId,
@@ -440,7 +456,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               }
               set(
                 {
-                  activeDynamicViewStep: null,
+                  activeWalkthrough: null,
                   focusedNodeId: nodeId,
                   dimmed
                 },
@@ -476,15 +492,15 @@ export function createDiagramStore(props: DiagramInitialState) {
 
           resetLastClicked: () => {
             let {
-              activeDynamicViewStep,
+              activeWalkthrough,
               focusedNodeId,
               lastClickedNodeId,
               lastClickedEdgeId
             } = get()
-            if (activeDynamicViewStep || focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
+            if (activeWalkthrough || focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
               set(
                 {
-                  activeDynamicViewStep: null,
+                  activeWalkthrough: null,
                   focusedNodeId: null,
                   lastClickedNodeId: null,
                   lastClickedEdgeId: null,
@@ -790,17 +806,17 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           fitDiagram: (duration = 500) => {
-            const { fitViewPadding, view, focusedNodeId, activeDynamicViewStep, xystore } = get()
+            const { fitViewPadding, view, focusedNodeId, activeWalkthrough, xystore } = get()
             const { width, height, panZoom, transform } = xystore.getState()
 
             const bounds = view.bounds
             const maxZoom = Math.max(1, transform[2])
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, fitViewPadding)
             panZoom?.setViewport(viewport, { duration })
-            if ((focusedNodeId ?? activeDynamicViewStep) !== null) {
+            if ((focusedNodeId ?? activeWalkthrough) !== null) {
               set(
                 {
-                  activeDynamicViewStep: null,
+                  activeWalkthrough: null,
                   focusedNodeId: null,
                   dimmed: EmptyStringSet
                 },
@@ -811,30 +827,94 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           nextDynamicStep: (increment = 1) => {
-            const { activeDynamicViewStep, activateDynamicStep } = get()
-            const nextStep = (activeDynamicViewStep ?? 0) + increment
-            if (nextStep <= 0) {
-              return
+            const { activeWalkthrough, xyedges, activateWalkthrough } = get()
+            const stepId = activeWalkthrough?.stepId
+            let nextStep
+            if (stepId) {
+              const currentIndex = xyedges.findIndex(({ id }) => id === stepId)
+              const nextIndex = currentIndex + increment
+              nextStep = xyedges[nextIndex]
+            } else {
+              nextStep = first(xyedges)
             }
-            if (nextStep !== activeDynamicViewStep) {
-              activateDynamicStep(nextStep)
+            if (nextStep) {
+              activateWalkthrough(nextStep.data.edge.id)
+              return
             }
           },
 
-          activateDynamicStep: (nextStep: number) => {
-            const { isDynamicView, xyflow, xystore, fitViewPadding } = get()
+          // activateDynamicStep: (nextStep: number) => {
+          //   const { isDynamicView, xyflow, xystore, fitViewPadding } = get()
+          //   invariant(isDynamicView, 'view is not dynamic')
+          //   const edgeId = StepEdgeId(nextStep)
+          //   const dimmed = new StringSet()
+          //   let edge: XYFlowEdge | null = null
+          //   for (const e of xyflow.getEdges()) {
+          //     if (e.id === edgeId) {
+          //       edge = e
+          //       continue
+          //     }
+          //     dimmed.add(e.id)
+          //   }
+          //   invariant(!!edge, `edge not found: ${edgeId}`)
+          //   const selected = [] as XYFlowNode[]
+          //   for (const n of xyflow.getNodes()) {
+          //     if (n.id === edge.source || n.id === edge.target) {
+          //       selected.push(n)
+          //       continue
+          //     }
+          //     dimmed.add(n.id)
+          //   }
+          //   const { fitView, transform } = xystore.getState()
+          //   fitView({
+          //     duration: 400,
+          //     includeHiddenNodes: true,
+          //     maxZoom: Math.max(1, transform[2]),
+          //     minZoom: MinZoom,
+          //     padding: Math.max(fitViewPadding, 0.2),
+          //     nodes: selected
+          //   })
+          //   set(
+          //     {
+          //       focusedNodeId: null,
+          //       activeDynamicViewStep: nextStep,
+          //       dimmed
+          //     },
+          //     noReplace,
+          //     'activateDynamicStep'
+          //   )
+          // },
+
+          activateWalkthrough: (step: EdgeId | XYFlowEdge) => {
+            const stepId = typeof step === 'string' ? step : step.data.edge.id
+            invariant(isStepEdgeId(stepId), `stepId ${stepId} is not a step edge id`)
+            let {
+              isDynamicView,
+              xyflow,
+              xyedges,
+              xystore,
+              fitViewPadding,
+              activeWalkthrough
+            } = get()
             invariant(isDynamicView, 'view is not dynamic')
-            const edgeId = StepEdgeId(nextStep)
-            const dimmed = new StringSet()
-            let edge: XYFlowEdge | null = null
-            for (const e of xyflow.getEdges()) {
-              if (e.id === edgeId) {
-                edge = e
-                continue
-              }
-              dimmed.add(e.id)
+            const edge = typeof step === 'string' ? xyedges.find(({ id }) => id === stepId) : step
+            invariant(edge, `edge not found: ${stepId}`)
+            const currentIndex = xyedges.findIndex(({ id }) => id === stepId)
+            activeWalkthrough = {
+              stepId,
+              hasPrevious: currentIndex > 0,
+              hasNext: currentIndex < xyedges.length - 1,
+              parallelPrefix: getParallelStepsPrefix(stepId)
             }
-            invariant(!!edge, `edge not found: ${edgeId}`)
+
+            const dimmed = new StringSet(
+              xyedges
+                .filter(({ id }) =>
+                  id !== stepId
+                  && !(activeWalkthrough.parallelPrefix && id.startsWith(activeWalkthrough.parallelPrefix))
+                )
+                .map(({ id }) => id)
+            )
             const selected = [] as XYFlowNode[]
             for (const n of xyflow.getNodes()) {
               if (n.id === edge.source || n.id === edge.target) {
@@ -855,24 +935,24 @@ export function createDiagramStore(props: DiagramInitialState) {
             set(
               {
                 focusedNodeId: null,
-                activeDynamicViewStep: nextStep,
+                activeWalkthrough,
                 dimmed
               },
               noReplace,
-              'activateDynamicStep'
+              'activateWalkthrough'
             )
           },
 
-          stopDynamicView: () => {
-            if (get().activeDynamicViewStep !== null) {
+          stopWalkthrough: () => {
+            if (get().activeWalkthrough !== null) {
               set(
                 {
-                  activeDynamicViewStep: null,
+                  activeWalkthrough: null,
                   focusedNodeId: null,
                   dimmed: EmptyStringSet
                 },
                 noReplace,
-                'stopDynamicView'
+                'stopWalkthrough'
               )
               get().fitDiagram()
             }

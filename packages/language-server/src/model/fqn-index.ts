@@ -26,7 +26,6 @@ export class FqnIndex {
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.IndexedContent,
       async (docs, _cancelToken) => {
-        logger.debug(`[FqnIndex] onIndexedContent ${docs.length}:\n` + printDocs(docs))
         for (const doc of docs) {
           if (isLikeC4LangiumDocument(doc)) {
             delete doc.c4fqnIndex

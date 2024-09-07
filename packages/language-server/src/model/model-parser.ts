@@ -545,6 +545,12 @@ export class LikeC4ModelParser {
           }
           return acc
         }
+        if (ast.isNoteProperty(prop)) {
+          if (isTruthy(prop.value)) {
+            acc.customRelation[prop.key] = removeIndent(prop.value)
+          }
+          return acc
+        }
         nonexhaustive(prop)
       },
       {
@@ -624,6 +630,12 @@ export class LikeC4ModelParser {
     }
   }
 
+  private parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicViewParallelSteps {
+    return {
+      __parallel: node.steps.map(step => this.parseDynamicStep(step))
+    }
+  }
+
   private parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep {
     const sourceEl = elementRef(node.source)
     if (!sourceEl) {
@@ -679,7 +691,13 @@ export class LikeC4ModelParser {
           }
           if (ast.isNotationProperty(prop)) {
             if (isTruthy(prop.value)) {
-              step[prop.key] = prop.value
+              step[prop.key] = removeIndent(prop.value)
+            }
+            continue
+          }
+          if (ast.isNoteProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              step[prop.key] = removeIndent(prop.value)
             }
             continue
           }
@@ -845,13 +863,17 @@ export class LikeC4ModelParser {
       steps: body.steps.reduce((acc, n) => {
         try {
           if (isValid(n)) {
-            acc.push(this.parseDynamicStep(n))
+            if (ast.isDynamicViewParallelSteps(n)) {
+              acc.push(this.parseDynamicParallelSteps(n))
+            } else {
+              acc.push(this.parseDynamicStep(n))
+            }
           }
         } catch (e) {
           logWarnError(e)
         }
         return acc
-      }, [] as c4.DynamicViewStep[]),
+      }, [] as c4.DynamicViewStepOrParallel[]),
       ...(manualLayout && { manualLayout })
     }
   }

@@ -151,6 +151,71 @@ describe.concurrent('dynamic views', () => {
     `)
   })
 
+  it('valid dynamic view with note', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view index1 {
+        user -> system.frontend 'User uses System'
+        system.frontend -> system.backend 'frontend uses backend'
+        system.frontend <- system.backend {
+          title 'backend uses frontend'
+          note 'some note'
+        }
+
+        style * {
+          color red
+        }
+        autoLayout BottomTop
+      }
+    `)
+  })
+
+  it('valid dynamic view with parallel steps', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view parallelSteps {
+        parallel {
+          user -> system.frontend 'User uses System'
+          system.frontend -> system.backend 'frontend uses backend'
+        }
+        parallel {
+          system.frontend <- system.backend
+        }
+      }
+    `)
+  })
+
+  it('valid dynamic view with empty parallel steps', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view parallelSteps {
+        parallel {
+        }
+        parallel {
+          system.frontend <- system.backend 'frontend uses backend' {
+            description 'some description'
+          }
+        }
+      }
+    `)
+  })
+
+  it('invalid dynamic view with nested parallel steps', async ctx => {
+    const { invalid } = await mkTestServices(ctx)
+    await invalid(`
+      dynamic view parallelSteps {
+        parallel {
+          user -> system.frontend 'User uses System'
+          system.frontend -> system.backend 'frontend uses backend'
+
+          parallel {
+            system.frontend <- system.backend
+          }
+        }
+      }
+    `)
+  })
+
   it('invalid views', async ctx => {
     const { invalid } = await mkTestServices(ctx)
     await invalid(`

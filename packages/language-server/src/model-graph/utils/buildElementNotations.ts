@@ -52,8 +52,8 @@ export function buildElementNotations(nodes: ComputedNode[]): ElementNotation[] 
       }))
     ),
     sortBy(
-      prop('title'),
       prop('shape'),
+      prop('title'),
       [
         n => n.kinds.length,
         'desc'

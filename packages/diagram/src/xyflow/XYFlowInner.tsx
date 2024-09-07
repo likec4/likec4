@@ -34,7 +34,7 @@ export const XYFlowInner = memo(function XYFlowInnerR({
     isDynamicView: s.isDynamicView,
     readonly: s.readonly,
     enableDynamicViewWalkthrough: s.enableDynamicViewWalkthrough,
-    isDynamicViewActive: isNonNullish(s.activeDynamicViewStep)
+    isDynamicViewActive: isNonNullish(s.activeWalkthrough)
   }))
 
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'

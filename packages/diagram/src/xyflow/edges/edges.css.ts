@@ -145,7 +145,7 @@ export const cssEdgePath = style({
       animationDelay: '450ms',
       transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
     },
-    [`:where(${isSelected}, [data-edge-active='true']) &`]: {
+    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '0ms',
       transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
@@ -171,10 +171,15 @@ export const stepEdgeNumber = style({
   borderTopLeftRadius: labelBorderRadius,
   borderBottomLeftRadius: labelBorderRadius,
   backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 5%)`,
-  fontVariantNumeric: 'tabular-nums'
-})
-globalStyle(`:where([data-mantine-color-scheme="dark"]) :where([data-likec4-color="gray"]) ${stepEdgeNumber}`, {
-  backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`
+  fontVariantNumeric: 'tabular-nums',
+  selectors: {
+    [`:where([data-mantine-color-scheme="dark"]) :where([data-likec4-color="gray"]) &`]: {
+      backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`
+    },
+    [`:where([data-edge-active='true']) &`]: {
+      backgroundColor: 'transparent'
+    }
+  }
 })
 
 export const varLabelX = createVar('label-x')

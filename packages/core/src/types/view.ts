@@ -1,4 +1,4 @@
-import { isNullish } from 'remeda'
+import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
@@ -100,12 +100,21 @@ export interface DynamicViewStep {
   readonly description?: string
   readonly technology?: string
   readonly notation?: string
+  // Comment for walkthrough
+  readonly note?: string
   readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
   readonly isBackward?: boolean
+  __parallel?: never
 }
+
+export interface DynamicViewParallelSteps {
+  readonly __parallel: DynamicViewStep[]
+}
+
+export type DynamicViewStepOrParallel = DynamicViewStep | DynamicViewParallelSteps
 
 export type DynamicViewIncludeRule = {
   include: ElementPredicateExpression[]
@@ -119,9 +128,13 @@ export type DynamicViewRule = DynamicViewIncludeRule | ViewRuleStyle | ViewRuleA
 export interface DynamicView extends BasicView<'dynamic'> {
   readonly __: 'dynamic'
 
-  readonly steps: DynamicViewStep[]
+  readonly steps: DynamicViewStepOrParallel[]
 
   readonly rules: DynamicViewRule[]
+}
+
+export function isDynamicViewParallelSteps(step: DynamicViewStepOrParallel): step is DynamicViewParallelSteps {
+  return '__parallel' in step && isArray(step.__parallel)
 }
 
 export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
@@ -146,20 +159,31 @@ export function isScopedElementView(view: LikeC4View): view is ScopedElementView
 export type NodeId = Tagged<string, 'Fqn'>
 
 export type EdgeId = Tagged<string, 'EdgeId'>
-export type StepEdgeIdLiteral = `step-${number}`
+export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
 export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
-export function StepEdgeId(step: number): StepEdgeId {
-  return `step-${String(step).padStart(3, '0')}` as StepEdgeId
+export function StepEdgeId(step: number, parallelStep?: number): StepEdgeId {
+  const id = `step-${String(step).padStart(3, '0')}` as StepEdgeId
+  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
 }
 
 export function isStepEdgeId(id: string): id is StepEdgeId {
   return id.startsWith('step-')
 }
+
 export function extractStep(id: EdgeId): number {
   if (!isStepEdgeId(id)) {
     throw new Error(`Invalid step edge id: ${id}`)
   }
-  return Number(id.slice('step-'.length))
+  return parseFloat(id.slice('step-'.length))
+}
+
+// Get the prefix of the parallel steps
+// i.e. step-01.1 -> step-01.
+export function getParallelStepsPrefix(id: string): string | null {
+  if (isStepEdgeId(id) && id.includes('.')) {
+    return id.slice(0, id.indexOf('.') + 1)
+  }
+  return null
 }
 
 export interface ComputedNode {
@@ -205,6 +229,9 @@ export interface ComputedEdge {
   technology?: string
   relations: RelationID[]
   kind?: RelationshipKind
+  notation?: string
+  // Comment for walkthrough
+  note?: string
   color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType

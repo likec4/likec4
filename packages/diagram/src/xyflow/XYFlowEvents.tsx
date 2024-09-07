@@ -80,13 +80,13 @@ export function useXYFlowEvents() {
         }
         const {
           focusedNodeId,
-          activeDynamicViewStep,
+          activeWalkthrough,
           fitDiagram,
           onCanvasClick,
           xystore,
           resetLastClicked
         } = diagramApi.getState()
-        if ((focusedNodeId ?? activeDynamicViewStep) !== null) {
+        if ((focusedNodeId ?? activeWalkthrough) !== null) {
           fitDiagram()
           if (!onCanvasClick) {
             event.stopPropagation()
@@ -196,8 +196,8 @@ export function useXYFlowEvents() {
           lastClickedEdgeId,
           isDynamicView,
           enableDynamicViewWalkthrough,
-          activateDynamicStep,
-          activeDynamicViewStep,
+          activateWalkthrough,
+          activeWalkthrough,
           focusedNodeId,
           xystore,
           nodesSelectable,
@@ -213,11 +213,11 @@ export function useXYFlowEvents() {
           && (focusedNodeId === xyedge.source || focusedNodeId === xyedge.target)
         if (
           isDynamicView && enableDynamicViewWalkthrough
-          && (isEdgeOfFocusedNode || isNotAFirstClick || isNonNullish(activeDynamicViewStep))
+          && (isEdgeOfFocusedNode || isNotAFirstClick || isNonNullish(activeWalkthrough))
         ) {
-          const nextStep = extractStep(xyedge.data.edge.id)
-          if (activeDynamicViewStep !== nextStep) {
-            activateDynamicStep(nextStep)
+          const nextStep = xyedge.data.edge.id
+          if (activeWalkthrough?.stepId !== nextStep) {
+            activateWalkthrough(nextStep)
             event.stopPropagation()
             return
           }
@@ -247,14 +247,14 @@ export function useXYFlowEvents() {
           isDynamicView,
           enableDynamicViewWalkthrough,
           focusOnNode,
-          activateDynamicStep,
-          activeDynamicViewStep
+          activeWalkthrough,
+          activateWalkthrough
         } = diagramApi.getState()
         // if we are in dynamic view, and clicked on an edge, activate the step
         if (isDynamicView && enableDynamicViewWalkthrough) {
-          const nextStep = extractStep(xyedge.data.edge.id)
-          if (activeDynamicViewStep !== nextStep) {
-            activateDynamicStep(extractStep(xyedge.data.edge.id))
+          const nextStep = xyedge.data.edge.id
+          if (activeWalkthrough?.stepId !== nextStep) {
+            activateWalkthrough(nextStep)
             event.stopPropagation()
           }
           return

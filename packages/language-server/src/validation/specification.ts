@@ -8,7 +8,7 @@ export const specificationRuleChecks = (
 ): ValidationCheck<ast.SpecificationRule> => {
   return (node, accept) => {
     if (node.$containerIndex && node.$containerIndex > 0) {
-      accept('error', `Only one specification per document is allowed`, {
+      accept('warning', `Prefer one specification per document`, {
         node: node,
         property: 'name'
       })
@@ -19,7 +19,7 @@ export const specificationRuleChecks = (
 export const modelRuleChecks = (_: LikeC4Services): ValidationCheck<ast.Model> => {
   return (node, accept) => {
     if (node.$containerIndex && node.$containerIndex > 0) {
-      accept('error', `Only one model per document is allowed`, {
+      accept('warning', `Prefer one model per document`, {
         node: node,
         property: 'name'
       })
@@ -30,7 +30,7 @@ export const modelRuleChecks = (_: LikeC4Services): ValidationCheck<ast.Model> =
 export const modelViewsChecks = (_: LikeC4Services): ValidationCheck<ast.ModelViews> => {
   return (node, accept) => {
     if (node.$containerIndex && node.$containerIndex > 0) {
-      accept('error', `Only one views block per document is allowed`, {
+      accept('warning', `Prefer one views block per document`, {
         node: node,
         property: 'name'
       })

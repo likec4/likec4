@@ -136,7 +136,7 @@ export const TopLeftPanel = () => {
     target,
     showGoToSource
   } = useDiagramState(s => {
-    const isNotActive = s.activeDynamicViewStep === null && s.focusedNodeId === null
+    const isNotActive = s.activeWalkthrough === null && s.focusedNodeId === null
     return ({
       showNavigationButtons: !!s.onBurgerMenuClick || s.showNavigationButtons && !!s.onNavigateTo,
       showFitDiagram: s.fitViewEnabled && s.zoomable && s.viewportChanged,

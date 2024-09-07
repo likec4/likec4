@@ -114,7 +114,7 @@ export interface ParsedAstDynamicView {
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<ParsedLink> | null
-  steps: c4.DynamicViewStep[]
+  steps: c4.DynamicViewStepOrParallel[]
   rules: Array<c4.DynamicViewRule>
   manualLayout?: c4.ViewManualLayout
 }
@@ -194,12 +194,12 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   return Object.assign(doc, props) as ParsedLikeC4LangiumDocument
 }
 
-export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqnIndex
-}
-
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
+}
+
+export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
+  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqnIndex
 }
 
 export function isParsedLikeC4LangiumDocument(
@@ -230,6 +230,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isRelationPredicateWith,
   ast.isElementExpression,
   ast.isRelationExpression,
+  ast.isDynamicViewParallelSteps,
   ast.isDynamicViewStep,
   ast.isViewProperty,
   ast.isStyleProperty,
