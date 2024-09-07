@@ -803,6 +803,47 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds model and dynamic view with notes', async ({ expect }) => {
+    const { validate, buildModel, services } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2
+      component system3
+    }
+    views {
+      dynamic view index {
+       system1 -> system2
+       parallel {
+         system1 -> system3 "label1" {
+           notes "Note 1"
+         }
+         system2 -> system3 {
+           notes "Note 2"
+         }
+       }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    // Check that computeView method does not change navigateTo
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    const [step1, step2, step3] = indexView!.edges
+
+    expect(step1).not.toHaveProperty('notes')
+    expect(step1).toHaveProperty('label', null)
+
+    expect(step2).toHaveProperty('notes', 'Note 1')
+    expect(step2).toHaveProperty('label', 'label1')
+
+    expect(step3).toHaveProperty('notes', 'Note 2')
+    expect(step3).toHaveProperty('label', null)
+  })
+
   it('builds relations with links', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
@@ -944,7 +985,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       specification {
         color custom-color1 #FF00FF
         color custom-color2 #FFFF00
-        
+
         element component {
           style {
             color custom-color2
@@ -1008,8 +1049,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         sys1 -[uses]-> sys2
       }
       views {
-        view { 
-          include * 
+        view {
+          include *
         }
       }
     `)

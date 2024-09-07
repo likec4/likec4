@@ -21,35 +21,35 @@ describe('dynamic-view: include custom element with', () => {
       'cloud.backend'
     ])
     expect(edgeIds).toEqual([
-      'step-001',
-      'step-002'
+      'step-01',
+      'step-02'
     ])
     expect(nodes).toMatchObject([
       {
         id: 'customer',
         parent: null,
-        outEdges: ['step-001'],
+        outEdges: ['step-01'],
         inEdges: []
       },
       {
         id: 'cloud.frontend.dashboard',
         parent: null,
         inEdges: [
-          'step-001'
+          'step-01'
         ],
-        outEdges: ['step-002']
+        outEdges: ['step-02']
       },
       {
         id: 'cloud.backend.graphql',
         parent: 'cloud.backend',
-        inEdges: ['step-002'],
+        inEdges: ['step-02'],
         outEdges: []
       },
       {
         id: 'cloud.backend',
         parent: null,
         technology: 'nodejs',
-        inEdges: ['step-002'],
+        inEdges: ['step-02'],
         navigateTo: 'some-custom-view',
         outEdges: []
       }

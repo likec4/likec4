@@ -8,7 +8,18 @@ import {
   type Point,
   type RelationshipArrowType
 } from '@likec4/core'
-import { Box } from '@mantine/core'
+import {
+  Box,
+  Button,
+  CloseButton,
+  Group,
+  Popover,
+  PopoverDropdown,
+  PopoverTarget,
+  ScrollAreaAutosize,
+  Stack,
+  Text
+} from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
@@ -16,9 +27,17 @@ import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual, deepEqual as eq } from 'fast-equals'
-import { memo, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
+import {
+  memo,
+  type PointerEvent as ReactPointerEvent,
+  type PropsWithChildren,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
+import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { useXYStoreApi } from '../../hooks/useXYFlow'
 import { ZIndexes } from '../const'
 import { EdgeMarkers, type EdgeMarkerType } from '../EdgeMarkers'
@@ -152,7 +171,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
   const {
-    isActive,
+    isFocusedNode,
+    isActiveWalkthroughStep,
     isEdgePathEditable,
     isHovered,
     isDimmed,
@@ -161,14 +181,15 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   } = useDiagramState(s => ({
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true && s.focusedNodeId === null
       && s.activeWalkthrough === null,
-    isActive: s.focusedNodeId === source || s.focusedNodeId === target
-      || s.activeWalkthrough?.stepId === data.edge.id,
+    isFocusedNode: s.focusedNodeId === source || s.focusedNodeId === target,
+    isActiveWalkthroughStep: s.activeWalkthrough?.stepId === data.edge.id,
     // If activeWalkthrough and this edge is part of the parallel group
     isActiveAsParallel: !!s.activeWalkthrough?.parallelPrefix && id.startsWith(s.activeWalkthrough.parallelPrefix),
     isHovered: s.hoveredEdgeId === id,
     isDimmed: s.dimmed.has(id),
     hasOnOpenSourceRelation: !!s.onOpenSourceRelation
   }))
+  const isActive = isFocusedNode || isActiveWalkthroughStep
   const { nodeLookup, edgeLookup } = xyflowStore.getState()
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
@@ -426,6 +447,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             stepNum: isStepEdge ? extractStep(data.edge.id) : null,
             label: data.label,
             zIndex: labelZIndex,
+            notes: isActiveWalkthroughStep ? (data.edge.notes ?? null) : null,
             isHovered,
             isActive,
             isStepEdge
@@ -450,6 +472,7 @@ type EdgeLabelProps = {
   selected: boolean
   stepNum: number | null
   label: RelationshipData['label']
+  notes: string | null
   isHovered: boolean
   isActive: boolean
   zIndex: number
@@ -465,52 +488,131 @@ const EdgeLabel = ({
   isEdgePathEditable,
   selected,
   label,
+  notes,
   stepNum,
   isHovered,
   isActive,
   zIndex,
   onClick
 }: EdgeLabelProps) => {
+  let labelBox = (
+    <Box
+      className={clsx([
+        'nodrag nopan',
+        edgesCss.container,
+        edgesCss.edgeLabel,
+        isDimmed && edgesCss.dimmed
+      ])}
+      style={{
+        ...assignInlineVars({
+          [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
+          [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
+        }),
+        ...(isEdgePathEditable && selected && {
+          pointerEvents: 'none'
+        }),
+        ...(label && {
+          maxWidth: label.bbox.width + 18
+        }),
+        zIndex
+      }}
+      mod={{
+        'data-likec4-color': color,
+        'data-edge-hovered': isHovered,
+        'data-edge-active': isActive
+      }}
+      onClick={onClick || undefined}
+    >
+      {stepNum !== null && (
+        <Box className={edgesCss.stepEdgeNumber}>
+          {stepNum}
+        </Box>
+      )}
+      {isTruthy(label?.text) && (
+        <Box className={edgesCss.edgeLabelText}>
+          {label.text}
+        </Box>
+      )}
+    </Box>
+  )
+
+  if (isTruthy(notes)) {
+    labelBox = <NotePopover notes={notes}>{labelBox}</NotePopover>
+  }
+
   return (
     <EdgeLabelRenderer>
-      <Box
-        className={clsx([
-          'nodrag nopan',
-          edgesCss.container,
-          edgesCss.edgeLabel,
-          isDimmed && edgesCss.dimmed
-        ])}
-        style={{
-          ...assignInlineVars({
-            [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
-            [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
-          }),
-          ...(isEdgePathEditable && selected && {
-            pointerEvents: 'none'
-          }),
-          ...(label && {
-            maxWidth: label.bbox.width + 18
-          }),
-          zIndex
-        }}
-        mod={{
-          'data-likec4-color': color,
-          'data-edge-hovered': isHovered,
-          'data-edge-active': isActive
-        }}
-        onClick={onClick || undefined}
-      >
-        {stepNum !== null && (
-          <Box className={edgesCss.stepEdgeNumber}>
-            {stepNum}
-          </Box>
-        )}
-        {isTruthy(label?.text) && (
-          <Box className={edgesCss.edgeLabelText}>
-            {label.text}
-          </Box>
-        )}
-      </Box>
+      {labelBox}
     </EdgeLabelRenderer>
+  )
+}
+
+const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) => {
+  const {
+    nextDynamicStep,
+    hasNext,
+    hasPrevious
+  } = useDiagramState(s => ({
+    nextDynamicStep: s.nextDynamicStep,
+    hasNext: s.activeWalkthrough?.hasNext ?? false,
+    hasPrevious: s.activeWalkthrough?.hasPrevious ?? false
+  }))
+
+  const [isOpened, setIsOpened] = useState(false)
+  const portalProps = useMantinePortalProps()
+
+  useDebouncedEffect(
+    () => {
+      setIsOpened(true)
+    },
+    [],
+    300
+  )
+
+  return (
+    <Popover
+      shadow="xs"
+      offset={16}
+      opened={isOpened}
+      closeOnClickOutside={false}
+      {...portalProps}>
+      <PopoverTarget>
+        {children}
+      </PopoverTarget>
+      <PopoverDropdown
+        component={Stack}
+        p={'xs'}
+        onPointerDownCapture={e => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
+        onDoubleClick={e => e.stopPropagation()}
+      >
+        <ScrollAreaAutosize maw={450} mah={350} type="scroll" mx={'auto'} mt={2}>
+          <Text component="div" className={edgesCss.edgeNoteText} p={4}>{notes}</Text>
+        </ScrollAreaAutosize>
+        <CloseButton
+          size={'xs'}
+          className={edgesCss.edgeNoteCloseButton}
+          onClick={() => setIsOpened(false)}
+        />
+        {(hasPrevious || hasNext) && (
+          <Group gap={0} justify={hasPrevious ? 'flex-start' : 'flex-end'}>
+            {hasPrevious && (
+              <Button
+                variant="subtle"
+                radius={'xs'}
+                size="compact-xs"
+                onClick={() => nextDynamicStep(-1)}>
+                back
+              </Button>
+            )}
+            {hasNext && (
+              <Button variant="subtle" radius={'xs'} size="compact-xs" onClick={() => nextDynamicStep()}>
+                next
+              </Button>
+            )}
+          </Group>
+        )}
+      </PopoverDropdown>
+    </Popover>
   )
 }

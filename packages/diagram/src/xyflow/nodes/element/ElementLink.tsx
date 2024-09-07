@@ -15,7 +15,7 @@ import { IconLink } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { useId } from 'react'
 import { clamp } from 'remeda'
-import { useDiagramState } from '../../../hooks/useDiagramState'
+import { useMantinePortalProps } from '../../../hooks/useMantinePortalProps'
 import { type DiagramState } from '../../../state/diagramStore'
 import type { XYFlowNode } from '../../types'
 import { elementLink, trigger } from './ElementLink.css'
@@ -24,17 +24,12 @@ type ElementLinkProps = {
   element: XYFlowNode['data']['element']
 }
 
-const selector = (s: DiagramState) => {
-  const target = s.getContainer()
-  return target ? { target } : null
-}
-
 export function ElementLink({
   element
 }: ElementLinkProps) {
   invariant(element.links, 'ElementLink: links are required')
   const id = useId()
-  const portalProps = useDiagramState(selector)
+  const portalProps = useMantinePortalProps()
   return (
     <div className={elementLink} data-likec4-linkid={id}>
       <HoverCard
@@ -47,7 +42,7 @@ export function ElementLink({
         transitionProps={{
           transition: 'pop'
         }}
-        {...(portalProps ? { portalProps } : { withinPortal: false })}
+        {...portalProps}
         floatingStrategy={'fixed'}
         openDelay={350}
         closeDelay={800}

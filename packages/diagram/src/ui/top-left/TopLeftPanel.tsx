@@ -20,6 +20,7 @@ import {
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
+import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import * as css from './styles.css'
@@ -133,7 +134,6 @@ export const TopLeftPanel = () => {
     showFitDiagram,
     showLayoutDriftWarning,
     showChangeAutoLayout,
-    target,
     showGoToSource
   } = useDiagramState(s => {
     const isNotActive = s.activeWalkthrough === null && s.focusedNodeId === null
@@ -142,11 +142,10 @@ export const TopLeftPanel = () => {
       showFitDiagram: s.fitViewEnabled && s.zoomable && s.viewportChanged,
       showLayoutDriftWarning: s.readonly !== true && s.view.hasLayoutDrift === true && isNotActive,
       showChangeAutoLayout: s.readonly !== true && !!s.onChange && isNotActive,
-      showGoToSource: !!s.onOpenSourceView,
-      target: s.getContainer()
+      showGoToSource: !!s.onOpenSourceView
     })
   })
-  const portalProps = target ? { portalProps: { target } } : undefined
+  const portalProps = useMantinePortalProps()
 
   return (
     <Stack

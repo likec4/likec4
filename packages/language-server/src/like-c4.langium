@@ -241,7 +241,7 @@ type StringProperty =
   SpecificationElementStringProperty |
   SpecificationRelationshipStringProperty |
   NotationProperty |
-  NoteProperty
+  NotesProperty
 ;
 
 ViewProperty:
@@ -436,8 +436,8 @@ ViewRuleAutoLayout:
 NotationProperty:
   key='notation' ':'? value=String ';'?
 ;
-NoteProperty:
-  key='note' ':'? value=String ';'?
+NotesProperty:
+  key='notes' ':'? value=String ';'?
 ;
 
 CustomElementProperties: '{'
@@ -454,7 +454,7 @@ CustomRelationProperties: '{'
   props+=(
     RelationStringProperty |
     NotationProperty |
-    NoteProperty |
+    NotesProperty |
     RelationshipStyleProperty
   )*
 '}'

@@ -545,7 +545,7 @@ export class LikeC4ModelParser {
           }
           return acc
         }
-        if (ast.isNoteProperty(prop)) {
+        if (ast.isNotesProperty(prop)) {
           if (isTruthy(prop.value)) {
             acc.customRelation[prop.key] = removeIndent(prop.value)
           }
@@ -695,7 +695,7 @@ export class LikeC4ModelParser {
             }
             continue
           }
-          if (ast.isNoteProperty(prop)) {
+          if (ast.isNotesProperty(prop)) {
             if (isTruthy(prop.value)) {
               step[prop.key] = removeIndent(prop.value)
             }

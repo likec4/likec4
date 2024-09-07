@@ -23,6 +23,7 @@ import { AnimatePresence, m } from 'framer-motion'
 import { useState } from 'react'
 import { ceil, isNonNullish, isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
+import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { vars } from '../../theme.css'
 import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
 import * as css from './NotationPanel.css'
@@ -120,8 +121,7 @@ const selector = (s: DiagramState) => ({
   id: s.view.id,
   notations: s.view.notation?.elements ?? [],
   height: s.xystore.getState().height,
-  isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
-  target: s.getContainer()
+  isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough)
 })
 
 export function NotationPanel() {
@@ -129,15 +129,14 @@ export function NotationPanel() {
     id,
     notations,
     isVisible,
-    height,
-    target
+    height
   } = useDiagramState(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'notation-panel-collapsed',
     defaultValue: true
   })
   const hasNotations = notations.length > 0
-  const portalProps = target ? { portalProps: { target } } : { withinPortal: false }
+  const portalProps = useMantinePortalProps()
 
   return (
     <AnimatePresence>

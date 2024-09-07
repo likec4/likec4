@@ -4,6 +4,8 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "moduleResolution": "Bundler",
+    "checkJs": false,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
       "@components/*": [
@@ -13,5 +15,12 @@
         "src/assets/*"
       ]
     }
-  }
+  },
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

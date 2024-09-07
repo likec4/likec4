@@ -151,7 +151,7 @@ describe.concurrent('dynamic views', () => {
     `)
   })
 
-  it('valid dynamic view with note', async ctx => {
+  it('valid dynamic view with notes', async ctx => {
     const { valid } = await mkTestServices(ctx)
     await valid(`
       dynamic view index1 {
@@ -159,7 +159,7 @@ describe.concurrent('dynamic views', () => {
         system.frontend -> system.backend 'frontend uses backend'
         system.frontend <- system.backend {
           title 'backend uses frontend'
-          note 'some note'
+          notes 'some note'
         }
 
         style * {
