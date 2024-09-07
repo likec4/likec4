@@ -1,3 +1,52 @@
+# [1.9.0](https://github.com/likec4/likec4/compare/v1.8.1...v1.9.0) (2024-09-07)
+
+### 🚀 Features  
+
+* **LikeC4 Model API**
+  Access and traverse your architecture model programmatically using the LikeC4 Model API.
+  ```ts
+  import { LikeC4 } from "likec4"
+
+  const likec4 = await LikeC4.fromWorkspace(`....`)
+  
+  // Validation errors
+  console.log(likec4.getErrors())
+  
+  // Traverse the model
+  const model = likec4.model()
+  model
+    .element('cloud.backend.api')
+    .incoming() // relationships incoming to the element
+    .filter(r => r.tags.includes('http')) // filter by tags
+    .map(r => r.source) // get source elements
+  
+  // Layouted views
+  const diagrams = await likec4.diagrams()
+  ```
+
+  [Documentation](https://likec4.dev/tooling/model-api/)
+  
+* **Custom colors**
+  ```zig
+  specification {
+    color custom #6BD731
+  
+    element customer {
+      notation "Person, Customer"
+      style {
+        shape person
+        color custom
+      }
+    }
+  }
+  ```
+  Thanks to [@pavelpykhtin](https://github.com/pavelpykhtin), resolves [#916](https://github.com/likec4/likec4/issues/916)
+  
+### Bug Fixes
+
+* **vite-plugin:** fail-safe `virtual:likec4/overview-graph` ([ed85e5f](https://github.com/likec4/likec4/commit/ed85e5f495db7907854e9c7590535eefed234be0)), closes [#959](https://github.com/likec4/likec4/issues/959)
+
+
 ## [1.8.1](https://github.com/likec4/likec4/compare/v1.8.0...v1.8.1) (2024-08-30)
 
 ### Bug Fixes
