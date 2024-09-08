@@ -13,7 +13,8 @@
     "topo": {
       "dependsOn": [
         "^topo"
-      ]
+      ],
+      "outputs": []
     },
     "generate": {
       "outputs": [],
@@ -21,11 +22,12 @@
     },
     "typecheck": {
       "dependsOn": [
+        "^generate",
         "topo",
         "generate"
       ],
       "outputs": [],
-      "outputLogs": "errors-only"
+      "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
@@ -39,8 +41,8 @@
     },
     "dev": {
       "dependsOn": [
-        "generate",
-        "^build"
+        "^generate",
+        "generate"
       ],
       "cache": false,
       "persistent": true

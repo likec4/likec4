@@ -180,7 +180,7 @@ In progress
 
 :::
 
-##### Metadata
+##### Metadata :badge[v1.8]{variant="success"}
 
 Same as [elements metadata](/dsl/model/#element-metadata):
 
@@ -227,5 +227,21 @@ model {
     // or relative link to navigate to sources
     link ../src/index.ts#L1-L10
   }
+}
+```
+
+
+##### Navigate To :badge[v1.10]{variant="success"}
+
+Relationship may have a `navigateTo` property, which is a link to some [dynamic view](/dsl/dynamic-views).  
+This allows to "zoom-in" and see more details about this relationship.
+
+```likec4 copy
+model {
+  webApp -> backend.api {
+    title 'requests data for the dashboard'
+    navigateTo dashboardRequestFlow
+  }
+  
 }
 ```

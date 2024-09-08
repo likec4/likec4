@@ -4,7 +4,7 @@ import type { LikeC4Services } from '../module'
 import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
-import { iconPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
+import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
 import { relationBodyChecks, relationChecks } from './relation'
 import {
   elementKindChecks,
@@ -27,6 +27,7 @@ export function registerValidationChecks(services: LikeC4Services) {
   logger.info('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
+    NotesProperty: notesPropertyRuleChecks(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),
     SpecificationRule: specificationRuleChecks(services),

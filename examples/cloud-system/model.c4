@@ -47,7 +47,9 @@ model {
       }
     }
   }
-  customer .uses cloud 'uses and pays'
+  customer .uses cloud 'uses and pays' {
+    navigateTo dynamic-view-1
+  }
 
 }
 
@@ -95,6 +97,25 @@ views {
       opacity 40%
       color muted
     }
+  }
+
+  dynamic view cloud-to-amazon {
+    title 'Dynamic View Example 2'
+
+    parallel {
+      ui.supportPanel -> amazon.aurora {
+        navigateTo dynamic-view-1
+      }
+      next.backend -> amazon.sqs
+    }
+
+    include next, ui, amazon
+
+    style next, ui, amazon {
+      opacity 40%
+    }
+
+    autoLayout TopBottom
   }
 
 }

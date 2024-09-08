@@ -3,6 +3,7 @@ import starlight from '@astrojs/starlight'
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections'
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
+import starlightHeadingBadges from 'starlight-heading-badges'
 import starlightLinksValidator from 'starlight-links-validator'
 import { searchForWorkspaceRoot } from 'vite'
 import likec4grammar from './likec4.tmLanguage.json' with { type: 'json' }
@@ -12,11 +13,12 @@ import structurizr from './structurizr.tmLanguage.json' with { type: 'json' }
 export default defineConfig({
   output: 'static',
   site: 'https://likec4.dev',
+
   integrations: [
     react(),
     starlight({
       title: 'LikeC4',
-      description: 'DSL and Toolchain for your architecture diagrams',
+      description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
       social: {
         github: 'https://github.com/likec4/likec4'
       },
@@ -77,12 +79,27 @@ export default defineConfig({
         },
         {
           label: 'Changelog',
-          link: 'https://github.com/likec4/likec4/releases',
-          attrs: {
-            target: '_blank',
-            style: 'font-weight: 500; font-size: var(--sl-text-sm)',
-            rel: 'noopener'
-          }
+          items: [
+            {
+              label: 'Latest',
+              badge: { text: '1.10.0', variant: 'success' },
+              link: 'https://github.com/likec4/likec4/releases/tag/v1.10.0',
+              attrs: {
+                target: '_blank',
+                style: 'font-weight: 500; font-size: var(--sl-text-sm)',
+                rel: 'noopener'
+              }
+            },
+            {
+              label: 'Releases',
+              link: 'https://github.com/likec4/likec4/releases',
+              attrs: {
+                target: '_blank',
+                style: 'font-weight: 500; font-size: var(--sl-text-sm)',
+                rel: 'noopener'
+              }
+            }
+          ]
         }
       ],
       expressiveCode: {
@@ -111,6 +128,7 @@ export default defineConfig({
         Head: './src/components/starlight/Head.astro'
       },
       plugins: [
+        starlightHeadingBadges(),
         starlightLinksValidator({
           exclude: [
             '/playground/blank/',

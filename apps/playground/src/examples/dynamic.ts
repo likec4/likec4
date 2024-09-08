@@ -1,3 +1,7 @@
+export const DynamicViewExample = {
+  currentFilename: 'dynamic.c4',
+  files: {
+    ['specs.c4']: `
 specification {
   element actor {
     notation "Person, Customer"
@@ -43,8 +47,9 @@ specification {
       shape storage
     }
   }
-}
-
+}\
+`.trimStart(),
+    ['dynamic.c4']: `
 model {
   customer = actor 'Customer' {
     description 'Customer of Cloud System'
@@ -117,8 +122,56 @@ model {
   customer -> web 'opens in browser'
 }
 
-// What diagrams to generate
 views {
+
+  dynamic view index {
+    title 'Story 1.1 - User dashboard'
+
+    customer -> web '' {
+      notes '
+        Opens application in the browser via secured connection, authenticates and navigates to the dashboard
+      '
+    }
+
+    web -> auth 'updates token if needed' {
+      navigateTo authTokenUpdateFlow
+      notes '
+        Frontend application checks access token expiration.
+        If expired - requests a new using refresh token
+      '
+    }
+
+    web -> api 'GET request' {
+      notes '
+        Requests data from API endpoint with access token
+      '
+    }
+    parallel {
+      api -> db '' {
+        notes 'Requests persistent data with SQL'
+      }
+      api -> cache '' {
+        notes 'Requests session data'
+      }
+    }
+
+    api -> api 'process' {
+      notes '
+        Transforms received data and prepares user dashboard
+      '
+    }
+    web <- api {
+      notes 'Returns data to frontend as JSON'
+    }
+
+    include cloud, storage
+
+    style cloud._ {
+      color secondary
+      opacity 30%
+    }
+  }
+
   view customer of customer {
     include
       customer,
@@ -170,54 +223,6 @@ views {
       backend._
   }
 
-
-  dynamic view index {
-    title 'Story 1.1 - User dashboard'
-
-    customer -> web '' {
-      notes '
-        Opens application in the browser via secured connection, authenticates and navigates to the dashboard'
-    }
-
-    web -> auth 'updates token if needed' {
-      navigateTo authTokenUpdateFlow
-      notes '
-        Frontend application checks access token expiration.
-        If expired - requests a new using refresh token
-      '
-    }
-
-    web -> api 'GET request' {
-      notes '
-        Requests data from API endpoint with access token
-      '
-    }
-    parallel {
-      api -> db '' {
-        notes 'Requests persistent data with SQL'
-      }
-      api -> cache '' {
-        notes 'Requests session data'
-      }
-    }
-
-    api -> api 'process' {
-      notes '
-        Transforms received data and prepares user dashboard
-      '
-    }
-    web <- api {
-      notes 'Returns data to frontend as JSON'
-    }
-
-    include cloud, storage
-
-    style cloud._ {
-      color secondary
-      opacity 30%
-    }
-  }
-
   dynamic view authTokenUpdateFlow {
     title 'Auth token update'
     customer -> web 'interacts'
@@ -263,5 +268,8 @@ views {
       color secondary
       opacity 40%
     }
+  }
+}
+`.trimStart()
   }
 }

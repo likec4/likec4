@@ -14,6 +14,7 @@ import type {
   RelationshipLineType,
   Tag,
   ThemeColor,
+  ViewID,
   ViewRulePredicate
 } from '@likec4/core'
 import {
@@ -206,7 +207,10 @@ export class ComputeCtx {
       }
 
       let relation:
-        | Pick<Relation, 'title' | 'kind' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail' | 'tags'>
+        | Pick<
+          Relation,
+          'title' | 'kind' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail' | 'tags' | 'navigateTo'
+        >
         | {
           // TODO refactor with type-fest
           title: string
@@ -218,6 +222,7 @@ export class ComputeCtx {
           head?: RelationshipArrowType | undefined
           tail?: RelationshipArrowType | undefined
           tags?: NonEmptyArray<Tag>
+          navigateTo?: ViewID | undefined
         }
         | undefined
       if (relations.length === 1) {
@@ -264,7 +269,8 @@ export class ComputeCtx {
           head: first(flatMap(relations, r => isTruthy(r.head) ? r.head : [])),
           tail: first(flatMap(relations, r => isTruthy(r.tail) ? r.tail : [])),
           color: first(flatMap(relations, r => isTruthy(r.color) ? r.color : [])),
-          line: first(flatMap(relations, r => isTruthy(r.line) ? r.line : []))
+          line: first(flatMap(relations, r => isTruthy(r.line) ? r.line : [])),
+          navigateTo: first(flatMap(relations, r => isTruthy(r.navigateTo) ? r.navigateTo : []))
         })
       }
 
@@ -280,6 +286,7 @@ export class ComputeCtx {
         relation.line && { line: relation.line },
         relation.head && { head: relation.head },
         relation.tail && { tail: relation.tail },
+        relation.navigateTo && { navigateTo: relation.navigateTo },
         hasAtLeast(tags, 1) && { tags }
       )
     })

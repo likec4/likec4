@@ -1,4 +1,4 @@
-import type { ValidationCheck } from 'langium'
+import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 
@@ -32,6 +32,18 @@ export const iconPropertyRuleChecks = (
       && container.$container.props.some(p => ast.isIconProperty(p))
     ) {
       accept('warning', `Redundant as icon defined on element`, {
+        node
+      })
+    }
+  }
+}
+
+export const notesPropertyRuleChecks = (
+  _: LikeC4Services
+): ValidationCheck<ast.NotesProperty> => {
+  return (node, accept) => {
+    if (!AstUtils.hasContainerOfType(node, ast.isDynamicViewStep)) {
+      accept('error', `Notes can be defined only inside dynamic view`, {
         node
       })
     }

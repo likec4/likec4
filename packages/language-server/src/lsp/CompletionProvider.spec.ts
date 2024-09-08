@@ -13,7 +13,7 @@ function expectCompletion() {
 }
 
 describe('LikeC4CompletionProvider', () => {
-  it('should suggest keywords inside specification', async () => {
+  it('should suggest keywords inside specification', async ({ expect }) => {
     const text = `
       <|>spe<|>cification {
         <|>el<|>ement frontend {
@@ -89,7 +89,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest keywords inside model', async () => {
+  it('should suggest keywords inside model', async ({ expect }) => {
     const text = `
       specification {
         element actor
@@ -158,7 +158,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest keywords inside element', async () => {
+  it('should suggest keywords inside element', async ({ expect }) => {
     const text = `
       specification {
         element actor
@@ -227,7 +227,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it.todo('should suggest relationship kind after dot', async () => {
+  it.todo('should suggest relationship kind after dot', async ({ expect }) => {
     const text = `
       specification {
         element actor
@@ -250,7 +250,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest nested elements for elementref', async () => {
+  it('should suggest nested elements for elementref', async ({ expect }) => {
     const text = `
       specification {
         element component
@@ -298,7 +298,7 @@ describe('LikeC4CompletionProvider', () => {
       expectedItems: ['notunique']
     })
   })
-  it('should suggest nested elements inside view predicates', async () => {
+  it('should suggest nested elements inside view predicates', async ({ expect }) => {
     const text = `
       specification {
         element component
@@ -361,7 +361,7 @@ describe('LikeC4CompletionProvider', () => {
       disposeAfterCheck: true
     })
   })
-  it('should suggest tags inside "where"-predicates', async () => {
+  it('should suggest tags inside "where"-predicates', async ({ expect }) => {
     const text = `
       specification {
         element service
@@ -429,7 +429,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest views for navigateTo', async () => {
+  it('should suggest views for navigateTo', async ({ expect }) => {
     const text = `
       specification {
         element component
@@ -489,6 +489,67 @@ describe('LikeC4CompletionProvider', () => {
       text,
       index: 2,
       expectedItems: ['index', 'view2', 'view3'],
+      disposeAfterCheck: true
+    })
+  })
+
+  it('should suggest dynamic views for navigateTo', async ({ expect }) => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        root = component
+      }
+      views {
+        view index {
+          include *
+        }
+        dynamic view view3 { // should also suggest dynamic views
+        }
+        view {
+          include root -> * <|>with {
+            <|>navigateTo <|>
+          }
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: [
+        'where',
+        'with',
+        'include',
+        'exclude',
+        'style',
+        'autoLayout'
+      ],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        'navigateTo',
+        'title',
+        'technology',
+        'description',
+        'notation',
+        'notes',
+        'color',
+        'line',
+        'head',
+        'tail'
+      ],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 2,
+      expectedItems: ['view3'],
       disposeAfterCheck: true
     })
   })

@@ -3,7 +3,8 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
@@ -16,12 +17,15 @@ import { chunkSizeWarningLimit } from './utils'
 
 export type { LikeC4ViteConfig }
 
+const _dirname = dirname(fileURLToPath(import.meta.url))
+const pkgRoot = resolve(_dirname, '../..')
+
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
   const useOverviewGraph = cfg?.useOverviewGraph === true
   const customLogger = cfg.customLogger ?? createLikeC4Logger('c4:vite')
 
-  const root = resolve('app')
+  const root = resolve(pkgRoot, 'app')
   if (!fs.existsSync(root)) {
     consola.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
@@ -64,11 +68,11 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     resolve: {
       alias: {
         'likec4/previews': likec4AssetsDir,
-        'likec4/icons': resolve('../icons'),
-        'likec4/react': resolve('app/react/components/index.ts'),
-        '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts'),
-        'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
+        'likec4/icons': resolve(pkgRoot, '../icons'),
+        'likec4/react': resolve(pkgRoot, 'app/react/components/index.ts'),
+        '@likec4/core': resolve(pkgRoot, '../core/src/index.ts'),
+        '@likec4/diagram': resolve(pkgRoot, '../diagram/src/index.ts'),
+        'react-dom/server': resolve(pkgRoot, 'app/react/react-dom-server-mock.ts')
       }
     },
     clearScreen: false,

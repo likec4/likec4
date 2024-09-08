@@ -1,7 +1,8 @@
 import { consola } from '@likec4/log'
 import react from '@vitejs/plugin-react'
 import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
@@ -15,6 +16,9 @@ type LikeC4ViteReactConfig = {
   filename?: string
 }
 
+const _dirname = dirname(fileURLToPath(import.meta.url))
+const pkgRoot = resolve(_dirname, '../..')
+
 export async function viteReactConfig({
   languageServices,
   outDir,
@@ -23,7 +27,7 @@ export async function viteReactConfig({
   consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:react')
 
-  const root = resolve('app')
+  const root = resolve(pkgRoot, 'app')
   if (!existsSync(root)) {
     consola.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
@@ -40,9 +44,9 @@ export async function viteReactConfig({
     mode: 'production',
     resolve: {
       alias: {
-        'likec4/icons': resolve('../icons'),
-        '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts')
+        'likec4/icons': resolve(pkgRoot, '../icons'),
+        '@likec4/core': resolve(pkgRoot, '../core/src/index.ts'),
+        '@likec4/diagram': resolve(pkgRoot, '../diagram/src/index.ts')
       }
     },
     esbuild: {

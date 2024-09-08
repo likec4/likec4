@@ -161,6 +161,8 @@ export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
     description?: string
     technology?: string
     notation?: string
+    // Link to dynamic view
+    navigateTo?: ViewID
     // Notes for walkthrough
     notes?: string
     color?: Color

@@ -265,3 +265,45 @@ export const edgeNoteText = style({
     }
   }
 })
+
+export const cssNavigateBtn = style({
+  zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+  position: 'absolute',
+  pointerEvents: 'all',
+  left: '50%',
+  top: 'calc(100% + 1px)',
+  color: xyvars.edge.labelColor,
+  cursor: 'pointer',
+  transformOrigin: 'top center',
+  opacity: 0.8,
+  transition: 'all 150ms ease-in-out',
+  transform: 'translate(-50%, 0)',
+  transitionDelay: '0ms',
+  backgroundColor: 'var(--ai-bg)',
+  vars: {
+    '--ai-bg': vars.relation.labelBgColor,
+    '--ai-hover': `color-mix(in srgb , ${vars.relation.labelBgColor}, ${mixColor} 10%)`
+  },
+  selectors: {
+    [`:where([data-edge-hovered="true"]) &`]: {
+      boxShadow: mantine.shadows.lg,
+      transform: 'translate(-50%, 0) scale(1.15)',
+      opacity: 1,
+      transitionDelay: '120ms'
+    }
+  },
+  ':hover': {
+    boxShadow: mantine.shadows.lg,
+    transform: 'translate(-50%, 0) scale(1.3)',
+    opacity: 1
+  },
+  ':active': {
+    transform: 'translate(-50%, 0) scale(1.02)'
+  }
+})
+globalStyle(`${cssNavigateBtn} .tabler-icon`, {
+  width: '75%',
+  height: '75%',
+  strokeWidth: 2
+})
+export const cssNavigateBtnIcon = style({})

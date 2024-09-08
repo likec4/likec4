@@ -14,6 +14,20 @@
         "tsr.config.json",
         "package.json"
       ]
+    },
+    "build": {
+      "dependsOn": [
+        "^generate",
+        "generate"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!src/routeTree.gen.ts",
+        "!tsr.config.json"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     }
   }
 }

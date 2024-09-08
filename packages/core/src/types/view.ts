@@ -107,6 +107,8 @@ export interface DynamicViewStep {
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
   readonly isBackward?: boolean
+  // Link to dynamic view
+  readonly navigateTo?: ViewID
   __parallel?: never
 }
 
@@ -237,6 +239,8 @@ export interface ComputedEdge {
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
   tags?: NonEmptyArray<Tag>
+  // Link to dynamic view
+  navigateTo?: ViewID
   /**
    * If this edge is derived from custom relationship predicate
    */

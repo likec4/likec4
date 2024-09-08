@@ -18,12 +18,12 @@ type IconRendererProps = {
   }
 }
 
-const RenderIcon = ({ node }: IconRendererProps) => {
+function RenderIcon({ node }: IconRendererProps) {
   const IconComponent = Icons[node.icon ?? '']
   return IconComponent ? <IconComponent /> : null
 }
 
-export { isLikeC4ViewId, LikeC4Views }
+export { isLikeC4ViewId, LikeC4Views, RenderIcon }
 
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 

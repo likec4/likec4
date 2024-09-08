@@ -170,6 +170,22 @@ describe.concurrent('dynamic views', () => {
     `)
   })
 
+  it('valid dynamic view with correct navigateTo', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view view1 {
+        user -> system.frontend 'User uses System' {
+          navigateTo view2
+        }
+      }
+      dynamic view view2 {
+        system.frontend -> system.backend 'frontend uses backend' {
+          navigateTo view1
+        }
+      }
+    `)
+  })
+
   it('valid dynamic view with parallel steps', async ctx => {
     const { valid } = await mkTestServices(ctx)
     await valid(`

@@ -126,8 +126,16 @@ export const LikeC4Views: Record<LikeC4ViewId, LikeC4DiagramView>
 
 export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
-export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
+type IconRendererProps = {
+  node: {
+    id: string
+    title: string
+    icon?: string | undefined
+  }
+}
+export declare function RenderIcon(props: IconRendererProps): JSX.Element
 
+export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 export declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element
 
 `.trimStart()

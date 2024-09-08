@@ -36,7 +36,7 @@ body {
   height: 100dvh;
 }
 
-.mantine-ActionIcon-icon .tabler-icon {
+:where(.mantine-ActionIcon-icon) .tabler-icon {
   width: 70%;
   height: 70%;
 }

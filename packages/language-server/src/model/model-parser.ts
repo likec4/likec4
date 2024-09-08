@@ -2,7 +2,7 @@ import { type HexColorLiteral, invariant, isNonEmptyArray, nonexhaustive } from 
 import type * as c4 from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
-import { filter, flatMap, isDefined, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
+import { filter, first, flatMap, isDefined, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Writable } from 'type-fest'
 import type {
@@ -247,6 +247,14 @@ export class LikeC4ModelParser {
       p => [p.key, p.value]
     )
 
+    const navigateTo = pipe(
+      astNode.body?.props ?? [],
+      filter(ast.isRelationNavigateToProperty),
+      map(p => p.value.view.ref?.name),
+      filter(isTruthy),
+      first()
+    )
+
     const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
     const description = removeIndent(bodyProps.description)
     const technology = removeIndent(astNode.technology) ?? toSingleLine(bodyProps.technology)
@@ -269,7 +277,8 @@ export class LikeC4ModelParser {
       ...(kind && { kind }),
       ...(tags && { tags }),
       ...(isNonEmptyArray(links) && { links }),
-      ...toRelationshipStyleExcludeDefaults(styleProp?.props)
+      ...toRelationshipStyleExcludeDefaults(styleProp?.props),
+      ...(navigateTo && { navigateTo: navigateTo as c4.ViewID })
     }
   }
 
@@ -514,7 +523,7 @@ export class LikeC4ModelParser {
     const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
-        if (ast.isRelationStringProperty(prop)) {
+        if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
           if (isDefined(prop.value)) {
             acc.customRelation[prop.key] = removeIndent(prop.value) ?? ''
           }
@@ -539,15 +548,10 @@ export class LikeC4ModelParser {
           }
           return acc
         }
-        if (ast.isNotationProperty(prop)) {
-          if (isTruthy(prop.value)) {
-            acc.customRelation[prop.key] = removeIndent(prop.value)
-          }
-          return acc
-        }
-        if (ast.isNotesProperty(prop)) {
-          if (isTruthy(prop.value)) {
-            acc.customRelation[prop.key] = removeIndent(prop.value)
+        if (ast.isRelationNavigateToProperty(prop)) {
+          const viewId = prop.value.view.ref?.name
+          if (isTruthy(viewId)) {
+            acc.customRelation.navigateTo = viewId as c4.ViewID
           }
           return acc
         }
@@ -647,9 +651,7 @@ export class LikeC4ModelParser {
     }
     let source = this.resolveFqn(sourceEl)
     let target = this.resolveFqn(targetEl)
-    const title = removeIndent(
-      node.title ?? node.custom?.props.find((p): p is ast.RelationStringProperty => p.key === 'title')?.value
-    ) ?? ''
+    const title = removeIndent(node.title) ?? null
 
     let step: Writable<c4.DynamicViewStep> = {
       source,
@@ -667,37 +669,35 @@ export class LikeC4ModelParser {
     if (Array.isArray(node.custom?.props)) {
       for (const prop of node.custom.props) {
         try {
-          if (ast.isRelationStringProperty(prop)) {
-            const value = removeIndent(prop.value)
-            if (isTruthy(value) && prop.key !== 'title') {
-              step[prop.key] = value
+          if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
+            if (isDefined(prop.value)) {
+              step[prop.key] = removeIndent(prop.value) ?? ''
             }
             continue
           }
           if (ast.isArrowProperty(prop)) {
-            step[prop.key] = prop.value
+            if (isDefined(prop.value)) {
+              step[prop.key] = prop.value
+            }
             continue
           }
           if (ast.isColorProperty(prop)) {
             const value = toColor(prop)
-            if (isTruthy(value)) {
+            if (isDefined(value)) {
               step[prop.key] = value
             }
             continue
           }
           if (ast.isLineProperty(prop)) {
-            step[prop.key] = prop.value
-            continue
-          }
-          if (ast.isNotationProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              step[prop.key] = removeIndent(prop.value)
+            if (isDefined(prop.value)) {
+              step[prop.key] = prop.value
             }
             continue
           }
-          if (ast.isNotesProperty(prop)) {
-            if (isTruthy(prop.value)) {
-              step[prop.key] = removeIndent(prop.value)
+          if (ast.isRelationNavigateToProperty(prop)) {
+            const viewId = prop.value.view.ref?.name
+            if (isTruthy(viewId)) {
+              step.navigateTo = viewId as c4.ViewID
             }
             continue
           }

@@ -42,7 +42,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.function
       })
     }
-    if (ast.isNavigateToProperty(node)) {
+    if (ast.isNavigateToProperty(node) || ast.isRelationNavigateToProperty(node)) {
       acceptor({
         node,
         property: 'key',

@@ -63,4 +63,49 @@ describe('property-checks', () => {
       ])
     })
   })
+
+  describe('notes', () => {
+    it('should report invalid notes', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1
+        component c2
+      }
+      views {
+        view index {
+          include c2 -> c1 with {
+            notes "some notes"
+          }
+        }
+      }
+    `)
+      expect(errors).toEqual(['Notes can be defined only inside dynamic view'])
+    })
+
+    it('should not report notes in dynamic view', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1
+        component c2
+      }
+      views {
+        dynamic view index {
+          c2 -> c1 {
+            notes "some notes"
+          }
+        }
+      }
+    `)
+      expect(errors).to.be.empty
+      expect.hasAssertions()
+    })
+  })
 })

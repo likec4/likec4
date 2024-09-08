@@ -57,7 +57,9 @@ model {
       }
     }
 
-    backend -> aurora.tblUsers 'reads/writes'
+    backend -> aurora.tblUsers 'reads/writes' {
+      navigateTo cloud-to-amazon
+    }
     backend -> cloud.legacy.backend.services 'calls legacy'
 
     events = component 'Events Manager' {

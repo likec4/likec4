@@ -6,9 +6,11 @@ import {
   nonexhaustive,
   nonNullable,
   type Point,
-  type RelationshipArrowType
+  type RelationshipArrowType,
+  type ViewID
 } from '@likec4/core'
 import {
+  ActionIcon,
   Box,
   Button,
   CloseButton,
@@ -21,6 +23,7 @@ import {
   Text
 } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
+import { IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
@@ -177,7 +180,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     isHovered,
     isDimmed,
     isActiveAsParallel,
-    hasOnOpenSourceRelation
+    hasOnOpenSourceRelation,
+    hasOnNavigateTo
   } = useDiagramState(s => ({
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true && s.focusedNodeId === null
       && s.activeWalkthrough === null,
@@ -187,8 +191,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     isActiveAsParallel: !!s.activeWalkthrough?.parallelPrefix && id.startsWith(s.activeWalkthrough.parallelPrefix),
     isHovered: s.hoveredEdgeId === id,
     isDimmed: s.dimmed.has(id),
-    hasOnOpenSourceRelation: !!s.onOpenSourceRelation
+    hasOnOpenSourceRelation: !!s.onOpenSourceRelation,
+    hasOnNavigateTo: !!s.onNavigateTo
   }))
+
+  const navigateTo = hasOnNavigateTo ? data.edge.navigateTo ?? null : null
+
   const isActive = isFocusedNode || isActiveWalkthroughStep
   const { nodeLookup, edgeLookup } = xyflowStore.getState()
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
@@ -442,6 +450,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             isModified,
             labelX,
             labelY,
+            navigateTo,
             isEdgePathEditable,
             selected: selected ?? false,
             stepNum: isStepEdge ? extractStep(data.edge.id) : null,
@@ -476,6 +485,7 @@ type EdgeLabelProps = {
   isHovered: boolean
   isActive: boolean
   zIndex: number
+  navigateTo: ViewID | null
   onClick: false | ((e: ReactPointerEvent<HTMLDivElement>) => void)
 }
 
@@ -487,6 +497,7 @@ const EdgeLabel = ({
   labelY,
   isEdgePathEditable,
   selected,
+  navigateTo,
   label,
   notes,
   stepNum,
@@ -533,6 +544,7 @@ const EdgeLabel = ({
           {label.text}
         </Box>
       )}
+      {navigateTo && !isDimmed && <NavigateToBtn viewId={navigateTo} />}
     </Box>
   )
 
@@ -614,5 +626,29 @@ const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) 
         )}
       </PopoverDropdown>
     </Popover>
+  )
+}
+
+type NavigateToBtnProps = {
+  viewId: ViewID
+}
+
+function NavigateToBtn({ viewId }: NavigateToBtnProps) {
+  const diagramApi = useDiagramStoreApi()
+  return (
+    <ActionIcon
+      className={clsx('nodrag nopan', edgesCss.cssNavigateBtn)}
+      size={'sm'}
+      radius="sm"
+      onPointerDownCapture={e => e.stopPropagation()}
+      onClick={event => {
+        event.stopPropagation()
+        diagramApi.getState().onNavigateTo?.(viewId, event)
+      }}
+      role="button"
+      onDoubleClick={event => event.stopPropagation()}
+    >
+      <IconZoomScan className={edgesCss.cssNavigateBtnIcon} />
+    </ActionIcon>
   )
 }

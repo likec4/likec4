@@ -89,6 +89,7 @@ export interface ParsedAstRelation {
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
   links?: c4.NonEmptyArray<ParsedLink>
+  navigateTo?: c4.ViewID
   metadata?: { [key: string]: string }
 }
 

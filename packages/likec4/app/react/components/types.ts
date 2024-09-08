@@ -6,7 +6,7 @@ export type DiagramView<ViewId extends string> = Omit<OriginalDiagramView, 'id'>
   id: ViewId
 }
 
-export type ElementIconRendererProps = {
+type ElementIconRendererProps = {
   node: {
     id: string
     title: string

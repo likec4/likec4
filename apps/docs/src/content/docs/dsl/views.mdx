@@ -1,6 +1,6 @@
 ---
 title: Views
-description: How to get architecture diagrams with LikeC4
+description: How to visualize architecture model with LikeC4
 sidebar: 
   label: Views
   order: 8
@@ -11,11 +11,13 @@ tableOfContents:
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Views are the architecture diagrams, projections of the model from different perspectives, with different levels of details, like:
+LikeC4 is model-based, and views are projections of the model, from different perspectives, scopes and details, like:
 
 - System / service overviews
 - Components interactions in specific use case
 - Data flows and sequence diagrams
+
+LikeC4 does not require to follow some rules, like strict number of levels or what should be included, again, it is up to you and your context.  
 
 ### View definition
 
@@ -35,9 +37,9 @@ views {
 
 View's name is used as a filename during the export, and a URL part for the sharing, so better to define it.
 
-<Aside>
+<Aside title="Default view">
   `index` is a special view, and is rendered by default if no view name is specified.  
-  If not defined, it will be generated for top-level elements
+  If it is not defined - will be generated with top-level elements
 </Aside>
 
 Views may have a title, description, tags and links (same as [model element](/dsl/model#element)):
@@ -55,18 +57,23 @@ views {
 
     link https://my.jira/epic/12 'Epic-12'
 
-    include *
   }
 
 }
 ```
 
-Properties should be defined before any predicates.
+Properties should be defined before [predicates](#view-predicates).  
+Predicates define what elements and relationships are visible.
 
+<Aside title="Relationships">
+  Views contain elements and connections (relationships).  
+  Connections represent merged relationships: direct between elements and/or derived from nested elements,
+  i.e. same directed connections are merged into one.
+</Aside>
 
 ### Scoped views
 
-View may be defined for a specific element (`view of ..`).  
+View may be defined for specific element (`view of ..`).  
 Then, view inherits the [scope](/dsl/references#scope) of the element:
 
 ```likec4
@@ -87,35 +94,34 @@ views {
 }
 ```
 
-This view becomes default for the element:
+Also, scoped view becomes default for the element:
 
 ```likec4
 views {
+
+  view {
+    // on click navigates to 'view1',
+    // because it is default for 'cloud.backend'
+    include cloud.backend
+  }
 
   view view1 of cloud.backend {
     include *
   }
 
-  view {
-    // on click navigates to 'view1', because it is the default view for 'cloud.backend'
-    include cloud.backend
-  }
-
 }
 ```
 
-You may have multiple views for the same element, but which one is default may be different from time to time.
-
+You may have multiple views for the same element, and which one default is defined by the order.
 
 ### View predicates
 
-Views are not static, they reflect any changes in the model.  
-Two types of predicates define what elements/relationships are visible.  
-
+Views are not static as they are generated from model. Any change in the model applied and reflected immediately.  
+Two types of predicates define what is visible.  
 
 ##### Element predicates
 
-Element predicates explicitly define what elements are visible, regardless of the relationships.
+Element predicates explicitly define what elements are visible. Element is included together with its relationships with already visible elements.
 
 ```likec4
 view {
@@ -146,7 +152,7 @@ view {
 
 ###### Combining
 
-Predicates may be combined. The following is equivalent to the previous example:
+Predicates may be combined. This is equivalent to the previous:
 
 ```likec4
 view {
@@ -197,8 +203,10 @@ views {
     // Visible:
     // - cloud.ui
     // - cloud.ui.webApp
-    // - customer, and relationship customer -> cloud.ui.webApp
-    // - cloud.backend, and derived relationship cloud.ui.webApp -> cloud.backend
+    // - customer
+    // - relationship customer -> cloud.ui.webApp
+    // - cloud.backend
+    // - cloud.ui.webApp -> cloud.backend, derived from cloud.ui.webApp -> cloud.backend.api
   }
 }
 ```
@@ -262,17 +270,33 @@ exclude element.tag = #next
 ```
 
 :::caution
-These predicates may be deprecated in the future, as they are replaced with [`where`](#filter) operator
+These predicates may be deprecated in the future, please consider [`where`](#filter) operator
 :::
 
 ##### Relationship predicates
 
-These predicates include elements from the satisfied relationships only.  
-Based on the model from [wildcard example](#wildcard):
+First, elements are picked by element predicates, and included to the view if they have relationships that satisfy the predicate.
+
+###### Directed relationships
+
+Include elements if there are directed relationships (or their nested elements):
+
+```likec4
+include customer -> cloud.*
+```
+
+###### Any relationship
+
+Include elements if they have any relationships:
+
+```likec4
+include customer <-> cloud
+```
 
 ###### Incoming
 
-Include elements that have incoming relationships from visible elements:
+Include elements that have incoming relationships from visible elements.  
+Based on the model from [wildcard example](#wildcard):
 
 ```likec4 wrap title="incoming predicate.c4"
 view {
@@ -320,22 +344,6 @@ Include nested elements of `cloud`, that have any relationships with visible ele
 include -> cloud.* ->
 ```
 
-###### Directed relationships
-
-Include elements if they have relationships of specific direction:
-
-```likec4
-include customer -> cloud.*
-```
-
-###### Any relationship
-
-Include elements if they have any relationships:
-
-```likec4
-include customer <-> cloud
-```
-
 ###### Relationship customization
 
 Relationships can be customized per view:
@@ -352,7 +360,8 @@ include
   customer -> cloud.*  with {
     // Override label
     title 'Customer uses cloud'
-  },  
+    navigateTo dynamicview1
+  }, 
 ```
 
 :::caution
@@ -361,6 +370,18 @@ It is possible to customize relationships with known endpoints only
 
 For example, `* -> *` can be customized (in other words, all relationships on the view), but just outgoing `cloud.* ->` not
 :::
+
+###### Custom navigation :badge[v1.10]{variant="success"}
+
+To stricly define navigation from relation use `navigateTo`.   
+For relationships, it is possible to navigate to [dynamic views](/dsl/dynamic-views) only:
+
+```likec4
+include
+  webApp -> backend.api with {
+    navigateTo dashboardRequestFlow
+  }
+```
 
 #### Expand predicate
 
@@ -376,7 +397,7 @@ include cloud,
 ```
 #### Filter
 
-`where` operator narrows down the predicate results by applying additional conditions:
+`where` operator narrows down results by applying additional conditions:
 
 ```likec4
 // include only microservices from nested
@@ -386,15 +407,15 @@ include cloud.*
 // only microservices and not deprecated
 include cloud.*
   where
-     kind == microservice and // possible to use 'is' or '=='
-     tag != #deprecated       // possible to use 'is not' or '!='
+    kind == microservice and // possible to use 'is' or '=='
+    tag != #deprecated       // possible to use 'is not' or '!='
 
 // Use logical operators
 include cloud.*
   where
-     not (kind is microservice or kind is webapp)
-     and tag is not #legacy
-     and (tag is #v1 or tag is #v2)
+    not (kind is microservice or kind is webapp)
+    and tag is not #legacy
+    and (tag is #v1 or tag is #v2)
 ```
 
 <br/>
@@ -423,8 +444,7 @@ It is possible to use `where` together with `with`, but `where` should be define
 
 ```likec4
 include *
-  where
-    kind is microservice
+  where kind is microservice
   with {
     color amber
   }  
@@ -437,18 +457,16 @@ Less verbose and more satisfying results are achieved with `where` in `exclude` 
 For example:
 
 ```likec4
-view {
-  // keep elements only with tag #v1
-  exclude * where tag is not #v1
-}
 
-view {
-  // keep relationships only with tag #commands
-  exclude * -> * where tag is not #commands
-}
+// only keep elements tagged with #v1
+exclude * where tag is not #v1
+
+// only keep relationships tagged with #commands
+exclude * -> * where tag is not #commands
+
 ```
 
-Together with [extend views](#extend-views) it allows to define a "baseline" and then filter out specific parts.
+Together with [extend views](#extend-views) you may define a "baseline" view (includes everything), and then filter out in inherited views.
 
 :::
 
@@ -464,10 +482,9 @@ view {
 Possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
 
 <Aside>
-Manual changes are supported in VSCode extension, but functionality is experimental and in active development.
-Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is appreciated.
+Manual changes are supported in VSCode extension and functionality is limited.  
+Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is much appreciated.
 </Aside>
-
 
 ### Style predicates
 
@@ -544,9 +561,9 @@ views {
 }
 ```
 
-The predicates and style rules of extended views are merged with the ones from ancestors.
+The predicates and style rules of extended views applied after the ones from ancestors.
 
-Extended views also inherit the scope:
+Extended view also inherits the scope:
 
 ```likec4
 views {

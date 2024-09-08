@@ -2,6 +2,7 @@ import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { Fqn, Link, Tag } from './element'
 import type { Color, ThemeColor } from './theme'
+import type { ViewID } from './view'
 
 export type RelationID = Tagged<string, 'RelationID'>
 export type RelationshipKind = Tagged<string, 'RelationshipKind'>
@@ -40,6 +41,8 @@ export interface Relation {
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
   readonly links?: NonEmptyArray<Link>
+  // Link to dynamic view
+  readonly navigateTo?: ViewID
   readonly metadata?: { [key: string]: string }
 }
 

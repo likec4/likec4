@@ -1,7 +1,6 @@
-import type { title } from '../components/NotFound.css'
 import { BigBankExample } from './bigbank'
 import { BlankExample } from './blank'
-import { DynamicViewExample } from './dynamic-view'
+import { DynamicViewExample } from './dynamic'
 import { TutorialExample } from './tutorial'
 
 export * from './bigbank'

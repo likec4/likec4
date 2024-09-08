@@ -83,7 +83,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/markdown-remark@npm:5.2.0":
+"@astrojs/markdown-remark@npm:5.2.0, @astrojs/markdown-remark@npm:^5.1.1":
   version: 5.2.0
   resolution: "@astrojs/markdown-remark@npm:5.2.0"
   dependencies:
@@ -2142,6 +2142,7 @@ __metadata:
     npm-run-all2: "npm:^6.2.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
+    starlight-heading-badges: "npm:^0.2.0"
     starlight-links-validator: "npm:^0.10.1"
     tsx: "npm:~4.9.3"
     typescript: "npm:^5.5.4"
@@ -12957,6 +12958,19 @@ __metadata:
   version: 0.0.2
   resolution: "stackback@npm:0.0.2"
   checksum: 10c0/89a1416668f950236dd5ac9f9a6b2588e1b9b62b1b6ad8dff1bfc5d1a15dbf0aafc9b52d2226d00c28dffff212da464eaeebfc6b7578b9d180cef3e3782c5983
+  languageName: node
+  linkType: hard
+
+"starlight-heading-badges@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "starlight-heading-badges@npm:0.2.0"
+  dependencies:
+    "@astrojs/markdown-remark": "npm:^5.1.1"
+    github-slugger: "npm:^2.0.0"
+    unist-util-visit: "npm:^5.0.0"
+  peerDependencies:
+    "@astrojs/starlight": ">=0.24.5"
+  checksum: 10c0/3f647e86bcdc5bdcdaa659541b649b9e9760e000c85320754b37f7cc3af713c05b6f2ee2d288b72e98cc66ad09f86935ced6c7721ea6b7370c7b02dc3dd6cae8
   languageName: node
   linkType: hard
 

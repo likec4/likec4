@@ -8,7 +8,7 @@ tableOfContents:
   maxHeadingLevel: 4
 ---
 
-import { Aside, FileTree, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, FileTree, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 import { Card } from '@astrojs/starlight/components';
 import DynamicLikeC4View from '@components/dynamic-view/DynamicLikeC4View.astro';
@@ -91,15 +91,9 @@ views {
       color muted
       opacity 0%
     }
-    style ui, backend {
-      opacity 0%
-    }
   }
 }
 ```
-
-<DynamicLikeC4View viewId="example"/>
-
 
 :::note
 Check this <a href="https://github.com/likec4/likec4/discussions/816" target='_blank'>GitHub discussion</a> for futher development.  
@@ -107,7 +101,9 @@ Feel free to share your ideas.
 :::
 
 
-### Parallel
+### New in :badge[v1.10]{variant="success"}
+
+#### Parallel steps
 
 ```likec4 copy
 dynamic view parallelexample {
@@ -117,13 +113,37 @@ dynamic view parallelexample {
     api -> cache 
     api -> db
   }
+  // or
+  par {
+    api -> cache 
+    api -> db
+  }
 }
 ```
 
-### Additional notes
+Nested parallel blocks are not possible - <a href="https://github.com/likec4/likec4/discussions/816#discussioncomment-10015146" target='_blank'>see this discussion</a>
 
-To add additional notes to the view and/or clarify steps, use `notes` property.  
-Notes are displayed during walk-through and in the diagram.
+#### Navigation
+
+Control the flow of the walk-through:
+
+```likec4 copy
+dynamic view level1 {
+  title 'Highlevel'
+
+  ui -> api {
+    navigateTo moreDetails
+  }
+}
+
+dynamic view moreDetails {
+  title 'Some details'
+}
+```
+
+#### Notes 
+
+`notes` is for additional comments during walk-through:
 
 ```likec4 copy
 dynamic view stepnotes {
@@ -132,25 +152,35 @@ dynamic view stepnotes {
   ui -> api {
     notes '
       🏛️ - Requests data using predefined GraphQL queries
-      ( ONLY )
-
       🤖 - Queries regression on CI
     '
   }
+
   parallel {
     api -> cache {
-      notes "
-        First, API checks if data is cached already.
-        Second, is it stale?
-      "
+      notes '
+        Requests temporary session-scoped data
+      '
     }
     api -> db {
-      notes "If no data cached, queries persistent data  (SQL)"
+      notes '
+        Queries persistent data
+      '
     }
   }  
 }
 ```
 
-Check this example:
+### Example
 
-<DynamicLikeC4View viewId="parallel-example"/>
+<DynamicLikeC4View viewId="index"/>
+
+<br/>
+<CardGrid>
+  <LinkCard
+    title="Try it online"
+    description="Open this example in LikeC4 playground"
+    href="https://playground.likec4.dev/w/dynamic-view/"
+    target="_blank"
+  />
+</CardGrid>

@@ -363,4 +363,48 @@ describe.concurrent('model relation', () => {
       }
     }`
   )
+
+  test(
+    'relationship with navigateTo',
+    valid`
+    specification {
+      element component
+
+      tag asIs
+    }
+    model {
+      component client1
+      component server
+
+      client1 -> server {
+        navigateTo target
+      }
+    }
+    views {
+      dynamic view target {
+      }
+    }`
+  )
+
+  test(
+    'relationship with invalid navigateTo',
+    invalid`
+    specification {
+      element component
+
+      tag asIs
+    }
+    model {
+      component client1
+      component server
+
+      client1 -> server {
+        navigateTo target
+      }
+    }
+    views {
+      view target {
+      }
+    }`
+  )
 })

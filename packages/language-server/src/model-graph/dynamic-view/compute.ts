@@ -10,7 +10,8 @@ import type {
   RelationshipArrowType,
   RelationshipLineType,
   Tag,
-  ThemeColor
+  ThemeColor,
+  ViewID
 } from '@likec4/core'
 import {
   ancestorsFqn,
@@ -48,6 +49,7 @@ export namespace DynamicViewComputeCtx {
     tail?: RelationshipArrowType
     relations: RelationID[]
     isBackward: boolean
+    navigateTo?: ViewID
     tags?: NonEmptyArray<Tag>
   }
 }
@@ -91,7 +93,7 @@ export class DynamicViewComputeCtx {
       ...step,
       source,
       target,
-      title: isTruthy(stepTitle) ? stepTitle : title,
+      title: stepTitle ?? title,
       relations: relations ?? [],
       isBackward: isBackward ?? false,
       ...(tags ? { tags } : {})

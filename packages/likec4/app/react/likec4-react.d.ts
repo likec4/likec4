@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import type { LikeC4BrowserProps, LikeC4ViewBaseProps, LikeC4ViewElementProp } from './components/index'
+import type { LikeC4BrowserProps, LikeC4ViewBaseProps, LikeC4ViewElementProps } from './components/index'
 
 declare module 'likec4/react' {
   export type { LikeC4ViewBaseProps }

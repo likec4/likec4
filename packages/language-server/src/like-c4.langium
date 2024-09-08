@@ -162,7 +162,12 @@ RelationBody: '{'
 ;
 
 RelationProperty:
-  RelationStringProperty | RelationStyleProperty |  LinkProperty | MetadataProperty;
+  RelationStringProperty |
+  RelationNavigateToProperty |
+  RelationStyleProperty |
+  LinkProperty |
+  MetadataProperty
+;
 
 RelationStringProperty:
   key=('title' | 'technology' | 'description') ':'? value=String ';'?;
@@ -214,6 +219,9 @@ ViewRef:
 
 ElementViewRef:
   view=[ElementView];
+
+DynamicViewRef:
+  view=[DynamicView];
 
 ElementViewBody: '{'
   tags=Tags?
@@ -452,6 +460,7 @@ CustomElementProperties: '{'
 
 CustomRelationProperties: '{'
   props+=(
+    RelationNavigateToProperty |
     RelationStringProperty |
     NotationProperty |
     NotesProperty |
@@ -462,6 +471,9 @@ CustomRelationProperties: '{'
 
 NavigateToProperty:
   key='navigateTo' value=ViewRef;
+
+RelationNavigateToProperty:
+  key='navigateTo' value=DynamicViewRef;
 
 // Common properties -------------------------------------
 
