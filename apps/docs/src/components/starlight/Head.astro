@@ -29,7 +29,7 @@ function getOgImageUrl(path: string): string | undefined {
 	return `/og/${imagePath}.png`;
 }
 
-const ogImageUrl = await getOgImageUrl(Astro.url.pathname);
+const ogImageUrl = getOgImageUrl(Astro.url.pathname);
 const imageSrc = ogImageUrl ?? "/img/og-default.png?v=2";
 // const canonicalImageSrc = new URL(imageSrc, Astro.url.origin);
 ---
