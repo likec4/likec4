@@ -101,7 +101,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=likec4-playground --branch preview
+          command: pages deploy dist --project-name=likec4-playground --commit-dirty --branch preview
           workingDirectory: apps/playground
           packageManager: yarn
 
@@ -139,6 +139,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=likec4-playground --branch main
+          command: pages deploy dist --project-name=likec4-playground --commit-dirty --branch main
           workingDirectory: apps/playground
           packageManager: yarn

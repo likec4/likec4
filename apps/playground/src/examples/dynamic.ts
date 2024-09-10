@@ -142,23 +142,28 @@ views {
     }
 
     web -> api 'GET request' {
+      notes 'Requests data from API endpoint with access token'
+    }
+    // Validates token
+    api -> auth {
       notes '
-        Requests data from API endpoint with access token
+        API verifies token and receives users identification if token is valid
+
+        If token is not valid, returns HTTP 403
       '
     }
+
     parallel {
       api -> db '' {
-        notes 'Requests persistent data with SQL'
+        notes 'Queries persistent data from database'
       }
       api -> cache '' {
-        notes 'Requests session data'
+        notes 'Reads session data'
       }
     }
 
     api -> api 'process' {
-      notes '
-        Transforms received data and prepares user dashboard
-      '
+      notes 'Transforms data and prepares user dashboard'
     }
     web <- api {
       notes 'Returns data to frontend as JSON'
@@ -260,9 +265,7 @@ views {
       '
     }
 
-    include
-      cloud,
-      storage
+    include cloud._
 
     style customer, cloud._ {
       color secondary
