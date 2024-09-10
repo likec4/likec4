@@ -1,8 +1,8 @@
-import type { DiagramView as OriginalDiagramView } from 'likec4'
+import type { DiagramView } from 'likec4'
 import type { HTMLAttributes, ReactNode } from 'react'
 import type { WhereOperator } from './types-filter'
 
-export type DiagramView<ViewId extends string> = Omit<OriginalDiagramView, 'id'> & {
+export type ViewData<ViewId extends string> = Omit<DiagramView, 'id'> & {
   id: ViewId
 }
 

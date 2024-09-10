@@ -109,22 +109,35 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   await writeFile(
     resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts')),
     `
-import type { JSX } from 'react'
-import type { LikeC4ViewBaseProps, DiagramView } from 'likec4/react'
+/* prettier-ignore-start */
+/* eslint-disable */
 
-export type LikeC4ViewId =
+/******************************************************************************
+ * This file was generated
+ * DO NOT EDIT MANUALLY!
+ ******************************************************************************/
+
+import type { JSX } from 'react'
+import type { LikeC4ViewBaseProps, ViewData } from 'likec4/react'
+
+type LikeC4ViewId =
 ${ids.join('\n')}
 
-export type LikeC4Tag =
+type LikeC4Tag =
 ${tags.join('\n')}
 
-export type LikeC4ElementKind =
+type LikeC4ElementKind =
 ${kinds.join('\n')}
 
-export type LikeC4DiagramView = DiagramView<LikeC4ViewId>
-export const LikeC4Views: Record<LikeC4ViewId, LikeC4DiagramView>
+type LikeC4ViewData = ViewData<LikeC4ViewId>
 
-export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
+/**
+ * @deprecated alias, use LikeC4ViewData instead
+ */
+type LikeC4DiagramView = LikeC4ViewData
+
+declare const LikeC4Views: Record<LikeC4ViewId, LikeC4ViewData>
+declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
 type IconRendererProps = {
   node: {
@@ -133,11 +146,24 @@ type IconRendererProps = {
     icon?: string | undefined
   }
 }
-export declare function RenderIcon(props: IconRendererProps): JSX.Element
+declare function RenderIcon(props: IconRendererProps): JSX.Element;
 
-export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
-export declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element
+type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>;
+declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element;
 
+export {
+  type LikeC4ViewId,
+  type LikeC4Tag,
+  type LikeC4ElementKind,
+  type LikeC4ViewData,
+  type LikeC4DiagramView,
+  type LikeC4ViewProps,
+  LikeC4Views,
+  isLikeC4ViewId,
+  RenderIcon,
+  LikeC4View
+}
+/* prettier-ignore-end */
 `.trimStart()
   )
 

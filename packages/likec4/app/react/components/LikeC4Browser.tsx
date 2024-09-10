@@ -7,11 +7,11 @@ import { closeButton, cssDiagram } from './LikeC4Browser.css'
 import { ShadowRoot } from './ShadowRoot'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import * as css from './styles.css'
-import type { DiagramView, ElementIconRenderer } from './types'
+import type { ElementIconRenderer, ViewData } from './types'
 import type { WhereOperator } from './types-filter'
 
 export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind extends string> = {
-  view: DiagramView<ViewId>
+  view: ViewData<ViewId>
 
   /**
    * By default determined by the user's system preferences.

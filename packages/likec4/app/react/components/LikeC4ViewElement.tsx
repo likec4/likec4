@@ -6,13 +6,13 @@ import { ShadowRoot } from './ShadowRoot'
 import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { cssInteractive, cssLikeC4View } from './styles.css'
-import type { DiagramView, ElementIconRenderer } from './types'
+import type { ElementIconRenderer, ViewData } from './types'
 import type { WhereOperator } from './types-filter'
 
 export type LikeC4ViewElementProps<ViewId extends string, Tag extends string, Kind extends string> =
   & Omit<HTMLAttributes<HTMLDivElement>, 'children'>
   & {
-    view: DiagramView<ViewId>
+    view: ViewData<ViewId>
 
     /**
      * By default determined by the user's system preferences.
