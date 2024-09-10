@@ -1,7 +1,7 @@
-import { CstUtils, type AstNode, type CompositeCstNode, type CstNode } from 'langium'
+import { type AstNode, type CompositeCstNode, type CstNode, CstUtils } from 'langium'
+import { GrammarUtils } from 'langium'
 import { AbstractFormatter, Formatting, type FormattingAction, type FormattingContext } from 'langium/lsp'
 import type { Position, Range, TextEdit } from 'vscode-languageserver-types'
-import { GrammarUtils } from 'langium'
 import * as ast from '../generated/ast'
 
 const FormattingOptions = {
@@ -13,19 +13,27 @@ const FormattingOptions = {
 }
 
 export class LikeC4Formatter extends AbstractFormatter {
-  protected format(node: AstNode): void {    
+  protected format(node: AstNode): void {
     this.removeIndentFromTopLevelStatements(node)
     this.indentContentInBraces(node)
     this.prependPropsWithSpace(node)
-    this.surroundOperatorsWithSpace(node)
-    this.surroundArrowsWithSpace(node)
     this.surroundKeywordsWithSpace(node)
 
+    this.formatSpecificationRule(node)
     this.formatElementDeclaration(node)
+    this.formatRelation(node)
+    this.formatWhereExpression(node)
+    this.formatIncludeExcludeExpressions(node)
   }
 
-  protected override createTextEdit(a: CstNode | undefined, b: CstNode, formatting: FormattingAction, context: FormattingContext): TextEdit[] {
-    return super.createTextEdit(a, b, formatting, context)
+  protected override createTextEdit(
+    a: CstNode | undefined,
+    b: CstNode,
+    formatting: FormattingAction,
+    context: FormattingContext
+  ): TextEdit[] {
+    const x = super.createTextEdit(a, b, formatting, context)
+    return x
   }
 
   protected surroundOperatorsWithSpace(node: AstNode) {
@@ -52,45 +60,31 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
   }
 
-  protected surroundArrowsWithSpace(node: AstNode) {
+  protected formatRelation(node: AstNode) {
     if (
       ast.isRelation(node)
-      || ast.isOutgoingRelationExpression(node)
       || ast.isInOutRelationExpression(node)
+      || ast.isOutgoingRelationExpression(node)
       || ast.isDynamicViewStep(node)
     ) {
       const formatter = this.getNodeFormatter(node)
-      formatter.properties('isBidirectional', 'isBackward')
-        .surround(FormattingOptions.oneSpace)
 
-      formatter.keywords('-[')
-        .prepend(FormattingOptions.oneSpace)
-        .prepend(Formatting.newLines(0, { allowMore: true }))
-      formatter.keywords(']->').append(FormattingOptions.oneSpace)
-    }
-    if (ast.isIncomingRelationExpression(node)) {
-      const formatter = this.getNodeFormatter(node)
-      formatter.keyword('->').append(FormattingOptions.oneSpace)
-    }
-    if (ast.isRelation(node)) {
-      const formatter = this.getNodeFormatter(node)
-      if (formatter.property('source').nodes.length != 0) {
-        formatter.keyword('->').surround(FormattingOptions.oneSpace)
+      const implicit = formatter.properties('source', 'from').nodes.length == 0
+      formatter.keywords('->', '<->', '-[')
+        .prepend(implicit ? FormattingOptions.newLine : FormattingOptions.oneSpace)
+      formatter.keywords('->', '<->', ']->').append(FormattingOptions.oneSpace)
+
+      const kind = formatter.property('kind')
+      const dotKinded = kind.nodes.length > 0
+        && formatter.keyword('-[').nodes.length == 0
+      if (dotKinded) {
+        kind.append(FormattingOptions.oneSpace)
+        kind.prepend(implicit ? FormattingOptions.newLine : FormattingOptions.oneSpace)
+      }
+      else {
+        kind.surround(FormattingOptions.noSpace)
       }
     }
-    if (ast.isDynamicViewStep(node)) {
-      const formatter = this.getNodeFormatter(node)
-      formatter.keyword('->').surround(FormattingOptions.oneSpace)
-    }
-    // if(ast.isImplicitRelation(node)) {
-    //     const formatter = this.getNodeFormatter(node);
-    //     if(formatter.keywords('this', 'it').nodes.length == 0) {
-    //         formatter.keyword('->').append(FormattingOptions.oneSpace);
-    //     }
-    //     else {
-    //         formatter.keyword('->').surround(FormattingOptions.oneSpace);
-    //     }
-    // }
   }
 
   protected removeIndentFromTopLevelStatements(node: AstNode) {
@@ -135,8 +129,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
       const interiorNodes = formatter.interior(openBrace, closeBrace)
 
-      
-      // Workaround for tags as they are parsed as overlapping regions. 
+      // Workaround for tags as they are parsed as overlapping regions.
       // E.g. '#tag1, #tag2' will be parsed as two nodes: '#tag1' and '#tag1, #tag2'
       let perviousNode = null
       for (const interiorNode of interiorNodes.nodes) {
@@ -151,7 +144,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         .prepend(FormattingOptions.oneSpace)
       closeBrace
         .prepend(FormattingOptions.noIndent)
-        .prepend(Formatting.newLine({ allowMore: true }))      
+        .prepend(Formatting.newLine({ allowMore: true }))
     }
   }
 
@@ -170,6 +163,15 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
   }
 
+  protected appendKeywordsWithSpace(node: AstNode) {
+    if (
+      ast.isSpecificationElementKind(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+      formatter.keywords('element').append(FormattingOptions.oneSpace)
+    }
+  }
+
   protected surroundKeywordsWithSpace(node: AstNode) {
     const defaultFormatter = this.getNodeFormatter(node)
     defaultFormatter.keywords(
@@ -178,15 +180,14 @@ export class LikeC4Formatter extends AbstractFormatter {
       'with',
       'where'
     ).surround(FormattingOptions.oneSpace)
+
     defaultFormatter.keywords(
       // 'icons',
-      // 'element',
-      // 'tag',
       // 'kind',
-      // 'relationship',
       'title',
       'technology',
       'description',
+      'color',
       // 'extend',
       // 'this',
       // 'it',
@@ -196,40 +197,134 @@ export class LikeC4Formatter extends AbstractFormatter {
       // 'extends',
       // 'dynamic',
       'view',
-      // 'TopBottom',
-      // 'LeftRight',
-      // 'BottomTop',
-      // 'RightLeft',
-      'include',
-      'exclude'
+      'autoLayout',
+      'TopBottom',
+      'LeftRight',
+      'BottomTop',
+      'RightLeft'
       // 'element.tag',
       // 'element.kind'
     ).append(FormattingOptions.oneSpace)
   }
 
-  private formatElementDeclaration(node: AstNode){
-    if(ast.isElement(node)) {
+  protected formatElementDeclaration(node: AstNode) {
+    if (ast.isElement(node)) {
       const formatter = this.getNodeFormatter(node)
 
-      const contentNodes = (node?.$cstNode as CompositeCstNode).content.map(x => x.astNode)
       const kind = GrammarUtils.findNodeForProperty(node.$cstNode, 'kind')
       const name = GrammarUtils.findNodeForProperty(node.$cstNode, 'name')
 
-      if(name && kind && this.compareRanges(name, kind) > 0){
+      if (name && kind && this.compareRanges(name, kind) > 0) {
         formatter.cst([name]).prepend(FormattingOptions.oneSpace)
       }
     }
   }
 
+  protected formatSpecificationRule(node: AstNode) {
+    if (
+      ast.isSpecificationElementKind(node)
+      || ast.isSpecificationRelationshipKind(node)
+      || ast.isSpecificationTag(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+
+      formatter.keywords('element', 'relationship', 'tag', 'color')
+        .append(FormattingOptions.oneSpace)
+    }
+  }
+
+  protected formatWhereExpression(node: AstNode) {
+    if (
+      ast.isRelationPredicateOrWhere(node)
+      || ast.isElementPredicateOrWhere(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+      formatter.keyword('where').append(FormattingOptions.oneSpace)
+    }
+    if (
+      ast.isWhereRelationExpression(node)
+      || ast.isWhereElementExpression(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+      formatter.property('operator').surround(FormattingOptions.oneSpace)
+    }
+    if (
+      ast.isWhereElementNegation(node)
+      || ast.isWhereRelationNegation(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+      formatter.keyword('not').append(FormattingOptions.oneSpace)
+    }
+    if (
+      ast.isWhereElement(node)
+      || ast.isWhereElementTag(node)
+      || ast.isWhereElementKind(node)
+      || ast.isWhereRelation(node)
+      || ast.isWhereRelationTag(node)
+      || ast.isWhereRelationKind(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+      formatter.property('operator').surround(FormattingOptions.oneSpace)
+      formatter.property('not').surround(FormattingOptions.oneSpace)
+    }
+  }
+
+  protected formatIncludeExcludeExpressions(node: AstNode) {
+    if (
+      ast.isDynamicViewRule(node)
+      || ast.isIncludePredicate(node)
+      || ast.isExcludePredicate(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+
+      if (!node.$cstNode || !this.isMultiline(node.$cstNode)) {
+        formatter.keywords('include', 'exclude')
+          .append(FormattingOptions.oneSpace)
+      }
+    }
+    if (
+      ast.isDynamicViewPredicateIterator(node)
+      || ast.isPredicates(node)
+      || ast.isPredicates(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+      const parent = this.findPredicateExpressionRoot(node)
+      const isMultiline = parent?.$cstNode && this.isMultiline(parent?.$cstNode)
+      
+      if (isMultiline) {
+        formatter.property('value').prepend(FormattingOptions.indent)
+      } 
+      formatter.keyword(',')
+        .prepend(FormattingOptions.noSpace)
+        .append(isMultiline ? FormattingOptions.newLine : FormattingOptions.oneSpace)
+    }
+  }
+
+  private findPredicateExpressionRoot(node: AstNode): AstNode | undefined {
+    let parent = node.$container
+    while (true) {
+      if (
+        !parent
+        || ast.isDynamicViewRule(parent)
+        || ast.isIncludePredicate(parent)
+        || ast.isExcludePredicate(parent)
+      ) {
+        return parent
+      }
+
+      parent = parent.$container
+    }
+  }
+
   private areOverlap(a: CstNode, b: CstNode): boolean {
-    [a, b] = this.compareRanges(a, b) > 0 ? [b, a] : [a, b]
+    ;[a, b] = this.compareRanges(a, b) > 0 ? [b, a] : [a, b]
 
     return this.isInRagne(a.range, b.range.start)
   }
 
   private compareRanges(a: CstNode, b: CstNode): number {
-    const lineDiff = a.range.start.line - b.range.start.line;
-    
+    const lineDiff = a.range.start.line - b.range.start.line
+
     return lineDiff !== 0 ? lineDiff : a.range.start.character - b.range.start.character
   }
 
@@ -238,6 +333,10 @@ export class LikeC4Formatter extends AbstractFormatter {
       || pos.line > range.end.line
       || pos.line == range.start.line && pos.character < range.start.character
       || pos.line == range.end.line && pos.character > range.end.character)
+  }
+
+  private isMultiline(node: CstNode): boolean {
+    return node.range.start.line != node.range.end.line
   }
 
   private wrapCollector() {
