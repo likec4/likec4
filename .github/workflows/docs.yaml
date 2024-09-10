@@ -50,6 +50,10 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
+      - name: typecheck
+        run: |
+          yarn turbo run typecheck --filter='@likec4/docs-astro'
+
       - name: build
         run: |
           yarn turbo run build --filter='@likec4/docs-astro'

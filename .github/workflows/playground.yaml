@@ -49,13 +49,13 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
-        run: |
-          yarn turbo run build --filter='@likec4/playground'
-
       - name: typecheck
         run: |
           yarn turbo run typecheck --filter='@likec4/playground'
+
+      - name: build
+        run: |
+          yarn turbo run build --filter='@likec4/playground'
 
       - name: upload a build artifact
         uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
