@@ -1,11 +1,10 @@
 import '@mantine/core/styles.css'
 import '@xyflow/react/dist/style.css'
 
-export { LikeC4Browser } from './LikeC4Browser'
-export { LikeC4ViewElement } from './LikeC4ViewElement'
-export { useColorScheme, useCreateStyleSheet } from './styles'
+export { LikeC4Browser, type LikeC4BrowserProps } from './LikeC4Browser'
 
-export type * from './LikeC4Browser'
-export type * from './LikeC4ViewElement'
-export type * from './types'
-export type * from './types-filter'
+export { LikeC4ViewElement, type LikeC4ViewElementProps } from './LikeC4ViewElement'
+
+export type { LikeC4ViewProps, ViewData } from './types'
+
+export { BundledStyles, DefaultTheme, useBundledStyleSheet, useColorScheme } from './style'

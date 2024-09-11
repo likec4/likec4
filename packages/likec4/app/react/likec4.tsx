@@ -1,4 +1,4 @@
-import type { LikeC4ViewBaseProps } from 'likec4/react'
+import type { LikeC4ViewProps as BaseLikeC4ViewProps } from 'likec4/react'
 import { LikeC4Browser, LikeC4ViewElement, useColorScheme } from 'likec4/react'
 import { memo, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
@@ -25,7 +25,7 @@ function RenderIcon({ node }: IconRendererProps) {
 
 export { isLikeC4ViewId, LikeC4Views, RenderIcon }
 
-export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
+export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 
 const NotFound = ({ viewId }: { viewId: string }) => (
   <div
@@ -58,6 +58,8 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
   showNavigationButtons = false,
   showNotations = false,
   enableFocusMode = false,
+  browserClassName,
+  browserStyle,
   ...props
 }) {
   const view = LikeC4Views[viewId]
@@ -111,6 +113,8 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
           onClose={closeBrowser}
           renderIcon={RenderIcon}
           where={where}
+          className={browserClassName}
+          style={browserStyle}
         />
       )}
     </>

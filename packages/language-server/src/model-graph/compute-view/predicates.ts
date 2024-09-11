@@ -1,6 +1,6 @@
 import type { Element, Relation } from '@likec4/core'
 import { Expr, isAncestor, nonexhaustive, parentFqn } from '@likec4/core'
-import { allPass, filter as remedaFilter, flatMap, isNullish as isNil, map, pipe } from 'remeda'
+import { allPass, filter as remedaFilter, flatMap, isNullish as isNil, map, pipe, unique } from 'remeda'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import type { ComputeCtx } from './compute'
 
@@ -318,13 +318,11 @@ const filterEdges = (edges: ReadonlyArray<ComputeCtx.Edge>, where?: RelationPred
 }
 
 const filterRelations = (edges: ComputeCtx.Edge[], where?: RelationPredicateFn) => {
-  if (!where) {
-    return edges.flatMap(e => e.relations)
-  }
   return pipe(
     edges,
     flatMap(e => e.relations),
-    remedaFilter(where)
+    where ? remedaFilter(where) : Identity,
+    unique()
   )
 }
 

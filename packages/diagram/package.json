@@ -2,6 +2,7 @@
   "name": "@likec4/diagram",
   "version": "1.9.0",
   "license": "MIT",
+  "private": true,
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -23,24 +24,11 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./style.css": "./dist/style.css"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
-      },
-      "./style.css": "./dist/style.css"
-    }
+    ".": "./src/index.ts"
   },
   "packageManager": "yarn@4.3.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "prepack": "vite build --mode production",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
   },
@@ -86,8 +74,6 @@
     "execa": "^9.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "typescript": "^5.5.4",
-    "vite": "5.3.4",
-    "vite-plugin-dts": "^3.9.1"
+    "typescript": "^5.5.4"
   }
 }

@@ -27,6 +27,7 @@
       ],
       "outputs": [
         "dist/**",
+        "react/**",
         "!**/*.tsbuildinfo"
       ],
       "inputs": [

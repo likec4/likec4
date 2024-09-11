@@ -1,11 +1,11 @@
 import consola from 'consola'
 import { $ as $_ } from 'execa'
-import { existsSync } from 'node:fs'
-import { cp } from 'node:fs/promises'
+import { resolve } from 'node:path'
+import { emptyDir } from './_utils'
 
 const $ = $_({
-  stderr: 'inherit',
-  stdout: 'inherit',
+  stdout: process.stdout,
+  stderr: process.stderr,
   env: {
     NODE_ENV: 'production'
   }
@@ -13,18 +13,8 @@ const $ = $_({
 
 consola.start('Building...')
 
-await $`rm -rf dist`
+emptyDir(resolve('react'))
+emptyDir(resolve('dist'))
 
 // Run build
 await $`yarn turbo-build`
-
-// Build type definitions
-await $`yarn tsc -p ./app/react/tsconfig-build.json`
-
-const components = 'dist/__app__/react/components.mjs'
-if (!existsSync(components)) {
-  throw new Error('Components not found')
-}
-await $`mv dist/__app__/react/components.mjs react/index.mjs`
-
-consola.success('React bundle moved to react/index.mjs')

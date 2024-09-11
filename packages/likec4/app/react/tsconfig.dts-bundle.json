@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "noEmitOnError": false,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "esModuleInterop": false,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "types": [
+      "react",
+      "vite/client"
+    ],
+    "paths": {
+      "@likec4/core": ["../../../core/src"],
+      "@likec4/diagram": ["../../../diagram/src"],
+    }
+  },
+  "include": [
+    "components",
+  ]
+}

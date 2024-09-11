@@ -20,7 +20,7 @@
     }
   },
   "include": [
-    "./src",
+    "src",
     "package.json"
   ]
 }

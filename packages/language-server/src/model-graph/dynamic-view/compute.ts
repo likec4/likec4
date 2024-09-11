@@ -10,7 +10,6 @@ import type {
   RelationshipArrowType,
   RelationshipLineType,
   Tag,
-  ThemeColor,
   ViewID
 } from '@likec4/core'
 import {
@@ -26,7 +25,7 @@ import {
   parentFqn,
   StepEdgeId
 } from '@likec4/core'
-import { hasAtLeast, isTruthy, map, omit, unique } from 'remeda'
+import { filter, flatMap, hasAtLeast, isTruthy, map, omit, only, pipe, unique } from 'remeda'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -74,6 +73,7 @@ export class DynamicViewComputeCtx {
       target: stepTarget,
       title: stepTitle,
       isBackward,
+      navigateTo: stepNavigateTo,
       ...step
     }: DynamicViewStep,
     index: number,
@@ -86,7 +86,14 @@ export class DynamicViewComputeCtx {
     this.explicits.add(source)
     this.explicits.add(target)
 
-    const { title, relations, tags } = this.findRelations(source, target)
+    const {
+      title,
+      relations,
+      tags,
+      navigateTo: derivedNavigateTo
+    } = this.findRelations(source, target)
+
+    const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id ? stepNavigateTo : derivedNavigateTo
 
     this.steps.push({
       id,
@@ -96,6 +103,7 @@ export class DynamicViewComputeCtx {
       title: stepTitle ?? title,
       relations: relations ?? [],
       isBackward: isBackward ?? false,
+      ...(navigateTo ? { navigateTo } : {}),
       ...(tags ? { tags } : {})
     })
   }
@@ -207,49 +215,53 @@ export class DynamicViewComputeCtx {
     title: string | null
     tags: NonEmptyArray<Tag> | null
     relations: NonEmptyArray<RelationID> | null
+    navigateTo: ViewID | null
   } {
     const relationships = unique(this.graph.edgesBetween(source, target).flatMap(e => e.relations))
-    const alltags = unique(relationships.flatMap(r => r.tags ?? []))
-    const tags = hasAtLeast(alltags, 1) ? alltags : null
-
-    const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
     if (relationships.length === 0) {
       return {
         title: null,
-        tags,
-        relations
+        tags: null,
+        relations: null,
+        navigateTo: null
       }
     }
-    let relation
-    if (relationships.length === 1) {
-      relation = relationships[0]
-    } else {
-      relation = relationships.find(r => r.source === source.id && r.target === target.id)
-    }
+    const alltags = pipe(
+      relationships,
+      flatMap(r => r.tags),
+      filter(isTruthy),
+      unique()
+    )
+    const tags = hasAtLeast(alltags, 1) ? alltags : null
+    const relations = hasAtLeast(relationships, 1) ? map(relationships, r => r.id) : null
 
-    if (relation && isTruthy(relation.title)) {
-      return {
-        title: relation.title,
-        tags,
-        relations
-      }
-    }
+    // Most closest relation
+    const relation = only(relationships) || relationships.find(r => r.source === source.id && r.target === target.id)
 
     // This edge represents mutliple relations
     // We use label if only it is the same for all relations
-    const labels = unique(relationships.flatMap(r => (isTruthy(r.title) ? r.title : [])))
-    if (labels.length === 1) {
-      return {
-        title: labels[0]!,
-        tags,
-        relations
-      }
-    }
+    const title = isTruthy(relation?.title) ? relation.title : pipe(
+      relationships,
+      map(r => r.title),
+      filter(isTruthy),
+      unique(),
+      only()
+    )
+
+    const navigateTo = !!relation?.navigateTo && relation.navigateTo !== this.view.id ? relation.navigateTo : pipe(
+      relationships,
+      map(r => r.navigateTo),
+      filter(isTruthy),
+      filter(v => v !== this.view.id),
+      unique(),
+      only()
+    )
 
     return {
-      title: null,
+      title: title ?? null,
       tags,
-      relations
+      relations,
+      navigateTo: navigateTo ?? null
     }
   }
 }

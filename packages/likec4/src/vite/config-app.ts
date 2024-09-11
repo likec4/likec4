@@ -60,7 +60,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     mode: 'development',
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      __USE_SHADOW_STYLE__: 'false',
+      __USE_STYLE_BUNDLE__: 'false',
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"development"'
@@ -69,9 +69,9 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       alias: {
         'likec4/previews': likec4AssetsDir,
         'likec4/icons': resolve(pkgRoot, '../icons'),
-        'likec4/react': resolve(pkgRoot, 'app/react/components/index.ts'),
-        '@likec4/core': resolve(pkgRoot, '../core/src/index.ts'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src/index.ts'),
+        'likec4/react': resolve(pkgRoot, 'app/react/components'),
+        '@likec4/core': resolve(pkgRoot, '../core/src'),
+        '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
         'react-dom/server': resolve(pkgRoot, 'app/react/react-dom-server-mock.ts')
       }
     },

@@ -2,7 +2,7 @@ import { type DetailedHTMLFactory, type HTMLAttributes, useState } from 'react'
 
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import root from 'react-shadow'
-import { useCreateStyleSheet } from './styles'
+import { useCreateStyleSheet } from './style'
 
 const Root: DetailedHTMLFactory<
   HTMLAttributes<HTMLDivElement> & {

@@ -1,24 +1,23 @@
-import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
+import { type DiagramNode, type DiagramView } from '@likec4/core'
 import { type ElementIconRenderer, LikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
 import Icon from '@likec4/icons/all'
-import { Button, Loader, LoadingOverlay } from '@mantine/core'
+import { Box, Button, Loader, LoadingOverlay, Notification } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
+import { IconX } from '@tabler/icons-react'
 import { useCallback, useRef, useState } from 'react'
-import { likec4Container, likec4error, likec4ParsingScreen } from './App.css'
+import * as css from './App.css'
+import { likec4Container, likec4ParsingScreen } from './App.css'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
-  <div className={likec4error}>
-    <p>
-      Oops, something went wrong
-      {error && (
-        <>
-          <br />
-          {error}
-        </>
-      )}
-    </p>
-  </div>
+  <Box className={css.stateAlert}>
+    <Notification
+      icon={<IconX style={{ width: 20, height: 20 }} />}
+      color={'red'}
+      withCloseButton={false}>
+      {error ?? 'Oops, something went wrong'}
+    </Notification>
+  </Box>
 )
 
 const IconRenderer: ElementIconRenderer = ({ node }) => {
@@ -110,7 +109,7 @@ const App = () => {
         )}
         <section>
           <p>
-            <Button onClick={extensionApi.closeMe}>
+            <Button color="gray" onClick={extensionApi.closeMe}>
               Close
             </Button>
           </p>
@@ -127,7 +126,7 @@ const App = () => {
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
-          fitViewPadding={0.08}
+          fitViewPadding={0.09}
           readonly={false}
           controls={false}
           nodesDraggable={nodesDraggable}
@@ -143,7 +142,7 @@ const App = () => {
             extensionApi.goToViewSource(to)
             extensionApi.openView(to)
           }}
-          onNodeContextMenu={({ element, xynode, event }) => {
+          onNodeContextMenu={(element) => {
             lastNodeContextMenuRef.current = element
           }}
           onCanvasContextMenu={event => {
@@ -151,7 +150,7 @@ const App = () => {
             event.stopPropagation()
             event.preventDefault()
           }}
-          onEdgeContextMenu={({ event }) => {
+          onEdgeContextMenu={(edge, event) => {
             resetLastClickedNd()
             event.stopPropagation()
             event.preventDefault()

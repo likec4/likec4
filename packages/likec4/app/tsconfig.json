@@ -6,6 +6,7 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
     "outDir": "../dist/__app__",
+    "noEmit": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "noPropertyAccessFromIndexSignature": false,
@@ -19,9 +20,9 @@
     "types": ["vite/client"]
   },
   "include": [
-    "./src",
-    "./webcomponent",
-    "./react"
+    "src",
+    "react",
+    "webcomponent"
   ],
   "references": [
     {

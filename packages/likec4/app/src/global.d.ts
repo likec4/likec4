@@ -1,5 +1,5 @@
 declare const __likec4styles: Map<string, string>
-declare const __USE_SHADOW_STYLE__: boolean
+declare const __USE_STYLE_BUNDLE__: boolean
 declare const __USE_HASH_HISTORY__: boolean | undefined
 declare const __USE_OVERVIEW_GRAPH__: boolean | undefined
 declare const __HOT_ENABLED__: boolean

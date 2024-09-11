@@ -749,8 +749,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             onNavigateTo(
               element.navigateTo,
               event,
-              element as DiagramNodeWithNavigate,
-              xynode
+              element as DiagramNodeWithNavigate
             )
           },
 

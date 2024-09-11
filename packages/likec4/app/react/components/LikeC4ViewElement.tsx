@@ -3,14 +3,14 @@ import clsx from 'clsx'
 import { type HTMLAttributes, useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
+import type { WhereOperator } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { ElementIconRenderer, ViewData } from './types'
-import type { WhereOperator } from './types-filter'
 
 export type LikeC4ViewElementProps<ViewId extends string, Tag extends string, Kind extends string> =
-  & Omit<HTMLAttributes<HTMLDivElement>, 'children'>
+  & Pick<HTMLAttributes<HTMLDivElement>, 'style' | 'className'>
   & {
     view: ViewData<ViewId>
 
@@ -89,7 +89,7 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
   enableFocusMode = false,
   showNotations = false,
   where,
-  ...props
+  style
 }: LikeC4ViewElementProps<ViewId, Tag, Kind>) {
   const id = useId()
 
@@ -134,7 +134,7 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
         data-likec4-instance={id}
         injectFontCss={injectFontCss}
         className={clsx('likec4-view', className)}
-        {...props}
+        style={style}
         {...(_onNavigateTo && {
           onClick: (e) => {
             e.stopPropagation()

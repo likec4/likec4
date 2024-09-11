@@ -40,8 +40,8 @@ export async function viteWebcomponentConfig({
     resolve: {
       alias: {
         'likec4/icons': resolve(pkgRoot, '../icons'),
-        '@likec4/core': resolve(pkgRoot, '../core/src/index.ts'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src/index.ts')
+        '@likec4/core': resolve(pkgRoot, '../core/src'),
+        '@likec4/diagram': resolve(pkgRoot, '../diagram/src')
       }
     },
     clearScreen: false,
@@ -49,7 +49,7 @@ export async function viteWebcomponentConfig({
     publicDir: false,
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      __USE_SHADOW_STYLE__: 'true',
+      __USE_STYLE_BUNDLE__: 'true',
       __USE_HASH_HISTORY__: 'false',
       __USE_OVERVIEW_GRAPH__: 'false',
       'process.env.NODE_ENV': '"development"'

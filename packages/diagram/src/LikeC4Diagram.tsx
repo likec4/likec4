@@ -124,7 +124,7 @@ type LikeC4DiagramInnerProps = {
   controls: boolean
   showDiagramTitle: boolean
 }
-const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
+const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
   controls,
   showDiagramTitle

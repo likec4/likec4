@@ -13,7 +13,6 @@ import type {
   RelationshipKind,
   RelationshipLineType,
   Tag,
-  ThemeColor,
   ViewID,
   ViewRulePredicate
 } from '@likec4/core'
@@ -31,7 +30,7 @@ import {
   parentFqn,
   whereOperatorAsPredicate
 } from '@likec4/core'
-import { first, flatMap, hasAtLeast, isTruthy, map, omit, unique } from 'remeda'
+import { filter, flatMap, hasAtLeast, isNonNull, isTruthy, map, omit, only, pipe, reduce, sort, unique } from 'remeda'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -193,7 +192,7 @@ export class ComputeCtx {
   protected computeEdges(): ComputedEdge[] {
     return this.ctxEdges.map((e): ComputedEdge => {
       invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
-      const relations = e.relations.toSorted(compareRelations)
+      const relations = sort(e.relations, compareRelations)
       const source = e.source.id
       const target = e.target.id
 
@@ -206,72 +205,78 @@ export class ComputeCtx {
         relations: relations.map(r => r.id)
       }
 
-      let relation:
-        | Pick<
-          Relation,
-          'title' | 'kind' | 'description' | 'technology' | 'color' | 'line' | 'head' | 'tail' | 'tags' | 'navigateTo'
-        >
-        | {
-          // TODO refactor with type-fest
-          title: string
-          description?: string | undefined
-          technology?: string | undefined
-          kind?: RelationshipKind | undefined
-          color?: Color | undefined
-          line?: RelationshipLineType | undefined
-          head?: RelationshipArrowType | undefined
-          tail?: RelationshipArrowType | undefined
-          tags?: NonEmptyArray<Tag>
-          navigateTo?: ViewID | undefined
-        }
-        | undefined
-      if (relations.length === 1) {
-        relation = relations[0]
-      } else {
-        relation = relations.find(r => r.source === source && r.target === target)
-        // relation ??= relations.toReversed().find(r => r.source === source || r.target === target)
-      }
+      let relation: {
+        // TODO refactor with type-fest
+        title: string
+        description?: string | undefined
+        technology?: string | undefined
+        kind?: RelationshipKind | undefined
+        color?: Color | undefined
+        line?: RelationshipLineType | undefined
+        head?: RelationshipArrowType | undefined
+        tail?: RelationshipArrowType | undefined
+        tags?: NonEmptyArray<Tag>
+        navigateTo?: ViewID | undefined
+      } | undefined
+      relation = relations.length === 1 ? relations[0] : relations.find(r => r.source === source && r.target === target)
 
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
       if (!relation) {
-        relation = relations.reduce((acc, r) => {
-          if (r.color && acc.color !== r.color) {
-            acc.color = undefined
-          }
-          if (r.kind && acc.kind !== r.kind) {
-            acc.kind = undefined
-          }
-          if (r.head && acc.head !== r.head) {
-            acc.head = undefined
-          }
-          if (r.tail && acc.tail !== r.tail) {
-            acc.tail = undefined
-          }
-          if (r.line && acc.line !== r.line) {
-            acc.line = undefined
-          }
-          if (r.description && acc.description !== r.description) {
-            acc.description = undefined
-          }
-          if (r.technology && acc.technology !== r.technology) {
-            acc.technology = undefined
-          }
-          if (isTruthy(r.title) && acc.title !== r.title) {
-            acc.title = '[...]'
-          }
-          return acc
-        }, {
-          title: first(flatMap(relations, r => isTruthy(r.title) ? r.title : [])) ?? '[...]',
-          description: first(flatMap(relations, r => isTruthy(r.description) ? r.description : [])),
-          technology: first(flatMap(relations, r => isTruthy(r.technology) ? r.technology : [])),
-          kind: first(flatMap(relations, r => isTruthy(r.kind) ? r.kind : [])),
-          head: first(flatMap(relations, r => isTruthy(r.head) ? r.head : [])),
-          tail: first(flatMap(relations, r => isTruthy(r.tail) ? r.tail : [])),
-          color: first(flatMap(relations, r => isTruthy(r.color) ? r.color : [])),
-          line: first(flatMap(relations, r => isTruthy(r.line) ? r.line : [])),
-          navigateTo: first(flatMap(relations, r => isTruthy(r.navigateTo) ? r.navigateTo : []))
-        })
+        const allprops = pipe(
+          relations,
+          reduce((acc, r) => {
+            if (isTruthy(r.title) && !acc.title.includes(r.title)) {
+              acc.title.push(r.title)
+            }
+            if (isTruthy(r.description) && !acc.description.includes(r.description)) {
+              acc.description.push(r.description)
+            }
+            if (isTruthy(r.technology) && !acc.technology.includes(r.technology)) {
+              acc.technology.push(r.technology)
+            }
+            if (isTruthy(r.kind) && !acc.kind.includes(r.kind)) {
+              acc.kind.push(r.kind)
+            }
+            if (isTruthy(r.color) && !acc.color.includes(r.color)) {
+              acc.color.push(r.color)
+            }
+            if (isTruthy(r.line) && !acc.line.includes(r.line)) {
+              acc.line.push(r.line)
+            }
+            if (isTruthy(r.head) && !acc.head.includes(r.head)) {
+              acc.head.push(r.head)
+            }
+            if (isTruthy(r.tail) && !acc.tail.includes(r.tail)) {
+              acc.tail.push(r.tail)
+            }
+            if (isTruthy(r.navigateTo) && !acc.navigateTo.includes(r.navigateTo)) {
+              acc.navigateTo.push(r.navigateTo)
+            }
+            return acc
+          }, {
+            title: [] as string[],
+            description: [] as string[],
+            technology: [] as string[],
+            kind: [] as RelationshipKind[],
+            head: [] as RelationshipArrowType[],
+            tail: [] as RelationshipArrowType[],
+            color: [] as Color[],
+            line: [] as RelationshipLineType[],
+            navigateTo: [] as ViewID[]
+          })
+        )
+        relation = {
+          title: only(allprops.title) ?? '[...]',
+          description: only(allprops.description),
+          technology: only(allprops.technology),
+          kind: only(allprops.kind),
+          head: only(allprops.head),
+          tail: only(allprops.tail),
+          color: only(allprops.color),
+          line: only(allprops.line),
+          navigateTo: only(allprops.navigateTo)
+        }
       }
 
       const tags = unique(flatMap(relations, r => r.tags ?? []))
@@ -356,29 +361,40 @@ export class ComputeCtx {
     }
   }
 
-  protected excludeImplicit(...excludes: Element[]) {
-    for (const el of excludes) {
-      this.implicits.delete(el)
-    }
-  }
+  // protected excludeImplicit(...excludes: Element[]) {
+  //   for (const el of excludes) {
+  //     this.implicits.delete(el)
+  //   }
+  // }
 
   protected excludeRelation(...relations: Relation[]) {
+    if (relations.length === 0) {
+      return
+    }
     const excludedImplicits = new Set<Element>()
-    for (const relation of relations) {
-      let edge
-      while ((edge = this.ctxEdges.find(e => e.relations.includes(relation)))) {
-        if (edge.relations.length === 1) {
+    const ctxEdges = pipe(
+      this.ctxEdges,
+      map(edge => {
+        const edgerelations = edge.relations.filter(r => !relations.includes(r))
+        if (edgerelations.length === 0) {
           excludedImplicits.add(edge.source)
           excludedImplicits.add(edge.target)
-          this.ctxEdges.splice(this.ctxEdges.indexOf(edge), 1)
-          continue
+          return null
         }
-        edge.relations = edge.relations.filter(r => r !== relation)
-      }
-    }
+        if (edgerelations.length !== edge.relations.length) {
+          return {
+            ...edge,
+            relations: edgerelations
+          }
+        }
+        return edge
+      }),
+      filter(isNonNull)
+    )
     if (excludedImplicits.size === 0) {
       return
     }
+    this.ctxEdges = ctxEdges
     const remaining = this.includedElements
     if (remaining.size === 0) {
       this.implicits.clear()
