@@ -1,4 +1,3 @@
-import { extractStep } from '@likec4/core'
 import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
 import { isNonNullish, isTruthy } from 'remeda'
@@ -98,11 +97,10 @@ export function useXYFlowEvents() {
       },
       onNodeContextMenu: (event, xynode) => {
         diagramApi.getState().setLastClickedNode(xynode.id)
-        diagramApi.getState().onNodeContextMenu?.({
-          element: xynode.data.element,
-          xynode,
+        diagramApi.getState().onNodeContextMenu?.(
+          xynode.data.element,
           event
-        })
+        )
       },
       onPaneContextMenu: (event) => {
         diagramApi.getState().resetLastClicked()
@@ -110,11 +108,10 @@ export function useXYFlowEvents() {
       },
       onEdgeContextMenu: (event, xyedge) => {
         diagramApi.getState().setLastClickedEdge(xyedge.id)
-        diagramApi.getState().onEdgeContextMenu?.({
-          edge: xyedge.data.edge,
-          xyedge,
+        diagramApi.getState().onEdgeContextMenu?.(
+          xyedge.data.edge,
           event
-        })
+        )
       },
       onNodeClick: (event, xynode) => {
         const {
@@ -165,11 +162,10 @@ export function useXYFlowEvents() {
           }
         }
         lastClickTimestamp.current = Date.now()
-        onNodeClick?.({
-          element: xynode.data.element,
-          xynode,
+        onNodeClick?.(
+          xynode.data.element,
           event
-        })
+        )
       },
       onNodeDoubleClick: (event, xynode) => {
         const {
@@ -234,11 +230,10 @@ export function useXYFlowEvents() {
             event.stopPropagation()
           }
         }
-        onEdgeClick?.({
-          edge: xyedge.data.edge,
-          xyedge,
+        onEdgeClick?.(
+          xyedge.data.edge,
           event
-        })
+        )
       },
       onEdgeDoubleClick: (event, xyedge) => {
         diagramApi.getState().setLastClickedEdge(xyedge.id)

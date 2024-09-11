@@ -17,7 +17,7 @@ type XYFlowInnerProps = PropsWithChildren<{
   showDiagramTitle: boolean
 }>
 
-export const XYFlowInner = memo(function XYFlowInnerR({
+export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
   children,
   background,
   controls,

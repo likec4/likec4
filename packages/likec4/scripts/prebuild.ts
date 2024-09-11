@@ -1,11 +1,10 @@
 import { consola } from 'consola'
-import { $, execa } from 'execa'
-import { mkdir, rm } from 'node:fs/promises'
+import { existsSync, readdirSync, rmSync } from 'node:fs'
+import { mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { stderr } from 'node:process'
+import { emptyDir } from './_utils'
 
-const dist = resolve('./dist')
+emptyDir(resolve('react'))
+emptyDir(resolve('dist'))
 
-consola.info('Cleaning dist: %s', dist)
-await rm(dist, { recursive: true, force: true })
 await mkdir('dist/__app__/src', { recursive: true })

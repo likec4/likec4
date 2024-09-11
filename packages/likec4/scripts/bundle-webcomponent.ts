@@ -25,15 +25,15 @@ export async function buildWebcomponentBundle(_isDev = false) {
     configFile: false,
     resolve: {
       alias: {
-        '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts'),
+        '@likec4/core': resolve('../core/src'),
+        '@likec4/diagram': resolve('../diagram/src'),
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
       }
     },
     clearScreen: false,
     mode: 'production',
     define: {
-      __USE_SHADOW_STYLE__: 'true',
+      __USE_STYLE_BUNDLE__: 'true',
       __USE_HASH_HISTORY__: 'false',
       'process.env.NODE_ENV': '"production"'
     },

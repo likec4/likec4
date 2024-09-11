@@ -1,51 +1,54 @@
+import type { WhereOperator } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { ActionIcon } from '@mantine/core'
 import { useMountEffect } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
-import { useId, useRef, useState } from 'react'
+import { type HTMLAttributes, useId, useRef, useState } from 'react'
 import { closeButton, cssDiagram } from './LikeC4Browser.css'
 import { ShadowRoot } from './ShadowRoot'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import * as css from './styles.css'
 import type { ElementIconRenderer, ViewData } from './types'
-import type { WhereOperator } from './types-filter'
 
-export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind extends string> = {
-  view: ViewData<ViewId>
+export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind extends string> =
+  & Pick<HTMLAttributes<HTMLDialogElement>, 'style' | 'className'>
+  & {
+    view: ViewData<ViewId>
 
-  /**
-   * By default determined by the user's system preferences.
-   */
-  colorScheme?: 'light' | 'dark'
+    /**
+     * By default determined by the user's system preferences.
+     */
+    colorScheme?: 'light' | 'dark'
 
-  /**
-   * LikeC4 views are using 'IBM Plex Sans' font.
-   * By default, component injects the CSS to document head.
-   * Set to false if you want to handle the font yourself.
-   *
-   * @default true
-   */
-  injectFontCss?: boolean | undefined
+    /**
+     * LikeC4 views are using 'IBM Plex Sans' font.
+     * By default, component injects the CSS to document head.
+     * Set to false if you want to handle the font yourself.
+     *
+     * @default true
+     */
+    injectFontCss?: boolean | undefined
 
-  /**
-   * Background pattern
-   * @default 'dots'
-   */
-  background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
+    /**
+     * Background pattern
+     * @default 'dots'
+     */
+    background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
 
-  onNavigateTo: (to: ViewId) => void
-  onClose: () => void
+    onNavigateTo: (to: ViewId) => void
+    onClose: () => void
 
-  /**
-   * Render custom icon for a node
-   * By default, if icon is http:// or https://, it will be rendered as an image
-   */
-  renderIcon?: ElementIconRenderer | undefined
+    /**
+     * Render custom icon for a node
+     * By default, if icon is http:// or https://, it will be rendered as an image
+     */
+    renderIcon?: ElementIconRenderer | undefined
 
-  where?: WhereOperator<Tag, Kind> | undefined
-}
+    where?: WhereOperator<Tag, Kind> | undefined
+  }
 
 export function LikeC4Browser<ViewId extends string, Tag extends string, Kind extends string>({
+  className,
   colorScheme,
   view,
   injectFontCss,
@@ -53,6 +56,7 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
   onClose,
   renderIcon,
   where,
+  style,
   background = 'dots'
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const [opened, setOpened] = useState(false)
@@ -160,8 +164,10 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
         style={{
           margin: 0,
           padding: 0,
-          border: '0 solid transparent'
+          border: '0 solid transparent',
+          ...style
         }}
+        className={className}
         onClose={closeMe}>
         <ShadowRoot injectFontCss={injectFontCss}>
           <ShadowRootMantineProvider

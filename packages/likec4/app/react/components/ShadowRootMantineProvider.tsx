@@ -1,35 +1,16 @@
-import { createTheme, MantineProvider, type MantineTheme } from '@mantine/core'
+import { MantineProvider, type MantineThemeOverride } from '@mantine/core'
 import clsx from 'clsx'
 import { type PropsWithChildren, useRef } from 'react'
-import { ShadowRootCssSelector } from './styles'
+import { DefaultTheme, ShadowRootCssSelector } from './style'
 import { shadowRoot } from './styles.css'
 
-const theme = createTheme({
-  autoContrast: true,
-  primaryColor: 'indigo',
-  cursorType: 'pointer',
-  defaultRadius: 'sm',
-  fontFamily: 'var(--likec4-default-font-family)',
-  headings: {
-    fontWeight: '500',
-    sizes: {
-      h1: {
-        // fontSize: '2rem',
-        fontWeight: '600'
-      },
-      h2: {
-        fontWeight: '500'
-        // fontSize: '1.85rem',
-      }
-    }
-  }
-}) as MantineTheme
-
 type ShadowRootMantineProps = PropsWithChildren<{
+  theme?: MantineThemeOverride | undefined
   className?: string | undefined
   colorScheme?: 'light' | 'dark' | undefined
 }>
 export function ShadowRootMantineProvider({
+  theme = DefaultTheme,
   children,
   className,
   colorScheme

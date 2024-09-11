@@ -32,7 +32,9 @@ model {
       description 'Retoool Application'
       icon tech:astro
       -> cloud.next.graphql "updates data in case of a support request"
-      -> amazon.aurora.tblUsers "reads users from the database"
+      -> amazon.aurora.tblUsers "reads users from the database" {
+        navigateTo cloud-to-amazon
+      }
     }
 
   }

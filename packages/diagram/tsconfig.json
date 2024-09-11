@@ -2,12 +2,12 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "dist",
     "types": [
       "vite/client",
     ]
   },
   "include": [
-    "./src"
+    "src"
   ]
 }

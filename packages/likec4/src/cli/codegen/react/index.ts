@@ -99,11 +99,15 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   const tags = [...all.tags].toSorted().map(v => `  | ${JSON.stringify(v)}`)
   if (tags.length === 0) {
     tags.push('  | never')
+  } else {
+    tags.push('  | (string & Record<never, never>) // as LiteralUnion from type-fest')
   }
 
   const kinds = [...all.kinds].toSorted().map(v => `  | ${JSON.stringify(v)}`)
   if (kinds.length === 0) {
     kinds.push('  | never')
+  } else {
+    tags.push('  | (string & Record<never, never>) // as LiteralUnion from type-fest')
   }
 
   await writeFile(
@@ -117,8 +121,8 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import type { JSX } from 'react'
-import type { LikeC4ViewBaseProps, ViewData } from 'likec4/react'
+import type { JSX } from 'react/jsx-runtime'
+import type { LikeC4ViewProps as BaseLikeC4ViewProps, ViewData } from 'likec4/react'
 
 type LikeC4ViewId =
 ${ids.join('\n')}
@@ -148,7 +152,7 @@ type IconRendererProps = {
 }
 declare function RenderIcon(props: IconRendererProps): JSX.Element;
 
-type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>;
+type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>;
 declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element;
 
 export {

@@ -100,13 +100,14 @@ views {
   }
 
   dynamic view cloud-to-amazon {
-    title 'Dynamic View Example 2'
+    title 'Cloud to amazon'
+
+    next.backend -> next.events
 
     parallel {
-      ui.supportPanel -> amazon.aurora {
-        navigateTo dynamic-view-1
-      }
-      next.backend -> amazon.sqs
+      next.backend -> amazon.aurora
+      ui.supportPanel -> amazon.aurora
+      next.events -> amazon.sqs
     }
 
     include next, ui, amazon

@@ -12,6 +12,9 @@ const root = dirname(__filename)
 const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
+  '@likec4/core/types': resolve('../../packages/core/src/types'),
+  '@likec4/core': resolve('../../packages/core/src'),
+  '@likec4/diagram': resolve('../../packages/diagram/src'),
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {

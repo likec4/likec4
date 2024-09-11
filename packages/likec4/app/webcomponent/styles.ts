@@ -4,7 +4,7 @@ import fontCss from '../react/components/font.css?inline'
 
 export const bundledStyles = () => {
   let BundledStyles
-  if (__USE_SHADOW_STYLE__) {
+  if (__USE_STYLE_BUNDLE__) {
     BundledStyles = SHADOW_STYLE
   } else {
     BundledStyles = [

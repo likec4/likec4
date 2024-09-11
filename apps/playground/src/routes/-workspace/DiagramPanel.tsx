@@ -95,7 +95,10 @@ export function DiagramPanel() {
             showNotations
             enableFocusMode
             renderIcon={RendererIcon}
-            onNavigateTo={id => store.getState().fetchDiagram(id)}
+            onNavigateTo={(id, event) => {
+              event?.stopPropagation()
+              store.getState().fetchDiagram(id)
+            }}
             onChange={ev => store.getState().onChanges(ev)}
             onOpenSourceElement={fqn => {
               showLocation({ element: fqn })

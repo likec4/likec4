@@ -36,19 +36,19 @@ export const likec4Container = style({
   }
 })
 
-export const likec4error = style({
-  position: 'absolute',
-  left: '2rem',
-  bottom: '2rem',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexDirection: 'column',
-  padding: '0 2rem',
-  backgroundColor: 'var(--vscode-inputValidation-errorBackground)',
-  border: '1px solid var(--vscode-inputValidation-errorBorder)',
-  color: 'var(--vscode-errorForeground)'
-})
+// export const likec4error = style({
+//   position: 'absolute',
+//   left: '2rem',
+//   bottom: '2rem',
+//   display: 'flex',
+//   alignItems: 'center',
+//   justifyContent: 'center',
+//   flexDirection: 'column',
+//   padding: '0 2rem',
+//   backgroundColor: 'var(--vscode-inputValidation-errorBackground)',
+//   border: '1px solid var(--vscode-inputValidation-errorBorder)',
+//   color: 'var(--vscode-errorForeground)'
+// })
 
 export const likec4ParsingScreen = style({
   padding: '1rem'
@@ -67,4 +67,15 @@ globalStyle(`${likec4Container} .likec4-top-left-panel .action-icon`, {
   vars: {
     ['--ai-size']: 'var(--ai-size-md)'
   }
+})
+
+export const stateAlert = style({
+  position: 'absolute',
+  top: '0.75rem',
+  left: '0.5rem',
+  userSelect: 'none'
+})
+
+globalStyle(`${stateAlert} .mantine-Notification-description`, {
+  whiteSpace: 'pre-line'
 })

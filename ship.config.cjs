@@ -8,7 +8,6 @@ module.exports = {
     ],
     packagesToPublish: [
       'packages/core',
-      'packages/diagram',
       'packages/log',
       'packages/icons',
       'packages/language-server',

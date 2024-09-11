@@ -63,7 +63,19 @@ model {
     backend -> cloud.legacy.backend.services 'calls legacy'
 
     events = component 'Events Manager' {
-      -> amazon.queue1 'writes'
+      -> amazon.queue1 {
+        title 'publishes events'
+        technology 'JSON'
+        navigateTo cloud-to-amazon
+      }
+      -> amazon.queue2 {
+        title 'publishes events'
+        technology 'proto'
+        navigateTo cloud-to-amazon
+      }
+    }
+    events -> amazon.sqs 'publishes events' {
+      navigateTo cloud-to-amazon
     }
 
     backend -> events "emits"
@@ -83,7 +95,7 @@ views {
         line solid
       }
     exclude
-      cloud.ui.supportPanel -> amazon,
+      cloud.ui -> amazon
 
     style * {
       color slate

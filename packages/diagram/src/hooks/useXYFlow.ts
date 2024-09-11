@@ -12,8 +12,7 @@ export function useXYStore<StateSlice = unknown>(
   equalityFn?: (a: StateSlice, b: StateSlice) => boolean
 ): StateSlice {
   return useStore(
-    // @ts-expect-error - types are not correct
-    selector,
+    selector as any,
     equalityFn ?? shallowEqual
   )
 }

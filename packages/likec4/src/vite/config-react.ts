@@ -45,8 +45,8 @@ export async function viteReactConfig({
     resolve: {
       alias: {
         'likec4/icons': resolve(pkgRoot, '../icons'),
-        '@likec4/core': resolve(pkgRoot, '../core/src/index.ts'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src/index.ts')
+        '@likec4/core': resolve(pkgRoot, '../core/src'),
+        '@likec4/diagram': resolve(pkgRoot, '../diagram/src')
       }
     },
     esbuild: {
