@@ -43,7 +43,10 @@ export interface TagSpec {
 
 export interface Link {
   readonly title?: string
+  // Value from Likec4 DSL
   readonly url: string
+  // Relative to workspace root (if url is relative),
+  readonly relative?: string
 }
 
 export interface Element {

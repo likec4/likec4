@@ -8,7 +8,10 @@
     "dist",
     "${configDir}/dist",
     "build",
-    "${configDir}/build",
+    "${configDir}/build"
+  ],
+  "include": [
+    "${configDir}/src"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",
@@ -16,11 +19,10 @@
       "dom",
       "dom.iterable",
       "esnext",
-      "es2023",
       "webworker"
     ],
-    "module": "ESNext",
-    "target": "es2022",
+    "module": "ES2022",
+    "target": "ES2022",
     "moduleResolution": "Bundler"
   }
 }

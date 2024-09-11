@@ -170,7 +170,7 @@ describe('compareRelations', () => {
     }
   }
   function sorted(...relations: Array<{ source: string; target: string }>) {
-    return relations.sort(compareRelations).map(r => r.source + ' -> ' + r.target)
+    return relations.toSorted(compareRelations).map(r => r.source + ' -> ' + r.target)
   }
 
   it('should sort by source and target', () => {

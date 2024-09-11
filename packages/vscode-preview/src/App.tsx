@@ -137,10 +137,11 @@ const App = () => {
           showElementLinks
           showNotations
           renderIcon={IconRenderer}
-          onNavigateTo={(to) => {
+          onNavigateTo={(to, event) => {
             resetLastClickedNd()
             extensionApi.goToViewSource(to)
             extensionApi.openView(to)
+            event?.stopPropagation()
           }}
           onNodeContextMenu={(element) => {
             lastNodeContextMenuRef.current = element

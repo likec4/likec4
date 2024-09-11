@@ -1,24 +1,24 @@
+import type * as c4 from '@likec4/core'
 import {
-  compareByFqnHierarchically,
   compareRelations,
   computeColorValues,
   type CustomColorDefinitions,
   isElementView,
   isScopedElementView,
   parentFqn,
-  type ScopedElementView,
+  sortNaturalByFqn,
   type ViewID
 } from '@likec4/core'
-import type * as c4 from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
 import {
   filter,
-  find,
   flatMap,
   forEach,
+  groupBy,
   indexBy,
+  isEmpty,
   isNonNullish,
   isNullish,
   isNumber,
@@ -38,7 +38,8 @@ import type {
   ParsedAstRelation,
   ParsedAstSpecification,
   ParsedAstView,
-  ParsedLikeC4LangiumDocument
+  ParsedLikeC4LangiumDocument,
+  ParsedLink
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logger, logWarnError } from '../logger'
@@ -60,16 +61,24 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     Object.assign(c4Specification.relationships, spec.relationships)
     Object.assign(c4Specification.colors, spec.colors)
   })
-  const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<c4.Link>) => {
-    try {
-      return links.map(l => ({
-        ...l,
-        url: services.lsp.DocumentLinkProvider.resolveLink(doc, l.url)
-      })) as c4.NonEmptyArray<c4.Link>
-    } catch (e) {
-      logWarnError(e)
-      return null
-    }
+  function resolveLinks(doc: LangiumDocument, links: c4.NonEmptyArray<ParsedLink>) {
+    return map(
+      links,
+      (link): c4.Link => {
+        try {
+          const relative = services.lsp.DocumentLinkProvider.relativeLink(doc, link.url)
+          if (relative && relative !== link.url) {
+            return {
+              ...link,
+              relative
+            }
+          }
+        } catch (e) {
+          logWarnError(e)
+        }
+        return link
+      }
+    )
   }
 
   const customColorDefinitions: CustomColorDefinitions = mapValues(
@@ -77,7 +86,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     c => computeColorValues(c.color)
   )
 
-  const toModelElement = (doc: LangiumDocument) => {
+  function toModelElement(doc: LangiumDocument) {
     return ({
       tags,
       links: unresolvedLinks,
@@ -112,7 +121,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...(color && { color }),
           ...(shape && { shape }),
           ...(icon && { icon }),
-          ...(metadata && { metadata }),
+          ...(metadata && !isEmpty(metadata) && { metadata }),
           ...(__kind.notation && { notation: __kind.notation }),
           style: {
             ...(border && { border }),
@@ -138,7 +147,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     flatMap(d => map(d.c4Elements, toModelElement(d))),
     filter(isTruthy),
     // sort from root elements to nested, so that parent is always present
-    sort(compareByFqnHierarchically),
+    sortNaturalByFqn,
     reduce(
       (acc, el) => {
         const parent = parentFqn(el.id)
@@ -153,7 +162,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     )
   )
 
-  const toModelRelation = (doc: LangiumDocument) => {
+  function toModelRelation(doc: LangiumDocument) {
     return ({
       astPath,
       source,
@@ -180,7 +189,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           target,
           kind,
           id
-        }
+        } satisfies c4.Relation
       }
       return {
         ...(links && { links }),
@@ -188,7 +197,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         source,
         target,
         id
-      }
+      } satisfies c4.Relation
     }
   }
 
@@ -201,7 +210,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     indexBy(prop('id'))
   )
 
-  const toC4View = (doc: LangiumDocument) => {
+  function toC4View(doc: LangiumDocument) {
     const docUri = doc.uri.toString()
     return (parsedAstView: ParsedAstView): c4.LikeC4View => {
       let {
@@ -210,10 +219,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         description,
         tags,
         links: unresolvedLinks,
-
         // ignore this property
         astPath: _ignore,
-
         // model should include discriminant __
         ...model
       } = parsedAstView
@@ -440,19 +447,22 @@ export class LikeC4ModelBuilder {
         }
         let computedView = result.view
 
-        const allElementViews = values(model.views).filter(
-          (v): v is ScopedElementView => isScopedElementView(v) && v.id !== viewId
+        const allElementViews = pipe(
+          model.views,
+          values(),
+          filter(isScopedElementView),
+          filter(v => v.id !== viewId),
+          groupBy(v => v.viewOf)
         )
 
-        computedView.nodes.forEach(node => {
+        for (const node of computedView.nodes) {
           if (!node.navigateTo) {
-            // find first element view that is not the current one
-            const navigateTo = find(allElementViews, v => v.viewOf === node.id)
-            if (navigateTo) {
-              node.navigateTo = navigateTo.id
+            const viewsOfNode = allElementViews[node.id]
+            if (viewsOfNode) {
+              node.navigateTo = viewsOfNode[0].id
             }
           }
-        })
+        }
 
         const previous = this.previousViews[viewId]
         computedView = previous && eq(computedView, previous) ? previous : computedView

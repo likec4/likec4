@@ -48,7 +48,8 @@ export async function buildHandler({
   const logger = createLikeC4Logger('c4:build')
 
   const languageServices = await LikeC4.fromWorkspace(path, {
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
+    logger: 'vite'
   })
 
   const outDir = outputDir ?? resolve(languageServices.workspace, 'dist')

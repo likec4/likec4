@@ -176,11 +176,7 @@ export function createLanguageServices(context: LanguageServicesContext = {}): {
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
 
-  if (!context.connection) {
-    // We don't run inside a language server
-    // Therefore, initialize the configuration provider instantly
-    shared.workspace.ConfigurationProvider.initialized({})
-  } else {
+  if (context.connection) {
     likec4.Rpc.init()
   }
 
