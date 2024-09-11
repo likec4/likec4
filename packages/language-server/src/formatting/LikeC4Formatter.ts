@@ -1,8 +1,7 @@
-import { type AstNode, type CompositeCstNode, type CstNode, CstUtils } from 'langium'
-import { GrammarUtils } from 'langium'
-import { AbstractFormatter, Formatting, type FormattingAction, type FormattingContext } from 'langium/lsp'
-import type { Position, Range, TextEdit } from 'vscode-languageserver-types'
+import { type AstNode, GrammarUtils } from 'langium'
+import { AbstractFormatter, Formatting, type NodeFormatter } from 'langium/lsp'
 import * as ast from '../generated/ast'
+import * as utils from './utils'
 
 const FormattingOptions = {
   newLine: Formatting.newLine({ allowMore: true }),
@@ -11,29 +10,27 @@ const FormattingOptions = {
   indent: Formatting.indent(),
   noIndent: Formatting.noIndent()
 }
+type Predicate<T extends AstNode> = (x: unknown) => x is T
 
 export class LikeC4Formatter extends AbstractFormatter {
   protected format(node: AstNode): void {
     this.removeIndentFromTopLevelStatements(node)
     this.indentContentInBraces(node)
-    this.prependPropsWithSpace(node)
-    this.surroundKeywordsWithSpace(node)
 
     this.formatSpecificationRule(node)
     this.formatElementDeclaration(node)
     this.formatRelation(node)
-    this.formatWhereExpression(node)
+    this.formatView(node)
+    this.formatViewRuleStyle(node)
     this.formatIncludeExcludeExpressions(node)
-  }
-
-  protected override createTextEdit(
-    a: CstNode | undefined,
-    b: CstNode,
-    formatting: FormattingAction,
-    context: FormattingContext
-  ): TextEdit[] {
-    const x = super.createTextEdit(a, b, formatting, context)
-    return x
+    this.formatWhereExpression(node)
+    this.formatWithPredicate(node)
+    this.formatLeafProperty(node)
+    this.formatMetadataProperty(node)
+    this.formatAutolayoutProperty(node)
+    this.formatLinkProperty(node)
+    this.formatNavigateToProperty(node)
+    this.formatTags(node)
   }
 
   protected surroundOperatorsWithSpace(node: AstNode) {
@@ -49,42 +46,47 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
   }
 
-  protected prependTagsWithNewLine(node: AstNode) {
-    if (
-      ast.isElementBody(node)
-      || ast.isRelationBody(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-      const operator = formatter.property('tags')
-      operator.prepend(FormattingOptions.newLine)
-    }
+  protected formatTags(node: AstNode) {
+    this.on(node, ast.isTags, (n, f) => {
+      f.cst(GrammarUtils.findNodesForProperty(n.$cstNode, 'values').slice(1))
+        .prepend(FormattingOptions.oneSpace)
+
+      f.keywords(',')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
+    })
   }
 
   protected formatRelation(node: AstNode) {
-    if (
-      ast.isRelation(node)
-      || ast.isInOutRelationExpression(node)
-      || ast.isOutgoingRelationExpression(node)
-      || ast.isDynamicViewStep(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
+    this.on(node, ast.isRelation, (n, f) => {
+      f.property('source').append(FormattingOptions.oneSpace)
+      f.keywords(']->').prepend(FormattingOptions.noSpace)
+      f.keywords('-[').append(FormattingOptions.noSpace)
 
-      const implicit = formatter.properties('source', 'from').nodes.length == 0
-      formatter.keywords('->', '<->', '-[')
-        .prepend(implicit ? FormattingOptions.newLine : FormattingOptions.oneSpace)
-      formatter.keywords('->', '<->', ']->').append(FormattingOptions.oneSpace)
+      f.properties('target', 'title', 'technology', 'tags').prepend(FormattingOptions.oneSpace)
+    })
 
-      const kind = formatter.property('kind')
-      const dotKinded = kind.nodes.length > 0
-        && formatter.keyword('-[').nodes.length == 0
-      if (dotKinded) {
-        kind.append(FormattingOptions.oneSpace)
-        kind.prepend(implicit ? FormattingOptions.newLine : FormattingOptions.oneSpace)
-      }
-      else {
-        kind.surround(FormattingOptions.noSpace)
-      }
-    }
+    this.on(node, ast.isDynamicViewStep, (n, f) => {
+      f.properties('source').append(FormattingOptions.oneSpace)
+      f.keywords(']->').prepend(FormattingOptions.noSpace)
+      f.keywords('-[').append(FormattingOptions.noSpace)
+      f.properties('target', 'title').prepend(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isDirectedRelationExpression)
+      ?.property('target').prepend(FormattingOptions.oneSpace)
+
+    this.on(node, ast.isOutgoingRelationExpression, (n, f) => {
+      f.property('from').append(FormattingOptions.oneSpace)
+      f.keywords(']->').prepend(FormattingOptions.noSpace)
+      f.keywords('-[').append(FormattingOptions.noSpace)
+    })
+
+    this.on(node, ast.isIncomingRelationExpression)
+      ?.keywords('->').append(FormattingOptions.oneSpace)
+
+    this.on(node, ast.isInOutRelationExpression)
+      ?.property('inout').append(FormattingOptions.oneSpace)
   }
 
   protected removeIndentFromTopLevelStatements(node: AstNode) {
@@ -102,26 +104,23 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected indentContentInBraces(node: AstNode) {
     if (
-      ast.isModel(node)
+      ast.isLikeC4Lib(node)
       || ast.isSpecificationRule(node)
       || ast.isSpecificationElementKind(node)
       || ast.isSpecificationRelationshipKind(node)
-      || ast.isLikeC4Lib(node)
+      || ast.isModel(node)
       || ast.isElementBody(node)
-      || ast.isMetadataBody(node)
-      || ast.isModelViews(node)
+      || ast.isExtendElementBody(node)
       || ast.isRelationBody(node)
       || ast.isRelationStyleProperty(node)
-      || ast.isDynamicViewBody(node)
+      || ast.isMetadataBody(node)
+      || ast.isModelViews(node)
       || ast.isElementViewBody(node)
-      || ast.isExtendElementBody(node)
-      || ast.isBorderStyleValue(node)
-      || ast.isBorderProperty(node)
+      || ast.isDynamicViewBody(node)
       || ast.isViewRuleStyle(node)
       || ast.isCustomElementProperties(node)
       || ast.isCustomRelationProperties(node)
-      || ast.isStyleProperty(node)
-      || ast.isNotationProperty(node)
+      || ast.isElementStyleProperty(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const openBrace = formatter.keywords('{')
@@ -133,7 +132,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       // E.g. '#tag1, #tag2' will be parsed as two nodes: '#tag1' and '#tag1, #tag2'
       let perviousNode = null
       for (const interiorNode of interiorNodes.nodes) {
-        if (!perviousNode || !this.areOverlap(perviousNode, interiorNode)) {
+        if (!perviousNode || !utils.areOverlap(perviousNode, interiorNode)) {
           formatter.cst([interiorNode]).prepend(FormattingOptions.indent)
         }
         perviousNode = interiorNode
@@ -148,76 +147,121 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
   }
 
-  protected prependPropsWithSpace(node: AstNode) {
-    if (
-      ast.isElement(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-      formatter.properties('props').prepend(FormattingOptions.oneSpace)
-    }
-    if (
-      ast.isRelation(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-      formatter.properties('title', 'tags').prepend(FormattingOptions.oneSpace)
-    }
-  }
-
   protected appendKeywordsWithSpace(node: AstNode) {
+    this.on(node, ast.isElementKind)
+      ?.keywords('element').append(FormattingOptions.oneSpace)
+  }
+
+  protected formatView(node: AstNode) {
+    this.on(node, ast.isElementView, (n, f) => {
+      if (n.extends || n.viewOf || n.name) {
+        f.keywords('view').append(FormattingOptions.oneSpace)
+      }
+      f.keywords('of', 'extends').surround(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isDynamicView)
+      ?.keywords('dynamic', 'view').append(FormattingOptions.oneSpace)
+  }
+
+  protected formatLeafProperty(node: AstNode) {
     if (
-      ast.isSpecificationElementKind(node)
+      ast.isElementStringProperty(node)
+      || ast.isRelationStringProperty(node)
+      || ast.isViewStringProperty(node)
+      || ast.isNotationProperty(node)
+      || ast.isSpecificationElementStringProperty(node)
+      || ast.isSpecificationRelationshipStringProperty(node)
+      || ast.isColorProperty(node)
+      || ast.isLineProperty(node)
+      || ast.isArrowProperty(node)
+      || ast.isIconProperty(node)
+      || ast.isShapeProperty(node)
+      || ast.isBorderProperty(node)
+      || ast.isOpacityProperty(node)
     ) {
       const formatter = this.getNodeFormatter(node)
-      formatter.keywords('element').append(FormattingOptions.oneSpace)
+      formatter.keywords(
+        'title',
+        'description',
+        'technology',
+        'notation',
+        'color',
+        'line',
+        'head',
+        'tail',
+        'icon',
+        'shape',
+        'border',
+        'opacity'
+      )
+        .append(FormattingOptions.oneSpace)
+
+      formatter.keyword(':')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
+
+      formatter.keyword(';')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.newLine)
     }
   }
 
-  protected surroundKeywordsWithSpace(node: AstNode) {
-    const defaultFormatter = this.getNodeFormatter(node)
-    defaultFormatter.keywords(
-      'extends',
-      'of',
-      'with',
-      'where'
-    ).surround(FormattingOptions.oneSpace)
+  protected formatLinkProperty(node: AstNode) {
+    this.on(node, ast.isLinkProperty, (n, f) => {
+      f.keyword('link').append(FormattingOptions.oneSpace)
+      f.property('value').append(FormattingOptions.oneSpace)
+      f.keyword(':')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
 
-    defaultFormatter.keywords(
-      // 'icons',
-      // 'kind',
-      'title',
-      'technology',
-      'description',
-      'color',
-      // 'extend',
-      // 'this',
-      // 'it',
-      'style',
-      'link',
-      // 'metadata',
-      // 'extends',
-      // 'dynamic',
-      'view',
-      'autoLayout',
-      'TopBottom',
-      'LeftRight',
-      'BottomTop',
-      'RightLeft'
-      // 'element.tag',
-      // 'element.kind'
-    ).append(FormattingOptions.oneSpace)
+      f.keyword(';')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.newLine)
+    })
+  }
+
+  protected formatNavigateToProperty(node: AstNode) {
+    this.on(node, ast.isNavigateToProperty)
+      ?.property('key').append(FormattingOptions.oneSpace)
+  }
+
+  protected formatAutolayoutProperty(node: AstNode) {
+    this.on(node, ast.isViewRuleAutoLayout)
+      ?.keyword('autoLayout').append(FormattingOptions.oneSpace)
+  }
+
+  protected formatMetadataProperty(node: AstNode) {
+    this.on(node, ast.isMetadataAttribute, (n, f) => {
+      f.property('key').append(FormattingOptions.oneSpace)
+      f.keyword(':')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
+      f.keyword(';')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.newLine)
+    })
   }
 
   protected formatElementDeclaration(node: AstNode) {
-    if (ast.isElement(node)) {
-      const formatter = this.getNodeFormatter(node)
+    this.on(node, ast.isElement, (n, f) => {
+      const kind = GrammarUtils.findNodeForProperty(n.$cstNode, 'kind')
+      const name = GrammarUtils.findNodeForProperty(n.$cstNode, 'name')
 
-      const kind = GrammarUtils.findNodeForProperty(node.$cstNode, 'kind')
-      const name = GrammarUtils.findNodeForProperty(node.$cstNode, 'name')
-
-      if (name && kind && this.compareRanges(name, kind) > 0) {
-        formatter.cst([name]).prepend(FormattingOptions.oneSpace)
+      if (name && kind) {
+        // system sys1
+        if (utils.compareRanges(name, kind) > 0) {
+          f.cst([kind]).append(FormattingOptions.oneSpace)
+        }
+        // sys1 = system
+        else {
+          f.cst([name]).append(FormattingOptions.oneSpace)
+          f.cst([kind]).prepend(FormattingOptions.oneSpace)
+        }
       }
-    }
+
+      f.properties('props').prepend(FormattingOptions.oneSpace)
+    })
   }
 
   protected formatSpecificationRule(node: AstNode) {
@@ -228,9 +272,36 @@ export class LikeC4Formatter extends AbstractFormatter {
     ) {
       const formatter = this.getNodeFormatter(node)
 
-      formatter.keywords('element', 'relationship', 'tag', 'color')
+      formatter.keywords('element', 'relationship', 'tag')
         .append(FormattingOptions.oneSpace)
     }
+    if (
+      ast.isSpecificationColor(node)
+    ) {
+      const formatter = this.getNodeFormatter(node)
+      formatter.keyword('color').append(FormattingOptions.oneSpace)
+      formatter.property('name').append(FormattingOptions.oneSpace)
+    }
+  }
+
+  protected formatWithPredicate(node: AstNode) {
+    const formatter = this.getNodeFormatter(node)
+    if (
+      ast.isElementPredicateWith(node)
+      || ast.isRelationPredicateWith(node)
+    ) {
+      formatter.keyword('with').prepend(FormattingOptions.oneSpace)
+    }
+  }
+
+  protected formatViewRuleStyle(node: AstNode) {
+    this.on(node, ast.isViewRuleStyle)
+      ?.keyword('style').append(FormattingOptions.oneSpace)
+
+      this.on(node, ast.isElementExpressionsIterator)
+      ?.keyword(',')
+      .prepend(FormattingOptions.noSpace)
+      .append(FormattingOptions.oneSpace)
   }
 
   protected formatWhereExpression(node: AstNode) {
@@ -277,7 +348,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     ) {
       const formatter = this.getNodeFormatter(node)
 
-      if (!node.$cstNode || !this.isMultiline(node.$cstNode)) {
+      if (!node.$cstNode || !utils.isMultiline(node.$cstNode)) {
         formatter.keywords('include', 'exclude')
           .append(FormattingOptions.oneSpace)
       }
@@ -289,11 +360,11 @@ export class LikeC4Formatter extends AbstractFormatter {
     ) {
       const formatter = this.getNodeFormatter(node)
       const parent = this.findPredicateExpressionRoot(node)
-      const isMultiline = parent?.$cstNode && this.isMultiline(parent?.$cstNode)
-      
+      const isMultiline = parent?.$cstNode && utils.isMultiline(parent?.$cstNode)
+
       if (isMultiline) {
         formatter.property('value').prepend(FormattingOptions.indent)
-      } 
+      }
       formatter.keyword(',')
         .prepend(FormattingOptions.noSpace)
         .append(isMultiline ? FormattingOptions.newLine : FormattingOptions.oneSpace)
@@ -316,33 +387,15 @@ export class LikeC4Formatter extends AbstractFormatter {
     }
   }
 
-  private areOverlap(a: CstNode, b: CstNode): boolean {
-    ;[a, b] = this.compareRanges(a, b) > 0 ? [b, a] : [a, b]
+  private on<T extends AstNode>(
+    node: AstNode,
+    predicate: Predicate<T>,
+    format?: (node: T, f: NodeFormatter<T>) => void
+  ): NodeFormatter<T> | undefined {
+    const formatter = predicate(node) ? this.getNodeFormatter(node) : undefined
 
-    return this.isInRagne(a.range, b.range.start)
-  }
+    format && formatter && format(node as T, formatter)
 
-  private compareRanges(a: CstNode, b: CstNode): number {
-    const lineDiff = a.range.start.line - b.range.start.line
-
-    return lineDiff !== 0 ? lineDiff : a.range.start.character - b.range.start.character
-  }
-
-  private isInRagne(range: Range, pos: Position): boolean {
-    return !(pos.line < range.start.line
-      || pos.line > range.end.line
-      || pos.line == range.start.line && pos.character < range.start.character
-      || pos.line == range.end.line && pos.character > range.end.character)
-  }
-
-  private isMultiline(node: CstNode): boolean {
-    return node.range.start.line != node.range.end.line
-  }
-
-  private wrapCollector() {
-    const originalCollector = this.collector
-    this.collector = (node: CstNode, mode: 'prepend' | 'append', formatting: FormattingAction) => {
-      originalCollector(node, mode, formatting)
-    }
+    return formatter
   }
 }

@@ -188,7 +188,7 @@ MetadataBody: '{'
 ;
 
 MetadataAttribute:
-  key=IdTerminal value=String
+  key=IdTerminal ':'? value=String ';'?
 ;
 
 // Views -------------------------------------
