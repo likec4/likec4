@@ -2064,8 +2064,10 @@ __metadata:
   dependencies:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/colors-generator": "npm:^7.12.2"
+    "@types/natural-compare-lite": "npm:^1"
     chroma-js: "npm:^3.0.0"
     execa: "npm:^9.3.1"
+    natural-compare-lite: "npm:^1.4.0"
     remeda: "npm:^2.11.0"
     turbo: "npm:^2.1.1"
     type-fest: "npm:^4.26.0"
@@ -2087,7 +2089,6 @@ __metadata:
     "@mantine/vanilla-extract": "npm:7.12.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.14.0"
-    "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/bezier-js": "npm:^4.1.3"
     "@types/d3-shape": "npm:^3.1.6"
     "@types/react": "npm:^18.3.4"
@@ -2095,8 +2096,6 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.15.5"
     "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@vanilla-extract/esbuild-plugin": "npm:^2.3.10"
-    "@vitejs/plugin-react": "npm:^4.3.1"
     "@xyflow/react": "npm:12.1.1"
     "@xyflow/system": "npm:0.0.39"
     bezier-js: "npm:^6.1.4"
@@ -2114,8 +2113,8 @@ __metadata:
     typescript: "npm:^5.5.4"
     zustand: "npm:^4.5.5"
   peerDependencies:
-    "@mantine/core": ^7.11.2
-    "@mantine/hooks": ^7.11.2
+    "@mantine/core": ^7.12.0
+    "@mantine/hooks": ^7.12.0
     react: ^18.3.1
     react-dom: ^18.3.1
   languageName: unknown
@@ -3315,13 +3314,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@total-typescript/ts-reset@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "@total-typescript/ts-reset@npm:0.5.1"
-  checksum: 10c0/0339e975034ae648e83f08d0d408d9bda926fdb0cbaddf8efebd3105b378847be8bc9c2f1aa1435e2221f5958019bc2cb562211745a52fe076a109645c8a31f0
-  languageName: node
-  linkType: hard
-
 "@trysound/sax@npm:0.2.0":
   version: 0.2.0
   resolution: "@trysound/sax@npm:0.2.0"
@@ -3566,6 +3558,13 @@ __metadata:
   version: 0.7.34
   resolution: "@types/ms@npm:0.7.34"
   checksum: 10c0/ac80bd90012116ceb2d188fde62d96830ca847823e8ca71255616bc73991aa7d9f057b8bfab79e8ee44ffefb031ddd1bcce63ea82f9e66f7c31ec02d2d823ccc
+  languageName: node
+  linkType: hard
+
+"@types/natural-compare-lite@npm:^1":
+  version: 1.4.2
+  resolution: "@types/natural-compare-lite@npm:1.4.2"
+  checksum: 10c0/ed9b93f505ed2742eb602e37e4c524a15d18d718402e4546ac9d3c762cb7cb1f7ec676c0f2e7c820b1538e5d65d2e297dbfade742e12acd0e1aff86e57f8738e
   languageName: node
   linkType: hard
 
@@ -9962,6 +9961,13 @@ __metadata:
   version: 0.11.3
   resolution: "nanostores@npm:0.11.3"
   checksum: 10c0/a21490e59cd493945de9536d4674edac6355a6041bde15e447cf5b0b683aabcb030b16fe89b6e11d9dff092c9fe6dde2384b58f7dc4281bf399e2ac50c385dc3
+  languageName: node
+  linkType: hard
+
+"natural-compare-lite@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "natural-compare-lite@npm:1.4.0"
+  checksum: 10c0/f6cef26f5044515754802c0fc475d81426f3b90fe88c20fabe08771ce1f736ce46e0397c10acb569a4dd0acb84c7f1ee70676122f95d5bfdd747af3a6c6bbaa8
   languageName: node
   linkType: hard
 

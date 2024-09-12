@@ -5,16 +5,18 @@
     "node_modules",
     "${configDir}/node_modules",
     "dist",
-    "${configDir}/dist",
-    "build",
-    "${configDir}/build",
+    "${configDir}/dist"
+  ],
+  "include": [
+    "${configDir}/src"
   ],
   "compilerOptions": {
     "lib": [
       "es2023"
     ],
     "outDir": "${configDir}/dist",
-    "target": "es2022",
+    "module": "ES2022",
+    "target": "ES2022",
     "moduleResolution": "Bundler",
     "declaration": true,
     "declarationMap": true,

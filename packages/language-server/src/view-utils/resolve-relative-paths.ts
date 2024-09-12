@@ -1,6 +1,6 @@
 import type { LikeC4View } from '@likec4/core'
-import { invariant } from '@likec4/core'
-import { filter, hasAtLeast, isTruthy, map, pipe, unique, zip } from 'remeda'
+import { compareNatural, invariant } from '@likec4/core'
+import { filter, hasAtLeast, isTruthy, map, pipe, unique } from 'remeda'
 import { parsePath } from 'ufo'
 
 function commonAncestorPath(views: LikeC4View[], sep = '/') {
@@ -11,7 +11,7 @@ function commonAncestorPath(views: LikeC4View[], sep = '/') {
     unique()
   )
   if (uniqURIs.length === 0) return ''
-  if (hasAtLeast(uniqURIs, 1) && uniqURIs.length === 1) {
+  if (uniqURIs.length === 1) {
     const parts = parsePath(uniqURIs[0]).pathname.split(sep)
     if (parts.length <= 1) return sep
     parts.pop() // remove filename
@@ -47,7 +47,7 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
       .map(view => {
         if (!view.docUri) {
           return {
-            ...view,
+            view,
             parts: []
           }
         }
@@ -62,28 +62,25 @@ export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
           path = path.includes(sep) ? path.slice(path.lastIndexOf(sep) + 1) : path
         }
         return {
-          ...view,
+          view,
           parts: path.split(sep)
         }
       })
       // Sort views by path segments
       .sort((a, b) => {
-        if (a.parts.length === b.parts.length) {
-          if (a.parts.length === 0) {
-            return 0
-          }
-          for (const [_a, _b] of zip(a.parts, b.parts)) {
-            const compare = _a.localeCompare(_b)
-            if (compare !== 0) {
-              return compare
-            }
-          }
-          return 0
+        if (a.parts.length !== b.parts.length) {
+          return a.parts.length - b.parts.length
         }
-        return a.parts.length - b.parts.length
+        for (let i = 0; i < a.parts.length; i++) {
+          const compare = compareNatural(a.parts[i], b.parts[i])
+          if (compare !== 0) {
+            return compare
+          }
+        }
+        return compareNatural(a.view.title ?? a.view.id, b.view.title ?? b.view.id)
       })
       // Build relativePath from path segments
-      .map(({ parts, ...view }) => {
+      .map(({ parts, view }) => {
         return {
           ...view,
           relativePath: parts.join(sep)

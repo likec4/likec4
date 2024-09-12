@@ -1,6 +1,8 @@
 import { LikeC4Model } from '@likec4/core'
 import { type LangiumDocuments, URI, UriUtils } from 'langium'
-import { resolve } from 'node:path'
+import { existsSync } from 'node:fs'
+import { basename, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
@@ -53,15 +55,9 @@ export class LikeC4 {
       scheme: 'virtual',
       path: '/workspace'
     })
-    const workspaceFolder = {
-      name: 'virtual',
-      uri: workspaceUri.toString()
-    }
-
-    await langium.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
-    // Workaround to set protected folders property
-    Object.assign(langium.shared.workspace.WorkspaceManager, {
-      folders: [workspaceFolder]
+    await langium.cli.Workspace.initWorkspace({
+      uri: workspaceUri.toString(),
+      name: 'virtual'
     })
 
     const uri = UriUtils.joinPath(workspaceUri, 'source.likec4')
@@ -85,6 +81,9 @@ export class LikeC4 {
 
   static async fromWorkspace(path: string, opts?: LikeC4Options) {
     const workspace = resolve(path)
+    if (!existsSync(workspace)) {
+      throw new Error(`Workspace not found: ${workspace}`)
+    }
     let likec4 = LikeC4.likec4Instances.get(workspace)
     if (!likec4) {
       const langium = createLanguageServices({
@@ -92,7 +91,13 @@ export class LikeC4 {
         ...opts
       })
 
-      await langium.cli.Workspace.initForWorkspace(workspace)
+      await langium.cli.Workspace.initWorkspace({
+        uri: pathToFileURL(workspace).toString(),
+        name: basename(workspace)
+      })
+
+      await langium.cli.Workspace.init()
+
       likec4 = new LikeC4(workspace, langium, opts?.printErrors ?? true)
       LikeC4.likec4Instances.set(workspace, likec4)
     }
@@ -183,6 +188,7 @@ export class LikeC4 {
             const messages = validationError.message.split('\n')
             if (messages.length > 10) {
               messages.length = 10
+              messages.push('...')
             }
             return messages
               .map((message, i) => {

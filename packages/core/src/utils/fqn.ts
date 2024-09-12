@@ -1,4 +1,5 @@
 import type { Element, Fqn } from '../types'
+import { compareNatural } from './compare-natural'
 import { isString } from './guards'
 
 type Predicate<T> = (x: T) => boolean
@@ -119,4 +120,29 @@ export function compareFqnHierarchically<T extends string = string>(a: T, b: T):
 
 export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T) {
   return compareFqnHierarchically(a.id, b.id)
+}
+
+type IterableContainer<T = unknown> = ReadonlyArray<T> | readonly []
+type ReorderedArray<T extends IterableContainer> = {
+  -readonly [P in keyof T]: T[number]
+}
+
+export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
+  array: A
+): ReorderedArray<A> {
+  return array
+    .map(item => ({ item, fqn: item.id.split('.') }))
+    .sort((a, b) => {
+      if (a.fqn.length !== b.fqn.length) {
+        return a.fqn.length - b.fqn.length
+      }
+      for (let i = 0; i < a.fqn.length; i++) {
+        const compare = compareNatural(a.fqn[i], b.fqn[i])
+        if (compare !== 0) {
+          return compare
+        }
+      }
+      return 0
+    })
+    .map(({ item }) => item) as ReorderedArray<A>
 }

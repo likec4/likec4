@@ -1,7 +1,6 @@
-import { basename } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import type { CliServices } from './module'
 
+import type { WorkspaceFolder } from 'langium'
 import { values } from 'remeda'
 import k from 'tinyrainbow'
 
@@ -11,20 +10,22 @@ export class CliWorkspace {
   constructor(private services: CliServices) {
   }
 
-  async initForWorkspace(workspacePath: string): Promise<void> {
+  async initWorkspace(workspace: WorkspaceFolder): Promise<void> {
     if (this.isInitialized) {
       throw new Error('Workspace already initialized')
     }
     const logger = this.services.logger
     const WorkspaceManager = this.services.shared.workspace.WorkspaceManager
-    logger.info(`${k.dim('workspace:')} ${workspacePath}`)
+    logger.info(`${k.dim('workspace:')} ${workspace.uri}`)
+    WorkspaceManager.initialize({
+      capabilities: {},
+      processId: null,
+      rootUri: null,
+      workspaceFolders: [workspace]
+    })
     await WorkspaceManager.initializeWorkspace([
-      {
-        name: basename(workspacePath),
-        uri: pathToFileURL(workspacePath).toString()
-      }
+      workspace
     ])
-    return await this.init()
   }
 
   async init() {

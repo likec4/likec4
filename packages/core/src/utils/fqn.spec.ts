@@ -1,3 +1,4 @@
+import { prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Element, Fqn } from '../types'
 import {
@@ -7,7 +8,8 @@ import {
   isAncestor,
   isDescendantOf,
   notDescendantOf,
-  parentFqn
+  parentFqn,
+  sortNaturalByFqn
 } from './fqn'
 
 const el = (id: string): Element => ({ id }) as unknown as Element
@@ -88,7 +90,13 @@ describe('notDescendantOf', () => {
 
 describe('compareFqnHierarchically', () => {
   it('should compare hierarchically', () => {
-    expect(['a', 'b', 'a.b', 'a.b.c', 'a.c.c'].sort(compareFqnHierarchically)).toEqual([
+    expect([
+      'a',
+      'b',
+      'a.b',
+      'a.b.c',
+      'a.c.c'
+    ].sort(compareFqnHierarchically)).toEqual([
       'a',
       'b',
       'a.b',
@@ -101,5 +109,49 @@ describe('compareFqnHierarchically', () => {
     expect(
       ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'].sort(compareFqnHierarchically)
     ).toEqual(['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'])
+  })
+})
+
+describe('sortNaturalByFqn', () => {
+  it('should sort hierarchically', () => {
+    expect(
+      sortNaturalByFqn([
+        el('a.b'),
+        el('a'),
+        el('a.c.a.b'),
+        el('a.c.c'),
+        el('b'),
+        el('a.b.c'),
+      ]).map(prop('id'))
+    ).toEqual([
+      'a',
+      'b',
+      'a.b',
+      'a.b.c',
+      'a.c.c',
+      'a.c.a.b'
+    ])
+  })
+
+  it('should sort natural', () => {
+    expect(
+      sortNaturalByFqn([
+        el('b'),
+        el('a.c.c'),
+        el('a'),
+        el('a.b1'),
+        el('a.b2'),
+        el('a.b10'),
+        el('a.b2.c')
+      ]).map(prop('id'))
+    ).toEqual([
+      'a',
+      'b',
+      'a.b1',
+      'a.b2',
+      'a.b10',
+      'a.b2.c',
+      'a.c.c'
+    ])
   })
 })

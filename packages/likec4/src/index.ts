@@ -47,7 +47,6 @@ export {
   isAncestor,
   isComputedDynamicView,
   isDescendantOf,
-  isDynamicView,
   isSameHierarchy,
   isStepEdgeId,
   LikeC4Model,

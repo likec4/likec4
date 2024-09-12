@@ -27,11 +27,13 @@ export function createTestServices(workspace = 'file:///test/workspace') {
           return
         }
         isInitialized = true
-        await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
-        // Workaround to set protected folders property
-        Object.assign(services.shared.workspace.WorkspaceManager, {
-          folders: [workspaceFolder]
+        services.shared.workspace.WorkspaceManager.initialize({
+          capabilities: {},
+          processId: null,
+          rootUri: null,
+          workspaceFolders: [workspaceFolder]
         })
+        await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
       })
     }
     const docUri = Utils.resolvePath(

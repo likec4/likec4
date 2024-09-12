@@ -398,11 +398,11 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         kind: 'component',
         tags: null,
         links: [
-          { url: 'file:///test/workspace/src/samefolder.js' },
-          { url: 'file:///test/workspace/src/sub/folder.js#L1-2' },
-          { url: 'file:///test/workspace/dir/another.js?query=1' },
-          { url: 'file:///test/workspace/workspace-root' },
-          { url: 'file:///test/workspace/root/another.js#L2' },
+          { url: './samefolder.js', relative: 'src/samefolder.js' },
+          { url: './sub/folder.js#L1-2', relative: 'src/sub/folder.js#L1-2' },
+          { url: '../dir/another.js?query=1', relative: 'dir/another.js?query=1' },
+          { url: '/workspace-root', relative: 'workspace-root' },
+          { url: '/root/another.js#L2', relative: 'root/another.js#L2' },
           { url: 'https://example1.com', title: 'component link title' }
         ]
       }
@@ -424,7 +424,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         links: [
           { url: 'https://example1.com' },
           { url: 'https://example2.com/', title: 'view link title' },
-          { url: 'file:///test/workspace/src/samefolder.html' }
+          { url: './samefolder.html', relative: 'src/samefolder.html' }
         ]
         // docUri: 'file:///test/workspace/src/1.c4'
       }
@@ -485,28 +485,28 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       sys1: {
         links: [
-          { url: 'vscode-vfs://host/virtual/src/samefolder.js' },
-          { url: 'vscode-vfs://host/virtual/src/sub/folder.js#L1-2' },
-          { url: 'vscode-vfs://host/virtual/dir/another.js' },
-          { url: 'vscode-vfs://host/virtual/workspace-root' }
+          { url: './samefolder.js', relative: 'src/samefolder.js' },
+          { url: './sub/folder.js#L1-2', relative: 'src/sub/folder.js#L1-2' },
+          { url: '../dir/another.js', relative: 'dir/another.js' },
+          { url: '/workspace-root' }
         ]
       },
       sys2: {
         links: [
-          { url: 'vscode-vfs://host/virtual/src/subdir/samefolder.c4' },
-          { url: 'vscode-vfs://host/virtual/src/sys2.c4' },
-          { url: 'vscode-vfs://host/virtual/workspace-root' }
+          { url: './samefolder.c4', relative: 'src/subdir/samefolder.c4' },
+          { url: '../sys2.c4', relative: 'src/sys2.c4' },
+          { url: '/workspace-root' }
         ]
       }
     })
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
-      links: [{ url: 'vscode-vfs://host/virtual/src/samefolder.c4' }],
+      links: [{ url: './samefolder.c4', relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
       relativePath: 'index.c4'
     })
     expect(views['sys2']).toMatchObject({
-      links: [{ url: 'vscode-vfs://host/virtual/src/subdir/doc2.html' }],
+      links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
       relativePath: 'subdir/doc2.c4'
     })
@@ -580,35 +580,35 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       sys1: {
-        links: [{ url: 'vscode-vfs://host/virtual/src/samefolder.c4' }]
+        links: [{ relative: 'src/samefolder.c4' }]
       },
       sys2: {
         links: [
-          { url: 'vscode-vfs://host/virtual/src/subdir/samefolder.c4' },
-          { url: 'vscode-vfs://host/virtual/src/sys2.c4' }
+          { relative: 'src/subdir/samefolder.c4' },
+          { relative: 'src/sys2.c4' }
         ]
       },
       sys3: {
         links: [
-          { url: 'vscode-vfs://host/virtual/src/a/b/c/samefolder.c4' },
-          { url: 'vscode-vfs://host/virtual/src/sys3.c4' }
+          { relative: 'src/a/b/c/samefolder.c4' },
+          { relative: 'src/sys3.c4' }
         ]
       }
     })
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
-      links: [{ url: 'vscode-vfs://host/virtual/src/samefolder.c4' }],
+      links: [{ relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
       relativePath: 'index.c4'
     })
     expect(views['index']).not.toHaveProperty('docUri')
     expect(views['sys2']).toMatchObject({
-      links: [{ url: 'vscode-vfs://host/virtual/src/subdir/doc2.html' }],
+      links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
       relativePath: 'subdir/doc2.c4'
     })
     expect(views['sys3']).toMatchObject({
-      links: [{ url: 'vscode-vfs://host/virtual/src/a/b/c/sys3/index.html' }],
+      links: [{ relative: 'src/a/b/c/sys3/index.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
       relativePath: 'a/b/c/doc3.c4'
     })
@@ -869,7 +869,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       source: 'system2',
       target: 'system1',
       links: [
-        { url: 'file:///test/workspace/src/samefolder.html' },
+        { url: './samefolder.html', relative: 'src/samefolder.html' },
         { url: 'https://example1.com', title: 'example 1' }
       ]
     })

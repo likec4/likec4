@@ -564,9 +564,12 @@ export class ComputeCtx {
   }
 
   protected getEdgeLabel(
-    relation: { title: String | undefined; technology?: String | undefined }
-  ): { label: String } | false {
-    const labelParts: String[] = []
+    relation: {
+      title: string
+      technology?: string | undefined
+    }
+  ) {
+    const labelParts: string[] = []
 
     if (isTruthy(relation.title)) {
       labelParts.push(relation.title)
@@ -576,6 +579,6 @@ export class ComputeCtx {
       labelParts.push(`[${relation.technology}]`)
     }
 
-    return labelParts.length > 0 && { label: labelParts.join('\n') }
+    return labelParts.length > 0 ? { label: labelParts.join('\n') } : {}
   }
 }
