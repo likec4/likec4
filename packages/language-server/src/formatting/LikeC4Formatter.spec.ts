@@ -300,7 +300,9 @@ specification{
         `
 specification {
   element el
+
   relationship rel
+
   tag tag1
   color custom #123456
 }`
@@ -1049,6 +1051,42 @@ model {
   system sys1 {
     #tag1 #tag2, #tag3, #tag4, #tag5 #tag6
   }
+}`
+      )
+  )
+
+  it(
+    'preserves empty lines',
+    async () =>
+      expect(
+        await format(
+          `
+model {
+
+  system sys1
+
+  system sys2 {
+
+    description 'some'
+
+    metadata
+  }
+
+}`
+        )
+      ).eq(
+        `
+model {
+
+  system sys1
+
+  system sys2 {
+
+    description 'some'
+
+    metadata
+  }
+
 }`
       )
   )

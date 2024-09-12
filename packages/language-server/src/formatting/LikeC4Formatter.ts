@@ -7,7 +7,7 @@ const FormattingOptions = {
   newLine: Formatting.newLine({ allowMore: true }),
   oneSpace: Formatting.oneSpace(),
   noSpace: Formatting.noSpace(),
-  indent: Formatting.indent(),
+  indent: Formatting.indent({ allowMore: true }),
   noIndent: Formatting.noIndent()
 }
 type Predicate<T extends AstNode> = (x: unknown) => x is T
@@ -31,19 +31,6 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatLinkProperty(node)
     this.formatNavigateToProperty(node)
     this.formatTags(node)
-  }
-
-  protected surroundOperatorsWithSpace(node: AstNode) {
-    if (
-      ast.isWhereElementExpression(node)
-      || ast.isWhereRelationExpression(node)
-      || ast.isWhereElement(node)
-    ) {
-      const formatter = this.getNodeFormatter(node)
-      const operator = formatter.properties('operator', 'not')
-      operator.surround(FormattingOptions.oneSpace)
-      formatter.keyword('not').surround(FormattingOptions.oneSpace)
-    }
   }
 
   protected formatTags(node: AstNode) {
