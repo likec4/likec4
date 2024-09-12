@@ -172,7 +172,7 @@
     "unbuild": "^3.0.0-rc.7",
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-shadow-style": "^1.1.1",
-    "vitest": "~2.0.5"
+    "vitest": "^2.1.0"
   },
   "packageManager": "yarn@4.3.1"
 }

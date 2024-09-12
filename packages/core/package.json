@@ -67,7 +67,7 @@
     "type-fest": "^4.26.1",
     "typescript": "^5.6.2",
     "unbuild": "^3.0.0-rc.7",
-    "vitest": "~2.0.5"
+    "vitest": "^2.1.0"
   },
   "packageManager": "yarn@4.3.1"
 }
