@@ -58,7 +58,7 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "^7.12.2",
-    "@types/natural-compare-lite": "^1",
+    "@types/natural-compare-lite": "^1.4.2",
     "chroma-js": "^3.0.0",
     "execa": "^9.3.1",
     "natural-compare-lite": "^1.4.0",
