@@ -30,7 +30,7 @@ import {
   parentFqn,
   whereOperatorAsPredicate
 } from '@likec4/core'
-import { filter, flatMap, hasAtLeast, isNonNull, isTruthy, map, omit, only, pipe, reduce, sort, unique } from 'remeda'
+import { filter, hasAtLeast, isNonNull, isTruthy, map, omit, only, pipe, reduce, sort, unique } from 'remeda'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -39,6 +39,7 @@ import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { sortNodes } from '../utils/sortNodes'
+import { uniqueTags } from '../utils/uniqueTags'
 import {
   type ElementPredicateFn,
   excludeElementKindOrTag,
@@ -218,7 +219,11 @@ export class ComputeCtx {
         tags?: NonEmptyArray<Tag>
         navigateTo?: ViewID | undefined
       } | undefined
-      relation = relations.length === 1 ? relations[0] : relations.find(r => r.source === source && r.target === target)
+      relation = only(relations) ?? pipe(
+        relations,
+        filter(r => r.source === source && r.target === target),
+        only()
+      )
 
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
@@ -279,7 +284,7 @@ export class ComputeCtx {
         }
       }
 
-      const tags = unique(flatMap(relations, r => r.tags ?? []))
+      const tags = uniqueTags(relations)
 
       return Object.assign(
         edge,
@@ -292,7 +297,7 @@ export class ComputeCtx {
         relation.head && { head: relation.head },
         relation.tail && { tail: relation.tail },
         relation.navigateTo && { navigateTo: relation.navigateTo },
-        hasAtLeast(tags, 1) && { tags }
+        tags && { tags }
       )
     })
   }

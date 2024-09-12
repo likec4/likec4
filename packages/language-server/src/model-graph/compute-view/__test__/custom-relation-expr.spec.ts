@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $customRelation, $include, $style, computeView } from './fixture'
+import { $customRelation, $include, computeView } from './fixture'
 
 describe('custom-relation-expr', () => {
   it('include edge and apply props', () => {
@@ -152,8 +152,8 @@ describe('custom-relation-expr', () => {
         "source": "cloud.backend",
         "tags": [
           "aws",
-          "storage",
           "legacy",
+          "storage",
         ],
         "target": "amazon.s3",
       }

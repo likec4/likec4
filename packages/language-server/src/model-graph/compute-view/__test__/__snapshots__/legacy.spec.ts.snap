@@ -53,8 +53,8 @@ exports[`compute-element-view > view of cloud 1`] = `
       "source": "cloud.backend",
       "tags": [
         "aws",
-        "storage",
         "legacy",
+        "storage",
       ],
       "target": "amazon",
     },
