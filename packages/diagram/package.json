@@ -50,7 +50,7 @@
     "framer-motion": "^11.3.30",
     "khroma": "^2.1.0",
     "remeda": "^2.11.0",
-    "type-fest": "^4.26.0",
+    "type-fest": "^4.26.1",
     "zustand": "^4.5.5"
   },
   "peerDependencies": {
