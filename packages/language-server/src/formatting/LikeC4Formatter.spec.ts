@@ -17,16 +17,18 @@ color red
 }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view index {
-    include *
-    style user {
-      color red
-    }
-  }
-}`
+        "
+        views {
+          view index {
+            include *
+            style user {
+              color red
+            }
+          }
+        }"
+      `
       )
   )
 
@@ -42,13 +44,15 @@ views{
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view index {
-    include *
-  }
-}`
+        "
+        views {
+          view index {
+            include *
+          }
+        }"
+      `
       )
   )
 
@@ -67,16 +71,18 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-model {
-  component user 'some title' 'description'
-}
-views {
-  view index {
-    include *
-  }
-}`
+        "
+        model {
+          component user 'some title' 'description'
+        }
+        views {
+          view index {
+            include *
+          }
+        }"
+      `
       )
   )
 
@@ -94,17 +100,19 @@ model {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element component
-}
-model {
-  component user {
-    title 'some title';
-    description 'description';
-  }
-}`
+        "
+        specification {
+          element component
+        }
+        model {
+          component user {
+            title 'some title';
+            description 'description';
+          }
+        }"
+      `
       )
   )
 
@@ -133,26 +141,28 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element component
-}
-model {
-  component system1 {
-    -> system2
-    .http system2
-  }
-  component system2
-  system2 -[http]-> system1
-  system2 .http system1 'title' 'http' #tag1
-}
-views {
-  view index {
-    include system1 <-> *
-    include * ->, -> *
-  }
-}`
+        "
+        specification {
+          element component
+        }
+        model {
+          component system1 {
+            -> system2
+            .http system2
+          }
+          component system2
+          system2 -[http]-> system1
+          system2 .http system1 'title' 'http' #tag1
+        }
+        views {
+          view index {
+            include system1 <-> *
+            include * ->, -> *
+          }
+        }"
+      `
       )
   )
 
@@ -173,16 +183,18 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view index {
-    include
-      * where tag == #tag1 or (tag != #tag1 and kind is not kind1) and not tag is #tag1
-    include
-      * -> * where tag == #tag2 or (tag != #tag2 and kind is not kind2) and not tag is #tag2
-  }
-}`
+        "
+        views {
+          view index {
+            include
+              * where tag == #tag1 or (tag != #tag1 and kind is not kind1) and not tag is #tag1
+            include
+              * -> * where tag == #tag2 or (tag != #tag2 and kind is not kind2) and not tag is #tag2
+          }
+        }"
+      `
       )
   )
 
@@ -202,18 +214,20 @@ model {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element el
-  tag tag1
-  tag tag2
-}
-model {
-  el sys1 'test' {
-    #tag1, #tag2
-  }
-}`
+        "
+        specification {
+          element el
+          tag tag1
+          tag tag2
+        }
+        model {
+          el sys1 'test' {
+            #tag1, #tag2
+          }
+        }"
+      `
       )
   )
 
@@ -238,22 +252,24 @@ model {
 }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  // comment
-  // comment2
-  // comment3
-  element el
-  tag tag1
-}
-model {
-  // comment
-  el sys1 'test' {
-    // comment
-    #tag1
-  }
-}`
+        "
+        specification {
+          // comment
+          // comment2
+          // comment3
+          element el
+          tag tag1
+        }
+        model {
+          // comment
+          el sys1 'test' {
+            // comment
+            #tag1
+          }
+        }"
+      `
       )
   )
 
@@ -270,14 +286,16 @@ model {
   el     sys1 'test'
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element el
-}
-model {
-  el sys1 'test'
-}`
+        "
+        specification {
+          element el
+        }
+        model {
+          el sys1 'test'
+        }"
+      `
       )
   )
 
@@ -296,16 +314,18 @@ specification{
   color    custom      #123456
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element el
+        "
+        specification {
+          element el
 
-  relationship rel
+          relationship rel
 
-  tag tag1
-  color custom #123456
-}`
+          tag tag1
+          color custom #123456
+        }"
+      `
       )
   )
 
@@ -325,19 +345,21 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view index {
-    include test, test.*
-    include
-      test1,
-      test2.*,
-      test3
-    include *, * -> *, * ->
-    exclude *, * -> *, * ->
-  }
-}`
+        "
+        views {
+          view index {
+            include test, test.*
+            include
+              test1,
+              test2.*,
+              test3
+            include *, * -> *, * ->
+            exclude *, * -> *, * ->
+          }
+        }"
+      `
       )
   )
 
@@ -360,20 +382,22 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view index {
-  }
-  view {
-  }
-  view view1 of el1 {
-  }
-  view view2 extends baseView {
-  }
-  dynamic view view3 {
-  }
-}`
+        "
+        views {
+          view index {
+          }
+          view {
+          }
+          view view1 of el1 {
+          }
+          view view2 extends baseView {
+          }
+          dynamic view view3 {
+          }
+        }"
+      `
       )
   )
 
@@ -392,20 +416,22 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view {
-    include * with {
-    }
-    include * where tag = #test with {
-    }
-    include -> * with {
-    }
-    include -> * where tag = #test with {
-    }
-  }
-}`
+        "
+        views {
+          view {
+            include * with {
+            }
+            include * where tag = #test with {
+            }
+            include -> * with {
+            }
+            include -> * where tag = #test with {
+            }
+          }
+        }"
+      `
       )
   )
 
@@ -456,50 +482,52 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element system {
-    notation 'test'
-    technology 'test'
-  }
-  relationship rel1 {
-    notation 'test'
-    technology 'test'
-  }
-}
-model {
-  system sys1 {
-    title 'test'
-    description 'test'
-    technology 'test'
-  }
-  sys1 -> sys2 {
-    title 'test'
-    description 'test'
-    technology 'test'
-  }
-}
-views {
-  view {
-    title 'test'
-    description 'test'
-    include
-      * with {
-        notation 'test'
-        title 'test'
-        description 'test'
-        technology 'test'
-      }
-    include
-      * -> * with {
-        notation 'test'
-        title 'test'
-        description 'test'
-        technology 'test'
-      }
-  }
-}`
+        "
+        specification {
+          element system {
+            notation 'test'
+            technology 'test'
+          }
+          relationship rel1 {
+            notation 'test'
+            technology 'test'
+          }
+        }
+        model {
+          system sys1 {
+            title 'test'
+            description 'test'
+            technology 'test'
+          }
+          sys1 -> sys2 {
+            title 'test'
+            description 'test'
+            technology 'test'
+          }
+        }
+        views {
+          view {
+            title 'test'
+            description 'test'
+            include
+              * with {
+                notation 'test'
+                title 'test'
+                description 'test'
+                technology 'test'
+              }
+            include
+              * -> * with {
+                notation 'test'
+                title 'test'
+                description 'test'
+                technology 'test'
+              }
+          }
+        }"
+      `
       )
   )
 
@@ -570,70 +598,72 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element system {
-    style {
-      color primary
-      opacity 30%
-      icon aws:person
-      shape queue
-      border solid
-    }
-  }
-  relationship rel1 {
-    color primary
-    line solid
-    head normal
-    tail normal
-  }
-}
-model {
-  system sys1 {
-    style {
-      color primary
-      opacity 30%
-      icon aws:person
-      shape queue
-      border solid
-    }
-  }
-  sys1 -> sys2 {
-    style {
-      color primary
-      line solid
-      head normal
-      tail normal
-    }
-  }
-}
-views {
-  view {
-    include
-      * with {
-        color primary
-        opacity 30%
-        icon aws:person
-        shape queue
-        border solid
-      }
-    include
-      * -> * with {
-        color primary
-        line solid
-        head normal
-        tail normal
-      }
-    style * {
-      color primary
-      opacity 30%
-      icon aws:person
-      shape queue
-      border solid
-    }
-  }
-}`
+        "
+        specification {
+          element system {
+            style {
+              color primary
+              opacity 30%
+              icon aws:person
+              shape queue
+              border solid
+            }
+          }
+          relationship rel1 {
+            color primary
+            line solid
+            head normal
+            tail normal
+          }
+        }
+        model {
+          system sys1 {
+            style {
+              color primary
+              opacity 30%
+              icon aws:person
+              shape queue
+              border solid
+            }
+          }
+          sys1 -> sys2 {
+            style {
+              color primary
+              line solid
+              head normal
+              tail normal
+            }
+          }
+        }
+        views {
+          view {
+            include
+              * with {
+                color primary
+                opacity 30%
+                icon aws:person
+                shape queue
+                border solid
+              }
+            include
+              * -> * with {
+                color primary
+                line solid
+                head normal
+                tail normal
+              }
+            style * {
+              color primary
+              opacity 30%
+              icon aws:person
+              shape queue
+              border solid
+            }
+          }
+        }"
+      `
       )
   )
 
@@ -684,50 +714,52 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element system {
-    notation: 'test';
-    technology: 'test';
-  }
-  relationship rel1 {
-    notation: 'test';
-    technology: 'test';
-  }
-}
-model {
-  system sys1 {
-    title: 'test';
-    description: 'test';
-    technology: 'test';
-  }
-  sys1 -> sys2 {
-    title: 'test';
-    description: 'test';
-    technology: 'test';
-  }
-}
-views {
-  view {
-    title: 'test';
-    description: 'test';
-    include
-      * with {
-        notation: 'test';
-        title: 'test';
-        description: 'test';
-        technology: 'test';
-      }
-    include
-      * -> * with {
-        notation: 'test';
-        title: 'test';
-        description: 'test';
-        technology: 'test';
-      }
-  }
-}`
+        "
+        specification {
+          element system {
+            notation: 'test';
+            technology: 'test';
+          }
+          relationship rel1 {
+            notation: 'test';
+            technology: 'test';
+          }
+        }
+        model {
+          system sys1 {
+            title: 'test';
+            description: 'test';
+            technology: 'test';
+          }
+          sys1 -> sys2 {
+            title: 'test';
+            description: 'test';
+            technology: 'test';
+          }
+        }
+        views {
+          view {
+            title: 'test';
+            description: 'test';
+            include
+              * with {
+                notation: 'test';
+                title: 'test';
+                description: 'test';
+                technology: 'test';
+              }
+            include
+              * -> * with {
+                notation: 'test';
+                title: 'test';
+                description: 'test';
+                technology: 'test';
+              }
+          }
+        }"
+      `
       )
   )
 
@@ -798,70 +830,72 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-specification {
-  element system {
-    style {
-      color: primary;
-      opacity: 30%;
-      icon: aws:person;
-      shape: queue;
-      border: solid;
-    }
-  }
-  relationship rel1 {
-    color: primary;
-    line: solid;
-    head: normal;
-    tail: normal;
-  }
-}
-model {
-  system sys1 {
-    style {
-      color: primary;
-      opacity: 30%;
-      icon: aws:person;
-      shape: queue;
-      border: solid;
-    }
-  }
-  sys1 -> sys2 {
-    style {
-      color: primary;
-      line: solid;
-      head: normal;
-      tail: normal;
-    }
-  }
-}
-views {
-  view {
-    include
-      * with {
-        color: primary;
-        opacity: 30%;
-        icon: aws:person;
-        shape: queue;
-        border: solid;
-      }
-    include
-      * -> * with {
-        color: primary;
-        line: solid;
-        head: normal;
-        tail: normal;
-      }
-    style * {
-      color: primary;
-      opacity: 30%;
-      icon: aws:person;
-      shape: queue;
-      border: solid;
-    }
-  }
-}`
+        "
+        specification {
+          element system {
+            style {
+              color: primary;
+              opacity: 30%;
+              icon: aws:person;
+              shape: queue;
+              border: solid;
+            }
+          }
+          relationship rel1 {
+            color: primary;
+            line: solid;
+            head: normal;
+            tail: normal;
+          }
+        }
+        model {
+          system sys1 {
+            style {
+              color: primary;
+              opacity: 30%;
+              icon: aws:person;
+              shape: queue;
+              border: solid;
+            }
+          }
+          sys1 -> sys2 {
+            style {
+              color: primary;
+              line: solid;
+              head: normal;
+              tail: normal;
+            }
+          }
+        }
+        views {
+          view {
+            include
+              * with {
+                color: primary;
+                opacity: 30%;
+                icon: aws:person;
+                shape: queue;
+                border: solid;
+              }
+            include
+              * -> * with {
+                color: primary;
+                line: solid;
+                head: normal;
+                tail: normal;
+              }
+            style * {
+              color: primary;
+              opacity: 30%;
+              icon: aws:person;
+              shape: queue;
+              border: solid;
+            }
+          }
+        }"
+      `
       )
   )
 
@@ -888,24 +922,26 @@ model {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-model {
-  system sys1 {
-    metadata {
-      prop1 'some'
-      prop2 'other'
-      prop3: 'another';
-    }
-  }
-  sys1 -> sys2 {
-    metadata {
-      prop1 'some'
-      prop2 'other'
-      prop3: 'another';
-    }
-  }
-}`
+        "
+        model {
+          system sys1 {
+            metadata {
+              prop1 'some'
+              prop2 'other'
+              prop3: 'another';
+            }
+          }
+          sys1 -> sys2 {
+            metadata {
+              prop1 'some'
+              prop2 'other'
+              prop3: 'another';
+            }
+          }
+        }"
+      `
       )
   )
 
@@ -921,13 +957,15 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view {
-    autoLayout TopBottom
-  }
-}`
+        "
+        views {
+          view {
+            autoLayout TopBottom
+          }
+        }"
+      `
       )
   )
 
@@ -945,15 +983,17 @@ model {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-model {
-  system sys1 {
-    link http://example.com
-    link http://example.com 'title'
-    link: http://example.com 'title';
-  }
-}`
+        "
+        model {
+          system sys1 {
+            link http://example.com
+            link http://example.com 'title'
+            link: http://example.com 'title';
+          }
+        }"
+      `
       )
   )
 
@@ -972,16 +1012,18 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view {
-    include
-      * with {
-        navigateTo viewB
-      }
-  }
-}`
+        "
+        views {
+          view {
+            include
+              * with {
+                navigateTo viewB
+              }
+          }
+        }"
+      `
       )
   )
 
@@ -998,14 +1040,16 @@ views {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-views {
-  view {
-    style *, sys1, sys2 {
-    }
-  }
-}`
+        "
+        views {
+          view {
+            style *, sys1, sys2 {
+            }
+          }
+        }"
+      `
       )
   )
 
@@ -1022,14 +1066,16 @@ model {
   sys4 = system       'title'  'description'   'tech'   'tag1, tag2'
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-model {
-  system sys1
-  system sys2 'title' 'description' 'tech' 'tag1, tag2'
-  sys3 = system
-  sys4 = system 'title' 'description' 'tech' 'tag1, tag2'
-}`
+        "
+        model {
+          system sys1
+          system sys2 'title' 'description' 'tech' 'tag1, tag2'
+          sys3 = system
+          sys4 = system 'title' 'description' 'tech' 'tag1, tag2'
+        }"
+      `
       )
   )
 
@@ -1045,13 +1091,15 @@ model {
   }
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-model {
-  system sys1 {
-    #tag1 #tag2, #tag3, #tag4, #tag5 #tag6
-  }
-}`
+        "
+        model {
+          system sys1 {
+            #tag1 #tag2, #tag3, #tag4, #tag5 #tag6
+          }
+        }"
+      `
       )
   )
 
@@ -1074,20 +1122,22 @@ model {
 
 }`
         )
-      ).eq(
+      ).toMatchInlineSnapshot(
         `
-model {
+        "
+        model {
 
-  system sys1
+          system sys1
 
-  system sys2 {
+          system sys2 {
 
-    description 'some'
+            description 'some'
 
-    metadata
-  }
+            metadata
+          }
 
-}`
+        }"
+      `
       )
   )
 })
