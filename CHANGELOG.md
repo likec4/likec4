@@ -1,18 +1,54 @@
 # [1.10.0](https://github.com/likec4/likec4/compare/v1.9.0...v1.10.0) (2024-09-12)
 
+### 🚀 Features  
+
+* **Parallel** steps and **notes** in dynamic views
+  
+  <img width="661" alt="image" src="https://github.com/user-attachments/assets/8454d296-6ffe-4ea2-a9d8-0d72aff70105">
+  [Playground example](https://playground.likec4.dev/w/dynamic/)
+
+* **Navigation** for relationships (zoom-in to dynamic views)
+  
+  ```zig
+  model {
+    webApp -> backend.api {
+      title 'requests data for the dashboard'
+      navigateTo dashboardRequestFlow
+    }  
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/relationships/#navigate-to)
+
+* **Code Formatter** in VSCode Extension (thanks @pavelpykhtin, to [#979](https://github.com/likec4/likec4/issues/979))
+
+* New component `ReactLikeC4`
+  Low-level component with more control and event listeners.
+  
+  ```tsx
+  const App = () => {
+    return (
+      <div>
+        <ReactLikeC4
+          viewId="index"
+          pannable={false}
+          zoomable
+          keepAspectRatio={false}
+          showElementLinks={false}
+          showDiagramTitle={false}
+          onNodeClick={...}
+        />
+      </div>
+    )
+  }
+  ```
+  [Documentation](https://likec4.dev/tooling/codegen/#reactlikec4)
+  
 
 ### Bug Fixes
 
-* relative links are translated into undeployable file:// ([#982](https://github.com/likec4/likec4/issues/982)) ([7b0ea80](https://github.com/likec4/likec4/commit/7b0ea800ad56307d85b2d5d36d177a19280e2e6c)), closes [#978](https://github.com/likec4/likec4/issues/978)
+* relative links are translated into undeployable `file://` (@davydkov [#982](https://github.com/likec4/likec4/issues/982)) ([7b0ea80](https://github.com/likec4/likec4/commit/7b0ea800ad56307d85b2d5d36d177a19280e2e6c)), closes [#978](https://github.com/likec4/likec4/issues/978)
 
 
-### Features
-
-* `ReactLikeC4` component ([c4d58ca](https://github.com/likec4/likec4/commit/c4d58cab3771c9b8a0b8aabc6ae372fd1a33e978))
-* **dsl:** warnings on repeated top blocks (instead of error) ([f81d78d](https://github.com/likec4/likec4/commit/f81d78d815cff3e158be864a9af30cfe3dd2971e))
-* navigateTo for relationships (zoom-in to dynamic views) ([74f398a](https://github.com/likec4/likec4/commit/74f398a5b652a107c1c613b0a62f83ee7f9a58ed))
-* notes in dynamic views ([3291a73](https://github.com/likec4/likec4/commit/3291a737be6c2f1f88305fcc80c27874f014da35))
-* parallel steps in dynamic views ([e134424](https://github.com/likec4/likec4/commit/e1344247c15a1911139f1ef10b9547d2ace3d95d))
 
 
 
