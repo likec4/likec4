@@ -1681,23 +1681,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/core@npm:^0.36.0":
-  version: 0.36.0
-  resolution: "@expressive-code/core@npm:0.36.0"
-  dependencies:
-    "@ctrl/tinycolor": "npm:^4.0.4"
-    hast-util-select: "npm:^6.0.2"
-    hast-util-to-html: "npm:^9.0.1"
-    hast-util-to-text: "npm:^4.0.1"
-    hastscript: "npm:^9.0.0"
-    postcss: "npm:^8.4.38"
-    postcss-nested: "npm:^6.0.1"
-    unist-util-visit: "npm:^5.0.0"
-    unist-util-visit-parents: "npm:^6.0.1"
-  checksum: 10c0/cf44cab3db9aaecdd3ec7da9d59d024ff9dd168bba4baf261dee0be2a19643a05e290bb92322a60dbe3badaf927750c13364953181d526f8d1e7133e32760e99
-  languageName: node
-  linkType: hard
-
 "@expressive-code/core@npm:^0.36.1":
   version: 0.36.1
   resolution: "@expressive-code/core@npm:0.36.1"
@@ -1715,12 +1698,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-collapsible-sections@npm:^0.36.0":
-  version: 0.36.0
-  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.36.0"
+"@expressive-code/plugin-collapsible-sections@npm:^0.36.1":
+  version: 0.36.1
+  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.36.1"
   dependencies:
-    "@expressive-code/core": "npm:^0.36.0"
-  checksum: 10c0/1f79c2abc89779eed411b3e9dad5e6dd5267d5ae65a38fa6e395dcc313ed2c815cc5efa980ebbf29dfcc06d30dfd6853a348e7b71c5d01aca554b17c06c11dc9
+    "@expressive-code/core": "npm:^0.36.1"
+  checksum: 10c0/2814b0657aec412edac67fc56ecec0dd8d6f5b35447df9c64b84dad9356e5cee842eb7417c5ad7e3aea9c09eea671385d3c8fca41722dcc0bb0caeb0e2dd720c
   languageName: node
   linkType: hard
 
@@ -2158,7 +2141,7 @@ __metadata:
     "@astrojs/check": "npm:^0.9.3"
     "@astrojs/react": "npm:^3.6.2"
     "@astrojs/starlight": "npm:^0.26.1"
-    "@expressive-code/plugin-collapsible-sections": "npm:^0.36.0"
+    "@expressive-code/plugin-collapsible-sections": "npm:^0.36.1"
     "@expressive-code/plugin-line-numbers": "npm:^0.36.1"
     "@fontsource/ibm-plex-sans": "npm:^5.0.22"
     "@types/picomatch": "npm:^2.3.4"

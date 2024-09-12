@@ -27,7 +27,7 @@
     "@astrojs/check": "^0.9.3",
     "@astrojs/react": "^3.6.2",
     "@astrojs/starlight": "^0.26.1",
-    "@expressive-code/plugin-collapsible-sections": "^0.36.0",
+    "@expressive-code/plugin-collapsible-sections": "^0.36.1",
     "@expressive-code/plugin-line-numbers": "^0.36.1",
     "@fontsource/ibm-plex-sans": "^5.0.22",
     "astro": "~4.14.0",
