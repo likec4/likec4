@@ -1,4 +1,4 @@
-import { DocumentState, EmptyFileSystem } from 'langium'
+import { DocumentState, EmptyFileSystem, TextDocument } from 'langium'
 import * as assert from 'node:assert'
 import stripIndent from 'strip-indent'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
@@ -13,6 +13,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   const documentBuilder = services.shared.workspace.DocumentBuilder
   const modelBuilder = services.likec4.ModelBuilder
   const workspaceUri = URI.parse(workspace)
+  const formatter = services.lsp.Formatter
   const workspaceFolder = {
     name: 'test',
     uri: workspaceUri.toString()
@@ -68,6 +69,22 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     }
   }
 
+  const format = async (input: string | LikeC4LangiumDocument, uri?: string) => {
+    const document = typeof input === 'string' ? await parse(input, uri) : input
+    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
+      await documentBuilder.build([document], { validation: false })
+    })
+
+    const edits = await services.lsp.Formatter?.formatDocument(
+      document, 
+      {
+        options: {tabSize: 2, insertSpaces: true},
+        textDocument: { uri: document.uri.toString() }
+      });
+
+    return TextDocument.applyEdits(document.textDocument, edits ?? []);
+  }
+
   type ValidateAllResult = {
     diagnostics: Diagnostic[]
     errors: string[]
@@ -112,7 +129,8 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     validate,
     validateAll,
     buildModel,
-    resetState
+    resetState,
+    format
   }
 }
 

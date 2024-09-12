@@ -26,5 +26,11 @@
         "clear": true,
       }
     },
+    {
+      "label": "build_extension",
+      "type": "npm",
+      "script": "build:turbo",
+      "path": "packages/vscode"
+    }
   ]
 }

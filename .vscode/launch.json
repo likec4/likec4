@@ -22,10 +22,11 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
+        
         "${workspaceFolder}/examples/cloud-system",
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/vscode/dist/**/*.js",
+        "${workspaceFolder}/packages/vscode/dist/**/*.js"
       ],
       "sourceMaps": true,
       "resolveSourceMapLocations": [
@@ -33,11 +34,7 @@
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,
-      "preLaunchTask": {
-        "type": "npm",
-        "script": "build:turbo",
-        "path": "packages/vscode"
-      }
+      "preLaunchTask": "build_extension",
     },
     {
       "name": "Attach to Extension",
@@ -66,11 +63,24 @@
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,
-      "preLaunchTask": {
-        "type": "npm",
-        "script": "build:turbo",
-        "path": "packages/vscode"
-      }
+      "preLaunchTask": "build_extension"
+    },
+    {
+      "name": "Run tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "vitest",
+      "args": [
+        "run",
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/packages/**",
+        "!${workspaceFolder}/packages/*/dist/",
+        "!**/node_modules/**"
+      ],
+      "autoAttachChildProcesses": true,
+      "preLaunchTask": "build_extension"
     }
-  ]
+  ]  
 }
