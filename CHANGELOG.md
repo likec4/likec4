@@ -1,3 +1,21 @@
+# [1.10.0](https://github.com/likec4/likec4/compare/v1.9.0...v1.10.0) (2024-09-12)
+
+
+### Bug Fixes
+
+* relative links are translated into undeployable file:// ([#982](https://github.com/likec4/likec4/issues/982)) ([7b0ea80](https://github.com/likec4/likec4/commit/7b0ea800ad56307d85b2d5d36d177a19280e2e6c)), closes [#978](https://github.com/likec4/likec4/issues/978)
+
+
+### Features
+
+* `ReactLikeC4` component ([c4d58ca](https://github.com/likec4/likec4/commit/c4d58cab3771c9b8a0b8aabc6ae372fd1a33e978))
+* **dsl:** warnings on repeated top blocks (instead of error) ([f81d78d](https://github.com/likec4/likec4/commit/f81d78d815cff3e158be864a9af30cfe3dd2971e))
+* navigateTo for relationships (zoom-in to dynamic views) ([74f398a](https://github.com/likec4/likec4/commit/74f398a5b652a107c1c613b0a62f83ee7f9a58ed))
+* notes in dynamic views ([3291a73](https://github.com/likec4/likec4/commit/3291a737be6c2f1f88305fcc80c27874f014da35))
+* parallel steps in dynamic views ([e134424](https://github.com/likec4/likec4/commit/e1344247c15a1911139f1ef10b9547d2ace3d95d))
+
+
+
 # [1.9.0](https://github.com/likec4/likec4/compare/v1.8.1...v1.9.0) (2024-09-07)
 
 ### 🚀 Features  
