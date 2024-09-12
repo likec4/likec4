@@ -115,7 +115,7 @@
     "npm-run-all2": "^6.2.2",
     "tsx": "~4.9.3",
     "turbo": "^2.1.1",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.2",
     "unbuild": "^3.0.0-rc.7",
     "vitest": "~2.0.5"
   },

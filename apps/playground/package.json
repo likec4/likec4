@@ -68,7 +68,7 @@
     "tsx": "~4.9.3",
     "turbo": "^2.1.1",
     "type-fest": "^4.26.0",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.2",
     "ufo": "^1.5.4",
     "vite": "5.3.4",
     "vscode": "npm:@codingame/monaco-vscode-api@6.0.3",

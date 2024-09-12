@@ -2071,7 +2071,7 @@ __metadata:
     remeda: "npm:^2.11.0"
     turbo: "npm:^2.1.1"
     type-fest: "npm:^4.26.0"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     unbuild: "npm:^3.0.0-rc.7"
     vitest: "npm:~2.0.5"
   languageName: unknown
@@ -2110,7 +2110,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     remeda: "npm:^2.11.0"
     type-fest: "npm:^4.26.0"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     zustand: "npm:^4.5.5"
   peerDependencies:
     "@mantine/core": ^7.12.0
@@ -2142,7 +2142,7 @@ __metadata:
     starlight-heading-badges: "npm:^0.2.0"
     starlight-links-validator: "npm:^0.10.1"
     tsx: "npm:~4.9.3"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
 
@@ -2156,7 +2156,7 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:3.1.3"
     remeda: "npm:^2.11.0"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     vitest: "npm:~2.0.5"
   languageName: unknown
   linkType: soft
@@ -2173,7 +2173,7 @@ __metadata:
     glob: "npm:^11.0.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
@@ -2209,7 +2209,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.1.1"
     type-fest: "npm:^4.26.0"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     ufo: "npm:^1.5.4"
     unbuild: "npm:^3.0.0-rc.7"
     vitest: "npm:~2.0.5"
@@ -2239,7 +2239,7 @@ __metadata:
     ts-graphviz: "npm:^1.8.2"
     turbo: "npm:^2.1.1"
     type-fest: "npm:^4.26.0"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     unbuild: "npm:^3.0.0-rc.7"
     vitest: "npm:~2.0.5"
     word-wrap: "npm:^1.2.5"
@@ -2253,7 +2253,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.16.1"
     consola: "npm:^3.2.3"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     unbuild: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -2315,7 +2315,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.1.1"
     type-fest: "npm:^4.26.0"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     ufo: "npm:^1.5.4"
     vite: "npm:5.3.4"
     vscode: "npm:@codingame/monaco-vscode-api@6.0.3"
@@ -2362,7 +2362,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
     tsx: "npm:~4.9.3"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     vite: "npm:5.3.4"
     vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
@@ -5296,7 +5296,7 @@ __metadata:
     execa: "npm:^9.3.1"
     prompts: "npm:^2.4.2"
     tsx: "npm:~4.9.3"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     unbuild: "npm:^3.0.0-rc.7"
   bin:
     create-likec4: index.js
@@ -8392,7 +8392,7 @@ __metadata:
     remeda: "npm:^2.11.0"
     tslib: "npm:^2.7.0"
     tsx: "npm:~4.9.3"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
     vscode-languageserver: "npm:9.0.1"
@@ -8478,7 +8478,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.1.1"
     type-fest: "npm:^4.26.0"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     ufo: "npm:^1.5.4"
     unbuild: "npm:^3.0.0-rc.7"
     vite: "npm:5.3.4"
@@ -12041,7 +12041,7 @@ __metadata:
     shipjs: "npm:^0.26.4"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.1.1"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.6.2"
     vite: "npm:5.3.4"
     vitest: "npm:~2.0.5"
   languageName: unknown
@@ -13288,7 +13288,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:>=5.0.2":
+"typescript@npm:>=5.0.2, typescript@npm:^5.6.2":
   version: 5.6.2
   resolution: "typescript@npm:5.6.2"
   bin:
@@ -13298,33 +13298,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.5.4":
-  version: 5.5.4
-  resolution: "typescript@npm:5.5.4"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/422be60f89e661eab29ac488c974b6cc0a660fb2228003b297c3d10c32c90f3bcffc1009b43876a082515a3c376b1eefcce823d6e78982e6878408b9a923199c
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A>=5.0.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A>=5.0.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.6.2#optional!builtin<compat/typescript>":
   version: 5.6.2
   resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=379a07"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/e6c1662e4852e22fe4bbdca471dca3e3edc74f6f1df043135c44a18a7902037023ccb0abdfb754595ca9028df8920f2f8492c00fc3cbb4309079aae8b7de71cd
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>":
-  version: 5.5.4
-  resolution: "typescript@patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/73409d7b9196a5a1217b3aaad929bf76294d3ce7d6e9766dd880ece296ee91cf7d7db6b16c6c6c630ee5096eccde726c0ef17c7dfa52b01a243e57ae1f09ef07
   languageName: node
   linkType: hard
 
