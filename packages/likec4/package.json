@@ -24,6 +24,7 @@
       "types": "./app/react/components/index.ts",
       "default": "./react/index.mjs"
     },
+    "./react/style.css": "./react/style.css",
     "./icons/all": {
       "types": "./icons/all.d.ts",
       "default": "./icons/all.js"
@@ -45,6 +46,7 @@
         "types": "./react/index.d.ts",
         "default": "./react/index.mjs"
       },
+      "./react/style.css": "./react/style.css",
       "./icons/all": {
         "types": "./icons/all.d.ts",
         "default": "./icons/all.js"

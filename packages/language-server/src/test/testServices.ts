@@ -73,7 +73,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     errors: string[]
     warnings: string[]
   }
-  let previousPromise = Promise.resolve() as Promise<any>
+
   const validateAll = async () => {
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
       const docs = langiumDocuments.all.toArray()

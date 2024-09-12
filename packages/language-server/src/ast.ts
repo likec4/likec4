@@ -267,7 +267,7 @@ const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefin
     }
     nd = nd.$container
   }
-  return
+  return undefined
 }
 
 export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {

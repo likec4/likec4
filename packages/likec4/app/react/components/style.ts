@@ -1,10 +1,11 @@
-import { createTheme, type MantineThemeOverride, mergeMantineTheme } from '@mantine/core'
+import { createTheme, type MantineThemeOverride } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { isString } from 'remeda'
 import fontCss from './font.css?inline'
 import { shadowRoot } from './styles.css'
+import type { ViewData } from './types'
 
 declare const __likec4styles: Map<string, string>
 declare const __USE_STYLE_BUNDLE__: boolean
@@ -103,24 +104,67 @@ const getComputedBodyColorScheme = (): ColorScheme | undefined => {
 export type ColorScheme = 'light' | 'dark'
 export function useColorScheme(explicit?: ColorScheme): ColorScheme {
   const preferred = usePreferredColorScheme(explicit)
-  const [current, setCurrent] = useState<ColorScheme>(explicit ?? preferred)
+  const [current, setCurrent] = useState<ColorScheme>(() => explicit ?? getComputedBodyColorScheme() ?? preferred)
 
   useEffect(() => {
     if (explicit) {
+      setCurrent(explicit)
       return
     }
-    const computed = getComputedBodyColorScheme()
-    if (!computed) {
-      if (current !== preferred) {
-        setCurrent(preferred)
-      }
-      return
-    }
-    if (computed !== current) {
-      setCurrent(computed)
-      return
-    }
-  })
+    setCurrent(getComputedBodyColorScheme() ?? preferred)
+  }, [preferred, explicit])
 
-  return explicit ?? current
+  return current
+}
+
+export function useShadowRootStyle(
+  keepAspectRatio: boolean,
+  view: ViewData<string>
+): [{ 'data-likec4-instance': string }, style: string] {
+  const id = useId()
+
+  if (keepAspectRatio === false) {
+    return [
+      { 'data-likec4-instance': id },
+      `
+:where([data-likec4-instance="${id}"]) {
+  display: block;
+  box-sizing: border-box;
+  border: 0 solid transparent;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 80px;
+  min-height: 80px;
+}
+  `.trim()
+    ]
+  }
+
+  const isLandscape = view.bounds.width > view.bounds.height
+
+  return [
+    { 'data-likec4-instance': id },
+    `
+:where([data-likec4-instance="${id}"]) {
+  display: block;
+  box-sizing: border-box;
+  border: 0 solid transparent;
+  background: transparent;
+  padding: 0;
+  ${
+      isLandscape ? '' : `
+  max-width: var(--likec4-view-max-width, ${Math.ceil(view.bounds.width)}px);
+  margin-left: auto;
+  margin-right: auto;`
+    }
+  width: ${isLandscape ? '100%' : 'auto'};
+  height: ${isLandscape ? 'auto' : '100%'};
+  ${isLandscape ? `min-width: 80px;` : `min-height: 80px;`}
+  aspect-ratio: ${Math.ceil(view.bounds.width)} / ${Math.ceil(view.bounds.height)};
+  max-height: var(--likec4-view-max-height, ${Math.ceil(view.bounds.height)}px);
+}
+`.trim()
+  ]
 }

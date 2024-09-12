@@ -36,8 +36,7 @@ function FitViewOnViewportResize({ diagramApi }: {
       fitDiagram(250)
     },
     [dimensions, diagramApi],
-    250,
-    1000
+    250
   )
 
   return null

@@ -50,7 +50,7 @@ export const EmbedPanel = ({ diagram }: { diagram: DiagramView }) => {
       {code.includes('http://localhost') && <AlertLocalhost />}
       <Box>
         <Text size="sm">
-          Embeded view is an iframe with a static diagram
+          Embedded view is an iframe with a static diagram
         </Text>
       </Box>
       <Stack gap={'xs'}>

@@ -1,15 +1,17 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
-import { type HTMLAttributes, useId } from 'react'
+import { type HTMLAttributes } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
 import type { WhereOperator } from '@likec4/core'
+import type { MantineThemeOverride } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
+import { useShadowRootStyle } from './style'
 import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { ElementIconRenderer, ViewData } from './types'
 
-export type LikeC4ViewElementProps<ViewId extends string, Tag extends string, Kind extends string> =
+export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, Kind extends string> =
   & Pick<HTMLAttributes<HTMLDivElement>, 'style' | 'className'>
   & {
     view: ViewData<ViewId>
@@ -73,9 +75,11 @@ export type LikeC4ViewElementProps<ViewId extends string, Tag extends string, Ki
     enableFocusMode?: boolean | undefined
 
     where?: WhereOperator<Tag, Kind> | undefined
+
+    mantineTheme?: MantineThemeOverride | undefined
   }
 
-export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kind extends string>({
+export function LikeC4ViewEmbedded<ViewId extends string, Tag extends string, Kind extends string>({
   onNavigateTo: _onNavigateTo,
   className,
   view,
@@ -88,12 +92,11 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
   showNavigationButtons = false,
   enableFocusMode = false,
   showNotations = false,
+  mantineTheme,
   where,
   style
-}: LikeC4ViewElementProps<ViewId, Tag, Kind>) {
-  const id = useId()
-
-  const isLandscape = view.bounds.width > view.bounds.height
+}: LikeC4ViewEmbeddedProps<ViewId, Tag, Kind>) {
+  const [shadowRootProps, cssstyle] = useShadowRootStyle(true, view)
 
   const onNavigateTo = useCallbackRef((to: string) => {
     _onNavigateTo?.(to as ViewId)
@@ -107,31 +110,10 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
       <style
         type="text/css"
         dangerouslySetInnerHTML={{
-          __html: `
-  [data-likec4-instance="${id}"] {
-    box-sizing: border-box;
-    border: 0 solid transparent;
-    padding: 0;
-    ${
-            isLandscape ? '' : `
-    margin-left: auto;
-    margin-right: auto;`
-          }
-    width: ${isLandscape ? '100%' : 'auto'};
-    width: -webkit-fill-available;
-    height: ${isLandscape ? 'auto' : '100%'};
-    height: -webkit-fill-available;
-    ${
-            isLandscape ? '' : `
-    min-height: 100px;`
-          }
-    aspect-ratio: ${Math.ceil(view.bounds.width)} / ${Math.ceil(view.bounds.height)};
-    max-height: var(--likec4-view-max-height, ${Math.ceil(view.bounds.height)}px);
-  }
-      `
+          __html: cssstyle
         }} />
       <ShadowRoot
-        data-likec4-instance={id}
+        {...shadowRootProps}
         injectFontCss={injectFontCss}
         className={clsx('likec4-view', className)}
         style={style}
@@ -143,6 +125,7 @@ export function LikeC4ViewElement<ViewId extends string, Tag extends string, Kin
         })}
       >
         <ShadowRootMantineProvider
+          theme={mantineTheme}
           colorScheme={colorScheme}
           className={clsx(cssLikeC4View, !!_onNavigateTo && cssInteractive)}
         >

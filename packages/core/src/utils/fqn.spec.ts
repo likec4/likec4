@@ -9,6 +9,7 @@ import {
   isDescendantOf,
   notDescendantOf,
   parentFqn,
+  sortByFqnHierarchically,
   sortNaturalByFqn
 } from './fqn'
 
@@ -121,7 +122,7 @@ describe('sortNaturalByFqn', () => {
         el('a.c.a.b'),
         el('a.c.c'),
         el('b'),
-        el('a.b.c'),
+        el('a.b.c')
       ]).map(prop('id'))
     ).toEqual([
       'a',
@@ -152,6 +153,50 @@ describe('sortNaturalByFqn', () => {
       'a.b10',
       'a.b2.c',
       'a.c.c'
+    ])
+  })
+})
+
+describe('sortByFqnHierarchically', () => {
+  it('should sort hierarchically', () => {
+    expect(
+      sortByFqnHierarchically([
+        el('a.b'),
+        el('a'),
+        el('a.b.c'),
+        el('a.c.a.b'),
+        el('a.c.c'),
+        el('b')
+      ]).map(prop('id'))
+    ).toEqual([
+      'a',
+      'b',
+      'a.b',
+      'a.b.c',
+      'a.c.c',
+      'a.c.a.b'
+    ])
+  })
+
+  it('should preserve initial order', () => {
+    expect(
+      sortByFqnHierarchically([
+        el('b'),
+        el('a.c.c'),
+        el('a'),
+        el('a.b10'),
+        el('a.b2.c'),
+        el('a.b1'),
+        el('a.b2')
+      ]).map(prop('id'))
+    ).toEqual([
+      'b',
+      'a',
+      'a.b10',
+      'a.b1',
+      'a.b2',
+      'a.c.c',
+      'a.b2.c'
     ])
   })
 })

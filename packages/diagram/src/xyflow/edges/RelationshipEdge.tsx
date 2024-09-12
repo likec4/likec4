@@ -29,7 +29,7 @@ import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
-import { deepEqual, deepEqual as eq } from 'fast-equals'
+import { deepEqual as eq } from 'fast-equals'
 import {
   memo,
   type PointerEvent as ReactPointerEvent,

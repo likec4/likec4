@@ -1,4 +1,5 @@
 import type { DiagramView, WhereOperator } from '@likec4/core'
+import type { MantineThemeOverride } from '@mantine/core'
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
 
 export type ViewData<ViewId extends string> = Omit<DiagramView, 'id'> & {
@@ -93,4 +94,6 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
 
   browserClassName?: string | undefined
   browserStyle?: CSSProperties | undefined
+
+  mantineTheme?: MantineThemeOverride | undefined
 }

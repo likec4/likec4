@@ -102,7 +102,7 @@ export function ancestorsFqn(fqn: Fqn): Fqn[] {
  *                    - Positive number if a is deeper than b.
  *                    - Negative number if b is deeper than a.
  */
-export function compareFqnHierarchically<T extends string = string>(a: T, b: T): number {
+export function compareFqnHierarchically<T extends string = string>(a: T, b: T): -1 | 0 | 1 {
   const depthA = a.split('.').length
   const depthB = b.split('.').length
   switch (true) {
@@ -125,6 +125,17 @@ export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T)
 type IterableContainer<T = unknown> = ReadonlyArray<T> | readonly []
 type ReorderedArray<T extends IterableContainer> = {
   -readonly [P in keyof T]: T[number]
+}
+
+export function sortByFqnHierarchically<T extends { id: string }, A extends IterableContainer<T>>(
+  array: A
+): ReorderedArray<A> {
+  return array
+    .map(item => ({ item, fqn: item.id.split('.') }))
+    .sort((a, b) => {
+      return a.fqn.length - b.fqn.length
+    })
+    .map(({ item }) => item) as ReorderedArray<A>
 }
 
 export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(

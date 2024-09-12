@@ -1,12 +1,12 @@
 /_astro/*
   Access-Control-Allow-Origin: *
   X-Robots-Tag: nosnippet
-  Cache-Control: public,max-age=604800
+  Cache-Control: public,max-age=604800,immutable
 
 /og/*
   Access-Control-Allow-Origin: *
   X-Robots-Tag: nosnippet
-  Cache-Control: public,max-age=604800
+  Cache-Control: public,max-age=600
 
 /img/*
   Access-Control-Allow-Origin: *

@@ -235,7 +235,7 @@ export function NotationPanel() {
                 <ScrollAreaAutosize
                   viewportProps={{
                     style: {
-                      maxHeight: height > 50 ? `min(40vh, ${height - 20}px)` : '40vh'
+                      maxHeight: `min(40vh, ${Math.max(height - 60, 50)}px)`
                     }
                   }}>
                   <Stack gap={0}>

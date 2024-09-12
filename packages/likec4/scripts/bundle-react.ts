@@ -43,7 +43,7 @@ export async function buildReact(_isDev = false) {
       jsxDev: false,
       legalComments: 'none',
       minifyIdentifiers: false,
-      minifyWhitespace: false,
+      minifyWhitespace: true,
       minifySyntax: true,
       tsconfigRaw: readFileSync(tsconfig, { encoding: 'utf-8' })
     },
@@ -52,7 +52,7 @@ export async function buildReact(_isDev = false) {
       emptyOutDir: false,
       cssCodeSplit: false,
       cssMinify: true,
-      minify: false,
+      minify: true,
       sourcemap: false,
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,
@@ -76,6 +76,7 @@ export async function buildReact(_isDev = false) {
           preset: 'safest'
         },
         output: {
+          compact: true,
           esModule: true,
           exports: 'named'
         },
@@ -117,7 +118,7 @@ export async function buildReact(_isDev = false) {
       `${outputFilepath} should not import "@emotion/is-prop-valid"`
     )
   }
-  await rm(resolve(outDir, 'style.css'))
+
   const likec4outDir = resolve('dist/__app__/react')
   await mkdir(likec4outDir, { recursive: true })
   await copyFile('app/react/likec4.tsx', resolve(likec4outDir, 'likec4.tsx'))

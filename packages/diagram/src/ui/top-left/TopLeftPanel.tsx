@@ -192,7 +192,7 @@ export const TopLeftPanel = () => {
               transform: 'translateX(-30%)'
             }}
             key={'fit-view'}>
-            <Tooltip label="Center diagram" {...portalProps}>
+            <Tooltip label="Center camera" {...portalProps}>
               <ActionIcon
                 className="action-icon"
                 onClick={e => {

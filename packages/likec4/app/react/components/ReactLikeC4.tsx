@@ -1,0 +1,102 @@
+import type { ElementKind, Tag as CoreTag, ViewID, WhereOperator } from '@likec4/core'
+import { LikeC4Diagram, type LikeC4DiagramProps, type OnNavigateTo } from '@likec4/diagram'
+import clsx from 'clsx'
+import { type CSSProperties } from 'react'
+import { ShadowRoot } from './ShadowRoot'
+
+import type { MantineThemeOverride } from '@mantine/core'
+import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
+import { useColorScheme, useShadowRootStyle } from './style'
+import { cssLikeC4View } from './styles.css'
+import type { ViewData } from './types'
+
+export type ReactLikeC4Props<
+  ViewId extends string = ViewID,
+  Tag extends string = CoreTag,
+  Kind extends string = ElementKind
+> = Omit<LikeC4DiagramProps, 'view' | 'where' | 'onNavigateTo'> & {
+  view: ViewData<ViewId>
+
+  /**
+   * Keep aspect ratio of the diagram
+   * Disable if you need to manage the viewport (use className)
+   *
+   * @default true
+   */
+  keepAspectRatio?: boolean | undefined
+
+  /**
+   * By default determined by the user's system preferences.
+   */
+  colorScheme?: 'light' | 'dark' | undefined
+
+  /**
+   * LikeC4 views are using 'IBM Plex Sans' font.
+   * By default, component injects the CSS to document head.
+   * Set to false if you want to handle the font yourself.
+   *
+   * @default true
+   */
+  injectFontCss?: boolean | undefined
+
+  style?: CSSProperties | undefined
+
+  where?: WhereOperator<Tag, Kind> | undefined
+
+  onNavigateTo?: OnNavigateTo<ViewId> | undefined
+
+  mantineTheme?: MantineThemeOverride | undefined
+}
+
+export function ReactLikeC4<
+  ViewId extends string = ViewID,
+  Tag extends string = CoreTag,
+  Kind extends string = ElementKind
+>({
+  className,
+  view,
+  colorScheme: explicitColorScheme,
+  injectFontCss = true,
+  keepAspectRatio = true,
+  showNotations = true,
+  onNavigateTo,
+  background = 'transparent',
+  style,
+  mantineTheme,
+  ...props
+}: ReactLikeC4Props<ViewId, Tag, Kind>) {
+  const colorScheme = useColorScheme(explicitColorScheme)
+
+  const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)
+
+  const notations = view.notation?.elements ?? []
+  const hasNotations = notations.length > 0
+
+  return (
+    <>
+      <style type="text/css" dangerouslySetInnerHTML={{ __html: cssstyle }} />
+      <ShadowRoot
+        {...shadowRootProps}
+        injectFontCss={injectFontCss}
+        className={clsx('likec4-view', className)}
+        style={style}
+      >
+        <ShadowRootMantineProvider
+          theme={mantineTheme}
+          colorScheme={colorScheme}
+          className={clsx(cssLikeC4View)}
+        >
+          <LikeC4Diagram
+            view={view as any}
+            showNotations={showNotations && hasNotations}
+            keepAspectRatio={false}
+            onNavigateTo={onNavigateTo as any}
+            background={background}
+            {...props}
+          />
+        </ShadowRootMantineProvider>
+      </ShadowRoot>
+    </>
+  )
+}
+ReactLikeC4.displayName = 'GenericReactLikeC4'

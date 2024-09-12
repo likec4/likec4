@@ -56,7 +56,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
       cssCodeSplit: false,
       cssMinify: true,
       sourcemap: false,
-      minify: 'esbuild',
+      minify: true,
       target: 'es2020',
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,

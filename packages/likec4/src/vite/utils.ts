@@ -9,7 +9,6 @@ import { find } from 'remeda'
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
 const banner = `
-// @ts-nocheck
 /* prettier-ignore-start */
 /* eslint-disable */
 

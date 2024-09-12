@@ -6,7 +6,7 @@ import {
   isElementView,
   isScopedElementView,
   parentFqn,
-  sortNaturalByFqn,
+  sortByFqnHierarchically,
   type ViewID
 } from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
@@ -147,7 +147,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     flatMap(d => map(d.c4Elements, toModelElement(d))),
     filter(isTruthy),
     // sort from root elements to nested, so that parent is always present
-    sortNaturalByFqn,
+    // Import to preserve the order from the source
+    sortByFqnHierarchically,
     reduce(
       (acc, el) => {
         const parent = parentFqn(el.id)

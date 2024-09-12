@@ -250,14 +250,9 @@ export const edgeNoteText = style({
   textWrap: 'pretty',
   lineHeight: 1.25,
   vars: {
-    '--text-fz': mantine.fontSizes.xs
+    '--text-fz': mantine.fontSizes.sm
   },
   '@media': {
-    [mantine.largerThan('sm')]: {
-      vars: {
-        '--text-fz': mantine.fontSizes.sm
-      }
-    },
     [mantine.largerThan('md')]: {
       vars: {
         '--text-fz': mantine.fontSizes.md

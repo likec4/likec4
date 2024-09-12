@@ -37,7 +37,7 @@ const cli = yargs(hideBin(argv))
   .demandCommand(1, 'Please run with valid command')
   .strict()
   .recommendCommands()
-  .showHelpOnFail(false, 'Something is wrong, run with --help for available options')
+  .showHelpOnFail(true, 'Something is wrong, run with --help')
   .updateStrings({
     'Options:': k.bold('Options:'),
     'Positionals:': k.bold('Arguments:'),

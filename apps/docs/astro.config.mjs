@@ -9,6 +9,8 @@ import { searchForWorkspaceRoot } from 'vite'
 import likec4grammar from './likec4.tmLanguage.json' with { type: 'json' }
 import structurizr from './structurizr.tmLanguage.json' with { type: 'json' }
 
+const version = process.env.npm_package_version || 'latest'
+
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
@@ -82,8 +84,8 @@ export default defineConfig({
           items: [
             {
               label: 'Latest',
-              badge: { text: '1.10.0', variant: 'success' },
-              link: 'https://github.com/likec4/likec4/releases/tag/v1.10.0',
+              badge: { text: version, variant: 'success' },
+              link: `https://github.com/likec4/likec4/releases/tag/v${version}`,
               attrs: {
                 target: '_blank',
                 style: 'font-weight: 500; font-size: var(--sl-text-sm)',

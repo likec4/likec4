@@ -30,13 +30,13 @@ export async function viteReactConfig({
     publicDir: false,
     mode: 'production',
     esbuild: {
-      banner: JsBanners.banner,
+      banner: `'use client'\n` + JsBanners.banner,
       footer: JsBanners.footer,
       jsx: 'transform',
       jsxDev: false,
       minifyIdentifiers: false,
-      minifySyntax: true,
-      minifyWhitespace: true,
+      minifySyntax: false,
+      minifyWhitespace: false,
       tsconfigRaw: {
         compilerOptions: {
           target: 'ES2020',
@@ -50,7 +50,7 @@ export async function viteReactConfig({
       outDir,
       emptyOutDir: false,
       sourcemap: false,
-      minify: 'esbuild',
+      minify: false,
       target: 'es2020',
       copyPublicDir: false,
       chunkSizeWarningLimit,
@@ -62,6 +62,9 @@ export async function viteReactConfig({
         formats: ['es']
       },
       rollupOptions: {
+        output: {
+          compact: false
+        },
         external: [
           'likec4/react',
           'likec4',

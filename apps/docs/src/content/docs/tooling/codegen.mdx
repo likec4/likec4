@@ -1,28 +1,48 @@
 ---
 title: Code generation
 description: How to generate React components, Webcomponents, and TypeScript models from the LikeC4 DSL.
+head:
+  - tag: title
+    content: Code generation with LikeC4
 sidebar:
+  label: Code generation (React)
   order: 2
 tableOfContents:
   minHeadingLevel: 3
   maxHeadingLevel: 6    
 ---
 
-import { Card } from '@astrojs/starlight/components';
+import { Card, Aside } from '@astrojs/starlight/components';
+
+<p>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+</p>
+
+Generate source code artifacts from architecture model.
+
+Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your dependencies:
+
+```sh
+npm add likec4 react react-dom
+```
 
 #### React
 
-Ensure you have the `likec4` in your dependencies (and `react` if you haven't already):
+The following generates a JavaScript bundle with React Component (and `.d.ts`):
 
 ```sh
-npm add likec4
+
+npx likec4 codegen react --outfile ./src/likec4.generated.js
+
+# Aliases
+npx likec4 generate react -o ./src/likec4.generated.js
+npx likec4 gen react -o ./src/likec4.generated.js
+
 ```
 
-The following command generates a JavaScript file (and type definitions `.d.ts`) with React component:
-
-```sh
-likec4 codegen react --outfile ./src/likec4.generated.js
-```
+:::tip
+Check `likec4 codegen react --help` for available options.
+:::
 
 To use the component:
 
@@ -42,27 +62,20 @@ const App = () => {
 | -----------------   | --------------------------------------------------------------------------------------------------- |
 | `viewId`            | Typed enumeration of your views                                                                     |
 | `interactive`       | Click on the view opens a modal with the views browser.<br/>Default value is `true`.                |
-| `where`             | Optional filter, like [in view predicates](/dsl/views#filter) |
-| `injectFontCss`     | Injects CSS to load <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans</a> font from CDN.<br/>Default value is `true` |
-| `background`        | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default value is `transparent`. |
-| `browserBackground` | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default value is `dots`. |
+| `where`             | Optional, see [filter](#filter) |
+| `injectFontCss`     | Injects CSS that loads <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans</a> from CDN.<br/>Default is `true` |
+| `background`        | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default is `transparent`. |
+| `browserBackground` | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default is `dots`. |
 
-Any other property will be passed to the underlying `div` element.
-
-:::tip
-Check `likec4 codegen react --help` for available options.
-:::
+Check <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/types.ts#L18" target="_blank">source code</a> for other properties.
 
 :::caution
-React component does not rehydrate correctly if rendered on the server (if you use Server-side-rendering), better to use it only on the client-side.
+`LikeC4View` does not rehydrate correctly if rendered on the server, prefer client-side.
 :::
 
 ##### Filter
 
-`where` hides elements and relationships, that are not matching the filter  
-(Layout stays the same, i.e. elements are not rearranged, just hidden).
-
-`where` is an object with predicates. For example:
+`where` is same [view predicate](/dsl/views#filter), but applies dynamically and enables to show/hide elements based on the context. For example:
 
 ```tsx
 import { LikeC4View } from './likec4.generated'
@@ -72,6 +85,7 @@ import { LikeC4View } from './likec4.generated'
 // - and 
 // - tag is 'v1' or 'v2'
 const App = () => {
+
   return (
     <div>
       <LikeC4View
@@ -92,44 +106,106 @@ const App = () => {
 }
 ```
 
+Layout stays the same, i.e. elements are not rearranged.  
 Be aware, `where` applies both to elements and relationships.
+
+##### ReactLikeC4
+
+`LikeC4View` renders views from your model, and allows to explore your model.  
+All examples on this site use this component in MDX.  
+Component works in most usecases, but if you need more - use `ReactLikeC4`:
+
+```tsx
+import { ReactLikeC4 } from './likec4.generated'
+
+const App = () => {
+  return (
+    <div>
+      <ReactLikeC4
+        viewId="index"
+        pannable={false}
+        zoomable 
+        keepAspectRatio={false}
+        showElementLinks={false}
+        showDiagramTitle={false}
+        onNodeClick={...}
+      />
+    </div>
+  )
+}
+```
+
+`ReactLikeC4` is a low-level component with more control and events, but you need to handle interactions yourself.  
+Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/LikeC4Diagram.props.ts#L61" target="_blank">source code</a> for available options.
+
+Feel free to share your ideas or ask questions in <a href="https://github.com/likec4/likec4/discussions/" target='_blank'>GitHub discussions</a>.
+
+<Aside type='tip' title="Generic version" >
+Code generation prepares component that is already "bound" to the model.  
+But it is also possible to use a generic from the library:
+
+```tsx
+import { ReactLikeC4 } from 'likec4/react'
+import { RenderIcon, LikeC4Views } from './likec4.generated'
+
+const App = () => {
+  const view = LikeC4Views['index']
+  return (
+    <div>
+      <ReactLikeC4
+        view={view} // required DiagramView
+        renderIcon={RenderIcon} // Optional, used for bundled icons
+        onEdgeClick={...}
+      />
+    </div>
+  )
+}
+```
+</Aside>
 
 #### Webcomponent
 
-If you don't use React, you can generate a webcomponent:
+Generate javascript bundle with webcomponent:
 
 ```sh
-likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
+npx likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
 ```  
 
-You can use it in your HTML:
+And use it in HTML:
 
 ```html
 <script src="./src/likec4-webcomponent.js"></script>
 <likec4-view view-id="index"></likec4-view>
 ```
 
-By default, this will generate a `likec4-view` webcomponent.  
-To change the prefix use option `-w, --webcomponent-prefix`.
+By default, cli generates a `likec4-view` webcomponent, where `likec4` is a prefix.
+You can change the prefix by `-w, --webcomponent-prefix`.
 
 For example:
 
 ```sh
-likec4 codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js
+npx likec4 codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js
 ```  
+
+And in HTML:
 
 ```html
 <custom-c4-view view-id="index"></custom-c4-view>
 ```
+
+:::note
+CLI command [build](/tooling/cli/#build-static-website) always generates javascript with webcomponents, and after deploy you can use it already.  
+Check `Share` button on the top at <a href="https://template.likec4.dev/view/cloud" target="_blank">this example</a>
+:::
 
 #### Typed Model
 
 Generate a TypeScript file with `LikeC4Views` object, which contains all diagrams and their metadata.
 
 ```sh
-likec4 codegen views-data --outfile ./src/likec4.generated.ts
+npx likec4 codegen views-data --outfile ./src/likec4.generated.ts
 
 #Aliases
-likec4 codegen views ...
-likec4 codegen ts ...
+npx likec4 codegen views ...
+npx likec4 codegen ts ...
 ```

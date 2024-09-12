@@ -1,6 +1,6 @@
 import type { WhereOperator } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
-import { ActionIcon } from '@mantine/core'
+import { ActionIcon, type MantineThemeOverride } from '@mantine/core'
 import { useMountEffect } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
 import { type HTMLAttributes, useId, useRef, useState } from 'react'
@@ -45,6 +45,8 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
     renderIcon?: ElementIconRenderer | undefined
 
     where?: WhereOperator<Tag, Kind> | undefined
+
+    mantineTheme?: MantineThemeOverride | undefined
   }
 
 export function LikeC4Browser<ViewId extends string, Tag extends string, Kind extends string>({
@@ -57,6 +59,7 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
   renderIcon,
   where,
   style,
+  mantineTheme,
   background = 'dots'
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const [opened, setOpened] = useState(false)
@@ -171,6 +174,7 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
         onClose={closeMe}>
         <ShadowRoot injectFontCss={injectFontCss}>
           <ShadowRootMantineProvider
+            theme={mantineTheme}
             colorScheme={colorScheme}
             className={css.cssLikeC4Browser}
           >

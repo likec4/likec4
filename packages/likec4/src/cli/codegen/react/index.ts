@@ -1,4 +1,5 @@
 import { viteReactConfig } from '@/vite/config-react'
+import { compareNatural } from '@likec4/core'
 import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { stat, writeFile } from 'node:fs/promises'
@@ -17,6 +18,16 @@ type HandlerParams = {
   path: string
   useDotBin: boolean
   outfile: string | undefined
+}
+
+function toUnion(unionset: Set<string>) {
+  const union = [...unionset].sort(compareNatural).map(v => `  | ${JSON.stringify(v)}`)
+  if (union.length === 0) {
+    union.push('  | never')
+  } else {
+    union.push('  | (string & Record<never, never>)')
+  }
+  return union.join('\n') + ';'
 }
 
 export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) {
@@ -94,21 +105,9 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     kinds: new Set<string>()
   })
 
-  const ids = [...all.ids].toSorted().map(v => `  | ${JSON.stringify(v)}`)
-
-  const tags = [...all.tags].toSorted().map(v => `  | ${JSON.stringify(v)}`)
-  if (tags.length === 0) {
-    tags.push('  | never')
-  } else {
-    tags.push('  | (string & Record<never, never>) // as LiteralUnion from type-fest')
-  }
-
-  const kinds = [...all.kinds].toSorted().map(v => `  | ${JSON.stringify(v)}`)
-  if (kinds.length === 0) {
-    kinds.push('  | never')
-  } else {
-    tags.push('  | (string & Record<never, never>) // as LiteralUnion from type-fest')
-  }
+  const ids = toUnion(all.ids)
+  const tags = toUnion(all.tags)
+  const kinds = toUnion(all.kinds)
 
   await writeFile(
     resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts')),
@@ -122,16 +121,16 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
  ******************************************************************************/
 
 import type { JSX } from 'react/jsx-runtime'
-import type { LikeC4ViewProps as BaseLikeC4ViewProps, ViewData } from 'likec4/react'
+import type { LikeC4ViewProps as BaseLikeC4ViewProps, ViewData, ReactLikeC4Props as GenericReactLikeC4Props } from 'likec4/react'
 
 type LikeC4ViewId =
-${ids.join('\n')}
-
-type LikeC4Tag =
-${tags.join('\n')}
+${ids}
 
 type LikeC4ElementKind =
-${kinds.join('\n')}
+${kinds}
+
+type LikeC4Tag =
+${tags}
 
 type LikeC4ViewData = ViewData<LikeC4ViewId>
 
@@ -155,6 +154,13 @@ declare function RenderIcon(props: IconRendererProps): JSX.Element;
 type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>;
 declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element;
 
+type ReactLikeC4Props =
+  & Omit<GenericReactLikeC4Props<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>, 'view' | 'renderIcon'>
+  & {
+    viewId: LikeC4ViewId
+  };
+declare function ReactLikeC4({viewId, ...props}: ReactLikeC4Props): JSX.Element;
+
 export {
   type LikeC4ViewId,
   type LikeC4Tag,
@@ -162,10 +168,12 @@ export {
   type LikeC4ViewData,
   type LikeC4DiagramView,
   type LikeC4ViewProps,
-  LikeC4Views,
+  type ReactLikeC4Props,
   isLikeC4ViewId,
+  LikeC4Views,
+  LikeC4View,
   RenderIcon,
-  LikeC4View
+  ReactLikeC4
 }
 /* prettier-ignore-end */
 `.trimStart()

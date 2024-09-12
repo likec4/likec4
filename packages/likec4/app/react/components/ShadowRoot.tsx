@@ -1,8 +1,7 @@
-import { type DetailedHTMLFactory, type HTMLAttributes, useState } from 'react'
+import { type DetailedHTMLFactory, type HTMLAttributes } from 'react'
 
-import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import root from 'react-shadow'
-import { useCreateStyleSheet } from './style'
+import { useBundledStyleSheet } from './style'
 
 const Root: DetailedHTMLFactory<
   HTMLAttributes<HTMLDivElement> & {
@@ -23,16 +22,7 @@ export function ShadowRoot({
   injectFontCss = true,
   ...props
 }: ShadowRootProps) {
-  const [styleSheets, setStyleSheets] = useState([] as CSSStyleSheet[])
-  const createCssStyleSheet = useCreateStyleSheet(injectFontCss)
-  useIsomorphicLayoutEffect(() => {
-    const css = createCssStyleSheet()
-    setStyleSheets([css])
-    return () => {
-      css.replaceSync('')
-    }
-  }, [createCssStyleSheet])
-
+  const styleSheets = useBundledStyleSheet(injectFontCss)
   return (
     <Root styleSheets={styleSheets} {...props}>
       {children}

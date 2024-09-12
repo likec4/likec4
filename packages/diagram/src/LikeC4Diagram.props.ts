@@ -14,8 +14,8 @@ import type { XYBackground } from './xyflow/XYFlowBackground'
 
 export type { WhereOperator }
 
-export type DiagramNodeWithNavigate = Omit<DiagramNode, 'navigateTo'> & {
-  navigateTo: ViewID
+export type DiagramNodeWithNavigate<ID extends string = ViewID> = Omit<DiagramNode, 'navigateTo'> & {
+  navigateTo: ID
 }
 
 type ElementIconNodeProps = {
@@ -28,18 +28,18 @@ export type ElementIconRenderer = (props: {
   node: ElementIconNodeProps
 }) => ReactNode
 
-export type OnNavigateTo = {
-  (
-    to: ViewID,
-    // These fields present if navigateTo triggered by a node click
-    event?: ReactMouseEvent,
-    element?: DiagramNodeWithNavigate
-  ): void
-}
+export type OnNavigateTo<ID extends string = ViewID> = (
+  to: ID,
+  // These fields present if navigateTo triggered by a node click
+  event?: ReactMouseEvent,
+  element?: DiagramNodeWithNavigate<ID>
+) => void
+
 export type OnNodeClick = (
   node: DiagramNode,
   event: ReactMouseEvent
 ) => void
+
 export type OnEdgeClick = (
   edge: DiagramEdge,
   event: ReactMouseEvent
@@ -53,9 +53,8 @@ export type OnCanvasClick = (event: ReactMouseEvent) => void
 export type ChangeEvent = {
   change: ViewChange
 }
-export type OnChange = {
-  (event: ChangeEvent): void
-}
+export type OnChange = (event: ChangeEvent) => void
+
 export type LikeC4ColorScheme = 'light' | 'dark'
 
 export interface LikeC4DiagramProperties {
@@ -64,15 +63,7 @@ export interface LikeC4DiagramProperties {
   className?: string | undefined
 
   /**
-   * Controls color scheme used for styling the flow
-   * By default inherits from system or surrounding MantineProvider
-   *
-   * @example 'light' | 'dark'
-   */
-  // colorScheme?: LikeC4ColorScheme | undefined
-
-  /**
-   * Show/hide controls menu
+   * Show/hide ReactFlow controls menu
    * @default false
    */
   controls?: boolean | undefined
@@ -102,10 +93,13 @@ export interface LikeC4DiagramProperties {
    */
   fitViewPadding?: number | undefined
 
+  /**
+   * @default false if readonly
+   */
   nodesSelectable?: boolean | undefined
 
   /**
-   * @default false
+   * @default false if readonly
    */
   nodesDraggable?: boolean | undefined
 
@@ -138,7 +132,7 @@ export interface LikeC4DiagramProperties {
 
   /**
    * Show back/forward navigation buttons
-   * @default false
+   * @default true if `onNavigateTo` is set
    */
   showNavigationButtons?: undefined | boolean
 
@@ -167,11 +161,14 @@ export interface LikeC4DiagramProperties {
   experimentalEdgeEditing?: boolean | undefined
 
   /**
-   * Render custom icon for a node
+   * Render icon for an element, bundled or remote
    * By default, if icon is http:// or https://, it will be rendered as an image
    */
   renderIcon?: ElementIconRenderer | undefined
 
+  /**
+   * Dynamic filter, applies both to nodes and edges
+   */
   where?: WhereOperator<string, string> | undefined
 }
 
@@ -186,8 +183,15 @@ export interface LikeC4DiagramEventHandlers {
   onCanvasClick?: OnCanvasClick | null | undefined
   onCanvasDblClick?: OnCanvasClick | null | undefined
 
+  // if set, will render a burger menu icon in the top left corner
   onBurgerMenuClick?: null | undefined | (() => void)
+
+  // if set, will render a source code icon in the top left corner
   onOpenSourceView?: null | undefined | (() => void)
+
+  // if set, will render an icon in properties panel for each element
   onOpenSourceElement?: null | undefined | ((fqn: Fqn) => void)
+
+  // if set, will be called on edge click
   onOpenSourceRelation?: null | undefined | ((id: RelationID) => void)
 }

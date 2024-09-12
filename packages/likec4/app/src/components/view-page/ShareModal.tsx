@@ -39,7 +39,7 @@ export function ShareModal({
           <Tabs value={activeTab} onChange={tab => setActiveTab(tab ?? 'webcomponent')}>
             <TabsList>
               <TabsTab value="webcomponent">Webcomponent</TabsTab>
-              <TabsTab value="embed">Embed</TabsTab>
+              <TabsTab value="embed">Embedded</TabsTab>
             </TabsList>
 
             <TabsPanel value="embed" pt={'md'}>

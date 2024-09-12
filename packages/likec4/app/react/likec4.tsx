@@ -1,5 +1,11 @@
-import type { LikeC4ViewProps as BaseLikeC4ViewProps } from 'likec4/react'
-import { LikeC4Browser, LikeC4ViewElement, useColorScheme } from 'likec4/react'
+import {
+  LikeC4Browser,
+  LikeC4ViewEmbedded,
+  type LikeC4ViewProps as BaseLikeC4ViewProps,
+  ReactLikeC4 as GenericReactLikeC4,
+  type ReactLikeC4Props as GenericReactLikeC4Props,
+  useColorScheme
+} from 'likec4/react'
 import { memo, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
 import {
@@ -45,7 +51,7 @@ const NotFound = ({ viewId }: { viewId: string }) => (
   </div>
 )
 
-export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4ViewComponent({
+const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View({
   viewId,
   interactive = true,
   colorScheme: explicitColorScheme,
@@ -60,6 +66,7 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
   enableFocusMode = false,
   browserClassName,
   browserStyle,
+  mantineTheme,
   ...props
 }) {
   const view = LikeC4Views[viewId]
@@ -88,7 +95,7 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
 
   return (
     <>
-      <LikeC4ViewElement<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
+      <LikeC4ViewEmbedded<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
         view={view}
         colorScheme={colorScheme}
         injectFontCss={injectFontCss}
@@ -101,6 +108,7 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
         showNotations={showNotations}
         enableFocusMode={enableFocusMode}
         where={where}
+        mantineTheme={mantineTheme}
         {...props}
       />
       {browserView && (
@@ -115,9 +123,31 @@ export const LikeC4View = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4V
           where={where}
           className={browserClassName}
           style={browserStyle}
+          mantineTheme={mantineTheme}
         />
       )}
     </>
   )
 })
-LikeC4View.displayName = 'LikeC4View'
+LikeC4ViewMemo.displayName = 'LikeC4ViewMemo'
+export { LikeC4ViewMemo as LikeC4View }
+
+export type ReactLikeC4Props =
+  & Omit<GenericReactLikeC4Props<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>, 'view' | 'renderIcon'>
+  & {
+    viewId: LikeC4ViewId
+  }
+
+export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props) {
+  const view = LikeC4Views[viewId]
+  if (!view) {
+    return <NotFound viewId={viewId} />
+  }
+  return (
+    <GenericReactLikeC4
+      view={view}
+      renderIcon={RenderIcon}
+      {...props}
+    />
+  )
+}

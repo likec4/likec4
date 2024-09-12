@@ -3,7 +3,7 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.enable": false,
   "npm.packageManager": "yarn",
-  "dprint.path": "node_modules/dprint/dprint",
+  "editor.defaultFormatter": "dprint.dprint",
   "[typescript]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
@@ -77,5 +77,8 @@
     "xyflow",
     "zoomable"
   ],
-  "editor.tabSize": 2
+  "sonarlint.connectedMode.project": {
+    "connectionId": "likec4",
+    "projectKey": "likec4_likec4"
+  }
 }
