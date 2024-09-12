@@ -2,6 +2,8 @@ import type { Tagged } from 'type-fest'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
+export type NonEmptyReadonlyArray<T> = readonly [T, ...T[]]
+
 export type IconUrl = Tagged<string, 'IconUrl'>
 
 export type CustomColor = string
