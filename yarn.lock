@@ -2102,7 +2102,7 @@ __metadata:
     "@mantine/hooks": "npm:7.12.2"
     "@mantine/vanilla-extract": "npm:7.12.2"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons-react": "npm:^3.14.0"
+    "@tabler/icons-react": "npm:^3.15.0"
     "@types/bezier-js": "npm:^4.1.3"
     "@types/d3-shape": "npm:^3.1.6"
     "@types/react": "npm:^18.3.4"
@@ -2298,7 +2298,7 @@ __metadata:
     "@mantine/hooks": "npm:7.12.2"
     "@mantine/vanilla-extract": "npm:7.12.2"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons-react": "npm:^3.14.0"
+    "@tabler/icons-react": "npm:^3.15.0"
     "@tanstack/react-router": "npm:1.45.13"
     "@tanstack/router-cli": "npm:1.45.13"
     "@tanstack/router-vite-plugin": "npm:1.45.13"
@@ -2362,7 +2362,7 @@ __metadata:
     "@mantine/vanilla-extract": "npm:7.12.2"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons-react": "npm:^3.14.0"
+    "@tabler/icons-react": "npm:^3.15.0"
     "@types/node": "npm:^20.16.1"
     "@types/react": "npm:18.3.4"
     "@types/react-dom": "npm:18.3.0"
@@ -3201,21 +3201,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tabler/icons-react@npm:^3.14.0":
-  version: 3.14.0
-  resolution: "@tabler/icons-react@npm:3.14.0"
+"@tabler/icons-react@npm:^3.15.0":
+  version: 3.16.0
+  resolution: "@tabler/icons-react@npm:3.16.0"
   dependencies:
-    "@tabler/icons": "npm:3.14.0"
+    "@tabler/icons": "npm:3.16.0"
   peerDependencies:
     react: ">= 16"
-  checksum: 10c0/87779307e81fda5ae29f3d0f1744d7ff84ad95bef16d2c9f472c0f99b1131ed3c2169994ca47b692c049b63cd029c833fcbd1fc158f26c49db603d1bb2ed905c
+  checksum: 10c0/269c9d0eb3911112248ee9e0a4f08fd699e5ed4ec99c139eb4cf5d724f90805263f4652899c413395fea3730cc89209a06da668b14fe6d2c1b5a2a05f67df4c7
   languageName: node
   linkType: hard
 
-"@tabler/icons@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@tabler/icons@npm:3.14.0"
-  checksum: 10c0/58aabf1b6843c2983ec7028d6f19e1e70e3ea786a5a966851c83567f0263c2fec39068e91383880dddb7e60844bb0a039556c9c8ac6c91f537ac238035dbfd3b
+"@tabler/icons@npm:3.16.0":
+  version: 3.16.0
+  resolution: "@tabler/icons@npm:3.16.0"
+  checksum: 10c0/1afceb101bd76e3a061323248671361a404471caff4fef0b1c8274d19d62924c291af763489535f6144d207b7d6647bd1692f436e10fa5343bc8fd9fed3c2681
   languageName: node
   linkType: hard
 
@@ -8541,7 +8541,7 @@ __metadata:
     "@mantine/vanilla-extract": "npm:7.12.2"
     "@nanostores/react": "npm:0.7.3"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons-react": "npm:^3.14.0"
+    "@tabler/icons-react": "npm:^3.15.0"
     "@tanstack/react-router": "npm:1.45.13"
     "@tanstack/router-cli": "npm:1.45.13"
     "@tanstack/router-vite-plugin": "npm:1.45.13"
