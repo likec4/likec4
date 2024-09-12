@@ -1698,6 +1698,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expressive-code/core@npm:^0.36.1":
+  version: 0.36.1
+  resolution: "@expressive-code/core@npm:0.36.1"
+  dependencies:
+    "@ctrl/tinycolor": "npm:^4.0.4"
+    hast-util-select: "npm:^6.0.2"
+    hast-util-to-html: "npm:^9.0.1"
+    hast-util-to-text: "npm:^4.0.1"
+    hastscript: "npm:^9.0.0"
+    postcss: "npm:^8.4.38"
+    postcss-nested: "npm:^6.0.1"
+    unist-util-visit: "npm:^5.0.0"
+    unist-util-visit-parents: "npm:^6.0.1"
+  checksum: 10c0/cb3b34e99139555c2a243168931f3d9958ad818ec04aed63b428ace37f4988f981cabb11f25f73ae0a2474b880677d6b3ea6c2ccb748da8994fa2000e70d09b0
+  languageName: node
+  linkType: hard
+
 "@expressive-code/plugin-collapsible-sections@npm:^0.36.0":
   version: 0.36.0
   resolution: "@expressive-code/plugin-collapsible-sections@npm:0.36.0"
@@ -1716,12 +1733,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-line-numbers@npm:^0.36.0":
-  version: 0.36.0
-  resolution: "@expressive-code/plugin-line-numbers@npm:0.36.0"
+"@expressive-code/plugin-line-numbers@npm:^0.36.1":
+  version: 0.36.1
+  resolution: "@expressive-code/plugin-line-numbers@npm:0.36.1"
   dependencies:
-    "@expressive-code/core": "npm:^0.36.0"
-  checksum: 10c0/918ca754e83c9b4d1082f7be59ddf87a67b544b0f9f3a037523533e2cbe72f9a3b37f3a00b635beb30255d5a29629dbf772535c50a237115cb681ae2e5f56384
+    "@expressive-code/core": "npm:^0.36.1"
+  checksum: 10c0/cd32f350f6feb9706b7cd40cd4dffcb44891c858662e26c0ba5f9b218b25782b7b528a91e5611231a269d2c87f849977d188876588d1da77b0d6bd6d4b32d9a3
   languageName: node
   linkType: hard
 
@@ -2142,7 +2159,7 @@ __metadata:
     "@astrojs/react": "npm:^3.6.2"
     "@astrojs/starlight": "npm:^0.26.1"
     "@expressive-code/plugin-collapsible-sections": "npm:^0.36.0"
-    "@expressive-code/plugin-line-numbers": "npm:^0.36.0"
+    "@expressive-code/plugin-line-numbers": "npm:^0.36.1"
     "@fontsource/ibm-plex-sans": "npm:^5.0.22"
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.4"
