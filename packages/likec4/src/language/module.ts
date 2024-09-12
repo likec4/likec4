@@ -9,7 +9,7 @@ import { NodeFileSystem } from 'langium/node'
 import k from 'tinyrainbow'
 import type { Constructor } from 'type-fest'
 import pkg from '../../package.json' with { type: 'json' }
-import { createLikeC4Logger, type Logger } from '../logger'
+import { createLikeC4Logger, type Logger, NoopLogger } from '../logger'
 import { Views } from './Views'
 import { CliWorkspace } from './Workspace'
 
@@ -55,7 +55,7 @@ export type CreateLanguageServiceOptions = {
    * Logger to use for the language service.
    * @default 'default'
    */
-  logger?: Logger | 'vite' | 'default'
+  logger?: Logger | 'vite' | 'default' | false
   /**
    * Whether to use the `dot` binary for layouting or the WebAssembly version.
    * @default 'wasm'
@@ -72,6 +72,9 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
   let logger: Logger
 
   switch (options.logger) {
+    case false:
+      logger = NoopLogger
+      break
     case 'vite':
       logger = createLikeC4Logger('c4:lsp ')
       break
@@ -92,7 +95,7 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
     }
   } satisfies Module<CliServices, DeepPartial<CliAddedServices>>
 
-  setLogLevel('warn')
+  setLogLevel(options.logger === false ? 'silent' : 'warn')
 
   return createCustomLanguageServices(options.useFileSystem ? NodeFileSystem : {}, CliModule, module).likec4
 }

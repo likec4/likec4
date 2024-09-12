@@ -26,7 +26,7 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
     graphviz: useDotBin ? 'binary' : 'wasm'
   })
 
-  const model = await languageServices.computed()
+  const model = await languageServices.buildComputedModel()
   if (!model) {
     logger.warn('no model parsed')
     throw new Error('no model parsed')

@@ -8,3 +8,6 @@ export type Fqn = LiteralUnion<CoreFqn, string>
 export type RelationID = LiteralUnion<CoreRelationID, string>
 export type ViewID = LiteralUnion<CoreViewID, string>
 export type EdgeId = LiteralUnion<CoreEdgeId, string>
+
+export type IncomingFilter = 'all' | 'direct' | 'to-descendants'
+export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'

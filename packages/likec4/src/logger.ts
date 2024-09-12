@@ -56,6 +56,12 @@ export type Logger = {
   warn(msg: string): void
   error(err: unknown): void
 }
+const noop = () => void 0
+export const NoopLogger: Logger = {
+  info: noop,
+  warn: noop,
+  error: noop
+}
 
 const NS_PER_MS = 1e6
 

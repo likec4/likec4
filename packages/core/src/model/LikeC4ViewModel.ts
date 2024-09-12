@@ -4,7 +4,7 @@ import type { ElementShape, Tag } from '../types/element'
 import type { Color } from '../types/theme'
 import type { ComputedEdge, ComputedNode, ComputedView } from '../types/view'
 import type { LikeC4Model } from './LikeC4Model'
-import type { EdgeId, Fqn } from './types'
+import type { EdgeId, Fqn, OutgoingFilter } from './types'
 
 type ElementOrFqn = Fqn | LikeC4ViewModel.Element
 
@@ -20,7 +20,7 @@ export class LikeC4ViewModel {
 
   constructor(
     public readonly view: ComputedView,
-    public readonly model: LikeC4Model
+    public readonly model: LikeC4Model<LikeC4ViewModel>
   ) {
     for (const node of view.nodes) {
       const el = new LikeC4ViewModel.Element(node, this)
@@ -157,7 +157,7 @@ export class LikeC4ViewModel {
    */
   public outgoing(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'from-descendants' = 'all'
+    filter: OutgoingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Connection> {
     const el = this.element(isString(element) ? element : element.id)
     const edges = el.node.outEdges.map(e => nonNullable(this.#connections.get(e), `Edge ${e} not found`))
@@ -176,7 +176,7 @@ export class LikeC4ViewModel {
 
   public outgoers(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'from-descendants' = 'all'
+    filter: OutgoingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Element> {
     return this.outgoing(element, filter).map(r => r.target)
   }
@@ -226,7 +226,7 @@ export namespace LikeC4ViewModel {
       return this.node.tags ?? []
     }
 
-    public model(): LikeC4Model.Element {
+    public model(): LikeC4Model.Element<LikeC4ViewModel> {
       return this.viewmodel.model.element(this.id)
     }
 
@@ -268,11 +268,11 @@ export namespace LikeC4ViewModel {
       return this.viewmodel.incomers(this, filter)
     }
 
-    public outgoing(filter: 'all' | 'direct' | 'from-descendants' = 'all'): ReadonlyArray<LikeC4ViewModel.Connection> {
+    public outgoing(filter: OutgoingFilter = 'all'): ReadonlyArray<LikeC4ViewModel.Connection> {
       return this.viewmodel.outgoing(this, filter)
     }
 
-    public outgoers(filter: 'all' | 'direct' | 'from-descendants' = 'all'): ReadonlyArray<LikeC4ViewModel.Element> {
+    public outgoers(filter: OutgoingFilter = 'all'): ReadonlyArray<LikeC4ViewModel.Element> {
       return this.viewmodel.outgoers(this, filter)
     }
 
@@ -311,7 +311,7 @@ export namespace LikeC4ViewModel {
     /**
      * Model relationships
      */
-    relationships(): ReadonlyArray<LikeC4Model.Relationship> {
+    relationships(): ReadonlyArray<LikeC4Model.Relationship<LikeC4ViewModel>> {
       return this.edge.relations.map(r => nonNullable(this.viewmodel.model.relationship(r)))
     }
   }

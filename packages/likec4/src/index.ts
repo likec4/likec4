@@ -49,6 +49,7 @@ export {
   isDescendantOf,
   isSameHierarchy,
   isStepEdgeId,
+  LikeC4DiagramModel,
   LikeC4Model,
   LikeC4ViewModel,
   nameFromFqn,
