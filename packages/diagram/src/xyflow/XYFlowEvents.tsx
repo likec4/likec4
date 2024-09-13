@@ -61,10 +61,9 @@ export function useXYFlowEvents() {
           xystore,
           viewportChanged,
           fitDiagram,
-          resetLastClicked
+          resetFocusAndLastClicked
         } = diagramApi.getState()
-        resetLastClicked()
-        xystore.getState().resetSelectedElements()
+        resetFocusAndLastClicked()
         if (!onCanvasDblClick) {
           event.stopPropagation()
         }
@@ -82,8 +81,7 @@ export function useXYFlowEvents() {
           activeWalkthrough,
           fitDiagram,
           onCanvasClick,
-          xystore,
-          resetLastClicked
+          resetFocusAndLastClicked
         } = diagramApi.getState()
         if ((focusedNodeId ?? activeWalkthrough) !== null) {
           fitDiagram()
@@ -91,8 +89,7 @@ export function useXYFlowEvents() {
             event.stopPropagation()
           }
         }
-        resetLastClicked()
-        xystore.getState().resetSelectedElements()
+        resetFocusAndLastClicked()
         onCanvasClick?.(event)
       },
       onNodeContextMenu: (event, xynode) => {
@@ -103,7 +100,7 @@ export function useXYFlowEvents() {
         )
       },
       onPaneContextMenu: (event) => {
-        diagramApi.getState().resetLastClicked()
+        diagramApi.getState().resetFocusAndLastClicked()
         diagramApi.getState().onCanvasContextMenu?.(event as any)
       },
       onEdgeContextMenu: (event, xyedge) => {
@@ -145,6 +142,7 @@ export function useXYFlowEvents() {
               break
             }
             case enableFocusMode && focusedNodeId === xynode.id && clickedRecently: {
+              focusOnNode(false)
               fitDiagram()
               break
             }
@@ -302,5 +300,5 @@ export function useXYFlowEvents() {
         hoveredNodeFromOnEdgeEnterRef.current = ''
       }
     }) satisfies XYFlowEventHandlers
-  }, [diagramApi, likec4model])
+  }, [diagramApi])
 }

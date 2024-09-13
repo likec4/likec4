@@ -129,6 +129,7 @@ export function XYFlow({
       {...(!zoomable && {
         zoomActivationKeyCode: null
       })}
+      zoomOnDoubleClick={zoomOnDoubleClick}
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
@@ -164,7 +165,6 @@ export function XYFlow({
         onNodeDragStop: layoutConstraints.onNodeDragStop
       }}
       nodeDragThreshold={3}
-      zoomOnDoubleClick={zoomOnDoubleClick}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
       onNodesChange={onNodesChange}

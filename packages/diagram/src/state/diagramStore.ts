@@ -126,7 +126,11 @@ export type DiagramState = Simplify<
     // Actions
     updateView: (view: DiagramView) => void
 
-    focusOnNode: (nodeId: string) => void
+    /**
+     * A function to set the focus on a specific node given its identifier.
+     * It can also be used to remove focus if the input is `false`.
+     */
+    focusOnNode: (nodeId: string | false) => void
 
     setHoveredNode: (nodeId: string | null) => void
     setHoveredEdge: (edgeId: string | null) => void
@@ -134,7 +138,7 @@ export type DiagramState = Simplify<
     setLastClickedNode: (nodeId: string | null) => void
     setLastClickedEdge: (edgeId: string | null) => void
 
-    resetLastClicked: () => void
+    resetFocusAndLastClicked: () => void
 
     getElement(id: Fqn): DiagramNode | null
     triggerChangeElementStyle: (change: ViewChange.ChangeElementStyle) => void
@@ -440,6 +444,18 @@ export function createDiagramStore(props: DiagramInitialState) {
           focusOnNode: (nodeId) => {
             const { focusedNodeId, view, enableFocusMode } = get()
             invariant(enableFocusMode, 'focus mode is not enabled')
+            if (nodeId === false) {
+              set(
+                {
+                  activeWalkthrough: null,
+                  focusedNodeId: null,
+                  dimmed: EmptyStringSet
+                },
+                noReplace,
+                `unfocus`
+              )
+              return
+            }
             if (nodeId !== focusedNodeId) {
               const notDimmed = new StringSet([nodeId])
               const dimmed = new StringSet()
@@ -493,12 +509,13 @@ export function createDiagramStore(props: DiagramInitialState) {
             }
           },
 
-          resetLastClicked: () => {
+          resetFocusAndLastClicked: () => {
             let {
               activeWalkthrough,
               focusedNodeId,
               lastClickedNodeId,
-              lastClickedEdgeId
+              lastClickedEdgeId,
+              xystore
             } = get()
             if (activeWalkthrough || focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
               set(
@@ -513,6 +530,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 'resetLastClicked'
               )
             }
+            xystore.getState().resetSelectedElements()
           },
 
           getElement: (fqn) => {
@@ -820,17 +838,17 @@ export function createDiagramStore(props: DiagramInitialState) {
             const maxZoom = Math.max(1, transform[2])
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, fitViewPadding)
             panZoom?.setViewport(viewport, { duration })
-            if ((focusedNodeId ?? activeWalkthrough) !== null) {
-              set(
-                {
-                  activeWalkthrough: null,
-                  focusedNodeId: null,
-                  dimmed: EmptyStringSet
-                },
-                noReplace,
-                'unfocus'
-              )
-            }
+            // if ((focusedNodeId ?? activeWalkthrough) !== null) {
+            //   set(
+            //     {
+            //       activeWalkthrough: null,
+            //       focusedNodeId: null,
+            //       dimmed: EmptyStringSet
+            //     },
+            //     noReplace,
+            //     'unfocus'
+            //   )
+            // }
           },
 
           nextDynamicStep: (increment = 1) => {
@@ -993,7 +1011,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             })
             set({ dimmed }, noReplace, 'highlightByElementNotation')
           }
-        }),
+        } satisfies DiagramState),
         {
           name: `${storeDevId} - ${props.view.id}`,
           enabled: DEV

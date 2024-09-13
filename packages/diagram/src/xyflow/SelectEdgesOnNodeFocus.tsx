@@ -4,6 +4,7 @@ import type { EdgeChange, NodeChange } from '@xyflow/react'
 import { getBoundsOfRects, getViewportForBounds } from '@xyflow/system'
 import { useUpdateEffect } from '../hooks'
 import { useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
+import { MinZoom } from './const'
 import type { XYFlowEdge, XYFlowNode } from './types'
 import { nodeToRect } from './utils'
 
@@ -78,7 +79,7 @@ export function SelectEdgesOnNodeFocus() {
       },
       width,
       height,
-      0.1,
+      MinZoom,
       maxZoom,
       0
     )
@@ -91,10 +92,10 @@ export function SelectEdgesOnNodeFocus() {
     focusedNodeId !== null
       ? [
         ['Escape', (e) => {
-          e.stopImmediatePropagation()
-          const { xystore, fitDiagram } = diagramStore.getState()
+          e.stopPropagation()
+          const { resetFocusAndLastClicked, fitDiagram } = diagramStore.getState()
+          resetFocusAndLastClicked()
           fitDiagram()
-          xystore.getState().resetSelectedElements()
         }, { preventDefault: true }]
       ]
       : []

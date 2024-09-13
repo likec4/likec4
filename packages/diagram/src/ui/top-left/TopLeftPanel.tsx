@@ -19,6 +19,7 @@ import {
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
+import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { ActionIcon, Tooltip } from './_shared'
@@ -134,15 +135,19 @@ export const TopLeftPanel = () => {
     showFitDiagram,
     showLayoutDriftWarning,
     showChangeAutoLayout,
-    showGoToSource
+    showGoToSource,
+    viewportChanged
   } = useDiagramState(s => {
-    const isNotActive = s.activeWalkthrough === null && s.focusedNodeId === null
+    const isNotWalkthrough = isNullish(s.activeWalkthrough)
+    const isNotFocused = isNullish(s.focusedNodeId)
+    const isNotActive = isNotWalkthrough && isNotFocused
     return ({
       showNavigationButtons: !!s.onBurgerMenuClick || s.showNavigationButtons && !!s.onNavigateTo,
-      showFitDiagram: s.fitViewEnabled && s.zoomable && s.viewportChanged,
-      showLayoutDriftWarning: s.readonly !== true && s.view.hasLayoutDrift === true && isNotActive,
-      showChangeAutoLayout: s.readonly !== true && !!s.onChange && isNotActive,
-      showGoToSource: !!s.onOpenSourceView
+      showFitDiagram: s.fitViewEnabled && s.zoomable && isNotWalkthrough,
+      showLayoutDriftWarning: !s.readonly && s.view.hasLayoutDrift === true && isNotActive,
+      showChangeAutoLayout: s.isEditable() && isNotActive,
+      showGoToSource: !!s.onOpenSourceView && isNotWalkthrough,
+      viewportChanged: s.viewportChanged
     })
   })
   const portalProps = useMantinePortalProps()
@@ -192,7 +197,7 @@ export const TopLeftPanel = () => {
               transform: 'translateX(-30%)'
             }}
             key={'fit-view'}>
-            <Tooltip label="Center camera" {...portalProps}>
+            <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
               <ActionIcon
                 className="action-icon"
                 onClick={e => {

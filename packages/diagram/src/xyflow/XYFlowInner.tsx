@@ -39,13 +39,13 @@ export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
 
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
 
-  const isDiagramTitleVisible = showDiagramTitle === true && !isDynamicViewActive
+  const isDiagramTitleVisible = showDiagramTitle && !isDynamicViewActive
   return (
     <>
       {isBgWithPattern && <XYFlowBackground background={background} />}
       {controls && <Controls position={'bottom-right'} />}
       <TopLeftPanel />
-      {readonly !== true && <OptionsPanel />}
+      {!readonly && <OptionsPanel />}
       {isDiagramTitleVisible && <DiagramTitlePanel />}
       {isDynamicView && enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
       {showNotations && <NotationPanel />}
