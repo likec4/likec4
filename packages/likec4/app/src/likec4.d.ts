@@ -1,6 +1,6 @@
 declare module 'virtual:likec4/store' {
   import type { MapStore } from 'nanostores'
-  import type { DiagramView, LikeC4ViewId } from 'virtual:likec4/views'
+  import type { DiagramView } from 'virtual:likec4/views'
 
   export const $views: MapStore<Record<string, DiagramView>>
 
@@ -58,6 +58,11 @@ declare module 'virtual:likec4/overview-graph' {
 
 declare module 'virtual:likec4/previews' {
   export function usePreviewUrl(viewId: string): string | null
+}
+
+declare module 'virtual:likec4/model' {
+  import type { LayoutedLikeC4Model } from '@likec4/core'
+  export const likec4ModelSource: LayoutedLikeC4Model
 }
 
 declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {

@@ -13,6 +13,7 @@ import {
   generateIconRendererSource,
   generateMmdSources,
   generateOverviewGraphSource,
+  likec4ModelSources,
   storeSource
 } from './generators'
 
@@ -125,6 +126,16 @@ const previewsModule = {
   }
 } satisfies Module
 
+const likec4ModelModule = {
+  id: 'virtual:likec4/model',
+  virtualId: '\0likec4-plugin/model.js',
+  async load({ likec4, logger, assetsDir }) {
+    logger.info(k.dim('generating virtual:likec4/model'))
+    const model = await likec4.layoutedModel()
+    return likec4ModelSources(model)
+  }
+} satisfies Module
+
 const hmrmodules = [
   iconsModule,
   dotSourcesModule,
@@ -132,7 +143,8 @@ const hmrmodules = [
   mmdSourcesModule,
   generatedViews,
   overviewGraphModule,
-  previewsModule
+  previewsModule,
+  likec4ModelModule
 ]
 
 export const modules = [

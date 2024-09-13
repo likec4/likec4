@@ -29,7 +29,7 @@ import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, first, hasAtLeast, isArray, isNullish, map, prop, reduce } from 'remeda'
+import { entries, first, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
 import type { ConditionalKeys, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -89,6 +89,9 @@ export type DiagramState = Simplify<
     viewportChanged: boolean
 
     initialized: boolean
+
+    // readonly=false and onChange is not null
+    isEditable: () => boolean
 
     // If Dynamic View
     isDynamicView: boolean
@@ -515,6 +518,11 @@ export function createDiagramStore(props: DiagramInitialState) {
           getElement: (fqn) => {
             const { view } = get()
             return view.nodes.find(({ id }) => id === fqn) ?? null
+          },
+
+          isEditable: () => {
+            const { readonly, onChange } = get()
+            return !readonly && !!onChange
           },
 
           triggerChangeElementStyle: (change) => {

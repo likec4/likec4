@@ -218,9 +218,14 @@ export function useXYFlowEvents() {
             return
           }
         }
-        // if we focused on a node, and clicked on an edge connected to it - focus on the other node
-        if (isEdgeOfFocusedNode) {
-          focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
+        // if we are in focus mode
+        if (isTruthy(focusedNodeId)) {
+          // if we focused on a node, and clicked on an edge connected to it - focus on the other node
+          if (isEdgeOfFocusedNode) {
+            focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
+          } else {
+            focusOnNode(xyedge.source)
+          }
           if (!onEdgeClick) {
             event.stopPropagation()
           }
@@ -297,5 +302,5 @@ export function useXYFlowEvents() {
         hoveredNodeFromOnEdgeEnterRef.current = ''
       }
     }) satisfies XYFlowEventHandlers
-  }, [diagramApi])
+  }, [diagramApi, likec4model])
 }

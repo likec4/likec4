@@ -1,5 +1,6 @@
 import { MantineProvider } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, ScrollRestoration } from '@tanstack/react-router'
+import { LikeC4Model } from '../components/LikeC4Model'
 import { theme as mantineTheme } from '../theme'
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
@@ -48,7 +49,9 @@ function RootComponent() {
         {...(theme && { forceColorScheme: theme })}
         defaultColorScheme={theme ?? 'auto'}
         theme={mantineTheme}>
-        <Outlet />
+        <LikeC4Model>
+          <Outlet />
+        </LikeC4Model>
       </MantineProvider>
     </>
   )

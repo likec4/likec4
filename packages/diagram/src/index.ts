@@ -1,6 +1,7 @@
 import '@xyflow/react/dist/style.css'
 
 export { LikeC4Diagram } from './LikeC4Diagram'
+export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
 
 export { useSetState } from './hooks/useSetState'

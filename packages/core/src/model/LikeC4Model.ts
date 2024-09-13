@@ -18,6 +18,9 @@ export function getId(element: ElementOrFqn): Fqn {
 
 type ViewModels = LikeC4DiagramModel | LikeC4ViewModel
 
+type SourceRawModel<M extends ViewModels> = M extends LikeC4DiagramModel ? c4.LayoutedLikeC4Model
+  : c4.ComputedLikeC4Model
+
 export class LikeC4Model<ViewModel extends ViewModels> {
   #elements = new Map<Fqn, LikeC4Model.Element<ViewModel>>()
 
@@ -46,6 +49,7 @@ export class LikeC4Model<ViewModel extends ViewModels> {
 
   static computed(computed: c4.ComputedLikeC4Model): LikeC4Model<LikeC4ViewModel> {
     const instance = new LikeC4Model<LikeC4ViewModel>(
+      computed,
       values(computed.elements),
       values(computed.relations)
     )
@@ -57,6 +61,7 @@ export class LikeC4Model<ViewModel extends ViewModels> {
 
   static layouted(diagramModel: c4.LayoutedLikeC4Model): LikeC4Model<LikeC4DiagramModel> {
     const instance = new LikeC4Model<LikeC4DiagramModel>(
+      diagramModel,
       values(diagramModel.elements),
       values(diagramModel.relations)
     )
@@ -67,6 +72,7 @@ export class LikeC4Model<ViewModel extends ViewModels> {
   }
 
   protected constructor(
+    public readonly sourcemodel: SourceRawModel<ViewModel>,
     elements: c4.Element[],
     relations: c4.Relation[]
   ) {
