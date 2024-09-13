@@ -46,7 +46,9 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatRelation(node: AstNode) {
     this.on(node, ast.isRelation, (n, f) => {
-      f.property('source').append(FormattingOptions.oneSpace)
+      const sourceNodes = n?.source?.$cstNode ? [n?.source?.$cstNode] : []
+
+      f.cst(sourceNodes).append(FormattingOptions.oneSpace)
       f.keywords(']->').prepend(FormattingOptions.noSpace)
       f.keywords('-[').append(FormattingOptions.noSpace)
 
@@ -73,7 +75,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       ?.keywords('->').append(FormattingOptions.oneSpace)
 
     this.on(node, ast.isInOutRelationExpression)
-      ?.property('inout').append(FormattingOptions.oneSpace)
+      ?.keyword('->').prepend(FormattingOptions.oneSpace)
   }
 
   protected removeIndentFromTopLevelStatements(node: AstNode) {

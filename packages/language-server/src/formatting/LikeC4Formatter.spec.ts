@@ -131,13 +131,20 @@ model {
     .http    system2
   }
   component system2
+  system2   ->   system1
   system2   -[   http   ]->   system1
-  system2  .http   system1   'title'  'http'    #tag1
+
+  system2.module1   ->     system1.module1
+  system2.module1.lib1   ->system1.module1.lib1
+  system2.module1   -[   http   ]->   system1.module1
+  system2.module1  .http   system1.module1   'title'  'http'    #tag1  
 }
 views {
   view index {
     include system1<->*
     include *->, ->*
+    include system1.module1<->*
+    include ->    system1.module1   ->
   }
 }`
         )
@@ -153,13 +160,20 @@ views {
             .http system2
           }
           component system2
+          system2 -> system1
           system2 -[http]-> system1
-          system2 .http system1 'title' 'http' #tag1
+
+          system2.module1 -> system1.module1
+          system2.module1.lib1 -> system1.module1.lib1
+          system2.module1 -[http]-> system1.module1
+          system2.module1 .http system1.module1 'title' 'http' #tag1
         }
         views {
           view index {
             include system1 <-> *
             include * ->, -> *
+            include system1.module1 <-> *
+            include -> system1.module1 ->
           }
         }"
       `
