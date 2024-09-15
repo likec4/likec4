@@ -31,7 +31,7 @@
     "@mantine/vanilla-extract": "7.12.2",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
-    "@tabler/icons-react": "^3.15.0",
+    "@tabler/icons-react": "^3.16.0",
     "@types/node": "^20.16.1",
     "@types/react": "18.3.4",
     "@types/react-dom": "18.3.0",
