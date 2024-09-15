@@ -2079,7 +2079,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/colors-generator": "npm:^7.12.2"
     "@types/natural-compare-lite": "npm:^1.4.2"
-    chroma-js: "npm:^3.0.0"
+    chroma-js: "npm:^3.1.1"
     execa: "npm:^9.3.1"
     natural-compare-lite: "npm:^1.4.0"
     remeda: "npm:^2.11.0"
@@ -4948,10 +4948,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chroma-js@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "chroma-js@npm:3.0.0"
-  checksum: 10c0/b7aade3f6e20d5f1f3e07a890fbdc6e6390663affeb0071330d0325368915612b6133124aeb0b29b56d6bcdff489b0223deba8cc86a656bb601c6bc3f06e2c7c
+"chroma-js@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "chroma-js@npm:3.1.1"
+  checksum: 10c0/fb5e3cd958a954b8cd44017f70aff42ae37bc561cdcea0ebeeb6d2df5989e7402e02c674274af2eefd1478ee172e05ce51ac353e3cbe1db139f599b338523339
   languageName: node
   linkType: hard
 
