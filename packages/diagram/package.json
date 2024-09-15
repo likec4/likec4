@@ -47,7 +47,7 @@
     "d3-shape": "^3.2.0",
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.3.30",
+    "framer-motion": "^11.5.4",
     "khroma": "^2.1.0",
     "remeda": "^2.11.0",
     "type-fest": "^4.26.1",
