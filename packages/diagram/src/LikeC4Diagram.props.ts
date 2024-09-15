@@ -9,7 +9,6 @@ import type {
   WhereOperator
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import type { XYBackground } from './xyflow/XYFlowBackground'
 
 export type { WhereOperator }
@@ -141,6 +140,12 @@ export interface LikeC4DiagramProperties {
    * @default true
    */
   showNotations?: boolean | undefined
+
+  /**
+   * Display dropdown with details on relationship's label click
+   * @default true
+   */
+  showRelationshipDetails?: boolean | undefined
 
   /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges

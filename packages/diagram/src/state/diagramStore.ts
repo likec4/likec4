@@ -56,6 +56,7 @@ export type DiagramInitialState = {
   showElementLinks: boolean
   showNavigationButtons: boolean
   showNotations: boolean
+  showRelationshipDetails: boolean
   fitViewEnabled: boolean
   fitViewPadding: number
   zoomable: boolean

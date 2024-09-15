@@ -33,6 +33,7 @@ export function LikeC4Diagram({
   showElementLinks = true,
   showDiagramTitle = true,
   showNotations = true,
+  showRelationshipDetails = true,
   enableDynamicViewWalkthrough = false,
   enableFocusMode = false,
   initialWidth,
@@ -85,6 +86,7 @@ export function LikeC4Diagram({
             showElementLinks={showElementLinks}
             showNavigationButtons={showNavigationButtons}
             showNotations={showNotations}
+            showRelationshipDetails={showRelationshipDetails}
             nodesDraggable={nodesDraggable}
             nodesSelectable={nodesSelectable}
             experimentalEdgeEditing={experimentalEdgeEditing}

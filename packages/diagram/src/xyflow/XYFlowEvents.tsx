@@ -203,11 +203,11 @@ export function useXYFlowEvents() {
           setLastClickedEdge(xyedge.id)
         }
         const isNotAFirstClick = lastClickedEdgeId === xyedge.id
-        const isEdgeOfFocusedNode = isTruthy(focusedNodeId)
+        const connectedToFocusedNode = isTruthy(focusedNodeId)
           && (focusedNodeId === xyedge.source || focusedNodeId === xyedge.target)
         if (
           isDynamicView && enableDynamicViewWalkthrough
-          && (isEdgeOfFocusedNode || isNotAFirstClick || isNonNullish(activeWalkthrough))
+          && (connectedToFocusedNode || isNotAFirstClick || isNonNullish(activeWalkthrough))
         ) {
           const nextStep = xyedge.data.edge.id
           if (activeWalkthrough?.stepId !== nextStep) {
@@ -219,7 +219,7 @@ export function useXYFlowEvents() {
         // if we are in focus mode
         if (isTruthy(focusedNodeId)) {
           // if we focused on a node, and clicked on an edge connected to it - focus on the other node
-          if (isEdgeOfFocusedNode) {
+          if (connectedToFocusedNode) {
             focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
           } else {
             focusOnNode(xyedge.source)

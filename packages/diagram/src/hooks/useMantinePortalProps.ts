@@ -4,5 +4,5 @@ import { useDiagramState } from './useDiagramState'
 
 export function useMantinePortalProps() {
   const target = useDiagramState(s => s.getContainer())
-  return useMemo(() => target ? { portalProps: { target } } : { withinPortal: false }, [target])
+  return useMemo(() => target ? { portalProps: { target }, withinPortal: true } : { withinPortal: false }, [target])
 }
