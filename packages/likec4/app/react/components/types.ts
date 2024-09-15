@@ -1,6 +1,14 @@
-import type { DiagramView, WhereOperator } from '@likec4/core'
+import type {
+  DiagramView,
+  LikeC4DiagramModel as LibLikeC4DiagramModel,
+  LikeC4Model as LibLikeC4Model,
+  WhereOperator
+} from '@likec4/core'
 import type { MantineThemeOverride } from '@mantine/core'
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+
+export type LikeC4Model = LibLikeC4Model<LibLikeC4DiagramModel>
+export type LikeC4DiagramModel = LibLikeC4DiagramModel
 
 export type ViewData<ViewId extends string> = Omit<DiagramView, 'id'> & {
   id: ViewId

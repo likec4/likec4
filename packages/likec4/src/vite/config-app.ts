@@ -81,9 +81,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         'react',
         'react-dom',
         'react/jsx-runtime',
-        'react-dom/client',
-        'nanostores',
-        '@nanostores/react'
+        'react-dom/client'
       ],
       force: true
     },

@@ -1,20 +1,21 @@
 import {
+  createLikeC4Model,
   LikeC4Browser,
+  LikeC4ModelProvider as GenericLikeC4ModelProvider,
   LikeC4ViewEmbedded,
   type LikeC4ViewProps as BaseLikeC4ViewProps,
   ReactLikeC4 as GenericReactLikeC4,
   type ReactLikeC4Props as GenericReactLikeC4Props,
-  useColorScheme
+  useColorScheme,
+  useLikeC4Model as useLikeC4ModelGeneric,
+  useLikeC4View as useLikeC4ViewGeneric,
+  useLikeC4ViewModel as useLikeC4ViewModelGeneric,
+  useLikeC4Views as useLikeC4ViewsGeneric
 } from 'likec4/react'
-import { memo, useCallback, useState } from 'react'
+import { memo, type PropsWithChildren, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
-import {
-  isLikeC4ViewId,
-  type LikeC4ElementKind,
-  type LikeC4Tag,
-  type LikeC4ViewId,
-  LikeC4Views
-} from 'virtual:likec4/views'
+import type { LikeC4ElementKind, LikeC4Tag, LikeC4ViewId } from 'virtual:likec4/model'
+import { likec4sourcemodel, LikeC4Views } from 'virtual:likec4/model'
 
 type IconRendererProps = {
   node: {
@@ -24,14 +25,28 @@ type IconRendererProps = {
   }
 }
 
-function RenderIcon({ node }: IconRendererProps) {
+export function RenderIcon({ node }: IconRendererProps) {
   const IconComponent = Icons[node.icon ?? '']
   return IconComponent ? <IconComponent /> : null
 }
 
-export { isLikeC4ViewId, LikeC4Views, RenderIcon }
+export const likeC4Model = /* @__PURE__ */ createLikeC4Model(likec4sourcemodel)
+export { LikeC4Views }
+
+export const useLikeC4Model = useLikeC4ModelGeneric
+export const useLikeC4View = useLikeC4ViewGeneric<LikeC4ViewId>
+export const useLikeC4Views = useLikeC4ViewsGeneric<LikeC4ViewId>
+export const useLikeC4ViewModel = useLikeC4ViewModelGeneric<LikeC4ViewId>
 
 export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
+
+export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
+  return (
+    value != null
+    && typeof value === 'string'
+    && value in LikeC4Views
+  )
+}
 
 const NotFound = ({ viewId }: { viewId: string }) => (
   <div
@@ -50,6 +65,14 @@ const NotFound = ({ viewId }: { viewId: string }) => (
     </div>
   </div>
 )
+
+export function LikeC4ModelProvider({ children }: PropsWithChildren) {
+  return (
+    <GenericLikeC4ModelProvider value={likeC4Model}>
+      {children}
+    </GenericLikeC4ModelProvider>
+  )
+}
 
 const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View({
   viewId,
@@ -94,7 +117,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
   }
 
   return (
-    <>
+    <LikeC4ModelProvider>
       <LikeC4ViewEmbedded<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
         view={view}
         colorScheme={colorScheme}
@@ -126,7 +149,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
           mantineTheme={mantineTheme}
         />
       )}
-    </>
+    </LikeC4ModelProvider>
   )
 })
 LikeC4ViewMemo.displayName = 'LikeC4ViewMemo'
@@ -144,10 +167,12 @@ export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props) {
     return <NotFound viewId={viewId} />
   }
   return (
-    <GenericReactLikeC4
-      view={view}
-      renderIcon={RenderIcon}
-      {...props}
-    />
+    <LikeC4ModelProvider>
+      <GenericReactLikeC4
+        view={view}
+        renderIcon={RenderIcon}
+        {...props}
+      />
+    </LikeC4ModelProvider>
   )
 }

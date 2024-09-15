@@ -3,6 +3,7 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     // This is only for TSX
+    "composite": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "paths": {

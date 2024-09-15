@@ -1,7 +1,6 @@
-import type { NonEmptyArray, OverviewGraph, Point } from '@likec4/core'
+import type { NonEmptyArray, Point } from '@likec4/core'
 import type { Edge, InternalNode, Node, ReactFlowInstance, ReactFlowState, Rect } from '@xyflow/react'
-import type { Simplify } from 'type-fest'
-import type { LikeC4ViewId } from 'virtual:likec4/views'
+import type { LikeC4ViewId } from 'virtual:likec4/model'
 
 export type FolderXYNode = Node<{
   dimmed: boolean

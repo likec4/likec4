@@ -1,13 +1,12 @@
 import { Link } from '@tanstack/react-router'
 
-import { StaticLikeC4Diagram } from '@likec4/diagram'
+import { StaticLikeC4Diagram, useLikeC4View, useLikeC4Views } from '@likec4/diagram'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { memo, useState } from 'react'
-import { useLikeC4View, useLikeC4Views } from 'virtual:likec4/store'
-import type { DiagramView } from 'virtual:likec4/views'
+import { useState } from 'react'
 
 import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
 import { ceil, clamp, keys } from 'remeda'
+import type { DiagramView } from 'virtual:likec4/model'
 import { RenderIcon } from '../components/RenderIcon'
 import * as styles from './index.css'
 

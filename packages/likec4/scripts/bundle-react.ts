@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { readFileSync } from 'node:fs'
-import { copyFile, mkdir, readFile, rm } from 'node:fs/promises'
+import { copyFile, mkdir, readFile } from 'node:fs/promises'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
@@ -86,8 +86,6 @@ export async function buildReact(_isDev = false) {
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
-          '@nanostores/react',
-          'nanostores',
           '@emotion/is-prop-valid' // dev-only import from framer-motion
         ],
         plugins: [

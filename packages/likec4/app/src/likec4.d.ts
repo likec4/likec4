@@ -1,39 +1,3 @@
-declare module 'virtual:likec4/store' {
-  import type { MapStore } from 'nanostores'
-  import type { DiagramView } from 'virtual:likec4/views'
-
-  export const $views: MapStore<Record<string, DiagramView>>
-
-  export function useLikeC4Views(): Record<string, DiagramView>
-  export function useLikeC4View(viewId: string): DiagramView | null
-}
-
-declare module 'likec4' {
-  import type { DiagramView } from '@likec4/core'
-
-  export type { DiagramView }
-}
-
-declare module 'virtual:likec4/views' {
-  import type { Tagged } from 'type-fest'
-  import type { DiagramView as CoreDiagramView, Tag, ViewID } from '@likec4/core'
-
-  export type LikeC4ViewId = Tagged<string, 'ViewID'>
-
-  export type LikeC4Tag = Tagged<string, 'Tag'>
-
-  export type LikeC4ElementKind = Tagged<string, 'ElementKind'>
-
-  export type DiagramView<ViewId extends string = LikeC4ViewId> = Omit<CoreDiagramView, 'id'> & {
-    id: ViewId
-  }
-
-  export type LikeC4Views = Record<LikeC4ViewId, DiagramView<LikeC4ViewId>>
-
-  export const LikeC4Views: LikeC4Views
-  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
-}
-
 declare module 'virtual:likec4/dot-sources' {
   export function dotSource(viewId: string): string
 
@@ -61,8 +25,29 @@ declare module 'virtual:likec4/previews' {
 }
 
 declare module 'virtual:likec4/model' {
-  import type { LayoutedLikeC4Model } from '@likec4/core'
-  export const likec4ModelSource: LayoutedLikeC4Model
+  import type { ReadableAtom } from 'nanostores'
+  import type { DiagramView as CoreDiagramView, LayoutedLikeC4Model, LikeC4Model } from '@likec4/core'
+  import type { Tagged } from 'type-fest'
+
+  export type LikeC4ViewId = Tagged<string, 'ViewID'>
+
+  export type LikeC4Tag = Tagged<string, 'Tag'>
+
+  export type LikeC4ElementKind = Tagged<string, 'ElementKind'>
+
+  export type DiagramView<ViewId extends string = LikeC4ViewId> = Omit<CoreDiagramView, 'id'> & {
+    id: ViewId
+  }
+
+  export const likec4sourcemodel: LayoutedLikeC4Model
+
+  export const LikeC4Views: Record<LikeC4ViewId, DiagramView<LikeC4ViewId>>
+
+  export const $likec4sourcemodel: ReadableAtom<LayoutedLikeC4Model>
+
+  export const $likec4model: ReadableAtom<LikeC4Model.Layouted>
+
+  export function useLikeC4Model(): LikeC4Model.Layouted
 }
 
 declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {

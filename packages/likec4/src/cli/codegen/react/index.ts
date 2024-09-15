@@ -120,8 +120,16 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import type { JSX } from 'react/jsx-runtime'
-import type { LikeC4ViewProps as BaseLikeC4ViewProps, ViewData, ReactLikeC4Props as GenericReactLikeC4Props } from 'likec4/react'
+import { PropsWithChildren } from 'react'
+import { JSX } from 'react/jsx-runtime'
+import {
+  LikeC4Model,
+  LikeC4DiagramModel,
+  LikeC4ViewProps as BaseLikeC4ViewProps,
+  ViewData,
+  ReactLikeC4Props as GenericReactLikeC4Props,
+  useLikeC4Model
+} from 'likec4/react'
 
 type LikeC4ViewId =
 ${ids}
@@ -139,8 +147,13 @@ type LikeC4ViewData = ViewData<LikeC4ViewId>
  */
 type LikeC4DiagramView = LikeC4ViewData
 
-declare const LikeC4Views: Record<LikeC4ViewId, LikeC4ViewData>
-declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
+declare const LikeC4Views: Readonly<Record<LikeC4ViewId, LikeC4ViewData>>;
+declare const likeC4Model: LikeC4Model;
+declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId;
+declare function useLikeC4View(viewId: LikeC4ViewId): LikeC4ViewData;
+declare function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4DiagramModel;
+declare function useLikeC4Views(): Readonly<Record<LikeC4ViewId, LikeC4ViewData>>;
+declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
 
 type IconRendererProps = {
   node: {
@@ -169,8 +182,15 @@ export {
   type LikeC4DiagramView,
   type LikeC4ViewProps,
   type ReactLikeC4Props,
+  type LikeC4Model,
   isLikeC4ViewId,
+  useLikeC4View,
+  useLikeC4Views,
+  useLikeC4Model,
+  useLikeC4ViewModel,
+  likeC4Model,
   LikeC4Views,
+  LikeC4ModelProvider,
   LikeC4View,
   RenderIcon,
   ReactLikeC4

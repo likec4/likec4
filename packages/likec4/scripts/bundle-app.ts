@@ -3,9 +3,9 @@ import react from '@vitejs/plugin-react'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { $ } from 'execa'
-import { copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
-import { join, resolve } from 'path'
+import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { modules } from '../src/vite/plugin'
@@ -67,9 +67,10 @@ export async function bundleApp() {
       assetsInlineLimit: 1_000_000,
       lib: {
         entry: {
-          'main': 'src/main.tsx',
           // 'lazy-data': 'src/routes/-view-lazy-data.ts',
-          'icons': 'src/components/RenderIcon.tsx'
+          'icons': 'src/components/RenderIcon.tsx',
+          'model': 'src/components/LikeC4Model.tsx',
+          'main': 'src/main.tsx'
         },
         formats: ['es']
       },
@@ -113,8 +114,7 @@ export async function bundleApp() {
           'react-dom/client',
           'react',
           'react-dom',
-          '@nanostores/react',
-          'nanostores',
+          'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           resolve(cwd, 'app/src/const.js'),
           ...modules.map(m => m.id)

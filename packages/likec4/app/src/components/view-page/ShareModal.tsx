@@ -11,7 +11,7 @@ import {
   TabsTab
 } from '@mantine/core'
 import { useState } from 'react'
-import type { DiagramView } from 'virtual:likec4/views'
+import type { DiagramView } from 'virtual:likec4/model'
 import { EmbedPanel } from './share-modal/EmbedPanel'
 import { WebcomponentsPanel } from './share-modal/WebcomponentsPanel'
 

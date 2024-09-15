@@ -74,6 +74,7 @@ export class LikeC4 {
     const likec4 = new LikeC4(workspaceUri.path, langium, opts?.printErrors ?? true)
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
+      likec4.dispose()
       return Promise.reject(validationErrorsToError(likec4))
     }
 
@@ -96,10 +97,13 @@ export class LikeC4 {
     }
     let likec4 = LikeC4.likec4Instances.get(workspace)
     if (!likec4) {
-      const langium = createLanguageServices({
-        useFileSystem: true,
-        ...opts
-      })
+      const langium = createLanguageServices(
+        defu(opts, {
+          useFileSystem: true,
+          logger: 'default' as const,
+          graphviz: 'wasm' as const
+        })
+      )
 
       await langium.cli.Workspace.initWorkspace({
         uri: pathToFileURL(workspace).toString(),
@@ -113,14 +117,13 @@ export class LikeC4 {
     }
 
     if (opts?.throwIfInvalid === true && likec4.hasErrors()) {
+      likec4.dispose()
       return Promise.reject(validationErrorsToError(likec4))
     }
 
     return likec4
   }
 
-  // private cachedModelComputed: LikeC4Model.Computed | undefined
-  // private cachedModelLayouted: LikeC4Model.Layouted | undefined
   private modelComputedRef: WeakRef<LikeC4Model.Computed> | undefined
   private modelLayoutedRef: WeakRef<LikeC4Model.Layouted> | undefined
   private logger: Logger

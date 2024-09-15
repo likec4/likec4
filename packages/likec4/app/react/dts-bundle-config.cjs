@@ -14,7 +14,7 @@ const config = {
     {
       filePath: './components/index.ts',
       outFile: '../../react/index.d.ts',
-      failOnClass: true,
+      failOnClass: false,
       noCheck: true,
       libraries: {
         inlinedLibraries: [
@@ -24,7 +24,9 @@ const config = {
           '@xyflow/system',
           'type-fest',
           '@likec4/core',
-          '@likec4/diagram'
+          '@likec4/diagram',
+          'nanostores',
+          '@nanostores/react'
         ]
       },
       output: {

@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Code, CopyButton, Group, Stack, Text } from '@mantine/core'
 import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
-import type { DiagramView } from 'virtual:likec4/views'
+import type { DiagramView } from 'virtual:likec4/model'
 import { ComponentName } from '../../../const.js'
 import { AlertLocalhost } from './AlertLocalhost'
 import { CopyButtonChild } from './CopyButtonChild'

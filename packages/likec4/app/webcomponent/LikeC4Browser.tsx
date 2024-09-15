@@ -4,7 +4,7 @@ import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot }
 import { useTimeoutEffect } from '@react-hookz/web'
 import { memo, useEffect, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
