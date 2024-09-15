@@ -1,6 +1,6 @@
 import type { ComputedEdge, ComputedNode, Element, ViewRule } from '@likec4/core'
 import { Expr, nonexhaustive } from '@likec4/core'
-import { isEmpty, isNullish, omitBy } from 'remeda'
+import { isNullish, omitBy } from 'remeda'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 function relationExpressionToPredicates(
