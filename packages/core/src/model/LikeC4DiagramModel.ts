@@ -4,20 +4,18 @@ import { DefaultRelationshipColor } from '../types'
 import type { ElementShape, Tag } from '../types/element'
 import type { Color } from '../types/theme'
 import type { ComputedElementView, DiagramEdge, DiagramNode, DiagramView } from '../types/view'
-import { getId, type LikeC4Model } from './LikeC4Model'
-import type { EdgeId, Fqn, IncomingFilter, OutgoingFilter } from './types'
-
-type ElementOrFqn = Fqn | LikeC4DiagramModel.Element
+import type { LikeC4Model } from './LikeC4Model'
+import { type EdgeId, type ElementOrFqn, type Fqn, getId, type IncomingFilter, type OutgoingFilter } from './types'
 
 /**
  * All methods are view-scoped, i.e. only return elements and connections in the view.
  */
 export class LikeC4DiagramModel {
-  #rootElements = new Set<LikeC4DiagramModel.Element>()
+  private _rootElements = new Set<LikeC4DiagramModel.Element>()
 
-  #elements = new Map<Fqn, LikeC4DiagramModel.Element>()
+  private _elements = new Map<Fqn, LikeC4DiagramModel.Element>()
 
-  #connections: Map<EdgeId, LikeC4DiagramModel.Connection>
+  private _connections: Map<EdgeId, LikeC4DiagramModel.Connection>
 
   constructor(
     public readonly view: DiagramView,
@@ -25,12 +23,12 @@ export class LikeC4DiagramModel {
   ) {
     for (const node of view.nodes) {
       const el = new LikeC4DiagramModel.Element(node, this)
-      this.#elements.set(node.id, el)
+      this._elements.set(node.id, el)
       if (isNullish(node.parent)) {
-        this.#rootElements.add(el)
+        this._rootElements.add(el)
       }
     }
-    this.#connections = new Map(view.edges.map(e => [e.id, new LikeC4DiagramModel.Connection(e, this)]))
+    this._connections = new Map(view.edges.map(e => [e.id, new LikeC4DiagramModel.Connection(e, this)]))
   }
 
   get isDynamic() {
@@ -58,27 +56,27 @@ export class LikeC4DiagramModel {
   }
 
   public roots(): ReadonlyArray<LikeC4DiagramModel.Element> {
-    return [...this.#rootElements]
+    return [...this._rootElements]
   }
 
   public elements(): ReadonlyArray<LikeC4DiagramModel.Element> {
-    return [...this.#elements.values()]
+    return [...this._elements.values()]
   }
 
   public element(id: Fqn): LikeC4DiagramModel.Element {
-    return nonNullable(this.#elements.get(id), `LikeC4DiagramModel.Element ${id} in view ${this.view.id} not found`)
+    return nonNullable(this._elements.get(id), `LikeC4DiagramModel.Element ${id} in view ${this.view.id} not found`)
   }
 
   public hasElement(id: Fqn): boolean {
-    return this.#elements.has(id)
+    return this._elements.has(id)
   }
 
   public connections(): ReadonlyArray<LikeC4DiagramModel.Connection> {
-    return [...this.#connections.values()]
+    return [...this._connections.values()]
   }
 
   public connection(id: EdgeId): LikeC4DiagramModel.Connection {
-    return nonNullable(this.#connections.get(id), `Connection ${id} in view ${this.view.id}  not found`)
+    return nonNullable(this._connections.get(id), `Connection ${id} in view ${this.view.id}  not found`)
   }
 
   public findConnections(
