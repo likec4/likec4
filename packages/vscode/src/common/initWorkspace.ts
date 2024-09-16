@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'
 import { logger, logWarn } from '../logger'
-import type { Rpc } from './Rpc'
+import type { Rpc } from '../Rpc'
 
 // LSP web extensions does not have access to the file system (even virtual)
 // so we do this trick (find all files and open them)

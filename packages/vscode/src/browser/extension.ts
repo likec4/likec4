@@ -2,25 +2,19 @@ import { hasAtLeast } from '@likec4/core'
 import { Scheme } from '@likec4/language-server/likec4lib'
 import * as vscode from 'vscode'
 import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
-import { BuiltInFileSystemProvider } from '../common/BuiltInFileSystemProvider'
-import { ExtensionController } from '../common/ExtensionController'
 import { extensionName, extensionTitle, languageId } from '../const'
+import { ExtensionController } from '../ExtensionController'
 import { logger, logToChannel } from '../logger'
-
-let controller: ExtensionController | undefined
-let worker: Worker | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
-  BuiltInFileSystemProvider.register(context)
-  const ctrl = (controller = new ExtensionController(context, createLanguageClient(context)))
-  void ctrl.activate()
+  const client = createLanguageClient(context)
+  ExtensionController.activate(context, client)
 }
 
 // This function is called when the extension is deactivated.
 export function deactivate() {
-  controller?.dispose()
-  controller = undefined
+  ExtensionController.deactivate()
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
@@ -50,7 +44,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   logger.debug(`worker: ${serverMain}`)
 
-  worker = new Worker(serverMain, {
+  const worker = new Worker(serverMain, {
     name: 'LikeC4 Language Server'
   })
 

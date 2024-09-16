@@ -70,7 +70,7 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
   showElementLinks?: boolean | undefined
 
   /**
-   * Display panel with diagram title / description
+   * Display webview with diagram title / description
    * @default false
    */
   showDiagramTitle?: boolean | undefined
@@ -86,6 +86,12 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
    * @default false
    */
   showNotations?: boolean | undefined
+
+  /**
+   * Display dropdown with details on relationship's label click
+   * @default false
+   */
+  showRelationshipDetails?: boolean | undefined
 
   /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges

@@ -124,7 +124,7 @@ export interface LikeC4DiagramProperties {
   showElementLinks?: boolean | undefined
 
   /**
-   * Display panel with diagram title / description
+   * Display webview with diagram title / description
    * @default true
    */
   showDiagramTitle?: boolean | undefined
@@ -194,7 +194,7 @@ export interface LikeC4DiagramEventHandlers {
   // if set, will render a source code icon in the top left corner
   onOpenSourceView?: null | undefined | (() => void)
 
-  // if set, will render an icon in properties panel for each element
+  // if set, will render an icon in properties webview for each element
   onOpenSourceElement?: null | undefined | ((fqn: Fqn) => void)
 
   // if set, will be called on edge click

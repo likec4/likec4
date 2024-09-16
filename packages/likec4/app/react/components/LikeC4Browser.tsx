@@ -192,6 +192,7 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
                 enableDynamicViewWalkthrough
                 enableFocusMode
                 showNavigationButtons
+                showRelationshipDetails
                 showNotations={hasNotations}
                 background={background}
                 controls={false}

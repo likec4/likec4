@@ -1,16 +1,14 @@
-import { type ConsolaReporter, LogLevels, rootLogger } from '@likec4/log'
+import { type ConsolaReporter, logger, LogLevels } from '@likec4/log'
 import type { Disposable, LogOutputChannel } from 'vscode'
 import { disposable } from './util'
 
-export const logger = rootLogger.withTag('vscode')
+export { logger }
 
 export function addLogReporter(log: ConsolaReporter['log']): Disposable {
   const reporter = { log }
-  rootLogger.addReporter(reporter)
-  logger.setReporters(rootLogger.options.reporters)
+  logger.addReporter(reporter)
   return disposable(() => {
-    rootLogger.removeReporter(reporter)
-    logger.setReporters(rootLogger.options.reporters)
+    logger.removeReporter(reporter)
   })
 }
 export function logToChannel(channel: LogOutputChannel): Disposable {

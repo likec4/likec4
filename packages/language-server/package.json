@@ -23,11 +23,13 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "browser": "./src/browser.ts",
+      "default": "./src/index.ts"
+    },
     "./likec4lib": "./src/likec4lib.ts",
     "./browser": "./src/browser.ts",
     "./protocol": "./src/protocol.ts",
-    "./node": "./src/node.ts",
     "./model-graph": "./src/model-graph/index.ts"
   },
   "publishConfig": {
@@ -35,9 +37,16 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs"
+        "browser": {
+          "types": "./dist/browser.d.ts",
+          "import": "./dist/browser.mjs",
+          "require": "./dist/browser.cjs"
+        },
+        "default": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.mjs",
+          "require": "./dist/index.cjs"
+        }
       },
       "./likec4lib": {
         "types": "./dist/likec4lib.d.ts",
@@ -53,11 +62,6 @@
         "types": "./dist/protocol.d.ts",
         "import": "./dist/protocol.mjs",
         "require": "./dist/protocol.cjs"
-      },
-      "./node": {
-        "types": "./dist/node.d.ts",
-        "import": "./dist/node.mjs",
-        "require": "./dist/node.cjs"
       },
       "./model-graph": {
         "types": "./dist/model-graph/index.d.ts",

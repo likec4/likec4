@@ -41,7 +41,7 @@ const BackwardForwardButtons = () => {
   } = useDiagramState(historySelector)
   return (
     <Group
-      className={'likec4-navigation-panel'}
+      className={'likec4-navigation-webview'}
       gap={'xs'}>
       {showBurgerMenu && (
         <ActionIcon
@@ -157,13 +157,13 @@ export const TopLeftPanel = () => {
       className={clsx(
         'react-flow__panel',
         css.panel,
-        'likec4-top-left-panel'
+        'likec4-top-left-webview'
       )}
       onClick={e => e.stopPropagation()}
       gap={'xs'}>
       {showNavigationButtons && <BackwardForwardButtons />}
       {showGoToSource && (
-        <Tooltip label="Go to source" {...portalProps}>
+        <Tooltip label="Open source" {...portalProps}>
           <ActionIcon
             className="action-icon"
             onClick={e => {

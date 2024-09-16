@@ -660,25 +660,25 @@ export function createDiagramStore(props: DiagramInitialState) {
             }, {} as ViewChange.SaveManualLayout['layout']['nodes'])
 
             const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
-              let controlPoints = data.controlPoints
+              let controlPoints = data.controlPoints ?? []
               const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
               // If edge control points are not set, but the source or target node was moved
-              if ((!controlPoints || controlPoints.length === 0) && sourceOrTargetMoved) {
+              if (controlPoints.length === 0 && sourceOrTargetMoved) {
                 controlPoints = bezierControlPoints(data.edge)
               }
-              if (data.edge.points.length === 0 && (!controlPoints || controlPoints.length === 0)) {
+              if (data.edge.points.length === 0 && controlPoints.length === 0) {
                 return acc
               }
               const _updated: ViewChange.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
                 points: data.edge.points
               }
               if (data.label?.bbox) {
-                _updated.labelBBox = data.label?.bbox
+                _updated.labelBBox = data.label.bbox
               }
               if (data.edge.labelBBox) {
                 _updated.labelBBox ??= data.edge.labelBBox
               }
-              if (controlPoints && hasAtLeast(controlPoints, 1)) {
+              if (hasAtLeast(controlPoints, 1)) {
                 _updated.controlPoints = controlPoints
               }
               if (!sourceOrTargetMoved && data.edge.dotpos) {
@@ -686,12 +686,12 @@ export function createDiagramStore(props: DiagramInitialState) {
               }
               const allX = [
                 ...data.edge.points.map(p => p[0]),
-                ...(controlPoints ?? []).map(p => p.x),
+                ...controlPoints.map(p => p.x),
                 ...(_updated.labelBBox ? [_updated.labelBBox.x, _updated.labelBBox.x + _updated.labelBBox.width] : [])
               ]
               const allY = [
                 ...data.edge.points.map(p => p[1]),
-                ...(controlPoints ?? []).map(p => p.y),
+                ...controlPoints.map(p => p.y),
                 ...(_updated.labelBBox ? [_updated.labelBBox.y, _updated.labelBBox.y + _updated.labelBBox.height] : [])
               ]
               const rect = boxToRect({

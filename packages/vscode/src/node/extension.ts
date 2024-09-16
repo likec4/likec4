@@ -10,9 +10,8 @@ import {
   type TextDocumentFilter,
   TransportKind
 } from 'vscode-languageclient/node'
-import { BuiltInFileSystemProvider } from '../common/BuiltInFileSystemProvider'
-import { ExtensionController } from '../common/ExtensionController'
 import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
+import { ExtensionController } from '../ExtensionController'
 import { logger, logToChannel } from '../logger'
 import { configureGraphviz } from './configure-graphviz'
 
@@ -20,23 +19,16 @@ function isWindows() {
   return os.platform() === 'win32'
 }
 
-let controller: ExtensionController | undefined
-
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
-  BuiltInFileSystemProvider.register(context)
   const client = createLanguageClient(context)
-  const ctrl = (controller = new ExtensionController(context, client))
-  ctrl.activate().catch(e => {
-    logger.error(`Failed to activate: ${e}`)
-  })
+  const ctrl = ExtensionController.activate(context, client)
   configureGraphviz(ctrl)
 }
 
 // This function is called when the extension is deactivated.
 export function deactivate() {
-  controller?.dispose()
-  controller = undefined
+  ExtensionController.deactivate()
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {

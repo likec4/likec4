@@ -26,10 +26,12 @@ import * as edgesCss from './edges.css'
 import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
 
 export interface EdgeLabelProps extends Omit<BoxProps, 'label'> {
+  isDimmed: boolean
   edgeData: RelationshipData
 }
 
 export const EdgeLabel = ({
+  isDimmed,
   edgeData: {
     label,
     edge
@@ -57,6 +59,7 @@ export const EdgeLabel = ({
     if (showRelationshipDetails && likec4model && edge.relations.length > 0) {
       return (
         <RelationshipsDropdownMenu
+          disabled={isDimmed}
           likec4model={likec4model}
           edge={edge}>
           {node}

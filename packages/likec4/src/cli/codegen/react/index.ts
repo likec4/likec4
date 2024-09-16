@@ -199,15 +199,20 @@ export {
 `.trimStart()
   )
 
-  consola.box(
-    stripIndent(`
-    ${k.dim('Component generated:')}
+  consola.box({
+    message: stripIndent(`
+    ${k.dim('Source generated:')}
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
-     ${k.blue('https://likec4.dev/tooling/codegen/#react')}
-  `)
-  )
+      ${k.underline('https://likec4.dev/tooling/codegen/#react')}
+  `).trim(),
+    style: {
+      padding: 2,
+      borderColor: 'green',
+      borderStyle: 'rounded'
+    }
+  })
 
   timer.stopAndLog()
 }

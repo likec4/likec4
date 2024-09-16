@@ -366,6 +366,7 @@ export class LikeC4Model<ViewModel extends ViewModels> {
 
 export namespace LikeC4Model {
   export type Computed = LikeC4Model<LikeC4ViewModel>
+
   export type Layouted = LikeC4Model<LikeC4DiagramModel>
   export namespace Layouted {
     export type Relationship = LikeC4Model.Relationship<LikeC4DiagramModel>

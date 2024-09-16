@@ -4,3 +4,5 @@ declare const __INTERNAL_STATE:
     edgesEditable: boolean
   }>
   | undefined
+
+declare const __VIEW_ID: ViewID

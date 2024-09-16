@@ -16,6 +16,7 @@ import '@mantine/core/styles.css'
 import { MantineProvider } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { LikeC4Context } from './Context'
 import { theme } from './theme'
 
 const root = document.getElementById('root') as HTMLDivElement
@@ -23,6 +24,8 @@ const scheme = document.body.classList.contains('dark') ? 'dark' : 'light'
 // const reactRoot = ReactDOM.createRoot(root)
 ReactDOM.createRoot(root).render(
   <MantineProvider theme={theme} forceColorScheme={scheme}>
-    <App />
+    <LikeC4Context>
+      <App />
+    </LikeC4Context>
   </MantineProvider>
 )

@@ -16,7 +16,7 @@ const selector = (s: DiagramState) => ({
 export default function DiagramTitlePanel() {
   const { id, title, description, links } = useDiagramState(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
-    key: 'diagram-title-panel-collapsed',
+    key: 'diagram-title-webview-collapsed',
     defaultValue: false
   })
   const toggle = () => setCollapsed(v => !v)

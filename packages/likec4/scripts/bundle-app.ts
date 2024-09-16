@@ -67,10 +67,9 @@ export async function bundleApp() {
       assetsInlineLimit: 1_000_000,
       lib: {
         entry: {
+          'main': 'src/main.tsx',
           // 'lazy-data': 'src/routes/-view-lazy-data.ts',
-          'icons': 'src/components/RenderIcon.tsx',
-          'model': 'src/components/LikeC4Model.tsx',
-          'main': 'src/main.tsx'
+          'icons': 'src/components/RenderIcon.tsx'
         },
         formats: ['es']
       },

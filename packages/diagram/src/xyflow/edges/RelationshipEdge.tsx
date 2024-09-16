@@ -103,9 +103,8 @@ const isSame = (a: number, b: number) => {
 }
 
 const isSamePoint = (a: XYPosition | Point, b: XYPosition | Point) => {
-  const [ax, ay] = isArray(a) ? a : [a.x, a.y]
-  const [bx, by] = isArray(b) ? b : [b.x, b.y]
-  return isSame(ax, bx) && isSame(ay, by)
+  return isSame(isArray(a) ? a[0] : a.x, isArray(b) ? b[0] : b.x)
+    && isSame(isArray(a) ? a[1] : a.y, isArray(b) ? b[1] : b.y)
 }
 
 const sameControlPoints = (a: XYPosition[] | null, b: XYPosition[] | null) => {
@@ -133,7 +132,7 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
-export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
+export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
   selected,
@@ -297,10 +296,14 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     let pointer = { x: e.clientX, y: e.clientY }
 
     const onPointerMove = (e: PointerEvent) => {
-      if (hasMoved || !isSamePoint(pointer, [e.clientX, e.clientY])) {
+      const clientPoint = {
+        x: e.clientX,
+        y: e.clientY
+      }
+      if (!isSamePoint(pointer, clientPoint)) {
         setIsControlPointDragging(true)
         hasMoved = true
-        pointer = { x: e.clientX, y: e.clientY }
+        pointer = clientPoint
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
         xyflow.updateEdgeData(id, xyedge => {
           const cp = (xyedge.data.controlPoints ?? controlPoints).slice()
@@ -347,7 +350,11 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const MarkerStart = markerStartName ? EdgeMarkers[markerStartName] : null
   const MarkerEnd = markerEndName ? EdgeMarkers[markerEndName] : null
 
-  const labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
+  let labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
+  if (isEdgePathEditable && selected) {
+    // Move label below ControlPoints, otherwise they don't capture events
+    labelZIndex = (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge) - 1
+  }
 
   return (
     <g
@@ -411,6 +418,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       )}
       {(data.label || isStepEdge) && (
         <EdgeLabel
+          isDimmed={isDimmed}
           edgeData={data}
           className={clsx(
             'nodrag nopan',
@@ -423,9 +431,9 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
               [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
               [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
             }),
-            ...(isEdgePathEditable && selected && {
-              pointerEvents: 'none'
-            }),
+            // ...(isEdgePathEditable && selected && {
+            //   pointerEvents: 'none'
+            // }),
             ...(label && {
               maxWidth: label.bbox.width + 18
             }),

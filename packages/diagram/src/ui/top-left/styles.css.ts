@@ -32,7 +32,7 @@ export const autolayoutIndicator = style({
   selectors: {
     [`:where([data-mantine-color-scheme="dark"]) &`]: {
       background: mantine.colors.dark[5],
-      border: `1px solid ${mantine.colors.dark[4]}`
+      borderColor: mantine.colors.dark[4]
     }
   }
 })

@@ -1,8 +1,8 @@
-import { createCustomLanguageServices, type LikeC4Services, setLogLevel } from '@likec4/language-server'
+import { createCustomLanguageServices, type LikeC4Services, lspLogger, setLogLevel } from '@likec4/language-server'
 import { GraphvizLayouter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
-import { consola } from '@likec4/log'
+import { consola, LogLevels } from '@likec4/log'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'
 import { NodeFileSystem } from 'langium/node'
@@ -79,7 +79,7 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
       logger = createLikeC4Logger('c4:lsp ')
       break
     case 'default':
-      logger = consola
+      logger = consola.withTag('lsp')
       break
     default:
       logger = options.logger
@@ -95,7 +95,49 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
     }
   } satisfies Module<CliServices, DeepPartial<CliAddedServices>>
 
-  setLogLevel(options.logger === false ? 'silent' : 'warn')
+  setLogLevel(options.logger === false ? 'silent' : 'info')
+  if (options.logger !== false && options.logger !== 'default') {
+    lspLogger.setReporters([{
+      log: ({ level, ...logObj }, ctx) => {
+        const tag = logObj.tag || ''
+        const parts = logObj.args.map((arg) => {
+          if (arg && typeof arg.stack === 'string') {
+            return arg.message + '\n' + arg.stack
+          }
+          if (typeof arg === 'string') {
+            return arg
+          }
+          return String(arg)
+        })
+        if (tag) {
+          parts.unshift(`[${tag}]`)
+        }
+        const message = parts.join(' ')
+        switch (true) {
+          case level >= LogLevels.debug: {
+            // ignore
+            break
+          }
+          case level >= LogLevels.info: {
+            logger.info(message)
+            break
+          }
+          case level >= LogLevels.log: {
+            logger.info(message)
+            break
+          }
+          case level >= LogLevels.warn: {
+            logger.warn(message)
+            break
+          }
+          case level >= LogLevels.fatal: {
+            logger.error(message)
+            break
+          }
+        }
+      }
+    }])
+  }
 
   return createCustomLanguageServices(options.useFileSystem ? NodeFileSystem : {}, CliModule, module).likec4
 }

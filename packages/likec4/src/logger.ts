@@ -1,7 +1,7 @@
 import { consola } from '@likec4/log'
-import { isCI } from 'ci-info'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
+import { isCI } from 'std-env'
 import k from 'tinyrainbow'
 import type { LogErrorOptions, LogOptions } from 'vite'
 import { createLogger } from 'vite'

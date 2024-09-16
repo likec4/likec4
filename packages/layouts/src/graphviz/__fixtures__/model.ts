@@ -156,7 +156,7 @@ export const fakeElements = {
     id: 'cloud.frontend.adminPanel',
     kind: 'component',
     title: 'Admin Panel Webapp',
-    description: 'The admin panel is a webapp that allows support staff to manage customer data.'
+    description: 'The admin webview is a webapp that allows support staff to manage customer data.'
   }),
   'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',

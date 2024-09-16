@@ -37,6 +37,7 @@ views {
   view cloud_legacy_backend of cloud.legacy.backend {
     include
       *,
+
       cloud
 
     style cloud {

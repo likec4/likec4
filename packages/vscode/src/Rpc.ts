@@ -12,8 +12,8 @@ import type * as vscode from 'vscode'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
-import { logger } from '../logger'
-import { AbstractDisposable } from '../util'
+import { logger } from './logger'
+import { AbstractDisposable } from './util'
 
 // #region From server
 const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')

@@ -1,6 +1,6 @@
 import { ReactFlow, useOnViewportChange } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type CSSProperties, type PropsWithChildren, useMemo, useState } from 'react'
+import { type CSSProperties, type PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { useDiagramState } from '../hooks/useDiagramState'
 import { useXYStoreApi } from '../hooks/useXYFlow'
 import type { DiagramState } from '../state/diagramStore'
@@ -88,14 +88,7 @@ export function XYFlow({
     translateY
   } = useDiagramState(selector, shallowEqual)
   const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(zoomable)
-
-  // useLogger('XYFlow',[
-  //   nodes,
-  //   edges,
-  // ])
-
   const layoutConstraints = useLayoutConstraints()
-
   const handlers = useXYFlowEvents()
 
   /**
@@ -111,9 +104,14 @@ export function XYFlow({
       if (x !== roundedX || y !== roundedY) {
         xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
       }
-      setZoomOnDoubleClick(zoomable && zoom < 1.1)
+      setZoomOnDoubleClick(zoomable && zoom < 0.75)
     }
   })
+
+  useEffect(() => {
+    const zoom = xyflowApi.getState().transform[2]
+    setZoomOnDoubleClick(zoomable && zoom < 0.75)
+  }, [])
 
   return (
     <ReactFlow<XYFlowNode, XYFlowEdge>
@@ -164,7 +162,7 @@ export function XYFlow({
         onNodeDrag: layoutConstraints.onNodeDrag,
         onNodeDragStop: layoutConstraints.onNodeDragStop
       }}
-      nodeDragThreshold={3}
+      nodeDragThreshold={4}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
       onNodesChange={onNodesChange}

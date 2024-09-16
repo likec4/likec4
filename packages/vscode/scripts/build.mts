@@ -4,7 +4,8 @@ import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill
 import { existsSync, writeFileSync } from 'node:fs'
 import { cp, mkdir } from 'node:fs/promises'
 
-import path, { resolve } from 'node:path'
+import { resolve } from 'node:path'
+import { sourceMapsEnabled } from 'node:process'
 
 const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
 if (isDev) {
@@ -44,11 +45,13 @@ const base = {
       'process.env.NODE_ENV': '"production"'
     }
   }),
-  sourcemap: isDev,
+  sourcemap: true,
   sourcesContent: false,
   minify: !isDev,
   minifyIdentifiers: false,
-  legalComments: 'none'
+  minifySyntax: !isDev,
+  minifyWhitespace: !isDev,
+  legalComments: 'linked'
 } satisfies BuildOptions
 
 const configs = [] as BuildOptions[]
@@ -58,14 +61,12 @@ const configs = [] as BuildOptions[]
 configs.push({
   ...base,
   entryPoints: ['src/node/language-server.ts'],
-  format: 'iife',
-  target: 'node18',
+  target: 'node20',
   platform: 'node'
 }, {
   ...base,
   entryPoints: ['src/node/extension.ts'],
-  format: 'cjs',
-  target: 'node18',
+  target: 'node20',
   platform: 'node'
 })
 

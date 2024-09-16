@@ -87,6 +87,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
   showNavigationButtons = false,
   showNotations = false,
   enableFocusMode = false,
+  showRelationshipDetails = false,
   browserClassName,
   browserStyle,
   mantineTheme,
@@ -130,6 +131,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
         showNavigationButtons={showNavigationButtons}
         showNotations={showNotations}
         enableFocusMode={enableFocusMode}
+        showRelationshipDetails={showRelationshipDetails}
         where={where}
         mantineTheme={mantineTheme}
         {...props}

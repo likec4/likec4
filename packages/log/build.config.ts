@@ -19,6 +19,14 @@ export default defineBuildConfig([
         browser: true
       },
       inlineDependencies: true
+    },
+    hooks: {
+      'rollup:options'(_, options) {
+        for (const output of options.output as any[]) {
+          // @ts-ignore
+          output.exports = 'named'
+        }
+      }
     }
   },
   {
@@ -40,6 +48,14 @@ export default defineBuildConfig([
         exportConditions: ['node']
       },
       inlineDependencies: true
+    },
+    hooks: {
+      'rollup:options'(_, options) {
+        for (const output of options.output as any[]) {
+          // @ts-ignore
+          output.exports = 'named'
+        }
+      }
     }
   }
 ])

@@ -55,8 +55,8 @@
     "theme": "dark"
   },
   "extensionKind": [
-    "ui",
-    "workspace"
+    "workspace",
+    "ui"
   ],
   "capabilities": {
     "virtualWorkspaces": true,
@@ -210,8 +210,7 @@
     "vscode-languageserver-types": "3.17.5",
     "vscode-messenger": "^0.4.5",
     "vscode-uri": "3.0.8",
-    "which": "^4.0.0",
-    "xstream": "^11.14.0"
+    "which": "^4.0.0"
   },
   "packageManager": "yarn@4.4.1"
 }
