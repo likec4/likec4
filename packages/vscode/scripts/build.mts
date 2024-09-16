@@ -50,7 +50,7 @@ const base = {
   minifyIdentifiers: false,
   minifySyntax: !isDev,
   minifyWhitespace: !isDev,
-  legalComments: 'linked'
+  legalComments: 'none'
 } satisfies BuildOptions
 
 const configs = [] as BuildOptions[]
@@ -74,6 +74,7 @@ configs.push({
 configs.push({
   ...base,
   sourcemap: isDev,
+  minifyIdentifiers: !isDev,
   entryPoints: ['src/browser/extension.ts'],
   format: 'cjs',
   target: 'es2022',
@@ -83,6 +84,7 @@ configs.push({
 }, {
   ...base,
   sourcemap: isDev,
+  minifyIdentifiers: !isDev,
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',
   target: 'es2022',

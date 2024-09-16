@@ -10,14 +10,7 @@ import TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
 import { BuiltInFileSystemProvider } from './common/BuiltInFileSystemProvider'
 import { initWorkspace, rebuildWorkspace } from './common/initWorkspace'
-import {
-  cmdLocate,
-  cmdOpenPreview,
-  cmdPreviewContextOpenSource,
-  cmdRebuild,
-  isProd,
-  TelemetryConnectionString
-} from './const'
+import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, TelemetryConnectionString } from './const'
 import { LikeC4Model } from './LikeC4Model'
 import { addLogReporter, logger } from './logger'
 import { Messenger } from './Messenger'
@@ -61,8 +54,10 @@ export class ExtensionController extends AbstractDisposable {
     try {
       const telemetry = ctrl.telemetry = new TelemetryReporter(TelemetryConnectionString)
       ctrl.onDispose(telemetry)
-
       ctrl.onDispose(addLogReporter(({ level, ...logObj }, ctx) => {
+        if (telemetry.telemetryLevel === 'off') {
+          return
+        }
         if (level !== LogLevels.error && level !== LogLevels.fatal) {
           return
         }

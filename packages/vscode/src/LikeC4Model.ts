@@ -1,8 +1,9 @@
 import type { ComputedLikeC4Model, ComputedView, ViewID } from '@likec4/core'
-
 import type { LayoutResult } from '@likec4/layouts'
 import { isDeepEqual, values } from 'remeda'
+import vscode from 'vscode'
 import type { ExtensionController } from './ExtensionController'
+import { logError } from './logger'
 import { AbstractDisposable } from './util'
 
 export class LikeC4Model extends AbstractDisposable {
@@ -11,6 +12,8 @@ export class LikeC4Model extends AbstractDisposable {
   private cachedDiagrams = new WeakMap<ComputedView, LayoutResult>()
 
   private computedModelPromise: Promise<{ model: ComputedLikeC4Model | null }> | undefined
+
+  private viewsWithReportedErrors = new Set<ViewID>()
 
   constructor(
     private ctrl: ExtensionController
@@ -52,11 +55,24 @@ export class LikeC4Model extends AbstractDisposable {
     const computedView = this.computedViews.get(viewId) ?? latest
     let layoutedView = this.cachedDiagrams.get(computedView)
     if (!layoutedView) {
-      layoutedView = await this.ctrl.graphviz.layout(computedView)
-      if (!layoutedView) {
+      try {
+        layoutedView = await this.ctrl.graphviz.layout(computedView)
+        if (!layoutedView) {
+          return null
+        }
+        this.viewsWithReportedErrors.delete(viewId)
+        this.cachedDiagrams.set(computedView, layoutedView)
+      } catch (err) {
+        if (!this.viewsWithReportedErrors.has(viewId)) {
+          const errMessage = err instanceof Error
+            ? (err.stack ?? err.message)
+            : '' + err
+          vscode.window.showErrorMessage(`LikeC4: ${errMessage}`)
+          this.viewsWithReportedErrors.add(viewId)
+        }
+        logError(err)
         return null
       }
-      this.cachedDiagrams.set(computedView, layoutedView)
     }
     return layoutedView
   }

@@ -1,4 +1,5 @@
 import { type ConsolaReporter, logger, LogLevels } from '@likec4/log'
+import { isError } from 'remeda'
 import type { Disposable, LogOutputChannel } from 'vscode'
 import { disposable } from './util'
 
@@ -15,8 +16,8 @@ export function logToChannel(channel: LogOutputChannel): Disposable {
   return addLogReporter(({ level, message, ...logObj }, ctx) => {
     const tag = logObj.tag || ''
     const parts = logObj.args.map((arg) => {
-      if (arg && typeof arg.stack === 'string') {
-        return arg.message + '\n' + arg.stack
+      if (isError(arg)) {
+        return arg.stack ?? arg.message
       }
       return arg
     })

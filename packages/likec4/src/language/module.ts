@@ -6,6 +6,7 @@ import { consola, LogLevels } from '@likec4/log'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'
 import { NodeFileSystem } from 'langium/node'
+import { isError } from 'remeda'
 import k from 'tinyrainbow'
 import type { Constructor } from 'type-fest'
 import pkg from '../../package.json' with { type: 'json' }
@@ -101,8 +102,8 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
       log: ({ level, ...logObj }, ctx) => {
         const tag = logObj.tag || ''
         const parts = logObj.args.map((arg) => {
-          if (arg && typeof arg.stack === 'string') {
-            return arg.message + '\n' + arg.stack
+          if (isError(arg)) {
+            return arg.stack ?? arg.message
           }
           if (typeof arg === 'string') {
             return arg
