@@ -307,7 +307,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     if (!domNode || e.pointerType !== 'mouse') {
       return
     }
+
     const { xyflow } = diagramStore.getState()
+
+    // Select edge before any changes
+    xyflow.setEdges((edges) => edges.map(x => ({ ...x, ...(x.id == id && { selected: true }) })))
+
     if (e.button === 2 && controlPoints.length > 1) {
       const newControlPoints = controlPoints.slice()
       newControlPoints.splice(index, 1)
