@@ -5,7 +5,6 @@ import { existsSync, writeFileSync } from 'node:fs'
 import { cp, mkdir } from 'node:fs/promises'
 
 import { resolve } from 'node:path'
-import { sourceMapsEnabled } from 'node:process'
 
 const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
 if (isDev) {
@@ -74,13 +73,16 @@ configs.push({
 
 configs.push({
   ...base,
+  sourcemap: isDev,
   entryPoints: ['src/browser/extension.ts'],
   format: 'cjs',
   target: 'es2022',
   platform: 'browser',
-  plugins: [nodeModulesPolyfillPlugin()]
+  plugins: [nodeModulesPolyfillPlugin()],
+
 }, {
   ...base,
+  sourcemap: isDev,
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',
   target: 'es2022',
@@ -91,12 +93,12 @@ configs.push({
 let hasErrors = false
 const bundles = await Promise.all(configs.map(cfg => build(cfg)))
 
-bundles.forEach(({ errors, warnings, metafile }) => {
+bundles.forEach(({ errors, warnings, metafile, }) => {
   if (metafile) {
     analyzeMetafileSync(metafile)
     const out = Object.keys(metafile.outputs).find(k => k.endsWith('.js'))
     if (out) {
-      const metafilepath = path.resolve(out + '.metafile.json')
+      const metafilepath = resolve(out + '.metafile.json')
       writeFileSync(metafilepath, JSON.stringify(metafile))
       consola.debug(metafilepath)
     }
