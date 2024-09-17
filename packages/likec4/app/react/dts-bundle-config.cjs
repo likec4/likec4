@@ -32,7 +32,7 @@ const config = {
       output: {
         exportReferencedTypes: false,
         inlineDeclareGlobals: false,
-        sortNodes: true
+        sortNodes:  false
       }
     }
   ]

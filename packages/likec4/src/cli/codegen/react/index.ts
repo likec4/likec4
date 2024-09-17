@@ -124,11 +124,9 @@ import { PropsWithChildren } from 'react'
 import { JSX } from 'react/jsx-runtime'
 import {
   LikeC4Model,
-  LikeC4DiagramModel,
   LikeC4ViewProps as BaseLikeC4ViewProps,
   ViewData,
-  ReactLikeC4Props as GenericReactLikeC4Props,
-  useLikeC4Model
+  ReactLikeC4Props as GenericReactLikeC4Props
 } from 'likec4/react'
 
 type LikeC4ViewId =
@@ -148,11 +146,15 @@ type LikeC4ViewData = ViewData<LikeC4ViewId>
 type LikeC4DiagramView = LikeC4ViewData
 
 declare const LikeC4Views: Readonly<Record<LikeC4ViewId, LikeC4ViewData>>;
-declare const likeC4Model: LikeC4Model;
+declare const likeC4Model: LikeC4Model.Layouted;
 declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId;
+
+declare function useLikeC4Model(): LikeC4Model.Layouted | null;
+declare function useLikeC4Model(strict: true): LikeC4Model.Layouted;
+declare function useLikeC4Model(strict: boolean): LikeC4Model.Layouted | null;
+
 declare function useLikeC4View(viewId: LikeC4ViewId): LikeC4ViewData;
-declare function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4DiagramModel;
-declare function useLikeC4Views(): Readonly<Record<LikeC4ViewId, LikeC4ViewData>>;
+declare function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4Model.Layouted.ViewModel;
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
 
 type IconRendererProps = {
@@ -182,11 +184,9 @@ export {
   type LikeC4DiagramView,
   type LikeC4ViewProps,
   type ReactLikeC4Props,
-  type LikeC4Model,
   isLikeC4ViewId,
-  useLikeC4View,
-  useLikeC4Views,
   useLikeC4Model,
+  useLikeC4View,
   useLikeC4ViewModel,
   likeC4Model,
   LikeC4Views,

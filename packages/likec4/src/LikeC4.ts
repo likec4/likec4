@@ -196,6 +196,7 @@ export class LikeC4 {
       }
       const diagrams = await this.views.diagrams()
       ref = LikeC4Model.layouted({
+        __: 'layouted',
         ...computedModel,
         views: indexBy(diagrams, prop('id'))
       })

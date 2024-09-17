@@ -1,7 +1,6 @@
-import { type ComputedView, type DiagramView, invariant, type ParsedLikeC4Model, type ViewID } from '@likec4/core'
-import { changeView, computeView, fetchModel, locate, type LocateParams } from '@likec4/language-server/protocol'
+import { type ComputedLikeC4Model, type ComputedView, type DiagramView, invariant, type ViewID } from '@likec4/core'
+import { changeView, fetchComputedModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
-import { deepEqual } from 'fast-equals'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import type { Simplify } from 'type-fest'
 import type { Location } from 'vscode-languageserver-protocol'
@@ -47,12 +46,13 @@ export type WorkspaceStore = {
     [filename: string]: string
   }
 
-  likeC4Model: ParsedLikeC4Model | null
+  likeC4Model: ComputedLikeC4Model | null
   modelFetched: boolean
 
   /**
    * Current diagram.
    */
+  viewId: ViewID
   computedView: ComputedView | null
   diagram: DiagramView | null
   diagramAsDot: string | null
@@ -68,7 +68,9 @@ interface WorkspaceStoreActions {
 
   onDidChangeModel: () => Promise<void>
 
-  fetchDiagram: (viewId: string) => Promise<void>
+  openView: (viewId: string) => void
+
+  layoutView: () => Promise<void>
 
   onChanges: NonNullable<LikeC4DiagramProps['onChange']>
 
@@ -103,6 +105,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 }: T) {
   let seq = 1
   const uniqueId = nanoid(6)
+
   return createWithEqualityFn<
     WorkspaceState,
     [
@@ -127,6 +130,8 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
             likeC4Model: null,
             modelFetched: false,
+
+            viewId: 'index' as ViewID,
             computedView: null,
             diagram: null,
             diagramAsDot: null,
@@ -162,21 +167,19 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 console.time(label)
                 console.log(`start ${label}`)
               }
-              const { languageClient, diagram, computedView, modelFetched } = get()
+              const { languageClient, modelFetched } = get()
               const client = languageClient()
               invariant(client, 'Language client is not initialized')
               try {
-                const { model } = await client.sendRequest(fetchModel)
+                const { model } = await client.sendRequest(fetchComputedModel)
                 set({ likeC4Model: model }, noReplace, 'likeC4Model')
+                // const indexId = 'index' as ViewID
+                // const viewId = computedView?.id ?? diagram?.id ?? indexId
+                // await get().openView(viewId)
+                // if (!deepEqual(updatedView, computedView) || isNullish(diagram)) {
+                //   set({ computedView: updatedView })
 
-                const indexId = 'index' as ViewID
-                const viewId = computedView?.id ?? diagram?.id ?? indexId
-                if (!model?.views[viewId]) {
-                  DEV && console.warn(`View ${viewId} not found in model.`)
-                  set({ computedView: null })
-                  return
-                }
-                await get().fetchDiagram(viewId)
+                // }
               } catch (e) {
                 console.error(e)
               } finally {
@@ -188,54 +191,106 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               }
             },
 
-            fetchDiagram: async (viewId) => {
-              const label = `fetchDiagram: ${viewId}`
-              if (DEV) {
-                console.time(label)
-                console.log(`start ${label}`)
+            openView: (viewId) => {
+              const { likeC4Model, viewId: currentViewId } = get()
+              const nextView = likeC4Model?.views[viewId as ViewID] ?? null
+              set({
+                viewId: viewId as ViewID,
+                computedView: nextView
+              })
+              if (viewId !== currentViewId) {
+                get().showLocation({ view: viewId as ViewID })
               }
+              // try {
+
+              //   if (!nextView || deepEqual(nextView, computedView)) {
+              //     return
+              //   }
+              //   set({computedView: null},
+              //       noReplace,
+              //       'fetchDiagram'
+              //     )
+              //   if () {
+              //     // if (isNullish(computeView)) {
+              //     //   // do nothing
+              //     //   return
+              //     // }
+              //     // if (isNullish(diagram) || diagram.id !== viewId) {
+              //     //   await layoutView()
+              //     // }
+              //     // already opened
+              //     return
+              //   }
+              //   const { view } = await client.sendRequest(computeView, { viewId })
+              //   if (deepEqual(view, computedView)) {
+              //     return
+              //   }
+              //   if (!view) {
+              //     set(
+              //       {
+              //         computedView: null
+              //       },
+              //       noReplace,
+              //       'fetchDiagram'
+              //     )
+              //     return
+              //   }
+              //   const layoutRes = await graphvizLayouter.layout(view).catch(e => {
+              //     console.error(e)
+              //     return {
+              //       diagram: null,
+              //       dot: null
+              //     }
+              //   })
+              //   set(
+              //     {
+              //       computedView: view,
+              //       diagram: layoutRes.diagram,
+              //       diagramAsDot: layoutRes.dot
+              //     },
+              //     noReplace,
+              //     'fetchDiagram'
+              //   )
+              //   if (view.id !== computedView?.id) {
+              //     get().showLocation({ view: view.id })
+              //   }
+              // } catch (e) {
+              //   console.error(e)
+              // } finally {
+              //   DEV && console.timeEnd(label)
+              // }
+            },
+
+            layoutView: async () => {
               const { languageClient, computedView } = get()
+              if (!computedView) {
+                // Do nothing
+                return
+              }
+
               const client = languageClient()
               invariant(client, 'Language client is not initialized')
-              try {
-                const { view } = await client.sendRequest(computeView, { viewId })
-                if (deepEqual(view, computedView)) {
-                  return
-                }
-                if (!view) {
-                  set(
-                    {
-                      computedView: null
-                    },
-                    noReplace,
-                    'fetchDiagram'
-                  )
-                  return
-                }
-                const layoutRes = await graphvizLayouter.layout(view).catch(e => {
-                  console.error(e)
-                  return {
-                    diagram: null,
-                    dot: null
-                  }
-                })
-                set(
-                  {
-                    computedView: view,
-                    diagram: layoutRes.diagram,
-                    diagramAsDot: layoutRes.dot
-                  },
-                  noReplace,
-                  'fetchDiagram'
-                )
-                if (view.id !== computedView?.id) {
-                  get().showLocation({ view: view.id })
-                }
-              } catch (e) {
+
+              const label = `layoutView: ${computedView.id}`
+              console.time(label)
+              console.log(`start ${label}`)
+
+              const layoutRes = await graphvizLayouter.layout(computedView).catch(e => {
                 console.error(e)
-              } finally {
-                DEV && console.timeEnd(label)
-              }
+                return {
+                  diagram: null,
+                  dot: null
+                }
+              })
+              console.timeEnd(label)
+              set(
+                {
+                  diagram: layoutRes.diagram,
+                  diagramAsDot: layoutRes.dot
+                },
+                noReplace,
+                'layoutView'
+              )
             },
 
             onChanges: ({ change }) => {

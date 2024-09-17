@@ -86,6 +86,7 @@ export async function buildReact(_isDev = false) {
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
+          'likec4',
           '@emotion/is-prop-valid' // dev-only import from framer-motion
         ],
         plugins: [

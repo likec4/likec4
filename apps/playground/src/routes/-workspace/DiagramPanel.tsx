@@ -1,8 +1,9 @@
-import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
+import { type ElementIconRenderer, LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconLoader, IconX } from '@tabler/icons-react'
-import React from 'react'
+import { deepEqual } from 'fast-equals'
+import React, { memo, useEffect, useMemo } from 'react'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
 
@@ -63,7 +64,50 @@ const selector = (s: WorkspaceState) => {
   }
 }
 
-export function DiagramPanel() {
+export const DiagramPanel = memo(() => {
+  const model = useWorkspaceState(s => s.likeC4Model)
+
+  const store = useStoreApi()
+
+  useEffect(() => {
+    const listenToModel = store.subscribe(s => s.likeC4Model?.views[s.viewId] ?? null, view => {
+      if (!view) {
+        return
+      }
+      const { computedView } = store.getState()
+      if (!deepEqual(computedView, view)) {
+        store.setState({ computedView: view })
+      }
+    }, {
+      equalityFn: deepEqual,
+      fireImmediately: true
+    })
+
+    const listenToComputedView = store.subscribe(s => s.computedView, () => {
+      store.getState().layoutView()
+    }, {
+      equalityFn: deepEqual,
+      fireImmediately: true
+    })
+
+    return () => {
+      listenToModel()
+      listenToComputedView()
+    }
+  }, [store])
+
+  if (model) {
+    return (
+      <LikeC4ModelProvider computed={model}>
+        <DiagramPanelContent />
+      </LikeC4ModelProvider>
+    )
+  }
+
+  return <DiagramPanelContent />
+})
+
+const DiagramPanelContent = memo(() => {
   const store = useStoreApi()
   const { state, message, diagram } = useWorkspaceState(selector)
 
@@ -97,7 +141,7 @@ export function DiagramPanel() {
             renderIcon={RendererIcon}
             onNavigateTo={(id, event) => {
               event?.stopPropagation()
-              store.getState().fetchDiagram(id)
+              store.getState().openView(id)
             }}
             onChange={ev => store.getState().onChanges(ev)}
             onOpenSourceElement={fqn => {
@@ -141,4 +185,4 @@ export function DiagramPanel() {
       </Box>
     </Box>
   )
-}
+})

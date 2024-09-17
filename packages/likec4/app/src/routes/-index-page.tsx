@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 
-import { StaticLikeC4Diagram, useLikeC4View, useLikeC4Views } from '@likec4/diagram'
+import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4Views } from '@likec4/diagram'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useState } from 'react'
 
@@ -26,7 +26,7 @@ export default function IndexPage() {
 }
 
 function ViewCard({ viewId }: { viewId: string }) {
-  const diagram = useLikeC4View(viewId)
+  const diagram = useLikeC4DiagramView(viewId)
   if (!diagram) {
     return null
   }

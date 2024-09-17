@@ -131,6 +131,7 @@ export default defineConfig((env) => {
         },
         build: {
           copyPublicDir: true,
+          modulePreload: false,
           rollupOptions: {
             treeshake: {
               preset: 'recommended'

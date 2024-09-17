@@ -21,6 +21,7 @@ export interface ParsedLikeC4Model {
  * Same as `ParsedLikeC4Model` but with computed views.
  */
 export interface ComputedLikeC4Model extends Omit<ParsedLikeC4Model, 'views'> {
+  __?: never
   views: Record<ViewID, ComputedView>
 }
 
@@ -28,5 +29,6 @@ export interface ComputedLikeC4Model extends Omit<ParsedLikeC4Model, 'views'> {
  * Same as `ParsedLikeC4Model` but with layouted views (DiagramView)
  */
 export interface LayoutedLikeC4Model extends Omit<ParsedLikeC4Model, 'views'> {
+  __: 'layouted'
   views: Record<ViewID, DiagramView>
 }

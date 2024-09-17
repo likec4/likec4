@@ -21,7 +21,7 @@ export function SyncMonacoAndWorkspace() {
       }
       let subscribe = monaco.editor.registerCommand('likec4.open-preview', (_, viewId) => {
         if (isString(viewId)) {
-          store.getState().fetchDiagram(viewId)
+          store.getState().openView(viewId)
         }
       })
 

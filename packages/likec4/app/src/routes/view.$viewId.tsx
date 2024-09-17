@@ -1,4 +1,4 @@
-import { useLikeC4View, useUpdateEffect } from '@likec4/diagram'
+import { useLikeC4DiagramView, useUpdateEffect } from '@likec4/diagram'
 import { Alert, Box, Button, Code, Container, Text } from '@mantine/core'
 import { createFileRoute, isNotFound, Outlet, useRouter } from '@tanstack/react-router'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
@@ -75,7 +75,7 @@ function ViewLayout() {
 }
 
 function ViewHeader() {
-  const view = useLikeC4View(Route.useParams().viewId)
+  const view = useLikeC4DiagramView(Route.useParams().viewId)
   if (!view) {
     return null
   }

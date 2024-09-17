@@ -20,9 +20,7 @@ import { PreviewPanel } from './webview/PreviewPanel'
 export type DirectToWebviewProtocol = ReturnType<Messenger['registerWebViewPanel']>
 
 export class Messenger extends AbstractDisposable {
-  private messenger = new VsCodeMessenger({
-    debugLog: true
-  })
+  private messenger = new VsCodeMessenger()
 
   constructor(
     ctrl: ExtensionController

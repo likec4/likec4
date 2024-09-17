@@ -21,6 +21,8 @@
   "files": [
     "dist",
     "src",
+    "!**/*.spec.ts",
+    "!**/__tests__/*",
     "!**/*.map"
   ],
   "type": "module",

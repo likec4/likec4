@@ -45,7 +45,7 @@ export function RelationshipsDropdownMenu({
 }: PropsWithChildren<{
   edge: RelationshipData['edge']
   disabled?: boolean | undefined
-  likec4model: LikeC4Model.Layouted
+  likec4model: LikeC4Model
 }>) {
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
@@ -74,7 +74,7 @@ export function RelationshipsDropdownMenu({
     return <>{children}</>
   }
 
-  const renderRelationship = (relationship: LikeC4Model.Layouted.Relationship) => (
+  const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship) => (
     <MenuItem
       key={relationship.id}
       component={Relationship}
@@ -93,7 +93,7 @@ export function RelationshipsDropdownMenu({
       closeOnClickOutside
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       closeOnEscape
-      closeOnItemClick
+      closeOnItemClick={false}
       disabled={disabled}
       {...portalProps}
     >
@@ -128,7 +128,7 @@ export function RelationshipsDropdownMenu({
 const Relationship = forwardRef<
   HTMLDivElement,
   StackProps & {
-    relationship: LikeC4Model.Layouted.Relationship
+    relationship: LikeC4Model.ViewModel.Relationship
     edge: RelationshipData['edge']
     sourceNode: DiagramNode
     targetNode: DiagramNode
@@ -175,7 +175,6 @@ const Relationship = forwardRef<
                   size={'sm'}
                   radius="sm"
                   variant="light"
-                  color="gray"
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
                     diagramApi.getState().onNavigateTo?.(navigateTo, event)
@@ -193,7 +192,6 @@ const Relationship = forwardRef<
                   size={'sm'}
                   radius="sm"
                   variant="light"
-                  color="gray"
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
                     event.stopPropagation()

@@ -11,10 +11,21 @@ export default defineBuildConfig({
   clean: false,
   outDir: 'dist',
   stub: !isProduction,
+  stubOptions: {
+    jiti: {
+      interopDefault: true,
+      nativeModules: [
+        'json5'
+      ]
+    }
+  },
   alias: {
-    '@/vite/config-app': resolve('src/vite/config-app.ts'),
-    '@/vite/config-react': resolve('src/vite/config-react.ts'),
-    '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.ts'),
+    // '@/vite/config-app': resolve('src/vite/config-app.ts'),
+    // '@/vite/config-react': resolve('src/vite/config-react.ts'),
+    // '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.ts'),
+    '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
+    '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
+    '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
     ...(isProduction && {
       '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
       '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
@@ -29,19 +40,19 @@ export default defineBuildConfig({
     })
   },
   failOnWarn: false,
-  declaration: isProduction ? 'node16' : false,
+  declaration: isProduction,
   rollup: {
     inlineDependencies: true,
     esbuild: {
       platform: 'node',
       legalComments: 'none',
       minify: isProduction,
-      minifyIdentifiers: false
+      minifyIdentifiers: false,
+      minifySyntax: true,
+      minifyWhitespace: true
     },
     output: {
-      minifyInternalExports: true,
-      compact: isProduction,
-      hoistTransitiveImports: true
+      compact: isProduction
     },
     resolve: {
       exportConditions: ['node']

@@ -21,7 +21,6 @@ export function SelectEdgesOnNodeFocus() {
     if (!container) {
       return
     }
-    const { width, height } = container.getBoundingClientRect()
 
     const edgeChanges = [] as EdgeChange<XYFlowEdge>[]
     const nodeChanges = [] as NodeChange<XYFlowNode>[]
@@ -68,6 +67,8 @@ export function SelectEdgesOnNodeFocus() {
       triggerEdgeChanges(edgeChanges)
     }
     triggerNodeChanges(nodeChanges)
+
+    const { width, height } = container.getBoundingClientRect()
 
     const maxZoom = Math.max(1, transform[2])
     const viewport = getViewportForBounds(

@@ -90,6 +90,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
           'react/jsx-dev-runtime',
           'react-dom/client',
           'likec4/react',
+          'likec4',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           ...modules.map(m => m.id)
         ],

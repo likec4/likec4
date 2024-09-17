@@ -3,7 +3,7 @@ import { mantine } from '../../mantine.css'
 import { vars } from '../../theme.css'
 
 export const menuDropdown = style({
-  minWidth: 200,
+  minWidth: 250,
   maxWidth: 'min(90vw, 500px)'
 })
 

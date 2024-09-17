@@ -163,7 +163,7 @@ messenger.onNotification(BroadcastModelUpdate, () => {
   fetchComputedModel()
 })
 
-export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.layouted(m as any))
+export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.computed(m as any))
 
 const $likeC4ViewState = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.state ?? null)
 

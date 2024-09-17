@@ -45,12 +45,17 @@ export function useXYFlowEvents() {
       }
       dblclickTimeout.current = window.setTimeout(() => {
         dblclickTimeout.current = undefined
-      }, 250)
+      }, 300)
       return false
     }
 
-    const lastClickWasRecent = (ms = 1500) => {
-      return lastClickTimestamp.current && (Date.now() - lastClickTimestamp.current) < ms
+    const lastClickWasRecent = (ms = 2000) => {
+      const prevTimestamp = lastClickTimestamp.current
+      lastClickTimestamp.current = Date.now()
+      if (prevTimestamp === undefined) {
+        return false
+      }
+      return prevTimestamp + ms > Date.now()
     }
 
     return ({
@@ -73,6 +78,7 @@ export function useXYFlowEvents() {
         onCanvasDblClick?.(event)
       },
       onPaneClick: (event) => {
+        console.log('onPaneClick')
         if (dbclickLock()) {
           return
         }
@@ -111,6 +117,7 @@ export function useXYFlowEvents() {
         )
       },
       onNodeClick: (event, xynode) => {
+        console.log('onNodeClick')
         const {
           focusedNodeId,
           fitDiagram,
@@ -134,32 +141,27 @@ export function useXYFlowEvents() {
         }
 
         if (enableFocusMode || nodesSelectable) {
-          let stopPropagation = true
           switch (true) {
-            case enableFocusMode && !focusedNodeId && clickedRecently:
-            case enableFocusMode && shallChangeFocus: {
-              focusOnNode(xynode.id)
-              break
-            }
-            case enableFocusMode && focusedNodeId === xynode.id && clickedRecently: {
+            case enableFocusMode && clickedRecently && focusedNodeId === xynode.id: {
               focusOnNode(false)
               fitDiagram()
+              break
+            }
+            case enableFocusMode && shallChangeFocus:
+            case enableFocusMode && clickedRecently && focusedNodeId !== xynode.id: {
+              focusOnNode(xynode.id)
               break
             }
             case nodesSelectable: {
               xystore.getState().addSelectedNodes([xynode.id])
               break
             }
-            default: {
-              stopPropagation = false
-            }
-          }
-          if (!onNodeClick && stopPropagation) {
-            // user did not provide a custom handler, stop propagation
-            event.stopPropagation()
           }
         }
-        lastClickTimestamp.current = Date.now()
+        if (!onNodeClick) {
+          // user did not provide a custom handler, stop propagation
+          event.stopPropagation()
+        }
         onNodeClick?.(
           xynode.data.element,
           event

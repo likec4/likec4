@@ -41,7 +41,7 @@ const BackwardForwardButtons = () => {
   } = useDiagramState(historySelector)
   return (
     <Group
-      className={'likec4-navigation-webview'}
+      className={clsx(css.backwardForwardButtons, 'likec4-navigation-webview')}
       gap={'xs'}>
       {showBurgerMenu && (
         <ActionIcon
