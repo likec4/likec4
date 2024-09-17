@@ -17,6 +17,7 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/vscode"
   },
+  "qna": "https://github.com/likec4/likec4/discussions",
   "bugs": {
     "url": "https://github.com/likec4/likec4/issues",
     "email": "denis@davydkov.com"
@@ -40,8 +41,8 @@
     "vscode": "^1.90.0"
   },
   "keywords": [
-    "architecture",
-    "architecture-as-code",
+    "software architecture",
+    "architecture-as-a-code",
     "diagrams",
     "c4"
   ],
