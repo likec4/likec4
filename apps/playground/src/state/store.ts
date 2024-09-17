@@ -10,8 +10,10 @@ import { createWithEqualityFn } from 'zustand/traditional'
 
 import type { LikeC4DiagramProps } from '@likec4/diagram'
 import { graphvizLayouter } from '@likec4/layouts'
+import { deepEqual } from 'fast-equals'
 import { nanoid } from 'nanoid'
-import { mergeDeep } from 'remeda'
+import pLimit from 'p-limit'
+import { forEachObj, isError, mapValues, mergeDeep } from 'remeda'
 import { LikeC4WorkspacesKey, type LocalStorageWorkspace } from './use-workspaces'
 
 export type WorkspaceStore = {
@@ -57,6 +59,28 @@ export type WorkspaceStore = {
   diagram: DiagramView | null
   diagramAsDot: string | null
 
+  diagrams: Record<
+    ViewID,
+    {
+      // Never loaded
+      state: 'pending'
+      view: null
+      error: null
+    } | {
+      state: 'success'
+      view: DiagramView
+      error: null
+    } | {
+      state: 'error'
+      view: DiagramView | null
+      error: string
+    } | {
+      state: 'stale'
+      view: DiagramView | null
+      error: string | null
+    }
+  >
+
   requestedLocation: Location | null
 }
 
@@ -66,11 +90,11 @@ interface WorkspaceStoreActions {
 
   currentFileContent: () => string
 
-  onDidChangeModel: () => Promise<void>
+  onDidChangeModel: () => void
 
   openView: (viewId: string) => void
 
-  layoutView: () => Promise<void>
+  layoutView: () => void
 
   onChanges: NonNullable<LikeC4DiagramProps['onChange']>
 
@@ -79,7 +103,7 @@ interface WorkspaceStoreActions {
 
 export type WorkspaceState = Simplify<WorkspaceStore & WorkspaceStoreActions>
 
-type CreateWorkspaceStore = Pick<WorkspaceStore, 'name' | 'title' | 'currentFilename' | 'files'> & {
+export type CreateWorkspaceStore = Pick<WorkspaceStore, 'name' | 'title' | 'currentFilename' | 'files'> & {
   skipHydration?: boolean
   /**
    * monaco-editor configuration.
@@ -95,6 +119,8 @@ const containsWithId = <T extends { id: string }>(arr: T[], id: string) => arr.s
 
 type PersistedState = Pick<WorkspaceState, 'name' | 'title' | 'currentFilename' | 'files' | 'originalFiles'>
 
+export type CreatedWorkspaceStore = ReturnType<typeof createWorkspaceStore>
+
 export function createWorkspaceStore<T extends CreateWorkspaceStore>({
   name,
   title,
@@ -105,6 +131,9 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 }: T) {
   let seq = 1
   const uniqueId = nanoid(6)
+
+  const layoutLimit = pLimit(1)
+  const fetchModelLimit = pLimit(1)
 
   return createWithEqualityFn<
     WorkspaceState,
@@ -134,6 +163,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
             viewId: 'index' as ViewID,
             computedView: null,
             diagram: null,
+            diagrams: {},
             diagramAsDot: null,
             requestedLocation: null,
 
@@ -161,42 +191,95 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               return files[currentFilename] ?? ''
             },
 
-            onDidChangeModel: async () => {
+            onDidChangeModel: () => {
               const label = `onDidChangeModel (${seq++})`
-              if (DEV) {
-                console.time(label)
-                console.log(`start ${label}`)
-              }
-              const { languageClient, modelFetched } = get()
+              const { languageClient } = get()
               const client = languageClient()
               invariant(client, 'Language client is not initialized')
-              try {
-                const { model } = await client.sendRequest(fetchComputedModel)
-                set({ likeC4Model: model }, noReplace, 'likeC4Model')
-                // const indexId = 'index' as ViewID
-                // const viewId = computedView?.id ?? diagram?.id ?? indexId
-                // await get().openView(viewId)
-                // if (!deepEqual(updatedView, computedView) || isNullish(diagram)) {
-                //   set({ computedView: updatedView })
-
-                // }
-              } catch (e) {
-                console.error(e)
-              } finally {
-                if (!modelFetched) {
-                  set({ modelFetched: true }, noReplace, 'modelFetched')
-                }
-
-                DEV && console.timeEnd(label)
+              if (fetchModelLimit.pendingCount > 0) {
+                console.warn('clearing fetchModelLimit queue')
+                fetchModelLimit.clearQueue()
               }
+              fetchModelLimit(async () => {
+                if (DEV) {
+                  console.time(label)
+                  console.log(`start ${label}`)
+                }
+                try {
+                  const { model } = await client.sendRequest(fetchComputedModel)
+                  if (model) {
+                    const {
+                      likeC4Model: currentmodel,
+                      diagrams: currentDiagrams
+                    } = get()
+                    // Copy diagram states
+                    const diagrams = mapValues(
+                      currentDiagrams,
+                      (diagramState) => ({ ...diagramState })
+                    ) as typeof currentDiagrams
+
+                    // Merge new views with current views
+                    const views = mapValues(model.views, (newView) => {
+                      const current = currentmodel?.views[newView.id]
+                      const next = current && deepEqual(newView, current) ? current : newView
+
+                      let diagramState = diagrams[newView.id]
+                      if (!diagramState) {
+                        diagrams[newView.id] = {
+                          state: 'pending',
+                          view: null,
+                          error: null
+                        }
+                      } else if (next !== current) {
+                        diagramState.state = 'stale'
+                      }
+                      return next
+                    }) as typeof model.views
+
+                    forEachObj(diagrams, (diagramState, id) => {
+                      if (id in views) {
+                        return
+                      }
+                      diagramState.state = 'error'
+                      diagramState.error = 'View is not found'
+                    })
+
+                    set(
+                      {
+                        likeC4Model: {
+                          ...model,
+                          views
+                        },
+                        diagrams
+                      },
+                      noReplace,
+                      'likeC4Model'
+                    )
+                  }
+
+                  // const indexId = 'index' as ViewID
+                  // const viewId = computedView?.id ?? diagram?.id ?? indexId
+                  // await get().openView(viewId)
+                  // if (!deepEqual(updatedView, computedView) || isNullish(diagram)) {
+                  //   set({ computedView: updatedView })
+
+                  // }
+                } catch (e) {
+                  console.error(e)
+                } finally {
+                  if (!get().modelFetched) {
+                    set({ modelFetched: true }, noReplace, 'modelFetched')
+                  }
+                  DEV && console.timeEnd(label)
+                }
+              })
             },
 
             openView: (viewId) => {
               const { likeC4Model, viewId: currentViewId } = get()
-              const nextView = likeC4Model?.views[viewId as ViewID] ?? null
+              // const nextView = likeC4Model?.views[viewId as ViewID] ?? null
               set({
-                viewId: viewId as ViewID,
-                computedView: nextView
+                viewId: viewId as ViewID
               })
               if (viewId !== currentViewId) {
                 get().showLocation({ view: viewId as ViewID })
@@ -228,7 +311,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               //   if (!view) {
               //     set(
               //       {
-              //         computedView: null
+              // z        computedView: null
               //       },
               //       noReplace,
               //       'fetchDiagram'
@@ -261,36 +344,48 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               // }
             },
 
-            layoutView: async () => {
-              const { languageClient, computedView } = get()
-              if (!computedView) {
-                // Do nothing
-                return
-              }
-
-              const client = languageClient()
+            layoutView: () => {
+              const client = get().languageClient()
               invariant(client, 'Language client is not initialized')
+              if (layoutLimit.pendingCount > 0) {
+                console.warn('clearing layoutLimit queue')
+                layoutLimit.clearQueue()
+              }
+              layoutLimit(async () => {
+                const { likeC4Model, viewId, diagrams: currentDiagrams } = get()
 
-              const label = `layoutView: ${computedView.id}`
-              console.time(label)
-              console.log(`start ${label}`)
-
-              const layoutRes = await graphvizLayouter.layout(computedView).catch(e => {
-                console.error(e)
-                return {
-                  diagram: null,
-                  dot: null
+                const computedView = likeC4Model?.views[viewId] ?? null
+                if (!computedView) {
+                  // Do nothing
+                  return
                 }
+
+                const diagrams = {
+                  ...currentDiagrams
+                }
+
+                const label = `layoutView: ${computedView.id}`
+                console.time(label)
+                console.log(`start ${label}`)
+                try {
+                  const layoutRes = await graphvizLayouter.layout(computedView)
+                  diagrams[viewId] = {
+                    view: layoutRes.diagram,
+                    state: 'success',
+                    error: null
+                  }
+                } catch (e) {
+                  diagrams[viewId] = {
+                    view: null,
+                    state: 'error',
+                    error: isError(e) ? e.message : 'Unknown error'
+                  }
+                } finally {
+                  console.timeEnd(label)
+                  set({ diagrams }, noReplace, 'layoutView')
+                }
+                return
               })
-              console.timeEnd(label)
-              set(
-                {
-                  diagram: layoutRes.diagram,
-                  diagramAsDot: layoutRes.dot
-                },
-                noReplace,
-                'layoutView'
-              )
             },
 
             onChanges: ({ change }) => {

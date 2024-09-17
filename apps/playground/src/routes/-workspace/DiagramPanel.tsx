@@ -3,7 +3,7 @@ import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconLoader, IconX } from '@tabler/icons-react'
 import { deepEqual } from 'fast-equals'
-import React, { memo, useEffect, useMemo } from 'react'
+import React, { memo, useEffect, useMemo, useRef } from 'react'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
 
@@ -70,30 +70,14 @@ export const DiagramPanel = memo(() => {
   const store = useStoreApi()
 
   useEffect(() => {
-    const listenToModel = store.subscribe(s => s.likeC4Model?.views[s.viewId] ?? null, view => {
-      if (!view) {
-        return
-      }
-      const { computedView } = store.getState()
-      if (!deepEqual(computedView, view)) {
-        store.setState({ computedView: view })
+    // If current view is stale or pending, trigger layout update
+    return store.subscribe(s => s.diagrams[s.viewId]?.state ?? null, (state) => {
+      if (state === 'pending' || state === 'stale') {
+        store.getState().layoutView()
       }
     }, {
-      equalityFn: deepEqual,
       fireImmediately: true
     })
-
-    const listenToComputedView = store.subscribe(s => s.computedView, () => {
-      store.getState().layoutView()
-    }, {
-      equalityFn: deepEqual,
-      fireImmediately: true
-    })
-
-    return () => {
-      listenToModel()
-      listenToComputedView()
-    }
   }, [store])
 
   if (model) {
@@ -109,9 +93,23 @@ export const DiagramPanel = memo(() => {
 
 const DiagramPanelContent = memo(() => {
   const store = useStoreApi()
-  const { state, message, diagram } = useWorkspaceState(selector)
+  const { state, error, view } = useWorkspaceState(s =>
+    s.diagrams[s.viewId] ?? ({
+      state: 'pending' as const,
+      view: null,
+      error: null
+    })
+  )
 
-  const isInvalid = state !== 'initializing' && state !== 'ok'
+  const prevViewRef = useRef(view)
+  // if view is not null - save it as previous
+  // (it might be null when we navigate to the pending diagram, and we want to show last valid view)
+  if (view) {
+    prevViewRef.current = view
+  }
+  const diagram = view ?? prevViewRef.current
+
+  const isInvalid = state === 'error'
   const icon = isInvalid ? <IconX style={{ width: 20, height: 20 }} /> : <IconCheck style={{ width: 20, height: 20 }} />
 
   const showLocation = (location: LocateParams) => {
@@ -156,14 +154,14 @@ const DiagramPanelContent = memo(() => {
               })
             }}
           />
-          {message && (
+          {error && (
             <Box className={css.stateAlert}>
               <Notification
                 icon={<IconX style={{ width: 20, height: 20 }} />}
                 color="red"
                 title="Error"
                 withCloseButton={false}>
-                {message}
+                {error}
               </Notification>
             </Box>
           )}
@@ -173,14 +171,14 @@ const DiagramPanelContent = memo(() => {
   }
   return (
     <Box pos={'relative'} w={'100%'} h={'100%'}>
-      {state === 'initializing' && <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />}
+      {state === 'pending' && <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />}
       <Box className={css.stateAlert}>
         <Notification
           icon={icon}
-          loading={state === 'initializing'}
+          loading={state === 'pending'}
           color={isInvalid ? 'red' : 'teal'}
           withCloseButton={false}>
-          {message}
+          {error || 'Loading...'}
         </Notification>
       </Box>
     </Box>

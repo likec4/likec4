@@ -2160,6 +2160,7 @@ __metadata:
     monaco-editor-wrapper: "npm:5.3.1"
     monaco-languageclient: "npm:8.6.0"
     nanoid: "npm:^5.0.7"
+    p-limit: "npm:^6.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
