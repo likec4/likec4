@@ -303,11 +303,13 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   }
 
   const onControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
-    const { domNode } = xyflowStore.getState()
+    const { domNode, addSelectedEdges } = xyflowStore.getState()
     if (!domNode || e.pointerType !== 'mouse') {
       return
     }
-    const { xyflow } = diagramStore.getState()
+    addSelectedEdges([id])
+
+    const { xyflow} = diagramStore.getState()    
     if (e.button === 2 && controlPoints.length > 1) {
       const newControlPoints = controlPoints.slice()
       newControlPoints.splice(index, 1)
