@@ -1,14 +1,11 @@
 ## [1.10.1](https://github.com/likec4/likec4/compare/v1.10.0...v1.10.1) (2024-09-17)
 
-
 ### Bug Fixes
 
-* **deps:** update [@langium](https://github.com/langium) to v3.2.0 ([#996](https://github.com/likec4/likec4/issues/996)) ([c006c3e](https://github.com/likec4/likec4/commit/c006c3eaccef49243639e88a1a8f34ed9950676d))
-* **deps:** update dependency @expressive-code/plugin-collapsible-sections to ^0.36.1 ([#993](https://github.com/likec4/likec4/issues/993)) ([d5006da](https://github.com/likec4/likec4/commit/d5006dad5c0b9a2af1acd6123db4fb45c4626c26))
-* **deps:** update dependency @expressive-code/plugin-line-numbers to ^0.36.1 ([#994](https://github.com/likec4/likec4/issues/994)) ([59b5b1a](https://github.com/likec4/likec4/commit/59b5b1a2f9e40d3f35abcf3e09785ca527719d93))
-* derived connection from multiple relationships with same endpoints always picks the last relationship ([12b1899](https://github.com/likec4/likec4/commit/12b1899a21e587f2d41ecec48fb535b8b45fcd69)), closes [#990](https://github.com/likec4/likec4/issues/990)
+* **dsl:** derived connection from multiple relationships with same endpoints always picks the last relationship ([12b1899](https://github.com/likec4/likec4/commit/12b1899a21e587f2d41ecec48fb535b8b45fcd69)), closes [#990](https://github.com/likec4/likec4/issues/990)
 * **vscode:** preview does not work in remote workspaces ([90e4725](https://github.com/likec4/likec4/commit/90e4725231ec011b88919d70e38311694f1581c1)), closes [#1004](https://github.com/likec4/likec4/issues/1004)
-
+* **react:** edge changes being reverted on mouse up  (thanks @pavelpykhtin, [#1008](https://github.com/likec4/likec4/issues/1008))
+* **vscode:** space being inserted into relation's source  (thanks @pavelpykhtin, [#1001](https://github.com/likec4/likec4/issues/1001))
 
 
 # [1.10.0](https://github.com/likec4/likec4/compare/v1.9.0...v1.10.0) (2024-09-12)
