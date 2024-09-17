@@ -1,3 +1,13 @@
+## [1.10.1](https://github.com/likec4/likec4/compare/v1.10.0...v1.10.1) (2024-09-17)
+
+### Bug Fixes
+
+* **dsl:** derived connection from multiple relationships with same endpoints always picks the last relationship ([12b1899](https://github.com/likec4/likec4/commit/12b1899a21e587f2d41ecec48fb535b8b45fcd69)), closes [#990](https://github.com/likec4/likec4/issues/990)
+* **vscode:** preview does not work in remote workspaces ([90e4725](https://github.com/likec4/likec4/commit/90e4725231ec011b88919d70e38311694f1581c1)), closes [#1004](https://github.com/likec4/likec4/issues/1004)
+* **react:** edge changes being reverted on mouse up  (thanks @pavelpykhtin, [#1008](https://github.com/likec4/likec4/issues/1008))
+* **vscode:** space being inserted into relation's source  (thanks @pavelpykhtin, [#1001](https://github.com/likec4/likec4/issues/1001))
+
+
 # [1.10.0](https://github.com/likec4/likec4/compare/v1.9.0...v1.10.0) (2024-09-12)
 
 ### 🚀 Features  
