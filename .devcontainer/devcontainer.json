@@ -23,7 +23,7 @@
     62002 // likec4 cli - preview
   ],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "sudo chown -R node /home/node/.yarn node_modules .yarn /workspace/.turbo && yarn install && yarn generate",
+  "postCreateCommand": "sudo chown -R node /home/node/.yarn node_modules .yarn /workspace/.turbo && yarn install && yarn build",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
