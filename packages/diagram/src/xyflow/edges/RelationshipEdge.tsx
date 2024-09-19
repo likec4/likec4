@@ -316,7 +316,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       e.stopPropagation()
       // Defer the update to avoid conflict with the pointerup event
       setTimeout(() => {
-        xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+        xyflow.updateEdgeData(id, { controlPoints: newControlPoints })        
+        diagramStore.getState().scheduleSaveManualLayout()
       }, 10)
       return
     }
