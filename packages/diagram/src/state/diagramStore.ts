@@ -29,7 +29,7 @@ import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, first, hasAtLeast, isArray, isNullish, map, prop, reduce } from 'remeda'
+import { entries, first, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
 import type { ConditionalKeys, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -41,6 +41,7 @@ import type {
   LikeC4DiagramEventHandlers,
   WhereOperator
 } from '../LikeC4Diagram.props'
+import { vector } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
@@ -158,6 +159,8 @@ export type DiagramState = Simplify<
     onEdgesChange: OnEdgesChange<XYFlowEdge>
 
     highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => void
+
+    resetEdgeControlPoints: () => void
   }
 >
 
@@ -984,6 +987,36 @@ export function createDiagramStore(props: DiagramInitialState) {
               }
             })
             set({ dimmed }, noReplace, 'highlightByElementNotation')
+          },
+
+          resetEdgeControlPoints: () => {
+            const { xyflow, scheduleSaveManualLayout, xynodes } = get()
+
+            xyedges.forEach(edge => {
+              console.log(edge, edge.data)
+
+              const sourceCenter = getNodeCenter(xynodes.find(x => x.id == edge.source))
+              const targetCenter = getNodeCenter(xynodes.find(x => x.id == edge.target))
+
+              const controlPoint = sourceCenter && targetCenter
+                  && [sourceCenter.add(targetCenter.sub(sourceCenter).mul(0.3))] || []
+              xyflow.updateEdgeData(edge.id, {
+                controlPoints: controlPoint
+              })
+            })
+
+            scheduleSaveManualLayout()
+
+            function getNodeCenter(node: XYFlowNode | undefined) {
+              if (!node) {
+                return null
+              }
+
+              const dimensions = vector({ x: node.width || 0, y: node.height || 0 })
+
+              return vector(node.position)
+                .add(dimensions.mul(0.5))
+            }
           }
         }),
         {

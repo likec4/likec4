@@ -13,6 +13,7 @@ import {
   IconAlertTriangle,
   IconChevronLeft,
   IconChevronRight,
+  IconClearAll,
   IconFileSymlink,
   IconFocusCentered,
   IconMenu2
@@ -127,6 +128,32 @@ const LayoutDriftNotification = (props: PopoverProps) => (
   </HoverCard>
 )
 
+const ResetControlPointsButton = () => {
+  const store = useDiagramStoreApi()
+
+  return (
+    <AnimatePresence>
+      <m.div
+        layout
+        initial={{ opacity: 0.05, transform: 'translateX(-10px)' }}
+        animate={{ opacity: 1, transform: 'translateX(0)' }}
+        exit={{
+          opacity: 0.05,
+          transform: 'translateX(-10px)'
+        }}
+        key={'back'}>
+        <ActionIcon
+          onClick={e => {
+            e.stopPropagation()
+            store.getState().resetEdgeControlPoints()
+          }}>
+          <IconClearAll />
+        </ActionIcon>
+      </m.div>
+    </AnimatePresence>
+  )
+}
+
 export const TopLeftPanel = () => {
   const store = useDiagramStoreApi()
   const {
@@ -183,6 +210,7 @@ export const TopLeftPanel = () => {
             <LayoutDriftNotification {...portalProps} />
           </m.div>
         )}
+        <ResetControlPointsButton />
         {showFitDiagram && (
           <m.div
             initial={{ opacity: 0.05, transform: 'translateX(-20%)' }}
