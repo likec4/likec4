@@ -995,8 +995,8 @@ export function createDiagramStore(props: DiagramInitialState) {
             xyedges.forEach(edge => {
               console.log(edge, edge.data)
 
-              const sourceCenter = getNodeCenter(xynodes.find(x => x.id == edge.source))
-              const targetCenter = getNodeCenter(xynodes.find(x => x.id == edge.target))
+              const sourceCenter = getNodeCenter(xynodes, edge.source)
+              const targetCenter = getNodeCenter(xynodes, edge.target)
 
               const controlPoint = sourceCenter && targetCenter
                   && [sourceCenter.add(targetCenter.sub(sourceCenter).mul(0.3))] || []
@@ -1007,15 +1007,29 @@ export function createDiagramStore(props: DiagramInitialState) {
 
             scheduleSaveManualLayout()
 
-            function getNodeCenter(node: XYFlowNode | undefined) {
+            function getNodeCenter(nodes: XYFlowNode[], nodeId: string) {
+              const node = nodes.find(x => x.id == nodeId)
               if (!node) {
                 return null
               }
 
               const dimensions = vector({ x: node.width || 0, y: node.height || 0 })
-
-              return vector(node.position)
+              let position = vector(node.position)
                 .add(dimensions.mul(0.5))
+
+              let currentNode = node
+              do {
+                const parent = currentNode.parentId && nodes.find(x => x.id == currentNode.parentId)
+
+                if (!parent) {
+                  break
+                }
+
+                currentNode = parent
+                position = position.add(parent.position)
+              } while (true)
+
+              return position
             }
           }
         }),
