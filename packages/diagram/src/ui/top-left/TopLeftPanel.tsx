@@ -16,7 +16,8 @@ import {
   IconClearAll,
   IconFileSymlink,
   IconFocusCentered,
-  IconMenu2
+  IconMenu2,
+  IconRouteOff
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
@@ -147,7 +148,7 @@ const ResetControlPointsButton = () => {
             e.stopPropagation()
             store.getState().resetEdgeControlPoints()
           }}>
-          <IconClearAll />
+          <IconRouteOff />
         </ActionIcon>
       </m.div>
     </AnimatePresence>

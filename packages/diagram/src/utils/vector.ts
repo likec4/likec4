@@ -25,6 +25,9 @@ export class VectorImpl implements Vector {
   static cross(a: Vector, b: Vector): VectorImpl {
     return new VectorImpl(a.y * b.x - a.x * b.y, a.x * b.y - a.y * b.x)
   }
+  static setLength(a: Vector, length: number): Vector {
+    return vector(a).setLength(length)
+  }
 
   add(b: Vector): VectorImpl {
     return new VectorImpl(this.x + b.x, this.y + b.y)
@@ -43,6 +46,9 @@ export class VectorImpl implements Vector {
   }
   abs(): number {
     return Math.sqrt(this.x * this.x + this.y * this.y)
+  }
+  setLength(length: number): VectorImpl {
+    return this.mul(length / this.abs())
   }
 }
 
