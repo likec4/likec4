@@ -991,7 +991,7 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           resetEdgeControlPoints: () => {
-            const { xyflow, scheduleSaveManualLayout, xynodes } = get()
+            const { xyflow, scheduleSaveManualLayout, xynodes, xyedges } = get()
 
             xyedges.forEach(edge => {
               xyflow.updateEdgeData(edge.id, {

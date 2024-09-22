@@ -134,23 +134,15 @@ const ResetControlPointsButton = () => {
 
   return (
     <AnimatePresence>
-      <m.div
-        layout
-        initial={{ opacity: 0.05, transform: 'translateX(-10px)' }}
-        animate={{ opacity: 1, transform: 'translateX(0)' }}
-        exit={{
-          opacity: 0.05,
-          transform: 'translateX(-10px)'
-        }}
-        key={'back'}>
-        <ActionIcon
-          onClick={e => {
-            e.stopPropagation()
-            store.getState().resetEdgeControlPoints()
-          }}>
-          <IconRouteOff />
-        </ActionIcon>
-      </m.div>
+          <Tooltip label="Reset all control points">
+            <ActionIcon
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().resetEdgeControlPoints()
+              }}>
+              <IconRouteOff />
+            </ActionIcon>
+          </Tooltip>
     </AnimatePresence>
   )
 }
