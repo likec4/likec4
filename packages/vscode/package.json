@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -41,7 +41,7 @@
     "vscode": "^1.90.0"
   },
   "keywords": [
-    "software architecture",
+    "architecture",
     "architecture-as-a-code",
     "diagrams",
     "c4"

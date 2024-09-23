@@ -15,7 +15,8 @@ import {
   IconChevronRight,
   IconFileSymlink,
   IconFocusCentered,
-  IconMenu2
+  IconMenu2,
+  IconRouteOff
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
@@ -128,6 +129,23 @@ const LayoutDriftNotification = (props: PopoverProps) => (
   </HoverCard>
 )
 
+const ResetControlPointsButton = () => {
+  const store = useDiagramStoreApi()
+  const portalProps = useMantinePortalProps()
+
+  return (
+    <Tooltip label="Reset all control points" {...portalProps}>
+      <ActionIcon
+        onClick={e => {
+          e.stopPropagation()
+          store.getState().resetEdgeControlPoints()
+        }}>
+        <IconRouteOff />
+      </ActionIcon>
+    </Tooltip>
+  )
+}
+
 export const TopLeftPanel = () => {
   const store = useDiagramStoreApi()
   const {
@@ -136,7 +154,8 @@ export const TopLeftPanel = () => {
     showLayoutDriftWarning,
     showChangeAutoLayout,
     showGoToSource,
-    viewportChanged
+    viewportChanged,
+    showResetControlPoints
   } = useDiagramState(s => {
     const isNotWalkthrough = isNullish(s.activeWalkthrough)
     const isNotFocused = isNullish(s.focusedNodeId)
@@ -147,7 +166,8 @@ export const TopLeftPanel = () => {
       showLayoutDriftWarning: !s.readonly && s.view.hasLayoutDrift === true && isNotActive,
       showChangeAutoLayout: s.isEditable() && isNotActive,
       showGoToSource: !!s.onOpenSourceView && isNotWalkthrough,
-      viewportChanged: s.viewportChanged
+      viewportChanged: s.viewportChanged,
+      showResetControlPoints: s.readonly !== true && s.experimentalEdgeEditing === true
     })
   })
   const portalProps = useMantinePortalProps()
@@ -188,6 +208,7 @@ export const TopLeftPanel = () => {
             <LayoutDriftNotification {...portalProps} />
           </m.div>
         )}
+        {showResetControlPoints && <ResetControlPointsButton />}
         {showFitDiagram && (
           <m.div
             initial={{ opacity: 0.05, transform: 'translateX(-20%)' }}

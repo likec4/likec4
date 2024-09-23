@@ -4,9 +4,9 @@
   "name": "LikeC4 Dev",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
   "features": {
-    "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
-    "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
-    "ghcr.io/devcontainers-contrib/features/tsx:1": {}
+    // "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
+    // "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
+    // "ghcr.io/devcontainers-contrib/features/tsx:1": {}
   },
   "containerEnv": {
     "TURBO_CACHE_DIR": "/workspace/.turbo"
@@ -32,13 +32,9 @@
       "extensions": [
         "langium.langium-vscode",
         "editorconfig.editorconfig",
-        "folke.vscode-monorepo-workspace",
         "meganrogge.template-string-converter",
         "redhat.vscode-yaml",
-        "visualstudioexptteam.vscodeintellicode",
         "github.copilot",
-        "codezombiech.gitignore",
-        "unifiedjs.vscode-mdx",
         "dprint.dprint",
         "vitest.explorer"
       ],
