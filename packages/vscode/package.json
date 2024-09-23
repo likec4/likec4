@@ -33,7 +33,7 @@
     "build:turbo": "run -T turbo run build --filter='likec4-vscode'",
     "build": "tsx scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf contrib dist src/generated",
+    "clean": "rm -r -f contrib dist src/generated",
     "vsce:pack": "yarn dlx vsce package",
     "vsce:publish": "yarn dlx vsce publish --skip-duplicate"
   },

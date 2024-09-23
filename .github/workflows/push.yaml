@@ -48,6 +48,18 @@ jobs:
       - name: test
         run: yarn ci:test
 
+      - name: pack
+        working-directory: packages/likec4
+        run: yarn pack
+
+      - name: upload artifact
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+        with:
+          name: likec4-package
+          if-no-files-found: error
+          path: packages/likec4/package.tgz
+          retention-days: 5
+
   check-playground:
     # If on pull request, run only if coming from forked repos
     if: |

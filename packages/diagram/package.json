@@ -30,7 +30,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
+    "clean": "rm -r -f -g 'dist/*' .tsbuildinfo"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

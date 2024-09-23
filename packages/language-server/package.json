@@ -80,7 +80,7 @@
     "generate": "langium generate && tsx scripts/generate-icons.ts",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist contrib",
+    "clean": "rm -r -f dist contrib",
     "test": "vitest run --no-isolate",
     "test-dbg": "vitest run --no-isolate -t formating",
     "vitest:ui": "vitest --no-isolate --ui",

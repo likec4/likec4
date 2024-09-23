@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit",
     "prepack": "tsc",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist",
+    "clean": "rm -r -f dist",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },

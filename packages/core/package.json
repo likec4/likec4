@@ -16,7 +16,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "run -T rimraf dist"
+    "clean": "rm -r -f dist"
   },
   "files": [
     "dist",

@@ -50,7 +50,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "run -T rimraf -g 'dist/**'"
+    "clean": "rm -r -f -g 'dist/**'"
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "1.3.0",
