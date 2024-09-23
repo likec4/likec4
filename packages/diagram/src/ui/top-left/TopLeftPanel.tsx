@@ -13,7 +13,6 @@ import {
   IconAlertTriangle,
   IconChevronLeft,
   IconChevronRight,
-  IconClearAll,
   IconFileSymlink,
   IconFocusCentered,
   IconMenu2,
@@ -131,19 +130,18 @@ const LayoutDriftNotification = (props: PopoverProps) => (
 
 const ResetControlPointsButton = () => {
   const store = useDiagramStoreApi()
+  const portalProps = useMantinePortalProps()
 
   return (
-    <AnimatePresence>
-          <Tooltip label="Reset all control points">
-            <ActionIcon
-              onClick={e => {
-                e.stopPropagation()
-                store.getState().resetEdgeControlPoints()
-              }}>
-              <IconRouteOff />
-            </ActionIcon>
-          </Tooltip>
-    </AnimatePresence>
+    <Tooltip label="Reset all control points" {...portalProps}>
+      <ActionIcon
+        onClick={e => {
+          e.stopPropagation()
+          store.getState().resetEdgeControlPoints()
+        }}>
+        <IconRouteOff />
+      </ActionIcon>
+    </Tooltip>
   )
 }
 
@@ -154,7 +152,8 @@ export const TopLeftPanel = () => {
     showFitDiagram,
     showLayoutDriftWarning,
     showChangeAutoLayout,
-    showGoToSource
+    showGoToSource,
+    showResetControlPoints
   } = useDiagramState(s => {
     const isNotActive = s.activeWalkthrough === null && s.focusedNodeId === null
     return ({
@@ -162,7 +161,8 @@ export const TopLeftPanel = () => {
       showFitDiagram: s.fitViewEnabled && s.zoomable && s.viewportChanged,
       showLayoutDriftWarning: s.readonly !== true && s.view.hasLayoutDrift === true && isNotActive,
       showChangeAutoLayout: s.readonly !== true && !!s.onChange && isNotActive,
-      showGoToSource: !!s.onOpenSourceView
+      showGoToSource: !!s.onOpenSourceView,
+      showResetControlPoints: s.readonly !== true && !!s.experimentalEdgeEditing === true
     })
   })
   const portalProps = useMantinePortalProps()
@@ -203,7 +203,7 @@ export const TopLeftPanel = () => {
             <LayoutDriftNotification {...portalProps} />
           </m.div>
         )}
-        <ResetControlPointsButton />
+        {showResetControlPoints && <ResetControlPointsButton />}
         {showFitDiagram && (
           <m.div
             initial={{ opacity: 0.05, transform: 'translateX(-20%)' }}
