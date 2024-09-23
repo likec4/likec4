@@ -42,10 +42,11 @@ import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { useXYStoreApi } from '../../hooks/useXYFlow'
+import { vector, VectorImpl } from '../../utils/vector'
 import { ZIndexes } from '../const'
 import { EdgeMarkers, type EdgeMarkerType } from '../EdgeMarkers'
 import { type RelationshipData, type XYFlowEdge } from '../types'
-import { bezierControlPoints } from '../utils'
+import { bezierControlPoints, distance } from '../utils'
 import * as edgesCss from './edges.css'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
 // import { getEdgeParams } from './utils'
@@ -309,7 +310,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     }
     addSelectedEdges([id])
 
-    const { xyflow} = diagramStore.getState()    
+    const { xyflow } = diagramStore.getState()
     if (e.button === 2 && controlPoints.length > 1) {
       const newControlPoints = controlPoints.slice()
       newControlPoints.splice(index, 1)
@@ -317,6 +318,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       // Defer the update to avoid conflict with the pointerup event
       setTimeout(() => {
         xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+        diagramStore.getState().scheduleSaveManualLayout()
       }, 10)
       return
     }
@@ -370,6 +372,58 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     })
   }
 
+  const onEdgePointerDown = (e: ReactPointerEvent<SVGElement>) => {
+    const { domNode } = xyflowStore.getState()
+    const { xyflow, scheduleSaveManualLayout } = diagramStore.getState()
+
+    if (!domNode || e.pointerType !== 'mouse') {
+      return
+    }
+    if (e.button !== 2) {
+      return
+    }
+
+    xyflow.updateEdgeData(id, edge => {
+      const points: VectorImpl[] = [
+        new VectorImpl(sourceX, sourceY),
+        ...controlPoints.map(vector) || [],
+        new VectorImpl(targetX, targetY)
+      ]
+
+      let pointer = { x: e.clientX, y: e.clientY }
+      const newPoint = vector(xyflow.screenToFlowPosition(pointer, { snapToGrid: false }))
+
+      let insertionIndex = 0
+      let minDistance = Infinity
+      for (let i = 0; i < points.length - 1; i++) {
+        const a = points[i]!, b = points[i + 1]!
+        const fromCurrentToNext = b.sub(a)
+        const fromCurrentToNew = newPoint.sub(a)
+        const fromNextToNew = newPoint.sub(b)
+
+        // Is pointer above the current segment?
+        if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
+          // Calculate distance by approximating edge segment with a staight line
+          const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew).abs() / fromCurrentToNext.abs())
+
+          if (distanceToEdge < minDistance) {
+            minDistance = distanceToEdge
+            insertionIndex = i
+          }
+        }
+      }
+
+      const newControlPoints = edge.data.controlPoints?.slice() || []
+      newControlPoints.splice(insertionIndex, 0, newPoint)
+
+      return { controlPoints: newControlPoints }
+    })
+
+    scheduleSaveManualLayout()
+
+    e.stopPropagation()
+  }
+
   let markerStartName = toMarker(diagramEdge.tail)
   let markerEndName = toMarker(diagramEdge.head ?? 'normal')
   if (diagramEdge.dir === 'back') {
@@ -403,7 +457,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         stroke={'transparent'}
         strokeWidth={interactionWidth ?? 10}
       />
-      <g className={edgesCss.markerContext}>
+      <g className={edgesCss.markerContext} onPointerDown={e => onEdgePointerDown(e)}>
         <defs>
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}

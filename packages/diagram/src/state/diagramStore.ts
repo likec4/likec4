@@ -7,7 +7,8 @@ import type {
   Fqn,
   NodeId,
   ViewChange,
-  ViewID
+  ViewID,
+  XYPoint
 } from '@likec4/core'
 import {
   getBBoxCenter,
@@ -29,7 +30,7 @@ import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, first, hasAtLeast, isArray, isNullish, map, prop, reduce } from 'remeda'
+import { entries, first, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
 import type { ConditionalKeys, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -41,6 +42,7 @@ import type {
   LikeC4DiagramEventHandlers,
   WhereOperator
 } from '../LikeC4Diagram.props'
+import { vector, type Vector } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
@@ -158,6 +160,8 @@ export type DiagramState = Simplify<
     onEdgesChange: OnEdgesChange<XYFlowEdge>
 
     highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => void
+
+    resetEdgeControlPoints: () => void
   }
 >
 
@@ -984,6 +988,68 @@ export function createDiagramStore(props: DiagramInitialState) {
               }
             })
             set({ dimmed }, noReplace, 'highlightByElementNotation')
+          },
+
+          resetEdgeControlPoints: () => {
+            const { xyflow, scheduleSaveManualLayout, xynodes, xyedges } = get()
+
+            xyedges.forEach(edge => {
+              xyflow.updateEdgeData(edge.id, {
+                controlPoints: getControlPointForEdge(edge)
+              })
+            })
+
+            scheduleSaveManualLayout()
+
+            function getNodeCenter(node: XYFlowNode, nodes: XYFlowNode[]) {
+              const dimensions = vector({ x: node.width || 0, y: node.height || 0 })
+              let position = vector(node.position)
+                .add(dimensions.mul(0.5))
+
+              let currentNode = node
+              do {
+                const parent = currentNode.parentId && nodes.find(x => x.id == currentNode.parentId)
+
+                if (!parent) {
+                  break
+                }
+
+                currentNode = parent
+                position = position.add(parent.position)
+              } while (true)
+
+              return position
+            }
+
+            function getControlPointForEdge(edge: XYFlowEdge): XYPoint[] {
+              const source = xynodes.find(x => x.id == edge.source)
+              const target = xynodes.find(x => x.id == edge.target)
+              if(!source || !target){
+                return []
+              }
+
+              const sourceCenter = getNodeCenter(source, xynodes)
+              const targetCenter = getNodeCenter(target, xynodes)
+
+              if(sourceCenter && targetCenter){
+                const sourceToTargetVector = targetCenter.sub(sourceCenter)
+                const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
+                const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
+
+                return [sourceBorderPoint.add(targetBorderPoint.sub(sourceBorderPoint).mul(0.3))]
+              }
+
+              return []
+            }
+
+            function getBorderPointOnVector(node: XYFlowNode, nodeCenter: Vector, v: Vector) {
+              const xScale = (node.width || 0) / 2 / v.x
+              const yScale = (node.height || 0) / 2 / v.y
+
+              const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
+
+              return vector(v).mul(scale).add(nodeCenter)
+            }
           }
         }),
         {
