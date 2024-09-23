@@ -65,7 +65,7 @@ export default function BundledIcon({ name, ...props }: IconProps): JSX.Element;
 await writeFile(
   'all.js',
   `
-import { jsx} from "react/jsx-runtime";
+import { jsx } from "react/jsx-runtime";
 ${imports.join('\n')}
 export const Icons = {
 ${icons.join('\n')}
@@ -84,9 +84,11 @@ await build({
     '**/*.tsx',
     '**/index.ts'
   ],
-  jsxSideEffects: true,
   sourceRoot: '.',
   outdir: '.',
+  minifyWhitespace: false,
+  minifyIdentifiers: true,
+  minifySyntax: true,
   format: 'esm',
   target: 'esnext',
   platform: 'browser'
