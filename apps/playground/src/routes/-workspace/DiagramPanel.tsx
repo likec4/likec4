@@ -2,9 +2,8 @@ import { type ElementIconRenderer, LikeC4Diagram, LikeC4ModelProvider } from '@l
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconLoader, IconX } from '@tabler/icons-react'
-import { deepEqual } from 'fast-equals'
-import React, { memo, useEffect, useMemo, useRef } from 'react'
-import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
+import React, { memo, useEffect, useRef } from 'react'
+import { useStoreApi, useWorkspaceState } from '../../state'
 import * as css from './styles.css'
 
 const Icons = React.lazy(() => import('@likec4/icons/all'))
@@ -178,7 +177,7 @@ const DiagramPanelContent = memo(() => {
           loading={state === 'pending'}
           color={isInvalid ? 'red' : 'teal'}
           withCloseButton={false}>
-          {error || 'Loading...'}
+          {error ?? 'Loading...'}
         </Notification>
       </Box>
     </Box>

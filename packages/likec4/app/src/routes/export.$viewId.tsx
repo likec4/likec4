@@ -1,4 +1,4 @@
-import { LikeC4Diagram, useLikeC4DiagramView, useLikeC4View } from '@likec4/diagram'
+import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
 import { Box, LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'

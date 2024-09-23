@@ -836,24 +836,13 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           fitDiagram: (duration = 500) => {
-            const { fitViewPadding, view, focusedNodeId, activeWalkthrough, xystore } = get()
+            const { fitViewPadding, view, xystore } = get()
             const { width, height, panZoom, transform } = xystore.getState()
 
             const bounds = view.bounds
             const maxZoom = Math.max(1, transform[2])
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, fitViewPadding)
             panZoom?.setViewport(viewport, { duration })
-            // if ((focusedNodeId ?? activeWalkthrough) !== null) {
-            //   set(
-            //     {
-            //       activeWalkthrough: null,
-            //       focusedNodeId: null,
-            //       dimmed: EmptyStringSet
-            //     },
-            //     noReplace,
-            //     'unfocus'
-            //   )
-            // }
           },
 
           nextDynamicStep: (increment = 1) => {
@@ -872,48 +861,6 @@ export function createDiagramStore(props: DiagramInitialState) {
               return
             }
           },
-
-          // activateDynamicStep: (nextStep: number) => {
-          //   const { isDynamicView, xyflow, xystore, fitViewPadding } = get()
-          //   invariant(isDynamicView, 'view is not dynamic')
-          //   const edgeId = StepEdgeId(nextStep)
-          //   const dimmed = new StringSet()
-          //   let edge: XYFlowEdge | null = null
-          //   for (const e of xyflow.getEdges()) {
-          //     if (e.id === edgeId) {
-          //       edge = e
-          //       continue
-          //     }
-          //     dimmed.add(e.id)
-          //   }
-          //   invariant(!!edge, `edge not found: ${edgeId}`)
-          //   const selected = [] as XYFlowNode[]
-          //   for (const n of xyflow.getNodes()) {
-          //     if (n.id === edge.source || n.id === edge.target) {
-          //       selected.push(n)
-          //       continue
-          //     }
-          //     dimmed.add(n.id)
-          //   }
-          //   const { fitView, transform } = xystore.getState()
-          //   fitView({
-          //     duration: 400,
-          //     includeHiddenNodes: true,
-          //     maxZoom: Math.max(1, transform[2]),
-          //     minZoom: MinZoom,
-          //     padding: Math.max(fitViewPadding, 0.2),
-          //     nodes: selected
-          //   })
-          //   set(
-          //     {
-          //       focusedNodeId: null,
-          //       activeDynamicViewStep: nextStep,
-          //       dimmed
-          //     },
-          //     noReplace,
-          //     'activateDynamicStep'
-          //   )
-          // },
 
           activateWalkthrough: (step: EdgeId | XYFlowEdge) => {
             const stepId = typeof step === 'string' ? step : step.data.edge.id

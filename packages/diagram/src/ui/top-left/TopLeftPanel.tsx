@@ -7,7 +7,8 @@ import {
   Notification,
   type PopoverProps,
   Stack,
-  Text
+  Text,
+  type TooltipProps
 } from '@mantine/core'
 import {
   IconAlertTriangle,
@@ -129,12 +130,11 @@ const LayoutDriftNotification = (props: PopoverProps) => (
   </HoverCard>
 )
 
-const ResetControlPointsButton = () => {
+const ResetControlPointsButton = (props: Omit<TooltipProps, 'label' | 'children'>) => {
   const store = useDiagramStoreApi()
-  const portalProps = useMantinePortalProps()
 
   return (
-    <Tooltip label="Reset all control points" {...portalProps}>
+    <Tooltip label="Reset all control points" {...props}>
       <ActionIcon
         onClick={e => {
           e.stopPropagation()
@@ -208,7 +208,7 @@ export const TopLeftPanel = () => {
             <LayoutDriftNotification {...portalProps} />
           </m.div>
         )}
-        {showResetControlPoints && <ResetControlPointsButton />}
+        {showResetControlPoints && <ResetControlPointsButton {...portalProps} />}
         {showFitDiagram && (
           <m.div
             initial={{ opacity: 0.05, transform: 'translateX(-20%)' }}

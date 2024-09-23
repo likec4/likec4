@@ -1,4 +1,4 @@
-import { type ComputedLikeC4Model, type ComputedView, type DiagramView, invariant, type ViewID } from '@likec4/core'
+import { type ComputedLikeC4Model, type DiagramView, invariant, type ViewID } from '@likec4/core'
 import { changeView, fetchComputedModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
