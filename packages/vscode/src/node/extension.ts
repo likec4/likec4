@@ -10,7 +10,8 @@ import {
   type TextDocumentFilter,
   TransportKind
 } from 'vscode-languageclient/node'
-import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
+import { isLikeC4Source } from '../common/initWorkspace'
+import { extensionTitle, globPattern, isDev, isVirtual, languageId } from '../const'
 import { ExtensionController } from '../ExtensionController'
 import { logger, logToChannel } from '../logger'
 import { configureGraphviz } from './configure-graphviz'
@@ -52,9 +53,6 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     'language-server.js'
   )
 
-  // @ts-ignore
-  const isProduction = process.env.NODE_ENV === 'production'
-
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   let serverOptions: ServerOptions = {
@@ -76,7 +74,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     }
   }
 
-  if (!isProduction) {
+  if (isDev) {
     logger.warn('!!! Running in development mode !!!')
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
@@ -110,6 +108,12 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     traceOutputChannel: outputChannel,
     documentSelector,
     diagnosticCollectionName: 'likec4',
+    diagnosticPullOptions: {
+      onTabs: true,
+      match(_, resource) {
+        return isLikeC4Source(resource.path)
+      }
+    },
     progressOnInitialization: true
   }
   logger.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)

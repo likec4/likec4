@@ -35,7 +35,7 @@ export function logErrorToTelemetry(connection: Connection): void {
         if (typeof arg === 'string') {
           return arg
         }
-        return String(arg)
+        return '' + arg
       })
       if (tag) {
         parts.unshift(`[${tag}]`)
@@ -59,17 +59,13 @@ export function logToLspConnection(connection: Connection): void {
         if (typeof arg === 'string') {
           return arg
         }
-        return String(arg)
+        return '' + arg
       })
       if (tag) {
         parts.unshift(`[${tag}]`)
       }
       const message = parts.join(' ')
       switch (true) {
-        case level >= LogLevels.trace: {
-          connection.tracer.log(message)
-          break
-        }
         case level >= LogLevels.debug: {
           connection.console.debug(message)
           break
@@ -90,9 +86,12 @@ export function logToLspConnection(connection: Connection): void {
           connection.console.error(message)
           break
         }
+        default: {
+          connection.console.log(message)
+        }
       }
     }
   }
-  root.addReporter(reporter)
+  root.setReporters([reporter])
   logger.setReporters(root.options.reporters)
 }

@@ -2,7 +2,7 @@ import { hasAtLeast } from '@likec4/core'
 import type { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
 import * as vscode from 'vscode'
 import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
-import { extensionName, extensionTitle, languageId } from '../const'
+import { extensionName, extensionTitle, isDev, languageId } from '../const'
 import { ExtensionController } from '../ExtensionController'
 import { logger, logToChannel } from '../logger'
 
@@ -27,10 +27,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   )
   logger.info('active browser extension')
 
-  // @ts-ignore
-  const isProduction = process.env.NODE_ENV === 'production'
-
-  if (!isProduction) {
+  if (isDev) {
     logger.warn('!!! Running in development mode !!!')
   }
 

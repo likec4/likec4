@@ -98,10 +98,6 @@ export class ExtensionController extends AbstractDisposable {
     ExtensionController._instance = null
   }
 
-  // get c4model() {
-  //   return nonNullable(this._c4model, 'C4Model not initialized')
-  // }
-
   get rpc() {
     return nonNullable(this._rpc, 'Rpc not initialized')
   }

@@ -19,7 +19,8 @@ export async function initWorkspace(rpc: Rpc) {
       )
     }
     const isweb = isWebUi() || isVirtual()
-    await delay(isweb ? 2000 : 500)
+    const minWait = isweb ? 2000 : 500
+    await delay(minWait, minWait + 500)
     logger.info(`[InitWorkspace] Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
@@ -39,7 +40,7 @@ export async function rebuildWorkspace(rpc: Rpc) {
           + docs.map(s => '  - ' + s).join('\n')
       )
     }
-    await delay(800)
+    await delay(500, 1000)
     logger.info(`Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
@@ -50,7 +51,7 @@ export async function rebuildWorkspace(rpc: Rpc) {
 async function findSources(client: LanguageClient) {
   const isweb = isWebUi() || isVirtual()
   const c2pConverter = client.code2ProtocolConverter
-  const uris = await (isweb ? recursiveSearchSources() : findFiles())
+  const uris = await (isweb ? recursiveSearchSources : findFiles)()
   const docs = [] as string[]
   for (const uri of uris) {
     try {
@@ -68,11 +69,11 @@ async function findSources(client: LanguageClient) {
 }
 
 async function findFiles() {
-  logger.info(`call vscode.workspace.findFiles`)
+  logger.info(`call vscode.workspace.findFiles with pattern "${globPattern}"`)
   return await vscode.workspace.findFiles(globPattern)
 }
 
-const isSource = (path: string) => {
+export const isLikeC4Source = (path: string) => {
   const p = path.toLowerCase()
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
 }
@@ -86,7 +87,7 @@ async function recursiveSearchSources() {
     try {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(folder)) {
         const path = vscode.Uri.joinPath(folder, name)
-        if (type === vscode.FileType.File && isSource(name)) {
+        if (type === vscode.FileType.File && isLikeC4Source(name)) {
           uris.push(path)
         }
         if (type === vscode.FileType.Directory) {

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-export const languageId = 'likec4' as const
-export const extensionName = 'likec4' as const
-export const extensionTitle = 'LikeC4' as const
+export const languageId = 'likec4'
+export const extensionName = 'likec4'
+export const extensionTitle = 'LikeC4'
 export const cmdReady = `${extensionName}.ready` as const
 export const cmdOpenPreview = `${extensionName}.open-preview` as const
 export const cmdRebuild = `${extensionName}.rebuild` as const
@@ -27,5 +27,6 @@ declare global {
   }
 }
 
-export const isProd = process.env.NODE_ENV == 'production'
+// Replaced by esbuild define
+export const isProd = process.env.NODE_ENV === 'production'
 export const isDev = !isProd

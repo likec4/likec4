@@ -3,10 +3,11 @@ import { analyzeMetafileSync, build, type BuildOptions, formatMessagesSync } fro
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 import { existsSync, writeFileSync } from 'node:fs'
 import { cp, mkdir } from 'node:fs/promises'
+import { isProduction } from 'std-env'
 
 import { resolve } from 'node:path'
 
-const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
+const isDev = !isProduction
 if (isDev) {
   consola.warn('VSCODE DEVELOPMENT BUILD')
 }
@@ -25,31 +26,28 @@ await cp(
   { recursive: true }
 )
 
-
 consola.start('Build vscode extension')
 
 const base = {
   metafile: isDev,
   outdir: 'dist',
   outbase: 'src',
-  logLevel: isDev ? 'debug' : 'info',
+  logLevel: isDev ? 'debug' : 'warning',
   color: true,
   bundle: true,
   treeShaking: true,
   external: [
     'vscode'
   ],
-  ...(!isDev && {
-    define: {
-      'process.env.NODE_ENV': '"production"'
-    }
-  }),
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
+  },
   sourcemap: true,
   sourcesContent: false,
-  minify: !isDev,
+  minify: true,
   minifyIdentifiers: false,
-  minifySyntax: !isDev,
-  minifyWhitespace: !isDev,
+  minifySyntax: isProduction,
+  minifyWhitespace: isProduction,
   legalComments: 'none'
 } satisfies BuildOptions
 
@@ -74,17 +72,16 @@ configs.push({
 configs.push({
   ...base,
   sourcemap: isDev,
-  minifyIdentifiers: !isDev,
+  minifyIdentifiers: isProduction,
   entryPoints: ['src/browser/extension.ts'],
   format: 'cjs',
   target: 'es2022',
   platform: 'browser',
-  plugins: [nodeModulesPolyfillPlugin()],
-
+  plugins: [nodeModulesPolyfillPlugin()]
 }, {
   ...base,
   sourcemap: isDev,
-  minifyIdentifiers: !isDev,
+  minifyIdentifiers: isProduction,
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',
   target: 'es2022',
@@ -95,7 +92,7 @@ configs.push({
 let hasErrors = false
 const bundles = await Promise.all(configs.map(cfg => build(cfg)))
 
-bundles.forEach(({ errors, warnings, metafile, }) => {
+bundles.forEach(({ errors, warnings, metafile }) => {
   if (metafile) {
     analyzeMetafileSync(metafile)
     const out = Object.keys(metafile.outputs).find(k => k.endsWith('.js'))
