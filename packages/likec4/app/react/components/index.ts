@@ -6,9 +6,7 @@ export { LikeC4Browser, type LikeC4BrowserProps } from './LikeC4Browser'
 export { LikeC4ViewEmbedded, type LikeC4ViewEmbeddedProps } from './LikeC4ViewEmbedded'
 export { ReactLikeC4, type ReactLikeC4Props } from './ReactLikeC4'
 
-export * from './nanostores'
-
-export type * from './types'
+export { atom, computed, map, useNanoStore } from './nanostores'
 
 export { BundledStyles, DefaultTheme, useBundledStyleSheet, useColorScheme } from './style'
 
@@ -21,4 +19,6 @@ export {
   useLikeC4Views
 } from '@likec4/diagram'
 
-export * from './createLikeC4Model'
+export { createLikeC4Model, type LikeC4Model } from './createLikeC4Model'
+
+export type * from './types'

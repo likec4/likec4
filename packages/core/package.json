@@ -57,6 +57,9 @@
       }
     }
   },
+  "dependencies": {
+    "type-fest": "4.26.1"
+  },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "^7.12.2",
@@ -66,10 +69,9 @@
     "natural-compare-lite": "^1.4.0",
     "remeda": "^2.11.0",
     "turbo": "^2.1.1",
-    "type-fest": "^4.26.1",
     "typescript": "^5.6.2",
     "unbuild": "^3.0.0-rc.7",
-    "vitest": "^2.1.0"
+    "vitest": "^2.1.1"
   },
   "packageManager": "yarn@4.4.1"
 }

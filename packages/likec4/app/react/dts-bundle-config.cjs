@@ -22,7 +22,6 @@ const config = {
           '@mantine/hooks',
           '@xyflow/react',
           '@xyflow/system',
-          'type-fest',
           '@likec4/core',
           '@likec4/diagram',
           'nanostores',
