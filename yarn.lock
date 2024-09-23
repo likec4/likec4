@@ -8328,7 +8328,6 @@ __metadata:
     dts-bundle-generator: "npm:^9.5.1"
     esbuild: "npm:^0.23.1"
     esbuild-node-externals: "npm:^1.14.0"
-    esm-env: "npm:^1.0.0"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
     fdir: "npm:^6.3.0"
