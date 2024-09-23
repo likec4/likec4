@@ -17,52 +17,52 @@ const RendererIcon: ElementIconRenderer = ({ node }) => {
   )
 }
 
-const selector = (s: WorkspaceState) => {
-  switch (true) {
-    case !!s.diagram && !!s.computedView:
-      return {
-        state: 'ok' as const,
-        message: '',
-        diagram: s.diagram
-      }
-    case !s.initialized || !s.modelFetched:
-      return {
-        state: 'initializing' as const,
-        message: 'Initializing...',
-        diagram: null
-      }
-    case !s.diagram && !s.computedView:
-      return {
-        state: 'no-views' as const,
-        message: 'No views found in model\n(or they are invalid)',
-        diagram: null
-      }
-    case !!s.diagram && !s.computedView && (!s.likeC4Model || !(s.diagram.id in s.likeC4Model.views)):
-      return {
-        state: 'removed' as const,
-        message: `View "${s.diagram.id}" not found in the model\n(removed or invalid)`,
-        diagram: s.diagram
-      }
-    case !!s.diagram && !s.computedView:
-      return {
-        state: 'compute-failed' as const,
-        message: `Failed to compute visible elements for view "${s.diagram.id}"\nCheck console for errors`,
-        diagram: s.diagram
-      }
-    case !s.diagram && !!s.computedView:
-      return {
-        state: 'layout-failed' as const,
-        message: `Failed to layout view "${s.computedView.id}"\nCheck console for errors`,
-        diagram: null
-      }
-    default:
-      return {
-        state: 'unknown-error' as const,
-        message: 'Unknown error ¯\_(ツ)_/¯\ncheck console or try another view',
-        diagram: s.diagram
-      }
-  }
-}
+// const selector = (s: WorkspaceState) => {
+//   switch (true) {
+//     case !!s.diagram && !!s.computedView:
+//       return {
+//         state: 'ok' as const,
+//         message: '',
+//         diagram: s.diagram
+//       }
+//     case !s.initialized || !s.modelFetched:
+//       return {
+//         state: 'initializing' as const,
+//         message: 'Initializing...',
+//         diagram: null
+//       }
+//     case !s.diagram && !s.computedView:
+//       return {
+//         state: 'no-views' as const,
+//         message: 'No views found in model\n(or they are invalid)',
+//         diagram: null
+//       }
+//     case !!s.diagram && !s.computedView && (!s.likeC4Model || !(s.diagram.id in s.likeC4Model.views)):
+//       return {
+//         state: 'removed' as const,
+//         message: `View "${s.diagram.id}" not found in the model\n(removed or invalid)`,
+//         diagram: s.diagram
+//       }
+//     case !!s.diagram && !s.computedView:
+//       return {
+//         state: 'compute-failed' as const,
+//         message: `Failed to compute visible elements for view "${s.diagram.id}"\nCheck console for errors`,
+//         diagram: s.diagram
+//       }
+//     case !s.diagram && !!s.computedView:
+//       return {
+//         state: 'layout-failed' as const,
+//         message: `Failed to layout view "${s.computedView.id}"\nCheck console for errors`,
+//         diagram: null
+//       }
+//     default:
+//       return {
+//         state: 'unknown-error' as const,
+//         message: 'Unknown error ¯\_(ツ)_/¯\ncheck console or try another view',
+//         diagram: s.diagram
+//       }
+//   }
+// }
 
 export const DiagramPanel = memo(() => {
   const model = useWorkspaceState(s => s.likeC4Model)

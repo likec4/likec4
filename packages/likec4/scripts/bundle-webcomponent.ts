@@ -1,5 +1,5 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { readFile, rm } from 'node:fs/promises'

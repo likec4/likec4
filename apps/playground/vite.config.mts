@@ -2,10 +2,10 @@ import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin as vanillaExtractEsbuildPlugin } from '@vanilla-extract/esbuild-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import { dirname, resolve } from 'node:path'
 import { type AliasOptions, defineConfig, mergeConfig, type UserConfig, type UserConfigFnObject } from 'vite'
-import tanStackRouterViteCfg from './tsr.config.json' assert { 'type': 'json' }
+import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const root = dirname(__filename)
 
@@ -14,7 +14,7 @@ const alias = {
   '#monaco/config': resolve('src/monaco/config.ts'),
   '@likec4/core/types': resolve('../../packages/core/src/types'),
   '@likec4/core': resolve('../../packages/core/src'),
-  '@likec4/diagram': resolve('../../packages/diagram/src'),
+  '@likec4/diagram': resolve('../../packages/diagram/src')
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
@@ -33,7 +33,6 @@ const baseConfig: UserConfigFnObject = () => {
       cssCodeSplit: false
     },
     optimizeDeps: {
-      force: true,
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin as any,

@@ -1,6 +1,5 @@
 export const storeSource = `
-import { useStore } from '@nanostores/react'
-import { map } from 'nanostores'
+import { map, useNanoStore as useStore } from 'likec4/react'
 import { LikeC4Views } from 'virtual:likec4/views'
 
 export let $views = map(LikeC4Views)

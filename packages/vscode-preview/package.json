@@ -41,7 +41,7 @@
     "@types/vscode-webview": "^1.57.5",
     "@vanilla-extract/css": "^1.15.5",
     "@vanilla-extract/vite-plugin": "^4.0.15",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react-swc": "3.7.0",
     "esm-env": "1.0.0",
     "nanostores": "0.11.3",
     "object-hash": "^3.0.0",

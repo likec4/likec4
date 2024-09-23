@@ -1,4 +1,3 @@
-import { logger } from '@likec4/log'
 import { type PropsWithChildren, useEffect, useRef } from 'react'
 import { type CreatedWorkspaceStore, type CreateWorkspaceStore, createWorkspaceStore } from './store'
 import { WorkspaceContext } from './WorkspaceContext'
@@ -28,12 +27,19 @@ export function WorkspaceContextProvider({ children, ...props }: PropsWithChildr
    */
   useEffect(() => {
     // @ts-ignore
-    globalThis['printDiagramDot'] = () => {
-      logger.info(store.current?.getState().diagramAsDot)
+    globalThis['currentDiagram'] = () => {
+      const {
+        diagrams,
+        viewId
+      } = store.current!.getState()
+      console.dir({
+        viewId,
+        ...diagrams[viewId]
+      })
     }
     return () => {
       // @ts-ignore
-      delete globalThis['printDiagramDot']
+      delete globalThis['currentDiagram']
     }
   }, [])
 

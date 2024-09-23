@@ -1,5 +1,5 @@
 import { consola } from '@likec4/log'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'

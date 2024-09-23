@@ -55,9 +55,6 @@ export type WorkspaceStore = {
    * Current diagram.
    */
   viewId: ViewID
-  computedView: ComputedView | null
-  diagram: DiagramView | null
-  diagramAsDot: string | null
 
   diagrams: Record<
     ViewID,
@@ -65,18 +62,22 @@ export type WorkspaceStore = {
       // Never loaded
       state: 'pending'
       view: null
+      dot: null
       error: null
     } | {
       state: 'success'
       view: DiagramView
+      dot: string
       error: null
     } | {
       state: 'error'
       view: DiagramView | null
+      dot: string | null
       error: string
     } | {
       state: 'stale'
       view: DiagramView | null
+      dot: string | null
       error: string | null
     }
   >
@@ -161,10 +162,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
             modelFetched: false,
 
             viewId: 'index' as ViewID,
-            computedView: null,
-            diagram: null,
             diagrams: {},
-            diagramAsDot: null,
             requestedLocation: null,
 
             isModified: () => {
@@ -212,7 +210,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                       likeC4Model: currentmodel,
                       diagrams: currentDiagrams
                     } = get()
-                    // Copy diagram states
+                    // Shallow-Copy diagram states
                     const diagrams = mapValues(
                       currentDiagrams,
                       (diagramState) => ({ ...diagramState })
@@ -227,6 +225,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                       if (!diagramState) {
                         diagrams[newView.id] = {
                           state: 'pending',
+                          dot: null,
                           view: null,
                           error: null
                         }
@@ -236,6 +235,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                       return next
                     }) as typeof model.views
 
+                    // Mark removed views
                     forEachObj(diagrams, (diagramState, id) => {
                       if (id in views) {
                         return
@@ -256,14 +256,6 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                       'likeC4Model'
                     )
                   }
-
-                  // const indexId = 'index' as ViewID
-                  // const viewId = computedView?.id ?? diagram?.id ?? indexId
-                  // await get().openView(viewId)
-                  // if (!deepEqual(updatedView, computedView) || isNullish(diagram)) {
-                  //   set({ computedView: updatedView })
-
-                  // }
                 } catch (e) {
                   console.error(e)
                 } finally {
@@ -276,72 +268,13 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
             },
 
             openView: (viewId) => {
-              const { likeC4Model, viewId: currentViewId } = get()
-              // const nextView = likeC4Model?.views[viewId as ViewID] ?? null
-              set({
-                viewId: viewId as ViewID
-              })
+              const { viewId: currentViewId } = get()
               if (viewId !== currentViewId) {
+                set({
+                  viewId: viewId as ViewID
+                })
                 get().showLocation({ view: viewId as ViewID })
               }
-              // try {
-
-              //   if (!nextView || deepEqual(nextView, computedView)) {
-              //     return
-              //   }
-              //   set({computedView: null},
-              //       noReplace,
-              //       'fetchDiagram'
-              //     )
-              //   if () {
-              //     // if (isNullish(computeView)) {
-              //     //   // do nothing
-              //     //   return
-              //     // }
-              //     // if (isNullish(diagram) || diagram.id !== viewId) {
-              //     //   await layoutView()
-              //     // }
-              //     // already opened
-              //     return
-              //   }
-              //   const { view } = await client.sendRequest(computeView, { viewId })
-              //   if (deepEqual(view, computedView)) {
-              //     return
-              //   }
-              //   if (!view) {
-              //     set(
-              //       {
-              // z        computedView: null
-              //       },
-              //       noReplace,
-              //       'fetchDiagram'
-              //     )
-              //     return
-              //   }
-              //   const layoutRes = await graphvizLayouter.layout(view).catch(e => {
-              //     console.error(e)
-              //     return {
-              //       diagram: null,
-              //       dot: null
-              //     }
-              //   })
-              //   set(
-              //     {
-              //       computedView: view,
-              //       diagram: layoutRes.diagram,
-              //       diagramAsDot: layoutRes.dot
-              //     },
-              //     noReplace,
-              //     'fetchDiagram'
-              //   )
-              //   if (view.id !== computedView?.id) {
-              //     get().showLocation({ view: view.id })
-              //   }
-              // } catch (e) {
-              //   console.error(e)
-              // } finally {
-              //   DEV && console.timeEnd(label)
-              // }
             },
 
             layoutView: () => {
@@ -371,12 +304,14 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                   const layoutRes = await graphvizLayouter.layout(computedView)
                   diagrams[viewId] = {
                     view: layoutRes.diagram,
+                    dot: layoutRes.dot,
                     state: 'success',
                     error: null
                   }
                 } catch (e) {
                   diagrams[viewId] = {
-                    view: null,
+                    view: currentDiagrams[viewId]?.view ?? null,
+                    dot: currentDiagrams[viewId]?.dot ?? null,
                     state: 'error',
                     error: isError(e) ? e.message : 'Unknown error'
                   }
@@ -384,18 +319,16 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                   console.timeEnd(label)
                   set({ diagrams }, noReplace, 'layoutView')
                 }
-                return
               })
             },
 
             onChanges: ({ change }) => {
-              const { languageClient, diagram } = get()
-              invariant(diagram, 'Diagram is not initialized')
+              const { languageClient, viewId } = get()
               const client = languageClient()
               invariant(client, 'Language client is not initialized')
               void client
                 .sendRequest(changeView, {
-                  viewId: diagram.id,
+                  viewId,
                   change
                 })
                 .then((location) => {

@@ -15,29 +15,36 @@ export default defineBuildConfig({
     jiti: {
       interopDefault: true,
       nativeModules: [
-        'json5'
+        'json5',
+        '@hpcc-js/wasm-graphviz',
+        'vite',
+        '@vitejs/plugin-react-swc'
       ]
     }
   },
   alias: {
-    // '@/vite/config-app': resolve('src/vite/config-app.ts'),
-    // '@/vite/config-react': resolve('src/vite/config-react.ts'),
-    // '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.ts'),
     '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
     '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
     '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
-    ...(isProduction && {
-      '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
-      '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
-      '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
-      '@likec4/layouts/graphviz/wasm': resolve('../layouts/dist/graphviz/wasm/index.mjs'),
-      '@likec4/layouts/graphviz/binary': resolve('../layouts/dist/graphviz/binary/index.mjs'),
-      '@likec4/layouts': resolve('../layouts/dist/index.mjs'),
-      '@likec4/core/types': resolve('../core/dist/types/index.mjs'),
-      '@likec4/core': resolve('../core/dist/index.mjs'),
-      '@likec4/language-server/model-graph': resolve('../language-server/dist/model-graph/index.mjs'),
-      '@likec4/language-server': resolve('../language-server/dist/index.mjs')
-    })
+    ...(isProduction
+      ? {
+        '@likec4/layouts/graphviz/wasm': resolve('../layouts/dist/graphviz/wasm/index.mjs'),
+        '@likec4/layouts/graphviz/binary': resolve('../layouts/dist/graphviz/binary/index.mjs'),
+        '@likec4/layouts': resolve('../layouts/dist/index.mjs'),
+        '@likec4/core/types': resolve('../core/dist/types/index.mjs'),
+        '@likec4/core': resolve('../core/dist/index.mjs'),
+        '@likec4/language-server/model-graph': resolve('../language-server/dist/model-graph/index.mjs'),
+        '@likec4/language-server': resolve('../language-server/dist/index.mjs')
+      }
+      : {
+        '@likec4/layouts/graphviz/wasm': resolve('../layouts/src/graphviz/wasm/index.ts'),
+        '@likec4/layouts/graphviz/binary': resolve('../layouts/src/graphviz/binary/index.ts'),
+        '@likec4/layouts': resolve('../layouts/src/index.ts'),
+        '@likec4/core/types': resolve('../core/src/types/index.ts'),
+        '@likec4/core': resolve('../core/src/index.ts'),
+        '@likec4/language-server/model-graph': resolve('../language-server/src/model-graph/index.ts'),
+        '@likec4/language-server': resolve('../language-server/src/index.ts')
+      })
   },
   failOnWarn: false,
   declaration: isProduction,
@@ -58,6 +65,8 @@ export default defineBuildConfig({
       exportConditions: ['node']
     },
     commonjs: {
+      ignoreTryCatch: 'remove',
+      esmExternals: true,
       transformMixedEsModules: true,
       exclude: [
         /\.d\.ts$/,
