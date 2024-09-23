@@ -1,4 +1,4 @@
-import { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
+import type { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
 import os from 'node:os'
 import path from 'node:path'
 import * as vscode from 'vscode'
@@ -32,10 +32,10 @@ export function deactivate() {
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
-  const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
+  const outputChannel = vscode.window.createOutputChannel('LikeC4 Language Server', {
     log: true
   })
-  const extensionOutputChannel = vscode.window.createOutputChannel('LikeC4 - Extension', {
+  const extensionOutputChannel = vscode.window.createOutputChannel('LikeC4 Extension', {
     log: true
   })
   context.subscriptions.push(
@@ -100,8 +100,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       return { language: languageId, scheme, pattern: w.scheme === 'file' ? w.fsPath : w.path }
     })
 
-  // Add the scheme for the likec4libq
-  documentSelector.push({ language: languageId, scheme: LibScheme })
+  // Add the scheme for the likec4lib
+  documentSelector.push({ language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme })
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {

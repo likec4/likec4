@@ -1,5 +1,5 @@
 import { hasAtLeast } from '@likec4/core'
-import { Scheme } from '@likec4/language-server/likec4lib'
+import type { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
 import * as vscode from 'vscode'
 import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
 import { extensionName, extensionTitle, languageId } from '../const'
@@ -59,7 +59,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       { language: languageId, scheme: 'file' },
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' },
-      { language: languageId, scheme: Scheme }
+      { language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme }
     ]
   }
 
