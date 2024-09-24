@@ -121,6 +121,7 @@ jobs:
   check-e2e:
     uses: ./.github/workflows/e2e.yaml
     needs: check-packages
+    secrets: inherit
     # # If on pull request, run only if coming from forked repos
     # if: |
     #   !contains(github.event.head_commit.message, 'ci skip') && (
