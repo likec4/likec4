@@ -78,3 +78,8 @@ jobs:
     name: docs.likec4.dev
     uses: ./.github/workflows/docs.yaml
     secrets: inherit
+
+  e2e:
+    uses: ./.github/workflows/e2e.yaml
+    needs: build
+    secrets: inherit
