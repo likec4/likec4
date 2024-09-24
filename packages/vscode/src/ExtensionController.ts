@@ -222,18 +222,16 @@ Restart VSCode. Please report this issue, if it persists.`)
 
       await initWorkspace(rpc)
 
-      // if (isProd) {
-      //   c4model.turnOnTelemetry()
-
-      //   this.telemetry?.sendTelemetryEvent(
-      //     'activation',
-      //     {},
-      //     {
-      //       workspaceFolders: workspaceFolders.length
-      //     }
-      //   )
-      // }
-      logger.info(`activated`)
+      if (this.telemetry && this.telemetry.telemetryLevel !== 'off') {
+        this.telemetry?.sendTelemetryEvent(
+          'activation',
+          {},
+          {
+            workspaceFolders: workspaceFolders.length
+          }
+        )
+        likeC4Model.turnOnTelemetry()
+      }
       //
     } catch (e) {
       if (e instanceof Error) {

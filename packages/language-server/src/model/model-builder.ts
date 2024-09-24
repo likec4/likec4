@@ -315,7 +315,7 @@ export class LikeC4ModelBuilder {
       async (docs, _cancelToken) => {
         let parsed = [] as URI[]
         try {
-          logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+          logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)`)
           for (const doc of parser.parse(docs)) {
             parsed.push(doc.uri)
           }
@@ -344,7 +344,7 @@ export class LikeC4ModelBuilder {
         logger.debug('[ModelBuilder] No documents to build model from')
         return null
       }
-      logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
+      logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)`)
       return buildModel(this.services, docs)
     })
   }
@@ -408,13 +408,13 @@ export class LikeC4ModelBuilder {
     if (cache.has(CACHE_KEY_COMPUTED_MODEL)) {
       return cache.get(CACHE_KEY_COMPUTED_MODEL)!
     }
-    const model = await this.buildModel(cancelToken)
-    if (!model) {
-      return null
-    }
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
+      }
+      const model = this.unsafeSyncBuildModel()
+      if (!model) {
+        return null
       }
       return this.unsafeSyncBuildComputedModel(model)
     })
@@ -429,17 +429,17 @@ export class LikeC4ModelBuilder {
     if (cache.has(cacheKey)) {
       return cache.get(cacheKey)!
     }
-    const model = await this.buildModel(cancelToken)
-    const view = model?.views[viewId]
-    if (!view) {
-      logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
-      return null
-    }
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
       return cache.get(cacheKey, () => {
+        const model = this.unsafeSyncBuildModel()
+        const view = model?.views[viewId]
+        if (!view) {
+          logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
+          return null
+        }
         const index = new LikeC4ModelGraph(model)
         const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
         if (!result.isSuccess) {

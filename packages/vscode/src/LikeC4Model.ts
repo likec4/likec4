@@ -1,6 +1,6 @@
 import type { ComputedLikeC4Model, ComputedView, ViewID } from '@likec4/core'
 import type { LayoutResult } from '@likec4/layouts'
-import { isDeepEqual, values } from 'remeda'
+import { isDeepEqual, keys, values } from 'remeda'
 import vscode from 'vscode'
 import type { ExtensionController } from './ExtensionController'
 import { logger } from './logger'
@@ -70,149 +70,59 @@ export class LikeC4Model extends AbstractDisposable {
           vscode.window.showErrorMessage(`LikeC4: ${errMessage}`)
           this.viewsWithReportedErrors.add(viewId)
         }
-        logger.warn(`[C4Model.layoutView] failed ${viewId}`, err)
+        logger.warn(`[LikeC4Model.layoutView] failed ${viewId}`, err)
         return Promise.reject(err)
       }
     }
     return layoutedView
   }
 
-  // override dispose() {
-  //   super.dispose()
-  //   logger.debug(`[C4Model] disposed`)
-  // }
+  override dispose() {
+    super.dispose()
+    logger.debug(`[LikeC4Model] disposed`)
+  }
 
-  // private fetchView(viewId: ViewID) {
-  //   logger.debug(`[C4Model] fetchView ${viewId}`)
-  //   const promise = this.ctrl.rpc.computeView(viewId)
-  //   return xs
-  //     .fromPromise(pTimeout(promise, {
-  //       milliseconds: 15_000,
-  //       message: `fetchView ${viewId} timeout`
-  //     }))
-  // }
+  public turnOnTelemetry() {
+    logger.info(`[LikeC4Model] turnOnTelemetry`)
+    const Minute = 60_000
+    // send first telemetry in 1 minute
+    setTimeout(() => this.sendTelemetryMetrics(), Minute)
 
-  // private layoutView(view: ComputedView) {
-  //   logger.debug(`[C4Model] layoutView ${view.id}`)
-  //   const promise = Promise.resolve().then(() => this.ctrl.graphviz.layout(view))
-  //   return xs.fromPromise(pTimeout(promise, {
-  //     milliseconds: 15_000,
-  //     message: `layoutView ${view.id} timeout`
-  //   }))
-  // }
+    // send telemetry every 15 minutes
+    const interval = setInterval(() => {
+      this.sendTelemetryMetrics()
+    }, 15 * Minute)
+    this.onDispose(() => clearInterval(interval))
+  }
 
-  // public subscribeToView(viewId: ViewID, callback: (result: Callback) => void) {
-  //   this.viewsWithReportedErrors.delete(viewId)
-  //   logger.debug(`[C4Model.subscribe] >> ${viewId}`)
-  //   let t1 = null as null | number
-  //   const subscription = this.changesStream
-  //     .map(() => this.fetchView(viewId))
-  //     .flatten()
-  //     .compose(dropRepeats<ComputedView | null>(equals))
-  //     .map(view => {
-  //       if (!view) {
-  //         callback({
-  //           success: false,
-  //           error: 'View not found'
-  //         })
-  //       }
-  //       return view
-  //     })
-  //     .filter(isNotNullish)
-  //     .map(view => {
-  //       t1 = performance.now()
-  //       return this.layoutView(view)
-  //     })
-  //     .flatten()
-  //     .subscribe({
-  //       next: ({ diagram }: DotLayoutResult) => {
-  //         if (t1) {
-  //           const ms = (performance.now() - t1).toFixed(3)
-  //           logger.debug(`[C4Model.layoutView] ${viewId} in ${ms}ms`)
-  //           t1 = null
-  //         }
-  //         this.viewsWithReportedErrors.delete(viewId)
-  //         callback({
-  //           success: true,
-  //           diagram
-  //         })
-  //       },
-  //       error: err => {
-  //         const errMessage = err instanceof Error
-  //           ? (err.stack ?? err.name + ': ' + err.message)
-  //           : '' + err
-  //         if (t1) {
-  //           const ms = (performance.now() - t1).toFixed(3)
-  //           logger.warn(
-  //             `[C4Model.layoutView] failed ${viewId} in ${ms}ms\n${errMessage}`
-  //           )
-  //           t1 = null
-  //         } else {
-  //           logError(err)
-  //         }
-  //         if (!this.viewsWithReportedErrors.has(viewId)) {
-  //           vscode.window.showErrorMessage(`LikeC4: ${errMessage}`)
-  //           this.viewsWithReportedErrors.add(viewId)
-  //         }
+  private async sendTelemetryMetrics() {
+    try {
+      const { metrics, ms } = await this.fetchMetrics()
+      if (metrics) {
+        logger.debug(`[LikeC4Model] send telemetry`, { ...metrics, ms })
+        this.ctrl.telemetry?.sendTelemetryEvent('model-metrics', {}, { ...metrics, ms })
+      }
+    } catch (e) {
+      logger.warn(e)
+    }
+  }
 
-  //         callback({
-  //           success: false,
-  //           error: errMessage
-  //         })
-  //       }
-  //     })
-
-  //   return disposable(() => {
-  //     logger.debug(`[C4Model.unsubscribe] -- ${viewId}`)
-  //     subscription.unsubscribe()
-  //   })
-  // }
-
-  // public turnOnTelemetry() {
-  //   logger.debug(`[C4Model] turnOnTelemetry`)
-  //   const Minute = 60_000
-  //   const telemetry = xs
-  //     .periodic(30 * Minute)
-  //     .drop(1)
-  //     .map(() => xs.from(this.fetchTelemetry()))
-  //     .flatten()
-  //     .compose(dropRepeats((a, b) => equals(a.metrics, b.metrics)))
-  //     .map(({ metrics, ms }) => (metrics ? { ...metrics, ms } : null))
-  //     .filter(isNotNullish)
-  //     .subscribe({
-  //       next: metrics => {
-  //         this.sendTelemetry(metrics)
-  //       },
-  //       error: err => {
-  //         logWarn(err)
-  //       }
-  //     })
-  //   this.onDispose(() => telemetry.unsubscribe())
-  // }
-
-  // private async fetchTelemetry() {
-  //   const t0 = performance.now()
-  //   await rebuildWorkspace(this.ctrl.rpc)
-  //   const model = await this.ctrl.rpc.fetchComputedModel()
-  //   const t1 = performance.now()
-  //   return {
-  //     metrics: model
-  //       ? {
-  //         elements: Object.keys(model.elements).length,
-  //         relationships: Object.keys(model.relations).length,
-  //         views: Object.keys(model.views).length
-  //       }
-  //       : null,
-  //     ms: t1 - t0
-  //   }
-  // }
-
-  // private sendTelemetry(measurements: TelemetryEventMeasurements) {
-  //   try {
-  //     this.ctrl.telemetry?.sendTelemetryEvent('model-metrics', {}, measurements)
-  //     logger.debug(`[C4Model] send telemetry`)
-  //   } catch (e) {
-  //     logWarn(e)
-  //   }
-  // }
+  private async fetchMetrics() {
+    const t0 = performance.now()
+    const model = await this.ctrl.rpc.fetchComputedModel(true)
+    const t1 = performance.now()
+    return {
+      metrics: model
+        ? {
+          elementKinds: keys(model.specification.elements).length,
+          relationshipKinds: keys(model.specification.relationships).length,
+          tags: keys(model.specification.tags).length,
+          elements: keys(model.elements).length,
+          relationships: keys(model.relations).length,
+          views: keys(model.views).length
+        }
+        : null,
+      ms: Math.round(t1 - t0)
+    }
+  }
 }

@@ -21,7 +21,11 @@ export const fetchModel = new RequestType0<{ model: ParsedLikeC4Model | null }, 
 )
 export type FetchModelRequest = typeof fetchModel
 
-export const fetchComputedModel = new RequestType0<{ model: ComputedLikeC4Model | null }, void>(
+export const fetchComputedModel = new RequestType<
+  { cleanCaches?: boolean | undefined },
+  { model: ComputedLikeC4Model | null },
+  void
+>(
   'likec4/fetchComputedModel'
 )
 export type FetchComputedModelRequest = typeof fetchComputedModel

@@ -206,7 +206,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                   console.log(`start ${label}`)
                 }
                 try {
-                  const { model } = await client.sendRequest(fetchComputedModel)
+                  const { model } = await client.sendRequest(fetchComputedModel, {})
                   if (model) {
                     const {
                       likeC4Model: currentmodel,
