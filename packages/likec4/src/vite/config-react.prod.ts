@@ -34,12 +34,13 @@ export async function viteReactConfig({
       footer: JsBanners.footer,
       jsx: 'transform',
       jsxDev: false,
+      jsxSideEffects: false,
       minifyIdentifiers: false,
       minifySyntax: false,
       minifyWhitespace: false,
       tsconfigRaw: {
         compilerOptions: {
-          target: 'ES2020',
+          target: 'ES2022',
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
           jsx: 'react-jsx'
@@ -51,7 +52,7 @@ export async function viteReactConfig({
       emptyOutDir: false,
       sourcemap: false,
       minify: false,
-      target: 'es2020',
+      target: 'es2022',
       copyPublicDir: false,
       chunkSizeWarningLimit,
       lib: {
@@ -63,7 +64,8 @@ export async function viteReactConfig({
       },
       rollupOptions: {
         output: {
-          compact: false
+          compact: false,
+          exports: 'named'
         },
         external: [
           'likec4/react',

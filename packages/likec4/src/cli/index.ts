@@ -3,7 +3,6 @@
 import { consola, LogLevels } from '@likec4/log'
 import { argv, exit, stdout } from 'node:process'
 import { clamp } from 'remeda'
-import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -16,8 +15,8 @@ import serveCmd from './serve'
 
 consola.level = LogLevels.debug
 
-// // @ts-expect-error
-if (isDevelopment) {
+// @ts-expect-error
+if (process.env.NODE_ENV === 'development') {
   consola.level = LogLevels.trace
   consola.warn('running cli in dev mode')
 }

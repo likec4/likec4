@@ -28,20 +28,18 @@ declare module 'virtual:likec4/model' {
   import type { LikeC4Model } from '@likec4/core'
   import type { DiagramView as CoreDiagramView } from '@likec4/core'
   import type { ReadableAtom } from 'nanostores'
-  // import type { DiagramView as CoreDiagramView, LikeC4Model } from 'likec4/react'
-  import type { Tagged } from 'type-fest'
 
-  export type LikeC4ViewId = Tagged<string, 'ViewID'>
+  export type LikeC4ViewId = 'likec4-view-id'
 
-  export type LikeC4Tag = Tagged<string, 'Tag'>
+  export type LikeC4Tag = 'likec4-tag'
 
-  export type LikeC4ElementKind = Tagged<string, 'ElementKind'>
+  export type LikeC4ElementKind = 'likec4-element-kind'
 
-  export type DiagramView<ViewId extends string = LikeC4ViewId> = Omit<CoreDiagramView, 'id'> & {
+  export type DiagramView<ViewId extends LikeC4ViewId = LikeC4ViewId> = Omit<CoreDiagramView, 'id'> & {
     id: ViewId
   }
 
-  export const LikeC4Views: Record<ViewID, DiagramView>
+  export const LikeC4Views: Record<LikeC4ViewId, DiagramView>
 
   export const likec4model: LikeC4Model.Layouted
 

@@ -150,6 +150,8 @@ function ExportPage() {
         controls={false}
         background={'transparent'}
         enableDynamicViewWalkthrough={false}
+        showNavigationButtons={false}
+        showRelationshipDetails={false}
         showElementLinks={false}
         showDiagramTitle={false}
         showNotations={false}

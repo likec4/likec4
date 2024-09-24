@@ -1,4 +1,4 @@
-import { LikeC4Model } from '@likec4/core'
+import { type DiagramView, LikeC4Model } from '@likec4/core'
 import defu from 'defu'
 import { type LangiumDocuments, URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -48,7 +48,7 @@ const validationErrorsToError = (likec4: LikeC4) =>
   )
 
 export class LikeC4 {
-  static async fromSource(likec4SourceCode: string, opts?: LikeC4Options) {
+  static async fromSource(likec4SourceCode: string, opts?: LikeC4Options): Promise<LikeC4> {
     const langium = createLanguageServices(
       defu(opts, {
         useFileSystem: false,
@@ -90,7 +90,7 @@ export class LikeC4 {
    * Initializes a LikeC4 instance from the specified workspace path.
    * By default in current folder
    */
-  static async fromWorkspace(path = '', opts?: LikeC4Options) {
+  static async fromWorkspace(path = '', opts?: LikeC4Options): Promise<LikeC4> {
     const workspace = resolve(path)
     if (!existsSync(workspace)) {
       throw new Error(`Workspace not found: ${workspace}`)
@@ -145,22 +145,18 @@ export class LikeC4 {
     }
   }
 
-  async buildComputedModel() {
-    return await this.langium.likec4.ModelBuilder.buildComputedModel()
-  }
-
   /**
    * Diagram is a computed view, layouted using Graphviz
    * Used in React components
    */
-  async diagrams() {
+  async diagrams(): Promise<DiagramView[]> {
     return await this.langium.likec4.Views.diagrams()
   }
 
   /**
    * @deprecated use computedModel
    */
-  model() {
+  model(): LikeC4Model.Computed {
     return this.computedModel()
   }
 
@@ -169,7 +165,7 @@ export class LikeC4 {
    * Only compute views predicates {@link ComputedView} - i.e. no layout
    * Not ready for rendering, but enough to traverse
    */
-  computedModel() {
+  computedModel(): LikeC4Model.Computed {
     let ref = this.modelComputedRef?.deref()
     if (!ref) {
       const parsedModel = this.langium.likec4.ModelBuilder.unsafeSyncBuildModel()
@@ -187,7 +183,7 @@ export class LikeC4 {
    * Same as {@link computedModel()}, after applies layout
    * Ready for rendering
    */
-  async layoutedModel() {
+  async layoutedModel(): Promise<LikeC4Model.Layouted> {
     let ref = this.modelLayoutedRef?.deref()
     if (!ref) {
       const computedModel = await this.langium.likec4.ModelBuilder.buildComputedModel()
@@ -219,16 +215,16 @@ export class LikeC4 {
     })
   }
 
-  hasErrors() {
+  hasErrors(): boolean {
     return this.langiumDocuments.all.some(doc => {
-      return (doc.diagnostics ?? []).some(d => d.severity === DiagnosticSeverity.Error)
+      return doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error) ?? false
     })
   }
 
   /**
    * @returns true if there are errors
    */
-  printErrors() {
+  printErrors(): boolean {
     let hasErrors = false
     for (const doc of this.langiumDocuments.all) {
       const errors = doc.diagnostics?.filter(e => e.severity === 1)
@@ -260,7 +256,7 @@ export class LikeC4 {
   /**
    * TODO Replace with watcher
    */
-  async notifyUpdate({ changed, removed }: { changed?: string; removed?: string }) {
+  async notifyUpdate({ changed, removed }: { changed?: string; removed?: string }): Promise<boolean> {
     this.modelLayoutedRef = undefined
     this.modelComputedRef = undefined
     const mutex = this.langium.shared.workspace.WorkspaceLock
@@ -282,14 +278,17 @@ export class LikeC4 {
     }
   }
 
-  onModelUpdate(listener: () => void) {
+  /**
+   * @returns a function to dispose the listener
+   */
+  onModelUpdate(listener: () => void): () => void {
     const sib = this.langium.likec4.ModelBuilder.onModelParsed(() => listener())
     return () => {
       sib.dispose()
     }
   }
 
-  dispose() {
+  dispose(): void {
     for (const [path, likec4] of LikeC4.likec4Instances) {
       if (likec4 === this) {
         LikeC4.likec4Instances.delete(path)

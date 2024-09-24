@@ -6,8 +6,7 @@ import {
   type LikeC4ViewProps as BaseLikeC4ViewProps,
   ReactLikeC4 as GenericReactLikeC4,
   type ReactLikeC4Props as GenericReactLikeC4Props,
-  useColorScheme,
-  useLikeC4Model as useLikeC4ModelGeneric
+  useColorScheme
 } from 'likec4/react'
 import { memo, type PropsWithChildren, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
@@ -29,14 +28,14 @@ export function RenderIcon({ node }: IconRendererProps) {
 
 export { likeC4Model, LikeC4Views }
 
-export function useLikeC4Model(strict?: boolean) {
-  return useLikeC4ModelGeneric(strict ?? false, 'layouted')
+export function useLikeC4Model() {
+  return useLikeC4ModelAtom()
 }
 
-export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView =>
-  useLikeC4ModelGeneric(true, 'layouted').view(viewId).view
 export const useLikeC4ViewModel = (viewId: LikeC4ViewId): LikeC4Model.Layouted.ViewModel =>
-  useLikeC4ModelGeneric(true, 'layouted').view(viewId)
+  useLikeC4ModelAtom().view(viewId)
+
+export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView => useLikeC4ModelAtom().view(viewId).view as any
 
 export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 

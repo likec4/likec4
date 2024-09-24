@@ -46,6 +46,8 @@ function EmbedPage() {
         background={'transparent'}
         enableDynamicViewWalkthrough={false}
         showElementLinks={false}
+        showNavigationButtons={false}
+        showRelationshipDetails={false}
         showDiagramTitle={false}
         showNotations={false}
         nodesSelectable={false}

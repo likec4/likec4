@@ -58,13 +58,13 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     mode: 'production',
     optimizeDeps: {
       include: [
+        'likec4/react',
         'react',
         'react-dom',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client'
-      ],
-      force: true
+      ]
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),

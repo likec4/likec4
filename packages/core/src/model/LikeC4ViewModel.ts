@@ -4,7 +4,7 @@ import type { ElementShape, Tag } from '../types/element'
 import type { Color } from '../types/theme'
 import type { ComputedEdge, ComputedNode, ComputedView } from '../types/view'
 import type { LikeC4Model } from './LikeC4Model'
-import { type EdgeId, type ElementOrFqn, type Fqn, getId, type OutgoingFilter } from './types'
+import { type EdgeId, type ElementOrFqn, type Fqn, getId, type IncomingFilter, type OutgoingFilter } from './types'
 
 /**
  * All methods are view-scoped, i.e. only return elements and connections in the view.
@@ -58,7 +58,7 @@ export class LikeC4ViewModel {
   }
 
   public element(id: Fqn): LikeC4ViewModel.Element {
-    return nonNullable(this._elements.get(id), `LikeC4ViewModel.Element ${id} in view ${this.view.id} not found`)
+    return nonNullable(this._elements.get(id), `LikeC4ViewModel.Element ${id} in view ${this.id} not found`)
   }
 
   public hasElement(id: Fqn): boolean {
@@ -70,7 +70,7 @@ export class LikeC4ViewModel {
   }
 
   public connection(id: EdgeId): LikeC4ViewModel.Connection {
-    return nonNullable(this._connections.get(id), `Connection ${id} in view ${this.view.id}  not found`)
+    return nonNullable(this._connections.get(id), `Connection ${id} in view ${this.id}  not found`)
   }
 
   public findConnections(
@@ -126,7 +126,7 @@ export class LikeC4ViewModel {
 
   public incoming(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'to-descendants' = 'all'
+    filter: IncomingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Connection> {
     const el = this.element(getId(element))
     const edges = el.node.inEdges.map(e => nonNullable(this._connections.get(e), `Edge ${e} not found`))
@@ -145,7 +145,7 @@ export class LikeC4ViewModel {
 
   public incomers(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'to-descendants' = 'all'
+    filter: IncomingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Element> {
     return this.incoming(element, filter).map(r => r.source)
   }

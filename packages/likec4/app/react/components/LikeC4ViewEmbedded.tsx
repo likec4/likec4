@@ -85,7 +85,11 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     mantineTheme?: MantineThemeOverride | undefined
   }
 
-export function LikeC4ViewEmbedded<ViewId extends string, Tag extends string, Kind extends string>({
+export function LikeC4ViewEmbedded<
+  ViewId extends string = string,
+  Tag extends string = string,
+  Kind extends string = string
+>({
   onNavigateTo: _onNavigateTo,
   className,
   view,

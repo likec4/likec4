@@ -11,9 +11,9 @@ import { cssLikeC4View } from './styles.css'
 import type { ViewData } from './types'
 
 export type ReactLikeC4Props<
-  ViewId extends string = ViewID,
-  Tag extends string = CoreTag,
-  Kind extends string = ElementKind
+  ViewId extends string,
+  Tag extends string,
+  Kind extends string
 > = Omit<LikeC4DiagramProps, 'view' | 'where' | 'onNavigateTo'> & {
   view: ViewData<ViewId>
 
@@ -49,9 +49,9 @@ export type ReactLikeC4Props<
 }
 
 export function ReactLikeC4<
-  ViewId extends string = ViewID,
-  Tag extends string = CoreTag,
-  Kind extends string = ElementKind
+  ViewId extends string = string,
+  Tag extends string = string,
+  Kind extends string = string
 >({
   className,
   view,
