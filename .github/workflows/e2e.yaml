@@ -61,14 +61,14 @@ jobs:
         run: yarn test:update-screenshots
 
       - name: create pull request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         # if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
         with:
           token: ${{ env.BOT_TOKEN }}
           commit-message: "chore: update e2e screenshots"
           title: "chore: update e2e screenshots"
           branch: update-screenshots/${{ github.ref_name }}
-          base: ${{ github.ref_name }}
+          add-paths: "e2e/tests/**"
           delete-branch: true
 
       - id: cloudflare
@@ -82,9 +82,10 @@ jobs:
           workingDirectory: e2e
           packageManager: yarn
 
-      # - uses: actions/upload-artifact@v4
-      #   if: ${{ !cancelled() }}
-      #   with:
-      #     name: playwright-report
-      #     path: e2e/playwright-report/
-      #     retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          compression-level: 9
+          retention-days: 30

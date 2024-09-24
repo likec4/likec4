@@ -8,6 +8,7 @@ on:
     branches-ignore:
       - "main"
       - "releases/*"
+      - "update-screenshots/*"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
@@ -120,7 +121,7 @@ jobs:
 
   check-e2e:
     uses: ./.github/workflows/e2e.yaml
-    needs: check-packages
+    needs: check-types
     secrets: inherit
     # # If on pull request, run only if coming from forked repos
     # if: |
