@@ -1,3 +1,44 @@
+# [1.11.0](https://github.com/likec4/likec4/compare/v1.10.1...v1.11.0) (2024-09-24)
+
+### 🚀 Features  
+
+* **Relationship details**
+
+  On hover displays direct relationships and resolved from nested. If relationship has `navigateTo` - displays navigation link
+    
+  <img width="681" alt="SCR-20240924-uhpz" src="https://github.com/user-attachments/assets/de90231d-2eaa-4b20-b508-f3f72e420d24">
+
+  To disable - set `showRelationshipDetails={false}` in react component
+
+* **Improved layout editing**
+
+  Thanks to @pavelpykhtin, now it is possible add control points with right click, or reset all control points  
+  Example here [#1013](https://github.com/likec4/likec4/pull/1013)
+
+* **New API `LikeC4Model.Layouted`**
+
+  Difference between `LikeC4Model.Computed` and `LikeC4Model.Layouted` - is that second one also includes layout data (dimensions, positions), that is needed for rendering
+
+  ```ts
+  import { LikeC4 } from 'likec4'
+  
+  const likec4 = await LikeC4.fromWorkspace()
+  
+  // Sync and fast
+  const model = likec4.computedModel()
+  model
+    .element('cloud.backend.api')
+    .incoming() // relationships incoming to the element
+    .filter(r => r.tags.includes('http')) // filter by tags
+    .map(r => r.source) // get source elements
+
+  // Async, includes layout data (dimensions, positions...)
+  const diagram = await likec4.layoutedModel().view('index')
+  ```
+
+  Generated React component also exports instance of `LikeC4Model.Layouted`, and hooks to use inside your app.
+
+
 ## [1.10.1](https://github.com/likec4/likec4/compare/v1.10.0...v1.10.1) (2024-09-17)
 
 ### Bug Fixes
