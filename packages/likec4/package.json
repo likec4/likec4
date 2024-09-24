@@ -102,7 +102,7 @@
     "vite": "5.4.7"
   },
   "devDependencies": {
-    "@fontsource/ibm-plex-sans": "^5.0.22",
+    "@fontsource/ibm-plex-sans": "^5.1.0",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
