@@ -64,17 +64,8 @@ jobs:
         run: yarn ci:test
 
       - name: pack
-        working-directory: packages/likec4
-        run: yarn pack
-
-      - name: upload artifact
-        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
-        with:
-          name: likec4-package
-          if-no-files-found: error
-          path: packages/likec4/package.tgz
-          retention-days: 5
-          compression-level: 0
+        run: |
+          yarn turbo run package --filter='likec4'
 
   check-playground:
     # If on pull request, run only if coming from forked repos
@@ -128,45 +119,46 @@ jobs:
           yarn turbo run build --filter='@likec4/docs-astro'
 
   check-e2e:
-    # If on pull request, run only if coming from forked repos
-    if: |
-      !contains(github.event.head_commit.message, 'ci skip') && (
-        github.event_name == 'push' || github.event.pull_request.head.repo.fork
-      )
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/e2e.yaml
     needs: check-packages
-    steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
+    # # If on pull request, run only if coming from forked repos
+    # if: |
+    #   !contains(github.event.head_commit.message, 'ci skip') && (
+    #     github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    #   )
+    # timeout-minutes: 10
+    # runs-on: ubuntu-latest
+    # needs: check-packages
+    # steps:
+    #   - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+    #     with:
+    #       fetch-depth: 0
+    #       ref: ${{ github.ref }}
 
-      - name: bootstrap
-        uses: ./.github/actions/bootstrap
+    #   - name: bootstrap
+    #     uses: ./.github/actions/bootstrap
 
-      - name: download packed likec4
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
-        with:
-          name: likec4-package
-          path: packages/likec4/
+    #   - name: download packed likec4
+    #     uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+    #     with:
+    #       name: likec4-package
+    #       path: packages/likec4/
 
-      - name: install e2e dependencies
-        working-directory: e2e
-        env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-        run: |
-          yarn install
-          yarn bootstrap
-          playwright install chrome --with-deps
+    #   - name: install e2e dependencies
+    #     working-directory: e2e
+    #     env:
+    #       YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+    #     run: |
+    #       yarn install
+    #       yarn bootstrap
 
-      - name: Run Playwright tests
-        working-directory: e2e
-        run: yarn playwright test
+    #   - name: Run Playwright tests
+    #     working-directory: e2e
+    #     run: yarn playwright test
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: e2e/playwright-report/
-          retention-days: 30
+    #   - uses: actions/upload-artifact@v4
+    #     if: ${{ !cancelled() }}
+    #     with:
+    #       name: playwright-report
+    #       path: e2e/playwright-report/
+    #       retention-days: 30

@@ -36,6 +36,21 @@
         "!test/**"
       ],
       "outputLogs": "new-only"
+    },
+    "package": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        "package.tgz"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!dev/**",
+        "!scripts/**",
+        "!test/**"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

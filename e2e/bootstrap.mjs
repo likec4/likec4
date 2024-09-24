@@ -3,7 +3,6 @@
 import 'zx/globals'
 
 import { LikeC4 } from 'likec4'
-import { capitalize, toCamelCase } from 'remeda'
 
 echo(chalk.greenBright('\n-------- Generate React component --------'))
 await $({ stdio: 'inherit' })`likec4 codegen react ./src`

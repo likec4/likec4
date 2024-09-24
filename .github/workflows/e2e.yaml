@@ -1,0 +1,45 @@
+name: e2e
+
+on:
+  workflow_call:
+
+env:
+  NODE_ENV: production
+  FORCE_COLOR: true
+
+jobs:
+  e2e:
+    name: run e2e tests
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: pack
+        run: |
+          yarn turbo run package --filter='likec4'
+
+      - name: install e2e dependencies
+        working-directory: e2e
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: |
+          yarn install
+          yarn bootstrap
+
+      - name: Run Playwright tests
+        working-directory: e2e
+        run: yarn test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 30

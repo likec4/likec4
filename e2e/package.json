@@ -9,10 +9,12 @@
     "node": "^20.0.0"
   },
   "scripts": {
-    "postinstall": "playwright install chrome --with-deps & node bootstrap.mjs",
+    "postinstall": "playwright install chromium --with-deps",
     "ladle:start": "ladle dev",
     "generate:png": "likec4 export png -o ./generated/images --flat",
-    "bootstrap": "node bootstrap.mjs"
+    "bootstrap": "node bootstrap.mjs",
+    "test": "playwright test",
+    "test:update-screenshots": "playwright test --update-snapshots"
   },
   "devDependencies": {
     "@playwright/test": "1.46.1",

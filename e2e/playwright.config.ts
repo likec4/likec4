@@ -4,6 +4,7 @@ import { isCI } from 'std-env'
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: 'tests',
+  snapshotPathTemplate: '{testDir}/__screenshots__{/projectName}/{testFilePath}/{arg}{ext}',
 
   // Run all tests in parallel.
   fullyParallel: true,
@@ -26,7 +27,7 @@ export default defineConfig({
     // baseURL: 'http://127.0.0.1:5173',
 
     // Collect trace when retrying the failed test.
-    trace: 'on-first-retry'
+    trace: 'retain-on-failure'
   },
 
   expect: {
