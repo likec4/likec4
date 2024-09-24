@@ -23,8 +23,8 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     folders: WorkspaceFolder[],
     collector: (document: LangiumDocument) => void
   ): Promise<void> {
-    await super.loadAdditionalDocuments(folders, collector)
     collector(this.documentFactory.fromString(BuiltIn.Content, URI.parse(BuiltIn.Uri)))
+    await super.loadAdditionalDocuments(folders, collector)
   }
 
   public workspace() {

@@ -1,10 +1,12 @@
+import { compareNatural } from '@likec4/core'
 import { Icons } from '@likec4/icons/all'
-import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
+import { consola } from 'consola'
+import { CompositeGeneratorNode, joinToNode, toString } from 'langium/generate'
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 const out = new CompositeGeneratorNode()
 
-const icons = Object.keys(Icons).toSorted()
+const icons = Object.keys(Icons).sort(compareNatural)
 
 if (icons.length === 0) {
   console.error('No icons found')
@@ -12,9 +14,7 @@ if (icons.length === 0) {
 }
 
 out
-  .append('export const LibIcons: string = `likec4lib {')
-  .appendNewLine()
-  .append('  icons {')
+  .append('export const LibIcons: string = `likec4lib { icons {')
   .appendNewLine()
   .indent({
     indentedChildren: [
@@ -22,15 +22,13 @@ out
         appendNewLineIfNotEmpty: true
       })
     ],
-    indentation: 4
+    indentation: 2
   })
   .appendNewLineIfNotEmpty()
-  .append('  }')
-  .appendNewLine()
-  .append('}', NL, '`;')
+  .append('}}`;')
   .appendNewLine()
 
 mkdirSync('src/generated-lib', { recursive: true })
 writeFileSync('src/generated-lib/icons.ts', toString(out), 'utf-8')
 
-console.log(`Generated src/generated-lib/icons.ts with ${icons.length} icons`)
+consola.success(`Generated src/generated-lib/icons.ts with ${icons.length} icons`)

@@ -1,3 +1,4 @@
+import type { DiagramView } from '@likec4/core'
 import {
   Button,
   Group,
@@ -11,7 +12,6 @@ import {
   TabsTab
 } from '@mantine/core'
 import { useState } from 'react'
-import type { DiagramView } from 'virtual:likec4/model'
 import { EmbedPanel } from './share-modal/EmbedPanel'
 import { WebcomponentsPanel } from './share-modal/WebcomponentsPanel'
 

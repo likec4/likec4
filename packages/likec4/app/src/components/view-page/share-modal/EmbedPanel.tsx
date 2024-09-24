@@ -1,3 +1,4 @@
+import type { DiagramView } from '@likec4/core'
 import {
   ActionIcon,
   Box,
@@ -13,7 +14,6 @@ import {
 import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
-import type { DiagramView } from 'virtual:likec4/model'
 import { AlertLocalhost } from './AlertLocalhost'
 import { CopyButtonChild } from './CopyButtonChild'
 

@@ -1,3 +1,4 @@
+import type { DiagramView } from '@likec4/core'
 import {
   Button,
   Divider,
@@ -14,7 +15,6 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconChevronDown, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
-import type { DiagramView } from 'virtual:likec4/model'
 import { usePreviewUrl } from 'virtual:likec4/previews'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as css from './Header.css'

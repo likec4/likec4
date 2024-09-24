@@ -4,9 +4,9 @@ import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4Views } from '@like
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useState } from 'react'
 
+import type { DiagramView } from '@likec4/core'
 import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
 import { ceil, clamp, keys } from 'remeda'
-import type { DiagramView } from 'virtual:likec4/model'
 import { RenderIcon } from '../components/RenderIcon'
 import * as styles from './index.css'
 
