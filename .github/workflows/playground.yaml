@@ -30,7 +30,6 @@ permissions:
 
 env:
   NODE_ENV: production
-  TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
 
 concurrency:
   group: playground-${{ github.ref_name }}

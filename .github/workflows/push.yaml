@@ -8,17 +8,18 @@ on:
     branches-ignore:
       - "main"
       - "releases/*"
+      - "update-screenshots/*"
 
 concurrency:
-  group:  ${{ github.workflow }}-${{github.event_name}}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
   NODE_ENV: production
-  TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
+  FORCE_COLOR: true
 
 jobs:
-  check-packages:
+  check-types:
     # If on pull request, run only if coming from forked repos
     if: |
       !contains(github.event.head_commit.message, 'ci skip') && (
@@ -33,14 +34,29 @@ jobs:
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
-        # with:
-        #   node-version: ${{ matrix.node-version }}
 
       - name: generate
         run: yarn ci:generate
 
       - name: typecheck
         run: yarn ci:typecheck
+
+  check-packages:
+    # If on pull request, run only if coming from forked repos
+    if: |
+      !contains(github.event.head_commit.message, 'ci skip') && (
+        github.event_name == 'push' || github.event.pull_request.head.repo.fork
+      )
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs: check-types
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
 
       - name: build
         run: yarn ci:build
@@ -49,17 +65,8 @@ jobs:
         run: yarn ci:test
 
       - name: pack
-        working-directory: packages/likec4
-        run: yarn pack
-
-      - name: upload artifact
-        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
-        with:
-          name: likec4-package
-          if-no-files-found: error
-          path: packages/likec4/package.tgz
-          retention-days: 5
-          compression-level: 0
+        run: |
+          yarn turbo run package --filter='likec4'
 
   check-playground:
     # If on pull request, run only if coming from forked repos
@@ -69,6 +76,7 @@ jobs:
       )
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    needs: check-types
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
@@ -93,6 +101,7 @@ jobs:
       )
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    needs: check-types
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
@@ -109,3 +118,8 @@ jobs:
       - name: build
         run: |
           yarn turbo run build --filter='@likec4/docs-astro'
+
+  check-e2e:
+    uses: ./.github/workflows/e2e.yaml
+    needs: check-packages
+    secrets: inherit

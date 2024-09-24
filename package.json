@@ -29,6 +29,7 @@
     "git:pre-commit": "lint-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
+    "test:e2e": "NODE_ENV=production turbo run package --filter='likec4' && cd e2e && yarn install && yarn bootstrap && yarn test",
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {

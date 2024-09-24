@@ -39,7 +39,7 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.mts",
+        "types": "./dist/index.d.ts",
         "default": "./dist/index.mjs"
       },
       "./react": {
@@ -59,6 +59,7 @@
   },
   "scripts": {
     "turbo-build": "turbo run build --log-prefix=none --log-order=grouped",
+    "package": "yarn pack",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.cli.json",
     "typecheck": "run-p --print-label 'typecheck:*'",
@@ -70,7 +71,7 @@
     "build:webcomponent": "tsx scripts/bundle-webcomponent.ts",
     "build": "run prebuild && run-p --print-label 'build:*'",
     "generate": "tsx scripts/generate.ts",
-    "prepack": "tsx scripts/prepack.ts",
+    "prepack": "turbo run build --log-prefix=none --log-order=grouped",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist app/dist dev/.export dev/dist node_modules/.vite",
     "dev": "tsx watch src/cli/index.ts serve dev",

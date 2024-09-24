@@ -52,7 +52,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     }
   })
 
-  let outfilepath = resolve(languageServices.workspace, 'likec4-views.mjs')
+  let outfilepath = resolve(languageServices.workspace, 'likec4-views.js')
   if (outfile) {
     outfilepath = isAbsolute(outfile) ? outfile : resolve(outfile)
     if (existsSync(outfile)) {

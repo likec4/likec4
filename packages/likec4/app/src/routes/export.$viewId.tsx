@@ -134,6 +134,7 @@ function ExportPage() {
       className={css.cssExportView}
       role="presentation"
       style={{
+        padding,
         minWidth: width,
         width: width,
         minHeight: height,
@@ -143,7 +144,7 @@ function ExportPage() {
       <LikeC4Diagram
         view={diagram}
         readonly
-        fitView={true}
+        fitView={false}
         fitViewPadding={0}
         pannable={false}
         zoomable={false}
@@ -159,8 +160,8 @@ function ExportPage() {
         nodesDraggable={false}
         enableFocusMode={false}
         renderIcon={RenderIcon}
-        initialWidth={width}
-        initialHeight={height} />
+        initialWidth={diagram.bounds.width}
+        initialHeight={diagram.bounds.height} />
     </Box>
   )
 }

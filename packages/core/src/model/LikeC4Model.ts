@@ -1,34 +1,39 @@
 import { isString, isTruthy, values } from 'remeda'
 import { nonNullable } from '../errors'
-import type * as c4 from '../types'
 import { DefaultElementShape, DefaultThemeColor } from '../types/element'
+import type {
+  Element as C4Element,
+  ElementKind as C4ElementKind,
+  ElementShape as C4ElementShape,
+  Fqn as C4Fqn,
+  Tag as C4Tag
+} from '../types/element'
+import type {
+  ComputedLikeC4Model as C4ComputedLikeC4Model,
+  LayoutedLikeC4Model as C4LayoutedLikeC4Model
+} from '../types/model'
+import type { Relation as C4Relation } from '../types/relation'
+import type { Color as C4Color } from '../types/theme'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
 import { LikeC4DiagramModel } from './LikeC4DiagramModel'
 import { LikeC4ViewModel } from './LikeC4ViewModel'
-import {
-  type ElementOrFqn,
-  type Fqn,
-  getId,
-  type IncomingFilter,
-  type OutgoingFilter,
-  type RelationID,
-  type ViewID
-} from './types'
+import { getId } from './types'
+import type { ElementOrFqn, Fqn, IncomingFilter, OutgoingFilter, RelationID, ViewID } from './types'
 
 type PickBySource<Source> = Source extends LikeC4Model.Layouted.SourceModel ? LikeC4Model.Layouted
   : Source extends LikeC4Model.Computed.SourceModel ? LikeC4Model.Computed
   : never
 
 export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel> {
-  private _elements = new Map<Fqn, LikeC4Model.Element<M>>()
+  private _elements = new Map<Fqn, LikeC4Model.ElementModel<M>>()
 
   // Parent element for given FQN
-  private _parents = new Map<Fqn, LikeC4Model.Element<M>>()
+  private _parents = new Map<Fqn, LikeC4Model.ElementModel<M>>()
 
   // Children elements for given FQN
-  private _children = new Map<Fqn, LikeC4Model.Element<M>[]>()
+  private _children = new Map<Fqn, LikeC4Model.ElementModel<M>[]>()
 
-  private _rootElements = new Set<LikeC4Model.Element<M>>()
+  private _rootElements = new Set<LikeC4Model.ElementModel<M>>()
 
   private _relations = new Map<RelationID, LikeC4Model.Relationship<M>>()
 
@@ -41,7 +46,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
   // Relationships inside the element, among descendants
   private _internal = new Map<Fqn, Set<LikeC4Model.Relationship<M>>>()
 
-  private _cacheAscendingSiblings = new Map<Fqn, LikeC4Model.Element<M>[]>()
+  private _cacheAscendingSiblings = new Map<Fqn, LikeC4Model.ElementModel<M>[]>()
 
   private _views = new Map<Fqn, M>()
 
@@ -53,7 +58,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
     return LikeC4Model.computed(source)
   }
 
-  static computed(source: c4.ComputedLikeC4Model): LikeC4Model<LikeC4ViewModel> {
+  static computed(source: C4ComputedLikeC4Model): LikeC4Model<LikeC4ViewModel> {
     const instance = new LikeC4Model<LikeC4ViewModel>(
       'computed',
       source,
@@ -66,7 +71,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
     return instance
   }
 
-  static layouted(source: c4.LayoutedLikeC4Model): LikeC4Model<LikeC4DiagramModel> {
+  static layouted(source: C4LayoutedLikeC4Model): LikeC4Model<LikeC4DiagramModel> {
     const instance = new LikeC4Model<LikeC4DiagramModel>(
       'layouted',
       source,
@@ -82,8 +87,8 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
   protected constructor(
     public readonly type: LikeC4Model.ModelType<M>,
     public readonly sourcemodel: LikeC4Model.SourceModel<M>,
-    elements: c4.Element[],
-    relations: c4.Relation[]
+    elements: C4Element[],
+    relations: C4Relation[]
   ) {
     for (const el of elements) {
       this.addElement(el)
@@ -96,21 +101,21 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
   /**
    * Returns the root elements of the model.
    */
-  public roots(): ReadonlyArray<LikeC4Model.Element<M>> {
+  public roots(): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     return [...this._rootElements]
   }
 
   /**
    * Returns all elements in the model.
    */
-  public elements(): ReadonlyArray<LikeC4Model.Element<M>> {
+  public elements(): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     return [...this._elements.values()]
   }
 
   /**
    * Returns a specific element by its FQN.
    */
-  public element(id: Fqn): LikeC4Model.Element<M> {
+  public element(id: Fqn): LikeC4Model.ElementModel<M> {
     return nonNullable(this._elements.get(id), `Element ${id} not found`)
   }
 
@@ -146,7 +151,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
    * Returns the parent element of given element.
    * @see ancestors
    */
-  public parent(element: ElementOrFqn): LikeC4Model.Element<M> | null {
+  public parent(element: ElementOrFqn): LikeC4Model.ElementModel<M> | null {
     const id = getId(element)
     return this._parents.get(id) || null
   }
@@ -155,7 +160,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element<M>> {
+  public children(element: ElementOrFqn): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     const id = getId(element)
     return this._childrenOf(id)
   }
@@ -163,7 +168,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
   /**
    * Get all sibling (i.e. same parent)
    */
-  public siblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element<M>> {
+  public siblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     const id = getId(element)
     const parent = this._parents.get(id)
     const siblings = parent ? this._childrenOf(parent.id) : this.roots()
@@ -174,9 +179,9 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public ancestors(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element<M>> {
+  public ancestors(element: ElementOrFqn): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     let id = isString(element) ? element : element.id
-    const result = [] as LikeC4Model.Element<M>[]
+    const result = [] as LikeC4Model.ElementModel<M>[]
     let parent
     while (parent = this._parents.get(id)) {
       result.push(parent)
@@ -188,7 +193,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public descendants(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element<M>> {
+  public descendants(element: ElementOrFqn): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     const id = getId(element)
     const children = this._childrenOf(id)
     return children.flatMap(c => [c, ...this.descendants(c.id)])
@@ -222,7 +227,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
   public incomers(
     element: ElementOrFqn,
     filter: IncomingFilter = 'all'
-  ): ReadonlyArray<LikeC4Model.Element<M>> {
+  ): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     return this.incoming(element, filter).map(r => r.source)
   }
 
@@ -253,7 +258,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
   public outgoers(
     element: ElementOrFqn,
     filter: OutgoingFilter = 'all'
-  ): ReadonlyArray<LikeC4Model.Element<M>> {
+  ): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     return this.outgoing(element, filter).map(r => r.target)
   }
 
@@ -269,7 +274,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
    * Resolve siblings of the element and siblings of ancestors
    *  (from closest to root)
    */
-  public ascendingSiblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element<M>> {
+  public ascendingSiblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.ElementModel<M>> {
     const id = getId(element)
     let siblings = this._cacheAscendingSiblings.get(id)
     if (!siblings) {
@@ -290,11 +295,11 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
     return [...this._views.values()].filter(v => v.hasElement(id))
   }
 
-  private addElement(parsed: c4.Element) {
+  private addElement(parsed: C4Element) {
     if (this._elements.has(parsed.id)) {
       throw new Error(`Element ${parsed.id} already exists`)
     }
-    const el = new LikeC4Model.Element(parsed, this)
+    const el = new LikeC4Model.ElementModel(parsed, this)
     this._elements.set(el.id, el)
     const parentId = parentFqn(el.id)
     if (parentId) {
@@ -305,7 +310,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
     }
   }
 
-  private addRelation(relation: c4.Relation) {
+  private addRelation(relation: C4Relation) {
     if (this._relations.has(relation.id)) {
       throw new Error(`Relation ${relation.id} already exists`)
     }
@@ -379,8 +384,8 @@ export namespace LikeC4Model {
     return model instanceof LikeC4Model
   }
 
-  export type SourceModel<M extends ViewModel = ViewModel> = M extends LikeC4DiagramModel ? c4.LayoutedLikeC4Model
-    : c4.ComputedLikeC4Model
+  export type SourceModel<M extends ViewModel = ViewModel> = M extends LikeC4DiagramModel ? C4LayoutedLikeC4Model
+    : C4ComputedLikeC4Model
 
   export type ViewModel = LikeC4ViewModel | LikeC4DiagramModel
   export namespace ViewModel {
@@ -395,16 +400,12 @@ export namespace LikeC4Model {
   export namespace Computed {
     export type ViewModel = LikeC4ViewModel
     export type SourceModel = LikeC4Model.SourceModel<ViewModel>
-    export type Element = LikeC4Model.Element<ViewModel>
-    export type Relationship = LikeC4Model.Relationship<ViewModel>
   }
 
   export type Layouted = LikeC4Model<LikeC4DiagramModel>
   export namespace Layouted {
     export type ViewModel = LikeC4DiagramModel
     export type SourceModel = LikeC4Model.SourceModel<ViewModel>
-    export type Element = LikeC4Model.Element<ViewModel>
-    export type Relationship = LikeC4Model.Relationship<ViewModel>
   }
 
   export type ModelType<M extends ViewModel = ViewModel> = M extends LikeC4DiagramModel ? 'layouted'
@@ -417,7 +418,7 @@ export namespace LikeC4Model {
 
   export class Relationship<M extends ViewModel> {
     constructor(
-      public readonly relationship: c4.Relation,
+      public readonly relationship: C4Relation,
       private model: LikeC4Model<M>
     ) {
     }
@@ -434,7 +435,7 @@ export namespace LikeC4Model {
       return this.relationship.kind ?? null
     }
 
-    get tags(): c4.Tag[] {
+    get tags(): C4Tag[] {
       return this.relationship.tags ?? []
     }
 
@@ -457,9 +458,10 @@ export namespace LikeC4Model {
     }
   }
 
-  export class Element<M extends ViewModel> {
+  // Class renamed to ElementModel, otherwise generated DTS will be incorrect
+  export class ElementModel<M extends ViewModel> {
     constructor(
-      public readonly element: c4.Element,
+      public readonly element: C4Element,
       private model: LikeC4Model<M>
     ) {
     }
@@ -472,7 +474,7 @@ export namespace LikeC4Model {
       return this.element.title
     }
 
-    get kind() {
+    get kind(): C4ElementKind {
       return this.element.kind
     }
 
@@ -484,19 +486,19 @@ export namespace LikeC4Model {
       return this.model.children(this).length > 0
     }
 
-    get shape(): c4.ElementShape {
+    get shape(): C4ElementShape {
       return this.element.shape ?? DefaultElementShape
     }
 
-    get color(): c4.Color {
+    get color(): C4Color {
       return this.element.color ?? DefaultThemeColor
     }
 
-    get tags(): c4.Tag[] {
+    get tags(): C4Tag[] {
       return this.element.tags ?? []
     }
 
-    public parent(): Element<M> | null {
+    public parent(): ElementModel<M> | null {
       return this.model.parent(this)
     }
 
