@@ -1,0 +1,133 @@
+name: preview comment
+
+on:
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  NODE_ENV: production
+  FORCE_COLOR: 1
+
+jobs:
+  preview-playground:
+    name: deploy playground preview
+    if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request && (contains(github.event.comment.body, '/preview playground') || contains(github.event.comment.body, '/playground')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: "Check if user has write access"
+        uses: "lannonbr/repo-permission-check-action@2.0.2"
+        with:
+          permission: "write"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: resolve pr refs
+        id: refs
+        uses: eficode/resolve-pr-refs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.refs.outputs.head_ref }}
+          fetch-depth: 0
+
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: build
+        run: |
+          yarn turbo run build --filter='@likec4/playground'
+
+      - id: cloudflare
+        name: publish to cloudflare
+        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=likec4-playground --commit-dirty --branch preview
+          workingDirectory: apps/playground
+          packageManager: yarn
+
+      - name: add comment
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
+        with:
+          script: |
+            let message = 'Playground: ' + process.env.DEPLOY_URL
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message,
+            })
+
+  preview-docs:
+    name: deploy docs preview
+    if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request && (contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: "Check if user has write access"
+        uses: "lannonbr/repo-permission-check-action@2.0.2"
+        with:
+          permission: "write"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: resolve pr refs
+        id: refs
+        uses: eficode/resolve-pr-refs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.refs.outputs.head_ref }}
+          fetch-depth: 0
+
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: build
+        run: |
+          yarn turbo run build --filter='@likec4/docs-astro'
+
+      - id: cloudflare
+        name: publish to cloudflare
+        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy dist --project-name likec4-docs-astro --commit-dirty --branch preview
+          workingDirectory: apps/docs
+          packageManager: yarn
+
+      - name: add comment
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
+        with:
+          script: |
+            let message = 'Docs: ' + process.env.DEPLOY_URL
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message,
+            })

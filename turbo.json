@@ -5,9 +5,7 @@
   ],
   "globalDependencies": [
     ".tool-versions",
-    "package.json",
-    "yarn.lock",
-    ".yarnrc.yml"
+    "package.json"
   ],
   "tasks": {
     "topo": {
