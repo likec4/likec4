@@ -1,3 +1,22 @@
+# [1.11.0](https://github.com/likec4/likec4/compare/v1.10.1...v1.11.0) (2024-09-24)
+
+
+### Bug Fixes
+
+* adjust table attributes in stepEdgeLabel for improved rendering ([0518910](https://github.com/likec4/likec4/commit/051891045ae7c803e8ff45e79dff599aa155e2d2))
+* **vscode:** showErrorMessage if view layout failed ([8832d0a](https://github.com/likec4/likec4/commit/8832d0abbf9e3b836acf4e5e51c4cbb67fa284c8))
+
+
+### Features
+
+* add GitHub Actions workflow for previewing playground and docs ([95b190c](https://github.com/likec4/likec4/commit/95b190ceea78ecb9f4a53183f10512724b356d4d))
+* e2e tests ([#1023](https://github.com/likec4/likec4/issues/1023)) ([bfe3788](https://github.com/likec4/likec4/commit/bfe37882a44d41bd9a137c469936f4b5726b620d))
+* enhance EmbedPage and ExportPage with navigation and relationship details options; refactor legacy handler naming ([83c6fcf](https://github.com/likec4/likec4/commit/83c6fcfac017fa4545cdaad5df58b60f38031755))
+* LikeC4Model ([e53f55f](https://github.com/likec4/likec4/commit/e53f55f76e60e8a5cefa64b79bea013ca196970b))
+* **react:** relationship details ([1af3554](https://github.com/likec4/likec4/commit/1af3554f914b6034fec306690f1013d9899163a0))
+
+
+
 ## [1.10.1](https://github.com/likec4/likec4/compare/v1.10.0...v1.10.1) (2024-09-17)
 
 ### Bug Fixes
