@@ -1989,7 +1989,7 @@ __metadata:
     astro: "npm:~4.14.0"
     astro-og-canvas: "npm:^0.5.3"
     likec4: "workspace:*"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.3"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     starlight-heading-badges: "npm:^0.2.0"
@@ -2054,7 +2054,7 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:3.2.0"
     langium-cli: "npm:3.2.0"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.3"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     remeda: "npm:^2.14.0"
@@ -8340,7 +8340,7 @@ __metadata:
     langium: "npm:3.2.0"
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:0.11.3"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.3"
     p-limit: "npm:^6.1.0"
     package-up: "npm:^5.0.0"
     playwright: "npm:1.46.1"
@@ -10025,9 +10025,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:^6.2.2":
-  version: 6.2.2
-  resolution: "npm-run-all2@npm:6.2.2"
+"npm-run-all2@npm:^6.2.3":
+  version: 6.2.3
+  resolution: "npm-run-all2@npm:6.2.3"
   dependencies:
     ansi-styles: "npm:^6.2.1"
     cross-spawn: "npm:^7.0.3"
@@ -10041,7 +10041,7 @@ __metadata:
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10c0/b32984a1fb6b495415258f88f87269b4049c19a73a1d6e2b13e0dd36dd311a5a4d945c9fd1cc356eb10811febaa03cf1c85d04dc43decd4ab1d590b625918440
+  checksum: 10c0/1f9b4c2aed4dbbb9ddea51693ea5bd83b63602bf824032491156118e2c3ec2598edc1353376a8bb9541d1e2a6899959548a49656a9f87a2e4fc0643be6e2eb6e
   languageName: node
   linkType: hard
 
@@ -11906,7 +11906,7 @@ __metadata:
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
     lint-staged: "npm:15.2.10"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.3"
     shipjs: "npm:^0.26.4"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.1.1"
