@@ -2,6 +2,16 @@ name: e2e
 
 on:
   workflow_call:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job to run'
+        required: true
+        default: 'run tests'
+        type: choice
+        options:
+        - run tests
+        - update screenshots
 
 env:
   NODE_ENV: production
@@ -13,10 +23,17 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
+      - uses: wow-actions/use-app-token@v2
+        id: likec4-bot
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
+          token: ${{ env.BOT_TOKEN }}
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
@@ -33,13 +50,41 @@ jobs:
           yarn install
           yarn bootstrap
 
-      - name: Run Playwright tests
+      - name: run playwright tests
         working-directory: e2e
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'run tests' }}
         run: yarn test
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+      - name: update screenshots
+        working-directory: e2e
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
+        run: yarn test:update-screenshots
+
+      - name: create pull request
+        uses: peter-evans/create-pull-request@v5
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
         with:
-          name: playwright-report
-          path: e2e/playwright-report/
-          retention-days: 30
+          token: ${{ env.BOT_TOKEN }}
+          commit-message: "chore: update e2e screenshots"
+          title: "chore: update e2e screenshots"
+          branch: update-screenshots/${{ github.ref_name }}
+          base: ${{ github.ref_name }}
+          delete-branch: true
+
+      - id: cloudflare
+        if: ${{ !cancelled() && ( github.event_name != 'workflow_dispatch' || inputs.job == 'run tests' ) }}
+        name: publish to cloudflare
+        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy playwright-report --project-name likec4-e2e --commit-dirty --branch preview
+          workingDirectory: e2e
+          packageManager: yarn
+
+      # - uses: actions/upload-artifact@v4
+      #   if: ${{ !cancelled() }}
+      #   with:
+      #     name: playwright-report
+      #     path: e2e/playwright-report/
+      #     retention-days: 30

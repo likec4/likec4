@@ -1,6 +1,6 @@
 {
   "name": "@likec4/e2e",
-  "version": "1.0.astro",
+  "version": "1.0.0",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.4.1",
