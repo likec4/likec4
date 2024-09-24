@@ -2,7 +2,7 @@ import type { DiagramView } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find, isTruthy, values } from 'remeda'
-import { useLikeC4Views } from 'virtual:likec4/store'
+import { useLikeC4ModelAtom } from 'virtual:likec4/model'
 
 interface DiagramTreeNodeData {
   label: string
@@ -75,6 +75,6 @@ function buildDiagramTreeData(views: DiagramView[]): DiagramTreeNodeData[] {
 // const $diagramsTree = batched($views, views => buildDiagramTreeData(values(views)))
 
 export function useDiagramsTreeData() {
-  const views = useLikeC4Views() as unknown as Record<string, DiagramView>
+  const views = useLikeC4ModelAtom().sourcemodel.views
   return useMemo(() => buildDiagramTreeData(values(views)), [views])
 }

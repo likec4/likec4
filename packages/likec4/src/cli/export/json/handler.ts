@@ -26,25 +26,14 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
     graphviz: useDotBin ? 'binary' : 'wasm'
   })
 
-  const model = await languageServices.computed()
-  if (!model) {
-    logger.warn('no model parsed')
-    throw new Error('no model parsed')
-  }
+  const model = await languageServices.layoutedModel()
 
   if (extname(outfile) !== '.json') {
     outfile = outfile + '.json'
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = await languageServices.diagrams()
-
-  const output = {
-    ...model,
-    views
-  }
-
-  const generatedSource = JSON.stringify(output, null, 2)
+  const generatedSource = JSON.stringify(model.sourcemodel, null, 2)
 
   await writeFile(outfile, generatedSource)
 

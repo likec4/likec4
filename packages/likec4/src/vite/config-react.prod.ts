@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
@@ -34,12 +34,13 @@ export async function viteReactConfig({
       footer: JsBanners.footer,
       jsx: 'transform',
       jsxDev: false,
+      jsxSideEffects: false,
       minifyIdentifiers: false,
       minifySyntax: false,
       minifyWhitespace: false,
       tsconfigRaw: {
         compilerOptions: {
-          target: 'ES2020',
+          target: 'ES2022',
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
           jsx: 'react-jsx'
@@ -51,7 +52,7 @@ export async function viteReactConfig({
       emptyOutDir: false,
       sourcemap: false,
       minify: false,
-      target: 'es2020',
+      target: 'es2022',
       copyPublicDir: false,
       chunkSizeWarningLimit,
       lib: {
@@ -63,11 +64,11 @@ export async function viteReactConfig({
       },
       rollupOptions: {
         output: {
-          compact: false
+          compact: false,
+          exports: 'named'
         },
         external: [
           'likec4/react',
-          'likec4',
           'react',
           'react-dom',
           'react/jsx-runtime',

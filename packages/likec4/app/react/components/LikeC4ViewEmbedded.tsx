@@ -51,7 +51,7 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     showElementLinks?: boolean | undefined
 
     /**
-     * Display panel with diagram title / description
+     * Display webview with diagram title / description
      * @default false
      */
     showDiagramTitle?: boolean | undefined
@@ -69,6 +69,12 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     showNotations?: boolean | undefined
 
     /**
+     * Display dropdown with details on relationship's label click
+     * @default false
+     */
+    showRelationshipDetails?: boolean | undefined
+
+    /**
      * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
      * @default false
      */
@@ -79,7 +85,11 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     mantineTheme?: MantineThemeOverride | undefined
   }
 
-export function LikeC4ViewEmbedded<ViewId extends string, Tag extends string, Kind extends string>({
+export function LikeC4ViewEmbedded<
+  ViewId extends string = string,
+  Tag extends string = string,
+  Kind extends string = string
+>({
   onNavigateTo: _onNavigateTo,
   className,
   view,
@@ -92,6 +102,7 @@ export function LikeC4ViewEmbedded<ViewId extends string, Tag extends string, Ki
   showNavigationButtons = false,
   enableFocusMode = false,
   showNotations = false,
+  showRelationshipDetails = false,
   mantineTheme,
   where,
   style
@@ -144,6 +155,7 @@ export function LikeC4ViewEmbedded<ViewId extends string, Tag extends string, Ki
             showNavigationButtons={showNavigationButtons}
             experimentalEdgeEditing={false}
             enableFocusMode={enableFocusMode}
+            showRelationshipDetails={showRelationshipDetails}
             controls={false}
             nodesSelectable={false}
             keepAspectRatio={false}

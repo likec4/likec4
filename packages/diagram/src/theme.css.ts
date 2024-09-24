@@ -31,12 +31,12 @@ export const vars = createGlobalThemeContract({
     labelBgColor: 'relation-labelBg'
   },
   optionsPanel: {
-    top: 'options-panel-top',
-    right: 'options-panel-right'
+    top: 'options-webview-top',
+    right: 'options-webview-right'
   },
   navigationPanel: {
-    top: 'navigation-panel-top',
-    left: 'navigation-panel-left'
+    top: 'navigation-webview-top',
+    left: 'navigation-webview-left'
   }
 }, (value) => `likec4-${value}`)
 

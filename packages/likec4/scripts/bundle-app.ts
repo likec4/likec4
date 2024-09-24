@@ -1,11 +1,11 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { $ } from 'execa'
-import { copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
-import { join, resolve } from 'path'
+import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { modules } from '../src/vite/plugin'
@@ -113,8 +113,7 @@ export async function bundleApp() {
           'react-dom/client',
           'react',
           'react-dom',
-          '@nanostores/react',
-          'nanostores',
+          'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           resolve(cwd, 'app/src/const.js'),
           ...modules.map(m => m.id)

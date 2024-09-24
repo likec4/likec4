@@ -243,8 +243,8 @@ function createLayoutConstraints(
       animationFrameId = null
       const pos = nodeLookup.get(xynode.id)!.internals.positionAbsolute
       const rect = nonNullable(rects.get(xynode.id))
-      solver.suggestValue(rect.minX, Math.ceil(pos.x))
-      solver.suggestValue(rect.minY, Math.ceil(pos.y))
+      solver.suggestValue(rect.minX, Math.floor(pos.x))
+      solver.suggestValue(rect.minY, Math.floor(pos.y))
       updateXYFlowNodes()
     })
   }
@@ -273,6 +273,7 @@ export function useLayoutConstraints(): LayoutConstraints {
       solverRef.current?.onNodeDrag(xynode)
     },
     onNodeDragStop: (_event, _xynode) => {
+      solverRef.current?.updateXYFlowNodes()
       diagramApi.getState().scheduleSaveManualLayout()
       solverRef.current = undefined
     }

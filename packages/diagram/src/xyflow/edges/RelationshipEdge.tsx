@@ -1,52 +1,28 @@
 import {
-  extractStep,
   invariant,
   isStepEdgeId,
   type NonEmptyArray,
   nonexhaustive,
   nonNullable,
   type Point,
-  type RelationshipArrowType,
-  type ViewID
+  type RelationshipArrowType
 } from '@likec4/core'
-import {
-  ActionIcon,
-  Box,
-  Button,
-  CloseButton,
-  Group,
-  Popover,
-  PopoverDropdown,
-  PopoverTarget,
-  ScrollAreaAutosize,
-  Stack,
-  Text
-} from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
-import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
-import {
-  memo,
-  type PointerEvent as ReactPointerEvent,
-  type PropsWithChildren,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { memo, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
-import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { useXYStoreApi } from '../../hooks/useXYFlow'
 import { vector, VectorImpl } from '../../utils/vector'
 import { ZIndexes } from '../const'
 import { EdgeMarkers, type EdgeMarkerType } from '../EdgeMarkers'
-import { type RelationshipData, type XYFlowEdge } from '../types'
-import { bezierControlPoints, distance } from '../utils'
+import { type XYFlowEdge } from '../types'
+import { bezierControlPoints } from '../utils'
+import { EdgeLabel } from './EdgeLabel'
 import * as edgesCss from './edges.css'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
 // import { getEdgeParams } from './utils'
@@ -128,9 +104,8 @@ const isSame = (a: number, b: number) => {
 }
 
 const isSamePoint = (a: XYPosition | Point, b: XYPosition | Point) => {
-  const [ax, ay] = isArray(a) ? a : [a.x, a.y]
-  const [bx, by] = isArray(b) ? b : [b.x, b.y]
-  return isSame(ax, bx) && isSame(ay, by)
+  return isSame(isArray(a) ? a[0] : a.x, isArray(b) ? b[0] : b.x)
+    && isSame(isArray(a) ? a[1] : a.y, isArray(b) ? b[1] : b.y)
 }
 
 const sameControlPoints = (a: XYPosition[] | null, b: XYPosition[] | null) => {
@@ -158,7 +133,7 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
-export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
+export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
   selected,
@@ -175,30 +150,24 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
   const {
-    isFocusedNode,
+    connectedToFocusedNode,
     isActiveWalkthroughStep,
     isEdgePathEditable,
     isHovered,
     isDimmed,
-    isActiveAsParallel,
-    hasOnOpenSourceRelation,
-    hasOnNavigateTo
+    isActiveAsParallel
   } = useDiagramState(s => ({
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true && s.focusedNodeId === null
       && s.activeWalkthrough === null,
-    isFocusedNode: s.focusedNodeId === source || s.focusedNodeId === target,
+    connectedToFocusedNode: s.focusedNodeId === source || s.focusedNodeId === target,
     isActiveWalkthroughStep: s.activeWalkthrough?.stepId === data.edge.id,
     // If activeWalkthrough and this edge is part of the parallel group
     isActiveAsParallel: !!s.activeWalkthrough?.parallelPrefix && id.startsWith(s.activeWalkthrough.parallelPrefix),
     isHovered: s.hoveredEdgeId === id,
-    isDimmed: s.dimmed.has(id),
-    hasOnOpenSourceRelation: !!s.onOpenSourceRelation,
-    hasOnNavigateTo: !!s.onNavigateTo
+    isDimmed: s.dimmed.has(id)
   }))
 
-  const navigateTo = hasOnNavigateTo ? data.edge.navigateTo ?? null : null
-
-  const isActive = isFocusedNode || isActiveWalkthroughStep
+  const isActive = connectedToFocusedNode || isActiveWalkthroughStep
   const { nodeLookup, edgeLookup } = xyflowStore.getState()
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
@@ -234,7 +203,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   let labelX = labelBBox?.x ?? 0,
     labelY = labelBBox?.y ?? 0
 
-  const [labelPos, setLabelPosition] = useState<XYPosition>({
+  const [labelPos, setLabelPos] = useState<XYPosition>({
     x: label?.bbox.x ?? labelX,
     y: label?.bbox.y ?? labelY
   })
@@ -275,7 +244,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       x: Math.round(dompoint.x),
       y: Math.round(dompoint.y)
     }
-    setLabelPosition(current => isSamePoint(current, point) ? current : point)
+    setLabelPos(current => isSamePoint(current, point) ? current : point)
   }, [edgePath])
 
   useDebouncedEffect(
@@ -331,10 +300,14 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     let pointer = { x: e.clientX, y: e.clientY }
 
     const onPointerMove = (e: PointerEvent) => {
-      if (hasMoved || !isSamePoint(pointer, [e.clientX, e.clientY])) {
+      const clientPoint = {
+        x: e.clientX,
+        y: e.clientY
+      }
+      if (!isSamePoint(pointer, clientPoint)) {
         setIsControlPointDragging(true)
         hasMoved = true
-        pointer = { x: e.clientX, y: e.clientY }
+        pointer = clientPoint
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
         xyflow.updateEdgeData(id, xyedge => {
           const cp = (xyedge.data.controlPoints ?? controlPoints).slice()
@@ -433,10 +406,11 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const MarkerStart = markerStartName ? EdgeMarkers[markerStartName] : null
   const MarkerEnd = markerEndName ? EdgeMarkers[markerEndName] : null
 
-  const labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
-
-  const relationId = first(data.edge.relations)
-  const showOpenSourceRelation = hasOnOpenSourceRelation && relationId !== undefined
+  let labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
+  if (isEdgePathEditable && selected) {
+    // Move label below ControlPoints, otherwise they don't capture events
+    labelZIndex = (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge) - 1
+  }
 
   return (
     <g
@@ -500,211 +474,34 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       )}
       {(data.label || isStepEdge) && (
         <EdgeLabel
-          {...({
-            isDimmed,
-            color,
-            isModified,
-            labelX,
-            labelY,
-            navigateTo,
-            isEdgePathEditable,
-            selected: selected ?? false,
-            stepNum: isStepEdge ? extractStep(data.edge.id) : null,
-            label: data.label,
-            zIndex: labelZIndex,
-            notes: isActiveWalkthroughStep ? (data.edge.notes ?? null) : null,
-            isHovered,
-            isActive,
-            isStepEdge
-          })}
-          onClick={showOpenSourceRelation && ((e) => {
-            e.stopPropagation()
-            diagramStore.getState().onOpenSourceRelation?.(relationId)
-          })}
+          isDimmed={isDimmed}
+          edgeData={data}
+          className={clsx(
+            'nodrag nopan',
+            edgesCss.container,
+            edgesCss.edgeLabel,
+            isDimmed && edgesCss.dimmed
+          )}
+          style={{
+            ...assignInlineVars({
+              [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
+              [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
+            }),
+            // ...(isEdgePathEditable && selected && {
+            //   pointerEvents: 'none'
+            // }),
+            ...(label && {
+              maxWidth: label.bbox.width + 18
+            }),
+            zIndex: labelZIndex
+          }}
+          mod={{
+            'data-likec4-color': color,
+            'data-edge-hovered': isHovered && !isActiveWalkthroughStep,
+            'data-edge-active': isActive
+          }}
         />
       )}
     </g>
   )
 }, isEqualProps)
-
-type EdgeLabelProps = {
-  isDimmed: boolean
-  color: string
-  isModified: boolean
-  labelX: number
-  labelY: number
-  isEdgePathEditable: boolean
-  selected: boolean
-  stepNum: number | null
-  label: RelationshipData['label']
-  notes: string | null
-  isHovered: boolean
-  isActive: boolean
-  zIndex: number
-  navigateTo: ViewID | null
-  onClick: false | ((e: ReactPointerEvent<HTMLDivElement>) => void)
-}
-
-const EdgeLabel = ({
-  isDimmed,
-  color,
-  isModified,
-  labelX,
-  labelY,
-  isEdgePathEditable,
-  selected,
-  navigateTo,
-  label,
-  notes,
-  stepNum,
-  isHovered,
-  isActive,
-  zIndex,
-  onClick
-}: EdgeLabelProps) => {
-  let labelBox = (
-    <Box
-      className={clsx([
-        'nodrag nopan',
-        edgesCss.container,
-        edgesCss.edgeLabel,
-        isDimmed && edgesCss.dimmed
-      ])}
-      style={{
-        ...assignInlineVars({
-          [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
-          [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
-        }),
-        ...(isEdgePathEditable && selected && {
-          pointerEvents: 'none'
-        }),
-        ...(label && {
-          maxWidth: label.bbox.width + 18
-        }),
-        zIndex
-      }}
-      mod={{
-        'data-likec4-color': color,
-        'data-edge-hovered': isHovered,
-        'data-edge-active': isActive
-      }}
-      onClick={onClick || undefined}
-    >
-      {stepNum !== null && (
-        <Box className={edgesCss.stepEdgeNumber}>
-          {stepNum}
-        </Box>
-      )}
-      {isTruthy(label?.text) && (
-        <Box className={edgesCss.edgeLabelText}>
-          {label.text}
-        </Box>
-      )}
-      {navigateTo && !isDimmed && <NavigateToBtn viewId={navigateTo} />}
-    </Box>
-  )
-
-  if (isTruthy(notes)) {
-    labelBox = <NotePopover notes={notes}>{labelBox}</NotePopover>
-  }
-
-  return (
-    <EdgeLabelRenderer>
-      {labelBox}
-    </EdgeLabelRenderer>
-  )
-}
-
-const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) => {
-  const {
-    nextDynamicStep,
-    hasNext,
-    hasPrevious
-  } = useDiagramState(s => ({
-    nextDynamicStep: s.nextDynamicStep,
-    hasNext: s.activeWalkthrough?.hasNext ?? false,
-    hasPrevious: s.activeWalkthrough?.hasPrevious ?? false
-  }))
-
-  const [isOpened, setIsOpened] = useState(false)
-  const portalProps = useMantinePortalProps()
-
-  useDebouncedEffect(
-    () => {
-      setIsOpened(true)
-    },
-    [],
-    300
-  )
-
-  return (
-    <Popover
-      shadow="xs"
-      offset={16}
-      opened={isOpened}
-      closeOnClickOutside={false}
-      {...portalProps}>
-      <PopoverTarget>
-        {children}
-      </PopoverTarget>
-      <PopoverDropdown
-        component={Stack}
-        p={'xs'}
-        onPointerDownCapture={e => e.stopPropagation()}
-        onClick={e => e.stopPropagation()}
-        onDoubleClick={e => e.stopPropagation()}
-      >
-        <ScrollAreaAutosize maw={450} mah={350} type="scroll" mx={'auto'} mt={2}>
-          <Text component="div" className={edgesCss.edgeNoteText} p={4}>{notes}</Text>
-        </ScrollAreaAutosize>
-        <CloseButton
-          size={'xs'}
-          className={edgesCss.edgeNoteCloseButton}
-          onClick={() => setIsOpened(false)}
-        />
-        {(hasPrevious || hasNext) && (
-          <Group gap={0} justify={hasPrevious ? 'flex-start' : 'flex-end'}>
-            {hasPrevious && (
-              <Button
-                variant="subtle"
-                radius={'xs'}
-                size="compact-xs"
-                onClick={() => nextDynamicStep(-1)}>
-                back
-              </Button>
-            )}
-            {hasNext && (
-              <Button variant="subtle" radius={'xs'} size="compact-xs" onClick={() => nextDynamicStep()}>
-                next
-              </Button>
-            )}
-          </Group>
-        )}
-      </PopoverDropdown>
-    </Popover>
-  )
-}
-
-type NavigateToBtnProps = {
-  viewId: ViewID
-}
-
-function NavigateToBtn({ viewId }: NavigateToBtnProps) {
-  const diagramApi = useDiagramStoreApi()
-  return (
-    <ActionIcon
-      className={clsx('nodrag nopan', edgesCss.cssNavigateBtn)}
-      size={'sm'}
-      radius="sm"
-      onPointerDownCapture={e => e.stopPropagation()}
-      onClick={event => {
-        event.stopPropagation()
-        diagramApi.getState().onNavigateTo?.(viewId, event)
-      }}
-      role="button"
-      onDoubleClick={event => event.stopPropagation()}
-    >
-      <IconZoomScan className={edgesCss.cssNavigateBtnIcon} />
-    </ActionIcon>
-  )
-}

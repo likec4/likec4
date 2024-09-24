@@ -1,6 +1,7 @@
 import { createTheme, type MantineTheme } from '@mantine/core'
 
 export const theme = createTheme({
+  autoContrast: true,
   primaryColor: 'indigo',
   defaultRadius: 'sm',
   fontFamily: `var(--likec4-default-font-family)`,

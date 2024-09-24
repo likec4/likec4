@@ -1,8 +1,8 @@
 import { invariant, type ViewID } from '@likec4/core'
-import { LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import { createRoot, type Root } from 'react-dom/client'
-import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+import { type DiagramView, likec4model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
 import { ComponentName } from './const'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
@@ -123,36 +123,38 @@ export class LikeC4View extends HTMLElement {
         {...(colorScheme && { forceColorScheme: colorScheme })}
         getRootElement={() => this.rootEl}
         cssVariablesSelector={'.likec4-shadow-root'}>
-        <LikeC4Diagram
-          view={view as any}
-          readonly
-          pannable={false}
-          zoomable={false}
-          background={'transparent'}
-          fitView
-          fitViewPadding={0.01}
-          showElementLinks
-          showDiagramTitle={false}
-          showNavigationButtons={false}
-          enableDynamicViewWalkthrough={false}
-          experimentalEdgeEditing={false}
-          enableFocusMode={false}
-          showNotations={false}
-          controls={false}
-          nodesSelectable={false}
-          keepAspectRatio={false}
-          renderIcon={RenderIcon}
-          onNavigateTo={to => {
-            this.openBrowser(to)
-          }}
-          onNodeClick={() => {
-            this.openBrowser()
-          }}
-          onCanvasClick={(e) => {
-            e.stopPropagation()
-            this.openBrowser()
-          }}
-        />
+        <LikeC4ModelProvider likec4model={likec4model}>
+          <LikeC4Diagram
+            view={view as any}
+            readonly
+            pannable={false}
+            zoomable={false}
+            background={'transparent'}
+            fitView
+            fitViewPadding={0.01}
+            showElementLinks
+            showDiagramTitle={false}
+            showNavigationButtons={false}
+            enableDynamicViewWalkthrough={false}
+            experimentalEdgeEditing={false}
+            enableFocusMode={false}
+            showNotations={false}
+            controls={false}
+            nodesSelectable={false}
+            keepAspectRatio={false}
+            renderIcon={RenderIcon}
+            onNavigateTo={to => {
+              this.openBrowser(to)
+            }}
+            onNodeClick={() => {
+              this.openBrowser()
+            }}
+            onCanvasClick={(e) => {
+              e.stopPropagation()
+              this.openBrowser()
+            }}
+          />
+        </LikeC4ModelProvider>
       </MantineProvider>
     )
   }

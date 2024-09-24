@@ -23,9 +23,7 @@ type HandlerParams = {
 function toUnion(unionset: Set<string>) {
   const union = [...unionset].sort(compareNatural).map(v => `  | ${JSON.stringify(v)}`)
   if (union.length === 0) {
-    union.push('  | never')
-  } else {
-    union.push('  | (string & Record<never, never>)')
+    union.push('  never')
   }
   return union.join('\n') + ';'
 }
@@ -120,8 +118,14 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
+import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
-import type { LikeC4ViewProps as BaseLikeC4ViewProps, ViewData, ReactLikeC4Props as GenericReactLikeC4Props } from 'likec4/react'
+import type {
+  LikeC4ViewProps as GenericLikeC4ViewProps,
+  ViewData,
+  LikeC4Model,
+  ReactLikeC4Props as GenericReactLikeC4Props
+} from 'likec4/react'
 
 type LikeC4ViewId =
 ${ids}
@@ -139,8 +143,18 @@ type LikeC4ViewData = ViewData<LikeC4ViewId>
  */
 type LikeC4DiagramView = LikeC4ViewData
 
-declare const LikeC4Views: Record<LikeC4ViewId, LikeC4ViewData>
-declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
+declare const LikeC4Views: {
+  readonly [K in LikeC4ViewId]: LikeC4ViewData
+};
+type LikeC4ViewsData = typeof LikeC4Views;
+declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId;
+
+declare const likeC4Model: LikeC4Model.Layouted;
+declare function useLikeC4Model(): LikeC4Model.Layouted;
+declare function useLikeC4View(viewId: LikeC4ViewId): LikeC4ViewData;
+declare function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4Model.Layouted.ViewModel;
+
+declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
 
 type IconRendererProps = {
   node: {
@@ -151,7 +165,7 @@ type IconRendererProps = {
 }
 declare function RenderIcon(props: IconRendererProps): JSX.Element;
 
-type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>;
+type LikeC4ViewProps = GenericLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>;
 declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element;
 
 type ReactLikeC4Props =
@@ -166,11 +180,17 @@ export {
   type LikeC4Tag,
   type LikeC4ElementKind,
   type LikeC4ViewData,
+  type LikeC4ViewsData,
   type LikeC4DiagramView,
   type LikeC4ViewProps,
   type ReactLikeC4Props,
   isLikeC4ViewId,
+  useLikeC4Model,
+  useLikeC4View,
+  useLikeC4ViewModel,
+  likeC4Model,
   LikeC4Views,
+  LikeC4ModelProvider,
   LikeC4View,
   RenderIcon,
   ReactLikeC4
@@ -179,15 +199,20 @@ export {
 `.trimStart()
   )
 
-  consola.box(
-    stripIndent(`
-    ${k.dim('Component generated:')}
+  consola.box({
+    message: stripIndent(`
+    ${k.dim('Source generated:')}
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
-     ${k.blue('https://likec4.dev/tooling/codegen/#react')}
-  `)
-  )
+      ${k.underline('https://likec4.dev/tooling/codegen/#react')}
+  `).trim(),
+    style: {
+      padding: 2,
+      borderColor: 'green',
+      borderStyle: 'rounded'
+    }
+  })
 
   timer.stopAndLog()
 }

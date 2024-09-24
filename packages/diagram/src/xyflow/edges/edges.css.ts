@@ -280,11 +280,8 @@ export const cssNavigateBtn = style({
     '--ai-hover': `color-mix(in srgb , ${vars.relation.labelBgColor}, ${mixColor} 10%)`
   },
   selectors: {
-    [`:where([data-edge-hovered="true"]) &`]: {
-      boxShadow: mantine.shadows.lg,
-      transform: 'translate(-50%, 0) scale(1.15)',
-      opacity: 1,
-      transitionDelay: '120ms'
+    [`:is(${dimmed}) &`]: {
+      display: 'none'
     }
   },
   ':hover': {

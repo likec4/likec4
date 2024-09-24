@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": "^18.0.0 || >=20.0.0"
+    "node": "^20.0.0"
   },
   "scripts": {
     "fmt": "dprint fmt",
@@ -26,11 +26,6 @@
     "vscode:typecheck": "turbo run typecheck --filter='!@likec4/docs-astro'",
     "release": "shipjs prepare",
     "clean": "turbo run clean",
-    "clean:root": "run-p --print-label 'clean:root:*'",
-    "clean:root:turbo": "rimraf -v -g '**/.turbo' 'node_modules/.cache/turbo'",
-    "clean:root:tsbuildinfo": "rimraf -v -g '**/.tsbuildinfo'",
-    "clean:root:vitetmp": "rimraf -v -g '**/vi*.config.ts.timestamp-*'",
-    "clean:root:afterpublish": "rimraf -v -g '**/package*.tgz'",
     "git:pre-commit": "lint-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
@@ -38,7 +33,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.16.1",
-    "@vitest/ui": "^2.1.0",
+    "@vitest/ui": "^2.1.1",
     "dprint": "0.47.2",
     "esbuild": "^0.23.1",
     "execa": "^9.3.1",
@@ -46,13 +41,12 @@
     "husky": "^8.0.3",
     "lint-staged": "15.2.10",
     "npm-run-all2": "^6.2.2",
-    "rimraf": "^6.0.1",
     "shipjs": "^0.26.4",
     "tsx": "~4.9.3",
     "turbo": "^2.1.1",
     "typescript": "^5.6.2",
-    "vite": "5.3.4",
-    "vitest": "~2.1.0"
+    "vite": "5.4.7",
+    "vitest": "^2.1.1"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.2.0",

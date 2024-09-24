@@ -1,7 +1,6 @@
-import { LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
 import { Box } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
 import { useTransparentBackground } from '../hooks'
 
@@ -12,7 +11,7 @@ export const Route = createFileRoute('/embed/$viewId')({
 function EmbedPage() {
   const { padding = 20 } = Route.useSearch()
   const { viewId } = Route.useParams()
-  const diagram = useLikeC4View(viewId)
+  const diagram = useLikeC4DiagramView(viewId)
 
   useTransparentBackground(!!diagram)
 
@@ -47,6 +46,8 @@ function EmbedPage() {
         background={'transparent'}
         enableDynamicViewWalkthrough={false}
         showElementLinks={false}
+        showNavigationButtons={false}
+        showRelationshipDetails={false}
         showDiagramTitle={false}
         showNotations={false}
         nodesSelectable={false}

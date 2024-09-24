@@ -1,5 +1,5 @@
 import * as BuildIn from '@likec4/language-server/likec4lib'
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 
 export class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
   static register(context: vscode.ExtensionContext) {

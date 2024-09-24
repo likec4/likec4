@@ -132,7 +132,7 @@ export function NotationPanel() {
     height
   } = useDiagramState(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
-    key: 'notation-panel-collapsed',
+    key: 'notation-webview-collapsed',
     defaultValue: true
   })
   const hasNotations = notations.length > 0

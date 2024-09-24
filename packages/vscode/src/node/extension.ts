@@ -1,7 +1,7 @@
-import { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
+import type { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
 import os from 'node:os'
 import path from 'node:path'
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
   type LanguageClientOptions,
@@ -10,9 +10,9 @@ import {
   type TextDocumentFilter,
   TransportKind
 } from 'vscode-languageclient/node'
-import { BuiltInFileSystemProvider } from '../common/BuiltInFileSystemProvider'
-import { ExtensionController } from '../common/ExtensionController'
-import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
+import { isLikeC4Source } from '../common/initWorkspace'
+import { extensionTitle, globPattern, isDev, isVirtual, languageId } from '../const'
+import { ExtensionController } from '../ExtensionController'
 import { logger, logToChannel } from '../logger'
 import { configureGraphviz } from './configure-graphviz'
 
@@ -20,30 +20,23 @@ function isWindows() {
   return os.platform() === 'win32'
 }
 
-let controller: ExtensionController | undefined
-
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
-  BuiltInFileSystemProvider.register(context)
   const client = createLanguageClient(context)
-  const ctrl = (controller = new ExtensionController(context, client))
-  ctrl.activate().catch(e => {
-    logger.error(`Failed to activate: ${e}`)
-  })
+  const ctrl = ExtensionController.activate(context, client)
   configureGraphviz(ctrl)
 }
 
 // This function is called when the extension is deactivated.
 export function deactivate() {
-  controller?.dispose()
-  controller = undefined
+  ExtensionController.deactivate()
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
-  const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
+  const outputChannel = vscode.window.createOutputChannel('LikeC4 Language Server', {
     log: true
   })
-  const extensionOutputChannel = vscode.window.createOutputChannel('LikeC4 - Extension', {
+  const extensionOutputChannel = vscode.window.createOutputChannel('LikeC4 Extension', {
     log: true
   })
   context.subscriptions.push(
@@ -59,9 +52,6 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     'node',
     'language-server.js'
   )
-
-  // @ts-ignore
-  const isProduction = process.env.NODE_ENV === 'production'
 
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
@@ -84,7 +74,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     }
   }
 
-  if (!isProduction) {
+  if (isDev) {
     logger.warn('!!! Running in development mode !!!')
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
@@ -108,8 +98,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       return { language: languageId, scheme, pattern: w.scheme === 'file' ? w.fsPath : w.path }
     })
 
-  // Add the scheme for the likec4libq
-  documentSelector.push({ language: languageId, scheme: LibScheme })
+  // Add the scheme for the likec4lib
+  documentSelector.push({ language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme })
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
@@ -118,6 +108,12 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     traceOutputChannel: outputChannel,
     documentSelector,
     diagnosticCollectionName: 'likec4',
+    diagnosticPullOptions: {
+      onTabs: true,
+      match(_, resource) {
+        return isLikeC4Source(resource.path)
+      }
+    },
     progressOnInitialization: true
   }
   logger.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)

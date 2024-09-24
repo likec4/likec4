@@ -42,7 +42,7 @@ import type {
   LikeC4DiagramEventHandlers,
   WhereOperator
 } from '../LikeC4Diagram.props'
-import { vector, type Vector } from '../utils/vector'
+import { type Vector, vector } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
@@ -58,6 +58,7 @@ export type DiagramInitialState = {
   showElementLinks: boolean
   showNavigationButtons: boolean
   showNotations: boolean
+  showRelationshipDetails: boolean
   fitViewEnabled: boolean
   fitViewPadding: number
   zoomable: boolean
@@ -92,6 +93,9 @@ export type DiagramState = Simplify<
 
     initialized: boolean
 
+    // readonly=false and onChange is not null
+    isEditable: () => boolean
+
     // If Dynamic View
     isDynamicView: boolean
     activeWalkthrough: null | {
@@ -125,7 +129,11 @@ export type DiagramState = Simplify<
     // Actions
     updateView: (view: DiagramView) => void
 
-    focusOnNode: (nodeId: string) => void
+    /**
+     * A function to set the focus on a specific node given its identifier.
+     * It can also be used to remove focus if the input is `false`.
+     */
+    focusOnNode: (nodeId: string | false) => void
 
     setHoveredNode: (nodeId: string | null) => void
     setHoveredEdge: (edgeId: string | null) => void
@@ -133,7 +141,7 @@ export type DiagramState = Simplify<
     setLastClickedNode: (nodeId: string | null) => void
     setLastClickedEdge: (edgeId: string | null) => void
 
-    resetLastClicked: () => void
+    resetFocusAndLastClicked: () => void
 
     getElement(id: Fqn): DiagramNode | null
     triggerChangeElementStyle: (change: ViewChange.ChangeElementStyle) => void
@@ -441,6 +449,18 @@ export function createDiagramStore(props: DiagramInitialState) {
           focusOnNode: (nodeId) => {
             const { focusedNodeId, view, enableFocusMode } = get()
             invariant(enableFocusMode, 'focus mode is not enabled')
+            if (nodeId === false) {
+              set(
+                {
+                  activeWalkthrough: null,
+                  focusedNodeId: null,
+                  dimmed: EmptyStringSet
+                },
+                noReplace,
+                `unfocus`
+              )
+              return
+            }
             if (nodeId !== focusedNodeId) {
               const notDimmed = new StringSet([nodeId])
               const dimmed = new StringSet()
@@ -494,12 +514,13 @@ export function createDiagramStore(props: DiagramInitialState) {
             }
           },
 
-          resetLastClicked: () => {
+          resetFocusAndLastClicked: () => {
             let {
               activeWalkthrough,
               focusedNodeId,
               lastClickedNodeId,
-              lastClickedEdgeId
+              lastClickedEdgeId,
+              xystore
             } = get()
             if (activeWalkthrough || focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
               set(
@@ -514,11 +535,17 @@ export function createDiagramStore(props: DiagramInitialState) {
                 'resetLastClicked'
               )
             }
+            xystore.getState().resetSelectedElements()
           },
 
           getElement: (fqn) => {
             const { view } = get()
             return view.nodes.find(({ id }) => id === fqn) ?? null
+          },
+
+          isEditable: () => {
+            const { readonly, onChange } = get()
+            return !readonly && !!onChange
           },
 
           triggerChangeElementStyle: (change) => {
@@ -637,25 +664,25 @@ export function createDiagramStore(props: DiagramInitialState) {
             }, {} as ViewChange.SaveManualLayout['layout']['nodes'])
 
             const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
-              let controlPoints = data.controlPoints
+              let controlPoints = data.controlPoints ?? []
               const sourceOrTargetMoved = movedNodes.has(source) || movedNodes.has(target)
               // If edge control points are not set, but the source or target node was moved
-              if ((!controlPoints || controlPoints.length === 0) && sourceOrTargetMoved) {
+              if (controlPoints.length === 0 && sourceOrTargetMoved) {
                 controlPoints = bezierControlPoints(data.edge)
               }
-              if (data.edge.points.length === 0 && (!controlPoints || controlPoints.length === 0)) {
+              if (data.edge.points.length === 0 && controlPoints.length === 0) {
                 return acc
               }
               const _updated: ViewChange.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
                 points: data.edge.points
               }
               if (data.label?.bbox) {
-                _updated.labelBBox = data.label?.bbox
+                _updated.labelBBox = data.label.bbox
               }
               if (data.edge.labelBBox) {
                 _updated.labelBBox ??= data.edge.labelBBox
               }
-              if (controlPoints && hasAtLeast(controlPoints, 1)) {
+              if (hasAtLeast(controlPoints, 1)) {
                 _updated.controlPoints = controlPoints
               }
               if (!sourceOrTargetMoved && data.edge.dotpos) {
@@ -663,12 +690,12 @@ export function createDiagramStore(props: DiagramInitialState) {
               }
               const allX = [
                 ...data.edge.points.map(p => p[0]),
-                ...(controlPoints ?? []).map(p => p.x),
+                ...controlPoints.map(p => p.x),
                 ...(_updated.labelBBox ? [_updated.labelBBox.x, _updated.labelBBox.x + _updated.labelBBox.width] : [])
               ]
               const allY = [
                 ...data.edge.points.map(p => p[1]),
-                ...(controlPoints ?? []).map(p => p.y),
+                ...controlPoints.map(p => p.y),
                 ...(_updated.labelBBox ? [_updated.labelBBox.y, _updated.labelBBox.y + _updated.labelBBox.height] : [])
               ]
               const rect = boxToRect({
@@ -809,24 +836,13 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           fitDiagram: (duration = 500) => {
-            const { fitViewPadding, view, focusedNodeId, activeWalkthrough, xystore } = get()
+            const { fitViewPadding, view, xystore } = get()
             const { width, height, panZoom, transform } = xystore.getState()
 
             const bounds = view.bounds
             const maxZoom = Math.max(1, transform[2])
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, fitViewPadding)
             panZoom?.setViewport(viewport, { duration })
-            if ((focusedNodeId ?? activeWalkthrough) !== null) {
-              set(
-                {
-                  activeWalkthrough: null,
-                  focusedNodeId: null,
-                  dimmed: EmptyStringSet
-                },
-                noReplace,
-                'unfocus'
-              )
-            }
           },
 
           nextDynamicStep: (increment = 1) => {
@@ -845,48 +861,6 @@ export function createDiagramStore(props: DiagramInitialState) {
               return
             }
           },
-
-          // activateDynamicStep: (nextStep: number) => {
-          //   const { isDynamicView, xyflow, xystore, fitViewPadding } = get()
-          //   invariant(isDynamicView, 'view is not dynamic')
-          //   const edgeId = StepEdgeId(nextStep)
-          //   const dimmed = new StringSet()
-          //   let edge: XYFlowEdge | null = null
-          //   for (const e of xyflow.getEdges()) {
-          //     if (e.id === edgeId) {
-          //       edge = e
-          //       continue
-          //     }
-          //     dimmed.add(e.id)
-          //   }
-          //   invariant(!!edge, `edge not found: ${edgeId}`)
-          //   const selected = [] as XYFlowNode[]
-          //   for (const n of xyflow.getNodes()) {
-          //     if (n.id === edge.source || n.id === edge.target) {
-          //       selected.push(n)
-          //       continue
-          //     }
-          //     dimmed.add(n.id)
-          //   }
-          //   const { fitView, transform } = xystore.getState()
-          //   fitView({
-          //     duration: 400,
-          //     includeHiddenNodes: true,
-          //     maxZoom: Math.max(1, transform[2]),
-          //     minZoom: MinZoom,
-          //     padding: Math.max(fitViewPadding, 0.2),
-          //     nodes: selected
-          //   })
-          //   set(
-          //     {
-          //       focusedNodeId: null,
-          //       activeDynamicViewStep: nextStep,
-          //       dimmed
-          //     },
-          //     noReplace,
-          //     'activateDynamicStep'
-          //   )
-          // },
 
           activateWalkthrough: (step: EdgeId | XYFlowEdge) => {
             const stepId = typeof step === 'string' ? step : step.data.edge.id
@@ -1024,14 +998,14 @@ export function createDiagramStore(props: DiagramInitialState) {
             function getControlPointForEdge(edge: XYFlowEdge): XYPoint[] {
               const source = xynodes.find(x => x.id == edge.source)
               const target = xynodes.find(x => x.id == edge.target)
-              if(!source || !target){
+              if (!source || !target) {
                 return []
               }
 
               const sourceCenter = getNodeCenter(source, xynodes)
               const targetCenter = getNodeCenter(target, xynodes)
 
-              if(sourceCenter && targetCenter){
+              if (sourceCenter && targetCenter) {
                 const sourceToTargetVector = targetCenter.sub(sourceCenter)
                 const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
                 const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
@@ -1051,7 +1025,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               return vector(v).mul(scale).add(nodeCenter)
             }
           }
-        }),
+        } satisfies DiagramState),
         {
           name: `${storeDevId} - ${props.view.id}`,
           enabled: DEV

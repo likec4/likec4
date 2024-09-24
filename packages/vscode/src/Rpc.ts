@@ -8,12 +8,12 @@ import type {
   LocateParams,
   LocateRequest
 } from '@likec4/language-server/protocol'
-import type * as vscode from 'vscode'
-import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
+import vscode from 'vscode'
+import { NotificationType, RequestType } from 'vscode-jsonrpc'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
-import { logger } from '../logger'
-import { AbstractDisposable } from '../util'
+import { logger } from './logger'
+import { AbstractDisposable } from './util'
 
 // #region From server
 const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
@@ -21,7 +21,7 @@ const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 
 // #region To server
 const computeView: ComputeViewRequest = new RequestType('likec4/computeView')
-const fetchComputedModel: FetchComputedModelRequest = new RequestType0('likec4/fetchComputedModel')
+const fetchComputedModel: FetchComputedModelRequest = new RequestType('likec4/fetchComputedModel')
 const buildDocuments: BuildDocumentsRequest = new RequestType('likec4/build')
 const locate: LocateRequest = new RequestType('likec4/locate')
 const changeView: ChangeViewRequest = new RequestType('likec4/change-view')
@@ -44,8 +44,8 @@ export class Rpc extends AbstractDisposable {
     return disposable
   }
 
-  async fetchComputedModel() {
-    const { model } = await this.client.sendRequest(fetchComputedModel)
+  async fetchComputedModel(cleanCaches?: true) {
+    const { model } = await this.client.sendRequest(fetchComputedModel, { cleanCaches })
     return model
   }
 

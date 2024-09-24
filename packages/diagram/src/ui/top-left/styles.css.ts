@@ -1,10 +1,16 @@
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+import { calc } from '@vanilla-extract/css-utils'
 import { mantine } from '../../mantine.css'
 import { vars } from '../../theme.css'
+
+export const backwardForwardButtons = style({
+  gap: calc(mantine.spacing.xs).divide(1.5).toString()
+})
 
 export const panel = style({
   top: fallbackVar(vars.navigationPanel.top, '1rem'),
   left: fallbackVar(vars.navigationPanel.left, '1rem'),
+  gap: calc(mantine.spacing.xs).divide(1.5).toString(),
   margin: 0
 })
 
@@ -32,7 +38,7 @@ export const autolayoutIndicator = style({
   selectors: {
     [`:where([data-mantine-color-scheme="dark"]) &`]: {
       background: mantine.colors.dark[5],
-      border: `1px solid ${mantine.colors.dark[4]}`
+      borderColor: mantine.colors.dark[4]
     }
   }
 })

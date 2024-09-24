@@ -49,7 +49,11 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
     mantineTheme?: MantineThemeOverride | undefined
   }
 
-export function LikeC4Browser<ViewId extends string, Tag extends string, Kind extends string>({
+export function LikeC4Browser<
+  ViewId extends string = string,
+  Tag extends string = string,
+  Kind extends string = string
+>({
   className,
   colorScheme,
   view,
@@ -192,6 +196,7 @@ export function LikeC4Browser<ViewId extends string, Tag extends string, Kind ex
                 enableDynamicViewWalkthrough
                 enableFocusMode
                 showNavigationButtons
+                showRelationshipDetails
                 showNotations={hasNotations}
                 background={background}
                 controls={false}

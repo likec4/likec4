@@ -3,10 +3,11 @@ import { analyzeMetafileSync, build, type BuildOptions, formatMessagesSync } fro
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 import { existsSync, writeFileSync } from 'node:fs'
 import { cp, mkdir } from 'node:fs/promises'
+import { isProduction } from 'std-env'
 
-import path, { resolve } from 'node:path'
+import { resolve } from 'node:path'
 
-const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
+const isDev = !isProduction
 if (isDev) {
   consola.warn('VSCODE DEVELOPMENT BUILD')
 }
@@ -25,29 +26,28 @@ await cp(
   { recursive: true }
 )
 
-
 consola.start('Build vscode extension')
 
 const base = {
   metafile: isDev,
   outdir: 'dist',
   outbase: 'src',
-  logLevel: isDev ? 'debug' : 'info',
+  logLevel: isDev ? 'debug' : 'warning',
   color: true,
   bundle: true,
   treeShaking: true,
   external: [
     'vscode'
   ],
-  ...(!isDev && {
-    define: {
-      'process.env.NODE_ENV': '"production"'
-    }
-  }),
-  sourcemap: isDev,
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
+  },
+  sourcemap: true,
   sourcesContent: false,
-  minify: !isDev,
+  minify: true,
   minifyIdentifiers: false,
+  minifySyntax: isProduction,
+  minifyWhitespace: isProduction,
   legalComments: 'none'
 } satisfies BuildOptions
 
@@ -58,14 +58,12 @@ const configs = [] as BuildOptions[]
 configs.push({
   ...base,
   entryPoints: ['src/node/language-server.ts'],
-  format: 'iife',
-  target: 'node18',
+  target: 'node20',
   platform: 'node'
 }, {
   ...base,
   entryPoints: ['src/node/extension.ts'],
-  format: 'cjs',
-  target: 'node18',
+  target: 'node20',
   platform: 'node'
 })
 
@@ -73,6 +71,8 @@ configs.push({
 
 configs.push({
   ...base,
+  sourcemap: isDev,
+  minifyIdentifiers: isProduction,
   entryPoints: ['src/browser/extension.ts'],
   format: 'cjs',
   target: 'es2022',
@@ -80,6 +80,8 @@ configs.push({
   plugins: [nodeModulesPolyfillPlugin()]
 }, {
   ...base,
+  sourcemap: isDev,
+  minifyIdentifiers: isProduction,
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',
   target: 'es2022',
@@ -95,7 +97,7 @@ bundles.forEach(({ errors, warnings, metafile }) => {
     analyzeMetafileSync(metafile)
     const out = Object.keys(metafile.outputs).find(k => k.endsWith('.js'))
     if (out) {
-      const metafilepath = path.resolve(out + '.metafile.json')
+      const metafilepath = resolve(out + '.metafile.json')
       writeFileSync(metafilepath, JSON.stringify(metafile))
       consola.debug(metafilepath)
     }

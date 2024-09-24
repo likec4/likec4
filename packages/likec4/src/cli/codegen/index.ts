@@ -2,7 +2,7 @@ import { resolve } from 'path'
 import k from 'tinyrainbow'
 import type { CommandModule } from 'yargs'
 import { outdir, path, useDotBin, webcomponentPrefix } from '../options'
-import { reactLegacyHandler } from './handler'
+import { legacyHandler } from './handler'
 // import { handler as npmHandler } from './npm-package/handler'
 // import { reactNexthandler } from './react-next'
 import { reactHandler } from './react'
@@ -112,7 +112,7 @@ export const codegenCmd = {
             })
             .option('use-dot', useDotBin),
         handler: async args => {
-          await reactLegacyHandler({
+          await legacyHandler({
             format: 'views',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -130,7 +130,7 @@ export const codegenCmd = {
             .option('outdir', outdir)
             .option('use-dot', useDotBin),
         handler: async args => {
-          await reactLegacyHandler({
+          await legacyHandler({
             format: 'dot',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -148,7 +148,7 @@ export const codegenCmd = {
             .option('outdir', outdir)
             .option('use-dot', useDotBin),
         handler: async args => {
-          await reactLegacyHandler({
+          await legacyHandler({
             format: 'd2',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -167,7 +167,7 @@ export const codegenCmd = {
             .option('outdir', outdir)
             .option('use-dot', useDotBin),
         handler: async args => {
-          await reactLegacyHandler({
+          await legacyHandler({
             format: 'mermaid',
             useDotBin: args.useDotBin,
             path: args.path,

@@ -35,15 +35,16 @@ export class Rpc implements Disposable {
     const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
 
     const notifyModelParsed = debounce(
-      () =>
-        void connection.sendNotification(onDidChangeModel, '').catch(e => {
+      () => {
+        connection.sendNotification(onDidChangeModel, '').catch(e => {
           logger.error(`[ServerRpc] error sending onDidChangeModel: ${e}`)
           return Promise.resolve()
-        }),
+        })
+      },
       {
         timing: 'both',
-        waitMs: 350,
-        maxWaitMs: 1000
+        waitMs: 300,
+        maxWaitMs: 600
       }
     )
 
@@ -54,7 +55,10 @@ export class Rpc implements Disposable {
         notifyModelParsed.cancel()
       }),
       modelBuilder.onModelParsed(() => notifyModelParsed.call()),
-      connection.onRequest(fetchComputedModel, async cancelToken => {
+      connection.onRequest(fetchComputedModel, async ({ cleanCaches }, cancelToken) => {
+        if (cleanCaches) {
+          this.services.WorkspaceCache.clear()
+        }
         const model = await modelBuilder.buildComputedModel(cancelToken)
         return { model }
       }),

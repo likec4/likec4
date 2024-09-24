@@ -49,14 +49,17 @@ export const BundledStyles = () => {
     ].filter(isString).join('\n')
   }
   // return BundledStyles
-  return styles.replaceAll('body {', `${ShadowRootCssSelector}{`)
-    .replaceAll('body{', `${ShadowRootCssSelector}{`)
-    .replaceAll(':root', `${ShadowRootCssSelector}`)
+  return styles
 }
 
 const createStyleSheet = () => {
   const bundledCSS = new CSSStyleSheet()
-  bundledCSS.replaceSync(BundledStyles())
+  bundledCSS.replaceSync(
+    BundledStyles()
+      .replaceAll('body {', `${ShadowRootCssSelector}{`)
+      .replaceAll('body{', `${ShadowRootCssSelector}{`)
+      .replaceAll(':root', `${ShadowRootCssSelector}`)
+  )
   return bundledCSS
 }
 

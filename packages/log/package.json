@@ -16,15 +16,17 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "node": {
-      "types": "./dist/node.d.ts",
-      "import": "./dist/node.mjs",
-      "require": "./dist/node.cjs"
-    },
-    "default": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+    ".": {
+      "node": {
+        "types": "./dist/node.d.ts",
+        "import": "./dist/node.mjs",
+        "require": "./dist/node.cjs"
+      },
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs"
+      }
     }
   },
   "publishConfig": {
@@ -40,8 +42,9 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.16.1",
     "consola": "^3.2.3",
+    "std-env": "^3.7.0",
     "typescript": "^5.6.2",
-    "unbuild": "^2.0.0"
+    "unbuild": "^3.0.0-rc.7"
   },
   "packageManager": "yarn@4.4.1"
 }

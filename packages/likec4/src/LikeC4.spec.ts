@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'
 
 describe('LikeC4', () => {
-  it('should parse single source', async ({ expect }) => {
+  it('should parse source and build computed model', async ({ expect }) => {
     const likec4 = await LikeC4.fromSource(`
       specification {
         element component
@@ -38,11 +38,66 @@ describe('LikeC4', () => {
     `)
     expect(likec4.hasErrors()).toBe(false)
 
-    const model = await likec4.model()
+    const model = likec4.computedModel()
     expect(model.element('customer').outgoing()).toHaveLength(2)
     expect(model.element('system').children()).toHaveLength(2)
     expect(model.view('index').elements()).toHaveLength(2)
     expect(model.view('index').connections()).toHaveLength(1)
+  })
+
+  it('should parse source and build layouted model', async ({ expect }) => {
+    const likec4 = await LikeC4.fromSource(`
+      specification {
+        element component
+        element user {
+          style {
+            shape person
+          }
+        }
+      }
+      model {
+        customer = user 'Customer'
+        component system {
+          spa = component 'SPA' {
+            style {
+              shape browser
+            }
+          }
+          mobile = component 'Mobile' {
+            style {
+              color green
+              shape mobile
+            }
+          }
+        }
+        customer -> spa
+        customer -> mobile
+      }
+      views {
+        view index {
+          include *
+        }
+      }
+    `)
+    expect(likec4.hasErrors()).toBe(false)
+
+    const model = await likec4.layoutedModel()
+    expect(model.element('customer').outgoing()).toHaveLength(2)
+    expect(model.element('system').children()).toHaveLength(2)
+    expect(model.element('system').children()).toHaveLength(2)
+    expect(model.view('index').elements()).toHaveLength(2)
+    expect(model.view('index').connections()).toHaveLength(1)
+    expect(model.view('index').element('system').node).toMatchObject({
+      width: expect.any(Number),
+      height: expect.any(Number),
+      position: expect.any(Array),
+      labelBBox: {
+        x: expect.any(Number),
+        y: expect.any(Number),
+        width: expect.any(Number),
+        height: expect.any(Number)
+      }
+    })
   })
 
   it('should not throw error if invalid', async ({ expect }) => {

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type ConsolaReporter, LogLevels, rootLogger as root } from '@likec4/log'
+import { isError } from 'remeda'
 import type { Connection } from 'vscode-languageserver'
 
 export const logger = root.withTag('lsp')
@@ -28,13 +29,13 @@ export function logErrorToTelemetry(connection: Connection): void {
       }
       const tag = logObj.tag || ''
       const parts = logObj.args.map((arg) => {
-        if (arg && typeof arg.stack === 'string') {
-          return arg.message + '\n' + arg.stack
+        if (isError(arg)) {
+          return arg.stack ?? arg.message
         }
         if (typeof arg === 'string') {
           return arg
         }
-        return String(arg)
+        return '' + arg
       })
       if (tag) {
         parts.unshift(`[${tag}]`)
@@ -52,33 +53,29 @@ export function logToLspConnection(connection: Connection): void {
     log: ({ level, ...logObj }, ctx) => {
       const tag = logObj.tag || ''
       const parts = logObj.args.map((arg) => {
-        if (arg && typeof arg.stack === 'string') {
-          return arg.message + '\n' + arg.stack
+        if (isError(arg)) {
+          return arg.stack ?? arg.message
         }
         if (typeof arg === 'string') {
           return arg
         }
-        return String(arg)
+        return '' + arg
       })
       if (tag) {
         parts.unshift(`[${tag}]`)
       }
       const message = parts.join(' ')
       switch (true) {
-        case level >= LogLevels.trace: {
-          connection.tracer.log(message)
-          break
-        }
         case level >= LogLevels.debug: {
           connection.console.debug(message)
           break
         }
-        case level >= LogLevels.info: {
-          connection.console.info(message)
-          break
-        }
+        // case level >= LogLevels.info: {
+        //   connection.console.info(message)
+        //   break
+        // }
         case level >= LogLevels.log: {
-          connection.console.log(message)
+          connection.console.info(message)
           break
         }
         case level >= LogLevels.warn: {
@@ -89,9 +86,12 @@ export function logToLspConnection(connection: Connection): void {
           connection.console.error(message)
           break
         }
+        default: {
+          connection.console.log(message)
+        }
       }
     }
   }
-  root.addReporter(reporter)
+  root.setReporters([reporter])
   logger.setReporters(root.options.reporters)
 }

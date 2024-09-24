@@ -1,9 +1,8 @@
+import { useLikeC4View } from '@likec4/diagram'
 import { Box, Button, ThemeIcon, Tree, type TreeNodeData, useComputedColorScheme, useTree } from '@mantine/core'
 import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
 import { Link, useParams } from '@tanstack/react-router'
 import { memo, useEffect } from 'react'
-import { isTruthy } from 'remeda'
-import { useLikeC4View } from 'virtual:likec4/store'
 import { isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'

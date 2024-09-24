@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { consola, LogLevels } from '@likec4/log'
-import { DEV } from 'esm-env'
 import { argv, exit, stdout } from 'node:process'
 import { clamp } from 'remeda'
 import k from 'tinyrainbow'
@@ -16,8 +15,8 @@ import serveCmd from './serve'
 
 consola.level = LogLevels.debug
 
-// // @ts-expect-error
-if (DEV) {
+// @ts-expect-error
+if (process.env.NODE_ENV === 'development') {
   consola.level = LogLevels.trace
   consola.warn('running cli in dev mode')
 }

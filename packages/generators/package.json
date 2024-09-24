@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit",
     "prepack": "tsc",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist",
+    "clean": "rm -r -f dist",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },
@@ -48,7 +48,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.16.1",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.0"
+    "vitest": "^2.1.1"
   },
   "packageManager": "yarn@4.4.1"
 }

@@ -1,4 +1,3 @@
-import { generateViewsDataJs } from '@likec4/generators'
 import { consola } from '@likec4/log'
 import pLimit from 'p-limit'
 import { mapToObj } from 'remeda'
@@ -13,7 +12,7 @@ import {
   generateIconRendererSource,
   generateMmdSources,
   generateOverviewGraphSource,
-  storeSource
+  likec4ModelSources
 } from './generators'
 
 export type LikeC4PluginOptions = {
@@ -32,25 +31,6 @@ interface Module {
     useOverviewGraph?: boolean
   }): Promise<string>
 }
-
-const generatedStore = {
-  id: 'virtual:likec4/store',
-  virtualId: '\0likec4-plugin/store.js',
-  async load({ likec4, logger }) {
-    logger.info(k.dim('generating virtual:likec4/store'))
-    return storeSource
-  }
-} satisfies Module
-
-const generatedViews = {
-  id: 'virtual:likec4/views',
-  virtualId: '\0likec4-plugin/views.js',
-  async load({ likec4, logger }) {
-    logger.info(k.dim('generating virtual:likec4/views'))
-    const diagrams = await likec4.views.diagrams()
-    return generateViewsDataJs([...diagrams])
-  }
-} satisfies Module
 
 const dotSourcesModule = {
   id: 'virtual:likec4/dot-sources',
@@ -125,19 +105,34 @@ const previewsModule = {
   }
 } satisfies Module
 
-const hmrmodules = [
+const likec4ModelModule = {
+  id: 'virtual:likec4/model',
+  virtualId: '\0likec4-plugin/model.js',
+  async load({ likec4, logger, assetsDir }) {
+    logger.info(k.dim('generating virtual:likec4/model'))
+    const model = await likec4.layoutedModel()
+    return likec4ModelSources(model)
+  }
+} satisfies Module
+
+// const hmrmodules = [
+//   iconsModule,
+//   dotSourcesModule,
+//   d2SourcesModule,
+//   mmdSourcesModule,
+//   overviewGraphModule,
+//   previewsModule,
+//   likec4ModelModule
+// ]
+
+export const modules = [
   iconsModule,
   dotSourcesModule,
   d2SourcesModule,
   mmdSourcesModule,
-  generatedViews,
   overviewGraphModule,
-  previewsModule
-]
-
-export const modules = [
-  ...hmrmodules,
-  generatedStore
+  previewsModule,
+  likec4ModelModule
 ]
 
 const isTarget = (path: string) => {
@@ -212,7 +207,7 @@ export function likec4Plugin({
             })
             return
           }
-          for (const module of hmrmodules) {
+          for (const module of modules) {
             const md = server.moduleGraph.getModuleById(module.virtualId)
             if (md && md.importers.size > 0) {
               logger.info(`${k.green('trigger hmr')} ${k.dim(md.url)}`)

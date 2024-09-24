@@ -45,12 +45,17 @@ export function useXYFlowEvents() {
       }
       dblclickTimeout.current = window.setTimeout(() => {
         dblclickTimeout.current = undefined
-      }, 250)
+      }, 300)
       return false
     }
 
-    const lastClickWasRecent = (ms = 1500) => {
-      return lastClickTimestamp.current && (Date.now() - lastClickTimestamp.current) < ms
+    const lastClickWasRecent = (ms = 2000) => {
+      const prevTimestamp = lastClickTimestamp.current
+      lastClickTimestamp.current = Date.now()
+      if (prevTimestamp === undefined) {
+        return false
+      }
+      return prevTimestamp + ms > Date.now()
     }
 
     return ({
@@ -58,13 +63,11 @@ export function useXYFlowEvents() {
         const {
           onCanvasDblClick,
           zoomable,
-          xystore,
           viewportChanged,
           fitDiagram,
-          resetLastClicked
+          resetFocusAndLastClicked
         } = diagramApi.getState()
-        resetLastClicked()
-        xystore.getState().resetSelectedElements()
+        resetFocusAndLastClicked()
         if (!onCanvasDblClick) {
           event.stopPropagation()
         }
@@ -74,6 +77,7 @@ export function useXYFlowEvents() {
         onCanvasDblClick?.(event)
       },
       onPaneClick: (event) => {
+        console.log('onPaneClick')
         if (dbclickLock()) {
           return
         }
@@ -82,8 +86,7 @@ export function useXYFlowEvents() {
           activeWalkthrough,
           fitDiagram,
           onCanvasClick,
-          xystore,
-          resetLastClicked
+          resetFocusAndLastClicked
         } = diagramApi.getState()
         if ((focusedNodeId ?? activeWalkthrough) !== null) {
           fitDiagram()
@@ -91,8 +94,7 @@ export function useXYFlowEvents() {
             event.stopPropagation()
           }
         }
-        resetLastClicked()
-        xystore.getState().resetSelectedElements()
+        resetFocusAndLastClicked()
         onCanvasClick?.(event)
       },
       onNodeContextMenu: (event, xynode) => {
@@ -103,7 +105,7 @@ export function useXYFlowEvents() {
         )
       },
       onPaneContextMenu: (event) => {
-        diagramApi.getState().resetLastClicked()
+        diagramApi.getState().resetFocusAndLastClicked()
         diagramApi.getState().onCanvasContextMenu?.(event as any)
       },
       onEdgeContextMenu: (event, xyedge) => {
@@ -114,6 +116,7 @@ export function useXYFlowEvents() {
         )
       },
       onNodeClick: (event, xynode) => {
+        console.log('onNodeClick')
         const {
           focusedNodeId,
           fitDiagram,
@@ -137,31 +140,27 @@ export function useXYFlowEvents() {
         }
 
         if (enableFocusMode || nodesSelectable) {
-          let stopPropagation = true
           switch (true) {
-            case enableFocusMode && !focusedNodeId && clickedRecently:
-            case enableFocusMode && shallChangeFocus: {
-              focusOnNode(xynode.id)
+            case enableFocusMode && clickedRecently && focusedNodeId === xynode.id: {
+              focusOnNode(false)
+              fitDiagram()
               break
             }
-            case enableFocusMode && focusedNodeId === xynode.id && clickedRecently: {
-              fitDiagram()
+            case enableFocusMode && shallChangeFocus:
+            case enableFocusMode && clickedRecently && focusedNodeId !== xynode.id: {
+              focusOnNode(xynode.id)
               break
             }
             case nodesSelectable: {
               xystore.getState().addSelectedNodes([xynode.id])
               break
             }
-            default: {
-              stopPropagation = false
-            }
-          }
-          if (!onNodeClick && stopPropagation) {
-            // user did not provide a custom handler, stop propagation
-            event.stopPropagation()
           }
         }
-        lastClickTimestamp.current = Date.now()
+        if (!onNodeClick) {
+          // user did not provide a custom handler, stop propagation
+          event.stopPropagation()
+        }
         onNodeClick?.(
           xynode.data.element,
           event
@@ -205,11 +204,11 @@ export function useXYFlowEvents() {
           setLastClickedEdge(xyedge.id)
         }
         const isNotAFirstClick = lastClickedEdgeId === xyedge.id
-        const isEdgeOfFocusedNode = isTruthy(focusedNodeId)
+        const connectedToFocusedNode = isTruthy(focusedNodeId)
           && (focusedNodeId === xyedge.source || focusedNodeId === xyedge.target)
         if (
           isDynamicView && enableDynamicViewWalkthrough
-          && (isEdgeOfFocusedNode || isNotAFirstClick || isNonNullish(activeWalkthrough))
+          && (connectedToFocusedNode || isNotAFirstClick || isNonNullish(activeWalkthrough))
         ) {
           const nextStep = xyedge.data.edge.id
           if (activeWalkthrough?.stepId !== nextStep) {
@@ -218,9 +217,14 @@ export function useXYFlowEvents() {
             return
           }
         }
-        // if we focused on a node, and clicked on an edge connected to it - focus on the other node
-        if (isEdgeOfFocusedNode) {
-          focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
+        // if we are in focus mode
+        if (isTruthy(focusedNodeId)) {
+          // if we focused on a node, and clicked on an edge connected to it - focus on the other node
+          if (connectedToFocusedNode) {
+            focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
+          } else {
+            focusOnNode(xyedge.source)
+          }
           if (!onEdgeClick) {
             event.stopPropagation()
           }

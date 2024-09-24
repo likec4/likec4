@@ -46,7 +46,7 @@ Method also accepts options:
 | -----------------| --------------------------------------------------------------------------------------------------- |
 | `printErrors`    | if model is invalid, errors are reported to the logger (default `true`) |
 | <span style="text-wrap:nowrap">`throwIfInvalid`</span> | return rejected promise if model is invalid  (default `false`) |
-| `logger`         | Whenever to use `vite` logger, `default` (console) or your custom implementation  |
+| `logger`         | Whenever to use `default` (console), `vite` logger  or your custom implementation <br/> Disable with `false`  |
 | `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
 
 <Aside type='caution' title="In progress" >
@@ -82,6 +82,11 @@ const likec4 = await LikeC4.fromSource(`
 
 When the model is initialized, you can use the following methods to query and traverse it.
 
+Two types of model with same API:
+
+- **LikeC4Model.Computed** - built model and view with computed predicates. not ready for rendering, but enough to traverse (fast and synchronous)
+- **LikeC4Model.Layouted** - same as Computed, but views are layouted (become Diagrams), ready for rendering.\
+
 #### Example
 
 ```ts
@@ -93,46 +98,43 @@ const likec4 = await LikeC4.fromSource(`....`)
 console.log(likec4.getErrors())
 
 // Traverse the model
-const model = likec4.model()
+const model = likec4.computedModel()
 model
   .element('cloud.backend.api')
   .incoming() // relationships incoming to the element
   .filter(r => r.tags.includes('http')) // filter by tags
   .map(r => r.source) // get source elements
 
-// Layouted views
-const diagrams = await likec4.diagrams()
-
+const diagram = await likec4.layoutedModel().view('index')
 
 ```  
 
-
 #### LikeC4Model
 
-This API provides methods to query and traverse the whole model.
+Model API provides methods to query and traverse the whole model.
 
 ```ts
 interface LikeC4Model {
   /**
    * Returns the root elements of the model.
    */
-  roots(): ReadonlyArray<LikeC4Model.Element>;
+  roots(): Element[];
   /**
    * Returns all elements in the model.
    */
-  elements(): ReadonlyArray<LikeC4Model.Element>;
+  elements(): Element[];
   /**
    * Returns a specific element by its FQN.
    */
-  element(id: Fqn): LikeC4Model.Element;
+  element(id: Fqn): Element;
   /**
    * Returns all relationships in the model.
    */
-  relationships(): ReadonlyArray<LikeC4Model.Relationship>;
+  relationships(): Relationship[];
   /**
    * Returns a specific relationship by its ID.
    */
-  relationship(id: RelationID): LikeC4Model.Relationship;
+  relationship(id: RelationID): Relationship;
   /**
    * Returns all views in the model.
    */
@@ -145,87 +147,59 @@ interface LikeC4Model {
    * Returns the parent element of given element.
    * @see ancestors
    */
-  parent(element: ElementOrFqn): LikeC4Model.Element | null;
+  parent(element: ElementOrFqn): Element | null;
   /**
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  children(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  children(element: ElementOrFqn): Element[];
   /**
    * Get all sibling (i.e. same parent)
    */
-  siblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  siblings(element: ElementOrFqn): Element[];
   /**
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  ancestors(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  ancestors(element: ElementOrFqn): Element[];
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  descendants(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  descendants(element: ElementOrFqn): Element[];
   /**
    * Incoming relationships to the element and its descendants
    * @see incomers
    */
-  incoming(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): ReadonlyArray<LikeC4Model.Relationship>;
+  incoming(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): Relationship[];
   /**
    * Source elements of incoming relationships
    */
-  incomers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): ReadonlyArray<LikeC4Model.Element>;
+  incomers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): Element[];
   /**
    * Outgoing relationships from the element and its descendants
    * @see outgoers
    */
-  outgoing(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): ReadonlyArray<LikeC4Model.Relationship>;
+  outgoing(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): Relationship[];
   /**
    * Target elements of outgoing relationships
    */
-  outgoers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): ReadonlyArray<LikeC4Model.Element>;
+  outgoers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): Element[];
   /**
    * Relationships inside the element, among descendants
    */
-  internal(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Relationship>;
+  internal(element: ElementOrFqn): Relationship[];
   /**
    * Resolve siblings of the element and siblings of ancestors
    *  (from closest to root)
    */
-  ascendingSiblings(element: ElementOrFqn): ReadonlyArray<LikeC4Model.Element>;
+  ascendingSiblings(element: ElementOrFqn): Element[];
   /**
    * Resolve all views that contain the element
    */
-  viewsWithElement(element: ElementOrFqn): ReadonlyArray<LikeC4ViewModel>;
+  viewsWithElement(element: ElementOrFqn): ViewModel[];
 }
 ```
 
 #### LikeC4ViewModel
 
-View model API provides methods to query and traverse elements and relationships that are included in the view:
-
-```ts
-import { LikeC4 } from "likec4"
-
-const likec4 = await LikeC4.fromSource(`....`)
-const viewModel = likec4.model().view('index')
-``` 
-
-{/* 
-##### Element
-
-...
-
-##### Relationship
-
-...
-
-#### LikeC4ViewModel
-
-...
-
-##### Element
-
-...
-
-##### Connection
-
-... */}
+View model API provides methods to query and traverse elements and relationships that are included in the view.  

@@ -177,7 +177,7 @@ const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelB
 
 export function stepEdgeLabel(step: number, text?: string | null) {
   const num =
-    `<TABLE FIXEDSIZE="TRUE" BORDER="0" CELLPADDING="6" ${BGCOLOR}><TR><TD WIDTH="20" HEIGHT="20"><FONT POINT-SIZE="${
+    `<TABLE BORDER="0" CELLPADDING="6" ${BGCOLOR}><TR><TD FIXEDSIZE="TRUE" WIDTH="20" HEIGHT="20"><FONT POINT-SIZE="${
       pxToPoints(14)
     }"><B>${step}</B></FONT></TD></TR></TABLE>`
 

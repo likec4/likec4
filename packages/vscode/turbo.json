@@ -7,7 +7,7 @@
     "build": {
       "dependsOn": [
         "^generate",
-        "^build"
+        "@likec4/vscode-preview#build"
       ],
       "outputs": [
         "dist/**",

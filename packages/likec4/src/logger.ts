@@ -1,7 +1,7 @@
 import { consola } from '@likec4/log'
-import { isCI } from 'ci-info'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
+import { isCI } from 'std-env'
 import k from 'tinyrainbow'
 import type { LogErrorOptions, LogOptions } from 'vite'
 import { createLogger } from 'vite'
@@ -55,6 +55,12 @@ export type Logger = {
   info(msg: string): void
   warn(msg: string): void
   error(err: unknown): void
+}
+const noop = () => void 0
+export const NoopLogger: Logger = {
+  info: noop,
+  warn: noop,
+  error: noop
 }
 
 const NS_PER_MS = 1e6

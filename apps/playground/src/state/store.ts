@@ -1,7 +1,6 @@
-import { type ComputedView, type DiagramView, invariant, type ParsedLikeC4Model, type ViewID } from '@likec4/core'
-import { changeView, computeView, fetchModel, locate, type LocateParams } from '@likec4/language-server/protocol'
+import { type ComputedLikeC4Model, type DiagramView, invariant, type ViewID } from '@likec4/core'
+import { changeView, fetchComputedModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
-import { deepEqual } from 'fast-equals'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import type { Simplify } from 'type-fest'
 import type { Location } from 'vscode-languageserver-protocol'
@@ -10,10 +9,14 @@ import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 
 import type { LikeC4DiagramProps } from '@likec4/diagram'
-import { graphvizLayouter } from '@likec4/layouts'
+import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
+import { deepEqual } from 'fast-equals'
 import { nanoid } from 'nanoid'
-import { mergeDeep } from 'remeda'
+import pLimit from 'p-limit'
+import { forEachObj, isError, mapValues, mergeDeep } from 'remeda'
 import { LikeC4WorkspacesKey, type LocalStorageWorkspace } from './use-workspaces'
+
+const graphvizLayouter = new GraphvizLayouter(new GraphvizWasmAdapter())
 
 export type WorkspaceStore = {
   readonly uniqueId: string
@@ -47,15 +50,39 @@ export type WorkspaceStore = {
     [filename: string]: string
   }
 
-  likeC4Model: ParsedLikeC4Model | null
+  likeC4Model: ComputedLikeC4Model | null
   modelFetched: boolean
 
   /**
    * Current diagram.
    */
-  computedView: ComputedView | null
-  diagram: DiagramView | null
-  diagramAsDot: string | null
+  viewId: ViewID
+
+  diagrams: Record<
+    ViewID,
+    {
+      // Never loaded
+      state: 'pending'
+      view: null
+      dot: null
+      error: null
+    } | {
+      state: 'success'
+      view: DiagramView
+      dot: string
+      error: null
+    } | {
+      state: 'error'
+      view: DiagramView | null
+      dot: string | null
+      error: string
+    } | {
+      state: 'stale'
+      view: DiagramView | null
+      dot: string | null
+      error: string | null
+    }
+  >
 
   requestedLocation: Location | null
 }
@@ -66,9 +93,11 @@ interface WorkspaceStoreActions {
 
   currentFileContent: () => string
 
-  onDidChangeModel: () => Promise<void>
+  onDidChangeModel: () => void
 
-  fetchDiagram: (viewId: string) => Promise<void>
+  openView: (viewId: string) => void
+
+  layoutView: () => void
 
   onChanges: NonNullable<LikeC4DiagramProps['onChange']>
 
@@ -77,7 +106,7 @@ interface WorkspaceStoreActions {
 
 export type WorkspaceState = Simplify<WorkspaceStore & WorkspaceStoreActions>
 
-type CreateWorkspaceStore = Pick<WorkspaceStore, 'name' | 'title' | 'currentFilename' | 'files'> & {
+export type CreateWorkspaceStore = Pick<WorkspaceStore, 'name' | 'title' | 'currentFilename' | 'files'> & {
   skipHydration?: boolean
   /**
    * monaco-editor configuration.
@@ -93,6 +122,8 @@ const containsWithId = <T extends { id: string }>(arr: T[], id: string) => arr.s
 
 type PersistedState = Pick<WorkspaceState, 'name' | 'title' | 'currentFilename' | 'files' | 'originalFiles'>
 
+export type CreatedWorkspaceStore = ReturnType<typeof createWorkspaceStore>
+
 export function createWorkspaceStore<T extends CreateWorkspaceStore>({
   name,
   title,
@@ -103,6 +134,10 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 }: T) {
   let seq = 1
   const uniqueId = nanoid(6)
+
+  const layoutLimit = pLimit(1)
+  const fetchModelLimit = pLimit(1)
+
   return createWithEqualityFn<
     WorkspaceState,
     [
@@ -127,9 +162,9 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
             likeC4Model: null,
             modelFetched: false,
-            computedView: null,
-            diagram: null,
-            diagramAsDot: null,
+
+            viewId: 'index' as ViewID,
+            diagrams: {},
             requestedLocation: null,
 
             isModified: () => {
@@ -156,96 +191,146 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               return files[currentFilename] ?? ''
             },
 
-            onDidChangeModel: async () => {
+            onDidChangeModel: () => {
               const label = `onDidChangeModel (${seq++})`
-              if (DEV) {
-                console.time(label)
-                console.log(`start ${label}`)
-              }
-              const { languageClient, diagram, computedView, modelFetched } = get()
+              const { languageClient } = get()
               const client = languageClient()
               invariant(client, 'Language client is not initialized')
-              try {
-                const { model } = await client.sendRequest(fetchModel)
-                set({ likeC4Model: model }, noReplace, 'likeC4Model')
-
-                const indexId = 'index' as ViewID
-                const viewId = computedView?.id ?? diagram?.id ?? indexId
-                if (!model?.views[viewId]) {
-                  DEV && console.warn(`View ${viewId} not found in model.`)
-                  set({ computedView: null })
-                  return
+              if (fetchModelLimit.pendingCount > 0) {
+                console.warn('clearing fetchModelLimit queue')
+                fetchModelLimit.clearQueue()
+              }
+              fetchModelLimit(async () => {
+                if (DEV) {
+                  console.time(label)
+                  console.log(`start ${label}`)
                 }
-                await get().fetchDiagram(viewId)
-              } catch (e) {
-                console.error(e)
-              } finally {
-                if (!modelFetched) {
-                  set({ modelFetched: true }, noReplace, 'modelFetched')
-                }
+                try {
+                  const { model } = await client.sendRequest(fetchComputedModel, {})
+                  if (model) {
+                    const {
+                      likeC4Model: currentmodel,
+                      diagrams: currentDiagrams
+                    } = get()
+                    // Shallow-Copy diagram states
+                    const diagrams = mapValues(
+                      currentDiagrams,
+                      (diagramState) => ({ ...diagramState })
+                    ) as typeof currentDiagrams
 
-                DEV && console.timeEnd(label)
+                    // Merge new views with current views
+                    const views = mapValues(model.views, (newView) => {
+                      const current = currentmodel?.views[newView.id]
+                      const next = current && deepEqual(newView, current) ? current : newView
+
+                      let diagramState = diagrams[newView.id]
+                      if (!diagramState) {
+                        diagrams[newView.id] = {
+                          state: 'pending',
+                          dot: null,
+                          view: null,
+                          error: null
+                        }
+                      } else if (next !== current) {
+                        diagramState.state = 'stale'
+                      }
+                      return next
+                    }) as typeof model.views
+
+                    // Mark removed views
+                    forEachObj(diagrams, (diagramState, id) => {
+                      if (id in views) {
+                        return
+                      }
+                      diagramState.state = 'error'
+                      diagramState.error = 'View is not found'
+                    })
+
+                    set(
+                      {
+                        likeC4Model: {
+                          ...model,
+                          views
+                        },
+                        diagrams
+                      },
+                      noReplace,
+                      'likeC4Model'
+                    )
+                  }
+                } catch (e) {
+                  console.error(e)
+                } finally {
+                  if (!get().modelFetched) {
+                    set({ modelFetched: true }, noReplace, 'modelFetched')
+                  }
+                  DEV && console.timeEnd(label)
+                }
+              })
+            },
+
+            openView: (viewId) => {
+              const { viewId: currentViewId } = get()
+              if (viewId !== currentViewId) {
+                set({
+                  viewId: viewId as ViewID
+                })
+                get().showLocation({ view: viewId as ViewID })
               }
             },
 
-            fetchDiagram: async (viewId) => {
-              const label = `fetchDiagram: ${viewId}`
-              if (DEV) {
+            layoutView: () => {
+              const client = get().languageClient()
+              invariant(client, 'Language client is not initialized')
+              if (layoutLimit.pendingCount > 0) {
+                console.warn('clearing layoutLimit queue')
+                layoutLimit.clearQueue()
+              }
+              layoutLimit(async () => {
+                const { likeC4Model, viewId, diagrams: currentDiagrams } = get()
+
+                const computedView = likeC4Model?.views[viewId] ?? null
+                if (!computedView) {
+                  // Do nothing
+                  return
+                }
+
+                const diagrams = {
+                  ...currentDiagrams
+                }
+
+                const label = `layoutView: ${computedView.id}`
                 console.time(label)
                 console.log(`start ${label}`)
-              }
-              const { languageClient, computedView } = get()
-              const client = languageClient()
-              invariant(client, 'Language client is not initialized')
-              try {
-                const { view } = await client.sendRequest(computeView, { viewId })
-                if (deepEqual(view, computedView)) {
-                  return
-                }
-                if (!view) {
-                  set(
-                    {
-                      computedView: null
-                    },
-                    noReplace,
-                    'fetchDiagram'
-                  )
-                  return
-                }
-                const layoutRes = await graphvizLayouter.layout(view).catch(e => {
-                  console.error(e)
-                  return {
-                    diagram: null,
-                    dot: null
+                try {
+                  const layoutRes = await graphvizLayouter.layout(computedView)
+                  diagrams[viewId] = {
+                    view: layoutRes.diagram,
+                    dot: layoutRes.dot,
+                    state: 'success',
+                    error: null
                   }
-                })
-                set(
-                  {
-                    computedView: view,
-                    diagram: layoutRes.diagram,
-                    diagramAsDot: layoutRes.dot
-                  },
-                  noReplace,
-                  'fetchDiagram'
-                )
-                if (view.id !== computedView?.id) {
-                  get().showLocation({ view: view.id })
+                } catch (e) {
+                  diagrams[viewId] = {
+                    view: currentDiagrams[viewId]?.view ?? null,
+                    dot: currentDiagrams[viewId]?.dot ?? null,
+                    state: 'error',
+                    error: isError(e) ? e.message : 'Unknown error'
+                  }
+                } finally {
+                  console.timeEnd(label)
+                  set({ diagrams }, noReplace, 'layoutView')
                 }
-              } catch (e) {
-                console.error(e)
-              } finally {
-                DEV && console.timeEnd(label)
-              }
+              })
             },
 
             onChanges: ({ change }) => {
-              const { languageClient, diagram } = get()
-              invariant(diagram, 'Diagram is not initialized')
+              const { languageClient, viewId } = get()
               const client = languageClient()
               invariant(client, 'Language client is not initialized')
               void client
                 .sendRequest(changeView, {
-                  viewId: diagram.id,
+                  viewId,
                   change
                 })
                 .then((location) => {

@@ -75,7 +75,10 @@
         }
       }
     },
-
+    {
+      "match": "\\b(aws|gcp|tech):([-\\w]+)\\b",
+      "name": "entity.name.type.enum.likec4"
+    },
     {
       "name": "entity.name.variable.likec4",
       "match": "\\b\\.(\\*|_)"

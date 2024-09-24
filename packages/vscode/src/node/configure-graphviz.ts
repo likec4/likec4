@@ -1,7 +1,7 @@
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import which from 'which'
-import type { ExtensionController } from '../common/ExtensionController'
+import type { ExtensionController } from '../ExtensionController'
 import { logger } from '../logger'
 
 function graphvizBinPath() {
@@ -44,7 +44,7 @@ export function configureGraphviz(ctrl: ExtensionController) {
       ctrl.graphviz = wasmGraphviz
       if (!showedWarning) {
         showedWarning = true
-        vscode.window.showWarningMessage('No Graphviz binaries found, sing wasm instead.', {
+        vscode.window.showWarningMessage('No Graphviz binaries found on PATH, switch to wasm.', {
           detail: 'Switched to WASM\nPlease install Graphviz or configure path to binaries.',
           modal: false
         })

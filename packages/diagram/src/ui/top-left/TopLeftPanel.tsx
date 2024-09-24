@@ -7,7 +7,8 @@ import {
   Notification,
   type PopoverProps,
   Stack,
-  Text
+  Text,
+  type TooltipProps
 } from '@mantine/core'
 import {
   IconAlertTriangle,
@@ -20,6 +21,7 @@ import {
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
+import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { ActionIcon, Tooltip } from './_shared'
@@ -41,7 +43,7 @@ const BackwardForwardButtons = () => {
   } = useDiagramState(historySelector)
   return (
     <Group
-      className={'likec4-navigation-panel'}
+      className={clsx(css.backwardForwardButtons, 'likec4-navigation-webview')}
       gap={'xs'}>
       {showBurgerMenu && (
         <ActionIcon
@@ -128,12 +130,11 @@ const LayoutDriftNotification = (props: PopoverProps) => (
   </HoverCard>
 )
 
-const ResetControlPointsButton = () => {
+const ResetControlPointsButton = (props: Omit<TooltipProps, 'label' | 'children'>) => {
   const store = useDiagramStoreApi()
-  const portalProps = useMantinePortalProps()
 
   return (
-    <Tooltip label="Reset all control points" {...portalProps}>
+    <Tooltip label="Reset all control points" {...props}>
       <ActionIcon
         onClick={e => {
           e.stopPropagation()
@@ -153,16 +154,20 @@ export const TopLeftPanel = () => {
     showLayoutDriftWarning,
     showChangeAutoLayout,
     showGoToSource,
+    viewportChanged,
     showResetControlPoints
   } = useDiagramState(s => {
-    const isNotActive = s.activeWalkthrough === null && s.focusedNodeId === null
+    const isNotWalkthrough = isNullish(s.activeWalkthrough)
+    const isNotFocused = isNullish(s.focusedNodeId)
+    const isNotActive = isNotWalkthrough && isNotFocused
     return ({
       showNavigationButtons: !!s.onBurgerMenuClick || s.showNavigationButtons && !!s.onNavigateTo,
-      showFitDiagram: s.fitViewEnabled && s.zoomable && s.viewportChanged,
-      showLayoutDriftWarning: s.readonly !== true && s.view.hasLayoutDrift === true && isNotActive,
-      showChangeAutoLayout: s.readonly !== true && !!s.onChange && isNotActive,
-      showGoToSource: !!s.onOpenSourceView,
-      showResetControlPoints: s.readonly !== true && !!s.experimentalEdgeEditing === true
+      showFitDiagram: s.fitViewEnabled && s.zoomable && isNotWalkthrough,
+      showLayoutDriftWarning: !s.readonly && s.view.hasLayoutDrift === true && isNotActive,
+      showChangeAutoLayout: s.isEditable() && isNotActive,
+      showGoToSource: !!s.onOpenSourceView && isNotWalkthrough,
+      viewportChanged: s.viewportChanged,
+      showResetControlPoints: s.readonly !== true && s.experimentalEdgeEditing === true
     })
   })
   const portalProps = useMantinePortalProps()
@@ -172,13 +177,13 @@ export const TopLeftPanel = () => {
       className={clsx(
         'react-flow__panel',
         css.panel,
-        'likec4-top-left-panel'
+        'likec4-top-left-webview'
       )}
       onClick={e => e.stopPropagation()}
       gap={'xs'}>
       {showNavigationButtons && <BackwardForwardButtons />}
       {showGoToSource && (
-        <Tooltip label="Go to source" {...portalProps}>
+        <Tooltip label="Open source" {...portalProps}>
           <ActionIcon
             className="action-icon"
             onClick={e => {
@@ -203,7 +208,7 @@ export const TopLeftPanel = () => {
             <LayoutDriftNotification {...portalProps} />
           </m.div>
         )}
-        {showResetControlPoints && <ResetControlPointsButton />}
+        {showResetControlPoints && <ResetControlPointsButton {...portalProps} />}
         {showFitDiagram && (
           <m.div
             initial={{ opacity: 0.05, transform: 'translateX(-20%)' }}
@@ -213,7 +218,7 @@ export const TopLeftPanel = () => {
               transform: 'translateX(-30%)'
             }}
             key={'fit-view'}>
-            <Tooltip label="Center camera" {...portalProps}>
+            <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
               <ActionIcon
                 className="action-icon"
                 onClick={e => {

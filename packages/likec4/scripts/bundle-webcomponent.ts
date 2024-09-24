@@ -1,8 +1,8 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
-import { readFile, rm, writeFile } from 'node:fs/promises'
+import { readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
@@ -89,8 +89,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
-          '@nanostores/react',
-          'nanostores',
+          'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           ...modules.map(m => m.id)
         ],

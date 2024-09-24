@@ -38,7 +38,7 @@ export function disposeAll(disposables: vscode.Disposable[]) {
 type DisposableLike = vscode.Disposable | (() => void)
 
 export abstract class AbstractDisposable implements vscode.Disposable {
-  protected _disposables: vscode.Disposable[] = []
+  protected readonly _disposables: vscode.Disposable[] = []
 
   private _isDisposed = false
 

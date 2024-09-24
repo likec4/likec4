@@ -3,12 +3,13 @@ import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
 import { domAnimation, LazyMotion } from 'framer-motion'
-import { memo, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { rootClassName } from './globals.css'
 import { useDiagramState } from './hooks/useDiagramState'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
 import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import { useLikeC4Model } from './likec4model'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
@@ -33,6 +34,7 @@ export function LikeC4Diagram({
   showElementLinks = true,
   showDiagramTitle = true,
   showNotations = true,
+  showRelationshipDetails = true,
   enableDynamicViewWalkthrough = false,
   enableFocusMode = false,
   initialWidth,
@@ -56,6 +58,7 @@ export function LikeC4Diagram({
   where,
   showNavigationButtons = !!onNavigateTo
 }: LikeC4DiagramProps) {
+  const hasLikec4model = !!useLikeC4Model()
   const initialRef = useRef({
     defaultNodes: [] as XYFlowNode[],
     defaultEdges: [] as XYFlowEdge[],
@@ -65,6 +68,12 @@ export function LikeC4Diagram({
   if (readonly !== true && !!where) {
     console.warn('where filter is only supported in readonly mode')
   }
+  useEffect(() => {
+    if (showRelationshipDetails && !hasLikec4model) {
+      console.warn('Relationship details require LikeC4ModelProvider')
+    }
+  }, [showRelationshipDetails, hasLikec4model])
+
   return (
     <EnsureMantine>
       <LazyMotion features={domAnimation} strict>
@@ -85,6 +94,7 @@ export function LikeC4Diagram({
             showElementLinks={showElementLinks}
             showNavigationButtons={showNavigationButtons}
             showNotations={showNotations}
+            showRelationshipDetails={showRelationshipDetails && hasLikec4model}
             nodesDraggable={nodesDraggable}
             nodesSelectable={nodesSelectable}
             experimentalEdgeEditing={experimentalEdgeEditing}

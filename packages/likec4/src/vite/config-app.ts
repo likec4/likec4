@@ -1,7 +1,7 @@
 import { consola } from '@likec4/log'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -81,9 +81,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         'react',
         'react-dom',
         'react/jsx-runtime',
-        'react-dom/client',
-        'nanostores',
-        '@nanostores/react'
+        'react-dom/client'
       ],
       force: true
     },

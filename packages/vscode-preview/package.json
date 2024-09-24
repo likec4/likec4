@@ -18,7 +18,7 @@
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist"
+    "clean": "rm -r -f dist"
   },
   "devDependencies": {
     "@fontsource/ibm-plex-sans": "^5.0.22",
@@ -29,25 +29,31 @@
     "@mantine/core": "7.12.2",
     "@mantine/hooks": "7.12.2",
     "@mantine/vanilla-extract": "7.12.2",
+    "@nanostores/react": "0.7.3",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.16.0",
     "@types/node": "^20.16.1",
+    "@types/object-hash": "^3.0.6",
     "@types/react": "18.3.4",
     "@types/react-dom": "18.3.0",
     "@types/vscode": "~1.92.0",
     "@types/vscode-webview": "^1.57.5",
     "@vanilla-extract/css": "^1.15.5",
     "@vanilla-extract/vite-plugin": "^4.0.15",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react-swc": "3.7.0",
     "esm-env": "1.0.0",
+    "nanostores": "0.11.3",
+    "object-hash": "^3.0.0",
     "postcss": "^8.4.41",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",
+    "remeda": "^2.11.0",
     "tsx": "~4.9.3",
+    "type-fest": "4.26.1",
     "typescript": "^5.6.2",
-    "vite": "5.3.4",
+    "vite": "5.4.7",
     "vscode-messenger-webview": "^0.4.5"
   }
 }

@@ -1,9 +1,8 @@
-import { LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
 import { Box, LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
-import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
 import { useTransparentBackground } from '../hooks'
 import * as css from './view.css'
@@ -84,7 +83,7 @@ function ExportPage() {
     download = false
   } = Route.useSearch()
   const { viewId } = Route.useParams()
-  const diagram = useLikeC4View(viewId)
+  const diagram = useLikeC4DiagramView(viewId)
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
 
@@ -151,6 +150,8 @@ function ExportPage() {
         controls={false}
         background={'transparent'}
         enableDynamicViewWalkthrough={false}
+        showNavigationButtons={false}
+        showRelationshipDetails={false}
         showElementLinks={false}
         showDiagramTitle={false}
         showNotations={false}

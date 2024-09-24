@@ -1,10 +1,10 @@
 import { invariant } from '@likec4/core'
-import { LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot } from '@mantine/core'
 import { useTimeoutEffect } from '@react-hookz/web'
 import { memo, useEffect, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+import { type DiagramView, likec4model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
@@ -49,28 +49,31 @@ const BrowserModal = memo<{
         <ModalContent>
           <ModalCloseButton />
           <ModalBody w={'100%'} h={'100%'} p={0}>
-            {visible && (
-              <LikeC4Diagram
-                view={view as any}
-                readonly
-                pannable
-                zoomable
-                fitView
-                fitViewPadding={0.08}
-                showDiagramTitle
-                showElementLinks
-                enableDynamicViewWalkthrough
-                enableFocusMode
-                showNavigationButtons
-                showNotations={hasNotations}
-                controls={false}
-                nodesSelectable={false}
-                nodesDraggable={false}
-                keepAspectRatio={false}
-                experimentalEdgeEditing={false}
-                renderIcon={RenderIcon}
-                onNavigateTo={onNavigateTo} />
-            )}
+            <LikeC4ModelProvider likec4model={likec4model}>
+              {visible && (
+                <LikeC4Diagram
+                  view={view as any}
+                  readonly
+                  pannable
+                  zoomable
+                  fitView
+                  fitViewPadding={0.08}
+                  showDiagramTitle
+                  showElementLinks
+                  enableDynamicViewWalkthrough
+                  enableFocusMode
+                  showNavigationButtons
+                  showRelationshipDetails
+                  showNotations={hasNotations}
+                  controls={false}
+                  nodesSelectable={false}
+                  nodesDraggable={false}
+                  keepAspectRatio={false}
+                  experimentalEdgeEditing={false}
+                  renderIcon={RenderIcon}
+                  onNavigateTo={onNavigateTo} />
+              )}
+            </LikeC4ModelProvider>
           </ModalBody>
         </ModalContent>
       </ModalRoot>

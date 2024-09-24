@@ -7,3 +7,5 @@ export * from './utils/fqn'
 export * from './utils/guards'
 export * from './utils/promises'
 export { compareRelations } from './utils/relations'
+
+export * as Expr from './types/expression'

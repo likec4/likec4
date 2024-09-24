@@ -2,6 +2,11 @@ import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser'
 import { createLanguageServices } from './module'
 
+export { setLogLevel } from './logger'
+export type * from './model'
+export type * from './module'
+export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
+
 // This is an example copied as is from here:
 // https://github.com/microsoft/vscode-extension-samples/blob/main/lsp-web-extension-sample/server/src/browserServerMain.ts
 // the only addition is the following line:

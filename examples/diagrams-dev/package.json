@@ -15,7 +15,7 @@
     "dev": "run generate && ladle serve",
     "preview": "ladle preview --outDir dist -p 61000",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist"
+    "clean": "rm -r -f dist"
   },
   "devDependencies": {
     "@ladle/react": "^4.0.2",
@@ -27,7 +27,7 @@
     "@react-hookz/web": "^24.0.4",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react-swc": "3.7.0",
     "framer-motion": "^11.1.7",
     "likec4": "workspace:*",
     "react": "^18.2.0",

@@ -1,8 +1,7 @@
 import type { ViewID } from '@likec4/core'
-import { type ChangeEvent, LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
-import { useLikeC4View } from 'virtual:likec4/store'
 import { RenderIcon } from '../components/RenderIcon'
 import { SidebarDrawerOps } from '../components/sidebar/Drawer'
 import { isDevelopment, withOverviewGraph } from '../const'
@@ -14,7 +13,7 @@ export const Route = createFileRoute('/view/$viewId/editor')({
 function ViewEditor() {
   const router = useRouter()
   const { viewId } = Route.useParams()
-  const view = useLikeC4View(viewId)
+  const view = useLikeC4DiagramView(viewId)
 
   const onNavigateTo = useCallbackRef((viewId: ViewID) => {
     router.navigate({

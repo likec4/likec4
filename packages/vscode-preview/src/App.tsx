@@ -1,13 +1,12 @@
-import { type DiagramNode, type DiagramView } from '@likec4/core'
-import { type ElementIconRenderer, LikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
+import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
 import Icon from '@likec4/icons/all'
 import { Box, Button, Loader, LoadingOverlay, Notification } from '@mantine/core'
-import { useDebouncedEffect } from '@react-hookz/web'
+import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
-import { useCallback, useRef, useState } from 'react'
 import * as css from './App.css'
 import { likec4Container, likec4ParsingScreen } from './App.css'
-import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
+import { changeViewId, setLastClickedNode, useLikeC4View, useVscodeAppState } from './state'
+import { ExtensionApi as extensionApi } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
   <Box className={css.stateAlert}>
@@ -24,84 +23,34 @@ const IconRenderer: ElementIconRenderer = ({ node }) => {
   return <Icon name={(node.icon ?? '') as any} />
 }
 
-type RpcState = {
-  state: 'loading'
-} | {
-  state: 'ready'
-  // view: DiagramView
-} | {
-  state: 'error'
-  error: string
-}
+export default function App() {
+  const [{
+    nodesDraggable,
+    edgesEditable
+  }] = useVscodeAppState()
 
-type InternalState = {
-  view: DiagramView | null
-  nodesDraggable: boolean
-  edgesEditable: boolean
-}
+  const {
+    state,
+    view,
+    error
+  } = useLikeC4View()
 
-const App = () => {
-  const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
-
-  function resetLastClickedNd() {
-    lastNodeContextMenuRef.current = null
-  }
-
-  const [rpcState, setRpcState] = useState<RpcState>({ state: 'loading' })
-  const [{ view, edgesEditable, nodesDraggable }, setInternalState] = useState<InternalState>(getPreviewWindowState)
-
-  const updateView = useCallback((view: DiagramView | null) => {
-    resetLastClickedNd()
-    if (view) {
-      savePreviewWindowState({
-        view
-      })
-      setRpcState(s => s.state === 'ready' ? s : { state: 'ready' })
-      setInternalState(s => ({ ...s, view }))
-    } else {
-      setRpcState({ state: 'error', error: 'View not found' })
-    }
-  }, [])
-
-  useMessenger({
-    onDiagramUpdate: updateView,
-    onError: error => {
-      setRpcState({
-        state: 'error',
-        error
-      })
-    },
-    onGetHoveredElement: () => {
-      return lastNodeContextMenuRef.current?.id ?? null
-    }
-  })
-
-  useDebouncedEffect(
-    () => extensionApi.imReady(),
-    [],
-    100
-  )
-
-  useUpdateEffect(() => {
-    extensionApi.updateWebviewState({
-      nodesDraggable,
-      edgesEditable
-    })
-  }, [nodesDraggable, edgesEditable])
+  // Debounce loading state to prevent flickering
+  const [isLoading] = useDebouncedValue(state === 'pending' || state === 'stale', 100)
 
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
-        {rpcState.state === 'error' && (
+        {state === 'error' && (
           <section>
             <h3>Oops, invalid view</h3>
             <p>
               Failed to parse your model:<br />
-              {rpcState.error}
+              {error ?? 'Unknown error'}
             </p>
           </section>
         )}
-        {rpcState.state !== 'error' && (
+        {state !== 'error' && (
           <section>
             <p>Parsing your model...</p>
             <Loader />
@@ -121,7 +70,7 @@ const App = () => {
     <>
       <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
         <LoadingOverlay
-          visible={rpcState.state === 'loading'}
+          visible={isLoading}
           zIndex={1000}
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
@@ -136,49 +85,47 @@ const App = () => {
           showNavigationButtons
           showElementLinks
           showNotations
+          showRelationshipDetails
+          showDiagramTitle
           renderIcon={IconRenderer}
           onNavigateTo={(to, event) => {
-            resetLastClickedNd()
+            setLastClickedNode()
             extensionApi.goToViewSource(to)
-            extensionApi.openView(to)
+            extensionApi.navigateTo(to)
+            changeViewId(to)
             event?.stopPropagation()
           }}
           onNodeContextMenu={(element) => {
-            lastNodeContextMenuRef.current = element
+            setLastClickedNode(element)
           }}
           onCanvasContextMenu={event => {
-            resetLastClickedNd()
+            setLastClickedNode()
             event.stopPropagation()
             event.preventDefault()
           }}
           onEdgeContextMenu={(edge, event) => {
-            resetLastClickedNd()
+            setLastClickedNode()
             event.stopPropagation()
             event.preventDefault()
           }}
           onChange={({ change }) => {
             extensionApi.change(view.id, change)
           }}
-          onCanvasClick={() => {
-            resetLastClickedNd()
-          }}
           onOpenSourceView={() => {
-            resetLastClickedNd()
+            setLastClickedNode()
             extensionApi.goToViewSource(view.id)
           }}
           onOpenSourceElement={fqn => {
-            resetLastClickedNd()
+            setLastClickedNode()
             extensionApi.goToElement(fqn)
           }}
           onOpenSourceRelation={id => {
-            resetLastClickedNd()
+            setLastClickedNode()
             extensionApi.goToRelation(id)
           }}
         />
       </div>
-      {rpcState.state === 'error' && <ErrorMessage error={rpcState.error} />}
+      {error && <ErrorMessage error={error} />}
     </>
   )
 }
-
-export default App

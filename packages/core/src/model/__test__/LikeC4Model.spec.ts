@@ -4,7 +4,7 @@ import { LikeC4Model } from '../LikeC4Model'
 import { fakeComputedModel, fakeElements } from './fixture'
 
 describe('LikeC4Model', () => {
-  const model = LikeC4Model.from(fakeComputedModel)
+  const model = LikeC4Model.computed(fakeComputedModel)
 
   it('roots', () => {
     expect(model.roots().map(prop('id'))).toEqual([
@@ -16,7 +16,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('parent and chilren', () => {
+  it('parent and children', () => {
     const parent = model.parent('cloud.backend.graphql')!
     expect(parent.id).toEqual('cloud.backend')
     expect(parent.element).toStrictEqual(fakeElements['cloud.backend'])

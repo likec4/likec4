@@ -18,6 +18,7 @@ export type {
   ElementView,
   Fqn,
   HexColorLiteral,
+  LayoutedLikeC4Model,
   LikeC4View,
   NodeId,
   ParsedLikeC4Model,
@@ -49,12 +50,12 @@ export {
   isDescendantOf,
   isSameHierarchy,
   isStepEdgeId,
+  LikeC4DiagramModel,
   LikeC4Model,
   LikeC4ViewModel,
   nameFromFqn,
   nonexhaustive,
   nonNullable,
-  notDescendantOf,
   parentFqn,
   RelationshipColors
 } from '@likec4/core'

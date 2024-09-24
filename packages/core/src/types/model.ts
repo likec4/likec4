@@ -1,7 +1,7 @@
 import type { UnwrapTagged } from 'type-fest'
 import type { Element, ElementKind, ElementKindSpecification, Fqn, Tag } from './element'
 import type { Relation, RelationID, RelationshipKindSpecification } from './relation'
-import type { ComputedView, LikeC4View, ViewID } from './view'
+import type { ComputedView, DiagramView, LikeC4View, ViewID } from './view'
 
 /**
  * Parsed elements, relations, and views.
@@ -21,5 +21,14 @@ export interface ParsedLikeC4Model {
  * Same as `ParsedLikeC4Model` but with computed views.
  */
 export interface ComputedLikeC4Model extends Omit<ParsedLikeC4Model, 'views'> {
+  __?: never
   views: Record<ViewID, ComputedView>
+}
+
+/**
+ * Same as `ParsedLikeC4Model` but with layouted views (DiagramView)
+ */
+export interface LayoutedLikeC4Model extends Omit<ParsedLikeC4Model, 'views'> {
+  __: 'layouted'
+  views: Record<ViewID, DiagramView>
 }

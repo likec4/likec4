@@ -1,35 +1,33 @@
-import { isNullish, isString } from 'remeda'
+import { isNullish } from 'remeda'
 import { nonNullable } from '../errors'
 import type { ElementShape, Tag } from '../types/element'
 import type { Color } from '../types/theme'
 import type { ComputedEdge, ComputedNode, ComputedView } from '../types/view'
 import type { LikeC4Model } from './LikeC4Model'
-import type { EdgeId, Fqn } from './types'
-
-type ElementOrFqn = Fqn | LikeC4ViewModel.Element
+import { type EdgeId, type ElementOrFqn, type Fqn, getId, type IncomingFilter, type OutgoingFilter } from './types'
 
 /**
  * All methods are view-scoped, i.e. only return elements and connections in the view.
  */
 export class LikeC4ViewModel {
-  #rootElements = new Set<LikeC4ViewModel.Element>()
+  private _rootElements = new Set<LikeC4ViewModel.Element>()
 
-  #elements = new Map<Fqn, LikeC4ViewModel.Element>()
+  private _elements = new Map<Fqn, LikeC4ViewModel.Element>()
 
-  #connections: Map<EdgeId, LikeC4ViewModel.Connection>
+  private _connections: Map<EdgeId, LikeC4ViewModel.Connection>
 
   constructor(
     public readonly view: ComputedView,
-    public readonly model: LikeC4Model
+    public readonly model: LikeC4Model<LikeC4ViewModel>
   ) {
     for (const node of view.nodes) {
       const el = new LikeC4ViewModel.Element(node, this)
-      this.#elements.set(node.id, el)
+      this._elements.set(node.id, el)
       if (isNullish(node.parent)) {
-        this.#rootElements.add(el)
+        this._rootElements.add(el)
       }
     }
-    this.#connections = new Map(view.edges.map(e => [e.id, new LikeC4ViewModel.Connection(e, this)]))
+    this._connections = new Map(view.edges.map(e => [e.id, new LikeC4ViewModel.Connection(e, this)]))
   }
 
   get id() {
@@ -52,27 +50,27 @@ export class LikeC4ViewModel {
   }
 
   public roots(): ReadonlyArray<LikeC4ViewModel.Element> {
-    return [...this.#rootElements]
+    return [...this._rootElements]
   }
 
   public elements(): ReadonlyArray<LikeC4ViewModel.Element> {
-    return [...this.#elements.values()]
+    return [...this._elements.values()]
   }
 
   public element(id: Fqn): LikeC4ViewModel.Element {
-    return nonNullable(this.#elements.get(id), `LikeC4ViewModel.Element ${id} in view ${this.view.id} not found`)
+    return nonNullable(this._elements.get(id), `LikeC4ViewModel.Element ${id} in view ${this.id} not found`)
   }
 
   public hasElement(id: Fqn): boolean {
-    return this.#elements.has(id)
+    return this._elements.has(id)
   }
 
   public connections(): ReadonlyArray<LikeC4ViewModel.Connection> {
-    return [...this.#connections.values()]
+    return [...this._connections.values()]
   }
 
   public connection(id: EdgeId): LikeC4ViewModel.Connection {
-    return nonNullable(this.#connections.get(id), `Connection ${id} in view ${this.view.id}  not found`)
+    return nonNullable(this._connections.get(id), `Connection ${id} in view ${this.id}  not found`)
   }
 
   public findConnections(
@@ -80,8 +78,8 @@ export class LikeC4ViewModel {
     target: ElementOrFqn,
     direction: 'both' | 'direct' = 'direct'
   ): ReadonlyArray<LikeC4ViewModel.Connection> {
-    const sourceId = isString(source) ? source : source.id
-    const targetId = isString(target) ? target : target.id
+    const sourceId = getId(source)
+    const targetId = getId(target)
     return this.connections().filter(c =>
       (c.source.id === sourceId && c.target.id === targetId)
       || (direction === 'both' && c.source.id === targetId && c.target.id === sourceId)
@@ -89,18 +87,18 @@ export class LikeC4ViewModel {
   }
 
   public parent(element: ElementOrFqn): LikeC4ViewModel.Element | null {
-    const el = this.element(isString(element) ? element : element.id)
+    const el = this.element(getId(element))
     return el.node.parent ? this.element(el.node.parent) : null
   }
 
   public children(element: ElementOrFqn): ReadonlyArray<LikeC4ViewModel.Element> {
-    const el = this.element(isString(element) ? element : element.id)
+    const el = this.element(getId(element))
     return el.node.children.map(c => this.element(c))
   }
 
   // Get all sibling (i.e. same parent)
   public siblings(element: ElementOrFqn): ReadonlyArray<LikeC4ViewModel.Element> {
-    const id = isString(element) ? element : element.id
+    const id = getId(element)
     const parent = this.parent(id)
     const siblings = parent ? this.children(parent) : this.roots()
     return siblings.filter(e => e.id !== id)
@@ -111,7 +109,7 @@ export class LikeC4ViewModel {
    * (from closest to root)
    */
   public ancestors(element: ElementOrFqn): ReadonlyArray<LikeC4ViewModel.Element> {
-    let id = isString(element) ? element : element.id
+    let id = getId(element)
     const result = [] as LikeC4ViewModel.Element[]
     let parent
     while (parent = this.parent(id)) {
@@ -128,10 +126,10 @@ export class LikeC4ViewModel {
 
   public incoming(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'to-descendants' = 'all'
+    filter: IncomingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Connection> {
-    const el = this.element(isString(element) ? element : element.id)
-    const edges = el.node.inEdges.map(e => nonNullable(this.#connections.get(e), `Edge ${e} not found`))
+    const el = this.element(getId(element))
+    const edges = el.node.inEdges.map(e => nonNullable(this._connections.get(e), `Edge ${e} not found`))
 
     if (filter === 'all' || edges.length === 0) {
       return edges
@@ -147,7 +145,7 @@ export class LikeC4ViewModel {
 
   public incomers(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'to-descendants' = 'all'
+    filter: IncomingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Element> {
     return this.incoming(element, filter).map(r => r.source)
   }
@@ -157,10 +155,10 @@ export class LikeC4ViewModel {
    */
   public outgoing(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'from-descendants' = 'all'
+    filter: OutgoingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Connection> {
-    const el = this.element(isString(element) ? element : element.id)
-    const edges = el.node.outEdges.map(e => nonNullable(this.#connections.get(e), `Edge ${e} not found`))
+    const el = this.element(getId(element))
+    const edges = el.node.outEdges.map(e => nonNullable(this._connections.get(e), `Edge ${e} not found`))
 
     if (filter === 'all' || edges.length === 0) {
       return edges
@@ -176,7 +174,7 @@ export class LikeC4ViewModel {
 
   public outgoers(
     element: ElementOrFqn,
-    filter: 'all' | 'direct' | 'from-descendants' = 'all'
+    filter: OutgoingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Element> {
     return this.outgoing(element, filter).map(r => r.target)
   }
@@ -226,7 +224,7 @@ export namespace LikeC4ViewModel {
       return this.node.tags ?? []
     }
 
-    public model(): LikeC4Model.Element {
+    public model(): LikeC4Model.Element<LikeC4ViewModel> {
       return this.viewmodel.model.element(this.id)
     }
 
@@ -268,11 +266,11 @@ export namespace LikeC4ViewModel {
       return this.viewmodel.incomers(this, filter)
     }
 
-    public outgoing(filter: 'all' | 'direct' | 'from-descendants' = 'all'): ReadonlyArray<LikeC4ViewModel.Connection> {
+    public outgoing(filter: OutgoingFilter = 'all'): ReadonlyArray<LikeC4ViewModel.Connection> {
       return this.viewmodel.outgoing(this, filter)
     }
 
-    public outgoers(filter: 'all' | 'direct' | 'from-descendants' = 'all'): ReadonlyArray<LikeC4ViewModel.Element> {
+    public outgoers(filter: OutgoingFilter = 'all'): ReadonlyArray<LikeC4ViewModel.Element> {
       return this.viewmodel.outgoers(this, filter)
     }
 
@@ -311,7 +309,7 @@ export namespace LikeC4ViewModel {
     /**
      * Model relationships
      */
-    relationships(): ReadonlyArray<LikeC4Model.Relationship> {
+    relationships(): ReadonlyArray<LikeC4Model.Relationship<LikeC4ViewModel>> {
       return this.edge.relations.map(r => nonNullable(this.viewmodel.model.relationship(r)))
     }
   }
