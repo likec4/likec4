@@ -97,6 +97,20 @@ To work on VSCode extension:
 
 - Launch [`Run Extension`](https://github.com/likec4/likec4/blob/c88cfdb3856aff4b28c5f72da7ded8caf8c47c62/.vscode/launch.json#L18) to start a new VSCode instance with the extension loaded.
 
+#### E2E
+
+`/e2e` contains isolated workspace. Test steps:
+- pack `likec4` to tarball
+- install this tarball in isolated wokspace
+- generate spec files from model (using LikeC4Model)
+- run playwright
+
+To run from root workspace:
+
+```sh
+yarn test:e2e
+```
+
 ## License
 
 This project is released under the [MIT License](LICENSE)
