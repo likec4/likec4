@@ -63,6 +63,7 @@ jobs:
         with:
           name: docs-astro
           if-no-files-found: error
+          retention-days: 5
           path: apps/docs/dist/
 
   deploy-docs-preview:

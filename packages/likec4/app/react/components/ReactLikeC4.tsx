@@ -1,4 +1,4 @@
-import type { ElementKind, Tag as CoreTag, ViewID, WhereOperator } from '@likec4/core'
+import type { WhereOperator } from '@likec4/core'
 import { LikeC4Diagram, type LikeC4DiagramProps, type OnNavigateTo } from '@likec4/diagram'
 import clsx from 'clsx'
 import { type CSSProperties } from 'react'

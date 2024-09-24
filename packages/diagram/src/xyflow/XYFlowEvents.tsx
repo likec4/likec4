@@ -63,7 +63,6 @@ export function useXYFlowEvents() {
         const {
           onCanvasDblClick,
           zoomable,
-          xystore,
           viewportChanged,
           fitDiagram,
           resetFocusAndLastClicked

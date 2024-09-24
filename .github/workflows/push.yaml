@@ -59,6 +59,7 @@ jobs:
           if-no-files-found: error
           path: packages/likec4/package.tgz
           retention-days: 5
+          compression-level: 0
 
   check-playground:
     # If on pull request, run only if coming from forked repos
