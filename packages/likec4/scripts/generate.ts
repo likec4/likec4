@@ -2,9 +2,13 @@ import consola from 'consola'
 import { $ } from 'execa'
 import { fdir } from 'fdir'
 import { rmSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { emptyDir } from './_utils'
 
 consola.info('Generating routes...')
 await $`tsr generate`
+
+emptyDir(resolve('icons'))
 
 // Copy icons
 await $`mkdir -p icons`
@@ -15,7 +19,7 @@ const copyDirs = [
 ]
 await $`cp -r ${copyDirs} icons`
 
-// Clean up icons .tsx files
+// Clean up any non js files
 const files = new fdir({
   includeDirs: false,
   includeBasePath: true,

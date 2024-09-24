@@ -22,8 +22,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./graphviz/binary": "./src/graphviz/binary/index.ts",
-    "./graphviz/wasm": "./src/graphviz/wasm/index.ts"
+    "./graphviz/binary": "./src/graphviz/binary/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -36,10 +35,6 @@
       "./graphviz/binary": {
         "types": "./dist/graphviz/binary/index.d.ts",
         "default": "./dist/graphviz/binary/index.mjs"
-      },
-      "./graphviz/wasm": {
-        "types": "./dist/graphviz/wasm/index.d.ts",
-        "default": "./dist/graphviz/wasm/index.mjs"
       }
     }
   },
@@ -56,7 +51,6 @@
     "@hpcc-js/wasm-graphviz": "1.5.0",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "esm-env": "^1.0.0",
     "execa": "^9.3.1",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",

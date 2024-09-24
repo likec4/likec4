@@ -69,7 +69,6 @@ export async function viteReactConfig({
         },
         external: [
           'likec4/react',
-          'likec4',
           'react',
           'react-dom',
           'react/jsx-runtime',

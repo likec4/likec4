@@ -1,18 +1,23 @@
 import type { ComputedLikeC4Model, ComputedView, DiagramView, OverviewGraph, ViewID } from '@likec4/core'
-import type { DotLayoutResult, DotSource, GraphvizLayouter } from '@likec4/layouts'
+import type { GraphvizLayouter } from '@likec4/layouts'
 import type { WorkspaceCache } from 'langium'
 import pLimit from 'p-limit'
 import { isTruthy } from 'remeda'
 import type { CliServices } from './module'
 
 type GraphvizOut = {
+  dot: string
+  diagram: DiagramView
+}
+
+type GraphvizSvgOut = {
   id: ViewID
-  dot: DotSource
+  dot: string
   svg: string
 }
 
 export class Views {
-  private cache = new WeakMap<ComputedView, DotLayoutResult>()
+  private cache = new WeakMap<ComputedView, GraphvizOut>()
 
   private layouter: GraphvizLayouter
 
@@ -38,7 +43,7 @@ export class Views {
     }
   }
 
-  async layoutViews(): Promise<Array<Readonly<DotLayoutResult>>> {
+  async layoutViews(): Promise<Array<Readonly<GraphvizOut>>> {
     const logger = this.services.logger
     const action = this.previousAction
       .then(async () => {
@@ -76,15 +81,15 @@ export class Views {
     return layouted.map(l => l.diagram)
   }
 
-  async viewsAsGraphvizOut(): Promise<Array<GraphvizOut>> {
+  async viewsAsGraphvizOut(): Promise<Array<GraphvizSvgOut>> {
     const KEY = 'All-LayoutedViews-DotWithSvg'
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, GraphvizOut[]>
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, GraphvizSvgOut[]>
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }
     const views = await this.computedViews()
     const tasks = views.map(l =>
-      this.limit(async (): Promise<GraphvizOut> => {
+      this.limit(async (): Promise<GraphvizSvgOut> => {
         const { dot, svg } = await this.layouter.svg(l)
         return {
           id: l.id,

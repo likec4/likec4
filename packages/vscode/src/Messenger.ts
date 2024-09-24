@@ -115,7 +115,6 @@ export class Messenger extends AbstractDisposable {
             error: null
           }
         } catch (e) {
-          logger.error(e)
           return {
             view: null,
             error: e instanceof Error ? (e.stack ?? e.message) : '' + e

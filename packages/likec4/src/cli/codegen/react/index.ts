@@ -121,9 +121,9 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import type {
-  LikeC4Model,
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ViewData,
+  LikeC4Model,
   ReactLikeC4Props as GenericReactLikeC4Props
 } from 'likec4/react'
 

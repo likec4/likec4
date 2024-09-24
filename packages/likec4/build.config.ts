@@ -1,7 +1,6 @@
 import { resolve } from 'node:path'
+import { isProduction } from 'std-env'
 import { defineBuildConfig } from 'unbuild'
-
-const isProduction = process.env.NODE_ENV === 'production'
 
 export default defineBuildConfig({
   entries: [
@@ -28,7 +27,6 @@ export default defineBuildConfig({
     '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
     ...(isProduction
       ? {
-        '@likec4/layouts/graphviz/wasm': resolve('../layouts/dist/graphviz/wasm/index.mjs'),
         '@likec4/layouts/graphviz/binary': resolve('../layouts/dist/graphviz/binary/index.mjs'),
         '@likec4/layouts': resolve('../layouts/dist/index.mjs'),
         '@likec4/core/types': resolve('../core/dist/types/index.mjs'),
@@ -37,7 +35,6 @@ export default defineBuildConfig({
         '@likec4/language-server': resolve('../language-server/dist/index.mjs')
       }
       : {
-        '@likec4/layouts/graphviz/wasm': resolve('../layouts/src/graphviz/wasm/index.ts'),
         '@likec4/layouts/graphviz/binary': resolve('../layouts/src/graphviz/binary/index.ts'),
         '@likec4/layouts': resolve('../layouts/src/index.ts'),
         '@likec4/core/types': resolve('../core/src/types/index.ts'),
@@ -52,6 +49,7 @@ export default defineBuildConfig({
     inlineDependencies: true,
     esbuild: {
       platform: 'node',
+      target: 'node20',
       legalComments: 'none',
       minify: isProduction,
       minifyIdentifiers: false,
@@ -68,6 +66,7 @@ export default defineBuildConfig({
       ignoreTryCatch: 'remove',
       esmExternals: true,
       transformMixedEsModules: true,
+      defaultIsModuleExports: true,
       exclude: [
         /\.d\.ts$/,
         /\.d\.cts$/,
@@ -76,6 +75,7 @@ export default defineBuildConfig({
     },
     dts: {
       tsconfig: 'tsconfig.cli.json',
+      respectExternal: true,
       compilerOptions: {
         noEmitOnError: false,
         strict: false,

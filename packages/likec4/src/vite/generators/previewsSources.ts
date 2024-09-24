@@ -21,7 +21,7 @@ export function diagramPreviewsSources(views: ComputedView[], assetsDir: string)
     cases: [] as string[]
   })
   return `
-import { map, useNanoStore } from 'likec4/react'
+import { nano } from 'likec4/react'
 // assets dir: ${assetsDir}
 
 ${imports.join('\n')}
@@ -30,10 +30,10 @@ const Previews = {
 ${cases.join(',\n')}
 }
 
-export let $previews = map(Previews)
+export let $previews = nano.map(Previews)
 
 export let usePreviewUrl = (id) => {
-  const views = useNanoStore($previews, {
+  const views = nano.useStore($previews, {
     keys: [id]
   })
   return views[id] ?? null

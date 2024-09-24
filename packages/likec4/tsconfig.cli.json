@@ -6,7 +6,6 @@
     "module": "esnext",
     "composite": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "allowJs": true,
     "checkJs": false,

@@ -3,7 +3,7 @@ import type { LayoutResult } from '@likec4/layouts'
 import { isDeepEqual, values } from 'remeda'
 import vscode from 'vscode'
 import type { ExtensionController } from './ExtensionController'
-import { logError } from './logger'
+import { logger } from './logger'
 import { AbstractDisposable } from './util'
 
 export class LikeC4Model extends AbstractDisposable {
@@ -70,8 +70,8 @@ export class LikeC4Model extends AbstractDisposable {
           vscode.window.showErrorMessage(`LikeC4: ${errMessage}`)
           this.viewsWithReportedErrors.add(viewId)
         }
-        logError(err)
-        return null
+        logger.warn(`[C4Model.layoutView] failed ${viewId}`, err)
+        return Promise.reject(err)
       }
     }
     return layoutedView

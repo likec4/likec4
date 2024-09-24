@@ -1,7 +1,6 @@
 import { consola } from 'consola'
 import { mkdir } from 'node:fs/promises'
 import { startTimer } from '../src/logger'
-import { buildCli } from './build-cli'
 import { bundleApp } from './bundle-app'
 import { buildReact } from './bundle-react'
 import { buildWebcomponentBundle } from './bundle-webcomponent'
@@ -19,8 +18,8 @@ await mkdir('dist/__app__/src', { recursive: true })
 
 emptyLine()
 
-await buildCli(isDev)
-emptyLine()
+// await buildCli(isDev)
+// emptyLine()
 
 await bundleApp()
 emptyLine()

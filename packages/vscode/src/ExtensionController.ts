@@ -3,8 +3,7 @@ import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient
 
 import { nonNullable, type ViewID } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
-import { GraphvizLayouter } from '@likec4/layouts'
-import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
+import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { LogLevels } from '@likec4/log'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'

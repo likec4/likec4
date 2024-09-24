@@ -1,7 +1,6 @@
 import { createCustomLanguageServices, type LikeC4Services, lspLogger, setLogLevel } from '@likec4/language-server'
-import { GraphvizLayouter } from '@likec4/layouts'
+import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
-import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
 import { consola, LogLevels } from '@likec4/log'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'

@@ -1,12 +1,12 @@
 import { Link } from '@tanstack/react-router'
 
 import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4Views } from '@likec4/diagram'
-import { useDebouncedEffect } from '@react-hookz/web'
-import { useState } from 'react'
+import { memo, useLayoutEffect, useState } from 'react'
 
 import type { DiagramView } from '@likec4/core'
 import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
-import { ceil, clamp, keys } from 'remeda'
+import { useInViewport } from '@mantine/hooks'
+import { keys } from 'remeda'
 import { RenderIcon } from '../components/RenderIcon'
 import * as styles from './index.css'
 
@@ -25,7 +25,7 @@ export default function IndexPage() {
   )
 }
 
-function ViewCard({ viewId }: { viewId: string }) {
+const ViewCard = memo<{ viewId: string }>(({ viewId }) => {
   const diagram = useLikeC4DiagramView(viewId)
   if (!diagram) {
     return null
@@ -33,10 +33,6 @@ function ViewCard({ viewId }: { viewId: string }) {
   const { id, title, description } = diagram
   return (
     <Card
-      component={Link}
-      to={'/view/$viewId'}
-      params={{ viewId: id }}
-      search
       shadow="xs"
       padding="lg"
       radius="sm"
@@ -52,27 +48,24 @@ function ViewCard({ viewId }: { viewId: string }) {
       <Text size="sm" c="dimmed">
         {description}
       </Text>
+      <Link to={'/view/$viewId'} params={{ viewId: id }} search className={styles.cardLink}></Link>
     </Card>
   )
-}
+})
 
-function DiagramPreview(props: { diagram: DiagramView }) {
-  const [diagram, setDiagram] = useState<DiagramView | null>(null)
+function DiagramPreview({ diagram }: { diagram: DiagramView }) {
+  const { ref, inViewport } = useInViewport()
+  const [visible, setVisible] = useState(inViewport)
 
-  // defer rendering to avoid flickering
-  useDebouncedEffect(
-    () => {
-      setDiagram(props.diagram)
-    },
-    [props.diagram],
-    clamp(ceil(Math.random() * 400, -1), {
-      min: 50
-    })
-  )
+  useLayoutEffect(() => {
+    if (inViewport && !visible) {
+      setVisible(true)
+    }
+  }, [inViewport])
 
   return (
-    <Box className={styles.previewBg} style={{ height: 175 }}>
-      {diagram && (
+    <Box ref={ref} className={styles.previewBg} style={{ height: 175 }}>
+      {visible && (
         <StaticLikeC4Diagram
           background={'transparent'}
           view={diagram}

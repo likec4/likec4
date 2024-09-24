@@ -7,22 +7,20 @@ export function likec4ModelSources(model: LikeC4Model.Layouted) {
     ...rest
   } = model.sourcemodel
   return `
-import { createLikeC4Model, atom, useNanoStore } from 'likec4/react'
+import { nano, createLikeC4Model } from 'likec4/react'
 
 // This is needed for tree better tree shaking
-export const LikeC4Views = ${JSON5.stringify(views)}
+export let LikeC4Views = ${JSON5.stringify(views)}
 
-const sourcemodel = /* @__PURE__ */ Object.assign(
+export let likec4model = /* @__PURE__ */ createLikeC4Model(Object.assign(
   ${JSON5.stringify(rest)},
   {views: LikeC4Views}
-)
+))
 
-export const likec4model = /* @__PURE__ */ createLikeC4Model(sourcemodel)
-
-export let $likec4model = /* @__PURE__ */ atom(likec4model)
+export let $likec4model = /* @__PURE__ */ nano.atom(likec4model)
 
 export function useLikeC4ModelAtom() {
-  return useNanoStore($likec4model)
+  return nano.useStore($likec4model)
 }
 
 if (import.meta.hot) {

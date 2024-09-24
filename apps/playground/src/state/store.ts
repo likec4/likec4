@@ -9,12 +9,14 @@ import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 
 import type { LikeC4DiagramProps } from '@likec4/diagram'
-import { graphvizLayouter } from '@likec4/layouts'
+import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { deepEqual } from 'fast-equals'
 import { nanoid } from 'nanoid'
 import pLimit from 'p-limit'
 import { forEachObj, isError, mapValues, mergeDeep } from 'remeda'
 import { LikeC4WorkspacesKey, type LocalStorageWorkspace } from './use-workspaces'
+
+const graphvizLayouter = new GraphvizLayouter(new GraphvizWasmAdapter())
 
 export type WorkspaceStore = {
   readonly uniqueId: string

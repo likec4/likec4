@@ -28,3 +28,9 @@ export const previewBg = style({
     zIndex: '1'
   }
 })
+
+export const cardLink = style({
+  position: 'absolute',
+  inset: 0,
+  zIndex: 5
+})

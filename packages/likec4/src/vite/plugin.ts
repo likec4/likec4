@@ -32,25 +32,6 @@ interface Module {
   }): Promise<string>
 }
 
-// const generatedStore = {
-//   id: 'virtual:likec4/store',
-//   virtualId: '\0likec4-plugin/store.js',
-//   async load({ likec4, logger }) {
-//     logger.info(k.dim('generating virtual:likec4/store'))
-//     return storeSource
-//   }
-// } satisfies Module
-//
-// const generatedViews = {
-//   id: 'virtual:likec4/views',
-//   virtualId: '\0likec4-plugin/views.js',
-//   async load({ likec4, logger }) {
-//     logger.info(k.dim('generating virtual:likec4/views'))
-//     const diagrams = await likec4.views.diagrams()
-//     return generateViewsDataJs([...diagrams])
-//   }
-// } satisfies Module
-
 const dotSourcesModule = {
   id: 'virtual:likec4/dot-sources',
   virtualId: '\0likec4-plugin/dot-sources.js',

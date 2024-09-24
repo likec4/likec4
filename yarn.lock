@@ -2083,7 +2083,6 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.16.1"
-    esm-env: "npm:^1.0.0"
     execa: "npm:^9.3.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"

@@ -1,7 +1,7 @@
 import type { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
 import os from 'node:os'
 import path from 'node:path'
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
   type LanguageClientOptions,

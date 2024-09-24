@@ -288,7 +288,7 @@ export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
 export type IsValidFn = ChecksFromDiagnostics['isValid']
 
 export function* streamModel(doc: LikeC4LangiumDocument, isValid: IsValidFn) {
-  const traverseStack = doc.parseResult.value.models.flatMap(m => (isValid(m) ? m.elements : []))
+  const traverseStack = doc.parseResult.value.models.flatMap(m => m.elements)
   const relations = [] as ast.Relation[]
   let el
   while ((el = traverseStack.shift())) {

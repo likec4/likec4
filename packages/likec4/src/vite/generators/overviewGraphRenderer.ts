@@ -3,12 +3,12 @@ import JSON5 from 'json5'
 
 export function generateOverviewGraphSource(overview: OverviewGraph) {
   return `
-import { atom, useNanoStore } from 'likec4/react'
+import { nano } from 'likec4/react'
 
-export const $graph = atom(${JSON5.stringify(overview, null, 2)})
+export const $graph = nano.atom(${JSON5.stringify(overview, null, 2)})
 
 export const useOverviewGraph = () => {
-  return useNanoStore($graph)
+  return nano.useStore($graph)
 }
 
 if (import.meta.hot) {
