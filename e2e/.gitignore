@@ -1,0 +1,11 @@
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+src/likec4-views.*
+test-results/*
+playwright-report/*
+tests/snapshot.spec.ts

@@ -1,0 +1,122 @@
+model {
+
+  customer = actor 'Cloud System Customer' {
+    description '
+      The regular customer of the system
+    '
+  }
+
+  cloud = system 'Cloud System' {
+    description '
+      Our SaaS platfrom that allows
+      customers to interact with
+      the latest technologies
+    '
+
+    ui = container 'Frontends' {
+      description '
+        All the frontend applications
+        of Cloud System
+      '
+      metadata {
+        version '2.1.1'
+      }
+    }
+
+    legacy = container 'Cloud Legacy' {
+      description '
+        The legacy version of our SaaS
+        MVP as was presented to the first customers
+      '
+      link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
+    }
+
+    next = container 'Cloud Next' {
+      description 'Cloud Next is the next version of our cloud systems'
+    }
+
+    supportUser = actor 'Support User' {
+      description '
+        A emploere from the support team
+        Has limited access to the system
+      '
+      -> customer 'helps with questions' {
+        metadata {
+          rps '1000'
+        }
+      }
+    }
+  }
+  customer .uses cloud 'uses and pays' {
+    navigateTo dynamic-view-1
+  }
+
+}
+
+views {
+
+  view index {
+    title "Landscape"
+    include
+      customer, // include first
+      *
+  }
+
+  view customer of customer {
+    include
+      *,
+      customer -> cloud.ui with {
+        color red
+      },
+      supportUser
+
+    style supportUser {
+      color indigo
+    }
+  }
+
+  dynamic view dynamic-view-1 {
+    title 'Dynamic View Example'
+
+    link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
+
+    customer -> ui.dashboard 'opens'
+    ui.dashboard -> cloud.graphql 'requests'
+    ui.dashboard <- cloud.graphql 'returns'
+
+    ui.mobile -> cloud.graphql 'requests'
+    ui.mobile <- cloud.graphql
+
+    include cloud
+
+    autoLayout TopBottom
+    style * {
+      color secondary
+    }
+    style cloud {
+      opacity 40%
+      color muted
+    }
+  }
+
+  dynamic view cloud-to-amazon {
+    title 'Cloud to amazon'
+
+    next.backend -> next.events
+
+    parallel {
+      next.backend -> amazon.aurora
+      ui.supportPanel -> amazon.aurora
+      next.events -> amazon.sqs
+    }
+
+    include next, ui, amazon
+
+    style next, ui, amazon {
+      opacity 40%
+    }
+
+    autoLayout TopBottom
+  }
+
+}

@@ -1,7 +1,11 @@
 import { isNullish } from 'remeda'
 import { nonNullable } from '../errors'
-import type { ElementShape, Tag } from '../types/element'
-import type { Color } from '../types/theme'
+import {
+  type ElementKind as C4ElementKind,
+  type ElementShape as C4ElementShape,
+  type Tag as C4Tag
+} from '../types/element'
+import type { Color as C4Color } from '../types/theme'
 import type { ComputedEdge, ComputedNode, ComputedView } from '../types/view'
 import type { LikeC4Model } from './LikeC4Model'
 import { type EdgeId, type ElementOrFqn, type Fqn, getId, type IncomingFilter, type OutgoingFilter } from './types'
@@ -45,7 +49,7 @@ export class LikeC4ViewModel {
     return null
   }
 
-  get tags(): Tag[] {
+  get tags(): C4Tag[] {
     return this.view.tags ?? []
   }
 
@@ -200,7 +204,7 @@ export namespace LikeC4ViewModel {
       return this.node.title
     }
 
-    get kind() {
+    get kind(): C4ElementKind {
       return this.node.kind
     }
 
@@ -212,19 +216,19 @@ export namespace LikeC4ViewModel {
       return this.node.children.length > 0
     }
 
-    get shape(): ElementShape {
+    get shape(): C4ElementShape {
       return this.node.shape
     }
 
-    get color(): Color {
+    get color(): C4Color {
       return this.node.color
     }
 
-    get tags(): Tag[] {
+    get tags(): C4Tag[] {
       return this.node.tags ?? []
     }
 
-    public model(): LikeC4Model.Element<LikeC4ViewModel> {
+    public model(): LikeC4Model.ElementModel<LikeC4ViewModel> {
       return this.viewmodel.model.element(this.id)
     }
 
@@ -302,7 +306,7 @@ export namespace LikeC4ViewModel {
       return this.viewmodel.element(this.edge.target)
     }
 
-    get tags(): Tag[] {
+    get tags(): C4Tag[] {
       return this.edge.tags ?? []
     }
 

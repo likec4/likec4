@@ -23,12 +23,12 @@ runs:
 
     - name: cache turbo build
       uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
-      if: github.ref == 'refs/heads/main'
       with:
         path: .turbo
-        key: turbo-cache-${{ github.sha }}
-        # restore-keys: |
-        #   turbo-cache-${{ github.ref_name }}-
+        key: turbo-cache-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          turbo-cache-${{ github.ref_name }}-
+          turbo-cache-
 
     - name: install dependencies
       shell: bash
