@@ -21,14 +21,10 @@ runs:
     #   shell: bash
     #   run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-    - name: cache turbo build
-      uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+    - name: cache for turbo
+      uses: rharkor/caching-for-turbo@v1.5
       with:
-        path: .turbo
-        key: turbo-cache-${{ github.ref_name }}-${{ github.sha }}
-        restore-keys: |
-          turbo-cache-${{ github.ref_name }}-
-          turbo-cache-
+        cache-prefix: turbo_cache_
 
     - name: install dependencies
       shell: bash
