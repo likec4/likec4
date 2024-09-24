@@ -1,20 +1,42 @@
 # [1.11.0](https://github.com/likec4/likec4/compare/v1.10.1...v1.11.0) (2024-09-24)
 
+### 🚀 Features  
 
-### Bug Fixes
+* **Relationship details**
 
-* adjust table attributes in stepEdgeLabel for improved rendering ([0518910](https://github.com/likec4/likec4/commit/051891045ae7c803e8ff45e79dff599aa155e2d2))
-* **vscode:** showErrorMessage if view layout failed ([8832d0a](https://github.com/likec4/likec4/commit/8832d0abbf9e3b836acf4e5e51c4cbb67fa284c8))
+  On hover displays direct relationships and resolved from nested. If relationship has `navigateTo` - displays navigation link
+    
+  <img width="681" alt="SCR-20240924-uhpz" src="https://github.com/user-attachments/assets/de90231d-2eaa-4b20-b508-f3f72e420d24">
 
+  To disable - set `showRelationshipDetails={false}` in react component
 
-### Features
+* **Improved layout editing**
 
-* add GitHub Actions workflow for previewing playground and docs ([95b190c](https://github.com/likec4/likec4/commit/95b190ceea78ecb9f4a53183f10512724b356d4d))
-* e2e tests ([#1023](https://github.com/likec4/likec4/issues/1023)) ([bfe3788](https://github.com/likec4/likec4/commit/bfe37882a44d41bd9a137c469936f4b5726b620d))
-* enhance EmbedPage and ExportPage with navigation and relationship details options; refactor legacy handler naming ([83c6fcf](https://github.com/likec4/likec4/commit/83c6fcfac017fa4545cdaad5df58b60f38031755))
-* LikeC4Model ([e53f55f](https://github.com/likec4/likec4/commit/e53f55f76e60e8a5cefa64b79bea013ca196970b))
-* **react:** relationship details ([1af3554](https://github.com/likec4/likec4/commit/1af3554f914b6034fec306690f1013d9899163a0))
+  Thanks to @pavelpykhtin, now it is possible add control points with right click, or reset all control points  
+  Example here [#1013](https://github.com/likec4/likec4/pull/1013)
 
+* **New API `LikeC4Model.Layouted`**
+
+  Difference between `LikeC4Model.Computed` and `LikeC4Model.Layouted` - is that second one also includes layout data (dimensions, positions), that is needed for rendering
+
+  ```ts
+  import { LikeC4 } from 'likec4'
+  
+  const likec4 = await LikeC4.fromWorkspace()
+  
+  // Sync and fast
+  const model = likec4.computedModel()
+  model
+    .element('cloud.backend.api')
+    .incoming() // relationships incoming to the element
+    .filter(r => r.tags.includes('http')) // filter by tags
+    .map(r => r.source) // get source elements
+
+  // Async, includes layout data (dimensions, positions...)
+  const diagram = await likec4.layoutedModel().view('index')
+  ```
+
+  Generated React component also exports instance of `LikeC4Model.Layouted`, and hooks to use inside your app.
 
 
 ## [1.10.1](https://github.com/likec4/likec4/compare/v1.10.0...v1.10.1) (2024-09-17)
