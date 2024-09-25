@@ -33,6 +33,11 @@
       "types": "./icon.d.ts",
       "default": "./gcp/*.js"
     },
+    "./azure": "./azure/index.js",
+    "./azure/*": {
+      "types": "./icon.d.ts",
+      "default": "./azure/*.js"
+    },
     "./*": {
       "types": "./icon.d.ts",
       "default": "./tech/*.js"
