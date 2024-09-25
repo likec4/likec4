@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@lume/kiwi": "^0.4.3",
+    "@lume/kiwi": "^0.4.4",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.16.0",
     "@vanilla-extract/css": "^1.15.5",
