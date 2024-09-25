@@ -233,6 +233,21 @@ describe.concurrent('views', () => {
       }
     }`
 
+  test('global ViewStyleRules - valid').valid`${model}
+    views {
+      style * {
+        color: secondary
+      }
+      view {
+        include *
+        exclude -> frontend
+      }
+      style backend, infra {
+        color: muted
+      }
+    }
+    `
+
   test('trailing comma in predicates').valid`${model}
     views {
       view {

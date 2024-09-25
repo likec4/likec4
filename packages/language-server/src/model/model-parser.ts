@@ -283,15 +283,21 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views : [])
-    for (const view of views) {
+    const views_and_rules = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views : [])
+    for (const view_or_rule of views_and_rules) {
       try {
-        if (!isValid(view)) {
+        if (!isValid(view_or_rule)) {
           continue
         }
-        doc.c4Views.push(
-          ast.isElementView(view) ? this.parseElementView(view, isValid) : this.parseDynamicElementView(view, isValid)
-        )
+        if (ast.isLikeC4View(view_or_rule)) {
+          const view = view_or_rule
+          doc.c4Views.push(
+            ast.isElementView(view) ? this.parseElementView(view, isValid) : this.parseDynamicElementView(view, isValid)
+          )
+        } else if (ast.isViewRule(view_or_rule)) {
+          const rule = view_or_rule
+          doc.c4GlobalRules.push(this.parseViewRule(rule, isValid))
+        }
       } catch (e) {
         logWarnError(e)
       }

@@ -279,6 +279,15 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     resolveRulesExtendedViews
   )
 
+  function toC4GlobalRule(doc: LangiumDocument) {
+    return (parsedAstView: c4.ViewRule): c4.ViewRule => {
+      return parsedAstView
+    }
+  }
+
+  const parsedGlobalRules = docs.flatMap(d => map(d.c4GlobalRules, toC4GlobalRule(d)))
+  const global_rules = parsedGlobalRules
+
   return {
     specification: {
       tags: Array.from(c4Specification.tags),
@@ -287,7 +296,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     },
     elements,
     relations,
-    views
+    views,
+    global_rules
   }
 }
 
@@ -377,7 +387,8 @@ export class LikeC4ModelBuilder {
 
       const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
-        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
+        const global_rules = model?.global_rules
+        const result = isElementView(view) ? computeView(view, index, global_rules) : computeDynamicView(view, index)
         if (!result.isSuccess) {
           logWarnError(result.error)
           continue
@@ -441,7 +452,8 @@ export class LikeC4ModelBuilder {
           return null
         }
         const index = new LikeC4ModelGraph(model)
-        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
+        const global_rules = model?.global_rules
+        const result = isElementView(view) ? computeView(view, index, global_rules) : computeDynamicView(view, index)
         if (!result.isSuccess) {
           logError(result.error)
           return null

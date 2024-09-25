@@ -199,8 +199,9 @@ ModelViews:
   '}';
 
 type LikeC4View = ElementView | DynamicView;
-LikeC4ViewRule returns LikeC4View:
-  ElementView | DynamicView;
+type LikeC4ViewOrRule = LikeC4View | ViewRule;
+LikeC4ViewRule returns LikeC4ViewOrRule:
+  ElementView | DynamicView | ViewRule;
 
 ElementView:
   'view' name=Id? (

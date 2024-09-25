@@ -523,11 +523,46 @@ view apiApp of internetBankingSystem.apiApplication {
   // apply to elements not tagged
   style element.tag != #deprecated {
     opacity 20%
-  }  
+  }
 }
 ```
 
 Please note, that [overrides](#with-overrides) have higher priority.
+
+Styles can be also applied to all views
+
+```likec4
+views {
+  // apply to all elements in all views
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  // apply in all views to elements with specific tag
+  style element.tag = #deprecated {
+    color muted
+  }
+
+  // apply in all views to elements not tagged
+  style element.tag != #deprecated {
+    opacity 20%
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+
+    // override global style
+    style element.tag = #deprecated {
+      color red
+    }
+  }
+
+  view storeConnector of internetBankingSystem.storeConnector {
+    include *
+  }
+}
+```
 
 ### Extend views
 
