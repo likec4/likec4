@@ -1,5 +1,5 @@
 import type { ViewID } from '@likec4/core'
-import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
+import { type ElementIconRenderer } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconLoader, IconX } from '@tabler/icons-react'
@@ -8,6 +8,7 @@ import { lazy, useCallback, useEffect, useRef } from 'react'
 import React from 'react'
 import { useStoreApi, useWorkspaceState } from '../state/use-workspace'
 import * as css from './w.$id.css'
+import ElkExperiment from './-workspace/ElkExperiment'
 
 export const Route = createFileRoute('/w/$id/$')({
   component: WorkspaceDiagramPage
@@ -72,7 +73,8 @@ export function WorkspaceDiagramPage() {
         pos={'relative'}
         w={'100%'}
         h={'100%'}>
-        <LikeC4Diagram
+          <ElkExperiment view={diagram}/>
+        {/* <LikeC4Diagram
           view={diagram}
           readonly={false}
           controls
@@ -112,7 +114,7 @@ export function WorkspaceDiagramPage() {
               view: diagram.id
             })
           }}
-        />
+        /> */}
         {error && (
           <Box className={css.stateAlert}>
             <Notification
