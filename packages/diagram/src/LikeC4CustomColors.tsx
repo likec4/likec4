@@ -1,7 +1,7 @@
 import { type ThemeColorValues } from '@likec4/core'
 import { entries } from 'remeda'
 import type { LikeC4CustomColorsProperties } from './LikeC4CustomColors.props'
-import { vars } from './theme.css'
+import { vars } from './theme-vars'
 
 type CSSVarFunction = `var(--${string})` | `var(--${string}, ${string | number} )`
 

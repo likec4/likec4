@@ -1,7 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine.css'
-import { vars, xyvars } from '../../theme.css'
+import { mantine, vars, xyvars } from '../../theme-vars'
 
 const mixColor = createVar('mix-color')
 

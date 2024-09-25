@@ -1,6 +1,5 @@
-import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine, whereDark } from '../mantine.css'
-import { vars } from '../theme.css'
+import { fallbackVar, style } from '@vanilla-extract/css'
+import { mantine, vars, whereDark } from '../theme-vars'
 
 export const container = style({
   bottom: 0,

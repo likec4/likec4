@@ -24,7 +24,7 @@ import { useState } from 'react'
 import { ceil, isNonNullish, isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import { vars } from '../../theme.css'
+import { vars } from '../../theme-vars'
 import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
 import * as css from './NotationPanel.css'
 
@@ -152,7 +152,7 @@ export function NotationPanel() {
           className={clsx('react-flow__panel', css.container)}>
           <Tooltip label="View has no notations" color="orange" {...portalProps}>
             <ThemeIcon
-              size={'xl'}
+              size={'lg'}
               variant="light"
               color="orange"
               radius={'md'}
@@ -175,7 +175,7 @@ export function NotationPanel() {
         >
           <Tooltip label="Show notation" color="dark" fz={'xs'} {...portalProps}>
             <ActionIcon
-              size={'xl'}
+              size={'lg'}
               variant="light"
               color="gray"
               radius={'md'}

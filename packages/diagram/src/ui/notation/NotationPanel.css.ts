@@ -1,7 +1,6 @@
-import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+import { fallbackVar, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { mantine, whereDark } from '../../mantine.css'
-import { vars } from '../../theme.css'
+import { mantine, vars, whereDark } from '../../theme-vars'
 import { stokeFillMix } from '../../xyflow/nodes/element/element.css'
 
 export const container = style({

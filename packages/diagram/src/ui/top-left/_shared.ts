@@ -1,19 +1,20 @@
 import { ActionIcon as MantineActionIcon, Tooltip as MantineTooltip } from '@mantine/core'
 
 export const Tooltip = MantineTooltip.withProps({
-  color: 'gray',
+  color: 'dark',
   fz: 'xs',
   position: 'right',
   openDelay: 400,
-  closeDelay: 100,
+  closeDelay: 150,
   label: '',
   children: null,
-  offset: 8,
-  transitionProps: { transition: 'fade-right', duration: 200 }
+  offset: 8
 })
 
 export const ActionIcon = MantineActionIcon.withProps({
-  className: 'action-icon',
-  variant: 'light',
+  classNames: {
+    root: 'action-icon'
+  },
+  variant: 'default',
   color: 'gray'
 })

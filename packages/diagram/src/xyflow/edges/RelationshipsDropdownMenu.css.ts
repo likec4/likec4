@@ -1,6 +1,5 @@
 import { style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine.css'
-import { vars } from '../../theme.css'
+import { mantine, vars } from '../../theme-vars'
 
 export const menuDropdown = style({
   minWidth: 250,
@@ -13,7 +12,7 @@ export const menuItemRelationship = style({
   // borderRadius: mantine.radius.sm,
   // paddingTop: mantine.spacing.xs,
   // paddingBottom: mantine.spacing.xs,
-  gap: 6
+  gap: 4
   // cursor: 'pointer',
   // ':hover': {
   // borderColor: mantine.colors.gray.light,

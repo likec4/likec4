@@ -1,8 +1,7 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { mantine } from '../../../mantine.css'
-import { vars } from '../../../theme.css'
+import { mantine, vars } from '../../../theme-vars'
 
 export const container = style({
   width: '100%',

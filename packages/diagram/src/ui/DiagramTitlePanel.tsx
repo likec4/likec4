@@ -23,6 +23,22 @@ export default function DiagramTitlePanel() {
 
   return (
     <AnimatePresence mode="wait">
+      {
+        /* <ViewportPortal>
+        <div className={css.inlineTitle} style={{ transform: `translate(0px,${height}px)` }}>
+          <m.div
+            key={id}
+            animate={{ opacity: 0.7, scale: .92 }}
+            whileHover={{ opacity: 1, scale: 1 }}
+            style={{
+              transformOrigin: 'left bottom'
+            }}
+          >
+            <Title order={1}>{title}</Title>
+          </m.div>
+        </div>
+      </ViewportPortal> */
+      }
       <m.div
         key={id}
         initial={{ opacity: 0.05, scale: 0.7 }}
