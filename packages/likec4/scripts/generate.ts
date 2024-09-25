@@ -14,6 +14,7 @@ emptyDir(resolve('icons'))
 await $`mkdir -p icons`
 const copyDirs = [
   '../icons/aws',
+  '../icons/azure',
   '../icons/gcp',
   '../icons/tech'
 ]

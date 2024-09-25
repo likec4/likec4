@@ -599,7 +599,7 @@ hidden terminal NL: /[\r\n]+/;
 //terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
 
 // LibIcons
-terminal LIB_ICON: /(aws|gcp|tech):[-\w]*/;
+terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;

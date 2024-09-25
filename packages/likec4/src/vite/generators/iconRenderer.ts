@@ -13,7 +13,7 @@ export function generateIconRendererSource(views: ComputedView[]) {
     imports,
     cases
   } = icons.reduce((acc, s, i) => {
-    const [group, icon] = s.split(':') as ['aws' | 'gcp' | 'tech', string]
+    const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
 
     const Component = 'Icon' + i.toString().padStart(2, '0')
 

@@ -4,6 +4,7 @@ React SVG icons from these packs:
 - [techicons.dev](https://techicons.dev/) (sourced from [devicons](https://github.com/devicons/devicon))
 - [aws-icons.com](https://aws-icons.com/)
 - [gcpicons.com](https://gcpicons.com/)
+- [microsoft.com](https://learn.microsoft.com/en-us/azure/architecture/icons/)
 
 ```ts
 import { ArgoCd, Astro } from '@likec4/icons'

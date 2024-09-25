@@ -76,7 +76,7 @@
       }
     },
     {
-      "match": "\\b(aws|gcp|tech):([-\\w]+)\\b",
+      "match": "\\b(aws|azure|gcp|tech):([-\\w]+)\\b",
       "name": "entity.name.type.enum.likec4"
     },
     {

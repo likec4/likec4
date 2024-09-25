@@ -9,10 +9,10 @@ await mkdir('.tmp/src', { recursive: true })
 
 if (!existsSync('.tmp/tech.zip')) {
   consola.info('Fetching tech-icons...')
-  await $`curl -o .tmp/tech.zip  https://icon.icepanel.io/Technology/svg.zip`
+  await $`curl -o .tmp/tech.zip https://icon.icepanel.io/Technology/svg.zip`
 }
 await $`unzip .tmp/tech.zip -d .tmp/src/tech`
-const renames = {
+const techRenames = {
   'Apache-Tomcat': 'Tomcat',
   'Apache-Subversion': 'Subversion',
   'Apache-Spark': 'Spark',
@@ -101,14 +101,14 @@ const renames = {
   'Windows-8': 'Windows8',
   'Windows-11': 'Windows11'
 }
-for (const [oldName, newName] of Object.entries(renames)) {
+for (const [oldName, newName] of Object.entries(techRenames)) {
   await $`mv .tmp/src/tech/${oldName}.svg .tmp/src/tech/${newName}.svg`
 }
 consola.success('tech-icons - OK')
 
 if (!existsSync('.tmp/gcp.zip')) {
   consola.info('Fetching gcp-icons...')
-  await $`curl -o .tmp/gcp.zip  https://icon.icepanel.io/GCP/svg.zip`
+  await $`curl -o .tmp/gcp.zip https://icon.icepanel.io/GCP/svg.zip`
 }
 await rm('.tmp/gcp', { force: true, recursive: true })
 await $`unzip .tmp/gcp.zip  -d .tmp/gcp`
@@ -123,14 +123,36 @@ await rm('.tmp/aws', { force: true, recursive: true })
 await $`unzip .tmp/aws.zip -d .tmp/aws`
 await mkdir('.tmp/src/aws', { recursive: true })
 
-const svgs = await glob('.tmp/aws/**/*.svg')
-for (const svg of svgs) {
+const awsSvgs = await glob('.tmp/aws/**/*.svg')
+for (const svg of awsSvgs) {
   const name = svg.split('/').pop()
   await $`mv ${svg} .tmp/src/aws/${name}`
 }
 consola.success('aws-icons - OK')
 
-await $`rm -r -f ${['aws', 'gcp', 'tech']}`
+if (!existsSync('.tmp/azure.zip')) {
+  consola.info('Fetching azure-icons...')
+  await $`curl -o .tmp/azure.zip https://arch-center.azureedge.net/icons/Azure_Public_Service_Icons_V19.zip`
+}
+await rm('.tmp/azure', { force: true, recursive: true })
+await $`unzip .tmp/azure.zip  -d .tmp/azure`
+await mkdir('.tmp/src/azure', { recursive: true })
+
+const azureSvgs = await glob('.tmp/azure/**/*.svg')
+for (const svg of azureSvgs) {
+  const name = svg.split('/').pop().replace(/^\d+-icon-service-/, '')
+  await $`mv ${svg} .tmp/src/azure/${name}`
+}
+
+const azureRenames = {
+  'Multi-Factor-Authentication': 'Identity-Multi-Factor-Authentication'
+}
+for (const [oldName, newName] of Object.entries(azureRenames)) {
+  await $`mv .tmp/src/azure/${oldName}.svg .tmp/src/azure/${newName}.svg`
+}
+consola.success('azure-icons - OK')
+
+await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech']}`
 const opts = [
   '--filename-case',
   'kebab',
@@ -145,7 +167,7 @@ await $`npx @svgr/cli ${opts} --out-dir . -- .tmp/src`
 
 consola.success('generated svg - DONE')
 
-await $`rm -r -f .tmp/src .tmp/aws .tmp/gcp`
+await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp`
 
 // await $`mv aws/index.jsx aws/index.js`
 // await $`mv gcp/index.jsx gcp/index.js`
