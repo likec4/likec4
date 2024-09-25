@@ -96,7 +96,7 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "1.5.0",
     "@vitejs/plugin-react-swc": "3.7.0",
-    "playwright": "1.46.1",
+    "playwright": "1.47.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "type-fest": "4.26.1",

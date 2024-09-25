@@ -17,7 +17,7 @@
     "test:update-screenshots": "playwright test --update-snapshots"
   },
   "devDependencies": {
-    "@playwright/test": "1.46.1",
+    "@playwright/test": "1.47.2",
     "@types/react": "18.3.4",
     "likec4": "file:../packages/likec4/package.tgz",
     "react": "^18.3.1",
@@ -26,9 +26,5 @@
     "std-env": "^3.7.0",
     "typescript": "^5.6.2",
     "zx": "^8.1.8"
-  },
-  "resolutions": {
-    "minimatch": "5.1.2",
-    "glob": "8.1.0"
   }
 }
