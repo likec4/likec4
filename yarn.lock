@@ -2216,7 +2216,7 @@ __metadata:
     esm-env: "npm:1.0.0"
     nanostores: "npm:0.11.3"
     object-hash: "npm:^3.0.0"
-    postcss: "npm:^8.4.41"
+    postcss: "npm:^8.4.47"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
@@ -8344,7 +8344,7 @@ __metadata:
     p-limit: "npm:^6.1.0"
     package-up: "npm:^5.0.0"
     playwright: "npm:1.47.2"
-    postcss: "npm:^8.4.41"
+    postcss: "npm:^8.4.47"
     postcss-preset-mantine: "npm:^1.17.0"
     pretty-ms: "npm:^9.1.0"
     react: "npm:^18.3.1"
@@ -11032,7 +11032,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.38, postcss@npm:^8.4.39, postcss@npm:^8.4.41, postcss@npm:^8.4.43":
+"postcss@npm:^8.4.38, postcss@npm:^8.4.39, postcss@npm:^8.4.43, postcss@npm:^8.4.47":
   version: 8.4.47
   resolution: "postcss@npm:8.4.47"
   dependencies:
