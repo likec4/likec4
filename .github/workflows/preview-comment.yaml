@@ -22,6 +22,7 @@ jobs:
       contents: read
       id-token: write
       issues: write
+      deployments: write
       pull-requests: write
     steps:
       - name: "Check if user has write access"
@@ -41,6 +42,15 @@ jobs:
         with:
           ref: ${{ steps.refs.outputs.head_ref }}
           fetch-depth: 0
+
+      - name: start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: playground-preview
+          ref: ${{ steps.refs.outputs.head_ref }}
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
@@ -73,6 +83,16 @@ jobs:
               body: message,
             })
 
+      - name: update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ steps.cloudflare.outputs.deployment-url }}
+
   preview-docs:
     name: deploy docs preview
     if: ${{ github.repository_owner == 'likec4' && github.event.issue.pull_request && (contains(github.event.comment.body, '/preview docs') || contains(github.event.comment.body, '/docs')) }}
@@ -100,6 +120,15 @@ jobs:
         with:
           ref: ${{ steps.refs.outputs.head_ref }}
           fetch-depth: 0
+
+      - name: start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: docs-preview
+          ref: ${{ steps.refs.outputs.head_ref }}
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
@@ -131,3 +160,13 @@ jobs:
               repo: context.repo.repo,
               body: message,
             })
+
+      - name: update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ steps.cloudflare.outputs.deployment-url }}
