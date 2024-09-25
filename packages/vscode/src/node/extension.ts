@@ -99,6 +99,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     })
 
   // Add the scheme for the likec4lib
+  documentSelector.push({ language: languageId, scheme: 'vscode-remote' })
   documentSelector.push({ language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme })
 
   // Options to control the language client
