@@ -28,7 +28,7 @@
     "zx": "^8.1.8"
   },
   "resolutions": {
-    "minimatch": "5.1.2",
+    "minimatch": "5.1.6",
     "glob": "8.1.0"
   }
 }
