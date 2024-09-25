@@ -1,8 +1,21 @@
-import { useLikeC4View } from '@likec4/diagram'
-import { Box, Button, ThemeIcon, Tree, type TreeNodeData, useComputedColorScheme, useTree } from '@mantine/core'
+import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4View } from '@likec4/diagram'
+import {
+  Box,
+  type BoxProps,
+  Button,
+  HoverCard,
+  HoverCardDropdown,
+  HoverCardTarget,
+  ThemeIcon,
+  Tree,
+  type TreeNodeData,
+  useComputedColorScheme,
+  useTree
+} from '@mantine/core'
 import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
 import { Link, useParams } from '@tanstack/react-router'
-import { memo, useEffect } from 'react'
+import { memo, type MouseEvent, type PropsWithChildren, useEffect } from 'react'
+import { RenderIcon } from '../RenderIcon'
 import { isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -63,7 +76,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
         }}
         levelOffset={'md'}
         renderNode={({ node, expanded, elementProps, hasChildren }) => (
-          <Box {...elementProps}>
+          <DiagramPreviewHoverCard viewId={!hasChildren ? node.value : null} {...elementProps}>
             <Button
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
@@ -90,9 +103,63 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
             >
               {node.label}
             </Button>
-          </Box>
+          </DiagramPreviewHoverCard>
         )}
       />
     </Box>
   )
 })
+
+function DiagramPreviewHoverCard({
+  viewId,
+  children,
+  ...props
+}: PropsWithChildren<BoxProps & { viewId: string | null; onClick: (event: MouseEvent) => void }>) {
+  if (!viewId) {
+    return <Box {...props}>{children}</Box>
+  }
+  return (
+    <Box {...props}>
+      <DiagramPreview viewId={viewId} onClick={props.onClick}>
+        {children}
+      </DiagramPreview>
+    </Box>
+  )
+}
+
+function DiagramPreview({
+  viewId,
+  children,
+  onClick
+}: PropsWithChildren<{ viewId: string; onClick: (event: MouseEvent) => void }>) {
+  const diagram = useLikeC4DiagramView(viewId)
+
+  if (!diagram) {
+    return children
+  }
+
+  const ratio = Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300)
+
+  const width = Math.round(diagram.bounds.width / ratio)
+  const height = Math.round(diagram.bounds.height / ratio)
+
+  return (
+    <HoverCard position="right-start" openDelay={300} keepMounted={false} shadow="lg">
+      <HoverCardTarget>
+        {children}
+      </HoverCardTarget>
+      <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
+        <StaticLikeC4Diagram
+          // className={css.diagramPreview}
+          view={diagram}
+          keepAspectRatio={false}
+          renderIcon={RenderIcon}
+          fitView
+          fitViewPadding={0}
+          initialWidth={width}
+          initialHeight={height}
+        />
+      </HoverCardDropdown>
+    </HoverCard>
+  )
+}

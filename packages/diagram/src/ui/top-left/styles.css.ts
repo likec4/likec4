@@ -1,7 +1,6 @@
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { mantine } from '../../mantine.css'
-import { vars } from '../../theme.css'
+import { mantine, vars } from '../../theme-vars'
 
 export const backwardForwardButtons = style({
   gap: calc(mantine.spacing.xs).divide(1.5).toString()
@@ -16,19 +15,23 @@ export const panel = style({
 
 globalStyle(`.likec4-top-left-panel .action-icon`, {
   vars: {
-    ['--ai-size']: 'var(--ai-size-lg)'
+    ['--ai-size']: '2rem'
   }
 })
 globalStyle(`.likec4-top-left-panel .action-icon .tabler-icon`, {
-  width: '70%',
-  height: '70%'
+  width: '65%',
+  height: '65%'
+})
+
+export const actionIconGroup = style({
+  boxShadow: mantine.shadows.md
 })
 
 export const autolayoutIcon = style({})
 
 globalStyle(`${autolayoutIcon} .tabler-icon`, {
-  width: '75%',
-  height: '75%'
+  width: '65%',
+  height: '65%'
 })
 
 export const autolayoutIndicator = style({

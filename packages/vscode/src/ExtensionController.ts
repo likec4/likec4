@@ -9,7 +9,14 @@ import TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
 import { BuiltInFileSystemProvider } from './common/BuiltInFileSystemProvider'
 import { initWorkspace, rebuildWorkspace } from './common/initWorkspace'
-import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, TelemetryConnectionString } from './const'
+import {
+  cmdLocate,
+  cmdOpenPreview,
+  cmdPreviewContextOpenSource,
+  cmdRebuild,
+  isProd,
+  TelemetryConnectionString
+} from './const'
 import { LikeC4Model } from './LikeC4Model'
 import { addLogReporter, logger } from './logger'
 import { Messenger } from './Messenger'
@@ -222,7 +229,7 @@ Restart VSCode. Please report this issue, if it persists.`)
 
       await initWorkspace(rpc)
 
-      if (this.telemetry && this.telemetry.telemetryLevel !== 'off') {
+      if (isProd && this.telemetry && this.telemetry.telemetryLevel !== 'off') {
         this.telemetry?.sendTelemetryEvent(
           'activation',
           {},

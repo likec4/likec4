@@ -1,5 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css'
-import { vars } from '../../../theme.css'
+import { vars } from '../../../theme-vars'
 
 export const elementLink = style({
   position: 'absolute',

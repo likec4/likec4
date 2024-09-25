@@ -2,8 +2,7 @@ import { defaultTheme } from '@likec4/core'
 import { createGlobalTheme, globalStyle } from '@vanilla-extract/css'
 import { scale, toHex } from 'khroma'
 import { keys, omit } from 'remeda'
-import { mantine, whereDark } from './mantine.css'
-import { vars } from './theme.css'
+import { mantine, vars, whereDark } from './theme-vars'
 
 export const rootClassName = 'likec4-diagram-root'
 
@@ -18,7 +17,7 @@ globalStyle(`.${rootClassName}`, {
   WebkitFontSmoothing: mantine.webkitFontSmoothing,
   MozOsxFontSmoothing: mantine.mozFontSmoothing
 })
-globalStyle(`:where(.${rootClassName} .mantine-ActionIcon-icon) .tabler-icon`, {
+globalStyle(`:where(.${rootClassName}) .mantine-ActionIcon-icon .tabler-icon`, {
   width: '75%',
   height: '75%'
 })

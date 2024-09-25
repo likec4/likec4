@@ -32,8 +32,8 @@ export const likec4Container = style({
   overflow: 'hidden',
   vars: {
     '--likec4-options-panel-top': '0.5rem',
-    '--likec4-navigation-panel-top': '0.5rem',
-    '--likec4-navigation-panel-left': '0.5rem'
+    '--likec4-navigation-panel-top': '0.25rem',
+    '--likec4-navigation-panel-left': '0.25rem'
   }
 })
 

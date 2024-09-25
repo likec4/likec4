@@ -74,14 +74,17 @@ export function RelationshipsDropdownMenu({
     return <>{children}</>
   }
 
-  const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship) => (
-    <MenuItem
-      key={relationship.id}
-      component={Relationship}
-      relationship={relationship}
-      sourceNode={sourceXYNode.data.element}
-      targetNode={targetXYNode.data.element}
-      edge={edge} />
+  const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship, index: number) => (
+    <>
+      {index > 0 && <MenuDivider opacity={0.65} />}
+      <MenuItem
+        key={relationship.id}
+        component={Relationship}
+        relationship={relationship}
+        sourceNode={sourceXYNode.data.element}
+        targetNode={targetXYNode.data.element}
+        edge={edge} />
+    </>
   )
 
   return (
@@ -174,7 +177,7 @@ const Relationship = forwardRef<
                   className={clsx('nodrag nopan')}
                   size={'sm'}
                   radius="sm"
-                  variant="light"
+                  variant="default"
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
                     diagramApi.getState().onNavigateTo?.(navigateTo, event)
@@ -191,7 +194,7 @@ const Relationship = forwardRef<
                   className={clsx('nodrag nopan')}
                   size={'sm'}
                   radius="sm"
-                  variant="light"
+                  variant="default"
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
                     event.stopPropagation()

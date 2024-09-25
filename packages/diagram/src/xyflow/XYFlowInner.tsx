@@ -43,7 +43,7 @@ export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
   return (
     <>
       {isBgWithPattern && <XYFlowBackground background={background} />}
-      {controls && <Controls position={'bottom-right'} />}
+      {controls && <Controls showInteractive={false} position={'top-center'} />}
       <TopLeftPanel />
       {!readonly && <OptionsPanel />}
       {isDiagramTitleVisible && <DiagramTitlePanel />}

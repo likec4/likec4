@@ -48,6 +48,7 @@ function ViewEditor() {
       enableFocusMode={false}
       onNavigateTo={onNavigateTo}
       renderIcon={RenderIcon}
+      onChange={(e) => console.log(e)}
       onBurgerMenuClick={withOverviewGraph
         ? () => {
           router.navigate({

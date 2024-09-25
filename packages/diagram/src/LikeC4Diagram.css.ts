@@ -1,5 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css'
-import { vars, xyvars } from './theme.css'
+import { vars, xyvars } from './theme-vars'
 
 export const cssReactFlow = style({
   '@supports': {

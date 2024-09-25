@@ -1,13 +1,16 @@
 import {
+  ActionIconGroup,
   Code,
   Group,
   HoverCard,
   HoverCardDropdown,
   HoverCardTarget,
   Notification,
+  Overlay,
   type PopoverProps,
   Stack,
   Text,
+  TooltipGroup,
   type TooltipProps
 } from '@mantine/core'
 import {
@@ -24,6 +27,7 @@ import { AnimatePresence, m } from 'framer-motion'
 import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
+import { mantine } from '../../theme-vars'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import * as css from './styles.css'
@@ -44,6 +48,7 @@ const BackwardForwardButtons = () => {
   return (
     <Group
       className={clsx(css.backwardForwardButtons, 'likec4-navigation-webview')}
+      align="flex-start"
       gap={'xs'}>
       {showBurgerMenu && (
         <ActionIcon
@@ -105,10 +110,8 @@ const LayoutDriftNotification = (props: PopoverProps) => (
     closeDelay={100}
     {...props}>
     <HoverCardTarget>
-      <ActionIcon
-        className="action-icon"
-        variant="light"
-        color="orange">
+      <ActionIcon c="orange">
+        <Overlay color={mantine.colors.orange.lightHover} backgroundOpacity={1} />
         <IconAlertTriangle />
       </ActionIcon>
     </HoverCardTarget>
@@ -173,54 +176,35 @@ export const TopLeftPanel = () => {
   const portalProps = useMantinePortalProps()
 
   return (
-    <Stack
-      className={clsx(
-        'react-flow__panel',
-        css.panel,
-        'likec4-top-left-webview'
-      )}
-      onClick={e => e.stopPropagation()}
-      gap={'xs'}>
-      {showNavigationButtons && <BackwardForwardButtons />}
-      {showGoToSource && (
-        <Tooltip label="Open source" {...portalProps}>
-          <ActionIcon
-            className="action-icon"
-            onClick={e => {
-              e.stopPropagation()
-              store.getState().onOpenSourceView?.()
-            }}>
-            <IconFileSymlink stroke={1.5} />
-          </ActionIcon>
-        </Tooltip>
-      )}
-      {showChangeAutoLayout && <ChangeAutoLayoutButton {...portalProps} />}
-      <AnimatePresence>
-        {showLayoutDriftWarning && (
-          <m.div
-            initial={{ opacity: 0.05, transform: 'translateX(-40%)' }}
-            animate={{ opacity: 1, transform: 'translateX(0)' }}
-            exit={{
-              opacity: 0,
-              transform: 'translateX(-40%)'
-            }}
-            key={'layout'}>
-            <LayoutDriftNotification {...portalProps} />
-          </m.div>
+    <TooltipGroup openDelay={500} closeDelay={150}>
+      <Stack
+        className={clsx(
+          'react-flow__panel',
+          css.panel,
+          'likec4-top-left-panel'
         )}
-        {showResetControlPoints && <ResetControlPointsButton {...portalProps} />}
-        {showFitDiagram && (
-          <m.div
-            initial={{ opacity: 0.05, transform: 'translateX(-20%)' }}
-            animate={{ opacity: 1, transform: 'translateX(0)' }}
-            exit={{
-              opacity: 0,
-              transform: 'translateX(-30%)'
-            }}
-            key={'fit-view'}>
+        align="flex-start"
+        onClick={e => e.stopPropagation()}
+        gap={'xs'}>
+        {showNavigationButtons && <BackwardForwardButtons />}
+        <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
+          {showGoToSource && (
+            <Tooltip label="Open source" {...portalProps}>
+              <ActionIcon
+                onClick={e => {
+                  e.stopPropagation()
+                  store.getState().onOpenSourceView?.()
+                }}>
+                <IconFileSymlink stroke={1.5} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+          {showChangeAutoLayout && <ChangeAutoLayoutButton {...portalProps} />}
+          {showLayoutDriftWarning && <LayoutDriftNotification {...portalProps} />}
+          {showResetControlPoints && <ResetControlPointsButton {...portalProps} />}
+          {showFitDiagram && (
             <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
               <ActionIcon
-                className="action-icon"
                 onClick={e => {
                   e.stopPropagation()
                   store.getState().fitDiagram()
@@ -228,10 +212,10 @@ export const TopLeftPanel = () => {
                 <IconFocusCentered />
               </ActionIcon>
             </Tooltip>
-          </m.div>
-        )}
-      </AnimatePresence>
-    </Stack>
+          )}
+        </ActionIconGroup>
+      </Stack>
+    </TooltipGroup>
   )
 }
 TopLeftPanel.displayName = 'TopLeftPanel'
