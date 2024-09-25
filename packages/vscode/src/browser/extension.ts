@@ -56,6 +56,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       { language: languageId, scheme: 'file' },
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' },
+      { language: languageId, scheme: 'vscode-remote' },
       { language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme }
     ]
   }

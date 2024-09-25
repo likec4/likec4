@@ -90,11 +90,10 @@ export class PreviewPanel extends AbstractDisposable {
     webview.options = {
       // retainContextWhenHidden: true,
       // Enable javascript in the webview
-      enableScripts: true
-      // And restrict the webview to only loading content from our extension's `dist` directory.
-      // localResourceRoots: [
-      //   vscode.Uri.joinPath(this.context.extensionUri, 'dist')
-      // ]
+      enableScripts: true,
+      localResourceRoots: [
+        ExtensionController.context.extensionUri
+      ]
     }
     // const internalState = this.ctrl.getPreviewPanelState()
     const internalState = {
@@ -113,14 +112,8 @@ export class PreviewPanel extends AbstractDisposable {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-    <meta http-equiv="Content-Security-Policy" content="
-      default-src 'none';
-      font-src data: https: ${cspSource};
-      style-src 'unsafe-inline' ${cspSource};
-      img-src data: https: ${cspSource};
-      script-src 'nonce-${nonce}' ${cspSource};
-    ">
-    <link rel="stylesheet" type="text/css" href="${stylesUri}">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${cspSource} data: https: 'nonce-${nonce}'; style-src ${cspSource} 'unsafe-inline' 'nonce-${nonce}'; img-src ${cspSource} data: https:; script-src 'nonce-${nonce}';">
+    <link rel="stylesheet" type="text/css" href="${stylesUri}" nonce="${nonce}">
   </head>
   <body class="${theme}">
     <script nonce="${nonce}">
@@ -128,7 +121,7 @@ export class PreviewPanel extends AbstractDisposable {
       var __INTERNAL_STATE = ${JSON.stringify({ internalState })};
     </script>
     <div id="root"></div>
-    <script src="${scriptUri}"></script>
+    <script nonce="${nonce}" src="${scriptUri}"></script>
   </body>
 </html>`
   }

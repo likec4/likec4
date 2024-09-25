@@ -3668,7 +3668,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode@npm:^1.90.0, @types/vscode@npm:~1.92.0":
+"@types/vscode@npm:^1.89.0":
+  version: 1.93.0
+  resolution: "@types/vscode@npm:1.93.0"
+  checksum: 10c0/5b62f6a333e21ba1687b93270489dcaf84a7474085b1bc440431508ff3bd0aebadd238812ddaa7e66a95417bb8d01c7b7ce5b6d8968bda5ac8f2fc7919366f9f
+  languageName: node
+  linkType: hard
+
+"@types/vscode@npm:~1.92.0":
   version: 1.92.0
   resolution: "@types/vscode@npm:1.92.0"
   checksum: 10c0/4c3fc2fbc663568a300eb9ddb8de0179e8e8bf27fcabc240915ac1194ab9e9fd7f0034816c036824cf171b4d4e7e40fa40a3d838e3dd239a9d79fc1f06b85896
@@ -8263,7 +8270,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": "npm:^20.16.1"
-    "@types/vscode": "npm:^1.90.0"
+    "@types/vscode": "npm:^1.89.0"
     "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.7"
     esbuild: "npm:^0.23.1"

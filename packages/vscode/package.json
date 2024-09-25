@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -38,7 +38,7 @@
     "vsce:publish": "yarn dlx vsce publish --skip-duplicate"
   },
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.89.0"
   },
   "keywords": [
     "architecture",
@@ -193,7 +193,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^20.16.1",
-    "@types/vscode": "^1.90.0",
+    "@types/vscode": "^1.89.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.7",
     "esbuild": "^0.23.1",
