@@ -92,6 +92,7 @@ jobs:
           status: ${{ job.status }}
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
           env_url: ${{ steps.cloudflare.outputs.deployment-url }}
+          env: ${{ steps.deployment.outputs.env }}
 
   preview-docs:
     name: deploy docs preview
@@ -101,6 +102,7 @@ jobs:
       contents: read
       id-token: write
       issues: write
+      deployments: write
       pull-requests: write
     steps:
       - name: "Check if user has write access"
@@ -168,5 +170,6 @@ jobs:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
           status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
           env_url: ${{ steps.cloudflare.outputs.deployment-url }}
