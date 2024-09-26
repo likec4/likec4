@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "yarn@4.4.1",
+  "packageManager": "yarn@4.5.0",
   "type": "module",
   "engines": {
     "node": "^20.0.0"
