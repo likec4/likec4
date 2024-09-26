@@ -27,7 +27,9 @@
         "topo",
         "generate"
       ],
-      "outputs": [],
+      "outputs": [
+        "**/.tsbuildinfo"
+      ],
       "outputLogs": "new-only"
     },
     "build": {

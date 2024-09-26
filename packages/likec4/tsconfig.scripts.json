@@ -6,6 +6,7 @@
     "module": "esnext",
     "target": "ESNext",
     "composite": true,
+    "incremental": false,
     "types": [
       "node"
     ]
