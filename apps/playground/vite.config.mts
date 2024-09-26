@@ -82,6 +82,7 @@ export default defineConfig((env) => {
             external: [
               'react',
               'react/jsx-runtime',
+              'react/jsx-dev-runtime',
               'react-dom',
               'react-dom/client',
               '@typefox/monaco-editor-react',

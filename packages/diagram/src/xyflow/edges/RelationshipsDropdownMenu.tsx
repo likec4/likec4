@@ -18,7 +18,7 @@ import {
 } from '@mantine/core'
 import { IconArrowRight, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { forwardRef, type MouseEventHandler, type PropsWithChildren } from 'react'
+import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useXYNodesData } from '../../hooks'
 import type { RelationshipData } from '../types'
@@ -75,16 +75,15 @@ export function RelationshipsDropdownMenu({
   }
 
   const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship, index: number) => (
-    <>
+    <Fragment key={relationship.id}>
       {index > 0 && <MenuDivider opacity={0.65} />}
       <MenuItem
-        key={relationship.id}
         component={Relationship}
         relationship={relationship}
         sourceNode={sourceXYNode.data.element}
         targetNode={targetXYNode.data.element}
         edge={edge} />
-    </>
+    </Fragment>
   )
 
   return (
