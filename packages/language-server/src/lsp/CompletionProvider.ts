@@ -17,6 +17,9 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
     keyword: GrammarAST.Keyword,
     acceptor: CompletionAcceptor
   ): MaybePromise<void> {
+    if (!this.filterKeyword(context, keyword)) {
+      return
+    }
     if (['views', 'specification', 'model'].includes(keyword.value)) {
       return acceptor(context, {
         label: keyword.value,
