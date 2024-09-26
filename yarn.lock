@@ -2333,7 +2333,7 @@ __metadata:
     "@mantine/core": "npm:7.12.2"
     "@mantine/hooks": "npm:7.12.2"
     "@mantine/vanilla-extract": "npm:7.12.2"
-    "@nanostores/react": "npm:0.7.3"
+    "@nanostores/react": "npm:0.8.0"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.17.0"
@@ -2557,13 +2557,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nanostores/react@npm:0.7.3":
-  version: 0.7.3
-  resolution: "@nanostores/react@npm:0.7.3"
+"@nanostores/react@npm:0.8.0":
+  version: 0.8.0
+  resolution: "@nanostores/react@npm:0.8.0"
   peerDependencies:
     nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0
     react: ">=18.0.0"
-  checksum: 10c0/fa16a07d822efa0219422fa8a5984104186b5d99d818dc927169ddf9fffe13ff97e6932c3639a8321844c7a2c755be3bc224cf3e15fc8b32149496354cce5f18
+  checksum: 10c0/b66fee969105d4f6fa1af58a4f2c2d98cb9a5e76638ae11fa9ce000b3b1271f29d78dfad7efee445c56feda65bede58fe6d8b11a51ebebaa6431b68091650fb7
   languageName: node
   linkType: hard
 
@@ -8509,7 +8509,7 @@ __metadata:
     "@mantine/core": "npm:7.12.2"
     "@mantine/hooks": "npm:7.12.2"
     "@mantine/vanilla-extract": "npm:7.12.2"
-    "@nanostores/react": "npm:0.7.3"
+    "@nanostores/react": "npm:0.8.0"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.17.0"
     "@tanstack/react-router": "npm:1.45.13"

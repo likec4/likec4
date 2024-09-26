@@ -114,7 +114,7 @@
     "@mantine/core": "7.12.2",
     "@mantine/hooks": "7.12.2",
     "@mantine/vanilla-extract": "7.12.2",
-    "@nanostores/react": "0.7.3",
+    "@nanostores/react": "0.8.0",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.17.0",
     "@tanstack/react-router": "1.45.13",
