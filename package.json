@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": "^20.0.0"
+    "node": "^20.17.0"
   },
   "scripts": {
     "fmt": "dprint fmt",
@@ -33,7 +33,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@types/node": "^20.16.1",
+    "@types/node": "^20.16.5",
     "@vitest/ui": "^2.1.1",
     "dprint": "0.47.2",
     "esbuild": "^0.23.1",
