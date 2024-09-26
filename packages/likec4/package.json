@@ -13,7 +13,7 @@
     "directory": "packages/likec4"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.17.0"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
@@ -120,7 +120,7 @@
     "@tanstack/react-router": "1.45.13",
     "@tanstack/router-cli": "1.45.13",
     "@tanstack/router-vite-plugin": "1.45.13",
-    "@types/node": "^20.16.1",
+    "@types/node": "^20.16.5",
     "@types/prop-types": "^15.7.13",
     "@types/react": "18.3.4",
     "@types/react-dom": "18.3.0",

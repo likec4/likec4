@@ -2145,7 +2145,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     json5: "npm:^2.2.3"
     langium: "npm:3.2.0"
     remeda: "npm:^2.14.0"
@@ -2184,7 +2184,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@msgpack/msgpack": "npm:^3.0.0-beta2"
     "@smithy/util-base64": "npm:^3.0.0"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     "@types/object-hash": "npm:^3.0.6"
     "@types/string-hash": "npm:^1.1.3"
     "@vitest/coverage-v8": "npm:^2.1.1"
@@ -2222,7 +2222,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     execa: "npm:^9.3.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
@@ -2244,7 +2244,7 @@ __metadata:
   resolution: "@likec4/log@workspace:packages/log"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     consola: "npm:^3.2.3"
     std-env: "npm:^3.7.0"
     typescript: "npm:^5.6.2"
@@ -2275,7 +2275,7 @@ __metadata:
     "@tanstack/router-cli": "npm:1.45.13"
     "@tanstack/router-vite-plugin": "npm:1.45.13"
     "@typefox/monaco-editor-react": "npm:4.5.3"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     "@types/react": "npm:18.3.4"
     "@types/react-dom": "npm:18.3.0"
     "@types/string-hash": "npm:^1.1.3"
@@ -2337,7 +2337,7 @@ __metadata:
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.17.0"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     "@types/object-hash": "npm:^3.0.6"
     "@types/react": "npm:18.3.4"
     "@types/react-dom": "npm:18.3.0"
@@ -3682,7 +3682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.16.1":
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
   version: 20.16.1
   resolution: "@types/node@npm:20.16.1"
   dependencies:
@@ -3695,6 +3695,15 @@ __metadata:
   version: 17.0.45
   resolution: "@types/node@npm:17.0.45"
   checksum: 10c0/0db377133d709b33a47892581a21a41cd7958f22723a3cc6c71d55ac018121382de42fbfc7970d5ae3e7819dbe5f40e1c6a5174aedf7e7964e9cb8fa72b580b0
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.16.5":
+  version: 20.16.9
+  resolution: "@types/node@npm:20.16.9"
+  dependencies:
+    undici-types: "npm:~6.19.2"
+  checksum: 10c0/52d7cbd6792a26e6757c913d1f6dd0fb0104ac44c93dd87480c011d1211b3a1ba282962996bf6aec03f633b5b39f61576f1bafe8436592ab08ad39464e53e4b0
   languageName: node
   linkType: hard
 
@@ -5445,7 +5454,7 @@ __metadata:
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^9.3.1"
     prompts: "npm:^2.4.2"
@@ -8467,7 +8476,7 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     "@types/vscode": "npm:^1.89.0"
     "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.7"
@@ -8515,7 +8524,7 @@ __metadata:
     "@tanstack/react-router": "npm:1.45.13"
     "@tanstack/router-cli": "npm:1.45.13"
     "@tanstack/router-vite-plugin": "npm:1.45.13"
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     "@types/prop-types": "npm:^15.7.13"
     "@types/react": "npm:18.3.4"
     "@types/react-dom": "npm:18.3.0"
@@ -12103,7 +12112,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root@workspace:."
   dependencies:
-    "@types/node": "npm:^20.16.1"
+    "@types/node": "npm:^20.16.5"
     "@vitest/ui": "npm:^2.1.1"
     dprint: "npm:0.47.2"
     esbuild: "npm:^0.23.1"
