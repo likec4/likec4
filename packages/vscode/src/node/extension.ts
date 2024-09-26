@@ -58,7 +58,10 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   let serverOptions: ServerOptions = {
     run: {
       module: serverModule,
-      transport: TransportKind.ipc
+      transport: TransportKind.ipc,
+      options: {
+        execArgv: ['--enable-source-maps']
+      }
     },
     debug: {
       module: serverModule,
@@ -67,6 +70,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       options: {
         detached: false,
         execArgv: [
+          '--enable-source-maps',
           '--nolazy',
           `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '9229'}`
         ]
@@ -104,7 +108,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
-    revealOutputChannelOn: RevealOutputChannelOn.Warn,
+    revealOutputChannelOn: isDev ? RevealOutputChannelOn.Info : RevealOutputChannelOn.Warn,
     outputChannel,
     traceOutputChannel: outputChannel,
     documentSelector,
