@@ -9,7 +9,7 @@
     "dev": "vite dev --clearScreen false",
     "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
-    "build": "vite build",
+    "build": "vite build --mode pre && vite build",
     "deploy": "npx wrangler pages deploy dist --project-name likec4-playground",
     "deploy:prod": "run deploy --branch main",
     "clean": "rm -r -f dist"
