@@ -31,9 +31,9 @@
         "react/**"
       ],
       "inputs": [
-        "app/**",
-        "scripts/**",
-        "package.json"
+        "$TURBO_DEFAULT$",
+        "!src/**",
+        "!build.config.ts",
       ],
       "outputLogs": "new-only"
     },
