@@ -12,6 +12,9 @@
       "dependsOn": [
         "^topo"
       ],
+      "inputs": [
+        "src/**"
+      ],
       "outputs": []
     },
     "generate": {
@@ -24,12 +27,15 @@
         "topo",
         "generate"
       ],
-      "outputs": [],
+      "outputs": [
+        "**/.tsbuildinfo"
+      ],
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
-        "^build",
+        "^generate",
+        "topo",
         "generate"
       ],
       "outputs": [
@@ -46,9 +52,6 @@
       "persistent": true
     },
     "clean": {
-      "cache": false
-    },
-    "//#clean:root": {
       "cache": false
     }
   }

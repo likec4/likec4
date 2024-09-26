@@ -12,7 +12,7 @@
   ],
   "compilerOptions": {
     "lib": [
-      "es2023"
+      "esnext"
     ],
     "outDir": "${configDir}/dist",
     "module": "ES2022",
@@ -43,6 +43,9 @@
     "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    "pretty": true
+    "pretty": true,
+    "incremental": true,
+    "tsBuildInfoFile": "${configDir}/.tsbuildinfo",
+    "types": []
   }
 }

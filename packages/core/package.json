@@ -70,7 +70,7 @@
     "remeda": "^2.14.0",
     "turbo": "^2.1.2",
     "typescript": "^5.6.2",
-    "unbuild": "^3.0.0-rc.7",
+    "unbuild": "^3.0.0-rc.8",
     "vitest": "^2.1.1"
   },
   "packageManager": "yarn@4.4.1"

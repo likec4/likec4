@@ -20,21 +20,48 @@
       ],
       "outputLogs": "new-only"
     },
-    "build": {
+    "build-app": {
+      "dependsOn": [
+        "@likec4/core#build",
+        "@likec4/diagram#build",
+        "generate"
+      ],
+      "outputs": [
+        "dist/__app__/**",
+        "react/**"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!src/**",
+        "!build.config.ts"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build-cli": {
       "dependsOn": [
         "generate",
         "^build"
       ],
       "outputs": [
         "dist/**",
-        "react/**",
-        "!**/*.tsbuildinfo"
+        "!dist/__app__/**"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
+        "!app/**",
+        "!scripts/**",
         "!dev/**",
         "!test/**"
       ],
+      "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": [
+        "build-app",
+        "build-cli"
+      ],
+      "outputs": [],
+      "inputs": [],
       "outputLogs": "new-only"
     },
     "package": {

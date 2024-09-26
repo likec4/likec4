@@ -32,8 +32,6 @@
     ".yarn/**": true,
     "yarn.lock": true,
     "node_modules/**": true,
-    "docs/.next/**": true,
-    "docs/node_modules/**": true,
     "*/*/dist/**": true,
     "packages/*/node_modules/**": true
   },

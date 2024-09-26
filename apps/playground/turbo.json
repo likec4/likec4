@@ -18,7 +18,8 @@
     "build": {
       "dependsOn": [
         "^generate",
-        "generate"
+        "generate",
+        "topo"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

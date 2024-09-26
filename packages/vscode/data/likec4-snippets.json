@@ -1,0 +1,56 @@
+{
+  "specification": {
+    "prefix": ["sp", "spe", "spec"],
+    "body": "specification {\n\t$0\n}",
+    "description": "inserts a specification block"
+  },
+  "model": {
+    "prefix": ["m", "model"],
+    "body": [
+			"model {",
+			"\t$0",
+			"}"
+		],
+    "description": "inserts model block"
+  },
+  "views": {
+    "prefix": ["views"],
+    "body": [
+			"views {",
+			"\t$0",
+			"}"
+		],
+    "description": "inserts views block"
+  },
+  "view": {
+    "prefix": ["v", "view"],
+    "body": [
+			"view ${2:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} of ${1:element} {",
+			"\ttitle '${3:Untitled}'",
+			"\t",
+			"\tinclude $0*",
+			"}"
+		],
+    "description": "inserts view block"
+  },
+  "dynamic view": {
+    "prefix": ["dv", "dynamic"],
+    "body": [
+			"dynamic view ${1:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} {",
+			"\ttitle '${2:Untitled}'",
+			"\t",
+			"\t$0",
+			"}"
+		],
+    "description": "inserts dynamic view block"
+  },
+  "extend": {
+    "prefix": ["ex", "extend"],
+    "body": [
+			"extend ${1:element} {",
+			"\t$0",
+			"}"
+		],
+    "description": "inserts extends block"
+  }
+}

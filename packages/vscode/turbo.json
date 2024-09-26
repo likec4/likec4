@@ -5,8 +5,13 @@
   ],
   "tasks": {
     "build": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!data/**"
+      ],
       "dependsOn": [
         "^generate",
+        "topo",
         "@likec4/vscode-preview#build"
       ],
       "outputs": [
