@@ -59,7 +59,7 @@
     "remeda": "^2.14.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
-    "tsx": "~4.9.3",
+    "tsx": "~4.19.1",
     "turbo": "^2.1.2",
     "type-fest": "^4.26.1",
     "typescript": "^5.6.2",
