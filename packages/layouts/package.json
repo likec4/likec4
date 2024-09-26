@@ -69,5 +69,5 @@
     "unbuild": "^3.0.0-rc.8",
     "vitest": "^2.1.1"
   },
-  "packageManager": "yarn@4.4.1"
+  "packageManager": "yarn@4.5.0"
 }
