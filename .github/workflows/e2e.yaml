@@ -67,9 +67,6 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
-    permissions:
-      pull-requests: write
-      contents: write
     steps:
       - uses: wow-actions/use-app-token@v2
         id: likec4-bot
