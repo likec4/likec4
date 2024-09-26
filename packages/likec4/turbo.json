@@ -33,7 +33,7 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "!src/**",
-        "!build.config.ts",
+        "!build.config.ts"
       ],
       "outputLogs": "new-only"
     },
