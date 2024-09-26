@@ -272,28 +272,12 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
     labelY = labelPos.y
   }
 
-  const onControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
-    const { domNode, addSelectedEdges } = xyflowStore.getState()
-    if (!domNode || e.pointerType !== 'mouse') {
-      return
-    }
+  const onLmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
+    const { addSelectedEdges } = xyflowStore.getState()
+    const { xyflow } = diagramStore.getState()
+
     addSelectedEdges([id])
 
-    const { xyflow } = diagramStore.getState()
-    if (e.button === 2 && controlPoints.length > 1) {
-      const newControlPoints = controlPoints.slice()
-      newControlPoints.splice(index, 1)
-      e.stopPropagation()
-      // Defer the update to avoid conflict with the pointerup event
-      setTimeout(() => {
-        xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
-        diagramStore.getState().scheduleSaveManualLayout()
-      }, 10)
-      return
-    }
-    if (e.button !== 0) {
-      return
-    }
     const wasCanceled = diagramStore.getState().cancelSaveManualLayout()
     e.stopPropagation()
     let hasMoved = false
@@ -343,6 +327,53 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
       once: true,
       capture: true
     })
+  }
+
+  const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
+    const { xyflow } = diagramStore.getState()
+
+    if(controlPoints.length <= 1) {
+      return
+    }
+
+    const onPointerUp = (e: PointerEvent) => {
+      const newControlPoints = controlPoints.slice()
+      newControlPoints.splice(index, 1)
+      e.stopPropagation()
+      // Defer the update to avoid conflict with the pointerup event
+      setTimeout(() => {
+        xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+        diagramStore.getState().scheduleSaveManualLayout()
+      }, 10)
+
+      domNode.removeEventListener('pointerup', onPointerUp, {
+        capture: true
+      })
+      e.stopPropagation()      
+    }
+
+    domNode.addEventListener('pointerup', onPointerUp, {
+      once: true,
+      capture: true
+    })
+
+    e.stopPropagation()
+  }
+
+  const onControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
+    const { domNode } = xyflowStore.getState()
+    if (!domNode || e.pointerType !== 'mouse') {
+      return
+    }
+
+    switch (e.button) {
+      case 0:
+        onLmbControlPointerDown(index, e, domNode)
+        break
+      case 2:
+        onRmbControlPointerDown(index, e, domNode)
+        break
+    }
   }
 
   const onEdgePointerDown = (e: ReactPointerEvent<SVGElement>) => {
