@@ -16,7 +16,11 @@
   ],
   lockFileMaintenance: {
     enabled: true,
-  },
+  }, 
+  ignorePaths: [
+    "e2e/**",
+    "examples/**"
+  ],
   packageRules: [
     {
       matchDepTypes: [
