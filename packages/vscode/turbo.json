@@ -5,6 +5,10 @@
   ],
   "tasks": {
     "build": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!data/**"
+      ],
       "dependsOn": [
         "^generate",
         "topo",

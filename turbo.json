@@ -12,6 +12,9 @@
       "dependsOn": [
         "^topo"
       ],
+      "inputs": [
+        "src/**"
+      ],
       "outputs": []
     },
     "generate": {
@@ -47,9 +50,6 @@
       "persistent": true
     },
     "clean": {
-      "cache": false
-    },
-    "//#clean:root": {
       "cache": false
     }
   }
