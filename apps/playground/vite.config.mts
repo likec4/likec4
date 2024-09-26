@@ -21,7 +21,8 @@ const baseConfig: UserConfigFnObject = () => {
   return {
     root,
     resolve: {
-      alias
+      alias,
+      dedupe: ['vscode']
     },
     css: {
       modules: {
@@ -48,87 +49,88 @@ const baseConfig: UserConfigFnObject = () => {
 
 export default defineConfig((env) => {
   switch (true) {
-    // Pre-build for production
-    // Workaround for incompatibility between vanilla-extract and monaco-editor
-    case env.command === 'build' && env.mode === 'pre':
-      return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
-        define: {
-          'process.env.NODE_ENV': JSON.stringify('production')
-        },
-        mode: 'production',
-        logLevel: 'warn',
-        build: {
-          cssCodeSplit: false,
-          cssMinify: false,
-          minify: false,
-          target: 'esnext',
-          outDir: resolve('prebuild'),
-          emptyOutDir: true,
-          commonjsOptions: {
-            transformMixedEsModules: true,
-            esmExternals: true
-          },
-          rollupOptions: {
-            output: {
-              hoistTransitiveImports: false,
-              preserveModules: true,
-              preserveModulesRoot: resolve('src'),
-              entryFileNames: '[name].mjs'
-            },
-            treeshake: {
-              preset: 'recommended'
-            },
-            makeAbsoluteExternalsRelative: 'ifRelativeSource',
-            external: [
-              'react',
-              'react/jsx-runtime',
-              'react-dom',
-              'react-dom/client',
-              '@typefox/monaco-editor-react',
-              'monaco-editor',
-              'monaco-editor-wrapper',
-              'monaco-languageclient',
-              'framer-motion',
-              'esm-env',
-              'tslib',
-              '#monaco/bootstrap',
-              '#monaco/config',
-              /@likec4\/(icons|log|layouts|language-server).*/,
-              /d3-/,
-              /hpcc-js/,
-              /node_modules.*vscode/,
-              /node_modules.*monaco/
-            ]
-          },
-          lib: {
-            entry: {
-              main: 'src/main.tsx'
-            },
-            formats: ['es']
-          }
-        },
-        plugins: [
-          vanillaExtractPlugin({
-            identifiers: 'short'
-          }),
-          react({
-            // jsxRuntime: 'classic'
-          })
-        ]
-      })
+  //   // Pre-build for production
+  //   // Workaround for incompatibility between vanilla-extract and monaco-editor
+  //   case env.command === 'build' && env.mode === 'pre':
+  //     return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
+  //       define: {
+  //         'process.env.NODE_ENV': JSON.stringify('production')
+  //       },
+  //       mode: 'production',
+  //       logLevel: 'warn',
+  //       build: {
+  //         cssCodeSplit: false,
+  //         cssMinify: false,
+  //         minify: false,
+  //         target: 'esnext',
+  //         outDir: resolve('prebuild'),
+  //         emptyOutDir: true,
+  //         commonjsOptions: {
+  //           transformMixedEsModules: true,
+  //           esmExternals: true
+  //         },
+  //         rollupOptions: {
+  //           output: {
+  //             hoistTransitiveImports: false,
+  //             preserveModules: true,
+  //             preserveModulesRoot: resolve('src'),
+  //             entryFileNames: '[name].mjs'
+  //           },
+  //           treeshake: {
+  //             preset: 'recommended'
+  //           },
+  //           makeAbsoluteExternalsRelative: 'ifRelativeSource',
+  //           external: [
+  //             'react',
+  //             'react/jsx-runtime',
+  //             'react-dom',
+  //             'react-dom/client',
+  //             '@typefox/monaco-editor-react',
+  //             'monaco-editor',
+  //             'monaco-editor-wrapper',
+  //             'monaco-languageclient',
+  //             'framer-motion',
+  //             'esm-env',
+  //             'tslib',
+  //             '#monaco/bootstrap',
+  //             '#monaco/config',
+  //             /@likec4\/(icons|log|layouts|language-server).*/,
+  //             /d3-/,
+  //             /hpcc-js/,
+  //             /node_modules.*vscode/,
+  //             /node_modules.*monaco/
+  //           ]
+  //         },
+  //         lib: {
+  //           entry: {
+  //             main: 'src/main.tsx'
+  //           },
+  //           formats: ['es']
+  //         }
+  //       },
+  //       plugins: [
+  //         vanillaExtractPlugin({
+  //           identifiers: 'short'
+  //         }),
+  //         react({
+  //           // jsxRuntime: 'classic'
+  //         })
+  //       ]
+  //     })
     case env.command === 'build':
       return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
         define: {
           'process.env.NODE_ENV': JSON.stringify('production')
         },
         mode: 'production',
-        resolve: {
-          alias: {
-            '/src/style.css': resolve('prebuild/style.css'),
-            '/src/main': resolve('prebuild/main.mjs')
-          }
-        },
         build: {
+          cssCodeSplit: false,
+          cssMinify: true,
+          emptyOutDir: true,
+          commonjsOptions: {
+            transformMixedEsModules: true,
+            esmExternals: true
+          },
           copyPublicDir: true,
           modulePreload: false,
           rollupOptions: {
@@ -155,9 +157,9 @@ export default defineConfig((env) => {
           }
         },
         plugins: [
-          react({
-            // jsxRuntime: 'classic'
-          })
+          vanillaExtractPlugin({}),
+          TanStackRouterVite(tanStackRouterViteCfg),
+          react({})
         ]
       })
     default:

@@ -2,7 +2,7 @@ import { type ComputedLikeC4Model, type DiagramView, invariant, type ViewID } fr
 import { changeView, fetchComputedModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
-import type { Simplify } from 'type-fest'
+import type { LiteralUnion, Simplify } from 'type-fest'
 import type { Location } from 'vscode-languageserver-protocol'
 import { devtools, persist, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -59,7 +59,7 @@ export type WorkspaceStore = {
   viewId: ViewID
 
   diagrams: Record<
-    ViewID,
+    LiteralUnion<ViewID, string>,
     {
       // Never loaded
       state: 'pending'
@@ -95,9 +95,7 @@ interface WorkspaceStoreActions {
 
   onDidChangeModel: () => void
 
-  openView: (viewId: string) => void
-
-  layoutView: () => void
+  layoutView: (viewId: string) => void
 
   onChanges: NonNullable<LikeC4DiagramProps['onChange']>
 
@@ -269,17 +267,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               })
             },
 
-            openView: (viewId) => {
-              const { viewId: currentViewId } = get()
-              if (viewId !== currentViewId) {
-                set({
-                  viewId: viewId as ViewID
-                })
-                get().showLocation({ view: viewId as ViewID })
-              }
-            },
-
-            layoutView: () => {
+            layoutView: (viewId) => {
               const client = get().languageClient()
               invariant(client, 'Language client is not initialized')
               if (layoutLimit.pendingCount > 0) {
@@ -287,9 +275,9 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 layoutLimit.clearQueue()
               }
               layoutLimit(async () => {
-                const { likeC4Model, viewId, diagrams: currentDiagrams } = get()
+                const { likeC4Model, diagrams: currentDiagrams } = get()
 
-                const computedView = likeC4Model?.views[viewId] ?? null
+                const computedView = likeC4Model?.views[viewId as ViewID] ?? null
                 if (!computedView) {
                   // Do nothing
                   return

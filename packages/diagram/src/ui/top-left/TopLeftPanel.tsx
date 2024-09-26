@@ -23,7 +23,7 @@ import {
   IconRouteOff
 } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { AnimatePresence, m } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
@@ -46,60 +46,62 @@ const BackwardForwardButtons = () => {
     hasStepForward
   } = useDiagramState(historySelector)
   return (
-    <Group
-      className={clsx(css.backwardForwardButtons, 'likec4-navigation-webview')}
-      align="flex-start"
-      gap={'xs'}>
-      {showBurgerMenu && (
-        <ActionIcon
-          onClick={e => {
-            e.stopPropagation()
-            store.getState().onBurgerMenuClick?.()
-          }}>
-          <IconMenu2 />
-        </ActionIcon>
-      )}
-      <AnimatePresence>
-        {hasStepBack && (
-          <m.div
-            layout
-            initial={{ opacity: 0.05, transform: 'translateX(-10px)' }}
-            animate={{ opacity: 1, transform: 'translateX(0)' }}
-            exit={{
-              opacity: 0.05,
-              transform: 'translateX(-10px)'
-            }}
-            key={'back'}>
-            <ActionIcon
-              onClick={e => {
-                e.stopPropagation()
-                store.getState().goBack()
-              }}>
-              <IconChevronLeft />
-            </ActionIcon>
-          </m.div>
+    <LayoutGroup>
+      <Group
+        className={clsx(css.backwardForwardButtons, 'likec4-navigation-webview')}
+        align="flex-start"
+        gap={'xs'}>
+        {showBurgerMenu && (
+          <ActionIcon
+            onClick={e => {
+              e.stopPropagation()
+              store.getState().onBurgerMenuClick?.()
+            }}>
+            <IconMenu2 />
+          </ActionIcon>
         )}
-        {hasStepForward && (
-          <m.div
-            layout
-            initial={{ opacity: 0.05, transform: 'translateX(10px)' }}
-            animate={{ opacity: 1, transform: 'translateX(0)' }}
-            exit={{
-              opacity: 0,
-              transform: 'translateX(10px)'
-            }}
-            key={'forward'}>
-            <ActionIcon
-              onClick={e => {
-                e.stopPropagation()
-                store.getState().goForward()
-              }}>
-              <IconChevronRight />
-            </ActionIcon>
-          </m.div>
-        )}
-      </AnimatePresence>
-    </Group>
+        <AnimatePresence>
+          {hasStepBack && (
+            <m.div
+              layout
+              initial={{ opacity: 0.05, transform: 'translateX(-10px)' }}
+              animate={{ opacity: 1, transform: 'translateX(0)' }}
+              exit={{
+                opacity: 0.05,
+                transform: 'translateX(-10px)'
+              }}
+              key={'back'}>
+              <ActionIcon
+                onClick={e => {
+                  e.stopPropagation()
+                  store.getState().goBack()
+                }}>
+                <IconChevronLeft />
+              </ActionIcon>
+            </m.div>
+          )}
+          {hasStepForward && (
+            <m.div
+              layout
+              initial={{ opacity: 0.05, transform: 'translateX(10px)' }}
+              animate={{ opacity: 1, transform: 'translateX(0)' }}
+              exit={{
+                opacity: 0,
+                transform: 'translateX(10px)'
+              }}
+              key={'forward'}>
+              <ActionIcon
+                onClick={e => {
+                  e.stopPropagation()
+                  store.getState().goForward()
+                }}>
+                <IconChevronRight />
+              </ActionIcon>
+            </m.div>
+          )}
+        </AnimatePresence>
+      </Group>
+    </LayoutGroup>
   )
 }
 

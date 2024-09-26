@@ -1,4 +1,4 @@
-import { createVar, style } from '@vanilla-extract/css'
+import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../mantine.css'
 
 const bg = createVar()
@@ -43,4 +43,15 @@ export const resize = style({
     //   [bg]: mantine.colors.primaryColors.filledHover
     // },
   }
+})
+
+export const stateAlert = style({
+  position: 'absolute',
+  top: '0.75rem',
+  left: '0.5rem',
+  userSelect: 'none'
+})
+
+globalStyle(`${stateAlert} .mantine-Notification-description`, {
+  whiteSpace: 'pre-line'
 })

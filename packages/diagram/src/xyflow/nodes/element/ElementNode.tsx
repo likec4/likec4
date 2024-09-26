@@ -122,6 +122,50 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   return (
     <>
+      {
+        /* <NodeToolbar isVisible={isTollbarVisible} offset={0}>
+        <ActionIconGroup>
+          <ActionIcon
+            size={'md'}
+            variant="default"
+            color="dark"
+            onClick={e => {
+              e.stopPropagation()
+              store.getState().onOpenSourceElement?.(element.id)
+            }}>
+            <IconFileSymlink
+              // stroke={1.2}
+              style={{
+                width: '70%',
+                height: '70%'
+              }} />
+          </ActionIcon>
+          <ActionIcon
+          size={'md'}
+            variant="default"
+            color="dark"
+          >
+              <ColorSwatch
+                color={defaultTheme.elements[element.color as ThemeColor]?.fill}
+                size={16}
+                withShadow
+                style={{ color: '#fff', cursor: 'pointer' }}
+              />
+            </ActionIcon>
+            <ActionIcon
+          size={'md'}
+            variant="default"
+            color="dark"
+            w={'fit-content'}
+            fz={'xs'}
+          >
+              {element.shape}
+            </ActionIcon>
+
+        </ActionIconGroup>
+      </NodeToolbar> */
+      }
+
       <Handle
         type="target"
         position={Position.Top}

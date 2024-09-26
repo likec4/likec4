@@ -1,13 +1,9 @@
-import getConfigurationServiceOverride from '@codingame/monaco-vscode-configuration-service-override'
 import getEditorServiceOverride from '@codingame/monaco-vscode-editor-service-override'
-import getFileServiceOverride from '@codingame/monaco-vscode-files-service-override'
-import * as monaco from 'monaco-editor'
 import '@codingame/monaco-vscode-theme-defaults-default-extension'
+import { useOpenEditorStub } from 'monaco-editor-wrapper/vscode/services'
 
 import type { UserConfig } from 'monaco-editor-wrapper'
-import { first } from 'remeda'
 import { joinURL, withLeadingSlash, withProtocol } from 'ufo'
-import type { ITextEditorOptions } from 'vscode/services'
 import languageConfig from '../../language-configuration.json?raw'
 import textmateGrammar from '../../likec4.tmLanguage.json?raw'
 import type { StoreApi } from '../state'
@@ -35,35 +31,34 @@ export function createMonacoConfig(store: StoreApi) {
     wrapperConfig: {
       serviceConfig: {
         userServices: {
-          ...getConfigurationServiceOverride(),
-          ...getFileServiceOverride(),
-          ...getEditorServiceOverride(async (modelRef, options, _sideBySide) => {
-            const editor = first(monaco.editor.getEditors())
-            if (!editor) {
-              return undefined
-            }
-            const nextFilename = modelRef.object.textEditorModel.uri.toString().substring(
-              workspaceUri.toString().length + 1
-            )
+          ...getEditorServiceOverride(useOpenEditorStub)
+          // ...getEditorServiceOverride(async (modelRef, options, _sideBySide) => {
+          //   const editor = first(monaco.editor.getEditors())
+          //   if (!editor) {
+          //     return undefined
+          //   }
+          //   const nextFilename = modelRef.object.textEditorModel.uri.toString().substring(
+          //     workspaceUri.toString().length + 1
+          //   )
 
-            editor.setModel(modelRef.object.textEditorModel)
-            const opts = options as (ITextEditorOptions | undefined)
-            if (opts?.selection) {
-              editor.setSelection({
-                startLineNumber: opts.selection.startLineNumber,
-                startColumn: opts.selection.startColumn,
-                endLineNumber: opts.selection.endLineNumber ?? opts.selection.startLineNumber,
-                endColumn: opts.selection.endColumn ?? opts.selection.startColumn
-              }, opts.selectionSource)
-              editor.revealLineNearTop(opts.selection.startLineNumber, 0)
-            }
+          //   editor.setModel(modelRef.object.textEditorModel)
+          //   const opts = options as (ITextEditorOptions | undefined)
+          //   if (opts?.selection) {
+          //     editor.setSelection({
+          //       startLineNumber: opts.selection.startLineNumber,
+          //       startColumn: opts.selection.startColumn,
+          //       endLineNumber: opts.selection.endLineNumber ?? opts.selection.startLineNumber,
+          //       endColumn: opts.selection.endColumn ?? opts.selection.startColumn
+          //     }, opts.selectionSource)
+          //     editor.revealLineNearTop(opts.selection.startLineNumber, 0)
+          //   }
 
-            store.setState({
-              currentFilename: nextFilename
-            })
+          //   store.setState({
+          //     currentFilename: nextFilename
+          //   })
 
-            return editor
-          })
+          //   return editor
+          // })
         },
         debugLogging: DEV
       },
@@ -77,6 +72,7 @@ export function createMonacoConfig(store: StoreApi) {
           }
         },
         editorOptions: {
+          codeLens: true,
           'semanticHighlighting.enabled': true,
           wordBasedSuggestions: 'off',
           theme: 'Default Dark+',
