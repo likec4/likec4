@@ -92,7 +92,7 @@ export const NodeOptions = memo<{ selectedNodeIds: string[] }>(({ selectedNodeId
   return (
     <Stack gap={'xs'}>
       <Group wrap="nowrap" align="flex-start">
-        <Box flex={1}>
+        <Box flex={1} miw={0}>
           <Text fz={rem(9)} fw={'500'} c={'dimmed'}>
             ELEMENT{rest.length > 0 ? 'S' : ``}
           </Text>
