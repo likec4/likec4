@@ -203,8 +203,8 @@ function createLayoutConstraints(
 
   solver.updateVariables()
   solver.maxIterations = 1000
-
-  const rectsToUpdate = [...rects.values()].filter(r => r.id !== draggingNodeId)
+  const selectedIds = nodeLookup.values().filter(n => n.selected).map(n => n.id)
+  const rectsToUpdate = [...rects.values()].filter(r => r.id in selectedIds)  
 
   function updateXYFlowNodes() {
     solver.updateVariables()
