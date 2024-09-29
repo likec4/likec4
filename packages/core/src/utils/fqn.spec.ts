@@ -2,60 +2,64 @@ import { prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Element, Fqn } from '../types'
 import {
-  ancestorsFqn,
-  commonAncestor,
+  ancestorsFqn as typedAncestorsFqn,
+  commonAncestor as typedCommonAncestor,
   compareFqnHierarchically,
   isAncestor,
   isDescendantOf,
   notDescendantOf,
-  parentFqn,
+  parentFqn as typedParentFqn,
   sortByFqnHierarchically,
   sortNaturalByFqn
 } from './fqn'
 
 const el = (id: string): Element => ({ id }) as unknown as Element
 
+const parentFqn = typedParentFqn as (fqn: string) => string | null
+const ancestorsFqn = typedAncestorsFqn as (fqn: string) => string[]
+const commonAncestor = typedCommonAncestor as (a: string, b: string) => string | null
+
 describe('parentFqn', () => {
   it('should return null if no parent', () => {
-    expect(parentFqn('a' as Fqn)).toBeNull()
+    expect(parentFqn('a')).toBeNull()
   })
   it('should return parent', () => {
-    expect(parentFqn('a.b' as Fqn)).toBe('a')
-    expect(parentFqn('a.b.c' as Fqn)).toBe('a.b')
+    expect(parentFqn('a.b')).toBe('a')
+    expect(parentFqn('a.b.c')).toBe('a.b')
   })
 })
 
 describe('ancestorsFqn', () => {
   it('should return empty array if no parent', () => {
-    expect(ancestorsFqn('a' as Fqn)).toEqual([])
+    expect(ancestorsFqn('a')).toEqual([])
   })
   it('should return ancestors', () => {
-    expect(ancestorsFqn('a.b.c.d.e' as Fqn)).toEqual(['a.b.c.d', 'a.b.c', 'a.b', 'a'])
+    expect(ancestorsFqn('a.b.c.d.e')).toEqual(['a.b.c.d', 'a.b.c', 'a.b', 'a'])
   })
 })
 
 describe('commonAncestor', () => {
   it('should return null if no common ancestor', () => {
-    expect(commonAncestor('a' as Fqn, 'b' as Fqn)).toBeNull()
-    expect(commonAncestor('a.b' as Fqn, 'c.d' as Fqn)).toBeNull()
+    expect(commonAncestor('a', 'b')).toBeNull()
+    expect(commonAncestor('a.b', 'c.d')).toBeNull()
   })
 
   it('should return common ancestor', () => {
-    expect(commonAncestor('a.b' as Fqn, 'a.c' as Fqn)).toBe('a')
-    expect(commonAncestor('a.b.c' as Fqn, 'a.b.e' as Fqn)).toBe('a.b')
-    expect(commonAncestor('a.b.c.d.e' as Fqn, 'a.b.c.d' as Fqn)).toBe('a.b.c')
+    expect(commonAncestor('a.b', 'a.c')).toBe('a')
+    expect(commonAncestor('a.b.c', 'a.b.e')).toBe('a.b')
+    expect(commonAncestor('a.b.c.d.e', 'a.b.c.d')).toBe('a.b.c')
   })
 })
 
 describe('isAncestor', () => {
   it('should return true if ancestor', () => {
-    expect(isAncestor('a' as Fqn, 'a.b' as Fqn)).toBe(true)
-    expect(isAncestor('a.b' as Fqn, 'a.b.c' as Fqn)).toBe(true)
+    expect(isAncestor('a', 'a.b')).toBe(true)
+    expect(isAncestor('a.b', 'a.b.c')).toBe(true)
   })
   it('should return false if not ancestor', () => {
-    expect(isAncestor('a' as Fqn, 'b' as Fqn)).toBe(false)
-    expect(isAncestor('a.b' as Fqn, 'a' as Fqn)).toBe(false)
-    expect(isAncestor('a.b' as Fqn, 'b.a' as Fqn)).toBe(false)
+    expect(isAncestor('a', 'b')).toBe(false)
+    expect(isAncestor('a.b', 'a')).toBe(false)
+    expect(isAncestor('a.b', 'b.a')).toBe(false)
   })
 })
 

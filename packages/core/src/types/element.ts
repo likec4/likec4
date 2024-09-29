@@ -3,7 +3,7 @@ import type { IconUrl, NonEmptyArray } from './_common'
 import type { Color, ThemeColor } from './theme'
 
 // Full-qualified-name
-export type Fqn = Tagged<string, 'Fqn'>
+export type Fqn<IDs extends string = string> = Tagged<IDs, 'Fqn'>
 
 export function AsFqn(name: string, parent?: Fqn | null) {
   return (parent ? parent + '.' + name : name) as Fqn
@@ -13,7 +13,7 @@ export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 
 export type BorderStyle = typeof BorderStyles[number]
 
-export type ElementKind = Tagged<string, 'ElementKind'>
+export type ElementKind<Kinds extends string = string> = Tagged<Kinds, 'ElementKind'>
 export const ElementShapes = [
   'rectangle',
   'person',
@@ -34,7 +34,7 @@ export interface ElementStyle {
   opacity?: number
 }
 
-export type Tag = Tagged<string, 'Tag'>
+export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
 
 export interface TagSpec {
   readonly id: Tag
@@ -49,20 +49,28 @@ export interface Link {
   readonly relative?: string
 }
 
-export interface Element {
-  readonly id: Fqn
-  readonly kind: ElementKind
+export interface TypedElement<
+  IDs extends string,
+  Kinds extends string,
+  Tags extends string,
+  MetadataKeys extends string = never
+> {
+  readonly id: Fqn<IDs>
+  readonly kind: ElementKind<Kinds>
   readonly title: string
   readonly description: string | null
   readonly technology: string | null
-  readonly tags: NonEmptyArray<Tag> | null
+  readonly tags: NonEmptyArray<Tag<Tags>> | null
   readonly links: NonEmptyArray<Link> | null
   readonly icon?: IconUrl
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
   readonly notation?: string
-  readonly metadata?: { [key: string]: string }
+  readonly metadata?: { [key in MetadataKeys]: string }
+}
+
+export interface Element extends TypedElement<string, string, string, string> {
 }
 
 export interface ElementKindSpecificationStyle {

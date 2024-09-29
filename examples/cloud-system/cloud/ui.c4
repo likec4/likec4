@@ -21,6 +21,7 @@ model {
         Native iOS Application
         written in Swift
       '
+      link /view/mobile 'view'
 
       .requests cloud.graphql.myAccount "fetches via GraphQL"
       .uses cloud.graphql.updateAccount "mutates via GraphQL"

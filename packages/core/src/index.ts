@@ -1,3 +1,4 @@
+export * from './builder'
 export * from './colors'
 export * from './errors'
 export * from './model'

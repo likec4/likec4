@@ -2059,6 +2059,7 @@ __metadata:
     "@mantine/colors-generator": "npm:^7.12.2"
     "@types/natural-compare-lite": "npm:^1.4.2"
     chroma-js: "npm:^3.1.1"
+    defu: "npm:^6.1.4"
     execa: "npm:^9.3.1"
     natural-compare-lite: "npm:^1.4.0"
     remeda: "npm:^2.14.0"

@@ -58,6 +58,7 @@
     }
   },
   "dependencies": {
+    "defu": "^6.1.4",
     "type-fest": "4.26.1"
   },
   "devDependencies": {

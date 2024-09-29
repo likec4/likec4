@@ -37,7 +37,7 @@ export function notDescendantOf(ancestors: Element[]): (e: Element) => boolean {
   return (e: Element) => !isDescendant(e)
 }
 
-export function commonAncestor(first: Fqn, second: Fqn) {
+export function commonAncestor<IDs extends string>(first: Fqn<IDs>, second: Fqn<IDs>) {
   const parentA = parentFqn(first)
   const parentB = parentFqn(second)
   if (parentA === parentB) {
@@ -49,20 +49,20 @@ export function commonAncestor(first: Fqn, second: Fqn) {
 
   const a = first.split('.')
   const b = second.split('.')
-  let ancestor: Fqn | null = null
+  let ancestor: Fqn<IDs> | null = null
 
   while (a.length > 1 && b.length > 1 && !!a[0] && a[0] === b[0]) {
-    ancestor = (ancestor ? `${ancestor}.${a[0]}` : a[0]) as Fqn
+    ancestor = (ancestor ? `${ancestor}.${a[0]}` : a[0]) as Fqn<IDs>
     a.shift()
     b.shift()
   }
   return ancestor
 }
 
-export function parentFqn(fqn: Fqn): Fqn | null {
+export function parentFqn<IDs extends string>(fqn: Fqn<IDs>): Fqn<IDs> | null {
   const lastDot = fqn.lastIndexOf('.')
   if (lastDot > 0) {
-    return fqn.slice(0, lastDot) as Fqn
+    return fqn.slice(0, lastDot) as Fqn<IDs>
   }
   return null
 }
@@ -76,20 +76,20 @@ export function parentFqnPredicate<T extends { parent: Fqn | null }>(parent: Fqn
  * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
  * (from closest to root)
  */
-export function ancestorsFqn(fqn: Fqn): Fqn[] {
-  const path = fqn.split('.')
+export function ancestorsFqn<IDs extends string>(fqn: Fqn<IDs>): Fqn<IDs>[] {
+  const path = fqn.split('.') as Fqn<IDs>[]
   path.pop()
   if (path.length === 0) {
     return []
   }
   return path.reduce((acc, part, idx) => {
     if (idx === 0) {
-      acc.push(part as Fqn)
+      acc.push(part)
       return acc
     }
-    acc.unshift(`${acc[0]}.${part}` as Fqn)
+    acc.unshift(`${acc[0]}.${part}` as Fqn<IDs>)
     return acc
-  }, [] as Fqn[])
+  }, [] as Fqn<IDs>[])
 }
 
 /**
