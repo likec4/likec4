@@ -181,12 +181,16 @@ function createLayoutConstraints(
     }
   }
 
+  const draggingNodes = new Set(nodeLookup.values()
+    .filter(x => x.dragging === true || x.id === draggingNodeId || x.selected)
+    .map(x => x.id))
+
   while (traverse.length > 0) {
     const { xynode, parent } = traverse.shift()!
-    const isDragging = xynode.dragging === true || xynode.id === draggingNodeId
+    const isDragging = draggingNodes.has(xynode.id)
 
     // Traverse children if the node is a compound, not dragging, and is an ancestor of the dragging node
-    const shouldTraverse = !isDragging && xynode.type === 'compound' && isAncestor(xynode.id, draggingNodeId)
+    const shouldTraverse = !isDragging && xynode.type === 'compound' && draggingNodes.values().some(x => isAncestor(xynode.id, x))
 
     const rect = shouldTraverse ? new Compound(solver, xynode, parent) : new Leaf(solver, xynode, parent, isDragging)
     rects.set(xynode.id, rect)
@@ -203,8 +207,7 @@ function createLayoutConstraints(
 
   solver.updateVariables()
   solver.maxIterations = 1000
-  const selectedIds = nodeLookup.values().filter(n => n.selected).map(n => n.id)
-  const rectsToUpdate = [...rects.values()].filter(r => r.id in selectedIds)  
+  const rectsToUpdate = [...rects.values()].filter(r => !draggingNodes.has(r.id))  
 
   function updateXYFlowNodes() {
     solver.updateVariables()
