@@ -5,6 +5,7 @@ entry LikeC4Grammar:
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
+    global_rules+=GlobalRules |
     likec4lib+=LikeC4Lib
   )*
 ;
@@ -265,12 +266,14 @@ ViewLayoutDirection returns string:
 ViewRule:
   ViewRulePredicate |
   ViewRuleStyle |
+  ViewRuleGlobalStyle |
   ViewRuleAutoLayout
 ;
 
 DynamicViewRule:
   DynamicViewIncludePredicate |
   ViewRuleStyle |
+  ViewRuleGlobalStyle |
   ViewRuleAutoLayout
 ;
 
@@ -438,6 +441,9 @@ ViewRuleStyle:
     )*
   '}';
 
+ViewRuleGlobalStyle:
+  'global' 'style' style=[GlobalStyle];
+
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
@@ -474,6 +480,26 @@ NavigateToProperty:
 
 RelationNavigateToProperty:
   key='navigateTo' value=DynamicViewRef;
+
+// Global -------------------------------------
+
+GlobalRules:
+  name='global' '{'
+    (
+      styles+=GlobalStyle*
+      //style_groups
+      //predicates
+      //predicate_groups
+    )*
+  '}';
+
+GlobalStyle:
+  'style' name=IdTerminal target=ElementExpressionsIterator '{'
+    props+=(
+      StyleProperty |
+      NotationProperty
+    )*
+  '}';
 
 // Common properties -------------------------------------
 

@@ -10,6 +10,8 @@ import type { ElementNotation } from './view-notation'
 // Full-qualified-name
 export type ViewID = Tagged<string, 'ViewID'>
 
+export type GlobalStyleID = Tagged<string, 'GlobalStyleID'>
+
 export type ViewRulePredicate =
   | {
     include: Expression[]

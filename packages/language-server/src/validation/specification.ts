@@ -38,6 +38,17 @@ export const modelViewsChecks = (_: LikeC4Services): ValidationCheck<ast.ModelVi
   }
 }
 
+export const globalRuleChecks = (_: LikeC4Services): ValidationCheck<ast.GlobalRules> => {
+  return (node, accept) => {
+    if (node.$containerIndex && node.$containerIndex > 0) {
+      accept('warning', `Prefer one global block per document`, {
+        node: node,
+        property: 'name'
+      })
+    }
+  }
+}
+
 export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast.ElementKind> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
@@ -123,6 +134,25 @@ export const relationshipChecks = (
       .count()
     if (sameKinds > 1) {
       accept('error', `Duplicate RelationshipKind '${node.name}'`, {
+        node: node,
+        property: 'name'
+      })
+    }
+  }
+}
+
+export const globalStyleChecks = (
+  services: LikeC4Services
+): ValidationCheck<ast.GlobalStyle> => {
+  const index = services.shared.workspace.IndexManager
+  return (node, accept) => {
+    const sameName = index
+      .allElements(ast.GlobalStyle)
+      .filter(s => s.name === node.name)
+      .limit(2)
+      .count()
+    if (sameName > 1) {
+      accept('error', `Duplicate GlobalStyle name '${node.name}'`, {
         node: node,
         property: 'name'
       })

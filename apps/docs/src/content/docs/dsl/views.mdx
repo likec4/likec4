@@ -523,11 +523,57 @@ view apiApp of internetBankingSystem.apiApplication {
   // apply to elements not tagged
   style element.tag != #deprecated {
     opacity 20%
-  }  
+  }
 }
 ```
 
 Please note, that [overrides](#with-overrides) have higher priority.
+
+#### Global style predicates
+
+Style predicates can be defined globally and applied to multiple views.
+
+```likec4
+global {
+  // apply to all elements
+  style all_elements * {
+    color muted
+    opacity 10%
+  }
+
+  // apply only to these elements
+  style applications singlePageApplication, mobileApp {
+    color secondary
+  }
+
+  // apply only to elements with specific tag
+  style deprecated element.tag = #deprecated {
+    color muted
+  }
+}
+
+views {
+  view apiApp of internetBankingSystem.apiApplication {
+
+    include *
+
+    global style all_elements
+
+    global style applications
+
+    // apply only to nested of apiApplication
+    style apiApplication.* {
+      color primary
+    }
+
+    global style deprecated
+
+    style element.tag != #deprecated {
+      opacity 20%
+    }
+  }
+}
+```
 
 ### Extend views
 
