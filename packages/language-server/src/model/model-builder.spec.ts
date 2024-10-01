@@ -1196,4 +1196,176 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(sys2View).toBeDefined()
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
+
+  it('global style is applied to a view', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+          global style style_name
+        }
+      }
+      global {
+        style style_name * {
+          color green
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    // Compute view, because global styles are appied at this stage
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    expect(indexView).toBeDefined()
+    expect(indexView).not.toBeNull()
+    if (indexView === null) return;
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+  })
+
+  it('global style is overridden by further styles', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+          global style style_id
+          style element.kind=component {
+            color red
+          }
+        }
+      }
+      global {
+        style style_id * {
+          color green
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    // Compute view, because global styles are appied at this stage
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    expect(indexView).toBeDefined()
+    if (indexView === null) return;
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
+  })
+
+  it('global style overrides previous styles', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+          style element.kind=component {
+            color red
+          }
+          global style style_id
+        }
+      }
+      global {
+        style style_id * {
+          color green
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    // Compute view, because global styles are appied at this stage
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    expect(indexView).toBeDefined()
+    if (indexView === null) return;
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+  })
+
+  it('global style is not applied if not defined', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+
+          global style missing_style_id
+        }
+      }
+      global {
+        style style_id * {
+          color green
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0]?.severity).toBe(1)
+
+    // Compute view, because global styles are appied at this stage
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    expect(indexView).toBeDefined()
+    if (indexView === null) return;
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
+  })
+
+  it('the first global style with duplicated name is applied', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+        tag element_tag
+      }
+      model {
+        component sys1 {
+          #element_tag
+        }
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+          global style repeated_style_id
+        }
+      }
+      global {
+        style repeated_style_id * {
+          color green
+        }
+        style repeated_style_id element.tag = #element_tag {
+          color red
+        }
+      }
+    `)
+    expect(diagnostics.length).toBeGreaterThan(0)
+    // Compute view, because global styles are appied at this stage
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    expect(indexView).toBeDefined()
+    if (indexView === null) return;
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+  })
 })

@@ -1,6 +1,7 @@
 export * from './_common'
 export * from './element'
 export * from './expression'
+export * from './global'
 export * from './model'
 export * from './operators'
 export * from './overview-graph'
