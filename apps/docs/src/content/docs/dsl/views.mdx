@@ -529,6 +529,28 @@ view apiApp of internetBankingSystem.apiApplication {
 
 Please note, that [overrides](#with-overrides) have higher priority.
 
+#### Local style predicates
+
+Style predicates can be defined for a `views` group.
+
+```likec4
+views {
+  // apply to all elements in all views in this views block
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+  }
+
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+  }
+}
+```
+
 #### Global style predicates
 
 Style predicates can be defined globally and applied to multiple views.
@@ -571,6 +593,35 @@ views {
     style element.tag != #deprecated {
       opacity 20%
     }
+  }
+}
+```
+
+##### Global style predicates as local styles
+
+Global style predicates can be used as local styles:
+
+```likec4
+global {
+  // apply only to elements with specific tag
+  style deprecated element.tag = #deprecated {
+    color muted
+  }
+
+  // apply to all elements
+  style all_elements * {
+    color muted
+    opacity 10%
+  }
+}
+
+views {
+  global style deprecated
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+
+    global style all_elements
   }
 }
 ```
@@ -622,6 +673,45 @@ views {
 
     style element.tag != #deprecated {
       opacity 20%
+    }
+  }
+}
+```
+
+##### Global style groups as local styles
+
+Global style groups can be used as local styles:
+
+```likec4
+global {
+  styleGroup common_styles {
+    style all_elements * {
+      color amber
+    }
+
+    style element.tag = #deprecated {
+      color muted
+    }
+
+    style element.tag != #undefined {
+      opacity 50%
+    }
+  }
+}
+
+views {
+  global style common_styles
+
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+
+    // view-specific style predicates
+    style apiApplication.* {
+      color primary
     }
   }
 }
