@@ -1285,4 +1285,296 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
+
+  it('global style group is applied to a view', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+          global style style_group_name
+        }
+      }
+      global {
+        styleGroup style_group_name {
+          style * {
+            color green
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+  })
+
+  it('global style group can be filtered on tags', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+        tag deprecated
+      }
+      model {
+        component sys1
+        component sys2 {
+          #deprecated
+        }
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include *
+          global style style_group_name
+        }
+      }
+      global {
+        styleGroup style_group_name {
+          style * {
+            color green
+          }
+          style element.tag = #deprecated {
+            color muted
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+    expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('muted')
+  })
+
+  it('global style group entreis are applied in order', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+        tag deprecated
+      }
+      model {
+        component sys1
+        component sys2 {
+          #deprecated
+        }
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include *
+          global style style_group_name
+        }
+      }
+      global {
+        styleGroup style_group_name {
+          style element.tag = #deprecated {
+            color muted
+          }
+          style * {
+            color green
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+    expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
+  })
+
+  it('global style group is overwritten by further styles', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+          global style style_group_name
+          style * {
+            color secondary
+          }
+        }
+      }
+      global {
+        styleGroup style_group_name {
+          style * {
+            color green
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('secondary')
+  })
+
+  it('global style group overwrites previous styles', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+
+          style * {
+            color secondary
+          }
+          global style style_group_name
+        }
+      }
+      global {
+        styleGroup style_group_name {
+          style * {
+            color green
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+  })
+
+  it('global style group is not applied if missing', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+
+          style * {
+            color secondary
+          }
+          global style missing_style_group_name
+        }
+      }
+      global {
+        styleGroup style_group_name {
+          style * {
+            color green
+          }
+        }
+      }
+    `)
+    expect(diagnostics.length).toBeGreaterThan(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('secondary')
+  })
+
+  it('global style group can be applied with a global style', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+
+          global style style_group_name
+          global style style_name
+        }
+      }
+      global {
+        styleGroup style_group_name {
+          style * {
+            color green
+          }
+        }
+        style style_name * {
+          color red
+        }
+      }
+    `)
+    expect(diagnostics.length).toBe(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
+  })
+
+  it('global style group should not share a name with a global style', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+
+          global style repeated_style_name
+        }
+      }
+      global {
+        styleGroup repeated_style_name {
+          style * {
+            color green
+          }
+        }
+        style repeated_style_name * {
+          color red
+        }
+      }
+    `)
+    expect(diagnostics.length).toBeGreaterThan(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    // note: styles are applied before style groups
+    //       groups do not overwrite applied styles
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
+  })
 })

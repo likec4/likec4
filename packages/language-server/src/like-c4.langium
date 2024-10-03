@@ -442,7 +442,7 @@ ViewRuleStyle:
   '}';
 
 ViewRuleGlobalStyle:
-  'global' 'style' style=[GlobalStyle];
+  'global' 'style' style=[GlobalStyleId];
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
@@ -487,18 +487,26 @@ GlobalRules:
   name='global' '{'
     (
       styles+=GlobalStyle*
-      //style_groups
+      style_groups+=GlobalStyleGroup*
       //predicates
       //predicate_groups
     )*
   '}';
 
+GlobalStyleId:
+  name=IdTerminal;
+
 GlobalStyle:
-  'style' name=IdTerminal target=ElementExpressionsIterator '{'
+  'style' id=GlobalStyleId target=ElementExpressionsIterator '{'
     props+=(
       StyleProperty |
       NotationProperty
     )*
+  '}';
+
+GlobalStyleGroup:
+  'styleGroup' id=GlobalStyleId '{'
+    styles+=ViewRuleStyle*
   '}';
 
 // Common properties -------------------------------------

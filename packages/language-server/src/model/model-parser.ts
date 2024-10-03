@@ -36,7 +36,7 @@ import { stringHash } from '../utils'
 import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
-import type { NotationProperty } from '../generated/ast'
+import { isGlobalStyle, isGlobalStyleGroup, type NotationProperty } from '../generated/ast'
 
 const { getDocument } = AstUtils
 
@@ -635,8 +635,17 @@ export class LikeC4ModelParser {
     if (globalRule === undefined) {
       return []
     }
-    const styleToApply = this.parseGlobalStyle(globalRule, isValid)
-    return [styleToApply]
+    const globalStyleNode = globalRule.$container
+    if (isGlobalStyle(globalStyleNode)) {
+      const styleToApply = this.parseGlobalStyle(globalStyleNode, isValid)
+      return [styleToApply]
+    }
+    if (isGlobalStyleGroup(globalStyleNode)) {
+      const stylesToApply = globalStyleNode.styles
+        .map(s => this.parseViewRuleStyle(s, isValid))
+      return stylesToApply
+    }
+    nonexhaustive(globalStyleNode)
   }
 
   private parseGlobalStyle(node: ast.GlobalStyle, isValid: IsValidFn): c4.ViewRuleStyle {

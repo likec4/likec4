@@ -71,8 +71,19 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     }
     for (const globalStyleAst of globalRules.flatMap(g => g.styles)) {
       try {
-        if (isTruthy(globalStyleAst.name)) {
-          docExports.push(this.descriptions.createDescription(globalStyleAst, globalStyleAst.name, document))
+        const id = globalStyleAst.id
+        if (isTruthy(id.name)) {
+          docExports.push(this.descriptions.createDescription(id, id.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+    for (const globalStyleGroupAst of globalRules.flatMap(g => g.style_groups)) {
+      try {
+        const id = globalStyleGroupAst.id
+        if (isTruthy(id.name)) {
+          docExports.push(this.descriptions.createDescription(id, id.name, document))
         }
       } catch (e) {
         logError(e)

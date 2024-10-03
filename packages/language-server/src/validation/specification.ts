@@ -141,18 +141,18 @@ export const relationshipChecks = (
   }
 }
 
-export const globalStyleChecks = (
+export const globalStyleIdChecks = (
   services: LikeC4Services
-): ValidationCheck<ast.GlobalStyle> => {
+): ValidationCheck<ast.GlobalStyleId> => {
   const index = services.shared.workspace.IndexManager
   return (node, accept) => {
     const sameName = index
-      .allElements(ast.GlobalStyle)
+      .allElements(ast.GlobalStyleId)
       .filter(s => s.name === node.name)
       .limit(2)
       .count()
     if (sameName > 1) {
-      accept('error', `Duplicate GlobalStyle name '${node.name}'`, {
+      accept('error', `Duplicate GlobalStyleId name '${node.name}'`, {
         node: node,
         property: 'name'
       })

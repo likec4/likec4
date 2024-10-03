@@ -9,7 +9,7 @@ import { relationBodyChecks, relationChecks } from './relation'
 import {
   elementKindChecks,
   globalRuleChecks,
-  globalStyleChecks,
+  globalStyleIdChecks,
   modelRuleChecks,
   modelViewsChecks,
   relationshipChecks,
@@ -36,7 +36,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     Model: modelRuleChecks(services),
     ModelViews: modelViewsChecks(services),
     GlobalRules: globalRuleChecks(services),
-    GlobalStyle: globalStyleChecks(services),
+    GlobalStyleId: globalStyleIdChecks(services),
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
     Element: elementChecks(services),
