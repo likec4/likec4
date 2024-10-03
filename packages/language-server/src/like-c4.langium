@@ -197,7 +197,7 @@ MetadataAttribute:
 ModelViews:
   name='views' '{' (
       views+=LikeC4ViewRule |
-      styles+=ViewRuleStyle
+      styles+=ViewRuleStyleOrGlobalRef
     )*
   '}';
 
@@ -268,8 +268,7 @@ ViewLayoutDirection returns string:
 ViewRule:
   ViewRulePredicate |
   ViewRuleGroup |
-  ViewRuleStyle |
-  ViewRuleGlobalStyle |
+  ViewRuleStyleOrGlobalRef |
   ViewRuleAutoLayout
 ;
 
@@ -288,8 +287,7 @@ ViewRuleGroup:
 
 DynamicViewRule:
   DynamicViewIncludePredicate |
-  ViewRuleStyle |
-  ViewRuleGlobalStyle |
+  ViewRuleStyleOrGlobalRef |
   ViewRuleAutoLayout
 ;
 
@@ -459,6 +457,9 @@ ViewRuleStyle:
 
 ViewRuleGlobalStyle:
   'global' 'style' style=[GlobalStyleId];
+
+ViewRuleStyleOrGlobalRef:
+  ViewRuleStyle | ViewRuleGlobalStyle;
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection (

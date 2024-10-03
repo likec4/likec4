@@ -54,6 +54,8 @@ export function isViewRuleGlobalStyle(rule: ViewRule): rule is ViewRuleGlobalSty
   return 'styleId' in rule
 }
 
+export type ViewRuleStyleOrGlobalRef = ViewRuleStyle | ViewRuleGlobalStyle
+
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
 export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
   return autoLayout === 'TB' || autoLayout === 'BT' || autoLayout === 'LR' || autoLayout === 'RL'
