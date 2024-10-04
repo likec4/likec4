@@ -474,11 +474,14 @@ Together with [extend views](#extend-views) you may define a "baseline" view (in
 ```likec4
 view {
   include *
-  autoLayout LeftRight
+  autoLayout LeftRight 120 110
 }
 ```
 
-Possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
+Parameters are:
+- direction: possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
+- rank distance: optional, must be a positive number
+- node distance. optional, must be a positive number
 
 <Aside>
 Manual changes are supported in VSCode extension and functionality is limited.  
