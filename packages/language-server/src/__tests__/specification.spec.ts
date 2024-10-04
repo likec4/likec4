@@ -313,7 +313,7 @@ describe.concurrent('specification', () => {
           }
         }
 
-        color custom-color #ffffff
+        color custom-color #00ffff
       }`
 
     test('spec with invalid relationshipkind color').invalid`

@@ -5,7 +5,7 @@ import { saveManualLayout } from './saveManualLayout'
 
 const layout: ViewManualLayout = {
   hash: 'hash',
-  autoLayout: 'TB',
+  autoLayout: { direction: 'TB' },
   x: -10,
   y: -20,
   height: 100,
@@ -56,7 +56,7 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
     expect(textedit.newText).toMatchInlineSnapshot(`
       "  /**
          * @likec4-generated(v1)
-         * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOBpHN5czGCoWKUAABkZKFjwqVlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
+         * iKRoYXNopGhhc2iqYXV0b0xheW91dIGpZGlyZWN0aW9uolRCoXj2oXnspmhlaWdodGSld2lkdGjMyKVub2Rlc4Gkc3lzMYKhYpQAAGRkoWPCpWVkZ2VzgaVlZGdlMYKiY3CRgqF4CqF5CqFwkpIAAJJkZA==
          */
       "
     `)
@@ -92,7 +92,7 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
     expect(textedit.newText).toMatchInlineSnapshot(`
       " /**
         * @likec4-generated(v1)
-        * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOBpHN5czGCoWKUAABkZKFjwqVlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
+        * iKRoYXNopGhhc2iqYXV0b0xheW91dIGpZGlyZWN0aW9uolRCoXj2oXnspmhlaWdodGSld2lkdGjMyKVub2Rlc4Gkc3lzMYKhYpQAAGRkoWPCpWVkZ2VzgaVlZGdlMYKiY3CRgqF4CqF5CqFwkpIAAJJkZA==
         */
       "
     `)

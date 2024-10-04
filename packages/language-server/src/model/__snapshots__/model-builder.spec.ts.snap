@@ -84,7 +84,9 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
   "views": {
     "index": {
       "__": "element",
-      "autoLayout": "TB",
+      "autoLayout": {
+        "direction": "TB",
+      },
       "customColorDefinitions": {},
       "description": null,
       "edges": [
@@ -99,7 +101,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "target": "system",
         },
       ],
-      "hash": "ac469a54751528fb8dabc034a32c9ca081503229",
+      "hash": "7a60f77938fde3ce37eee7a81e6d8601379ccff4",
       "id": "index",
       "links": null,
       "nodes": [
@@ -237,7 +239,9 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
   "views": {
     "frontend": {
       "__": "element",
-      "autoLayout": "TB",
+      "autoLayout": {
+        "direction": "TB",
+      },
       "customColorDefinitions": {},
       "description": null,
       "edges": [
@@ -262,7 +266,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend",
         },
       ],
-      "hash": "79faa703342209c445f10cc39cb15618fc4bba64",
+      "hash": "6133897cf17d30559ee717c08c2226aa7fa629da",
       "id": "frontend",
       "links": null,
       "nodes": [
@@ -333,7 +337,9 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
     "index": {
       "__": "element",
-      "autoLayout": "TB",
+      "autoLayout": {
+        "direction": "TB",
+      },
       "customColorDefinitions": {},
       "description": null,
       "edges": [
@@ -348,7 +354,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system",
         },
       ],
-      "hash": "cc748ca08ef32c6b15850602f25c38ad1e749497",
+      "hash": "dad995a71feeb1fb61f6704bbb35d53951ddc278",
       "id": "index",
       "links": null,
       "nodes": [
@@ -397,7 +403,9 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
     "v1": {
       "__": "element",
-      "autoLayout": "LR",
+      "autoLayout": {
+        "direction": "LR",
+      },
       "customColorDefinitions": {},
       "description": null,
       "edges": [
@@ -412,7 +420,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.backend.api",
         },
       ],
-      "hash": "e37913cdeecf2c10f83c4311ac7cde84821b37b2",
+      "hash": "39d3d26d1dcddbfbe839ea31ad45163946543741",
       "id": "v1",
       "links": null,
       "nodes": [
@@ -539,7 +547,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
   "views": {
     "index": {
       "__": "element",
-      "autoLayout": "TB",
+      "autoLayout": {
+        "direction": "TB",
+      },
       "customColorDefinitions": {},
       "description": null,
       "edges": [
@@ -558,7 +568,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "target": "user2",
         },
       ],
-      "hash": "2e3fd594e686a7aa420adcf9280bf544bb4cde6d",
+      "hash": "f35bcd834a8aabbcd5ded7aae4735b2b16901742",
       "id": "index",
       "links": null,
       "nodes": [
@@ -659,7 +669,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
   "views": {
     "index": {
       "__": "element",
-      "autoLayout": "TB",
+      "autoLayout": {
+        "direction": "TB",
+      },
       "customColorDefinitions": {},
       "description": null,
       "edges": [
@@ -676,7 +688,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "technology": "Async",
         },
       ],
-      "hash": "161eceeafe8043ac53e924941d1b2203306d406a",
+      "hash": "174b9cf8311224d705f83fcbf6373a25b135a742",
       "id": "index",
       "links": null,
       "nodes": [
@@ -775,7 +787,9 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
   "views": {
     "index": {
       "__": "element",
-      "autoLayout": "TB",
+      "autoLayout": {
+        "direction": "TB",
+      },
       "customColorDefinitions": {},
       "description": null,
       "edges": [
@@ -794,7 +808,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "target": "user2",
         },
       ],
-      "hash": "c39ac45d66eb3f057ec9e3d802f4d09093a371b2",
+      "hash": "eaa45c2703d406ed239c59bb1985720d44010491",
       "id": "index",
       "links": null,
       "nodes": [

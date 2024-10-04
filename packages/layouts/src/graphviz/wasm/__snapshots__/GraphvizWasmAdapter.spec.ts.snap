@@ -3,7 +3,9 @@
 exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
 {
   "__": "element",
-  "autoLayout": "TB",
+  "autoLayout": {
+    "direction": "TB",
+  },
   "bounds": {
     "height": 281,
     "width": 937,
@@ -50,7 +52,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "target": "amazon.s3",
     },
   ],
-  "hash": "2fe4e80c600f1e11bb4146c6a339d7f8e504d78c",
+  "hash": "0e855f58163143eb9c45ac79127b7f60de4c5843",
   "id": "amazon",
   "links": null,
   "nodes": [
@@ -194,7 +196,9 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
 exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
 {
   "__": "element",
-  "autoLayout": "TB",
+  "autoLayout": {
+    "direction": "TB",
+  },
   "bounds": {
     "height": 949,
     "width": 1376,
@@ -436,7 +440,7 @@ with sso authentification",
       "target": "amazon",
     },
   ],
-  "hash": "a4ca58a72b59662945b70989e081ee7eddca2021",
+  "hash": "45bb6881c62a9d9859b24ef23ba7d88255ad4be0",
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -753,7 +757,9 @@ with sso authentification",
 exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
 {
   "__": "element",
-  "autoLayout": "TB",
+  "autoLayout": {
+    "direction": "TB",
+  },
   "bounds": {
     "height": 560,
     "width": 1529,
@@ -906,7 +912,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "28144a16eff264c9d83ac34bf264dd5c54c5739f",
+  "hash": "ce579a71c5b48307612e44e36ab91b7b06a3a6f3",
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -1118,7 +1124,9 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
 exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
 {
   "__": "element",
-  "autoLayout": "TB",
+  "autoLayout": {
+    "direction": "TB",
+  },
   "bounds": {
     "height": 503,
     "width": 1072,
@@ -1235,7 +1243,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "6ec8fd293af82571ecd6cb9175a74e6f0a22952c",
+  "hash": "4923fc4c18d9538671bf4a81642d46b9698a2e3d",
   "id": "index",
   "links": null,
   "nodes": [

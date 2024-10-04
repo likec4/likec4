@@ -608,9 +608,7 @@ export class LikeC4ModelParser {
       }
     }
     if (ast.isViewRuleAutoLayout(astRule)) {
-      return {
-        autoLayout: toAutoLayout(astRule.direction)
-      }
+      return toAutoLayout(astRule)
     }
     nonexhaustive(astRule)
   }
@@ -849,9 +847,7 @@ export class LikeC4ModelParser {
             return acc
           }
           if (ast.isViewRuleAutoLayout(n)) {
-            acc.push({
-              autoLayout: toAutoLayout(n.direction)
-            })
+            acc.push(toAutoLayout(n))
             return acc
           }
           nonexhaustive(n)

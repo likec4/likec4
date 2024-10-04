@@ -175,7 +175,11 @@ export class ComputeCtx {
 
     return calcViewLayoutHash({
       ...view,
-      autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
+      autoLayout: {
+        direction: autoLayoutRule?.direction ?? 'TB',
+        ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
+        ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
+      },
       nodes: map(nodes, omit(['notation'])),
       edges: applyCustomRelationProperties(rules, nodes, sortedEdges),
       ...(elementNotations.length > 0 && {
