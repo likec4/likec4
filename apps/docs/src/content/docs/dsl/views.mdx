@@ -469,6 +469,35 @@ Together with [extend views](#extend-views) you may define a "baseline" view (in
 
 :::
 
+#### Global predicates
+
+Predicates can be defined in global groups.
+Eache global group can be applied to multiple views.
+When a group is applied to a view, all predicates from the group are applied.
+
+```likec4
+global {
+  predicateGroup new_cloud_service {
+    include cloud.*
+      where kind is microservice
+    exclude *
+      where tag is #deprecated
+  }
+}
+
+views {
+  view of newServices {
+    include *
+    global predicate new_cloud_service
+  }
+
+  view of newBackendServices {
+    include *
+    global predicate new_cloud_service
+  }
+}
+```
+
 ### Auto-layout
 
 ```likec4

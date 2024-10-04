@@ -89,6 +89,24 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         logError(e)
       }
     }
+    for (const globalPredicateGroupAst of globalRules.flatMap(g => g.predicate_groups)) {
+      try {
+        if (isTruthy(globalPredicateGroupAst.name)) {
+          docExports.push(this.descriptions.createDescription(globalPredicateGroupAst, globalPredicateGroupAst.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+    for (const globalDynamicPredicateGroupAst of globalRules.flatMap(g => g.dynamic_predicate_groups)) {
+      try {
+        if (isTruthy(globalDynamicPredicateGroupAst.name)) {
+          docExports.push(this.descriptions.createDescription(globalDynamicPredicateGroupAst, globalDynamicPredicateGroupAst.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
   }
 
   private exportModel(

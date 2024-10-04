@@ -270,6 +270,7 @@ ViewRule:
   ViewRulePredicate |
   ViewRuleStyle |
   ViewRuleGlobalStyle |
+  ViewRuleGlobalPredicate |
   ViewRuleAutoLayout
 ;
 
@@ -277,6 +278,7 @@ DynamicViewRule:
   DynamicViewIncludePredicate |
   ViewRuleStyle |
   ViewRuleGlobalStyle |
+  DynamicViewRuleGlobalPredicate |
   ViewRuleAutoLayout
 ;
 
@@ -447,6 +449,12 @@ ViewRuleStyle:
 ViewRuleGlobalStyle:
   'global' 'style' style=[GlobalStyleId];
 
+ViewRuleGlobalPredicate:
+  'global' 'predicate' predicate=[GlobalPredicateGroup];
+
+DynamicViewRuleGlobalPredicate:
+  'global' 'predicate' predicate=[GlobalDynamicPredicateGroup];
+
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
@@ -492,7 +500,8 @@ GlobalRules:
       styles+=GlobalStyle*
       style_groups+=GlobalStyleGroup*
       //predicates
-      //predicate_groups
+      predicate_groups+=GlobalPredicateGroup*
+      dynamic_predicate_groups+=GlobalDynamicPredicateGroup*
     )*
   '}';
 
@@ -510,6 +519,16 @@ GlobalStyle:
 GlobalStyleGroup:
   'styleGroup' id=GlobalStyleId '{'
     styles+=ViewRuleStyle*
+  '}';
+
+GlobalPredicateGroup:
+  'predicateGroup' name=IdTerminal '{'
+    predicates+=ViewRulePredicate*
+  '}';
+
+GlobalDynamicPredicateGroup:
+  'dynamicPredicateGroup' name=IdTerminal '{'
+    predicates+=DynamicViewRule*
   '}';
 
 // Common properties -------------------------------------
