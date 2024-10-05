@@ -56,10 +56,18 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
 
     this.on(node, ast.isDynamicViewStep, (n, f) => {
-      f.properties('source').append(FormattingOptions.oneSpace)
-      f.keywords(']->').prepend(FormattingOptions.noSpace)
-      f.keywords('-[').append(FormattingOptions.noSpace)
-      f.properties('target', 'title').prepend(FormattingOptions.oneSpace)
+      f.keywords('->', '<-').surround(FormattingOptions.oneSpace)
+
+      const kind = f.property('kind')
+      kind.nodes[0]?.text.startsWith('.') && kind.surround(FormattingOptions.oneSpace)
+      f.keywords(']->')
+        .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.oneSpace)
+      f.keywords('-[')
+        .prepend(FormattingOptions.oneSpace)
+        .append(FormattingOptions.noSpace)
+
+      f.properties('title').prepend(FormattingOptions.oneSpace)
     })
 
     this.on(node, ast.isDirectedRelationExpression)
@@ -110,6 +118,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isCustomElementProperties(node)
       || ast.isCustomRelationProperties(node)
       || ast.isElementStyleProperty(node)
+      || ast.isDynamicViewParallelSteps(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const openBrace = formatter.keywords('{')
@@ -287,7 +296,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.on(node, ast.isViewRuleStyle)
       ?.keyword('style').append(FormattingOptions.oneSpace)
 
-      this.on(node, ast.isElementExpressionsIterator)
+    this.on(node, ast.isElementExpressionsIterator)
       ?.keyword(',')
       .prepend(FormattingOptions.noSpace)
       .append(FormattingOptions.oneSpace)
