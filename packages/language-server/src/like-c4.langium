@@ -5,6 +5,7 @@ entry LikeC4Grammar:
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
+    global_rules+=GlobalRules |
     likec4lib+=LikeC4Lib
   )*
 ;
@@ -194,8 +195,11 @@ MetadataAttribute:
 // Views -------------------------------------
 
 ModelViews:
-  name='views' '{'
-    views+=LikeC4ViewRule*
+  name='views' '{' (
+      views+=LikeC4ViewRule |
+      styles+=ViewRuleStyle |
+      global_styles+=ViewRuleGlobalStyle
+    )*
   '}';
 
 type LikeC4View = ElementView | DynamicView;
@@ -265,12 +269,16 @@ ViewLayoutDirection returns string:
 ViewRule:
   ViewRulePredicate |
   ViewRuleStyle |
+  ViewRuleGlobalStyle |
+  ViewRuleGlobalPredicate |
   ViewRuleAutoLayout
 ;
 
 DynamicViewRule:
   DynamicViewIncludePredicate |
   ViewRuleStyle |
+  ViewRuleGlobalStyle |
+  DynamicViewRuleGlobalPredicate |
   ViewRuleAutoLayout
 ;
 
@@ -438,6 +446,15 @@ ViewRuleStyle:
     )*
   '}';
 
+ViewRuleGlobalStyle:
+  'global' 'style' style=[GlobalStyleId];
+
+ViewRuleGlobalPredicate:
+  'global' 'predicate' predicate=[GlobalPredicateGroup];
+
+DynamicViewRuleGlobalPredicate:
+  'global' 'predicate' predicate=[GlobalDynamicPredicateGroup];
+
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
@@ -474,6 +491,45 @@ NavigateToProperty:
 
 RelationNavigateToProperty:
   key='navigateTo' value=DynamicViewRef;
+
+// Global -------------------------------------
+
+GlobalRules:
+  name='global' '{'
+    (
+      styles+=GlobalStyle*
+      style_groups+=GlobalStyleGroup*
+      //predicates
+      predicate_groups+=GlobalPredicateGroup*
+      dynamic_predicate_groups+=GlobalDynamicPredicateGroup*
+    )*
+  '}';
+
+GlobalStyleId:
+  name=IdTerminal;
+
+GlobalStyle:
+  'style' id=GlobalStyleId target=ElementExpressionsIterator '{'
+    props+=(
+      StyleProperty |
+      NotationProperty
+    )*
+  '}';
+
+GlobalStyleGroup:
+  'styleGroup' id=GlobalStyleId '{'
+    styles+=ViewRuleStyle*
+  '}';
+
+GlobalPredicateGroup:
+  'predicateGroup' name=IdTerminal '{'
+    predicates+=ViewRulePredicate*
+  '}';
+
+GlobalDynamicPredicateGroup:
+  'dynamicPredicateGroup' name=IdTerminal '{'
+    predicates+=DynamicViewRule*
+  '}';
 
 // Common properties -------------------------------------
 

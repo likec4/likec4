@@ -20,7 +20,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<AstNodeDescription[]> {
     const docExports: AstNodeDescription[] = []
     try {
-      const { specifications, models, views, likec4lib } = document.parseResult.value
+      const { specifications, models, views, global_rules, likec4lib } = document.parseResult.value
 
       // Process library
       this.exportLibrary(likec4lib, docExports, document)
@@ -33,6 +33,9 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
       // Process views
       this.exportViews(views, docExports, document)
+
+      // Process global
+      this.exportGlobalRules(global_rules, docExports, document)
     } catch (e) {
       logError(e)
     }
@@ -51,6 +54,54 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       try {
         if (isTruthy(viewAst.name)) {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+  }
+
+  private exportGlobalRules(
+    globalRules: ast.GlobalRules[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument
+  ) {
+    if (isNullish(globalRules) || globalRules.length === 0) {
+      return
+    }
+    for (const globalStyleAst of globalRules.flatMap(g => g.styles)) {
+      try {
+        const id = globalStyleAst.id
+        if (isTruthy(id.name)) {
+          docExports.push(this.descriptions.createDescription(id, id.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+    for (const globalStyleGroupAst of globalRules.flatMap(g => g.style_groups)) {
+      try {
+        const id = globalStyleGroupAst.id
+        if (isTruthy(id.name)) {
+          docExports.push(this.descriptions.createDescription(id, id.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+    for (const globalPredicateGroupAst of globalRules.flatMap(g => g.predicate_groups)) {
+      try {
+        if (isTruthy(globalPredicateGroupAst.name)) {
+          docExports.push(this.descriptions.createDescription(globalPredicateGroupAst, globalPredicateGroupAst.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+    for (const globalDynamicPredicateGroupAst of globalRules.flatMap(g => g.dynamic_predicate_groups)) {
+      try {
+        if (isTruthy(globalDynamicPredicateGroupAst.name)) {
+          docExports.push(this.descriptions.createDescription(globalDynamicPredicateGroupAst, globalDynamicPredicateGroupAst.name, document))
         }
       } catch (e) {
         logError(e)

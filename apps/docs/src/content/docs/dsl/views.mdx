@@ -469,6 +469,35 @@ Together with [extend views](#extend-views) you may define a "baseline" view (in
 
 :::
 
+#### Global predicates
+
+Predicates can be defined in global groups.
+Eache global group can be applied to multiple views.
+When a group is applied to a view, all predicates from the group are applied.
+
+```likec4
+global {
+  predicateGroup new_cloud_service {
+    include cloud.*
+      where kind is microservice
+    exclude *
+      where tag is #deprecated
+  }
+}
+
+views {
+  view of newServices {
+    include *
+    global predicate new_cloud_service
+  }
+
+  view of newBackendServices {
+    include *
+    global predicate new_cloud_service
+  }
+}
+```
+
 ### Auto-layout
 
 ```likec4
@@ -523,11 +552,199 @@ view apiApp of internetBankingSystem.apiApplication {
   // apply to elements not tagged
   style element.tag != #deprecated {
     opacity 20%
-  }  
+  }
 }
 ```
 
 Please note, that [overrides](#with-overrides) have higher priority.
+
+#### Local style predicates
+
+Style predicates can be defined for a `views` group.
+
+```likec4
+views {
+  // apply to all elements in all views in this views block
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+  }
+
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+  }
+}
+```
+
+#### Global style predicates
+
+Style predicates can be defined globally and applied to multiple views.
+
+```likec4
+global {
+  // apply to all elements
+  style all_elements * {
+    color muted
+    opacity 10%
+  }
+
+  // apply only to these elements
+  style applications singlePageApplication, mobileApp {
+    color secondary
+  }
+
+  // apply only to elements with specific tag
+  style deprecated element.tag = #deprecated {
+    color muted
+  }
+}
+
+views {
+  view apiApp of internetBankingSystem.apiApplication {
+
+    include *
+
+    global style all_elements
+
+    global style applications
+
+    // apply only to nested of apiApplication
+    style apiApplication.* {
+      color primary
+    }
+
+    global style deprecated
+
+    style element.tag != #deprecated {
+      opacity 20%
+    }
+  }
+}
+```
+
+##### Global style predicates as local styles
+
+Global style predicates can be used as local styles:
+
+```likec4
+global {
+  // apply only to elements with specific tag
+  style deprecated element.tag = #deprecated {
+    color muted
+  }
+
+  // apply to all elements
+  style all_elements * {
+    color muted
+    opacity 10%
+  }
+}
+
+views {
+  global style deprecated
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+
+    global style all_elements
+  }
+}
+```
+
+#### Global style groups
+
+Global style predicates can be grouped.
+When a group is applied to a view, all predicates from the group are applied.
+A group can be applied to multiple views
+
+```likec4
+global {
+  styleGroup common_styles {
+    // apply to all elements
+    style all_elements * {
+      color muted
+      opacity 10%
+    }
+
+    // apply only to these elements
+    style singlePageApplication, mobileApp {
+      color secondary
+    }
+
+    // apply only to elements with specific tag
+    style element.tag = #deprecated {
+      color muted
+    }
+  }
+}
+
+views {
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+
+    global style common_styles
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+
+    include *
+
+    global style common_styles
+
+    // view-specific style predicates
+    style apiApplication.* {
+      color primary
+    }
+
+    style element.tag != #deprecated {
+      opacity 20%
+    }
+  }
+}
+```
+
+##### Global style groups as local styles
+
+Global style groups can be used as local styles:
+
+```likec4
+global {
+  styleGroup common_styles {
+    style all_elements * {
+      color amber
+    }
+
+    style element.tag = #deprecated {
+      color muted
+    }
+
+    style element.tag != #undefined {
+      opacity 50%
+    }
+  }
+}
+
+views {
+  global style common_styles
+
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+
+    // view-specific style predicates
+    style apiApplication.* {
+      color primary
+    }
+  }
+}
+```
 
 ### Extend views
 
