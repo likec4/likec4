@@ -6,6 +6,7 @@ import { CopyToClipboard } from '../components/CopyToClipboard'
 import { SidebarDrawerOps } from '../components/sidebar/Drawer'
 import { svgContainer } from './view.css'
 import * as css from './view_viewId_.css'
+import { krokiD2SvgUrl } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/d2')({
   component: ViewAsD2,
@@ -23,7 +24,7 @@ export const Route = createFileRoute('/view/$viewId/d2')({
 })
 
 const fetchFromKroki = async (d2: string) => {
-  const res = await fetch('https://kroki.io/d2/svg', {
+  const res = await fetch(krokiD2SvgUrl, {
     method: 'POST',
     cache: 'force-cache',
     body: JSON.stringify({

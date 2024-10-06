@@ -15,3 +15,5 @@ export const basepath = useHashHistory ? '/' : BASE
 export const withOverviewGraph = __USE_OVERVIEW_GRAPH__ === true
 
 export const isDevelopment = import.meta.env.DEV
+
+export const krokiD2SvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kroki.io/d2/svg'
