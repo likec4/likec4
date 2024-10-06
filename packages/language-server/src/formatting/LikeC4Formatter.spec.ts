@@ -15,6 +15,14 @@ style user {
 color red
 }
 }
+dynamic view dynamic-view-1 {
+parallel {
+sys1 -> sys2
+}
+par {
+sys2 -> sys3
+}
+} 
 }`
         )
       ).toMatchInlineSnapshot(
@@ -25,6 +33,14 @@ color red
             include *
             style user {
               color red
+            }
+          }
+          dynamic view dynamic-view-1 {
+            parallel {
+              sys1 -> sys2
+            }
+            par {
+              sys2 -> sys3
             }
           }
         }"
@@ -124,13 +140,23 @@ model {
           `
 specification {
   element component
+  relationship http
+  tag tag1
 }
 model {
-  component system1 {
+  component system1 {    
+    component module1 {
+        component lib1
+    }
+
     ->   system2
     .http    system2
   }
-  component system2
+  component system2 {   
+    component module1 {
+        component lib1
+    }
+  }
   system2   ->   system1
   system2   -[   http   ]->   system1
 
@@ -146,6 +172,16 @@ views {
     include system1.module1<->*
     include ->    system1.module1   ->
   }
+
+  dynamic view some {
+    system2   ->   system1
+    system2   -[   http   ]->   system1
+
+    system2.module1   ->     system1.module1
+    system2.module1.lib1   ->system1.module1.lib1
+    system2.module1   -[   http   ]->   system1.module1
+    system2.module1  .http   system1.module1   'title' 
+  }
 }`
         )
       ).toMatchInlineSnapshot(
@@ -153,13 +189,23 @@ views {
         "
         specification {
           element component
+          relationship http
+          tag tag1
         }
         model {
           component system1 {
+            component module1 {
+              component lib1
+            }
+
             -> system2
             .http system2
           }
-          component system2
+          component system2 {
+            component module1 {
+              component lib1
+            }
+          }
           system2 -> system1
           system2 -[http]-> system1
 
@@ -174,6 +220,16 @@ views {
             include * ->, -> *
             include system1.module1 <-> *
             include -> system1.module1 ->
+          }
+
+          dynamic view some {
+            system2 -> system1
+            system2 -[http]-> system1
+
+            system2.module1 -> system1.module1
+            system2.module1.lib1 -> system1.module1.lib1
+            system2.module1 -[http]-> system1.module1
+            system2.module1 .http system1.module1 'title'
           }
         }"
       `
