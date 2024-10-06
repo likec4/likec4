@@ -11,7 +11,7 @@ const nodeName = (node: ComputedNode): string => {
 }
 
 const d2direction = ({ autoLayout }: ComputedView) => {
-  switch (autoLayout) {
+  switch (autoLayout.direction) {
     case 'TB': {
       return 'down'
     }

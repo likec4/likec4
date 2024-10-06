@@ -271,5 +271,13 @@ describe.concurrent('views', () => {
         autoLayout LeftRight
         include *
       }
+      view {
+        autoLayout LeftRight 200
+        include *
+      }
+      view {
+        autoLayout LeftRight 200 100
+        include *
+      }
     }`
 })

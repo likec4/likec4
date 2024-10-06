@@ -10,7 +10,7 @@ function views(...views: ElementView[]): Record<ViewID, ElementView> {
 describe('manual-layout', () => {
   const manualLayout: ViewManualLayout = {
     hash: 'hash',
-    autoLayout: 'TB',
+    autoLayout: { direction: 'TB' },
     x: -10,
     y: -20,
     height: 100,
@@ -32,9 +32,17 @@ describe('manual-layout', () => {
     expect(commentText).toMatchInlineSnapshot(`
       "/**
        * @likec4-generated(v1)
-       * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOCpHN5czGCoWKUAABkZKFjwqRzeXMygqFilBQUHh6hY8OlZWRnZXOBpWVkZ2UxgqJjcJGCoXgKoXkKoXCSkgAAkmRk
+       * iKRoYXNopGhhc2iqYXV0b0xheW91dIGpZGlyZWN0aW9uolRCoXj2oXnspmhlaWdodGSld2lkdGjMyKVub2Rlc4Kkc3lzMYKhYpQAAGRkoWPCpHN5czKCoWKUFBQeHqFjw6VlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
        */"
     `)
+    expect(deserializeFromComment(commentText)).toEqual(manualLayout)
+  })
+
+  it('deserialize from old format', () => {
+    const commentText = `/**
+       * @likec4-generated(v1)
+       * iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOCpHN5czGCoWKUAABkZKFjwqRzeXMygqFilBQUHh6hY8OlZWRnZXOBpWVkZ2UxgqJjcJGCoXgKoXkKoXCSkgAAkmRk
+       */`
     expect(deserializeFromComment(commentText)).toEqual(manualLayout)
   })
 
@@ -42,9 +50,9 @@ describe('manual-layout', () => {
     expect(deserializeFromComment(`
       /**
        * @likec4-generated(v1)
-       *    iKRoYXNopGhhc2iqYXV0b0xheW91dKJUQqF49qF57KZo
-       *  ZWlnaHRkpXdpZHRozMilbm9kZXOCpHN5czGCoWKUAABkZKFjwqRzeXMygqFil
-       * BQUHh6hY8OlZWRnZXOBpWVkZ2UxgqJjcJGCoXgKoXkKoXCSkgAAkmRk
+       *    iKRoYXNopGhhc2iqYXV0b0xheW91dIGpZGlyZWN
+       *  0aW9uolRCoXj2oXnspmhlaWdodGSld2lkdGjMyKVub2Rlc4Kkc
+       * 3lzMYKhYpQAAGRkoWPCpHN5czKCoWKUFBQeHqFjw6VlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
        */
     `)).toEqual(manualLayout)
 
@@ -60,7 +68,7 @@ describe('manual-layout', () => {
        *
        *
        *
-       * Ghhc2iqYXV0b0xheW91dKJUQqF49qF57KZoZWlnaHRkpXdpZHRozMilbm9kZXOCpHN5czGCoWKUAABkZKFjwqRzeXMygqFilBQUHh6hY8OlZWRnZXOBpWVkZ2UxgqJjcJGCoXgKoXkKoXCSkgAAkmRk
+       * Ghhc2iqYXV0b0xheW91dIGpZGlyZWN0aW9uolRCoXj2oXnspmhlaWdodGSld2lkdGjMyKVub2Rlc4Kkc3lzMYKhYpQAAGRkoWPCpHN5czKCoWKUFBQeHqFjw6VlZGdlc4GlZWRnZTGComNwkYKheAqheQqhcJKSAACSZGQ=
        */
     `)).toEqual(manualLayout)
   })

@@ -225,8 +225,11 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatAutolayoutProperty(node: AstNode) {
-    this.on(node, ast.isViewRuleAutoLayout)
-      ?.keyword('autoLayout').append(FormattingOptions.oneSpace)
+    this.on(node, ast.isViewRuleAutoLayout, (n, f) => {
+      f.keyword('autoLayout').append(FormattingOptions.oneSpace)
+      f.property('rankSep').prepend(FormattingOptions.oneSpace)
+      f.property('nodeSep').prepend(FormattingOptions.oneSpace)
+    })
   }
 
   protected formatMetadataProperty(node: AstNode) {

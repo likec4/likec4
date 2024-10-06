@@ -455,27 +455,41 @@ export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
 }
 
 export function toAutoLayout(
-  direction: ast.ViewLayoutDirection
-): c4.ViewRuleAutoLayout['autoLayout'] {
-  switch (direction) {
+  rule: ast.ViewRuleAutoLayout
+): c4.ViewRuleAutoLayout {
+  const rankSep = rule.rankSep
+  const nodeSep = rule.nodeSep
+
+  let direction: c4.ViewRuleAutoLayout['direction'];
+  switch (rule.direction) {
     case 'TopBottom': {
-      return 'TB'
+      direction = 'TB'
+      break
     }
     case 'BottomTop': {
-      return 'BT'
+      direction = 'BT'
+      break
     }
     case 'LeftRight': {
-      return 'LR'
+      direction = 'LR'
+      break
     }
     case 'RightLeft': {
-      return 'RL'
+      direction = 'RL'
+      break
     }
     default:
-      nonexhaustive(direction)
+      nonexhaustive(rule.direction)
+  }
+
+  return {
+    direction,
+    ...(nodeSep && { nodeSep }),
+    ...(rankSep && { rankSep })
   }
 }
 
-export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['autoLayout']): ast.ViewLayoutDirection {
+export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['direction']): ast.ViewLayoutDirection {
   switch (c4) {
     case 'TB': {
       return 'TopBottom'

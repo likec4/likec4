@@ -200,7 +200,11 @@ export class DynamicViewComputeCtx {
 
     return calcViewLayoutHash({
       ...view,
-      autoLayout: autoLayoutRule?.autoLayout ?? 'LR',
+      autoLayout: {
+        direction: autoLayoutRule?.direction ?? 'LR',
+        ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
+        ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
+      },
       nodes: map(nodes, omit(['notation'])),
       edges,
       ...(elementNotations.length > 0 && {

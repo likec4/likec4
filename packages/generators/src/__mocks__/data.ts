@@ -180,6 +180,7 @@ export const fakeDiagram: DiagramView = {
       title: 'frontend'
     }
   ],
+  autoLayout: { direction: 'TB' },
   rules: [
     {
       exprs: [
@@ -292,6 +293,7 @@ export const fakeDiagram2: DiagramView = {
       title: 'frontend'
     }
   ],
+  autoLayout: { direction: 'TB' },
   rules: [
     {
       exprs: [
@@ -428,6 +430,7 @@ export const fakeComputedView3Levels: ComputedView = {
       title: 'dashboard'
     }
   ],
+  autoLayout: { direction: 'TB' },
   rules: [
     {
       exprs: [

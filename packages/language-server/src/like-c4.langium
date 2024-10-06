@@ -439,7 +439,10 @@ ViewRuleStyle:
   '}';
 
 ViewRuleAutoLayout:
-  'autoLayout' direction=ViewLayoutDirection;
+  'autoLayout' direction=ViewLayoutDirection (
+    rankSep=Number (
+      nodeSep=Number)?
+    )?;
 
 NotationProperty:
   key='notation' ':'? value=String ';'?
@@ -547,7 +550,7 @@ ElementShape returns string:
   'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
 
 CustomColorValue returns string:
-  Hash (Id | Hex);
+  Hash (Id | Hex | Number);
 
 IconId returns string:
   LIB_ICON;
@@ -620,4 +623,5 @@ terminal String: /"[^"]*"|'[^']*'/;
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal IdTerminal:  /[_]*[a-zA-Z][-\w]*/;
-terminal Hex: /[a-zA-Z0-9]+/;
+terminal Number returns number: /\b\d+\b/;
+terminal Hex: /\b[a-zA-Z0-9]+\b/;

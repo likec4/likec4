@@ -40,11 +40,17 @@ export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
 }
 
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
+export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
+  return autoLayout === 'TB' || autoLayout === 'BT' || autoLayout === 'LR' || autoLayout === 'RL'
+}
+
 export interface ViewRuleAutoLayout {
-  autoLayout: AutoLayoutDirection
+  direction: AutoLayoutDirection
+  nodeSep?: number
+  rankSep?: number
 }
 export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout {
-  return 'autoLayout' in rule
+  return 'direction' in rule
 }
 
 export type ViewRule = ViewRulePredicate | ViewRuleStyle | ViewRuleAutoLayout
@@ -265,10 +271,14 @@ export interface ViewWithNotation {
     elements: ElementNotation[]
   }
 }
-
+export interface ViewAutoLayout {
+  direction: ViewRuleAutoLayout['direction']
+  rankSep?: number
+  nodeSep?: number
+}
 export interface ComputedElementView extends Omit<ElementView, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly extends?: ViewID
-  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
+  readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
   rules?: never
@@ -277,7 +287,7 @@ export interface ComputedElementView extends Omit<ElementView, 'rules' | 'docUri
 export interface ComputedDynamicView
   extends Omit<DynamicView, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation
 {
-  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
+  readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
   steps?: never
@@ -354,7 +364,7 @@ export type ViewManualLayout = {
   readonly y: number
   readonly width: number
   readonly height: number
-  readonly autoLayout: AutoLayoutDirection
+  readonly autoLayout: ViewAutoLayout
   readonly nodes: Record<string, {
     isCompound: boolean
     x: number

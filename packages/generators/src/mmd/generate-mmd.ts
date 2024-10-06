@@ -84,7 +84,7 @@ export function generateMermaid<V extends ComputedView>(view: V) {
         '---',
         NL
       )
-      .append('graph ', view.autoLayout, NL)
+      .append('graph ', view.autoLayout.direction, NL)
       .indent({
         indentedChildren: indent => {
           indent

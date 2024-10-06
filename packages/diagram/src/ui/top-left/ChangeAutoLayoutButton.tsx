@@ -10,7 +10,6 @@ import {
   PopoverTarget,
   Stack,
   Text,
-  Tooltip as MantineTooltip,
   TooltipGroup
 } from '@mantine/core'
 import { IconArrowBigDownLines, IconLayoutDashboard } from '@tabler/icons-react'
@@ -68,7 +67,7 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
       <PopoverDropdown className="likec4-top-left-panel" p={8} pt={4}>
         <Box pos={'relative'} ref={setRootRef}>
           <FloatingIndicator
-            target={controlsRefs[autoLayout]}
+            target={controlsRefs[autoLayout.direction]}
             parent={rootRef}
             className={css.autolayoutIndicator}
           />

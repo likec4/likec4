@@ -4,7 +4,7 @@ exports[`generate mermaid - fakeComputedView 3 Levels 1`] = `
 "---
 title: "Context: Cloud"
 ---
-graph 
+graph TB
   Amazon[amazon]
   subgraph Cloud["cloud"]
     subgraph Cloud.Backend["backend"]
@@ -26,7 +26,7 @@ graph
 `;
 
 exports[`generate mermaid - fakeDiagram 1`] = `
-"graph 
+"graph TB
   Amazon[amazon]
   subgraph Cloud["cloud"]
     Cloud.Backend[backend]
@@ -45,7 +45,7 @@ exports[`generate mermaid - fakeDiagram2 1`] = `
 "---
 title: "frontend"
 ---
-graph 
+graph TB
   Client[client]
   SystemBackend[backend]
   SystemFrontend[frontend]

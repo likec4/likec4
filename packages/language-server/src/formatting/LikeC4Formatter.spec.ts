@@ -1025,6 +1025,9 @@ views {
   view {
     autoLayout     TopBottom
   }
+  view {
+    autoLayout     TopBottom   123   321
+  }
 }`
         )
       ).toMatchInlineSnapshot(
@@ -1033,6 +1036,9 @@ views {
         views {
           view {
             autoLayout TopBottom
+          }
+          view {
+            autoLayout TopBottom 123 321
           }
         }"
       `

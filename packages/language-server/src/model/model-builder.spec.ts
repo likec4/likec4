@@ -333,13 +333,13 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       index: {
         id: 'index',
         title: 'Index',
-        autoLayout: 'TB'
+        autoLayout: { direction: 'TB' }
       },
       v1: {
         id: 'v1',
         viewOf: 'system.backend.api',
         title: 'api',
-        autoLayout: 'LR'
+        autoLayout: { direction: 'LR' }
       }
     })
     expect(model.views['index' as ViewID]).not.toHaveProperty('viewOf')
@@ -961,7 +961,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const indexView = model?.views['index' as ViewID]!
     expect(indexView).toBeDefined()
     expect(indexView).toHaveProperty('manualLayout', {
-      autoLayout: 'TB',
+      autoLayout: { direction: 'TB' },
       hash: 'hash',
       x: -10,
       y: -20,
