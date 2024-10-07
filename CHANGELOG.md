@@ -1,19 +1,31 @@
 # [1.12.0](https://github.com/likec4/likec4/compare/v1.11.0...v1.12.0) (2024-10-07)
 
-### Features
+### 🚀 Features  
 
-* **deployments:** add deployment steps and status updates to preview workflows ([dd199a0](https://github.com/likec4/likec4/commit/dd199a0f8a91b70d22c8ab5afa8596a880fd6c24))
-* **playground:** implement dynamic routing and enhance workspace context management ([#1041](https://github.com/likec4/likec4/issues/1041)) ([0782524](https://github.com/likec4/likec4/commit/0782524e348973d06c783cf5aeba6a4a95a310cf))
+* **dsl:** params to adjust autolayout (thanks @pavelpykhtin, [#1053](https://github.com/likec4/likec4/issues/1053))
 
-* **dsl:** optional params to adjust autolayout (thanks @pavelpykhtin, [#1053](https://github.com/likec4/likec4/issues/1053))
-* **app:** add krokiD2SvgUrl configuration
+  ```zig
+  view {
+    include *
+    autoLayout LeftRight 120 110
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/views/#auto-layout)
+
+* **dsl:** add Azure iconset (thanks @msisolak [#1040](https://github.com/likec4/likec4/pull/1040))
 * publish extension to Open VSX (thanks @davydkov, [#908](https://github.com/likec4/likec4/issues/908))
 
 
 ### Bug Fixes
 
+* **diagram:** unable to drag multiple nodes (thanks @pavelpykhtin, [#1043](https://github.com/likec4/likec4/issues/1043))
+* **diagram:** long node names overflow in node options panel (thanks @pavelpykhtin)
+* **diagram:** deleted control point being reverted on mouse up (thanks @pavelpykhtin, [#1044](https://github.com/likec4/likec4/pull/1044) )
+* **vscode**: extra space in dynamic step (thanks @pavelpykhtin, [#1056](https://github.com/likec4/likec4/issues/1056))
+* **app:** configure kroki url with `VITE_KROKI_D2_SVG_URL`  (thanks @davydkov, [#1060](https://github.com/likec4/likec4/issues/1060))
 * **deps:** upgrade playwright to 1.47.2 ([73758c6](https://github.com/likec4/likec4/commit/73758c69825642bc62eb15e33e428352f5116cee))
 * **vscode:** `--enable-source-maps` in node extension ([eef8153](https://github.com/likec4/likec4/commit/eef8153462007c8249e70dc289eef9993080a730))
+
 
 
 # [1.11.0](https://github.com/likec4/likec4/compare/v1.10.1...v1.11.0) (2024-09-24)
