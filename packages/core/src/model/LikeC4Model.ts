@@ -1,13 +1,13 @@
 import { isString, isTruthy, values } from 'remeda'
+import type { Class } from 'type-fest'
 import { nonNullable } from '../errors'
-import { DefaultElementShape, DefaultThemeColor } from '../types/element'
 import type {
   Element as C4Element,
   ElementKind as C4ElementKind,
   ElementShape as C4ElementShape,
-  Fqn as C4Fqn,
   Tag as C4Tag
 } from '../types/element'
+import { DefaultElementShape, DefaultThemeColor } from '../types/element'
 import type {
   ComputedLikeC4Model as C4ComputedLikeC4Model,
   LayoutedLikeC4Model as C4LayoutedLikeC4Model
@@ -17,8 +17,8 @@ import type { Color as C4Color } from '../types/theme'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
 import { LikeC4DiagramModel } from './LikeC4DiagramModel'
 import { LikeC4ViewModel } from './LikeC4ViewModel'
-import { getId } from './types'
 import type { ElementOrFqn, Fqn, IncomingFilter, OutgoingFilter, RelationID, ViewID } from './types'
+import { getId } from './types'
 
 type PickBySource<Source> = Source extends LikeC4Model.Layouted.SourceModel ? LikeC4Model.Layouted
   : Source extends LikeC4Model.Computed.SourceModel ? LikeC4Model.Computed
@@ -48,47 +48,15 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
 
   private _cacheAscendingSiblings = new Map<Fqn, LikeC4Model.ElementModel<M>[]>()
 
-  private _views = new Map<Fqn, M>()
+  private _views: Map<Fqn, M>
 
-  static create(source: LikeC4Model.SourceModel): PickBySource<typeof source> {
-    // static create<MM extends LikeC4Model>(source: MM['s']): PickBySource<typeof source> {
-    if (source.__ === 'layouted') {
-      return LikeC4Model.layouted(source)
-    }
-    return LikeC4Model.computed(source)
-  }
-
-  static computed(source: C4ComputedLikeC4Model): LikeC4Model<LikeC4ViewModel> {
-    const instance = new LikeC4Model<LikeC4ViewModel>(
-      'computed',
-      source,
-      values(source.elements),
-      values(source.relations)
-    )
-    for (const view of values(source.views)) {
-      instance._views.set(view.id, new LikeC4ViewModel(view, instance))
-    }
-    return instance
-  }
-
-  static layouted(source: C4LayoutedLikeC4Model): LikeC4Model<LikeC4DiagramModel> {
-    const instance = new LikeC4Model<LikeC4DiagramModel>(
-      'layouted',
-      source,
-      values(source.elements),
-      values(source.relations)
-    )
-    for (const view of values(source.views)) {
-      instance._views.set(view.id, new LikeC4DiagramModel(view, instance))
-    }
-    return instance
-  }
-
-  protected constructor(
+  constructor(
     public readonly type: LikeC4Model.ModelType<M>,
     public readonly sourcemodel: LikeC4Model.SourceModel<M>,
     elements: C4Element[],
-    relations: C4Relation[]
+    relations: C4Relation[],
+    views: LikeC4Model.SourceModel<M>['views'],
+    ViewModelClass: Class<M>
   ) {
     for (const el of elements) {
       this.addElement(el)
@@ -96,6 +64,9 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
     for (const rel of relations) {
       this.addRelation(rel)
     }
+    this._views = new Map(
+      values(views).map(view => [view.id, new ViewModelClass(view, this)])
+    )
   }
 
   /**
@@ -380,6 +351,36 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
 }
 
 export namespace LikeC4Model {
+  export function create(source: LikeC4Model.SourceModel): PickBySource<typeof source> {
+    // static create<MM extends LikeC4Model>(source: MM['s']): PickBySource<typeof source> {
+    if (source.__ === 'layouted') {
+      return LikeC4Model.layouted(source)
+    }
+    return LikeC4Model.computed(source)
+  }
+
+  export function computed(source: C4ComputedLikeC4Model): LikeC4Model<LikeC4ViewModel> {
+    return new LikeC4Model(
+      'computed',
+      source,
+      values(source.elements),
+      values(source.relations),
+      source.views,
+      LikeC4ViewModel
+    )
+  }
+
+  export function layouted(source: C4LayoutedLikeC4Model): LikeC4Model<LikeC4DiagramModel> {
+    return new LikeC4Model(
+      'layouted',
+      source,
+      values(source.elements),
+      values(source.relations),
+      source.views,
+      LikeC4DiagramModel
+    )
+  }
+
   export function isModel(model: any): model is LikeC4Model {
     return model instanceof LikeC4Model
   }

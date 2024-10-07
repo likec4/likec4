@@ -1,18 +1,17 @@
-import { isArray, isString, map, piped } from 'remeda'
+import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Tagged } from 'type-fest'
-import { invariant, nonexhaustive } from '../errors'
 import {
   type AutoLayoutDirection,
   type ElementExpression as C4ElementExpression,
   type Expression as C4Expression,
   type Fqn,
   isElementPredicateExpr,
-  isRelationPredicateExpr,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator
 } from '../types'
-import { type AnyTypesHook, LikeC4ModelBuilder, type TypesHook, type ViewBuilder } from './LikeC4ModelBuilder'
+import type { AnyTypesHook, TypesHook } from './_types'
+import type { ViewBuilder } from './LikeC4ModelBuilder'
 
 // To hook types
 type TypedC4Expression<Types extends AnyTypesHook> = Tagged<C4Expression, 'typed', Types>
@@ -69,19 +68,41 @@ function parseWhere(where: TypesHook.ViewPredicate.WhereOperator<AnyTypesHook>):
   throw new Error(`Unknown where operator: ${where}`)
 }
 
-export function $include<Types extends AnyTypesHook>(
+function $include<Types extends AnyTypesHook>(
   ...args:
     | [Types['Expression'] | TypedC4Expression<Types>]
-    | [Types['Expression'], TypesHook.ViewPredicate.Where<Types>]
+    | [Types['Expression'], TypesHook.ViewPredicate.Custom<Types>]
 ): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
   return (b) => {
     let expr = $expr(args[0]) as C4Expression
-    if (args.length === 2 && args[1].where) {
-      const condition = parseWhere(args[1].where)
-      expr = {
-        where: {
-          expr: expr as any,
-          condition
+    const isElement = isElementPredicateExpr(expr)
+    if (args.length === 2) {
+      const condition = args[1].where ? parseWhere(args[1].where) : undefined
+      if (condition) {
+        expr = {
+          where: {
+            expr: expr as any,
+            condition
+          }
+        }
+      }
+
+      const custom = args[1].with
+      if (custom) {
+        if (isElement) {
+          expr = {
+            custom: {
+              ...custom,
+              expr: expr as any
+            }
+          }
+        } else {
+          expr = {
+            customRelation: {
+              ...custom,
+              relation: expr as any
+            }
+          }
         }
       }
     }
@@ -90,10 +111,10 @@ export function $include<Types extends AnyTypesHook>(
   }
 }
 
-export function $exclude<Types extends AnyTypesHook>(
+function $exclude<Types extends AnyTypesHook>(
   ...args:
     | [Types['Expression'] | TypedC4Expression<Types>]
-    | [Types['Expression'], TypesHook.ViewPredicate.Where<Types>]
+    | [Types['Expression'], TypesHook.ViewPredicate.Custom<Types>]
 ): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
   return (b) => {
     let expr = $expr(args[0]) as C4Expression
@@ -111,7 +132,7 @@ export function $exclude<Types extends AnyTypesHook>(
   }
 }
 
-export function $expr<Types extends AnyTypesHook>(expr: Types['Expression'] | C4Expression): TypedC4Expression<Types> {
+function $expr<Types extends AnyTypesHook>(expr: Types['Expression'] | C4Expression): TypedC4Expression<Types> {
   if (!isString(expr)) {
     return expr as TypedC4Expression<Types>
   }
@@ -165,7 +186,7 @@ export function $expr<Types extends AnyTypesHook>(expr: Types['Expression'] | C4
   } as TypedC4Expression<Types>
 }
 
-export function $style<Types extends AnyTypesHook>(
+function $style<Types extends AnyTypesHook>(
   element: TypesHook.ElementExpr<Types['Fqn']> | NonEmptyArray<TypesHook.ElementExpr<Types['Fqn']>>,
   { notation, ...style }: ViewRuleStyle['style'] & { notation?: string }
 ): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
@@ -179,101 +200,15 @@ export function $style<Types extends AnyTypesHook>(
     })
 }
 
-export function $autoLayout<Types extends AnyTypesHook>(
+function $autoLayout<Types extends AnyTypesHook>(
   layout: AutoLayoutDirection
 ): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
   return (b) => b.autoLayout(layout)
 }
 
 type Builder<Types extends AnyTypesHook> = (b: ViewBuilder<Types>) => ViewBuilder<Types>
-export function $rules<Types extends AnyTypesHook>(...rules: Builder<Types>[]): Builder<Types> {
+function $rules<Types extends AnyTypesHook>(...rules: Builder<Types>[]): Builder<Types> {
   return (b) => rules.reduce((b, rule) => rule(b), b)
 }
-const b = LikeC4ModelBuilder({
-  elements: {
-    mobile: {
-      style: {
-        shape: 'mobile'
-      }
-    },
-    component: {},
-    service: {},
-    system: {
-      style: {
-        color: 'gray'
-      }
-    }
-  },
-  relationships: {
-    'uses': {}
-  },
-  tags: ['Tag', 'Tag2'],
-  metadataKeys: ['key1', 'key2']
-})
-  .mobile('a')
-  .mobile('b', {
-    metadata: {
-      'key1': '',
-      'key2': ''
-    }
-  })
-  .system('cloud', {
-    title: 'Title',
-    tags: ['Tag', 'Tag2']
-  })
-  .component('cloud.backend', b => {
-    return b
-      .service('api', api => {
-        return api
-          .component('auth')
-          .component('rest')
-          .component('validation')
-      })
-      .description('asd')
-      .component('graphql', g => {
-        return g.rel('b')
-          .component('storage')
-      })
-  })
-  ._𐙤('a', 'b')
-  .viewOf(
-    'index1',
-    'cloud.backend',
-    piped(
-      $include('* -> a', {
-        where: {
-          and: [
-            'tag is not #Tag'
-            // 'tag is not #Tag2'
-          ]
-        }
-      }),
-      $exclude('* -> *')
-    )
-  )
-  .viewOf('index', 'a', [
-    'include *',
-    'exclude -> a ->'
-  ])
-  .view(
-    'index2',
-    $rules(
-      $include('-> * ->', {
-        where: {
-          not: {
-            and: [
-              'kind is component',
-              {
-                or: [
-                  'tag is #Tag',
-                  'tag is #Tag2'
-                ]
-              }
-            ]
-          }
-        }
-      })
-    )
-  )
-  .relationship('a', 'b')
-  .relationship('b', 'cloud.backend.api.validation')
+
+export { $autoLayout, $exclude, $expr, $include, $rules, $style }

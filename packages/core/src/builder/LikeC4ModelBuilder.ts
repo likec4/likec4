@@ -1,4 +1,4 @@
-import {} from '../types'
+import defu from 'defu'
 import {
   fromEntries,
   isArray,
@@ -11,11 +11,10 @@ import {
   omitBy,
   pickBy
 } from 'remeda'
-import type { IfNever, TupleToUnion, Writable } from 'type-fest'
+import type { IfNever, IsStringLiteral, LiteralUnion, Writable } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
 import {
   type AutoLayoutDirection,
-  type BorderStyle,
   type Color,
   DefaultElementShape,
   DefaultThemeColor,
@@ -28,179 +27,53 @@ import {
   type Expression as C4Expression,
   type Fqn,
   type IconUrl,
-  type LikeC4View,
-  type NonEmptyArray,
-  type ParsedLikeC4Model,
   type Relation,
   type RelationID,
-  type RelationshipArrowType,
   type RelationshipKind,
-  type RelationshipKindSpecification,
-  type RelationshipLineType,
   type Tag,
-  type TypedElement,
   type ViewID,
   type ViewRule,
   type ViewRuleStyle
 } from '../types'
 import { isNonEmptyArray, isSameHierarchy, nameFromFqn, parentFqn } from '../utils'
-import { $expr } from './view-helpers'
+import type { AnyTypesHook, Specification, TypesFromSpecification, TypesHook, Warn, WithModelMethod } from './_types'
+import { $expr } from './view-ops'
 
-type Specification = {
-  elements: {
-    [kind: string]: Partial<ElementKindSpecification>
-  }
-  relationships?: Record<string, Partial<RelationshipKindSpecification>>
-  tags?: [string, ...string[]]
-  metadataKeys?: [string, ...string[]]
-}
-
-type Metadata<Keys> = Keys extends string ? Record<Keys, string> : never
-
-type NewElementProps<Tag, Metadata> = {
-  title?: string
-  description?: string
-  technology?: string
-  tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
-  metadata?: Metadata
-  icon?: string
-  shape?: ElementShape
-  color?: Color
-  links?: Array<string | { title?: string; url: string }>
-  style?: {
-    border?: BorderStyle
-    // 0-100
-    opacity?: number
-  }
-}
-
-type NewRelationProps<Kind, Tag, Metadata> = {
-  kind?: Kind
-  title?: string
-  description?: string
-  technology?: string
-  tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
-  metadata?: Metadata
-  head?: RelationshipArrowType
-  tail?: RelationshipArrowType
-  line?: RelationshipLineType
-  color?: Color
-  links?: Array<string | { title?: string; url: string }>
-}
-
-/**
- * Auxilary type to keep track of the types in builder
- * "Hides" types from pu
- */
-export interface TypesHook<
-  ElementKind extends string,
-  RelationshipKind extends string,
-  Tag extends string,
-  MetadataKey extends string,
-  Fqn extends string,
-  ViewId extends string
-> {
-  readonly ElementKind: ElementKind
-  readonly RelationshipKind: RelationshipKind
-  readonly Tag: Tag
-  readonly MetadataKey: MetadataKey
-  readonly Fqn: Fqn
-  readonly ViewId: ViewId
-
-  readonly Element: TypedElement<Fqn, ElementKind, Tag, MetadataKey>
-  readonly View: LikeC4View<ViewId, Tag>
-
-  Tags: IfNever<Tag, never, [Tag, ...Tag[]]>
-  Metadata: Metadata<MetadataKey>
-
-  ElementProps: NewElementProps<Tag, Metadata<MetadataKey>>
-
-  RelationProps: NewRelationProps<RelationshipKind, Tag, Metadata<MetadataKey>>
-
-  Expression: TypesHook.Expression<TypesHook.ElementExpr<Fqn>>
-
-  ViewPredicate: TypesHook.ViewPredicate<TypesHook.Expression<TypesHook.ElementExpr<Fqn>>>
-
-  DynamicViewStep: `${Fqn} ${'->' | '<-'} ${Fqn}`
-}
-export type AnyTypesHook = TypesHook<any, any, any, any, any, any>
-
-export namespace TypesHook {
-  export type ElementExpr<Fqn extends string> = '*' | Fqn | `${Fqn}.*` | `${Fqn}._`
-
-  export type Expression<ElementExpr extends string> =
-    | ElementExpr
-    | `-> ${ElementExpr} ->`
-    | `-> ${ElementExpr}`
-    | `${ElementExpr} ->`
-    | `${ElementExpr} ${'->' | '<->'} ${ElementExpr}`
-
-  export type ViewPredicate<Expr extends string> = `${'exclude' | 'include'} ${Expr}`
-
-  export namespace ViewPredicate {
-    export type WhereTag<Tag extends string> = `tag ${'is' | 'is not'} #${Tag}`
-    export type WhereKind<Kind extends string> = `kind ${'is' | 'is not'} ${Kind}`
-
-    export type WhereEq<Types extends AnyTypesHook> =
-      | WhereTag<Types['Tag']>
-      | WhereKind<Types['ElementKind']>
-
-    export type WhereOperator<Types extends AnyTypesHook> = WhereEq<Types> | {
-      and: NonEmptyArray<WhereOperator<Types>>
-      or?: never
-      not?: never
-    } | {
-      or: NonEmptyArray<WhereOperator<Types>>
-      and?: never
-      not?: never
-    } | {
-      not: WhereOperator<Types>
-      and?: never
-      or?: never
-    }
-
-    export type Where<Types extends AnyTypesHook> = {
-      where: WhereOperator<Types>
-    }
-  }
-}
-
-type KeysOf<T> = keyof T extends infer K extends string ? K : never
-
-interface WithNewElement<Types extends AnyTypesHook> {
-  <const Id extends string>(id: Id, titleOrProps?: string | Types['ElementProps']): LikeC4ModelBuilder<
-    TypesHook<
-      Types['ElementKind'],
-      Types['RelationshipKind'],
-      Types['Tag'],
-      Types['MetadataKey'],
-      Id | Types['Fqn'],
-      Types['ViewId']
-    >
-  >
-  <const Id extends string, TypesFromBuilder extends AnyTypesHook>(
-    id: Id,
-    builder: (
-      builder: ElementBuilder<
-        Id,
-        TypesHook<
-          Types['ElementKind'],
-          Types['RelationshipKind'],
-          Types['Tag'],
-          Types['MetadataKey'],
-          Id | Types['Fqn'],
-          Types['ViewId']
-        >
-      >
-    ) => ElementBuilder<Id, TypesFromBuilder>
-  ): LikeC4ModelBuilder<TypesFromBuilder>
-}
+// interface WithNewElement<Types extends AnyTypesHook> {
+//   <const Id extends string>(id: Id, titleOrProps?: string | Types['ElementProps']): LikeC4ModelBuilder<
+//     TypesHook<
+//       Types['ElementKind'],
+//       Types['RelationshipKind'],
+//       Types['Tag'],
+//       Types['MetadataKey'],
+//       Id | Types['Fqn'],
+//       Types['ViewId']
+//     >
+//   >
+//   <const Id extends string, TypesFromBuilder extends AnyTypesHook>(
+//     id: Id,
+//     builder: (
+//       builder: ElementBuilder<
+//         Id,
+//         TypesHook<
+//           Types['ElementKind'],
+//           Types['RelationshipKind'],
+//           Types['Tag'],
+//           Types['MetadataKey'],
+//           Id | Types['Fqn'],
+//           Types['ViewId']
+//         >
+//       >
+//     ) => ElementBuilder<Id, TypesFromBuilder>
+//   ): LikeC4ModelBuilder<TypesFromBuilder>
+// }
 
 type ElementBuilder<
   Id extends string,
   Types extends AnyTypesHook
 > =
   & {
+    // readonly id: Id
     title(title: string): ElementBuilder<Id, Types>
     description(description: string): ElementBuilder<Id, Types>
     techology(techology: string): ElementBuilder<Id, Types>
@@ -211,99 +84,35 @@ type ElementBuilder<
     ): ElementBuilder<Id, Types>
   }
   & {
-    [Kind in Types['ElementKind']]: ElementBuilder.WithNestedElement<Id, Types>
+    [Kind in Types['ElementKind']]: ElementBuilder.AddNestedElement<Id, Types>
   }
 
 namespace ElementBuilder {
-  export interface WithNestedElement<
+  export interface AddNestedElement<
     Parent extends string,
-    Types extends AnyTypesHook
+    Type extends AnyTypesHook
   > {
-    <const Id extends string>(id: Id, titleOrProps?: string | Types['ElementProps']): ElementBuilder<
-      Parent,
-      TypesHook<
-        Types['ElementKind'],
-        Types['RelationshipKind'],
-        Types['Tag'],
-        Types['MetadataKey'],
-        `${Parent}.${Id}` | Types['Fqn'],
-        Types['ViewId']
-      >
-    >
     <const Id extends string, TypesFromBuilder extends AnyTypesHook>(
       id: Id,
       builder: (
         builder: ElementBuilder<
           `${Parent}.${Id}`,
-          TypesHook<
-            Types['ElementKind'],
-            Types['RelationshipKind'],
-            Types['Tag'],
-            Types['MetadataKey'],
-            `${Parent}.${Id}` | Types['Fqn'],
-            Types['ViewId']
-          >
-        >
+          TypesHook.AddFqn<Type, `${Parent}.${Id}`>
+        > // TypesHook<
+        //   Types['ElementKind'],
+        //   Types['RelationshipKind'],
+        //   Types['Tag'],
+        //   Types['MetadataKey'],
+        //   `${Parent}.${Id}` | Types['Fqn'],
+        //   Types['ViewId']
+        // >
       ) => ElementBuilder<`${Parent}.${Id}`, TypesFromBuilder>
-    ): ElementBuilder<
+    ): ElementBuilder<Parent, TypesFromBuilder>
+    <const Id extends string>(id: Id, titleOrProps?: string | Type['ElementProps']): ElementBuilder<
       Parent,
-      TypesFromBuilder
+      TypesHook.AddFqn<Type, `${Parent}.${Id}`>
     >
   }
-  /* type ElementBuilderWithNestedElement<Id extends string, EB> = EB extends ElementBuilder<infer Parent, infer Types>
-    ? ElementBuilder<
-      Parent,
-      TypesHook<
-        Types['ElementKind'],
-        Types['RelationshipKind'],
-        Types['Tag'],
-        Types['MetadataKey'],
-        `${Parent}.${Id}` | Types['Fqn'],
-        Types['ViewId']
-      >
-    >
-    : never
-
-  export type NestedElementFp<ElementProps> = <
-    Id extends string
-  >(
-    id: Id,
-    titleOrProps?: string | ElementProps
-  ) => <EB extends ElementBuilder<any, any>>(eb: EB) => ElementBuilderWithNestedElement<Id, EB>
-    <
-    Parent extends string,
-    Types extends AnyTypesHook
-
-  (eb: EB) => ElementBuilder<
-    Parent,
-    TypesHook<
-      Types['ElementKind'],
-      Types['RelationshipKind'],
-      Types['Tag'],
-      Types['MetadataKey'],
-      `${Parent}.${Id}` | Types['Fqn'],
-      Types['ViewId']
-    >
-  >
-  <const Id extends string, TypesFromBuilder extends AnyTypesHook>(
-    id: Id,
-    builder: (
-      builder: ElementBuilder<
-        `${Parent}.${Id}`,
-        TypesHook<
-          Types['ElementKind'],
-          Types['RelationshipKind'],
-          Types['Tag'],
-          Types['MetadataKey'],
-          `${Parent}.${Id}` | Types['Fqn'],
-          Types['ViewId']
-        >
-      >
-    ) => ElementBuilder<`${Parent}.${Id}`, TypesFromBuilder>
-  ): ElementBuilder<
-    Parent,
-    TypesFromBuilder
-  > */
 }
 
 export type ViewBuilder<
@@ -317,95 +126,113 @@ export type ViewBuilder<
   autoLayout(layout: AutoLayoutDirection): ViewBuilder<Types>
 }
 
-type WithNewView<B> = B extends LikeC4ModelBuilder<infer Types> ? <const Id extends string>(
-    id: Id,
+interface AddNewView<Type extends AnyTypesHook> {
+  <const Id extends string>(
+    id: Warn<Id, Type['ViewId']>,
     predicates:
-      | Types['ViewPredicate']
-      | [Types['ViewPredicate'], ...Types['ViewPredicate'][]]
-      | ((v: ViewBuilder<Types>) => ViewBuilder<Types>)
-  ) => LikeC4ModelBuilder<
+      | Type['ViewPredicate']
+      | [Type['ViewPredicate'], ...Type['ViewPredicate'][]]
+      | ((v: ViewBuilder<Type>) => ViewBuilder<Type>)
+  ): LikeC4ModelBuilder<
     TypesHook<
-      Types['ElementKind'],
-      Types['RelationshipKind'],
-      Types['Tag'],
-      Types['MetadataKey'],
-      Types['Fqn'],
-      Id | Types['ViewId']
+      Type['ElementKind'],
+      Type['RelationshipKind'],
+      Type['Tag'],
+      Type['MetadataKey'],
+      Type['Fqn'],
+      Id | Type['ViewId']
     >
   >
-  : never
+}
 
-type WithNewViewOf<B> = B extends LikeC4ModelBuilder<infer Types> ? <const Id extends string>(
-    id: Id,
-    viewOf: Types['Fqn'],
+interface AddNewViewOf<Type extends AnyTypesHook> {
+  <const Id extends string>(
+    id: Warn<Id, Type['ViewId']>,
+    viewOf: Type['Fqn'],
     predicates:
-      | Types['ViewPredicate']
-      | [Types['ViewPredicate'], ...Types['ViewPredicate'][]]
-      | ((v: ViewBuilder<Types>) => ViewBuilder<Types>)
-  ) => LikeC4ModelBuilder<
+      | Type['ViewPredicate']
+      | [Type['ViewPredicate'], ...Type['ViewPredicate'][]]
+      | ((v: ViewBuilder<Type>) => ViewBuilder<Type>)
+  ): LikeC4ModelBuilder<
     TypesHook<
-      Types['ElementKind'],
-      Types['RelationshipKind'],
-      Types['Tag'],
-      Types['MetadataKey'],
-      Types['Fqn'],
-      Id | Types['ViewId']
+      Type['ElementKind'],
+      Type['RelationshipKind'],
+      Type['Tag'],
+      Type['MetadataKey'],
+      Type['Fqn'],
+      Id | Type['ViewId']
     >
   >
-  : never
+}
 
 interface InvalidBuilder<Error extends string> {
   error: Error
 }
 
-type WithModelMethods<Types extends AnyTypesHook> = {
-  [Kind in Types['ElementKind']]: WithNewElement<Types>
+interface AddElement<Type extends AnyTypesHook> {
+  <
+    const Id extends string,
+    TypesFromBuilder extends AnyTypesHook
+  >(
+    id: Warn<Id, Type['Fqn']>,
+    builder: (builder: ElementBuilder<Id, TypesHook.AddFqn<Type, Id>>) => ElementBuilder<Id, TypesFromBuilder>
+  ): LikeC4ModelBuilder<TypesFromBuilder>
+
+  <const Id extends string>(
+    id: Warn<Id, Type['Fqn']>,
+    titleOrProps?: string | Type['ElementProps']
+  ): LikeC4ModelBuilder<TypesHook.AddFqn<Type, Id>>
 }
 
-type EmptyLikeC4ModelBuilder<Types extends AnyTypesHook> = Types['ElementKind'] extends never
-  ? InvalidBuilder<'No Element kinds'>
-  : WithModelMethods<Types>
-
-export type LikeC4ModelBuilder<Types extends AnyTypesHook> =
-  & WithModelMethods<Types>
+export type WithModelMethods<Type extends AnyTypesHook> =
+  & WithModelMethod<Type>
   & {
-    readonly Types: Types
-    relationship: (
-      source: Types['Fqn'],
-      target: Types['Fqn'],
-      props?: string | Types['RelationProps']
-    ) => LikeC4ModelBuilder<Types>
-    _𐙤: (
-      source: Types['Fqn'],
-      target: Types['Fqn'],
-      props?: string | Types['RelationProps']
-    ) => LikeC4ModelBuilder<Types>
-    rel: (
-      source: Types['Fqn'],
-      target: Types['Fqn'],
-      props?: string | Types['RelationProps']
-    ) => LikeC4ModelBuilder<Types>
-    view: WithNewView<LikeC4ModelBuilder<Types>>
-    viewOf: WithNewViewOf<LikeC4ModelBuilder<Types>>
-    clone: () => LikeC4ModelBuilder<Types>
-    build: () => ParsedLikeC4Model<
-      Types['ElementKind'],
-      Types['RelationshipKind'],
-      Types['Tag'],
-      Types['Fqn'],
-      Types['ViewId']
-    >
+    [Kind in Type['ElementKind']]: AddElement<Type>
+    // // Variant 1
+    // <const Id extends string>(
+    //   id: Warn<Id, Types['Fqn']>,
+    //   titleOrProps?: string | Types['ElementProps']
+    // ): LikeC4ModelBuilder<TypesHook.AddFqn<Types, Id>>
+    // // Variant 1
+  }
+  & {
+    modelFunctions(): ModelFunctions<Type>
   }
 
-type TypesFromSpecification<Spec> = Spec extends Specification ? TypesHook<
-    KeysOf<Spec['elements']>,
-    KeysOf<Spec['relationships']>,
-    TupleToUnion<Spec['tags']>,
-    TupleToUnion<Spec['metadataKeys']>,
-    never,
-    never
-  >
-  : never
+export type EmptyLikeC4ModelBuilder<Types extends AnyTypesHook> = WithModelMethods<Types> & {
+  clone(): EmptyLikeC4ModelBuilder<Types>
+}
+
+export type ValidLikeC4ModelBuilder<T extends AnyTypesHook> = IfNever<
+  T['ElementKind'],
+  InvalidBuilder<'No Element kinds'>,
+  EmptyLikeC4ModelBuilder<T>
+>
+
+interface AddRelationship<T extends AnyTypesHook> {
+  <Id extends T['Fqn']>(
+    source: Id,
+    target: Id,
+    titleOrProps?: string | T['RelationProps']
+  ): LikeC4ModelBuilder<T>
+}
+
+export type LikeC4ModelBuilder<Type extends AnyTypesHook> =
+  & WithModelMethods<Type>
+  & {
+    readonly Types: Type
+    relationship: AddRelationship<Type>
+    // _𐙤_: (
+    //   source: Types['Fqn'],
+    //   target: Types['Fqn'],
+    //   props?: string | Types['RelationProps']
+    // ) => LikeC4ModelBuilder<Types>
+    rel: AddRelationship<Type>
+    view: AddNewView<Type>
+    viewOf: AddNewViewOf<Type>
+    clone(): LikeC4ModelBuilder<Type>
+    build(): TypesHook.ToParsedLikeC4Model<Type>
+  }
 
 const emptyView = {
   __: 'element' as const,
@@ -418,13 +245,13 @@ const emptyView = {
   rules: [] as ViewRule[]
 }
 
-function mkLikeC4ModelBuilder<const Spec extends Specification>(
+function newBuilder<const Spec extends Specification>(
   spec: Spec,
   elements = new Map<string, Element>(),
   relations = [] as Relation[],
-  views = new Map<string, LikeC4View>()
+  views = new Map<string, ElementView>()
 ): LikeC4ModelBuilder<TypesFromSpecification<Spec>> {
-  type Types = TypesHook<ElementKind<'some'>, RelationshipKind, Tag, string, Fqn, ViewID>
+  type Types = TypesHook<ElementKind, RelationshipKind, Tag, string, Fqn, ViewID>
 
   function ensureElement(id: string): Writable<Element> {
     return nonNullable(elements.get(id))
@@ -522,7 +349,7 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
     return elBuilder
   }
 
-  const mkElementViewBuilder = (view: Writable<ElementView>): ViewBuilder<Types> => {
+  const mkViewBuilder = (view: Writable<ElementView>): ViewBuilder<Types> => {
     const viewBuilder: ViewBuilder<Types> = {
       autoLayout(autoLayout) {
         view.rules.push({
@@ -546,61 +373,16 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
         view.rules.push(rule)
         return viewBuilder
       },
-      title: function(title: string) {
+      title(title: string) {
         view.title = title
         return viewBuilder
       },
-      description: function(description: string) {
+      description(description: string) {
         view.description = description
         return viewBuilder
       }
     }
     return viewBuilder
-    // const element = ensureElement(parentId)
-    // const elBuilder: ElementBuilder<Fqn, Types> = {
-    //   title(title) {
-    //     element.title = title
-    //     return elBuilder
-    //   },
-    //   techology(techology) {
-    //     element.technology = techology
-    //     return elBuilder
-    //   },
-    //   description(description) {
-    //     element.description = description
-    //     return elBuilder
-    //   },
-    //   style({
-    //     color,
-    //     icon,
-    //     shape,
-    //     ...style
-    //   }) {
-    //     Object.assign(element, color && { color }, icon && { icon }, shape && { shape }, {
-    //       style: {
-    //         ...element.style,
-    //         ...omitBy(style, isNullish)
-    //       }
-    //     })
-    //     return elBuilder
-    //   },
-    //   rel(target, props) {
-    //     builder.relationship(parentId, target, props)
-    //     return elBuilder
-    //   },
-    //   ...mapValues(spec.elements, (spec, kind) => {
-    //     return (_id: Fqn, props?: string | Types['ElementProps'] | ((b: any) => any)) => {
-    //       const id = `${parentId}.${_id}` as Fqn
-    //       const properties = typeof props === 'string' ? { title: props } : isFunction(props) ? {} : (props ?? {})
-    //       addElement(id, properties, kind as ElementKind, spec)
-    //       if (isFunction(props)) {
-    //         props(mkElementBuilder(id, builder))
-    //       }
-    //       return elBuilder
-    //     }
-    //   })
-    // }
-    // return elBuilder
   }
 
   const processViewPredicates = (view: ElementView, rules: Types['ViewPredicate'][]) => {
@@ -625,10 +407,37 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
     }
   }
 
-  const modelBuilder: LikeC4ModelBuilder<Types> = {
-    get Types(): Types {
+  const toLikeC4Specification = (): TypesHook.ToParsedLikeC4Model<Types>['specification'] => ({
+    tags: (spec.tags ?? []) as Tag<Types['Tag']>[],
+    elements: {
+      ...spec.elements as any
+    },
+    relationships: {
+      ...spec.relationships
+    }
+  })
+
+  const modelFunctions = () => {
+    return mapValues(spec.elements, (_spec, kind) => (...args: any[]) => (builder: any) => {
+      const fn = builder[kind]
+      invariant(isFunction(fn), `Builder does not have method ${kind}`)
+      return fn.call(builder, args)
+    })
+  }
+
+  const modelBuilder: LikeC4ModelBuilder<AnyTypesHook> = {
+    get Types(): AnyTypesHook {
       throw new Error('Types are not available in runtime')
     },
+    model(...ops: Array<(input: any) => any>) {
+      if (ops.length === 0) {
+        return modelBuilder
+      }
+      return ops.reduce((acc, op) => op(acc), modelBuilder) as any
+    },
+    modelFunctions,
+    // nestedModelFunctions: modelFunctions,
+    // elementKinds: () => keys(spec.elements) as any,
     // model: mapValues(spec.elements, (spec, kind) => {
     //   return (...args: any[]) => {
     //     return (container: any) => {
@@ -637,7 +446,7 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
     //   }
     // }),
     ...mapValues(spec.elements, (spec, kind) => {
-      return (id: Fqn, props?: string | Types['ElementProps'] | ((b: any) => any)) => {
+      return (id: Fqn, props?: string | AnyTypesHook['ElementProps'] | ((b: unknown) => any)) => {
         const properties = typeof props === 'string' ? { title: props } : isFunction(props) ? {} : (props ?? {})
         addElement(id, properties, kind as ElementKind, spec)
         if (isFunction(props)) {
@@ -646,7 +455,7 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
         return modelBuilder
       }
     }),
-    relationship: (source, target, _props?: string | Types['RelationProps']) => {
+    relationship(source, target, _props?: string | AnyTypesHook['RelationProps']) {
       const sourceEl = ensureElement(source)
       const targetEl = ensureElement(target)
       invariant(
@@ -669,7 +478,7 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
       })
       return modelBuilder
     },
-    rel: (source, target, _props?: string | Types['RelationProps']) => {
+    rel: (source, target, _props?: string | AnyTypesHook['RelationProps']) => {
       return modelBuilder.relationship(source, target, _props)
     },
     view: (id, rules) => {
@@ -682,7 +491,7 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
       }
       views.set(id, view)
       if (isFunction(rules)) {
-        rules(mkElementViewBuilder(view))
+        rules(mkViewBuilder(view))
       } else {
         processViewPredicates(view, isArray(rules) ? rules : [rules])
       }
@@ -693,14 +502,17 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
       if (views.has(id)) {
         throw new Error(`View with ID ${id} already exists`)
       }
+      if (!elements.has(viewOf)) {
+        throw new Error(`Element with ID ${viewOf} does not exist`)
+      }
       const view = {
         ...emptyView,
-        viewOf,
+        viewOf: viewOf as Fqn,
         id: id as any
       }
       views.set(id, view)
       if (isFunction(rules)) {
-        rules(mkElementViewBuilder(view))
+        rules(mkViewBuilder(view))
       } else {
         processViewPredicates(view, isArray(rules) ? rules : [rules])
       }
@@ -708,21 +520,17 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
       return modelBuilder
     },
     clone: () =>
-      mkLikeC4ModelBuilder(
-        spec,
+      newBuilder(
+        structuredClone(spec),
         structuredClone(elements),
         structuredClone(relations),
         structuredClone(views)
       ) as any,
     build: () => ({
-      specification: {
-        tags: (spec.tags ?? []) as Tag[],
-        elements: spec.elements as any,
-        relationships: {}
-      },
+      specification: toLikeC4Specification(),
       elements: fromEntries(elements.entries().toArray()) as any,
       relations: mapToObj(relations, r => [r.id, r]),
-      views: {}
+      views: fromEntries(views.entries().toArray()) as any
     })
   }
 
@@ -731,6 +539,101 @@ function mkLikeC4ModelBuilder<const Spec extends Specification>(
 
 export function LikeC4ModelBuilder<const Spec extends Specification>(
   spec: Spec
-): EmptyLikeC4ModelBuilder<TypesFromSpecification<Spec>> {
-  return mkLikeC4ModelBuilder(spec) as any
+): ValidLikeC4ModelBuilder<TypesFromSpecification<Spec>> {
+  return newBuilder(
+    defu(
+      spec,
+      {
+        elements: {},
+        relationships: {}
+      } satisfies Specification
+    )
+  ) as any
 }
+
+interface NewElementCurried<Id extends string> {
+  <A extends AnyTypesHook>(input: LikeC4ModelBuilder<A>): LikeC4ModelBuilder<TypesHook.AddFqn<A, Id>>
+
+  // withNested<
+  //   A extends AnyTypesHook,
+  //   B extends AnyTypesHook
+  // >(
+  //   op1: (
+  //     input: ElementBuilder<
+  //       Id,
+  //       TypesHook<
+  //         A['ElementKind'],
+  //         A['RelationshipKind'],
+  //         A['Tag'],
+  //         A['MetadataKey'],
+  //         Id | A['Fqn'],
+  //         A['ViewId']
+  //       >
+  //     >
+  //   ) => ElementBuilder<Id, B>
+  // ): (input: LikeC4ModelBuilder<A>) => LikeC4ModelBuilder<B>
+
+  // withNested<
+  //   A extends AnyTypesHook,
+  //   B extends AnyTypesHook,
+  //   C extends AnyTypesHook,
+  // >(
+  //   op1: (
+  //     input: ElementBuilder<
+  //       Id,
+  //       TypesHook<
+  //         A['ElementKind'],
+  //         A['RelationshipKind'],
+  //         A['Tag'],
+  //         A['MetadataKey'],
+  //         Id | A['Fqn'],
+  //         A['ViewId']
+  //       >
+  //     >
+  //   ) => ElementBuilder<Id, B>,
+  //   op2: (input: ElementBuilder<Id, B>) => ElementBuilder<Id, C>
+  // ): (input: LikeC4ModelBuilder<A>) => LikeC4ModelBuilder<C>
+}
+
+type ModelFunctions<Types> = Types extends TypesHook<infer E, any, any, any, any, any> ? (
+    IsStringLiteral<E> extends true ? ({
+        [Kind in E]: <const Id extends string>(id: Id, title?: string | Types['ElementProps']) => NewElementCurried<Id>
+      })
+      : {}
+  )
+  : never
+// {
+// [Kind in Types['ElementKind']]:
+//   // applied to the builder
+//   <const Id extends string>(
+//     id: Id,
+//     title?: string | Types['ElementProps']
+//   ) => NewElementCurried<Id>
+// | (<const Id extends string, A extends AnyTypesHook, Parent extends string>(
+//   id: Id,
+//   title?: string
+// ) => (input: ElementBuilder<Parent, A>) => ElementBuilder<
+//   Parent,
+//   TypesHook<
+//     A['ElementKind'],
+//     A['RelationshipKind'],
+//     A['Tag'],
+//     A['MetadataKey'],
+//     `${Parent}.${Id}` | A['Fqn'],
+//     A['ViewId']
+//   >
+// >)
+// applied to the element builder
+// | (<Parent extends string>(input: ElementBuilder<Parent, A>) => ElementBuilder<Parent,
+//   TypesHook<
+//     A['ElementKind'],
+//     A['RelationshipKind'],
+//     A['Tag'],
+//     A['MetadataKey'],
+//     `${Parent}.${Id}` | A['Fqn'],
+//     A['ViewId']
+//   >
+// >)
+// | // applied to the builder
+// ()
+// }
