@@ -166,10 +166,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm-graphviz@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@hpcc-js/wasm-graphviz@npm:1.5.0"
-  checksum: 10c0/30d092a96955687d7840060d22eee1c0b047f2ea8847c563da10c1176431ec0a1a353f14576590a316adaa0e465ff07a09f2f801a83f0eb060416ed32fa15126
+"@hpcc-js/wasm-graphviz@npm:1.6.1":
+  version: 1.6.1
+  resolution: "@hpcc-js/wasm-graphviz@npm:1.6.1"
+  checksum: 10c0/f04fe49e1cb8cbabb451cd9f7beb0b5cc6673191d96fe72abda7022b35c7a9c9add942d5cc1579de9902c568faa28a0f8ac2790a38bc1c336a5f26a5d760b7e4
   languageName: node
   linkType: hard
 
@@ -1038,19 +1038,19 @@ __metadata:
   linkType: hard
 
 "likec4@file:../packages/likec4/package.tgz::locator=%40likec4%2Fe2e%40workspace%3A.":
-  version: 1.10.1
-  resolution: "likec4@file:../packages/likec4/package.tgz#../packages/likec4/package.tgz::hash=cbc831&locator=%40likec4%2Fe2e%40workspace%3A."
+  version: 1.11.0
+  resolution: "likec4@file:../packages/likec4/package.tgz#../packages/likec4/package.tgz::hash=7d98b6&locator=%40likec4%2Fe2e%40workspace%3A."
   dependencies:
-    "@hpcc-js/wasm-graphviz": "npm:1.5.0"
+    "@hpcc-js/wasm-graphviz": "npm:1.6.1"
     "@vitejs/plugin-react-swc": "npm:3.7.0"
-    playwright: "npm:1.46.1"
+    playwright: "npm:1.47.2"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     type-fest: "npm:4.26.1"
-    vite: "npm:5.4.7"
+    vite: "npm:5.4.8"
   bin:
     likec4: ./bin/likec4.mjs
-  checksum: 10c0/c0f229276cad76d22c28a23f9891f7abee31c360685b7a7b574fb5221ee139a23b9023ae52ef1247afd816e6ee09e84d8ffb7b1b81b18b3135ae9005ee63758a
+  checksum: 10c0/364b2e7e77c07e60a819ef8dd124488011cb1c3061a6ffcd80928298288bd9d577b97ac1b4cd08b6f887ab978078d086e076072f1ab94db862f7652061d63488
   languageName: node
   linkType: hard
 
@@ -1288,36 +1288,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.46.1":
-  version: 1.46.1
-  resolution: "playwright-core@npm:1.46.1"
-  bin:
-    playwright-core: cli.js
-  checksum: 10c0/98e48e271caccaa6c54b3c591cbddbef36a679eef011b38e2af11fbaba0aab1f997b45f9207c4099468a0c79047a1e879bbd9e81bd880ae24501a0ee3c7a33c7
-  languageName: node
-  linkType: hard
-
 "playwright-core@npm:1.47.2":
   version: 1.47.2
   resolution: "playwright-core@npm:1.47.2"
   bin:
     playwright-core: cli.js
   checksum: 10c0/3426adf4448da71dc103e38484f711df93fad8620d825e470593629012db6772663ccdc7ccefcdb787fa0ee26dd81e84fdce8abd0bad01a4c4b0d13ff8837d3b
-  languageName: node
-  linkType: hard
-
-"playwright@npm:1.46.1":
-  version: 1.46.1
-  resolution: "playwright@npm:1.46.1"
-  dependencies:
-    fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.46.1"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    playwright: cli.js
-  checksum: 10c0/2a328a2073313136192d74b48b981d9aeb1d4cc54926ed235f638c875f9de59c41370bb20bb2d8cf30126c52c6e25cc02db21ffafeb487c92c84c52c84846912
   languageName: node
   linkType: hard
 
@@ -1676,9 +1652,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:5.4.7":
-  version: 5.4.7
-  resolution: "vite@npm:5.4.7"
+"vite@npm:5.4.8":
+  version: 5.4.8
+  resolution: "vite@npm:5.4.8"
   dependencies:
     esbuild: "npm:^0.21.3"
     fsevents: "npm:~2.3.3"
@@ -1715,7 +1691,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/0ca7ca60f71c61f3855bbabf7e33909bec32933b35914d4d281813c728183e78e7ce5be05735a7671df3a994613d3881f520a32a80715faa92effb28deee9320
+  checksum: 10c0/af70af6d6316a3af71f44ebe3ab343bd66450d4157af73af3b32239e1b6ec43ff6f651d7cc4193b21ed3bff2e9356a3de9e96aee53857f39922e4a2d9fad75a1
   languageName: node
   linkType: hard
 
