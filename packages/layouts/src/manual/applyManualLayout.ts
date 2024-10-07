@@ -1,4 +1,5 @@
 import { type DiagramEdge, type DiagramNode, type DiagramView, type ViewManualLayout } from '@likec4/core'
+import { deepEqual } from 'fast-equals'
 import { entries } from 'remeda'
 import type { MergeExclusive, SetRequired } from 'type-fest'
 import type { ApplyManualLayoutData } from '../graphviz/DotPrinter'
@@ -69,7 +70,7 @@ export function applyManualLayout(
   // - leaf nodes do not become larger
   // - edge labels do not become larger
   if (
-    diagramView.autoLayout === manualLayout.autoLayout
+    deepEqual(diagramView.autoLayout, manualLayout.autoLayout)
     && diagramView.nodes.every(n => {
       const manualNode = manualLayout.nodes[n.id]
       return !!manualNode

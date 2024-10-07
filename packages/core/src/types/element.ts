@@ -1,9 +1,9 @@
-import type { Tagged } from 'type-fest'
+import type { IfNever, Tagged, TupleToUnion } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { Color, ThemeColor } from './theme'
 
 // Full-qualified-name
-export type Fqn<IDs extends string = string> = Tagged<IDs, 'Fqn'>
+export type Fqn<Id extends string = string> = Tagged<Id, 'Fqn'>
 
 export function AsFqn(name: string, parent?: Fqn | null) {
   return (parent ? parent + '.' + name : name) as Fqn
@@ -11,7 +11,7 @@ export function AsFqn(name: string, parent?: Fqn | null) {
 
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 
-export type BorderStyle = typeof BorderStyles[number]
+export type BorderStyle = TupleToUnion<typeof BorderStyles>
 
 export type ElementKind<Kinds extends string = string> = Tagged<Kinds, 'ElementKind'>
 export const ElementShapes = [
@@ -24,7 +24,7 @@ export const ElementShapes = [
   'queue'
 ] as const
 
-export type ElementShape = typeof ElementShapes[number]
+export type ElementShape = TupleToUnion<typeof ElementShapes>
 export const DefaultThemeColor = 'primary' satisfies ThemeColor
 export const DefaultElementShape = 'rectangle' satisfies ElementShape
 
@@ -50,12 +50,12 @@ export interface Link {
 }
 
 export interface TypedElement<
-  IDs extends string,
+  Ids extends string,
   Kinds extends string,
   Tags extends string,
   MetadataKeys extends string = never
 > {
-  readonly id: Fqn<IDs>
+  readonly id: Fqn<Ids>
   readonly kind: ElementKind<Kinds>
   readonly title: string
   readonly description: string | null
@@ -67,7 +67,7 @@ export interface TypedElement<
   readonly color?: Color
   readonly style?: ElementStyle
   readonly notation?: string
-  readonly metadata?: { [key in MetadataKeys]: string }
+  readonly metadata?: Record<MetadataKeys, string>
 }
 
 export interface Element extends TypedElement<string, string, string, string> {

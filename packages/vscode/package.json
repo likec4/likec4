@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -185,7 +185,7 @@
   "main": "dist/node/extension.js",
   "browser": "dist/browser/extension.js",
   "devDependencies": {
-    "@hpcc-js/wasm-graphviz": "1.5.0",
+    "@hpcc-js/wasm-graphviz": "1.6.1",
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",

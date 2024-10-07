@@ -1,7 +1,7 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -48,7 +48,7 @@
     "clean": "rm -r -f -g 'dist/**'"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "1.5.0",
+    "@hpcc-js/wasm-graphviz": "1.6.1",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "execa": "^9.3.1",
@@ -67,7 +67,7 @@
     "turbo": "^2.1.2",
     "typescript": "^5.6.2",
     "unbuild": "^3.0.0-rc.8",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.2"
   },
   "packageManager": "yarn@4.5.0"
 }

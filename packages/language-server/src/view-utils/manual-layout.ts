@@ -1,4 +1,4 @@
-import type { ViewManualLayout } from '@likec4/core'
+import { isAutoLayoutDirection, type ViewManualLayout } from '@likec4/core'
 import { decode, encode } from '@msgpack/msgpack'
 import { fromBase64, toBase64 } from '@smithy/util-base64'
 import { mapValues } from 'remeda'
@@ -28,10 +28,13 @@ function pack({
 function unpack({
   nodes,
   edges,
+  autoLayout,
   ...rest
 }: ReturnType<typeof pack>): ViewManualLayout {
   return {
     ...rest,
+    /// Try to parse the old format for backward compatibility
+    autoLayout: isAutoLayoutDirection(autoLayout) ? { direction: autoLayout } : autoLayout,
     nodes: mapValues(nodes, ({ b, c, ...n }) => ({
       x: b[0],
       y: b[1],

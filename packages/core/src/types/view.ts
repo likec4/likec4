@@ -7,8 +7,7 @@ import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipL
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
-// Full-qualified-name
-export type ViewID<IDs extends string = string> = Tagged<IDs, 'ViewID'>
+export type ViewID<Id extends string = string> = Tagged<Id, 'ViewID'>
 
 export type ViewRulePredicate =
   | {
@@ -40,11 +39,17 @@ export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
 }
 
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
+export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
+  return autoLayout === 'TB' || autoLayout === 'BT' || autoLayout === 'LR' || autoLayout === 'RL'
+}
+
 export interface ViewRuleAutoLayout {
-  autoLayout: AutoLayoutDirection
+  direction: AutoLayoutDirection
+  nodeSep?: number
+  rankSep?: number
 }
 export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout {
-  return 'autoLayout' in rule
+  return 'direction' in rule
 }
 
 export type ViewRule = ViewRulePredicate | ViewRuleStyle | ViewRuleAutoLayout
@@ -287,13 +292,17 @@ export interface ViewWithNotation {
     elements: ElementNotation[]
   }
 }
-
+export interface ViewAutoLayout {
+  direction: ViewRuleAutoLayout['direction']
+  rankSep?: number
+  nodeSep?: number
+}
 export interface ComputedElementView<
   ViewIDs extends string = string,
   Tags extends string = string
 > extends Omit<ElementView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly extends?: ViewID<ViewIDs>
-  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
+  readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
   rules?: never
@@ -303,7 +312,7 @@ export interface ComputedDynamicView<
   ViewIDs extends string = string,
   Tags extends string = string
 > extends Omit<DynamicView<ViewIDs, Tags>, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation {
-  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
+  readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
   steps?: never
@@ -386,7 +395,7 @@ export type ViewManualLayout = {
   readonly y: number
   readonly width: number
   readonly height: number
-  readonly autoLayout: AutoLayoutDirection
+  readonly autoLayout: ViewAutoLayout
   readonly nodes: Record<string, {
     isCompound: boolean
     x: number

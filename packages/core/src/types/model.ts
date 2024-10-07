@@ -19,7 +19,7 @@ export interface ParsedLikeC4Model<
   }
   elements: Record<Fqns, TypedElement<Fqns, ElementKinds, Tags>>
   relations: Record<RelationID, Relation>
-  views: Record<ViewID<Views>, LikeC4View<Views, Tags>>
+  views: Record<Views, LikeC4View<Views, Tags>>
 }
 
 /**

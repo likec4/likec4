@@ -14,11 +14,11 @@ import { type EdgeId, type ElementOrFqn, type Fqn, getId, type IncomingFilter, t
  * All methods are view-scoped, i.e. only return elements and connections in the view.
  */
 export class LikeC4ViewModel {
-  private _rootElements = new Set<LikeC4ViewModel.Element>()
+  private readonly _rootElements = new Set<LikeC4ViewModel.Element>()
 
-  private _elements = new Map<Fqn, LikeC4ViewModel.Element>()
+  private readonly _elements = new Map<Fqn, LikeC4ViewModel.Element>()
 
-  private _connections: Map<EdgeId, LikeC4ViewModel.Connection>
+  private readonly _connections: Map<EdgeId, LikeC4ViewModel.Connection>
 
   constructor(
     public readonly view: ComputedView,
@@ -192,7 +192,7 @@ export namespace LikeC4ViewModel {
   export class Element {
     constructor(
       public readonly node: ComputedNode,
-      private viewmodel: LikeC4ViewModel
+      private readonly viewmodel: LikeC4ViewModel
     ) {
     }
 
@@ -290,7 +290,7 @@ export namespace LikeC4ViewModel {
   export class Connection {
     constructor(
       public readonly edge: ComputedEdge,
-      private viewmodel: LikeC4ViewModel
+      private readonly viewmodel: LikeC4ViewModel
     ) {
     }
 

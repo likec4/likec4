@@ -20,7 +20,6 @@ import type {
   Fqn,
   RelationshipLineType,
   RelationshipThemeColorValues,
-  ThemeColorValues,
   XYPoint
 } from '@likec4/core/types'
 import { logger } from '@likec4/log'
@@ -144,12 +143,12 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   }
 
   protected createGraph(): RootGraphModel {
-    const isVertical = this.view.autoLayout === 'TB' || this.view.autoLayout === 'BT'
+    const autoLayout = this.view.autoLayout
     const G = digraph({
       [_.bgcolor]: 'transparent',
       [_.layout]: 'dot',
       [_.compound]: true,
-      [_.rankdir]: this.view.autoLayout,
+      [_.rankdir]: autoLayout.direction,
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
@@ -157,9 +156,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       // [_.nslimit]: 5,
       // [_.nslimit1]: 5,
       // [_.ratio]
-      [_.nodesep]: pxToInch(110),
-      [_.ranksep]: pxToInch(120),
-      [_.pack]: pxToPoints(120),
+      [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 110),
+      [_.ranksep]: pxToInch(autoLayout.rankSep ?? 120),
+      [_.pack]: pxToPoints(autoLayout.rankSep ?? 120),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15),
       [_.forcelabels]: true,
@@ -167,8 +166,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     })
     G.attributes.graph.apply({
       [_.fontsize]: pxToPoints(15),
-      [_.labeljust]: this.view.autoLayout === 'RL' ? 'r' : 'l',
-      [_.labelloc]: this.view.autoLayout === 'BT' ? 'b' : 't',
+      [_.labeljust]: autoLayout.direction === 'RL' ? 'r' : 'l',
+      [_.labelloc]: autoLayout.direction === 'BT' ? 'b' : 't',
       [_.margin]: 50.1 // space around clusters, but SVG output requires hack
     })
 

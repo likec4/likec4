@@ -27,55 +27,68 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: Package Extension
-        id: packageExtension
-        uses: HaaLeo/publish-vscode-extension@v1
-        with:
-          pat: stub
-          packagePath: packages/vscode
-          dryRun: true
+      # - name: Package Extension
+      #   id: packageExtension
+      #   uses: HaaLeo/publish-vscode-extension@v1
+      #   with:
+      #     pat: stub
+      #     packagePath: packages/vscode
+      #     dependencies: false
+      #     yarn: true
+      #     dryRun: true
+
+      # - name: upload a build artifact
+      #   uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+      #   with:
+      #     name: vscode-extension-vsix
+      #     if-no-files-found: error
+      #     path: ${{ steps.packageExtension.outputs.vsixPath }}
+
+      # - name: Publish to Visual Studio Marketplace
+      #   uses: HaaLeo/publish-vscode-extension@v1
+      #   with:
+      #     skipDuplicate: true
+      #     packagePath: packages/vscode
+      #     dependencies: false
+      #     yarn: true
+      #     pat: ${{ secrets.VSCE_PAT }}
+      #     registryUrl: https://marketplace.visualstudio.com
+      #     extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
+
+      # - name: Publish to Open VSX Registry
+      #   uses: HaaLeo/publish-vscode-extension@v1
+      #   with:
+      #     skipDuplicate: true
+      #     packagePath: packages/vscode
+      #     dependencies: false
+      #     yarn: true
+      #     pat: ${{ secrets.VSX_PAT }}
+      #     extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
+
+      - name: vsix package
+        run: |
+          yarn dlx vsce package --out likec4.vsix
+        working-directory: packages/vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: upload a build artifact
         uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
         with:
           name: vscode-extension-vsix
           if-no-files-found: error
-          path: ${{ steps.packageExtension.outputs.vsixPath }}
+          path: packages/vscode/likec4.vsix
 
-      - name: Publish to Visual Studio Marketplace
-        uses: HaaLeo/publish-vscode-extension@v1
-        with:
-          skipDuplicate: true
-          pat: ${{ secrets.VSCE_PAT }}
-          registryUrl: https://marketplace.visualstudio.com
-          extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
+      - name: vsce publish
+        run: |
+          yarn dlx vsce publish --skip-duplicate
+        working-directory: packages/vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
-      - name: Publish to Open VSX Registry
-        uses: HaaLeo/publish-vscode-extension@v1
-        with:
-          skipDuplicate: true
-          pat: ${{ secrets.VSX_PAT }}
-          extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
-
-      # - name: vsce publish
-      #   run: |
-      #     VERSION=$(node -e "console.log(require('./package.json').version)")
-      #     echo " version: $VERSION"
-      #     yarn dlx vsce publish --skip-duplicate $VERSION
-      #   working-directory: packages/vscode
-      #   env:
-      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
-      # - name: vsix package
-      #   run: |
-      #     yarn dlx vsce package --out likec4.vsix
-      #   working-directory: packages/vscode
-      #   env:
-      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
-      # - name: open vsx publish
-      #   run: |
-      #     yarn dlx ovsx publish likec4.vsix -p $VSX_PAT --skip-duplicate
-      #   working-directory: packages/vscode
-      #   env:
-      #     VSCE_PAT: ${{ secrets.VSX_PAT }}
+      - name: open vsx publish
+        run: |
+          yarn dlx ovsx publish likec4.vsix -p $VSX_PAT --skip-duplicate
+        working-directory: packages/vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSX_PAT }}

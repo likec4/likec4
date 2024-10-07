@@ -65,7 +65,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
       this.addRelation(rel)
     }
     this._views = new Map(
-      values(views).map(view => [view.id, new ViewModelClass(view, this)])
+      values(views).map(view => [view.id, new ViewModelClass(view, this)] as [Fqn, M])
     )
   }
 
@@ -420,7 +420,7 @@ export namespace LikeC4Model {
   export class Relationship<M extends ViewModel> {
     constructor(
       public readonly relationship: C4Relation,
-      private model: LikeC4Model<M>
+      private readonly model: LikeC4Model<M>
     ) {
     }
 
@@ -463,7 +463,7 @@ export namespace LikeC4Model {
   export class ElementModel<M extends ViewModel> {
     constructor(
       public readonly element: C4Element,
-      private model: LikeC4Model<M>
+      private readonly model: LikeC4Model<M>
     ) {
     }
 
