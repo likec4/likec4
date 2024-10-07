@@ -5,7 +5,7 @@ import { vars } from './theme-vars'
 
 type CSSVarFunction = `var(--${string})` | `var(--${string}, ${string | number} )`
 
-export function LikeC4CustomColors({ customColors }: LikeC4CustomColorsProperties) {
+export function LikeC4CustomColors({ customColors, nonce }: LikeC4CustomColorsProperties) {
   function toStyle(name: String, colorValues: ThemeColorValues): String {
     const rules = new Array<String>(
       ...entries(colorValues.elements).map(([key, value]) => `${stripCssVarReference(vars.element[key])}: ${value};`),
@@ -31,7 +31,7 @@ export function LikeC4CustomColors({ customColors }: LikeC4CustomColorsPropertie
 
   return (
     <>
-      <style type="text/css" dangerouslySetInnerHTML={{ __html: styles }} />
+      <style type="text/css" dangerouslySetInnerHTML={{ __html: styles }} {...(nonce && { nonce })} />
     </>
   )
 }

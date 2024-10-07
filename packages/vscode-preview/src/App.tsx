@@ -23,7 +23,11 @@ const IconRenderer: ElementIconRenderer = ({ node }) => {
   return <Icon name={(node.icon ?? '') as any} />
 }
 
-export default function App() {
+export interface AppProperties {
+  nonce?: string | undefined
+}
+
+export default function App({nonce}: AppProperties) {
   const [{
     nodesDraggable,
     edgesEditable
@@ -75,6 +79,7 @@ export default function App() {
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
         <LikeC4Diagram
           view={view}
+          nonce={nonce}
           fitViewPadding={0.09}
           readonly={false}
           controls={false}
