@@ -1,3 +1,21 @@
+# [1.12.0](https://github.com/likec4/likec4/compare/v1.11.0...v1.12.0) (2024-10-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @lume/kiwi to ^0.4.4 ([#1033](https://github.com/likec4/likec4/issues/1033)) ([a73a9f2](https://github.com/likec4/likec4/commit/a73a9f2bc2e97c4e74b11f1c8d8c744c8f910a7d))
+* **deps:** upgrade playwright to 1.47.2 ([73758c6](https://github.com/likec4/likec4/commit/73758c69825642bc62eb15e33e428352f5116cee))
+* **vscode:** `--enable-source-maps` in node extension ([eef8153](https://github.com/likec4/likec4/commit/eef8153462007c8249e70dc289eef9993080a730))
+
+
+### Features
+
+* **deployments:** add deployment steps and status updates to preview workflows ([dd199a0](https://github.com/likec4/likec4/commit/dd199a0f8a91b70d22c8ab5afa8596a880fd6c24))
+* **playground:** implement dynamic routing and enhance workspace context management ([#1041](https://github.com/likec4/likec4/issues/1041)) ([0782524](https://github.com/likec4/likec4/commit/0782524e348973d06c783cf5aeba6a4a95a310cf))
+* publish extension to Open VSX ([f58ac38](https://github.com/likec4/likec4/commit/f58ac38f176efbfda4af5f32a290f48b21912a7c)), closes [#908](https://github.com/likec4/likec4/issues/908)
+
+
+
 # [1.11.0](https://github.com/likec4/likec4/compare/v1.10.1...v1.11.0) (2024-09-24)
 
 ### 🚀 Features  
