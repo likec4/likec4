@@ -1,7 +1,7 @@
 import type { NonEmptyArray } from './_common'
 import type { BorderStyle, ElementShape, Fqn } from './element'
 import type { ThemeColor } from './theme'
-import type { AutoLayoutDirection, ViewManualLayout } from './view'
+import type { ViewManualLayout, ViewRuleAutoLayout } from './view'
 
 export namespace ViewChange {
   export interface ChangeElementStyle {
@@ -22,7 +22,7 @@ export namespace ViewChange {
 
   export interface ChangeAutoLayout {
     op: 'change-autolayout'
-    layout: AutoLayoutDirection
+    layout: ViewRuleAutoLayout
   }
 }
 export type ViewChange = ViewChange.ChangeElementStyle | ViewChange.SaveManualLayout | ViewChange.ChangeAutoLayout
