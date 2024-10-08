@@ -361,11 +361,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               typeof _props === 'string' ? { title: _props } : { ..._props },
               { title: null, links: null }
             )
-            // const {
-            //   title = '',
-            //   links: _links = [],
-            //   ...props
-            // } = typeof _props === 'string' ? { title: _props } : pickBy({ ..._props }, isNonNullish)
             const links = mapLinks(_links)
             b.addRelation({
               source: source as any,
@@ -443,7 +438,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
             add.with = (...ops: Array<(input: ModelBuilder<any>) => ModelBuilder<any>>) => (b: ModelBuilder<any>) => {
               add(b)
-              const v: ModelBuilder<any> = {
+              const nestedBuilder: ModelBuilder<any> = {
                 ...b,
                 fqn: (child) => `${b.fqn(id)}.${child}` as Fqn,
                 addSourcelessRelation: (relation) => {
@@ -454,7 +449,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 }
               }
               for (const op of ops) {
-                op(v)
+                op(nestedBuilder)
               }
               return b
             }
