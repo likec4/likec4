@@ -179,7 +179,8 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isOpacityProperty(node)
     ) {
       const formatter = this.getNodeFormatter(node)
-      formatter.keywords(
+      const colon = formatter.keyword(':')
+      const propertyName = formatter.keywords(
         'title',
         'description',
         'technology',
@@ -193,11 +194,15 @@ export class LikeC4Formatter extends AbstractFormatter {
         'border',
         'opacity'
       )
-        .append(FormattingOptions.oneSpace)
 
-      formatter.keyword(':')
-        .prepend(FormattingOptions.noSpace)
-        .append(FormattingOptions.oneSpace)
+      if (colon.nodes.length === 0) {
+        propertyName
+          .append(FormattingOptions.oneSpace)
+      } else {
+        colon
+          .prepend(FormattingOptions.noSpace)
+          .append(FormattingOptions.oneSpace)
+      }
 
       formatter.keyword(';')
         .prepend(FormattingOptions.noSpace)
