@@ -42,7 +42,7 @@
     "@vanilla-extract/dynamic": "^2.1.2",
     "@vanilla-extract/esbuild-plugin": "^2.3.11",
     "@vanilla-extract/vite-plugin": "^4.0.16",
-    "@vitejs/plugin-react-swc": "3.7.0",
+    "@vitejs/plugin-react-swc": "3.7.1",
     "clsx": "^2.1.1",
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
