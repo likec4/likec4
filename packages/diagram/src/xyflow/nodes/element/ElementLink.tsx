@@ -52,6 +52,7 @@ export function ElementLink({
         }}>
         <HoverCardTarget>
           <UnstyledButton
+            tabIndex={-1}
             className={clsx('nodrag nopan', trigger)}
             autoFocus={false}>
             <IconLink size={12} />

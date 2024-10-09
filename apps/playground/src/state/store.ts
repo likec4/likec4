@@ -1,4 +1,4 @@
-import { type ComputedLikeC4Model, type DiagramView, invariant, type ViewID } from '@likec4/core'
+import { type DiagramView, invariant, LikeC4Model, type ViewID } from '@likec4/core'
 import { changeView, fetchComputedModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
@@ -50,7 +50,7 @@ export type WorkspaceStore = {
     [filename: string]: string
   }
 
-  likeC4Model: ComputedLikeC4Model | null
+  likeC4Model: LikeC4Model.Computed | null
   modelFetched: boolean
 
   /**
@@ -218,7 +218,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
                     // Merge new views with current views
                     const views = mapValues(model.views, (newView) => {
-                      const current = currentmodel?.views[newView.id]
+                      const current = currentmodel?.sourcemodel.views[newView.id]
                       const next = current && deepEqual(newView, current) ? current : newView
 
                       let diagramState = diagrams[newView.id]
@@ -246,10 +246,10 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
                     set(
                       {
-                        likeC4Model: {
+                        likeC4Model: LikeC4Model.computed({
                           ...model,
                           views
-                        },
+                        }),
                         diagrams
                       },
                       noReplace,
@@ -277,7 +277,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               layoutLimit(async () => {
                 const { likeC4Model, diagrams: currentDiagrams } = get()
 
-                const computedView = likeC4Model?.views[viewId as ViewID] ?? null
+                const computedView = likeC4Model?.sourcemodel.views[viewId as ViewID] ?? null
                 if (!computedView) {
                   // Do nothing
                   return

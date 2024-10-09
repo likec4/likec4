@@ -57,6 +57,9 @@ export type ColorKey = typeof colors[0]['key']
 
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
+/**
+ * @deprecated
+ */
 export const NodeOptions = memo<{ selectedNodeIds: string[] }>(({ selectedNodeIds }) => {
   // export function NodeOptions(props: { nodes: XYFlowNode[] }) {
   const diagramApi = useDiagramStoreApi()

@@ -176,7 +176,7 @@ export function NotationPanel() {
           <Tooltip label="Show notation" color="dark" fz={'xs'} {...portalProps}>
             <ActionIcon
               size={'lg'}
-              variant="light"
+              variant="default"
               color="gray"
               radius={'md'}
               onClick={() => setCollapsed(false)}

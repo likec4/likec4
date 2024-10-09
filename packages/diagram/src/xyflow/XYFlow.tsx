@@ -1,6 +1,6 @@
 import { ReactFlow, useOnViewportChange } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { type CSSProperties, type PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import { type CSSProperties, type PropsWithChildren, useMemo } from 'react'
 import { useDiagramState } from '../hooks/useDiagramState'
 import { useXYStoreApi } from '../hooks/useXYFlow'
 import type { DiagramState } from '../state/diagramStore'
@@ -46,8 +46,8 @@ const selector = (s: DiagramState) => ({
   nodesDraggable: s.nodesDraggable,
   fitView: s.fitViewEnabled,
   fitViewPadding: s.fitViewPadding,
-  hasOnNavigateTo: !!s.onNavigateTo,
-  hasOnNodeClick: !!s.onNodeClick,
+  // hasOnNavigateTo: !!s.onNavigateTo,
+  // hasOnNodeClick: !!s.onNodeClick,
   hasOnNodeContextMenu: !!s.onNodeContextMenu,
   hasOnCanvasContextMenu: !!s.onCanvasContextMenu,
   hasOnEdgeContextMenu: !!s.onEdgeContextMenu,
@@ -79,15 +79,13 @@ export function XYFlow({
     fitViewPadding,
     pannable,
     zoomable,
-    hasOnNodeClick,
-    hasOnNavigateTo,
     hasOnNodeContextMenu,
     hasOnCanvasContextMenu,
     hasOnEdgeContextMenu,
     translateX,
     translateY
   } = useDiagramState(selector, shallowEqual)
-  const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(zoomable)
+  // const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(zoomable)
   const layoutConstraints = useLayoutConstraints()
   const handlers = useXYFlowEvents()
 
@@ -104,14 +102,14 @@ export function XYFlow({
       if (x !== roundedX || y !== roundedY) {
         xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
       }
-      setZoomOnDoubleClick(zoomable && zoom < 0.75)
+      // setZoomOnDoubleClick(zoomable && zoom < 0.75)
     }
   })
 
-  useEffect(() => {
-    const zoom = xyflowApi.getState().transform[2]
-    setZoomOnDoubleClick(zoomable && zoom < 0.75)
-  }, [])
+  // useEffect(() => {
+  //   const zoom = xyflowApi.getState().transform[2]
+  //   setZoomOnDoubleClick(zoomable && zoom < 0.75)
+  // }, [])
 
   return (
     <ReactFlow<XYFlowNode, XYFlowEdge>
@@ -127,7 +125,7 @@ export function XYFlow({
       {...(!zoomable && {
         zoomActivationKeyCode: null
       })}
-      zoomOnDoubleClick={zoomOnDoubleClick}
+      zoomOnDoubleClick={false}
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
@@ -154,7 +152,7 @@ export function XYFlow({
         selectionKeyCode: null
       })}
       elementsSelectable={nodesSelectable}
-      nodesFocusable={nodesDraggable || nodesSelectable || hasOnNodeClick || hasOnNavigateTo}
+      nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
       nodesDraggable={nodesDraggable}
       {...nodesDraggable && {

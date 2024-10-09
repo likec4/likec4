@@ -13,7 +13,7 @@ import {
   useTree
 } from '@mantine/core'
 import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
-import { Link, useParams } from '@tanstack/react-router'
+import { useParams } from '@tanstack/react-router'
 import { memo, type MouseEvent, type PropsWithChildren, useEffect } from 'react'
 import { RenderIcon } from '../RenderIcon'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
@@ -28,13 +28,11 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
       </ThemeIcon>
     )
   }
-  return <ThemeIcon size={'sm'} variant="transparent" color="violet">
-    {expanded ? <IconFolderOpen size={16} /> : <IconFolderFilled size={16} />}
-  </ThemeIcon>
-  // if (expanded) {
-  //   return <IconFolderOpen size={16} />
-  // }
-  // return <IconFolderFilled size={16} />
+  return (
+    <ThemeIcon size={'sm'} variant="transparent" color="violet">
+      {expanded ? <IconFolderOpen size={16} /> : <IconFolderFilled size={16} />}
+    </ThemeIcon>
+  )
 }
 
 export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupBy | undefined }) => {
@@ -110,8 +108,6 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               {...(!hasChildren && {
                 onClick: () =>
                   tree.select(node.value)
-                // component: Link,
-                // params: { viewId: node.value }
               })}
             >
               {node.label}
