@@ -1,7 +1,7 @@
-import type { DiagramView } from '@likec4/core'
+import { type DiagramView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
-import { find, isTruthy, values } from 'remeda'
+import { find, values } from 'remeda'
 import { useLikeC4ModelAtom } from 'virtual:likec4/model'
 
 interface DiagramTreeNodeData {
@@ -11,8 +11,17 @@ interface DiagramTreeNodeData {
   children: DiagramTreeNodeData[]
 }
 
+export type GroupBy = 'by-files' | 'by-folders' | 'none'
+
 export const isTreeNodeData = (node: TreeNodeData): node is DiagramTreeNodeData =>
   'type' in node && ['file', 'folder', 'diagram'].includes(node.type as any)
+
+function dropFilename(relativePath: string) {
+  if (relativePath === '') {
+    return ''
+  }
+  return relativePath.split('/').slice(0, -1).join('/')
+}
 
 function compareTreeNodes(a: DiagramTreeNodeData, b: DiagramTreeNodeData) {
   if (a.children.length === 0 && b.children.length > 0) {
@@ -24,7 +33,7 @@ function compareTreeNodes(a: DiagramTreeNodeData, b: DiagramTreeNodeData) {
   return a.label.localeCompare(b.label)
 }
 
-function buildDiagramTreeData(views: DiagramView[]): DiagramTreeNodeData[] {
+function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTreeNodeData[] {
   const root: DiagramTreeNodeData = {
     value: '',
     label: 'Diagrams',
@@ -54,7 +63,21 @@ function buildDiagramTreeData(views: DiagramView[]): DiagramTreeNodeData[] {
   }
 
   for (const view of views) {
-    const parent = findParent(view.relativePath ?? '')
+    let relativePath
+    switch (groupBy) {
+      case 'by-files':
+        relativePath = view.relativePath ?? ''
+        break
+      case 'by-folders':
+        relativePath = dropFilename(view.relativePath ?? '')
+        break
+      case 'none':
+        relativePath = ''
+        break
+      default:
+        nonexhaustive(groupBy)
+    }
+    const parent = findParent(relativePath)
     parent.children.push({
       value: view.id,
       label: view.title ?? view.id,
@@ -63,7 +86,7 @@ function buildDiagramTreeData(views: DiagramView[]): DiagramTreeNodeData[] {
     })
     if (parent !== root) {
       parent.children.sort(compareTreeNodes)
-      if (isTruthy(view.relativePath) && parent.type !== 'file') {
+      if (groupBy === 'by-files' && parent.type !== 'file') {
         parent.type = 'file'
       }
     }
@@ -74,7 +97,7 @@ function buildDiagramTreeData(views: DiagramView[]): DiagramTreeNodeData[] {
 
 // const $diagramsTree = batched($views, views => buildDiagramTreeData(values(views)))
 
-export function useDiagramsTreeData() {
+export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
   const views = useLikeC4ModelAtom().sourcemodel.views
-  return useMemo(() => buildDiagramTreeData(values(views)), [views])
+  return useMemo(() => buildDiagramTreeData(values(views), groupBy), [views, groupBy])
 }
