@@ -61,8 +61,6 @@ export interface LikeC4DiagramProperties {
 
   className?: string | undefined
 
-  nonce?: string | undefined
-
   /**
    * Show/hide ReactFlow controls menu
    * @default false

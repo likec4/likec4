@@ -25,9 +25,9 @@ const nonce = root.getAttribute('nonce') || undefined
 
 // const reactRoot = ReactDOM.createRoot(root)
 ReactDOM.createRoot(root).render(
-  <MantineProvider theme={theme} forceColorScheme={scheme}>
+  <MantineProvider theme={theme} forceColorScheme={scheme} {...(nonce && { getStyleNonce: () => nonce })}>
     <LikeC4Context>
-      <App nonce={nonce} />
+      <App />
     </LikeC4Context>
   </MantineProvider>
 )

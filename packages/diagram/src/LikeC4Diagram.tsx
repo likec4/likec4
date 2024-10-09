@@ -22,7 +22,6 @@ export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHan
 export function LikeC4Diagram({
   view,
   className,
-  nonce,
   fitView = true,
   fitViewPadding = 0,
   readonly = true,
@@ -82,7 +81,7 @@ export function LikeC4Diagram({
           fitView={fitView}
           {...initialRef.current}
         >
-          {customColorsDefined(view) && <LikeC4CustomColors customColors={view.customColorDefinitions} nonce={nonce} />}
+          {customColorsDefined(view) && <LikeC4CustomColors customColors={view.customColorDefinitions} />}
           <DiagramContextProvider
             view={view}
             keepAspectRatio={keepAspectRatio}
