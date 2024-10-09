@@ -759,6 +759,9 @@ model {
     description  :'test'   ;
     technology  :   'test'   ;
   }
+  system sys1 {
+    title: 'test';
+  }
   sys1 -> sys2 {
     title  :'test'   ;
     description  :    'test'   ;
@@ -802,6 +805,9 @@ views {
             title: 'test';
             description: 'test';
             technology: 'test';
+          }
+          system sys1 {
+            title: 'test';
           }
           sys1 -> sys2 {
             title: 'test';
@@ -1216,6 +1222,148 @@ model {
       `
       )
   )
+
+  it('is idempotent', async () => {
+    const source = `
+specification {
+  color custom #6BD731
+
+  element actor {
+    notation "Person"
+    style {
+      shape person
+    }
+  }
+  element system
+  element externalSystem {
+    notation "External System"
+    style {
+      color secondary
+      opacity 10%
+    }
+  }
+
+  element containe
+  element app {
+    notation "Application"
+  }
+  element component
+  element mobileApp {
+    notation "Mobile Application"
+    style {
+      shape mobile
+      icon tech:swift
+      //icon https://icon.icepanel.io/Technology/svg/Swift.svg
+    }
+  }
+
+  relationship uses
+  relationship requests
+}
+model {
+  customer = actor 'Cloud System Customer' {
+    description '
+      The regular customer of the system
+    '
+  }
+
+  cloud = system 'Cloud System' {
+    description '
+      Our SaaS platfrom that allows
+      customers to interact with
+      the latest technologies
+    '
+
+    ui = container 'Frontends' {
+      description '
+        All the frontend applications
+        of Cloud System
+      '
+      metadata {
+        version '2.1.1'
+      }
+    }
+
+    legacy = container 'Cloud Legacy' {
+      description '
+        The legacy version of our SaaS
+        MVP as was presented to the first customers
+      '
+      link ./.github/workflows/update-diagrams.yml#L19-L25 'L19-L25'
+    }
+
+    next = container 'Cloud Next' {
+      description 'Cloud Next is the next version of our cloud systems'
+    }
+
+    supportUser = actor 'Support User' {
+      description '
+        A emploere from the support team
+        Has limited access to the system
+      '
+      -> customer 'helps with questions' {
+        metadata {
+          rps '1000'
+        }
+      }
+    }
+  }
+  customer .uses cloud 'uses and pays' {
+    navigateTo dynamic-view-1
+  }
+
+}
+
+views {
+  view index {
+    title "Landscape"
+    include
+      customer, // include first
+      *
+  }
+
+  view customer of customer {
+    include
+      *,
+      customer -> cloud.ui with {
+        color red
+      },
+      supportUser
+
+    style supportUser {
+      color: indigo;
+    }
+  }
+
+  dynamic view dynamic-view-1 {
+    title 'Dynamic View Example'
+
+    link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
+
+    customer -> ui.dashboard 'opens'
+    ui.dashboard -> cloud.graphql 'requests'
+    ui.dashboard <- cloud.graphql 'returns'
+
+    ui.mobile -> cloud.graphql 'requests'
+    ui.mobile <- cloud.graphql
+
+    include cloud
+
+    autoLayout TopBottom
+    style * {
+      color secondary
+    }
+    style cloud {
+      opacity 40%
+      color muted
+    }
+  }
+}`
+    const stage1 = await format(source)
+    const stage2 = await format(stage1)
+
+    expect(stage1).toBe(stage2)
+  })
 })
 
 async function format(source: string) {
