@@ -934,6 +934,127 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds global styles', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        -> system1 'uses'
+      }
+    }
+    views {
+      view index {
+        include *
+      }
+      
+      style system1 {
+        color muted
+        shape mobile
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    const { views } = await buildModel()
+    expect(views).toHaveProperty('index')
+
+    const system1Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system1')!
+    expect(system1Node).toBeDefined()
+    expect(system1Node.color).toEqual('muted')
+    expect(system1Node.shape).toEqual('mobile')
+
+    const system2Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system2')!
+    expect(system2Node).toBeDefined()
+    expect(system2Node.color).toEqual('primary')
+    expect(system2Node.shape).toEqual('rectangle')
+  })
+
+  it('local sytles override global styles', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        -> system1 'uses'
+      }
+    }
+    views {
+      view index {
+        include *
+
+        style system1 {
+          color secondary
+        }
+      }
+      
+      style * {
+        color muted
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    const { views } = await buildModel()
+    expect(views).toHaveProperty('index')
+
+    const system1Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system1')!
+    expect(system1Node).toBeDefined()
+    expect(system1Node.color).toEqual('secondary')
+    expect(system1Node.shape).toEqual('rectangle')
+
+    const system2Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system2')!
+    expect(system2Node).toBeDefined()
+    expect(system2Node.color).toEqual('muted')
+    expect(system2Node.shape).toEqual('rectangle')
+  })
+
+  it('global styles apply to tags', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      tag deprecated
+    }
+    model {
+      component system1
+      component system2 {
+        #deprecated
+        -> system1 'uses'
+      }
+    }
+    views {
+      style element.tag = #deprecated {
+        color muted
+      }
+
+      view index {
+        include *
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    const { views } = await buildModel()
+    expect(views).toHaveProperty('index')
+
+    const system1Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system1')!
+    expect(system1Node).toBeDefined()
+    expect(system1Node.color).toEqual('primary')
+    expect(system1Node.shape).toEqual('rectangle')
+
+    const system2Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system2')!
+    expect(system2Node).toBeDefined()
+    expect(system2Node.color).toEqual('muted')
+    expect(system2Node.shape).toEqual('rectangle')
+  })
+
   // Base64 taken from saveManualLayout.spec.ts
   it('parses manual layout', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()

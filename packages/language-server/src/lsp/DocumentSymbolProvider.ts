@@ -168,7 +168,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: astViews.name,
         range: cst.range,
         selectionRange: nameNode.range,
-        children: astViews.views.flatMap(e => this.getViewSymbol(e))
+        children: astViews.views.filter(e => ast.isLikeC4View(e)).flatMap(e => this.getViewSymbol(e))
       }
     ]
   }

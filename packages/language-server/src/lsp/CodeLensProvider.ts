@@ -1,7 +1,7 @@
 import { DocumentState, type LangiumDocument, type MaybePromise } from 'langium'
 import type { CodeLensProvider } from 'langium/lsp'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
-import { isParsedLikeC4LangiumDocument, ViewOps } from '../ast'
+import { ast, isParsedLikeC4LangiumDocument, ViewOps } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 
@@ -23,7 +23,7 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return
     }
-    const views = doc.parseResult.value.views.flatMap(v => v.views)
+    const views = doc.parseResult.value.views.flatMap(v => v.views).filter(v => ast.isLikeC4View(v))
     return views.flatMap<CodeLens>(ast => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const viewId = ViewOps.readId(ast)

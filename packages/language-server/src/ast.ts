@@ -131,6 +131,13 @@ export const ViewOps = {
   }
 }
 
+export interface ParsedAstGlobalRule {
+  __: 'global_rule'
+  rules: c4.ViewRule[]
+}
+
+export type ParsedAstViewOrRule = ParsedAstView | ParsedAstGlobalRule
+
 export interface ParsedLink {
   title?: string
   url: string
@@ -164,6 +171,7 @@ export interface LikeC4DocumentProps {
   c4Elements?: ParsedAstElement[]
   c4Relations?: ParsedAstRelation[]
   c4Views?: ParsedAstView[]
+  c4GlobalRules?: c4.ViewRule[]
   // Fqn -> Element
   c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
@@ -190,7 +198,8 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
     },
     c4Elements: [],
     c4Relations: [],
-    c4Views: []
+    c4Views: [],
+    c4GlobalRules: []
   }
   return Object.assign(doc, props) as ParsedLikeC4LangiumDocument
 }
@@ -213,6 +222,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Elements
     && !!doc.c4Relations
     && !!doc.c4Views
+    && !!doc.c4GlobalRules
     && !!doc.c4fqnIndex
   )
 }

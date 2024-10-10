@@ -33,6 +33,7 @@ export class FqnIndex {
             delete doc.c4Specification
             delete doc.c4Relations
             delete doc.c4Views
+            delete doc.c4GlobalRules
             try {
               computeDocumentFqn(doc, services)
             } catch (e) {
