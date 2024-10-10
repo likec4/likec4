@@ -2296,7 +2296,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
-    react-resizable-panels: "npm:^2.1.3"
+    react-resizable-panels: "npm:^2.1.4"
     remeda: "npm:^2.14.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
@@ -8555,7 +8555,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
-    react-resizable-panels: "npm:^2.1.3"
+    react-resizable-panels: "npm:^2.1.4"
     react-shadow: "npm:^20.5.0"
     remeda: "npm:^2.14.0"
     std-env: "npm:^3.7.0"
@@ -11506,13 +11506,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable-panels@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "react-resizable-panels@npm:2.1.3"
+"react-resizable-panels@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "react-resizable-panels@npm:2.1.4"
   peerDependencies:
     react: ^16.14.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/65257545a935f8bd664b234659bb72535f37ba3ff2a1f09e4063315a8a4651604a6dc3da73b80895d6f15f2c52f9ca5c3e0affa3e1db7aa77b8b430df221bc68
+  checksum: 10c0/c1afef5baf9b401292fbe90297da0802142967a20ecc88cc93086f43acd46c1d0dccc124aa0e95688378850856d4cb55c9a054e12860e39a4f653256fbf3835f
   languageName: node
   linkType: hard
 
