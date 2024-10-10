@@ -137,7 +137,7 @@
     "defu": "^6.1.4",
     "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.24.0",
-    "esbuild-node-externals": "^1.14.0",
+    "esbuild-node-externals": "^1.15.0",
     "execa": "^9.3.1",
     "fast-equals": "^5.0.1",
     "fdir": "^6.4.0",
