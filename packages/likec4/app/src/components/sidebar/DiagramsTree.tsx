@@ -13,7 +13,7 @@ import {
   useTree
 } from '@mantine/core'
 import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
-import { useParams } from '@tanstack/react-router'
+import { useParams, useRouter } from '@tanstack/react-router'
 import { memo, type MouseEvent, type PropsWithChildren, useEffect } from 'react'
 import { RenderIcon } from '../RenderIcon'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
@@ -40,6 +40,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
   const { viewId } = useParams({
     from: '/view/$viewId'
   })
+  const router = useRouter()
   const diagram = useLikeC4View(viewId)
 
   const tree = useTree({
@@ -88,8 +89,6 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
               variant={selected ? 'transparent' : 'subtle'}
-              // variant={viewId === node.value ? 'filled' : 'subtle'}
-              // variant={viewId === node.value ? 'filled' : 'subtle'}
               size="sm"
               fz={'sm'}
               fw={hasChildren ? '600' : '500'}
@@ -106,8 +105,13 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
                 </>
               }
               {...(!hasChildren && {
-                onClick: () =>
-                  tree.select(node.value)
+                onClick: () => {
+                  router.navigate({
+                    params: {
+                      viewId: node.value
+                    }
+                  })
+                }
               })}
             >
               {node.label}
