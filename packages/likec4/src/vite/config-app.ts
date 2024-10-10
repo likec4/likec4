@@ -81,6 +81,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         'react',
         'react-dom',
         'react/jsx-runtime',
+        'react/jsx-dev-runtime',
         'react-dom/client',
         '@mantine/core',
         '@mantine/hooks',

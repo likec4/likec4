@@ -10,10 +10,17 @@ import {
   Text,
   UnstyledButton
 } from '@mantine/core'
-import { clampUseMovePosition, useMove, type UseMovePosition, useUncontrolled } from '@mantine/hooks'
+import {
+  clampUseMovePosition,
+  useHover,
+  useMergedRef,
+  useMove,
+  type UseMovePosition,
+  useUncontrolled
+} from '@mantine/hooks'
 import { useDebouncedCallback } from '@react-hookz/web'
 import { IconLayoutDashboard } from '@tabler/icons-react'
-import { useState } from 'react'
+import { forwardRef, useState } from 'react'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { ActionIcon, Tooltip } from './_shared'
 import * as css from './styles.css'
@@ -31,6 +38,8 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
     autoLayout,
     viewId
   } = useDiagramState(selector)
+
+  const { ref, hovered: isSpacingHovered } = useHover()
 
   const setControlRef = (name: AutoLayoutDirection) => (node: HTMLButtonElement) => {
     controlsRefs[name] = node
@@ -51,6 +60,10 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
   }
 
   const setSpacing = (nodeSep: number, rankSep: number) => {
+    // Force fitDiagram
+    store.setState({
+      viewportChanged: false
+    })
     store.getState().onChange?.({
       change: {
         op: 'change-autolayout',
@@ -82,7 +95,7 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
           </ActionIcon>
         </Tooltip>
       </PopoverTarget>
-      <PopoverDropdown className="likec4-top-left-panel" p={8} pt={6}>
+      <PopoverDropdown className="likec4-top-left-panel" p={8} pt={6} opacity={isSpacingHovered ? 0.6 : 1}>
         <Box pos={'relative'} ref={setRootRef}>
           <FloatingIndicator
             target={controlsRefs[autoLayout.direction]}
@@ -110,6 +123,7 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
             <Text inline fz={'xs'} c={'dimmed'} fw={500}>Spacing:</Text>
           </Box>
           <SpacingSliders
+            ref={ref}
             isVertical={autoLayout.direction === 'TB' || autoLayout.direction === 'BT'}
             key={viewId}
             nodeSep={autoLayout.nodeSep}
@@ -122,17 +136,18 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
   )
 }
 
-const SpacingSliders = ({
-  isVertical,
-  nodeSep,
-  rankSep,
-  onChange
-}: {
+const MAX_SPACING = 400
+const SpacingSliders = forwardRef<HTMLDivElement, {
   isVertical: boolean
   nodeSep: number | undefined
   rankSep: number | undefined
   onChange: (nodeSep: number, rankSep: number) => void
-}) => {
+}>(({
+  isVertical,
+  nodeSep,
+  rankSep,
+  onChange
+}, _ref) => {
   if (!isVertical) {
     ;[nodeSep, rankSep] = [rankSep, nodeSep]
   }
@@ -142,7 +157,7 @@ const SpacingSliders = ({
       if (!isVertical) {
         ;[x, y] = [y, x]
       }
-      onChange(Math.round(x * 500), Math.round(y * 500))
+      onChange(Math.round(x * MAX_SPACING), Math.round(y * MAX_SPACING))
     },
     [onChange, isVertical],
     150,
@@ -151,22 +166,24 @@ const SpacingSliders = ({
 
   const [value, setValue] = useUncontrolled({
     defaultValue: clampUseMovePosition({
-      x: (nodeSep ?? 250) / 500,
-      y: (rankSep ?? 250) / 500
+      x: (nodeSep ?? 100) / MAX_SPACING,
+      y: (rankSep ?? 120) / MAX_SPACING
     }),
     onChange: propagateChange
   })
 
   const { ref } = useMove(setValue)
 
-  let nodeSepValue = Math.round(value.x * 500)
-  let rankSepValue = Math.round(value.y * 500)
+  let nodeSepValue = Math.round(value.x * MAX_SPACING)
+  let rankSepValue = Math.round(value.y * MAX_SPACING)
   if (!isVertical) {
     ;[nodeSepValue, rankSepValue] = [rankSepValue, nodeSepValue]
   }
 
+  const mergedRef = useMergedRef(ref, _ref)
+
   return (
-    <Box ref={ref} className={css.spacingSliderBody} pt={'100%'}>
+    <Box ref={mergedRef} className={css.spacingSliderBody} pt={'100%'}>
       <Box
         className={css.spacingSliderThumb}
         style={{
@@ -179,4 +196,4 @@ const SpacingSliders = ({
       </Box>
     </Box>
   )
-}
+})
