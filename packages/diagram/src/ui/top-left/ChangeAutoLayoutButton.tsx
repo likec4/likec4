@@ -59,7 +59,7 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
     })
   }
 
-  const setSpacing = (nodeSep: number, rankSep: number) => {
+  const setSpacing = (nodeSep: number | null, rankSep: number | null) => {
     // Force fitDiagram
     store.setState({
       viewportChanged: false

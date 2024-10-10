@@ -1,6 +1,6 @@
 import { invariant, type ViewRuleAutoLayout } from '@likec4/core'
 import { GrammarUtils } from 'langium'
-import { isDefined } from 'remeda'
+import { isNumber } from 'remeda'
 import { TextEdit } from 'vscode-languageserver-types'
 import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument, toAstViewLayoutDirection } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -28,9 +28,9 @@ export function changeViewLayout(_services: LikeC4Services, {
 
   let newRule = `autoLayout ${newdirection}`
 
-  if (isDefined(layout.rankSep)) {
+  if (isNumber(layout.rankSep)) {
     newRule += ` ${layout.rankSep}`
-    if (isDefined(layout.nodeSep)) {
+    if (isNumber(layout.nodeSep)) {
       newRule += ` ${layout.nodeSep}`
     }
   }
