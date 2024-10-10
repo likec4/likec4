@@ -24,6 +24,8 @@ type ElementLinkProps = {
   element: XYFlowNode['data']['element']
 }
 
+const stopEventPropagation = (e: React.MouseEvent) => e.stopPropagation()
+
 export function ElementLink({
   element
 }: ElementLinkProps) {
@@ -31,7 +33,11 @@ export function ElementLink({
   const id = useId()
   const portalProps = useMantinePortalProps()
   return (
-    <div className={elementLink} data-likec4-linkid={id}>
+    <div
+      className={elementLink}
+      data-likec4-linkid={id}
+      onDoubleClick={stopEventPropagation}
+      onClick={stopEventPropagation}>
       <HoverCard
         position="bottom-start"
         shadow="lg"
@@ -59,10 +65,7 @@ export function ElementLink({
             <span>links</span>
           </UnstyledButton>
         </HoverCardTarget>
-        <HoverCardDropdown
-          onPointerDownCapture={e => e.stopPropagation()}
-          onClick={e => e.stopPropagation()}
-          p={'xs'}>
+        <HoverCardDropdown p={'xs'}>
           <Stack gap={'xs'}>
             {element.links.map((link) => (
               <Group key={link.url} wrap="nowrap" gap={'sm'}>
@@ -78,9 +81,8 @@ export function ElementLink({
                       fz={'10'}
                       variant="light"
                       onClick={copy}
-                      color={copied
-                        ? 'teal'
-                        : 'gray'}>
+                      color={copied ? 'teal' : 'gray'}
+                    >
                       {copied ? 'copied' : 'copy'}
                     </Button>
                   )}

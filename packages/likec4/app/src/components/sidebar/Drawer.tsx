@@ -19,7 +19,7 @@ export function SidebarDrawer() {
       opened={opened}
       scrollAreaComponent={ScrollArea.Autosize}
       onClose={SidebarDrawerOps.close}>
-      <Drawer.Overlay />
+      <Drawer.Overlay blur={.5} />
       <Drawer.Content>
         <Drawer.Header>
           <Group>

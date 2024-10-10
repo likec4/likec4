@@ -31,7 +31,7 @@ import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { entries, first, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
-import type { ConditionalKeys, Except, RequiredKeysOf, Simplify } from 'type-fest'
+import type { ConditionalKeys, Except, RequiredKeysOf, RequireExactlyOne, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
@@ -55,6 +55,8 @@ type RequiredOrNull<T> = {
 export type DiagramInitialState = {
   view: DiagramView
   readonly: boolean
+  // If LikeC4Model provided
+  hasLikeC4Model: boolean
   showElementLinks: boolean
   showNavigationButtons: boolean
   showNotations: boolean
@@ -92,6 +94,13 @@ export type DiagramState = Simplify<
     viewportChanged: boolean
 
     initialized: boolean
+
+    activeOverlay:
+      | null
+      | RequireExactlyOne<{
+        relationshipsOf: Fqn
+        edgeDetails: EdgeId
+      }>
 
     // readonly=false and onChange is not null
     isEditable: () => boolean
@@ -163,6 +172,9 @@ export type DiagramState = Simplify<
     activateWalkthrough: (step: EdgeId | XYFlowEdge) => void
     stopWalkthrough: () => void
 
+    openOverlay: (overlay: NonNullable<DiagramState['activeOverlay']>) => void
+    closeOverlay: () => void
+
     onInit: (xyflow: XYFlowInstance) => void
     onNodesChange: OnNodesChange<XYFlowNode>
     onEdgesChange: OnEdgesChange<XYFlowEdge>
@@ -184,6 +196,7 @@ const DEFAULT_PROPS: Except<
   initialized: false,
   navigationHistoryIndex: 0,
   viewportChanged: false,
+  activeOverlay: null,
   activeWalkthrough: null,
   focusedNodeId: null,
   hoveredNodeId: null,
@@ -258,6 +271,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               lastClickedNodeId,
               lastClickedEdgeId,
               activeWalkthrough,
+              activeOverlay,
               nodesDraggable,
               nodesSelectable,
               hoveredEdgeId,
@@ -364,6 +378,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               hoveredNodeId = null
               focusedNodeId = null
               activeWalkthrough = null
+              activeOverlay = null
               dimmed = EmptyStringSet
             }
 
@@ -429,6 +444,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 viewSyncDebounceTimeout,
                 view: nextView,
                 activeWalkthrough,
+                activeOverlay,
                 lastOnNavigate,
                 lastClickedNodeId,
                 lastClickedEdgeId,
@@ -833,6 +849,25 @@ export function createDiagramStore(props: DiagramInitialState) {
               )
               onNavigateTo(stepForward.viewId)
             }
+          },
+
+          openOverlay: (overlay) => {
+            set(
+              {
+                activeOverlay: overlay
+              },
+              noReplace,
+              'openOverlay'
+            )
+          },
+          closeOverlay: () => {
+            set(
+              {
+                activeOverlay: null
+              },
+              noReplace,
+              'openOverlay'
+            )
           },
 
           fitDiagram: (duration = 500) => {

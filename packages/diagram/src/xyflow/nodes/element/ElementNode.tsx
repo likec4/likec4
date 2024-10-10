@@ -94,7 +94,6 @@ const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
   && eq(prev.dragging ?? false, next.dragging ?? false)
-  // && eq(prev.draggable ?? false, next.draggable ?? false)
   && eq(prev.width ?? 0, next.width ?? 0)
   && eq(prev.height ?? 0, next.height ?? 0)
   && eq(prev.data.element, next.data.element)
@@ -106,7 +105,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     element
   },
   dragging,
-  // draggable = false,
   selected = false,
   width,
   height
@@ -119,13 +117,10 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isInteractive: s.nodesDraggable || s.nodesSelectable || (!!s.onNavigateTo && !!element.navigateTo),
     isHovercards: s.showElementLinks,
     hasOnNavigateTo: !!s.onNavigateTo
-    // hasGoToSource: !!s.onOpenSourceElement
   }))
   const isNavigable = hasOnNavigateTo && !!element.navigateTo
-  // const isIdle = useIdle(300)
-  // const [isToolbarVisible] = useDebouncedValue(isEditable && (isHovered || (import.meta.env.DEV && selected)), isIdle ? 50 : 350)
-  const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
 
+  const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const w = toDomPrecision(width ?? element.width)

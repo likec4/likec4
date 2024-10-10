@@ -11,6 +11,7 @@ import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { useLikeC4Model } from './likec4model'
 import { EnsureMantine } from './mantine/EnsureMantine'
+import { Overlays } from './overlays'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
@@ -89,6 +90,7 @@ export function LikeC4Diagram({
             readonly={readonly}
             pannable={pannable}
             zoomable={zoomable}
+            hasLikeC4Model={hasLikec4model}
             fitViewEnabled={fitView}
             fitViewPadding={fitViewPadding}
             showElementLinks={showElementLinks}
@@ -173,6 +175,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         <>
           {fitView && <FitViewOnDiagramChange />}
           {enableFocusMode && <SelectEdgesOnNodeFocus />}
+          <Overlays />
         </>
       )}
     </>

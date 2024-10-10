@@ -178,7 +178,7 @@ export const TopLeftPanel = () => {
   const portalProps = useMantinePortalProps()
 
   return (
-    <TooltipGroup openDelay={500} closeDelay={150}>
+    <TooltipGroup openDelay={600} closeDelay={150}>
       <Stack
         className={clsx(
           'react-flow__panel',
