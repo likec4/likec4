@@ -6141,15 +6141,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-node-externals@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "esbuild-node-externals@npm:1.14.0"
+"esbuild-node-externals@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "esbuild-node-externals@npm:1.15.0"
   dependencies:
     find-up: "npm:^5.0.0"
     tslib: "npm:^2.4.1"
   peerDependencies:
-    esbuild: 0.12 - 0.23
-  checksum: 10c0/4ca6afe39fb9a9e9aa2dff78b4937766c8004e9d9399b35c265bfacdeabad5b87e394d958dfe36fc1fff5326efe09f2297730f215c91bc8c742605c948b661dc
+    esbuild: 0.12 - 0.24
+  checksum: 10c0/91243415513b335c0ea69d2ec8807bb189aaddc5a6349c5455921c65f0fe322ecdb3485b6c3948fe8941c3cc1914ab2198b16a51adcbb1ed73baab587afafff0
   languageName: node
   linkType: hard
 
@@ -8533,7 +8533,7 @@ __metadata:
     defu: "npm:^6.1.4"
     dts-bundle-generator: "npm:^9.5.1"
     esbuild: "npm:^0.24.0"
-    esbuild-node-externals: "npm:^1.14.0"
+    esbuild-node-externals: "npm:^1.15.0"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
     fdir: "npm:^6.4.0"
