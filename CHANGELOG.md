@@ -1,3 +1,14 @@
+## [1.12.2](https://github.com/likec4/likec4/compare/v1.12.1...v1.12.2) (2024-10-10)
+
+### Improvements
+
+* **vscode:** transparent layout spacing panel for a clearer preview of changes
+
+### Bug Fixes
+
+* unable to open diagram from Sidebar (thanks @davydkov, closes [#1091](https://github.com/likec4/likec4/issues/1091))
+
+
 ## [1.12.1](https://github.com/likec4/likec4/compare/v1.12.0...v1.12.1) (2024-10-10)
 
 ### Improvements
