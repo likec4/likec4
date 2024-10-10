@@ -1,18 +1,41 @@
-import type { DiagramNode } from '@likec4/core'
+import { defaultTheme, type DiagramNode, type ThemeColor } from '@likec4/core'
 import { Text as MantineText } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo } from 'react'
-import { isNumber, isTruthy } from 'remeda'
+import { memo, useState } from 'react'
+import { isNumber, isTruthy, keys } from 'remeda'
 import { type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../../../hooks/useDiagramState'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
+import { ElementToolbar } from '../shared/Toolbar'
 import * as css from './element.css'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
+
+const {
+  primary,
+  secondary,
+  muted,
+  ...otherColors
+} = defaultTheme.elements
+
+export const themedColors = [
+  { key: 'primary', value: primary.fill },
+  { key: 'secondary', value: secondary.fill },
+  { key: 'muted', value: muted.fill }
+] satisfies Array<{ key: ThemeColor; value: string }>
+
+export const colors = keys(otherColors).map(key => ({
+  key,
+  value: defaultTheme.elements[key].fill
+}))
+
+export type ThemeColorKey = typeof themedColors[0]['key']
+export type ColorKey = typeof colors[0]['key']
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -89,15 +112,21 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   height
 }) {
   const store = useDiagramStoreApi()
-  const { isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive, hasGoToSource } = useDiagramState(s => ({
+  const { isEditable, isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
+    isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    isInteractive: s.nodesDraggable || s.nodesSelectable || !!s.onNavigateTo,
+    isInteractive: s.nodesDraggable || s.nodesSelectable || (!!s.onNavigateTo && !!element.navigateTo),
     isHovercards: s.showElementLinks,
-    hasOnNavigateTo: !!s.onNavigateTo,
-    hasGoToSource: !!s.onOpenSourceElement
+    hasOnNavigateTo: !!s.onNavigateTo
+    // hasGoToSource: !!s.onOpenSourceElement
   }))
   const isNavigable = hasOnNavigateTo && !!element.navigateTo
+  // const isIdle = useIdle(300)
+  // const [isToolbarVisible] = useDebouncedValue(isEditable && (isHovered || (import.meta.env.DEV && selected)), isIdle ? 50 : 350)
+  const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
+
+  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -120,52 +149,17 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const elementIcon = ElementIcon({ node: element, store })
 
+  const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
+
   return (
     <>
-      {
-        /* <NodeToolbar isVisible={isTollbarVisible} offset={0}>
-        <ActionIconGroup>
-          <ActionIcon
-            size={'md'}
-            variant="default"
-            color="dark"
-            onClick={e => {
-              e.stopPropagation()
-              store.getState().onOpenSourceElement?.(element.id)
-            }}>
-            <IconFileSymlink
-              // stroke={1.2}
-              style={{
-                width: '70%',
-                height: '70%'
-              }} />
-          </ActionIcon>
-          <ActionIcon
-          size={'md'}
-            variant="default"
-            color="dark"
-          >
-              <ColorSwatch
-                color={defaultTheme.elements[element.color as ThemeColor]?.fill}
-                size={16}
-                withShadow
-                style={{ color: '#fff', cursor: 'pointer' }}
-              />
-            </ActionIcon>
-            <ActionIcon
-          size={'md'}
-            variant="default"
-            color="dark"
-            w={'fit-content'}
-            fz={'xs'}
-          >
-              {element.shape}
-            </ActionIcon>
-
-        </ActionIconGroup>
-      </NodeToolbar> */
-      }
-
+      {isToolbarVisible && (
+        <ElementToolbar
+          element={element}
+          isVisible={isToolbarVisible}
+          onColorPreview={setPreviewColor}
+        />
+      )}
       <Handle
         type="target"
         position={Position.Top}
@@ -180,11 +174,12 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           'likec4-element-node'
         ])}
         data-hovered={!dragging && isHovered}
-        data-likec4-color={element.color}
+        data-likec4-color={previewColor ?? element.color}
         data-likec4-shape={element.shape}
         variants={variants}
         initial={false}
         animate={animate}
+        tabIndex={-1}
         {...(isInteractive && {
           whileTap: dragging ? animate : 'tap'
         })}

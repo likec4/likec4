@@ -47,6 +47,9 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
     where?: WhereOperator<Tag, Kind> | undefined
 
     mantineTheme?: MantineThemeOverride | undefined
+
+    /** Function to generate nonce attribute added to all generated `<style />` tags */
+    styleNonce?: string | (() => string) | undefined
   }
 
 export function LikeC4Browser<
@@ -64,7 +67,8 @@ export function LikeC4Browser<
   where,
   style,
   mantineTheme,
-  background = 'dots'
+  background = 'dots',
+  styleNonce
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -87,10 +91,18 @@ export function LikeC4Browser<
   const notations = view.notation?.elements ?? []
   const hasNotations = notations.length > 0
 
+  let nonce
+  if (typeof styleNonce === 'string') {
+    nonce = styleNonce
+  } else if (typeof styleNonce === 'function') {
+    nonce = styleNonce()
+  }
+
   return (
     <>
       <style
         type="text/css"
+        nonce={nonce}
         dangerouslySetInnerHTML={{
           __html: `
         @keyframes likec4-dialog-fade-in {
@@ -181,6 +193,7 @@ export function LikeC4Browser<
             theme={mantineTheme}
             colorScheme={colorScheme}
             className={css.cssLikeC4Browser}
+            styleNonce={styleNonce}
           >
             {opened && (
               <LikeC4Diagram
@@ -211,9 +224,10 @@ export function LikeC4Browser<
             )}
             <ActionIcon
               className={closeButton}
-              variant="light"
+              variant="default"
               color="gray"
               autoFocus
+              data-autofocus
               onClick={(e) => {
                 e.stopPropagation()
                 dialogRef.current?.close()

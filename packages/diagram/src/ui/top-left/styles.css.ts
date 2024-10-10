@@ -36,6 +36,7 @@ globalStyle(`${autolayoutIcon} .tabler-icon`, {
 })
 
 export const autolayoutButton = style({
+  flex: '1 1 40%',
   textAlign: 'center',
   fontWeight: 500,
   padding: '4px 6px',

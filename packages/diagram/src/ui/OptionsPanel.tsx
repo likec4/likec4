@@ -8,7 +8,10 @@ import { useDiagramState } from '../hooks/useDiagramState'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 
-export default function OptionsPanel() {
+/**
+ * @deprecated
+ */
+export function OptionsPanel() {
   const { isFocused, viewId } = useDiagramState(s => ({
     viewId: s.view.id,
     isFocused: s.focusedNodeId !== null || s.activeWalkthrough !== null

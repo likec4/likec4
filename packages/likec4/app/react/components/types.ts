@@ -102,4 +102,7 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
   browserStyle?: CSSProperties | undefined
 
   mantineTheme?: MantineThemeOverride | undefined
+
+  /** Function to generate nonce attribute added to all generated `<style />` tags */
+  styleNonce?: string | (() => string) | undefined
 }

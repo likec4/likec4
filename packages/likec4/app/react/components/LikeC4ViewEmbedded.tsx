@@ -83,6 +83,9 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     where?: WhereOperator<Tag, Kind> | undefined
 
     mantineTheme?: MantineThemeOverride | undefined
+
+    /** Function to generate nonce attribute added to all generated `<style />` tags */
+    styleNonce?: string | (() => string) | undefined
   }
 
 export function LikeC4ViewEmbedded<
@@ -105,7 +108,8 @@ export function LikeC4ViewEmbedded<
   showRelationshipDetails = false,
   mantineTheme,
   where,
-  style
+  style,
+  styleNonce
 }: LikeC4ViewEmbeddedProps<ViewId, Tag, Kind>) {
   const [shadowRootProps, cssstyle] = useShadowRootStyle(true, view)
 
@@ -116,10 +120,18 @@ export function LikeC4ViewEmbedded<
   const notations = view.notation?.elements ?? []
   const hasNotations = notations.length > 0
 
+  let nonce
+  if (typeof styleNonce === 'string') {
+    nonce = styleNonce
+  } else if (typeof styleNonce === 'function') {
+    nonce = styleNonce()
+  }
+
   return (
     <>
       <style
         type="text/css"
+        nonce={nonce}
         dangerouslySetInnerHTML={{
           __html: cssstyle
         }} />
@@ -138,6 +150,7 @@ export function LikeC4ViewEmbedded<
         <ShadowRootMantineProvider
           theme={mantineTheme}
           colorScheme={colorScheme}
+          styleNonce={styleNonce}
           className={clsx(cssLikeC4View, !!_onNavigateTo && cssInteractive)}
         >
           <LikeC4Diagram
@@ -158,6 +171,7 @@ export function LikeC4ViewEmbedded<
             showRelationshipDetails={showRelationshipDetails}
             controls={false}
             nodesSelectable={false}
+            nodesDraggable={false}
             keepAspectRatio={false}
             renderIcon={renderIcon}
             where={where}

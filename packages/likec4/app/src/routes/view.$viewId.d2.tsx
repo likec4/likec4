@@ -3,10 +3,10 @@ import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components/CopyToClipboard'
-import { SidebarDrawerOps } from '../components/sidebar/Drawer'
+import { SidebarDrawerOps } from '../components/sidebar/state'
+import { krokiD2SvgUrl } from '../const'
 import { svgContainer } from './view.css'
 import * as css from './view_viewId_.css'
-import { krokiD2SvgUrl } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/d2')({
   component: ViewAsD2,

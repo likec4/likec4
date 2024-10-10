@@ -1,13 +1,12 @@
 import type { AutoLayoutDirection } from '@likec4/core'
 import {
   Box,
+  Flex,
   FloatingIndicator,
-  Group,
   Popover,
   PopoverDropdown,
   type PopoverProps,
   PopoverTarget,
-  SimpleGrid,
   Text,
   UnstyledButton
 } from '@mantine/core'
@@ -93,7 +92,7 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
           <Box mb={10}>
             <Text inline fz={'xs'} c={'dimmed'} fw={500}>Auto layout:</Text>
           </Box>
-          <SimpleGrid cols={2} spacing={2} verticalSpacing={4}>
+          <Flex gap={2} wrap={'wrap'} justify={'stretch'} maw={160}>
             <UnstyledButton className={css.autolayoutButton} ref={setControlRef('TB')} onClick={setAutoLayout('TB')}>
               Top-Bottom
             </UnstyledButton>
@@ -106,7 +105,7 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
             <UnstyledButton className={css.autolayoutButton} ref={setControlRef('RL')} onClick={setAutoLayout('RL')}>
               Right-Left
             </UnstyledButton>
-          </SimpleGrid>
+          </Flex>
           <Box my={10}>
             <Text inline fz={'xs'} c={'dimmed'} fw={500}>Spacing:</Text>
           </Box>

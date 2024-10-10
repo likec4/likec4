@@ -3,7 +3,7 @@ import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { RenderIcon } from '../components/RenderIcon'
-import { SidebarDrawerOps } from '../components/sidebar/Drawer'
+import { SidebarDrawerOps } from '../components/sidebar/state'
 import { isDevelopment, withOverviewGraph } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/editor')({

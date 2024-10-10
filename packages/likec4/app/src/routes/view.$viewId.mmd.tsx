@@ -4,7 +4,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components/CopyToClipboard'
-import { SidebarDrawerOps } from '../components/sidebar/Drawer'
+import { SidebarDrawerOps } from '../components/sidebar/state'
 import { svgContainer } from './view.css'
 import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 

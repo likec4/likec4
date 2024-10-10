@@ -1,13 +1,16 @@
+import type { ThemeColor } from '@likec4/core'
 import { Box, Text } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
+import { CompoundToolbar } from '../shared/Toolbar'
 import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
@@ -17,7 +20,7 @@ type CompoundNodeProps = Pick<
 
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id
-  // && prev.selected === next.selected
+  && eq(prev.selected ?? false, next.selected ?? false)
   // && eq(prev.width, next.width)
   // && eq(prev.height, next.height)
   && eq(prev.data.element, next.data.element)
@@ -25,6 +28,7 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
 
 export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function CompoundNode({
   id,
+  selected = false,
   data: {
     element
   }
@@ -41,15 +45,28 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     max: 50
   })
 
-  const { isHovered, isDimmed, hasOnNavigateTo } = useDiagramState(s => ({
+  const { isEditable, isHovered, isDimmed, hasOnNavigateTo } = useDiagramState(s => ({
+    isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
     hasOnNavigateTo: !!s.onNavigateTo
   }))
   const isnavigable = !!compound.navigateTo && hasOnNavigateTo
 
+  const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
+  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
+
+  const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
+
   return (
     <>
+      {isToolbarVisible && (
+        <CompoundToolbar
+          isVisible={isToolbarVisible}
+          element={element}
+          align="start"
+          onColorPreview={setPreviewColor} />
+      )}
       <Handle
         type="target"
         position={Position.Top}
@@ -64,7 +81,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         )}
         mod={{
           'compound-depth': depth,
-          'likec4-color': color,
+          'likec4-color': previewColor ?? color,
           hovered: isHovered
         }}
       >

@@ -34,12 +34,15 @@ export function useLikeC4ViewModel(viewId: LiteralUnion<ViewID, string>): LikeC4
   return useLikeC4Model(true).view(viewId)
 }
 
+/**
+ * Parsed view, computed or layouted
+ */
 export function useLikeC4View(viewId: LiteralUnion<ViewID, string>): ComputedView | DiagramView | null {
   const model = useLikeC4Model(true)
   try {
     return model.view(viewId).view
   } catch (error) {
-    console.error(error)
+    console.warn(error)
     return null
   }
 }
@@ -49,7 +52,7 @@ export function useLikeC4DiagramView(viewId: LiteralUnion<ViewID, string>): Diag
   try {
     return model.view(viewId).view
   } catch (error) {
-    console.error(error)
+    console.warn(error)
     return null
   }
 }
