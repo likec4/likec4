@@ -34,7 +34,7 @@
     "@lume/kiwi": "^0.4.4",
     "@mantine/vanilla-extract": "7.13.2",
     "@react-hookz/web": "^24.0.4",
-    "@tabler/icons-react": "^3.19.0",
+    "@tabler/icons-react": "3.17.0",
     "@vanilla-extract/css": "^1.16.0",
     "@vanilla-extract/css-utils": "^0.1.4",
     "@vanilla-extract/dynamic": "^2.1.2",
