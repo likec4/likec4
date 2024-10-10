@@ -1,18 +1,16 @@
 ## [1.12.1](https://github.com/likec4/likec4/compare/v1.12.0...v1.12.1) (2024-10-10)
 
+### Improvements
+
+* **preview:** change grouping in sidebar
+* **react:** change layout spacings from the UI
+* **react:** toolbar to change styles (instead of panel)
 
 ### Bug Fixes
 
-*  nonce parameter for marking dynamic styles inserted by components [#1065](https://github.com/likec4/likec4/issues/1065) ([89be0f1](https://github.com/likec4/likec4/commit/89be0f12e4c0b5bab0e56dc7bf624e928768d16a))
-* **react:** react component open full-screen mode ([4cd1464](https://github.com/likec4/likec4/commit/4cd1464b7f861a9520f05fd8616cfd6aee141fa7)), closes [#1055](https://github.com/likec4/likec4/issues/1055)
-* **vscode:** space being added/removed before colon ([#1074](https://github.com/likec4/likec4/issues/1074)) ([fd3624c](https://github.com/likec4/likec4/commit/fd3624c74be1ec71253c48f110934c7b236dc313))
-
-
-### Features
-
-* change grouping in sidebar ([06bfe8d](https://github.com/likec4/likec4/commit/06bfe8d7d97e2f2a48bfc4f7e18c551fefcd5234))
-* change layout spacings from the UI ([4dba20a](https://github.com/likec4/likec4/commit/4dba20a79ef1426a545fdaab082fc8b249949a56))
-* toolbar to change styles (instead of panel) ([5e1025d](https://github.com/likec4/likec4/commit/5e1025d5289189faceb596ecfb4c9c777eb782c2))
+* **vscode:** nonce parameter for marking dynamic styles inserted by components (thanks @pavelpykhtin, [#1065](https://github.com/likec4/likec4/issues/1065) ([89be0f1](https://github.com/likec4/likec4/commit/89be0f12e4c0b5bab0e56dc7bf624e928768d16a))
+* **react:** react component open full-screen mode (thanks @davydkov, [4cd1464](https://github.com/likec4/likec4/commit/4cd1464b7f861a9520f05fd8616cfd6aee141fa7)), closes [#1055](https://github.com/likec4/likec4/issues/1055)
+* **vscode:** space being added/removed before colon (thanks @pavelpykhtin, [#1074](https://github.com/likec4/likec4/issues/1074)) ([fd3624c](https://github.com/likec4/likec4/commit/fd3624c74be1ec71253c48f110934c7b236dc313))
 
 
 
