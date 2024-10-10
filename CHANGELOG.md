@@ -1,3 +1,12 @@
+## [1.12.2](https://github.com/likec4/likec4/compare/v1.12.1...v1.12.2) (2024-10-10)
+
+
+### Bug Fixes
+
+* unable to open diagram from Sidebar [#1091](https://github.com/likec4/likec4/issues/1091) ([62750db](https://github.com/likec4/likec4/commit/62750db493c32ce0342e4f28a6fd1d743bfc15c9))
+
+
+
 ## [1.12.1](https://github.com/likec4/likec4/compare/v1.12.0...v1.12.1) (2024-10-10)
 
 ### Improvements
