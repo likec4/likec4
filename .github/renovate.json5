@@ -7,8 +7,8 @@
     'npm:unpublishSafe',
     'helpers:disableTypesNodeMajor',
   ],
-  prHourlyLimit: 5,
-  prConcurrentLimit: 5,
+  prHourlyLimit: 15,
+  prConcurrentLimit: 6,
   rangeStrategy: 'bump',
   updateInternalDeps: true,
   labels: [
