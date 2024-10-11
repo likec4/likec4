@@ -63,8 +63,9 @@ const toMarker = (arrowType?: RelationshipArrowType): EdgeMarkerType | undefined
   }
   switch (arrowType) {
     case 'normal':
-    case 'crow':
       return 'Arrow' as const
+    case 'crow':
+      return 'Crow' as const
     case 'onormal':
       return 'OArrow' as const
     case 'diamond':
