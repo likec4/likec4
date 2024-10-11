@@ -81,6 +81,8 @@ export type DiagramInitialState = {
   getContainer: () => HTMLDivElement | null
 } & RequiredOrNull<LikeC4DiagramEventHandlers>
 
+type AlignmentMode = 'Left' | 'Center' | 'Right' | 'Top' | 'Middle' | 'Bottom'
+
 const StringSet = Set<string>
 
 export type DiagramState = Simplify<
@@ -172,7 +174,7 @@ export type DiagramState = Simplify<
     highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => void
 
     resetEdgeControlPoints: () => void
-    align: (mode: 'Left' | 'Right' | 'Top' | 'Bottom') => void
+    align: (mode: AlignmentMode) => void
   }
 >
 
@@ -1028,7 +1030,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               return vector(v).mul(scale).add(nodeCenter)
             }
           },
-          align: (mode: 'Left' | 'Right' | 'Top' | 'Bottom') => {
+          align: (mode: AlignmentMode) => {
             const { scheduleSaveManualLayout, xystore } = get()
             const { nodeLookup, parentLookup } = xystore.getState()
 
@@ -1052,14 +1054,28 @@ export function createDiagramStore(props: DiagramInitialState) {
                 getPosition = (alignTo, _) => Math.floor(alignTo)
                 break
               case 'Right':
-                getEdgePosition = nodes => Math.max(...nodes.map(n => n.internals.positionAbsolute.x + n.width!))
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.x + getNodeDimensions(n).width))
                 propertyToEdit = 'x'
                 getPosition = (alignTo, node) => Math.floor(alignTo - node.width!)
                 break
               case 'Bottom':
-                getEdgePosition = nodes => Math.max(...nodes.map(n => n.internals.positionAbsolute.y + n.height!))
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.y + getNodeDimensions(n).height))
                 propertyToEdit = 'y'
                 getPosition = (alignTo, node) => Math.floor(alignTo - node.height!)
+                break
+              case 'Center':
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.x + getNodeDimensions(n).width / 2))
+                propertyToEdit = 'x'
+                getPosition = (alignTo, node) => Math.floor(alignTo - getNodeDimensions(node).width / 2)
+                break
+              case 'Middle':
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.y + getNodeDimensions(n).height / 2))
+                propertyToEdit = 'y'
+                getPosition = (alignTo, node) => Math.floor(alignTo - getNodeDimensions(node).height / 2)
                 break
             }
 
