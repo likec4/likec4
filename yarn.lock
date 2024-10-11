@@ -169,9 +169,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.26.1":
-  version: 0.26.1
-  resolution: "@astrojs/starlight@npm:0.26.1"
+"@astrojs/starlight@npm:^0.28.3":
+  version: 0.28.3
+  resolution: "@astrojs/starlight@npm:0.28.3"
   dependencies:
     "@astrojs/mdx": "npm:^3.1.3"
     "@astrojs/sitemap": "npm:^3.1.6"
@@ -184,6 +184,7 @@ __metadata:
     hast-util-select: "npm:^6.0.2"
     hast-util-to-string: "npm:^3.0.0"
     hastscript: "npm:^9.0.0"
+    i18next: "npm:^23.11.5"
     mdast-util-directive: "npm:^3.0.0"
     mdast-util-to-markdown: "npm:^2.1.0"
     mdast-util-to-string: "npm:^4.0.0"
@@ -195,8 +196,8 @@ __metadata:
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.2"
   peerDependencies:
-    astro: ^4.8.6
-  checksum: 10c0/1924a8f86ddb9f67f37e74038ed90e8f0f0a499644c5e5c0264c4975f8988bb1967d13489517ceaea28903ebfce776d9155e0520cb951e19a81be10932342f23
+    astro: ^4.14.0
+  checksum: 10c0/8038fa86484e1269b05005f898b793c9f42374462ab4542e2f8354becb39108794a250baf185762b344e6ee89766c6210a662b38b86865be0d13e2dc0adea36b
   languageName: node
   linkType: hard
 
@@ -458,6 +459,15 @@ __metadata:
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
   checksum: 10c0/b6fa3ec61a53402f3c1d75f4d808f48b35e0dfae0ec8e2bb5c6fc79fb95935da75766e0ca534d0f1c84871f6ae0d2ebdd950727cfadb745a2cdbef13faef5513
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.23.2":
+  version: 7.25.7
+  resolution: "@babel/runtime@npm:7.25.7"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10c0/86b7829d2fc9343714a9afe92757cf96c4dc799006ca61d73cda62f4b9e29bfa1ce36794955bc6cb4c188f5b10db832c949339895e1bbe81a69022d9d578ce29
   languageName: node
   linkType: hard
 
@@ -2119,7 +2129,7 @@ __metadata:
   dependencies:
     "@astrojs/check": "npm:^0.9.3"
     "@astrojs/react": "npm:^3.6.2"
-    "@astrojs/starlight": "npm:^0.26.1"
+    "@astrojs/starlight": "npm:^0.28.3"
     "@expressive-code/plugin-collapsible-sections": "npm:^0.36.1"
     "@expressive-code/plugin-line-numbers": "npm:^0.36.1"
     "@fontsource/ibm-plex-sans": "npm:^5.1.0"
@@ -7696,6 +7706,15 @@ __metadata:
   bin:
     husky: lib/bin.js
   checksum: 10c0/6722591771c657b91a1abb082e07f6547eca79144d678e586828ae806499d90dce2a6aee08b66183fd8b085f19d20e0990a2ad396961746b4c8bd5bdb619d668
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^23.11.5":
+  version: 23.15.2
+  resolution: "i18next@npm:23.15.2"
+  dependencies:
+    "@babel/runtime": "npm:^7.23.2"
+  checksum: 10c0/6e079bf486ac24440c2e01f1852b518c3c7f2cf9754ab98c25c78e4bc50f5af936b7cbb3c566f60fbbc093ec14d7432d5320016376038bc23fc1167a03cdb6bc
   languageName: node
   linkType: hard
 
