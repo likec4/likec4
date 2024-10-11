@@ -2075,7 +2075,6 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@lume/kiwi": "npm:^0.4.4"
     "@mantine/core": "npm:7.13.2"
     "@mantine/hooks": "npm:7.13.2"
     "@mantine/vanilla-extract": "npm:7.13.2"
@@ -2360,13 +2359,6 @@ __metadata:
     vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
   linkType: soft
-
-"@lume/kiwi@npm:^0.4.4":
-  version: 0.4.4
-  resolution: "@lume/kiwi@npm:0.4.4"
-  checksum: 10c0/780d41ae5133ce08dc71bcbdd4aa16e77322fc0e2ee6c04823adaf32f19259f35980b5db46520df73c965fbe78b4a060fd145ee8fc0480d8760ce736ee1b495a
-  languageName: node
-  linkType: hard
 
 "@mantine/colors-generator@npm:^7.13.2":
   version: 7.13.2

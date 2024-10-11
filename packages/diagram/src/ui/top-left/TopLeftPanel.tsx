@@ -15,6 +15,10 @@ import {
 } from '@mantine/core'
 import {
   IconAlertTriangle,
+  IconBoxAlignBottom,
+  IconBoxAlignLeft,
+  IconBoxAlignRight,
+  IconBoxAlignTop,
   IconChevronLeft,
   IconChevronRight,
   IconFileSymlink,
@@ -216,6 +220,42 @@ export const TopLeftPanel = () => {
             </Tooltip>
           )}
         </ActionIconGroup>
+        <Tooltip label="Align top" {...portalProps}>
+          <ActionIcon
+            onClick={e => {
+              e.stopPropagation()
+              store.getState().align('Top')
+            }}>
+            <IconBoxAlignTop />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip label="Align left" {...portalProps}>
+          <ActionIcon
+            onClick={e => {
+              e.stopPropagation()
+              store.getState().align('Left')
+            }}>
+            <IconBoxAlignLeft />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip label="Align bottom" {...portalProps}>
+          <ActionIcon
+            onClick={e => {
+              e.stopPropagation()
+              store.getState().align('Bottom')
+            }}>
+            <IconBoxAlignBottom />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip label="Align right" {...portalProps}>
+          <ActionIcon
+            onClick={e => {
+              e.stopPropagation()
+              store.getState().align('Right')
+            }}>
+            <IconBoxAlignRight />
+          </ActionIcon>
+        </Tooltip>
       </Stack>
     </TooltipGroup>
   )
