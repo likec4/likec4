@@ -37,6 +37,8 @@ export function StaticLikeC4Diagram({
       showNotations={false}
       showRelationshipDetails={false}
       enableDynamicViewWalkthrough={false}
+      enableRelationshipsBrowser={false}
+      experimentalEdgeEditing={false}
       enableFocusMode={false}
       nodesSelectable={false}
       nodesDraggable={false}
