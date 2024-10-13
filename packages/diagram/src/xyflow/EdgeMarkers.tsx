@@ -39,6 +39,24 @@ const Arrow = (props: SVGProps<SVGMarkerElement>) => (
   </marker>
 )
 
+const Crow = (props: SVGProps<SVGMarkerElement>) => (
+  <marker
+    viewBox="-1 -1 12 12"
+    refX={8}
+    refY={4}
+    markerWidth="8"
+    markerHeight="8"
+    preserveAspectRatio="xMaxYMid meet"
+    orient="auto-start-reverse"
+    {...props}>
+    <path
+      d="M 8 0 L 0 4 L 8 8 M 8 4 L 0 4"
+      fill="none"
+      strokeWidth={1}
+    />
+  </marker>
+)
+
 const OArrow = (props: SVGProps<SVGMarkerElement>) => (
   <marker
     viewBox="-1 -1 12 10"
@@ -139,6 +157,7 @@ const ODot = (props: SVGProps<SVGMarkerElement>) => (
 
 export const EdgeMarkers = {
   Arrow,
+  Crow,
   OArrow,
   Open,
   Diamond,
