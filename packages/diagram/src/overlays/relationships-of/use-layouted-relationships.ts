@@ -509,8 +509,10 @@ function layout(
   }
 
   const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
-  if (subjectPortsCount > 2) {
-    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 2) * 10
+  if (subjectPortsCount > 5) {
+    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 18
+  } else if (subjectPortsCount > 2) {
+    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 2) * 15
   }
 
   const nodebounds = applyDagreLayout(ctx.g)

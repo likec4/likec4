@@ -6,14 +6,15 @@ import {
   Popover,
   PopoverDropdown,
   PopoverTarget,
+  rem,
   SegmentedControl,
   Space,
   Text,
   ThemeIcon
 } from '@mantine/core'
-import { useLocalStorage } from '@mantine/hooks'
+import { useLocalStorage, useStateHistory } from '@mantine/hooks'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { IconAlertCircle, IconSelector } from '@tabler/icons-react'
+import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconSelector } from '@tabler/icons-react'
 import { Panel, ReactFlow, useReactFlow, useStoreApi } from '@xyflow/react'
 import { memo, useEffect, useRef } from 'react'
 import { useOverlayDialog } from '../../components'
@@ -63,10 +64,27 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     subject
   } = useLayoutedRelationships(_scope)
   const scope = viewIncludesSubject ? _scope : 'global'
+  const showSubjectWarning = !viewIncludesSubject && _scope === 'view'
+
+  const [historySubjectId, historyOps, { history, current }] = useStateHistory(subject.id)
 
   const xyflow = useReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>()
   const xystore = useStoreApi()
   const overlay = useOverlayDialog()
+
+  useEffect(() => {
+    if (historySubjectId !== subject.id) {
+      historyOps.set(subject.id)
+    }
+  }, [subject.id])
+
+  useEffect(() => {
+    if (historySubjectId !== subject.id) {
+      overlay.openOverlay({
+        relationshipsOf: historySubjectId
+      })
+    }
+  }, [historySubjectId])
 
   useEffect(() => {
     const lastClicked = lastClickedNodeRef.current
@@ -178,43 +196,104 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       }}
     >
       <Panel position="top-center">
-        <Group gap={'xs'}>
-          <Box fz={'sm'} fw={'400'}>Relationships of</Box>
-          <Popover position="bottom" shadow="md" withinPortal={false} closeOnClickOutside>
-            <PopoverTarget>
-              <Button
-                size="xs"
-                variant="light"
-                color="gray"
-                fw={'500'}
-                style={{ padding: '0.25rem 0.75rem' }}
-                rightSection={<IconSelector size={16} />}
-              >
-                {subject.title}
-              </Button>
-            </PopoverTarget>
-            <PopoverDropdown p={'xs'}>
-              <Group>
-                <ThemeIcon color="orange" variant="light">
-                  <IconAlertCircle size={14} />
-                </ThemeIcon>
-                <Text c="orange" size="sm">In progress...</Text>
-              </Group>
-            </PopoverDropdown>
-          </Popover>
-
-          <Space w={2} />
-          <SegmentedControl
+        <Group gap={'xs'} wrap={'nowrap'}>
+          <Button
+            leftSection={<IconArrowLeft stroke={4} size={14} />}
+            color="dimmed"
+            variant="subtle"
+            style={{
+              visibility: current > 0 ? 'visible' : 'hidden',
+              padding: '0.25rem 0.75rem'
+            }}
+            styles={{
+              section: {
+                marginInlineEnd: 4
+              }
+            }}
             size="xs"
-            withItemsBorders={false}
-            value={scope}
-            onChange={setScope as any}
-            data={[
-              { label: 'Global', value: 'global' },
-              { label: 'Current view', value: 'view', disabled: !viewIncludesSubject }
-            ]}
-          />
-          {!viewIncludesSubject && <Text fw={500} size="xs" c="orange" component="div">View doesn't include it</Text>}
+            onClick={() => {
+              historyOps.back()
+            }}>
+            Back
+          </Button>
+          <Space w={2} />
+          <Group gap={'xs'} pos={'relative'}>
+            <Box fz={'sm'} fw={'400'}>Relationships of</Box>
+            <Box>
+              <Popover position="bottom" shadow="md" withinPortal={false} closeOnClickOutside>
+                <PopoverTarget>
+                  <Button
+                    size="xs"
+                    variant="light"
+                    color="gray"
+                    fw={'500'}
+                    style={{ padding: '0.25rem 0.75rem' }}
+                    rightSection={<IconSelector size={16} />}
+                  >
+                    {subject.title}
+                  </Button>
+                </PopoverTarget>
+                <PopoverDropdown p={'xs'}>
+                  <Group>
+                    <ThemeIcon color="orange" variant="light">
+                      <IconAlertCircle size={14} />
+                    </ThemeIcon>
+                    <Text c="orange" size="sm">In progress...</Text>
+                  </Group>
+                </PopoverDropdown>
+              </Popover>
+            </Box>
+            <SegmentedControl
+              size="xs"
+              withItemsBorders={false}
+              value={scope}
+              onChange={setScope as any}
+              data={[
+                { label: 'Global', value: 'global' },
+                { label: 'Current view', value: 'view', disabled: !viewIncludesSubject }
+              ]}
+            />
+            {showSubjectWarning && (
+              <Box
+                pos={'absolute'}
+                top={'calc(100% + .5rem)'}
+                left={'50%'}
+                w={'max-content'}
+                style={{
+                  transform: 'translateX(-50%)',
+                  textAlign: 'center',
+                  cursor: 'pointer'
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setScope('global')
+                }}
+              >
+                <Text fw={500} size="xs" c="orange" component="div">
+                  Current view doesn't include selected element, switched to Global
+                </Text>
+              </Box>
+            )}
+          </Group>
+          <Button
+            rightSection={<IconArrowRight stroke={4} size={14} />}
+            color="dimmed"
+            variant="subtle"
+            style={{
+              visibility: current + 1 < history.length ? 'visible' : 'hidden',
+              padding: '0.25rem 0.75rem'
+            }}
+            styles={{
+              section: {
+                marginInlineStart: 4
+              }
+            }}
+            size="xs"
+            onClick={() => {
+              historyOps.forward()
+            }}>
+            Forward
+          </Button>
         </Group>
       </Panel>
     </ReactFlow>
