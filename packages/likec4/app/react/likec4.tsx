@@ -84,6 +84,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
   showNotations = false,
   enableFocusMode = false,
   showRelationshipDetails = false,
+  enableRelationshipsBrowser = false,
   browserClassName,
   browserStyle,
   mantineTheme,
@@ -148,6 +149,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
           style={browserStyle}
           mantineTheme={mantineTheme}
           styleNonce={styleNonce}
+          enableRelationshipsBrowser={enableRelationshipsBrowser}
         />
       )}
     </LikeC4ModelProvider>

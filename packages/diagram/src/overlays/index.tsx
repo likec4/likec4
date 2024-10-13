@@ -1,6 +1,6 @@
 import { useDiagramState } from '../hooks/useDiagramState'
 import { EdgeDetailsOverlay } from './edge-details/EdgeDetailsOverlay'
-import { RelationshipsOfOverlay } from './relationships-of/RelationshipsOfOverlay'
+import { RelationshipsOfOverlay } from './relationships-of/RelationshipsOverlay'
 
 export function Overlays() {
   const {
@@ -21,7 +21,7 @@ export function Overlays() {
   }
 
   if (activeOverlay.relationshipsOf) {
-    return <RelationshipsOfOverlay elementId={activeOverlay.relationshipsOf} />
+    return <RelationshipsOfOverlay />
   }
 
   if (activeOverlay.edgeDetails) {

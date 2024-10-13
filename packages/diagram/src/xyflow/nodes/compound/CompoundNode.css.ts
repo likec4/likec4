@@ -212,7 +212,7 @@ export const navigateBtn = style({
   transformOrigin: '90% 50%',
   opacity: 0.75,
   transition: 'all 150ms ease-out',
-  transitionDelay: '0ms',
+  transitionDelay: '200ms',
   backgroundColor: 'var(--ai-bg)',
   vars: {
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
@@ -260,3 +260,52 @@ globalStyle(`${navigateBtn} svg.icon`, {
 //   ":hover": {
 //   }
 // })
+
+export const relationshipsOfButton = style({
+  position: 'absolute',
+  pointerEvents: 'all',
+  left: 3,
+  top: 45,
+  cursor: 'pointer',
+  color: `var(--_compound-title-color,${navigateBtnColor})`,
+  transformOrigin: '90% 50%',
+  opacity: 0,
+  transition: 'all 130ms ease-out',
+  transform: 'scale(0.6) translate(0, -100%)',
+  transitionDelay: '200ms',
+  backgroundColor: 'var(--ai-bg)',
+  vars: {
+    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
+    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
+  },
+  ':hover': {
+    boxShadow: mantine.shadows.lg,
+    transform: 'scale(1.25)',
+    opacity: 1,
+    transitionDelay: '0'
+  },
+  ':active': {
+    transform: 'scale(1.02)',
+    opacity: 1,
+    transitionDelay: '0'
+  },
+  selectors: {
+    [`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) &`]: {
+      // opacity: 0.85,
+      vars: {
+        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 60%)`,
+        '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`
+      }
+    },
+    [`:where(.react-flow__node:not(.dragging) ${container}:hover, [data-hovered]) &:not(:hover)`]: {
+      boxShadow: mantine.shadows.lg,
+      transform: 'scale(1.15)',
+      opacity: 1,
+      transitionDelay: '300ms',
+      vars: {
+        '--ai-bg': 'var(--ai-bg-hover)'
+      }
+    }
+  }
+})

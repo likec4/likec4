@@ -110,7 +110,7 @@ export const fillElementStroke = style({
 })
 
 export const fillMixStroke = style({
-  fill: stokeFillMix
+  fill: fallbackVar(stokeFillMix, `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`)
 })
 
 export const hasIcon = style({})
@@ -372,4 +372,50 @@ globalStyle(`${cssNavigateBtn} svg.icon`, {
   width: '65%',
   height: '65%',
   strokeWidth: '1.5'
+})
+
+export const relationshipsOfButton = style({
+  zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+  position: 'absolute',
+  pointerEvents: 'all',
+  bottom: 0,
+  left: 'calc(50% + 24px)',
+  color: vars.element.loContrast,
+  cursor: 'pointer',
+  transformOrigin: '20% 50%',
+  opacity: 0,
+  transition: 'all 130ms ease-out',
+  transform: 'scale(0.7) translate(-50%, 0)',
+  transitionDelay: '0ms',
+  backgroundColor: 'var(--ai-bg)',
+  'vars': {
+    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
+    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
+  },
+  selectors: {
+    [`:where([data-likec4-shape='browser']) &`]: {
+      bottom: 3
+    },
+    [`:where(.react-flow__node:not(.dragging) ${container}:hover) &:not(:hover)`]: {
+      boxShadow: mantine.shadows.lg,
+      transform: 'scale(1.05)',
+      opacity: 1,
+      transitionDelay: '300ms',
+      vars: {
+        '--ai-bg': 'var(--ai-bg-hover)'
+      }
+    }
+  },
+  ':hover': {
+    boxShadow: mantine.shadows.lg,
+    transform: 'scale(1.25)',
+    opacity: 1,
+    transitionDelay: '0'
+  },
+  ':active': {
+    transform: 'scale(1.02)',
+    opacity: 1,
+    transitionDelay: '0'
+  }
 })

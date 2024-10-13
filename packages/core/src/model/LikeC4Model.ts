@@ -228,7 +228,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
     element: ElementOrFqn,
     filter: IncomingFilter = 'all'
   ): ReadonlyArray<LikeC4Model.ElementModel<M>> {
-    return this.incoming(element, filter).map(r => r.source)
+    return [...new Set(this.incoming(element, filter).map(r => r.source))]
   }
 
   /**
@@ -259,7 +259,7 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
     element: ElementOrFqn,
     filter: OutgoingFilter = 'all'
   ): ReadonlyArray<LikeC4Model.ElementModel<M>> {
-    return this.outgoing(element, filter).map(r => r.target)
+    return [...new Set(this.outgoing(element, filter).map(r => r.target))]
   }
 
   /**
@@ -389,6 +389,7 @@ export namespace LikeC4Model {
 
   export type ViewModel = LikeC4ViewModel | LikeC4DiagramModel
   export namespace ViewModel {
+    export type ElementModel = LikeC4ViewModel.Element | LikeC4DiagramModel.Element
     export type Relationship = LikeC4Model.Relationship<ViewModel>
 
     export function isLayouted(model: ViewModel): model is LikeC4DiagramModel {
@@ -416,7 +417,7 @@ export namespace LikeC4Model {
     return model.type === 'layouted'
   }
 
-  export class Relationship<M extends ViewModel> {
+  export class Relationship<M extends ViewModel = ViewModel> {
     constructor(
       public readonly relationship: C4Relation,
       private model: LikeC4Model<M>
@@ -459,7 +460,7 @@ export namespace LikeC4Model {
   }
 
   // Class renamed to ElementModel, otherwise generated DTS will be incorrect
-  export class ElementModel<M extends ViewModel> {
+  export class ElementModel<M extends ViewModel = ViewModel> {
     constructor(
       public readonly element: C4Element,
       private model: LikeC4Model<M>

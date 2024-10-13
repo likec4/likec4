@@ -38,6 +38,7 @@ export function LikeC4Diagram({
   showRelationshipDetails = true,
   enableDynamicViewWalkthrough = false,
   enableFocusMode = false,
+  enableRelationshipsBrowser = false,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -102,6 +103,7 @@ export function LikeC4Diagram({
             experimentalEdgeEditing={experimentalEdgeEditing}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableFocusMode={enableFocusMode}
+            enableRelationshipsBrowser={enableRelationshipsBrowser && hasLikec4model}
             whereFilter={where ?? null}
             renderIcon={renderIcon ?? null}
             onCanvasClick={onCanvasClick ?? null}

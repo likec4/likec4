@@ -10,6 +10,7 @@ import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
+import { RelationshipsOfButton } from '../shared/RelationshipsOfButton'
 import { CompoundToolbar } from '../shared/Toolbar'
 import * as css from './CompoundNode.css'
 
@@ -45,11 +46,18 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     max: 50
   })
 
-  const { isEditable, isHovered, isDimmed, hasOnNavigateTo } = useDiagramState(s => ({
+  const {
+    isEditable,
+    isHovered,
+    isDimmed,
+    hasOnNavigateTo,
+    enableRelationshipsMode
+  } = useDiagramState(s => ({
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    hasOnNavigateTo: !!s.onNavigateTo
+    hasOnNavigateTo: !!s.onNavigateTo,
+    enableRelationshipsMode: s.enableRelationshipsBrowser
   }))
   const isnavigable = !!compound.navigateTo && hasOnNavigateTo
 
@@ -114,13 +122,18 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
             component="div"
             className={clsx(
               css.title,
-              isnavigable && css.titleWithNavigation,
+              (isnavigable || enableRelationshipsMode) && css.titleWithNavigation,
               'likec4-compound-title'
             )}>
             {compound.title}
           </Text>
         </div>
         {isnavigable && <NavigateToBtn xynodeId={id} className={css.navigateBtn} />}
+        {enableRelationshipsMode && (
+          <RelationshipsOfButton
+            elementId={element.id}
+            className={isnavigable ? css.relationshipsOfButton : css.navigateBtn} />
+        )}
       </Box>
       <Handle
         type="source"

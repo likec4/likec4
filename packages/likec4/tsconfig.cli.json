@@ -9,6 +9,7 @@
     "verbatimModuleSyntax": true,
     "allowJs": true,
     "checkJs": false,
+    "tsBuildInfoFile": "cli.tsbuildinfo",
     "baseUrl": ".",
     "types": [
       "node"

@@ -149,9 +149,16 @@ export interface LikeC4DiagramProperties {
 
   /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
-   * @default true
+   * @default false
    */
   enableFocusMode?: boolean | undefined
+
+  /**
+   * Experimental feature to browse relationships
+   *
+   * @default false
+   */
+  enableRelationshipsBrowser?: boolean | undefined
 
   /**
    * If Walkthrough for dynamic views should be enabled

@@ -1,4 +1,4 @@
-import { defaultTheme, type DiagramNode, type ThemeColor } from '@likec4/core'
+import { type DiagramNode, type ThemeColor } from '@likec4/core'
 import { Text as MantineText } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
@@ -6,36 +6,16 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo, useState } from 'react'
-import { isNumber, isTruthy, keys } from 'remeda'
+import { isNumber, isTruthy } from 'remeda'
 import { type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../../../hooks/useDiagramState'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
+import { RelationshipsOfButton } from '../shared/RelationshipsOfButton'
 import { ElementToolbar } from '../shared/Toolbar'
 import * as css from './element.css'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
-
-const {
-  primary,
-  secondary,
-  muted,
-  ...otherColors
-} = defaultTheme.elements
-
-export const themedColors = [
-  { key: 'primary', value: primary.fill },
-  { key: 'secondary', value: secondary.fill },
-  { key: 'muted', value: muted.fill }
-] satisfies Array<{ key: ThemeColor; value: string }>
-
-export const colors = keys(otherColors).map(key => ({
-  key,
-  value: defaultTheme.elements[key].fill
-}))
-
-export type ThemeColorKey = typeof themedColors[0]['key']
-export type ColorKey = typeof colors[0]['key']
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -110,13 +90,22 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   height
 }) {
   const store = useDiagramStoreApi()
-  const { isEditable, isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
+  const {
+    isEditable,
+    isHovered,
+    isDimmed,
+    hasOnNavigateTo,
+    isHovercards,
+    isInteractive,
+    enableRelationshipsMode
+  } = useDiagramState(s => ({
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
     isInteractive: s.nodesDraggable || s.nodesSelectable || (!!s.onNavigateTo && !!element.navigateTo),
     isHovercards: s.showElementLinks,
-    hasOnNavigateTo: !!s.onNavigateTo
+    hasOnNavigateTo: !!s.onNavigateTo,
+    enableRelationshipsMode: s.enableRelationshipsBrowser
   }))
   const isNavigable = hasOnNavigateTo && !!element.navigateTo
 
@@ -245,6 +234,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         </div>
         {isHovercards && element.links && <ElementLink element={element} />}
         {isNavigable && <NavigateToBtn xynodeId={id} className={css.cssNavigateBtn} />}
+        {enableRelationshipsMode && (
+          <RelationshipsOfButton
+            elementId={element.id}
+            className={isNavigable ? css.relationshipsOfButton : css.cssNavigateBtn} />
+        )}
       </m.div>
       <Handle
         type="source"

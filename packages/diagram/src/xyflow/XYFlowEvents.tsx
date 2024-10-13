@@ -162,9 +162,6 @@ export function useXYFlowEvents() {
             event.stopPropagation()
           }
         }
-        diagramApi.getState().openOverlay({
-          relationshipsOf: xynode.data.element.id
-        })
         onNodeClick?.(
           xynode.data.element,
           event

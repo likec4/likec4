@@ -33,10 +33,10 @@ import {
   Space,
   Stack,
   Text,
-  Tooltip,
+  Tooltip as MantineTooltip,
   TooltipGroup
 } from '@mantine/core'
-import { IconCheck, IconFileSymlink, IconSelector } from '@tabler/icons-react'
+import { IconCheck, IconFileSymlink, IconSelector, IconTransform } from '@tabler/icons-react'
 import { NodeToolbar, type NodeToolbarProps } from '@xyflow/react'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
@@ -63,6 +63,16 @@ const colors = keys(otherColors).map(key => ({
 type ThemeColorKey = typeof themedColors[0]['key']
 type ColorKey = typeof colors[0]['key']
 
+const Tooltip = MantineTooltip.withProps({
+  color: 'dark',
+  fz: 'xs',
+  openDelay: 400,
+  closeDelay: 150,
+  label: '',
+  children: null,
+  offset: 4
+})
+
 const stopEventPropagation = (e: React.MouseEvent) => e.stopPropagation()
 
 type ToolbarProps = NodeToolbarProps & {
@@ -79,8 +89,12 @@ export function CompoundToolbar({
 }: ToolbarProps) {
   const targets = [element.id] as NonEmptyArray<Fqn>
   const diagramApi = useDiagramStoreApi()
-  const { hasGoToSource } = useDiagramState(s => ({
-    hasGoToSource: !!s.onOpenSourceElement
+  const {
+    hasGoToSource,
+    enableRelationshipsBrowser
+  } = useDiagramState(s => ({
+    hasGoToSource: !!s.onOpenSourceElement,
+    enableRelationshipsBrowser: s.enableRelationshipsBrowser
   }))
 
   const onChange: OnStyleChange = (style) => {
@@ -105,6 +119,7 @@ export function CompoundToolbar({
         onChange={onChange}
       />
       {hasGoToSource && <GoToSourceButton elementId={element.id} />}
+      {enableRelationshipsBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
 }
@@ -144,8 +159,12 @@ export function ElementToolbar({
 }: ToolbarProps) {
   const targets = [element.id] as NonEmptyArray<Fqn>
   const diagramApi = useDiagramStoreApi()
-  const { hasGoToSource } = useDiagramState(s => ({
-    hasGoToSource: !!s.onOpenSourceElement
+  const {
+    hasGoToSource,
+    enableRelationshipsBrowser
+  } = useDiagramState(s => ({
+    hasGoToSource: !!s.onOpenSourceElement,
+    enableRelationshipsBrowser: s.enableRelationshipsBrowser
   }))
   const portalProps = useMantinePortalProps()
 
@@ -217,6 +236,7 @@ export function ElementToolbar({
         position="right-end"
       />
       {hasGoToSource && <GoToSourceButton elementId={element.id} />}
+      {enableRelationshipsBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
 }
@@ -230,17 +250,20 @@ type ColorButtonProps = Omit<PopoverProps, 'onChange'> & {
 
 function GoToSourceButton({ elementId }: { elementId: Fqn }) {
   const diagramApi = useDiagramStoreApi()
+  const portalProps = useMantinePortalProps()
   return (
-    <ActionIcon
-      size={'sm'}
-      variant="subtle"
-      color="gray"
-      onClick={e => {
-        e.stopPropagation()
-        diagramApi.getState().onOpenSourceElement?.(elementId)
-      }}>
-      <IconFileSymlink size={'70%'} stroke={1.8} />
-    </ActionIcon>
+    <Tooltip label={'Open source'} {...portalProps}>
+      <ActionIcon
+        size={'sm'}
+        variant="subtle"
+        color="gray"
+        onClick={e => {
+          e.stopPropagation()
+          diagramApi.getState().onOpenSourceElement?.(elementId)
+        }}>
+        <IconFileSymlink size={'70%'} stroke={1.8} />
+      </ActionIcon>
+    </Tooltip>
   )
 }
 
@@ -314,7 +337,7 @@ function ColorSwatches({
       <TooltipGroup openDelay={1000} closeDelay={300}>
         <Flex maw={120} gap="6" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
           {themedColors.map(({ key, value }) => (
-            <Tooltip
+            <MantineTooltip
               key={key}
               label={key}
               fz={'xs'}
@@ -331,7 +354,7 @@ function ColorSwatches({
               >
                 {elementColor === key && <CheckIcon style={{ width: rem(10), height: rem(10) }} />}
               </ColorSwatch>
-            </Tooltip>
+            </MantineTooltip>
           ))}
         </Flex>
 
@@ -344,7 +367,7 @@ function ColorSwatches({
           direction="row"
           wrap="wrap">
           {colors.map(({ key, value }) => (
-            <Tooltip
+            <MantineTooltip
               key={key}
               label={key}
               fz={'xs'}
@@ -360,7 +383,7 @@ function ColorSwatches({
               >
                 {elementColor === key && <CheckIcon style={{ width: rem(10), height: rem(10) }} />}
               </ColorSwatch>
-            </Tooltip>
+            </MantineTooltip>
           ))}
         </Flex>
       </TooltipGroup>
@@ -422,5 +445,31 @@ function OpacityOption({
       value={value}
       onChange={setValue}
       onChangeEnd={onOpacityChange} />
+  )
+}
+
+function BrowseRelationshipsButton({ elementId }: { elementId: Fqn }) {
+  const diagramApi = useDiagramStoreApi()
+  const portalProps = useMantinePortalProps()
+  return (
+    <Tooltip label={'Browse relationships'} {...portalProps}>
+      <ActionIcon
+        size={'sm'}
+        variant="subtle"
+        color="gray"
+        onClick={e => {
+          e.stopPropagation()
+          diagramApi.getState().openOverlay({
+            relationshipsOf: elementId
+          })
+        }}>
+        <IconTransform
+          stroke={2}
+          style={{
+            width: '72%',
+            height: '72%'
+          }} />
+      </ActionIcon>
+    </Tooltip>
   )
 }

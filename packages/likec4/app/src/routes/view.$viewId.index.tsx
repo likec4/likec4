@@ -41,10 +41,11 @@ function ViewReact() {
       showDiagramTitle
       showElementLinks
       showNavigationButtons
+      enableFocusMode
       enableDynamicViewWalkthrough
+      enableRelationshipsBrowser
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}
-      enableFocusMode={true}
       nodesDraggable={false}
       nodesSelectable={false}
       renderIcon={RenderIcon}

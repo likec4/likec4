@@ -4,12 +4,10 @@ import { whereDark } from '../theme-vars'
 const dialogFadeIn = keyframes({
   '0%': {
     opacity: 0,
-    transform: 'scale(0.75)',
     display: 'none'
   },
   '100%': {
     opacity: 1,
-    transform: 'scale(1)',
     display: 'block'
   }
 })
@@ -38,7 +36,7 @@ const dialogBackdropFadeIn = keyframes({
   '100%': {
     WebkitBackdropFilter: 'blur(8px)',
     backdropFilter: 'blur(8px)',
-    backgroundColor: `rgb(${backdropRgb} / 80%)`
+    backgroundColor: `rgb(${backdropRgb} / 85%)`
   }
 })
 
@@ -46,16 +44,16 @@ export const dialog = style({
   top: 0,
   left: 0,
   padding: 0,
-  margin: 'auto',
+  margin: 0,
   boxSizing: 'border-box',
   border: '0 solid transparent',
   width: '100%',
-  minWidth: '100dvw',
+  maxWidth: '100dvw',
   height: '100%',
-  minHeight: '100dvh',
+  maxHeight: '100dvh',
   background: 'transparent',
-  animation: `${dialogFadeOut} 160ms cubic-bezier(0.50, 0, 1, 1)`,
-  transformOrigin: '50% 10%',
+  animation: `${dialogFadeOut} 120ms cubic-bezier(0.50, 0, 1, 1)`,
+  transformOrigin: '50% 50%',
   vars: {
     [backdropRgb]: '255 255 255'
   },
@@ -66,7 +64,10 @@ export const dialog = style({
       }
     },
     '&[open]': {
-      animation: `${dialogFadeIn} 220ms cubic-bezier(0, 0, 0.40, 1)`
+      opacity: 0,
+      display: 'block',
+      animation: `${dialogFadeIn} 200ms cubic-bezier(0, 0, 0.40, 1) forwards`,
+      animationDelay: '50ms'
     },
     '&::backdrop': {
       WebkitBackdropFilter: 'blur(1px)',

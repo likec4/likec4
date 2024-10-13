@@ -151,7 +151,7 @@ export class LikeC4ViewModel {
     element: ElementOrFqn,
     filter: IncomingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Element> {
-    return this.incoming(element, filter).map(r => r.source)
+    return [...new Set(this.incoming(element, filter).map(r => r.source))]
   }
 
   /**
@@ -180,7 +180,7 @@ export class LikeC4ViewModel {
     element: ElementOrFqn,
     filter: OutgoingFilter = 'all'
   ): ReadonlyArray<LikeC4ViewModel.Element> {
-    return this.outgoing(element, filter).map(r => r.target)
+    return [...new Set(this.outgoing(element, filter).map(r => r.target))]
   }
 }
 

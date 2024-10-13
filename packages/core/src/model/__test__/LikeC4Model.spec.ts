@@ -76,4 +76,34 @@ describe('LikeC4Model', () => {
       'cloud.backend.graphql:cloud.backend.storage'
     ])
   })
+
+  it('unique incomers', () => {
+    const incoming = model.element('cloud.frontend').incoming()
+    expect(incoming.map(prop('id'))).toEqual([
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel',
+      'customer:cloud.frontend'
+    ])
+    const incomers = model.element('cloud.frontend').incomers()
+    expect(incomers.map(prop('id'))).toEqual([
+      'customer',
+      'support'
+    ])
+  })
+
+  it('unique outgoers', () => {
+    const outgoing = model.element('cloud').outgoing()
+    expect(outgoing.map(prop('id'))).toEqual([
+      'cloud.backend.storage:amazon.s3',
+      'cloud:amazon',
+      'cloud.backend:email',
+      'cloud:email'
+    ])
+    const outgoers = model.element('cloud').outgoers()
+    expect(outgoers.map(prop('id'))).toEqual([
+      'amazon.s3',
+      'amazon',
+      'email'
+    ])
+  })
 })

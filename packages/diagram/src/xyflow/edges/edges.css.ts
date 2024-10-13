@@ -51,7 +51,7 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
 //   },
 // })
 
-globalStyle(`.react-flow__edges > svg`, {
+globalStyle(`.likec4-diagram .react-flow__edges > svg`, {
   mixBlendMode: 'plus-lighter'
 })
 
@@ -61,7 +61,7 @@ globalStyle(`.react-flow__edges > svg`, {
 
 export const dimmed = style({})
 
-globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
+globalStyle(`.likec4-diagram .react-flow__edges > svg:has(${dimmed})`, {
   opacity: 0.6,
   transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
   transitionDelay: '200ms',
