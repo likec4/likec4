@@ -1,11 +1,9 @@
-// '@dagrejs/graphlib' is a CommonJS module
-// Here is a workaround to import it
+import dagre from '@dagrejs/dagre'
 
-import { Graph } from '@dagrejs/graphlib'
-import graphlib from '@dagrejs/graphlib'
+const Graph = dagre.graphlib.Graph
 
 export { Graph }
 
-export const postorder = graphlib.alg.postorder
-export const findCycles = graphlib.alg.findCycles
-export const isAcyclic = graphlib.alg.isAcyclic
+export const postorder = dagre.graphlib.alg.postorder
+export const findCycles = dagre.graphlib.alg.findCycles
+export const isAcyclic = dagre.graphlib.alg.isAcyclic

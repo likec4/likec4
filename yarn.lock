@@ -855,7 +855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/graphlib@npm:2.2.4, @dagrejs/graphlib@npm:^2.2.4":
+"@dagrejs/graphlib@npm:2.2.4":
   version: 2.2.4
   resolution: "@dagrejs/graphlib@npm:2.2.4"
   checksum: 10c0/14597ea9294c46b2571aee78bcaad3a24e3e5e0ebcdf198b6eae5b3805f99af727ac54a477dd9152e8b0a576efea0528fb7d4919c74801e9f669c90e5e6f5bd9
@@ -2062,6 +2062,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
+    "@dagrejs/dagre": "npm:^1.1.4"
     "@likec4/tsconfig": "workspace:*"
     "@mantine/colors-generator": "npm:^7.13.2"
     "@types/natural-compare-lite": "npm:^1.4.2"
@@ -2186,7 +2187,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
-    "@dagrejs/graphlib": "npm:^2.2.4"
+    "@dagrejs/dagre": "npm:^1.1.4"
     "@likec4/core": "workspace:*"
     "@likec4/icons": "workspace:*"
     "@likec4/log": "workspace:*"
