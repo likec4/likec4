@@ -5,6 +5,9 @@ export default defineProject({
     name: 'core',
     chaiConfig: {
       truncateThreshold: 300
+    },
+    typecheck: {
+      enabled: true
     }
   }
 })

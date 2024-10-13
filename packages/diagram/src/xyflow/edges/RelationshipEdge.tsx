@@ -333,7 +333,7 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
   const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
     const { xyflow } = diagramStore.getState()
 
-    if(controlPoints.length <= 1) {
+    if (controlPoints.length <= 1) {
       return
     }
 
@@ -350,7 +350,7 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
       domNode.removeEventListener('pointerup', onPointerUp, {
         capture: true
       })
-      e.stopPropagation()      
+      e.stopPropagation()
     }
 
     domNode.addEventListener('pointerup', onPointerUp, {

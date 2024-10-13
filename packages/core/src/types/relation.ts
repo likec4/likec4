@@ -5,7 +5,7 @@ import type { Color, ThemeColor } from './theme'
 import type { ViewID } from './view'
 
 export type RelationID = Tagged<string, 'RelationID'>
-export type RelationshipKind = Tagged<string, 'RelationshipKind'>
+export type RelationshipKind<Kinds extends string = string> = Tagged<Kinds, 'RelationshipKind'>
 
 export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
 

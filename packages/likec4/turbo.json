@@ -23,7 +23,7 @@
     "build-app": {
       "dependsOn": [
         "@likec4/core#build",
-        "@likec4/diagram#build",
+        "@likec4/log#generate",
         "generate"
       ],
       "outputs": [

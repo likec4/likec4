@@ -178,7 +178,7 @@ export class ComputeCtx {
       autoLayout: {
         direction: autoLayoutRule?.direction ?? 'TB',
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
-        ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
+        ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
       },
       nodes: map(nodes, omit(['notation'])),
       edges: applyCustomRelationProperties(rules, nodes, sortedEdges),

@@ -460,7 +460,7 @@ export function toAutoLayout(
   const rankSep = rule.rankSep
   const nodeSep = rule.nodeSep
 
-  let direction: c4.ViewRuleAutoLayout['direction'];
+  let direction: c4.ViewRuleAutoLayout['direction']
   switch (rule.direction) {
     case 'TopBottom': {
       direction = 'TB'

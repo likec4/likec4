@@ -1,8 +1,8 @@
 import { type DiagramEdge, type DiagramNode, type DiagramView, type ViewManualLayout } from '@likec4/core'
+import { deepEqual } from 'fast-equals'
 import { entries } from 'remeda'
 import type { MergeExclusive, SetRequired } from 'type-fest'
 import type { ApplyManualLayoutData } from '../graphviz/DotPrinter'
-import { deepEqual } from 'fast-equals'
 
 type ManualNode = ViewManualLayout['nodes'][string]
 type ManualEdge = ViewManualLayout['edges'][string]

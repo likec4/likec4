@@ -1,9 +1,9 @@
-import type { Tagged } from 'type-fest'
+import type { IfNever, Tagged, TupleToUnion } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { Color, ThemeColor } from './theme'
 
 // Full-qualified-name
-export type Fqn = Tagged<string, 'Fqn'>
+export type Fqn<Id extends string = string> = Tagged<Id, 'Fqn'>
 
 export function AsFqn(name: string, parent?: Fqn | null) {
   return (parent ? parent + '.' + name : name) as Fqn
@@ -11,9 +11,9 @@ export function AsFqn(name: string, parent?: Fqn | null) {
 
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 
-export type BorderStyle = typeof BorderStyles[number]
+export type BorderStyle = TupleToUnion<typeof BorderStyles>
 
-export type ElementKind = Tagged<string, 'ElementKind'>
+export type ElementKind<Kinds extends string = string> = Tagged<Kinds, 'ElementKind'>
 export const ElementShapes = [
   'rectangle',
   'person',
@@ -24,7 +24,7 @@ export const ElementShapes = [
   'queue'
 ] as const
 
-export type ElementShape = typeof ElementShapes[number]
+export type ElementShape = TupleToUnion<typeof ElementShapes>
 export const DefaultThemeColor = 'primary' satisfies ThemeColor
 export const DefaultElementShape = 'rectangle' satisfies ElementShape
 
@@ -34,7 +34,7 @@ export interface ElementStyle {
   opacity?: number
 }
 
-export type Tag = Tagged<string, 'Tag'>
+export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
 
 export interface TagSpec {
   readonly id: Tag
@@ -49,20 +49,28 @@ export interface Link {
   readonly relative?: string
 }
 
-export interface Element {
-  readonly id: Fqn
-  readonly kind: ElementKind
+export interface TypedElement<
+  Ids extends string,
+  Kinds extends string,
+  Tags extends string,
+  MetadataKeys extends string = never
+> {
+  readonly id: Fqn<Ids>
+  readonly kind: ElementKind<Kinds>
   readonly title: string
   readonly description: string | null
   readonly technology: string | null
-  readonly tags: NonEmptyArray<Tag> | null
+  readonly tags: NonEmptyArray<Tag<Tags>> | null
   readonly links: NonEmptyArray<Link> | null
   readonly icon?: IconUrl
   readonly shape?: ElementShape
   readonly color?: Color
   readonly style?: ElementStyle
   readonly notation?: string
-  readonly metadata?: { [key: string]: string }
+  readonly metadata?: Record<MetadataKeys, string>
+}
+
+export interface Element extends TypedElement<string, string, string, string> {
 }
 
 export interface ElementKindSpecificationStyle {

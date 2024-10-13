@@ -7,8 +7,7 @@ import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipL
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
-// Full-qualified-name
-export type ViewID = Tagged<string, 'ViewID'>
+export type ViewID<Id extends string = string> = Tagged<Id, 'ViewID'>
 
 export type ViewRulePredicate =
   | {
@@ -55,12 +54,16 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
 
 export type ViewRule = ViewRulePredicate | ViewRuleStyle | ViewRuleAutoLayout
 
-export interface BasicView<ViewType extends 'element' | 'dynamic'> {
+export interface BasicView<
+  ViewType extends 'element' | 'dynamic',
+  ViewIDs extends string,
+  Tags extends string
+> {
   readonly __?: ViewType
-  readonly id: ViewID
+  readonly id: ViewID<ViewIDs>
   readonly title: string | null
   readonly description: string | null
-  readonly tags: NonEmptyArray<Tag> | null
+  readonly tags: NonEmptyArray<Tag<Tags>> | null
   readonly links: NonEmptyArray<Link> | null
 
   /**
@@ -86,18 +89,30 @@ export interface BasicView<ViewType extends 'element' | 'dynamic'> {
   readonly customColorDefinitions: CustomColorDefinitions
 }
 
-export interface BasicElementView extends BasicView<'element'> {
+export interface BasicElementView<ViewIDs extends string, Tags extends string>
+  extends BasicView<'element', ViewIDs, Tags>
+{
   readonly viewOf?: Fqn
   readonly rules: ViewRule[]
 }
-export interface ScopedElementView extends BasicElementView {
+export interface ScopedElementView<ViewIDs extends string, Tags extends string>
+  extends BasicElementView<ViewIDs, Tags>
+{
   readonly viewOf: Fqn
 }
 
-export interface ExtendsElementView extends BasicElementView {
-  readonly extends: ViewID
+export interface ExtendsElementView<ViewIDs extends string, Tags extends string>
+  extends BasicElementView<ViewIDs, Tags>
+{
+  readonly extends: ViewID<ViewIDs>
 }
-export type ElementView = ScopedElementView | ExtendsElementView | BasicElementView
+export type ElementView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> =
+  | ScopedElementView<ViewIDs, Tags>
+  | ExtendsElementView<ViewIDs, Tags>
+  | BasicElementView<ViewIDs, Tags>
 
 export interface DynamicViewStep {
   readonly source: Fqn
@@ -133,7 +148,10 @@ export function isDynamicViewIncludeRule(rule: DynamicViewRule): rule is Dynamic
 }
 
 export type DynamicViewRule = DynamicViewIncludeRule | ViewRuleStyle | ViewRuleAutoLayout
-export interface DynamicView extends BasicView<'dynamic'> {
+export interface DynamicView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends BasicView<'dynamic', ViewIDs, Tags> {
   readonly __: 'dynamic'
 
   readonly steps: DynamicViewStepOrParallel[]
@@ -147,7 +165,10 @@ export function isDynamicViewParallelSteps(step: DynamicViewStepOrParallel): ste
 
 export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
-export type LikeC4View = ElementView | DynamicView
+export type LikeC4View<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags>
 
 export function isDynamicView(view: LikeC4View): view is DynamicView {
   return view.__ === 'dynamic'
@@ -156,15 +177,15 @@ export function isElementView(view: LikeC4View): view is ElementView {
   return isNullish(view.__) || view.__ === 'element'
 }
 
-export function isExtendsElementView(view: LikeC4View): view is ExtendsElementView {
+export function isExtendsElementView(view: LikeC4View): view is ExtendsElementView<string, string> {
   return isElementView(view) && 'extends' in view
 }
 
-export function isScopedElementView(view: LikeC4View): view is ScopedElementView {
+export function isScopedElementView(view: LikeC4View): view is ScopedElementView<string, string> {
   return isElementView(view) && 'viewOf' in view
 }
 
-export type NodeId = Tagged<string, 'Fqn'>
+export type NodeId<IDs extends string = string> = Tagged<IDs, 'Fqn'>
 
 export type EdgeId = Tagged<string, 'EdgeId'>
 export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
@@ -276,17 +297,21 @@ export interface ViewAutoLayout {
   rankSep?: number
   nodeSep?: number
 }
-export interface ComputedElementView extends Omit<ElementView, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
-  readonly extends?: ViewID
+export interface ComputedElementView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends Omit<ElementView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
+  readonly extends?: ViewID<ViewIDs>
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
   rules?: never
   docUri?: never
 }
-export interface ComputedDynamicView
-  extends Omit<DynamicView, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation
-{
+export interface ComputedDynamicView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends Omit<DynamicView<ViewIDs, Tags>, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
@@ -298,7 +323,10 @@ export function isComputedDynamicView(view: ComputedView): view is ComputedDynam
   return view.__ === 'dynamic'
 }
 
-export type ComputedView = ComputedElementView | ComputedDynamicView
+export type ComputedView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags>
 
 export function isComputedElementView(view: ComputedView): view is ComputedElementView {
   return isNullish(view.__) || view.__ === 'element'
@@ -343,7 +371,10 @@ export interface DiagramEdge extends ComputedEdge {
   dotpos?: string
 }
 
-export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges' | 'manualLayout'> {
+export interface DiagramView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends Omit<ComputedView<ViewIDs, Tags>, 'nodes' | 'edges' | 'manualLayout'> {
   readonly nodes: DiagramNode[]
   readonly edges: DiagramEdge[]
   readonly bounds: BBox
