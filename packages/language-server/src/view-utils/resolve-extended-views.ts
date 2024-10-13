@@ -17,7 +17,7 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
     compound: false
   })
   for (const view of values(unresolvedViews)) {
-    g.setNode(view.id)
+    g.setNode(view.id, view.id)
     if (isExtendsElementView(view)) {
       // view -> parent
       g.setEdge(view.id, view.extends)
@@ -40,7 +40,7 @@ export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
     g.removeNode(cycledNode)
   }
 
-  const ordered = postorder(g, g.sources())
+  const ordered = postorder(g, g.sources() as unknown as string[])
 
   return ordered.reduce((acc, id) => {
     const view = unresolvedViews[id]
