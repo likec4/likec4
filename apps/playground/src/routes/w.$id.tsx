@@ -71,7 +71,7 @@ const LikeC4ModelContext = ({ children }: PropsWithChildren) => {
 
   if (model) {
     return (
-      <LikeC4ModelProvider computed={model}>
+      <LikeC4ModelProvider likec4model={model}>
         {children}
       </LikeC4ModelProvider>
     )

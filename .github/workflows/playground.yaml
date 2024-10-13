@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
         with:
           ref: ${{ github.ref }}
 
@@ -57,7 +57,7 @@ jobs:
           yarn turbo run build --filter='@likec4/playground'
 
       - name: upload a build artifact
-        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+        uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # v4
         with:
           name: playground-website
           if-no-files-found: error
@@ -79,7 +79,7 @@ jobs:
     outputs:
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
         with:
           ref: ${{ github.ref }}
 
@@ -97,7 +97,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
+        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -117,7 +117,7 @@ jobs:
     outputs:
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
         with:
           ref: ${{ github.ref }}
 
@@ -135,7 +135,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
+        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}

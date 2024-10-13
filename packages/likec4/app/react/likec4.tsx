@@ -11,7 +11,7 @@ import {
 import { memo, type PropsWithChildren, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
 import type { DiagramView, LikeC4ElementKind, LikeC4Tag, LikeC4ViewId } from 'virtual:likec4/model'
-import { likec4model as likeC4Model, LikeC4Views, useLikeC4ModelAtom } from 'virtual:likec4/model'
+import { likec4model as likeC4Model, LikeC4Views, useLikeC4ModelAtom as useLikeC4Model } from 'virtual:likec4/model'
 
 type IconRendererProps = {
   node: {
@@ -26,16 +26,12 @@ export function RenderIcon({ node }: IconRendererProps) {
   return IconComponent ? <IconComponent /> : null
 }
 
-export { likeC4Model, LikeC4Views }
-
-export function useLikeC4Model() {
-  return useLikeC4ModelAtom()
-}
+export { likeC4Model, LikeC4Views, useLikeC4Model }
 
 export const useLikeC4ViewModel = (viewId: LikeC4ViewId): LikeC4Model.Layouted.ViewModel =>
-  useLikeC4ModelAtom().view(viewId)
+  useLikeC4Model().view(viewId)
 
-export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView => useLikeC4ModelAtom().view(viewId).view as any
+export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView => useLikeC4Model().view(viewId).view as any
 
 export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 
@@ -66,7 +62,7 @@ const NotFound = ({ viewId }: { viewId: string }) => (
 )
 
 export function LikeC4ModelProvider({ children }: PropsWithChildren) {
-  const likeC4Model = useLikeC4ModelAtom()
+  const likeC4Model = useLikeC4Model()
   return (
     <GenericLikeC4ModelProvider likec4model={likeC4Model}>
       {children}
@@ -91,6 +87,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
   browserClassName,
   browserStyle,
   mantineTheme,
+  styleNonce,
   ...props
 }) {
   const view = LikeC4Views[viewId]
@@ -134,6 +131,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
         showRelationshipDetails={showRelationshipDetails}
         where={where}
         mantineTheme={mantineTheme}
+        styleNonce={styleNonce}
         {...props}
       />
       {browserView && (
@@ -149,13 +147,13 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
           className={browserClassName}
           style={browserStyle}
           mantineTheme={mantineTheme}
+          styleNonce={styleNonce}
         />
       )}
     </LikeC4ModelProvider>
   )
 })
 LikeC4ViewMemo.displayName = 'LikeC4ViewMemo'
-export { LikeC4ViewMemo as LikeC4View }
 
 export type ReactLikeC4Props =
   & Omit<GenericReactLikeC4Props<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>, 'view' | 'renderIcon'>
@@ -163,7 +161,7 @@ export type ReactLikeC4Props =
     viewId: LikeC4ViewId
   }
 
-export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props) {
+const ReactLikeC4Memo = /* @__PURE__ */ memo<ReactLikeC4Props>(function ReactLikeC4({ viewId, ...props }) {
   const view = LikeC4Views[viewId]
   if (!view) {
     return <NotFound viewId={viewId} />
@@ -177,4 +175,7 @@ export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props) {
       />
     </LikeC4ModelProvider>
   )
-}
+})
+ReactLikeC4Memo.displayName = 'ReactLikeC4Memo'
+
+export { LikeC4ViewMemo as LikeC4View, ReactLikeC4Memo as ReactLikeC4 }

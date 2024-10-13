@@ -22,7 +22,11 @@ export namespace ViewChange {
 
   export interface ChangeAutoLayout {
     op: 'change-autolayout'
-    layout: AutoLayoutDirection
+    layout: {
+      direction: AutoLayoutDirection
+      nodeSep?: number | null
+      rankSep?: number | null
+    }
   }
 }
 export type ViewChange = ViewChange.ChangeElementStyle | ViewChange.SaveManualLayout | ViewChange.ChangeAutoLayout

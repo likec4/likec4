@@ -70,6 +70,7 @@ export default function DiagramTitlePanel() {
                 onClick={toggle}
                 fw={500}
                 fz={'sm'}
+                tabIndex={-1}
               >
                 {title}
               </Button>
@@ -87,6 +88,7 @@ export default function DiagramTitlePanel() {
                   variant={'subtle'}
                   color="gray"
                   onClick={toggle}
+                  tabIndex={-1}
                 >
                   <IconMenu size={11} opacity={0.7} />
                 </Button>
@@ -122,8 +124,12 @@ export default function DiagramTitlePanel() {
               {description && (
                 <Spoiler
                   maxHeight={42}
-                  showLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">show more</Button>}
-                  hideLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">hide</Button>}>
+                  showLabel={
+                    <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>show more</Button>
+                  }
+                  hideLabel={
+                    <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>hide</Button>
+                  }>
                   <Text
                     component={'div'}
                     size="sm"

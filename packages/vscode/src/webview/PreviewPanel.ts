@@ -120,7 +120,7 @@ export class PreviewPanel extends AbstractDisposable {
       var __VIEW_ID = ${JSON.stringify(this._viewId)};
       var __INTERNAL_STATE = ${JSON.stringify({ internalState })};
     </script>
-    <div id="root"></div>
+    <div id="root" nonce="${nonce}"></div>
     <script nonce="${nonce}" src="${scriptUri}"></script>
   </body>
 </html>`

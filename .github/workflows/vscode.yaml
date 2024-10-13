@@ -22,48 +22,10 @@ jobs:
         contains(github.event.head_commit.message, 'chore: release')
       )
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
-
-      # - name: Package Extension
-      #   id: packageExtension
-      #   uses: HaaLeo/publish-vscode-extension@v1
-      #   with:
-      #     pat: stub
-      #     packagePath: packages/vscode
-      #     dependencies: false
-      #     yarn: true
-      #     dryRun: true
-
-      # - name: upload a build artifact
-      #   uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
-      #   with:
-      #     name: vscode-extension-vsix
-      #     if-no-files-found: error
-      #     path: ${{ steps.packageExtension.outputs.vsixPath }}
-
-      # - name: Publish to Visual Studio Marketplace
-      #   uses: HaaLeo/publish-vscode-extension@v1
-      #   with:
-      #     skipDuplicate: true
-      #     packagePath: packages/vscode
-      #     dependencies: false
-      #     yarn: true
-      #     pat: ${{ secrets.VSCE_PAT }}
-      #     registryUrl: https://marketplace.visualstudio.com
-      #     extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
-
-      # - name: Publish to Open VSX Registry
-      #   uses: HaaLeo/publish-vscode-extension@v1
-      #   with:
-      #     skipDuplicate: true
-      #     packagePath: packages/vscode
-      #     dependencies: false
-      #     yarn: true
-      #     pat: ${{ secrets.VSX_PAT }}
-      #     extensionFile: ${{ steps.packageExtension.outputs.vsixPath }}
 
       - name: vsix package
         run: |
@@ -73,7 +35,7 @@ jobs:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: upload a build artifact
-        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+        uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # v4
         with:
           name: vscode-extension-vsix
           if-no-files-found: error
@@ -88,7 +50,7 @@ jobs:
 
       - name: open vsx publish
         run: |
-          yarn dlx ovsx publish likec4.vsix -p $VSX_PAT --skip-duplicate
+          yarn dlx ovsx publish  --skip-duplicate likec4.vsix
         working-directory: packages/vscode
         env:
-          VSCE_PAT: ${{ secrets.VSX_PAT }}
+          OVSX_PAT: ${{ secrets.VSX_PAT }}

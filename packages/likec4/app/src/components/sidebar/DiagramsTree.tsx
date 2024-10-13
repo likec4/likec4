@@ -1,4 +1,4 @@
-import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4View } from '@likec4/diagram'
+import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4View, useUpdateEffect } from '@likec4/diagram'
 import {
   Box,
   type BoxProps,
@@ -13,10 +13,10 @@ import {
   useTree
 } from '@mantine/core'
 import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
-import { Link, useParams } from '@tanstack/react-router'
+import { useParams, useRouter } from '@tanstack/react-router'
 import { memo, type MouseEvent, type PropsWithChildren, useEffect } from 'react'
 import { RenderIcon } from '../RenderIcon'
-import { isTreeNodeData, useDiagramsTreeData } from './data'
+import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
 
@@ -28,20 +28,19 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
       </ThemeIcon>
     )
   }
-  return <ThemeIcon size={'sm'} variant="transparent" color="violet">
-    {expanded ? <IconFolderOpen size={16} /> : <IconFolderFilled size={16} />}
-  </ThemeIcon>
-  // if (expanded) {
-  //   return <IconFolderOpen size={16} />
-  // }
-  // return <IconFolderFilled size={16} />
+  return (
+    <ThemeIcon size={'sm'} variant="transparent" color="violet">
+      {expanded ? <IconFolderOpen size={16} /> : <IconFolderFilled size={16} />}
+    </ThemeIcon>
+  )
 }
 
-export const DiagramsTree = /* @__PURE__ */ memo(() => {
-  const data = useDiagramsTreeData()
+export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupBy | undefined }) => {
+  const data = useDiagramsTreeData(groupBy)
   const { viewId } = useParams({
     from: '/view/$viewId'
   })
+  const router = useRouter()
   const diagram = useLikeC4View(viewId)
 
   const tree = useTree({
@@ -49,6 +48,10 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
   })
 
   const relativePath = diagram?.relativePath ?? null
+
+  useUpdateEffect(() => {
+    tree.collapseAllNodes()
+  }, [groupBy])
 
   useEffect(() => {
     if (relativePath) {
@@ -59,13 +62,18 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
         tree.expand(path)
       }
     }
-  }, [relativePath])
+  }, [relativePath, groupBy])
+
+  useEffect(() => {
+    tree.select(viewId)
+  }, [viewId])
 
   const theme = useComputedColorScheme()
 
   return (
     <Box>
       <Tree
+        allowRangeSelection={false}
         tree={tree}
         data={data}
         styles={{
@@ -75,12 +83,12 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
           }
         }}
         levelOffset={'md'}
-        renderNode={({ node, expanded, elementProps, hasChildren }) => (
+        renderNode={({ node, selected, expanded, elementProps, hasChildren }) => (
           <DiagramPreviewHoverCard viewId={!hasChildren ? node.value : null} {...elementProps}>
             <Button
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
-              variant={viewId === node.value ? 'filled' : 'subtle'}
+              variant={selected ? 'transparent' : 'subtle'}
               size="sm"
               fz={'sm'}
               fw={hasChildren ? '600' : '500'}
@@ -97,8 +105,13 @@ export const DiagramsTree = /* @__PURE__ */ memo(() => {
                 </>
               }
               {...(!hasChildren && {
-                component: Link,
-                params: { viewId: node.value }
+                onClick: () => {
+                  router.navigate({
+                    params: {
+                      viewId: node.value
+                    }
+                  })
+                }
               })}
             >
               {node.label}
@@ -144,7 +157,7 @@ function DiagramPreview({
   const height = Math.round(diagram.bounds.height / ratio)
 
   return (
-    <HoverCard position="right-start" openDelay={300} keepMounted={false} shadow="lg">
+    <HoverCard position="right-start" openDelay={400} closeDelay={100} keepMounted={false} shadow="lg">
       <HoverCardTarget>
         {children}
       </HoverCardTarget>

@@ -53,12 +53,12 @@ function unpack({
   }
 }
 
+const MAX_LINE_LENGTH = 500
 export function serializeToComment(layout: ViewManualLayout) {
   const bytes = encode(pack(layout))
   const base64 = toBase64(bytes)
   const lines = [] as string[]
   let offset = 0
-  const MAX_LINE_LENGTH = 200
   while (offset < base64.length) {
     lines.push(' * ' + base64.slice(offset, Math.min(offset + MAX_LINE_LENGTH, base64.length)))
     offset += MAX_LINE_LENGTH

@@ -21,9 +21,11 @@ import { theme } from './theme'
 
 const root = document.getElementById('root') as HTMLDivElement
 const scheme = document.body.classList.contains('dark') ? 'dark' : 'light'
+const nonce = root.getAttribute('nonce') || undefined
+
 // const reactRoot = ReactDOM.createRoot(root)
 ReactDOM.createRoot(root).render(
-  <MantineProvider theme={theme} forceColorScheme={scheme}>
+  <MantineProvider theme={theme} forceColorScheme={scheme} {...(nonce && { getStyleNonce: () => nonce })}>
     <LikeC4Context>
       <App />
     </LikeC4Context>

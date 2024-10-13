@@ -7,7 +7,6 @@ import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import DiagramTitlePanel from '../ui/DiagramTitlePanel'
 import { DynamicViewWalkthrough } from '../ui/DynamicViewWalkthrough'
 import NotationPanel from '../ui/notation'
-import OptionsPanel from '../ui/OptionsPanel'
 import { TopLeftPanel } from '../ui/top-left/TopLeftPanel'
 import { XYFlowBackground } from './XYFlowBackground'
 
@@ -27,12 +26,10 @@ export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
     showNotations,
     isDynamicView,
     isDynamicViewActive,
-    readonly,
     enableDynamicViewWalkthrough
   } = useDiagramState(s => ({
     showNotations: s.showNotations,
     isDynamicView: s.isDynamicView,
-    readonly: s.readonly,
     enableDynamicViewWalkthrough: s.enableDynamicViewWalkthrough,
     isDynamicViewActive: isNonNullish(s.activeWalkthrough)
   }))
@@ -45,7 +42,6 @@ export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
       {isBgWithPattern && <XYFlowBackground background={background} />}
       {controls && <Controls showInteractive={false} position={'top-center'} />}
       <TopLeftPanel />
-      {!readonly && <OptionsPanel />}
       {isDiagramTitleVisible && <DiagramTitlePanel />}
       {isDynamicView && enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
       {showNotations && <NotationPanel />}

@@ -2,7 +2,7 @@ import type { DiagramView } from '@likec4/core'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
-import { domAnimation, LazyMotion } from 'framer-motion'
+import { domMax, LazyMotion } from 'framer-motion'
 import { memo, useEffect, useRef } from 'react'
 import { rootClassName } from './globals.css'
 import { useDiagramState } from './hooks/useDiagramState'
@@ -76,7 +76,7 @@ export function LikeC4Diagram({
 
   return (
     <EnsureMantine>
-      <LazyMotion features={domAnimation} strict>
+      <LazyMotion features={domMax} strict>
         <XYFlowProvider
           fitView={fitView}
           {...initialRef.current}

@@ -116,7 +116,6 @@ export function useXYFlowEvents() {
         )
       },
       onNodeClick: (event, xynode) => {
-        console.log('onNodeClick')
         const {
           focusedNodeId,
           fitDiagram,
@@ -137,6 +136,9 @@ export function useXYFlowEvents() {
 
         if (clickedRecently && !!onOpenSourceElement) {
           onOpenSourceElement(xynode.data.element.id)
+          if (!onNodeClick) {
+            event.stopPropagation()
+          }
         }
 
         if (enableFocusMode || nodesSelectable) {
@@ -156,10 +158,9 @@ export function useXYFlowEvents() {
               break
             }
           }
-        }
-        if (!onNodeClick) {
-          // user did not provide a custom handler, stop propagation
-          event.stopPropagation()
+          if (!onNodeClick) {
+            event.stopPropagation()
+          }
         }
         onNodeClick?.(
           xynode.data.element,

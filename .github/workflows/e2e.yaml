@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'run tests' }}
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
@@ -47,7 +47,7 @@ jobs:
       - id: cloudflare
         if: ${{ failure() }}
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
+        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -74,7 +74,7 @@ jobs:
           app_id: ${{ secrets.BOT_APP_ID }}
           private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
         with:
           fetch-depth: 0
           token: ${{ env.BOT_TOKEN }}

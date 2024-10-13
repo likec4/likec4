@@ -1,3 +1,30 @@
+## [1.12.2](https://github.com/likec4/likec4/compare/v1.12.1...v1.12.2) (2024-10-10)
+
+### Improvements
+
+* **vscode:** transparent layout spacing panel for a clearer preview of changes
+
+### Bug Fixes
+
+* unable to open diagram from Sidebar (thanks @davydkov, closes [#1091](https://github.com/likec4/likec4/issues/1091))
+
+
+## [1.12.1](https://github.com/likec4/likec4/compare/v1.12.0...v1.12.1) (2024-10-10)
+
+### Improvements
+
+* **preview:** change grouping in sidebar
+* **react:** change layout spacings from the UI
+* **react:** toolbar to change styles (instead of panel)
+
+### Bug Fixes
+
+* **vscode:** nonce parameter for marking dynamic styles inserted by components (thanks @pavelpykhtin, [#1065](https://github.com/likec4/likec4/issues/1065) ([89be0f1](https://github.com/likec4/likec4/commit/89be0f12e4c0b5bab0e56dc7bf624e928768d16a))
+* **react:** react component open full-screen mode (thanks @davydkov, [4cd1464](https://github.com/likec4/likec4/commit/4cd1464b7f861a9520f05fd8616cfd6aee141fa7)), closes [#1055](https://github.com/likec4/likec4/issues/1055)
+* **vscode:** space being added/removed before colon (thanks @pavelpykhtin, [#1074](https://github.com/likec4/likec4/issues/1074)) ([fd3624c](https://github.com/likec4/likec4/commit/fd3624c74be1ec71253c48f110934c7b236dc313))
+
+
+
 # [1.12.0](https://github.com/likec4/likec4/compare/v1.11.0...v1.12.0) (2024-10-07)
 
 ### 🚀 Features  
