@@ -85,30 +85,10 @@ export interface Types<
 
   Tags: IfNever<Tag, never, [Tag, ...Tag[]]>
   // Metadata: Metadata<MetadataKey>
-  // RelationshipKind: Specs['RelationshipKind']
-  // RelationshipKind: Specs['RelationshipKind']
-  // Tag: Specs['Tag']
-  // MetadataKey: Specs['MetadataKey']
-
-  // MissingFqn: MissingFqn
-
-  // Element: TypedElement<Fqn, ElementKind, Tag, MetadataKey>
-  // View: LikeC4View<ViewId, Tag>
-
-  // Tags: IfNever<Tag, never, [Tag, ...Tag[]]>
-  // Metadata: Metadata<MetadataKey>
 
   NewElementProps: NewElementProps<Tag, Metadata<MetadataKey>>
   NewRelationshipProps: NewRelationProps<RelationshipKind, Tag, Metadata<MetadataKey>>
   NewViewProps: NewViewProps<Tag>
-
-  // RelationshipExpr: Types.RelationshipExpr<Fqn>
-
-  // Expression: Types.Expression<TypesHook.ElementExpr<Fqn>>
-
-  // ViewPredicate: Types.ViewPredicate<TypesHook.Expression<TypesHook.ElementExpr<Fqn>>>
-
-  // DynamicViewStep: `${Fqn} ${'->' | '<-'} ${Fqn}`
 }
 
 /**
