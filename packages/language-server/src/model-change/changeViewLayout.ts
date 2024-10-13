@@ -1,4 +1,4 @@
-import { invariant, type ViewRuleAutoLayout } from '@likec4/core'
+import { invariant, type ViewChange } from '@likec4/core'
 import { GrammarUtils } from 'langium'
 import { isNumber } from 'remeda'
 import { TextEdit } from 'vscode-languageserver-types'
@@ -11,7 +11,7 @@ type ChangeViewLayoutArg = {
   view: ParsedAstView
   doc: ParsedLikeC4LangiumDocument
   viewAst: ast.LikeC4View
-  layout: ViewRuleAutoLayout
+  layout: ViewChange.ChangeAutoLayout['layout']
 }
 
 export function changeViewLayout(_services: LikeC4Services, {
