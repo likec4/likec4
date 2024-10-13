@@ -23,10 +23,10 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
     if (['views', 'specification', 'model'].includes(keyword.value)) {
       return acceptor(context, {
         label: keyword.value,
-        detail: `Insert ${keyword} block`,
+        detail: `Insert ${keyword.value} block`,
         kind: CompletionItemKind.Module,
         insertTextFormat: InsertTextFormat.Snippet,
-        insertText: `${keyword} {\n\t$0\n}`
+        insertText: `${keyword.value} {\n\t$0\n}`
       })
     }
     if (keyword.value === 'dynamic') {

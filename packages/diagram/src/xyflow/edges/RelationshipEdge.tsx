@@ -63,8 +63,9 @@ const toMarker = (arrowType?: RelationshipArrowType): EdgeMarkerType | undefined
   }
   switch (arrowType) {
     case 'normal':
-    case 'crow':
       return 'Arrow' as const
+    case 'crow':
+      return 'Crow' as const
     case 'onormal':
       return 'OArrow' as const
     case 'diamond':
@@ -332,7 +333,7 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
   const onRmbControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>, domNode: HTMLDivElement) => {
     const { xyflow } = diagramStore.getState()
 
-    if(controlPoints.length <= 1) {
+    if (controlPoints.length <= 1) {
       return
     }
 
@@ -349,7 +350,7 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
       domNode.removeEventListener('pointerup', onPointerUp, {
         capture: true
       })
-      e.stopPropagation()      
+      e.stopPropagation()
     }
 
     domNode.addEventListener('pointerup', onPointerUp, {

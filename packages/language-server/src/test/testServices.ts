@@ -76,13 +76,14 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     })
 
     const edits = await services.lsp.Formatter?.formatDocument(
-      document, 
+      document,
       {
-        options: {tabSize: 2, insertSpaces: true},
+        options: { tabSize: 2, insertSpaces: true },
         textDocument: { uri: document.uri.toString() }
-      });
+      }
+    )
 
-    return TextDocument.applyEdits(document.textDocument, edits ?? []);
+    return TextDocument.applyEdits(document.textDocument, edits ?? [])
   }
 
   type ValidateAllResult = {

@@ -11,6 +11,7 @@
     "checkJs": false,
     "tsBuildInfoFile": "cli.tsbuildinfo",
     "baseUrl": ".",
+    "tsBuildInfoFile": "cli.tsbuildinfo",
     "types": [
       "node"
     ],

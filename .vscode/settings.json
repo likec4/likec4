@@ -37,6 +37,7 @@
   },
   "files.exclude": {
     "**/.tsbuildinfo": true,
+    "**/*.tsbuildinfo": true,
     "**/.turbo": true,
     "packages/*/.vscode-test-web": true
   },

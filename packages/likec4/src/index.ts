@@ -1,6 +1,8 @@
 export type {
   AutoLayoutDirection,
   BBox,
+  Builder,
+  BuilderSpecification,
   Color,
   ComputedDynamicView,
   ComputedEdge,
@@ -35,6 +37,7 @@ export type {
 export {
   ancestorsFqn,
   BorderStyles,
+  Builder as LikeC4Builder,
   commonAncestor,
   compareByFqnHierarchically,
   compareFqnHierarchically,

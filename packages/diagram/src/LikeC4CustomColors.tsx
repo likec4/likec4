@@ -1,8 +1,8 @@
 import { type ThemeColorValues } from '@likec4/core'
+import { useMantineStyleNonce } from '@mantine/core'
 import { entries } from 'remeda'
 import type { LikeC4CustomColorsProperties } from './LikeC4CustomColors.props'
 import { vars } from './theme-vars'
-import { useMantineStyleNonce } from '@mantine/core'
 
 type CSSVarFunction = `var(--${string})` | `var(--${string}, ${string | number} )`
 
@@ -29,7 +29,7 @@ export function LikeC4CustomColors({ customColors }: LikeC4CustomColorsPropertie
   const styles = entries(customColors)
     .map(([name, color]) => toStyle(name, color))
     .join('\n')
-  
+
   const nonce = useMantineStyleNonce()?.()
 
   return (

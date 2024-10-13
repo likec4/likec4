@@ -15,11 +15,11 @@ import { type EdgeId, type ElementOrFqn, type Fqn, getId, type IncomingFilter, t
  * All methods are view-scoped, i.e. only return elements and connections in the view.
  */
 export class LikeC4DiagramModel {
-  private _rootElements = new Set<LikeC4DiagramModel.Element>()
+  private readonly _rootElements = new Set<LikeC4DiagramModel.Element>()
 
-  private _elements = new Map<Fqn, LikeC4DiagramModel.Element>()
+  private readonly _elements = new Map<Fqn, LikeC4DiagramModel.Element>()
 
-  private _connections: Map<EdgeId, LikeC4DiagramModel.Connection>
+  private readonly _connections: Map<EdgeId, LikeC4DiagramModel.Connection>
 
   constructor(
     public readonly view: DiagramView,
@@ -198,7 +198,7 @@ export namespace LikeC4DiagramModel {
   export class Element {
     constructor(
       public readonly node: DiagramNode,
-      private view: LikeC4DiagramModel
+      private readonly view: LikeC4DiagramModel
     ) {
     }
 
@@ -304,7 +304,7 @@ export namespace LikeC4DiagramModel {
   export class Connection {
     constructor(
       public readonly edge: DiagramEdge,
-      private view: LikeC4DiagramModel
+      private readonly view: LikeC4DiagramModel
     ) {
     }
 

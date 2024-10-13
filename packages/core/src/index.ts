@@ -1,6 +1,10 @@
+export * from './builder'
+export { Builder } from './builder'
+export type * from './builder'
 export * from './colors'
 export * from './errors'
 export * from './model'
+
 export * from './types'
 export * from './utils/compare-natural'
 export * from './utils/fqn'

@@ -9,34 +9,6 @@ import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
 import { saveManualLayout } from './saveManualLayout'
 
-// function unionRangeOfAllEdits(ranges: Range[]): Range {
-//   let startLine = Number.MAX_SAFE_INTEGER
-//   let endLine = Number.MIN_SAFE_INTEGER
-
-//   let startCharacter = Number.MAX_SAFE_INTEGER
-//   let endCharacter = Number.MIN_SAFE_INTEGER
-
-//   for (const { start, end } of ranges) {
-//     if (start.line <= startLine) {
-//       if (startLine == start.line) {
-//         startCharacter = Math.min(start.character, startCharacter)
-//       } else {
-//         startLine = start.line
-//         startCharacter = start.character
-//       }
-//     }
-//     if (endLine <= end.line) {
-//       if (endLine == end.line) {
-//         endCharacter = Math.max(end.character, endCharacter)
-//       } else {
-//         endLine = end.line
-//         endCharacter = end.character
-//       }
-//     }
-//   }
-//   return Range.create(startLine, startCharacter, endLine, endCharacter)
-// }
-
 export class LikeC4ModelChanges {
   private locator: LikeC4ModelLocator
 
