@@ -350,7 +350,7 @@ export const cssNavigateBtn = style({
       boxShadow: mantine.shadows.lg,
       transform: 'translate(-50%, 0) scale(1.185)',
       opacity: 1,
-      transitionDelay: '250ms',
+      transitionDelay: '150ms',
       vars: {
         '--ai-bg': 'var(--ai-bg-hover)'
       }
@@ -358,7 +358,7 @@ export const cssNavigateBtn = style({
   },
   ':hover': {
     boxShadow: mantine.shadows.lg,
-    transform: 'translate(-50%, 0) scale(1.35)',
+    transform: 'translate(-50%, 0) scale(1.3)',
     opacity: 1,
     transitionDelay: '0'
   },
@@ -384,7 +384,7 @@ export const relationshipsOfButton = style({
   cursor: 'pointer',
   transformOrigin: '20% 50%',
   opacity: 0,
-  transition: 'all 130ms ease-out',
+  transition: 'all 130ms cubic-bezier(0, 0, 0.40, 1)',
   transform: 'scale(0.7) translate(-50%, 0)',
   transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
@@ -399,9 +399,9 @@ export const relationshipsOfButton = style({
     },
     [`:where(.react-flow__node:not(.dragging) ${container}:hover) &:not(:hover)`]: {
       boxShadow: mantine.shadows.lg,
-      transform: 'scale(1.05)',
+      transform: 'scale(1.1)',
       opacity: 1,
-      transitionDelay: '300ms',
+      transitionDelay: '190ms',
       vars: {
         '--ai-bg': 'var(--ai-bg-hover)'
       }
@@ -409,7 +409,7 @@ export const relationshipsOfButton = style({
   },
   ':hover': {
     boxShadow: mantine.shadows.lg,
-    transform: 'scale(1.25)',
+    transform: 'scale(1.3)',
     opacity: 1,
     transitionDelay: '0'
   },

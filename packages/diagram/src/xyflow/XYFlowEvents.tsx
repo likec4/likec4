@@ -77,7 +77,6 @@ export function useXYFlowEvents() {
         onCanvasDblClick?.(event)
       },
       onPaneClick: (event) => {
-        console.log('onPaneClick')
         if (dbclickLock()) {
           return
         }

@@ -20,7 +20,7 @@ const dialogFadeOut = keyframes({
   },
   '100%': {
     opacity: 0,
-    transform: 'scale(0.95)',
+    transform: 'scale(0.98)',
     display: 'none'
   }
 })
@@ -52,8 +52,8 @@ export const dialog = style({
   height: '100%',
   maxHeight: '100dvh',
   background: 'transparent',
-  animation: `${dialogFadeOut} 120ms cubic-bezier(0.50, 0, 1, 1)`,
-  transformOrigin: '50% 50%',
+  animation: `${dialogFadeOut} 130ms cubic-bezier(0.50, 0, 1, 1)`,
+  transformOrigin: '50% 20%',
   vars: {
     [backdropRgb]: '255 255 255'
   },
@@ -66,7 +66,7 @@ export const dialog = style({
     '&[open]': {
       opacity: 0,
       display: 'block',
-      animation: `${dialogFadeIn} 200ms cubic-bezier(0, 0, 0.40, 1) forwards`,
+      animation: `${dialogFadeIn} 190ms cubic-bezier(0, 0, 0.40, 1) forwards`,
       animationDelay: '50ms'
     },
     '&::backdrop': {

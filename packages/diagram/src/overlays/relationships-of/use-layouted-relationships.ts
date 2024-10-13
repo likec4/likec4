@@ -355,7 +355,6 @@ function processRelations(props: {
   pipe(
     props.incoming,
     groupBy(r => r.source),
-    tap(v => console.log('incoming', v)),
     entries(),
     sort((a, b) => compareFqnHierarchically(a[0], b[0])),
     reverse(),
@@ -371,7 +370,6 @@ function processRelations(props: {
   pipe(
     props.outgoing,
     groupBy(r => r.target),
-    tap(v => console.log('incoming', v)),
     entries(),
     sort((a, b) => compareFqnHierarchically(a[0], b[0])),
     reverse(),
