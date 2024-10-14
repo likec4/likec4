@@ -3,6 +3,7 @@ import { ActionIcon, Tooltip } from '@mantine/core'
 import { IconTransform } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { useDiagramStoreApi } from '../../../hooks/useDiagramState'
+import { stopPropagation } from '../../utils'
 
 export const RelationshipsOfButton = ({ elementId, className }: { elementId: Fqn; className: string }) => {
   const store = useDiagramStoreApi()
@@ -11,7 +12,7 @@ export const RelationshipsOfButton = ({ elementId, className }: { elementId: Fqn
       <ActionIcon
         className={clsx('nodrag nopan', className)}
         radius="md"
-        onPointerDownCapture={e => e.stopPropagation()}
+        onPointerDownCapture={stopPropagation}
         onClick={event => {
           event.stopPropagation()
           store.getState().openOverlay({
@@ -19,7 +20,7 @@ export const RelationshipsOfButton = ({ elementId, className }: { elementId: Fqn
           })
         }}
         role="button"
-        onDoubleClick={event => event.stopPropagation()}
+        onDoubleClick={stopPropagation}
       >
         <IconTransform
           stroke={2}

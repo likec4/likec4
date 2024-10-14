@@ -41,6 +41,7 @@ import { NodeToolbar, type NodeToolbarProps } from '@xyflow/react'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useUpdateEffect } from '../../../hooks'
+import { stopPropagation } from '../../utils'
 
 const {
   primary,
@@ -72,8 +73,6 @@ const Tooltip = MantineTooltip.withProps({
   children: null,
   offset: 4
 })
-
-const stopEventPropagation = (e: React.MouseEvent) => e.stopPropagation()
 
 type ToolbarProps = NodeToolbarProps & {
   element: Element
@@ -134,10 +133,10 @@ function Toolbar({ element, children, ...props }: Omit<ToolbarProps, 'onColorPre
         pt={4}
         radius={'sm'}
         shadow="xl"
-        onDoubleClickCapture={stopEventPropagation}
-        onPointerDown={stopEventPropagation}
-        onClick={stopEventPropagation}
-        onDoubleClick={stopEventPropagation}
+        onDoubleClickCapture={stopPropagation}
+        onPointerDown={stopPropagation}
+        onClick={stopPropagation}
+        onDoubleClick={stopPropagation}
         withBorder>
         <Stack gap={4}>
           <Box pl={2}>
@@ -209,8 +208,8 @@ export function ElementToolbar({
           // className={css.menuDropdown}
           // onPointerDownCapture={stopEventPropagation}
           // onPointerDown={stopEventPropagation}
-          onDoubleClick={stopEventPropagation}
-          onClick={stopEventPropagation}
+          onDoubleClick={stopPropagation}
+          onClick={stopPropagation}
         >
           {ElementShapes.map(shape => (
             <MenuItem

@@ -50,12 +50,9 @@ export function useXYFlowEvents() {
     }
 
     const lastClickWasRecent = (ms = 2000) => {
-      const prevTimestamp = lastClickTimestamp.current
-      lastClickTimestamp.current = Date.now()
-      if (prevTimestamp === undefined) {
-        return false
-      }
-      return prevTimestamp + ms > Date.now()
+      const prevTimestamp = lastClickTimestamp.current ?? 0
+      const now = lastClickTimestamp.current = Date.now()
+      return prevTimestamp + ms > now
     }
 
     return ({
@@ -68,11 +65,11 @@ export function useXYFlowEvents() {
           resetFocusAndLastClicked
         } = diagramApi.getState()
         resetFocusAndLastClicked()
-        if (!onCanvasDblClick) {
-          event.stopPropagation()
-        }
         if (zoomable && viewportChanged) {
           fitDiagram()
+        }
+        if (!onCanvasDblClick) {
+          event.stopPropagation()
         }
         onCanvasDblClick?.(event)
       },
@@ -131,7 +128,7 @@ export function useXYFlowEvents() {
         // if we focused on a node, and clicked on another node - focus on the clicked node
         const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
         // if user clicked on the same node twice in a short time, focus on it
-        const clickedRecently = lastClickedNodeId === xynode.id && lastClickWasRecent()
+        const clickedRecently = lastClickWasRecent() && lastClickedNodeId === xynode.id
 
         if (clickedRecently && !!onOpenSourceElement) {
           onOpenSourceElement(xynode.data.element.id)
@@ -140,27 +137,27 @@ export function useXYFlowEvents() {
           }
         }
 
-        if (enableFocusMode || nodesSelectable) {
+        if (enableFocusMode) {
           switch (true) {
-            case enableFocusMode && clickedRecently && focusedNodeId === xynode.id: {
+            case clickedRecently && focusedNodeId === xynode.id: {
               focusOnNode(false)
               fitDiagram()
               break
             }
-            case enableFocusMode && shallChangeFocus:
-            case enableFocusMode && clickedRecently && focusedNodeId !== xynode.id: {
+            case (shallChangeFocus || clickedRecently): {
               focusOnNode(xynode.id)
               break
             }
-            case nodesSelectable: {
-              xystore.getState().addSelectedNodes([xynode.id])
-              break
-            }
           }
-          if (!onNodeClick) {
-            event.stopPropagation()
-          }
+        } else if (nodesSelectable) {
+          xystore.getState().addSelectedNodes([xynode.id])
         }
+
+        if (!onNodeClick && (enableFocusMode || nodesSelectable)) {
+          event.stopPropagation()
+          return
+        }
+
         onNodeClick?.(
           xynode.data.element,
           event
@@ -175,16 +172,17 @@ export function useXYFlowEvents() {
           setLastClickedNode
         } = diagramApi.getState()
         setLastClickedNode(xynode.id)
-        lastClickTimestamp.current = Date.now()
+        lastClickWasRecent()
         if (isNonNullish(focusedNodeId) || enableFocusMode) {
           // if we are already focused on the node, cancel
           if (focusedNodeId === xynode.id) {
+            focusOnNode(false)
             fitDiagram()
           } else {
             focusOnNode(xynode.id)
           }
-          event.stopPropagation()
         }
+        event.stopPropagation()
       },
       onEdgeClick: (event, xyedge) => {
         const {

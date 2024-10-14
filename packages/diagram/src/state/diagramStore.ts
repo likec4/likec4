@@ -470,6 +470,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               set(
                 {
                   activeWalkthrough: null,
+                  activeOverlay: null,
                   focusedNodeId: null,
                   dimmed: EmptyStringSet
                 },
@@ -498,6 +499,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               set(
                 {
                   activeWalkthrough: null,
+                  activeOverlay: null,
                   focusedNodeId: nodeId,
                   dimmed
                 },
@@ -532,27 +534,19 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           resetFocusAndLastClicked: () => {
-            let {
-              activeWalkthrough,
-              focusedNodeId,
-              lastClickedNodeId,
-              lastClickedEdgeId,
-              xystore
-            } = get()
-            if (activeWalkthrough || focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
-              set(
-                {
-                  activeWalkthrough: null,
-                  focusedNodeId: null,
-                  lastClickedNodeId: null,
-                  lastClickedEdgeId: null,
-                  dimmed: EmptyStringSet
-                },
-                noReplace,
-                'resetLastClicked'
-              )
-            }
-            xystore.getState().resetSelectedElements()
+            set(
+              {
+                activeWalkthrough: null,
+                activeOverlay: null,
+                focusedNodeId: null,
+                lastClickedNodeId: null,
+                lastClickedEdgeId: null,
+                dimmed: EmptyStringSet
+              },
+              noReplace,
+              'resetLastClicked'
+            )
+            get().xystore.getState().resetSelectedElements()
           },
 
           getElement: (fqn) => {
@@ -757,10 +751,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             onChange?.({ change })
           },
           scheduleSaveManualLayout: () => {
-            let { viewSyncDebounceTimeout } = get()
-            if (viewSyncDebounceTimeout) {
-              clearTimeout(viewSyncDebounceTimeout)
-            }
+            clearTimeout(get().viewSyncDebounceTimeout ?? undefined)
             set(
               {
                 viewSyncDebounceTimeout: setTimeout(() => {
