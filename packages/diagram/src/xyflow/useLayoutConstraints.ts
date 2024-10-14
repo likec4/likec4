@@ -107,8 +107,6 @@ export function createLayoutConstraints(
   const traverse = new Array<{ xynode: InternalNode<XYFlowNode>; parent: Compound | null }>()
 
   for (const [, xynode] of nodeLookup) {
-    console.log(xynode.id, xynode.parentId)
-
     if (isNullish(xynode.parentId)) {
       traverse.push({
         xynode,
@@ -142,7 +140,6 @@ export function createLayoutConstraints(
   applyConstraints(rectsToUpdate)
 
   function applyConstraints(targets: Rect[]) {
-    console.log('applyConstraints', targets)
     targets
       .filter(x => x instanceof Compound)
       .forEach((r) => {
@@ -160,14 +157,11 @@ export function createLayoutConstraints(
           maxY: -Infinity
         })
 
-        console.log('applyConstraints', r.id, childrenBB)
 
         r.minX = childrenBB.minX - Rect.LeftPadding
         r.minY = childrenBB.minY - Rect.TopPadding
         r.maxX = childrenBB.maxX + Rect.RightPadding
         r.maxY = childrenBB.maxY + Rect.BottomPadding
-
-        console.log('applyConstraints', r.id, r.minX, r.minY, r.maxX, r.maxY)
       })
   }
 
@@ -175,11 +169,6 @@ export function createLayoutConstraints(
     applyConstraints(rectsToUpdate)
     xyflowApi.getState().triggerNodeChanges(
       rectsToUpdate.reduce((acc, r) => {
-        console.log(
-          `updating ${r.id} to ${JSON.stringify(r.positionAbsolute)} (${JSON.stringify(r.position)}) from ${
-            JSON.stringify(nodeLookup.get(r.id)!.internals.positionAbsolute)
-          } (${JSON.stringify(nodeLookup.get(r.id)!.position)})`
-        )
         acc.push({
           id: r.id,
           type: 'position',
