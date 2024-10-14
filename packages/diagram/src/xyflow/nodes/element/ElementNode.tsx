@@ -168,22 +168,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           whileTap: dragging ? animate : 'tap'
         })}
       >
-        {
-          /* <svg
-          className={clsx(
-            css.cssShapeSvgMultiple
-          )}
-          viewBox={`0 0 ${w} ${h}`}
-          width={w}
-          height={h}
-        >
-          <ElementShapeSvg
-            shape={element.shape}
-            w={w}
-            h={h}
-          />
-        </svg> */
-        }
         <svg
           className={clsx(
             css.cssShapeSvg
@@ -215,6 +199,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           {elementIcon}
           <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
             <Text
+              lineClamp={3}
               className={clsx(css.title, 'likec4-element-title')}>
               {element.title}
             </Text>
@@ -226,6 +211,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             )}
             {element.description && (
               <Text
+                lineClamp={5}
                 className={clsx(css.description, 'likec4-element-description')}>
                 {element.description}
               </Text>
@@ -266,7 +252,13 @@ const ElementIcon = ({ node, store }: { node: DiagramNode; store: DiagramStoreAp
     return null
   }
   return (
-    <div className={clsx(css.elementIcon, 'likec4-element-icon')}>
+    <div
+      className={clsx(
+        css.elementIcon,
+        'likec4-element-icon'
+      )}
+      data-likec4-icon={node.icon}
+    >
       {icon}
     </div>
   )

@@ -1,10 +1,11 @@
+import type { LiteralUnion } from 'type-fest'
 import type { Element, Fqn } from '../types'
 import { compareNatural } from './compare-natural'
 import { isString } from './guards'
 
 type Predicate<T> = (x: T) => boolean
 
-export function nameFromFqn(fqn: Fqn) {
+export function nameFromFqn(fqn: LiteralUnion<Fqn, string>) {
   const lastDot = fqn.lastIndexOf('.')
   if (lastDot > 0) {
     return fqn.slice(lastDot + 1)

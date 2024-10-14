@@ -14,8 +14,10 @@ type CompoundNodeProps = NodeProps<XYFlowTypes.CompoundNode>
 export function CompoundNode({
   data: {
     element,
-    ports
+    ports,
+    ...data
   },
+  width = 200,
   selectable = true
 }: CompoundNodeProps) {
   return (
@@ -27,19 +29,25 @@ export function CompoundNode({
         ])}
         data-compound-depth={2}
         data-likec4-color={element.color}
+        animate={{
+          opacity: data.dimmed ? 0.15 : 1,
+          transition: {
+            delay: data.dimmed ? .8 : 0
+          }
+        }}
         {...(selectable && {
           whileHover: {
             scale: 1.04,
             transition: {
-              delay: 0.25
+              delay: 0.15
             }
           },
           whileTap: {
-            scale: 0.985
+            scale: 1
           }
         })}
       >
-        <Text className={css.compoundNodeTitle}>{element.title}</Text>
+        <Text className={css.compoundNodeTitle} maw={width - 20}>{element.title}</Text>
       </m.div>
       {ports.left.map(({ id, type }, i) => (
         <Handle

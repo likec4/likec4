@@ -21,6 +21,8 @@ export namespace XYFlowTypes {
       left: Port[]
       right: Port[]
     }
+    hovered?: boolean
+    dimmed?: boolean
   }
 
   export type ElementNode = SetRequired<ReactFlowNode<NodeProps, 'element'>, 'type'>
@@ -32,6 +34,8 @@ export namespace XYFlowTypes {
   export type EmptyNode = SetRequired<
     ReactFlowNode<{
       column: 'incomers' | 'outgoers'
+      hovered?: boolean
+      dimmed?: boolean
     }, 'empty'>,
     'type'
   >
@@ -43,6 +47,8 @@ export namespace XYFlowTypes {
   export type Edge = Omit<ReactFlowEdge, 'data' | 'type'> & {
     data: {
       relations: [Relation, ...Relation[]]
+      hovered?: boolean
+      dimmed?: boolean
     }
     type: 'relation'
   }

@@ -2,6 +2,8 @@ import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { vars, xyvars } from '../../theme-vars'
 
 const mixColor = createVar('mix-color')
+
+export const root = 'likec4-relationships-xyflow'
 //
 export const overlay = style({
   // position: 'absolute',
@@ -32,4 +34,7 @@ globalStyle(`:where(${overlay}) .react-flow__attribution`, {
 })
 globalStyle(`:where(${overlay}) .react-flow__edge-text`, {
   fontSize: 14
+})
+globalStyle(`:where(${overlay}) .react-flow__node-compound`, {
+  mixBlendMode: 'hard-light'
 })

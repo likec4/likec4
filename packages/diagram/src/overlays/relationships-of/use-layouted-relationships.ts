@@ -106,6 +106,7 @@ type LikeC4ModelElement = LikeC4Model.ElementModel
 // type LikeC4ModelElement = LikeC4ViewModel.Element
 
 type Context = {
+  scope: 'global' | 'view'
   g: dagre.graphlib.Graph
   subjectId: Fqn
   diagramNodes: Map<Fqn, DiagramNode>
@@ -152,12 +153,14 @@ function nodeData(
 
   // Ansector separetely, because we want to inherit
   // color from it if there is no diagram node
-  const ancestor = diagramNode ?? pipe(
-    element.ancestors(),
-    map(ancestor => ctx.diagramNodes.get(ancestor.id)),
-    filter(isTruthy),
-    first()
-  )
+  const ancestor = diagramNode ?? (ctx.scope === 'view'
+    ? pipe(
+      element.ancestors(),
+      map(ancestor => ctx.diagramNodes.get(ancestor.id)),
+      filter(isTruthy),
+      first()
+    )
+    : undefined)
 
   return {
     fqn: element.id,
@@ -332,15 +335,12 @@ function addEdge(
     zIndex: ZIndexes.edge,
     markerEnd: {
       type: MarkerType.ArrowClosed,
-      width: isMultiple ? 8 : 10
-      // height: isMultiple ? 8 : 10,
+      width: isMultiple ? 7 : 9
     },
     style: {
-      strokeWidth: isMultiple ? 5 : 2
+      strokeWidth: isMultiple ? 5 : 2.2,
+      strokeDasharray: isMultiple ? undefined : '5, 5'
     }
-    // pathOptions: {
-    //   curvature: 0.4
-    // }
   }
   ctx.edges.push(edge)
 }
@@ -385,16 +385,17 @@ function processRelations(props: {
 
 function layout(
   subjectId: Fqn,
-  diagram: DiagramView,
+  view: DiagramView,
   likec4model: LikeC4Model,
   scope: 'global' | 'view'
 ): {
+  view: DiagramView
   viewIncludesSubject: boolean
   subject: LikeC4ModelElement
   nodes: XYFlowTypes.Node[]
   edges: XYFlowTypes.Edge[]
 } {
-  const diagramNodes = new Map(diagram.nodes.map(n => [n.id, n]))
+  const diagramNodes = new Map(view.nodes.map(n => [n.id, n]))
   const subjectElement = likec4model.element(subjectId)
 
   if (!diagramNodes.has(subjectId)) {
@@ -405,6 +406,7 @@ function layout(
   const g = createGraph()
 
   const ctx: Context = {
+    scope,
     g,
     diagramNodes,
     subjectId,
@@ -443,10 +445,10 @@ function layout(
         outgoing: subjectElement.outgoing().map(r => r.relationship)
       }
       : {
-        incoming: likec4model.view(diagram.id).element(subjectId)
+        incoming: likec4model.view(view.id).element(subjectId)
           .incoming()
           .flatMap(c => c.relationships().map(r => r.relationship)),
-        outgoing: likec4model.view(diagram.id).element(subjectId)
+        outgoing: likec4model.view(view.id).element(subjectId)
           .outgoing()
           .flatMap(c => c.relationships().map(r => r.relationship))
       }),
@@ -507,10 +509,8 @@ function layout(
   }
 
   const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
-  if (subjectPortsCount > 5) {
-    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 18
-  } else if (subjectPortsCount > 2) {
-    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 2) * 15
+  if (subjectPortsCount > 2) {
+    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 2) * 1
   }
 
   const nodebounds = applyDagreLayout(ctx.g)
@@ -567,6 +567,7 @@ function layout(
   }
 
   return {
+    view: view,
     viewIncludesSubject: diagramNodes.has(subjectId),
     subject: subjectElement,
     edges: ctx.edges,

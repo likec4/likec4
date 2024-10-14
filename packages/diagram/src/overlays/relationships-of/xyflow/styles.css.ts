@@ -1,11 +1,22 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine, vars, xyvars } from '../../../theme-vars'
+import { mantine, vars, whereLight, xyvars } from '../../../theme-vars'
+import { root } from '../styles.css'
 
 export const elementNode = style({
   // position: 'relative',
   width: '100%',
   height: '100%'
 })
+
+// globalStyle(`${elementNode} > *`, {
+//   opacity: 1,
+//   transition: 'all 0.2s ease-in-out',
+//   transitionDelay: '50ms',
+// })
+// globalStyle(`${elementNode}:is([data-node-dimmed='true']) > *`, {
+//   opacity: 0.2,
+//   transitionDuration: '600ms'
+// })
 
 export const elementNodeContent = style({
   // position: 'relative',
@@ -50,9 +61,7 @@ export const compoundNodeBody = style({
   width: '100%',
   height: '100%',
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
-  // border: `1px solid ${vars.element.stroke}`,
-  background: `color-mix(in srgb , ${vars.element.fill},  transparent 50%)`,
-  // background: vars.element.fill,
+  background: `color-mix(in srgb , ${vars.element.fill},  transparent 45%)`,
   borderRadius: 4
 })
 
@@ -61,19 +70,20 @@ export const compoundNodeTitle = style({
   fontFamily: vars.compound.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
-  fontWeight: 500,
+  fontWeight: 600,
   fontSize: 14,
   lineHeight: 1,
   textTransform: 'uppercase',
   paddingTop: 12,
   paddingLeft: 10,
   mixBlendMode: 'screen',
-  letterSpacing: .3,
-  color: vars.compound.titleColor
-})
-
-globalStyle(`:where([data-mantine-color-scheme='light']) ${compoundNodeTitle}`, {
-  color: vars.element.stroke
+  color: vars.compound.titleColor,
+  selectors: {
+    [`${whereLight} &`]: {
+      mixBlendMode: 'darken',
+      color: vars.element.stroke
+    }
+  }
 })
 
 export const cssShapeSvg = style({
@@ -92,21 +102,24 @@ export const cssShapeSvg = style({
   zIndex: -1
 })
 
-export const varLabelX = createVar('label-x')
-export const varLabelY = createVar('label-y')
+export const edgePath = style({
+  opacity: 1,
+  transition: 'all 0.2s ease-in-out',
 
-const varTranslate = createVar('label-y')
+  selectors: {
+    [`&[data-edge-dimmed='true']`]: {
+      opacity: 0.1,
+      transitionDelay: '800ms'
+    }
+  }
+})
 
 export const edgeLabel = style({
-  // top: 0,
-  // left: 0,
   padding: '2px 5px',
   fontFamily: vars.likec4.font,
   position: 'absolute',
   cursor: 'pointer',
   width: 'fit-content',
-  // transformOrigin: '50% 50%',
-  // mixBlendMode: 'overlay',
   color: xyvars.edge.labelColor,
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: 4,
@@ -114,28 +127,16 @@ export const edgeLabel = style({
   // if you have an interactive element, set pointer-events: all
   pointerEvents: 'all',
   textWrap: 'pretty',
-  whiteSpace: 'preserve-breaks'
-  // transform: varTranslate,
-  // vars: {
-  //   [varTranslate]: `translate(-50%, -50%) translate(${varLabelX},${varLabelY})`
-  // },
-  // selectors: {
-  //   '&[data-edge-hovered="true"]': {
-  //     transition: 'all 140ms ease-in-out',
-  //     transform: `${varTranslate} scale(1.12)`
-  //   },
-  //   [`&:has(${stepEdgeNumber})`]: {
-  //     padding: 0,
-  //     gap: 2
-  //   },
-  //   [`&:is(${dimmed})`]: {
-  //     opacity: 0.3,
-  //     transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-  //     transitionDelay: '200ms',
-  //     filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  //     willChange: 'opacity, filter'
-  //   }
-  // }
+  whiteSpace: 'preserve-breaks',
+  opacity: 1,
+  transition: 'all 0.2s ease-in-out',
+  selectors: {
+    [`&[data-edge-dimmed='true']`]: {
+      opacity: 0.1,
+      // transitionDuration: '400ms',
+      transitionDelay: '800ms'
+    }
+  }
 })
 
 export const edgeLabelText = style({
@@ -143,6 +144,28 @@ export const edgeLabelText = style({
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: mantine.fontSizes.sm,
   lineHeight: mantine.lineHeights.xs
+})
+
+export const edgeOpenSourceBtn = style({
+  position: 'absolute',
+  top: '100%',
+  left: '50%',
+  transition: 'all 160ms cubic-bezier(0, 0, 0.40, 1)',
+  opacity: 0,
+  transform: 'scale(0.7) translate(-50%, -10%)',
+  transformOrigin: '50% 50%',
+  transitionDelay: '200ms',
+  selectors: {
+    [`:where([data-edge-hovered='true']) &`]: {
+      opacity: 1,
+      transform: 'scale(1) translate(-50%, 3px)',
+      transitionDelay: '100ms'
+    }
+  }
+})
+
+globalStyle(`.${root} .react-flow__edge`, {
+  // strokeDasharray: '5, 5',
 })
 
 export const emptyNode = style({

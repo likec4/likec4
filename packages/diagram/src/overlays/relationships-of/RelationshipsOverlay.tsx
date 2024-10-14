@@ -16,34 +16,18 @@ export const RelationshipsOfOverlay = memo(() => {
       }}
       data-likec4-color="gray"
     >
-      {
-        ({ opened }) =>
-          <>
-            {opened && (
-              <XYFlowProvider
-                defaultNodes={[]}
-                defaultEdges={[]}>
-                <RelationshipsXYFlow />
-              </XYFlowProvider>
-            )}
-            <OverlayDialogCloseButton />
-          </>
-
-        // <Paper className={css.dependencyViewContainer}>
-        //   <div>element</div>
-        //   <Code block>{JSON.stringify(element, null, 2)}</Code>
-        //   <ActionIcon
-        //     variant="default"
-        //     color="gray"
-        //     autoFocus
-        //     onClick={(e) => {
-        //       e.stopPropagation()
-        //       close()
-        //     }}>
-        //     <IconX />
-        //   </ActionIcon>
-        // </Paper>
-      }
+      {({ opened }) => (
+        <>
+          {opened && (
+            <XYFlowProvider
+              defaultNodes={[]}
+              defaultEdges={[]}>
+              <RelationshipsXYFlow />
+            </XYFlowProvider>
+          )}
+          <OverlayDialogCloseButton />
+        </>
+      )}
     </OverlayDialog>
   )
 })

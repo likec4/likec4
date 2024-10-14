@@ -14,6 +14,7 @@ export function EdgeDetailsOverlay({ edgeId }: { edgeId: EdgeId }) {
       onClose={() => {
         diagramApi.getState().closeOverlay()
       }}
+      data-likec4-color="gray"
     >
       {({ close }) => (
         <Paper className={css.dependencyViewContainer}>
@@ -32,35 +33,5 @@ export function EdgeDetailsOverlay({ edgeId }: { edgeId: EdgeId }) {
         </Paper>
       )}
     </OverlayDialog>
-    // <dialog
-    //   aria-modal="true"
-    //   ref={dialogRef}
-    //   className={css.dialog}
-    //   onClick={e => {
-    //     e.stopPropagation()
-    //     if ((e.target as any).nodeName === 'DIALOG') {
-    //       dialogRef.current?.close()
-    //     }
-    //   }}
-    //   onClose={e => {
-    //     e.stopPropagation()
-    //     closeMe()
-    //   }}>
-    //   {/* {opened && ( */}
-    //     <Box className={css.dependencyViewContainer}>
-    //       <div>Dependecy: {targetNode}</div>
-    //       <ActionIcon
-    //         variant="default"
-    //         color="gray"
-    //         autoFocus
-    //         onClick={(e) => {
-    //           e.stopPropagation()
-    //           dialogRef.current?.close()
-    //         }}>
-    //         <IconX />
-    //       </ActionIcon>
-    //     </Box>
-    //   {/* )} */}
-    // </dialog>
   )
 }

@@ -1,24 +1,16 @@
-import { isAncestor } from '@likec4/core'
-import {
-  Box,
-  Button,
-  Group,
-  Popover,
-  PopoverDropdown,
-  PopoverTarget,
-  rem,
-  SegmentedControl,
-  Space,
-  Text,
-  ThemeIcon
-} from '@mantine/core'
+import { isAncestor, type notDescendantOf, type Relation } from '@likec4/core'
+import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useLocalStorage, useStateHistory } from '@mantine/hooks'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconSelector } from '@tabler/icons-react'
-import { Panel, ReactFlow, useReactFlow, useStoreApi } from '@xyflow/react'
+import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
+import { Panel, ReactFlow, type ReactFlowInstance, useReactFlow, useStoreApi } from '@xyflow/react'
 import { memo, useEffect, useRef } from 'react'
+import { map, only, prop, unique } from 'remeda'
 import { useOverlayDialog } from '../../components'
 import type { XYFlowTypes } from './_types'
+import { SelectElement } from './SelectElement'
+import * as css from './styles.css'
+import { root } from './styles.css'
 import { useLayoutedRelationships, ZIndexes } from './use-layouted-relationships'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
@@ -34,21 +26,97 @@ const edgeTypes = {
   relation: RelationshipEdge
 }
 
-const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) =>
-  edges.map(edge => {
-    if (
-      edge.source === node.id
-      || edge.target === node.id
-      || isAncestor(node.id, edge.source)
+const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>) => {
+  xyflow.setEdges(edges =>
+    edges.map(edge => ({
+      ...edge,
+      data: {
+        ...edge.data,
+        dimmed: false,
+        hovered: false
+      },
+      animated: false
+    }))
+  )
+  xyflow.setNodes(nodes =>
+    nodes.map(n =>
+      ({
+        ...n,
+        data: {
+          ...n.data,
+          dimmed: false,
+          hovered: false
+        }
+      }) as any
+    )
+  )
+}
+
+// const onNodeMouseEvent = (
+//   node: XYFlowTypes.Node,
+//   state: 'enter' | 'leave',
+//   xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>
+// ) => {
+//   if (state === 'leave') {
+//     resetDimmedAndHovered(xyflow)
+//     return
+//   }
+//   const notDimmed = new Set<string>(node.id)
+//   xyflow.getEdges().forEach(edge => {
+//     const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
+//       || isAncestor(node.id, edge.target)
+//     if (isConnected) {
+//       notDimmed.add(edge.source)
+//       notDimmed.add(edge.target)
+//     }
+//   })
+
+//   xyflow.setEdges(edges =>
+//     edges.map(edge => {
+//       const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
+//         || isAncestor(node.id, edge.target)
+//       return {
+//         ...edge,
+//         data: {
+//           ...edge.data,
+//           dimmed: !isConnected
+//         },
+//         animated: isConnected
+//       }
+//     })
+//   )
+//   xyflow.setNodes(nodes =>
+//     nodes.map(n => {
+//       const isNotDimmed = n.id === node.id || notDimmed.has(n.id)
+//       return {
+//         ...n,
+//         data: {
+//           ...n.data,
+//           dimmed: !isNotDimmed,
+//           hovered: n.id === node.id
+//         }
+//       } as any
+//     })
+//   )
+// }
+
+const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) => {
+  return edges.map(edge => {
+    const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
       || isAncestor(node.id, edge.target)
-    ) {
-      return {
-        ...edge,
-        animated
-      }
+    return {
+      ...edge,
+      animated: animated && isConnected
     }
-    return edge
   })
+}
+
+const onlyOneUnique = <T extends keyof Relation>(
+  data: XYFlowTypes.Edge['data'],
+  property: T
+): Relation[T] | undefined => {
+  return only(unique(map(data.relations, prop(property))))
+}
 
 export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
   const lastClickedNodeRef = useRef<XYFlowTypes.NonEmptyNode | null>(null)
@@ -58,6 +126,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     defaultValue: 'view'
   })
   const {
+    view,
     viewIncludesSubject,
     edges,
     nodes,
@@ -94,12 +163,12 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       const elTo = nodes.find((n) => n.type !== 'empty' && n.id === subject.id)
       if (xynodeFrom && elTo) {
         const fromPos = xyflow.flowToScreenPosition({
-            x: xynodeFrom.internals.positionAbsolute.x + xynodeFrom.width! / 2,
-            y: xynodeFrom.internals.positionAbsolute.y + xynodeFrom.height! / 2
+            x: xynodeFrom.internals.positionAbsolute.x,
+            y: xynodeFrom.internals.positionAbsolute.y
           }),
           toPos = xyflow.flowToScreenPosition({
-            x: elTo.position.x + elTo.width! / 2,
-            y: elTo.position.y + elTo.height! / 2
+            x: elTo.position.x,
+            y: elTo.position.y
           }),
           diff = {
             x: fromPos.x - toPos.x,
@@ -132,6 +201,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
 
   return (
     <ReactFlow
+      className={root}
       defaultEdges={[] as XYFlowTypes.Edge[]}
       defaultNodes={[] as XYFlowTypes.Node[]}
       nodeTypes={nodeTypes}
@@ -159,22 +229,37 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       edgesFocusable={false}
       nodesDraggable={false}
       onNodeMouseEnter={(_, node) => {
+        if (node.type === 'empty') return
         xyflow.setEdges(animateEdge(node, true))
       }}
-      onNodeMouseLeave={(_, node) => {
-        xyflow.setEdges(animateEdge(node, false))
+      onNodeMouseLeave={() => {
+        resetDimmedAndHovered(xyflow)
       }}
       onEdgeMouseEnter={(_, edge) => {
-        xyflow.updateEdge(edge.id, {
-          zIndex: ZIndexes.max,
-          animated: true
-        })
+        xyflow.setEdges(edges =>
+          edges.map(e => ({
+            ...e,
+            data: {
+              ...e.data,
+              dimmed: e.id !== edge.id,
+              hovered: e.id === edge.id
+            },
+            zIndex: e.id === edge.id ? ZIndexes.max : ZIndexes.edge,
+            animated: e.id === edge.id
+          }))
+        )
+        xyflow.setNodes(nodes =>
+          nodes.map(n => ({
+            ...n,
+            data: {
+              ...n.data,
+              dimmed: n.id !== edge.source && n.id !== edge.target
+            } as any
+          }))
+        )
       }}
-      onEdgeMouseLeave={(_, edge) => {
-        xyflow.updateEdge(edge.id, {
-          zIndex: ZIndexes.edge,
-          animated: false
-        })
+      onEdgeMouseLeave={() => {
+        resetDimmedAndHovered(xyflow)
       }}
       onNodeClick={(e, node) => {
         if (node.type === 'empty') return
@@ -194,11 +279,28 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
           duration: 450
         })
       }}
+      onEdgeClick={(e, edge) => {
+        e.stopPropagation()
+        let next: XYFlowTypes.Node | undefined = undefined
+        if (edge.data.relations.length > 1) {
+          if (onlyOneUnique(edge.data, 'source')) {
+            next = xyflow.getNode(edge.source)
+          } else {
+            next = xyflow.getNode(edge.target)
+          }
+        }
+        if (next && next.type !== 'empty') {
+          lastClickedNodeRef.current = next
+          overlay.openOverlay({
+            relationshipsOf: next.data.fqn
+          })
+        }
+      }}
     >
       <Panel position="top-center">
         <Group gap={'xs'} wrap={'nowrap'}>
           <Button
-            leftSection={<IconArrowLeft stroke={4} size={14} />}
+            leftSection={<IconArrowLeft stroke={3} size={14} />}
             color="dimmed"
             variant="subtle"
             style={{
@@ -206,42 +308,32 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
               padding: '0.25rem 0.75rem'
             }}
             styles={{
+              label: {
+                fontWeight: 400
+              },
               section: {
-                marginInlineEnd: 4
+                marginInlineEnd: 6
               }
             }}
-            size="xs"
-            onClick={() => {
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation()
               historyOps.back()
             }}>
             Back
           </Button>
           <Space w={2} />
-          <Group gap={'xs'} pos={'relative'}>
+          <Group gap={'xs'} pos={'relative'} wrap="nowrap">
             <Box fz={'sm'} fw={'400'}>Relationships of</Box>
             <Box>
-              <Popover position="bottom" shadow="md" withinPortal={false} closeOnClickOutside>
-                <PopoverTarget>
-                  <Button
-                    size="xs"
-                    variant="light"
-                    color="gray"
-                    fw={'500'}
-                    style={{ padding: '0.25rem 0.75rem' }}
-                    rightSection={<IconSelector size={16} />}
-                  >
-                    {subject.title}
-                  </Button>
-                </PopoverTarget>
-                <PopoverDropdown p={'xs'}>
-                  <Group>
-                    <ThemeIcon color="orange" variant="light">
-                      <IconAlertCircle size={14} />
-                    </ThemeIcon>
-                    <Text c="orange" size="sm">In progress...</Text>
-                  </Group>
-                </PopoverDropdown>
-              </Popover>
+              <SelectElement
+                scope={scope}
+                subject={subject.element}
+                onSelect={fqn =>
+                  overlay.openOverlay({
+                    relationshipsOf: fqn
+                  })}
+                viewId={view.id} />
             </Box>
             <SegmentedControl
               size="xs"
@@ -276,7 +368,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
             )}
           </Group>
           <Button
-            rightSection={<IconArrowRight stroke={4} size={14} />}
+            rightSection={<IconArrowRight stroke={3} size={14} />}
             color="dimmed"
             variant="subtle"
             style={{
@@ -284,12 +376,16 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
               padding: '0.25rem 0.75rem'
             }}
             styles={{
+              label: {
+                fontWeight: 400
+              },
               section: {
                 marginInlineStart: 4
               }
             }}
-            size="xs"
-            onClick={() => {
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation()
               historyOps.forward()
             }}>
             Forward

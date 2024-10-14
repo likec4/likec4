@@ -80,7 +80,8 @@ export const OverlayDialogCloseButton = () => {
     <Box pos={'absolute'} top={'1rem'} right={'1rem'}>
       <ActionIcon
         variant="default"
-        color="gray"
+        // color="gray"
+        size={'lg'}
         autoFocus
         onClick={(e) => {
           e.stopPropagation()

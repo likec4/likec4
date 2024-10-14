@@ -15,7 +15,8 @@ type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
 export function ElementNode({
   data: {
     element,
-    ports
+    ports,
+    ...data
   },
   selectable = true,
   width: w = 100,
@@ -42,12 +43,21 @@ export function ElementNode({
           'likec4-element-node'
         ])}
         data-likec4-color={element.color}
+        animate={{
+          opacity: data.dimmed ? 0.15 : 1,
+          transition: {
+            delay: data.dimmed ? .8 : 0
+          }
+        }}
         {...(selectable && {
           whileHover: {
-            scale: 1.05
+            scale: 1.045,
+            transition: {
+              delay: 0.15
+            }
           },
           whileTap: {
-            scale: 0.985
+            scale: 0.97
           }
         })}
       >
@@ -65,8 +75,10 @@ export function ElementNode({
             h={h} />
         </svg>
         <Box className={css.elementNodeContent}>
-          <Text className={css.elementNodeTitle}>{element.title}</Text>
-          {element.description && <Text className={css.elementNodeDescription}>{element.description}</Text>}
+          <Text className={css.elementNodeTitle} lineClamp={2}>{element.title}</Text>
+          {element.description && (
+            <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
+          )}
         </Box>
       </m.div>
       {ports.left.map(({ id, type }, i) => (

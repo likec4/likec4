@@ -415,6 +415,12 @@ function BorderStyleOption({
           setValue(border)
           onChange({ border })
         }}
+        styles={{
+          label: {
+            paddingTop: 2,
+            paddingBottom: 2
+          }
+        }}
         data={[
           { label: 'Solid', value: 'solid' },
           { label: 'Dashed', value: 'dashed' },
