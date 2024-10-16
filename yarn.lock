@@ -2088,7 +2088,7 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.16.0"
     "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@xyflow/react": "npm:12.3.1"
+    "@xyflow/react": "npm:12.3.2"
     "@xyflow/system": "npm:0.0.43"
     bezier-js: "npm:^6.1.4"
     clsx: "npm:^2.1.1"
@@ -4206,9 +4206,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xyflow/react@npm:12.3.1":
-  version: 12.3.1
-  resolution: "@xyflow/react@npm:12.3.1"
+"@xyflow/react@npm:12.3.2":
+  version: 12.3.2
+  resolution: "@xyflow/react@npm:12.3.2"
   dependencies:
     "@xyflow/system": "npm:0.0.43"
     classcat: "npm:^5.0.3"
@@ -4216,7 +4216,7 @@ __metadata:
   peerDependencies:
     react: ">=17"
     react-dom: ">=17"
-  checksum: 10c0/729297ecff1f660969b4b17882207b4e7569bd1abb5e9140916863d02c7d11363f601c4acd0720a78394497a2ce4ca64fb419aa03aae842d48ddbf5974171aa2
+  checksum: 10c0/8e5c0f296b5851b94b357466014260281f14740ad0f93ad5ef2eb851a78b850d04b20e1778c47b2a9b63c94ee7601d0a9855827ea7adc7398a0fbfa960f450e2
   languageName: node
   linkType: hard
 
@@ -8533,7 +8533,7 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vanilla-extract/vite-plugin": "npm:^4.0.16"
     "@vitejs/plugin-react-swc": "npm:3.7.1"
-    "@xyflow/react": "npm:12.3.1"
+    "@xyflow/react": "npm:12.3.2"
     "@xyflow/system": "npm:0.0.43"
     autoprefixer: "npm:^10.4.20"
     classnames: "npm:^2.5.1"
