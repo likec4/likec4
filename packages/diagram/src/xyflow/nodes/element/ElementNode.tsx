@@ -21,8 +21,6 @@ const Text = MantineText.withProps({
   component: 'div'
 })
 
-type ElementNodeProps = NodeProps<ElementXYFlowNode>
-
 const selectedScale = 1.015
 
 // Frame-motion variants
@@ -131,6 +129,7 @@ VariantsRelationsBtn['selected'] = VariantsRelationsBtn['hovered']
 
 type VariantLabel = keyof typeof VariantsRoot | keyof typeof VariantsNavigate | keyof typeof VariantsRelationsBtn
 
+type ElementNodeProps = NodeProps<ElementXYFlowNode>
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
@@ -260,8 +259,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    // Delay the opening of the overlay to allow the hover animation to play
-    setTimeout(() => triggerOnNavigateTo(element.id, e), 100)
+    setTimeout(() => triggerOnNavigateTo(element.id, e), 50)
   }, [triggerOnNavigateTo, element.id])
 
   const onBrowseRelations = useCallback((e: React.MouseEvent) => {

@@ -17,15 +17,13 @@ import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
-  'id' | 'data' | 'width' | 'height' | 'selected' | 'dragging'
+  'id' | 'data' | 'selected' | 'dragging'
 >
 
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
   && eq(prev.dragging ?? false, next.dragging ?? false)
-  && eq(prev.width, next.width)
-  && eq(prev.height, next.height)
   && eq(prev.data, next.data)
 )
 
@@ -42,10 +40,10 @@ const VariantsRoot = {
       }
       : {}
   }),
-  selected: (_, { scale }) => ({}),
+  selected: {},
   hovered: (_, { translateY }) => ({
     translateX: -1,
-    translateY: -2,
+    translateY: -1,
     transition: !isNumber(translateY) || translateY === 0
       ? {
         delay: 0.15,
@@ -54,9 +52,7 @@ const VariantsRoot = {
       }
       : {}
   }),
-  tap: {
-    // scale: 0.975
-  }
+  tap: {}
 } satisfies Variants
 
 const VariantsNavigate = {
@@ -65,8 +61,7 @@ const VariantsNavigate = {
     scale: 0.98,
     opacity: 0.8,
     originX: 0.8,
-    translateX: 0,
-    translateY: 0
+    translateX: 0
   },
   hovered: {
     '--ai-bg': 'var(--ai-bg-hover)',
@@ -74,14 +69,11 @@ const VariantsNavigate = {
     opacity: 1,
     originX: 0.8,
     translateX: -2
-    // translateY: 2
   },
   'hovered:navigate': {
     scale: 1.4
   },
-  'hovered:relations': {
-    // translateY: 1
-  },
+  'hovered:relations': {},
   'tap:navigate': {
     scale: 0.975
   }
@@ -129,10 +121,14 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   selected = false,
   dragging = false,
   data: {
-    element
+    element: {
+      color,
+      style,
+      depth = 1,
+      ...element
+    }
   }
 }) {
-  const { color, style, depth = 1, ...compound } = element
   const opacity = clamp((style.opacity ?? 100) / 100, {
     min: 0,
     max: 1
@@ -159,7 +155,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     hasOnNavigateTo: !!s.onNavigateTo,
     enableRelationshipsMode: s.enableRelationshipsBrowser
   }))
-  const isNavigable = !!compound.navigateTo && hasOnNavigateTo
+  const isNavigable = !!element.navigateTo && hasOnNavigateTo
 
   const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
@@ -215,8 +211,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    // Delay the opening of the overlay to allow the hover animation to play
-    setTimeout(() => triggerOnNavigateTo(element.id, e), 100)
+    setTimeout(() => triggerOnNavigateTo(element.id, e), 50)
   }, [triggerOnNavigateTo, element.id])
 
   const onBrowseRelations = useCallback((e: React.MouseEvent) => {
@@ -286,11 +281,12 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
               (isNavigable || enableRelationshipsMode) && css.titleWithNavigation,
               'likec4-compound-title'
             )}>
-            {compound.title}
+            {element.title}
           </Text>
         </div>
         {isNavigable && (
           <ActionIcon
+            key={'navigate'}
             component={m.div}
             variants={VariantsNavigate}
             data-animate-target="navigate"
@@ -308,6 +304,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         {enableRelationshipsMode && (
           <Tooltip fz="xs" color="dark" label="Browse relationships" withinPortal={false} openDelay={600}>
             <ActionIcon
+              key={isNavigable ? 'relations' : 'relations-as-navigate'}
               component={m.div}
               // Is is a second button, so we need to use a different variant
               variants={isNavigable ? VariantsRelationsBtn : VariantsNavigate}
