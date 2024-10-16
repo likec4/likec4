@@ -2093,8 +2093,8 @@ __metadata:
     "@tabler/icons-react": "npm:3.17.0"
     "@types/bezier-js": "npm:^4.1.3"
     "@types/d3-shape": "npm:^3.1.6"
-    "@types/react": "npm:^18.3.4"
-    "@types/react-dom": "npm:^18.3.0"
+    "@types/react": "npm:^18.3.11"
+    "@types/react-dom": "npm:^18.3.1"
     "@vanilla-extract/css": "npm:^1.16.0"
     "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
@@ -2133,8 +2133,8 @@ __metadata:
     "@expressive-code/plugin-line-numbers": "npm:^0.36.1"
     "@fontsource/ibm-plex-sans": "npm:^5.1.0"
     "@types/picomatch": "npm:^2.3.4"
-    "@types/react": "npm:18.3.4"
-    "@types/react-dom": "npm:18.3.0"
+    "@types/react": "npm:18.3.11"
+    "@types/react-dom": "npm:18.3.1"
     astro: "npm:~4.14.0"
     astro-og-canvas: "npm:^0.5.3"
     likec4: "workspace:*"
@@ -2167,8 +2167,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/icons@workspace:packages/icons"
   dependencies:
-    "@types/react": "npm:^18.3.4"
-    "@types/react-dom": "npm:^18.3.0"
+    "@types/react": "npm:^18.3.11"
+    "@types/react-dom": "npm:^18.3.1"
     consola: "npm:^3.2.3"
     esbuild: "npm:^0.24.0"
     execa: "npm:^9.3.1"
@@ -2285,8 +2285,8 @@ __metadata:
     "@tanstack/router-vite-plugin": "npm:1.45.13"
     "@typefox/monaco-editor-react": "npm:4.5.3"
     "@types/node": "npm:^20.16.5"
-    "@types/react": "npm:18.3.4"
-    "@types/react-dom": "npm:18.3.0"
+    "@types/react": "npm:18.3.11"
+    "@types/react-dom": "npm:18.3.1"
     "@types/string-hash": "npm:^1.1.3"
     "@vanilla-extract/css": "npm:^1.16.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
@@ -2348,8 +2348,8 @@ __metadata:
     "@tabler/icons-react": "npm:3.17.0"
     "@types/node": "npm:^20.16.5"
     "@types/object-hash": "npm:^3.0.6"
-    "@types/react": "npm:18.3.4"
-    "@types/react-dom": "npm:18.3.0"
+    "@types/react": "npm:18.3.11"
+    "@types/react-dom": "npm:18.3.1"
     "@types/vscode": "npm:~1.92.0"
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.16.0"
@@ -3745,22 +3745,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:18.3.0, @types/react-dom@npm:^18.3.0":
-  version: 18.3.0
-  resolution: "@types/react-dom@npm:18.3.0"
+"@types/react-dom@npm:18.3.1, @types/react-dom@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "@types/react-dom@npm:18.3.1"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10c0/6c90d2ed72c5a0e440d2c75d99287e4b5df3e7b011838cdc03ae5cd518ab52164d86990e73246b9d812eaf02ec351d74e3b4f5bd325bf341e13bf980392fd53b
+  checksum: 10c0/8b416551c60bb6bd8ec10e198c957910cfb271bc3922463040b0d57cf4739cdcd24b13224f8d68f10318926e1ec3cd69af0af79f0291b599a992f8c80d47f1eb
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:18.3.4, @types/react@npm:^18.3.4":
+"@types/react@npm:*":
   version: 18.3.4
   resolution: "@types/react@npm:18.3.4"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 10c0/5c52e1e6f540cff21e3c2a5212066d02e005f6fb21e4a536a29097fae878db9f407cd7a4b43778f51359349c5f692e08bc77ddb5f5cecbfca9ca4d4e3c91a48e
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:18.3.11, @types/react@npm:^18.3.11":
+  version: 18.3.11
+  resolution: "@types/react@npm:18.3.11"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/ce80512246ca5bda69db85b9f4f1835189334acfb6b2c4f3eda8cabff1ff1a3ea9ce4f3b895bdbc18c94140aa45592331aa3fdeb557f525c1b048de7ce84fc0e
   languageName: node
   linkType: hard
 
@@ -8535,8 +8545,8 @@ __metadata:
     "@tanstack/router-vite-plugin": "npm:1.45.13"
     "@types/node": "npm:^20.16.5"
     "@types/prop-types": "npm:^15.7.13"
-    "@types/react": "npm:18.3.4"
-    "@types/react-dom": "npm:18.3.0"
+    "@types/react": "npm:18.3.11"
+    "@types/react-dom": "npm:18.3.1"
     "@types/string-hash": "npm:^1.1.3"
     "@types/yargs": "npm:^17.0.33"
     "@vanilla-extract/css": "npm:^1.16.0"
