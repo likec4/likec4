@@ -19,7 +19,7 @@ type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
 function selector(s: DiagramState) {
   return {
     viewId: s.view.id,
-    triggerOnNavigateTo: s.triggerOnNavigateTo
+    onNavigateTo: s.onNavigateTo
   }
 }
 
@@ -37,7 +37,7 @@ export function ElementNode({
   const overlay = useOverlayDialog()
   const {
     viewId,
-    triggerOnNavigateTo
+    onNavigateTo
   } = useDiagramState(selector)
   // const xyflow = useReactFlow()
   // const sortedports.right = pipe(
@@ -97,22 +97,23 @@ export function ElementNode({
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
         </Box>
-        {navigateTo && navigateTo !== viewId && (
-          <ActionIcon
-            className={clsx('nodrag nopan', css.navigateBtn)}
-            radius="md"
-            style={{ zIndex: 100 }}
-            onClick={(event) => {
-              event.stopPropagation()
-              overlay.close()
-              triggerOnNavigateTo(navigateTo, event)
-            }}
-            role="button"
-            onDoubleClick={stopPropagation}
-            onPointerDownCapture={stopPropagation}
-          >
-            <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-          </ActionIcon>
+        {navigateTo && onNavigateTo && navigateTo !== viewId && (
+          <Box className={css.navigateBtnBox}>
+            <ActionIcon
+              className={clsx('nodrag nopan', css.navigateBtn)}
+              radius="md"
+              onClick={(event) => {
+                event.stopPropagation()
+                setTimeout(() => onNavigateTo(navigateTo), 200)
+                overlay.close()
+              }}
+              role="button"
+              onDoubleClick={stopPropagation}
+              onPointerDownCapture={stopPropagation}
+            >
+              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
+            </ActionIcon>
+          </Box>
         )}
       </m.div>
       {ports.left.map(({ id, type }, i) => (

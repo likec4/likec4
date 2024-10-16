@@ -51,7 +51,7 @@ const Sizes = {
     edgesep: 20
   } satisfies GraphLabel,
   edgeLabel: {
-    width: 60
+    width: 50
   } satisfies Label,
 
   emptyNodeOffset: 100,

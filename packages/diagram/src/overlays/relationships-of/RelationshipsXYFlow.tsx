@@ -7,10 +7,10 @@ import { Panel, ReactFlow, type ReactFlowInstance, useReactFlow, useStoreApi } f
 import { memo, useEffect, useRef } from 'react'
 import { map, only, prop, unique } from 'remeda'
 import { useOverlayDialog } from '../../components'
+import { useDiagramStoreApi } from '../../hooks/useDiagramState'
 import type { XYFlowTypes } from './_types'
 import { SelectElement } from './SelectElement'
 import * as css from './styles.css'
-import { root } from './styles.css'
 import { useLayoutedRelationships, ZIndexes } from './use-layouted-relationships'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
@@ -52,54 +52,6 @@ const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlo
   )
 }
 
-// const onNodeMouseEvent = (
-//   node: XYFlowTypes.Node,
-//   state: 'enter' | 'leave',
-//   xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>
-// ) => {
-//   if (state === 'leave') {
-//     resetDimmedAndHovered(xyflow)
-//     return
-//   }
-//   const notDimmed = new Set<string>(node.id)
-//   xyflow.getEdges().forEach(edge => {
-//     const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
-//       || isAncestor(node.id, edge.target)
-//     if (isConnected) {
-//       notDimmed.add(edge.source)
-//       notDimmed.add(edge.target)
-//     }
-//   })
-
-//   xyflow.setEdges(edges =>
-//     edges.map(edge => {
-//       const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
-//         || isAncestor(node.id, edge.target)
-//       return {
-//         ...edge,
-//         data: {
-//           ...edge.data,
-//           dimmed: !isConnected
-//         },
-//         animated: isConnected
-//       }
-//     })
-//   )
-//   xyflow.setNodes(nodes =>
-//     nodes.map(n => {
-//       const isNotDimmed = n.id === node.id || notDimmed.has(n.id)
-//       return {
-//         ...n,
-//         data: {
-//           ...n.data,
-//           dimmed: !isNotDimmed,
-//           hovered: n.id === node.id
-//         }
-//       } as any
-//     })
-//   )
-// }
-
 const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) => {
   return edges.map(edge => {
     const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
@@ -119,6 +71,7 @@ const onlyOneUnique = <T extends keyof Relation>(
 }
 
 export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
+  const diagramStore = useDiagramStoreApi()
   const lastClickedNodeRef = useRef<XYFlowTypes.NonEmptyNode | null>(null)
   const [_scope, setScope] = useLocalStorage<'global' | 'view'>({
     key: 'likec4:scope-relationships-of',
@@ -208,7 +161,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
 
   return (
     <ReactFlow
-      className={root}
+      className={css.root}
       defaultEdges={[] as XYFlowTypes.Edge[]}
       defaultNodes={[] as XYFlowTypes.Node[]}
       nodeTypes={nodeTypes}
@@ -289,6 +242,10 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
         if (edge.data.relations.length <= 1) {
+          const relationId = only(edge.data.relations)?.id
+          if (relationId) {
+            diagramStore.getState().onOpenSourceRelation?.(relationId)
+          }
           return
         }
         const nodeId = onlyOneUnique(edge.data, 'source') ? edge.source : edge.target
@@ -327,9 +284,9 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
             Back
           </Button>
           <Space w={2} />
-          <Group gap={'xs'} pos={'relative'} wrap="nowrap">
-            <Box fz={'sm'} fw={'400'}>Relationships of</Box>
-            <Box>
+          <Group gap={'xs'} pos={'relative'} wrap="nowrap" flex={'1 0 auto'}>
+            <Box fz={'sm'} fw={'400'} style={{ whiteSpace: 'nowrap' }}>Relationships of</Box>
+            <Box flex={'1 0 auto'}>
               <SelectElement
                 scope={scope}
                 subject={subject.element}
@@ -340,6 +297,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
                 viewId={view.id} />
             </Box>
             <SegmentedControl
+              flex={'1 0 auto'}
               size="xs"
               withItemsBorders={false}
               value={scope}

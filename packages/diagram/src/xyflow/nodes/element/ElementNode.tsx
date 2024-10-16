@@ -259,8 +259,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    setTimeout(() => triggerOnNavigateTo(element.id, e), 50)
-  }, [triggerOnNavigateTo, element.id])
+    setTimeout(() => triggerOnNavigateTo(id, e), 50)
+  }, [triggerOnNavigateTo, id])
 
   const onBrowseRelations = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
@@ -268,7 +268,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     setTimeout(() =>
       openOverlay({
         relationshipsOf: element.id
-      }), 200)
+      }), 100)
   }, [openOverlay, element.id])
 
   return (

@@ -1,6 +1,5 @@
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 import { mantine, vars, whereLight, xyvars } from '../../../theme-vars'
-import { root } from '../styles.css'
 
 export const elementNode = style({
   // position: 'relative',
@@ -146,28 +145,6 @@ export const edgeLabelText = style({
   lineHeight: mantine.lineHeights.xs
 })
 
-export const edgeOpenSourceBtn = style({
-  position: 'absolute',
-  top: '100%',
-  left: '50%',
-  transition: 'all 160ms cubic-bezier(0, 0, 0.40, 1)',
-  opacity: 0,
-  transform: 'scale(0.7) translate(-50%, -10%)',
-  transformOrigin: '50% 50%',
-  transitionDelay: '200ms',
-  selectors: {
-    [`:where([data-edge-hovered='true']) &`]: {
-      opacity: 1,
-      transform: 'scale(1) translate(-50%, 3px)',
-      transitionDelay: '100ms'
-    }
-  }
-})
-
-globalStyle(`.${root} .react-flow__edge`, {
-  // strokeDasharray: '5, 5',
-})
-
 export const emptyNode = style({
   width: '100%',
   height: '100%',
@@ -178,26 +155,27 @@ export const emptyNode = style({
   alignItems: 'center'
 })
 
-export const navigateBtn = style({
-  zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+export const navigateBtnBox = style({
+  zIndex: 100,
   position: 'absolute',
-  pointerEvents: 'all',
   left: '50%',
   bottom: 2,
-  transform: 'translateX(-50%)',
-  color: vars.element.loContrast,
-  cursor: 'pointer',
-  backgroundColor: 'var(--ai-bg)',
-  'vars': {
-    '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
-    '--ai-bg': `var(--ai-bg-idle)`,
-    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
-    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
-  },
+  transform: 'translate(-50%, 0%)',
   selectors: {
     [`:where([data-likec4-shape='browser']) &`]: {
       bottom: 4
     }
+  }
+})
+export const navigateBtn = style({
+  pointerEvents: 'all',
+  color: vars.element.loContrast,
+  cursor: 'pointer',
+  backgroundColor: 'var(--ai-bg)',
+  'vars': {
+    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
+    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
   },
   ':hover': {
     boxShadow: mantine.shadows.md
