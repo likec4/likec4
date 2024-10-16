@@ -1,8 +1,9 @@
+import { memo } from 'react'
 import { useDiagramState } from '../hooks/useDiagramState'
 import { EdgeDetailsOverlay } from './edge-details/EdgeDetailsOverlay'
 import { RelationshipsOfOverlay } from './relationships-of/RelationshipsOverlay'
 
-export function Overlays() {
+export const Overlays = memo(() => {
   const {
     hasLikeC4Model,
     activeOverlay
@@ -29,4 +30,4 @@ export function Overlays() {
   }
 
   return null
-}
+})

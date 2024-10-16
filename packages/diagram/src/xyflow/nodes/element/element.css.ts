@@ -328,7 +328,7 @@ export const cssShapeSvg = style({
   }
 })
 
-export const cssNavigateBtn = style({
+export const navigateBtn = style({
   zIndex: 'calc(var(--layer-overlays, 1) + 1)',
   position: 'absolute',
   pointerEvents: 'all',
@@ -336,91 +336,19 @@ export const cssNavigateBtn = style({
   bottom: 0,
   color: vars.element.loContrast,
   cursor: 'pointer',
-  transformOrigin: '50% 65%',
-  opacity: 0.75,
-  transition: 'all 150ms ease-out',
-  transform: 'translate(-50%, 0)',
-  transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
   'vars': {
-    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg': `var(--ai-bg-idle)`,
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
   },
   selectors: {
     [`:where([data-likec4-shape='browser']) &`]: {
-      bottom: 3
-    },
-    [`:where(.react-flow__node:not(.dragging) ${container}:hover) &:not(:hover)`]: {
-      boxShadow: mantine.shadows.lg,
-      transform: 'translate(-50%, 0) scale(1.185)',
-      opacity: 1,
-      transitionDelay: '150ms',
-      vars: {
-        '--ai-bg': 'var(--ai-bg-hover)'
-      }
+      bottom: 4
     }
   },
   ':hover': {
-    boxShadow: mantine.shadows.lg,
-    transform: 'translate(-50%, 0) scale(1.3)',
-    opacity: 1,
-    transitionDelay: '0'
-  },
-  ':active': {
-    transform: 'translate(-50%, 0) scale(1.02)',
-    opacity: 1,
-    transitionDelay: '0'
-  }
-})
-globalStyle(`${cssNavigateBtn} svg.icon`, {
-  width: '65%',
-  height: '65%',
-  strokeWidth: '1.5'
-})
-
-export const relationshipsOfButton = style({
-  zIndex: 'calc(var(--layer-overlays, 1) + 1)',
-  position: 'absolute',
-  pointerEvents: 'all',
-  bottom: 0,
-  left: 'calc(50% + 24px)',
-  color: vars.element.loContrast,
-  cursor: 'pointer',
-  transformOrigin: '20% 50%',
-  opacity: 0,
-  transition: 'all 130ms cubic-bezier(0, 0, 0.40, 1)',
-  transform: 'scale(0.7) translate(-50%, 0)',
-  transitionDelay: '0ms',
-  backgroundColor: 'var(--ai-bg)',
-  'vars': {
-    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
-    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
-    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
-  },
-  selectors: {
-    [`:where([data-likec4-shape='browser']) &`]: {
-      bottom: 3
-    },
-    [`:where(.react-flow__node:not(.dragging) ${container}:hover) &:not(:hover)`]: {
-      boxShadow: mantine.shadows.lg,
-      transform: 'scale(1.1)',
-      opacity: 1,
-      transitionDelay: '190ms',
-      vars: {
-        '--ai-bg': 'var(--ai-bg-hover)'
-      }
-    }
-  },
-  ':hover': {
-    boxShadow: mantine.shadows.lg,
-    transform: 'scale(1.3)',
-    opacity: 1,
-    transitionDelay: '0'
-  },
-  ':active': {
-    transform: 'scale(1.02)',
-    opacity: 1,
-    transitionDelay: '0'
+    boxShadow: mantine.shadows.md
   }
 })

@@ -1,4 +1,4 @@
-import { isAncestor, type notDescendantOf, type Relation } from '@likec4/core'
+import { invariant, isAncestor, type notDescendantOf, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useLocalStorage, useStateHistory } from '@mantine/hooks'
 import { useDebouncedEffect } from '@react-hookz/web'
@@ -156,29 +156,36 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
   }, [historySubjectId])
 
   useEffect(() => {
-    const lastClicked = lastClickedNodeRef.current
-    if (lastClicked && lastClicked.data.fqn === subject.id) {
-      lastClickedNodeRef.current = null
-      const xynodeFrom = xyflow.getInternalNode(lastClicked.id)
-      const elTo = nodes.find((n) => n.type !== 'empty' && n.id === subject.id)
-      if (xynodeFrom && elTo) {
-        const fromPos = xyflow.flowToScreenPosition({
-            x: xynodeFrom.internals.positionAbsolute.x,
-            y: xynodeFrom.internals.positionAbsolute.y
-          }),
-          toPos = xyflow.flowToScreenPosition({
-            x: elTo.position.x,
-            y: elTo.position.y
-          }),
-          diff = {
-            x: fromPos.x - toPos.x,
-            y: fromPos.y - toPos.y
-          }
-        xystore.getState().panBy(diff)
-        xystore.getState().setNodes(nodes)
-        xystore.getState().setEdges(edges)
-        return
-      }
+    const nextSubjectNode = nodes.find((n): n is XYFlowTypes.NonEmptyNode =>
+      n.type !== 'empty' && n.data.column === 'subject'
+    )
+    if (!nextSubjectNode) {
+      console.error('Subject node not found')
+    } else if (nextSubjectNode.data.fqn !== subject.id) {
+      console.error(`Subject node mismatch, expected: ${subject.id} got: ${nextSubjectNode.data.fqn}`)
+    }
+    const existingNode = lastClickedNodeRef.current
+      ?? xyflow.getNodes().find(n => n.type !== 'empty' && n.data.column !== 'subject' && n.data.fqn === subject.id)
+    lastClickedNodeRef.current = null
+    // Correct position if we have subject in existing nodes
+    if (nextSubjectNode && existingNode && existingNode.data.column !== 'subject') {
+      const xynodeFrom = xyflow.getInternalNode(existingNode.id)!
+      const fromPos = xyflow.flowToScreenPosition({
+          x: xynodeFrom.internals.positionAbsolute.x,
+          y: xynodeFrom.internals.positionAbsolute.y
+        }),
+        toPos = xyflow.flowToScreenPosition({
+          x: nextSubjectNode.position.x,
+          y: nextSubjectNode.position.y
+        }),
+        diff = {
+          x: fromPos.x - toPos.x,
+          y: fromPos.y - toPos.y
+        }
+      xystore.getState().panBy(diff)
+      xystore.getState().setNodes(nodes)
+      xystore.getState().setEdges(edges)
+      return
     }
     xyflow.setNodes(nodes)
     xyflow.setEdges(edges)
@@ -262,8 +269,8 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
         resetDimmedAndHovered(xyflow)
       }}
       onNodeClick={(e, node) => {
-        if (node.type === 'empty') return
         e.stopPropagation()
+        if (node.type === 'empty') return
         if (subject.id !== node.data.fqn) {
           lastClickedNodeRef.current = node
         }
@@ -281,14 +288,11 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       }}
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
-        let next: XYFlowTypes.Node | undefined = undefined
-        if (edge.data.relations.length > 1) {
-          if (onlyOneUnique(edge.data, 'source')) {
-            next = xyflow.getNode(edge.source)
-          } else {
-            next = xyflow.getNode(edge.target)
-          }
+        if (edge.data.relations.length <= 1) {
+          return
         }
+        const nodeId = onlyOneUnique(edge.data, 'source') ? edge.source : edge.target
+        const next = xyflow.getNode(nodeId)
         if (next && next.type !== 'empty') {
           lastClickedNodeRef.current = next
           overlay.openOverlay({

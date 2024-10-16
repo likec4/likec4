@@ -531,6 +531,13 @@ export namespace LikeC4Model {
     }
 
     /**
+     * All views 'view of' current element
+     */
+    public viewsOf() {
+      return this.model.views().filter(v => v.viewOf?.id === this.id)
+    }
+
+    /**
      * Views that contain this element
      */
     public views() {
@@ -555,6 +562,14 @@ export namespace LikeC4Model {
 
     public internal() {
       return this.model.internal(this)
+    }
+
+    /**
+     * Resolve siblings of the element and siblings of ancestors
+     *  (from closest to root)
+     */
+    public ascendingSiblings() {
+      return this.model.ascendingSiblings(this)
     }
 
     // public *descendants(): IterableIterator<LikeC4Element> {

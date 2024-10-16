@@ -10,14 +10,13 @@ import NotationPanel from '../ui/notation'
 import { TopLeftPanel } from '../ui/top-left/TopLeftPanel'
 import { XYFlowBackground } from './XYFlowBackground'
 
-type XYFlowInnerProps = PropsWithChildren<{
+type XYFlowInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
   controls: boolean
   showDiagramTitle: boolean
-}>
+}
 
 export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
-  children,
   background,
   controls,
   showDiagramTitle
@@ -45,7 +44,6 @@ export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
       {isDiagramTitleVisible && <DiagramTitlePanel />}
       {isDynamicView && enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
       {showNotations && <NotationPanel />}
-      {children}
     </>
   )
 }, shallowEqual)

@@ -1,8 +1,12 @@
-import { Box, Text as MantineText } from '@mantine/core'
+import { ActionIcon, Box, Text as MantineText } from '@mantine/core'
+import { IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
+import { useOverlayDialog } from '../../../components'
+import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
+import { stopPropagation } from '../../../xyflow/utils'
 import type { XYFlowTypes } from '../_types'
 import * as css from './styles.css'
 
@@ -12,16 +16,29 @@ const Text = MantineText.withProps({
 
 type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
 
+function selector(s: DiagramState) {
+  return {
+    viewId: s.view.id,
+    triggerOnNavigateTo: s.triggerOnNavigateTo
+  }
+}
+
 export function ElementNode({
   data: {
     element,
     ports,
+    navigateTo,
     ...data
   },
   selectable = true,
   width: w = 100,
   height: h = 100
 }: ElementNodeProps) {
+  const overlay = useOverlayDialog()
+  const {
+    viewId,
+    triggerOnNavigateTo
+  } = useDiagramState(selector)
   // const xyflow = useReactFlow()
   // const sortedports.right = pipe(
   //   ports.right,
@@ -80,6 +97,23 @@ export function ElementNode({
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
         </Box>
+        {navigateTo && navigateTo !== viewId && (
+          <ActionIcon
+            className={clsx('nodrag nopan', css.navigateBtn)}
+            radius="md"
+            style={{ zIndex: 100 }}
+            onClick={(event) => {
+              event.stopPropagation()
+              overlay.close()
+              triggerOnNavigateTo(navigateTo, event)
+            }}
+            role="button"
+            onDoubleClick={stopPropagation}
+            onPointerDownCapture={stopPropagation}
+          >
+            <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
+          </ActionIcon>
+        )}
       </m.div>
       {ports.left.map(({ id, type }, i) => (
         <Handle

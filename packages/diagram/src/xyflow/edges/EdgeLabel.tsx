@@ -22,6 +22,7 @@ import { isTruthy } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps } from '../../hooks'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import type { RelationshipData } from '../types'
+import { stopPropagation } from '../utils'
 import * as edgesCss from './edges.css'
 import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
 
@@ -125,9 +126,9 @@ const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) 
       <PopoverDropdown
         component={Stack}
         p={'xs'}
-        onPointerDownCapture={e => e.stopPropagation()}
-        onClick={e => e.stopPropagation()}
-        onDoubleClick={e => e.stopPropagation()}
+        onPointerDownCapture={stopPropagation}
+        onClick={stopPropagation}
+        onDoubleClick={stopPropagation}
       >
         <ScrollAreaAutosize maw={450} mah={350} type="scroll" mx={'auto'} mt={2}>
           <Text component="div" className={edgesCss.edgeNoteText} p={4}>{notes}</Text>
@@ -171,13 +172,13 @@ function NavigateToBtn({ viewId }: NavigateToBtnProps) {
       className={clsx('nodrag nopan', edgesCss.cssNavigateBtn)}
       size={'sm'}
       radius="sm"
-      onPointerDownCapture={e => e.stopPropagation()}
+      onPointerDownCapture={stopPropagation}
       onClick={event => {
         event.stopPropagation()
         diagramApi.getState().onNavigateTo?.(viewId, event)
       }}
       role="button"
-      onDoubleClick={event => event.stopPropagation()}
+      onDoubleClick={stopPropagation}
     >
       <IconZoomScan className={edgesCss.cssNavigateBtnIcon} />
     </ActionIcon>

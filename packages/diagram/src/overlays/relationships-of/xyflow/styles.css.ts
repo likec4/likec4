@@ -177,3 +177,29 @@ export const emptyNode = style({
   justifyContent: 'center',
   alignItems: 'center'
 })
+
+export const navigateBtn = style({
+  zIndex: 'calc(var(--layer-overlays, 1) + 1)',
+  position: 'absolute',
+  pointerEvents: 'all',
+  left: '50%',
+  bottom: 2,
+  transform: 'translateX(-50%)',
+  color: vars.element.loContrast,
+  cursor: 'pointer',
+  backgroundColor: 'var(--ai-bg)',
+  'vars': {
+    '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg': `var(--ai-bg-idle)`,
+    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
+    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
+  },
+  selectors: {
+    [`:where([data-likec4-shape='browser']) &`]: {
+      bottom: 4
+    }
+  },
+  ':hover': {
+    boxShadow: mantine.shadows.md
+  }
+})

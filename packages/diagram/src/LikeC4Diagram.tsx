@@ -147,13 +147,15 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
     isInitialized,
     pannable,
     fitView,
-    enableFocusMode
+    enableFocusMode,
+    enableOverlays
   } = useDiagramState(s => ({
     isInitialized: s.initialized,
     zoomable: s.zoomable,
     pannable: s.pannable,
     fitView: s.fitViewEnabled,
-    enableFocusMode: s.enableFocusMode
+    enableFocusMode: s.enableFocusMode,
+    enableOverlays: s.enableRelationshipsBrowser
   }))
 
   return (
@@ -173,11 +175,11 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
           controls={controls}
         />
       </XYFlow>
+      {enableOverlays && <Overlays />}
       {isInitialized && (
         <>
           {fitView && <FitViewOnDiagramChange />}
           {enableFocusMode && <SelectEdgesOnNodeFocus />}
-          <Overlays />
         </>
       )}
     </>

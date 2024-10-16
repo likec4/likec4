@@ -36,6 +36,7 @@ export function ElementLink({
     <div
       className={elementLink}
       data-likec4-linkid={id}
+      onPointerDownCapture={stopEventPropagation}
       onDoubleClick={stopEventPropagation}
       onClick={stopEventPropagation}>
       <HoverCard

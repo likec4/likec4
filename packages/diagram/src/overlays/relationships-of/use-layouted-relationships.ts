@@ -110,7 +110,7 @@ type Context = {
   g: dagre.graphlib.Graph
   subjectId: Fqn
   diagramNodes: Map<Fqn, DiagramNode>
-
+  subjectElement: LikeC4ModelElement
   // likec4model: LikeC4Model
   // subject: XYFlowTypes.ElementNode
   // Model
@@ -172,6 +172,7 @@ function nodeData(
       color: diagramNode?.color ?? ancestor?.color ?? element.color,
       shape: diagramNode?.shape ?? element.shape
     },
+    navigateTo: diagramNode?.navigateTo ?? first(element.viewsOf())?.id ?? null,
     ports: {
       left: [],
       right: []
@@ -228,7 +229,10 @@ function createNode(
   const parent = pipe(
     element.ancestors(),
     takeWhile(ancestor => !isAncestor(ancestor.id, ctx.subjectId)),
-    find(ancestor => ctx.diagramNodes.has(ancestor.id) || ctx.connected[column].has(ancestor.id)),
+    find(ancestor =>
+      ctx.diagramNodes.has(ancestor.id) || ctx.connected[column].has(ancestor.id)
+      || (ctx.scope === 'global' && ctx.subjectElement.ascendingSiblings().some(s => s.id === ancestor.id))
+    ),
     found => found ? createNode(column, 'compound', found, ctx) : null
   )
 
@@ -410,6 +414,7 @@ function layout(
     g,
     diagramNodes,
     subjectId,
+    subjectElement,
     connected: fromKeys(
       ['incomers', 'outgoers'] as const,
       (column) => new Set(subjectElement[column]().map(m => m.id))
