@@ -1,5 +1,4 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
-import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
 import type { InternalNode, NodeChange, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
@@ -9,31 +8,36 @@ import { type XYStoreApi } from '../hooks/useXYFlow'
 import type { XYFlowNode } from './types'
 
 abstract class Rect {
+  static readonly LeftPadding = 40
+  static readonly RightPadding = 40
+  static readonly TopPadding = 55
+  static readonly BottomPadding = 40
+
   id!: string
-  minX = new Variable()
-  minY = new Variable()
-  maxX: Expression | Variable = new Variable()
-  maxY: Expression | Variable = new Variable()
-
-  get x() {
-    return this.minX
-  }
-
-  get y() {
-    return this.minY
-  }
+  minX: number = Infinity
+  minY: number = Infinity
+  maxX: number = -Infinity
+  maxY: number = -Infinity
 
   get positionAbsolute(): XYPosition {
     return {
-      x: this.x.value(),
-      y: this.y.value()
+      x: this.minX,
+      y: this.minY
     }
+  }
+
+  set positionAbsolute(pos: XYPosition) {
+    this.maxX += pos.x - this.minX
+    this.maxY += pos.y - this.minY
+
+    this.minX = pos.x
+    this.minY = pos.y
   }
 
   get dimensions() {
     return {
-      width: this.maxX.value() - this.minX.value(),
-      height: this.maxY.value() - this.minY.value()
+      width: this.maxX - this.minX,
+      height: this.maxY - this.minY
     }
   }
 
@@ -53,121 +57,51 @@ abstract class Rect {
 }
 
 class Compound extends Rect {
-  protected readonly children = [] as Rect[]
+  public readonly children = [] as Rect[]
 
   constructor(
-    protected solver: Solver,
     xynode: InternalNode<XYFlowNode>,
     protected readonly parent: Compound | null = null
   ) {
     super()
     this.id = xynode.id
 
-    solver.createConstraint(this.maxX, Operator.Ge, this.minX)
-    solver.createConstraint(this.maxY, Operator.Ge, this.minY)
-
     if (parent) {
-      parent.addChild(this)
+      parent.children.push(this)
     }
-  }
-
-  addChild<R extends Rect>(rect: R) {
-    this.children.push(rect)
-
-    const leftPadding = new Expr(
-      rect.minX,
-      [-1, this.minX]
-    )
-    const { weak } = Strength
-    this.solver.createConstraint(leftPadding, Operator.Ge, 40)
-    this.solver.createConstraint(leftPadding, Operator.Eq, 41, weak)
-
-    const topPadding = new Expr(
-      rect.minY,
-      [-1, this.minY]
-    )
-    this.solver.createConstraint(topPadding, Operator.Ge, 54)
-    this.solver.createConstraint(topPadding, Operator.Eq, 55, weak)
-
-    const rightPadding = new Expr(
-      this.maxX,
-      [-1, rect.maxX]
-    )
-    this.solver.createConstraint(rightPadding, Operator.Ge, 40)
-    this.solver.createConstraint(rightPadding, Operator.Eq, 41, weak)
-
-    const bottomPadding = new Expr(
-      this.maxY,
-      [-1, rect.maxY]
-    )
-    this.solver.createConstraint(bottomPadding, Operator.Ge, 40)
-    this.solver.createConstraint(bottomPadding, Operator.Eq, 41, weak)
   }
 }
 
 class Leaf extends Rect {
   constructor(
-    solver: Solver,
     xynode: InternalNode<XYFlowNode>,
-    public readonly parent: Compound | null = null,
-    public readonly isEditing: boolean = false
+    public readonly parent: Compound | null = null
   ) {
     super()
     this.id = xynode.id
 
-    // const isEditing: boolean = xynode.dragging ?? false
-    const x = Math.ceil(xynode.internals.positionAbsolute.x)
-    const y = Math.ceil(xynode.internals.positionAbsolute.y)
+    this.positionAbsolute = xynode.internals.positionAbsolute
 
     const { width, height } = getNodeDimensions(xynode)
 
-    this.maxX = new Expression(this.minX, Math.ceil(width))
-    this.maxY = new Expression(this.minY, Math.ceil(height))
-
-    // solver.createConstraint(this.width, Operator.Eq, width, Strength.required)
-    // solver.createConstraint(this.height, Operator.Eq, height, Strength.required)
-
-    if (isEditing) {
-      const superStrong = Strength.create(100, 0, 0)
-      solver.addEditVariable(this.minX, superStrong)
-      solver.addEditVariable(this.minY, superStrong)
-      solver.suggestValue(this.minX, x)
-      solver.suggestValue(this.minY, y)
-    } else {
-      const halfMedium = Strength.create(0.0, 1.0, 0.0, 0.5)
-      solver.createConstraint(this.minX, Operator.Eq, x, halfMedium)
-      solver.createConstraint(this.minY, Operator.Eq, y, halfMedium)
-      // const weaker = Strength.create(0.0, 0.0, 1.0, 0.5)
-      // const weak = Strength.create(0.0, 0.0, 1.0)
-      // const x = new Expr(
-      //   this.minX,
-      //   [-1, pos.x]
-      // )
-      // solver.createConstraint(x, Operator.Eq, 0, weaker)
-      // solver.createConstraint(x, Operator.Ge, -30, weak)
-      // solver.createConstraint(x, Operator.Le, 30, weak)
-
-      // const y = new Expr(
-      //   this.minY,
-      //   [-1, pos.y]
-      // )
-      // solver.createConstraint(y, Operator.Eq, 0, weaker)
-      // solver.createConstraint(y, Operator.Ge, -30, weak)
-      // solver.createConstraint(y, Operator.Le, 30, weak)
-    }
+    this.maxX = this.minX + Math.ceil(width)
+    this.maxY = this.minY + Math.ceil(height)
 
     if (parent) {
-      parent.addChild(this)
+      parent.children.push(this)
     }
   }
 }
 
-function createLayoutConstraints(
+type NodePositionUpdater = (
+  nodes: Array<{ rect: Rect | Compound; node: InternalNode<XYFlowNode> }>
+) => void
+
+export function createLayoutConstraints(
   xyflowApi: XYStoreApi,
-  draggingNodeId: string
+  editingNodeIds: Set<string>
 ) {
   const { parentLookup, nodeLookup } = xyflowApi.getState()
-  const solver = new Solver()
   const rects = new Map<string, Leaf | Compound>()
 
   const traverse = new Array<{ xynode: InternalNode<XYFlowNode>; parent: Compound | null }>()
@@ -181,21 +115,15 @@ function createLayoutConstraints(
     }
   }
 
-  const draggingNodes = new Set(
-    nodeLookup.values()
-      .filter(x => x.dragging === true || x.id === draggingNodeId || x.selected)
-      .map(x => x.id)
-  )
-
   while (traverse.length > 0) {
     const { xynode, parent } = traverse.shift()!
-    const isDragging = draggingNodes.has(xynode.id)
+    const isEditing = editingNodeIds.has(xynode.id)
 
     // Traverse children if the node is a compound, not dragging, and is an ancestor of the dragging node
-    const shouldTraverse = !isDragging && xynode.type === 'compound'
-      && draggingNodes.values().some(x => isAncestor(xynode.id, x))
+    const shouldTraverse = !isEditing && xynode.type === 'compound'
+      && editingNodeIds.values().some(x => isAncestor(xynode.id, x))
 
-    const rect = shouldTraverse ? new Compound(solver, xynode, parent) : new Leaf(solver, xynode, parent, isDragging)
+    const rect = shouldTraverse ? new Compound(xynode, parent) : new Leaf(xynode, parent)
     rects.set(xynode.id, rect)
 
     if (shouldTraverse) {
@@ -208,12 +136,37 @@ function createLayoutConstraints(
     }
   }
 
-  solver.updateVariables()
-  solver.maxIterations = 1000
-  const rectsToUpdate = [...rects.values()].filter(r => !draggingNodes.has(r.id))
+  const rectsToUpdate = [...rects.values()]
+  applyConstraints(rectsToUpdate)
+
+  function applyConstraints(targets: Rect[]) {
+    targets
+      .filter(x => x instanceof Compound)
+      .forEach((r) => {
+        applyConstraints(r.children)
+
+        const childrenBB = r.children.reduce((acc, r) => ({
+          minX: Math.min(acc.minX, r.minX),
+          minY: Math.min(acc.minY, r.minY),
+          maxX: Math.max(acc.maxX, r.maxX),
+          maxY: Math.max(acc.maxY, r.maxY)
+        }), {
+          minX: Infinity,
+          minY: Infinity,
+          maxX: -Infinity,
+          maxY: -Infinity
+        })
+
+
+        r.minX = childrenBB.minX - Rect.LeftPadding
+        r.minY = childrenBB.minY - Rect.TopPadding
+        r.maxX = childrenBB.maxX + Rect.RightPadding
+        r.maxY = childrenBB.maxY + Rect.BottomPadding
+      })
+  }
 
   function updateXYFlowNodes() {
-    solver.updateVariables()
+    applyConstraints(rectsToUpdate)
     xyflowApi.getState().triggerNodeChanges(
       rectsToUpdate.reduce((acc, r) => {
         acc.push({
@@ -238,26 +191,28 @@ function createLayoutConstraints(
 
   let animationFrameId: number | null = null
 
-  /**
-   * Move the editing node to the given position.
-   */
-  function onNodeDrag(xynode: XYFlowNode) {
+  function onMove(
+    updater: NodePositionUpdater
+  ) {
     if (rectsToUpdate.length === 0) {
       return
     }
     animationFrameId ??= requestAnimationFrame(() => {
       animationFrameId = null
-      const pos = nodeLookup.get(xynode.id)!.internals.positionAbsolute
-      const rect = nonNullable(rects.get(xynode.id))
-      solver.suggestValue(rect.minX, Math.floor(pos.x))
-      solver.suggestValue(rect.minY, Math.floor(pos.y))
+      updater(
+        [
+          ...editingNodeIds.values()
+            .filter(id => rects.has(id) && nodeLookup.has(id))
+            .map(id => ({ rect: nonNullable(rects.get(id)), node: nodeLookup.get(id)! }))
+        ]
+      )
       updateXYFlowNodes()
     })
   }
 
   return {
-    onNodeDrag,
-    updateXYFlowNodes
+    updateXYFlowNodes,
+    onMove
   }
 }
 
@@ -271,14 +226,26 @@ export function useLayoutConstraints(): LayoutConstraints {
   return useMemo((): LayoutConstraints => ({
     onNodeDragStart: (_event, xynode) => {
       const { cancelSaveManualLayout, xystore } = diagramApi.getState()
+      const { nodeLookup } = xystore.getState()
       cancelSaveManualLayout()
-      solverRef.current = createLayoutConstraints(xystore, xynode.id)
+
+      const draggingNodes = new Set(
+        nodeLookup.values()
+          .filter(x => x.dragging === true || x.id === xynode.id || x.selected)
+          .filter(x => x.draggable === true)
+          .map(x => x.id)
+      )
+      solverRef.current = createLayoutConstraints(xystore, draggingNodes)
     },
-    onNodeDrag: (_event, xynode) => {
+    onNodeDrag: () => {
       invariant(solverRef.current, 'solverRef.current should be defined')
-      solverRef.current?.onNodeDrag(xynode)
+      solverRef.current.onMove((nodes) => {
+        nodes.forEach(({ rect, node }) => {
+          rect.positionAbsolute = node.internals.positionAbsolute
+        })
+      })
     },
-    onNodeDragStop: (_event, _xynode) => {
+    onNodeDragStop: () => {
       solverRef.current?.updateXYFlowNodes()
       diagramApi.getState().scheduleSaveManualLayout()
       solverRef.current = undefined

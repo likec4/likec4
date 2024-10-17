@@ -10,8 +10,7 @@ import {
   type PopoverProps,
   Stack,
   Text,
-  TooltipGroup,
-  type TooltipProps
+  TooltipGroup
 } from '@mantine/core'
 import {
   IconAlertTriangle,
@@ -20,7 +19,6 @@ import {
   IconFileSymlink,
   IconFocusCentered,
   IconMenu2,
-  IconRouteOff
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
@@ -30,6 +28,7 @@ import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { mantine } from '../../theme-vars'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
+import { ManualLAyoutToolsButton } from './ManualLayoutToolsButton'
 import * as css from './styles.css'
 
 const historySelector = (s: DiagramState) => ({
@@ -135,22 +134,6 @@ const LayoutDriftNotification = (props: PopoverProps) => (
   </HoverCard>
 )
 
-const ResetControlPointsButton = (props: Omit<TooltipProps, 'label' | 'children'>) => {
-  const store = useDiagramStoreApi()
-
-  return (
-    <Tooltip label="Reset all control points" {...props}>
-      <ActionIcon
-        onClick={e => {
-          e.stopPropagation()
-          store.getState().resetEdgeControlPoints()
-        }}>
-        <IconRouteOff />
-      </ActionIcon>
-    </Tooltip>
-  )
-}
-
 export const TopLeftPanel = () => {
   const store = useDiagramStoreApi()
   const {
@@ -160,7 +143,7 @@ export const TopLeftPanel = () => {
     showChangeAutoLayout,
     showGoToSource,
     viewportChanged,
-    showResetControlPoints
+    showManualLayoutTools
   } = useDiagramState(s => {
     const isNotWalkthrough = isNullish(s.activeWalkthrough)
     const isNotFocused = isNullish(s.focusedNodeId)
@@ -172,7 +155,7 @@ export const TopLeftPanel = () => {
       showChangeAutoLayout: s.isEditable() && isNotActive,
       showGoToSource: !!s.onOpenSourceView && isNotWalkthrough,
       viewportChanged: s.viewportChanged,
-      showResetControlPoints: s.readonly !== true && s.experimentalEdgeEditing === true
+      showManualLayoutTools: s.readonly !== true && s.experimentalEdgeEditing === true
     })
   })
   const portalProps = useMantinePortalProps()
@@ -203,7 +186,7 @@ export const TopLeftPanel = () => {
           )}
           {showChangeAutoLayout && <ChangeAutoLayoutButton {...portalProps} />}
           {showLayoutDriftWarning && <LayoutDriftNotification {...portalProps} />}
-          {showResetControlPoints && <ResetControlPointsButton {...portalProps} />}
+          {showManualLayoutTools && <ManualLAyoutToolsButton {...portalProps} />}
           {showFitDiagram && (
             <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
               <ActionIcon
