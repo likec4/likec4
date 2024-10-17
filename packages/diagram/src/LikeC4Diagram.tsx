@@ -31,7 +31,7 @@ export function LikeC4Diagram({
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
   background = 'dots',
-  controls = false,
+  controls = !readonly,
   showElementLinks = true,
   showDiagramTitle = true,
   showNotations = true,
@@ -71,10 +71,16 @@ export function LikeC4Diagram({
     console.warn('where filter is only supported in readonly mode')
   }
   useEffect(() => {
-    if (showRelationshipDetails && !hasLikec4model) {
-      console.warn('Relationship details require LikeC4ModelProvider')
+    if (hasLikec4model) {
+      return
     }
-  }, [showRelationshipDetails, hasLikec4model])
+    if (showRelationshipDetails) {
+      console.warn('Invalid showRelationshipDetails=true, requires LikeC4ModelProvider')
+    }
+    if (enableRelationshipsBrowser) {
+      console.warn('Invalid enableRelationshipsBrowser=true, requires LikeC4ModelProvider')
+    }
+  }, [])
 
   return (
     <EnsureMantine>
@@ -94,8 +100,9 @@ export function LikeC4Diagram({
             hasLikeC4Model={hasLikec4model}
             fitViewEnabled={fitView}
             fitViewPadding={fitViewPadding}
+            controls={controls}
             showElementLinks={showElementLinks}
-            showNavigationButtons={showNavigationButtons}
+            showNavigationButtons={showNavigationButtons && !!onNavigateTo}
             showNotations={showNotations}
             showRelationshipDetails={showRelationshipDetails && hasLikec4model}
             nodesDraggable={nodesDraggable}
@@ -104,7 +111,7 @@ export function LikeC4Diagram({
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableFocusMode={enableFocusMode}
             enableRelationshipsBrowser={enableRelationshipsBrowser && hasLikec4model}
-            whereFilter={where ?? null}
+            whereFilter={readonly !== true ? (where ?? null) : null}
             renderIcon={renderIcon ?? null}
             onCanvasClick={onCanvasClick ?? null}
             onCanvasContextMenu={onCanvasContextMenu ?? null}
@@ -121,7 +128,6 @@ export function LikeC4Diagram({
             onBurgerMenuClick={onBurgerMenuClick ?? null}
           >
             <LikeC4DiagramInnerMemo
-              controls={controls}
               background={background}
               showDiagramTitle={showDiagramTitle}
             />
@@ -135,12 +141,10 @@ LikeC4Diagram.displayName = 'LikeC4Diagram'
 
 type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
-  controls: boolean
   showDiagramTitle: boolean
 }
 const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
-  controls,
   showDiagramTitle
 }) {
   const {
@@ -151,7 +155,6 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
     enableOverlays
   } = useDiagramState(s => ({
     isInitialized: s.initialized,
-    zoomable: s.zoomable,
     pannable: s.pannable,
     fitView: s.fitViewEnabled,
     enableFocusMode: s.enableFocusMode,
@@ -164,7 +167,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         className={clsx(
           'likec4-diagram',
           css.cssReactFlow,
-          controls === false && css.cssNoControls,
+          css.cssNoControls,
           pannable !== true && css.cssDisablePan,
           background === 'transparent' && css.cssTransparentBg
         )}
@@ -172,7 +175,6 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         <XYFlowInner
           showDiagramTitle={showDiagramTitle}
           background={background}
-          controls={controls}
         />
       </XYFlow>
       {enableOverlays && <Overlays />}

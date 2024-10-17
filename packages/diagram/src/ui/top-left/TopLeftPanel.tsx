@@ -34,8 +34,9 @@ import * as css from './styles.css'
 
 const historySelector = (s: DiagramState) => ({
   showBurgerMenu: !!s.onBurgerMenuClick,
-  hasStepBack: s.navigationHistoryIndex > 0,
-  hasStepForward: s.navigationHistoryIndex < s.navigationHistory.length - 1
+  hasStepBack: s.showNavigationButtons && !!s.onNavigateTo && s.navigationHistoryIndex > 0,
+  hasStepForward: s.showNavigationButtons && !!s.onNavigateTo
+    && s.navigationHistoryIndex < s.navigationHistory.length - 1
 })
 
 const BackwardForwardButtons = () => {
@@ -166,13 +167,13 @@ export const TopLeftPanel = () => {
     const isNotFocused = isNullish(s.focusedNodeId)
     const isNotActive = isNotWalkthrough && isNotFocused
     return ({
-      showNavigationButtons: !!s.onBurgerMenuClick || s.showNavigationButtons && !!s.onNavigateTo,
-      showFitDiagram: s.fitViewEnabled && s.zoomable && isNotWalkthrough,
-      showLayoutDriftWarning: !s.readonly && s.view.hasLayoutDrift === true && isNotActive,
-      showChangeAutoLayout: s.isEditable() && isNotActive,
-      showGoToSource: !!s.onOpenSourceView && isNotWalkthrough,
+      showNavigationButtons: !!s.onBurgerMenuClick || (s.showNavigationButtons && !!s.onNavigateTo),
+      showFitDiagram: s.controls && s.fitViewEnabled && s.zoomable && isNotWalkthrough,
+      showLayoutDriftWarning: s.controls && !s.readonly && s.view.hasLayoutDrift === true && isNotActive,
+      showChangeAutoLayout: s.controls && s.isEditable() && isNotActive,
+      showGoToSource: s.controls && !!s.onOpenSourceView && isNotWalkthrough,
       viewportChanged: s.viewportChanged,
-      showResetControlPoints: s.readonly !== true && s.experimentalEdgeEditing === true
+      showResetControlPoints: s.controls && s.readonly !== true && s.experimentalEdgeEditing === true
     })
   })
   const portalProps = useMantinePortalProps()

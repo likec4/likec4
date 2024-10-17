@@ -1,4 +1,4 @@
-import { type Element, type Fqn, type ViewID } from '@likec4/core'
+import { compareNatural, type Element, type Fqn, type ViewID } from '@likec4/core'
 import { useMemo } from 'react'
 import { useLikeC4Model } from './useLikeC4Model'
 
@@ -18,7 +18,7 @@ function buildTree(
     return {
       label: nd.title,
       value: nd.id,
-      children: children(nd.id).map(child => buildNode(child))
+      children: children(nd.id).map(child => buildNode(child)).sort((a, b) => compareNatural(a.label, b.label))
     }
   }
   return roots.map(root => buildNode(root))

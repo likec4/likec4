@@ -4,8 +4,8 @@ export const Tooltip = MantineTooltip.withProps({
   color: 'dark',
   fz: 'xs',
   position: 'right',
-  openDelay: 400,
-  closeDelay: 150,
+  openDelay: 600,
+  closeDelay: 120,
   label: '',
   children: null,
   offset: 8

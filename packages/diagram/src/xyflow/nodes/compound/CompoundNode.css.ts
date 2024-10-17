@@ -8,7 +8,17 @@ export const container = style({
   height: '100%',
   position: 'relative',
   padding: 0,
-  margin: 0
+  margin: 0,
+  ':before': {
+    content: ' ',
+    position: 'absolute',
+    top: 0,
+    left: -16,
+    width: 16,
+    height: 'min(100%, 80px)',
+    pointerEvents: 'all',
+    background: 'transparent'
+  }
 })
 
 export const nodeHandlerInCenter = style({
@@ -59,7 +69,7 @@ export const compoundBody = style({
     }
   },
   ':before': {
-    content: '" "',
+    content: ' ',
     position: 'absolute',
     top: 0,
     left: 0,

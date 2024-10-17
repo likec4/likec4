@@ -23,6 +23,16 @@ export const container = style({
     '&[data-hovered="true"]': {
       willChange: 'transform'
     }
+  },
+  ':after': {
+    content: ' ',
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    height: 16,
+    background: 'transparent',
+    pointerEvents: 'all'
   }
 })
 

@@ -96,6 +96,7 @@ export function ReactLikeC4<
         injectFontCss={injectFontCss}
         className={clsx('likec4-view', className)}
         style={style}
+        styleNonce={styleNonce}
       >
         <ShadowRootMantineProvider
           theme={mantineTheme}

@@ -1,9 +1,9 @@
 import { ActionIcon, Box } from '@mantine/core'
 import { useMergedRef, useTimeout } from '@mantine/hooks'
-import { useMountEffect, useSyncedRef } from '@react-hookz/web'
+import { useDebouncedEffect, useSyncedRef } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { forwardRef, type HTMLAttributes, type ReactNode, useCallback, useMemo, useRef, useState } from 'react'
+import { forwardRef, type HTMLAttributes, type ReactNode, useMemo, useRef, useState } from 'react'
 import { useDiagramStoreApi } from '../hooks/useDiagramState'
 import * as css from './Overlay.css'
 import { OverlayContext, useOverlayDialog } from './OverlayContext'
@@ -28,15 +28,23 @@ export const OverlayDialog = forwardRef<HTMLDialogElement, OverlayDialogProps>((
   const dialogRef = useRef<HTMLDialogElement>(null)
   const ref = useMergedRef(dialogRef, forwardedRef)
 
-  useMountEffect(() => {
-    dialogRef.current?.showModal()
-    setTimeout(() => {
+  useDebouncedEffect(
+    () => {
+      dialogRef.current?.showModal()
+    },
+    [],
+    30
+  )
+
+  useDebouncedEffect(
+    () => {
       setOpened(true)
-    }, 75)
-  })
+    },
+    [],
+    80
+  )
 
   const { start: triggerOnClose } = useTimeout(() => {
-    setOpened(false)
     onCloseRef.current?.()
   }, 300)
 

@@ -57,6 +57,7 @@ export type DiagramInitialState = {
   readonly: boolean
   // If LikeC4Model provided
   hasLikeC4Model: boolean
+  controls: boolean
   showElementLinks: boolean
   showNavigationButtons: boolean
   showNotations: boolean

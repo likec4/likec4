@@ -221,7 +221,7 @@ export function LikeC4Browser<
                 showRelationshipDetails
                 showNotations={hasNotations}
                 background={background}
-                controls={false}
+                controls
                 nodesSelectable={false}
                 nodesDraggable={false}
                 keepAspectRatio={false}

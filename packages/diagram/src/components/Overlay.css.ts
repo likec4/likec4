@@ -64,10 +64,7 @@ export const dialog = style({
       }
     },
     '&[open]': {
-      opacity: 0,
-      display: 'block',
-      animation: `${dialogFadeIn} 190ms cubic-bezier(0, 0, 0.40, 1) forwards`,
-      animationDelay: '50ms'
+      animation: `${dialogFadeIn} 200ms cubic-bezier(0, 0, 0.40, 1) forwards`
     },
     '&::backdrop': {
       WebkitBackdropFilter: 'blur(1px)',

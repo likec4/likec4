@@ -7,7 +7,7 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { clamp, isNumber } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
@@ -46,9 +46,9 @@ const VariantsRoot = {
     translateY: -1,
     transition: !isNumber(translateY) || translateY === 0
       ? {
-        delay: 0.15,
-        delayChildren: 0.16,
-        staggerChildren: 0.09
+        delay: 0.08,
+        delayChildren: 0.09,
+        staggerChildren: 0.15
       }
       : {}
   }),
@@ -58,36 +58,35 @@ const VariantsRoot = {
 const VariantsNavigate = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 0.98,
+    scale: 1,
     opacity: 0.8,
-    originX: 0.8,
-    translateX: 0
+    translateX: 0,
+    translateY: 0
   },
   hovered: {
+    display: 'block',
     '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.25,
+    scale: 1.35,
     opacity: 1,
-    originX: 0.8,
-    translateX: -2
+    translateX: -6,
+    translateY: 2
   },
   'hovered:navigate': {
     scale: 1.4
   },
   'hovered:relations': {},
   'tap:navigate': {
-    scale: 0.975
+    scale: 1.15
   }
 } satisfies Variants
 
 const VariantsRelationsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 0.8,
+    scale: 1,
     opacity: 0,
-    translateX: 1,
-    translateY: -7,
-    originX: 0.8,
-    originY: 0.4,
+    translateX: 2,
+    translateY: -8,
     transitionEnd: {
       display: 'none'
     }
@@ -95,24 +94,32 @@ const VariantsRelationsBtn = {
   hovered: {
     display: 'block',
     '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.25,
+    scale: 1.2,
     opacity: 1,
-    originX: 0.8,
-    originY: 0.4,
-    translateX: -2,
+    translateX: -5,
     translateY: 2
-  },
-  'hovered:navigate': {
-    translateY: 4
   },
   'hovered:relations': {
-    scale: 1.4,
-    translateY: 2
+    scale: 1.42
   },
   'tap:relations': {
-    scale: 0.975
+    scale: 1.15
   }
 } satisfies Variants
+
+/**
+ * Variants for the relationships button (when Navigate button is not visible)
+ */
+const VariantsRelationsBtnSingle = {
+  ...VariantsNavigate,
+  idle: {
+    ...VariantsNavigate.idle,
+    opacity: 0,
+    transitionEnd: {
+      display: 'none'
+    }
+  }
+}
 
 type VariantLabel = keyof typeof VariantsRoot | keyof typeof VariantsNavigate | keyof typeof VariantsRelationsBtn
 
@@ -144,6 +151,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     isEditable,
     isHovered,
     isDimmed,
+    isInteractive,
     hasOnNavigateTo,
     enableRelationshipsMode
   } = useDiagramState(s => ({
@@ -152,6 +160,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
+      || (!!s.onNavigateTo && !!element.navigateTo),
     hasOnNavigateTo: !!s.onNavigateTo,
     enableRelationshipsMode: s.enableRelationshipsBrowser
   }))
@@ -162,32 +172,35 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
 
   const [animateVariants, setAnimateVariants] = useState<VariantLabel[] | null>(null)
 
+  useEffect(() => {
+    if (!isHovered && animateVariants) {
+      setAnimateVariants(null)
+    }
+  }, [isHovered])
+
   const animateHandlers = useMemo(() => {
     const getTarget = (e: MouseEvent) =>
       (e.target as HTMLElement).closest('[data-animate-target]')?.getAttribute('data-animate-target')
-    const onHoverStart = (e: MouseEvent) => {
-      const hoverTarget = getTarget(e)
-      if (hoverTarget) {
-        setAnimateVariants(['hovered', `hovered:${hoverTarget}` as VariantLabel])
-      } else {
-        setAnimateVariants(null)
-      }
-    }
     return ({
       onTapStart: (e: MouseEvent) => {
         const tapTarget = getTarget(e)
-        setAnimateVariants([
-          'hovered',
-          `hovered:${tapTarget}` as VariantLabel,
-          `tap:${tapTarget}` as VariantLabel
-        ])
+        if (tapTarget) {
+          setAnimateVariants([
+            'hovered',
+            `hovered:${tapTarget}` as VariantLabel,
+            `tap:${tapTarget}` as VariantLabel
+          ])
+        }
       },
-      onHoverStart,
+      onHoverStart: (e: MouseEvent) => {
+        const hoverTarget = getTarget(e)
+        if (hoverTarget) {
+          setAnimateVariants(['hovered', `hovered:${hoverTarget}` as VariantLabel])
+        }
+      },
       onHoverEnd: () => setAnimateVariants(null),
       onTapCancel: () => setAnimateVariants(null),
-      onTap: (e: MouseEvent) => {
-        onHoverStart(e)
-      }
+      onTap: () => setAnimateVariants(null)
     })
   }, [setAnimateVariants])
 
@@ -199,7 +212,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     case dragging:
       animate = 'idle'
       break
-    case isHovered:
+    case isInteractive && isHovered:
       animate = 'hovered'
       break
     case selected:
@@ -211,16 +224,12 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    setTimeout(() => triggerOnNavigateTo(id, e), 50)
+    triggerOnNavigateTo(id, e)
   }, [triggerOnNavigateTo, id])
 
   const onBrowseRelations = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    // Delay the opening of the overlay to allow the hover animation to play
-    setTimeout(() =>
-      openOverlay({
-        relationshipsOf: element.id
-      }), 100)
+    openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
 
   return (
@@ -234,7 +243,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
       )}
       <Box
         component={m.div}
-        animate={animateVariants ?? animate}
+        animate={isHovered ? (animateVariants ?? animate) : animate}
         variants={VariantsRoot}
         initial={false}
         className={clsx(
@@ -302,17 +311,23 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           </ActionIcon>
         )}
         {enableRelationshipsMode && (
-          <Tooltip fz="xs" color="dark" label="Browse relationships" withinPortal={false} openDelay={600}>
+          <Tooltip
+            fz="xs"
+            color="dark"
+            label="Browse relationships"
+            withinPortal={false}
+            openDelay={600}
+            position="right">
             <ActionIcon
-              key={isNavigable ? 'relations' : 'relations-as-navigate'}
               component={m.div}
               // Is is a second button, so we need to use a different variant
-              variants={isNavigable ? VariantsRelationsBtn : VariantsNavigate}
+              key={isNavigable ? 'relations' : 'relations-as-navigate'}
+              variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
               data-animate-target={isNavigable ? 'relations' : 'navigate'}
               className={clsx('nodrag nopan', css.navigateBtn)}
               radius="md"
               style={{
-                top: isNavigable ? 44 : undefined,
+                top: isNavigable ? 50 : undefined,
                 zIndex: 99
               }}
               role="button"
@@ -320,7 +335,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
               onDoubleClick={stopPropagation}
               {...animateHandlers}
             >
-              <IconTransform stroke={1.8} style={{ width: '75%' }} />
+              <IconTransform stroke={1.8} style={{ width: '67%' }} />
             </ActionIcon>
           </Tooltip>
         )}

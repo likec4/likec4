@@ -36,7 +36,7 @@ function ViewReact() {
       readonly
       zoomable
       pannable
-      controls={false}
+      controls
       fitViewPadding={0.08}
       showDiagramTitle
       showElementLinks

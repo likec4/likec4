@@ -1,4 +1,4 @@
-import { type DiagramView, nonexhaustive } from '@likec4/core'
+import { compareNatural, type DiagramView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find, values } from 'remeda'
@@ -30,7 +30,7 @@ function compareTreeNodes(a: DiagramTreeNodeData, b: DiagramTreeNodeData) {
   if (a.children.length > 0 && b.children.length === 0) {
     return -1
   }
-  return a.label.localeCompare(b.label)
+  return compareNatural(a.label, b.label)
 }
 
 function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTreeNodeData[] {

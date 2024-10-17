@@ -12,23 +12,23 @@ import { XYFlowBackground } from './XYFlowBackground'
 
 type XYFlowInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
-  controls: boolean
   showDiagramTitle: boolean
 }
 
 export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
   background,
-  controls,
   showDiagramTitle
 }: XYFlowInnerProps) {
   const {
     showNotations,
     isDynamicView,
+    showTopLeft,
     isDynamicViewActive,
     enableDynamicViewWalkthrough
   } = useDiagramState(s => ({
     showNotations: s.showNotations,
     isDynamicView: s.isDynamicView,
+    showTopLeft: s.controls || (s.showNavigationButtons && !!s.onNavigateTo) || !!s.onBurgerMenuClick,
     enableDynamicViewWalkthrough: s.enableDynamicViewWalkthrough,
     isDynamicViewActive: isNonNullish(s.activeWalkthrough)
   }))
@@ -39,8 +39,7 @@ export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
   return (
     <>
       {isBgWithPattern && <XYFlowBackground background={background} />}
-      {controls && <Controls showInteractive={false} position={'top-center'} />}
-      <TopLeftPanel />
+      {showTopLeft && <TopLeftPanel />}
       {isDiagramTitleVisible && <DiagramTitlePanel />}
       {isDynamicView && enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
       {showNotations && <NotationPanel />}

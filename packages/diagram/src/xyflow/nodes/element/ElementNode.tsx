@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo, useCallback, useMemo, useState } from 'react'
-import { isEmpty, isNonNull, isNumber, isString, isTruthy } from 'remeda'
+import { clone, isEmpty, isNonNull, isNumber, isString, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
 import type { ElementXYFlowNode } from '../../types'
@@ -31,29 +31,21 @@ const VariantsRoot = {
     transition: isNumber(scale) && scale > selectedScale
       ? {
         delay: 0.1,
-        delayChildren: 0.1,
-        staggerChildren: 0.08,
+        delayChildren: 0.06,
+        staggerChildren: 0.07,
         staggerDirection: -1
       }
       : {}
   }),
-  selected: (_, { scale }) => ({
-    scale: selectedScale,
-    transition: isNumber(scale) && scale > selectedScale
-      ? {
-        delay: 0.1,
-        delayChildren: 0.1,
-        staggerChildren: 0.08,
-        staggerDirection: -1
-      }
-      : {}
-  }),
+  selected: {
+    scale: selectedScale
+  },
   hovered: (_, { scale }) => ({
     scale: 1.06,
     transition: !isNumber(scale) || (scale >= 1 && scale < 1.06)
       ? {
         // delay: 0.09,
-        delayChildren: 0.08,
+        delayChildren: 0.07,
         staggerChildren: 0.1
       }
       : {}
@@ -73,32 +65,31 @@ const VariantsNavigate = {
   },
   selected: {},
   hovered: {
+    display: 'block',
     '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.22,
-    opacity: 1,
-    translateX: '-50%',
-    originY: 0.1
+    scale: 1.35,
+    opacity: 1
   },
   'hovered:navigate': {
-    scale: 1.4
+    scale: 1.42
   },
-  // 'hovered:relations': {
-  //   translateX: '-52%'
-  // },
   'tap:navigate': {
-    scale: 0.975
+    scale: 1.15
   }
 } satisfies Variants
 VariantsNavigate['selected'] = VariantsNavigate['hovered']
 
+/**
+ * Variants for the relationships button (when Navigate button is visible)
+ */
 const VariantsRelationsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 0.8,
+    scale: 1,
     opacity: 0,
-    originX: 0.1,
-    originY: 0.3,
-    translateX: -6,
+    originX: 0.25,
+    originY: 0.1,
+    translateX: -8,
     transitionEnd: {
       display: 'none'
     }
@@ -107,25 +98,33 @@ const VariantsRelationsBtn = {
   hovered: {
     display: 'block',
     '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.22,
+    scale: 1.25,
     opacity: 1,
-    translateX: 0,
-    originX: 0.1,
-    originY: 0.1
+    translateX: 0
   },
-  'hovered:navigate': {
-    translateX: 3
-  },
+  'hovered:navigate': {},
   'hovered:relations': {
-    originY: 0.1,
-    translateX: 2,
-    scale: 1.4
+    scale: 1.42
   },
   'tap:relations': {
-    scale: 0.975
+    scale: 1.15
   }
 } satisfies Variants
 VariantsRelationsBtn['selected'] = VariantsRelationsBtn['hovered']
+
+/**
+ * Variants for the relationships button (when Navigate button is not visible)
+ */
+const VariantsRelationsBtnSingle = {
+  ...VariantsNavigate,
+  idle: {
+    ...VariantsNavigate.idle,
+    opacity: 0,
+    transitionEnd: {
+      display: 'none'
+    }
+  }
+}
 
 type VariantLabel = keyof typeof VariantsRoot | keyof typeof VariantsNavigate | keyof typeof VariantsRelationsBtn
 
@@ -190,20 +189,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
     const onHoverStart = (e: MouseEvent) => {
       const hoverTarget = getTarget(e)
-      if (!isString(hoverTarget)) {
+      if (!isString(hoverTarget) || isEmpty(hoverTarget)) {
         setAnimateVariants(null)
         return
       }
-
-      if (isNonNull(hoverTarget)) {
-        if (isEmpty(hoverTarget)) {
-          setAnimateVariants(['hovered'])
-        } else {
-          setAnimateVariants(['hovered', `hovered:${hoverTarget}` as VariantLabel])
-        }
-      } else {
-        setAnimateVariants(null)
-      }
+      setAnimateVariants(['hovered', `hovered:${hoverTarget}` as VariantLabel])
     }
     return ({
       onTapStart: (e: MouseEvent) => {
@@ -259,16 +249,14 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    setTimeout(() => triggerOnNavigateTo(id, e), 50)
+    // setAnimateVariants(null)
+    triggerOnNavigateTo(id, e)
   }, [triggerOnNavigateTo, id])
 
   const onBrowseRelations = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    // Delay the opening of the overlay to allow the hover animation to play
-    setTimeout(() =>
-      openOverlay({
-        relationshipsOf: element.id
-      }), 100)
+    // setAnimateVariants(null)
+    openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
 
   return (
@@ -294,7 +282,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         data-animate-target=""
         variants={VariantsRoot}
         initial={false}
-        animate={dragging ? animate : (animateVariants ?? animate)}
+        animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
         tabIndex={-1}
         {...(isInteractive && {
           onTapStart: animateHandlers.onTapStart,
@@ -355,12 +343,12 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             <ActionIcon
               component={m.div}
               // Is is a second button, so we need to use a different variant
-              variants={isNavigable ? VariantsRelationsBtn : VariantsNavigate}
+              variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
               data-animate-target={isNavigable ? 'relations' : 'navigate'}
               className={clsx('nodrag nopan', css.navigateBtn)}
               radius="md"
               style={{
-                left: isNavigable ? 'calc(50% + 24px)' : '50%',
+                left: isNavigable ? 'calc(50% + 28px)' : '50%',
                 zIndex: 99
               }}
               role="button"
@@ -369,7 +357,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
               onHoverStart={animateHandlers.onHoverStart}
               onHoverEnd={animateHandlers.onHoverEnd}
             >
-              <IconTransform stroke={1.8} style={{ width: '75%' }} />
+              <IconTransform stroke={1.8} style={{ width: '67%' }} />
             </ActionIcon>
           </Tooltip>
         )}
