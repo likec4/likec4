@@ -6,13 +6,14 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo, useCallback, useMemo, useState } from 'react'
-import { isEmpty, isNumber, isString, isTruthy } from 'remeda'
+import { memo, useCallback, useState } from 'react'
+import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
 import type { ElementXYFlowNode } from '../../types'
 import { stopPropagation, toDomPrecision } from '../../utils'
 import { ElementToolbar } from '../shared/Toolbar'
+import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
@@ -126,8 +127,6 @@ const VariantsRelationsBtnSingle = {
   }
 }
 
-type VariantLabel = keyof typeof VariantsRoot | keyof typeof VariantsNavigate | keyof typeof VariantsRelationsBtn
-
 type ElementNodeProps = NodeProps<ElementXYFlowNode>
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
@@ -181,48 +180,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
 
-  const [animateVariants, setAnimateVariants] = useState<VariantLabel[] | null>(null)
-
-  const animateHandlers = useMemo(() => {
-    const getTarget = (e: MouseEvent) =>
-      (e.target as HTMLElement).closest('[data-animate-target]')?.getAttribute('data-animate-target') ?? null
-
-    const onHoverStart = (e: MouseEvent) => {
-      const hoverTarget = getTarget(e)
-      if (!isString(hoverTarget) || isEmpty(hoverTarget)) {
-        setAnimateVariants(null)
-        return
-      }
-      setAnimateVariants(['hovered', `hovered:${hoverTarget}` as VariantLabel])
-    }
-    return ({
-      onTapStart: (e: MouseEvent) => {
-        const tapTarget = getTarget(e)
-        if (!isString(tapTarget)) {
-          setAnimateVariants(null)
-          return
-        }
-        if (isEmpty(tapTarget)) {
-          setAnimateVariants([
-            'hovered',
-            'tap'
-          ])
-        } else {
-          setAnimateVariants([
-            'hovered',
-            `hovered:${tapTarget}` as VariantLabel,
-            `tap:${tapTarget}` as VariantLabel
-          ])
-        }
-      },
-      onHoverStart,
-      onHoverEnd: () => setAnimateVariants(null),
-      onTapCancel: () => setAnimateVariants(null),
-      onTap: (e: MouseEvent) => {
-        onHoverStart(e)
-      }
-    })
-  }, [setAnimateVariants])
+  const [animateVariants, animateHandlers] = useFramerAnimateVariants()
 
   let animate: keyof typeof VariantsRoot
   switch (true) {
@@ -329,11 +287,10 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             className={clsx('nodrag nopan', css.navigateBtn)}
             radius="md"
             style={{ zIndex: 100 }}
-            onClick={onNavigateTo}
             role="button"
+            onClick={onNavigateTo}
             onDoubleClick={stopPropagation}
-            onHoverStart={animateHandlers.onHoverStart}
-            onHoverEnd={animateHandlers.onHoverEnd}
+            {...isInteractive && animateHandlers}
           >
             <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
           </ActionIcon>
@@ -354,8 +311,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
               role="button"
               onClick={onBrowseRelations}
               onDoubleClick={stopPropagation}
-              onHoverStart={animateHandlers.onHoverStart}
-              onHoverEnd={animateHandlers.onHoverEnd}
+              {...isInteractive && animateHandlers}
             >
               <IconTransform stroke={1.8} style={{ width: '67%' }} />
             </ActionIcon>

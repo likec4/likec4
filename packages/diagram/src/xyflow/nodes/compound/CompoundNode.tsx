@@ -7,12 +7,13 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { clamp, isNumber } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
 import { stopPropagation } from '../../utils'
 import { CompoundToolbar } from '../shared/Toolbar'
+import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
@@ -121,8 +122,6 @@ const VariantsRelationsBtnSingle = {
   }
 }
 
-type VariantLabel = keyof typeof VariantsRoot | keyof typeof VariantsNavigate | keyof typeof VariantsRelationsBtn
-
 export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function CompoundNode({
   id,
   selected = false,
@@ -170,39 +169,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
-  const [animateVariants, setAnimateVariants] = useState<VariantLabel[] | null>(null)
-
-  useEffect(() => {
-    if (!isHovered && animateVariants) {
-      setAnimateVariants(null)
-    }
-  }, [isHovered])
-
-  const animateHandlers = useMemo(() => {
-    const getTarget = (e: MouseEvent) =>
-      (e.target as HTMLElement).closest('[data-animate-target]')?.getAttribute('data-animate-target')
-    return ({
-      onTapStart: (e: MouseEvent) => {
-        const tapTarget = getTarget(e)
-        if (tapTarget) {
-          setAnimateVariants([
-            'hovered',
-            `hovered:${tapTarget}` as VariantLabel,
-            `tap:${tapTarget}` as VariantLabel
-          ])
-        }
-      },
-      onHoverStart: (e: MouseEvent) => {
-        const hoverTarget = getTarget(e)
-        if (hoverTarget) {
-          setAnimateVariants(['hovered', `hovered:${hoverTarget}` as VariantLabel])
-        }
-      },
-      onHoverEnd: () => setAnimateVariants(null),
-      onTapCancel: () => setAnimateVariants(null),
-      onTap: () => setAnimateVariants(null)
-    })
-  }, [setAnimateVariants])
+  const [animateVariants, animateHandlers] = useFramerAnimateVariants()
 
   let animate: keyof typeof VariantsRoot
   switch (true) {
@@ -245,9 +212,9 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
       )}
       <Box
         component={m.div}
-        animate={isHovered ? (animateVariants ?? animate) : animate}
         variants={VariantsRoot}
         initial={false}
+        animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
         className={clsx(
           css.container,
           'likec4-compound-node',
@@ -255,10 +222,17 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           isDimmed && css.dimmed
         )}
         mod={{
+          'animate-target': '',
           'compound-depth': depth,
           'likec4-color': previewColor ?? color,
           hovered: isHovered
         }}
+        tabIndex={-1}
+        {...(isInteractive && {
+          onTapStart: animateHandlers.onTapStart,
+          onTap: animateHandlers.onTap,
+          onTapCancel: animateHandlers.onTapCancel
+        })}
       >
         <svg className={css.indicator}>
           <rect
@@ -307,7 +281,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
             onClick={onNavigateTo}
             role="button"
             onDoubleClick={stopPropagation}
-            {...animateHandlers}
+            {...isInteractive && animateHandlers}
           >
             <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
           </ActionIcon>
@@ -335,7 +309,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
               role="button"
               onClick={onBrowseRelations}
               onDoubleClick={stopPropagation}
-              {...animateHandlers}
+              {...isInteractive && animateHandlers}
             >
               <IconTransform stroke={1.8} style={{ width: '66%' }} />
             </ActionIcon>

@@ -62,8 +62,8 @@ export const OverlayDialog = forwardRef<HTMLDialogElement, OverlayDialogProps>((
         ref={ref}
         className={clsx(css.dialog, className)}
         onClick={e => {
-          e.stopPropagation()
-          if ((e.target as any).nodeName === 'DIALOG') {
+          if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
+            e.stopPropagation()
             dialogRef.current?.close()
           }
         }}

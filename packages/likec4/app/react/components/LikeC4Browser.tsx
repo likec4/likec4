@@ -1,7 +1,8 @@
 import type { WhereOperator } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { ActionIcon, type MantineThemeOverride } from '@mantine/core'
-import { useMountEffect } from '@react-hookz/web'
+import { useTimeout } from '@mantine/hooks'
+import { useDebouncedEffect, useMountEffect, useSyncedRef } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
 import { type HTMLAttributes, useId, useRef, useState } from 'react'
 import { closeButton, cssDiagram } from './LikeC4Browser.css'
@@ -78,21 +79,30 @@ export function LikeC4Browser<
   styleNonce,
   enableRelationshipsBrowser = false
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
+  const onCloseRef = useSyncedRef(onClose)
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const id = useId()
 
-  useMountEffect(() => {
-    dialogRef.current?.showModal()
-    setTimeout(() => {
+  useDebouncedEffect(
+    () => {
+      dialogRef.current?.showModal()
+    },
+    [],
+    30
+  )
+
+  useDebouncedEffect(
+    () => {
       setOpened(true)
-    }, 50)
-  })
-  const closeMe = () => {
-    setTimeout(() => {
-      onClose()
-    }, 400)
-  }
+    },
+    [],
+    80
+  )
+
+  const { start: triggerOnClose } = useTimeout(() => {
+    onCloseRef.current?.()
+  }, 300)
 
   const backdropRgb = colorScheme === 'dark' ? '36 36 36' : '255 255 255'
 
@@ -195,7 +205,16 @@ export function LikeC4Browser<
           ...style
         }}
         className={className}
-        onClose={closeMe}>
+        onClick={e => {
+          if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
+            e.stopPropagation()
+            dialogRef.current?.close()
+          }
+        }}
+        onClose={e => {
+          e.stopPropagation()
+          triggerOnClose()
+        }}>
         <ShadowRoot injectFontCss={injectFontCss}>
           <ShadowRootMantineProvider
             theme={mantineTheme}

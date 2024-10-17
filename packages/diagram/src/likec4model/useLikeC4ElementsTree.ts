@@ -1,4 +1,11 @@
-import { compareNatural, type Element, type Fqn, type ViewID } from '@likec4/core'
+import {
+  compareNatural,
+  type Fqn,
+  type LikeC4DiagramModel,
+  type LikeC4Model,
+  type LikeC4ViewModel,
+  type ViewID
+} from '@likec4/core'
 import { useMemo } from 'react'
 import { useLikeC4Model } from './useLikeC4Model'
 
@@ -8,20 +15,16 @@ interface LikeC4ModelTreeNodeData {
   children: LikeC4ModelTreeNodeData[]
 }
 
-type TreeNode = Pick<Element, 'id' | 'title'>
+const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeData) => compareNatural(a.label, b.label)
 
-function buildTree(
-  roots: TreeNode[],
-  children: (id: Fqn) => TreeNode[]
-): LikeC4ModelTreeNodeData[] {
-  const buildNode = (nd: TreeNode): LikeC4ModelTreeNodeData => {
-    return {
-      label: nd.title,
-      value: nd.id,
-      children: children(nd.id).map(child => buildNode(child)).sort((a, b) => compareNatural(a.label, b.label))
-    }
+function buildNode(
+  element: LikeC4Model.ElementModel | LikeC4DiagramModel.Element | LikeC4ViewModel.Element
+): LikeC4ModelTreeNodeData {
+  return {
+    label: element.title,
+    value: element.id,
+    children: element.children().map(buildNode).sort(sortByLabel)
   }
-  return roots.map(root => buildNode(root))
 }
 
 /**
@@ -33,30 +36,9 @@ export function useLikeC4ElementsTree(viewId?: ViewID): LikeC4ModelTreeNodeData[
   return useMemo(() => {
     if (viewId) {
       const view = model.view(viewId)
-      const roots = view.roots().map(e => ({
-        id: e.id,
-        title: e.title
-      }))
-      return buildTree(
-        roots,
-        id =>
-          view.children(id).map(e => ({
-            id: e.id,
-            title: e.title
-          }))
-      )
+      return view.roots().map(buildNode).sort(sortByLabel)
     } else {
-      return buildTree(
-        model.roots().map(e => ({
-          id: e.id,
-          title: e.title
-        })),
-        id =>
-          model.children(id).map(e => ({
-            id: e.id,
-            title: e.title
-          }))
-      )
+      return model.roots().map(buildNode).sort(sortByLabel)
     }
   }, [model, viewId ?? null])
 }
