@@ -66,7 +66,7 @@
     "@mantine/colors-generator": "^7.13.2",
     "@types/natural-compare-lite": "^1.4.2",
     "chroma-js": "^3.1.1",
-    "execa": "^9.3.1",
+    "execa": "^9.4.0",
     "natural-compare-lite": "^1.4.0",
     "remeda": "^2.14.0",
     "turbo": "^2.1.3",
