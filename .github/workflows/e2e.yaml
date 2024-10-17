@@ -100,7 +100,6 @@ jobs:
 
       - name: create pull request
         uses: peter-evans/create-pull-request@v7
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
         with:
           token: ${{ env.BOT_TOKEN }}
           commit-message: "chore: update e2e screenshots"

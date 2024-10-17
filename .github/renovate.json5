@@ -1,5 +1,5 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   configMigration: true,
   extends: [
     'config:recommended',
@@ -16,16 +16,17 @@
   ],
   lockFileMaintenance: {
     enabled: true,
-  }, 
+  },
   ignorePaths: [
     "e2e/**",
     "examples/**"
   ],
   packageRules: [
     {
-      matchDepTypes: [
-        'action',
+      matchCategories: [
+        'ci',
       ],
+      automerge: true,
       pinDigests: false,
     },
     {
@@ -36,12 +37,12 @@
         'lint-staged',
         'dprint',
       ],
-      automerge: true,
       matchPackageNames: [
         '@commitlint{/,}**',
         '@typescript-eslint/{/,}**',
         'eslint{/,}**',
       ],
+      automerge: true,
     },
     {
       groupName: '@langium',
@@ -74,11 +75,6 @@
         '/^monaco/',
         '/^@monaco/',
         '/^@codingame/',
-      ],
-    },
-    {
-      enabled: false,
-      matchDepNames: [
         '@types/vscode',
         'vscode',
         '/^vscode-/',
