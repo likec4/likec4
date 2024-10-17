@@ -1,8 +1,8 @@
 import { createTheme, type MantineThemeOverride } from '@mantine/core'
-import { useColorScheme as usePreferredColorScheme } from '@mantine/hooks'
+import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMutationObserver } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { useEffect, useId, useState } from 'react'
-import { isFunction, isString } from 'remeda'
+import { useId, useState } from 'react'
+import { first, isFunction, isString } from 'remeda'
 import fontCss from './font.css?inline'
 import { shadowRoot } from './styles.css'
 import type { ViewData } from './types'
@@ -98,19 +98,34 @@ export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string
   return styleSheets
 }
 
+const getComputedColorScheme = (): ColorScheme | null => {
+  try {
+    const htmlScheme = window.getComputedStyle(document.documentElement).colorScheme ?? ''
+    const colorScheme = first(htmlScheme.split(' '))
+    if (colorScheme === 'light' || colorScheme === 'dark') {
+      return colorScheme
+    }
+  } catch (_e) {
+    // noop
+  }
+  return null
+}
+
 export type ColorScheme = 'light' | 'dark'
 export function useColorScheme(explicit?: ColorScheme): ColorScheme {
   const preferred = usePreferredColorScheme()
-  const [current, setCurrent] = useState<ColorScheme>(preferred)
+  const [computed, setComputed] = useState(getComputedColorScheme)
+  useMutationObserver(
+    useDebouncedCallback(() => setComputed(getComputedColorScheme), 50),
+    {
+      attributes: true,
+      childList: false,
+      subtree: false
+    },
+    () => document.documentElement
+  )
 
-  useEffect(() => {
-    if (explicit) {
-      return
-    }
-    setCurrent(preferred)
-  }, [preferred])
-
-  return explicit ?? current
+  return explicit ?? computed ?? preferred
 }
 
 export function useShadowRootStyle(
