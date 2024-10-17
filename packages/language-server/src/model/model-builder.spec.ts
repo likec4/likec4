@@ -1120,4 +1120,80 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
   })
+
+  it('local styles are applied to all views', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+        }
+
+        view sys2 {
+          include sys2
+        }
+
+        style * {
+          color green
+        }
+      }
+    `)
+    expect(diagnostics.length).toBe(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+
+    const sys2View = model?.views['sys2' as ViewID]!
+    expect(sys2View).toBeDefined()
+    expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
+  })
+
+  it('local styles are overwritten by internal view styles', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+
+          style * {
+            color red
+          }
+        }
+
+        view sys2 {
+          include sys2
+        }
+
+        style * {
+          color green
+        }
+      }
+    `)
+    expect(diagnostics.length).toBe(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
+
+    const sys2View = model?.views['sys2' as ViewID]!
+    expect(sys2View).toBeDefined()
+    expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
+  })
 })

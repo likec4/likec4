@@ -286,17 +286,23 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views : [])
-    for (const view of views) {
-      try {
-        if (!isValid(view)) {
-          continue
+    const viewBlocks = doc.parseResult.value.views.filter(v => isValid(v))
+    for (const viewBlock of viewBlocks) {
+      const localStyles = viewBlock.styles
+        .flatMap(s => this.parseViewRuleStyle(s, isValid))
+      const stylesToApply = localStyles
+
+      for (const view of viewBlock.views) {
+        try {
+          if (!isValid(view)) {
+            continue
+          }
+          doc.c4Views.push(
+            ast.isElementView(view) ? this.parseElementView(view, stylesToApply, isValid) : this.parseDynamicElementView(view, stylesToApply, isValid)
+          )
+        } catch (e) {
+          logWarnError(e)
         }
-        doc.c4Views.push(
-          ast.isElementView(view) ? this.parseElementView(view, isValid) : this.parseDynamicElementView(view, isValid)
-        )
-      } catch (e) {
-        logWarnError(e)
       }
     }
   }
@@ -723,7 +729,7 @@ export class LikeC4ModelParser {
     return step
   }
 
-  private parseElementView(astNode: ast.ElementView, isValid: IsValidFn): ParsedAstElementView {
+  private parseElementView(astNode: ast.ElementView, additionalStyles: c4.ViewRuleStyle[], isValid: IsValidFn): ParsedAstElementView {
     const body = astNode.body
     invariant(body, 'ElementView body is not defined')
     const astPath = this.getAstNodePath(astNode)
@@ -764,14 +770,14 @@ export class LikeC4ModelParser {
       description,
       tags,
       links: isNonEmptyArray(links) ? links : null,
-      rules: body.rules.flatMap(n => {
+      rules: [...additionalStyles, ...body.rules.flatMap(n => {
         try {
           return isValid(n) ? this.parseViewRule(n, isValid) : []
         } catch (e) {
           logWarnError(e)
           return []
         }
-      }),
+      })],
       ...(viewOf && { viewOf }),
       ...(manualLayout && { manualLayout })
     }
@@ -788,7 +794,7 @@ export class LikeC4ModelParser {
     return view
   }
 
-  private parseDynamicElementView(astNode: ast.DynamicView, isValid: IsValidFn): ParsedAstDynamicView {
+  private parseDynamicElementView(astNode: ast.DynamicView, additionalStyles: c4.ViewRuleStyle[], isValid: IsValidFn): ParsedAstDynamicView {
     const body = astNode.body
     invariant(body, 'DynamicElementView body is not defined')
     // only valid props
@@ -821,14 +827,14 @@ export class LikeC4ModelParser {
       description,
       tags,
       links: isNonEmptyArray(links) ? links : null,
-      rules: body.rules.flatMap(n => {
+      rules: [...additionalStyles, ...body.rules.flatMap(n => {
         try {
           return isValid(n) ? this.parseDynamicViewRule(n, isValid) : []
         } catch (e) {
           logWarnError(e)
           return []
         }
-      }, [] as Array<c4.DynamicViewRule>),
+      }, [] as Array<c4.DynamicViewRule>)],
       steps: body.steps.reduce((acc, n) => {
         try {
           if (isValid(n)) {

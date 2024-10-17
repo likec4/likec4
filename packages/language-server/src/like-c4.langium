@@ -194,8 +194,10 @@ MetadataAttribute:
 // Views -------------------------------------
 
 ModelViews:
-  name='views' '{'
-    views+=LikeC4ViewRule*
+  name='views' '{' (
+      views+=LikeC4ViewRule |
+      styles+=ViewRuleStyle
+    )*
   '}';
 
 type LikeC4View = ElementView | DynamicView;

@@ -532,6 +532,28 @@ view apiApp of internetBankingSystem.apiApplication {
 
 Please note, that [overrides](#with-overrides) have higher priority.
 
+#### Local style predicates
+
+Style predicates can be defined for a `views` group.
+
+```likec4
+views {
+  // apply to all elements in all views in this views block
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+  }
+
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+  }
+}
+```
+
 ### Extend views
 
 Views can be extended to avoid duplication, to create a "baseline" or, for example, "slides" for a presentation:
