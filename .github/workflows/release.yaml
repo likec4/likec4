@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 5
     if: "github.ref == 'refs/heads/main'"
     steps:
-      - uses: wow-actions/use-app-token@d7957e08172ca2e8e49b35b8d266ad585885edc7 # v2
+      - uses: wow-actions/use-app-token@9e8487c993ab4085b2dd8cb90ab446b6a18cf834 # v2
         with:
           fallback: ${{ secrets.GITHUB_TOKEN }}
           app_id: ${{ secrets.BOT_APP_ID }}
