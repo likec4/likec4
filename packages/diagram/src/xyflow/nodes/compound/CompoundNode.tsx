@@ -335,7 +335,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
               onDoubleClick={stopPropagation}
               {...animateHandlers}
             >
-              <IconTransform stroke={1.8} style={{ width: '67%' }} />
+              <IconTransform stroke={1.8} style={{ width: '66%' }} />
             </ActionIcon>
           </Tooltip>
         )}
