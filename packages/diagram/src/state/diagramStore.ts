@@ -23,10 +23,11 @@ import {
   applyEdgeChanges,
   applyNodeChanges,
   getViewportForBounds,
+  type InternalNode,
   type OnEdgesChange,
   type OnNodesChange
 } from '@xyflow/react'
-import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
+import { boxToRect, getBoundsOfRects, getNodeDimensions, type XYPosition } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
@@ -45,6 +46,7 @@ import type {
 import { type Vector, vector } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
+import { createLayoutConstraints } from '../xyflow/useLayoutConstraints'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
@@ -82,6 +84,8 @@ export type DiagramInitialState = {
   // Diagram Container, for Mantine Portal
   getContainer: () => HTMLDivElement | null
 } & RequiredOrNull<LikeC4DiagramEventHandlers>
+
+type AlignmentMode = 'Left' | 'Center' | 'Right' | 'Top' | 'Middle' | 'Bottom'
 
 const StringSet = Set<string>
 
@@ -184,6 +188,7 @@ export type DiagramState = Simplify<
     highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => void
 
     resetEdgeControlPoints: () => void
+    align: (mode: AlignmentMode) => void
   }
 >
 
@@ -1052,6 +1057,65 @@ export function createDiagramStore(props: DiagramInitialState) {
 
               return vector(v).mul(scale).add(nodeCenter)
             }
+          },
+          align: (mode: AlignmentMode) => {
+            const { scheduleSaveManualLayout, xystore } = get()
+            const { nodeLookup, parentLookup } = xystore.getState()
+
+            const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
+            const nodesToAlign = new Set(selectedNodes.difference(new Set(parentLookup.keys())))
+            const constraints = createLayoutConstraints(xystore, nodesToAlign)
+
+            let getEdgePosition: (nodes: InternalNode<XYFlowNode>[]) => number
+            let getPosition: (alignTo: number, node: InternalNode<XYFlowNode>) => number
+            let propertyToEdit: keyof XYPosition
+
+            switch (mode) {
+              case 'Left':
+                getEdgePosition = nodes => Math.min(...nodes.map(n => n.internals.positionAbsolute.x))
+                propertyToEdit = 'x'
+                getPosition = (alignTo, _) => Math.floor(alignTo)
+                break
+              case 'Top':
+                getEdgePosition = nodes => Math.min(...nodes.map(n => n.internals.positionAbsolute.y))
+                propertyToEdit = 'y'
+                getPosition = (alignTo, _) => Math.floor(alignTo)
+                break
+              case 'Right':
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.x + getNodeDimensions(n).width))
+                propertyToEdit = 'x'
+                getPosition = (alignTo, node) => Math.floor(alignTo - node.width!)
+                break
+              case 'Bottom':
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.y + getNodeDimensions(n).height))
+                propertyToEdit = 'y'
+                getPosition = (alignTo, node) => Math.floor(alignTo - node.height!)
+                break
+              case 'Center':
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.x + getNodeDimensions(n).width / 2))
+                propertyToEdit = 'x'
+                getPosition = (alignTo, node) => Math.floor(alignTo - getNodeDimensions(node).width / 2)
+                break
+              case 'Middle':
+                getEdgePosition = nodes =>
+                  Math.max(...nodes.map(n => n.internals.positionAbsolute.y + getNodeDimensions(n).height / 2))
+                propertyToEdit = 'y'
+                getPosition = (alignTo, node) => Math.floor(alignTo - getNodeDimensions(node).height / 2)
+                break
+            }
+
+            constraints.onMove((nodes) => {
+              const alignTo = getEdgePosition(nodes.map(({ node }) => node))
+
+              nodes.forEach(({ rect, node }) => {
+                rect.positionAbsolute = { ...rect.positionAbsolute, [propertyToEdit]: getPosition(alignTo, node) }
+              })
+            })
+
+            scheduleSaveManualLayout()
           }
         } satisfies DiagramState),
         {

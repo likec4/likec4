@@ -73,7 +73,7 @@ export function diagramViewToXYFlowData(
     // const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
 
     const id = ns + node.id
-    const draggable = opts.draggable && (!parent || parent.children.length > 1)
+    const draggable = opts.draggable
     xynodes.push({
       id,
       type: isCompound ? 'compound' : 'element',

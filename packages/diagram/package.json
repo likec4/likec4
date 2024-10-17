@@ -32,7 +32,6 @@
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
     "@likec4/core": "workspace:*",
-    "@lume/kiwi": "^0.4.4",
     "@mantine/vanilla-extract": "7.13.2",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "3.17.0",
