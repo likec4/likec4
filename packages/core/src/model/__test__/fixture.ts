@@ -249,6 +249,11 @@ const fakeRelationsArr = [
     title: 'uses'
   }),
   rel({
+    source: 'customer',
+    target: 'cloud.frontend',
+    title: 'uses frontend'
+  }),
+  rel({
     source: 'cloud.backend.graphql',
     target: 'cloud.backend.storage',
     title: 'stores',

@@ -1,41 +1,141 @@
 import type { ThemeColor } from '@likec4/core'
-import { Box, Text } from '@mantine/core'
+import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
+import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
-import { memo, useState } from 'react'
-import { clamp } from 'remeda'
+import { m, type Variants } from 'framer-motion'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { clamp, isNumber } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
-import { NavigateToBtn } from '../shared/NavigateToBtn'
+import { stopPropagation } from '../../utils'
 import { CompoundToolbar } from '../shared/Toolbar'
 import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
-  'id' | 'data' | 'width' | 'height' | 'selected'
+  'id' | 'data' | 'selected' | 'dragging'
 >
 
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
-  // && eq(prev.width, next.width)
-  // && eq(prev.height, next.height)
-  && eq(prev.data.element, next.data.element)
+  && eq(prev.dragging ?? false, next.dragging ?? false)
+  && eq(prev.data, next.data)
 )
+
+const VariantsRoot = {
+  idle: (_, { translateY }) => ({
+    translateX: 0,
+    translateY: 0,
+    transition: isNumber(translateY) && translateY < 0
+      ? {
+        delay: 0.09,
+        delayChildren: 0.1,
+        staggerChildren: 0.08,
+        staggerDirection: -1
+      }
+      : {}
+  }),
+  selected: {},
+  hovered: (_, { translateY }) => ({
+    translateX: -1,
+    translateY: -1,
+    transition: !isNumber(translateY) || translateY === 0
+      ? {
+        delay: 0.08,
+        delayChildren: 0.09,
+        staggerChildren: 0.15
+      }
+      : {}
+  }),
+  tap: {}
+} satisfies Variants
+
+const VariantsNavigate = {
+  idle: {
+    '--ai-bg': 'var(--ai-bg-idle)',
+    scale: 1,
+    opacity: 0.8,
+    translateX: 0,
+    translateY: 0
+  },
+  hovered: {
+    display: 'block',
+    '--ai-bg': 'var(--ai-bg-hover)',
+    scale: 1.35,
+    opacity: 1,
+    translateX: -6,
+    translateY: 2
+  },
+  'hovered:navigate': {
+    scale: 1.4
+  },
+  'hovered:relations': {},
+  'tap:navigate': {
+    scale: 1.15
+  }
+} satisfies Variants
+
+const VariantsRelationsBtn = {
+  idle: {
+    '--ai-bg': 'var(--ai-bg-idle)',
+    scale: 1,
+    opacity: 0,
+    translateX: 2,
+    translateY: -8,
+    transitionEnd: {
+      display: 'none'
+    }
+  },
+  hovered: {
+    display: 'block',
+    '--ai-bg': 'var(--ai-bg-hover)',
+    scale: 1.2,
+    opacity: 1,
+    translateX: -5,
+    translateY: 2
+  },
+  'hovered:relations': {
+    scale: 1.42
+  },
+  'tap:relations': {
+    scale: 1.15
+  }
+} satisfies Variants
+
+/**
+ * Variants for the relationships button (when Navigate button is not visible)
+ */
+const VariantsRelationsBtnSingle = {
+  ...VariantsNavigate,
+  idle: {
+    ...VariantsNavigate.idle,
+    opacity: 0,
+    transitionEnd: {
+      display: 'none'
+    }
+  }
+}
+
+type VariantLabel = keyof typeof VariantsRoot | keyof typeof VariantsNavigate | keyof typeof VariantsRelationsBtn
 
 export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function CompoundNode({
   id,
   selected = false,
+  dragging = false,
   data: {
-    element
+    element: {
+      color,
+      style,
+      depth = 1,
+      ...element
+    }
   }
 }) {
-  const { color, style, depth = 1, ...compound } = element
-  // const w = toDomPrecision(width ?? compound.width)
-  // const h = toDomPrecision(height ?? compound.height)
   const opacity = clamp((style.opacity ?? 100) / 100, {
     min: 0,
     max: 1
@@ -45,18 +145,92 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     max: 50
   })
 
-  const { isEditable, isHovered, isDimmed, hasOnNavigateTo } = useDiagramState(s => ({
+  const {
+    triggerOnNavigateTo,
+    openOverlay,
+    isEditable,
+    isHovered,
+    isDimmed,
+    isInteractive,
+    hasOnNavigateTo,
+    enableRelationshipsMode
+  } = useDiagramState(s => ({
+    triggerOnNavigateTo: s.triggerOnNavigateTo,
+    openOverlay: s.openOverlay,
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    hasOnNavigateTo: !!s.onNavigateTo
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
+      || (!!s.onNavigateTo && !!element.navigateTo),
+    hasOnNavigateTo: !!s.onNavigateTo,
+    enableRelationshipsMode: s.enableRelationshipsBrowser
   }))
-  const isnavigable = !!compound.navigateTo && hasOnNavigateTo
+  const isNavigable = !!element.navigateTo && hasOnNavigateTo
 
   const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
+  const [animateVariants, setAnimateVariants] = useState<VariantLabel[] | null>(null)
+
+  useEffect(() => {
+    if (!isHovered && animateVariants) {
+      setAnimateVariants(null)
+    }
+  }, [isHovered])
+
+  const animateHandlers = useMemo(() => {
+    const getTarget = (e: MouseEvent) =>
+      (e.target as HTMLElement).closest('[data-animate-target]')?.getAttribute('data-animate-target')
+    return ({
+      onTapStart: (e: MouseEvent) => {
+        const tapTarget = getTarget(e)
+        if (tapTarget) {
+          setAnimateVariants([
+            'hovered',
+            `hovered:${tapTarget}` as VariantLabel,
+            `tap:${tapTarget}` as VariantLabel
+          ])
+        }
+      },
+      onHoverStart: (e: MouseEvent) => {
+        const hoverTarget = getTarget(e)
+        if (hoverTarget) {
+          setAnimateVariants(['hovered', `hovered:${hoverTarget}` as VariantLabel])
+        }
+      },
+      onHoverEnd: () => setAnimateVariants(null),
+      onTapCancel: () => setAnimateVariants(null),
+      onTap: () => setAnimateVariants(null)
+    })
+  }, [setAnimateVariants])
+
+  let animate: keyof typeof VariantsRoot = 'idle'
+  switch (true) {
+    case dragging && selected:
+      animate = 'selected'
+      break
+    case dragging:
+      animate = 'idle'
+      break
+    case isInteractive && isHovered:
+      animate = 'hovered'
+      break
+    case selected:
+      animate = 'selected'
+      break
+  }
+
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
+
+  const onNavigateTo = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    triggerOnNavigateTo(id, e)
+  }, [triggerOnNavigateTo, id])
+
+  const onBrowseRelations = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    openOverlay({ relationshipsOf: element.id })
+  }, [openOverlay, element.id])
 
   return (
     <>
@@ -67,12 +241,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           align="start"
           onColorPreview={setPreviewColor} />
       )}
-      <Handle
-        type="target"
-        position={Position.Top}
-        className={css.nodeHandlerInCenter}
-      />
       <Box
+        component={m.div}
+        animate={isHovered ? (animateVariants ?? animate) : animate}
+        variants={VariantsRoot}
+        initial={false}
         className={clsx(
           css.container,
           'likec4-compound-node',
@@ -114,19 +287,61 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
             component="div"
             className={clsx(
               css.title,
-              isnavigable && css.titleWithNavigation,
+              (isNavigable || enableRelationshipsMode) && css.titleWithNavigation,
               'likec4-compound-title'
             )}>
-            {compound.title}
+            {element.title}
           </Text>
         </div>
-        {isnavigable && <NavigateToBtn xynodeId={id} className={css.navigateBtn} />}
+        {isNavigable && (
+          <ActionIcon
+            key={'navigate'}
+            component={m.div}
+            variants={VariantsNavigate}
+            data-animate-target="navigate"
+            className={clsx('nodrag nopan', css.navigateBtn)}
+            radius="md"
+            style={{ zIndex: 100 }}
+            onClick={onNavigateTo}
+            role="button"
+            onDoubleClick={stopPropagation}
+            {...animateHandlers}
+          >
+            <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
+          </ActionIcon>
+        )}
+        {enableRelationshipsMode && (
+          <Tooltip
+            fz="xs"
+            color="dark"
+            label="Browse relationships"
+            withinPortal={false}
+            openDelay={600}
+            position="right">
+            <ActionIcon
+              component={m.div}
+              // Is is a second button, so we need to use a different variant
+              key={isNavigable ? 'relations' : 'relations-as-navigate'}
+              variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
+              data-animate-target={isNavigable ? 'relations' : 'navigate'}
+              className={clsx('nodrag nopan', css.navigateBtn)}
+              radius="md"
+              style={{
+                top: isNavigable ? 50 : undefined,
+                zIndex: 99
+              }}
+              role="button"
+              onClick={onBrowseRelations}
+              onDoubleClick={stopPropagation}
+              {...animateHandlers}
+            >
+              <IconTransform stroke={1.8} style={{ width: '66%' }} />
+            </ActionIcon>
+          </Tooltip>
+        )}
       </Box>
-      <Handle
-        type="source"
-        position={Position.Top}
-        className={css.nodeHandlerInCenter}
-      />
+      <Handle type="target" position={Position.Top} className={css.nodeHandlerInCenter} />
+      <Handle type="source" position={Position.Top} className={css.nodeHandlerInCenter} />
     </>
   )
 }, isEqualProps)

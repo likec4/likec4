@@ -50,6 +50,13 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
 
     /** Function to generate nonce attribute added to all generated `<style />` tags */
     styleNonce?: string | (() => string) | undefined
+
+    /**
+     * Experimental feature to browse relationships
+     *
+     * @default false
+     */
+    enableRelationshipsBrowser?: boolean | undefined
   }
 
 export function LikeC4Browser<
@@ -68,7 +75,8 @@ export function LikeC4Browser<
   style,
   mantineTheme,
   background = 'dots',
-  styleNonce
+  styleNonce,
+  enableRelationshipsBrowser = false
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -208,11 +216,12 @@ export function LikeC4Browser<
                 showElementLinks
                 enableDynamicViewWalkthrough
                 enableFocusMode
+                enableRelationshipsBrowser={enableRelationshipsBrowser}
                 showNavigationButtons
                 showRelationshipDetails
                 showNotations={hasNotations}
                 background={background}
-                controls={false}
+                controls
                 nodesSelectable={false}
                 nodesDraggable={false}
                 keepAspectRatio={false}

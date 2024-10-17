@@ -8,7 +8,7 @@ import {
   invariant,
   nonNullable
 } from '@likec4/core'
-import { difference, filter, map, pipe, sort, take } from 'remeda'
+import { difference, filter, map, pipe, sort } from 'remeda'
 import { Graph, postorder } from '../../utils/graphlib'
 
 // side effect
@@ -53,7 +53,7 @@ export function sortNodes({
   }
 
   for (const n of nodes) {
-    g.setNode(n.id)
+    g.setNode(n.id, n.id)
     if (n.children.length > 0) {
       // n.children.forEach(c => {
       //   g.setEdge(n.id, c, undefined, `${n.id}:${c}`)
@@ -79,7 +79,7 @@ export function sortNodes({
     }
   }
 
-  let sources = g.sources()
+  let sources = g.sources() as unknown as Fqn[]
   if (sources.length === 0) {
     sources = pipe(
       nodes,

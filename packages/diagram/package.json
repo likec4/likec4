@@ -30,6 +30,7 @@
     "clean": "rm -r -f -g 'dist/*' .tsbuildinfo"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^1.1.4",
     "@likec4/core": "workspace:*",
     "@mantine/vanilla-extract": "7.13.2",
     "@react-hookz/web": "^24.0.4",

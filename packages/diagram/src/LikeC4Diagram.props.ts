@@ -62,11 +62,6 @@ export interface LikeC4DiagramProperties {
   className?: string | undefined
 
   /**
-   * Show/hide ReactFlow controls menu
-   * @default false
-   */
-  controls?: boolean | undefined
-  /**
    * Enable/disable panning
    * @default true
    */
@@ -81,6 +76,12 @@ export interface LikeC4DiagramProperties {
    * @default true
    */
   readonly?: boolean | undefined
+  /**
+   * Show/hide panel with top left controls,
+   *
+   * @default true if not readonly
+   */
+  controls?: boolean | undefined
   /**
    * If set, initial viewport will show all nodes & edges
    * @default true
@@ -130,7 +131,7 @@ export interface LikeC4DiagramProperties {
   showDiagramTitle?: boolean | undefined
 
   /**
-   * Show back/forward navigation buttons
+   * Show back/forward history navigation buttons
    * @default true if `onNavigateTo` is set
    */
   showNavigationButtons?: undefined | boolean
@@ -149,9 +150,16 @@ export interface LikeC4DiagramProperties {
 
   /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
-   * @default true
+   * @default false
    */
   enableFocusMode?: boolean | undefined
+
+  /**
+   * Experimental feature to browse relationships
+   *
+   * @default false
+   */
+  enableRelationshipsBrowser?: boolean | undefined
 
   /**
    * If Walkthrough for dynamic views should be enabled

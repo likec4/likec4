@@ -46,7 +46,7 @@ export const Header = memo(() => {
 
       <Group h="100%" gap={4}>
         {isShareable && (
-          <Popover position="bottom" withArrow shadow="md" closeOnClickOutside>
+          <Popover position="bottom" shadow="md" closeOnClickOutside>
             <PopoverTarget>
               <Button
                 visibleFrom="md"

@@ -1,6 +1,6 @@
-import { Button, Drawer, Group, ScrollArea, SegmentedControl } from '@mantine/core'
+import { Button, Drawer, Group, rem, ScrollArea, SegmentedControl } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
-import { IconArrowLeft } from '@tabler/icons-react'
+import { IconArrowLeft, IconStarFilled } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
 import { DiagramsTree } from './DiagramsTree'
 import { SidebarDrawerOps, useDrawerOpened } from './state'
@@ -19,16 +19,22 @@ export function SidebarDrawer() {
       opened={opened}
       scrollAreaComponent={ScrollArea.Autosize}
       onClose={SidebarDrawerOps.close}>
-      <Drawer.Overlay />
+      <Drawer.Overlay blur={.5} />
       <Drawer.Content>
         <Drawer.Header>
-          <Group>
+          <Group gap={'xs'}>
             <Button
               component={Link}
               to="/"
-              leftSection={<IconArrowLeft size={16} />}
+              leftSection={<IconArrowLeft size={14} />}
               color="dimmed"
               variant="subtle"
+              px={rem(5)}
+              styles={{
+                section: {
+                  marginInlineEnd: 4
+                }
+              }}
               size="xs">
               Overview
             </Button>
@@ -40,9 +46,25 @@ export function SidebarDrawer() {
               data={[
                 { label: 'By files', value: 'by-files' },
                 { label: 'By folders', value: 'by-folders' },
-                { label: 'None', value: 'none' }
+                { label: 'List', value: 'none' }
               ]}
             />
+            <Button
+              component={Link}
+              to="/view/$viewId"
+              params={{ viewId: 'index' }}
+              leftSection={<IconStarFilled size={12} stroke={2} />}
+              color="dimmed"
+              variant="subtle"
+              px={rem(5)}
+              styles={{
+                section: {
+                  marginInlineEnd: 4
+                }
+              }}
+              size="xs">
+              Open index
+            </Button>
           </Group>
           <Drawer.CloseButton />
         </Drawer.Header>

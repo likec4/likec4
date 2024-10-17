@@ -37,11 +37,6 @@ export async function viteWebcomponentConfig({
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       'process.env.NODE_ENV': '"production"'
     },
-    resolve: {
-      alias: {
-        'likec4/icons': resolve(root, '../../icons')
-      }
-    },
     esbuild: {
       ...JsBanners
     },

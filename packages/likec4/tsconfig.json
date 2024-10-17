@@ -6,7 +6,6 @@
     "composite": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "incremental": false,
     "paths": {
       "@/*": [
         "./src/*"

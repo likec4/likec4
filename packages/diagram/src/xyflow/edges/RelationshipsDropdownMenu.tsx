@@ -47,6 +47,7 @@ export function RelationshipsDropdownMenu({
   disabled?: boolean | undefined
   likec4model: LikeC4Model
 }>) {
+  const diagramApi = useDiagramStoreApi()
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
 
@@ -122,6 +123,22 @@ export function RelationshipsDropdownMenu({
             {nested.map(renderRelationship)}
           </>
         )}
+        {
+          /* <Box pos={'absolute'} top={5} right={6}>
+          <ActionIcon
+            size={24}
+            variant="light"
+            onClick={e => {
+              e.stopPropagation()
+              diagramApi.getState().openOverlay({
+                edgeDetails: edge.id
+              })
+            }}
+          >
+            <IconArrowsMaximize style={{ width: '70%' }} />
+          </ActionIcon>
+        </Box> */
+        }
       </MenuDropdown>
     </Menu>
   )

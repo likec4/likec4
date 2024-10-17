@@ -2,7 +2,7 @@ import { createTheme, type MantineThemeOverride } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useEffect, useId, useState } from 'react'
-import { isString } from 'remeda'
+import { isFunction, isString } from 'remeda'
 import fontCss from './font.css?inline'
 import { shadowRoot } from './styles.css'
 import type { ViewData } from './types'
@@ -63,12 +63,18 @@ const createStyleSheet = () => {
   return bundledCSS
 }
 
-export function useCreateStyleSheet(injectFontCss: boolean) {
+export function useCreateStyleSheet(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
   useIsomorphicLayoutEffect(() => {
     if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
       const style = document.createElement('style')
       style.setAttribute('type', 'text/css')
       style.setAttribute('data-likec4-font', '')
+      if (isString(styleNonce)) {
+        style.setAttribute('nonce', styleNonce)
+      }
+      if (isFunction(styleNonce)) {
+        style.setAttribute('nonce', styleNonce())
+      }
       style.appendChild(document.createTextNode(fontCss))
       document.head.appendChild(style)
     }
@@ -77,9 +83,9 @@ export function useCreateStyleSheet(injectFontCss: boolean) {
   return createStyleSheet
 }
 
-export function useBundledStyleSheet(injectFontCss = true) {
+export function useBundledStyleSheet(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
   const [styleSheets, setStyleSheets] = useState([] as CSSStyleSheet[])
-  const createCssStyleSheet = useCreateStyleSheet(injectFontCss)
+  const createCssStyleSheet = useCreateStyleSheet(injectFontCss, styleNonce)
 
   useIsomorphicLayoutEffect(() => {
     const css = createCssStyleSheet()
@@ -92,32 +98,19 @@ export function useBundledStyleSheet(injectFontCss = true) {
   return styleSheets
 }
 
-const getComputedBodyColorScheme = (): ColorScheme | undefined => {
-  try {
-    const colorScheme = window.getComputedStyle(document.body).colorScheme
-    if (colorScheme === 'light' || colorScheme === 'dark') {
-      return colorScheme
-    }
-  } catch (_e) {
-    // noop
-  }
-  return undefined
-}
-
 export type ColorScheme = 'light' | 'dark'
 export function useColorScheme(explicit?: ColorScheme): ColorScheme {
-  const preferred = usePreferredColorScheme(explicit)
-  const [current, setCurrent] = useState<ColorScheme>(() => explicit ?? getComputedBodyColorScheme() ?? preferred)
+  const preferred = usePreferredColorScheme()
+  const [current, setCurrent] = useState<ColorScheme>(preferred)
 
   useEffect(() => {
     if (explicit) {
-      setCurrent(explicit)
       return
     }
-    setCurrent(getComputedBodyColorScheme() ?? preferred)
-  }, [preferred, explicit])
+    setCurrent(preferred)
+  }, [preferred])
 
-  return current
+  return explicit ?? current
 }
 
 export function useShadowRootStyle(

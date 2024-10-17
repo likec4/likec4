@@ -86,6 +86,13 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
 
     /** Function to generate nonce attribute added to all generated `<style />` tags */
     styleNonce?: string | (() => string) | undefined
+
+    /**
+     * Experimental feature to browse relationships
+     *
+     * @default false
+     */
+    enableRelationshipsBrowser?: boolean | undefined
   }
 
 export function LikeC4ViewEmbedded<
@@ -106,6 +113,7 @@ export function LikeC4ViewEmbedded<
   enableFocusMode = false,
   showNotations = false,
   showRelationshipDetails = false,
+  enableRelationshipsBrowser = false,
   mantineTheme,
   where,
   style,
@@ -169,6 +177,7 @@ export function LikeC4ViewEmbedded<
             experimentalEdgeEditing={false}
             enableFocusMode={enableFocusMode}
             showRelationshipDetails={showRelationshipDetails}
+            enableRelationshipsBrowser={enableRelationshipsBrowser}
             controls={false}
             nodesSelectable={false}
             nodesDraggable={false}

@@ -82,6 +82,7 @@ export default function App() {
           experimentalEdgeEditing={edgesEditable}
           enableFocusMode
           enableDynamicViewWalkthrough
+          enableRelationshipsBrowser
           showNavigationButtons
           showElementLinks
           showNotations

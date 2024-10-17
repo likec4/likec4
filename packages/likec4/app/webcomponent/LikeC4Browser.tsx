@@ -62,10 +62,11 @@ const BrowserModal = memo<{
                   showElementLinks
                   enableDynamicViewWalkthrough
                   enableFocusMode
+                  enableRelationshipsBrowser
                   showNavigationButtons
                   showRelationshipDetails
                   showNotations={hasNotations}
-                  controls={false}
+                  controls
                   nodesSelectable={false}
                   nodesDraggable={false}
                   keepAspectRatio={false}

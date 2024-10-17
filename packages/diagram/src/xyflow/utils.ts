@@ -83,3 +83,7 @@ export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point) {
 export function distanceBetweenPoints(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
+
+export function stopPropagation(e: React.MouseEvent) {
+  return e.stopPropagation()
+}

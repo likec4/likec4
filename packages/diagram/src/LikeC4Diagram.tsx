@@ -11,6 +11,7 @@ import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { useLikeC4Model } from './likec4model'
 import { EnsureMantine } from './mantine/EnsureMantine'
+import { Overlays } from './overlays'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
@@ -30,13 +31,14 @@ export function LikeC4Diagram({
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
   background = 'dots',
-  controls = false,
+  controls = !readonly,
   showElementLinks = true,
   showDiagramTitle = true,
   showNotations = true,
   showRelationshipDetails = true,
   enableDynamicViewWalkthrough = false,
   enableFocusMode = false,
+  enableRelationshipsBrowser = false,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -69,10 +71,16 @@ export function LikeC4Diagram({
     console.warn('where filter is only supported in readonly mode')
   }
   useEffect(() => {
-    if (showRelationshipDetails && !hasLikec4model) {
-      console.warn('Relationship details require LikeC4ModelProvider')
+    if (hasLikec4model) {
+      return
     }
-  }, [showRelationshipDetails, hasLikec4model])
+    if (showRelationshipDetails) {
+      console.warn('Invalid showRelationshipDetails=true, requires LikeC4ModelProvider')
+    }
+    if (enableRelationshipsBrowser) {
+      console.warn('Invalid enableRelationshipsBrowser=true, requires LikeC4ModelProvider')
+    }
+  }, [])
 
   return (
     <EnsureMantine>
@@ -89,10 +97,12 @@ export function LikeC4Diagram({
             readonly={readonly}
             pannable={pannable}
             zoomable={zoomable}
+            hasLikeC4Model={hasLikec4model}
             fitViewEnabled={fitView}
             fitViewPadding={fitViewPadding}
+            controls={controls}
             showElementLinks={showElementLinks}
-            showNavigationButtons={showNavigationButtons}
+            showNavigationButtons={showNavigationButtons && !!onNavigateTo}
             showNotations={showNotations}
             showRelationshipDetails={showRelationshipDetails && hasLikec4model}
             nodesDraggable={nodesDraggable}
@@ -100,7 +110,8 @@ export function LikeC4Diagram({
             experimentalEdgeEditing={experimentalEdgeEditing}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableFocusMode={enableFocusMode}
-            whereFilter={where ?? null}
+            enableRelationshipsBrowser={enableRelationshipsBrowser && hasLikec4model}
+            whereFilter={readonly !== true ? (where ?? null) : null}
             renderIcon={renderIcon ?? null}
             onCanvasClick={onCanvasClick ?? null}
             onCanvasContextMenu={onCanvasContextMenu ?? null}
@@ -117,7 +128,6 @@ export function LikeC4Diagram({
             onBurgerMenuClick={onBurgerMenuClick ?? null}
           >
             <LikeC4DiagramInnerMemo
-              controls={controls}
               background={background}
               showDiagramTitle={showDiagramTitle}
             />
@@ -131,25 +141,24 @@ LikeC4Diagram.displayName = 'LikeC4Diagram'
 
 type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
-  controls: boolean
   showDiagramTitle: boolean
 }
 const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
-  controls,
   showDiagramTitle
 }) {
   const {
     isInitialized,
     pannable,
     fitView,
-    enableFocusMode
+    enableFocusMode,
+    enableOverlays
   } = useDiagramState(s => ({
     isInitialized: s.initialized,
-    zoomable: s.zoomable,
     pannable: s.pannable,
     fitView: s.fitViewEnabled,
-    enableFocusMode: s.enableFocusMode
+    enableFocusMode: s.enableFocusMode,
+    enableOverlays: s.enableRelationshipsBrowser
   }))
 
   return (
@@ -158,7 +167,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         className={clsx(
           'likec4-diagram',
           css.cssReactFlow,
-          controls === false && css.cssNoControls,
+          css.cssNoControls,
           pannable !== true && css.cssDisablePan,
           background === 'transparent' && css.cssTransparentBg
         )}
@@ -166,9 +175,9 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         <XYFlowInner
           showDiagramTitle={showDiagramTitle}
           background={background}
-          controls={controls}
         />
       </XYFlow>
+      {enableOverlays && <Overlays />}
       {isInitialized && (
         <>
           {fitView && <FitViewOnDiagramChange />}

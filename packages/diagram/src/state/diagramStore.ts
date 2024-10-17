@@ -32,7 +32,7 @@ import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { entries, first, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
-import type { ConditionalKeys, Except, RequiredKeysOf, Simplify } from 'type-fest'
+import type { ConditionalKeys, Except, RequiredKeysOf, RequireExactlyOne, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
@@ -57,6 +57,9 @@ type RequiredOrNull<T> = {
 export type DiagramInitialState = {
   view: DiagramView
   readonly: boolean
+  // If LikeC4Model provided
+  hasLikeC4Model: boolean
+  controls: boolean
   showElementLinks: boolean
   showNavigationButtons: boolean
   showNotations: boolean
@@ -69,6 +72,7 @@ export type DiagramInitialState = {
   nodesSelectable: boolean
   experimentalEdgeEditing: boolean
   enableFocusMode: boolean
+  enableRelationshipsBrowser: boolean
   renderIcon: ElementIconRenderer | null
   whereFilter: WhereOperator<string, string> | null
   // If Dynamic View
@@ -96,6 +100,13 @@ export type DiagramState = Simplify<
     viewportChanged: boolean
 
     initialized: boolean
+
+    activeOverlay:
+      | null
+      | RequireExactlyOne<{
+        relationshipsOf: Fqn
+        edgeDetails: EdgeId
+      }>
 
     // readonly=false and onChange is not null
     isEditable: () => boolean
@@ -167,6 +178,9 @@ export type DiagramState = Simplify<
     activateWalkthrough: (step: EdgeId | XYFlowEdge) => void
     stopWalkthrough: () => void
 
+    openOverlay: (overlay: NonNullable<DiagramState['activeOverlay']>) => void
+    closeOverlay: () => void
+
     onInit: (xyflow: XYFlowInstance) => void
     onNodesChange: OnNodesChange<XYFlowNode>
     onEdgesChange: OnEdgesChange<XYFlowEdge>
@@ -189,6 +203,7 @@ const DEFAULT_PROPS: Except<
   initialized: false,
   navigationHistoryIndex: 0,
   viewportChanged: false,
+  activeOverlay: null,
   activeWalkthrough: null,
   focusedNodeId: null,
   hoveredNodeId: null,
@@ -263,6 +278,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               lastClickedNodeId,
               lastClickedEdgeId,
               activeWalkthrough,
+              activeOverlay,
               nodesDraggable,
               nodesSelectable,
               hoveredEdgeId,
@@ -369,6 +385,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               hoveredNodeId = null
               focusedNodeId = null
               activeWalkthrough = null
+              activeOverlay = null
               dimmed = EmptyStringSet
             }
 
@@ -434,6 +451,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 viewSyncDebounceTimeout,
                 view: nextView,
                 activeWalkthrough,
+                activeOverlay,
                 lastOnNavigate,
                 lastClickedNodeId,
                 lastClickedEdgeId,
@@ -458,6 +476,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               set(
                 {
                   activeWalkthrough: null,
+                  activeOverlay: null,
                   focusedNodeId: null,
                   dimmed: EmptyStringSet
                 },
@@ -486,6 +505,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               set(
                 {
                   activeWalkthrough: null,
+                  activeOverlay: null,
                   focusedNodeId: nodeId,
                   dimmed
                 },
@@ -520,27 +540,19 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           resetFocusAndLastClicked: () => {
-            let {
-              activeWalkthrough,
-              focusedNodeId,
-              lastClickedNodeId,
-              lastClickedEdgeId,
-              xystore
-            } = get()
-            if (activeWalkthrough || focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
-              set(
-                {
-                  activeWalkthrough: null,
-                  focusedNodeId: null,
-                  lastClickedNodeId: null,
-                  lastClickedEdgeId: null,
-                  dimmed: EmptyStringSet
-                },
-                noReplace,
-                'resetLastClicked'
-              )
-            }
-            xystore.getState().resetSelectedElements()
+            set(
+              {
+                activeWalkthrough: null,
+                activeOverlay: null,
+                focusedNodeId: null,
+                lastClickedNodeId: null,
+                lastClickedEdgeId: null,
+                dimmed: EmptyStringSet
+              },
+              noReplace,
+              'resetLastClicked'
+            )
+            get().xystore.getState().resetSelectedElements()
           },
 
           getElement: (fqn) => {
@@ -745,10 +757,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             onChange?.({ change })
           },
           scheduleSaveManualLayout: () => {
-            let { viewSyncDebounceTimeout } = get()
-            if (viewSyncDebounceTimeout) {
-              clearTimeout(viewSyncDebounceTimeout)
-            }
+            clearTimeout(get().viewSyncDebounceTimeout ?? undefined)
             set(
               {
                 viewSyncDebounceTimeout: setTimeout(() => {
@@ -838,6 +847,25 @@ export function createDiagramStore(props: DiagramInitialState) {
               )
               onNavigateTo(stepForward.viewId)
             }
+          },
+
+          openOverlay: (overlay) => {
+            set(
+              {
+                activeOverlay: overlay
+              },
+              noReplace,
+              'openOverlay'
+            )
+          },
+          closeOverlay: () => {
+            set(
+              {
+                activeOverlay: null
+              },
+              noReplace,
+              'openOverlay'
+            )
           },
 
           fitDiagram: (duration = 500) => {

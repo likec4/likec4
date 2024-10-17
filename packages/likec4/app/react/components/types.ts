@@ -93,6 +93,13 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
    */
   enableFocusMode?: boolean | undefined
 
+  /**
+   * Experimental feature to browse relationships
+   *
+   * @default false
+   */
+  enableRelationshipsBrowser?: boolean | undefined
+
   where?: WhereOperator<Tag, Kind> | undefined
 
   className?: string | undefined

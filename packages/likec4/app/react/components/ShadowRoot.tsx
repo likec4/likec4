@@ -15,14 +15,16 @@ const Root: DetailedHTMLFactory<
 
 type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
   injectFontCss?: boolean | undefined
+  styleNonce?: string | (() => string) | undefined
 }
 
 export function ShadowRoot({
   children,
   injectFontCss = true,
+  styleNonce,
   ...props
 }: ShadowRootProps) {
-  const styleSheets = useBundledStyleSheet(injectFontCss)
+  const styleSheets = useBundledStyleSheet(injectFontCss, styleNonce)
   return (
     <Root styleSheets={styleSheets} {...props}>
       {children}

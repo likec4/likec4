@@ -6,7 +6,13 @@ interface Props {
 const { viewId } = Astro.props
 ---
 
-<C4View viewId={viewId} className="likec4-index-view" client:only="react" injectFontCss={false} />
+<C4View
+  viewId={viewId}
+  className="likec4-index-view"
+  enableRelationshipsBrowser={false}
+  client:only="react"
+  injectFontCss={false}
+/>
 
 <style>
   .likec4-index-view {

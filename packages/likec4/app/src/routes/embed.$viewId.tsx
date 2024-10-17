@@ -53,6 +53,9 @@ function EmbedPage() {
         nodesSelectable={false}
         nodesDraggable={false}
         enableFocusMode={false}
+        enableRelationshipsBrowser={false}
+        experimentalEdgeEditing={false}
+        keepAspectRatio={false}
         renderIcon={RenderIcon}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />

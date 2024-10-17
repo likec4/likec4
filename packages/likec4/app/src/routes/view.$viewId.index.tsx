@@ -36,15 +36,16 @@ function ViewReact() {
       readonly
       zoomable
       pannable
-      controls={false}
+      controls
       fitViewPadding={0.08}
       showDiagramTitle
       showElementLinks
       showNavigationButtons
+      enableFocusMode
       enableDynamicViewWalkthrough
+      enableRelationshipsBrowser
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}
-      enableFocusMode={true}
       nodesDraggable={false}
       nodesSelectable={false}
       renderIcon={RenderIcon}

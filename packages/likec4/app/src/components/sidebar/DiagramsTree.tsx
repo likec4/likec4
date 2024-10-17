@@ -12,7 +12,14 @@ import {
   useComputedColorScheme,
   useTree
 } from '@mantine/core'
-import { IconFileCode, IconFolderFilled, IconFolderOpen, IconLayoutDashboard } from '@tabler/icons-react'
+import {
+  IconFileCode,
+  IconFolderFilled,
+  IconFolderOpen,
+  IconLayoutDashboard,
+  IconStar,
+  IconStarFilled
+} from '@tabler/icons-react'
 import { useParams, useRouter } from '@tanstack/react-router'
 import { memo, type MouseEvent, type PropsWithChildren, useEffect } from 'react'
 import { RenderIcon } from '../RenderIcon'
@@ -100,7 +107,8 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               }}
               leftSection={
                 <>
-                  {!hasChildren && <IconLayoutDashboard size={16} opacity={0.7} />}
+                  {!hasChildren && node.value === 'index' && <IconStarFilled size={14} opacity={0.7} />}
+                  {!hasChildren && node.value !== 'index' && <IconLayoutDashboard size={16} opacity={0.7} />}
                   {hasChildren && <FolderIcon node={node} expanded={expanded} />}
                 </>
               }

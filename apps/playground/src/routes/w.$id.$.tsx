@@ -75,7 +75,7 @@ export function WorkspaceDiagramPage() {
         <LikeC4Diagram
           view={diagram}
           readonly={false}
-          controls={false}
+          controls
           fitView
           fitViewPadding={0.07}
           experimentalEdgeEditing
@@ -83,6 +83,7 @@ export function WorkspaceDiagramPage() {
           nodesDraggable
           showNavigationButtons
           enableDynamicViewWalkthrough
+          enableRelationshipsBrowser
           showNotations
           enableFocusMode
           renderIcon={RendererIcon}

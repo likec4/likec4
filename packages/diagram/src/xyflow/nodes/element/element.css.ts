@@ -23,6 +23,16 @@ export const container = style({
     '&[data-hovered="true"]': {
       willChange: 'transform'
     }
+  },
+  ':after': {
+    content: ' ',
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    height: 16,
+    background: 'transparent',
+    pointerEvents: 'all'
   }
 })
 
@@ -110,7 +120,7 @@ export const fillElementStroke = style({
 })
 
 export const fillMixStroke = style({
-  fill: stokeFillMix
+  fill: fallbackVar(stokeFillMix, `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`)
 })
 
 export const hasIcon = style({})
@@ -248,7 +258,12 @@ export const elementIcon = style({
   alignItems: 'center',
   justifyContent: 'center',
   mixBlendMode: 'hard-light',
-  alignSelf: 'flex-start'
+  alignSelf: 'flex-start',
+  selectors: {
+    '&[data-likec4-icon^="azure:"]': {
+      mixBlendMode: 'normal'
+    }
+  }
 })
 globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
   width: '100%',
@@ -323,7 +338,7 @@ export const cssShapeSvg = style({
   }
 })
 
-export const cssNavigateBtn = style({
+export const navigateBtn = style({
   zIndex: 'calc(var(--layer-overlays, 1) + 1)',
   position: 'absolute',
   pointerEvents: 'all',
@@ -331,45 +346,19 @@ export const cssNavigateBtn = style({
   bottom: 0,
   color: vars.element.loContrast,
   cursor: 'pointer',
-  transformOrigin: '50% 65%',
-  opacity: 0.75,
-  transition: 'all 150ms ease-out',
-  transform: 'translate(-50%, 0)',
-  transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
   'vars': {
-    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg': `var(--ai-bg-idle)`,
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
   },
   selectors: {
     [`:where([data-likec4-shape='browser']) &`]: {
-      bottom: 3
-    },
-    [`:where(.react-flow__node:not(.dragging) ${container}:hover) &:not(:hover)`]: {
-      boxShadow: mantine.shadows.lg,
-      transform: 'translate(-50%, 0) scale(1.185)',
-      opacity: 1,
-      transitionDelay: '250ms',
-      vars: {
-        '--ai-bg': 'var(--ai-bg-hover)'
-      }
+      bottom: 4
     }
   },
   ':hover': {
-    boxShadow: mantine.shadows.lg,
-    transform: 'translate(-50%, 0) scale(1.35)',
-    opacity: 1,
-    transitionDelay: '0'
-  },
-  ':active': {
-    transform: 'translate(-50%, 0) scale(1.02)',
-    opacity: 1,
-    transitionDelay: '0'
+    boxShadow: mantine.shadows.md
   }
-})
-globalStyle(`${cssNavigateBtn} svg.icon`, {
-  width: '65%',
-  height: '65%',
-  strokeWidth: '1.5'
 })
