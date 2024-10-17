@@ -17,7 +17,6 @@ import {
   IconFolderFilled,
   IconFolderOpen,
   IconLayoutDashboard,
-  IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
 import { useParams, useRouter } from '@tanstack/react-router'

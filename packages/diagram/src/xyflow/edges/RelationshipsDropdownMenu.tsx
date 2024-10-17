@@ -47,7 +47,6 @@ export function RelationshipsDropdownMenu({
   disabled?: boolean | undefined
   likec4model: LikeC4Model
 }>) {
-  const diagramApi = useDiagramStoreApi()
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
 

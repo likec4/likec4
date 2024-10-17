@@ -204,7 +204,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     })
   }, [setAnimateVariants])
 
-  let animate: keyof typeof VariantsRoot = 'idle'
+  let animate: keyof typeof VariantsRoot
   switch (true) {
     case dragging && selected:
       animate = 'selected'
@@ -218,6 +218,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     case selected:
       animate = 'selected'
       break
+    default:
+      animate = 'idle'
   }
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)

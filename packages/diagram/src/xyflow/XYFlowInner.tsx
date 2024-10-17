@@ -1,6 +1,5 @@
-import { Controls } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { memo, type PropsWithChildren } from 'react'
+import { memo } from 'react'
 import { isNonNullish } from 'remeda'
 import { useDiagramState } from '../hooks/useDiagramState'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'

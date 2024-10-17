@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo, useCallback, useMemo, useState } from 'react'
-import { clone, isEmpty, isNonNull, isNumber, isString, isTruthy } from 'remeda'
+import { isEmpty, isNumber, isString, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
 import type { ElementXYFlowNode } from '../../types'
@@ -224,7 +224,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     })
   }, [setAnimateVariants])
 
-  let animate: keyof typeof VariantsRoot = 'idle'
+  let animate: keyof typeof VariantsRoot
   switch (true) {
     case dragging && selected:
       animate = 'selected'
@@ -238,6 +238,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     case selected:
       animate = 'selected'
       break
+    default:
+      animate = 'idle'
   }
 
   const elementIcon = ElementIcon({
@@ -249,13 +251,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    // setAnimateVariants(null)
     triggerOnNavigateTo(id, e)
   }, [triggerOnNavigateTo, id])
 
   const onBrowseRelations = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    // setAnimateVariants(null)
     openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
 

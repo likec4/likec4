@@ -1,4 +1,4 @@
-import { invariant, isAncestor, type notDescendantOf, type Relation } from '@likec4/core'
+import { isAncestor, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useLocalStorage, useStateHistory } from '@mantine/hooks'
 import { useDebouncedEffect } from '@react-hookz/web'
@@ -47,7 +47,7 @@ const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlo
           dimmed: false,
           hovered: false
         }
-      }) as any
+      }) as XYFlowTypes.Node
     )
   )
 }
@@ -214,8 +214,8 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
             data: {
               ...n.data,
               dimmed: n.id !== edge.source && n.id !== edge.target
-            } as any
-          }))
+            }
+          } as XYFlowTypes.Node))
         )
       }}
       onEdgeMouseLeave={() => {

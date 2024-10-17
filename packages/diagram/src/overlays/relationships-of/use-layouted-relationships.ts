@@ -28,8 +28,7 @@ import {
   reverse,
   sort,
   sortBy,
-  takeWhile,
-  tap
+  takeWhile
 } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'

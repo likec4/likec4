@@ -1,4 +1,3 @@
-import { resolve } from 'node:path'
 import { createLikeC4Logger } from '../logger'
 
 import k from 'tinyrainbow'
