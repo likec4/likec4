@@ -43,8 +43,6 @@ export namespace XYFlowTypes {
 
   export type Node = NonEmptyNode | EmptyNode
 
-  // export type InternalNode = ReactFlowInternalNode<Node>
-
   export type Edge = Omit<ReactFlowEdge, 'data' | 'type'> & {
     data: {
       relations: [Relation, ...Relation[]]
@@ -55,5 +53,4 @@ export namespace XYFlowTypes {
   }
 
   export type Instance = ReactFlowInstance<Node, Edge>
-  // export type XYFlowState = ReactFlowState<XYFlowNode, XYFlowEdge>
 }

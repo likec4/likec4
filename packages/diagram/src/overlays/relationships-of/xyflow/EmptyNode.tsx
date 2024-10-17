@@ -14,19 +14,6 @@ export function EmptyNode({
     column
   }
 }: EmptyNodeProps) {
-  // const xyflow = useReactFlow()
-  // const sortedports.right = pipe(
-  //   ports.right,
-  //   map(port => {
-  //     const node = xyflow.getInternalNode(port.id)!
-  //     node?.internals.positionAbsolute
-  //     return {
-  //       ...port,
-  //       positionY: node.internals.positionAbsolute.y + ((node.height ?? 0) / 2)
-  //     }
-  //   }),
-  //   sortBy(prop('positionY'))
-  // )
   return (
     <>
       <Box className={css.emptyNode}>

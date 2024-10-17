@@ -123,20 +123,6 @@ export const SelectElement = ({
                     {node.label}
                   </Text>
                 </Box>
-                {
-                  /* <Button
-                  fullWidth
-                  color={theme === 'light' ? 'dark' : 'gray'}
-                  variant={selected ? 'transparent' : 'subtle'}
-                  size="sm"
-                  fz={'sm'}
-                  fw={'500'}
-                  justify="flex-start"
-                  leftSection={hasChildren ? (expanded ? <IconArrowDown /> : <IconArrowRight />) : null}
-                >
-                  {node.label}
-                </Button> */
-                }
               </Group>
             )}
           />

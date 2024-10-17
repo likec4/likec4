@@ -2,23 +2,11 @@ import { style } from '@vanilla-extract/css'
 import { mantine, vars, whereLight, xyvars } from '../../../theme-vars'
 
 export const elementNode = style({
-  // position: 'relative',
   width: '100%',
   height: '100%'
 })
 
-// globalStyle(`${elementNode} > *`, {
-//   opacity: 1,
-//   transition: 'all 0.2s ease-in-out',
-//   transitionDelay: '50ms',
-// })
-// globalStyle(`${elementNode}:is([data-node-dimmed='true']) > *`, {
-//   opacity: 0.2,
-//   transitionDuration: '600ms'
-// })
-
 export const elementNodeContent = style({
-  // position: 'relative',
   width: '100%',
   height: '100%',
   display: 'flex',
@@ -65,7 +53,6 @@ export const compoundNodeBody = style({
 })
 
 export const compoundNodeTitle = style({
-  // flex: '0 0 auto',
   fontFamily: vars.compound.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',

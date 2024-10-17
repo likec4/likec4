@@ -4,14 +4,8 @@ import { vars, xyvars } from '../../theme-vars'
 const mixColor = createVar('mix-color')
 
 export const root = 'likec4-relationships-xyflow'
-//
+
 export const overlay = style({
-  // position: 'absolute',
-  // top: 20,
-  // left: 20,
-  // width: 'calc(100% - 40px)',
-  // height: 'calc(100% - 40px)',
-  // overflow: 'hidden',
   vars: {
     [mixColor]: `black`,
     [xyvars.edge.stroke]: vars.relation.lineColor,

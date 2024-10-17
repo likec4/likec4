@@ -45,19 +45,13 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
     [xyvars.edge.strokeWidth]: '4'
   }
 })
-// globalStyle(`${container}[data-edge-hovered='true']`, {
-//   vars: {
-//     [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, white 35%)`
-//   },
-// })
 
 globalStyle(`.likec4-diagram .react-flow__edges > svg`, {
   mixBlendMode: 'plus-lighter'
 })
-
-// globalStyle(`:where([data-mantine-color-scheme="light"]) .react-flow__edges > svg`, {
-//   mixBlendMode: 'screen'
-// })
+globalStyle(`:where([data-mantine-color-scheme="light"]) .likec4-diagram .react-flow__edges > svg`, {
+  mixBlendMode: 'screen'
+})
 
 export const dimmed = style({})
 
