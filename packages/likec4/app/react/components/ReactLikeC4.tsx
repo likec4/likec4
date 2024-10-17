@@ -5,6 +5,7 @@ import { type CSSProperties } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
 import type { MantineThemeOverride } from '@mantine/core'
+import { isFunction, isString } from 'remeda'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { useColorScheme, useShadowRootStyle } from './style'
 import { cssLikeC4View } from './styles.css'
@@ -46,6 +47,9 @@ export type ReactLikeC4Props<
   onNavigateTo?: OnNavigateTo<ViewId> | undefined
 
   mantineTheme?: MantineThemeOverride | undefined
+
+  /** Function to generate nonce attribute added to all generated `<style />` tags */
+  styleNonce?: string | (() => string) | undefined
 }
 
 export function ReactLikeC4<
@@ -63,6 +67,7 @@ export function ReactLikeC4<
   background = 'transparent',
   style,
   mantineTheme,
+  styleNonce,
   ...props
 }: ReactLikeC4Props<ViewId, Tag, Kind>) {
   const colorScheme = useColorScheme(explicitColorScheme)
@@ -72,9 +77,20 @@ export function ReactLikeC4<
   const notations = view.notation?.elements ?? []
   const hasNotations = notations.length > 0
 
+  let nonce
+  if (isString(styleNonce)) {
+    nonce = styleNonce
+  } else if (isFunction(styleNonce)) {
+    nonce = styleNonce()
+  }
+
   return (
     <>
-      <style type="text/css" dangerouslySetInnerHTML={{ __html: cssstyle }} />
+      <style
+        type="text/css"
+        nonce={nonce}
+        dangerouslySetInnerHTML={{ __html: cssstyle }}
+      />
       <ShadowRoot
         {...shadowRootProps}
         injectFontCss={injectFontCss}
@@ -85,6 +101,7 @@ export function ReactLikeC4<
           theme={mantineTheme}
           colorScheme={colorScheme}
           className={clsx(cssLikeC4View)}
+          styleNonce={styleNonce}
         >
           <LikeC4Diagram
             view={view as any}
