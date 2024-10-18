@@ -1,27 +1,53 @@
 # [1.13.0](https://github.com/likec4/likec4/compare/v1.12.2...v1.13.0) (2024-10-18)
 
+### 🚀 Features  
+
+* **Browse relationships**  
+  Experimental browser 
+
+  Share your feedback in our [Discussions](https://github.com/likec4/likec4/discussions)
+
+  Disabled by default in generated components, to enable:
+  ```tsx
+  import { LikeC4View } from './likec4.generated'
+
+  <LikeC4View
+    viewId="index"
+    enableRelationshipsBrowser
+    />
+  ```
+
+* **dsl:** local (shared) styles in views block (thanks @hubertmis, [#1113](https://github.com/likec4/likec4/pull/1113))
+
+  ```zig
+  views {
+    // apply to all views in this views block
+    style * {
+      color muted
+      opacity 10%
+    }
+
+    view apiApp of internetBankingSystem.apiApplication {
+      include *
+    }
+
+    view mobileApp of internetBankingSystem.mobileApplication {
+      include *
+    }
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/views/#local-style-predicates)
+
+* **editor:** Implemented alignment tools for manual layouting  (thanks @pavelpykhtin, [#1099](https://github.com/likec4/likec4/issues/1099))   
+  ![alignment-tools](https://github.com/user-attachments/assets/9d6e5b1b-e2af-4cce-bac5-b0a3a1dfc73b)
 
 ### Bug Fixes
 
-* **deps:** update dependency astro to ~4.16.0 [security] ([#1107](https://github.com/likec4/likec4/issues/1107)) ([e9dc27a](https://github.com/likec4/likec4/commit/e9dc27a450d6b463e41f0dcc4b17dd2b0b89fc91)), closes [/github.com/withastro/astro/blob/7814a6cad15f06931f963580176d9b38aa7819f2/packages/astro/src/transitions/router.ts#L135-L156](https://github.com//github.com/withastro/astro/blob/7814a6cad15f06931f963580176d9b38aa7819f2/packages/astro/src/transitions/router.ts/issues/L135-L156)
-* **editor:** tooltips overlap with layout buttons ([ee04122](https://github.com/likec4/likec4/commit/ee0412216a7aaf02fba4d7bf2eab33ad88ab0214))
+* **react:** `crow` arrow type (thanks @pavelpykhtin, [#1092](https://github.com/likec4/likec4/issues/1092))
+* **react:** `controls` property to show/hide top left panel ([b36880f](https://github.com/likec4/likec4/commit/b36880f7797e011eec54760a88e3190237140c45))
 * **react:** `styleNonce` property for ReactLikeC4 ([0c78314](https://github.com/likec4/likec4/commit/0c7831419034c8a9a47dc7ded597270987f81b06))
-* Text colors / backdrop not updated until page refresh when toggling between light and dark mode [#1098](https://github.com/likec4/likec4/issues/1098) ([6bb6cf3](https://github.com/likec4/likec4/commit/6bb6cf384efbacc0d98951a7e1f915147e7eb4a0))
-* update setNode and postorder type handling in resolveRulesExtendedViews ([c1fc436](https://github.com/likec4/likec4/commit/c1fc436716c6739b4b3130339c5680291bc09ee6))
-* **vscode:** autocompletion of "specification", "views" and "model" broken ([b64d8a5](https://github.com/likec4/likec4/commit/b64d8a5966377135fc540b6357f5e800e1f7d4f5)), closes [#1102](https://github.com/likec4/likec4/issues/1102)
-
-
-### Features
-
-* add activeOverlay state management and improve event propagation handling ([c4da1fe](https://github.com/likec4/likec4/commit/c4da1fe2947ad6fa37447c1f4c3196f4ad60170b))
-* add new relationships overlay and enhance existing components with additional props and styles ([0ef1e3f](https://github.com/likec4/likec4/commit/0ef1e3f5c6ffbee2b5befe23fa079fe806c2bc78))
-* browse dependencies ([bf97b8f](https://github.com/likec4/likec4/commit/bf97b8f83b991fae6b48585fad29cdb08b8f3d4c))
-* **editor:** implemented alignment tools ([#1099](https://github.com/likec4/likec4/issues/1099)) ([7ac0fd1](https://github.com/likec4/likec4/commit/7ac0fd18f6d2d4d9814d386c0db2fde9a2a372a7))
-* enhance event handling and add new methods for element navigation in LikeC4Model ([0b43382](https://github.com/likec4/likec4/commit/0b4338293196cc3361e4c6b998b5f2ca42ee5857))
-* **lsp:** shared styles in views block ([#1113](https://github.com/likec4/likec4/issues/1113)) ([82a7f1e](https://github.com/likec4/likec4/commit/82a7f1ea87e3b664a7174cfc28fb1718cd11ece3)), closes [#1058](https://github.com/likec4/likec4/issues/1058)
-* model builder ([#1103](https://github.com/likec4/likec4/issues/1103)) ([82da4b0](https://github.com/likec4/likec4/commit/82da4b0c4e482d94c2a62323089fec99da340b4d))
-* **react:** property `controls` to show/hide top left panel ([b36880f](https://github.com/likec4/likec4/commit/b36880f7797e011eec54760a88e3190237140c45))
-
+* **react:** Text colors / backdrop not updated until page refresh when toggling between light and dark mode [#1098](https://github.com/likec4/likec4/issues/1098) ([6bb6cf3](https://github.com/likec4/likec4/commit/6bb6cf384efbacc0d98951a7e1f915147e7eb4a0))
+* **vscode:** autocompletion of "specification", "views" and "model" broken (closes [#1102](https://github.com/likec4/likec4/issues/1102))
 
 
 ## [1.12.2](https://github.com/likec4/likec4/compare/v1.12.1...v1.12.2) (2024-10-10)
