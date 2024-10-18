@@ -9,7 +9,6 @@ import { relationBodyChecks, relationChecks } from './relation'
 import {
   elementKindChecks,
   modelRuleChecks,
-  modelViewsChecks,
   relationshipChecks,
   specificationRuleChecks,
   tagChecks
@@ -32,7 +31,6 @@ export function registerValidationChecks(services: LikeC4Services) {
     IconProperty: iconPropertyRuleChecks(services),
     SpecificationRule: specificationRuleChecks(services),
     Model: modelRuleChecks(services),
-    ModelViews: modelViewsChecks(services),
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
     Element: elementChecks(services),

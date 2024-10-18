@@ -7,7 +7,8 @@ export const RESERVED_WORDS = [
   'it',
   'self',
   'super',
-  'likec4lib'
+  'likec4lib',
+  'global'
 ]
 
 export function tryOrLog<T extends AstNode>(fn: ValidationCheck<T>): ValidationCheck<T> {

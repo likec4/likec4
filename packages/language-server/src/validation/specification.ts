@@ -27,17 +27,6 @@ export const modelRuleChecks = (_: LikeC4Services): ValidationCheck<ast.Model> =
   }
 }
 
-export const modelViewsChecks = (_: LikeC4Services): ValidationCheck<ast.ModelViews> => {
-  return (node, accept) => {
-    if (node.$containerIndex && node.$containerIndex > 0) {
-      accept('warning', `Prefer one views block per document`, {
-        node: node,
-        property: 'name'
-      })
-    }
-  }
-}
-
 export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast.ElementKind> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {

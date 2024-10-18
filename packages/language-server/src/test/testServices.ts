@@ -75,7 +75,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
       await documentBuilder.build([document], { validation: true })
     })
 
-    const edits = await services.lsp.Formatter?.formatDocument(
+    const edits = await formatter?.formatDocument(
       document,
       {
         options: { tabSize: 2, insertSpaces: true },
@@ -117,6 +117,9 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     return model
   }
 
+  /**
+   * This will clear all documents
+   */
   const resetState = async () => {
     await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
       const docs = langiumDocuments.all.toArray().map(doc => doc.uri)
