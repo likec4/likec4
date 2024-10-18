@@ -37,7 +37,7 @@
     }
   }
   ```
-  [Documentation](https://likec4.dev/dsl/views/#local-style-predicates)
+  [Documentation](https://likec4.dev/dsl/views/#shared-local-styles)
 
 * **Alignment tools:**  
   Implemented alignment tools for manual layouting  (thanks @pavelpykhtin, [#1099](https://github.com/likec4/likec4/issues/1099))
