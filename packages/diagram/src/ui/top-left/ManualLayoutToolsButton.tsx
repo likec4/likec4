@@ -1,12 +1,4 @@
-import {
-  ActionIconGroup,
-  Group,
-  Popover,
-  PopoverDropdown,
-  type PopoverProps,
-  PopoverTarget,
-  type TooltipProps
-} from '@mantine/core'
+import { ActionIconGroup, Group, Popover, PopoverDropdown, type PopoverProps, PopoverTarget } from '@mantine/core'
 import {
   IconLayoutAlignBottom,
   IconLayoutAlignCenter,
@@ -17,14 +9,27 @@ import {
   IconLayoutCollage,
   IconRouteOff
 } from '@tabler/icons-react'
-import { useMantinePortalProps } from '../../hooks'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { ActionIcon, Tooltip } from './_shared'
 
-export const ManualLAyoutToolsButton = (props: PopoverProps) => {
-  const store = useDiagramStoreApi()
+const Action = ({
+  label,
+  icon,
+  onClick
+}: {
+  label: string
+  icon: React.ReactNode
+  onClick: React.MouseEventHandler
+}) => (
+  <Tooltip label={label} withinPortal={false} position="top">
+    <ActionIcon onClick={onClick}>
+      {icon}
+    </ActionIcon>
+  </Tooltip>
+)
 
-  const portalProps = useMantinePortalProps()
+export const ManualLayoutToolsButton = (props: PopoverProps) => {
+  const store = useDiagramStoreApi()
 
   return (
     <Popover
@@ -39,89 +44,67 @@ export const ManualLAyoutToolsButton = (props: PopoverProps) => {
       }}
       {...props}>
       <PopoverTarget>
-        <Tooltip label="Manual layouting tools">
+        <Tooltip label="Manual layouting tools" withinPortal={false} position="top-end">
           <ActionIcon>
             <IconLayoutCollage />
           </ActionIcon>
         </Tooltip>
       </PopoverTarget>
       <PopoverDropdown p={0}>
-        <Group>
+        <Group gap={'xs'}>
           <ActionIconGroup pos={'relative'}>
-            <Tooltip label="Align left" {...portalProps}>
-              <ActionIcon
-                onClick={e => {
-                  e.stopPropagation()
-                  store.getState().align('Left')
-                }}>
-                <IconLayoutAlignLeft />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Align center" {...portalProps}>
-              <ActionIcon
-                onClick={e => {
-                  e.stopPropagation()
-                  store.getState().align('Center')
-                }}>
-                <IconLayoutAlignCenter />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Align right" {...portalProps}>
-              <ActionIcon
-                onClick={e => {
-                  e.stopPropagation()
-                  store.getState().align('Right')
-                }}>
-                <IconLayoutAlignRight />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Align top" {...portalProps}>
-              <ActionIcon
-                onClick={e => {
-                  e.stopPropagation()
-                  store.getState().align('Top')
-                }}>
-                <IconLayoutAlignTop />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Align middle" {...portalProps}>
-              <ActionIcon
-                onClick={e => {
-                  e.stopPropagation()
-                  store.getState().align('Middle')
-                }}>
-                <IconLayoutAlignMiddle />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Align bottom" {...portalProps}>
-              <ActionIcon
-                onClick={e => {
-                  e.stopPropagation()
-                  store.getState().align('Bottom')
-                }}>
-                <IconLayoutAlignBottom />
-              </ActionIcon>
-            </Tooltip>
+            <Action
+              label="Align left"
+              icon={<IconLayoutAlignLeft />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Left')
+              }} />
+            <Action
+              label="Align center"
+              icon={<IconLayoutAlignCenter />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Center')
+              }} />
+            <Action
+              label="Align right"
+              icon={<IconLayoutAlignRight />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Right')
+              }} />
+            <Action
+              label="Align top"
+              icon={<IconLayoutAlignTop />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Top')
+              }} />
+            <Action
+              label="Align middle"
+              icon={<IconLayoutAlignMiddle />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Middle')
+              }} />
+            <Action
+              label="Align bottom"
+              icon={<IconLayoutAlignBottom />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Bottom')
+              }} />
           </ActionIconGroup>
-          <ResetControlPointsButton {...portalProps} />
+          <Action
+            label="Reset all control points"
+            icon={<IconRouteOff />}
+            onClick={e => {
+              e.stopPropagation()
+              store.getState().resetEdgeControlPoints()
+            }} />
         </Group>
       </PopoverDropdown>
     </Popover>
-  )
-}
-
-const ResetControlPointsButton = (props: Omit<TooltipProps, 'label' | 'children'>) => {
-  const store = useDiagramStoreApi()
-
-  return (
-    <Tooltip label="Reset all control points" {...props}>
-      <ActionIcon
-        onClick={e => {
-          e.stopPropagation()
-          store.getState().resetEdgeControlPoints()
-        }}>
-        <IconRouteOff />
-      </ActionIcon>
-    </Tooltip>
   )
 }

@@ -77,7 +77,7 @@ export default function App() {
           view={view}
           fitViewPadding={0.09}
           readonly={false}
-          controls={false}
+          controls
           nodesDraggable={nodesDraggable}
           experimentalEdgeEditing={edgesEditable}
           enableFocusMode

@@ -18,7 +18,7 @@ import {
   IconChevronRight,
   IconFileSymlink,
   IconFocusCentered,
-  IconMenu2,
+  IconMenu2
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
@@ -28,7 +28,7 @@ import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { mantine } from '../../theme-vars'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
-import { ManualLAyoutToolsButton } from './ManualLayoutToolsButton'
+import { ManualLayoutToolsButton } from './ManualLayoutToolsButton'
 import * as css from './styles.css'
 
 const historySelector = (s: DiagramState) => ({
@@ -187,7 +187,7 @@ export const TopLeftPanel = () => {
           )}
           {showChangeAutoLayout && <ChangeAutoLayoutButton {...portalProps} />}
           {showLayoutDriftWarning && <LayoutDriftNotification {...portalProps} />}
-          {showManualLayoutTools && <ManualLAyoutToolsButton {...portalProps} />}
+          {showManualLayoutTools && <ManualLayoutToolsButton {...portalProps} />}
           {showFitDiagram && (
             <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
               <ActionIcon
