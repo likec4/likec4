@@ -1,3 +1,58 @@
+# [1.13.0](https://github.com/likec4/likec4/compare/v1.12.2...v1.13.0) (2024-10-18)
+
+### 🚀 Features  
+
+* **Browse relationships**
+  
+  ![SCR-20241018-didx](https://github.com/user-attachments/assets/6565e3da-3f9e-4991-8d2c-e28b88c94375)
+
+  Disabled by default in generated components, to enable:
+  ```tsx
+  import { LikeC4View } from './likec4.generated'
+
+  <LikeC4View
+    viewId="index"
+    enableRelationshipsBrowser
+    />
+  ```
+  Share your feedback in our [Discussions](https://github.com/likec4/likec4/discussions)
+
+* **Local styles:**  
+  Shared styles in views block (thanks @hubertmis, [#1113](https://github.com/likec4/likec4/pull/1113))
+  
+  ```zig
+  views {
+    // apply to all views in this views block
+    style * {
+      color muted
+      opacity 10%
+    }
+
+    view apiApp of internetBankingSystem.apiApplication {
+      include *
+    }
+
+    view mobileApp of internetBankingSystem.mobileApplication {
+      include *
+    }
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/views/#shared-local-styles)
+
+* **Alignment tools:**  
+  Implemented alignment tools for manual layouting  (thanks @pavelpykhtin, [#1099](https://github.com/likec4/likec4/issues/1099))
+  
+  ![alignment-tools](https://github.com/user-attachments/assets/9d6e5b1b-e2af-4cce-bac5-b0a3a1dfc73b)
+
+### Bug Fixes
+
+* **react:** `crow` arrow type (thanks @pavelpykhtin, [#1092](https://github.com/likec4/likec4/issues/1092))
+* **react:** `controls` property to show/hide top left panel ([b36880f](https://github.com/likec4/likec4/commit/b36880f7797e011eec54760a88e3190237140c45))
+* **react:** `styleNonce` property for ReactLikeC4 ([0c78314](https://github.com/likec4/likec4/commit/0c7831419034c8a9a47dc7ded597270987f81b06))
+* **react:** Text colors / backdrop not updated until page refresh when toggling between light and dark mode [#1098](https://github.com/likec4/likec4/issues/1098) ([6bb6cf3](https://github.com/likec4/likec4/commit/6bb6cf384efbacc0d98951a7e1f915147e7eb4a0))
+* **vscode:** autocompletion of "specification", "views" and "model" broken (closes [#1102](https://github.com/likec4/likec4/issues/1102))
+
+
 ## [1.12.2](https://github.com/likec4/likec4/compare/v1.12.1...v1.12.2) (2024-10-10)
 
 ### Improvements
