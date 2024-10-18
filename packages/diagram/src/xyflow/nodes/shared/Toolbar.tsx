@@ -260,7 +260,7 @@ function GoToSourceButton({ elementId }: { elementId: Fqn }) {
           e.stopPropagation()
           diagramApi.getState().onOpenSourceElement?.(elementId)
         }}>
-        <IconFileSymlink size={'70%'} stroke={1.8} />
+        <IconFileSymlink stroke={1.8} style={{ width: '70%' }} />
       </ActionIcon>
     </Tooltip>
   )

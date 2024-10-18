@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 import { mantine, vars, whereLight, xyvars } from '../../../theme-vars'
 
 export const elementNode = style({
@@ -13,6 +13,7 @@ export const elementNodeContent = style({
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
+  overflow: 'hidden',
   gap: 6,
   padding: 16
 })
@@ -88,6 +89,8 @@ export const cssShapeSvg = style({
   zIndex: -1
 })
 
+const DimmedTransitionDelay = '400ms'
+
 export const edgePath = style({
   opacity: 1,
   transition: 'all 0.2s ease-in-out',
@@ -95,7 +98,7 @@ export const edgePath = style({
   selectors: {
     [`&[data-edge-dimmed='true']`]: {
       opacity: 0.1,
-      transitionDelay: '800ms'
+      transitionDelay: DimmedTransitionDelay
     }
   }
 })
@@ -119,8 +122,7 @@ export const edgeLabel = style({
   selectors: {
     [`&[data-edge-dimmed='true']`]: {
       opacity: 0.1,
-      // transitionDuration: '400ms',
-      transitionDelay: '800ms'
+      transitionDelay: DimmedTransitionDelay
     }
   }
 })
@@ -148,23 +150,56 @@ export const navigateBtnBox = style({
   left: '50%',
   bottom: 2,
   transform: 'translate(-50%, 0%)',
+  gap: 0,
+  transition: 'all 190ms cubic-bezier(0.5, 0, 0.4, 1)',
   selectors: {
     [`:where([data-likec4-shape='browser']) &`]: {
       bottom: 4
     }
   }
 })
+globalStyle(`:where(${elementNode}:hover) ${navigateBtnBox}`, {
+  transitionDelay: '20ms',
+  gap: 8,
+  transform: 'translate(-50%, 5px)'
+})
+
 export const navigateBtn = style({
+  opacity: 0.7,
   pointerEvents: 'all',
-  color: vars.element.loContrast,
   cursor: 'pointer',
-  backgroundColor: 'var(--ai-bg)',
+  transform: 'scale(0.9)',
+  transition: 'all 190ms cubic-bezier(0.5, 0, 0.4, 1)',
   'vars': {
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
   },
   ':hover': {
-    boxShadow: mantine.shadows.md
+    transitionDelay: '0ms',
+    transform: 'scale(1.25)',
+    boxShadow: mantine.shadows.lg
+  },
+  ':active': {
+    transform: 'scale(0.975)'
   }
 })
+
+globalStyle(`:where(${elementNode}:hover) ${navigateBtn}`, {
+  transitionDelay: '40ms',
+  transitionTimingFunction: 'cubic-bezier(0, 0, 0.40, 1)',
+  opacity: 1,
+  transform: 'scale(1.07)',
+  boxShadow: mantine.shadows.md,
+  vars: {
+    '--ai-bg': `var(--ai-bg-hover)`
+  }
+})
+// globalStyle(`${elementNode}:hover ${navigateBtn}`, {
+//   opacity: 1,
+//   transform: 'scale(1.05)',
+//   boxShadow: mantine.shadows.md,
+//   vars: {
+//     '--ai-bg': `var(--ai-bg-hover)`
+//   }
+// })

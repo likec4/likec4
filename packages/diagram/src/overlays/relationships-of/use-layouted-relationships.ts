@@ -28,7 +28,8 @@ import {
   reverse,
   sort,
   sortBy,
-  takeWhile
+  takeWhile,
+  tap
 } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
@@ -50,10 +51,10 @@ const Sizes = {
     edgesep: 20
   } satisfies GraphLabel,
   edgeLabel: {
-    width: 50
+    width: 60
   } satisfies Label,
 
-  emptyNodeOffset: 100,
+  emptyNodeOffset: 150,
 
   nodeWidth: 270,
   hodeHeight: 160,
@@ -90,10 +91,13 @@ function createGraph() {
   columns.reduce((prev, column) => {
     const c = graphColumn(column)
     g.setNode(c.id, {})
-    g.setNode(c.anchor, { width: 50, height: 5 })
+    g.setNode(c.anchor, { width: 40, height: 5 })
     g.setParent(c.anchor, c.id)
     if (prev) {
-      g.setEdge(prev, c.anchor)
+      g.setEdge(prev, c.anchor, {
+        width: 0,
+        weight: 10
+      })
     }
     return c.anchor
   }, null as string | null)
@@ -397,6 +401,12 @@ function layout(
   subject: LikeC4ModelElement
   nodes: XYFlowTypes.Node[]
   edges: XYFlowTypes.Edge[]
+  bounds: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
 } {
   const diagramNodes = new Map(view.nodes.map(n => [n.id, n]))
   const subjectElement = likec4model.element(subjectId)
@@ -459,13 +469,11 @@ function layout(
 
     forEachIncoming(sourceId, relations) {
       const source = createNode('incomers', 'element', likec4model.element(sourceId), ctx)
-      g.setEdge(graphId(source).port, subject.id, {
-        weight: source.type === 'compound' ? 0 : 1
-      })
+      g.setEdge(graphId(source).port, subject.id)
 
-      const op = source.type === 'compound' ? 'unshift' : 'push'
+      // const op = source.type === 'compound' ? 'unshift' : 'push'
 
-      subject.data.ports.left[op]({
+      subject.data.ports.left.push({
         id: source.id,
         type: 'in'
       })
@@ -482,12 +490,10 @@ function layout(
 
     forEachOutgoing(targetId, relations) {
       const target = createNode('outgoers', 'element', likec4model.element(targetId), ctx)
-      g.setEdge(subjectElement.id, graphId(target).port, {
-        weight: target.type === 'compound' ? 2 : 1
-      })
+      g.setEdge(subjectElement.id, graphId(target).port)
 
-      const op = target.type === 'compound' ? 'unshift' : 'push'
-      subject.data.ports.right[op]({
+      // const op = target.type === 'compound' ? 'unshift' : 'push'
+      subject.data.ports.right.push({
         id: target.id,
         type: 'out'
       })
@@ -548,24 +554,25 @@ function layout(
     )
   }
 
-  // Sort ports by their position
   for (const node of xynodes) {
+    // Grow empty nodes to fill the space
     if (node.type === 'empty') {
       const subjectPosition = nodebounds(subject.id)
       node.position.y = subjectPosition.position.y + subjectPosition.height / 2 - node.height / 2
       if (node.data.column === 'incomers') {
-        // Place on the left
-        node.position.x = subjectPosition.position.x - node.width - Sizes.emptyNodeOffset
+        node.width = subjectPosition.position.x - Sizes.emptyNodeOffset - node.position.x
       } else {
-        // Place on the right
+        const rightX = node.position.x + node.width
         node.position.x = subjectPosition.position.x + subjectPosition.width + Sizes.emptyNodeOffset
+        node.width = rightX - node.position.x
       }
       continue
     }
-    if (node.data.ports.left.length > 0) {
+    // Sort ports by their position
+    if (node.data.ports.left.length > 1) {
       node.data.ports.left = sortedPorts(node.data.ports.left)
     }
-    if (node.data.ports.right.length > 0) {
+    if (node.data.ports.right.length > 1) {
       node.data.ports.right = sortedPorts(node.data.ports.right)
     }
   }
@@ -575,7 +582,13 @@ function layout(
     viewIncludesSubject: diagramNodes.has(subjectId),
     subject: subjectElement,
     edges: ctx.edges,
-    nodes: xynodes
+    nodes: xynodes,
+    bounds: {
+      x: 0,
+      y: 0,
+      width: g.graph().width ?? 0,
+      height: g.graph().height ?? 0
+    }
   }
 }
 

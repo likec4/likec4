@@ -1,5 +1,10 @@
 import type { ComputedNode, Fqn, Relation, ViewID } from '@likec4/core'
-import type { Edge as ReactFlowEdge, Node as ReactFlowNode, ReactFlowInstance } from '@xyflow/react'
+import type {
+  Edge as ReactFlowEdge,
+  InternalNode as ReactFlowInternalNode,
+  Node as ReactFlowNode,
+  ReactFlowInstance
+} from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
 
 export namespace XYFlowTypes {
@@ -23,7 +28,11 @@ export namespace XYFlowTypes {
     }
     navigateTo: ViewID | null
     hovered?: boolean
-    dimmed?: boolean
+    /**
+     * Whether the node is dimmed
+     * 'immediate' means that the node is dimmed without delay
+     */
+    dimmed?: 'immediate' | boolean
   }
 
   export type ElementNode = SetRequired<ReactFlowNode<NodeProps, 'element'>, 'type'>
@@ -53,4 +62,6 @@ export namespace XYFlowTypes {
   }
 
   export type Instance = ReactFlowInstance<Node, Edge>
+
+  export type InternalNode = ReactFlowInternalNode<Node>
 }

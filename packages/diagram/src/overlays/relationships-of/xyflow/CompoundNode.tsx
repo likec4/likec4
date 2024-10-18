@@ -32,7 +32,7 @@ export function CompoundNode({
         animate={{
           opacity: data.dimmed ? 0.15 : 1,
           transition: {
-            delay: data.dimmed ? .8 : 0
+            delay: data.dimmed === true ? .4 : 0
           }
         }}
         {...(selectable && {

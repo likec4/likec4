@@ -1,13 +1,23 @@
 import { isAncestor, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useLocalStorage, useStateHistory } from '@mantine/hooks'
-import { useDebouncedEffect } from '@react-hookz/web'
+import { useDebouncedCallback, useDebouncedEffect } from '@react-hookz/web'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
-import { Panel, ReactFlow, type ReactFlowInstance, useReactFlow, useStoreApi } from '@xyflow/react'
+import {
+  getViewportForBounds,
+  Panel,
+  ReactFlow,
+  type ReactFlowInstance,
+  useReactFlow,
+  useStoreApi
+} from '@xyflow/react'
+import { fitView, getNodeDimensions } from '@xyflow/system'
 import { memo, useEffect, useRef } from 'react'
 import { map, only, prop, unique } from 'remeda'
 import { useOverlayDialog } from '../../components'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
+import { dimmed } from '../../xyflow/edges/edges.css'
+import { getNodeCenter } from '../../xyflow/edges/utils'
 import type { XYFlowTypes } from './_types'
 import { SelectElement } from './SelectElement'
 import * as css from './styles.css'
@@ -83,7 +93,8 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     viewIncludesSubject,
     edges,
     nodes,
-    subject
+    subject,
+    bounds
   } = useLayoutedRelationships(_scope)
   const scope = viewIncludesSubject ? _scope : 'global'
   const showSubjectWarning = !viewIncludesSubject && _scope === 'view'
@@ -108,6 +119,19 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     }
   }, [historySubjectId])
 
+  const fitview = useDebouncedCallback(
+    () => {
+      xyflow.fitView({
+        padding: 0.2,
+        includeHiddenNodes: true,
+        maxZoom: 1,
+        duration: 500
+      })
+    },
+    [xyflow],
+    150
+  )
+
   useEffect(() => {
     const nextSubjectNode = nodes.find((n): n is XYFlowTypes.NonEmptyNode =>
       n.type !== 'empty' && n.data.column === 'subject'
@@ -117,47 +141,91 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     } else if (nextSubjectNode.data.fqn !== subject.id) {
       console.error(`Subject node mismatch, expected: ${subject.id} got: ${nextSubjectNode.data.fqn}`)
     }
+
+    const {
+      nodes: _nodes,
+      edges: _edges,
+      setNodes,
+      setEdges,
+      width,
+      height
+    } = xystore.getState()
+
+    const nextviewport = getViewportForBounds(bounds, width, height, 0.2, 1, 0.2)
+
+    const nextSubjectCenter = nextSubjectNode && {
+      x: nextSubjectNode.position.x + (nextSubjectNode.width ?? 0) / 2,
+      y: nextSubjectNode.position.y + (nextSubjectNode.height ?? 0) / 2
+    }
+
     const existingNode = lastClickedNodeRef.current
       ?? xyflow.getNodes().find(n => n.type !== 'empty' && n.data.column !== 'subject' && n.data.fqn === subject.id)
     lastClickedNodeRef.current = null
-    // Correct position if we have subject in existing nodes
-    if (nextSubjectNode && existingNode && existingNode.data.column !== 'subject') {
-      const xynodeFrom = xyflow.getInternalNode(existingNode.id)!
-      const fromPos = xyflow.flowToScreenPosition({
-          x: xynodeFrom.internals.positionAbsolute.x,
-          y: xynodeFrom.internals.positionAbsolute.y
-        }),
-        toPos = xyflow.flowToScreenPosition({
-          x: nextSubjectNode.position.x,
-          y: nextSubjectNode.position.y
-        }),
-        diff = {
-          x: fromPos.x - toPos.x,
-          y: fromPos.y - toPos.y
+    // Animate from existing node to next subject node
+    if (nextSubjectCenter && existingNode) {
+      // Dim all nodes except the existing node
+      setNodes(_nodes.map(n => {
+        return {
+          ...n,
+          data: {
+            ...n.data,
+            dimmed: n.id !== existingNode.id ? 'immediate' : false
+          }
         }
-      xystore.getState().panBy(diff)
-      xystore.getState().setNodes(nodes)
-      xystore.getState().setEdges(edges)
-      return
-    }
-    xyflow.setNodes(nodes)
-    xyflow.setEdges(edges)
-  }, [nodes, edges])
+      }))
+      setEdges(_edges.map(e => ({
+        ...e,
+        data: {
+          ...e.data,
+          dimmed: true
+        }
+      })))
 
-  const zoomable = true
+      // Move to center of existing node
+      const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
+      const existingDimensions = getNodeDimensions(existingInternalNode)
+      const existingCenter = {
+        x: existingInternalNode.internals.positionAbsolute.x + existingDimensions.width / 2,
+        y: existingInternalNode.internals.positionAbsolute.y + existingDimensions.height / 2
+      }
 
-  useDebouncedEffect(
-    () => {
-      xyflow.fitView({
-        padding: 0.2,
-        includeHiddenNodes: true,
-        maxZoom: 1,
-        duration: 450
+      // Pick the smaller zoom level
+      const zoom = Math.min(
+        nextviewport.zoom,
+        nextSubjectNode.width! / existingDimensions.width,
+        nextSubjectNode.height! / existingDimensions.height
+      )
+
+      let isCancelled = false
+
+      xyflow.setCenter(
+        existingCenter.x,
+        existingCenter.y,
+        {
+          zoom,
+          // we zoomed to match the subject node (might be smaller than the existing node)
+          // so make it faster
+          duration: zoom < nextviewport.zoom ? 250 : 350
+        }
+      ).then(() => {
+        // If the component is unmounted, we don't want to update the state
+        if (isCancelled) return
+        setNodes(nodes)
+        setEdges(edges)
+        xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, {
+          // so we need to zoom out to the smaller of the two
+          zoom: nextviewport.zoom
+        })
+        fitview()
       })
-    },
-    [subject.id, scope],
-    200
-  )
+      return () => {
+        isCancelled = true
+      }
+    }
+    setNodes(nodes)
+    setEdges(edges)
+    xyflow.setViewport(nextviewport)
+  }, [nodes, edges])
 
   return (
     <ReactFlow
@@ -167,7 +235,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       defaultMarkerColor="var(--xy-edge-stroke)"
-      zoomOnPinch={zoomable}
+      zoomOnPinch={true}
       zoomOnScroll={false}
       zoomOnDoubleClick={false}
       maxZoom={1.5}
@@ -224,30 +292,27 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       onNodeClick={(e, node) => {
         e.stopPropagation()
         if (node.type === 'empty') return
-        if (subject.id !== node.data.fqn) {
-          lastClickedNodeRef.current = node
-        }
+        lastClickedNodeRef.current = node
         overlay.openOverlay({
           relationshipsOf: node.data.fqn
         })
       }}
+      onNodeDoubleClick={(e) => {
+        e.stopPropagation()
+      }}
       onDoubleClick={e => {
         e.stopPropagation()
-        xyflow.fitView({
-          includeHiddenNodes: true,
-          maxZoom: 1,
-          duration: 450
-        })
+        fitview()
       }}
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
-        if (edge.data.relations.length <= 1) {
-          const relationId = only(edge.data.relations)?.id
-          if (relationId) {
-            diagramStore.getState().onOpenSourceRelation?.(relationId)
-          }
+        // One relation in edge
+        const relationId = only(edge.data.relations)?.id
+        if (relationId) {
+          diagramStore.getState().onOpenSourceRelation?.(relationId)
           return
         }
+
         const nodeId = onlyOneUnique(edge.data, 'source') ? edge.source : edge.target
         const next = xyflow.getNode(nodeId)
         if (next && next.type !== 'empty') {
@@ -324,7 +389,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
                 }}
               >
                 <Text fw={500} size="xs" c="orange" component="div">
-                  Current view doesn't include selected element, switched to Global
+                  Current view doesn't include this element, switched to Global
                 </Text>
               </Box>
             )}

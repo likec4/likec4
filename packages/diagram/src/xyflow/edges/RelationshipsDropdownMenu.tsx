@@ -16,7 +16,7 @@ import {
   Tooltip as MantineTooltip,
   TooltipGroup
 } from '@mantine/core'
-import { IconArrowRight, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
+import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
@@ -47,6 +47,7 @@ export function RelationshipsDropdownMenu({
   disabled?: boolean | undefined
   likec4model: LikeC4Model
 }>) {
+  const openOverlay = useDiagramState(s => s.openOverlay)
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
 
@@ -122,22 +123,20 @@ export function RelationshipsDropdownMenu({
             {nested.map(renderRelationship)}
           </>
         )}
-        {
-          /* <Box pos={'absolute'} top={5} right={6}>
+        <Box pos={'absolute'} top={5} right={6}>
           <ActionIcon
             size={24}
             variant="light"
             onClick={e => {
               e.stopPropagation()
-              diagramApi.getState().openOverlay({
+              openOverlay({
                 edgeDetails: edge.id
               })
             }}
           >
             <IconArrowsMaximize style={{ width: '70%' }} />
           </ActionIcon>
-        </Box> */
-        }
+        </Box>
       </MenuDropdown>
     </Menu>
   )

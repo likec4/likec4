@@ -1,5 +1,5 @@
-import { ActionIcon, Box, Text as MantineText } from '@mantine/core'
-import { IconZoomScan } from '@tabler/icons-react'
+import { ActionIcon, Box, Group, Text as MantineText } from '@mantine/core'
+import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
@@ -10,6 +10,14 @@ import { stopPropagation } from '../../../xyflow/utils'
 import type { XYFlowTypes } from '../_types'
 import * as css from './styles.css'
 
+const Action = ActionIcon.withProps({
+  className: 'nodrag nopan ' + css.navigateBtn,
+  radius: 'md',
+  role: 'button',
+  onDoubleClick: stopPropagation,
+  onPointerDownCapture: stopPropagation
+})
+
 const Text = MantineText.withProps({
   component: 'div'
 })
@@ -18,8 +26,9 @@ type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
 
 function selector(s: DiagramState) {
   return {
-    viewId: s.view.id,
-    onNavigateTo: s.onNavigateTo
+    currentViewId: s.view.id,
+    onNavigateTo: s.onNavigateTo,
+    onOpenSource: s.onOpenSourceElement
   }
 }
 
@@ -36,8 +45,9 @@ export function ElementNode({
 }: ElementNodeProps) {
   const overlay = useOverlayDialog()
   const {
-    viewId,
-    onNavigateTo
+    currentViewId,
+    onNavigateTo,
+    onOpenSource
   } = useDiagramState(selector)
   return (
     <>
@@ -50,7 +60,7 @@ export function ElementNode({
         animate={{
           opacity: data.dimmed ? 0.15 : 1,
           transition: {
-            delay: data.dimmed ? .8 : 0
+            delay: data.dimmed === true ? .4 : 0
           }
         }}
         {...(selectable && {
@@ -73,10 +83,7 @@ export function ElementNode({
           width={w}
           height={h}
         >
-          <ElementShapeSvg
-            shape={element.shape}
-            w={w}
-            h={h} />
+          <ElementShapeSvg shape={element.shape} w={w} h={h} />
         </svg>
         <Box className={css.elementNodeContent}>
           <Text className={css.elementNodeTitle} lineClamp={2}>{element.title}</Text>
@@ -84,24 +91,38 @@ export function ElementNode({
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
         </Box>
-        {navigateTo && onNavigateTo && navigateTo !== viewId && (
-          <Box className={css.navigateBtnBox}>
-            <ActionIcon
-              className={clsx('nodrag nopan', css.navigateBtn)}
-              radius="md"
+        <Group className={css.navigateBtnBox}>
+          {navigateTo && onNavigateTo && navigateTo !== currentViewId && (
+            <Action
               onClick={(event) => {
                 event.stopPropagation()
-                setTimeout(() => onNavigateTo(navigateTo), 200)
+                setTimeout(() => onNavigateTo(navigateTo), 100)
                 overlay.close()
-              }}
-              role="button"
-              onDoubleClick={stopPropagation}
-              onPointerDownCapture={stopPropagation}
-            >
+              }}>
               <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-            </ActionIcon>
-          </Box>
-        )}
+            </Action>
+          )}
+          {data.column !== 'subject' && (
+            <Action
+              onClick={(event) => {
+                event.stopPropagation()
+                overlay.openOverlay({
+                  relationshipsOf: data.fqn
+                })
+              }}>
+              <IconTransform stroke={1.8} style={{ width: '72%' }} />
+            </Action>
+          )}
+          {onOpenSource && (
+            <Action
+              onClick={(event) => {
+                event.stopPropagation()
+                onOpenSource(data.fqn)
+              }}>
+              <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
+            </Action>
+          )}
+        </Group>
       </m.div>
       {ports.left.map(({ id, type }, i) => (
         <Handle

@@ -850,22 +850,21 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           openOverlay: (overlay) => {
-            set(
-              {
-                activeOverlay: overlay
-              },
-              noReplace,
-              'openOverlay'
-            )
+            if (eq(overlay, get().activeOverlay)) {
+              return
+            }
+            set({ activeOverlay: overlay }, noReplace, 'openOverlay')
           },
           closeOverlay: () => {
-            set(
-              {
-                activeOverlay: null
-              },
-              noReplace,
-              'openOverlay'
-            )
+            if (get().activeOverlay !== null) {
+              set(
+                {
+                  activeOverlay: null
+                },
+                noReplace,
+                'openOverlay'
+              )
+            }
           },
 
           fitDiagram: (duration = 500) => {
