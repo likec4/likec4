@@ -2,10 +2,9 @@
 
 ### 🚀 Features  
 
-* **Browse relationships**  
-  Experimental browser 
-
-  Share your feedback in our [Discussions](https://github.com/likec4/likec4/discussions)
+* **Browse relationships**
+  
+  ![SCR-20241018-didx](https://github.com/user-attachments/assets/6565e3da-3f9e-4991-8d2c-e28b88c94375)
 
   Disabled by default in generated components, to enable:
   ```tsx
@@ -16,9 +15,11 @@
     enableRelationshipsBrowser
     />
   ```
+  Share your feedback in our [Discussions](https://github.com/likec4/likec4/discussions)
 
-* **dsl:** local (shared) styles in views block (thanks @hubertmis, [#1113](https://github.com/likec4/likec4/pull/1113))
-
+* **Local styles:**  
+  Shared styles in views block (thanks @hubertmis, [#1113](https://github.com/likec4/likec4/pull/1113))
+  
   ```zig
   views {
     // apply to all views in this views block
@@ -38,7 +39,9 @@
   ```
   [Documentation](https://likec4.dev/dsl/views/#local-style-predicates)
 
-* **editor:** Implemented alignment tools for manual layouting  (thanks @pavelpykhtin, [#1099](https://github.com/likec4/likec4/issues/1099))   
+* **Alignment tools:**  
+  Implemented alignment tools for manual layouting  (thanks @pavelpykhtin, [#1099](https://github.com/likec4/likec4/issues/1099))
+  
   ![alignment-tools](https://github.com/user-attachments/assets/9d6e5b1b-e2af-4cce-bac5-b0a3a1dfc73b)
 
 ### Bug Fixes
