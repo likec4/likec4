@@ -85,17 +85,13 @@ export function LikeC4Browser<
   const id = useId()
 
   useDebouncedEffect(
-    () => {
-      dialogRef.current?.showModal()
-    },
+    () => dialogRef.current?.showModal(),
     [],
     30
   )
 
   useDebouncedEffect(
-    () => {
-      setOpened(true)
-    },
+    () => setOpened(true),
     [],
     80
   )
@@ -215,7 +211,10 @@ export function LikeC4Browser<
           e.stopPropagation()
           triggerOnClose()
         }}>
-        <ShadowRoot injectFontCss={injectFontCss}>
+        <ShadowRoot
+          injectFontCss={injectFontCss}
+          styleNonce={styleNonce}
+        >
           <ShadowRootMantineProvider
             theme={mantineTheme}
             colorScheme={colorScheme}
