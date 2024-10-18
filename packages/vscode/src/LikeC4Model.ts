@@ -88,10 +88,10 @@ export class LikeC4Model extends AbstractDisposable {
     // send first telemetry in 1 minute
     setTimeout(() => this.sendTelemetryMetrics(), Minute)
 
-    // send telemetry every 15 minutes
+    // send telemetry every 30 minutes
     const interval = setInterval(() => {
       this.sendTelemetryMetrics()
-    }, 15 * Minute)
+    }, 30 * Minute)
     this.onDispose(() => clearInterval(interval))
   }
 
