@@ -65,7 +65,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "^7.13.2",
     "@types/natural-compare-lite": "^1.4.2",
-    "chroma-js": "^3.1.1",
+    "chroma-js": "^3.1.2",
     "execa": "^9.3.1",
     "natural-compare-lite": "^1.4.0",
     "remeda": "^2.15.0",
