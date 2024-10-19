@@ -1,6 +1,6 @@
 import { type ComputedLikeC4Model, type DiagramNode, type DiagramView, LikeC4Model, type ViewID } from '@likec4/core'
 import { useStore } from '@nanostores/react'
-import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
+import { atom, batched, deepMap, map, onMount, onSet, task } from 'nanostores'
 import { useRef } from 'react'
 import { entries, isDeepEqual, isNullish, keys, values } from 'remeda'
 import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
@@ -165,9 +165,22 @@ messenger.onNotification(BroadcastModelUpdate, () => {
 
 export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.computed(m as any))
 
+const $likeC4View = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.view ?? null)
 const $likeC4ViewState = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.state ?? null)
+const $likeC4ViewError = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.error ?? null)
 
-onMount($likeC4Diagrams, () => {
+onMount($likeC4View, () => {
+  return $likeC4View.listen(view => {
+    if (view) {
+      saveVscodeState({
+        viewId: view.id,
+        view
+      })
+    }
+  })
+})
+
+onMount($likeC4ViewState, () => {
   return $likeC4ViewState.subscribe((state) => {
     if (state === 'pending' || state === 'stale') {
       fetchDiagramView($viewId.get()).catch(e => console.error(e))
@@ -204,20 +217,6 @@ async function fetchDiagramView(viewId: ViewID) {
     error: null
   })
 }
-
-const $likeC4View = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.view ?? null)
-const $likeC4ViewError = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.error ?? null)
-
-onMount($likeC4View, () => {
-  return $likeC4View.listen(view => {
-    if (view) {
-      saveVscodeState({
-        viewId: view.id,
-        view
-      })
-    }
-  })
-})
 
 export function useLikeC4View() {
   const state = useStore($likeC4ViewState)

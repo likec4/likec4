@@ -592,17 +592,8 @@ function layout(
   }
 }
 
-export function useLayoutedRelationships(scope: 'global' | 'view') {
-  const {
-    subjectId,
-    view
-  } = useDiagramState(s => {
-    return {
-      subjectId: s.activeOverlay?.relationshipsOf,
-      view: s.view
-    }
-  })
-  invariant(subjectId, 'subject not found')
+export function useLayoutedRelationships(subjectId: Fqn, scope: 'global' | 'view') {
+  const view = useDiagramState(s => s.view)
   const likec4model = useLikeC4Model(true)
   return useMemo(() =>
     layout(

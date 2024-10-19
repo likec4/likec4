@@ -49,28 +49,32 @@ export function CompoundNode({
       >
         <Text className={css.compoundNodeTitle} maw={width - 20}>{element.title}</Text>
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.out.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
-          position={Position.Left}
-          style={{
-            visibility: 'hidden',
-            top: `${16 + 20 * i}px`
-          }} />
-      ))}
-      {ports.right.map(({ id, type }, i) => (
-        <Handle
-          key={id}
-          id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type={'source'}
           position={Position.Right}
           style={{
             visibility: 'hidden',
             top: `${16 + 20 * i}px`
           }} />
       ))}
+      {ports.in.map((id, i) => (
+        <Handle
+          key={id}
+          id={id}
+          type={'target'}
+          position={Position.Left}
+          style={{
+            visibility: 'hidden',
+            top: `${16 + 20 * i}px`
+          }} />
+      ))}
+      {
+        /* <Handle type="target" position={Position.Left}/>
+      <Handle type="source" position={Position.Right}/> */
+      }
     </>
   )
 }

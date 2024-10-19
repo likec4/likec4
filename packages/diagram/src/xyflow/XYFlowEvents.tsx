@@ -225,11 +225,13 @@ export function useXYFlowEvents() {
           }
           if (!onEdgeClick) {
             event.stopPropagation()
+            return
           }
         } else if (nodesSelectable) {
           xystore.getState().addSelectedEdges([xyedge.id])
           if (!onEdgeClick) {
             event.stopPropagation()
+            return
           }
         }
         onEdgeClick?.(
@@ -245,7 +247,9 @@ export function useXYFlowEvents() {
           enableDynamicViewWalkthrough,
           focusOnNode,
           activeWalkthrough,
-          activateWalkthrough
+          activateWalkthrough,
+          openOverlay,
+          showRelationshipDetails
         } = diagramApi.getState()
         // if we are in dynamic view, and clicked on an edge, activate the step
         if (isDynamicView && enableDynamicViewWalkthrough) {
@@ -254,6 +258,14 @@ export function useXYFlowEvents() {
             activateWalkthrough(nextStep)
             event.stopPropagation()
           }
+          return
+        }
+
+        if (showRelationshipDetails) {
+          openOverlay({
+            edgeDetails: xyedge.data.edge.id
+          })
+          event.stopPropagation()
           return
         }
 

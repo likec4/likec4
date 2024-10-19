@@ -112,7 +112,7 @@ export class PreviewPanel extends AbstractDisposable {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${cspSource} data: https: 'nonce-${nonce}'; style-src ${cspSource} 'unsafe-inline' 'nonce-${nonce}'; img-src ${cspSource} data: https:; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${cspSource} data: https: 'nonce-${nonce}'; style-src ${cspSource} 'unsafe-inline'; img-src ${cspSource} data: https:; script-src 'nonce-${nonce}';">
     <link rel="stylesheet" type="text/css" href="${stylesUri}" nonce="${nonce}">
   </head>
   <body class="${theme}">
