@@ -221,6 +221,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     setNodes(nodes)
     setEdges(edges)
     fitview()
+    return undefined
   }, [nodes, edges])
 
   return (
