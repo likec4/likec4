@@ -102,6 +102,10 @@ likec4 preview -o ./dist
 
 For example, this command can be used on CI, to compare diagrams with ones from the previous/main build.
 
+> **Tip:**\
+> The website root is strictly bound to the given base path (`/` by default).
+> If you need a relocatable bundle you may use `--base "./"`.
+
 ### Export to PNG
 
 ```sh
