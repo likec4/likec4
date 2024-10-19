@@ -13,6 +13,7 @@ import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
 import {
+  entries,
   filter,
   flatMap,
   forEach,
@@ -46,7 +47,7 @@ import { logError, logger, logWarnError } from '../logger'
 import { computeDynamicView, computeView, LikeC4ModelGraph } from '../model-graph'
 import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils/printDocs'
-import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
+import { assignNavigateTo, resolveGlobalRules, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
   const c4Specification: ParsedAstSpecification = {
@@ -211,6 +212,23 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     indexBy(prop('id'))
   )
 
+  const parsedGlobals: {
+    styles: Record<c4.GlobalStyleID, c4.ViewRuleStyle[]>
+  } = {
+    styles: {}
+  }
+  Object.assign(parsedGlobals.styles, ...docs.map(d => d.c4Globals.styles))
+
+  const globals: {
+    styles: Record<c4.GlobalStyleID, c4.GlobalStyle>
+  } = {
+    styles: pipe(
+      entries(parsedGlobals.styles),
+      map(([id, styles]) => ({ id, styles })),
+      indexBy(prop('id'))
+    )
+  }
+
   function toC4View(doc: LangiumDocument) {
     const docUri = doc.uri.toString()
     return (parsedAstView: ParsedAstView): c4.LikeC4View => {
@@ -287,6 +305,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     },
     elements,
     relations,
+    globals,
     views
   }
 }
@@ -396,6 +415,7 @@ export class LikeC4ModelBuilder {
         specification: model.specification,
         elements: model.elements,
         relations: model.relations,
+        globals: model.globals,
         views
       }
     })
@@ -441,7 +461,10 @@ export class LikeC4ModelBuilder {
           return null
         }
         const index = new LikeC4ModelGraph(model)
-        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
+        const resolvedView = resolveGlobalRules(view, model.globals.styles)
+        const result = isElementView(resolvedView)
+          ? computeView(resolvedView, index)
+          : computeDynamicView(resolvedView, index)
         if (!result.isSuccess) {
           logError(result.error)
           return null

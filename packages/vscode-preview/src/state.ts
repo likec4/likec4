@@ -94,6 +94,9 @@ const EMPTY: ComputedLikeC4Model = {
   },
   elements: {},
   relations: {},
+  globals: {
+    styles: {}
+  },
   views: {}
 }
 

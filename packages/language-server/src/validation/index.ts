@@ -8,6 +8,8 @@ import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChe
 import { relationBodyChecks, relationChecks } from './relation'
 import {
   elementKindChecks,
+  globalsChecks,
+  globalStyleChecks,
   modelRuleChecks,
   relationshipChecks,
   specificationRuleChecks,
@@ -31,6 +33,8 @@ export function registerValidationChecks(services: LikeC4Services) {
     IconProperty: iconPropertyRuleChecks(services),
     SpecificationRule: specificationRuleChecks(services),
     Model: modelRuleChecks(services),
+    Globals: globalsChecks(services),
+    GlobalStyle: globalStyleChecks(services),
     DynamicViewStep: dynamicViewStep(services),
     LikeC4View: viewChecks(services),
     Element: elementChecks(services),

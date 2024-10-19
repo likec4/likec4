@@ -20,7 +20,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<AstNodeDescription[]> {
     const docExports: AstNodeDescription[] = []
     try {
-      const { specifications, models, views, likec4lib } = document.parseResult.value
+      const { specifications, models, views, globals, likec4lib } = document.parseResult.value
 
       // Process library
       this.exportLibrary(likec4lib, docExports, document)
@@ -33,6 +33,9 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
       // Process views
       this.exportViews(views, docExports, document)
+
+      // Process global
+      this.exportGlobals(globals, docExports, document)
     } catch (e) {
       logError(e)
     }
@@ -51,6 +54,25 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       try {
         if (isTruthy(viewAst.name)) {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
+  }
+
+  private exportGlobals(
+    globals: ast.Globals[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument
+  ) {
+    if (isNullish(globals) || globals.length === 0) {
+      return
+    }
+    for (const globalStyleAst of globals.flatMap(g => g.styles)) {
+      try {
+        if (isTruthy(globalStyleAst.name)) {
+          docExports.push(this.descriptions.createDescription(globalStyleAst, globalStyleAst.name, document))
         }
       } catch (e) {
         logError(e)

@@ -30,15 +30,13 @@ import {
   ViewOps
 } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
+import { type NotationProperty } from '../generated/ast'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
 import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
-import {
-  type NotationProperty
-} from '../generated/ast'
 
 const { getDocument } = AstUtils
 
@@ -83,6 +81,7 @@ export class LikeC4ModelParser {
     const { isValid } = checksFromDiagnostics(doc)
     this.parseSpecification(doc, isValid)
     this.parseModel(doc, isValid)
+    this.parseGlobal(doc, isValid)
     this.parseViews(doc, isValid)
     return doc
   }
@@ -285,6 +284,37 @@ export class LikeC4ModelParser {
     }
   }
 
+  private parseGlobal(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
+    const { parseResult, c4Globals } = doc
+
+    const globals = parseResult.value.globals.filter(isValid)
+    const styles = globals.flatMap(r => r.styles.filter(isValid))
+    for (const style of styles) {
+      try {
+        const globalStyleId = style.name as c4.GlobalStyleID
+        if (!isTruthy(globalStyleId)) {
+          continue
+        }
+        if (globalStyleId in c4Globals.styles) {
+          logger.warn(`Global style named "${globalStyleId}" is already defined`)
+          continue
+        }
+        c4Globals.styles[globalStyleId] = [
+          this.parseGlobalStyle(style, isValid)
+        ]
+      } catch (e) {
+        logWarnError(e)
+      }
+    }
+  }
+
+  private parseGlobalStyle(astRule: ast.GlobalStyle, isValid: IsValidFn): c4.ViewRuleStyle {
+    const styleProps = astRule.props.filter(ast.isStyleProperty)
+    const targets = astRule.target
+    const notation = astRule.props.find(ast.isNotationProperty)
+    return this.parseRuleStyle(styleProps, targets, isValid, notation)
+  }
+
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
     const viewBlocks = doc.parseResult.value.views.filter(v => isValid(v))
     for (const viewBlock of viewBlocks) {
@@ -298,7 +328,9 @@ export class LikeC4ModelParser {
             continue
           }
           doc.c4Views.push(
-            ast.isElementView(view) ? this.parseElementView(view, stylesToApply, isValid) : this.parseDynamicElementView(view, stylesToApply, isValid)
+            ast.isElementView(view)
+              ? this.parseElementView(view, stylesToApply, isValid)
+              : this.parseDynamicElementView(view, stylesToApply, isValid)
           )
         } catch (e) {
           logWarnError(e)
@@ -610,6 +642,9 @@ export class LikeC4ModelParser {
     if (ast.isViewRuleAutoLayout(astRule)) {
       return toAutoLayout(astRule)
     }
+    if (ast.isViewRuleGlobalStyle(astRule)) {
+      return this.parseViewRuleGlobalStyle(astRule, isValid)
+    }
     nonexhaustive(astRule)
   }
 
@@ -620,7 +655,12 @@ export class LikeC4ModelParser {
     return this.parseRuleStyle(styleProps, targets, isValid, notation)
   }
 
-  private parseRuleStyle(styleProperties: ast.StyleProperty[], elementExpressionsIterator: ast.ElementExpressionsIterator, isValid: IsValidFn, notationProperty?: NotationProperty): c4.ViewRuleStyle {
+  private parseRuleStyle(
+    styleProperties: ast.StyleProperty[],
+    elementExpressionsIterator: ast.ElementExpressionsIterator,
+    isValid: IsValidFn,
+    notationProperty?: NotationProperty
+  ): c4.ViewRuleStyle {
     const styleProps = toElementStyle(styleProperties, isValid)
     const notation = removeIndent(notationProperty?.value)
     const targets = this.parseElementExpressionsIterator(elementExpressionsIterator)
@@ -630,6 +670,12 @@ export class LikeC4ModelParser {
       style: {
         ...styleProps
       }
+    }
+  }
+
+  private parseViewRuleGlobalStyle(astRule: ast.ViewRuleGlobalStyle, isValid: IsValidFn): c4.ViewRuleGlobalStyle {
+    return {
+      styleId: astRule.style.$refText as c4.GlobalStyleID
     }
   }
 
@@ -729,7 +775,11 @@ export class LikeC4ModelParser {
     return step
   }
 
-  private parseElementView(astNode: ast.ElementView, additionalStyles: c4.ViewRuleStyle[], isValid: IsValidFn): ParsedAstElementView {
+  private parseElementView(
+    astNode: ast.ElementView,
+    additionalStyles: c4.ViewRuleStyle[],
+    isValid: IsValidFn
+  ): ParsedAstElementView {
     const body = astNode.body
     invariant(body, 'ElementView body is not defined')
     const astPath = this.getAstNodePath(astNode)
@@ -770,14 +820,17 @@ export class LikeC4ModelParser {
       description,
       tags,
       links: isNonEmptyArray(links) ? links : null,
-      rules: [...additionalStyles, ...body.rules.flatMap(n => {
-        try {
-          return isValid(n) ? this.parseViewRule(n, isValid) : []
-        } catch (e) {
-          logWarnError(e)
-          return []
-        }
-      })],
+      rules: [
+        ...additionalStyles,
+        ...body.rules.flatMap(n => {
+          try {
+            return isValid(n) ? this.parseViewRule(n, isValid) : []
+          } catch (e) {
+            logWarnError(e)
+            return []
+          }
+        })
+      ],
       ...(viewOf && { viewOf }),
       ...(manualLayout && { manualLayout })
     }
@@ -794,7 +847,11 @@ export class LikeC4ModelParser {
     return view
   }
 
-  private parseDynamicElementView(astNode: ast.DynamicView, additionalStyles: c4.ViewRuleStyle[], isValid: IsValidFn): ParsedAstDynamicView {
+  private parseDynamicElementView(
+    astNode: ast.DynamicView,
+    additionalStyles: c4.ViewRuleStyle[],
+    isValid: IsValidFn
+  ): ParsedAstDynamicView {
     const body = astNode.body
     invariant(body, 'DynamicElementView body is not defined')
     // only valid props
@@ -827,14 +884,17 @@ export class LikeC4ModelParser {
       description,
       tags,
       links: isNonEmptyArray(links) ? links : null,
-      rules: [...additionalStyles, ...body.rules.flatMap(n => {
-        try {
-          return isValid(n) ? this.parseDynamicViewRule(n, isValid) : []
-        } catch (e) {
-          logWarnError(e)
-          return []
-        }
-      }, [] as Array<c4.DynamicViewRule>)],
+      rules: [
+        ...additionalStyles,
+        ...body.rules.flatMap(n => {
+          try {
+            return isValid(n) ? this.parseDynamicViewRule(n, isValid) : []
+          } catch (e) {
+            logWarnError(e)
+            return []
+          }
+        }, [] as Array<c4.DynamicViewRule>)
+      ],
       steps: body.steps.reduce((acc, n) => {
         try {
           if (isValid(n)) {
@@ -863,10 +923,16 @@ export class LikeC4ModelParser {
     if (ast.isViewRuleAutoLayout(astRule)) {
       return toAutoLayout(astRule)
     }
+    if (ast.isViewRuleGlobalStyle(astRule)) {
+      return this.parseViewRuleGlobalStyle(astRule, isValid)
+    }
     nonexhaustive(astRule)
   }
 
-  private parseDynamicViewIncludePredicate(astRule: ast.DynamicViewIncludePredicate, isValid: IsValidFn): c4.DynamicViewIncludeRule {
+  private parseDynamicViewIncludePredicate(
+    astRule: ast.DynamicViewIncludePredicate,
+    isValid: IsValidFn
+  ): c4.DynamicViewIncludeRule {
     const include = [] as c4.ElementPredicateExpression[]
     let iter: ast.DynamicViewPredicateIterator | undefined = astRule.predicates
     while (iter) {

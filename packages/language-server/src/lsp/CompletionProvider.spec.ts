@@ -34,6 +34,7 @@ describe('LikeC4CompletionProvider', () => {
         'specification',
         'model',
         'views',
+        'global',
         'likec4lib'
       ]
     })
@@ -356,6 +357,7 @@ describe('LikeC4CompletionProvider', () => {
         'include',
         'exclude',
         'style',
+        'global',
         'autoLayout'
       ],
       disposeAfterCheck: true
@@ -464,6 +466,7 @@ describe('LikeC4CompletionProvider', () => {
         'include',
         'exclude',
         'style',
+        'global',
         'autoLayout'
       ],
       disposeAfterCheck: true
@@ -525,6 +528,7 @@ describe('LikeC4CompletionProvider', () => {
         'include',
         'exclude',
         'style',
+        'global',
         'autoLayout'
       ],
       disposeAfterCheck: true

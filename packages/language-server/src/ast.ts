@@ -93,6 +93,10 @@ export interface ParsedAstRelation {
   metadata?: { [key: string]: string }
 }
 
+export interface ParsedAstGlobals {
+  styles: Record<c4.GlobalStyleID, c4.NonEmptyArray<c4.ViewRuleStyle>>
+}
+
 export interface ParsedAstElementView {
   __: 'element'
   id: c4.ViewID
@@ -163,6 +167,7 @@ export interface LikeC4DocumentProps {
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
   c4Relations?: ParsedAstRelation[]
+  c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
   // Fqn -> Element
   c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
@@ -190,6 +195,9 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
     },
     c4Elements: [],
     c4Relations: [],
+    c4Globals: {
+      styles: {}
+    },
     c4Views: []
   }
   return Object.assign(doc, props) as ParsedLikeC4LangiumDocument
@@ -226,6 +234,8 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
+  ast.isGlobals,
+  ast.isGlobalStyle,
   ast.isDynamicViewPredicateIterator,
   ast.isElementPredicateWith,
   ast.isRelationPredicateWith,

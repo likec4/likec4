@@ -10,6 +10,7 @@ import {
   type ElementShape,
   type ElementView,
   type Fqn,
+  type GlobalStyle,
   type IconUrl,
   isScopedElementView,
   type LikeC4View,
@@ -219,6 +220,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
   _elements = new Map<string, Element>(),
   _relations = [] as Relation[],
+  _globals = { styles: [] } as {
+    styles: GlobalStyle[]
+  },
   _views = new Map<string, LikeC4View>()
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
@@ -283,6 +287,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(spec),
         structuredClone(_elements),
         structuredClone(_relations),
+        structuredClone(_globals),
         structuredClone(_views)
       ),
     __model: () => ({
@@ -338,6 +343,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       specification: toLikeC4Specification(),
       elements: fromEntries(Array.from(_elements.entries())) as any,
       relations: mapToObj(_relations, r => [r.id, r]),
+      globals: {
+        styles: mapToObj(_globals.styles, s => [s.id, s])
+      },
       views: fromEntries(Array.from(_views.entries())) as any
     }),
     helpers: () => ({
