@@ -30,7 +30,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   let base = '/'
   if (cfg.base) {
     base = withTrailingSlash(cfg.base)
-    if (!hasProtocol(base)) {
+    if (!hasProtocol(base) && base !== './') {
       base = withLeadingSlash(base)
     }
   }
