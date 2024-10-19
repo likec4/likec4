@@ -73,9 +73,9 @@ export function DiagramContextProvider({
       animate('.likec4-diagram .react-flow__renderer', {
         filter: isActiveOverlay ? 'grayscale(0.85) brightness(0.5)' : 'grayscale(0) brightness()',
         scale: isActiveOverlay ? 0.97 : 1,
-        translateY: isActiveOverlay ? 10 : 0
+        transform: isActiveOverlay ? `translateY(10px)` : `translateY(0)`
       }, {
-        duration: isActiveOverlay ? 0.6 : 0.16
+        duration: isActiveOverlay ? 0.5 : 0.16
       })
     })
   }, [api])

@@ -107,6 +107,7 @@ export const SelectEdge = ({
           <Box className={css.edgeGrid} p="xs">
             {edges.map(e => (
               <div
+                key={e.id}
                 className={css.edgeRow}
                 data-selected={e.id === edge.id}
                 onClick={event => {
