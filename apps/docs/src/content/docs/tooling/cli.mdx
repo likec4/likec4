@@ -100,6 +100,9 @@ You can start the process in a separate terminal window and keep it running whil
 Build a single HTML with diagrams, ready to be embedded into your website.
 When you deployed the website, you can use "Share" button to get a link to a specific diagram.
 
+The resulting website is strictly bound to the given base path (`/` by default).
+A relocatable app can be built with `--base "./"`.
+
 ```sh
 likec4 build -o ./dist
 ```
@@ -107,7 +110,7 @@ likec4 build -o ./dist
 | Option                  | Description                                                                                           |
 | ----------------------- | ----------------------------------------------------------------------------------------------------- |
 | `--output`              | Output directory                                                                                      |
-| `--base, --base-url`    | Base URL the app is being served from, e.g. "/" or "/pages/"                                          |
+| `--base, --base-url`    | Base URL the app is being served from, e.g. "/", "/pages/" or "./" for a relocatable app              |
 | `--use-hash-history`    | Hash-based navigation, e.g. "/#/view" instead of "/view"                                              |
 | `--use-dot`             | Use local binaries of Graphviz ("dot") instead of bundled WASM                                        |
 | `--webcomponent-prefix` | Prefix for web components, e.g. "c4" generates `<c4-view ../>`                                        |
