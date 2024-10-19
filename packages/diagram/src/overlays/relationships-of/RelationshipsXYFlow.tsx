@@ -225,6 +225,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     setNodes(nodes)
     setEdges(edges)
     xyflow.setViewport(nextviewport)
+    return undefined
   }, [nodes, edges])
 
   return (
