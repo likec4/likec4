@@ -2160,7 +2160,7 @@ __metadata:
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
-    astro: "npm:~4.16.0"
+    astro: "npm:~4.16.5"
     astro-og-canvas: "npm:^0.5.3"
     likec4: "workspace:*"
     npm-run-all2: "npm:^6.2.2"
@@ -4562,9 +4562,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro@npm:~4.16.0":
-  version: 4.16.5
-  resolution: "astro@npm:4.16.5"
+"astro@npm:~4.16.5":
+  version: 4.16.6
+  resolution: "astro@npm:4.16.6"
   dependencies:
     "@astrojs/compiler": "npm:^2.10.3"
     "@astrojs/internal-helpers": "npm:0.4.1"
@@ -4634,7 +4634,7 @@ __metadata:
       optional: true
   bin:
     astro: astro.js
-  checksum: 10c0/630bcb2986c975f47fa3f0a55b141eacf7128ec8fe7c140df9baf8cc792e8e93bfcafa7d3c79a2902c2f298b7ba0e685ce573b6be4d3c160b99f3592d3e7b127
+  checksum: 10c0/f5f768a6b8451c7e1ac4244fa007391ece569ca3f8359cac910765752fc4f0b2d3d73c9bc850eb4afbe6999cef08429179f0d305955bed35ec5441b2a3d073d2
   languageName: node
   linkType: hard
 
