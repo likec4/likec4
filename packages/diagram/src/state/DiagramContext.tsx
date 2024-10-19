@@ -1,6 +1,8 @@
 import { invariant } from '@likec4/core'
+import { useMergedRef } from '@mantine/hooks'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { createContext, type PropsWithChildren, useCallback, useRef } from 'react'
+import { useAnimate } from 'framer-motion'
+import { createContext, type PropsWithChildren, useCallback, useEffect, useRef } from 'react'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../hooks/useXYFlow'
 import { createDiagramStore, type DiagramInitialState, type DiagramZustandStore } from './diagramStore'
@@ -22,7 +24,9 @@ export function DiagramContextProvider({
   whereFilter,
   ...props
 }: DiagramContextProviderProps) {
+  const [scope, animate] = useAnimate()
   const containerRef = useRef<HTMLDivElement>(null)
+  const ref = useMergedRef(scope, containerRef)
   const xystore = useXYStoreApi()
   const xyflow = useXYFlow()
   const store = useRef<DiagramZustandStore>()
@@ -63,9 +67,22 @@ export function DiagramContextProvider({
     (a, b) => shallowEqual(a[0], b[0]) && deepEqual(a[1], b[1])
   )
 
+  const api = store.current
+  useEffect(() => {
+    return api.subscribe(s => !!s.activeOverlay, (isActiveOverlay) => {
+      animate('.likec4-diagram .react-flow__renderer', {
+        filter: isActiveOverlay ? 'grayscale(0.85) brightness(0.5)' : 'grayscale(0) brightness()',
+        scale: isActiveOverlay ? 0.97 : 1,
+        translateY: isActiveOverlay ? 10 : 0
+      }, {
+        duration: isActiveOverlay ? 0.6 : 0.16
+      })
+    })
+  }, [api])
+
   return (
     <div
-      ref={containerRef}
+      ref={ref}
       className={className}
       {...(keepAspectRatio && {
         style: {
@@ -73,7 +90,7 @@ export function DiagramContextProvider({
           maxHeight: Math.ceil(view.bounds.height)
         }
       })}>
-      <DiagramContext.Provider value={store.current}>
+      <DiagramContext.Provider value={api}>
         {children}
       </DiagramContext.Provider>
     </div>

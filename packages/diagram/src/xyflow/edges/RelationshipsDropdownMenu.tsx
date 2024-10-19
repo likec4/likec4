@@ -18,7 +18,7 @@ import {
 } from '@mantine/core'
 import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren } from 'react'
+import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useXYNodesData } from '../../hooks'
 import type { RelationshipData } from '../types'
@@ -79,6 +79,7 @@ export function RelationshipsDropdownMenu({
     <Fragment key={relationship.id}>
       {index > 0 && <MenuDivider opacity={0.65} />}
       <MenuItem
+        onClick={onClickOpenOverlay}
         component={Relationship}
         relationship={relationship}
         sourceNode={sourceXYNode.data.element}
@@ -86,6 +87,13 @@ export function RelationshipsDropdownMenu({
         edge={edge} />
     </Fragment>
   )
+
+  const onClickOpenOverlay = useCallback((e: React.MouseEvent): void => {
+    e.stopPropagation()
+    openOverlay({
+      edgeDetails: edge.id
+    })
+  }, [edge.id, openOverlay])
 
   return (
     <Menu
@@ -108,7 +116,6 @@ export function RelationshipsDropdownMenu({
         onPointerDownCapture={stopPropagation}
         onPointerDown={stopPropagation}
         onClick={stopPropagation}
-        onDoubleClick={stopPropagation}
       >
         {direct.length > 0 && (
           <>
@@ -127,12 +134,7 @@ export function RelationshipsDropdownMenu({
           <ActionIcon
             size={24}
             variant="light"
-            onClick={e => {
-              e.stopPropagation()
-              openOverlay({
-                edgeDetails: edge.id
-              })
-            }}
+            onClick={onClickOpenOverlay}
           >
             <IconArrowsMaximize style={{ width: '70%' }} />
           </ActionIcon>
@@ -194,6 +196,7 @@ const Relationship = forwardRef<
                   variant="default"
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
+                    event.stopPropagation()
                     diagramApi.getState().onNavigateTo?.(navigateTo, event)
                   }}
                   role="button"

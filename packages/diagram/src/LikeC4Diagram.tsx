@@ -158,7 +158,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
     pannable: s.pannable,
     fitView: s.fitViewEnabled,
     enableFocusMode: s.enableFocusMode,
-    enableOverlays: s.enableRelationshipsBrowser
+    enableOverlays: s.hasLikeC4Model && (s.enableRelationshipsBrowser || s.showRelationshipDetails)
   }))
 
   return (
@@ -169,7 +169,8 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
           css.cssReactFlow,
           css.cssNoControls,
           pannable !== true && css.cssDisablePan,
-          background === 'transparent' && css.cssTransparentBg
+          background === 'transparent' && css.cssTransparentBg,
+          isInitialized ? 'initialized' : css.notInitialized
         )}
       >
         <XYFlowInner

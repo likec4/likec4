@@ -1,7 +1,7 @@
-import { isAncestor, type Relation } from '@likec4/core'
+import { type Fqn, isAncestor, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useLocalStorage, useStateHistory } from '@mantine/hooks'
-import { useDebouncedCallback, useDebouncedEffect } from '@react-hookz/web'
+import { useDebouncedCallback, useSyncedRef } from '@react-hookz/web'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import {
   getViewportForBounds,
@@ -11,16 +11,13 @@ import {
   useReactFlow,
   useStoreApi
 } from '@xyflow/react'
-import { fitView, getNodeDimensions } from '@xyflow/system'
+import { getNodeDimensions } from '@xyflow/system'
 import { memo, useEffect, useRef } from 'react'
 import { map, only, prop, unique } from 'remeda'
-import { useOverlayDialog } from '../../components'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
-import { dimmed } from '../../xyflow/edges/edges.css'
-import { getNodeCenter } from '../../xyflow/edges/utils'
+import { useOverlayDialog } from '../OverlayContext'
 import type { XYFlowTypes } from './_types'
 import { SelectElement } from './SelectElement'
-import * as css from './styles.css'
 import { useLayoutedRelationships, ZIndexes } from './use-layouted-relationships'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
@@ -35,6 +32,9 @@ const nodeTypes = {
 const edgeTypes = {
   relation: RelationshipEdge
 }
+
+const findSubjectNode = (nodes: XYFlowTypes.Node[]) =>
+  nodes.find((n): n is XYFlowTypes.ElementNode => n.type === 'element' && n.data.column === 'subject')
 
 const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>) => {
   xyflow.setEdges(edges =>
@@ -80,7 +80,7 @@ const onlyOneUnique = <T extends keyof Relation>(
   return only(unique(map(data.relations, prop(property))))
 }
 
-export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
+export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function RelationshipsXYFlow({ subjectId }) {
   const diagramStore = useDiagramStoreApi()
   const lastClickedNodeRef = useRef<XYFlowTypes.NonEmptyNode | null>(null)
   const [_scope, setScope] = useLocalStorage<'global' | 'view'>({
@@ -95,14 +95,14 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     nodes,
     subject,
     bounds
-  } = useLayoutedRelationships(_scope)
+  } = useLayoutedRelationships(subjectId, _scope)
   const scope = viewIncludesSubject ? _scope : 'global'
   const showSubjectWarning = !viewIncludesSubject && _scope === 'view'
 
   const [historySubjectId, historyOps, { history, current }] = useStateHistory(subject.id)
 
   const xyflow = useReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>()
-  const xystore = useStoreApi()
+  const xystore = useStoreApi<XYFlowTypes.Node, XYFlowTypes.Edge>()
   const overlay = useOverlayDialog()
 
   useEffect(() => {
@@ -133,15 +133,6 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
   )
 
   useEffect(() => {
-    const nextSubjectNode = nodes.find((n): n is XYFlowTypes.NonEmptyNode =>
-      n.type !== 'empty' && n.data.column === 'subject'
-    )
-    if (!nextSubjectNode) {
-      console.error('Subject node not found')
-    } else if (nextSubjectNode.data.fqn !== subject.id) {
-      console.error(`Subject node mismatch, expected: ${subject.id} got: ${nextSubjectNode.data.fqn}`)
-    }
-
     const {
       nodes: _nodes,
       edges: _edges,
@@ -151,7 +142,23 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
       height
     } = xystore.getState()
 
-    const nextviewport = getViewportForBounds(bounds, width, height, 0.2, 1, 0.2)
+    const nextSubjectNode = findSubjectNode(nodes)
+    const currentSubjectNode = findSubjectNode(_nodes)
+
+    // If subject node is the same, don't animate
+    if (nextSubjectNode?.data.fqn === currentSubjectNode?.data.fqn) {
+      setNodes(nodes)
+      setEdges(edges)
+      return
+    }
+
+    if (!nextSubjectNode) {
+      console.error('Subject node not found')
+    } else if (nextSubjectNode.data.fqn !== subject.id) {
+      console.error(`Subject node mismatch, expected: ${subject.id} got: ${nextSubjectNode.data.fqn}`)
+    }
+
+    const nextzoom = getViewportForBounds(bounds, width, height, 0.2, 1, 0.2).zoom
 
     const nextSubjectCenter = nextSubjectNode && {
       x: nextSubjectNode.position.x + (nextSubjectNode.width ?? 0) / 2,
@@ -171,7 +178,7 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
             ...n.data,
             dimmed: n.id !== existingNode.id ? 'immediate' : false
           }
-        }
+        } as XYFlowTypes.Node
       }))
       setEdges(_edges.map(e => ({
         ...e,
@@ -191,31 +198,20 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
 
       // Pick the smaller zoom level
       const zoom = Math.min(
-        nextviewport.zoom,
+        xyflow.getViewport().zoom,
+        nextzoom,
         nextSubjectNode.width! / existingDimensions.width,
         nextSubjectNode.height! / existingDimensions.height
       )
 
       let isCancelled = false
 
-      xyflow.setCenter(
-        existingCenter.x,
-        existingCenter.y,
-        {
-          zoom,
-          // we zoomed to match the subject node (might be smaller than the existing node)
-          // so make it faster
-          duration: zoom < nextviewport.zoom ? 250 : 350
-        }
-      ).then(() => {
+      xyflow.setCenter(existingCenter.x, existingCenter.y, { zoom, duration: 350 }).then(() => {
         // If the component is unmounted, we don't want to update the state
         if (isCancelled) return
         setNodes(nodes)
         setEdges(edges)
-        xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, {
-          // so we need to zoom out to the smaller of the two
-          zoom: nextviewport.zoom
-        })
+        xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom: nextzoom })
         fitview()
       })
       return () => {
@@ -224,12 +220,11 @@ export const RelationshipsXYFlow = memo(function RelationshipsXYFlow() {
     }
     setNodes(nodes)
     setEdges(edges)
-    xyflow.setViewport(nextviewport)
+    fitview()
   }, [nodes, edges])
 
   return (
     <ReactFlow
-      className={css.root}
       defaultEdges={[] as XYFlowTypes.Edge[]}
       defaultNodes={[] as XYFlowTypes.Node[]}
       nodeTypes={nodeTypes}

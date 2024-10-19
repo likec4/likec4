@@ -128,16 +128,6 @@ export const edgeLabelText = style({
   lineHeight: mantine.lineHeights.xs
 })
 
-export const emptyNode = style({
-  width: '100%',
-  height: '100%',
-  border: `3px dashed ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.md,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
-
 export const navigateBtnBox = style({
   zIndex: 100,
   position: 'absolute',
@@ -147,8 +137,8 @@ export const navigateBtnBox = style({
   gap: 0,
   transition: 'all 190ms cubic-bezier(0.5, 0, 0.4, 1)',
   selectors: {
-    [`:where([data-likec4-shape='browser']) &`]: {
-      bottom: 4
+    [`:where([data-likec4-shape='browser'],[data-likec4-shape='mobile']) &`]: {
+      bottom: 6
     }
   }
 })
