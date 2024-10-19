@@ -1,4 +1,4 @@
-import { type DiagramNode, LikeC4Model, nameFromFqn } from '@likec4/core'
+import { type DiagramNode, invariant, LikeC4Model, nameFromFqn } from '@likec4/core'
 import {
   ActionIcon,
   Box,
@@ -16,9 +16,9 @@ import {
   Tooltip as MantineTooltip,
   TooltipGroup
 } from '@mantine/core'
-import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
+import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren } from 'react'
+import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useXYNodesData } from '../../hooks'
 import type { RelationshipData } from '../types'
@@ -51,7 +51,8 @@ export function RelationshipsDropdownMenu({
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
 
-  if (!sourceXYNode || !targetXYNode) return children
+  invariant(sourceXYNode, `Source XYNode ${edge.source} not found for edge ${edge.id}`)
+  invariant(targetXYNode, `Target XYNode ${edge.target} not found for edge ${edge.id}`)
 
   const [direct, nested] = pipe(
     edge.relations,
@@ -71,14 +72,11 @@ export function RelationshipsDropdownMenu({
     partition(r => r.relationship.source === edge.source && r.relationship.target === edge.target)
   )
 
-  if (direct.length + nested.length === 0) {
-    return <>{children}</>
-  }
-
   const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship, index: number) => (
     <Fragment key={relationship.id}>
       {index > 0 && <MenuDivider opacity={0.65} />}
       <MenuItem
+        onClick={onClickOpenOverlay}
         component={Relationship}
         relationship={relationship}
         sourceNode={sourceXYNode.data.element}
@@ -86,6 +84,17 @@ export function RelationshipsDropdownMenu({
         edge={edge} />
     </Fragment>
   )
+
+  const onClickOpenOverlay = useCallback((e: React.MouseEvent): void => {
+    e.stopPropagation()
+    openOverlay({
+      edgeDetails: edge.id
+    })
+  }, [edge.id, openOverlay])
+
+  if (direct.length + nested.length === 0) {
+    return <>{children}</>
+  }
 
   return (
     <Menu
@@ -108,7 +117,6 @@ export function RelationshipsDropdownMenu({
         onPointerDownCapture={stopPropagation}
         onPointerDown={stopPropagation}
         onClick={stopPropagation}
-        onDoubleClick={stopPropagation}
       >
         {direct.length > 0 && (
           <>
@@ -126,15 +134,10 @@ export function RelationshipsDropdownMenu({
         <Box pos={'absolute'} top={5} right={6}>
           <ActionIcon
             size={24}
-            variant="light"
-            onClick={e => {
-              e.stopPropagation()
-              openOverlay({
-                edgeDetails: edge.id
-              })
-            }}
+            variant="subtle"
+            onClick={onClickOpenOverlay}
           >
-            <IconArrowsMaximize style={{ width: '70%' }} />
+            <IconInfoCircle style={{ width: '70%' }} />
           </ActionIcon>
         </Box>
       </MenuDropdown>
@@ -194,6 +197,7 @@ const Relationship = forwardRef<
                   variant="default"
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
+                    event.stopPropagation()
                     diagramApi.getState().onNavigateTo?.(navigateTo, event)
                   }}
                   role="button"

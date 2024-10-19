@@ -20,15 +20,17 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
+        "--disable-updates",
+        "--disable-workspace-trust",
+        "--skip-release-notes",
+        "--skip-welcome",
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        
         "${workspaceFolder}/examples/cloud-system",
       ],
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*.js"
       ],
-      "sourceMaps": true,
       "resolveSourceMapLocations": [
         "${workspaceFolder}/packages/**",
         "!**/node_modules/**"
@@ -82,5 +84,5 @@
       "autoAttachChildProcesses": true,
       "preLaunchTask": "build_extension"
     }
-  ]  
+  ]
 }

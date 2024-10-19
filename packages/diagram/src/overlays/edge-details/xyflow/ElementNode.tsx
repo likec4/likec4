@@ -57,6 +57,7 @@ export function ElementNode({
           'likec4-element-node'
         ])}
         data-likec4-color={element.color}
+        data-likec4-shape={element.shape}
         animate={{
           opacity: data.dimmed ? 0.15 : 1,
           transition: {
@@ -102,17 +103,15 @@ export function ElementNode({
               <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
             </Action>
           )}
-          {data.column !== 'subject' && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.openOverlay({
-                  relationshipsOf: data.fqn
-                })
-              }}>
-              <IconTransform stroke={1.8} style={{ width: '72%' }} />
-            </Action>
-          )}
+          <Action
+            onClick={(event) => {
+              event.stopPropagation()
+              overlay.openOverlay({
+                relationshipsOf: data.fqn
+              })
+            }}>
+            <IconTransform stroke={1.8} style={{ width: '72%' }} />
+          </Action>
           {onOpenSource && (
             <Action
               onClick={(event) => {
@@ -124,28 +123,32 @@ export function ElementNode({
           )}
         </Group>
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.out.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
-          position={Position.Left}
-          style={{
-            visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.left.length + 1))}px`
-          }} />
-      ))}
-      {ports.right.map(({ id, type }, i) => (
-        <Handle
-          key={id}
-          id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type="source"
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.right.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
+      {ports.in.map((id, i) => (
+        <Handle
+          key={id}
+          id={id}
+          type="target"
+          position={Position.Left}
+          style={{
+            visibility: 'hidden',
+            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
+          }} />
+      ))}
+      {
+        /* <Handle type="target" position={Position.Left} />
+      <Handle type="source" position={Position.Right} /> */
+      }
     </>
   )
 }

@@ -13,6 +13,10 @@ export const cssReactFlow = style({
   }
 })
 
+export const notInitialized = style({
+  opacity: 0
+})
+
 globalStyle(`.react-flow${cssReactFlow}`, {
   vars: {
     [xyvars.background.color]: vars.likec4.background.color,
