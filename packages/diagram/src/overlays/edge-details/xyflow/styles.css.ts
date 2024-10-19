@@ -124,8 +124,15 @@ export const edgeLabel = style({
 export const edgeLabelText = style({
   textAlign: 'center',
   whiteSpaceCollapse: 'preserve-breaks',
-  fontSize: mantine.fontSizes.sm,
+  fontSize: mantine.fontSizes.md,
   lineHeight: mantine.lineHeights.xs
+})
+
+export const edgeLabelTechnology = style({
+  textAlign: 'center',
+  whiteSpaceCollapse: 'preserve-breaks',
+  fontSize: mantine.fontSizes.sm,
+  lineHeight: 1
 })
 
 export const navigateBtnBox = style({

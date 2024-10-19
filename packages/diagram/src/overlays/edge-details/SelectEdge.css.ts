@@ -88,3 +88,12 @@ export const edgeGrid = style({
   // `,
   // gridAutoFlow: 'row',
 })
+
+export const edgeDataGrid = style({
+  display: 'grid',
+  gridTemplateColumns: 'min-content 1fr',
+  gridAutoRows: 'min-content max-content',
+  gap: '10px 12px',
+  alignItems: 'baseline',
+  justifyItems: 'start'
+})

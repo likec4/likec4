@@ -1,7 +1,9 @@
-import { Group, Text, ThemeIcon } from '@mantine/core'
-import { IconBoxMultipleFilled } from '@tabler/icons-react'
+import { ActionIcon, Box, Stack, Text } from '@mantine/core'
+import { IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
+import { useDiagramState } from '../../../hooks/useDiagramState'
+import { stopPropagation } from '../../../xyflow/utils'
 import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-edge-details'
 import * as css from './styles.css'
@@ -11,7 +13,9 @@ export function RelationshipEdge({
   label,
   ...props
 }: EdgeProps<XYFlowTypes.Edge>) {
+  const onNavigateTo = useDiagramState(s => s.onNavigateTo)
   const [edgePath, labelX, labelY] = getBezierPath(props)
+  const navigateTo = data.relation.navigateTo
   return (
     <>
       <g
@@ -24,28 +28,54 @@ export function RelationshipEdge({
           {...props}
         />
       </g>
-      {label && (
-        <EdgeLabelRenderer>
-          <div
-            style={{
-              position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              maxWidth: Math.abs(props.targetX - props.sourceX - 40),
-              zIndex: ZIndexes.max
-            }}
-            className={clsx([
-              css.edgeLabel,
-              'nodrag nopan'
-            ])}
-            data-edge-dimmed={data.dimmed}
-            data-edge-hovered={data.hovered}
-          >
+      <EdgeLabelRenderer>
+        <Stack
+          gap={2}
+          style={{
+            position: 'absolute',
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            maxWidth: Math.abs(props.targetX - props.sourceX - 40),
+            zIndex: ZIndexes.max
+          }}
+          className={clsx([
+            css.edgeLabel,
+            'nodrag nopan'
+          ])}
+          data-edge-dimmed={data.dimmed}
+          data-edge-hovered={data.hovered}
+        >
+          {label && (
             <Text component={'div'} className={css.edgeLabelText} lineClamp={3}>
               {label}
             </Text>
-          </div>
-        </EdgeLabelRenderer>
-      )}
+          )}
+          {data.relation.technology && (
+            <Text component={'div'} className={css.edgeLabelTechnology}>
+              {'[ '}
+              {data.relation.technology}
+              {' ]'}
+            </Text>
+          )}
+          {navigateTo && onNavigateTo && (
+            <Box ta={'center'} mt={4}>
+              <ActionIcon
+                variant="default"
+                size={'sm'}
+                radius="sm"
+                onPointerDownCapture={stopPropagation}
+                onClick={event => {
+                  event.stopPropagation()
+                  onNavigateTo(navigateTo, event)
+                }}
+                role="button"
+                onDoubleClick={stopPropagation}
+              >
+                <IconZoomScan />
+              </ActionIcon>
+            </Box>
+          )}
+        </Stack>
+      </EdgeLabelRenderer>
     </>
   )
 }

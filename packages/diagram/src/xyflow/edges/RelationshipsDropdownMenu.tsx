@@ -1,4 +1,4 @@
-import { type DiagramNode, LikeC4Model, nameFromFqn } from '@likec4/core'
+import { type DiagramNode, invariant, LikeC4Model, nameFromFqn } from '@likec4/core'
 import {
   ActionIcon,
   Box,
@@ -16,7 +16,7 @@ import {
   Tooltip as MantineTooltip,
   TooltipGroup
 } from '@mantine/core'
-import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
+import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
@@ -51,7 +51,8 @@ export function RelationshipsDropdownMenu({
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
 
-  if (!sourceXYNode || !targetXYNode) return children
+  invariant(sourceXYNode, `Source XYNode ${edge.source} not found for edge ${edge.id}`)
+  invariant(targetXYNode, `Target XYNode ${edge.target} not found for edge ${edge.id}`)
 
   const [direct, nested] = pipe(
     edge.relations,
@@ -70,10 +71,6 @@ export function RelationshipsDropdownMenu({
     filter(isTruthy),
     partition(r => r.relationship.source === edge.source && r.relationship.target === edge.target)
   )
-
-  if (direct.length + nested.length === 0) {
-    return <>{children}</>
-  }
 
   const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship, index: number) => (
     <Fragment key={relationship.id}>
@@ -94,6 +91,10 @@ export function RelationshipsDropdownMenu({
       edgeDetails: edge.id
     })
   }, [edge.id, openOverlay])
+
+  if (direct.length + nested.length === 0) {
+    return <>{children}</>
+  }
 
   return (
     <Menu
@@ -133,10 +134,10 @@ export function RelationshipsDropdownMenu({
         <Box pos={'absolute'} top={5} right={6}>
           <ActionIcon
             size={24}
-            variant="light"
+            variant="subtle"
             onClick={onClickOpenOverlay}
           >
-            <IconArrowsMaximize style={{ width: '70%' }} />
+            <IconInfoCircle style={{ width: '70%' }} />
           </ActionIcon>
         </Box>
       </MenuDropdown>

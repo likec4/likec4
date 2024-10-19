@@ -1,6 +1,6 @@
 import { type DiagramEdge, type EdgeId, isAncestor } from '@likec4/core'
-import { Box, Group } from '@mantine/core'
-import { useDebouncedCallback, useDebouncedEffect, useSyncedRef, useUpdateEffect } from '@react-hookz/web'
+import { Box, Group, Text } from '@mantine/core'
+import { useDebouncedCallback, useSyncedRef, useUpdateEffect } from '@react-hookz/web'
 import {
   getViewportForBounds,
   Panel,
@@ -12,9 +12,9 @@ import {
 } from '@xyflow/react'
 import { memo, useEffect } from 'react'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
-import { useOverlayDialog } from '../OverlayContext'
 import type { XYFlowTypes } from './_types'
 import { SelectEdge } from './SelectEdge'
+import * as css from './SelectEdge.css'
 import { useLayoutedEdgeDetails, ZIndexes } from './use-layouted-edge-details'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
@@ -235,7 +235,12 @@ const EdgeData = ({ edge, top, width }: { edge: DiagramEdge; top: number; width:
         style={{
           transform: `translate(100px, ${top + 32}px)`
         }}>
-        {edge.id}
+        <Box className={css.edgeDataGrid}>
+          <Text size="xs" fw={500} c="dimmed">technology</Text>
+          <Text>{edge.technology || 'unknown'}</Text>
+          <Text size="xs" fw={500} c="dimmed">description</Text>
+          <Text>{edge.description || 'no description'}</Text>
+        </Box>
       </Box>
     </ViewportPortal>
   )

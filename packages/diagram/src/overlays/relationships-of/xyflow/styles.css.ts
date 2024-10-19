@@ -1,3 +1,4 @@
+import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
 import { mantine, vars, whereLight, xyvars } from '../../../theme-vars'
 
@@ -124,8 +125,15 @@ export const edgeLabel = style({
 export const edgeLabelText = style({
   textAlign: 'center',
   whiteSpaceCollapse: 'preserve-breaks',
-  fontSize: mantine.fontSizes.sm,
+  fontSize: rem(15),
   lineHeight: mantine.lineHeights.xs
+})
+
+export const edgeLabelTechnology = style({
+  textAlign: 'center',
+  whiteSpaceCollapse: 'preserve-breaks',
+  fontSize: mantine.fontSizes.sm,
+  lineHeight: 1
 })
 
 export const emptyNode = style({

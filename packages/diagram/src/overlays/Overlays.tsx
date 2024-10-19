@@ -45,7 +45,7 @@ export const Overlays = memo(() => {
               '--backdrop-blur': '0px',
               '--backdrop-opacity': '60%',
               opacity: 0,
-              translateY: -20
+              translateY: -15
             }}
             animate={{
               '--backdrop-blur': '10px',
