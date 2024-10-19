@@ -128,7 +128,8 @@ export function XYFlow({
       zoomOnDoubleClick={false}
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
-      fitView={fitView}
+      // Fitview is handled by store in onInit
+      fitView={false}
       fitViewOptions={useMemo(() => ({
         minZoom: MinZoom,
         maxZoom: 1,

@@ -874,7 +874,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             const bounds = view.bounds
             const maxZoom = Math.max(1, transform[2])
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, fitViewPadding)
-            panZoom?.setViewport(viewport, { duration })
+            panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
           },
 
           nextDynamicStep: (increment = 1) => {
@@ -968,8 +968,11 @@ export function createDiagramStore(props: DiagramInitialState) {
           },
 
           onInit: (instance) => {
-            const { xyflow, initialized } = get()
+            const { xyflow, initialized, fitViewEnabled, fitDiagram } = get()
             if (!initialized || xyflow !== instance) {
+              if (fitViewEnabled) {
+                fitDiagram(0)
+              }
               set(
                 {
                   xyflow: instance,
