@@ -315,7 +315,7 @@ describe('LikeC4CompletionProvider', () => {
       }
       views {
         view {
-          include
+          <|>include
             <|>root.<|> -> *,
             * -> b<|>2 <|>
         }
@@ -326,6 +326,22 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
+      expectedItems: [
+        'title',
+        'description',
+        'link',
+        'include',
+        'exclude',
+        'group',
+        'style',
+        'global',
+        'autoLayout'
+      ],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 1,
       expectedItems: [
         'root',
         'a',
@@ -338,24 +354,25 @@ describe('LikeC4CompletionProvider', () => {
     })
     await completion({
       text,
-      index: 1,
+      index: 2,
       expectedItems: ['a', 'b1', 'b2'],
       disposeAfterCheck: true
     })
     await completion({
       text,
-      index: 2,
+      index: 3,
       expectedItems: ['b1', 'b2'],
       disposeAfterCheck: true
     })
     await completion({
       text,
-      index: 3,
+      index: 4,
       expectedItems: [
         'where',
         'with',
         'include',
         'exclude',
+        'group',
         'style',
         'global',
         'autoLayout'
@@ -465,6 +482,7 @@ describe('LikeC4CompletionProvider', () => {
         'with',
         'include',
         'exclude',
+        'group',
         'style',
         'global',
         'autoLayout'
@@ -527,6 +545,7 @@ describe('LikeC4CompletionProvider', () => {
         'with',
         'include',
         'exclude',
+        'group',
         'style',
         'global',
         'autoLayout'

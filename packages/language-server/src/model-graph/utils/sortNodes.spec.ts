@@ -182,8 +182,8 @@ describe('sortNodes', () => {
       expect(map(sorted, prop('id'))).toEqual([
         'customer',
         'amazon',
-        'cloud.frontend',
         'cloud',
+        'cloud.frontend',
         'cloud.db',
         'cloud.backend'
       ])

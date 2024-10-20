@@ -8,7 +8,7 @@ import {
   invariant,
   nonNullable
 } from '@likec4/core'
-import { difference, filter, map, pipe, sort } from 'remeda'
+import { difference, filter, map, pipe, sort, tap } from 'remeda'
 import { Graph, postorder } from '../../utils/graphlib'
 
 // side effect
@@ -27,8 +27,15 @@ export function sortNodes({
   nodes: ComputedNode[]
   edges: ComputedEdge[]
 }): ComputedNode[] {
-  if (edges.length === 0) {
+  if (nodes.length < 2) {
     return nodes
+  }
+  if (edges.length === 0) {
+    return pipe(
+      nodes,
+      sort(compareByFqnHierarchically),
+      tap(sortChildren)
+    )
   }
 
   const g = new Graph({

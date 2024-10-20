@@ -1,4 +1,4 @@
-import { invariant, isAncestor, nonNullable } from '@likec4/core'
+import { invariant, isAncestor, type NodeId, nonNullable } from '@likec4/core'
 import type { InternalNode, NodeChange, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
@@ -104,6 +104,25 @@ export function createLayoutConstraints(
   const { parentLookup, nodeLookup } = xyflowApi.getState()
   const rects = new Map<string, Leaf | Compound>()
 
+  const ancestorsOf = (nodeId: string) => {
+    const ancestors = [] as string[]
+    const xynode = nodeLookup.get(nodeId)
+    let parent = xynode?.parentId
+    while (parent) {
+      const parentNode = nodeLookup.get(parent)
+      if (!parentNode) {
+        break
+      }
+      ancestors.push(parentNode.id as NodeId)
+      parent = parentNode.parentId
+    }
+    return ancestors
+  }
+
+  const ancestorsOfDraggingNodes = new Set(
+    [...editingNodeIds.values()].flatMap(ancestorsOf)
+  )
+
   const traverse = new Array<{ xynode: InternalNode<XYFlowNode>; parent: Compound | null }>()
 
   for (const [, xynode] of nodeLookup) {
@@ -121,7 +140,7 @@ export function createLayoutConstraints(
 
     // Traverse children if the node is a compound, not dragging, and is an ancestor of the dragging node
     const shouldTraverse = !isEditing && xynode.type === 'compound'
-      && editingNodeIds.values().some(x => isAncestor(xynode.id, x))
+      && ancestorsOfDraggingNodes.has(xynode.id)
 
     const rect = shouldTraverse ? new Compound(xynode, parent) : new Leaf(xynode, parent)
     rects.set(xynode.id, rect)
@@ -156,7 +175,6 @@ export function createLayoutConstraints(
           maxX: -Infinity,
           maxY: -Infinity
         })
-
 
         r.minX = childrenBB.minX - Rect.LeftPadding
         r.minY = childrenBB.minY - Rect.TopPadding

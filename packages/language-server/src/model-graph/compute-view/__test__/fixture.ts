@@ -20,6 +20,7 @@ import {
   type Tag,
   type ViewID,
   type ViewRule,
+  type ViewRuleGroup,
   type ViewRulePredicate,
   type ViewRuleStyle,
   type WhereOperator
@@ -473,6 +474,12 @@ export function $include(expr: Expression | C4Expression): ViewRulePredicate {
 export function $exclude(expr: Expression | C4Expression): ViewRulePredicate {
   return {
     exclude: [$expr(expr)]
+  }
+}
+export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
+  return {
+    title: null,
+    groupRules
   }
 }
 

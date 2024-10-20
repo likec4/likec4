@@ -1,4 +1,4 @@
-import { describe, it, type TestContext, vi } from 'vitest'
+import { describe, it, type TestContext } from 'vitest'
 import { createTestServices } from '../test'
 
 const model = `
@@ -172,7 +172,7 @@ describe.concurrent('views2', () => {
     `)
   })
 
-  describe.concurrent('include', () => {
+  describe('include', () => {
     it('element', async ctx => {
       const { valid, invalid } = await mkTestServices(ctx)
       await valid(`
@@ -613,7 +613,7 @@ describe.concurrent('views2', () => {
     })
   })
 
-  describe.concurrent('style', () => {
+  describe('style', () => {
     it('element', async ctx => {
       const { valid } = await mkTestServices(ctx)
       await valid(`
@@ -662,6 +662,41 @@ describe.concurrent('views2', () => {
         style * {
           color secondary
           notation 'dev'
+        }
+      `)
+    })
+  })
+
+  describe('groups', () => {
+    it('parse group', async ctx => {
+      const { valid } = await mkTestServices(ctx)
+      await valid(`
+        include *
+        group {
+          include *
+        }
+      `)
+      await valid(`
+        group 'Backend' {
+          include system.backend
+        }
+        group 'Frontend' {
+          include system.frontend
+        }
+      `)
+    })
+
+    it('parse nested groups', async ctx => {
+      const { valid } = await mkTestServices(ctx)
+      await valid(`
+        group {
+          group 'Backend' {
+            include system.backend
+          }
+          group 'Frontend' {
+            include system.frontend
+          }
+          exclude system
         }
       `)
     })

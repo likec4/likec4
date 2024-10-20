@@ -3,10 +3,10 @@ import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
+import type { GlobalStyleID } from './global'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
-import type { GlobalStyleID } from './global'
 
 export type ViewID<Id extends string = string> = Tagged<Id, 'ViewID'>
 
@@ -40,7 +40,7 @@ export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
 }
 
 export interface ViewRuleGlobalStyle {
-  styleId: GlobalStyleID,
+  styleId: GlobalStyleID
 }
 export function isViewRuleGlobalStyle(rule: ViewRule): rule is ViewRuleGlobalStyle {
   return 'styleId' in rule
@@ -60,7 +60,16 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
   return 'direction' in rule
 }
 
-export type ViewRule = ViewRulePredicate | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
+export interface ViewRuleGroup {
+  groupRules: Array<ViewRulePredicate | ViewRuleGroup>
+  title: string | null
+}
+
+export function isViewRuleGroup(rule: ViewRule): rule is ViewRuleGroup {
+  return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
+}
+
+export type ViewRule = ViewRulePredicate | ViewRuleGroup | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
 
 export interface BasicView<
   ViewType extends 'element' | 'dynamic',
