@@ -1,18 +1,41 @@
 # [1.14.0](https://github.com/likec4/likec4/compare/v1.13.0...v1.14.0) (2024-10-20)
 
+### 🚀 Features  
+
+* **View relationship decomposition**:  
+  Relationship `Cloud -> Amazon` from [examples](https://github.com/likec4/likec4/tree/main/examples/diagrams-dev/likec4):
+  
+  ![SCR-20241020-dgyj](https://github.com/user-attachments/assets/3983d564-bc7a-4f98-9509-5788064ce7cb)
+
+* **Global styles:**  
+  Shared global styles
+  ```zig
+  global {
+    style mute_all * {
+      color muted
+      opacity 10%
+    }
+  }
+  
+  views {
+    view of app {  
+      global style mute_all
+      style cloud.* {
+        color green
+      }
+    }  
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/views/#shared-global-styles) (thanks @hubertmis, closes [#1058](https://github.com/likec4/likec4/issues/1058))
+
+* **Build with `--base './'`**:  
+  Allows to build a relocatable website (thanks @rumpelrausch, closes [#1111](https://github.com/likec4/likec4/issues/1111))
 
 ### Bug Fixes
 
-* **docs:** update link for shared global styles in DSL introduction ([9342bda](https://github.com/likec4/likec4/commit/9342bdaf4d3e0eeec42fc2c1a48d44501a8cddab))
-* **telemetry:** update telemetry interval from 15 to 30 minutes ([4ae2d12](https://github.com/likec4/likec4/commit/4ae2d12c1e4cb797053ce58fd55d97a71496e8dd))
+* **diagram:** edges with no nearby nodes are not visible in the canvas (thanks @davydkov, closes [#1109](https://github.com/likec4/likec4/issues/1109))
 
-
-### Features
-
-* allows building a relocatable website ([#1132](https://github.com/likec4/likec4/issues/1132)) ([f11475a](https://github.com/likec4/likec4/commit/f11475aaaf0fb9a33cc087c657dd47f4d85bf4b4)), closes [#1111](https://github.com/likec4/likec4/issues/1111)
-* global styles ([#1130](https://github.com/likec4/likec4/issues/1130)) ([9e0f469](https://github.com/likec4/likec4/commit/9e0f4698698e65320c53b34ff6826ba1a246d936)), closes [#1058](https://github.com/likec4/likec4/issues/1058)
-
-
+  
 
 # [1.13.0](https://github.com/likec4/likec4/compare/v1.12.2...v1.13.0) (2024-10-18)
 
