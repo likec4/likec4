@@ -162,7 +162,7 @@
     "std-env": "^3.7.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
-    "terser": "^5.33.0",
+    "terser": "^5.36.0",
     "tinyrainbow": "^1.2.0",
     "tsx": "~4.9.3",
     "turbo": "^2.1.3",
