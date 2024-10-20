@@ -1,3 +1,42 @@
+# [1.14.0](https://github.com/likec4/likec4/compare/v1.13.0...v1.14.0) (2024-10-20)
+
+### 🚀 Features  
+
+* **View relationship decomposition**:  
+  Relationship `Cloud -> Amazon` from [examples](https://github.com/likec4/likec4/tree/main/examples/diagrams-dev/likec4):
+  
+  ![SCR-20241020-dgyj](https://github.com/user-attachments/assets/3983d564-bc7a-4f98-9509-5788064ce7cb)
+
+* **Global styles:**  
+  Shared global styles
+  ```zig
+  global {
+    style mute_all * {
+      color muted
+      opacity 10%
+    }
+  }
+  
+  views {
+    view of app {  
+      global style mute_all
+      style cloud.* {
+        color green
+      }
+    }  
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/views/#shared-global-styles) (thanks @hubertmis, closes [#1058](https://github.com/likec4/likec4/issues/1058))
+
+* **Build with `--base './'`**:  
+  Allows to build a relocatable website (thanks @rumpelrausch, closes [#1111](https://github.com/likec4/likec4/issues/1111))
+
+### Bug Fixes
+
+* **diagram:** edges with no nearby nodes are not visible in the canvas (thanks @davydkov, closes [#1109](https://github.com/likec4/likec4/issues/1109))
+
+  
+
 # [1.13.0](https://github.com/likec4/likec4/compare/v1.12.2...v1.13.0) (2024-10-18)
 
 ### 🚀 Features  
