@@ -34,13 +34,18 @@ A project may look like this:
 
 Source file should have at least one of these statements:
 
-- `specification` - defines element kinds to be used in the model, like **app**, **microservice**, **graphqlMutation**...
+- `specification` - defines element kinds to be used in the model, like **system**, **app**, **microservice**...
 - `model` - architecture elements, hierarchies, compositions and relationships
 - `views` - visualizations
+- `global` - globally shared predicates (explained later in [Views](/dsl/views/#global-style-predicates))
 
 ```likec4
 // example.c4
 specification {
+  //...
+}
+
+global {
   //...
 }
 
@@ -53,15 +58,20 @@ views {
 }
 ```
 
-It is not allowed to have multiple statements of the same kind: 
+You have multiple statements of the same type: 
 
-```likec4 del="model {}"
-// invalid.c4
-model {
+```likec4
+// Views group 1
+views {
 }
 
-// ⛔️ not allowed to have multiple statements
-model {}
+// Views group 2
+views {
+}
 ```
 
-But it is allowed to skip any of them, so only `model`, or only `views`, or only `specification`, or any combination of them.
+:::tip
+For example, `views` block allows _"local styles"_, that apply to the views in the same block.  
+This way you can group views that have same styles, and avoid boilterplate.  
+Explained later in [Views](/dsl/views/#shared-local-styles).
+:::

@@ -123,7 +123,7 @@ export default defineConfig({
           ]
         }
       },
-      pagination: false,
+      pagination: true,
       credits: false,
       components: {
         SiteTitle: './src/components/starlight/SiteTitle.astro',

@@ -193,9 +193,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.26.1":
-  version: 0.26.1
-  resolution: "@astrojs/starlight@npm:0.26.1"
+"@astrojs/starlight@npm:^0.28.3":
+  version: 0.28.3
+  resolution: "@astrojs/starlight@npm:0.28.3"
   dependencies:
     "@astrojs/mdx": "npm:^3.1.3"
     "@astrojs/sitemap": "npm:^3.1.6"
@@ -208,6 +208,7 @@ __metadata:
     hast-util-select: "npm:^6.0.2"
     hast-util-to-string: "npm:^3.0.0"
     hastscript: "npm:^9.0.0"
+    i18next: "npm:^23.11.5"
     mdast-util-directive: "npm:^3.0.0"
     mdast-util-to-markdown: "npm:^2.1.0"
     mdast-util-to-string: "npm:^4.0.0"
@@ -219,8 +220,8 @@ __metadata:
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.2"
   peerDependencies:
-    astro: ^4.8.6
-  checksum: 10c0/1924a8f86ddb9f67f37e74038ed90e8f0f0a499644c5e5c0264c4975f8988bb1967d13489517ceaea28903ebfce776d9155e0520cb951e19a81be10932342f23
+    astro: ^4.14.0
+  checksum: 10c0/8038fa86484e1269b05005f898b793c9f42374462ab4542e2f8354becb39108794a250baf185762b344e6ee89766c6210a662b38b86865be0d13e2dc0adea36b
   languageName: node
   linkType: hard
 
@@ -482,6 +483,15 @@ __metadata:
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
   checksum: 10c0/b6fa3ec61a53402f3c1d75f4d808f48b35e0dfae0ec8e2bb5c6fc79fb95935da75766e0ca534d0f1c84871f6ae0d2ebdd950727cfadb745a2cdbef13faef5513
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.23.2":
+  version: 7.25.7
+  resolution: "@babel/runtime@npm:7.25.7"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10c0/86b7829d2fc9343714a9afe92757cf96c4dc799006ca61d73cda62f4b9e29bfa1ce36794955bc6cb4c188f5b10db832c949339895e1bbe81a69022d9d578ce29
   languageName: node
   linkType: hard
 
@@ -1693,9 +1703,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/core@npm:^0.36.1":
-  version: 0.36.1
-  resolution: "@expressive-code/core@npm:0.36.1"
+"@expressive-code/core@npm:^0.37.1":
+  version: 0.37.1
+  resolution: "@expressive-code/core@npm:0.37.1"
   dependencies:
     "@ctrl/tinycolor": "npm:^4.0.4"
     hast-util-select: "npm:^6.0.2"
@@ -1706,16 +1716,16 @@ __metadata:
     postcss-nested: "npm:^6.0.1"
     unist-util-visit: "npm:^5.0.0"
     unist-util-visit-parents: "npm:^6.0.1"
-  checksum: 10c0/cb3b34e99139555c2a243168931f3d9958ad818ec04aed63b428ace37f4988f981cabb11f25f73ae0a2474b880677d6b3ea6c2ccb748da8994fa2000e70d09b0
+  checksum: 10c0/76f6a1c6829301e250e704246c55ee086d6eb83978ce019ce579f8188ff883119ba2467df4aaa725daf90060d8bf94242864c61a20f82502c251cce585d1a562
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-collapsible-sections@npm:^0.36.1":
-  version: 0.36.1
-  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.36.1"
+"@expressive-code/plugin-collapsible-sections@npm:^0.37.1":
+  version: 0.37.1
+  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.37.1"
   dependencies:
-    "@expressive-code/core": "npm:^0.36.1"
-  checksum: 10c0/2814b0657aec412edac67fc56ecec0dd8d6f5b35447df9c64b84dad9356e5cee842eb7417c5ad7e3aea9c09eea671385d3c8fca41722dcc0bb0caeb0e2dd720c
+    "@expressive-code/core": "npm:^0.37.1"
+  checksum: 10c0/e50f4a451bdc50425edbbab2c5f1a89176d042dc7b34cff0bf0fe62d7b37ce6cb79531a9d38122a87face2ad6a33d96ae1f1ce3ea370c31b209f136ce1c27415
   languageName: node
   linkType: hard
 
@@ -1728,12 +1738,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-line-numbers@npm:^0.36.1":
-  version: 0.36.1
-  resolution: "@expressive-code/plugin-line-numbers@npm:0.36.1"
+"@expressive-code/plugin-line-numbers@npm:^0.37.1":
+  version: 0.37.1
+  resolution: "@expressive-code/plugin-line-numbers@npm:0.37.1"
   dependencies:
-    "@expressive-code/core": "npm:^0.36.1"
-  checksum: 10c0/cd32f350f6feb9706b7cd40cd4dffcb44891c858662e26c0ba5f9b218b25782b7b528a91e5611231a269d2c87f849977d188876588d1da77b0d6bd6d4b32d9a3
+    "@expressive-code/core": "npm:^0.37.1"
+  checksum: 10c0/ea02d44f1fe106362d4fa0ca7c18f829a6ded77f8acedd0b29d0d0fb790ab9c916b6e39bfc0ecb53a7d4d6d2007e3bf2277e55174d018e73e2830869a4bc58a0
   languageName: node
   linkType: hard
 
@@ -2153,21 +2163,21 @@ __metadata:
   dependencies:
     "@astrojs/check": "npm:^0.9.4"
     "@astrojs/react": "npm:^3.6.2"
-    "@astrojs/starlight": "npm:^0.26.1"
-    "@expressive-code/plugin-collapsible-sections": "npm:^0.36.1"
-    "@expressive-code/plugin-line-numbers": "npm:^0.36.1"
+    "@astrojs/starlight": "npm:^0.28.3"
+    "@expressive-code/plugin-collapsible-sections": "npm:^0.37.1"
+    "@expressive-code/plugin-line-numbers": "npm:^0.37.1"
     "@fontsource/ibm-plex-sans": "npm:^5.1.0"
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
-    astro: "npm:~4.16.5"
-    astro-og-canvas: "npm:^0.5.3"
+    astro: "npm:~4.16.6"
+    astro-og-canvas: "npm:^0.5.4"
     likec4: "workspace:*"
     npm-run-all2: "npm:^6.2.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    starlight-heading-badges: "npm:^0.2.0"
-    starlight-links-validator: "npm:^0.10.1"
+    starlight-heading-badges: "npm:^0.3.0"
+    starlight-links-validator: "npm:^0.12.3"
     tsx: "npm:~4.9.3"
     typescript: "npm:^5.6.3"
   languageName: unknown
@@ -3782,6 +3792,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/picomatch@npm:2.3.3":
+  version: 2.3.3
+  resolution: "@types/picomatch@npm:2.3.3"
+  checksum: 10c0/5ad7f891eb3e16e8eb1f51615f0b755bc44ac5dff5a1e2513229f307f72e226c917c6b9a829a97134cedbec727036f885890a55b1975b6e3f381b6545b962c4d
+  languageName: node
+  linkType: hard
+
 "@types/picomatch@npm:^2.3.4":
   version: 2.3.4
   resolution: "@types/picomatch@npm:2.3.4"
@@ -4549,20 +4566,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro-og-canvas@npm:^0.5.3":
-  version: 0.5.3
-  resolution: "astro-og-canvas@npm:0.5.3"
+"astro-og-canvas@npm:^0.5.4":
+  version: 0.5.4
+  resolution: "astro-og-canvas@npm:0.5.4"
   dependencies:
     canvaskit-wasm: "npm:^0.39.1"
     deterministic-object-hash: "npm:^2.0.2"
     entities: "npm:^4.4.0"
   peerDependencies:
     astro: ^3.0.0 || ^4.0.0
-  checksum: 10c0/00afc5089e27deb83bc923acecbf75b56e499697303d32f3aa258f2fa507126d5e6907113b14d88c6f5d1da454dd48f659f534dde86ef590de32e2fb75c73f1a
+  checksum: 10c0/257a4a0fdba461691182a7eee89ea612340288c3a65e27db7a28534a4b96f74e57557b414c50255cb72043ab21b06d54ccc80a0917b50ebc8295e303569ae210
   languageName: node
   linkType: hard
 
-"astro@npm:~4.16.5":
+"astro@npm:~4.16.6":
   version: 4.16.6
   resolution: "astro@npm:4.16.6"
   dependencies:
@@ -7781,6 +7798,15 @@ __metadata:
   bin:
     husky: lib/bin.js
   checksum: 10c0/6722591771c657b91a1abb082e07f6547eca79144d678e586828ae806499d90dce2a6aee08b66183fd8b085f19d20e0990a2ad396961746b4c8bd5bdb619d668
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^23.11.5":
+  version: 23.16.1
+  resolution: "i18next@npm:23.16.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.23.2"
+  checksum: 10c0/6bab6b956db1e563ed03319d073b566c66df089c7ad96fc695fa6fe3719654522ffae21c18b77058ebd9aa57dc9f42feb617a8c92903bdc78e1c2e0d9460b669
   languageName: node
   linkType: hard
 
@@ -12786,23 +12812,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starlight-heading-badges@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "starlight-heading-badges@npm:0.2.0"
+"starlight-heading-badges@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "starlight-heading-badges@npm:0.3.0"
   dependencies:
     "@astrojs/markdown-remark": "npm:^5.1.1"
     github-slugger: "npm:^2.0.0"
     unist-util-visit: "npm:^5.0.0"
   peerDependencies:
-    "@astrojs/starlight": ">=0.24.5"
-  checksum: 10c0/3f647e86bcdc5bdcdaa659541b649b9e9760e000c85320754b37f7cc3af713c05b6f2ee2d288b72e98cc66ad09f86935ced6c7721ea6b7370c7b02dc3dd6cae8
+    "@astrojs/starlight": ">=0.28.0"
+  checksum: 10c0/61be93ea6367c81ef7c157eb584082e2040d1593da6e683e24dcd290bcdc55c1c6eb12c16b8cc7400422b872111888be535ef003efb7f5dc3495b09a29b04bf3
   languageName: node
   linkType: hard
 
-"starlight-links-validator@npm:^0.10.1":
-  version: 0.10.1
-  resolution: "starlight-links-validator@npm:0.10.1"
+"starlight-links-validator@npm:^0.12.3":
+  version: 0.12.3
+  resolution: "starlight-links-validator@npm:0.12.3"
   dependencies:
+    "@types/picomatch": "npm:2.3.3"
     github-slugger: "npm:2.0.0"
     hast-util-from-html: "npm:2.0.1"
     hast-util-has-property: "npm:3.0.0"
@@ -12814,7 +12841,7 @@ __metadata:
   peerDependencies:
     "@astrojs/starlight": ">=0.15.0"
     astro: ">=4.0.0"
-  checksum: 10c0/a5a04dd127942a4462f73bc31e6662382de8ccba0729463647655811c3ef2facd146ac2d145c79e35051e7c6bea97f385975b7b44519012580b438c8cfb5e228
+  checksum: 10c0/e8e0e0e85b6a7a9a23d282e2fb46b487ea6fcf57cb66751631f87aff9c30c16183420a53737ebf929e22b1d4e24532d065711170fbcdffff0e4c748e3978fff7
   languageName: node
   linkType: hard
 
