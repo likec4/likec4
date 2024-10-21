@@ -1,10 +1,24 @@
-import type { ComputedNode, ViewRule } from '@likec4/core'
-import { Expr } from '@likec4/core'
+import { ComputedNode, type Expression, type ViewRule } from '@likec4/core'
+import { Expr, isViewRuleGroup, isViewRulePredicate } from '@likec4/core'
 import { isEmpty, isNullish, omitBy } from 'remeda'
+import { NodesGroup } from '../compute-view/compute'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
+export function flattenGroupRules<T extends Expression>(guard: (expr: Expression) => expr is T) {
+  return (rule: ViewRule): Array<T> => {
+    if (isViewRuleGroup(rule)) {
+      return rule.groupRules.flatMap(flattenGroupRules(guard))
+    }
+    if (isViewRulePredicate(rule)) {
+      return 'include' in rule ? rule.include.filter(guard) : []
+    }
+
+    return []
+  }
+}
+
 export function applyCustomElementProperties(_rules: ViewRule[], _nodes: ComputedNode[]) {
-  const rules = _rules.flatMap(r => ('include' in r ? r.include.filter(Expr.isCustomElement) : []))
+  const rules = _rules.flatMap(flattenGroupRules(Expr.isCustomElement))
   if (rules.length === 0) {
     return _nodes
   }
@@ -18,7 +32,7 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
     const notEmpty = !isEmpty(rest)
     const satisfies = elementExprToPredicate(expr)
     nodes.forEach((node, i) => {
-      if (!satisfies(node)) {
+      if (ComputedNode.isNodesGroup(node) || !satisfies(node)) {
         return
       }
       if (notEmpty) {

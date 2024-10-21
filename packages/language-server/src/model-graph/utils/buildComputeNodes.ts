@@ -1,6 +1,13 @@
 import type { ComputedNode, Element, Fqn, NodeId } from '@likec4/core'
-import { compareByFqnHierarchically, DefaultElementShape, DefaultThemeColor, parentFqn } from '@likec4/core'
-import { AdHocGroup } from '../compute-view/compute'
+import {
+  compareByFqnHierarchically,
+  DefaultElementShape,
+  DefaultThemeColor,
+  ElementKind,
+  nonNullable,
+  parentFqn
+} from '@likec4/core'
+import { NodesGroup } from '../compute-view/compute'
 
 function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, ComputedNode>) {
   let parentNd
@@ -15,36 +22,39 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, Comp
   }
 }
 
-export function buildComputeNodes(elements: Iterable<Element>, groups?: AdHocGroup[]) {
+export function buildComputeNodes(elements: Iterable<Element>, groups?: NodesGroup[]) {
   const nodesMap = new Map<Fqn, ComputedNode>()
 
   const elementToGroup = new Map<Fqn, NodeId>()
 
-  groups?.forEach(group => {
-    if (group.parent) {
-      nodesMap.get(group.parent)?.children.push(group.id)
+  groups?.forEach(({ id, parent, viewRule, explicits }) => {
+    if (parent) {
+      nonNullable(nodesMap.get(parent), `Parent group node ${parent} not found`).children.push(id)
     }
-    nodesMap.set(group.id, {
-      id: group.id,
-      kind: AdHocGroup.kind,
-      title: group.title || '',
-      description: null,
-      technology: null,
-      tags: null,
-      links: null,
-      parent: group.parent,
-      level: 0,
-      color: 'gray',
+    nodesMap.set(id, {
+      id,
+      parent,
+      kind: ElementKind.Group,
+      title: viewRule.title ?? '',
+      color: viewRule.color ?? 'muted',
       shape: 'rectangle',
       children: [],
       inEdges: [],
       outEdges: [],
+      level: 0,
+      depth: 0,
+      description: null,
+      technology: null,
+      tags: null,
+      links: null,
       style: {
-        border: 'dashed',
-        opacity: .5
+        border: viewRule.border ?? 'dashed',
+        opacity: viewRule.opacity ?? 0
       }
     })
-    group.explicits.forEach(e => elementToGroup.set(e.id, group.id))
+    for (const e of explicits) {
+      elementToGroup.set(e.id, id)
+    }
   })
 
   return (
@@ -52,7 +62,7 @@ export function buildComputeNodes(elements: Iterable<Element>, groups?: AdHocGro
       // Sort from Top to Bottom
       // So we can ensure that parent nodes are created before child nodes
       .sort(compareByFqnHierarchically)
-      .reduce((map, { id, color, shape, style, ...el }) => {
+      .reduce((map, { id, color, shape, style, kind, title, ...el }) => {
         let parent = parentFqn(id)
         let level = 0
         let parentNd: ComputedNode | undefined
@@ -64,6 +74,7 @@ export function buildComputeNodes(elements: Iterable<Element>, groups?: AdHocGro
           }
           parent = parentFqn(parent)
         }
+        // If parent is not found in the map, check if it is in a group
         if (!parentNd && elementToGroup.has(id)) {
           parent = elementToGroup.get(id)!
           parentNd = map.get(parent)!
@@ -80,15 +91,17 @@ export function buildComputeNodes(elements: Iterable<Element>, groups?: AdHocGro
           level = parentNd.level + 1
         }
         const node: ComputedNode = {
-          ...el,
           id,
           parent,
-          level,
+          kind,
+          title,
           color: color ?? DefaultThemeColor,
           shape: shape ?? DefaultElementShape,
           children: [],
           inEdges: [],
           outEdges: [],
+          level,
+          ...el,
           style: {
             ...style
           }

@@ -6,13 +6,12 @@ describe('custom-relation-expr', () => {
     const { edges, nodeIds, edgeIds } = computeView([
       $include('customer'),
       $include('cloud.frontend'),
-      $include($customRelation(
-        '* -> cloud.backend',
-        {
+      $include('* -> cloud.backend', {
+        with: {
           color: 'red',
           head: 'diamond'
         }
-      ))
+      })
     ])
     expect(nodeIds).toEqual([
       'customer',
@@ -51,14 +50,13 @@ describe('custom-relation-expr', () => {
 
   it('include edges and update title', () => {
     const { edges, edgeIds } = computeView([
-      $include($customRelation(
-        'cloud.frontend.* -> cloud.backend.*',
-        {
+      $include('cloud.frontend.* -> cloud.backend.*', {
+        with: {
           color: 'red',
           title: 'custom label',
           head: 'crow'
         }
-      ))
+      })
     ])
     expect(edgeIds).toEqual([
       'cloud.frontend.adminPanel:cloud.backend.graphql',
@@ -110,12 +108,11 @@ describe('custom-relation-expr', () => {
 
   it('set edge title to empty string', () => {
     const { edges, edgeIds } = computeView([
-      $include($customRelation(
-        'cloud.frontend.adminPanel -> cloud.backend',
-        {
+      $include('cloud.frontend.adminPanel -> cloud.backend', {
+        with: {
           title: ''
         }
-      ))
+      })
     ])
     expect(edgeIds).toEqual([
       'cloud.frontend.adminPanel:cloud.backend'
@@ -127,13 +124,12 @@ describe('custom-relation-expr', () => {
   it('handles <->', () => {
     // in model we have cloud -> amazon
     const { edges, edgeIds } = computeView([
-      $include($customRelation(
-        'amazon.* <-> cloud.*',
-        {
+      $include('amazon.* <-> cloud.*', {
+        with: {
           color: 'red',
           title: 'custom label'
         }
-      ))
+      })
     ])
     expect(edgeIds).toEqual([
       'cloud.backend:amazon.s3'

@@ -1,7 +1,15 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
+import {
+  type BorderStyle,
+  ElementKind,
+  type ElementShape,
+  type ElementStyle,
+  type Fqn,
+  type Link,
+  type Tag
+} from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { GlobalStyleID } from './global'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
@@ -63,6 +71,10 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
 export interface ViewRuleGroup {
   groupRules: Array<ViewRulePredicate | ViewRuleGroup>
   title: string | null
+  color?: Color
+  border?: BorderStyle
+  // 0-100
+  opacity?: number
 }
 
 export function isViewRuleGroup(rule: ViewRule): rule is ViewRuleGroup {
@@ -264,6 +276,14 @@ export interface ComputedNode {
    */
   isCustomized?: boolean
 }
+export namespace ComputedNode {
+  /**
+   * Nodes group is a special kind of node, exisiting only in view
+   */
+  export function isNodesGroup(node: ComputedNode): boolean {
+    return node.kind === ElementKind.Group
+  }
+}
 
 export interface ComputedEdge {
   id: EdgeId
@@ -375,6 +395,15 @@ export interface DiagramNode extends ComputedNode {
   // Absolute position, top left
   position: Point
   labelBBox: BBox
+}
+
+export namespace DiagramNode {
+  /**
+   * Nodes group is a special kind of node, exisiting only in view
+   */
+  export function isNodesGroup(node: DiagramNode): boolean {
+    return node.kind === ElementKind.Group
+  }
 }
 
 export interface DiagramEdge extends ComputedEdge {

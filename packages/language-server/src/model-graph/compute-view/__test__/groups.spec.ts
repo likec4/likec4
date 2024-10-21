@@ -2,7 +2,7 @@ import type { ComputedNode } from '@likec4/core'
 import { indexBy, mapValues, pipe, prop } from 'remeda'
 import type { BuildTuple } from 'type-fest/source/internal'
 import { describe, expect, it } from 'vitest'
-import { $exclude, $group, $include, computeView } from './fixture'
+import { $exclude, $group, $include, $where, computeView } from './fixture'
 
 describe('groups', () => {
   it('should include elements', () => {
@@ -53,7 +53,11 @@ describe('groups', () => {
     const { nodeIds, edgeIds, nodes, edges } = computeView([
       $group([
         $group([
-          $include('cloud.frontend.dashboard')
+          $include('cloud.frontend.*', {
+            where: {
+              tag: { eq: 'next' }
+            }
+          })
         ]),
         $group([
           $include('cloud.frontend.adminPanel'),

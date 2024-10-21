@@ -57,23 +57,40 @@ views {
 
   view index {
     title "Landscape"
-    include
-      customer, // include first
-      *
+
+    group {
+      color green
+      opacity 100%
+      include customer with {
+        color green
+      }
+    }
+
+    group {
+      color primary
+      opacity 100%
+      include *
+      exclude -> customer
+    }
   }
 
   view customer of customer {
-    include
-      *,
-      customer -> cloud.ui with {
-        color red
-      },
-      supportUser
+    include customer
+
+    group {
+      include
+        *,
+        customer -> cloud.ui with {
+          color red
+        },
+        supportUser
+    }
 
     style supportUser {
       color indigo
     }
-  }
+  	autoLayout BottomTop
+	}
 
   dynamic view dynamic-view-1 {
     title 'Dynamic View Example'

@@ -275,7 +275,15 @@ ViewRule:
 
 ViewRuleGroup:
   'group' title=String? '{'
-    groupRules+=(ViewRulePredicate | ViewRuleGroup)*
+    props+=(
+      ColorProperty |
+      BorderProperty |
+      OpacityProperty
+    )*
+    groupRules+=(
+      ViewRulePredicate |
+      ViewRuleGroup
+    )*
   '}';
 
 DynamicViewRule:

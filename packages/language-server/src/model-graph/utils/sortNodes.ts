@@ -62,9 +62,6 @@ export function sortNodes({
   for (const n of nodes) {
     g.setNode(n.id, n.id)
     if (n.children.length > 0) {
-      // n.children.forEach(c => {
-      //   g.setEdge(n.id, c, undefined, `${n.id}:${c}`)
-      // })
       n.inEdges.forEach(e => {
         const edge = getEdge(e)
         // if this edge from leaf to the child of this node
@@ -90,15 +87,15 @@ export function sortNodes({
   if (sources.length === 0) {
     sources = pipe(
       nodes,
-      sort(compareByFqnHierarchically),
       filter(n => n.inEdges.length === 0 || n.parent === null),
+      sort(compareByFqnHierarchically),
       map(n => n.id)
     )
   }
   const orderedIds = postorder(g, sources).reverse() as Fqn[]
   const sorted = orderedIds.map(getNode)
   if (sorted.length < nodes.length) {
-    const unsorted = difference(nodes, sorted)
+    const unsorted = difference(nodes, sorted).sort(compareByFqnHierarchically)
     sorted.push(...unsorted)
   }
 

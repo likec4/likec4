@@ -1,6 +1,7 @@
 import type { ComputedEdge, ComputedNode, Element, ViewRule } from '@likec4/core'
 import { Expr, nonexhaustive } from '@likec4/core'
 import { isNullish, omitBy } from 'remeda'
+import { flattenGroupRules } from './applyCustomElementProperties'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 function relationExpressionToPredicates(
@@ -39,7 +40,7 @@ export function applyCustomRelationProperties(
   nodes: ComputedNode[],
   _edges: Iterable<ComputedEdge>
 ): ComputedEdge[] {
-  const rules = _rules.flatMap(r => ('include' in r ? r.include.filter(Expr.isCustomRelationExpr) : []))
+  const rules = _rules.flatMap(flattenGroupRules(Expr.isCustomRelationExpr))
   const edges = Array.from(_edges)
   if (rules.length === 0 || edges.length === 0) {
     return edges

@@ -680,8 +680,13 @@ describe.concurrent('views2', () => {
         group 'Backend' {
           include system.backend
         }
-        group 'Frontend' {
-          include system.frontend
+        group '' {
+          include *
+            where tag is #next
+            with {
+              title ''
+            }
+          exclude system.frontend
         }
       `)
     })
@@ -690,10 +695,13 @@ describe.concurrent('views2', () => {
       const { valid } = await mkTestServices(ctx)
       await valid(`
         group {
+          color red
           group 'Backend' {
+            border solid
             include system.backend
           }
           group 'Frontend' {
+            opacity 10%
             include system.frontend
           }
           exclude system

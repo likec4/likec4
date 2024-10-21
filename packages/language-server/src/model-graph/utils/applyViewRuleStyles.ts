@@ -1,12 +1,9 @@
-import type { ComputedNode, ViewRule } from '@likec4/core'
+import { ComputedNode, type ViewRule } from '@likec4/core'
 import { Expr, isViewRuleStyle } from '@likec4/core'
-import { anyPass, filter, forEach, isDefined, pipe } from 'remeda'
-import { AdHocGroup } from '../compute-view/compute'
+import { anyPass, filter, forEach, isDefined, isNot, pipe } from 'remeda'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
-
-const notGroup = (n: ComputedNode) => n.kind !== AdHocGroup.kind
 
 export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
   const rules = _rules.filter(isViewRuleStyle)
@@ -24,7 +21,7 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
     }
     pipe(
       nodes,
-      filter(notGroup),
+      filter(isNot(ComputedNode.isNodesGroup)),
       filter(anyPass(predicates)),
       forEach(n => {
         n.shape = rule.style.shape ?? n.shape

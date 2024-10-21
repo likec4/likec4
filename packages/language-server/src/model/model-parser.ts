@@ -680,7 +680,8 @@ export class LikeC4ModelParser {
     }
     return {
       title: toSingleLine(astNode.title) ?? null,
-      groupRules
+      groupRules,
+      ...toElementStyle(astNode.props, _isValid)
     }
   }
 

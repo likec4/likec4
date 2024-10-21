@@ -1,24 +1,24 @@
-import type {
-  Color,
-  ComputedEdge,
-  ComputedElementView,
-  ComputedNode,
-  EdgeId,
-  Element,
+import {
+  type Color,
+  type ComputedEdge,
+  type ComputedElementView,
+  type ComputedNode,
+  type EdgeId,
+  type Element,
   ElementKind,
-  ElementPredicateExpression,
-  ElementView,
-  NodeId,
-  NonEmptyArray,
-  Relation,
-  RelationPredicateExpression,
-  RelationshipArrowType,
-  RelationshipKind,
-  RelationshipLineType,
-  Tag,
-  ViewID,
-  ViewRuleGroup,
-  ViewRulePredicate
+  type ElementPredicateExpression,
+  type ElementView,
+  type NodeId,
+  type NonEmptyArray,
+  type Relation,
+  type RelationPredicateExpression,
+  type RelationshipArrowType,
+  type RelationshipKind,
+  type RelationshipLineType,
+  type Tag,
+  type ViewID,
+  type ViewRuleGroup,
+  type ViewRulePredicate
 } from '@likec4/core'
 import {
   commonAncestor,
@@ -109,11 +109,15 @@ function isDirectEdge({ relations: [rel, ...tail], source, target }: ComputeCtx.
   return false
 }
 
-export class AdHocGroup {
-  static readonly kind = '@group' as ElementKind
+export class NodesGroup {
+  static readonly kind = ElementKind.Group
 
   static root() {
-    return new AdHocGroup('@root' as NodeId)
+    return new NodesGroup('@root' as NodeId, { title: null, groupRules: [] })
+  }
+
+  static is(node: ComputedNode) {
+    return node.kind === NodesGroup.kind
   }
 
   readonly explicits = new Set<Element>()
@@ -121,7 +125,7 @@ export class AdHocGroup {
 
   constructor(
     public id: NodeId,
-    public title: string = '',
+    public viewRule: ViewRuleGroup,
     public parent: NodeId | null = null
   ) {
   }
@@ -169,9 +173,9 @@ export class ComputeCtx {
    * Root group - not included in the groups
    * But used to accumulate elements that are not in any group
    */
-  private __rootGroup = AdHocGroup.root()
-  private groups = [] as AdHocGroup[]
-  private activeGroupStack = [] as AdHocGroup[]
+  private __rootGroup = NodesGroup.root()
+  private groups = [] as NodesGroup[]
+  private activeGroupStack = [] as NodesGroup[]
 
   protected get activeGroup() {
     return this.activeGroupStack[0] ?? this.__rootGroup
@@ -547,7 +551,7 @@ export class ComputeCtx {
     this.implicits.clear()
     this.ctxEdges = []
     // Reset groups
-    this.__rootGroup = AdHocGroup.root()
+    this.__rootGroup = NodesGroup.root()
     this.groups = []
     this.activeGroupStack = []
   }
@@ -640,7 +644,7 @@ export class ComputeCtx {
       if (isViewRuleGroup(rule)) {
         const parent = first(this.activeGroupStack)
         const groupId = `@gr${this.groups.length + 1}` as NodeId
-        const group = new AdHocGroup(groupId, rule.title ?? '', parent?.id ?? null)
+        const group = new NodesGroup(groupId, rule, parent?.id ?? null)
         this.groups.push(group)
         this.activeGroupStack.unshift(group)
         this.processPredicates(rule.groupRules)
