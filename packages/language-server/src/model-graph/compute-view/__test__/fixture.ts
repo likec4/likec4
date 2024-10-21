@@ -11,6 +11,10 @@ import {
   type ElementWhereExpr,
   type Expression as C4Expression,
   type Fqn,
+  isElementRef,
+  isElementWhere,
+  isRelationExpression,
+  isRelationWhere,
   type NonEmptyArray,
   type Relation,
   type RelationID,
@@ -20,6 +24,7 @@ import {
   type Tag,
   type ViewID,
   type ViewRule,
+  type ViewRuleGroup,
   type ViewRulePredicate,
   type ViewRuleStyle,
   type WhereOperator
@@ -362,8 +367,6 @@ export type Expression =
   | IncomingExpr
   | OutgoingExpr
   | RelationExpr
-  | ElementWhereExpr
-  | RelationWhereExpr
 
 export function $custom(
   expr: ElementRefExpr,
@@ -465,14 +468,52 @@ export function $expr(expr: Expression | C4Expression): C4Expression {
   }
 }
 
-export function $include(expr: Expression | C4Expression): ViewRulePredicate {
+type CustomProps = {
+  where?: WhereOperator<TestTag, string>
+  with?: {
+    title?: string
+    description?: string
+    technology?: string
+    shape?: ElementShape
+    color?: Color
+    border?: BorderStyle
+    icon?: string
+    opacity?: number
+    navigateTo?: string
+  } & Omit<C4CustomRelationExpr['customRelation'], 'relation' | 'navigateTo'>
+}
+export function $include(expr: Expression | C4Expression, props?: CustomProps): ViewRulePredicate {
+  let _expr = props?.where ? $where(expr, props.where) : $expr(expr)
+  if (props?.with) {
+    if (isRelationExpression(_expr) || isRelationWhere(_expr)) {
+      _expr = {
+        customRelation: {
+          relation: _expr,
+          ...props.with as any
+        }
+      }
+    } else if (isElementRef(_expr) || isElementWhere(_expr)) {
+      _expr = {
+        custom: {
+          expr: _expr,
+          ...props.with as any
+        }
+      }
+    }
+  }
   return {
-    include: [$expr(expr)]
+    include: [_expr]
   }
 }
 export function $exclude(expr: Expression | C4Expression): ViewRulePredicate {
   return {
     exclude: [$expr(expr)]
+  }
+}
+export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
+  return {
+    title: null,
+    groupRules
   }
 }
 

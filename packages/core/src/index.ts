@@ -6,6 +6,7 @@ export * from './errors'
 export * from './model'
 
 export * from './types'
+export * from './utils/commonHead'
 export * from './utils/compare-natural'
 export * from './utils/fqn'
 export * from './utils/guards'

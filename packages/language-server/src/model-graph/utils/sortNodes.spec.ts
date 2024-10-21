@@ -116,14 +116,14 @@ describe('sortNodes', () => {
   describe('two nodes inside', () => {
     const nodes = [
       {
+        id: 'cloud.backend',
+        parent: 'cloud'
+      },
+      {
         id: 'cloud'
       },
       {
         id: 'customer'
-      },
-      {
-        id: 'cloud.backend',
-        parent: 'cloud'
       },
       {
         id: 'cloud.frontend',
@@ -182,8 +182,8 @@ describe('sortNodes', () => {
       expect(map(sorted, prop('id'))).toEqual([
         'customer',
         'amazon',
-        'cloud.frontend',
         'cloud',
+        'cloud.frontend',
         'cloud.db',
         'cloud.backend'
       ])
@@ -236,7 +236,7 @@ describe('sortNodes', () => {
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'cloud.backend']
-      ]).toEqual(['customer', 'amazon', 'cloud.frontend', 'cloud', 'cloud.db', 'cloud.backend'])
+      ]).toEqual(['customer', 'amazon', 'cloud', 'cloud.frontend', 'cloud.db', 'cloud.backend'])
     })
 
     it('should sort nodes using edges and ignore cycles (2)', () => {

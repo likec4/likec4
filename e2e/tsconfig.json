@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", ".ladle", "bootstrap.mjs", "playwright.config.ts"],
+  "include": ["src", "bootstrap.mjs", "playwright.config.ts"],
   "exclude": ["**/node_modules/**"]
 }

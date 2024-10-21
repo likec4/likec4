@@ -1,12 +1,20 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
+import {
+  type BorderStyle,
+  ElementKind,
+  type ElementShape,
+  type ElementStyle,
+  type Fqn,
+  type Link,
+  type Tag
+} from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
+import type { GlobalStyleID } from './global'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
-import type { GlobalStyleID } from './global'
 
 export type ViewID<Id extends string = string> = Tagged<Id, 'ViewID'>
 
@@ -40,7 +48,7 @@ export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
 }
 
 export interface ViewRuleGlobalStyle {
-  styleId: GlobalStyleID,
+  styleId: GlobalStyleID
 }
 export function isViewRuleGlobalStyle(rule: ViewRule): rule is ViewRuleGlobalStyle {
   return 'styleId' in rule
@@ -60,7 +68,20 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
   return 'direction' in rule
 }
 
-export type ViewRule = ViewRulePredicate | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
+export interface ViewRuleGroup {
+  groupRules: Array<ViewRulePredicate | ViewRuleGroup>
+  title: string | null
+  color?: Color
+  border?: BorderStyle
+  // 0-100
+  opacity?: number
+}
+
+export function isViewRuleGroup(rule: ViewRule): rule is ViewRuleGroup {
+  return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
+}
+
+export type ViewRule = ViewRulePredicate | ViewRuleGroup | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
 
 export interface BasicView<
   ViewType extends 'element' | 'dynamic',
@@ -255,6 +276,14 @@ export interface ComputedNode {
    */
   isCustomized?: boolean
 }
+export namespace ComputedNode {
+  /**
+   * Nodes group is a special kind of node, exisiting only in view
+   */
+  export function isNodesGroup(node: ComputedNode): boolean {
+    return node.kind === ElementKind.Group
+  }
+}
 
 export interface ComputedEdge {
   id: EdgeId
@@ -366,6 +395,15 @@ export interface DiagramNode extends ComputedNode {
   // Absolute position, top left
   position: Point
   labelBBox: BBox
+}
+
+export namespace DiagramNode {
+  /**
+   * Nodes group is a special kind of node, exisiting only in view
+   */
+  export function isNodesGroup(node: DiagramNode): boolean {
+    return node.kind === ElementKind.Group
+  }
 }
 
 export interface DiagramEdge extends ComputedEdge {

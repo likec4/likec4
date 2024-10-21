@@ -1,4 +1,4 @@
-import type { ThemeColor } from '@likec4/core'
+import { type ThemeColor } from '@likec4/core'
 import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
@@ -127,14 +127,12 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   selected = false,
   dragging = false,
   data: {
-    element: {
-      color,
-      style,
-      depth = 1,
-      ...element
-    }
+    isViewGroup,
+    element
   }
 }) {
+  const { depth, style, color } = element
+  const isNotViewGroup = !isViewGroup
   const opacity = clamp((style.opacity ?? 100) / 100, {
     min: 0,
     max: 1
@@ -164,9 +162,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     hasOnNavigateTo: !!s.onNavigateTo,
     enableRelationshipsMode: s.enableRelationshipsBrowser
   }))
-  const isNavigable = !!element.navigateTo && hasOnNavigateTo
+  // If this is a view group, we don't want to show the navigate button
+  const isNavigable = isNotViewGroup && !!element.navigateTo && hasOnNavigateTo
+  const hasRelationshipsBrowser = isNotViewGroup && enableRelationshipsMode
 
-  const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
+  const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const [animateVariants, animateHandlers] = useFramerAnimateVariants()
@@ -263,7 +263,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
             component="div"
             className={clsx(
               css.title,
-              (isNavigable || enableRelationshipsMode) && css.titleWithNavigation,
+              (isNavigable || hasRelationshipsBrowser) && css.titleWithNavigation,
               'likec4-compound-title'
             )}>
             {element.title}
@@ -286,7 +286,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
             <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
           </ActionIcon>
         )}
-        {enableRelationshipsMode && (
+        {hasRelationshipsBrowser && (
           <Tooltip
             fz="xs"
             color="dark"

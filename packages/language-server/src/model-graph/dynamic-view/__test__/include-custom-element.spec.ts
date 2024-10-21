@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $custom, $include } from '../../compute-view/__test__/fixture'
+import { $include } from '../../compute-view/__test__/fixture'
 import { $step, compute } from './fixture'
 
 describe('dynamic-view: include custom element with', () => {
@@ -7,12 +7,14 @@ describe('dynamic-view: include custom element with', () => {
     const { nodeIds, edgeIds, nodes, edges } = compute([
       $step('customer -> cloud.frontend.dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
-      $include($custom('cloud.backend', {
-        title: null as any, // null should be ignored
-        technology: 'nodejs',
-        navigateTo: 'some-custom-view',
-        description: undefined as any // undefined should be ignored
-      }))
+      $include('cloud.backend', {
+        with: {
+          title: null as any, // null should be ignored
+          technology: 'nodejs',
+          navigateTo: 'some-custom-view',
+          description: undefined as any // undefined should be ignored
+        }
+      })
     ])
     expect(nodeIds).toEqual([
       'customer',

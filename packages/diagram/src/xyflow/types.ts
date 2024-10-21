@@ -11,6 +11,7 @@ export type ElementXYFlowNode = Node<{
 
 export type CompoundXYFlowNode = Node<{
   fqn: Fqn
+  isViewGroup: boolean
   element: DiagramNode
 }, 'compound'>
 

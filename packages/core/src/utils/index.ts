@@ -1,3 +1,4 @@
+export * from './commonHead'
 export * from './compare-natural'
 export * from './fqn'
 export * from './guards'

@@ -10,7 +10,6 @@
   },
   "scripts": {
     "postinstall": "playwright install chromium --with-deps",
-    "ladle:start": "ladle dev",
     "generate:png": "likec4 export png -o ./generated/images --flat",
     "bootstrap": "node bootstrap.mjs",
     "test": "playwright test",

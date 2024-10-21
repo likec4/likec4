@@ -97,7 +97,9 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr, w
   ]
 
   for (const el of children) {
-    this.addEdges(this.graph.anyEdgesBetween(el, neighbours))
+    this.addEdges(this.graph.anyEdgesBetween(el, neighbours)).forEach(edge => {
+      this.addImplicit(edge.source, edge.target)
+    })
   }
 
   // If root has no children
@@ -331,8 +333,9 @@ export function includeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr, w
   if (edges.length === 0) {
     return
   }
-  this.addEdges(edges)
-  this.addImplicit(...edges.map(e => e.target))
+  this.addEdges(edges).forEach(edge => {
+    this.addImplicit(edge.target)
+  })
 }
 export function excludeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr, where?: RelationPredicateFn) {
   let relations = filterRelations(edgesIncomingExpr.call(this, expr.incoming), where)
@@ -375,8 +378,9 @@ export function includeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr, w
   if (edges.length === 0) {
     return
   }
-  this.addEdges(edges)
-  this.addImplicit(...edges.map(e => e.source))
+  this.addEdges(edges).forEach(edge => {
+    this.addImplicit(edge.source)
+  })
 }
 export function excludeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr, where?: RelationPredicateFn) {
   const relations = filterRelations(edgesOutgoingExpr.call(this, expr.outgoing), where)
@@ -484,7 +488,9 @@ export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr, w
   if (expr.isBidirectional === true) {
     edges.push(...this.graph.edgesBetween(targets, sources))
   }
-  this.addEdges(filterEdges(edges, where))
+  this.addEdges(filterEdges(edges, where)).forEach(edge => {
+    this.activeGroup.addImplicit(edge.source, edge.target)
+  })
 }
 
 export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr, where?: RelationPredicateFn) {

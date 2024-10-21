@@ -14,6 +14,9 @@ export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 export type BorderStyle = TupleToUnion<typeof BorderStyles>
 
 export type ElementKind<Kinds extends string = string> = Tagged<Kinds, 'ElementKind'>
+export namespace ElementKind {
+  export const Group = '@group' as ElementKind
+}
 export const ElementShapes = [
   'rectangle',
   'person',
