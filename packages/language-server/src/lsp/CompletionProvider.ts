@@ -21,6 +21,14 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
     if (!this.filterKeyword(context, keyword)) {
       return
     }
+    if (['title', 'description', 'technology'].includes(keyword.value)) {
+      return acceptor(context, {
+        label: keyword.value,
+        kind: CompletionItemKind.Property,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: `${keyword.value} '\${0}'`
+      })
+    }
     if (['views', 'specification', 'model', 'with'].includes(keyword.value)) {
       return acceptor(context, {
         label: keyword.value,
@@ -65,7 +73,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           detail: `Insert ${keyword.value} block`,
           kind: CompletionItemKind.Module,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} \${1:name} \${2:selector} {\n\tcolor \${0:primary}\n}`
+          insertText: `${keyword.value} \${1:name} \${2:*} {\n\tcolor \${0:primary}\n}`
         })
       }
       if (AstUtils.hasContainerOfType(context.node, ast.isLikeC4View)) {
@@ -74,7 +82,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           detail: `Insert ${keyword.value} block`,
           kind: CompletionItemKind.Module,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} \${1:selector} {\n\tcolor \${0:primary}\n}`
+          insertText: `${keyword.value} \${1:*} {\n\tcolor \${0:primary}\n}`
         })
       }
       return acceptor(context, {
@@ -83,6 +91,24 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         kind: CompletionItemKind.Module,
         insertTextFormat: InsertTextFormat.Snippet,
         insertText: `${keyword.value} {\n\tcolor \${0:primary}\n}`
+      })
+    }
+    if (keyword.value === 'extend') {
+      return acceptor(context, {
+        label: keyword.value,
+        detail: `Extend another view`,
+        kind: CompletionItemKind.Class,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: 'extend ${1:element} {\n\t$0\n}'
+      })
+    }
+
+    if (keyword.value === 'autoLayout') {
+      return acceptor(context, {
+        label: keyword.value,
+        kind: CompletionItemKind.Class,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: 'autoLayout ${1|TopBottom,BottomTop,LeftRight,RightLeft|}$0'
       })
     }
     acceptor(context, {
