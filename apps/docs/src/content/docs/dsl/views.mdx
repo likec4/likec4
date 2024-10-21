@@ -1,6 +1,6 @@
 ---
 title: Views
-description: How to visualize architecture model with LikeC4
+description: How to visualize software architecture in diagrams with LikeC4
 sidebar: 
   label: Views
   order: 8
@@ -468,6 +468,127 @@ exclude * -> * where tag is not #commands
 Together with [extend views](#extend-views) you may define a "baseline" view (includes everything), and then filter out in inherited views.
 
 :::
+
+### Groups :badge[v1.15]{variant="success"}
+
+It is possible to group elements, and this is rendered as a boundary around them:
+
+```likec4
+view {
+
+  group {
+    include backend
+  }
+
+  // with title
+  group 'Frontend' {
+    include frontend.*
+  }
+
+  // with style
+  group 'Service Bus' {
+    color amber
+    opacity 20%
+    border solid
+
+    include messageBroker.*
+  }
+}
+```
+
+Groups can be nested:
+
+```likec4
+view {
+  group 'Third-parties' {
+    group 'Integrations' {      
+      group 'Analytics' {}
+      group 'Marketing' {}
+    }  
+    group 'Monitoring' {}
+  }
+}
+```
+:::note
+Order of predicates is significant. 
+<details>
+<summary>How element predicates are grouped?</summary>
+
+For element predicates - element stays in first group it was included.
+
+```likec4
+group {
+  include backend   //wins
+  group {
+    include backend //ignored
+  }
+}
+group {  
+  group {
+    include api //wins
+  }
+  include api   //ignored
+}
+```
+It is possible to change:
+
+```likec4
+group {
+  include backend   
+  group {
+    exclude backend 
+    include backend //wins
+  }
+}
+```
+</details>
+<details>
+<summary>How relationship predicates are grouped?</summary>
+
+For relationship predicates - the last one "wins":
+
+```likec4 
+group {
+  include -> backend  
+  group {
+    include -> backend //wins
+  }
+}
+
+
+group {  
+  group {
+    include -> backend
+  }
+  include -> backend   //wins
+}
+```
+</details> 
+:::
+
+<Aside type="caution" title="Elements hierarchy and Groups">
+  Element is included in the group if only there is no parent in the view.  
+  This might lead to unexpected results.  
+  
+  Example:
+  ```likec4
+  group {
+    include cloud
+    group 'Backend' {
+      include cloud.backend.api // ⛔️ no, will be nested in 'cloud'
+    }
+  }
+
+  group 'Amazon' {    
+    group 'Queues' {
+      include amazon.sqs.queue1 // ⛔️ no, will be nested in 'amazon' from below
+    }
+    include cloud -> amazon
+  }
+  ```
+
+  
+</Aside>
 
 ### Auto-layout
 
