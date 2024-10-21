@@ -116,23 +116,23 @@ All examples on this site use this component in MDX.
 Component works in most usecases, but if you need more - use `ReactLikeC4`:
 
 ```tsx
-import { ReactLikeC4 } from './likec4.generated'
+import { ReactLikeC4, type LikeC4ViewId } from './likec4.generated'
 
 const App = () => {
+  const [viewId, setViewId] = useState<LikeC4ViewId>('index')
   return (
-    <div>
-      <ReactLikeC4
-        viewId="index"
-        pannable={false}
-        zoomable 
-        keepAspectRatio
-        showNavigationButtons
-        enableDynamicViewWalkthrough={false}
-        showElementLinks={false}
-        showDiagramTitle={false}
-        onNodeClick={...}
-      />
-    </div>
+    <ReactLikeC4
+      viewId={viewId}
+      pannable
+      zoomable={false} 
+      keepAspectRatio
+      showNavigationButtons
+      enableDynamicViewWalkthrough={false}
+      showElementLinks={false}
+      showDiagramTitle={false}
+      onNavigateTo={setViewId}
+      onNodeClick={...}
+    />
   )
 }
 ```
@@ -153,13 +153,11 @@ import { RenderIcon, LikeC4Views } from './likec4.generated'
 const App = () => {
   const view = LikeC4Views['index']
   return (
-    <div>
-      <ReactLikeC4
-        view={view} // required DiagramView
-        renderIcon={RenderIcon} // Optional, used for bundled icons
-        onEdgeClick={...}
-      />
-    </div>
+    <ReactLikeC4
+      view={view} // required DiagramView
+      renderIcon={RenderIcon} // Optional, used for bundled icons
+      onEdgeClick={...}
+    />
   )
 }
 ```

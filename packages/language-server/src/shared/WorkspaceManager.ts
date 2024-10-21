@@ -4,6 +4,7 @@ import { DefaultWorkspaceManager } from 'langium'
 import type { LangiumSharedServices } from 'langium/lsp'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
+import { LibIcons } from '../generated-lib/icons'
 import * as BuiltIn from '../likec4lib'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
@@ -23,7 +24,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     folders: WorkspaceFolder[],
     collector: (document: LangiumDocument) => void
   ): Promise<void> {
-    collector(this.documentFactory.fromString(BuiltIn.Content, URI.parse(BuiltIn.Uri)))
+    collector(this.documentFactory.fromString(LibIcons, URI.parse(BuiltIn.Uri)))
     await super.loadAdditionalDocuments(folders, collector)
   }
 
