@@ -4,6 +4,16 @@ import type { BuildTuple } from 'type-fest/source/internal'
 import { describe, expect, it } from 'vitest'
 import { $exclude, $group, $include, $where, computeView } from './fixture'
 
+function expectParents(nodes: ComputedNode[]) {
+  return expect(
+    pipe(
+      nodes,
+      indexBy(prop('id')),
+      mapValues(prop('parent'))
+    )
+  )
+}
+
 describe('groups', () => {
   it('should include elements', () => {
     const { nodeIds, edgeIds, nodes } = computeView([
@@ -47,6 +57,60 @@ describe('groups', () => {
     })
 
     expect(edgeIds).toEqual(['support:cloud'])
+  })
+
+  it('should include and keep elements in first-seen group', (ctx) => {
+    const variant1 = computeView([
+      $group([
+        $include('customer'),
+        $group([
+          $include('customer')
+        ])
+      ])
+    ])
+    expectParents(variant1.nodes).toMatchInlineSnapshot(`
+      {
+        "@gr1": null,
+        "@gr2": "@gr1",
+        "customer": "@gr1",
+      }
+    `)
+
+    const variant2 = computeView([
+      $group([
+        $group([
+          $include('customer')
+        ]),
+        $include('customer')
+      ])
+    ])
+    expectParents(variant2.nodes).toMatchInlineSnapshot(`
+      {
+        "@gr1": null,
+        "@gr2": "@gr1",
+        "customer": "@gr2",
+      }
+    `)
+
+    const variant3 = computeView([
+      $group([
+        $group([
+          $include('customer')
+        ]),
+        $exclude('customer'),
+        $group([
+          $include('customer')
+        ])
+      ])
+    ])
+    expectParents(variant3.nodes).toMatchInlineSnapshot(`
+      {
+        "@gr1": null,
+        "@gr2": "@gr1",
+        "@gr3": "@gr1",
+        "customer": "@gr3",
+      }
+    `)
   })
 
   it('nested groups', () => {

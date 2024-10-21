@@ -473,10 +473,17 @@ export class ComputeCtx {
    */
   protected addElement(...el: Element[]) {
     for (const r of el) {
+      if (!this.explicits.has(r)) {
+        this.activeGroup.addElement(r)
+      } else if (this.activeGroup !== this.__rootGroup) {
+        this.groups.forEach(g => {
+          g.implicits.delete(r)
+        })
+        this.activeGroup.addImplicit(r)
+      }
       this.explicits.add(r)
       this.implicits.add(r)
     }
-    this.activeGroup.addElement(...el)
   }
 
   /**
@@ -486,6 +493,12 @@ export class ComputeCtx {
   protected addImplicit(...el: Element[]) {
     for (const r of el) {
       this.implicits.add(r)
+      // Remove implicits from other groups
+      if (this.activeGroup !== this.__rootGroup) {
+        this.groups.forEach(g => {
+          g.implicits.delete(r)
+        })
+      }
     }
     this.activeGroup.addImplicit(...el)
   }
