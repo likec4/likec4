@@ -137,7 +137,6 @@ const curve = d3line<XYPosition>()
 export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
-  selected,
   sourceX,
   sourceY,
   targetX,
