@@ -530,8 +530,11 @@ export class LikeC4ModelParser {
 
   private parseRelationPredicate(astNode: ast.RelationPredicate, _isValid: IsValidFn): c4.RelationPredicateExpression {
     if (ast.isRelationPredicateWith(astNode)) {
-      const subject = ast.isRelationPredicateWhere(astNode.subject) ? astNode.subject.subject : astNode.subject
-      return this.parseRelationPredicateWith(astNode, subject)
+      let relation = ast.isRelationPredicateWhere(astNode.subject) 
+        ? this.parseRelationPredicateWhere(astNode.subject)
+        : this.parseRelationExpr(astNode.subject)
+
+      return this.parseRelationPredicateWith(astNode, relation)
     }
     if (ast.isRelationPredicateWhere(astNode)) {
       return this.parseRelationPredicateWhere(astNode)
@@ -558,9 +561,8 @@ export class LikeC4ModelParser {
 
   private parseRelationPredicateWith(
     astNode: ast.RelationPredicateWith,
-    subject: ast.RelationExpression
+    relation: c4.RelationExpression | c4.RelationWhereExpr
   ): c4.CustomRelationExpr {
-    const relation = this.parseRelationExpr(subject)
     const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
