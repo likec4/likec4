@@ -137,7 +137,6 @@ const curve = d3line<XYPosition>()
 export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
-  selected,
   sourceX,
   sourceY,
   targetX,
@@ -438,11 +437,10 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
   const MarkerStart = markerStartName ? EdgeMarkers[markerStartName] : null
   const MarkerEnd = markerEndName ? EdgeMarkers[markerEndName] : null
 
-  let labelZIndex = 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
-  if (isEdgePathEditable && selected) {
+  let labelZIndex = isEdgePathEditable
     // Move label below ControlPoints, otherwise they don't capture events
-    labelZIndex = (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge) - 1
-  }
+    ? (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge) - 1
+    : 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
 
   return (
     <g
