@@ -437,10 +437,18 @@ export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function Relationshi
   const MarkerStart = markerStartName ? EdgeMarkers[markerStartName] : null
   const MarkerEnd = markerEndName ? EdgeMarkers[markerEndName] : null
 
-  let labelZIndex = isEdgePathEditable
+  const edgeZIndex = edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge
+  let labelZIndex
+  if (isEdgePathEditable) {
     // Move label below ControlPoints, otherwise they don't capture events
-    ? (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge) - 1
-    : 1 + (isHovered ? ZIndexes.Element : (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge))
+    labelZIndex = edgeZIndex - 1
+  }
+  else if (isHovered) {
+    // Move above the elements
+    labelZIndex = ZIndexes.Element + 1
+  } else {
+    labelZIndex = edgeZIndex + 1
+  }
 
   return (
     <g
