@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgFinancialServicesMarketplace = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgFinancialServicesMarketplace = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path fill="#669df6" d="M4.98 10.96H12v1H4.98z" />
     <path fill="#4285f4" d="M12 10.96h7.02v1H12z" />
@@ -15,5 +18,5 @@ const SvgFinancialServicesMarketplace = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#669df6" d="M12 7.47a2.25 2.25 0 0 1-2.28-2.24v-.07A2.25 2.25 0 0 1 12 2.91V2a3.2 3.2 0 0 0 0 6.39z" />
     <path fill="#4285f4" d="M11.54 3.71h.91v2.96h-.91z" />
   </svg>
-)
+)}
 export default SvgFinancialServicesMarketplace

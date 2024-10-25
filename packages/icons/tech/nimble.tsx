@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgNimble = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgNimble = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="M64 45.621 2.262 24.707v61.512L64 110.609Zm0 0"
@@ -60,5 +63,5 @@ const SvgNimble = (props: SVGProps<SVGSVGElement>) => (
       stroke="none"
     />
   </svg>
-)
+)}
 export default SvgNimble

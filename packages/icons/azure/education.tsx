@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgEducation = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgEducation = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={9}
         x2={9}
         y1={-7205.66}
@@ -22,7 +25,7 @@ const SvgEducation = (props: SVGProps<SVGSVGElement>) => (
     </defs>
     <path fill="#773adc" d="M14.45 8.8H3.68v4.85c0 1.26 2.41 2.29 5.44 2.29s5.44-1 5.44-2.29Z" />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="m8.39 2.16-8 4.09a.71.71 0 0 0-.25.94.62.62 0 0 0 .25.28l8 3.48a.93.93 0 0 0 .73 0l8.48-3.5a.72.72 0 0 0 .28-.94.63.63 0 0 0-.28-.3L9.14 2.14a.86.86 0 0 0-.75.02"
     />
     <path
@@ -31,5 +34,5 @@ const SvgEducation = (props: SVGProps<SVGSVGElement>) => (
     />
     <ellipse cx={8.94} cy={6.46} fill="#552f99" rx={1.34} ry={0.68} />
   </svg>
-)
+)}
 export default SvgEducation

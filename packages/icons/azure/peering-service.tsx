@@ -1,15 +1,18 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPeeringService = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPeeringService = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.123} x2={7.123} y2={13.962} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={7.123} x2={7.123} y2={13.962} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
     </defs>
-    <circle cx={7.123} cy={6.981} r={6.981} fill="url(#a)" />
+    <circle cx={7.123} cy={6.981} r={6.981} fill={`url(#a-${suffix})`} />
     <circle cx={11.022} cy={11.164} r={6.684} fill="#0078d4" />
     <path
       fill="#83b9f9"
@@ -20,5 +23,5 @@ const SvgPeeringService = (props: SVGProps<SVGSVGElement>) => (
       d="M11.031 9.684a1.5 1.5 0 0 0-.663.154l-4.04-4.976a1.573 1.573 0 1 0-.707.548L9.7 10.438a1.54 1.54 0 0 0-.23.8 1.557 1.557 0 1 0 1.557-1.557Z"
     />
   </svg>
-)
+)}
 export default SvgPeeringService

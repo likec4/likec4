@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPartnerPortal = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPartnerPortal = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -22,5 +25,5 @@ const SvgPartnerPortal = (props: SVGProps<SVGSVGElement>) => (
       d="m12 11.1 3.3-3.3L12 4.5V.8h2.2c.3 0 .5.2.6.5l.3 2.4c.9.3 1.8.9 2.6 1.5l2.2-.9c.3-.1.5 0 .7.2l2.2 3.9c.2.2.2.5-.1.6l-1.9 1.5q.3 1.5 0 3l1.9 1.5c.2.2.3.5.1.7l-2.2 3.9c-.1.2-.4.3-.7.2l-2.2-.9c-.8.6-1.7 1.1-2.6 1.5l-.3 2.4c0 .3-.3.5-.6.5H12v-7.4h4.4v-1.3H12v-1.3h2.1c.5 0 .9-.3 1.2-.7L17.8 8l-1.1-.6-.7 1.3-1.8 3.3H12zm2.8 5.3c-.7 0-1.2.6-1.2 1.2s.6 1.2 1.2 1.2c.7 0 1.2-.6 1.2-1.2s-.6-1.2-1.2-1.2"
     />
   </svg>
-)
+)}
 export default SvgPartnerPortal

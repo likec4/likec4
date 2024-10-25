@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgComputeFleet = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgComputeFleet = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={12.948} x2={12.948} y1={12.804} y2={7.74} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={12.948} x2={12.948} y1={12.804} y2={7.74} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
@@ -46,7 +49,7 @@ const SvgComputeFleet = (props: SVGProps<SVGSVGElement>) => (
       d="M17.45 3.754a.24.24 0 0 1 .149.029c-.251-.113-.5-.413-.773-.23L7.522 8.914a.98.98 0 0 0-.452.781l.019 6.766c-.034.322.402.409.583.552-.081-.047-.132-.148-.132-.29l-.019-6.766a.94.94 0 0 1 .132-.445.94.94 0 0 1 .319-.336l9.304-5.361a.5.5 0 0 1 .174-.06Z"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M14.267 7.827c-.033.091-.024.176.029.206 1.648.955-.651 5.554-2.698 4.655-1.306-.689-.091-3.788 1.261-4.469-.002.053-.07.29.06.184l.615-.623c.039-.022.069-.017.108-.026.21-.032.435-.012.625.072Z"
     />
     <path fill="#9cebff" d="m11.773 10.23 1.173.122c.005.333-.003 1.228-.004 1.572l-1.176-.122z" />
@@ -57,5 +60,5 @@ const SvgComputeFleet = (props: SVGProps<SVGSVGElement>) => (
       d="M13 7.451a.05.05 0 0 1 .037-.007c.008.008.574.16.547.188.08.114-.616.689-.662.771-.128.106-.065-.132-.06-.184-.476.298-.929.786-1.265 1.367-1.09 1.781-.544 3.986 1.36 2.967 1.377-.637 2.686-3.786 1.343-4.52-.072-.035-.053-.185 0-.266.05-.084.139-.17.227-.131.412.235.649.736.659 1.399.022 1.406-.96 3.139-2.196 3.872-1.212.727-2.26.198-2.276-1.218-.022-1.406.96-3.139 2.195-3.872.02-.07.004-.33.092-.365Z"
     />
   </svg>
-)
+)}
 export default SvgComputeFleet

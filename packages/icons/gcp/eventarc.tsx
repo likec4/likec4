@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgEventarc = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgEventarc = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path d="M17.98 7.06 7.26 17.75l-.91-.91 10.71-10.7z" fill="#4285f4" />
     <circle cx={12} cy={12.06} r={2.82} transform="rotate(-43.97 11.998 12.06)" fill="#669df6" />
@@ -15,5 +18,5 @@ const SvgEventarc = (props: SVGProps<SVGSVGElement>) => (
       fillRule="evenodd"
     />
   </svg>
-)
+)}
 export default SvgEventarc

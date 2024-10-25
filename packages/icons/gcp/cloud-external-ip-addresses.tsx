@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudExternalIpAddresses = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudExternalIpAddresses = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g data-name="Product Icons">
       <path
@@ -14,5 +17,5 @@ const SvgCloudExternalIpAddresses = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgCloudExternalIpAddresses

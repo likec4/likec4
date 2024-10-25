@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgVue = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgVue = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="none"
@@ -10,5 +13,5 @@ const SvgVue = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#35495e" d="m25.997 9.393 23.002.009L64.035 34.36 79.018 9.404 102 9.398 64.15 75.053z" />
     <path fill="#41b883" d="m.91 9.569 25.067-.172 38.15 65.659L101.98 9.401l25.11.026-62.966 108.06z" />
   </svg>
-)
+)}
 export default SvgVue

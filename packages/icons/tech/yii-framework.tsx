@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgYiiFramework = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgYiiFramework = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#40B3D8"
@@ -20,5 +23,5 @@ const SvgYiiFramework = (props: SVGProps<SVGSVGElement>) => (
       d="M88.731 95.746c.127-3.557-2.406-6.547-4.936-8.82-5.625-5.052-15.292-8.422-15.292-8.422.995-1.618 1.98-3.629 2.722-5.239 4.446-9.64 6.918-22.964 6.923-22.982.002-.006 2.754 3.914 4.544 8.102s5.468 11.579 6.332 22.98c.251 3.326.508 5.916-.293 14.38Z"
     />
   </svg>
-)
+)}
 export default SvgYiiFramework

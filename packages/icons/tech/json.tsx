@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgJson = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgJson = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <linearGradient
-      id="a"
+      id={`a-${suffix}`}
       x1={-670.564}
       x2={-583.105}
       y1={-280.831}
@@ -16,13 +19,13 @@ const SvgJson = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#fff" />
     </linearGradient>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       fillRule="evenodd"
       d="M63.895 94.303c27.433 37.398 54.281-10.438 54.241-39.205-.046-34.012-34.518-53.021-54.263-53.021C32.182 2.077 2 28.269 2 64.105 2 103.937 36.596 126 63.873 126c-6.172-.889-26.742-5.296-27.019-52.674-.186-32.044 10.453-44.846 26.974-39.214.37.137 18.223 7.18 18.223 30.187 0 22.908-18.156 30.004-18.156 30.004"
       clipRule="evenodd"
     />
     <linearGradient
-      id="b"
+      id={`b-${suffix}`}
       x1={-579.148}
       x2={-666.607}
       y1={-364.34}
@@ -34,11 +37,11 @@ const SvgJson = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#fff" />
     </linearGradient>
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       fillRule="evenodd"
       d="M63.863 34.086C45.736 27.838 23.53 42.778 23.53 72.703 23.53 121.565 59.739 126 64.128 126 95.818 126 126 99.808 126 63.972 126 24.14 91.404 2.077 64.127 2.077c7.555-1.046 40.719 8.176 40.719 53.504 0 29.559-24.764 45.651-40.87 38.776-.37-.137-18.223-7.18-18.223-30.187 0-22.91 18.11-30.085 18.11-30.084"
       clipRule="evenodd"
     />
   </svg>
-)
+)}
 export default SvgJson

@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAstro = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAstro = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={882.997}
         x2={638.955}
         y1={27.113}
@@ -17,7 +20,7 @@ const SvgAstro = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#150426" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={1001.68}
         x2={790.326}
         y1={652.45}
@@ -30,7 +33,7 @@ const SvgAstro = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M81.504 9.465c.973 1.207 1.469 2.836 2.457 6.09l21.656 71.136a90 90 0 0 0-25.89-8.765L65.629 30.28a1.833 1.833 0 0 0-3.52.004L48.18 77.902a90.1 90.1 0 0 0-26.003 8.778l21.758-71.14c.996-3.25 1.492-4.876 2.464-6.083a8 8 0 0 1 3.243-2.398c1.433-.575 3.136-.575 6.535-.575H71.72c3.402 0 5.105 0 6.543.579a8 8 0 0 1 3.242 2.402Zm0 0"
     />
     <path
@@ -38,9 +41,9 @@ const SvgAstro = (props: SVGProps<SVGSVGElement>) => (
       d="M84.094 90.074c-3.57 3.055-10.696 5.137-18.903 5.137-10.07 0-18.515-3.137-20.754-7.356-.8 2.418-.98 5.184-.98 6.954 0 0-.527 8.675 5.508 14.71a5.67 5.67 0 0 1 5.672-5.671c5.37 0 5.367 4.683 5.363 8.488v.336c0 5.773 3.527 10.719 8.543 12.805a11.6 11.6 0 0 1-1.172-5.098c0-5.508 3.23-7.555 6.988-9.938 2.989-1.894 6.309-4 8.594-8.222a15.5 15.5 0 0 0 1.875-7.41 15.6 15.6 0 0 0-.734-4.735m0 0"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M84.094 90.074c-3.57 3.055-10.696 5.137-18.903 5.137-10.07 0-18.515-3.137-20.754-7.356-.8 2.418-.98 5.184-.98 6.954 0 0-.527 8.675 5.508 14.71a5.67 5.67 0 0 1 5.672-5.671c5.37 0 5.367 4.683 5.363 8.488v.336c0 5.773 3.527 10.719 8.543 12.805a11.6 11.6 0 0 1-1.172-5.098c0-5.508 3.23-7.555 6.988-9.938 2.989-1.894 6.309-4 8.594-8.222a15.5 15.5 0 0 0 1.875-7.41 15.6 15.6 0 0 0-.734-4.735m0 0"
     />
   </svg>
-)
+)}
 export default SvgAstro

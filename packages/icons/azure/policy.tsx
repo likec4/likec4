@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPolicy = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPolicy = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.45} x2={8.45} y1={11.47} y2={6.24} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.45} x2={8.45} y1={11.47} y2={6.24} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#198ab3" />
         <stop offset={0.16} stopColor="#1f9ac2" />
         <stop offset={0.5} stopColor="#29bade" />
@@ -12,7 +15,7 @@ const SvgPolicy = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#32d4f5" />
       </linearGradient>
     </defs>
-    <ellipse cx={8.45} cy={8.85} fill="url(#a)" rx={2.6} ry={2.61} />
+    <ellipse cx={8.45} cy={8.85} fill={`url(#a-${suffix})`} rx={2.6} ry={2.61} />
     <ellipse cx={15.73} cy={4.77} fill="#32bedd" rx={1.27} ry={1.28} />
     <ellipse cx={15.73} cy={8.95} fill="#32bedd" rx={1.27} ry={1.28} />
     <ellipse cx={15.73} cy={13.12} fill="#32bedd" rx={1.27} ry={1.28} />
@@ -27,5 +30,5 @@ const SvgPolicy = (props: SVGProps<SVGSVGElement>) => (
       d="M8.45 15.9a.3.3 0 0 1-.13 0L2.5 12.47a.22.22 0 0 1-.12-.2V5.7a.3.3 0 0 1 0-.12L1 4.72a.3.3 0 0 0 0 .13v8.27a.24.24 0 0 0 .11.21l7.22 4.14a.24.24 0 0 0 .12 0Z"
     />
   </svg>
-)
+)}
 export default SvgPolicy

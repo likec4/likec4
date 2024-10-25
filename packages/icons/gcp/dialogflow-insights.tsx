@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDialogflowInsights = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDialogflowInsights = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g fill="none" fillRule="evenodd">
       <path
@@ -25,5 +28,5 @@ const SvgDialogflowInsights = (props: SVGProps<SVGSVGElement>) => (
       </g>
     </g>
   </svg>
-)
+)}
 export default SvgDialogflowInsights

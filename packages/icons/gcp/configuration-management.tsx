@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgConfigurationManagement = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgConfigurationManagement = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path d="M5.76 8.64v3.88A8.16 8.16 0 0 0 12 20.29V5.73Z" fill="#4285f4" />
     <path
@@ -13,5 +16,5 @@ const SvgConfigurationManagement = (props: SVGProps<SVGSVGElement>) => (
       fill="#4285f4"
     />
   </svg>
-)
+)}
 export default SvgConfigurationManagement

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDebugger = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDebugger = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -21,5 +24,5 @@ const SvgDebugger = (props: SVGProps<SVGSVGElement>) => (
       <path fill="#5C85DE" d="M1.5 14.2H6V9.8H1.5zM18 14.2h4.5V9.8H18z" />
     </g>
   </svg>
-)
+)}
 export default SvgDebugger

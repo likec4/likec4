@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSocketio = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSocketio = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fill="#010101" fillRule="evenodd">
       <path
@@ -41,5 +44,5 @@ const SvgSocketio = (props: SVGProps<SVGSVGElement>) => (
       <path d="M48.39 60.716c14.004-11.44 27.702-23.278 42.011-34.384-7.505 11.533-15.224 22.913-22.729 34.445-6.437.03-12.875.03-19.282-.061m11.838 6.376c6.468 0 12.905 0 19.342.092-14.095 11.38-27.732 23.309-42.071 34.384 7.505-11.533 15.224-22.943 22.729-34.476" />
     </g>
   </svg>
-)
+)}
 export default SvgSocketio

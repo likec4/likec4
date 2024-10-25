@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgVueStorefront = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgVueStorefront = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <rect width={71.83} height={50.423} x={29.74} y={41.216} fill="#fff" stroke="#6dd0c7" strokeWidth={0.294} ry={0} />
     <path
@@ -13,5 +16,5 @@ const SvgVueStorefront = (props: SVGProps<SVGSVGElement>) => (
       d="M105.85 8.76c1.41 1.34 1.18 3.14 1.34 4.83-29.2 0-58.4.01-87.6.01.38-1.67-.31-3.69 1.62-4.84z"
     />
   </svg>
-)
+)}
 export default SvgVueStorefront

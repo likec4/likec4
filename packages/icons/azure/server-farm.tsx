@@ -1,16 +1,19 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.759} x2={5.759} y1={0.5} y2={16.523} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={5.759} x2={5.759} y1={0.5} y2={16.523} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#b3b2b3" />
         <stop offset={0.375} stopColor="#afaeaf" />
         <stop offset={0.763} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#979797" />
       </linearGradient>
-      <linearGradient id="b" x1={11.676} x2={11.676} y1={17.5} y2={8.901} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={11.676} x2={11.676} y1={17.5} y2={8.901} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.156} stopColor="#1380da" />
         <stop offset={0.528} stopColor="#3c91e5" />
@@ -19,7 +22,7 @@ const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M10.96 15.98a.574.574 0 0 1-.6.543h-9.2a.574.574 0 0 1-.6-.543V1.043A.574.574 0 0 1 1.158.5h9.2a.574.574 0 0 1 .6.543Z"
     />
     <path
@@ -29,7 +32,7 @@ const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={3.542} cy={3.649} r={0.836} fill="#50e6ff" />
     <circle cx={3.542} cy={7.35} r={0.836} fill="#50e6ff" />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M14.849 10.484 11.676 8.9l-3.288 1.584-1.2 2.35v4.381a.286.286 0 0 0 .286.285h8.405a.286.286 0 0 0 .286-.285v-4.381Z"
     />
     <path
@@ -41,5 +44,5 @@ const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => (
       <path d="m11.635 15.94 1.728-1.157a.3.3 0 0 0-.16-.049h-3.136a.3.3 0 0 0-.16.049ZM13.488 17.18v-2.127l-1.589 1.064zM11.371 16.117l-1.589-1.064v2.127zM13.475 17.5h.013v-.021zM9.782 17.479v.021h.014zM9.833 17.5h3.604l-1.802-1.206z" />
     </g>
   </svg>
-)
+)}
 export default SvgServerFarm

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgNetworkConnectivityCenter = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgNetworkConnectivityCenter = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       d="M8.36 7.8a4.4 4.4 0 0 0-.54.52l-.23-.23-.88-.88.53-.53.88.88ZM17.32 16.76l-.53.53-1.09-1.1a4.3 4.3 0 0 0 .53-.52ZM6.58 11.6a2.6 2.6 0 0 0 0 .4 2 2 0 0 0 0 .35H4.87v-.75ZM19.13 11.6v.75h-1.66v-.75ZM7.79 15.65a4.4 4.4 0 0 0 .53.53l-1.11 1.11-.53-.53ZM15.9 7.54l.86-.86.53.53L16.2 8.3a4.4 4.4 0 0 0-.53-.53ZM12 17.47h.38v1.67h-.75v-1.69ZM12.4 4.87v1.69a2 2 0 0 0-.34 0 3 3 0 0 0-.4 0V4.87Z"
@@ -57,5 +60,5 @@ const SvgNetworkConnectivityCenter = (props: SVGProps<SVGSVGElement>) => (
     <path d="M12.02 13.04h2.11v.75h-2.11zM12.02 11.67h2.11v.75h-2.11zM12.02 10.31h2.11v.75h-2.11z" fill="#aecbfa" />
     <path d="M9.91 13.04h2.11v.75H9.91zM9.91 11.67h2.11v.75H9.91zM9.91 10.31h2.11v.75H9.91z" fill="#fff" />
   </svg>
-)
+)}
 export default SvgNetworkConnectivityCenter

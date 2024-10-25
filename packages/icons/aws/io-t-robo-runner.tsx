@@ -1,21 +1,24 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgIoTRoboRunner = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgIoTRoboRunner = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" {...props}>
     <defs>
-      <linearGradient id="a" x1="0%" x2="100%" y1="100%" y2="0%">
+      <linearGradient id={`a-${suffix}`} x1="0%" x2="100%" y1="100%" y2="0%">
         <stop offset="0%" stopColor="#1B660F" />
         <stop offset="100%" stopColor="#6CAE3E" />
       </linearGradient>
     </defs>
     <g fill="none" fillRule="evenodd">
-      <path fill="url(#a)" d="M0 0h80v80H0z" />
+      <path fill={`url(#a-${suffix})`} d="M0 0h80v80H0z" />
       <path
         fill="#FFF"
         d="M62 14c2.206 0 4 1.794 4 4s-1.794 4-4 4-4-1.794-4-4 1.794-4 4-4m0 10c3.309 0 6-2.691 6-6s-2.691-6-6-6c-2.967 0-5.431 2.167-5.91 5H44v2h12.09c.479 2.833 2.943 5 5.91 5m-9.707 28.293c6.663-6.664 6.663-17.922 0-24.586l1.414-1.414c7.43 7.43 7.43 19.984 0 27.414zM27.707 27.707c-6.663 6.664-6.663 17.922 0 24.586l-1.414 1.414c-7.43-7.43-7.43-19.984 0-27.414zM18 66c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4m0-10c-3.309 0-6 2.691-6 6s2.691 6 6 6c2.967 0 5.431-2.167 5.91-5H36v-2H23.91c-.479-2.833-2.943-5-5.91-5m44 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4M30 40c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10-10-4.486-10-10M18 22c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4m44 34c-2.967 0-5.431 2.167-5.91 5H41v-9.051c6.15-.511 11-5.67 11-11.949s-4.85-11.438-11-11.949V18a1 1 0 0 0-1-1H23.91c-.479-2.833-2.943-5-5.91-5-3.309 0-6 2.691-6 6s2.691 6 6 6c2.967 0 5.431-2.167 5.91-5H39v9.051c-6.15.511-11 5.67-11 11.949s4.85 11.438 11 11.949V62a1 1 0 0 0 1 1h16.09c.479 2.833 2.943 5 5.91 5 3.309 0 6-2.691 6-6s-2.691-6-6-6"
       />
     </g>
   </svg>
-)
+)}
 export default SvgIoTRoboRunner

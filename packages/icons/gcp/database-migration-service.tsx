@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDatabaseMigrationService = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDatabaseMigrationService = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path d="m4.69 7.7 4.69-2.71V2.27L2.25 6.38l.39.48 1.62.88z" fill="#4285f4" />
     <path
@@ -15,5 +18,5 @@ const SvgDatabaseMigrationService = (props: SVGProps<SVGSVGElement>) => (
       fillRule="evenodd"
     />
   </svg>
-)
+)}
 export default SvgDatabaseMigrationService

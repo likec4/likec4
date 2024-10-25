@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgExternalIdentities = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgExternalIdentities = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#59b4d9"
@@ -24,5 +27,5 @@ const SvgExternalIdentities = (props: SVGProps<SVGSVGElement>) => (
       d="M9.143 17.5a3.52 3.52 0 0 0 3.493-3.185h-1.047a2.456 2.456 0 0 1-2.428 2.154 2.36 2.36 0 0 1-1.895-.941L8.419 14.3H5.5v3.11l1.054-1.122A3.37 3.37 0 0 0 9.143 17.5M8.989 1.531a2.36 2.36 0 0 1 1.893.943L9.73 3.7h2.924V.589L11.6 1.71A3.37 3.37 0 0 0 9.006.5a3.517 3.517 0 0 0-3.493 3.2h1.045a2.456 2.456 0 0 1 2.431-2.169"
     />
   </svg>
-)
+)}
 export default SvgExternalIdentities

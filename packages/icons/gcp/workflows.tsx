@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgWorkflows = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgWorkflows = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       fill="#4285f4"
@@ -49,5 +52,5 @@ const SvgWorkflows = (props: SVGProps<SVGSVGElement>) => (
       d="M16.12 10.87v2.25A1.13 1.13 0 0 1 15 14.25h-3v-1.5h2.62v-1.5H12v-1.5h3a1.12 1.12 0 0 1 1.12 1.12"
     />
   </svg>
-)
+)}
 export default SvgWorkflows

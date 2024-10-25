@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudScheduler = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudScheduler = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#669df6}.cls-2{fill:#4285f4}.cls-4{fill:#aecbfa}'}</style>
@@ -18,7 +21,7 @@ const SvgCloudScheduler = (props: SVGProps<SVGSVGElement>) => (
       <g data-name="colored-32/scheduler">
         <path d="M0 0h24v24H0z" fill="none" />
         <path d="M12 21a9 9 0 1 1 9-9 9 9 0 0 1-9 9m0-2a7 7 0 1 0-7-7 7 7 0 0 0 7 7" className="cls-1" />
-        <path id="Oval" d="M12 17a5 5 0 0 0 5-5 5 5 0 0 0-5-5v5l-4.08 2.91A5 5 0 0 0 12 17" className="cls-2" />
+        <path id={`Oval-${suffix}`} d="M12 17a5 5 0 0 0 5-5 5 5 0 0 0-5-5v5l-4.08 2.91A5 5 0 0 0 12 17" className="cls-2" />
       </g>
       <path
         d="M4 6.07a1 1 0 0 1-.71-1.71l2-2a1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.41l-2 2a1 1 0 0 1-.71.3M20 6.07a1 1 0 0 1-.71-.3l-2-2a1 1 0 0 1 0-1.41 1 1 0 0 1 1.42 0l2 2A1 1 0 0 1 20 6.07"
@@ -26,5 +29,5 @@ const SvgCloudScheduler = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgCloudScheduler

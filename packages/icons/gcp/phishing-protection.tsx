@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPhishingProtection = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPhishingProtection = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1,.cls-2{fill:#669df6;fill-rule:evenodd}.cls-2{fill:#4285f4}'}</style>
@@ -26,5 +29,5 @@ const SvgPhishingProtection = (props: SVGProps<SVGSVGElement>) => (
       <path d="M12.38 14.39a1.07 1.07 0 0 1-1.52 0L9.37 12.9l.76-.76 1.49 1.49 4.27-4.26.76.76Z" className="cls-2" />
     </g>
   </svg>
-)
+)}
 export default SvgPhishingProtection

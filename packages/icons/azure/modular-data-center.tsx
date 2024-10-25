@@ -1,17 +1,20 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgModularDataCenter = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgModularDataCenter = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={12.764} x2={12.764} y1={-0.269} y2={16.422} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={12.764} x2={12.764} y1={-0.269} y2={16.422} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={0.2} stopColor="#328de2" />
         <stop offset={0.4} stopColor="#0078d4" />
         <stop offset={0.7} stopColor="#006abb" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
-      <linearGradient id="b" x1={9.367} x2={9.367} y1={20.932} y2={9.35} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={9.367} x2={9.367} y1={20.932} y2={9.35} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#198ab3" />
         <stop offset={0.4} stopColor="#29b8dc" />
         <stop offset={0.7} stopColor="#38d5f6" />
@@ -19,7 +22,7 @@ const SvgModularDataCenter = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M17.407.055H8.132a.6.6 0 0 0-.6.593v13.269h.179a1.75 1.75 0 0 1 1.574-1.059h.013a1.74 1.74 0 1 1-.789 3.3 1.72 1.72 0 0 1-.773-.746h-.2v.737a.6.6 0 0 0 .6.593h9.275a.59.59 0 0 0 .589-.59V.648a.59.59 0 0 0-.593-.593"
     />
     <path
@@ -28,7 +31,7 @@ const SvgModularDataCenter = (props: SVGProps<SVGSVGElement>) => (
       opacity={0.4}
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M15.181 11H3.553a.587.587 0 0 0-.588.587v2.327h4.742a1.75 1.75 0 0 1 1.574-1.059h.013a1.74 1.74 0 1 1-.789 3.3 1.72 1.72 0 0 1-.773-.746H2.965v1.943a.587.587 0 0 0 .588.587h11.628a.59.59 0 0 0 .588-.587V11.59a.59.59 0 0 0-.588-.59"
     />
     <rect width={1.866} height={5.166} x={12.07} y={11.892} fill="#fff" opacity={0.8} rx={0.238} />
@@ -43,5 +46,5 @@ const SvgModularDataCenter = (props: SVGProps<SVGSVGElement>) => (
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgModularDataCenter

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPytest = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPytest = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#696969"
@@ -15,5 +18,5 @@ const SvgPytest = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#c7d302" d="M48.168 39.54h12.324v50.698H48.168zm0 0" />
     <path fill="#009fe3" d="M32.047 39.54H44.37v61.792H32.047zm0 0" />
   </svg>
-)
+)}
 export default SvgPytest

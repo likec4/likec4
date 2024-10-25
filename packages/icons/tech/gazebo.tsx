@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGazebo = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGazebo = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#fff"
@@ -14,5 +17,5 @@ const SvgGazebo = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#fff" d="m67.501 96.99.059 20.355 42.73-26.534-.06-20.43L67.5 96.989" />
     <path fill="#f58113" d="m20.904 35.199 43.09 26.755 43.091-26.833L63.998 8.44z" />
   </svg>
-)
+)}
 export default SvgGazebo

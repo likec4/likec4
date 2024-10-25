@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgKubernetesFleetManager = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgKubernetesFleetManager = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <rect width={6.053} height={6.053} x={5.974} fill="#a67af4" rx={0.401} ry={0.401} />
     <path
@@ -61,5 +64,5 @@ const SvgKubernetesFleetManager = (props: SVGProps<SVGSVGElement>) => (
       <path d="M13.967 12.607c.084.203.054.411.013.586a4 4 0 0 1-.108.366l-.01.029-.013.027-1.011 2.172-.032.068-.014.029-.249.515c.213-.071.385-.174.575-.295.372-.238.833-.533 1.708-.544h.037c.872.003 1.342.304 1.721.545l.125.077.12-.274.22-.496.026-.055.82-1.762s.045-.128.072-.244c.017-.073.027-.141.015-.171a.3.3 0 0 0-.173-.166l-.58-.212-2.221-.814a1.64 1.64 0 0 0-1.117-.005l-.372.133c.2.107.36.28.448.492Z" />
     </g>
   </svg>
-)
+)}
 export default SvgKubernetesFleetManager

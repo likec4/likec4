@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgLooker = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgLooker = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -27,5 +30,5 @@ const SvgLooker = (props: SVGProps<SVGSVGElement>) => (
       d="M6.668 9.423q-.934 0-1.867.267l.8 1.956c.355 0 .71-.089 1.067-.089 2.489 0 4.445 2.045 4.445 4.445 0 2.49-2.045 4.445-4.445 4.445-2.49 0-4.445-2.045-4.445-4.445 0-1.69.889-3.2 2.4-3.912l-.8-1.955c-3.29 1.6-4.623 5.6-3.023 8.8 1.6 3.29 5.6 4.624 8.801 3.023 3.29-1.6 4.623-5.6 3.023-8.8-1.156-2.223-3.467-3.735-5.956-3.735"
     />
   </svg>
-)
+)}
 export default SvgLooker

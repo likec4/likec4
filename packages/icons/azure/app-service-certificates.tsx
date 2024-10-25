@@ -1,17 +1,20 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAppServiceCertificates = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAppServiceCertificates = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={13.51} y2={0.76} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={13.51} y2={0.76} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#f78d1e" />
         <stop offset={0.44} stopColor="#f8911e" />
         <stop offset={0.85} stopColor="#f99c1d" />
         <stop offset={1} stopColor="#faa21d" />
       </linearGradient>
     </defs>
-    <rect width={18} height={12.75} y={0.76} fill="url(#a)" rx={0.6} />
+    <rect width={18} height={12.75} y={0.76} fill={`url(#a-${suffix})`} rx={0.6} />
     <rect width={15.9} height={10.5} x={1.05} y={1.88} fill="#fff" rx={0.3} />
     <path
       fill="#d15900"
@@ -24,5 +27,5 @@ const SvgAppServiceCertificates = (props: SVGProps<SVGSVGElement>) => (
     <ellipse cx={3.48} cy={10.54} fill="#e62323" rx={3.01} ry={3.02} />
     <circle cx={3.48} cy={10.54} r={2.29} fill="#ffb34d" />
   </svg>
-)
+)}
 export default SvgAppServiceCertificates

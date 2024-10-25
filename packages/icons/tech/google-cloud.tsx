@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGoogleCloud = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGoogleCloud = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#ea4535"
@@ -17,5 +20,5 @@ const SvgGoogleCloud = (props: SVGProps<SVGSVGElement>) => (
       d="M40.2 41.9c-14.9.1-28.1 9.3-32.9 22.8-4.8 13.6 0 28.5 11.8 37.3l15.6-14.9c-8.6-3.7-10.6-14.5-4-20.8 6.6-6.4 17.8-4.4 21.7 3.8L68 55.2C61.4 46.9 51.1 42 40.2 42.1z"
     />
   </svg>
-)
+)}
 export default SvgGoogleCloud

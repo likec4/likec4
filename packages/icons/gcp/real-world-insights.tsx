@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgRealWorldInsights = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgRealWorldInsights = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g fill="none" fillRule="evenodd" transform="translate(-2.4 -2)">
       <path d="M0 0h24v24H0z" />
@@ -15,5 +18,5 @@ const SvgRealWorldInsights = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgRealWorldInsights

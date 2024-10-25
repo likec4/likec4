@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgFiles = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgFiles = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={11.246} x2={11.246} y1={18} y2={3.281} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={11.246} x2={11.246} y1={18} y2={3.281} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.817} stopColor="#5ea0ef" />
       </linearGradient>
@@ -24,7 +27,7 @@ const SvgFiles = (props: SVGProps<SVGSVGElement>) => (
       d="M12.082 3.39H5.818a.5.5 0 0 0-.495.5V17.4a.5.5 0 0 0 .495.5h10.856a.5.5 0 0 0 .494-.5V8.454a.5.5 0 0 0-.494-.5h-3.6a.5.5 0 0 1-.495-.495V3.886a.5.5 0 0 0-.497-.496"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M11.853 4.023v3.393A1.246 1.246 0 0 0 13.1 8.661h3.418v8.6H5.977V4.023zm.24-.742H5.737a.5.5 0 0 0-.5.5V17.5a.5.5 0 0 0 .5.5h11.017a.5.5 0 0 0 .5-.5V8.421a.5.5 0 0 0-.5-.5H13.1a.5.5 0 0 1-.5-.5V3.783a.5.5 0 0 0-.5-.5Z"
     />
     <path fill="#0078d4" d="M17.064 8.019 12.422 3.39v3.772a.85.85 0 0 0 .846.857Z" />
@@ -32,5 +35,5 @@ const SvgFiles = (props: SVGProps<SVGSVGElement>) => (
     <rect width={8.177} height={1.097} x={7.157} y={11.948} fill="#5ea0ef" rx={0.493} />
     <rect width={5.154} height={1.097} x={7.157} y={13.913} fill="#5ea0ef" rx={0.493} />
   </svg>
-)
+)}
 export default SvgFiles

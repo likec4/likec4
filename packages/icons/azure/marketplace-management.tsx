@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMarketplaceManagement = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMarketplaceManagement = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.18} x2={8.18} y1={6.52} y2={15.24} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.18} x2={8.18} y1={6.52} y2={15.24} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#fff" />
         <stop offset={0.48} stopColor="#f6f6f6" />
         <stop offset={1} stopColor="#e6e6e6" />
@@ -22,9 +25,9 @@ const SvgMarketplaceManagement = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#32bedd" d="M14.1 4.7v12.81l-12.47-.99L2 4.7zM15.14 4.7v10.88l1.23.18L16 4.7z" />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M10.41 6.52H6a.29.29 0 0 0-.29.29v8a.29.29 0 0 0 .29.29l4.46.14a.28.28 0 0 0 .28-.29V6.81a.28.28 0 0 0-.33-.29m-3.19 5.73a.08.08 0 0 1-.08.07h-.82a.08.08 0 0 1-.07-.07v-1.06a.08.08 0 0 1 .07-.07h.82a.08.08 0 0 1 .08.07Zm0-1.92a.08.08 0 0 1-.08.07h-.82a.08.08 0 0 1-.07-.07V9.27a.08.08 0 0 1 .07-.07h.82a.08.08 0 0 1 .08.07Zm0-1.93a.09.09 0 0 1-.08.08h-.82a.09.09 0 0 1-.07-.08V7.34a.08.08 0 0 1 .07-.07h.82a.08.08 0 0 1 .08.07Zm1.42 6.32a.07.07 0 0 1-.07.07h-.8a.07.07 0 0 1-.07-.07v-1.6a.07.07 0 0 1 .07-.07h.82a.07.07 0 0 1 .07.07Zm0-2.47a.07.07 0 0 1-.07.07h-.8a.07.07 0 0 1-.07-.07v-1.06a.07.07 0 0 1 .07-.07h.82a.07.07 0 0 1 .07.07Zm0-1.92a.07.07 0 0 1-.07.07h-.8a.07.07 0 0 1-.07-.07V9.27a.07.07 0 0 1 .07-.07h.82a.07.07 0 0 1 .07.07Zm0-1.93a.08.08 0 0 1-.07.08h-.8a.08.08 0 0 1-.07-.08V7.34a.07.07 0 0 1 .07-.07h.82a.07.07 0 0 1 .07.07Zm1.44 3.85a.07.07 0 0 1-.07.07h-.8a.07.07 0 0 1-.07-.07v-1.06a.07.07 0 0 1 .07-.07H10a.07.07 0 0 1 .07.07Zm0-1.92a.07.07 0 0 1-.07.07h-.8a.07.07 0 0 1-.07-.07V9.27a.07.07 0 0 1 .07-.07H10a.07.07 0 0 1 .07.07Zm0-1.93a.08.08 0 0 1-.07.08h-.8a.08.08 0 0 1-.07-.08V7.34a.07.07 0 0 1 .07-.07H10a.07.07 0 0 1 .07.07Z"
     />
   </svg>
-)
+)}
 export default SvgMarketplaceManagement

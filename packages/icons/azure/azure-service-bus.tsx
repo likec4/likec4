@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAzureServiceBus = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAzureServiceBus = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.995} x2={8.995} y1={10.299} y2={13.199} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.995} x2={8.995} y1={10.299} y2={13.199} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.258} stopColor="#00589d" />
         <stop offset={0.525} stopColor="#004f90" />
@@ -18,7 +21,7 @@ const SvgAzureServiceBus = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#32bedd" d="m4.606 7.4.008 5.8 4.381-2.9Z" />
     <path fill="#198ab3" d="m13.384 7.4-4.389 2.9 4.381 2.9z" />
-    <path fill="url(#a)" d="m8.995 10.299-4.381 2.895v.005h8.762v-.005z" />
+    <path fill={`url(#a-${suffix})`} d="m8.995 10.299-4.381 2.895v.005h8.762v-.005z" />
     <g fill="#999">
       <path d="M1.072 1.43h1.29v3.6a.286.286 0 0 1-.286.286H.786A.286.286 0 0 1 .5 5.035V2a.57.57 0 0 1 .572-.57" />
       <path
@@ -50,5 +53,5 @@ const SvgAzureServiceBus = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <path fill="#949494" d="M.5 16.003v-1.247h17v1.247a.567.567 0 0 1-.567.567H1.067a.567.567 0 0 1-.567-.567" />
   </svg>
-)
+)}
 export default SvgAzureServiceBus

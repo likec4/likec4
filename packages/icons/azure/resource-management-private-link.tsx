@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgResourceManagementPrivateLink = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgResourceManagementPrivateLink = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.016} x2={9.016} y1={3.116} y2={7.162} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={9.016} x2={9.016} y1={3.116} y2={7.162} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#a3a3a3" />
         <stop offset={1} stopColor="#999" />
       </linearGradient>
@@ -27,9 +30,9 @@ const SvgResourceManagementPrivateLink = (props: SVGProps<SVGSVGElement>) => (
       fill="#1490df"
       d="m14.66 9.362 3.223 3.231a.4.4 0 0 1 0 .565l-.328.328-3.5-3.513a.206.206 0 0 1 0-.286l.327-.325a.2.2 0 0 1 .278 0"
     />
-    <path fill="url(#a)" d="M8.524 7.317a.92.92 0 0 1 .921 0l.132.077V2.186H8.455v5.171Z" />
+    <path fill={`url(#a-${suffix})`} d="M8.524 7.317a.92.92 0 0 1 .921 0l.132.077V2.186H8.455v5.171Z" />
     <path fill="#1490df" d="M10.663 1.961A1.647 1.647 0 1 1 9.016.314a1.65 1.65 0 0 1 1.647 1.647" />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgResourceManagementPrivateLink

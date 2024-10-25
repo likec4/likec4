@@ -1,16 +1,19 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCapacity = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCapacity = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={6.01} x2={6.01} y1={17.69} y2={0.26} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={6.01} x2={6.01} y1={17.69} y2={0.26} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#949494" />
         <stop offset={0.53} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#b3b3b3" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={10.55}
         x2={15}
         y1={853.33}
@@ -33,7 +36,7 @@ const SvgCapacity = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M11.13 17.1a.6.6 0 0 1-.59.59H1.48a.59.59 0 0 1-.59-.59V.85a.58.58 0 0 1 .59-.59h9.06a.59.59 0 0 1 .59.59Z"
     />
     <path
@@ -44,7 +47,7 @@ const SvgCapacity = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={3.55} cy={6.37} r={0.75} fill="#50e6ff" />
     <ellipse cx={12.62} cy={14.91} fill="#76bc2d" rx={4.49} ry={1.84} />
     <ellipse cx={12.73} cy={14.89} fill="#5e9624" rx={1.49} ry={0.41} />
-    <ellipse cx={12.62} cy={10.82} fill="url(#b)" rx={4.49} ry={1.84} />
+    <ellipse cx={12.62} cy={10.82} fill={`url(#b-${suffix})`} rx={4.49} ry={1.84} />
     <ellipse cx={12.73} cy={10.8} fill="#005ba1" rx={1.49} ry={0.41} />
     <path
       fill="#5e9624"
@@ -55,5 +58,5 @@ const SvgCapacity = (props: SVGProps<SVGSVGElement>) => (
       d="M12.62 12.62c2.48 0 4.49-.82 4.49-1.84v1.09c-.09 1-2.06 1.78-4.49 1.78s-4.49-.83-4.49-1.85v-1c0 1 2.01 1.82 4.49 1.82"
     />
   </svg>
-)
+)}
 export default SvgCapacity

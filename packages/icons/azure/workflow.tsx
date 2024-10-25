@@ -1,20 +1,23 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgWorkflow = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgWorkflow = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={2.624} x2={2.624} y1={15.969} y2={11.167} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={2.624} x2={2.624} y1={15.969} y2={11.167} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#76bc2d" />
         <stop offset={0.601} stopColor="#81ce31" />
         <stop offset={0.822} stopColor="#86d633" />
       </linearGradient>
-      <linearGradient id="b" x1={9.026} x2={9.026} y1={18} y2={13.198} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={9.026} x2={9.026} y1={18} y2={13.198} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#76bc2d" />
         <stop offset={0.601} stopColor="#81ce31" />
         <stop offset={0.822} stopColor="#86d633" />
       </linearGradient>
-      <linearGradient id="c" x1={15.376} x2={15.376} y1={16.001} y2={11.199} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`c-${suffix}`} x1={15.376} x2={15.376} y1={16.001} y2={11.199} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#76bc2d" />
         <stop offset={0.601} stopColor="#81ce31" />
         <stop offset={0.822} stopColor="#86d633" />
@@ -26,9 +29,9 @@ const SvgWorkflow = (props: SVGProps<SVGSVGElement>) => (
     />
     <rect width={5.881} height={5.881} x={6.029} fill="#0078d4" rx={0.532} />
     <rect width={3.622} height={3.622} x={7.158} y={1.13} fill="#fff" rx={0.328} />
-    <rect width={4.802} height={4.802} x={0.223} y={11.167} fill="url(#a)" rx={0.435} />
-    <rect width={4.802} height={4.802} x={6.624} y={13.198} fill="url(#b)" rx={0.435} />
-    <rect width={4.802} height={4.802} x={12.975} y={11.199} fill="url(#c)" rx={0.435} />
+    <rect width={4.802} height={4.802} x={0.223} y={11.167} fill={`url(#a-${suffix})`} rx={0.435} />
+    <rect width={4.802} height={4.802} x={6.624} y={13.198} fill={`url(#b-${suffix})`} rx={0.435} />
+    <rect width={4.802} height={4.802} x={12.975} y={11.199} fill={`url(#c-${suffix})`} rx={0.435} />
   </svg>
-)
+)}
 export default SvgWorkflow

@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgKeys = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgKeys = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={9}
         x2={9}
         y1={8.112}
@@ -17,7 +20,7 @@ const SvgKeys = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.83} stopColor="#50e6ff" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={-120.971}
         x2={-120.971}
         y1={1279.27}
@@ -33,11 +36,11 @@ const SvgKeys = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M17.026 8.314A3.61 3.61 0 0 0 13.9 4.845 4.55 4.55 0 0 0 9.214.5a4.665 4.665 0 0 0-4.459 3.043A4.3 4.3 0 0 0 .974 7.681a4.37 4.37 0 0 0 4.521 4.2h7.714a.7.7 0 0 0 .2 0 3.647 3.647 0 0 0 3.617-3.567"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M12.3 10.954a1.6 1.6 0 0 0 1.6-1.6V5.478A1.57 1.57 0 0 0 12.335 3.9H8.429a1.6 1.6 0 0 0-1.587 1.6v3.22a.46.46 0 0 1-.134.28L3.7 12.042a.54.54 0 0 0-.161.384v1.462a.357.357 0 0 0 .348.366h2.286a.205.205 0 0 0 .205-.205v-.589a.23.23 0 0 1 .232-.232h.606a.205.205 0 0 0 .206-.205v-.633a.22.22 0 0 1 .222-.223h.607a.205.205 0 0 0 .214-.2v-.847l.152-.161Zm.339-5.8a.911.911 0 1 1-.024-.023Z"
     />
     <path
@@ -68,5 +71,5 @@ const SvgKeys = (props: SVGProps<SVGSVGElement>) => (
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgKeys

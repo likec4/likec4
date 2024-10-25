@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgNim = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgNim = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="m109.398 88.598-16.98-12.453-28.645-5.29-28.644 5.29-16.98 12.453-4.403 8.87-6.234-11.94-4.801-20.13 8.23 3.41 9.606-7.163 5.492-11.258 9.262 7.164 19.55-2.73 8.922-8.528 8.918 8.527 19.555 2.73 9.262-7.163 5.488 11.258 9.606 7.164 8.234-3.41-4.805 20.128-6.23 11.942zm0 0"
@@ -20,5 +23,5 @@ const SvgNim = (props: SVGProps<SVGSVGElement>) => (
       stroke="none"
     />
   </svg>
-)
+)}
 export default SvgNim

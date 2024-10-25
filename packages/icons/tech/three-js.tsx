@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgThreejs = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g color="#000" fontFamily="sans-serif" fontWeight={400}>
       <path
@@ -126,5 +129,5 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgThreejs

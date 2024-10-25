@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGithubActions = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGithubActions = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#2088ff"
@@ -12,5 +15,5 @@ const SvgGithubActions = (props: SVGProps<SVGSVGElement>) => (
       d="M109.334 90.666c-9.383 0-17.188 6.993-18.477 16.031a3 3 0 0 0-.265-.011l-2.7.09a2.667 2.667 0 0 0-2.578 2.751 2.667 2.667 0 0 0 2.752 2.578l2.7-.087.097-.006C92.17 121.029 99.965 128 109.334 128c10.278 0 18.666-8.388 18.666-18.666s-8.388-18.668-18.666-18.668m0 5.334a13.293 13.293 0 0 1 13.332 13.334 13.29 13.29 0 0 1-13.332 13.332A13.293 13.293 0 0 1 96 109.334 13.294 13.294 0 0 1 109.334 96"
     />
   </svg>
-)
+)}
 export default SvgGithubActions

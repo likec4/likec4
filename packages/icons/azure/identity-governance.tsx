@@ -1,14 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgIdentityGovernance = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgIdentityGovernance = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={7.11} y2={14.2} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={7.11} y2={14.2} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#a67af4" />
         <stop offset={1} stopColor="#552f99" />
       </linearGradient>
-      <linearGradient id="b" x1={8.8} x2={9.32} y1={3.31} y2={9.75} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={8.8} x2={9.32} y1={3.31} y2={9.75} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#a67af4" />
         <stop offset={1} stopColor="#552f99" />
       </linearGradient>
@@ -26,11 +29,11 @@ const SvgIdentityGovernance = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#32bedd" d="M4.82 16.13a2.09 2.09 0 1 1 0-2.95 2.09 2.09 0 0 1 0 2.95" />
     <path fill="#fff" d="M2.62 15.38a1 1 0 1 0 0-1.45 1 1 0 0 0 0 1.45" />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M12.51 12.92a.76.76 0 0 0 .76-.76v-.09C13 9.69 11.61 7.74 9 7.74s-4 1.65-4.26 4.34a.76.76 0 0 0 .68.84z"
     />
     <path fill="#fff" d="M9 8.31a2.4 2.4 0 0 1-1.3-.38L9 11.28 10.27 8A2.37 2.37 0 0 1 9 8.31" opacity={0.8} />
-    <circle cx={9.01} cy={5.92} r={2.39} fill="url(#b)" />
+    <circle cx={9.01} cy={5.92} r={2.39} fill={`url(#b-${suffix})`} />
   </svg>
-)
+)}
 export default SvgIdentityGovernance

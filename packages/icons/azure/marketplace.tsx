@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMarketplace = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMarketplace = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.63} x2={7.63} y1={15.34} y2={5.84} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={7.63} x2={7.63} y1={15.34} y2={5.84} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.15} stopColor="#dadada" />
         <stop offset={0.44} stopColor="#eee" />
@@ -24,9 +27,9 @@ const SvgMarketplace = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#32bedd" d="M13.92 4.77v12.8l-12.47-.99.38-11.81zM14.95 4.77v10.87l1.23.18-.37-11.05z" />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M12.19 12.31a2.3 2.3 0 0 0-1.79-2.18 2.84 2.84 0 0 0-2.66-2.75A2.47 2.47 0 0 0 5.2 9a2.3 2.3 0 0 0-2.13 2.31A2.74 2.74 0 0 0 5.63 14h.22l4.16.28h.11a2 2 0 0 0 2.07-1.97"
     />
   </svg>
-)
+)}
 export default SvgMarketplace

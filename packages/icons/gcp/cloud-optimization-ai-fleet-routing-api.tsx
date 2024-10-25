@@ -1,8 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudOptimizationAiFleetRoutingApi = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" id="Artwork" x={0} y={0} viewBox="0 0 24 24" {...props}>
+import { randomString } from 'remeda'
+const SvgCloudOptimizationAiFleetRoutingApi = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
+  <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" id={`Artwork-${suffix}`} x={0} y={0} viewBox="0 0 24 24" {...props}>
     <style>{'.st0{fill:#aecbfa}.st1{fill:#4285f4}'}</style>
     <path
       d="M8.203 17.333a2.076 2.076 0 0 0-2.062 2.07c0 .083.008.165.015.248a2.067 2.067 0 0 0 4.103 0c.007-.083.015-.165.015-.248a2.08 2.08 0 0 0-2.071-2.07m0 3.382a1.315 1.315 0 1 1 .008-2.632 1.315 1.315 0 0 1 1.312 1.32c0 .725-.588 1.313-1.312 1.313zM17.843 4.35a2.067 2.067 0 0 0-4.118.247 2.066 2.066 0 0 0 4.132 0c.002-.082-.007-.165-.014-.247m-2.046 1.568a1.316 1.316 0 1 1 1.312-1.32 1.32 1.32 0 0 1-1.312 1.32M12.75 10.078a2.062 2.062 0 1 0-1.5 3.843 2.062 2.062 0 1 0 1.5-3.843M12 13.312a1.312 1.312 0 1 1 0-2.624 1.312 1.312 0 0 1 0 2.624"
@@ -13,5 +16,5 @@ const SvgCloudOptimizationAiFleetRoutingApi = (props: SVGProps<SVGSVGElement>) =
       className="st1"
     />
   </svg>
-)
+)}
 export default SvgCloudOptimizationAiFleetRoutingApi

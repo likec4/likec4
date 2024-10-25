@@ -1,18 +1,21 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudHealthcareApi = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudHealthcareApi = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-4{fill:#4285f4}.cls-6{fill:#669df6}'}</style>
-      <mask id="mask" width={5.33} height={16.67} x={9.33} y={5.33} maskUnits="userSpaceOnUse">
-        <path id="path-1" d="m12 22-.83-.77V6.67h1.66v14.56z" fill="#fff" fillRule="evenodd" />
+      <mask id={`mask-${suffix}`} width={5.33} height={16.67} x={9.33} y={5.33} maskUnits="userSpaceOnUse">
+        <path id={`path-1-${suffix}`} d="m12 22-.83-.77V6.67h1.66v14.56z" fill="#fff" fillRule="evenodd" />
       </mask>
     </defs>
     <g data-name="Product Icons">
       <path d="m12 22-.83-.77V6.67h1.66v14.56z" data-name="Mask" fillRule="evenodd" fill="#aecbfa" />
-      <path d="M12 8a2.67 2.67 0 0 0 2.67-2.67H9.33A2.67 2.67 0 0 0 12 8" className="cls-4" mask="url(#mask)" />
-      <path id="Line-2" d="M12.83 18.87h-1.66v-1.54h1.66z" className="cls-4" />
+      <path d="M12 8a2.67 2.67 0 0 0 2.67-2.67H9.33A2.67 2.67 0 0 0 12 8" className="cls-4" mask={`url(#mask-${suffix})`} />
+      <path id={`Line-2-${suffix}`} d="M12.83 18.87h-1.66v-1.54h1.66z" className="cls-4" />
       <path d="M12.83 10.87h-1.66V9.33h1.66z" className="cls-4" />
       <circle cx={12} cy={4.67} r={2.67} fill="#aecbfa" />
       <path
@@ -25,5 +28,5 @@ const SvgCloudHealthcareApi = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgCloudHealthcareApi

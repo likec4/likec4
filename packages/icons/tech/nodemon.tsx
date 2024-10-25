@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgNodemon = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgNodemon = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#76d04b"
@@ -12,5 +15,5 @@ const SvgNodemon = (props: SVGProps<SVGSVGElement>) => (
       d="M95.468 50.618 93.3 49.371c3.334-4.917 5.325-12.308 2.828-23.36 0 0-5.625 15.765-16.931 15.243l-13.24-7.62a3.45 3.45 0 0 0-1.624-.471h-.305a3.5 3.5 0 0 0-1.63.472l-13.24 7.619c-11.306.523-16.932-15.242-16.932-15.242-2.499 11.05-.504 18.442 2.829 23.359l-2.168 1.247a3.57 3.57 0 0 0-1.785 3.098l.065 45.73c0 .639.33 1.23.89 1.54.548.33 1.225.33 1.77 0l17.54-10.043c1.11-.66 1.785-1.822 1.785-3.093V66.486a3.55 3.55 0 0 1 1.78-3.086l7.467-4.3a3.5 3.5 0 0 1 1.787-.482c.608 0 1.232.157 1.773.48l7.466 4.301a3.55 3.55 0 0 1 1.783 3.086V87.85c0 1.271.683 2.443 1.786 3.093l17.534 10.043c.55.33 1.238.33 1.783 0 .543-.31.885-.902.885-1.54l.057-45.73a3.56 3.56 0 0 0-1.783-3.098z"
     />
   </svg>
-)
+)}
 export default SvgNodemon

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGodotEngine = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGodotEngine = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#fff"
@@ -32,5 +35,5 @@ const SvgGodotEngine = (props: SVGProps<SVGSVGElement>) => (
       d="M82.078 66.566a7.53 7.53 0 0 0 7.531 7.532 7.531 7.531 0 1 0 0-15.063 7.53 7.53 0 0 0-7.53 7.531"
     />
   </svg>
-)
+)}
 export default SvgGodotEngine

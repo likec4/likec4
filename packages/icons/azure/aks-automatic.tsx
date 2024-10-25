@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAksAutomatic = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAksAutomatic = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#0078d4"
@@ -63,5 +66,5 @@ const SvgAksAutomatic = (props: SVGProps<SVGSVGElement>) => (
       d="M10.824 14.41v3.105l2.297.486v-3.98l-2.297.39Zm.969 2.874-.644-.135v-2.388l.644-.111zm1.002.175-.739-.119v-2.73l.739-.127z"
     />
   </svg>
-)
+)}
 export default SvgAksAutomatic

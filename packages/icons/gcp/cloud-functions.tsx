@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudFunctions = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudFunctions = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#669df6}.cls-2{fill:#4285f4}.cls-3{fill:#aecbfa}'}</style>
@@ -21,10 +24,10 @@ const SvgCloudFunctions = (props: SVGProps<SVGSVGElement>) => (
         </g>
       </g>
       <path d="M18.01 22 22 18.01l-.01-4L16.01 20z" className="cls-3" />
-      <circle id="Oval" cx={8} cy={12} r={1} className="cls-3" />
-      <circle id="Oval-2" cx={12} cy={12} r={1} className="cls-3" data-name="Oval" />
-      <circle id="Oval-3" cx={15.99} cy={12} r={1} className="cls-3" data-name="Oval" />
+      <circle id={`Oval-${suffix}`} cx={8} cy={12} r={1} className="cls-3" />
+      <circle id={`Oval-2-${suffix}`} cx={12} cy={12} r={1} className="cls-3" data-name="Oval" />
+      <circle id={`Oval-3-${suffix}`} cx={15.99} cy={12} r={1} className="cls-3" data-name="Oval" />
     </g>
   </svg>
-)
+)}
 export default SvgCloudFunctions

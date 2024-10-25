@@ -1,15 +1,18 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMetricsAdvisor = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMetricsAdvisor = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.284} x2={8.284} y1={13.471} y2={0.189} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.284} x2={8.284} y1={13.471} y2={0.189} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
-    <rect width={12.761} height={13.281} x={1.904} y={0.189} fill="url(#a)" rx={0.521} />
+    <rect width={12.761} height={13.281} x={1.904} y={0.189} fill={`url(#a-${suffix})`} rx={0.521} />
     <g fill="#fff">
       <ellipse cx={6.29} cy={5.086} rx={1.025} ry={1.029} />
       <ellipse cx={10.124} cy={7.034} rx={1.025} ry={1.029} />
@@ -34,5 +37,5 @@ const SvgMetricsAdvisor = (props: SVGProps<SVGSVGElement>) => (
     />
     <circle cx={13.045} cy={10.112} r={2.18} fill="#ffd400" />
   </svg>
-)
+)}
 export default SvgMetricsAdvisor

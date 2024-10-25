@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgEventHubClusters = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgEventHubClusters = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <g fill="#b3b3b3">
       <path d="M9.18 8.24h.65v1.81a.14.14 0 0 1-.14.14H9a.14.14 0 0 1-.14-.14V8.53a.29.29 0 0 1 .32-.29" />
@@ -54,5 +57,5 @@ const SvgEventHubClusters = (props: SVGProps<SVGSVGElement>) => (
       d="M7.82 8.32a.11.11 0 0 1-.11.12h-1a.11.11 0 0 1-.13-.11v-.77a.11.11 0 0 1 .11-.13h1c.1 0 .15.05.15.13Zm0 .76C7.82 9 7.77 9 7.67 9h-1a.12.12 0 0 0-.11.13v.78a.12.12 0 0 0 .13.11h1a.12.12 0 0 0 .11-.13Zm0 1.52c0-.07-.05-.12-.15-.12h-1a.11.11 0 0 0-.11.12v.78a.11.11 0 0 0 .13.11h1a.11.11 0 0 0 .11-.13Zm-4.2-6.49A.13.13 0 0 0 3.47 4h-1a.12.12 0 0 0-.11.13v.78a.12.12 0 0 0 .11.09h1a.11.11 0 0 0 .11-.13Zm0 1.52c0-.07-.05-.12-.15-.12h-1a.11.11 0 0 0-.11.12v.77a.11.11 0 0 0 .12.11h1a.11.11 0 0 0 .11-.12Zm0 1.53c0-.08-.05-.13-.15-.13h-1a.12.12 0 0 0-.11.13v.76a.12.12 0 0 0 .12.12h1a.12.12 0 0 0 .11-.13Z"
     />
   </svg>
-)
+)}
 export default SvgEventHubClusters

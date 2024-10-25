@@ -1,16 +1,19 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDnsPrivateResolver = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDnsPrivateResolver = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.049} x2={9.049} y1={1.196} y2={16.892} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={9.049} x2={9.049} y1={1.196} y2={16.892} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M16.444 8.968a7.39 7.39 0 0 1-7.39 7.39 8 8 0 0 1-.96-.06 7.2 7.2 0 0 1-2.82-.98l-.08-.59-.09-.7-.06-.43a.74.74 0 0 0-.23-.41.64.64 0 0 0-.83.05l-.21.21-.33.33a7.33 7.33 0 0 1-1.78-4.55 2 2 0 0 1-.01-.26 7.4 7.4 0 0 1 7.4-7.4A7.25 7.25 0 0 1 12.8 2.6l.08.6.1.69.07.51a.67.67 0 0 0 .17.36.65.65 0 0 0 .44.18.6.6 0 0 0 .44-.18l.57-.57a7.28 7.28 0 0 1 1.774 4.778"
     />
     <path
@@ -26,5 +29,5 @@ const SvgDnsPrivateResolver = (props: SVGProps<SVGSVGElement>) => (
       d="M18 8.958a8.94 8.94 0 0 1-2.64 6.36.58.58 0 0 1-.4.17.56.56 0 0 1-.4-.17.567.567 0 0 1 0-.8 7.84 7.84 0 0 0 2.3-5.56 7.74 7.74 0 0 0-2.16-5.4l-.9.9a.2.2 0 0 1-.33-.11l-.42-3.04a.192.192 0 0 1 .22-.22l3.04.41a.2.2 0 0 1 .11.34l-.91.91A8.9 8.9 0 0 1 18 8.958m-13.39 4.7a.2.2 0 0 0-.33-.12l-.91.91A7.86 7.86 0 0 1 3.434 3.4a.56.56 0 0 0 0-.81.567.567 0 0 0-.8 0 9.02 9.02 0 0 0-.06 12.67l-.91.91a.192.192 0 0 0 .11.33l3.04.42a.2.2 0 0 0 .22-.23Z"
     />
   </svg>
-)
+)}
 export default SvgDnsPrivateResolver

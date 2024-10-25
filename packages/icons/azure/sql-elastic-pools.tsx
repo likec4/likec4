@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSqlElasticPools = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSqlElasticPools = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-3071.86}
         x2={-3071.86}
         y1={6711.69}
@@ -19,7 +22,7 @@ const SvgSqlElasticPools = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.75} stopColor="#0078d4" />
       </linearGradient>
     </defs>
-    <rect width={13.08} height={13.08} x={2.46} y={2.46} fill="url(#a)" rx={0.61} transform="rotate(-45 8.999 9.003)" />
+    <rect width={13.08} height={13.08} x={2.46} y={2.46} fill={`url(#a-${suffix})`} rx={0.61} transform="rotate(-45 8.999 9.003)" />
     <path
       fill="#50e6ff"
       d="M9 3.41c-.95 0-1.71-.24-1.71-.55v2.91c0 .29.75.54 1.68.54H9c.94 0 1.71-.24 1.71-.54V2.86c.01.31-.71.55-1.71.55"
@@ -55,5 +58,5 @@ const SvgSqlElasticPools = (props: SVGProps<SVGSVGElement>) => (
       d="M4.92 7.58a3.5 3.5 0 0 0-1 .14 3.6 3.6 0 0 0 1 .13 3.6 3.6 0 0 0 1-.13 3.6 3.6 0 0 0-1-.14"
     />
   </svg>
-)
+)}
 export default SvgSqlElasticPools

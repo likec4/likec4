@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgNetworkSecurity = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgNetworkSecurity = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:none}.cls-2{fill:#669df6}'}</style>
@@ -22,5 +25,5 @@ const SvgNetworkSecurity = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgNetworkSecurity

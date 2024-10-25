@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSqlDeveloper = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSqlDeveloper = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#d1d1d1"
@@ -25,5 +28,5 @@ const SvgSqlDeveloper = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#fff" d="m88.063 105.906 24.027-13.87-24.028-13.872Zm0 0" />
   </svg>
-)
+)}
 export default SvgSqlDeveloper

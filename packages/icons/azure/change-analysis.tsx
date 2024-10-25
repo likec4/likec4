@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-28.849}
         x2={-28.849}
         y1={86.754}
@@ -17,7 +20,7 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.82} stopColor="#86d633" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={7.82}
         x2={7.82}
         y1={16.227}
@@ -29,7 +32,7 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.82} stopColor="#86d633" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id={`c-${suffix}`}
         x1={-20.227}
         x2={-20.227}
         y1={87.696}
@@ -41,7 +44,7 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.82} stopColor="#86d633" />
       </linearGradient>
       <linearGradient
-        id="d"
+        id={`d-${suffix}`}
         x1={-33.251}
         x2={-33.251}
         y1={80.916}
@@ -54,10 +57,10 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path fill="#76bc2d" d="m2.59 16.55-1.06-.94 5.18-5.8 4.41 4.54 4.16-4.41 1.03.97-5.18 5.49-4.37-4.52z" />
-    <circle cx={6.732} cy={10.857} r={1.7} fill="url(#a)" />
-    <circle cx={11.122} cy={15.236} r={1.7} fill="url(#b)" />
-    <circle cx={15.799} cy={10.277} r={1.7} fill="url(#c)" />
-    <circle cx={2.203} cy={15.8} r={1.7} fill="url(#d)" />
+    <circle cx={6.732} cy={10.857} r={1.7} fill={`url(#a-${suffix})`} />
+    <circle cx={11.122} cy={15.236} r={1.7} fill={`url(#b-${suffix})`} />
+    <circle cx={15.799} cy={10.277} r={1.7} fill={`url(#c-${suffix})`} />
+    <circle cx={2.203} cy={15.8} r={1.7} fill={`url(#d-${suffix})`} />
     <path
       fill="#0078d4"
       fillRule="evenodd"
@@ -68,5 +71,5 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
       d="M8.26 4.233a2.88 2.88 0 0 0 .291 2.241 2.8 2.8 0 0 0 .522.636 3 3 0 0 0 .656.469 3.3 3.3 0 0 0 .761.26 2.7 2.7 0 0 0 .823 0l-.072-.781a.17.17 0 0 0-.157-.146 2 2 0 0 1-.417 0 2.3 2.3 0 0 1-.51-.177 2 2 0 0 1-.449-.313 1.8 1.8 0 0 1-.354-.438 1.74 1.74 0 0 1-.25-.709 2 2 0 0 1 0-.75l.271.448a.166.166 0 0 0 .219 0l.365-.094a.167.167 0 0 0 .052-.219l-.9-1.469a.165.165 0 0 0-.2-.1l-1.521.9a.166.166 0 0 0 0 .219l.187.323a.167.167 0 0 0 .219.062ZM11.418 3.118a1.8 1.8 0 0 1 .51.177 1.9 1.9 0 0 1 .8.74 1.9 1.9 0 0 1 .25.719 2.1 2.1 0 0 1 0 .761l-.26-.448A.167.167 0 0 0 12.5 5l-.323.2a.157.157 0 0 0-.068.211v.008l.907 1.512a.157.157 0 0 0 .21.067h.009l1.511-.907a.156.156 0 0 0 0-.219l-.188-.323a.17.17 0 0 0-.219 0l-.521.313a2.8 2.8 0 0 0 .082-1.149 2.7 2.7 0 0 0-.375-1.1 2.8 2.8 0 0 0-.511-.646 3.3 3.3 0 0 0-.667-.459 2.8 2.8 0 0 0-.761-.26 2.8 2.8 0 0 0-.646-.1.166.166 0 0 0-.146.177v.615a.17.17 0 0 0 .157.146 1.8 1.8 0 0 1 .467.032"
     />
   </svg>
-)
+)}
 export default SvgChangeAnalysis

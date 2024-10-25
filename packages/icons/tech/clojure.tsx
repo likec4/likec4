@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgClojure = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgClojure = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fill="none">
       <path
@@ -26,5 +29,5 @@ const SvgClojure = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgClojure

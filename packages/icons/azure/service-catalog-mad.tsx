@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgServiceCatalogMad = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgServiceCatalogMad = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.15} x2={8.15} y1={17.5} y2={2.1} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.15} x2={8.15} y1={17.5} y2={2.1} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#773adc" />
         <stop offset={0.25} stopColor="#9255e6" />
         <stop offset={0.5} stopColor="#a669ee" />
@@ -20,7 +23,7 @@ const SvgServiceCatalogMad = (props: SVGProps<SVGSVGElement>) => (
       fill="#fff"
       d="m2.9 2.1.74-.85A.53.53 0 0 1 4 1.08h10.88a.52.52 0 0 1 .52.52v13.78a.52.52 0 0 1-.17.39l-1.15 1.05z"
     />
-    <path fill="url(#a)" d="M14 2.1H1.95v15a.39.39 0 0 0 .38.39H14a.39.39 0 0 0 .38-.39V2.48A.38.38 0 0 0 14 2.1" />
+    <path fill={`url(#a-${suffix})`} d="M14 2.1H1.95v15a.39.39 0 0 0 .38.39H14a.39.39 0 0 0 .38-.39V2.48A.38.38 0 0 0 14 2.1" />
     <g fill="#fff">
       <path d="m8.35 11.18-1.6-.88V8.5l1.57.87v1.75M6.3 10l-1.6-.85v-1.8l1.57.87V10" />
       <path
@@ -35,5 +38,5 @@ const SvgServiceCatalogMad = (props: SVGProps<SVGSVGElement>) => (
       <path d="m11.88 13-1 .6-1.1.65a1.56 1.56 0 0 1-.86.11h-.33l-1 .05h-.53c-.43 0-1.06-.45-1.4-.76l-.17-.16A2 2 0 0 0 4.1 13h-.58v-1.47H4.7a2.2 2.2 0 0 0 .54-.08 4.3 4.3 0 0 1 .92-.11 1.24 1.24 0 0 1 1 .67c.14.2.26.37.43.4s.58 0 .95 0H9c.4 0 .48.12.5.3a.43.43 0 0 1-.11.33 2.4 2.4 0 0 1-.69.11c-.33 0-1.2.1-1.42-.1l-.6-.53-.12.15.6.52a1.2 1.2 0 0 0 .81.19c.16 0 .54 0 .75-.05a3.2 3.2 0 0 0 .67-.09.12.12 0 0 0 .08 0c.06 0 1.4-.6 1.77-.77s1-.22 1.05 0-.1.36-.4.52z" />
     </g>
   </svg>
-)
+)}
 export default SvgServiceCatalogMad

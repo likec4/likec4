@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDataLabeling = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDataLabeling = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#a6cafd}.cls-3{fill:#fff}.cls-4{fill:#669df6}'}</style>
@@ -10,7 +13,7 @@ const SvgDataLabeling = (props: SVGProps<SVGSVGElement>) => (
       <path d="M20 4H7.7a1.12 1.12 0 0 0-1 .63L3 12h2l3-6h11v1h2V5a1 1 0 0 0-1-1" className="cls-1" />
       <circle cx={10} cy={12} r={3} fill="#559cfc" />
       <circle cx={10} cy={12} r={1} className="cls-3" />
-      <path id="path-5" d="M0 0h8v1H0z" className="cls-3" />
+      <path id={`path-5-${suffix}`} d="M0 0h8v1H0z" className="cls-3" />
       <rect width={5} height={2} x={17} y={8} className="cls-4" rx={1} />
       <rect width={8} height={2} x={14} y={11} className="cls-4" rx={1} />
       <rect width={5} height={2} x={17} y={14} className="cls-4" rx={1} />
@@ -18,5 +21,5 @@ const SvgDataLabeling = (props: SVGProps<SVGSVGElement>) => (
       <path d="M10 12H2" fill="none" stroke="#2683fb" strokeMiterlimit={10} />
     </g>
   </svg>
-)
+)}
 export default SvgDataLabeling

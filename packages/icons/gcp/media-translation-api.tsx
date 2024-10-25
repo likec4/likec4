@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMediaTranslationApi = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMediaTranslationApi = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       d="M18.56 3a.37.37 0 0 1 .38.36v4.15a.38.38 0 0 1-.75 0V3.39a.37.37 0 0 1 .37-.39m3.15 1.41V6a.37.37 0 0 1-.38.36A.36.36 0 0 1 21 6V4.44a.36.36 0 0 1 .37-.36.37.37 0 0 1 .34.36Zm-2.14-1.74V8a.38.38 0 0 0 .75 0V2.67a.38.38 0 0 0-.75 0m-2.75 1.52v2.22a.38.38 0 0 0 .75 0V4.19a.38.38 0 0 0-.75 0"
@@ -16,5 +19,5 @@ const SvgMediaTranslationApi = (props: SVGProps<SVGSVGElement>) => (
       fill="#4285f4"
     />
   </svg>
-)
+)}
 export default SvgMediaTranslationApi

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPutty = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPutty = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#0403ff" d="M69.531 19.84h31.281v20.25H69.531zm0 0" />
     <path fill="#0808bd" d="M69.531 18.918v22.094h-1.895l.051-22.094zm0 0" />
@@ -50,5 +53,5 @@ const SvgPutty = (props: SVGProps<SVGSVGElement>) => (
     />
     <path d="M40.398 87.91h-3.996v-3.148l23.555-23.551H45.621v-3.203l41.98-32.637h3.074v3.121L67.992 52.043h13.469v3.203zm-2.152-1.816h1.512l39.883-31.719v-.488H63.668L88.832 27.75v-.562h-.613L47.438 58.93v.461h16.945l-26.137 26.14zm0 0" />
   </svg>
-)
+)}
 export default SvgPutty

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDbeaver = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDbeaver = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#382a24"
@@ -32,5 +35,5 @@ const SvgDbeaver = (props: SVGProps<SVGSVGElement>) => (
       d="M102.031 83.078a88.2 88.2 0 0 1-5.785 16.738q-.78 1.46-2.34 1.97l-.246-.372a25.2 25.2 0 0 0 1.477-9.23 43.6 43.6 0 0 1-4.059 10.586q-2.836 1.164-5.785.367a7.8 7.8 0 0 1-1.356-2.582 55.4 55.4 0 0 1-1.105-9.356q11.706.791 19.2-8.12Zm0 0"
     />
   </svg>
-)
+)}
 export default SvgDbeaver

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgLivewire = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgLivewire = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="M108.566 83.547c-1.937 2.926-3.406 6.527-7.34 6.527-6.624 0-6.98-10.203-13.609-10.203-6.625 0-6.265 10.203-12.887 10.203-6.625 0-6.98-10.203-13.609-10.203-6.625 0-6.266 10.203-12.887 10.203-6.625 0-6.98-10.203-13.605-10.203-6.629 0-6.27 10.203-12.89 10.203-2.083 0-3.544-1.008-4.778-2.39-4.738-8.239-7.465-17.895-7.465-28.22 0-30.222 23.367-54.722 52.191-54.722s52.192 24.5 52.192 54.723c0 8.64-1.91 16.816-5.313 24.082m0 0"
@@ -52,5 +55,5 @@ const SvgLivewire = (props: SVGProps<SVGSVGElement>) => (
       fillOpacity={1}
     />
   </svg>
-)
+)}
 export default SvgLivewire

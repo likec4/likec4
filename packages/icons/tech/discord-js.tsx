@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDiscordjs = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDiscordjs = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#b75cff"
@@ -32,5 +35,5 @@ const SvgDiscordjs = (props: SVGProps<SVGSVGElement>) => (
       d="M0 26.748V81.75h20.823c5.458 0 9.638-.865 13.52-2.823q-.009-.203-.007-.41c0-6.335 5.12-11.468 11.436-11.468q.28 0 .557.014c1.981-4.033 2.78-8.032 2.78-13.286 0-5.421-1.02-10.139-3.064-14.223-2.121-4.007-5.186-7.15-9.27-9.43-4.088-2.277-9.037-3.376-14.931-3.376Zm13.2 11.785h7.937c4.637 0 8.172 1.337 10.53 4.087s3.535 6.52 3.535 11.392c0 4.95-1.259 8.802-3.694 11.63-2.435 2.907-6.05 4.321-10.844 4.321h-7.463zm32.605 32.76a7.226 7.226 0 1 0 0 14.449 7.226 7.226 0 0 0 0-14.45z"
     />
   </svg>
-)
+)}
 export default SvgDiscordjs

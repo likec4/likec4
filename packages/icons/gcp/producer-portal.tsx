@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgProducerPortal = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgProducerPortal = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -16,5 +19,5 @@ const SvgProducerPortal = (props: SVGProps<SVGSVGElement>) => (
       <path fill="#5C85DE" d="M2 5.9.8 12v2.4h22.4V12L22 5.9zm2.1 2.4H20l.7 3.7H3.3z" />
     </g>
   </svg>
-)
+)}
 export default SvgProducerPortal

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAndroidStudio = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAndroidStudio = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#073042" d="M51.3 17.7H23.2C17.6 17.7 13 22.3 13 28c-.2 5.5 4.2 10.1 9.7 10.3h28.9z" />
     <path
@@ -26,5 +29,5 @@ const SvgAndroidStudio = (props: SVGProps<SVGSVGElement>) => (
       d="M105.6 58.1h-4.2c-.2.1-.4.3-.4.6v66.5c0 .3.2.5.5.5h4.4c5.1 0 9.2-4.2 9.2-9.2V48.8c0 5.1-4.1 9.2-9.2 9.2h-.3z"
     />
   </svg>
-)
+)}
 export default SvgAndroidStudio

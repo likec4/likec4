@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgToolsForPowershell = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgToolsForPowershell = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>
@@ -24,5 +27,5 @@ const SvgToolsForPowershell = (props: SVGProps<SVGSVGElement>) => (
       <path d="m19.73 12.02-2.41 4.28h2.27L22 12.02l-1.11-1.97z" className="cls-3" />
     </g>
   </svg>
-)
+)}
 export default SvgToolsForPowershell

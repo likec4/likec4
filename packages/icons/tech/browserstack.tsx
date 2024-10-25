@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgBrowserstack = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgBrowserstack = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#f4b960"
@@ -44,5 +47,5 @@ const SvgBrowserstack = (props: SVGProps<SVGSVGElement>) => (
       d="M76.878 37.836a4.414 7.062 24.166 0 1 1.135 8.25 4.414 7.062 24.166 0 1-6.918 4.636 4.414 7.062 24.166 0 1-1.135-8.249 4.414 7.062 24.166 0 1 6.917-4.637z"
     />
   </svg>
-)
+)}
 export default SvgBrowserstack

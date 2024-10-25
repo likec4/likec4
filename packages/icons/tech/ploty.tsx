@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPloty = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPloty = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#3d4c73"
@@ -16,5 +19,5 @@ const SvgPloty = (props: SVGProps<SVGSVGElement>) => (
       d="M30.248 69.036c-3.105 0-5.622 2.56-5.622 5.722v22.873c0 3.162 2.517 5.718 5.622 5.718s5.622-2.556 5.622-5.718V74.758c0-3.158-2.516-5.718-5.622-5.718m44.972-.004c-3.106 0-5.618 2.56-5.618 5.722v22.873c0 3.162 2.512 5.718 5.618 5.718 3.102 0 5.622-2.556 5.622-5.718V74.758c0-3.158-2.52-5.718-5.622-5.718M52.736 46.163c-3.106 0-5.622 2.56-5.622 5.714v45.754c0 3.162 2.516 5.718 5.622 5.718s5.618-2.556 5.618-5.718V51.877c0-3.158-2.512-5.718-5.618-5.718m44.971.004c-3.105 0-5.621 2.56-5.621 5.714v45.754c0 3.162 2.516 5.718 5.621 5.718 3.102 0 5.622-2.556 5.622-5.718V51.877c0-3.158-2.52-5.718-5.622-5.718"
     />
   </svg>
-)
+)}
 export default SvgPloty

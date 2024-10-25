@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMinitab = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMinitab = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#8DC63F" d="M0 0h128v128H0z" />
     <linearGradient
-      id="a"
+      id={`a-${suffix}`}
       x1={99.32}
       x2={21.21}
       y1={-254.43}
@@ -17,7 +20,7 @@ const SvgMinitab = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopOpacity={0.2} />
     </linearGradient>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="m41 128-26.2-21.7 19.8-53.9 19.2 17.9V19.4h7.9l21 23.5 6.1-5.3L113.9 70l2.1-1.5 12 16.1v43.2z"
     />
     <path
@@ -29,5 +32,5 @@ const SvgMinitab = (props: SVGProps<SVGSVGElement>) => (
       d="m14.8 100.3 19.8-7.4v13.4H14.8zm46.9-28.4v34.4H42V89.1zm7.4 0 19.7 14.5v19.9H69.1zm27.2 14.3 19.7-7.6v27.7H96.3z"
     />
   </svg>
-)
+)}
 export default SvgMinitab

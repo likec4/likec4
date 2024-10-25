@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudRunForAnthos = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudRunForAnthos = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       d="M6.42 13a3.92 3.92 0 0 0 0 7.83 3.92 3.92 0 0 0 0-7.83M6 17.09l-.63 2.11-.83.42.62-2.53-.62-2.52.83.42zm0 2.53.83-2.53L6 14.57l3.32 2.52Z"
@@ -12,5 +15,5 @@ const SvgCloudRunForAnthos = (props: SVGProps<SVGSVGElement>) => (
       fill="#4285f4"
     />
   </svg>
-)
+)}
 export default SvgCloudRunForAnthos

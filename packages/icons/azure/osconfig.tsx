@@ -1,19 +1,22 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgOsConfig = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgOsConfig = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.104} x2={7.104} y1={2.052} y2={18.826} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={7.104} x2={7.104} y1={2.052} y2={18.826} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
-      <linearGradient id="b" x1={14.209} x2={14.209} y1={4.873} y2={14.895} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={14.209} x2={14.209} y1={4.873} y2={14.895} gradientUnits="userSpaceOnUse">
         <stop offset={0.001} stopColor="#76bc2d" />
         <stop offset={1} stopColor="#86d633" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id={`c-${suffix}`}
         x1={-549.791}
         x2={-549.791}
         y1={1012.685}
@@ -26,7 +29,7 @@ const SvgOsConfig = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M9.962 8.728V5.823a.68.68 0 0 1 .676-.673c1.108-.029 1.454-.266 1.821-.518s.784-.538 1.75-.538V2.151a.656.656 0 0 0-.661-.651H.661A.656.656 0 0 0 0 2.151v13.697c0 .36.296.651.661.651h12.887a.656.656 0 0 0 .661-.651v-1.895a.7.7 0 0 1-.361-.099c-.649-.387-3.886-2.455-3.886-5.127Z"
     />
     <path
@@ -37,11 +40,11 @@ const SvgOsConfig = (props: SVGProps<SVGSVGElement>) => (
     <rect width={5.02} height={0.963} x={5.031} y={11.166} fill="#c3f1ff" rx={0.325} ry={0.325} />
     <rect width={4.189} height={0.963} x={5.031} y={8.618} fill="#c3f1ff" rx={0.325} ry={0.325} />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M18 8.728c0 2.41-3.012 4.35-3.666 4.743a.25.25 0 0 1-.25 0c-.655-.391-3.666-2.334-3.666-4.743v-2.9a.235.235 0 0 1 .233-.23c2.342-.061 1.803-1.056 3.558-1.056s1.216.995 3.558 1.056a.235.235 0 0 1 .233.23z"
     />
     <path
-      fill="url(#c)"
+      fill={`url(#c-${suffix})`}
       d="M17.685 8.752c0 2.209-2.761 3.989-3.362 4.35a.22.22 0 0 1-.229 0c-.601-.358-3.362-2.14-3.362-4.35V6.095a.215.215 0 0 1 .213-.211c2.148-.058 1.653-.97 3.263-.97s1.115.912 3.261.968a.215.215 0 0 1 .213.211l.002 2.659Z"
     />
     <path
@@ -49,5 +52,5 @@ const SvgOsConfig = (props: SVGProps<SVGSVGElement>) => (
       d="m16.113 7.144-2.342 2.318-1.141-1.124-.057-.046a.414.414 0 0 0-.568.111.4.4 0 0 0 .046.505l1.43 1.411.057.046a.41.41 0 0 0 .521-.048l2.636-2.603.047-.056a.4.4 0 0 0-.119-.558.414.414 0 0 0-.506.045h-.007.002Z"
     />
   </svg>
-)
+)}
 export default SvgOsConfig

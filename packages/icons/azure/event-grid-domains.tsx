@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgEventGridDomains = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgEventGridDomains = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={4589.72}
         x2={4589.72}
         y1={-5180.02}
@@ -16,7 +19,7 @@ const SvgEventGridDomains = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0} stopColor="#c69aeb" />
         <stop offset={1} stopColor="#6f4bb2" />
       </linearGradient>
-      <linearGradient id="b" x1={4587.99} x2={4587.99} y1={-5188.47} y2={-5192.65} href="#a" />
+      <linearGradient id={`b-${suffix}`} x1={4587.99} x2={4587.99} y1={-5188.47} y2={-5192.65} href={`#a-${suffix}`} />
     </defs>
     <path
       fill="#32bedd"
@@ -27,8 +30,8 @@ const SvgEventGridDomains = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={13} cy={7.85} r={0.87} fill="#fff" />
     <circle cx={12.1} cy={12.07} r={0.87} fill="#fff" />
     <circle cx={10.86} cy={5.74} r={1.05} fill="#50e6ff" />
-    <circle cx={12.97} cy={7.85} r={1.05} fill="url(#a)" />
-    <circle cx={12.1} cy={12.07} r={1.05} fill="url(#b)" />
+    <circle cx={12.97} cy={7.85} r={1.05} fill={`url(#a-${suffix})`} />
+    <circle cx={12.1} cy={12.07} r={1.05} fill={`url(#b-${suffix})`} />
     <circle cx={9.98} cy={9.96} r={1.05} fill="#50e6ff" />
     <g fill="#999">
       <path d="M1.07 1.43h1.29V5a.29.29 0 0 1-.29.29H.79A.29.29 0 0 1 .5 5V2a.57.57 0 0 1 .57-.57" />
@@ -52,5 +55,5 @@ const SvgEventGridDomains = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <path fill="#949494" d="M.5 16v-1.25h17V16a.57.57 0 0 1-.57.57H1.07A.57.57 0 0 1 .5 16" />
   </svg>
-)
+)}
 export default SvgEventGridDomains

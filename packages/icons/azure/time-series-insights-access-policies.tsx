@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgTimeSeriesInsightsAccessPolicies = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgTimeSeriesInsightsAccessPolicies = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id={`a-${suffix}`}
         cx={125.5}
         cy={123.98}
         r={11.18}
@@ -19,7 +22,7 @@ const SvgTimeSeriesInsightsAccessPolicies = (props: SVGProps<SVGSVGElement>) => 
       </radialGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M14 7.1a2.06 2.06 0 0 0 0-2.92L10.46.61a2.06 2.06 0 0 0-2.92 0L4 4.18A2.06 2.06 0 0 0 4 7.1l3 3a.57.57 0 0 1 .17.41V16a.7.7 0 0 0 .21.5l1.35 1.35a.45.45 0 0 0 .66 0l1.31-1.31.77-.78a.26.26 0 0 0 0-.38l-.55-.55a.29.29 0 0 1 0-.42l.55-.56a.26.26 0 0 0 0-.38l-.55-.56a.28.28 0 0 1 0-.41l.55-.56a.26.26 0 0 0 0-.38l-.77-.78v-.28ZM9 1.47a1.18 1.18 0 1 1-1.17 1.17A1.17 1.17 0 0 1 9 1.47"
     />
     <path
@@ -31,5 +34,5 @@ const SvgTimeSeriesInsightsAccessPolicies = (props: SVGProps<SVGSVGElement>) => 
     <rect width={5.86} height={0.69} x={6.15} y={6.49} fill="#ff9300" opacity={0.75} rx={0.32} />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgTimeSeriesInsightsAccessPolicies

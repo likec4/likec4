@@ -1,17 +1,20 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgLoadBalancers = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgLoadBalancers = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={19.85} y2={-1.02} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={19.85} y2={-1.02} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#5e9624" />
         <stop offset={0.02} stopColor="#5f9724" />
         <stop offset={1} stopColor="#76bc2d" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M.18 8.57 8.57.18a.6.6 0 0 1 .86 0l8.39 8.39a.6.6 0 0 1 0 .86l-8.4 8.4a.6.6 0 0 1-.84 0l-8.4-8.4a.6.6 0 0 1 0-.86"
     />
     <path
@@ -21,5 +24,5 @@ const SvgLoadBalancers = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#fff" d="M11.79 9a2.79 2.79 0 1 0-3.54 2.67v.95a1.71 1.71 0 1 0 1.57 0v-1A2.77 2.77 0 0 0 11.79 9" />
     <circle cx={9.01} cy={8.99} r={1.62} fill="#5ea0ef" />
   </svg>
-)
+)}
 export default SvgLoadBalancers

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCairoGraphics = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCairoGraphics = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#f39914"
@@ -12,5 +15,5 @@ const SvgCairoGraphics = (props: SVGProps<SVGSVGElement>) => (
       d="M64 .708c-10.678 0-19.366 8.687-19.366 19.365S53.321 39.439 64 39.439s19.365-8.687 19.365-19.366S74.678.708 64 .708m0 .635c10.328 0 18.731 8.402 18.731 18.73S74.328 38.806 64 38.806s-18.731-8.403-18.731-18.731S53.671 1.343 64 1.343m-8.714 10.016v17.428h17.428V11.359H55.57zm.285.285h5.43v5.43h-5.43zm5.714 0h5.43v5.43h-5.43zm5.715 0h5.429v5.43h-5.43zm-3 .714a2 2 0 0 0-2 2 2 2 0 0 0 2 2.001 2 2 0 0 0 2-2 2 2 0 0 0-2-2m-8.429 5h5.43v5.43h-5.43zm5.714 0h5.43v5.43h-5.43zm5.715 0h5.429v5.43h-5.43zm2.714.715a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2m-14.143 5h5.43v5.43h-5.43zm5.715 0h5.429v5.43h-5.43zm5.714 0h5.43v5.43H67zm-8.714.714a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2m5.714 0a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2m5.715 0a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"
     />
   </svg>
-)
+)}
 export default SvgCairoGraphics

@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgRuby = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <linearGradient
-      id="a"
+      id={`a-${suffix}`}
       x1={157.08}
       x2={131.682}
       y1={2382.05}
@@ -18,9 +21,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#900" />
       <stop offset={1} stopColor="#900" />
     </linearGradient>
-    <path fill="url(#a)" d="M97.078 83.214 28.34 124.031l89.003-6.04 6.855-89.745z" />
+    <path fill={`url(#a-${suffix})`} d="M97.078 83.214 28.34 124.031l89.003-6.04 6.855-89.745z" />
     <linearGradient
-      id="b"
+      id={`b-${suffix}`}
       x1={169.731}
       x2={136.998}
       y1={2419.72}
@@ -33,9 +36,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#911209" />
       <stop offset={1} stopColor="#911209" />
     </linearGradient>
-    <path fill="url(#b)" d="m117.488 117.93-7.649-52.799-20.837 27.514z" />
+    <path fill={`url(#b-${suffix})`} d="m117.488 117.93-7.649-52.799-20.837 27.514z" />
     <linearGradient
-      id="c"
+      id={`c-${suffix}`}
       x1={143.542}
       x2={110.81}
       y1={2380.69}
@@ -48,9 +51,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#911209" />
       <stop offset={1} stopColor="#911209" />
     </linearGradient>
-    <path fill="url(#c)" d="m117.592 117.93-56.044-4.399-32.91 10.385z" />
+    <path fill={`url(#c-${suffix})`} d="m117.592 117.93-56.044-4.399-32.91 10.385z" />
     <linearGradient
-      id="d"
+      id={`d-${suffix}`}
       x1={74.817}
       x2={79.891}
       y1={2435.622}
@@ -65,9 +68,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#A60003" />
       <stop offset={1} stopColor="#A60003" />
     </linearGradient>
-    <path fill="url(#d)" d="m28.717 123.928 14.001-45.867-30.81 6.588z" />
+    <path fill={`url(#d-${suffix})`} d="m28.717 123.928 14.001-45.867-30.81 6.588z" />
     <linearGradient
-      id="e"
+      id={`e-${suffix}`}
       x1={109.719}
       x2={111.589}
       y1={2466.413}
@@ -82,9 +85,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#A80D00" />
       <stop offset={1} stopColor="#A80D00" />
     </linearGradient>
-    <path fill="url(#e)" d="m88.996 92.797-12.882-50.46-36.866 34.558z" />
+    <path fill={`url(#e-${suffix})`} d="m88.996 92.797-12.882-50.46-36.866 34.558z" />
     <linearGradient
-      id="f"
+      id={`f-${suffix}`}
       x1={140.691}
       x2={146.289}
       y1={2497.523}
@@ -99,9 +102,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#A80D00" />
       <stop offset={1} stopColor="#A80D00" />
     </linearGradient>
-    <path fill="url(#f)" d="M121.275 43.047 86.426 14.585l-9.704 31.373z" />
+    <path fill={`url(#f-${suffix})`} d="M121.275 43.047 86.426 14.585l-9.704 31.373z" />
     <linearGradient
-      id="g"
+      id={`g-${suffix}`}
       x1={123.6}
       x2={147.719}
       y1={2506.018}
@@ -115,9 +118,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#BF0905" />
       <stop offset={1} stopColor="#BF0905" />
     </linearGradient>
-    <path fill="url(#g)" d="M104.978 4.437 84.481 15.764 71.551 4.285z" />
+    <path fill={`url(#g-${suffix})`} d="M104.978 4.437 84.481 15.764 71.551 4.285z" />
     <linearGradient
-      id="h"
+      id={`h-${suffix}`}
       x1={53.674}
       x2={55.66}
       y1={2444.028}
@@ -131,13 +134,13 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#BF190B" />
       <stop offset={1} stopColor="#BF190B" />
     </linearGradient>
-    <path fill="url(#h)" d="m3.802 100.034 8.586-15.659L5.442 65.72z" />
+    <path fill={`url(#h-${suffix})`} d="m3.802 100.034 8.586-15.659L5.442 65.72z" />
     <path
       fill="#fff"
       d="m4.981 65.131 6.987 19.821 30.365-6.812L77 45.922l9.783-31.075L71.38 3.969l-26.19 9.802c-8.252 7.675-24.263 22.86-24.84 23.146-.573.291-10.575 19.195-15.369 28.214"
     />
     <linearGradient
-      id="i"
+      id={`i-${suffix}`}
       x1={40.026}
       x2={133.345}
       y1={2418.781}
@@ -157,11 +160,11 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#E82609" />
     </linearGradient>
     <path
-      fill="url(#i)"
+      fill={`url(#i-${suffix})`}
       d="M29.519 29.521c17.882-17.73 40.937-28.207 49.785-19.28 8.843 8.926-.534 30.62-18.418 48.345S20.233 87.365 11.393 78.438c-8.849-8.92.242-31.191 18.126-48.917"
     />
     <linearGradient
-      id="j"
+      id={`j-${suffix}`}
       x1={111.507}
       x2={83.398}
       y1={2409.102}
@@ -175,9 +178,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#A80D0E" />
       <stop offset={1} stopColor="#A80D0E" />
     </linearGradient>
-    <path fill="url(#j)" d="m28.717 123.909 13.89-46.012 46.135 14.82c-16.68 15.642-35.233 28.865-60.025 31.192" />
+    <path fill={`url(#j-${suffix})`} d="m28.717 123.909 13.89-46.012 46.135 14.82c-16.68 15.642-35.233 28.865-60.025 31.192" />
     <linearGradient
-      id="k"
+      id={`k-${suffix}`}
       x1={159.785}
       x2={134.814}
       y1={2442.837}
@@ -190,9 +193,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#9E0C00" />
       <stop offset={1} stopColor="#9E0C00" />
     </linearGradient>
-    <path fill="url(#k)" d="m77.062 45.831 11.844 46.911c13.934-14.65 26.439-30.401 32.563-49.883z" />
+    <path fill={`url(#k-${suffix})`} d="m77.062 45.831 11.844 46.911c13.934-14.65 26.439-30.401 32.563-49.883z" />
     <linearGradient
-      id="l"
+      id={`l-${suffix}`}
       x1={168.959}
       x2={156.521}
       y1={2483.901}
@@ -205,10 +208,10 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#9E120B" />
       <stop offset={1} stopColor="#9E120B" />
     </linearGradient>
-    <path fill="url(#l)" d="M121.348 43.097c4.74-14.305 5.833-34.825-16.517-38.635l-18.339 10.13z" />
+    <path fill={`url(#l-${suffix})`} d="M121.348 43.097c4.74-14.305 5.833-34.825-16.517-38.635l-18.339 10.13z" />
     <path fill="#9E1209" d="M3.802 99.828c.656 23.608 17.689 23.959 24.945 24.167l-16.759-39.14z" />
     <radialGradient
-      id="m"
+      id={`m-${suffix}`}
       cx={138.703}
       cy={2464.789}
       r={30.601}
@@ -221,11 +224,11 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#7E0E08" />
     </radialGradient>
     <path
-      fill="url(#m)"
+      fill={`url(#m-${suffix})`}
       d="M77.128 45.904c10.708 6.581 32.286 19.798 32.723 20.041.68.383 9.304-14.542 11.261-22.976z"
     />
     <radialGradient
-      id="n"
+      id={`n-${suffix}`}
       cx={96.325}
       cy={2424.465}
       r={40.679}
@@ -237,9 +240,9 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#800E08" />
       <stop offset={1} stopColor="#800E08" />
     </radialGradient>
-    <path fill="url(#n)" d="m42.589 77.897 18.57 35.828c10.98-5.955 19.579-13.211 27.454-20.983z" />
+    <path fill={`url(#n-${suffix})`} d="m42.589 77.897 18.57 35.828c10.98-5.955 19.579-13.211 27.454-20.983z" />
     <linearGradient
-      id="o"
+      id={`o-${suffix}`}
       x1={67.509}
       x2={57.373}
       y1={2393.115}
@@ -254,11 +257,11 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#B3100C" />
     </linearGradient>
     <path
-      fill="url(#o)"
+      fill={`url(#o-${suffix})`}
       d="m11.914 84.904-2.631 31.331c4.964 6.781 11.794 7.371 18.96 6.842-5.184-12.9-15.538-38.696-16.329-38.173"
     />
     <linearGradient
-      id="p"
+      id={`p-${suffix}`}
       x1={145.272}
       x2={167.996}
       y1={2507.076}
@@ -272,7 +275,7 @@ const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.99} stopColor="#791C12" />
       <stop offset={1} stopColor="#791C12" />
     </linearGradient>
-    <path fill="url(#p)" d="m86.384 14.67 36.891 5.177c-1.969-8.343-8.015-13.727-18.32-15.41z" />
+    <path fill={`url(#p-${suffix})`} d="m86.384 14.67 36.891 5.177c-1.969-8.343-8.015-13.727-18.32-15.41z" />
   </svg>
-)
+)}
 export default SvgRuby

@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCostBudgets = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCostBudgets = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <radialGradient id="a" cx={9.477} cy={9.576} r={7.889} gradientUnits="userSpaceOnUse">
+      <radialGradient id={`a-${suffix}`} cx={9.477} cy={9.576} r={7.889} gradientUnits="userSpaceOnUse">
         <stop offset={0.669} stopColor="#76bc2d" />
         <stop offset={0.787} stopColor="#70b22b" />
         <stop offset={0.985} stopColor="#5f9825" />
@@ -18,10 +21,10 @@ const SvgCostBudgets = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={2.027} cy={8.496} r={1.527} fill="#f78d1e" />
     <circle cx={4.102} cy={3.932} r={1.527} fill="#f78d1e" />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M11.636 1.891a8 8 0 0 0-.947-.2 1.51 1.51 0 0 1-.252 1.146 6.825 6.825 0 1 1-6.754 10.331l.6-.225a.132.132 0 0 0 .038-.226l-2.149-1.772a.133.133 0 0 0-.216.081l-.448 2.747a.133.133 0 0 0 .178.146l.883-.332a8 8 0 1 0 9.067-11.7Z"
     />
     <circle cx={8.566} cy={1.928} r={1.527} fill="#f78d1e" />
   </svg>
-)
+)}
 export default SvgCostBudgets

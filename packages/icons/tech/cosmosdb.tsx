@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCosmosdb = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCosmosdb = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" {...props}>
     <path
       fill="#59B3D8"
@@ -34,5 +37,5 @@ const SvgCosmosdb = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
   </svg>
-)
+)}
 export default SvgCosmosdb

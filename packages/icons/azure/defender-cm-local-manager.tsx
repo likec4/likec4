@@ -1,14 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDefenderCmLocalManager = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDefenderCmLocalManager = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="m15.733 3.502-1.238-.032h-.148l-2.19-.327-1.408-.622L9.861 0 7.819.021l-.096.285L7.025 2.5l-1.407.601-2.391-1.055L1.809 3.47l.148.285 1.058 2.036-.56 1.403L0 8.112v2.057l.286.095 2.2.675.603 1.403-1.058 2.394 1.471 1.424.264-.147 2.042-1.055.656.801 1.693 2.226H10.2l.095-.284.73-1.288 1.164-.58 2.307-.137 1.439-1.466v-.137l.285-1.055.836-2.5zm-6.73 10.095a4.63 4.63 0 0 1-2.575-.775 4.597 4.597 0 0 1-.692-7.106 4.63 4.63 0 0 1 5.053-.976 4.6 4.6 0 0 1 2.068 1.716 4.6 4.6 0 0 1 .76 2.574 4.6 4.6 0 0 1-1.363 3.231 4.62 4.62 0 0 1-3.25 1.336"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M9.003 12.745c.047.088.14.16.258.2l4.356 1.708a1.615 1.615 0 0 0 1.089.024l3.065-1.319a.3.3 0 0 0 .123-.073.2.2 0 0 0 .062-.106.1.1 0 0 0 0-.04.3.3 0 0 0-.096-.142.5.5 0 0 0-.173-.095l-4.348-1.707a1.613 1.613 0 0 0-1.089-.024l-3.074 1.317a.28.28 0 0 0-.153.105.16.16 0 0 0-.02.152"
     />
     <path
@@ -26,7 +29,7 @@ const SvgDefenderCmLocalManager = (props: SVGProps<SVGSVGElement>) => (
       d="M16.807 14.77c-.116-.049-.116-.206 0-.351.115-.146.31-.226.42-.173.108.053.113.205 0 .35-.114.144-.31.222-.42.174"
     />
     <path
-      fill="url(#c)"
+      fill={`url(#c-${suffix})`}
       d="M9.003 8.358a.45.45 0 0 0 .258.2l4.349 1.706a1.612 1.612 0 0 0 1.087.024l3.06-1.317a.3.3 0 0 0 .122-.074.2.2 0 0 0 .062-.105.1.1 0 0 0 0-.04.3.3 0 0 0-.095-.142.5.5 0 0 0-.173-.094L13.332 6.81a1.61 1.61 0 0 0-1.087-.024l-3.07 1.315a.28.28 0 0 0-.152.105.16.16 0 0 0-.02.151"
     />
     <path
@@ -44,7 +47,7 @@ const SvgDefenderCmLocalManager = (props: SVGProps<SVGSVGElement>) => (
       d="M16.794 10.38c-.115-.049-.115-.205 0-.35.115-.146.31-.226.42-.173.108.053.113.205 0 .35-.114.143-.31.221-.42.173"
     />
     <path
-      fill="url(#d)"
+      fill={`url(#d-${suffix})`}
       d="M9.003 3.707a.45.45 0 0 0 .258.2l4.349 1.705a1.612 1.612 0 0 0 1.087.024l3.06-1.317a.3.3 0 0 0 .122-.073.2.2 0 0 0 .062-.106.1.1 0 0 0 0-.04.3.3 0 0 0-.095-.141.5.5 0 0 0-.173-.095L13.332 2.16a1.61 1.61 0 0 0-1.087-.024l-3.07 1.315a.28.28 0 0 0-.152.104.16.16 0 0 0-.02.152"
     />
     <path
@@ -62,25 +65,25 @@ const SvgDefenderCmLocalManager = (props: SVGProps<SVGSVGElement>) => (
       d="M16.794 5.728c-.115-.048-.115-.205 0-.35s.31-.225.42-.172c.108.053.113.205 0 .349-.114.144-.31.222-.42.173"
     />
     <defs>
-      <linearGradient id="a" x1={8.527} x2={8.527} y1={0} y2={17.985} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.527} x2={8.527} y1={0} y2={17.985} gradientUnits="userSpaceOnUse">
         <stop stopColor="#7A7A7A" />
         <stop offset={1} stopColor="#454545" />
       </linearGradient>
-      <linearGradient id="b" x1={13.475} x2={13.475} y1={11.089} y2={14.759} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={13.475} x2={13.475} y1={11.089} y2={14.759} gradientUnits="userSpaceOnUse">
         <stop stopColor="#5EA0EF" />
         <stop offset={0.18} stopColor="#559CEC" />
         <stop offset={0.47} stopColor="#3C91E5" />
         <stop offset={0.84} stopColor="#1380DA" />
         <stop offset={1} stopColor="#0078D4" />
       </linearGradient>
-      <linearGradient id="c" x1={13.468} x2={13.468} y1={6.706} y2={10.369} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`c-${suffix}`} x1={13.468} x2={13.468} y1={6.706} y2={10.369} gradientUnits="userSpaceOnUse">
         <stop stopColor="#5EA0EF" />
         <stop offset={0.18} stopColor="#559CEC" />
         <stop offset={0.47} stopColor="#3C91E5" />
         <stop offset={0.84} stopColor="#1380DA" />
         <stop offset={1} stopColor="#0078D4" />
       </linearGradient>
-      <linearGradient id="d" x1={13.468} x2={13.468} y1={2.054} y2={5.718} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`d-${suffix}`} x1={13.468} x2={13.468} y1={2.054} y2={5.718} gradientUnits="userSpaceOnUse">
         <stop stopColor="#5EA0EF" />
         <stop offset={0.18} stopColor="#559CEC" />
         <stop offset={0.47} stopColor="#3C91E5" />
@@ -89,5 +92,5 @@ const SvgDefenderCmLocalManager = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
   </svg>
-)
+)}
 export default SvgDefenderCmLocalManager

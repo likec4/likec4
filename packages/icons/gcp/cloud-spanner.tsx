@@ -1,14 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudSpanner = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudSpanner = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1,.cls-3{fill:#669df6;fill-rule:evenodd}.cls-3{fill:#aecbfa}'}</style>
     </defs>
     <g data-name="Product Icons">
       <path
-        id="Shape-2"
+        id={`Shape-2-${suffix}`}
         d="M13.34 12.76V8.4h-2.68v4.36l-3.77 2.18 1.34 2.32L12 15.08l3.77 2.18 1.34-2.32z"
         className="cls-1"
         data-name="Shape"
@@ -29,5 +32,5 @@ const SvgCloudSpanner = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgCloudSpanner

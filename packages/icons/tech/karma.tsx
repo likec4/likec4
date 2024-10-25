@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgKarma = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgKarma = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#409B83"
@@ -12,5 +15,5 @@ const SvgKarma = (props: SVGProps<SVGSVGElement>) => (
       d="M14.746 109.871 37.34 57.117 22.977 74.625 0 39.575zM124.97.391H93.95l-19 36.285V.39H46.492v37.632l15.172 72.282 3.535 17.117h9.75V95.664z"
     />
   </svg>
-)
+)}
 export default SvgKarma

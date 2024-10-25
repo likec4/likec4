@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSqlServer = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSqlServer = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={0.5} x2={13.18} y1={10.04} y2={10.04} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={0.5} x2={13.18} y1={10.04} y2={10.04} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -15,7 +18,7 @@ const SvgSqlServer = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M6.84 5.09c-3.5 0-6.34-1-6.34-2.3V15c0 1.26 2.79 2.28 6.25 2.3h.09c3.5 0 6.34-1 6.34-2.3V2.79c0 1.27-2.84 2.3-6.34 2.3"
     />
     <path fill="#e8e8e8" d="M13.18 2.79c0 1.27-2.84 2.3-6.34 2.3S.5 4.06.5 2.79 3.34.49 6.84.49s6.34 1 6.34 2.3" />
@@ -33,5 +36,5 @@ const SvgSqlServer = (props: SVGProps<SVGSVGElement>) => (
       d="m14.81 17.49.24-.79.47-.27.81.36.52-.53v-.06l-.37-.71.22-.5.81-.29h.09v-.73h-.1l-.8-.24-.26-.46.35-.82-.53-.51h-.06l-.71.36L15 12l-.32-.89h-.74v.11l-.24.79-.51.22-.87-.4-.51.53.05.1.38.74-.2.51-.94.29v.74h.11l.79.24.22.51-.39.86.53.52.09-.05.74-.38.51.2.34.89h.73Zm-1.2-2.36a1.06 1.06 0 1 1 1.49-1.52 1.06 1.06 0 0 1-1.49 1.52"
     />
   </svg>
-)
+)}
 export default SvgSqlServer

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgVisualInspection = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgVisualInspection = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       d="m14.28 15.33 1.93 1.93L12 20.65 1.2 12H8a4 4 0 0 0 4 4 4.1 4.1 0 0 0 2.28-.67M16 12a4 4 0 0 1-.64 2.18l2.08 2.1L22.81 12Z"
@@ -15,5 +18,5 @@ const SvgVisualInspection = (props: SVGProps<SVGSVGElement>) => (
       fillRule="evenodd"
     />
   </svg>
-)
+)}
 export default SvgVisualInspection

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCertificateAuthorityService = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCertificateAuthorityService = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -20,5 +23,5 @@ const SvgCertificateAuthorityService = (props: SVGProps<SVGSVGElement>) => (
       d="M12 3.3c3 0 5.4 2.4 5.4 5.5 0 1.8-.8 3.4-2.2 4.4v6.5L12 16.6l-3.2 3.1v-6.5c-1.3-1-2.2-2.6-2.2-4.4C6.6 5.7 9 3.3 12 3.3m0 8.2c1.5 0 2.7-1.2 2.7-2.7S13.5 6 12 6 9.3 7.2 9.3 8.7s1.2 2.8 2.7 2.8"
     />
   </svg>
-)
+)}
 export default SvgCertificateAuthorityService

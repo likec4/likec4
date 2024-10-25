@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSsisLiftAndShiftIr = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSsisLiftAndShiftIr = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={4.969}
         x2={79.875}
         y1={45.222}
@@ -23,7 +26,7 @@ const SvgSsisLiftAndShiftIr = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M42.425 27.445c-20.686 0-37.456-5.843-37.456-13.557v72.224c0 7.421 16.478 13.439 36.93 13.556h.526c20.681 0 37.45-5.843 37.45-13.556V13.888c0 7.538-16.769 13.557-37.45 13.557"
     />
     <path
@@ -49,5 +52,5 @@ const SvgSsisLiftAndShiftIr = (props: SVGProps<SVGSVGElement>) => (
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgSsisLiftAndShiftIr

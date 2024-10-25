@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgResourceMover = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgResourceMover = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path fill="#32bedd" d="M16.41 4.004v7.967l-6.885 4.003V7.995z" />
     <path fill="#9cebff" d="M16.41 4.004 9.526 8.006 2.64 4.003 9.526 0z" />
@@ -14,5 +17,5 @@ const SvgResourceMover = (props: SVGProps<SVGSVGElement>) => (
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgResourceMover

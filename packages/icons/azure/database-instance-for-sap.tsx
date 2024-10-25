@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDatabaseInstanceForSap = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDatabaseInstanceForSap = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-2.376}
         x2={8.922}
         y1={780.183}
@@ -16,7 +19,7 @@ const SvgDatabaseInstanceForSap = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
-      <linearGradient id="b" x1={11.418} x2={11.418} y1={17.247} y2={10.771} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={11.418} x2={11.418} y1={17.247} y2={10.771} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={0.302} stopColor="#36c3e1" />
         <stop offset={0.66} stopColor="#41d1ee" />
@@ -24,7 +27,7 @@ const SvgDatabaseInstanceForSap = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M6.07 4.869C2.95 4.861.424 3.933.427 2.8L.4 13.744c0 1.127 2.481 2.049 5.567 2.072h.077c3.12.008 5.651-.907 5.654-2.043l.028-10.948C11.721 3.963 9.19 4.877 6.07 4.869"
     />
     <path
@@ -40,12 +43,12 @@ const SvgDatabaseInstanceForSap = (props: SVGProps<SVGSVGElement>) => (
       d="M6.074 2.946a10.4 10.4 0 0 0-3.43.488 10 10 0 0 0 3.429.519 10 10 0 0 0 3.431-.5 10.4 10.4 0 0 0-3.43-.507"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M5.652 17.247h5.953a.42.42 0 0 0 .3-.124l5.578-5.639a.419.419 0 0 0-.3-.713H5.652a.42.42 0 0 0-.418.419v5.639a.42.42 0 0 0 .418.418"
     />
     <path fill="#fff" d="M11.724 12.689v2.405l-2.078 1.208v-2.407z" opacity={0.6} />
     <path fill="#fff" d="m11.724 12.689-2.078 1.208-2.08-1.21 2.08-1.208z" opacity={0.9} />
     <path fill="#fff" d="M9.646 13.897v2.405l-2.08-1.208v-2.407z" opacity={0.75} />
   </svg>
-)
+)}
 export default SvgDatabaseInstanceForSap

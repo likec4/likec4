@@ -1,19 +1,22 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgUserSubscriptions = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgUserSubscriptions = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.89} x2={7.89} y1={6.9} y2={19.35} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={7.89} x2={7.89} y1={6.9} y2={19.35} gradientUnits="userSpaceOnUse">
         <stop offset={0.22} stopColor="#32d4f5" />
         <stop offset={1} stopColor="#198ab3" />
       </linearGradient>
-      <linearGradient id="b" x1={7.53} x2={8.44} y1={0.22} y2={11.53} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={7.53} x2={8.44} y1={0.22} y2={11.53} gradientUnits="userSpaceOnUse">
         <stop offset={0.22} stopColor="#32d4f5" />
         <stop offset={1} stopColor="#198ab3" />
       </linearGradient>
       <radialGradient
-        id="c"
+        id={`c-${suffix}`}
         cx={-19.24}
         cy={6.51}
         r={6.13}
@@ -25,13 +28,13 @@ const SvgUserSubscriptions = (props: SVGProps<SVGSVGElement>) => (
       </radialGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M14.05 17.11a1.34 1.34 0 0 0 1.34-1.33 1 1 0 0 0 0-.16C14.86 11.42 12.47 8 7.9 8S.86 10.9.4 15.63a1.34 1.34 0 0 0 1.19 1.47h12.46Z"
     />
     <path fill="#fff" d="M7.9 9a4.1 4.1 0 0 1-2.27-.67l2.25 5.89 2.24-5.85A4.17 4.17 0 0 1 7.9 9" opacity={0.8} />
-    <circle cx={7.9} cy={4.8} r={4.21} fill="url(#b)" />
+    <circle cx={7.9} cy={4.8} r={4.21} fill={`url(#b-${suffix})`} />
     <path
-      fill="url(#c)"
+      fill={`url(#c-${suffix})`}
       d="M17.27 11.45a1.13 1.13 0 0 0 0-1.6l-1.94-2a1.12 1.12 0 0 0-1.6 0l-2 1.94a1.14 1.14 0 0 0 0 1.61l1.61 1.64a.3.3 0 0 1 .09.22v3a.36.36 0 0 0 .12.28l.73.75a.27.27 0 0 0 .37 0l.72-.72.42-.43a.14.14 0 0 0 0-.2l-.31-.31a.17.17 0 0 1 0-.23l.31-.31a.13.13 0 0 0 0-.2l-.3-.31a.17.17 0 0 1 0-.23l.31-.31a.14.14 0 0 0 0-.2l-.42-.43v-.11Zm-2.73-3.11a.66.66 0 0 1 .64.65.63.63 0 0 1-.65.64.65.65 0 0 1 0-1.29Z"
     />
     <path
@@ -60,5 +63,5 @@ const SvgUserSubscriptions = (props: SVGProps<SVGSVGElement>) => (
       transform="rotate(-89.65 14.559 11.29)"
     />
   </svg>
-)
+)}
 export default SvgUserSubscriptions

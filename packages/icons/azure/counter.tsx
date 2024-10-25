@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCounter = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCounter = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#0078d4"
@@ -21,5 +24,5 @@ const SvgCounter = (props: SVGProps<SVGSVGElement>) => (
       d="M14.8 6.939v4.141h-.89V7.945a1 1 0 0 1-.174.122 2 2 0 0 1-.213.105 2 2 0 0 1-.235.079 2 2 0 0 1-.24.047v-.752a3.7 3.7 0 0 0 .655-.259 4 4 0 0 0 .557-.348Z"
     />
   </svg>
-)
+)}
 export default SvgCounter

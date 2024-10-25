@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgJupyter = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgJupyter = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#767677"
@@ -20,5 +23,5 @@ const SvgJupyter = (props: SVGProps<SVGSVGElement>) => (
       d="M21.285 23.418a5.53 5.53 0 0 1-3.14-.816 5.63 5.63 0 0 1-2.618-5.672 5.6 5.6 0 0 1 1.407-2.95 5.6 5.6 0 0 1 2.789-1.664 5.46 5.46 0 0 1 3.238.184 5.54 5.54 0 0 1 2.586 1.969 5.66 5.66 0 0 1-.399 7.129 5.56 5.56 0 0 1-3.867 1.82zm0 0"
     />
   </svg>
-)
+)}
 export default SvgJupyter

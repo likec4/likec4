@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDart = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDart = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#00c4b3" d="m35.2 34.9-8.3-8.3v59.7l.1 2.8c0 1.3.2 2.8.7 4.3l65.6 23.1 16.3-7.2z" />
     <path fill="#22d3c5" d="m109.6 109.3-16.3 7.2-65.4-23.1c1.3 4.8 4 10.1 7 13.2l21.3 21.2 47.6.1z" />
@@ -15,5 +18,5 @@ const SvgDart = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#00c4b3" d="M90.5 18.2 75.7 3.5c-3.4-3.4-8-4.4-10.4-2.3L26.9 26.6h59.5l2.9.1c1.3 0 2.8.2 4.3.7z" />
   </svg>
-)
+)}
 export default SvgDart

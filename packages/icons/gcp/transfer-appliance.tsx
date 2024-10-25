@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgTransferAppliance = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgTransferAppliance = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#4285f4}.cls-2{fill:#669df6}'}</style>
@@ -16,5 +19,5 @@ const SvgTransferAppliance = (props: SVGProps<SVGSVGElement>) => (
       <path d="M6.74 15.75H4.61a.81.81 0 0 1-.21-1.61h2.34A.81.81 0 0 1 7 15.75Z" className="cls-2" />
     </g>
   </svg>
-)
+)}
 export default SvgTransferAppliance

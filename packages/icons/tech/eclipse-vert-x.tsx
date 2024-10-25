@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgEclipseVertx = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgEclipseVertx = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="M11.2 1.2C7.04 2.48 2.237 7.12.878 11.12.399 12.641 0 16.481 0 19.68v5.922h16.879l1.441 3.359c.801 1.918 4.239 9.758 7.68 17.437 3.36 7.68 7.04 16.32 8.16 19.122l2.078 5.12 4.082-8.718c2.32-4.8 6.801-14.723 10.078-22.082l6-13.36 12.082-.082h12.08l7.043 10.403c3.918 5.758 7.359 10.16 7.597 9.84.32-.403 3.52-5.04 7.2-10.48l6.64-9.763H128v-5.84c0-3.117-.398-7.199-.879-8.956-1.2-4.403-6.64-9.524-11.36-10.641C110-.56 16-.24 11.2 1.199Zm0 0"
@@ -20,5 +23,5 @@ const SvgEclipseVertx = (props: SVGProps<SVGSVGElement>) => (
       stroke="none"
     />
   </svg>
-)
+)}
 export default SvgEclipseVertx

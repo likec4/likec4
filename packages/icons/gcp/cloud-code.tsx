@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudCode = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudCode = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#aecbfa}.cls-2{fill:#669df6}.cls-3{fill:#4285f4}'}</style>
@@ -17,5 +20,5 @@ const SvgCloudCode = (props: SVGProps<SVGSVGElement>) => (
       </g>
     </g>
   </svg>
-)
+)}
 export default SvgCloudCode

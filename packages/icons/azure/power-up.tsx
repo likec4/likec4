@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPowerUp = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPowerUp = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.886} x2={8.886} y1={12.654} y2={6.632} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.886} x2={8.886} y1={12.654} y2={6.632} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#1988d9" />
         <stop offset={0.218} stopColor="#218ddc" />
         <stop offset={0.559} stopColor="#379ce5" />
@@ -12,7 +15,7 @@ const SvgPowerUp = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M8.886 12.654c3.062-2.194 3.165-3.474 3.179-3.875.019-.56-.059-2.026-1.537-2.141a1.6 1.6 0 0 0-1.642 1.069 1.6 1.6 0 0 0-1.642-1.069c-1.478.115-1.556 1.581-1.537 2.141.013.4.116 1.681 3.179 3.875"
     />
     <path
@@ -29,5 +32,5 @@ const SvgPowerUp = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#b3b3b3" d="m2.8 8.303.692 1.072-.554.517-.842-1.293zM15.2 9.695l-.734-1.133.606-.472.771 1.206z" />
   </svg>
-)
+)}
 export default SvgPowerUp

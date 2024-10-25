@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPrivateServiceConnect = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPrivateServiceConnect = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path d="m12 6.23-4.72 2.1v3.15A6.73 6.73 0 0 0 10 16.79a5.8 5.8 0 0 0 2 1Z" fill="#669df6" />
     <path
@@ -18,5 +21,5 @@ const SvgPrivateServiceConnect = (props: SVGProps<SVGSVGElement>) => (
     <path d="M20.41 12.73a.73.73 0 0 1 0-1.46v-.6a1.33 1.33 0 0 0 0 2.66Z" fill="#aecbfa" />
     <path d="M20.41 13.33A1.32 1.32 0 0 0 21.75 12a1.33 1.33 0 0 0-1.34-1.33v.6a.73.73 0 1 1 0 1.46Z" fill="#669df6" />
   </svg>
-)
+)}
 export default SvgPrivateServiceConnect

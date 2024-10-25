@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCapacitor = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCapacitor = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#53b9ff"
@@ -16,5 +19,5 @@ const SvgCapacitor = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#119eff" d="m57.68 50.492 19.828-19.8L46.957.155 27.184 19.957Zm0 0" />
     <path fillOpacity={0.2} d="m57.68 50.492 19.828-19.8-7.633-7.594Zm0 0" />
   </svg>
-)
+)}
 export default SvgCapacitor

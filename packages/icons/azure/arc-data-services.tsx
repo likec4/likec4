@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgArcDataServices = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgArcDataServices = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={3.423} x2={14.584} y1={8.438} y2={8.438} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={3.423} x2={14.584} y1={8.438} y2={8.438} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.52} stopColor="#0078d4" />
         <stop offset={1} stopColor="#005ba1" />
@@ -16,7 +19,7 @@ const SvgArcDataServices = (props: SVGProps<SVGSVGElement>) => (
     />
     <ellipse cx={9.001} cy={13.246} fill="#50e6ff" rx={8.576} ry={2.965} transform="rotate(-.575 9.001 13.298)" />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M9 4.067c-3.082 0-5.581-.87-5.581-2.019v10.76c0 1.106 2.456 2 5.5 2.02H9c3.082 0 5.58-.871 5.58-2.02V2.048c.004 1.123-2.494 2.019-5.58 2.019"
     />
     <path
@@ -33,5 +36,5 @@ const SvgArcDataServices = (props: SVGProps<SVGSVGElement>) => (
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgArcDataServices

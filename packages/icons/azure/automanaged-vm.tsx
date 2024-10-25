@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAutomanagedVm = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAutomanagedVm = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={9}
         x2={9}
         y1={778.831}
@@ -17,7 +20,7 @@ const SvgAutomanagedVm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.8} stopColor="#5ea0ef" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={9}
         x2={9}
         y1={774.201}
@@ -29,9 +32,9 @@ const SvgAutomanagedVm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#707070" />
       </linearGradient>
     </defs>
-    <rect width={18} height={12} y={0.685} fill="url(#a)" rx={0.6} />
+    <rect width={18} height={12} y={0.685} fill={`url(#a-${suffix})`} rx={0.6} />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M12.61 16.315c-1.78-.28-1.85-1.56-1.85-3.63H7.23c0 2.07-.06 3.35-1.84 3.63a1 1 0 0 0-.89 1h9a1 1 0 0 0-.89-1"
     />
     <path
@@ -45,5 +48,5 @@ const SvgAutomanagedVm = (props: SVGProps<SVGSVGElement>) => (
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgAutomanagedVm

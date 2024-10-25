@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgNodewebkit = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgNodewebkit = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#3D3B47"
@@ -24,5 +27,5 @@ const SvgNodewebkit = (props: SVGProps<SVGSVGElement>) => (
       d="M62.5 58.1c.6-.1 1.2-.2 1.9-.2 2 .1 3.9 1.3 4.9 3 .6 1.1.9 2.3.8 3.5-.1 1.5-.7 2.8-1.7 3.8l39.9-29.4z"
     />
   </svg>
-)
+)}
 export default SvgNodewebkit

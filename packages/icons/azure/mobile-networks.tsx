@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMobileNetworks = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMobileNetworks = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={307}
         x2={307}
         y1={388.135}
@@ -19,17 +22,17 @@ const SvgMobileNetworks = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.67} stopColor="#0076d1" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
-      <linearGradient id="b" x1={4.738} x2={4.738} y1={15.38} y2={6.013} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={4.738} x2={4.738} y1={15.38} y2={6.013} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M13.943 15.325A4.09 4.09 0 0 0 18 11.382 4.04 4.04 0 0 0 14.489 7.5 5.1 5.1 0 0 0 9.24 2.622a5.23 5.23 0 0 0-5 3.407A4.83 4.83 0 0 0 0 10.671a4.9 4.9 0 0 0 5.07 4.706"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M9.473 15.38v-4.775a4.745 4.745 0 0 0-4.828-4.592A4.78 4.78 0 0 0 0 10.788a4.886 4.886 0 0 0 4.738 4.592Z"
     />
     <path
@@ -52,5 +55,5 @@ const SvgMobileNetworks = (props: SVGProps<SVGSVGElement>) => (
       <path d="M2.1 13.239v-.634a1.44 1.44 0 0 0 .751.211.72.72 0 0 0 .469-.139.47.47 0 0 0 .169-.38q0-.5-.722-.5a5 5 0 0 0-.614.04l.13-1.88H4.1v.606H2.862l-.048.675q.184-.015.319-.015a1.2 1.2 0 0 1 .83.273.95.95 0 0 1 .3.733 1.07 1.07 0 0 1-.357.833 1.4 1.4 0 0 1-.969.323 2.1 2.1 0 0 1-.837-.146M7.493 13.1a2.5 2.5 0 0 1-1.252.284 1.83 1.83 0 0 1-1.308-.45 1.62 1.62 0 0 1-.479-1.234 1.71 1.71 0 0 1 .523-1.3 1.93 1.93 0 0 1 1.391-.5 2.9 2.9 0 0 1 .964.148v.712a1.94 1.94 0 0 0-.974-.226 1.05 1.05 0 0 0-.785.307 1.11 1.11 0 0 0-.3.818 1.11 1.11 0 0 0 .273.8.97.97 0 0 0 .735.284 1.05 1.05 0 0 0 .441-.077v-.658H6.03v-.606h1.463Z" />
     </g>
   </svg>
-)
+)}
 export default SvgMobileNetworks

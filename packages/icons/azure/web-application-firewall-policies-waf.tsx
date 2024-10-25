@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgWebApplicationFirewallPoliciesWaf = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgWebApplicationFirewallPoliciesWaf = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id={`a-${suffix}`}
         cx={15013.284}
         cy={4584.191}
         r={56.626}
@@ -16,7 +19,7 @@ const SvgWebApplicationFirewallPoliciesWaf = (props: SVGProps<SVGSVGElement>) =>
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={4.022}
         x2={3.991}
         y1={171.297}
@@ -31,12 +34,12 @@ const SvgWebApplicationFirewallPoliciesWaf = (props: SVGProps<SVGSVGElement>) =>
         <stop offset={1} stopColor="#fcfcfc" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M13.9 15.5A8.512 8.512 0 0 1 3.4 2.1l.1-.1a8.521 8.521 0 0 1 10.4 13.5" />
+    <path fill={`url(#a-${suffix})`} d="M13.9 15.5A8.512 8.512 0 0 1 3.4 2.1l.1-.1a8.521 8.521 0 0 1 10.4 13.5" />
     <path
       fill="#83b9f9"
       d="M2.1 10.5a26 26 0 0 0-.8 2.6l.6.9.6.6a14.3 14.3 0 0 1 1.1-3.5 2.53 2.53 0 0 1-1.5-.6M3.1 5.9A13.7 13.7 0 0 1 2.4 3a7.6 7.6 0 0 0-1.1 1.4 10.6 10.6 0 0 0 .6 2.4 2.73 2.73 0 0 1 1.2-.9"
     />
-    <circle cx={4} cy={8.5} r={2.7} fill="url(#b)" />
+    <circle cx={4} cy={8.5} r={2.7} fill={`url(#b-${suffix})`} />
     <path
       fill="#83b9f9"
       d="M8 13.5a2.1 2.1 0 0 1 .5-1.3A9.2 9.2 0 0 1 6 10.3a2.75 2.75 0 0 1-1.5.8A19 19 0 0 0 6 12.5a8.2 8.2 0 0 0 2 1.2ZM14.3 13.7a13.3 13.3 0 0 1-2.8-.3v.1a1.66 1.66 0 0 1-.5 1.2 13 13 0 0 0 3.4.2c.4-.4.8-.9 1.2-1.3a5.3 5.3 0 0 1-1.3.1"
@@ -65,5 +68,5 @@ const SvgWebApplicationFirewallPoliciesWaf = (props: SVGProps<SVGSVGElement>) =>
     <path fill="#ff7381" d="M9.5 15.5h3.6v1.6H9.5z" />
     <path fill="#e62323" d="M13.6 15.5h3.6v1.6h-3.6z" />
   </svg>
-)
+)}
 export default SvgWebApplicationFirewallPoliciesWaf

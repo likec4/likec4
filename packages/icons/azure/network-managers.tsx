@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgNetworkManagers = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgNetworkManagers = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={12.141} x2={12.141} y1={7.014} y2={17.81} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={12.141} x2={12.141} y1={7.014} y2={17.81} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
@@ -26,10 +29,10 @@ const SvgNetworkManagers = (props: SVGProps<SVGSVGElement>) => (
       d="m14.465 4.542-.523.521L9.82.929a.235.235 0 0 1 0-.329l.529-.527a.235.235 0 0 1 .333 0l3.789 3.8a.47.47 0 0 1 0 .667Z"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M17.539 13.124V11.9h-.162l-1.331-.413-.306-.918.666-1.439-.864-.864h-.162l-1.241.63-.828-.342-.54-1.494h-1.277v.18l-.432 1.314-.846.342-1.4-.666-.864.864.09.162.5 1.331-.288.9-1.511.485v1.314h.18l1.313.432.306.809-.666 1.44.9.917.18-.09 1.223-.629.846.342.541 1.493h1.223v-.18l.432-1.313.846-.342 1.421.665.864-.863-.09-.162-.522-1.3.342-.845Zm-5.361 1.8h-.037a2.357 2.357 0 1 1 .037 0"
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgNetworkManagers

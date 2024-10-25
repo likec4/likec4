@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgVyper = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgVyper = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path d="M80 91.712 64 64 48 91.712l16 27.712z" opacity={0.8} />
     <path d="M96 64 80 36.288 64 64l16 27.712zM64 64 48 36.288 32 64l16 27.712z" opacity={0.6} />
@@ -11,5 +14,5 @@ const SvgVyper = (props: SVGProps<SVGSVGElement>) => (
     />
     <path d="M128 8.574H96l16 27.713zM32 8.574H0l16 27.713z" opacity={0.3} />
   </svg>
-)
+)}
 export default SvgVyper

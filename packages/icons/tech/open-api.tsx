@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgOpenApi = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgOpenApi = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="M43.125 51.148H20.781l.012.325q.02.315.039.625.005.135.016.27a41 41 0 0 0 .164 1.687c0 .027.004.05.008.078q.05.43.113.86-.001.005.004.01a37 37 0 0 0 1.152 5.255c.004.008.008.012.008.02a28 28 0 0 0 .265.859q.008.023.016.047c.078.242.164.484.246.73.024.059.043.121.067.184q.11.311.226.629.058.139.11.285.104.256.203.52.082.191.164.39c.054.133.113.27.168.406q.112.246.218.492.07.152.133.297c.09.195.184.395.278.59l.093.191q.166.34.336.672.029.053.051.102a36 36 0 0 0 .41.773q.044.078.086.149L44.45 56.156l.07-.043a15 15 0 0 1-1.394-4.965Zm0 0"
@@ -100,5 +103,5 @@ const SvgOpenApi = (props: SVGProps<SVGSVGElement>) => (
       stroke="none"
     />
   </svg>
-)
+)}
 export default SvgOpenApi

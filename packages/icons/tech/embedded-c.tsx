@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgEmbeddedC = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgEmbeddedC = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fill="#b3b3b3" transform="matrix(1 0 0 .8 0 27.184)">
       <g transform="translate(112)">
@@ -38,5 +41,5 @@ const SvgEmbeddedC = (props: SVGProps<SVGSVGElement>) => (
       <ellipse cx={23} cy={-5.2} fill="#fff" rx={3} ry={3.8} />
     </g>
   </svg>
-)
+)}
 export default SvgEmbeddedC

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgComputeEngine = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgComputeEngine = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#aecbfa}.cls-2{fill:#669df6}.cls-3{fill:#4285f4}'}</style>
@@ -16,5 +19,5 @@ const SvgComputeEngine = (props: SVGProps<SVGSVGElement>) => (
       <path d="m12 12 3 3V9z" className="cls-3" />
     </g>
   </svg>
-)
+)}
 export default SvgComputeEngine

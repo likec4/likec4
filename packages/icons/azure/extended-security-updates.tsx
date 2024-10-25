@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgExtendedSecurityUpdates = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgExtendedSecurityUpdates = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.981} x2={7.981} y1={16.737} y2={0.724} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={7.981} x2={7.981} y1={16.737} y2={0.724} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
@@ -14,7 +17,7 @@ const SvgExtendedSecurityUpdates = (props: SVGProps<SVGSVGElement>) => (
       d="M15.125 8.153c0 4.7-5.674 8.475-6.909 9.241a.44.44 0 0 1-.47 0C6.512 16.628.837 12.848.837 8.153V2.5a.45.45 0 0 1 .439-.447C5.69 1.937 4.674 0 7.981 0s2.292 1.937 6.706 2.057a.45.45 0 0 1 .438.447Z"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M14.533 8.2c0 4.306-5.2 7.772-6.336 8.475a.41.41 0 0 1-.431 0C6.634 15.973 1.43 12.507 1.43 8.2V3.021a.41.41 0 0 1 .4-.41C5.88 2.5 4.948.724 7.981.724s2.1 1.777 6.15 1.887a.41.41 0 0 1 .4.41Z"
     />
     <circle cx={11.946} cy={12.783} r={5.217} fill="#76bc2d" />
@@ -23,5 +26,5 @@ const SvgExtendedSecurityUpdates = (props: SVGProps<SVGSVGElement>) => (
       d="M8.22 12.293a.184.184 0 0 1-.253-.065l-.221-.372a.185.185 0 0 1 .065-.253l1.751-1.039a.184.184 0 0 1 .253.065l1.039 1.751a.184.184 0 0 1-.065.253l-.372.221a.185.185 0 0 1-.253-.065l-.308-.52a2.4 2.4 0 0 0-.048.877 2.2 2.2 0 0 0 .289.831 2.1 2.1 0 0 0 .4.5 2.4 2.4 0 0 0 .521.362 2.3 2.3 0 0 0 .6.207 2.4 2.4 0 0 0 .476.043.18.18 0 0 1 .18.167l.084.9a3.3 3.3 0 0 1-.945-.051 3.5 3.5 0 0 1-.884-.306 3.4 3.4 0 0 1-.765-.534 3.33 3.33 0 0 1-1.03-2 3.4 3.4 0 0 1 .093-1.33Zm4.256-1.7a2.3 2.3 0 0 1 .6.21 2.4 2.4 0 0 1 .52.362 2.18 2.18 0 0 1 .692 1.326 2.4 2.4 0 0 1-.048.877l-.308-.52a.185.185 0 0 0-.253-.065l-.372.221a.184.184 0 0 0-.065.253l1.039 1.752a.185.185 0 0 0 .253.064l1.751-1.039a.184.184 0 0 0 .065-.253l-.221-.372a.185.185 0 0 0-.253-.064l-.606.359a3.35 3.35 0 0 0 .093-1.329 3.33 3.33 0 0 0-1.03-2 3.4 3.4 0 0 0-.765-.533 3.5 3.5 0 0 0-.884-.306 3.3 3.3 0 0 0-.755-.063.18.18 0 0 0-.172.2l.066.71a.18.18 0 0 0 .181.168 2 2 0 0 1 .472.049Z"
     />
   </svg>
-)
+)}
 export default SvgExtendedSecurityUpdates

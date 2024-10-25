@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDrupal = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDrupal = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#00598E"
@@ -32,5 +35,5 @@ const SvgDrupal = (props: SVGProps<SVGSVGElement>) => (
       d="M105.336 39.423c2.396 7.311.119 13.903-1.438 17.979-1.559 4.075-9.588 21.813-52.975 41.229-8.03 3.595-9.708 5.154-18.816 5.273-7.671.12-11.626-2.516-14.143-4.793l-1.188.042c9.7 16.492 28.028 27.044 47.69 27.044 28.885 0 53.934-20.974 53.934-52.735 0-17.441-7.084-29.641-14.108-37.494.243.91.581 2.044 1.044 3.455"
     />
   </svg>
-)
+)}
 export default SvgDrupal

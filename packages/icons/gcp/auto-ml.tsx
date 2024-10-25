@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAutoMl = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAutoMl = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-2{fill:#669df6;fill-opacity:.8}'}</style>
@@ -13,5 +16,5 @@ const SvgAutoMl = (props: SVGProps<SVGSVGElement>) => (
       <path d="M11.17 21 9.5 18.43l1.67-2.57H7.83l-1.66 2.57L7.83 21z" className="cls-2" />
     </g>
   </svg>
-)
+)}
 export default SvgAutoMl

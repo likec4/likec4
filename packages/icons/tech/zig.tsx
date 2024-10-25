@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgZig = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgZig = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fill="#f7a41d">
       <path d="m38.484 23.843-15.06 18.405-7.529-11.712z" />
@@ -21,5 +24,5 @@ const SvgZig = (props: SVGProps<SVGSVGElement>) => (
       <path d="m104.575 84.915 4.183 12.55-20.078 5.855z" />
     </g>
   </svg>
-)
+)}
 export default SvgZig

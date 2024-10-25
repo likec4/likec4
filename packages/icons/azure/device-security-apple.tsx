@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDeviceSecurityApple = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDeviceSecurityApple = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={11.122} x2={2.751} y1={13.92} y2={-0.562} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={11.122} x2={2.751} y1={13.92} y2={-0.562} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#a33a85" />
         <stop offset={0.998} stopColor="#dc92bf" />
       </linearGradient>
@@ -14,7 +17,7 @@ const SvgDeviceSecurityApple = (props: SVGProps<SVGSVGElement>) => (
       d="M12.494 7.023c0 4.037-4.969 7.286-6.049 7.945a.4.4 0 0 1-.412 0C4.952 14.309-.016 11.06-.016 7.023V2.167a.39.39 0 0 1 .384-.385C4.232 1.679 3.343.013 6.239.013s2.006 1.666 5.871 1.769a.39.39 0 0 1 .384.385Z"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M11.975 7.065c0 3.7-4.556 6.681-5.547 7.285a.36.36 0 0 1-.378 0C5.059 13.746.5 10.766.5 7.065V2.611a.357.357 0 0 1 .352-.353C4.4 2.164 3.583.636 6.239.636s1.84 1.528 5.384 1.622a.357.357 0 0 1 .352.353Z"
     />
     <path
@@ -30,5 +33,5 @@ const SvgDeviceSecurityApple = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={7.118} cy={14.066} r={0.498} fill="#fff" opacity={0.7} />
     <circle cx={6.998} cy={16.691} r={0.531} fill="#fff" opacity={0.7} />
   </svg>
-)
+)}
 export default SvgDeviceSecurityApple

@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAppSpaceComponent = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAppSpaceComponent = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={9.355}
         x2={8.403}
         y1={790.98}
@@ -18,7 +21,7 @@ const SvgAppSpaceComponent = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M10.036 0H2.264a.614.614 0 0 0-.614.615v16.77a.614.614 0 0 0 .614.615h13.472a.616.616 0 0 0 .614-.615V6.286a.614.614 0 0 0-.614-.614h-4.472a.614.614 0 0 1-.614-.614V.615A.614.614 0 0 0 10.036 0"
     />
     <path fill="#318581" d="M16.115 5.794 10.438.134v4.612a1.04 1.04 0 0 0 1.035 1.048z" />
@@ -30,5 +33,5 @@ const SvgAppSpaceComponent = (props: SVGProps<SVGSVGElement>) => (
       d="m7.425 14.514 2.278-7.116a.11.11 0 0 1 .141-.073l.56.179a.11.11 0 0 1 .073.141l-2.278 7.116a.11.11 0 0 1-.141.073l-.56-.179a.11.11 0 0 1-.073-.141M6.658 8.225l.35.349a.16.16 0 0 1 0 .224l-2.757 2.765-.35-.349a.316.316 0 0 1 0-.448l2.535-2.541a.156.156 0 0 1 .222 0M14.096 11.213l-.35.349-2.754-2.761a.16.16 0 0 1 0-.224l.35-.349a.16.16 0 0 1 .224 0l2.531 2.539a.317.317 0 0 1 0 .448h-.001z"
     />
   </svg>
-)
+)}
 export default SvgAppSpaceComponent

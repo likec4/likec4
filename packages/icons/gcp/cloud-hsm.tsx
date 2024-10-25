@@ -1,8 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudHsm = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" id="Artwork" viewBox="0 0 24 24" {...props}>
+import { randomString } from 'remeda'
+const SvgCloudHsm = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
+  <svg xmlns="http://www.w3.org/2000/svg" id={`Artwork-${suffix}`} viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#669df6}.cls-3{fill:#aecbfa}'}</style>
     </defs>
@@ -24,5 +27,5 @@ const SvgCloudHsm = (props: SVGProps<SVGSVGElement>) => (
       className="cls-3"
     />
   </svg>
-)
+)}
 export default SvgCloudHsm

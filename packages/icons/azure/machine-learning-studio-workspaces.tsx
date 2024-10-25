@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMachineLearningStudioWorkspaces = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMachineLearningStudioWorkspaces = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.71} x2={5.82} y1={7.1} y2={17.48} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={5.71} x2={5.82} y1={7.1} y2={17.48} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#32d4f5" />
         <stop offset={0.32} stopColor="#31d1f3" />
         <stop offset={0.53} stopColor="#2ec9eb" />
@@ -26,7 +29,7 @@ const SvgMachineLearningStudioWorkspaces = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#83b9f9" d="M13.55 9.87H9.57V6.04h3.98z" />
     <path fill="#0078d4" d="M9.57 9.87H5.59V6.04h3.98z" />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M10.73 17.4H.89c-.31 0-.5-.5-.32-.76l3.39-5a.34.34 0 0 0 .04-.17V8.2a.2.2 0 0 0-.16-.2h-.19a.39.39 0 0 1-.39-.39v-.17a.39.39 0 0 1 .39-.38H8a.38.38 0 0 1 .39.38v.18A.38.38 0 0 1 8 8h-.21a.2.2 0 0 0-.2.19v3.28a.4.4 0 0 0 .07.22l3.4 4.94c.17.27-.01.77-.33.77"
     />
     <path
@@ -34,5 +37,5 @@ const SvgMachineLearningStudioWorkspaces = (props: SVGProps<SVGSVGElement>) => (
       d="m2.19 16 2.46-3.59a.86.86 0 0 0 .16-.51v-1.5a.29.29 0 0 1 .29-.29h1.4a.28.28 0 0 1 .28.29V12a.6.6 0 0 0 .11.34L9.41 16a.21.21 0 0 1-.18.34H2.36a.21.21 0 0 1-.17-.34"
     />
   </svg>
-)
+)}
 export default SvgMachineLearningStudioWorkspaces

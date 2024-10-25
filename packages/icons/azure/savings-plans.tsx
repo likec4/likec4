@@ -1,20 +1,23 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSavingsPlans = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSavingsPlans = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.388} x2={8.388} y1={1.268} y2={15.439} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.388} x2={8.388} y1={1.268} y2={15.439} gradientUnits="userSpaceOnUse">
         <stop offset={0.163} stopColor="#f2f2f2" />
         <stop offset={1} stopColor="#e6e6e6" />
       </linearGradient>
-      <linearGradient id="b" x1={13.511} x2={13.511} y1={8.97} y2={17.914} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={13.511} x2={13.511} y1={8.97} y2={17.914} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#86d633" />
         <stop offset={0.999} stopColor="#76bc2d" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M15.58 8.408q-.001.326-.031.646c-3.949-1.97-8.465 2.578-6.494 6.527C3.906 16.2-.31 10.564 1.707 5.8a7.1 7.1 0 0 1 1.4-2.247c.676 1.292.86-.864 1.363-1.175 5.038-3.118 11.293.465 11.11 6.03"
     />
     <path
@@ -27,7 +30,7 @@ const SvgSavingsPlans = (props: SVGProps<SVGSVGElement>) => (
       d="M9.055 15.581c.086.364.824.963.213 1.166C1.774 17.6-3.175 8.3 2.375 2.542c-.149-.248-.87-.887-.254-1.043l2.4-.283c.67.016.028.879-.053 1.162-.1.236-.5 1.089-.655 1.452-.27.418-.553-.023-.708-.277a8 8 0 0 0-.374.441L2.727 4q-.068.09-.133.179l-.012.021a7 7 0 0 0-.871 1.595v.007c-2.055 4.907 2.259 10.283 7.344 9.779M12.084.845a.2.2 0 0 0-.065-.031 8.3 8.3 0 0 0-3.627-.822.619.619 0 0 0 0 1.236h.133a7.19 7.19 0 0 1 7.015 7.82c1.144.644 1.261.8 1.26-.662A8.41 8.41 0 0 0 12.084.845"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M16.594 10.256a4.6 4.6 0 0 0-1.1-.761l-.065-.034a4.492 4.492 0 0 0-5.986 5.97 1 1 0 0 0 .039.081 4.5 4.5 0 0 0 .741 1.071c0 .008.012.012.019.02a4.49 4.49 0 1 0 6.347-6.347Z"
     />
     <path
@@ -35,5 +38,5 @@ const SvgSavingsPlans = (props: SVGProps<SVGSVGElement>) => (
       d="M14.734 13.947a1.4 1.4 0 0 0-.726-.692 4 4 0 0 1-.69-.341.36.36 0 0 1-.162-.487.34.34 0 0 1 .13-.119 1.31 1.31 0 0 1 1.168.042 2 2 0 0 1 .211.119v-.8a2.85 2.85 0 0 0-1.536-.085 1.22 1.22 0 0 0-.792.523.1.1 0 0 1-.019.034 1.05 1.05 0 0 0-.123.515 1 1 0 0 0 .219.653 1.8 1.8 0 0 0 .669.457c.325.15.991.334.787.8a.33.33 0 0 1-.119.123 1 1 0 0 1-.492.1 1.64 1.64 0 0 1-.987-.338 1 1 0 0 1-.069-.054v.857a1.8 1.8 0 0 0 .507.169c.077.011.15.023.246.031.625.05 1.5.007 1.787-.663a1.04 1.04 0 0 0-.009-.844m-1.294 1.8a.386.386 0 1 0 .384.388.387.387 0 0 0-.384-.385Zm.019-5.233a.387.387 0 1 0 .384.384.38.38 0 0 0-.384-.381Z"
     />
   </svg>
-)
+)}
 export default SvgSavingsPlans

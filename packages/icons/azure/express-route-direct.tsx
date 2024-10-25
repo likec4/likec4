@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgExpressRouteDirect = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgExpressRouteDirect = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={13.119} x2={11.489} y1={5.643} y2={16.919} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={13.119} x2={11.489} y1={5.643} y2={16.919} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#a67af4" />
         <stop offset={1} stopColor="#773adc" />
       </linearGradient>
@@ -29,10 +32,10 @@ const SvgExpressRouteDirect = (props: SVGProps<SVGSVGElement>) => (
       d="M14.973 6.249 12.78 8.442a.3.3 0 0 0 0 .425l2.366 2.366a.3.3 0 0 0 .425 0L17.606 9.2a5.7 5.7 0 0 0-2.633-2.951"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M12.3 6.335a4.946 4.946 0 1 1-4.946 4.946A4.95 4.95 0 0 1 12.3 6.335m0-.75a5.7 5.7 0 1 0 5.7 5.7 5.7 5.7 0 0 0-5.7-5.7"
     />
     {'\u200B'}
   </svg>
-)
+)}
 export default SvgExpressRouteDirect

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGruntjs = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGruntjs = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#493310"
@@ -173,5 +176,5 @@ const SvgGruntjs = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
   </svg>
-)
+)}
 export default SvgGruntjs

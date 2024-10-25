@@ -1,16 +1,19 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAzureObjectUnderstanding = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAzureObjectUnderstanding = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={11.499} x2={11.499} y1={2.355} y2={12.575} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={11.499} x2={11.499} y1={2.355} y2={12.575} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#42e8ca" />
         <stop offset={1} stopColor="#37c2b1" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="m7.846 9.132 3.342-6.582a.357.357 0 0 1 .633-.006l3.334 6.291a2.24 2.24 0 0 1 .333 1.285c0 1.356-1.786 2.455-3.989 2.455S7.51 11.476 7.51 10.12a1.7 1.7 0 0 1 .336-.988"
       style={{
         isolation: 'isolate'
@@ -31,5 +34,5 @@ const SvgAzureObjectUnderstanding = (props: SVGProps<SVGSVGElement>) => (
       d="M2.855 8.152a.467.467 0 1 1-.466-.466.467.467 0 0 1 .466.466M6.45 5.3a.466.466 0 1 0 .466.466.465.465 0 0 0-.466-.466m4.091 2.386a.467.467 0 1 0 .466.466.466.466 0 0 0-.466-.466M6.45 10.042a.467.467 0 1 0 .466.466.466.466 0 0 0-.466-.466m-4.061 2.411a.467.467 0 1 0 .466.467.467.467 0 0 0-.466-.467m4.061 2.331a.466.466 0 1 0 .466.466.466.466 0 0 0-.466-.466m4.091-2.331a.467.467 0 1 0 .466.467.467.467 0 0 0-.466-.467"
     />
   </svg>
-)
+)}
 export default SvgAzureObjectUnderstanding

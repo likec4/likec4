@@ -1,8 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAssuredWorkloads = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" id="Artwork" viewBox="0 0 24 24" {...props}>
+import { randomString } from 'remeda'
+const SvgAssuredWorkloads = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
+  <svg xmlns="http://www.w3.org/2000/svg" id={`Artwork-${suffix}`} viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-2{fill:#aecbfa}.cls-3{fill:#669df6}'}</style>
     </defs>
@@ -22,5 +25,5 @@ const SvgAssuredWorkloads = (props: SVGProps<SVGSVGElement>) => (
     <path d="M18.53 8v1.59h-8.14V7.64a1.13 1.13 0 0 0 0-2.25V2.25Z" className="cls-3" />
     <path d="M10.39 17.86v1.64H2.25v-1.62z" className="cls-2" />
   </svg>
-)
+)}
 export default SvgAssuredWorkloads

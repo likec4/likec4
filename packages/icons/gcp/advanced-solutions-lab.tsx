@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAdvancedSolutionsLab = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAdvancedSolutionsLab = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#669df6}.cls-2{fill:#4285f4}.cls-3{fill:#aecbfa}'}</style>
@@ -41,5 +44,5 @@ const SvgAdvancedSolutionsLab = (props: SVGProps<SVGSVGElement>) => (
       <circle cx={12.03} cy={20.93} r={1.07} className="cls-1" />
     </g>
   </svg>
-)
+)}
 export default SvgAdvancedSolutionsLab

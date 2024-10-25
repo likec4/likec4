@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgOhMyZsh = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgOhMyZsh = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fillRule="evenodd"
@@ -23,5 +26,5 @@ const SvgOhMyZsh = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
   </svg>
-)
+)}
 export default SvgOhMyZsh

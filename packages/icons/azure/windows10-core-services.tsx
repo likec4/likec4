@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgWindows10CoreServices = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgWindows10CoreServices = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.41} x2={8.41} y1={17.49} y2={0.44} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.41} x2={8.41} y1={17.49} y2={0.44} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.06} stopColor="#0a7cd7" />
         <stop offset={0.34} stopColor="#2e8ce1" />
@@ -14,7 +17,7 @@ const SvgWindows10CoreServices = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="m15.23 3.76-1.38-1.34h-.14l-1.86 1-1.33-.59L9.68.44 7.75.46l-.09.27L7 2.81l-1.33.57-2.26-1-1.34 1.35.14.27 1 1.93-.53 1.33-2.32.87v1.95l.27.09 2.08.64.57 1.33-1 2.27 1.39 1.35.25-.14 1.93-1 .62.76 1.6 2.11H10l.09-.27.69-1.22 1.1-.55 2.18-.13 1.36-1.39v-.13l.27-1 .79-2.37Zm-6.36 9.57A4.37 4.37 0 1 1 13.23 9a4.36 4.36 0 0 1-4.36 4.33"
     />
     <path
@@ -34,5 +37,5 @@ const SvgWindows10CoreServices = (props: SVGProps<SVGSVGElement>) => (
       d="m14.16 2.39.71-1.47a.15.15 0 0 0-.07-.21h-.08l-5.51.42a.16.16 0 0 0-.14.17.13.13 0 0 0 0 .08l3.12 4.5a.16.16 0 0 0 .22 0l.05-.06.62-1.29a.17.17 0 0 1 .21-.08A6.33 6.33 0 0 1 15.61 9a6.42 6.42 0 0 1-6.29 6.56 6.7 6.7 0 0 1-3.11-.7.16.16 0 0 0-.21.06l-.82 1.48a.16.16 0 0 0 .06.21A8.52 8.52 0 0 0 16.69 13a8.3 8.3 0 0 0 .95-4.08 8.42 8.42 0 0 0-3.44-6.34.17.17 0 0 1-.04-.19"
     />
   </svg>
-)
+)}
 export default SvgWindows10CoreServices

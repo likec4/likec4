@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudComposer = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudComposer = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#aecbfa}.cls-2{fill:#4285f4}'}</style>
@@ -12,5 +15,5 @@ const SvgCloudComposer = (props: SVGProps<SVGSVGElement>) => (
       <path d="M8.6 22H4.68v-3.94H8.6z" className="cls-1" />
     </g>
   </svg>
-)
+)}
 export default SvgCloudComposer

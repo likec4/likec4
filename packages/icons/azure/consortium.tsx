@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgConsortium = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgConsortium = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path fill="#773adc" d="M12.1 2.05v3.8l-3.2 1.9v-3.8z" />
     <path
@@ -44,5 +47,5 @@ const SvgConsortium = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#42e8ca" d="m6.7 7.25-3.3 1.9-3.2-1.9 3.2-1.9z" />
     <path fill="#b4ec36" d="m17.8 7.05-3.2 1.9-3.2-1.9 3.2-1.8z" />
   </svg>
-)
+)}
 export default SvgConsortium

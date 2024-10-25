@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgRecent = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgRecent = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id={`a-${suffix}`}
         cx={-7.55}
         cy={17.42}
         r={9}
@@ -22,7 +25,7 @@ const SvgRecent = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
       <radialGradient
-        id="b"
+        id={`b-${suffix}`}
         cx={-7.17}
         cy={18.5}
         r={1.26}
@@ -33,7 +36,7 @@ const SvgRecent = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5e5e5e" />
       </radialGradient>
     </defs>
-    <circle cx={8.88} cy={9.09} r={8.5} fill="url(#a)" />
+    <circle cx={8.88} cy={9.09} r={8.5} fill={`url(#a-${suffix})`} />
     <circle cx={8.92} cy={9.09} r={7.4} fill="#fff" />
     <path
       fill="#7a7a7a"
@@ -41,7 +44,7 @@ const SvgRecent = (props: SVGProps<SVGSVGElement>) => (
     />
     <rect width={1.14} height={6.52} x={8.4} y={2.83} fill="#7a7a7a" rx={0.52} />
     <rect width={1.14} height={4.08} x={9.92} y={8.65} fill="#7a7a7a" rx={0.52} transform="rotate(135 10.494 10.685)" />
-    <circle cx={8.92} cy={9.08} r={1.2} fill="url(#b)" />
+    <circle cx={8.92} cy={9.08} r={1.2} fill={`url(#b-${suffix})`} />
   </svg>
-)
+)}
 export default SvgRecent

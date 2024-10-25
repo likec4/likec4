@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDataplex = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDataplex = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g fill="none" fillRule="evenodd">
       <path d="M0 0h24v24H0z" />
@@ -11,5 +14,5 @@ const SvgDataplex = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgDataplex

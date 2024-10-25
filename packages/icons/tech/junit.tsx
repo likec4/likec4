@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgJunit = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgJunit = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="M64.166 2.191c-15.303-.292-29.9 3.746-42.39 15.293-26.137 24.174-26.915 65.564-1.67 90.63 4.544 4.512 9.952 8.686 15.89 11.228 1.551-5.215 1.249-11.511.758-17.7-.118-.122-.24-.243-.33-.378-1.659-2.473-.428-8.929-.428-11.866 10.436 1.85 18.936 7.59 30.108 4.256 10.933-3.263 15.49-19.03 5.851-26.494-5.821-4.51-14.457-3.895-21.322-3.068-4.123.498-9.271 2.02-12.117-2.365-1.68-2.581.054-8.916.336-11.836.07-.736.147-1.486.22-2.225.731-9.068 1.944-18.234 1.944-27.307H85.34V4.975C78.224 3.35 71.122 2.325 64.166 2.19z"
@@ -21,5 +24,5 @@ const SvgJunit = (props: SVGProps<SVGSVGElement>) => (
       strokeWidth={0.998488}
     />
   </svg>
-)
+)}
 export default SvgJunit

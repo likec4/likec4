@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSequelize = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSequelize = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#2f406a" d="M101.84 41.72V86l-37.66 22.32-.34.31v16.57l.34.32 53-30.64V33.12l-.5-.12-15 8.36.08.36" />
     <path fill="#2379bd" d="m26.4 86.4 37.78 21.92v17.2l-53.4-30.76V33.24l.55-.08 14.91 8.67.16.5z" />
@@ -31,5 +34,5 @@ const SvgSequelize = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#2379bd" d="M49.8 71.63V53.82h.41l14.51 8.45.12.33v17.25z" />
     <path fill="#03afef" d="m64.6 45.06-14.8 8.76 15.05 8.76 14.8-8.64z" />
   </svg>
-)
+)}
 export default SvgSequelize

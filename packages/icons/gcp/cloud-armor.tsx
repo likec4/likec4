@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudArmor = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudArmor = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#aecbfa}.cls-2{fill:#669df6}'}</style>
@@ -20,5 +23,5 @@ const SvgCloudArmor = (props: SVGProps<SVGSVGElement>) => (
       <circle cx={9.69} cy={9.6} r={1.42} className="cls-2" />
     </g>
   </svg>
-)
+)}
 export default SvgCloudArmor

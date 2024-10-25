@@ -1,8 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgServiceDiscovery = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" id="Product_Icons" data-name="Product Icons" viewBox="0 0 24 24" {...props}>
+import { randomString } from 'remeda'
+const SvgServiceDiscovery = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
+  <svg xmlns="http://www.w3.org/2000/svg" id={`Product_Icons-${suffix}`} data-name="Product Icons" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-2{fill:#4285f4}.cls-3{fill:#669df6}'}</style>
     </defs>
@@ -22,5 +25,5 @@ const SvgServiceDiscovery = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={14} cy={7} r={1.25} className="cls-3" />
     <circle cx={10} cy={7} r={1.25} className="cls-3" />
   </svg>
-)
+)}
 export default SvgServiceDiscovery

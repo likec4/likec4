@@ -1,17 +1,20 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAzureNetAppFiles = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAzureNetAppFiles = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={15.83} y2={5.79} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={15.83} y2={5.79} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={0.18} stopColor="#32caea" />
         <stop offset={0.41} stopColor="#32d2f2" />
         <stop offset={0.78} stopColor="#32d4f5" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M.5 5.79h17v9.48a.57.57 0 0 1-.57.57H1.07a.57.57 0 0 1-.57-.57z" />
+    <path fill={`url(#a-${suffix})`} d="M.5 5.79h17v9.48a.57.57 0 0 1-.57.57H1.07a.57.57 0 0 1-.57-.57z" />
     <path fill="#198ab3" d="M1.07 2.17h15.86a.57.57 0 0 1 .57.57v3.05H.5V2.73a.57.57 0 0 1 .57-.56" />
     <path
       fill="#fff"
@@ -26,5 +29,5 @@ const SvgAzureNetAppFiles = (props: SVGProps<SVGSVGElement>) => (
       d="M5.11 7.86v5.59a.28.28 0 0 0 .28.28h2.35a.28.28 0 0 0 .26-.28v-3.32a.27.27 0 0 1 .28-.28h1.41a.27.27 0 0 1 .28.28v3.32a.28.28 0 0 0 .29.28h2.35a.28.28 0 0 0 .28-.28V7.86a.28.28 0 0 0-.28-.28H5.39a.28.28 0 0 0-.28.28"
     />
   </svg>
-)
+)}
 export default SvgAzureNetAppFiles

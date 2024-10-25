@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAirflow = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAirflow = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#017cee"
@@ -37,5 +40,5 @@ const SvgAirflow = (props: SVGProps<SVGSVGElement>) => (
     />
     <circle cx={64.009} cy={63.995} r={2.718} fill="#4a4848" />
   </svg>
-)
+)}
 export default SvgAirflow

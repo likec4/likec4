@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPremiumNetworkTier = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPremiumNetworkTier = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#4285f4}'}</style>
@@ -15,5 +18,5 @@ const SvgPremiumNetworkTier = (props: SVGProps<SVGSVGElement>) => (
       <circle cx={21.16} cy={13.04} r={0.84} fill="#aecbfa" />
     </g>
   </svg>
-)
+)}
 export default SvgPremiumNetworkTier

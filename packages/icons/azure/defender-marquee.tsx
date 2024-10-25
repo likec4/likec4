@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDefenderMarquee = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDefenderMarquee = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
-    <path fill="url(#a)" fillRule="evenodd" d="M17.654 4.348H.348v10.104h17.306zM0 4v10.8h18V4z" clipRule="evenodd" />
-    <path fill="url(#b)" d="M.348 4.348h17.306v10.104H.348z" />
+    <path fill={`url(#a-${suffix})`} fillRule="evenodd" d="M17.654 4.348H.348v10.104h17.306zM0 4v10.8h18V4z" clipRule="evenodd" />
+    <path fill={`url(#b-${suffix})`} d="M.348 4.348h17.306v10.104H.348z" />
     <path
       fill="#fff"
       fillRule="evenodd"
@@ -12,7 +15,7 @@ const SvgDefenderMarquee = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <defs>
-      <linearGradient id="a" x1={-0.086} x2={17.914} y1={9.4} y2={9.4} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={-0.086} x2={17.914} y1={9.4} y2={9.4} gradientUnits="userSpaceOnUse">
         <stop stopColor="#005BA1" />
         <stop offset={0.07} stopColor="#0060A9" />
         <stop offset={0.36} stopColor="#0071C8" />
@@ -21,7 +24,7 @@ const SvgDefenderMarquee = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.82} stopColor="#006ABB" />
         <stop offset={1} stopColor="#005BA1" />
       </linearGradient>
-      <linearGradient id="b" x1={-0.086} x2={17.914} y1={9.4} y2={9.4} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={-0.086} x2={17.914} y1={9.4} y2={9.4} gradientUnits="userSpaceOnUse">
         <stop stopColor="#005BA1" />
         <stop offset={0.07} stopColor="#0060A9" />
         <stop offset={0.36} stopColor="#0071C8" />
@@ -32,5 +35,5 @@ const SvgDefenderMarquee = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
   </svg>
-)
+)}
 export default SvgDefenderMarquee

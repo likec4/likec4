@@ -1,16 +1,19 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 24 24" {...props}>
     <g transform="translate(16 4)">
       <defs>
-        <filter id="a" width={17} height={28} x={-9} y={-6} filterUnits="userSpaceOnUse">
+        <filter id={`a-${suffix}`} width={17} height={28} x={-9} y={-6} filterUnits="userSpaceOnUse">
           <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
         </filter>
       </defs>
-      <mask id="b" width={17} height={28} x={-9} y={-6} maskUnits="userSpaceOnUse">
-        <g filter="url(#a)">
+      <mask id={`b-${suffix}`} width={17} height={28} x={-9} y={-6} maskUnits="userSpaceOnUse">
+        <g filter={`url(#a-${suffix})`}>
           <path
             fill="#FFF"
             fillRule="evenodd"
@@ -19,16 +22,16 @@ const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => (
           />
         </g>
       </mask>
-      <path fill="#AECBFA" fillRule="evenodd" d="M-9 22H8V-6H-9z" clipRule="evenodd" mask="url(#b)" />
+      <path fill="#AECBFA" fillRule="evenodd" d="M-9 22H8V-6H-9z" clipRule="evenodd" mask={`url(#b-${suffix})`} />
     </g>
     <g transform="translate(6.667 4)">
       <defs>
-        <filter id="c" width={17} height={28} x={-6.7} y={-6} filterUnits="userSpaceOnUse">
+        <filter id={`c-${suffix}`} width={17} height={28} x={-6.7} y={-6} filterUnits="userSpaceOnUse">
           <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
         </filter>
       </defs>
-      <mask id="d" width={17} height={28} x={-6.7} y={-6} maskUnits="userSpaceOnUse">
-        <g filter="url(#c)">
+      <mask id={`d-${suffix}`} width={17} height={28} x={-6.7} y={-6} maskUnits="userSpaceOnUse">
+        <g filter={`url(#c-${suffix})`}>
           <path
             fill="#FFF"
             fillRule="evenodd"
@@ -37,7 +40,7 @@ const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => (
           />
         </g>
       </mask>
-      <path fill="#669DF6" fillRule="evenodd" d="M-6.7 22h17V-6h-17z" clipRule="evenodd" mask="url(#d)" />
+      <path fill="#669DF6" fillRule="evenodd" d="M-6.7 22h17V-6h-17z" clipRule="evenodd" mask={`url(#d-${suffix})`} />
     </g>
     <path
       fill="#4285F4"
@@ -47,5 +50,5 @@ const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="none" d="M0 0h24v24H0z" />
   </svg>
-)
+)}
 export default SvgSecurityHealthAdvisor

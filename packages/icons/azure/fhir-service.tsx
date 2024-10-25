@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgFhirService = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgFhirService = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-278}
         x2={-278}
         y1={852.647}
@@ -20,7 +23,7 @@ const SvgFhirService = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={307}
         x2={307}
         y1={388.577}
@@ -33,9 +36,9 @@ const SvgFhirService = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path fill="#a3a3a3" d="M13.378 4.4h-.9V2.035H5.632V4.4h-.9V1.99a.9.9 0 0 1 .927-.858h6.792a.9.9 0 0 1 .927.858Z" />
-    <rect width={18} height={12.57} y={4.298} fill="url(#a)" rx={0.6} />
+    <rect width={18} height={12.57} y={4.298} fill={`url(#a-${suffix})`} rx={0.6} />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M11.359 6.235a2.31 2.31 0 0 0-2.366 1.55 2.32 2.32 0 0 0-2.381-1.534c-2.138.175-2.244 2.291-2.206 3.1.018.578.137 2.4 4.565 5.56l.038.027.038-.027c4.428-3.187 4.536-5.044 4.55-5.645.027-.787-.097-2.866-2.238-3.031"
     />
     <g fill="#fff">
@@ -45,5 +48,5 @@ const SvgFhirService = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgFhirService

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDnsMultistack = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDnsMultistack = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#9cebff"
@@ -34,5 +37,5 @@ const SvgDnsMultistack = (props: SVGProps<SVGSVGElement>) => (
       d="M6.587 7.829a5 5 0 0 0-.678.047l-.006 2.395q.291.03.584.029c.395.027.785-.101 1.087-.356.246-.257.375-.603.356-.958a1.17 1.17 0 0 0-.345-.853 1.43 1.43 0 0 0-.999-.304Zm1.012 1.392a.947.947 0 0 1-1.047.834 3 3 0 0 1-.321 0V8.052q.184-.018.368 0a.877.877 0 0 1 1 .946q.014.111.001.224Zm2.289-.387c0 .386.006.683.035 1.011a7 7 0 0 0-.444-.8L8.69 7.818h-.345v2.459l.28.018V8.227c.129.234.292.543.462.818l.771 1.232h.321V7.818h-.292v1.016Zm1.601.047c-.339-.128-.491-.304-.491-.473s.129-.368.467-.368a.95.95 0 0 1 .467.117l.094-.263a1.2 1.2 0 0 0-.543-.117l-.048-.004a.713.713 0 0 0-.753.67c0 .35.321.578.654.701s.462.234.462.485-.187.421-.514.421c-.205 0-.407-.055-.584-.158l-.07.263c.191.106.407.16.625.158.584 0 .865-.345.865-.707s-.292-.596-.631-.724Z"
     />
   </svg>
-)
+)}
 export default SvgDnsMultistack

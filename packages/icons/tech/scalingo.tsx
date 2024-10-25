@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgScalingo = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgScalingo = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="M49.2 16.11c5.597-9.614 18.14-13.2 28.015-8.016 9.875 5.187 13.344 17.183 7.75 26.793L47.075 99.96c-5.598 9.61-18.141 13.2-28.016 8.012-9.875-5.184-13.344-17.18-7.75-26.793zm0 0"
@@ -20,5 +23,5 @@ const SvgScalingo = (props: SVGProps<SVGSVGElement>) => (
       stroke="none"
     />
   </svg>
-)
+)}
 export default SvgScalingo

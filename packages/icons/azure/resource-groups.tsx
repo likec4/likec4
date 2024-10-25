@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgResourceGroups = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgResourceGroups = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#949494"
@@ -25,5 +28,5 @@ const SvgResourceGroups = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#9cebff" d="m3.68 12.07 5.31-3.06v6.15z" />
     <path fill="#50e6ff" d="M14.31 12.07 8.99 9.01v6.15z" />
   </svg>
-)
+)}
 export default SvgResourceGroups

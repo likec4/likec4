@@ -1,23 +1,26 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgIntegrationServiceEnvironments = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgIntegrationServiceEnvironments = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="b" x1={5.344} x2={5.344} y1={10.72} y2={13.464} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={5.344} x2={5.344} y1={10.72} y2={13.464} gradientUnits="userSpaceOnUse">
         <stop offset={0.001} stopColor="#76bc2d" />
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
-      <linearGradient id="c" x1={12.646} x2={12.646} y1={10.72} y2={13.464} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`c-${suffix}`} x1={12.646} x2={12.646} y1={10.72} y2={13.464} gradientUnits="userSpaceOnUse">
         <stop offset={0.001} stopColor="#76bc2d" />
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
-      <radialGradient id="a" cx={9.044} cy={8.913} r={10.514} gradientUnits="userSpaceOnUse">
+      <radialGradient id={`a-${suffix}`} cx={9.044} cy={8.913} r={10.514} gradientUnits="userSpaceOnUse">
         <stop offset={0.183} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
     </defs>
-    <circle cx={9} cy={9} r={8.863} fill="url(#a)" />
+    <circle cx={9} cy={9} r={8.863} fill={`url(#a-${suffix})`} />
     <circle cx={9} cy={9} r={7.386} fill="#fff" />
     <path
       fill="#0078d4"
@@ -32,13 +35,13 @@ const SvgIntegrationServiceEnvironments = (props: SVGProps<SVGSVGElement>) => (
       d="M10.551 3.862H7.41a.347.347 0 0 0-.347.347V7.35a.347.347 0 0 0 .347.35h3.141a.347.347 0 0 0 .349-.35V4.209a.347.347 0 0 0-.349-.347m-.3 2.96a.23.23 0 0 1-.23.23H7.938a.23.23 0 0 1-.23-.23V4.737a.23.23 0 0 1 .23-.23h2.085a.23.23 0 0 1 .23.23Z"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M6.715 13.185V11a.28.28 0 0 0-.279-.279H4.251a.28.28 0 0 0-.279.279v2.186a.28.28 0 0 0 .279.279h2.185a.28.28 0 0 0 .279-.28"
     />
     <path
-      fill="url(#c)"
+      fill={`url(#c-${suffix})`}
       d="M14.018 13.185V11a.28.28 0 0 0-.279-.279h-2.186a.28.28 0 0 0-.279.279v2.186a.28.28 0 0 0 .279.279h2.186a.28.28 0 0 0 .279-.28"
     />
   </svg>
-)
+)}
 export default SvgIntegrationServiceEnvironments

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDataTransfer = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDataTransfer = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path d="m21.74 12.89-4.12 4.13-1.06-1.07 2.32-2.31h-7.62v-1.5h7.62l-2.32-2.32 1.06-1.06z" fill="#4285f4" />
     <path
@@ -11,5 +14,5 @@ const SvgDataTransfer = (props: SVGProps<SVGSVGElement>) => (
     <path d="M14.01 17.45H6.38l2.32 2.32-1.06 1.06-4.13-4.13 4.13-4.13 1.06 1.07-2.32 2.31h7.63z" fill="#4285f4" />
     <path d="m16.63 7.49-1.1 1a4.45 4.45 0 0 0-3.76-2.27V4.76a5.88 5.88 0 0 1 4.86 2.73" fill="#669df6" />
   </svg>
-)
+)}
 export default SvgDataTransfer

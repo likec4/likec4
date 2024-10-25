@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgRSpec = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgRSpec = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#6de1fa"
@@ -20,5 +23,5 @@ const SvgRSpec = (props: SVGProps<SVGSVGElement>) => (
       d="M3.328 85.137c-4.121-10.84-4.195-29.52-.16-41.403 8.25-24.3 30.605-41.785 55.5-43.41l8-.523 2.445 4.394 2.45 4.395-2.934 4.082c-2.73 3.797-3.473 4.164-10.766 5.297-10.836 1.687-18.75 5.695-26.472 13.422-13.059 13.058-16.801 28.855-11.485 48.5.63 2.332.442 2.496-2.14 1.867l-5.286-1.285c-1.949-.473-3.035.222-5.285 3.386L4.36 87.848zm0 0"
     />
   </svg>
-)
+)}
 export default SvgRSpec

@@ -1,13 +1,16 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGenomics = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGenomics = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#aecbfa}.cls-2{fill:#4285f4;fill-rule:evenodd}.cls-3{fill:#669df6}'}</style>
     </defs>
     <g data-name="Product Icons">
-      <circle id="Oval" cx={12} cy={12} r={1.6} className="cls-1" />
+      <circle id={`Oval-${suffix}`} cx={12} cy={12} r={1.6} className="cls-1" />
       <path d="M7.58 9.2h6.37l.74-.7-.74-.7H7.58z" className="cls-2" />
       <circle cx={6.8} cy={8.5} r={1.23} className="cls-3" />
       <circle cx={17.2} cy={8.5} r={1.6} className="cls-1" />
@@ -22,5 +25,5 @@ const SvgGenomics = (props: SVGProps<SVGSVGElement>) => (
       <circle cx={20.4} cy={19.7} r={1.23} className="cls-3" />
     </g>
   </svg>
-)
+)}
 export default SvgGenomics

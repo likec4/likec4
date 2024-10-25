@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgHadoop = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgHadoop = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#ff0"
@@ -21,5 +24,5 @@ const SvgHadoop = (props: SVGProps<SVGSVGElement>) => (
       d="M104.414 40.664a1.223 1.223 0 0 0-1.2 1.123c-.037.392.176.894.444 1.168.642-.236 1.264-.42 1.887-.525a1.244 1.244 0 0 0-1.13-1.766zm-18.09 5.873a1.652 1.652 0 0 0-1.498 2.363 1.8 1.8 0 0 0 .969.883 10.5 10.5 0 0 1 2.11-2.066 2 2 0 0 0-.09-.238 1.66 1.66 0 0 0-1.49-.942z"
     />
   </svg>
-)
+)}
 export default SvgHadoop

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgApiMonetization = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgApiMonetization = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#4285f4}.cls-2{fill:#aecbfa}.cls-3{fill:#669df6}'}</style>
@@ -19,5 +22,5 @@ const SvgApiMonetization = (props: SVGProps<SVGSVGElement>) => (
       <circle cx={19.64} cy={3.51} r={1.51} className="cls-2" />
     </g>
   </svg>
-)
+)}
 export default SvgApiMonetization

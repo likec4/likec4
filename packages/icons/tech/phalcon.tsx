@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPhalcon = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPhalcon = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#22A882" d="M36.5 56 39 45.2 30.5 62z" />
     <path fill="#99D5B5" d="M88.8 10 87 19.4 75 33.6 52.6 45.3z" />
@@ -29,5 +32,5 @@ const SvgPhalcon = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#99D5B5" d="m78.1 78.3-5.2-2.4-6.8.7.8.6z" />
     <path fill="#178D6D" d="m90 111.3-.1 8.2-2.4 1.6 1.3-6.6z" />
   </svg>
-)
+)}
 export default SvgPhalcon

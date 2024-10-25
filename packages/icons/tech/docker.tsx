@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDocker = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDocker = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#3A4D54"
@@ -85,5 +88,5 @@ const SvgDocker = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#D4EEF1" d="M46.1 89.9c-.9-1.3-1.8-2.8-2.5-4.3-2.5.7-5.5 1.2-8.9 1.4 2.3 1.2 5.7 2.4 11.4 2.9" />
   </svg>
-)
+)}
 export default SvgDocker

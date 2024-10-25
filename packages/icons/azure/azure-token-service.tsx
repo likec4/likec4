@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAzureTokenService = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAzureTokenService = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path fill="#773adc" d="M13.276 3.608V10.6l-6.01 3.514V7.11z" />
     <path fill="#b796f9" d="M13.276 3.608 7.268 7.12l-6-3.514 6-3.514z" />
@@ -28,5 +31,5 @@ const SvgAzureTokenService = (props: SVGProps<SVGSVGElement>) => (
     />
     <ellipse cx={13.583} cy={11.61} fill="#50e6ff" rx={1.83} ry={3.159} transform="rotate(-89.838 13.583 11.61)" />
   </svg>
-)
+)}
 export default SvgAzureTokenService

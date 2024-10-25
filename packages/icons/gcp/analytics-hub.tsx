@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgAnalyticsHub = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgAnalyticsHub = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       d="m10.53 11.68-2.6-1.57A1.3 1.3 0 0 0 8 9.76a1.37 1.37 0 1 0-1.36 1.36 1.32 1.32 0 0 0 .92-.37l2.61 1.57a.33.33 0 0 0 .19.06.38.38 0 0 0 .19-.7Zm-3.91-1.31a.61.61 0 1 1 0-1.22.61.61 0 0 1 0 1.22"
@@ -16,5 +19,5 @@ const SvgAnalyticsHub = (props: SVGProps<SVGSVGElement>) => (
       fill="#4285f4"
     />
   </svg>
-)
+)}
 export default SvgAnalyticsHub

@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id={`a-${suffix}`}
         cx={438.3}
         cy={639.01}
         r={569.94}
@@ -18,7 +21,7 @@ const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#4352b9" stopOpacity={1} />
       </radialGradient>
       <radialGradient
-        id="b"
+        id={`b-${suffix}`}
         cx={65.64}
         cy={-16.21}
         r={746.46}
@@ -31,7 +34,7 @@ const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#0080c5" stopOpacity={1} />
       </radialGradient>
       <radialGradient
-        id="f"
+        id={`f-${suffix}`}
         cx={259.68}
         cy={-34.71}
         r={431.37}
@@ -43,7 +46,7 @@ const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#000" stopOpacity={1} />
       </radialGradient>
       <linearGradient
-        id="c"
+        id={`c-${suffix}`}
         x1={74.77}
         x2={277.23}
         y1={67.3}
@@ -57,7 +60,7 @@ const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#fff" stopOpacity={1} />
       </linearGradient>
       <linearGradient
-        id="d"
+        id={`d-${suffix}`}
         x1={-228.74}
         x2={451}
         y1={-144.29}
@@ -71,7 +74,7 @@ const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#fff" />
       </linearGradient>
       <linearGradient
-        id="e"
+        id={`e-${suffix}`}
         x1={-151.22}
         x2={450.08}
         y1={-285.9}
@@ -85,36 +88,36 @@ const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#fff" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M40.07 124.8a121.7 121.7 0 0 0 62.242-33.366L16.216 5.332v95.61Zm0 0" />
-    <path fill="url(#b)" d="M16.215 100.941c52.805 0 95.61-42.804 95.61-95.609h-95.61Zm0 0" />
+    <path fill={`url(#a-${suffix})`} d="M40.07 124.8a121.7 121.7 0 0 0 62.242-33.366L16.216 5.332v95.61Zm0 0" />
+    <path fill={`url(#b-${suffix})`} d="M16.215 100.941c52.805 0 95.61-42.804 95.61-95.609h-95.61Zm0 0" />
     <path
-      fill="url(#c)"
+      fill={`url(#c-${suffix})`}
       d="m16.215 100.941 3.68 3.68c25.933-.95 49.363-11.875 66.558-29.062l-2.621-2.618a95.3 95.3 0 0 1-67.617 28m0 0"
       style={{
         mixBlendMode: 'multiply'
       }}
     />
     <path
-      fill="url(#d)"
+      fill={`url(#d-${suffix})`}
       d="M40.07 124.8a121.7 121.7 0 0 0 62.242-33.366L16.216 5.332v95.61Zm0 0"
       style={{
         mixBlendMode: 'multiply'
       }}
     />
     <path
-      fill="url(#e)"
+      fill={`url(#e-${suffix})`}
       d="M102.313 91.434 16.215 5.332l78.27 93.254a122 122 0 0 0 7.828-7.152m0 0"
       style={{
         mixBlendMode: 'multiply'
       }}
     />
     <path
-      fill="url(#f)"
+      fill={`url(#f-${suffix})`}
       d="m16.215 5.332 67.605 67.61a99 99 0 0 0 1.782-1.837Zm0 0"
       style={{
         mixBlendMode: 'screen'
       }}
     />
   </svg>
-)
+)}
 export default SvgPythonPoetry

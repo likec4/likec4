@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudRun = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudRun = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1,.cls-2{fill:#aecbfa;fill-rule:evenodd}.cls-2{fill:#4285f4}'}</style>
@@ -12,5 +15,5 @@ const SvgCloudRun = (props: SVGProps<SVGSVGElement>) => (
       <path d="M3.44 2.63 5.78 12H8.9L6.57 4.19z" className="cls-1" />
     </g>
   </svg>
-)
+)}
 export default SvgCloudRun

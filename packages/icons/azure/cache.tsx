@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCache = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCache = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-2.113}
         x2={10.011}
         y1={12.211}
@@ -22,7 +25,7 @@ const SvgCache = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={6.563}
         x2={14.785}
         y1={15.274}
@@ -39,7 +42,7 @@ const SvgCache = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M6.629 4.917C3.281 4.909.57 3.913.573 2.693l-.03 11.749c0 1.21 2.663 2.2 5.973 2.224H6.6c3.348.009 6.065-.973 6.068-2.193L12.7 2.724c-.006 1.22-2.723 2.202-6.071 2.193"
     />
     <path
@@ -55,7 +58,7 @@ const SvgCache = (props: SVGProps<SVGSVGElement>) => (
       d="M6.635 2.853a11.2 11.2 0 0 0-3.683.524 10.8 10.8 0 0 0 3.68.557 10.8 10.8 0 0 0 3.683-.534 11.2 11.2 0 0 0-3.68-.547"
     />
     <path
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       d="M13.343 9.533c-2.271-.006-4.109-.681-4.107-1.508l-.021 7.967c0 .82 1.807 1.491 4.051 1.508h.056c2.271.006 4.113-.66 4.115-1.487l.02-7.967c-.002.827-1.844 1.493-4.114 1.487"
     />
     <path
@@ -75,5 +78,5 @@ const SvgCache = (props: SVGProps<SVGSVGElement>) => (
       d="M14.044 10.589a.1.1 0 0 0-.052-.013.13.13 0 0 0-.092.052L11.652 13.9a.13.13 0 0 0-.013.118.13.13 0 0 0 .105.065h1.346l-.6 1.974a.1.1 0 0 0 .052.13.08.08 0 0 0 .052.013.13.13 0 0 0 .092-.052L15 12.837c.013-.026.026-.039.026-.065a.117.117 0 0 0-.117-.118h-1.388l.579-1.934a.1.1 0 0 0-.056-.131"
     />
   </svg>
-)
+)}
 export default SvgCache

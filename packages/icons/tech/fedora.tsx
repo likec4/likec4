@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgFedora = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgFedora = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#294172"
@@ -32,5 +35,5 @@ const SvgFedora = (props: SVGProps<SVGSVGElement>) => (
       d="M116.809 116.773v-2.652l-1.211 2.781-1.18-2.78v2.651h-.68v-4.187h.711l1.168 2.676 1.149-2.676h.722v4.187zm-4.954-3.484v3.484h-.71v-3.484h-1.192v-.703h3.09v.703"
     />
   </svg>
-)
+)}
 export default SvgFedora

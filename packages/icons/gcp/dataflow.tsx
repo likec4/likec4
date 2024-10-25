@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDataflow = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDataflow = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>
@@ -27,11 +30,11 @@ const SvgDataflow = (props: SVGProps<SVGSVGElement>) => (
         className="cls-3"
       />
       <path d="m11.89 19.96-1.68-1-5.14-3.07v-2h1.76l-.01 1.04 4.25 2.56.02-1.72.86.01z" className="cls-2" />
-      <circle id="Oval" cx={18.12} cy={12.04} r={1.14} className="cls-4" />
+      <circle id={`Oval-${suffix}`} cx={18.12} cy={12.04} r={1.14} className="cls-4" />
       <circle cx={5.88} cy={11.88} r={1.14} className="cls-4" />
       <circle cx={12.06} cy={9.99} r={1.14} className="cls-4" />
       <circle cx={11.97} cy={14} r={1.14} className="cls-4" />
     </g>
   </svg>
-)
+)}
 export default SvgDataflow

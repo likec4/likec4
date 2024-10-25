@@ -1,30 +1,33 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgManagedInstanceApacheCassandra = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgManagedInstanceApacheCassandra = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={3.707} x2={3.707} y1={5.123} y2={2.061} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={3.707} x2={3.707} y1={5.123} y2={2.061} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="b" x1={12.741} x2={12.741} y1={10.558} y2={5.161} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`b-${suffix}`} x1={12.741} x2={12.741} y1={10.558} y2={5.161} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="c" x1={3.707} x2={3.707} y1={13.723} y2={10.378} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`c-${suffix}`} x1={3.707} x2={3.707} y1={13.723} y2={10.378} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
     <path fill="#003067" d="m5.459 3.98.464-.862 5.445 2.929-.464.863z" />
-    <path fill="url(#a)" d="M7.081 4.2V1.5H.33v2.7c0 .716 1.511 1.3 3.376 1.3s3.376-.58 3.376-1.3Z" />
+    <path fill={`url(#a-${suffix})`} d="M7.081 4.2V1.5H.33v2.7c0 .716 1.511 1.3 3.376 1.3s3.376-.58 3.376-1.3Z" />
     <ellipse cx={3.707} cy={1.546} fill="#83b9f9" rx={3.376} ry={1.296} />
-    <path fill="url(#b)" d="M16.115 8.616v-2.7h-6.75v2.7c0 .716 1.511 1.3 3.376 1.3s3.376-.58 3.376-1.3Z" />
+    <path fill={`url(#b-${suffix})`} d="M16.115 8.616v-2.7h-6.75v2.7c0 .716 1.511 1.3 3.376 1.3s3.376-.58 3.376-1.3Z" />
     <ellipse cx={12.741} cy={5.96} fill="#83b9f9" rx={3.376} ry={1.296} />
     <path fill="#003067" d="M3.22 4.168h.98v7.962h-.98z" />
     <circle cx={3.75} cy={3.337} r={1.157} fill="#c3f1ff" />
-    <path fill="url(#c)" d="M7.081 12.824v-2.7H.33v2.7c0 .716 1.511 1.3 3.376 1.3s3.376-.58 3.376-1.3Z" />
+    <path fill={`url(#c-${suffix})`} d="M7.081 12.824v-2.7H.33v2.7c0 .716 1.511 1.3 3.376 1.3s3.376-.58 3.376-1.3Z" />
     <ellipse cx={3.707} cy={10.167} fill="#83b9f9" rx={3.376} ry={1.296} />
     <path fill="#003067" d="m3.99 11.36 8.745-4.291.432.88-8.745 4.29z" />
     <circle cx={3.701} cy={11.939} r={1.157} fill="#c3f1ff" />
@@ -40,5 +43,5 @@ const SvgManagedInstanceApacheCassandra = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="none" stroke="#b31b1b" strokeMiterlimit={10} d="M-4.934-3.691h29.331V30.57H-4.934z" />
   </svg>
-)
+)}
 export default SvgManagedInstanceApacheCassandra

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgPyscript = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgPyscript = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#2c2e34" d="M0 0v128h128V0z" />
     <path
@@ -9,5 +12,5 @@ const SvgPyscript = (props: SVGProps<SVGSVGElement>) => (
       d="M52.146 48.63c-5.137.299-8.478 3.168-10.952 7.094v-6.285h-4.73v39.327h4.73V77.752l3.236.311c5.176.573 8.37-1.185 10.08-2.302 1.71-1.118 5.134-4.67 6.224-10.58 2.086-13.14-4.906-16.385-8.588-16.551zm37.336.871-8.639 21.057-10.38-21.055h-5.14L78.376 76.65c-3.95 9.63-8.006 9.515-13.535 8.322v4.17c10.126 1.64 13.234-2.9 15.681-7.406a50 50 0 0 0 2.552-5.165l11.3-27.069zm-58.369.747L3.609 63.938 31.113 77.69v-4.234L12.32 63.938l18.792-9.41zm65.773.062v4.281L115.678 64l-18.792 9.518v4.234L124.39 64zm-46.359 2.925c4.531 0 5.82 5.165 5.414 10.33-1.128 8.857-6.797 12.07-14.748 9.956V61.387c2.237-4.217 6.483-8.152 9.334-8.152z"
     />
   </svg>
-)
+)}
 export default SvgPyscript

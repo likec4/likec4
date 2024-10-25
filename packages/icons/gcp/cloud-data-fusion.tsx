@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudDataFusion = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudDataFusion = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#aecbfa}.cls-3{fill:#669df6}'}</style>
@@ -14,5 +17,5 @@ const SvgCloudDataFusion = (props: SVGProps<SVGSVGElement>) => (
       <path d="m2 22 4-4h10l4 4z" className="cls-3" />
     </g>
   </svg>
-)
+)}
 export default SvgCloudDataFusion

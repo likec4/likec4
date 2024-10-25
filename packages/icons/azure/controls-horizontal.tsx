@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-655.644}
         x2={-655.644}
         y1={751.401}
@@ -18,7 +21,7 @@ const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id={`b-${suffix}`}
         x1={-650.227}
         x2={-650.227}
         y1={759.495}
@@ -31,7 +34,7 @@ const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id={`c-${suffix}`}
         x1={-644.724}
         x2={-644.724}
         y1={751.401}
@@ -52,7 +55,7 @@ const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
       height={11.838}
       x={10.834}
       y={8.557}
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       rx={0.596}
       transform="rotate(-90 12.081 14.476)"
     />
@@ -61,7 +64,7 @@ const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
       height={3.744}
       x={14.881}
       y={7.187}
-      fill="url(#b)"
+      fill={`url(#b-${suffix})`}
       rx={0.596}
       transform="rotate(-90 16.128 9.06)"
     />
@@ -70,7 +73,7 @@ const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
       height={11.838}
       x={10.834}
       y={-2.363}
-      fill="url(#c)"
+      fill={`url(#c-${suffix})`}
       rx={0.596}
       transform="rotate(-90 12.081 3.556)"
     />
@@ -102,5 +105,5 @@ const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
       transform="rotate(-90 6.623 3.556)"
     />
   </svg>
-)
+)}
 export default SvgControlsHorizontal

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudShell = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudShell = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g data-name="Product Icons">
       <g data-name="Cloud-Shell shaded 32px">
@@ -14,5 +17,5 @@ const SvgCloudShell = (props: SVGProps<SVGSVGElement>) => (
       </g>
     </g>
   </svg>
-)
+)}
 export default SvgCloudShell

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCloudSecurityScanner = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCloudSecurityScanner = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <circle cx={11.45} cy={11.51} r={2.89} fill="#669df6" />
     <path
@@ -15,5 +18,5 @@ const SvgCloudSecurityScanner = (props: SVGProps<SVGSVGElement>) => (
     <path d="M4.22 12.78a2 2 0 1 1 0-3.93" fill="#669df6" />
     <path d="M4.22 8.85a2 2 0 0 1 0 3.93" fill="#4285f4" />
   </svg>
-)
+)}
 export default SvgCloudSecurityScanner

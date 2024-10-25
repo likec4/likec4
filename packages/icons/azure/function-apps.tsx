@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgFunctionApps = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgFunctionApps = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-175.993}
         x2={-175.993}
         y1={-343.723}
@@ -37,9 +40,9 @@ const SvgFunctionApps = (props: SVGProps<SVGSVGElement>) => (
       d="m17.782 9.34-.59.589-4.648-4.662a.267.267 0 0 1 0-.377l.59-.588a.267.267 0 0 1 .378 0l4.273 4.286a.533.533 0 0 1 0 .753Z"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M8.459 9.9H4.87a.193.193 0 0 1-.2-.181.2.2 0 0 1 .018-.075L8.991 1.13a.21.21 0 0 1 .186-.106h4.245a.193.193 0 0 1 .2.181.17.17 0 0 1-.035.1L8.534 7.966h4.928a.193.193 0 0 1 .2.181.18.18 0 0 1-.052.122l-8.189 8.519c-.077.046-.624.5-.356-.189Z"
     />
   </svg>
-)
+)}
 export default SvgFunctionApps

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMongodb = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMongodb = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#439934"
@@ -90,5 +93,5 @@ const SvgMongodb = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#4FAA41" fillRule="evenodd" d="m64.316 95.172-.066-.011-.066.01.155-.559z" clipRule="evenodd" />
   </svg>
-)
+)}
 export default SvgMongodb

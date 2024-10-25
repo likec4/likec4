@@ -1,10 +1,13 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgLogStreaming = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgLogStreaming = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.153} x2={8.153} y1={17.5} y2={2.093} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={8.153} x2={8.153} y1={17.5} y2={2.093} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#ef7100" />
         <stop offset={0.9} stopColor="#f78d1e" />
       </linearGradient>
@@ -18,7 +21,7 @@ const SvgLogStreaming = (props: SVGProps<SVGSVGElement>) => (
       d="m2.905 2.1.742-.846a.52.52 0 0 1 .394-.179h10.845a.52.52 0 0 1 .522.522v13.786a.52.52 0 0 1-.171.386l-1.158 1.055Z"
     />
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M14.008 2.093H1.969a.056.056 0 0 0-.056.056v14.966a.385.385 0 0 0 .387.385h11.71a.385.385 0 0 0 .385-.385V2.478a.386.386 0 0 0-.387-.385"
     />
     <path
@@ -30,5 +33,5 @@ const SvgLogStreaming = (props: SVGProps<SVGSVGElement>) => (
       d="M12.5 9.8a3.37 3.37 0 0 1-.952 2.367.573.573 0 0 1-.855.1.588.588 0 0 1 .009-.886 2.333 2.333 0 0 0 0-3.242.582.582 0 1 1 .854-.778A3.44 3.44 0 0 1 12.5 9.8M3.8 9.726a3.37 3.37 0 0 0 .952 2.367.573.573 0 0 0 .855.1.588.588 0 0 0-.007-.893 2.334 2.334 0 0 1 0-3.242.582.582 0 1 0-.853-.778A3.44 3.44 0 0 0 3.8 9.726"
     />
   </svg>
-)
+)}
 export default SvgLogStreaming

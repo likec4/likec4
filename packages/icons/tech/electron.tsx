@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgElectron = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgElectron = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fill="#47848f">
       <path d="M49.07 32.66c-14.37-2.62-25.72.12-30.25 8-3.38 5.85-2.41 13.61 2.34 21.9a1.47 1.47 0 0 0 2.56-1.47c-4.28-7.47-5.12-14.17-2.35-19 3.76-6.51 13.89-9 27.17-6.54a1.47 1.47 0 1 0 .53-2.9zM28.63 72.61a92.2 92.2 0 0 0 22 17.34c20.84 12 43 15.25 54 7.79a1.47 1.47 0 0 0-1.66-2.43C93.11 102 72 98.92 52.07 87.39a89.3 89.3 0 0 1-21.26-16.77 1.47 1.47 0 0 0-2.18 2z" />
@@ -10,5 +13,5 @@ const SvgElectron = (props: SVGProps<SVGSVGElement>) => (
       <path d="M64.05 23.13A7.05 7.05 0 1 0 57 16.08a7.05 7.05 0 0 0 7.05 7.05m0-2.95a4.1 4.1 0 1 1 4.1-4.1 4.1 4.1 0 0 1-4.1 4.1m1.08 51.59A5.1 5.1 0 1 1 69 65.71a5.1 5.1 0 0 1-3.87 6.06" />
     </g>
   </svg>
-)
+)}
 export default SvgElectron

@@ -1,16 +1,19 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgCentralServiceInstanceForSap = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgCentralServiceInstanceForSap = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={13.712} y2={4.288} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={13.712} y2={4.288} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill={`url(#a-${suffix})`}
       d="M.609 13.712h8.663a.6.6 0 0 0 .432-.181l8.119-8.206a.609.609 0 0 0-.433-1.037H.609A.61.61 0 0 0 0 4.9v8.2a.61.61 0 0 0 .609.612"
     />
     <path fill="#fff" d="M8.329 7.767v2.247l-1.941 1.129v-2.25z" opacity={0.6} />
@@ -31,5 +34,5 @@ const SvgCentralServiceInstanceForSap = (props: SVGProps<SVGSVGElement>) => (
       d="M2.956 10.516 2.95 10.4a.132.132 0 0 1 .191-.124l.1.052.263.134A3.23 3.23 0 0 1 5.363 5.93a3.3 3.3 0 0 1 .87-.163.06.06 0 0 0 .03-.009l.358-.216a.131.131 0 0 0-.005-.227l-.356-.2a.06.06 0 0 0-.035-.008 3.8 3.8 0 0 0-.875.137 3.887 3.887 0 0 0-2.376 5.617Z"
     />
   </svg>
-)
+)}
 export default SvgCentralServiceInstanceForSap

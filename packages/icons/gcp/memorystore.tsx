@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgMemorystore = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgMemorystore = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1{fill:#669df6}.cls-2{fill:#4285f4;fill-rule:evenodd}'}</style>
@@ -19,5 +22,5 @@ const SvgMemorystore = (props: SVGProps<SVGSVGElement>) => (
       <path d="M11.33 22v-3.23L16 11.03h-3.33V2h6v20z" fill="#669df6" fillRule="evenodd" />
     </g>
   </svg>
-)
+)}
 export default SvgMemorystore

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgProximityPlacementGroups = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgProximityPlacementGroups = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#949494"
@@ -44,5 +47,5 @@ const SvgProximityPlacementGroups = (props: SVGProps<SVGSVGElement>) => (
       <circle cx={11.18} cy={8.37} r={0.44} />
     </g>
   </svg>
-)
+)}
 export default SvgProximityPlacementGroups

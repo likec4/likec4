@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgRedCubesEpicCompilerThingyProgrammingReCt = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgRedCubesEpicCompilerThingyProgrammingReCt = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#292929" d="M0 0h128v128H0z" />
     <path stroke="#fff" strokeWidth={4.853} d="M5.762 5.762h116.476v116.476H5.762zm0 0" />
@@ -11,5 +14,5 @@ const SvgRedCubesEpicCompilerThingyProgrammingReCt = (props: SVGProps<SVGSVGElem
     />
     <path fill="#fff" d="M48.379 102.672H37.004v3.793h7.582v3.793h3.793zm3.793 7.586h-3.793v3.789h3.793zm0 0" />
   </svg>
-)
+)}
 export default SvgRedCubesEpicCompilerThingyProgrammingReCt

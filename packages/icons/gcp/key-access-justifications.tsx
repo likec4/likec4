@@ -1,15 +1,18 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgKeyAccessJustifications = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgKeyAccessJustifications = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
-      <clipPath id="a">
+      <clipPath id={`a-${suffix}`}>
         <path d="M0 0h24v24H0z" fill="none" />
       </clipPath>
     </defs>
-    <g data-name="Artwork 3" clipPath="url(#a)">
-      <g clipPath="url(#a)">
+    <g data-name="Artwork 3" clipPath={`url(#a-${suffix})`}>
+      <g clipPath={`url(#a-${suffix})`}>
         <path d="M13.53 2.27v2.36" fill="none" stroke="#579bfb" strokeMiterlimit={10} strokeWidth="2px" />
       </g>
       <path
@@ -19,7 +22,7 @@ const SvgKeyAccessJustifications = (props: SVGProps<SVGSVGElement>) => (
         strokeMiterlimit={10}
         strokeWidth="2px"
       />
-      <g clipPath="url(#a)">
+      <g clipPath={`url(#a-${suffix})`}>
         <path d="M21.75 10.49H19.4" fill="none" stroke="#579bfb" strokeMiterlimit={10} strokeWidth="2px" />
       </g>
       <path
@@ -29,7 +32,7 @@ const SvgKeyAccessJustifications = (props: SVGProps<SVGSVGElement>) => (
         strokeMiterlimit={10}
         strokeWidth="2px"
       />
-      <g clipPath="url(#a)">
+      <g clipPath={`url(#a-${suffix})`}>
         <path d="m9.6 13.81-5.38 5.38 1.93 1.93" fill="none" stroke="#abc9f8" strokeMiterlimit={10} strokeWidth="2px" />
         <path
           d="M17.64 14.6a5.81 5.81 0 1 1 0-8.21 5.8 5.8 0 0 1 0 8.21Z"
@@ -42,5 +45,5 @@ const SvgKeyAccessJustifications = (props: SVGProps<SVGSVGElement>) => (
       </g>
     </g>
   </svg>
-)
+)}
 export default SvgKeyAccessJustifications

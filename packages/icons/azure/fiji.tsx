@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgFiji = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgFiji = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#0078d4"
@@ -24,5 +27,5 @@ const SvgFiji = (props: SVGProps<SVGSVGElement>) => (
       d="M7.789 15.371a.56.56 0 0 1 .256.444v.732c0 .164-.115.233-.258.15l-.637-.368a.57.57 0 0 1-.259-.448v-.732c0-.165.118-.228.261-.146ZM7.152 11.6c-.143-.082-.261-.018-.261.146v.732a.57.57 0 0 0 .259.449l.637.367c.143.083.258.015.258-.15v-.732a.56.56 0 0 0-.256-.444Zm0-3.407c-.143-.083-.261-.019-.261.145v.732a.57.57 0 0 0 .259.449l.637.368c.143.082.258.014.258-.15v-.732a.56.56 0 0 0-.256-.445Z"
     />
   </svg>
-)
+)}
 export default SvgFiji

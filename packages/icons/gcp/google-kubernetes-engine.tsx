@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGoogleKubernetesEngine = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGoogleKubernetesEngine = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>
@@ -21,5 +24,5 @@ const SvgGoogleKubernetesEngine = (props: SVGProps<SVGSVGElement>) => (
       <path d="M12.48 12.3v4.59l3.86-2.29v-4.59z" className="cls-1" />
     </g>
   </svg>
-)
+)}
 export default SvgGoogleKubernetesEngine

@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgClarity = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgClarity = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#13171a"
@@ -20,5 +23,5 @@ const SvgClarity = (props: SVGProps<SVGSVGElement>) => (
       d="M80.997 31.809a18.38 18.38 0 0 1 13.239-4.71v6.07a11.27 11.27 0 0 0-8.638 3.317A15.98 15.98 0 0 0 82.883 47v33.998c-.27 3.69.748 7.36 2.88 10.382a11.19 11.19 0 0 0 8.77 3.615v5.938a18.4 18.4 0 0 1-13.238-4.744 19.673 19.673 0 0 1-5.03-14.627V46.434a19.7 19.7 0 0 1 4.732-14.627z"
     />
   </svg>
-)
+)}
 export default SvgClarity

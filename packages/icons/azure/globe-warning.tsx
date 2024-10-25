@@ -1,11 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgGlobeWarning = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgGlobeWarning = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id={`a-${suffix}`}
         x1={-245.439}
         x2={-245.439}
         y1={803.355}
@@ -25,7 +28,7 @@ const SvgGlobeWarning = (props: SVGProps<SVGSVGElement>) => (
       fill="#a3a3a3"
       d="M13.335 1.1a.57.57 0 0 1 .807 0l.026.028a8.32 8.32 0 0 1-11.736 11.73.57.57 0 0 1-.049-.8l.025-.026A.57.57 0 0 1 3.19 12 7.178 7.178 0 0 0 13.312 1.882a.573.573 0 0 1 .023-.782M11.946 17.5h-5.9a.476.476 0 0 1-.476-.476.476.476 0 0 1 .476-.476h5.9a.476.476 0 0 1 .475.476.476.476 0 0 1-.475.476"
     />
-    <circle cx={7.871} cy={6.563} r={6.063} fill="url(#a)" />
+    <circle cx={7.871} cy={6.563} r={6.063} fill={`url(#a-${suffix})`} />
     <path
       fill="#f2f2f2"
       d="M4.15 9.515h7.562a.293.293 0 0 0 .251-.443l-3.78-6.355a.293.293 0 0 0-.5 0L3.9 9.072a.293.293 0 0 0 .25.443"
@@ -36,5 +39,5 @@ const SvgGlobeWarning = (props: SVGProps<SVGSVGElement>) => (
     />
     <circle cx={7.931} cy={8.451} r={0.516} fill="#f78d1e" />
   </svg>
-)
+)}
 export default SvgGlobeWarning

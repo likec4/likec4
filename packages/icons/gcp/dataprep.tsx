@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDataprep = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDataprep = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
       <style>{'.cls-1,.cls-3{fill:#669df6;fill-rule:evenodd}.cls-3{fill:#4285f4}'}</style>
@@ -18,5 +21,5 @@ const SvgDataprep = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+)}
 export default SvgDataprep

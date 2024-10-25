@@ -1,7 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgComposer = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgComposer = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" data-name="composer-original" viewBox="0 0 128 128" {...props}>
     <g data-name="layer101">
       <path d="M45.34 127.9c-.53-.49-.21-1.76.73-2.91.56-.67 1.89-2.56 2.94-4.2 2.35-3.65 3.23-4.52 4.07-4 .49.31.59.84.52 2.77l-.1 2.44 1-1.22c1.89-2.46 3.67-4.21 4.27-4.21 1.33 0 1.54.88 1 4.07-.39 2.34-.39 3.15-.07 3.67.91 1.47.14 2.77-1.65 2.77-1.12 0-1.54-1.23-1.26-3.64l.25-2.14-.81 1c-1.85 2.49-3.6 4-4.59 4s-1.08-.18-1.4-2.24c-.07-.46-.56 0-1.75 1.68C47 128 46 128.6 45.34 127.9" />
@@ -50,5 +53,5 @@ const SvgComposer = (props: SVGProps<SVGSVGElement>) => (
       data-name="layer109"
     />
   </svg>
-)
+)}
 export default SvgComposer

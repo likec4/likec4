@@ -1,9 +1,12 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-const SvgDefenderSlot = (props: SVGProps<SVGSVGElement>) => (
+import { randomString } from 'remeda'
+const SvgDefenderSlot = (props: SVGProps<SVGSVGElement>) => {
+const suffix = randomString(6)
+return (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
-    <rect width={4.286} height={18} fill="url(#a)" rx={1} />
+    <rect width={4.286} height={18} fill={`url(#a-${suffix})`} rx={1} />
     <path
       fill="#fff"
       d="M1.522 2.462h1.32A.16.16 0 0 0 3 2.304V.977a.16.16 0 0 0-.158-.159h-1.32a.16.16 0 0 0-.158.159v1.322a.16.16 0 0 0 .158.163m0 8.17h1.32A.157.157 0 0 0 3 10.475V3.898a.16.16 0 0 0-.158-.157h-1.32a.156.156 0 0 0-.158.157v6.576a.16.16 0 0 0 .096.15q.03.012.062.012z"
@@ -15,7 +18,7 @@ const SvgDefenderSlot = (props: SVGProps<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <defs>
-      <linearGradient id="a" x1={2.143} x2={2.143} y1={18} y2={0} gradientUnits="userSpaceOnUse">
+      <linearGradient id={`a-${suffix}`} x1={2.143} x2={2.143} y1={18} y2={0} gradientUnits="userSpaceOnUse">
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
@@ -24,5 +27,5 @@ const SvgDefenderSlot = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
   </svg>
-)
+)}
 export default SvgDefenderSlot
