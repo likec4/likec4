@@ -458,7 +458,7 @@ ViewRuleStyle:
   '}';
 
 ViewRuleGlobalStyle:
-  'global' 'style' style=[GlobalStyle];
+  'global' 'style' style=[GlobalStyleId];
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection (
@@ -505,16 +505,24 @@ RelationNavigateToProperty:
 Globals:
   name='global' '{'
     (
-      styles+=GlobalStyle*
+      styles+=(GlobalStyle | GlobalStyleGroup)*
     )*
   '}';
 
+GlobalStyleId:
+  name=IdTerminal;
+
 GlobalStyle:
-  'style' name=IdTerminal target=ElementExpressionsIterator '{'
+  'style' id=GlobalStyleId target=ElementExpressionsIterator '{'
     props+=(
       StyleProperty |
       NotationProperty
     )*
+  '}';
+
+GlobalStyleGroup:
+  'styleGroup' id=GlobalStyleId '{'
+    styles+=ViewRuleStyle*
   '}';
 
 // Common properties -------------------------------------

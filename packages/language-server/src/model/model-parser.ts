@@ -30,7 +30,7 @@ import {
   ViewOps
 } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
-import { type NotationProperty } from '../generated/ast'
+import { isGlobalStyle, isGlobalStyleGroup, type NotationProperty } from '../generated/ast'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
@@ -291,7 +291,7 @@ export class LikeC4ModelParser {
     const styles = globals.flatMap(r => r.styles.filter(isValid))
     for (const style of styles) {
       try {
-        const globalStyleId = style.name as c4.GlobalStyleID
+        const globalStyleId = style.id.name as c4.GlobalStyleID
         if (!isTruthy(globalStyleId)) {
           continue
         }
@@ -299,13 +299,28 @@ export class LikeC4ModelParser {
           logger.warn(`Global style named "${globalStyleId}" is already defined`)
           continue
         }
-        c4Globals.styles[globalStyleId] = [
-          this.parseGlobalStyle(style, isValid)
-        ]
+
+        const styles = this.parseGlobalStyleOrGroup(style, isValid)
+        if (styles.length > 0) {
+          c4Globals.styles[globalStyleId] = styles as c4.NonEmptyArray<c4.ViewRuleStyle>
+        }
       } catch (e) {
         logWarnError(e)
       }
     }
+  }
+
+  private parseGlobalStyleOrGroup(
+    astRule: ast.GlobalStyle | ast.GlobalStyleGroup,
+    isValid: IsValidFn
+  ): c4.ViewRuleStyle[] {
+    if (ast.isGlobalStyle(astRule)) {
+      return [this.parseGlobalStyle(astRule, isValid)]
+    }
+    if (ast.isGlobalStyleGroup(astRule)) {
+      return astRule.styles.map(s => this.parseViewRuleStyle(s, isValid))
+    }
+    nonexhaustive(astRule)
   }
 
   private parseGlobalStyle(astRule: ast.GlobalStyle, isValid: IsValidFn): c4.ViewRuleStyle {
@@ -530,8 +545,11 @@ export class LikeC4ModelParser {
 
   private parseRelationPredicate(astNode: ast.RelationPredicate, _isValid: IsValidFn): c4.RelationPredicateExpression {
     if (ast.isRelationPredicateWith(astNode)) {
-      const subject = ast.isRelationPredicateWhere(astNode.subject) ? astNode.subject.subject : astNode.subject
-      return this.parseRelationPredicateWith(astNode, subject)
+      let relation = ast.isRelationPredicateWhere(astNode.subject) 
+        ? this.parseRelationPredicateWhere(astNode.subject)
+        : this.parseRelationExpr(astNode.subject)
+
+      return this.parseRelationPredicateWith(astNode, relation)
     }
     if (ast.isRelationPredicateWhere(astNode)) {
       return this.parseRelationPredicateWhere(astNode)
@@ -558,9 +576,8 @@ export class LikeC4ModelParser {
 
   private parseRelationPredicateWith(
     astNode: ast.RelationPredicateWith,
-    subject: ast.RelationExpression
+    relation: c4.RelationExpression | c4.RelationWhereExpr
   ): c4.CustomRelationExpr {
-    const relation = this.parseRelationExpr(subject)
     const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
@@ -703,7 +720,7 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseViewRuleGlobalStyle(astRule: ast.ViewRuleGlobalStyle, isValid: IsValidFn): c4.ViewRuleGlobalStyle {
+  private parseViewRuleGlobalStyle(astRule: ast.ViewRuleGlobalStyle, _isValid: IsValidFn): c4.ViewRuleGlobalStyle {
     return {
       styleId: astRule.style.$refText as c4.GlobalStyleID
     }

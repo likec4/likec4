@@ -738,6 +738,58 @@ views {
 }
 ```
 
+#### Global style groups
+
+Global style predicates can be grouped.
+When a group is applied to a view, all predicates from the group are applied.
+A group can be applied to multiple views
+
+```likec4
+global {
+  styleGroup common_styles {
+    // apply to all elements
+    style all_elements * {
+      color muted
+      opacity 10%
+    }
+
+    // apply only to these elements
+    style singlePageApplication, mobileApp {
+      color secondary
+    }
+
+    // apply only to elements with specific tag
+    style element.tag = #deprecated {
+      color muted
+    }
+  }
+}
+
+views {
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+
+    global style common_styles
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+
+    include *
+
+    global style common_styles
+
+    // view-specific style predicates
+    style apiApplication.* {
+      color primary
+    }
+
+    style element.tag != #deprecated {
+      opacity 20%
+    }
+  }
+}
+```
+
 ### Extend views
 
 Views can be extended to avoid duplication, to create a "baseline" or, for example, "slides" for a presentation:
