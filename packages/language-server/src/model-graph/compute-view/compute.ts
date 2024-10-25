@@ -1,36 +1,59 @@
-import type {
-  Color,
-  ComputedEdge,
-  ComputedElementView,
-  EdgeId,
-  Element,
-  ElementPredicateExpression,
-  ElementView,
-  NonEmptyArray,
-  Relation,
-  RelationPredicateExpression,
-  RelationshipArrowType,
-  RelationshipKind,
-  RelationshipLineType,
-  Tag,
-  ViewID,
-  ViewRulePredicate
+import {
+  type Color,
+  type ComputedEdge,
+  type ComputedElementView,
+  type ComputedNode,
+  type EdgeId,
+  type Element,
+  ElementKind,
+  type ElementPredicateExpression,
+  type ElementView,
+  type NodeId,
+  type NonEmptyArray,
+  type Relation,
+  type RelationPredicateExpression,
+  type RelationshipArrowType,
+  type RelationshipKind,
+  type RelationshipLineType,
+  type Tag,
+  type ViewID,
+  type ViewRuleGroup,
+  type ViewRulePredicate
 } from '@likec4/core'
 import {
-  ancestorsFqn,
   commonAncestor,
+  commonHead,
   compareRelations,
   Expr,
   invariant,
   isAncestor,
   isScopedElementView,
   isViewRuleAutoLayout,
+  isViewRuleGroup,
   isViewRulePredicate,
   nonexhaustive,
-  parentFqn,
+  nonNullable,
   whereOperatorAsPredicate
 } from '@likec4/core'
-import { filter, hasAtLeast, isNonNull, isTruthy, map, omit, only, pipe, reduce, sort, unique } from 'remeda'
+import {
+  anyPass,
+  concat,
+  difference,
+  filter,
+  first,
+  hasAtLeast,
+  isNonNull,
+  isTruthy,
+  last,
+  map,
+  omit,
+  only,
+  pipe,
+  reduce,
+  reverse,
+  sort,
+  unique
+} from 'remeda'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -86,11 +109,77 @@ function isDirectEdge({ relations: [rel, ...tail], source, target }: ComputeCtx.
   return false
 }
 
+export class NodesGroup {
+  static readonly kind = ElementKind.Group
+
+  static root() {
+    return new NodesGroup('@root' as NodeId, { title: null, groupRules: [] })
+  }
+
+  static is(node: ComputedNode) {
+    return node.kind === NodesGroup.kind
+  }
+
+  readonly explicits = new Set<Element>()
+  readonly implicits = new Set<Element>()
+
+  constructor(
+    public id: NodeId,
+    public viewRule: ViewRuleGroup,
+    public parent: NodeId | null = null
+  ) {
+  }
+
+  /**
+   * Add element explicitly
+   * Included even without relationships
+   */
+  addElement(...el: Element[]) {
+    for (const r of el) {
+      this.explicits.add(r)
+      this.implicits.add(r)
+    }
+  }
+
+  /**
+   * Add element implicitly
+   * Included if only has relationships
+   */
+  addImplicit(...el: Element[]) {
+    for (const r of el) {
+      this.implicits.add(r)
+    }
+  }
+
+  excludeElement(...excludes: Element[]) {
+    for (const el of excludes) {
+      this.explicits.delete(el)
+      this.implicits.delete(el)
+    }
+  }
+
+  isEmpty() {
+    return this.explicits.size === 0 && this.implicits.size === 0
+  }
+}
+
 export class ComputeCtx {
   // Intermediate state
   private explicits = new Set<Element>()
   private implicits = new Set<Element>()
   private ctxEdges = [] as ComputeCtx.Edge[]
+
+  /**
+   * Root group - not included in the groups
+   * But used to accumulate elements that are not in any group
+   */
+  private __rootGroup = NodesGroup.root()
+  private groups = [] as NodesGroup[]
+  private activeGroupStack = [] as NodesGroup[]
+
+  protected get activeGroup() {
+    return this.activeGroupStack[0] ?? this.__rootGroup
+  }
 
   public static elementView(view: ElementView, graph: LikeC4ModelGraph) {
     return new ComputeCtx(view, graph).compute()
@@ -102,7 +191,6 @@ export class ComputeCtx {
   ) {}
 
   protected compute(): ComputedElementView {
-    // reset ctx
     this.reset()
     const {
       docUri: _docUri, // exclude docUri
@@ -110,15 +198,34 @@ export class ComputeCtx {
       ...view
     } = this.view
 
-    const viewPredicates = rules.filter(isViewRulePredicate)
+    const viewPredicates = rules.filter(anyPass([isViewRulePredicate, isViewRuleGroup])) as Array<
+      ViewRulePredicate | ViewRuleGroup
+    >
     if (this.root && viewPredicates.length == 0) {
       this.addElement(this.graph.element(this.root))
     }
     this.processPredicates(viewPredicates)
     this.removeRedundantImplicitEdges()
+    if (this.groups.length > 0) {
+      this.cleanGroupElements()
+    }
 
     const elements = [...this.includedElements]
-    const nodesMap = buildComputeNodes(elements)
+    const nodesMap = buildComputeNodes(elements, this.groups)
+
+    const ancestorsOf = (node: ComputedNode) => {
+      const ancestors = [] as ComputedNode[]
+      let parent = node.parent
+      while (parent) {
+        const parentNode = nodesMap.get(parent)
+        if (!parentNode) {
+          break
+        }
+        ancestors.push(parentNode)
+        parent = parentNode.parent
+      }
+      return ancestors
+    }
 
     const edgesMap = new Map<EdgeId, ComputedEdge>()
     const edges = this.computeEdges()
@@ -128,30 +235,45 @@ export class ComputeCtx {
       const target = nodesMap.get(edge.target)
       invariant(source, `Source node ${edge.source} not found`)
       invariant(target, `Target node ${edge.target} not found`)
-      while (edge.parent && !nodesMap.has(edge.parent)) {
-        edge.parent = parentFqn(edge.parent)
-      }
+      // These ancestors are reversed: from bottom to top
+      const sourceAncestors = ancestorsOf(source)
+      const targetAncestors = ancestorsOf(target)
+
+      const edgeParent = last(
+        commonHead(
+          reverse(sourceAncestors),
+          reverse(targetAncestors)
+        )
+      )
+      edge.parent = edgeParent?.id ?? null
       source.outEdges.push(edge.id)
       target.inEdges.push(edge.id)
       // Process edge source ancestors
-      for (const sourceAncestor of ancestorsFqn(edge.source)) {
-        if (sourceAncestor === edge.parent) {
+      for (const sourceAncestor of sourceAncestors) {
+        if (sourceAncestor === edgeParent) {
           break
         }
-        nodesMap.get(sourceAncestor)?.outEdges.push(edge.id)
+        sourceAncestor.outEdges.push(edge.id)
       }
       // Process target hierarchy
-      for (const targetAncestor of ancestorsFqn(edge.target)) {
-        if (targetAncestor === edge.parent) {
+      for (const targetAncestor of targetAncestors) {
+        if (targetAncestor === edgeParent) {
           break
         }
-        nodesMap.get(targetAncestor)?.inEdges.push(edge.id)
+        targetAncestor.inEdges.push(edge.id)
       }
     }
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
-    const initialSort = elements.flatMap(e => nodesMap.get(e.id) ?? [])
+    let initialSort = elements.map(e => nonNullable(nodesMap.get(e.id), `Node ${e.id} not found in nodesMap`))
+
+    if (this.groups.length > 0) {
+      initialSort = concat(
+        this.groups.map(g => nonNullable(nodesMap.get(g.id), `Node ${g.id} not found in nodesMap`)),
+        initialSort
+      )
+    }
 
     const nodes = applyCustomElementProperties(
       rules,
@@ -326,6 +448,7 @@ export class ComputeCtx {
   }
 
   protected addEdges(edges: ComputeCtx.Edge[]) {
+    const added = [] as ComputeCtx.Edge[]
     for (const e of edges) {
       if (!hasAtLeast(e.relations, 1)) {
         continue
@@ -335,10 +458,13 @@ export class ComputeCtx {
       )
       if (existing) {
         existing.relations = unique([...existing.relations, ...e.relations])
+        added.push(existing)
         continue
       }
+      added.push(e)
       this.ctxEdges.push(e)
     }
+    return added
   }
 
   /**
@@ -347,6 +473,14 @@ export class ComputeCtx {
    */
   protected addElement(...el: Element[]) {
     for (const r of el) {
+      if (!this.explicits.has(r)) {
+        this.activeGroup.addElement(r)
+      } else if (this.activeGroup !== this.__rootGroup) {
+        this.groups.forEach(g => {
+          g.implicits.delete(r)
+        })
+        this.activeGroup.addImplicit(r)
+      }
       this.explicits.add(r)
       this.implicits.add(r)
     }
@@ -359,7 +493,14 @@ export class ComputeCtx {
   protected addImplicit(...el: Element[]) {
     for (const r of el) {
       this.implicits.add(r)
+      // Remove implicits from other groups
+      if (this.activeGroup !== this.__rootGroup) {
+        this.groups.forEach(g => {
+          g.implicits.delete(r)
+        })
+      }
     }
+    this.activeGroup.addImplicit(...el)
   }
 
   protected excludeElement(...excludes: Element[]) {
@@ -368,13 +509,11 @@ export class ComputeCtx {
       this.explicits.delete(el)
       this.implicits.delete(el)
     }
+    this.__rootGroup.excludeElement(...excludes)
+    this.groups.forEach(g => {
+      g.excludeElement(...excludes)
+    })
   }
-
-  // protected excludeImplicit(...excludes: Element[]) {
-  //   for (const el of excludes) {
-  //     this.implicits.delete(el)
-  //   }
-  // }
 
   protected excludeRelation(...relations: Relation[]) {
     if (relations.length === 0) {
@@ -407,11 +546,15 @@ export class ComputeCtx {
     const remaining = this.includedElements
     if (remaining.size === 0) {
       this.implicits.clear()
+      this.__rootGroup.implicits.clear()
+      this.groups.forEach(g => g.implicits.clear())
       return
     }
     for (const el of excludedImplicits) {
       if (!remaining.has(el)) {
         this.implicits.delete(el)
+        this.__rootGroup.implicits.delete(el)
+        this.groups.forEach(g => g.implicits.delete(el))
       }
     }
   }
@@ -420,6 +563,10 @@ export class ComputeCtx {
     this.explicits.clear()
     this.implicits.clear()
     this.ctxEdges = []
+    // Reset groups
+    this.__rootGroup = NodesGroup.root()
+    this.groups = []
+    this.activeGroupStack = []
   }
 
   // Filter out edges if there are edges between descendants
@@ -478,9 +625,45 @@ export class ComputeCtx {
     }, [] as ComputeCtx.Edge[])
   }
 
-  protected processPredicates(viewRules: ViewRulePredicate[]): this {
+  protected cleanGroupElements() {
+    const unprocessed = new Set<Element>(difference(
+      [...this.includedElements],
+      [...this.__rootGroup.explicits]
+    ))
+    // Step 1 - Process explicits
+    for (const group of this.groups) {
+      const explicits = [...group.explicits]
+      group.explicits.clear()
+      for (const el of explicits) {
+        if (unprocessed.delete(el)) {
+          group.explicits.add(el)
+        }
+      }
+    }
+    // Step 2 - Process implicits
+    for (const group of this.groups) {
+      for (const el of group.implicits) {
+        if (unprocessed.delete(el)) {
+          group.explicits.add(el)
+        }
+      }
+      group.implicits.clear()
+    }
+  }
+
+  protected processPredicates(viewRules: Array<ViewRulePredicate | ViewRuleGroup>): this {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     for (const rule of viewRules) {
+      if (isViewRuleGroup(rule)) {
+        const parent = first(this.activeGroupStack)
+        const groupId = `@gr${this.groups.length + 1}` as NodeId
+        const group = new NodesGroup(groupId, rule, parent?.id ?? null)
+        this.groups.push(group)
+        this.activeGroupStack.unshift(group)
+        this.processPredicates(rule.groupRules)
+        this.activeGroupStack.shift()
+        continue
+      }
       const isInclude = 'include' in rule
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {

@@ -1,4 +1,4 @@
-import type { ComputedNode, ElementKind, Expression as C4Expression } from '@likec4/core'
+import type { ComputedNode, ElementWhereExpr, Expression as C4Expression, RelationWhereExpr } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
 import { $expr, $where, type Expression, type FakeElementIds } from '../compute-view/__test__/fixture'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
@@ -28,7 +28,7 @@ function nd(
   } as ComputedNode
 }
 
-function test$expr(expr: Expression) {
+function test$expr(expr: Expression | ElementWhereExpr | RelationWhereExpr) {
   const predicate = toPredicate($expr(expr))
   return {
     yes(node: Node) {

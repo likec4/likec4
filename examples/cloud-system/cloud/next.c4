@@ -87,13 +87,19 @@ views {
 
 
   view cloud_next of cloud.next {
+    include cloud.ui
+
+    group {
+      include *
+    }
+
     include
-      *,
-      amazon._,
-      cloud.* -> amazon.* with {
-        color indigo
-        line solid
-      }
+        amazon._,
+        cloud.* -> amazon.* with {
+          color indigo
+          line solid
+        }
+        
     exclude
       cloud.ui -> amazon
 

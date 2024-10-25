@@ -662,6 +662,9 @@ export class LikeC4ModelParser {
     if (ast.isViewRuleGlobalStyle(astRule)) {
       return this.parseViewRuleGlobalStyle(astRule, isValid)
     }
+    if (ast.isViewRuleGroup(astRule)) {
+      return this.parseViewRuleGroup(astRule, isValid)
+    }
     nonexhaustive(astRule)
   }
 
@@ -670,6 +673,33 @@ export class LikeC4ModelParser {
     const targets = astRule.target
     const notation = astRule.props.find(ast.isNotationProperty)
     return this.parseRuleStyle(styleProps, targets, isValid, notation)
+  }
+
+  private parseViewRuleGroup(astNode: ast.ViewRuleGroup, _isValid: IsValidFn): c4.ViewRuleGroup {
+    const groupRules = [] as c4.ViewRuleGroup['groupRules']
+    for (const rule of astNode.groupRules) {
+      try {
+        if (!_isValid(rule)) {
+          continue
+        }
+        if (ast.isViewRulePredicate(rule)) {
+          groupRules.push(this.parseViewRulePredicate(rule, _isValid))
+          continue
+        }
+        if (ast.isViewRuleGroup(rule)) {
+          groupRules.push(this.parseViewRuleGroup(rule, _isValid))
+          continue
+        }
+        nonexhaustive(rule)
+      } catch (e) {
+        logWarnError(e)
+      }
+    }
+    return {
+      title: toSingleLine(astNode.title) ?? null,
+      groupRules,
+      ...toElementStyle(astNode.props, _isValid)
+    }
   }
 
   private parseRuleStyle(

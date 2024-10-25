@@ -267,10 +267,24 @@ ViewLayoutDirection returns string:
 
 ViewRule:
   ViewRulePredicate |
+  ViewRuleGroup |
   ViewRuleStyle |
   ViewRuleGlobalStyle |
   ViewRuleAutoLayout
 ;
+
+ViewRuleGroup:
+  'group' title=String? '{'
+    props+=(
+      ColorProperty |
+      BorderProperty |
+      OpacityProperty
+    )*
+    groupRules+=(
+      ViewRulePredicate |
+      ViewRuleGroup
+    )*
+  '}';
 
 DynamicViewRule:
   DynamicViewIncludePredicate |
@@ -601,7 +615,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group';
 
 fragment EqOperator:
   (

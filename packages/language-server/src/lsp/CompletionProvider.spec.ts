@@ -1,6 +1,6 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { map, prop, take } from 'remeda'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, type ExpectStatic, it } from 'vitest'
 import { createTestServices } from '../test'
 
 function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
@@ -12,7 +12,7 @@ function expectCompletion() {
   return langiumExpectCompletion(services)
 }
 
-describe('LikeC4CompletionProvider', () => {
+describe.concurrent('LikeC4CompletionProvider', () => {
   it('should suggest keywords inside specification', async ({ expect }) => {
     const text = `
       <|>spe<|>cification {
@@ -315,7 +315,7 @@ describe('LikeC4CompletionProvider', () => {
       }
       views {
         view {
-          include
+          <|>include
             <|>root.<|> -> *,
             * -> b<|>2 <|>
         }
@@ -326,6 +326,22 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
+      expectedItems: [
+        'title',
+        'description',
+        'link',
+        'include',
+        'exclude',
+        'group',
+        'style',
+        'global',
+        'autoLayout'
+      ],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 1,
       expectedItems: [
         'root',
         'a',
@@ -338,24 +354,25 @@ describe('LikeC4CompletionProvider', () => {
     })
     await completion({
       text,
-      index: 1,
+      index: 2,
       expectedItems: ['a', 'b1', 'b2'],
       disposeAfterCheck: true
     })
     await completion({
       text,
-      index: 2,
+      index: 3,
       expectedItems: ['b1', 'b2'],
       disposeAfterCheck: true
     })
     await completion({
       text,
-      index: 3,
+      index: 4,
       expectedItems: [
         'where',
         'with',
         'include',
         'exclude',
+        'group',
         'style',
         'global',
         'autoLayout'
@@ -363,71 +380,118 @@ describe('LikeC4CompletionProvider', () => {
       disposeAfterCheck: true
     })
   })
-  it('should suggest tags inside "where"-predicates', async ({ expect }) => {
-    const text = `
-      specification {
-        element service
-        element component
-        tag tag1
-        tag tag2
-        relationship uses
-      }
-      model {
-        root = component {
-          a = component {
-            b1 = component {
-              b2 = component
+
+  describe('inside "where"-predicates', () => {
+    const testWithText = async (text: string, expect: ExpectStatic) => {
+      const completion = expectCompletion()
+
+      await completion({
+        text,
+        index: 0,
+        assert: completions => {
+          expect(completions.items).not.to.be.empty
+          const first = take(completions.items, 2)
+          expect(pluck('label', first)).toEqual([
+            '#tag1',
+            '#tag2'
+          ])
+        },
+        disposeAfterCheck: true
+      })
+      await completion({
+        text,
+        index: 1,
+        expectedItems: [
+          '#tag1',
+          '#tag2'
+        ],
+        disposeAfterCheck: true
+      })
+      await completion({
+        text,
+        index: 2,
+        assert: completions => {
+          expect(completions.items).not.to.be.empty
+          const first = take(completions.items, 2)
+          expect(pluck('label', first)).toEqual([
+            'service',
+            'component'
+          ])
+        },
+        disposeAfterCheck: true
+      })
+    }
+
+    it('should suggest tags and kinds inside "where"-predicates', async ({ expect }) => {
+      expect.hasAssertions()
+      await testWithText(
+        `
+        specification {
+          element service
+          element component
+          tag tag1
+          tag tag2
+          relationship uses
+        }
+        model {
+          root = component {
+            a = component {
+              b1 = component {
+                b2 = component
+              }
             }
           }
         }
-      }
-      views {
-        view {
-          include
-            * where (
-              tag == <|>#tag1 and
-              tag is not #<|>tag2 or
-              kind != <|>service
-            )
+        views {
+          view {
+            include
+              * where (
+                tag == <|>#tag1 and
+                tag is not #<|>tag2 or
+                kind != <|>service
+              )
+          }
         }
-      }
-    `
-    const completion = expectCompletion()
+      `,
+        expect
+      )
+    })
 
-    await completion({
-      text,
-      index: 0,
-      assert: completions => {
-        expect(completions.items).not.to.be.empty
-        const first = take(completions.items, 2)
-        expect(pluck('label', first)).toEqual([
-          '#tag1',
-          '#tag2'
-        ])
-      },
-      disposeAfterCheck: true
-    })
-    await completion({
-      text,
-      index: 1,
-      expectedItems: [
-        '#tag1',
-        '#tag2'
-      ],
-      disposeAfterCheck: true
-    })
-    await completion({
-      text,
-      index: 2,
-      assert: completions => {
-        expect(completions.items).not.to.be.empty
-        const first = take(completions.items, 2)
-        expect(pluck('label', first)).toEqual([
-          'service',
-          'component'
-        ])
-      },
-      disposeAfterCheck: true
+    it('should suggest tags and kinds inside "where"-predicates inside groups', async ({ expect }) => {
+      expect.hasAssertions()
+      await testWithText(
+        `
+        specification {
+          element service
+          element component
+          tag tag1
+          tag tag2
+          relationship uses
+        }
+        model {
+          root = component {
+            a = component {
+              b1 = component {
+                b2 = component
+              }
+            }
+          }
+        }
+        views {
+          view {
+            group {
+              include
+                * where (
+                  tag == <|>#tag1 and
+                  tag is not #<|>tag2 or
+                  kind != <|>service
+                )
+            }
+          }
+        }
+      `,
+        expect
+      )
     })
   })
 
@@ -465,6 +529,7 @@ describe('LikeC4CompletionProvider', () => {
         'with',
         'include',
         'exclude',
+        'group',
         'style',
         'global',
         'autoLayout'
@@ -527,6 +592,7 @@ describe('LikeC4CompletionProvider', () => {
         'with',
         'include',
         'exclude',
+        'group',
         'style',
         'global',
         'autoLayout'

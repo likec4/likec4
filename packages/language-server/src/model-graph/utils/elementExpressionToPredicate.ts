@@ -4,7 +4,9 @@ import { isNullish } from 'remeda'
 
 type Predicate<T> = (x: T) => boolean
 
-export function elementExprToPredicate(target: Expr.ElementPredicateExpression): Predicate<Element> {
+export function elementExprToPredicate<T extends Pick<Element, 'id' | 'kind' | 'tags'>>(
+  target: Expr.ElementPredicateExpression
+): Predicate<T> {
   if (Expr.isElementWhere(target)) {
     const predicate = elementExprToPredicate(target.where.expr)
     const where = whereOperatorAsPredicate(target.where.condition)
