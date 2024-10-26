@@ -57,8 +57,12 @@ views {
 
   view index {
     title "Landscape"
-
-    group {
+    group 'SAAS' {
+      color primary
+      opacity 20%
+      include * -> *
+    }
+    group 'External' {
       color green
       opacity 100%
       include customer with {
@@ -66,12 +70,8 @@ views {
       }
     }
 
-    group {
-      color primary
-      opacity 100%
-      include *
-      exclude -> customer
-    }
+    
+    exclude -> customer
   }
 
   view customer of customer {
