@@ -149,7 +149,7 @@
     "langium": "3.2.0",
     "mkdirp": "^3.0.1",
     "nanostores": "0.11.3",
-    "npm-run-all2": "^6.2.2",
+    "npm-run-all2": "^6.2.6",
     "p-limit": "^6.1.0",
     "package-up": "^5.0.0",
     "postcss": "^8.4.47",
