@@ -1,18 +1,25 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgStorageAzureFiles = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgStorageAzureFiles = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={15.799} y2={5.316} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Storage-Azure-Files_svg__a"
+        x1={9}
+        x2={9}
+        y1={15.799}
+        y2={5.316}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={0.775} stopColor="#32d4f5" />
       </linearGradient>
     </defs>
-    <path fill={`url(#a-${suffix})`} d="M.544 5.316h16.912v9.918a.565.565 0 0 1-.565.565H1.109a.565.565 0 0 1-.565-.565z" />
+    <path
+      fill="url(#Storage-Azure-Files_svg__a)"
+      d="M.544 5.316h16.912v9.918a.565.565 0 0 1-.565.565H1.109a.565.565 0 0 1-.565-.565z"
+    />
     <path fill="#0078d4" d="M1.112 2.2h15.776a.565.565 0 0 1 .565.565v2.55H.547V2.766a.565.565 0 0 1 .565-.566" />
     <path
       fill="#5ea0ef"
@@ -26,5 +33,5 @@ return (
       opacity={0.9}
     />
   </svg>
-)}
+)
 export default SvgStorageAzureFiles

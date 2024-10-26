@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgProcessing = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgProcessing = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Processing_svg__a"
         x1={64}
         x2={64}
         y1={169}
@@ -172,8 +169,8 @@ return (
         <path stroke="#c4c32d" strokeWidth={0.6} d="m21.274 280.9 13.309-4.953" />
       </g>
       <path fill="#0f212e" stroke="#11385e" strokeWidth={0.3} d="m78.811 241.49-4.11-6.561" />
-      <circle cx={64} cy={233} r={61.336} fill="none" stroke={`url(#a-${suffix})`} strokeWidth={5.328} />
+      <circle cx={64} cy={233} r={61.336} fill="none" stroke="url(#Processing_svg__a)" strokeWidth={5.328} />
     </g>
   </svg>
-)}
+)
 export default SvgProcessing

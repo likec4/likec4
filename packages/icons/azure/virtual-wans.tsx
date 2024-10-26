@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgVirtualWaNs = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgVirtualWaNs = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Virtual-WANs_svg__a"
         x1={9}
         x2={9}
         y1={172.704}
@@ -25,7 +22,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Virtual-WANs_svg__a)"
       d="M17.5 8.9a3.854 3.854 0 0 0-3.3-3.7 4.87 4.87 0 0 0-5-4.6 5.01 5.01 0 0 0-4.7 3.2 4.69 4.69 0 0 0-4 4.4 4.61 4.61 0 0 0 4.8 4.5h8.4a3.8 3.8 0 0 0 3.8-3.8"
     />
     <circle cx={9} cy={12.9} r={4.4} fill="#f2f2f2" />
@@ -46,5 +43,5 @@ return (
     <circle cx={5.3} cy={11.1} r={1.1} fill="#ce74b6" />
     <circle cx={12.6} cy={11.1} r={1.1} fill="#ce74b6" />
   </svg>
-)}
+)
 export default SvgVirtualWaNs

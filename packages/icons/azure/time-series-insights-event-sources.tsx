@@ -1,20 +1,31 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgTimeSeriesInsightsEventSources = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgTimeSeriesInsightsEventSources = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9.03} x2={9.03} y1={13.38} y2={4.63} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Time-Series-Insights-Event-Sources_svg__a"
+        x1={9.03}
+        x2={9.03}
+        y1={13.38}
+        y2={4.63}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#198ab3" />
         <stop offset={0.4} stopColor="#25aed3" />
         <stop offset={0.78} stopColor="#2fcaec" />
         <stop offset={1} stopColor="#32d4f5" />
       </linearGradient>
     </defs>
-    <rect width={8.75} height={8.75} x={4.65} y={4.63} fill={`url(#a-${suffix})`} rx={0.41} />
+    <rect
+      width={8.75}
+      height={8.75}
+      x={4.65}
+      y={4.63}
+      fill="url(#Time-Series-Insights-Event-Sources_svg__a)"
+      rx={0.41}
+    />
     <path fill="#fff" d="M7.31 12.53" />
     <path
       fill="#c3f1ff"
@@ -29,5 +40,5 @@ return (
       d="M15.94 2v3.25a.27.27 0 0 0 .11.22l1 .7A.26.26 0 0 0 17.5 6V2ZM15.94 16v-3.25a.25.25 0 0 1 .11-.21l1-.71a.27.27 0 0 1 .41.22v4Z"
     />
   </svg>
-)}
+)
 export default SvgTimeSeriesInsightsEventSources

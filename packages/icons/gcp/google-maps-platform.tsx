@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgGoogleMapsPlatform = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgGoogleMapsPlatform = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 24 24" {...props}>
     <path
       d="M14.45.78A8.09 8.09 0 0 0 5.8 3.29l3.83 3.22Z"
@@ -32,5 +29,5 @@ return (
       fill="#34a853"
     />
   </svg>
-)}
+)
 export default SvgGoogleMapsPlatform

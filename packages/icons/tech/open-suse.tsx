@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgOpenSuse = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgOpenSuse = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fill="#73ba25">
       <path
@@ -14,5 +11,5 @@ return (
       <path d="M92.496 81.863c.805 0 1.445.645 1.445 1.453 0 .82-.64 1.461-1.449 1.461a1.45 1.45 0 0 1-1.457-1.46c0-.81.653-1.454 1.457-1.454zm-.004.227c-.648 0-1.176.547-1.176 1.226 0 .692.528 1.235 1.18 1.235.652.008 1.176-.543 1.176-1.227 0-.687-.524-1.234-1.176-1.234zm-.277 2.074h-.262v-1.621c.14-.02.27-.04.465-.04.25 0 .41.052.508.122q.152.103.152.336c0 .21-.144.344-.32.394v.012c.144.028.242.156.273.395.043.254.078.351.106.402h-.274c-.039-.05-.078-.2-.11-.414-.042-.207-.144-.285-.355-.285h-.183zm0-.898h.191c.215 0 .399-.078.399-.278 0-.144-.106-.285-.399-.285-.086 0-.144.004-.191.012zm0 0" />
     </g>
   </svg>
-)}
+)
 export default SvgOpenSuse

@@ -1,13 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgVideoAnalyzers = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgVideoAnalyzers = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={0.199} y2={15.707} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Video-Analyzers_svg__a" x1={9} x2={9} y1={0.199} y2={15.707} gradientUnits="userSpaceOnUse">
         <stop offset={0.117} stopColor="#5ea0ef" />
         <stop offset={0.271} stopColor="#4595e8" />
         <stop offset={0.531} stopColor="#1f85dd" />
@@ -16,7 +13,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Video-Analyzers_svg__a)"
       d="M14.506 7.464a5.16 5.16 0 0 0-5.294-4.871 5.31 5.31 0 0 0-4.977 3.388A4.97 4.97 0 0 0 0 10.64a4.884 4.884 0 0 0 5 4.768h8.98A4.024 4.024 0 0 0 18 11.381a4.08 4.08 0 0 0-3.494-3.917"
     />
     <path
@@ -32,5 +29,5 @@ return (
       d="M11.736 9.038a.264.264 0 0 0 0-.458L9.8 7.46 7.858 6.341a.264.264 0 0 0-.4.229v4.478a.264.264 0 0 0 .4.229L9.8 10.158Z"
     />
   </svg>
-)}
+)
 export default SvgVideoAnalyzers

@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgPrivateLinkService = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgPrivateLinkService = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Private-Link-Service_svg__a"
         x1={7.699}
         x2={7.699}
         y1={956.076}
@@ -20,7 +17,7 @@ return (
         <stop offset={0.93} stopColor="#127fd9" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Private-Link-Service_svg__b"
         x1={9.927}
         x2={9.927}
         y1={957.947}
@@ -33,11 +30,11 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Private-Link-Service_svg__a)"
       d="M8.588 6.076h-1.8a2.246 2.246 0 0 0-.348 4.461 2.4 2.4 0 0 1 .026-.837 1.418 1.418 0 0 1 .326-2.8h1.8a1.422 1.422 0 0 1 0 2.844h-.498a1.1 1.1 0 0 0-.1.449 1 1 0 0 0 .071.374h.527a2.246 2.246 0 1 0 0-4.491Z"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Private-Link-Service_svg__b)"
       d="M11.182 7.977a3 3 0 0 1 .026.345 2.3 2.3 0 0 1-.049.49 1.418 1.418 0 0 1-.325 2.8h-1.8a1.422 1.422 0 0 1 0-2.844h.494a1.05 1.05 0 0 0 .1-.449 1 1 0 0 0-.071-.375h-.52a2.246 2.246 0 0 0 0 4.491h1.8a2.246 2.246 0 0 0 .348-4.461Z"
     />
     <path
@@ -57,5 +54,5 @@ return (
       d="m13.311 4.205 4.525 4.536a.563.563 0 0 1 0 .793l-.461.46-4.921-4.932a.287.287 0 0 1 0-.4l.46-.457a.28.28 0 0 1 .397 0"
     />
   </svg>
-)}
+)
 export default SvgPrivateLinkService

@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgSchedulerJobCollections = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgSchedulerJobCollections = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id={`a-${suffix}`}
+        id="Scheduler-Job-Collections_svg__a"
         cx={-3179.5}
         cy={28295.77}
         r={40.52}
@@ -25,7 +22,7 @@ return (
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
     </defs>
-    <circle cx={9.39} cy={9} r={5.43} fill={`url(#a-${suffix})`} />
+    <circle cx={9.39} cy={9} r={5.43} fill="url(#Scheduler-Job-Collections_svg__a)" />
     <circle cx={9.41} cy={9} r={4.73} fill="#fff" />
     <path
       fill="#7a7a7a"
@@ -53,5 +50,5 @@ return (
       d="M7.94 3.35a.49.49 0 0 0-.64-.3A6.56 6.56 0 0 0 3 9.24a6.13 6.13 0 0 0 2 4.35l-.34.46a.21.21 0 0 0 .16.34l1.88.13a.22.22 0 0 0 .23-.31l-.79-1.64a.23.23 0 0 0-.39 0l-.19.26A5.23 5.23 0 0 1 4 9.2a5.58 5.58 0 0 1 3.65-5.28.47.47 0 0 0 .29-.57"
     />
   </svg>
-)}
+)
 export default SvgSchedulerJobCollections

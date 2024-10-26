@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureDatabasePostgreSqlServerGroup = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureDatabasePostgreSqlServerGroup = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Azure-Database-PostgreSQL-Server-Group_svg__a"
         x1={2.447}
         x2={15.27}
         y1={9.339}
@@ -26,7 +23,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Database-PostgreSQL-Server-Group_svg__a)"
       d="M9 5.14c-3.54 0-6.41-1-6.41-2.32v12.36c0 1.27 2.82 2.3 6.32 2.32H9c3.54 0 6.41-1 6.41-2.32V2.82c0 1.28-2.87 2.32-6.41 2.32"
     />
     <path fill="#e8e8e8" d="M15.41 2.82c0 1.28-2.87 2.32-6.41 2.32s-6.41-1-6.41-2.32S5.46.5 9 .5s6.41 1 6.41 2.32" />
@@ -48,5 +45,5 @@ return (
       d="M13.844 15.841a1.084 1.084 0 0 1 .044-1.833c1.159-.83 1.23.365.3.52 0 .43 1.208.379 1.728-.582.584-1.081-1.132-1.766-2.619-.127-.951 1.049-.975 2.484-.134 2.8a2.538 2.538 0 0 0 3.255-2.655c-.798 1.873-1.939 2.144-2.574 1.877"
     />
   </svg>
-)}
+)
 export default SvgAzureDatabasePostgreSqlServerGroup

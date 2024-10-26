@@ -1,18 +1,22 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgNetworkSecurityPerimeters = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgNetworkSecurityPerimeters = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={3.397} x2={3.397} y1={2.087} y2={10.659} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Network-Security-Perimeters_svg__a"
+        x1={3.397}
+        x2={3.397}
+        y1={2.087}
+        y2={10.659}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.167} stopColor="#50e6ff" />
         <stop offset={1} stopColor="#32bedd" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Network-Security-Perimeters_svg__b"
         x1={-1258.471}
         x2={-1258.471}
         y1={827.868}
@@ -23,7 +27,14 @@ return (
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={0.826} stopColor="#50e6ff" />
       </linearGradient>
-      <linearGradient id={`c-${suffix}`} x1={11.505} x2={11.505} y1={0.126} y2={6.41} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Network-Security-Perimeters_svg__c"
+        x1={11.505}
+        x2={11.505}
+        y1={0.126}
+        y2={6.41}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.167} stopColor="#50e6ff" />
         <stop offset={1} stopColor="#32bedd" />
       </linearGradient>
@@ -33,7 +44,7 @@ return (
       d="M15.712 4.536v3.1a.136.136 0 0 1-.205.118 2.96 2.96 0 0 0-1.485-.4h-.078a3 3 0 0 0-.293.015.136.136 0 0 1-.147-.137V3.091a.382.382 0 0 1 .62-.3l.02.019L15.6 4.266l.025.028a.4.4 0 0 1 .052.083.4.4 0 0 1 .035.159M4.668 2.162H7.4a.273.273 0 0 1 .193.467l-1.7 1.7a.14.14 0 0 1-.1.04H3.222a.381.381 0 0 1-.269-.65L4.4 2.274a.38.38 0 0 1 .268-.112"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Network-Security-Perimeters_svg__a)"
       d="M4.51 2.162v5.016a.154.154 0 0 0 .154.154h1.717a.15.15 0 0 1 .118.049.153.153 0 0 1-.006.217L3.545 10.53a.153.153 0 0 1-.209 0L.361 7.6a.164.164 0 1 1 .112-.31h1.705a.14.14 0 0 0 .122-.154V4.514a.35.35 0 0 1 .1-.245Z"
     />
     <path
@@ -41,11 +52,11 @@ return (
       d="M2.294 13.206v-2.732a.274.274 0 0 1 .468-.193l1.7 1.7a.13.13 0 0 1 .04.1v2.574a.381.381 0 0 1-.65.269l-1.446-1.448a.39.39 0 0 1-.112-.27"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Network-Security-Perimeters_svg__b)"
       d="M2.294 13.364h4.254a.154.154 0 0 0 .152-.154v-1.716a.15.15 0 0 1 .049-.119.153.153 0 0 1 .217.006L9.9 14.329a.153.153 0 0 1 0 .209l-2.932 2.976a.164.164 0 0 1-.308-.114v-1.7a.14.14 0 0 0-.153-.124H4.646a.35.35 0 0 1-.245-.1Z"
     />
     <path
-      fill={`url(#c-${suffix})`}
+      fill="url(#Network-Security-Perimeters_svg__c)"
       d="M15.71 4.379h-5.047a.14.14 0 0 0-.075.041.15.15 0 0 0-.048.109v1.72a.15.15 0 0 1-.049.119l-.023.019a.154.154 0 0 1-.192-.026L7.342 3.414a.154.154 0 0 1 0-.21L10.275.229s.1-.128.209-.1c.087.023.1.119.1.21v1.7a.2.2 0 0 0 .015.05.13.13 0 0 0 .136.074h2.624a.3.3 0 0 1 .1.015l.033.011a.4.4 0 0 1 .111.075l2.021 2.022Z"
     />
     <path
@@ -63,5 +74,5 @@ return (
       opacity={0.4}
     />
   </svg>
-)}
+)
 export default SvgNetworkSecurityPerimeters

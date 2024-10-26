@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgCertificateManager = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgCertificateManager = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" {...props}>
     <g fill="#4285f4">
       <path
@@ -20,5 +17,5 @@ return (
       <path d="M13.075 8.483a2.5 2.5 0 0 0-.395-.94 2.56 2.56 0 0 0-1.108-.94 2.7 2.7 0 0 0-1.071-.225c-.376 0-.733.085-1.062.226a2.56 2.56 0 0 0-1.109.94c-.29.412-.45.92-.45 1.465a2.4 2.4 0 0 0 .065.564c.02.084.038.178.066.263q.113.338.31.62c.122.178.263.347.432.498v3.307l1.748-1.644 1.757 1.644v-3.307c.338-.301.592-.686.742-1.118.028-.085.047-.179.066-.263.009-.02.009-.029.009-.038a2.4 2.4 0 0 0 0-1.052m-1.353.526a1.217 1.217 0 0 1-2.433 0c0-.188.037-.367.122-.526.188-.414.61-.696 1.09-.696a1.2 1.2 0 0 1 1.099.696c.085.16.122.338.122.526" />
     </g>
   </svg>
-)}
+)
 export default SvgCertificateManager

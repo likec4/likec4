@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgKeras = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgKeras = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 128 128" {...props}>
     <path d="M128 128H0V0h128z" fill="#d00000" />
     <path
@@ -12,5 +9,5 @@ return (
       fill="#fff"
     />
   </svg>
-)}
+)
 export default SvgKeras

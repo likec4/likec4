@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDevOpsStarter = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDevOpsStarter = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="DevOps-Starter_svg__a"
         x1={306.077}
         x2={305.834}
         y1={-363.569}
@@ -20,7 +17,7 @@ return (
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="DevOps-Starter_svg__b"
         x1={310.996}
         x2={305.457}
         y1={-367.576}
@@ -33,12 +30,12 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#DevOps-Starter_svg__a)"
       d="M17.85 9.71c-.545 1.979-1.868 2.634-3.293 3.239a1.8 1.8 0 0 1-.694.119H7.714c-1.159 0-2.923-.019-3.747-.028a1.95 1.95 0 0 1-.875-.2A5 5 0 0 1 .153 8.83C.071 8.1-.106 5.123 4.239 3.977A5.33 5.33 0 0 1 9.307.68a5.045 5.045 0 0 1 5.068 4.73c1.448.29 3.765 1.72 3.475 4.3"
     />
     <path fill="#fff" d="M16.764 11.866a5.454 5.454 0 1 1-5.454-5.454 5.454 5.454 0 0 1 5.454 5.454" />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#DevOps-Starter_svg__b)"
       fillRule="evenodd"
       d="M11.31 16.6a4.736 4.736 0 1 0-4.736-4.736A4.736 4.736 0 0 0 11.31 16.6m0 .717a5.454 5.454 0 1 0-5.453-5.453 5.453 5.453 0 0 0 5.453 5.453"
     />
@@ -70,5 +67,5 @@ return (
       d="M11.289 11.059a.1.1 0 0 1-.066-.036 1.7 1.7 0 0 0-.339-.341 1.8 1.8 0 0 0-.989-.374.094.094 0 0 1-.086-.093v-.567a.093.093 0 0 1 .091-.093h.006a2.6 2.6 0 0 1 1.2.364 2.6 2.6 0 0 1 .681.587.09.09 0 0 1-.008.125l-.418.4a.1.1 0 0 1-.072.025Zm-.05-.165.058.073.418-.4A2.5 2.5 0 0 0 9.9 9.648v.567a1.9 1.9 0 0 1 1.337.679Z"
     />
   </svg>
-)}
+)
 export default SvgDevOpsStarter

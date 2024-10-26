@@ -3,6 +3,7 @@ import { $ } from 'execa'
 import { glob, globSync } from 'glob'
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
+import * as path from 'path'
 
 await rm('.tmp/src', { force: true, recursive: true })
 await mkdir('.tmp/src', { recursive: true })
@@ -125,7 +126,7 @@ await mkdir('.tmp/src/aws', { recursive: true })
 
 const awsSvgs = await glob('.tmp/aws/**/*.svg')
 for (const svg of awsSvgs) {
-  const name = svg.split('/').pop()
+  const name = path.basename(svg)
   await $`mv ${svg} .tmp/src/aws/${name}`
 }
 consola.success('aws-icons - OK')
@@ -140,8 +141,9 @@ await mkdir('.tmp/src/azure', { recursive: true })
 
 const azureSvgs = await glob('.tmp/azure/**/*.svg')
 for (const svg of azureSvgs) {
-  const name = svg.split('/').pop().replace(/^\d+-icon-service-/, '')
-  await $`mv ${svg} .tmp/src/azure/${name}`
+  let name = path.basename(svg).replace(/^\d+-icon-service-/, '')
+  name = path.resolve('.tmp/src/azure', name)
+  await $`mv ${path.resolve(svg)} ${name}'`
 }
 
 const azureRenames = {
@@ -153,6 +155,7 @@ for (const [oldName, newName] of Object.entries(azureRenames)) {
 consola.success('azure-icons - OK')
 
 await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech']}`
+console.log('rm')
 const opts = [
   '--filename-case',
   'kebab',
@@ -164,7 +167,6 @@ const opts = [
 ]
 
 await $`npx @svgr/cli ${opts} --out-dir . -- .tmp/src`
-
 consola.success('generated svg - DONE')
 
 await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp`

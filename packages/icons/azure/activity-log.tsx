@@ -1,13 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgActivityLog = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgActivityLog = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={8.15} x2={8.15} y1={17.5} y2={2.09} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Activity-Log_svg__a" x1={8.15} x2={8.15} y1={17.5} y2={2.09} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#1988d9" />
         <stop offset={0.9} stopColor="#54aef0" />
       </linearGradient>
@@ -21,10 +18,10 @@ return (
       d="m2.91 2.1.74-.84A.5.5 0 0 1 4 1.08h10.89a.52.52 0 0 1 .52.52v13.78a.52.52 0 0 1-.17.39l-1.16 1.05Z"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Activity-Log_svg__a)"
       d="M14 2.09H2a.06.06 0 0 0-.06.06v15a.39.39 0 0 0 .39.38H14a.38.38 0 0 0 .38-.38V2.48a.39.39 0 0 0-.38-.39"
     />
     <rect width={6.58} height={2.38} x={4.72} y={6.2} fill="#fff" rx={0.28} />
   </svg>
-)}
+)
 export default SvgActivityLog

@@ -1,18 +1,15 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgLanguage = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgLanguage = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={11.841} x2={11.841} y1={2.17} y2={13.446} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Language_svg__a" x1={11.841} x2={11.841} y1={2.17} y2={13.446} gradientUnits="userSpaceOnUse">
         <stop offset={0.001} stopColor="#ffb34d" />
         <stop offset={1} stopColor="#faa21d" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Language_svg__b"
         x1={-2018.213}
         x2={-2018.213}
         y1={1017.927}
@@ -29,7 +26,7 @@ return (
       d="M.362 3.138A.36.36 0 0 1 0 2.777V.361A.36.36 0 0 1 .362 0h2.266a.361.361 0 0 1 0 .722H.724v2.053a.363.363 0 0 1-.361.363ZM18 2.777V.361A.36.36 0 0 0 17.638 0h-2.266a.361.361 0 1 0 0 .722h1.9v2.053a.362.362 0 0 0 .724 0ZM2.99 17.639a.36.36 0 0 0-.362-.361H.724v-2.053a.362.362 0 0 0-.724 0v2.415a.36.36 0 0 0 .362.36h2.266a.36.36 0 0 0 .362-.361m15.01 0v-2.414a.362.362 0 0 0-.724 0v2.053h-1.9a.361.361 0 1 0 0 .722h2.266a.36.36 0 0 0 .358-.36Z"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Language_svg__a)"
       d="M16.684 2.666v10.463a.32.32 0 0 1-.3.329h-5.756a.28.28 0 0 1-.281-.281V8.266a.945.945 0 0 0-.932-.866H7.279A.28.28 0 0 1 7 7.12V2.666a.316.316 0 0 1 .3-.33h9.08a.32.32 0 0 1 .304.33"
     />
     <path
@@ -37,7 +34,7 @@ return (
       d="M15.118 6.405h-1.79a.327.327 0 0 1-.285-.356.33.33 0 0 1 .285-.357h1.79a.33.33 0 0 1 .286.357.327.327 0 0 1-.286.356"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Language_svg__b)"
       d="M9.414 7.823H1a.53.53 0 0 0-.511.477v5.687a.524.524 0 0 0 .511.476h2.784a.08.08 0 0 1 .081.079v.958a.19.19 0 0 0 .208.164.2.2 0 0 0 .086-.035l.278-.181.77-.51.7-.466a.1.1 0 0 1 .052-.017h3.455a.51.51 0 0 0 .511-.468V8.3a.523.523 0 0 0-.511-.477"
     />
     <path
@@ -49,5 +46,5 @@ return (
       d="M12.12 6.405H8.563a.357.357 0 1 1 0-.713h3.557a.357.357 0 1 1 0 .713m3.355 1.55a.357.357 0 0 0-.357-.356h-3.4a.357.357 0 1 0 0 .713h3.4a.357.357 0 0 0 .357-.357m-9.632 2.194a.356.356 0 0 0-.357-.356H1.929a.356.356 0 1 0 0 .712h3.557a.356.356 0 0 0 .357-.356m3 1.906a.357.357 0 0 0-.357-.356H4.512a.357.357 0 1 0 0 .713h3.973a.357.357 0 0 0 .357-.357Z"
     />
   </svg>
-)}
+)
 export default SvgLanguage

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgMatplotlib = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgMatplotlib = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#fff"
@@ -115,5 +112,5 @@ return (
       d="M97.832 106.652a.41.41 0 0 1-.324-.156L63.651 64.041a.413.413 0 0 1 .577-.584l42.833 33.379a.414.414 0 0 1 .072.581 54.7 54.7 0 0 1-9.045 9.146.4.4 0 0 1-.256.089M66.477 66.258l31.42 39.399a54 54 0 0 0 8.329-8.423z"
     />
   </svg>
-)}
+)
 export default SvgMatplotlib

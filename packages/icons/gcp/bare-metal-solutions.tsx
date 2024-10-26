@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgBareMetalSolutions = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgBareMetalSolutions = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g fill="#4285f4">
       <path d="m12 20.99-9-4.276 4.5-1.428L12 19.57l4.5-4.285 4.5 1.428z" />
@@ -12,5 +9,5 @@ return (
       <path d="m18.841 12.285.659.63-7.5 7.228-7.501-7.228.659-.63.627.6-.062.06L12 18.835l6.276-5.89-.063-.06z" />
     </g>
   </svg>
-)}
+)
 export default SvgBareMetalSolutions

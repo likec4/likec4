@@ -1,13 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgRuby = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgRuby = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <linearGradient
-      id={`a-${suffix}`}
+      id="Ruby_svg__a"
       x1={157.08}
       x2={131.682}
       y1={2382.05}
@@ -21,9 +18,9 @@ return (
       <stop offset={0.99} stopColor="#900" />
       <stop offset={1} stopColor="#900" />
     </linearGradient>
-    <path fill={`url(#a-${suffix})`} d="M97.078 83.214 28.34 124.031l89.003-6.04 6.855-89.745z" />
+    <path fill="url(#Ruby_svg__a)" d="M97.078 83.214 28.34 124.031l89.003-6.04 6.855-89.745z" />
     <linearGradient
-      id={`b-${suffix}`}
+      id="Ruby_svg__b"
       x1={169.731}
       x2={136.998}
       y1={2419.72}
@@ -36,9 +33,9 @@ return (
       <stop offset={0.99} stopColor="#911209" />
       <stop offset={1} stopColor="#911209" />
     </linearGradient>
-    <path fill={`url(#b-${suffix})`} d="m117.488 117.93-7.649-52.799-20.837 27.514z" />
+    <path fill="url(#Ruby_svg__b)" d="m117.488 117.93-7.649-52.799-20.837 27.514z" />
     <linearGradient
-      id={`c-${suffix}`}
+      id="Ruby_svg__c"
       x1={143.542}
       x2={110.81}
       y1={2380.69}
@@ -51,9 +48,9 @@ return (
       <stop offset={0.99} stopColor="#911209" />
       <stop offset={1} stopColor="#911209" />
     </linearGradient>
-    <path fill={`url(#c-${suffix})`} d="m117.592 117.93-56.044-4.399-32.91 10.385z" />
+    <path fill="url(#Ruby_svg__c)" d="m117.592 117.93-56.044-4.399-32.91 10.385z" />
     <linearGradient
-      id={`d-${suffix}`}
+      id="Ruby_svg__d"
       x1={74.817}
       x2={79.891}
       y1={2435.622}
@@ -68,9 +65,9 @@ return (
       <stop offset={0.99} stopColor="#A60003" />
       <stop offset={1} stopColor="#A60003" />
     </linearGradient>
-    <path fill={`url(#d-${suffix})`} d="m28.717 123.928 14.001-45.867-30.81 6.588z" />
+    <path fill="url(#Ruby_svg__d)" d="m28.717 123.928 14.001-45.867-30.81 6.588z" />
     <linearGradient
-      id={`e-${suffix}`}
+      id="Ruby_svg__e"
       x1={109.719}
       x2={111.589}
       y1={2466.413}
@@ -85,9 +82,9 @@ return (
       <stop offset={0.99} stopColor="#A80D00" />
       <stop offset={1} stopColor="#A80D00" />
     </linearGradient>
-    <path fill={`url(#e-${suffix})`} d="m88.996 92.797-12.882-50.46-36.866 34.558z" />
+    <path fill="url(#Ruby_svg__e)" d="m88.996 92.797-12.882-50.46-36.866 34.558z" />
     <linearGradient
-      id={`f-${suffix}`}
+      id="Ruby_svg__f"
       x1={140.691}
       x2={146.289}
       y1={2497.523}
@@ -102,9 +99,9 @@ return (
       <stop offset={0.99} stopColor="#A80D00" />
       <stop offset={1} stopColor="#A80D00" />
     </linearGradient>
-    <path fill={`url(#f-${suffix})`} d="M121.275 43.047 86.426 14.585l-9.704 31.373z" />
+    <path fill="url(#Ruby_svg__f)" d="M121.275 43.047 86.426 14.585l-9.704 31.373z" />
     <linearGradient
-      id={`g-${suffix}`}
+      id="Ruby_svg__g"
       x1={123.6}
       x2={147.719}
       y1={2506.018}
@@ -118,9 +115,9 @@ return (
       <stop offset={0.99} stopColor="#BF0905" />
       <stop offset={1} stopColor="#BF0905" />
     </linearGradient>
-    <path fill={`url(#g-${suffix})`} d="M104.978 4.437 84.481 15.764 71.551 4.285z" />
+    <path fill="url(#Ruby_svg__g)" d="M104.978 4.437 84.481 15.764 71.551 4.285z" />
     <linearGradient
-      id={`h-${suffix}`}
+      id="Ruby_svg__h"
       x1={53.674}
       x2={55.66}
       y1={2444.028}
@@ -134,13 +131,13 @@ return (
       <stop offset={0.99} stopColor="#BF190B" />
       <stop offset={1} stopColor="#BF190B" />
     </linearGradient>
-    <path fill={`url(#h-${suffix})`} d="m3.802 100.034 8.586-15.659L5.442 65.72z" />
+    <path fill="url(#Ruby_svg__h)" d="m3.802 100.034 8.586-15.659L5.442 65.72z" />
     <path
       fill="#fff"
       d="m4.981 65.131 6.987 19.821 30.365-6.812L77 45.922l9.783-31.075L71.38 3.969l-26.19 9.802c-8.252 7.675-24.263 22.86-24.84 23.146-.573.291-10.575 19.195-15.369 28.214"
     />
     <linearGradient
-      id={`i-${suffix}`}
+      id="Ruby_svg__i"
       x1={40.026}
       x2={133.345}
       y1={2418.781}
@@ -160,11 +157,11 @@ return (
       <stop offset={1} stopColor="#E82609" />
     </linearGradient>
     <path
-      fill={`url(#i-${suffix})`}
+      fill="url(#Ruby_svg__i)"
       d="M29.519 29.521c17.882-17.73 40.937-28.207 49.785-19.28 8.843 8.926-.534 30.62-18.418 48.345S20.233 87.365 11.393 78.438c-8.849-8.92.242-31.191 18.126-48.917"
     />
     <linearGradient
-      id={`j-${suffix}`}
+      id="Ruby_svg__j"
       x1={111.507}
       x2={83.398}
       y1={2409.102}
@@ -178,9 +175,12 @@ return (
       <stop offset={0.99} stopColor="#A80D0E" />
       <stop offset={1} stopColor="#A80D0E" />
     </linearGradient>
-    <path fill={`url(#j-${suffix})`} d="m28.717 123.909 13.89-46.012 46.135 14.82c-16.68 15.642-35.233 28.865-60.025 31.192" />
+    <path
+      fill="url(#Ruby_svg__j)"
+      d="m28.717 123.909 13.89-46.012 46.135 14.82c-16.68 15.642-35.233 28.865-60.025 31.192"
+    />
     <linearGradient
-      id={`k-${suffix}`}
+      id="Ruby_svg__k"
       x1={159.785}
       x2={134.814}
       y1={2442.837}
@@ -193,9 +193,9 @@ return (
       <stop offset={0.99} stopColor="#9E0C00" />
       <stop offset={1} stopColor="#9E0C00" />
     </linearGradient>
-    <path fill={`url(#k-${suffix})`} d="m77.062 45.831 11.844 46.911c13.934-14.65 26.439-30.401 32.563-49.883z" />
+    <path fill="url(#Ruby_svg__k)" d="m77.062 45.831 11.844 46.911c13.934-14.65 26.439-30.401 32.563-49.883z" />
     <linearGradient
-      id={`l-${suffix}`}
+      id="Ruby_svg__l"
       x1={168.959}
       x2={156.521}
       y1={2483.901}
@@ -208,10 +208,10 @@ return (
       <stop offset={0.99} stopColor="#9E120B" />
       <stop offset={1} stopColor="#9E120B" />
     </linearGradient>
-    <path fill={`url(#l-${suffix})`} d="M121.348 43.097c4.74-14.305 5.833-34.825-16.517-38.635l-18.339 10.13z" />
+    <path fill="url(#Ruby_svg__l)" d="M121.348 43.097c4.74-14.305 5.833-34.825-16.517-38.635l-18.339 10.13z" />
     <path fill="#9E1209" d="M3.802 99.828c.656 23.608 17.689 23.959 24.945 24.167l-16.759-39.14z" />
     <radialGradient
-      id={`m-${suffix}`}
+      id="Ruby_svg__m"
       cx={138.703}
       cy={2464.789}
       r={30.601}
@@ -224,11 +224,11 @@ return (
       <stop offset={1} stopColor="#7E0E08" />
     </radialGradient>
     <path
-      fill={`url(#m-${suffix})`}
+      fill="url(#Ruby_svg__m)"
       d="M77.128 45.904c10.708 6.581 32.286 19.798 32.723 20.041.68.383 9.304-14.542 11.261-22.976z"
     />
     <radialGradient
-      id={`n-${suffix}`}
+      id="Ruby_svg__n"
       cx={96.325}
       cy={2424.465}
       r={40.679}
@@ -240,9 +240,9 @@ return (
       <stop offset={0.99} stopColor="#800E08" />
       <stop offset={1} stopColor="#800E08" />
     </radialGradient>
-    <path fill={`url(#n-${suffix})`} d="m42.589 77.897 18.57 35.828c10.98-5.955 19.579-13.211 27.454-20.983z" />
+    <path fill="url(#Ruby_svg__n)" d="m42.589 77.897 18.57 35.828c10.98-5.955 19.579-13.211 27.454-20.983z" />
     <linearGradient
-      id={`o-${suffix}`}
+      id="Ruby_svg__o"
       x1={67.509}
       x2={57.373}
       y1={2393.115}
@@ -257,11 +257,11 @@ return (
       <stop offset={1} stopColor="#B3100C" />
     </linearGradient>
     <path
-      fill={`url(#o-${suffix})`}
+      fill="url(#Ruby_svg__o)"
       d="m11.914 84.904-2.631 31.331c4.964 6.781 11.794 7.371 18.96 6.842-5.184-12.9-15.538-38.696-16.329-38.173"
     />
     <linearGradient
-      id={`p-${suffix}`}
+      id="Ruby_svg__p"
       x1={145.272}
       x2={167.996}
       y1={2507.076}
@@ -275,7 +275,7 @@ return (
       <stop offset={0.99} stopColor="#791C12" />
       <stop offset={1} stopColor="#791C12" />
     </linearGradient>
-    <path fill={`url(#p-${suffix})`} d="m86.384 14.67 36.891 5.177c-1.969-8.343-8.015-13.727-18.32-15.41z" />
+    <path fill="url(#Ruby_svg__p)" d="m86.384 14.67 36.891 5.177c-1.969-8.343-8.015-13.727-18.32-15.41z" />
   </svg>
-)}
+)
 export default SvgRuby

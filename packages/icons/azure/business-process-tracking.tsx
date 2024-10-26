@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgBusinessProcessTracking = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgBusinessProcessTracking = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#76d263"
@@ -19,5 +16,5 @@ return (
       d="M2.7 3.64V.5c0-.276.235-.5.525-.5h11.55c.29 0 .525.224.525.5v3.14a.5.5 0 0 1-.359.474L9 6 3.059 4.114A.5.5 0 0 1 2.7 3.64"
     />
   </svg>
-)}
+)
 export default SvgBusinessProcessTracking

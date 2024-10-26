@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgInputOutput = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgInputOutput = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Input-Output_svg__a"
         x1={-1803.596}
         x2={-1810.471}
         y1={-323.82}
@@ -20,7 +17,7 @@ return (
         <stop offset={1} stopColor="#a67af4" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Input-Output_svg__b"
         x1={-1803.596}
         x2={-1810.471}
         y1={-333.097}
@@ -63,13 +60,13 @@ return (
     </g>
     <path fill="#949494" d="M.765 15.711v-1.2h16.29v1.2a.543.543 0 0 1-.543.543H1.308a.543.543 0 0 1-.543-.543" />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Input-Output_svg__a)"
       d="m4.989 5.484 3.125 3.125a.37.37 0 0 1 0 .527l-3.125 3.125a.166.166 0 0 1-.284-.118v-1.921a.166.166 0 0 0-.166-.167H.633A.13.13 0 0 1 .5 9.922v-2.1a.13.13 0 0 1 .133-.132h3.906a.166.166 0 0 0 .166-.167V5.6a.166.166 0 0 1 .284-.116"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Input-Output_svg__b)"
       d="m14.266 5.484 3.125 3.125a.374.374 0 0 1 0 .527l-3.125 3.125a.166.166 0 0 1-.284-.118v-1.921a.167.167 0 0 0-.167-.167H9.909a.13.13 0 0 1-.132-.133v-2.1a.13.13 0 0 1 .132-.133h3.906a.167.167 0 0 0 .167-.167V5.6a.166.166 0 0 1 .284-.116"
     />
   </svg>
-)}
+)
 export default SvgInputOutput

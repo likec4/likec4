@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgFleetEngine = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgFleetEngine = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" {...props}>
     <g fill="#4285f4" fillRule="evenodd" clipRule="evenodd">
       <path d="M11.988 7.199a4.8 4.8 0 0 0-1.568.265l.837.975a3.62 3.62 0 0 1 4.35 3.54 3.62 3.62 0 0 1-3.619 3.613 3.62 3.62 0 0 1-3.617-3.614c0-.444.08-.87.228-1.262l-.837-.976a4.74 4.74 0 0 0-.559 2.239c0 2.635 2.147 4.78 4.785 4.78s4.785-2.145 4.785-4.78a4.79 4.79 0 0 0-4.785-4.78" />
@@ -12,5 +9,5 @@ return (
       <path d="M12.009 12.423c-.257 0-.467-.209-.467-.465a.467.467 0 0 1 .934 0c0 .257-.21.465-.467.465M5.24 4.63a.467.467 0 0 1 .934 0 .467.467 0 0 1-.934 0m6.769 5.7c-.193 0-.377.035-.549.097L7.143 5.405c.126-.23.198-.495.198-.776a1.633 1.633 0 0 0-3.268 0A1.633 1.633 0 0 0 6.256 6.16l4.317 5.02c-.126.232-.198.496-.198.777a1.633 1.633 0 0 0 3.268 0c0-.898-.733-1.629-1.634-1.629" />
     </g>
   </svg>
-)}
+)
 export default SvgFleetEngine

@@ -1,13 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgInternetAnalyzerProfiles = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgInternetAnalyzerProfiles = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={8.693} x2={8.693} y1={12.726} y2={0.705} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Internet-Analyzer-Profiles_svg__a"
+        x1={8.693}
+        x2={8.693}
+        y1={12.726}
+        y2={0.705}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.105} stopColor="#1480da" />
         <stop offset={0.306} stopColor="#348ee3" />
@@ -19,7 +23,7 @@ return (
     <path fill="none" d="M0 0h18v18H0z" />
     <path fill="none" d="M0 0h18v18H0z" />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Internet-Analyzer-Profiles_svg__a)"
       d="M17.173 8.961A3.81 3.81 0 0 0 13.866 5.3 4.8 4.8 0 0 0 8.919.705a4.93 4.93 0 0 0-4.708 3.211 4.55 4.55 0 0 0-4 4.375 4.615 4.615 0 0 0 4.776 4.435q.211 0 .42-.018h7.734a.8.8 0 0 0 .2-.031 3.855 3.855 0 0 0 3.832-3.716"
     />
     <circle cx={9.101} cy={6.379} r={1.318} fill="#fff" />
@@ -38,5 +42,5 @@ return (
       d="m11.949 15.034.463 1.072a.066.066 0 0 0 .124-.005l.484-1.435a.066.066 0 0 1 .122-.01l.394.751a.067.067 0 0 0 .116 0l.526-.889a.07.07 0 0 1 .058-.033h1.057l-.215-.311a.07.07 0 0 0-.055-.029h-.981a.07.07 0 0 0-.058.032l-.314.532a.066.066 0 0 1-.116 0l-.481-.915a.066.066 0 0 0-.122.01l-.451 1.348a.066.066 0 0 1-.124.005l-.387-.9a.066.066 0 0 0-.119 0l-.549 1a.07.07 0 0 1-.059.034h-.9a.07.07 0 0 0-.055.029l-.214.311h1.367a.07.07 0 0 0 .059-.034l.311-.565a.066.066 0 0 1 .119.002"
     />
   </svg>
-)}
+)
 export default SvgInternetAnalyzerProfiles

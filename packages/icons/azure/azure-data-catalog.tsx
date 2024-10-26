@@ -1,19 +1,30 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureDataCatalog = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureDataCatalog = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={6.41} x2={6.41} y1={1.78} y2={14.13} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Data-Catalog_svg__a"
+        x1={6.41}
+        x2={6.41}
+        y1={1.78}
+        y2={14.13}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#b3b2b3" />
         <stop offset={0.38} stopColor="#afaeaf" />
         <stop offset={0.76} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#979797" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={7.85} x2={16.6} y1={13.09} y2={13.09} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Data-Catalog_svg__b"
+        x1={7.85}
+        x2={16.6}
+        y1={13.09}
+        y2={13.09}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -37,11 +48,11 @@ return (
       d="m2.2 1.79.59-.68A.44.44 0 0 1 3.11 1h8.69a.42.42 0 0 1 .42.42v11.01a.44.44 0 0 1-.13.31l-.93.85"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Data-Catalog_svg__a)"
       d="M11.1 1.78H1.4v12a.31.31 0 0 0 .31.31h9.39a.31.31 0 0 0 .31-.31V2.09a.31.31 0 0 0-.31-.31"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Azure-Data-Catalog_svg__b)"
       d="M12.22 10.08c-2.41 0-4.37-.62-4.37-1.39v7.42c0 .76 1.92 1.38 4.31 1.39h.06c2.42 0 4.38-.62 4.38-1.39V8.69c0 .77-1.96 1.39-4.38 1.39"
     />
     <path fill="#e8e8e8" d="M16.6 8.69c0 .77-2 1.39-4.38 1.39s-4.37-.62-4.37-1.39 2-1.4 4.37-1.4 4.38.63 4.38 1.4" />
@@ -51,5 +62,5 @@ return (
       d="M12.22 8.78a8.9 8.9 0 0 0-2.65.34 8.8 8.8 0 0 0 2.65.34 8.9 8.9 0 0 0 2.66-.34 9 9 0 0 0-2.66-.34"
     />
   </svg>
-)}
+)
 export default SvgAzureDataCatalog

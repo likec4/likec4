@@ -1,13 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgMicrosoftDefenderForCloud = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgMicrosoftDefenderForCloud = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={16.795} y2={1.205} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Microsoft-Defender-for-Cloud_svg__a"
+        x1={9}
+        x2={9}
+        y1={16.795}
+        y2={1.205}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5e9624" />
         <stop offset={0.321} stopColor="#639d26" />
         <stop offset={0.794} stopColor="#6fb12a" />
@@ -19,7 +23,7 @@ return (
       d="M16.083 8.438c0 4.571-5.626 8.25-6.85 9a.45.45 0 0 1-.466 0c-1.224-.747-6.85-4.426-6.85-9v-5.5a.44.44 0 0 1 .434-.438C6.728 2.386 5.72.5 9 .5s2.272 1.886 6.649 2a.44.44 0 0 1 .434.435Z"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Microsoft-Defender-for-Cloud_svg__a)"
       d="M15.5 8.485c0 4.191-5.16 7.566-6.282 8.25a.41.41 0 0 1-.428 0c-1.126-.684-6.29-4.059-6.29-8.25V3.441a.4.4 0 0 1 .4-.4C6.916 2.935 5.992 1.205 9 1.205s2.084 1.73 6.1 1.837a.4.4 0 0 1 .4.4Z"
     />
     <path
@@ -37,5 +41,5 @@ return (
       opacity={0.09}
     />
   </svg>
-)}
+)
 export default SvgMicrosoftDefenderForCloud

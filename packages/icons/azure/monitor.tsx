@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgMonitor = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgMonitor = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id={`a-${suffix}`}
+        id="Monitor_svg__a"
         cx={5.72}
         cy={7.45}
         r={8.42}
@@ -25,7 +22,7 @@ return (
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
       <radialGradient
-        id={`b-${suffix}`}
+        id="Monitor_svg__b"
         cx={28.18}
         cy={202.29}
         r={2.7}
@@ -39,7 +36,7 @@ return (
         <stop offset={1} stopColor="#3e3f3f" />
       </radialGradient>
     </defs>
-    <ellipse cx={9} cy={9} fill={`url(#a-${suffix})`} rx={8.5} ry={8.47} />
+    <ellipse cx={9} cy={9} fill="url(#Monitor_svg__a)" rx={8.5} ry={8.47} />
     <ellipse cx={9} cy={9} fill="#fff" rx={7.4} ry={7.37} />
     <path fill="#9cebff" d="M2.72 9.44a6.24 6.24 0 0 0 1.82 4l2-2a3.53 3.53 0 0 1-1-2Z" />
     <path
@@ -48,7 +45,7 @@ return (
     />
     <path fill="#50e6ff" d="m6.22 6.85-2-2a6.16 6.16 0 0 0-1.5 3.71h2.79a3.6 3.6 0 0 1 .71-1.71" />
     <path fill="#f04049" d="M14.14 7a.45.45 0 0 0-.57-.25L9.45 8.41l.32.81 4.12-1.63a.44.44 0 0 0 .25-.59" />
-    <circle cx={9} cy={9} r={1.2} fill={`url(#b-${suffix})`} />
+    <circle cx={9} cy={9} r={1.2} fill="url(#Monitor_svg__b)" />
   </svg>
-)}
+)
 export default SvgMonitor

@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgCloudTest = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgCloudTest = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="CloudTest_svg__a"
         x1={9}
         x2={9}
         y1={780.461}
@@ -19,17 +16,17 @@ return (
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={7.905} x2={7.905} y1={18} y2={5.162} gradientUnits="userSpaceOnUse">
+      <linearGradient id="CloudTest_svg__b" x1={7.905} x2={7.905} y1={18} y2={5.162} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#50e6ff" />
         <stop offset={1} stopColor="#9cebff" />
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#CloudTest_svg__a)"
       d="M16.8 7.591a3.5 3.5 0 0 0-3.04-3.365A4.41 4.41 0 0 0 9.209 0a4.53 4.53 0 0 0-4.328 2.954A4.18 4.18 0 0 0 1.2 6.975a4.24 4.24 0 0 0 4.39 4.077q.195 0 .386-.016h7.11a.7.7 0 0 0 .183-.029A3.544 3.544 0 0 0 16.8 7.591"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#CloudTest_svg__b)"
       d="M14.019 18H1.8c-.393 0-.621-.621-.406-.95L5.6 10.181a.43.43 0 0 0 .093-.281V6.582a.25.25 0 0 0-.241-.241h-.228a.48.48 0 0 1-.481-.482v-.215a.48.48 0 0 1 .481-.482h5.361a.48.48 0 0 1 .481.482v.215a.48.48 0 0 1-.481.482h-.228a.24.24 0 0 0-.241.241v3.333a.45.45 0 0 0 .089.279l4.207 6.856c.216.316-.012.95-.393.95"
     />
     <path
@@ -42,5 +39,5 @@ return (
     />
     {'\u200B'}
   </svg>
-)}
+)
 export default SvgCloudTest

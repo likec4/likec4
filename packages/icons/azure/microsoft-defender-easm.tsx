@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgMicrosoftDefenderEasm = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgMicrosoftDefenderEasm = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Microsoft-Defender-EASM_svg__a"
         x1={149.824}
         x2={159.281}
         y1={-352.541}
@@ -20,7 +17,7 @@ return (
         <stop offset={1} stopColor="#508dfa" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Microsoft-Defender-EASM_svg__b"
         x1={161.576}
         x2={148.34}
         y1={-367.038}
@@ -33,11 +30,11 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Microsoft-Defender-EASM_svg__a)"
       d="M15.926 8.436c0 4.572-5.5 8.253-6.7 9a.43.43 0 0 1-.456 0c-1.2-.746-6.7-4.427-6.7-9v-5.5A.435.435 0 0 1 2.5 2.5c4.28-.114 3.294-2 6.5-2s2.221 1.889 6.5 2a.435.435 0 0 1 .425.436z"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Microsoft-Defender-EASM_svg__b)"
       d="M15.352 8.487c0 4.192-5.046 7.568-6.143 8.253a.39.39 0 0 1-.418 0c-1.1-.685-6.143-4.063-6.143-8.253V3.442a.4.4 0 0 1 .39-.4C6.963 2.936 6.059 1.206 9 1.206s2.037 1.73 5.962 1.836a.4.4 0 0 1 .276.121.4.4 0 0 1 .114.279z"
     />
     <path
@@ -49,5 +46,5 @@ return (
       d="M7.741 12.967H5.726a.5.5 0 0 1-.5-.5v-2.04a.5.5 0 0 1 .5-.5h1.867a.2.2 0 0 0 .123-.035.07.07 0 0 0 .025-.062V7.278a.147.147 0 0 0-.148-.147H5.726a.5.5 0 0 1-.5-.5V4.718a.5.5 0 0 1 .5-.5h2.016a.5.5 0 0 1 .5.5V6.48a.147.147 0 0 0 .147.147h2.561a.15.15 0 0 0 .15-.147v-.958a.5.5 0 0 1 .5-.5h1.175a.5.5 0 0 1 .5.5v1.1a.505.505 0 0 1-.5.5h-1.024a.147.147 0 0 0-.148.147v2.656a.5.5 0 0 1-.5.5H8.392a.147.147 0 0 0-.147.147v1.887a.5.5 0 0 1-.504.508m-2.015-2.791a.25.25 0 0 0-.252.251v2.036a.25.25 0 0 0 .252.252h2.015a.25.25 0 0 0 .252-.252v-1.887a.4.4 0 0 1 .4-.4H11.1a.25.25 0 0 0 .251-.252V7.278a.4.4 0 0 1 .4-.4h1.027a.25.25 0 0 0 .251-.252v-1.1a.25.25 0 0 0-.251-.251H11.6a.25.25 0 0 0-.252.251v.954a.4.4 0 0 1-.4.4H8.392a.4.4 0 0 1-.4-.4V4.719a.24.24 0 0 0-.073-.178.25.25 0 0 0-.178-.074H5.726a.25.25 0 0 0-.252.251v1.909a.25.25 0 0 0 .252.252h1.867a.4.4 0 0 1 .4.4v2.548a.33.33 0 0 1-.116.256.45.45 0 0 1-.284.093Z"
     />
   </svg>
-)}
+)
 export default SvgMicrosoftDefenderEasm

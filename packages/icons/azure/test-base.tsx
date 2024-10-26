@@ -1,27 +1,24 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgTestBase = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgTestBase = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={15.155} y2={2.845} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Test-Base_svg__a" x1={9} x2={9} y1={15.155} y2={2.845} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.817} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={9.044} x2={9.044} y1={12.424} y2={6.079} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Test-Base_svg__b" x1={9.044} x2={9.044} y1={12.424} y2={6.079} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#50e6ff" />
         <stop offset={1} stopColor="#9cebff" />
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Test-Base_svg__a)"
       d="M17.684 11.3A3.9 3.9 0 0 0 14.3 7.548a4.92 4.92 0 0 0-5.066-4.7 5.05 5.05 0 0 0-4.825 3.285 4.656 4.656 0 0 0-4.093 4.481 4.725 4.725 0 0 0 4.89 4.541q.218 0 .431-.018h7.92a.8.8 0 0 0 .209-.032 3.95 3.95 0 0 0 3.918-3.805"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Test-Base_svg__b)"
       d="M12.076 12.466H6.012c-.193 0-.307-.309-.2-.468L7.9 8.952a.24.24 0 0 0 .042-.136V6.8a.12.12 0 0 0-.12-.12h-.108a.24.24 0 0 1-.24-.239v-.106a.24.24 0 0 1 .24-.24h2.659a.24.24 0 0 1 .24.24v.109a.24.24 0 0 1-.24.239h-.112a.12.12 0 0 0-.12.12v2.018a.24.24 0 0 0 .042.136L12.274 12c.109.157-.005.466-.198.466"
     />
     <path
@@ -47,5 +44,5 @@ return (
     </g>
     <path fill="#fff" d="M4.367 7.935H4.8v5.952h-.433a.2.2 0 0 1-.2-.2V8.134a.2.2 0 0 1 .2-.199" />
   </svg>
-)}
+)
 export default SvgTestBase

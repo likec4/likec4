@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgElasticSan = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgElasticSan = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Elastic-SAN_svg__a"
         x1={-313.941}
         x2={-313.941}
         y1={642.516}
@@ -22,7 +19,7 @@ return (
     </defs>
     <path fill="none" d="m8.686 9.038.015.005zM8.686 10.626l.015.005zM8.686 4.273l.015.005zM8.686 5.861l.015.005z" />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Elastic-SAN_svg__a)"
       d="M18 14.474a3.58 3.58 0 0 0-3.098-3.428 4.49 4.49 0 0 0-4.631-4.258 4.6 4.6 0 0 0-4.407 2.959 4.26 4.26 0 0 0-3.747 4.098 4.32 4.32 0 0 0 4.471 4.152h7.867A3.61 3.61 0 0 0 18 14.473Z"
     />
     <g fill="#fff">
@@ -50,5 +47,5 @@ return (
     />
     <ellipse cx={5.688} cy={1.339} fill="#9cebff" rx={5.688} ry={1.339} />
   </svg>
-)}
+)
 export default SvgElasticSan

@@ -1,22 +1,19 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureManagedGrafana = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureManagedGrafana = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={2} y2={16} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Azure-Managed-Grafana_svg__a" x1={9} x2={9} y1={2} y2={16} gradientUnits="userSpaceOnUse">
         <stop offset={0.18} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
-    <rect width={18} height={14} y={2} fill={`url(#a-${suffix})`} rx={0.76} />
+    <rect width={18} height={14} y={2} fill="url(#Azure-Managed-Grafana_svg__a)" rx={0.76} />
     <path
       fill="#f2f2f2"
       d="m8.318 4.81-.009.043a4 4 0 0 0-1.213.573 2.83 2.83 0 0 0-2.162.074 3.1 3.1 0 0 0 .559 2.097 5.3 5.3 0 0 0-.275 1.192 2.8 2.8 0 0 0-1.354 1.573 2.98 2.98 0 0 0 1.888 1.065l.003-.002a4.4 4.4 0 0 0 .668.903 2.35 2.35 0 0 0 .045 1.665 2.7 2.7 0 0 0 1.742-.531 4.4 4.4 0 0 0 1.587.222 1.95 1.95 0 0 0 1.262.746 2 2 0 0 0 .605-1.33l-.001-.027-.002-.027a3.5 3.5 0 0 0 .984-1.042 1.6 1.6 0 0 0 1.103-.4 1.68 1.68 0 0 0-.572-1.066l-.015-.011-.015-.01a2.808 2.808 0 0 0-2.851-3.152c-2.835-.103-2.532 4.888.283 3.512.173-.416-.484.023-.662-.07A1.17 1.17 0 0 1 8.834 9.58a1.47 1.47 0 0 1 2.255-1.1c1.883 1.053.538 3.992-1.428 3.827h-.002a3.067 3.067 0 0 1-2.99-3.05 3.306 3.306 0 0 1 3.198-3.413c1.916-.182 3.373 1.376 3.918 2.987a3.44 3.44 0 0 0-1.134-2.95 1.58 1.58 0 0 0-.186-1.134 1.68 1.68 0 0 0-1.094.281 4.3 4.3 0 0 0-1.095-.303A2.03 2.03 0 0 0 9.29 3.57a2.16 2.16 0 0 0-.972 1.24"
     />
   </svg>
-)}
+)
 export default SvgAzureManagedGrafana

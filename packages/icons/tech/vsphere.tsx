@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgVsphere = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgVsphere = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#00C1D5"
@@ -19,5 +16,5 @@ return (
       <path d="M33.2 85.4h-7c-3.9 0-4.6-4.1-4.8-4.9V26.7c0-4.8 4.5-5.2 5.3-5.3l52.7.2c4 0 4.8 4.3 5 5.1v5.5h4.8v-5.9c-.4-3.3-2.9-9.5-9.7-9.5l-52.8-.2c-3.4.1-9.9 2.4-9.9 10v54.2c.3 3.2 2.8 9.3 9.5 9.3h7v-4.7z" />
     </g>
   </svg>
-)}
+)
 export default SvgVsphere

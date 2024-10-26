@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureFirewallPolicy = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureFirewallPolicy = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#821010"
@@ -28,5 +25,5 @@ return (
     <circle cx={10.09} cy={12.62} r={0.37} fill="#666" />
     <circle cx={10.09} cy={14.2} r={0.37} fill="#666" />
   </svg>
-)}
+)
 export default SvgAzureFirewallPolicy

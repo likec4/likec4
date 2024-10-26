@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgQwik = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgQwik = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="m95.672 112.555-17.43-17.34-.246.043v-.184L40.93 58.418l9.152-8.82-5.383-30.84L19.23 50.355c-4.324 4.368-5.156 11.508-2.023 16.75l15.918 26.422c2.434 4.051 6.258 6.657 11.598 6.465 11.304-.402 16.273-.402 16.273-.402l34.668 12.957.008.012Zm0 0"
@@ -28,5 +25,5 @@ return (
       fillOpacity={1}
     />
   </svg>
-)}
+)
 export default SvgQwik

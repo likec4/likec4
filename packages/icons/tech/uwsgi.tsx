@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgUwsgi = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgUwsgi = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <rect fill="none" />
     <path
@@ -26,5 +23,5 @@ return (
       d="M82.194 52.726c0 .5-.375.875-.875.875s-.875-.375-.875-.875.375-.875.875-.875a.88.88 0 0 1 .875.875"
     />
   </svg>
-)}
+)
 export default SvgUwsgi

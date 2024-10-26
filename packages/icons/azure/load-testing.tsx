@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgLoadTesting = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgLoadTesting = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Load-Testing_svg__a"
         x1={8.995}
         x2={9.092}
         y1={778.607}
@@ -21,7 +18,7 @@ return (
         <stop offset={1} stopColor="#32d4f5" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Load-Testing_svg__b"
         x1={8.997}
         x2={8.997}
         y1={791.404}
@@ -34,7 +31,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Load-Testing_svg__a)"
       d="M13.233 12.922H4.767c-.27 0-.429-.431-.277-.654l2.919-4.256a.35.35 0 0 0 .059-.2V5.008a.17.17 0 0 0-.168-.166h-.157a.336.336 0 0 1-.335-.335v-.144a.337.337 0 0 1 .335-.336h3.709a.337.337 0 0 1 .335.336v.151a.334.334 0 0 1-.335.334H10.7a.167.167 0 0 0-.167.167v2.814a.34.34 0 0 0 .058.2l2.92 4.249c.155.213-.011.644-.278.644"
     />
     <path
@@ -49,7 +46,7 @@ return (
       fill="#0078d4"
       d="M9 .105 1.242 4.543v8.865L9 17.9l7.758-4.438v-8.9Zm6.325 12.423L9 16.185l-6.325-3.618V5.422L9 1.766l6.325 3.666Z"
     />
-    <path fill={`url(#b-${suffix})`} d="m16.753 4.565-1.428.864L9 1.772 2.675 5.429l-1.433-.88L9 .112Z" />
+    <path fill="url(#Load-Testing_svg__b)" d="m16.753 4.565-1.428.864L9 1.772 2.675 5.429l-1.433-.88L9 .112Z" />
   </svg>
-)}
+)
 export default SvgLoadTesting

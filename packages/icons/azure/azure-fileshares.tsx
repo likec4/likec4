@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureFileshares = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureFileshares = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Azure-Fileshares_svg__a"
         x1={-1267.23}
         x2={-1267.52}
         y1={3.07}
@@ -34,9 +31,9 @@ return (
     <path fill="#0078d4" d="m15.17 4.75-6.91-1h-.14a1 1 0 0 0-1 .87l-.26 1.69H16V5.9a1 1 0 0 0-.83-1.15" />
     <path fill="#fff" d="m15.1 5.18-6.9-1h-.09a.58.58 0 0 0-.57.5L7.3 6.31h8.22l.07-.47a.58.58 0 0 0-.49-.66" />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Fileshares_svg__a)"
       d="M5.26 5h6.05a.33.33 0 0 1 .21.09l1 1a.3.3 0 0 0 .21.09h4.6a.3.3 0 0 1 .3.29v7.43a.3.3 0 0 1-.3.29h-12A.29.29 0 0 1 5 13.9V5.32A.3.3 0 0 1 5.26 5"
     />
   </svg>
-)}
+)
 export default SvgAzureFileshares

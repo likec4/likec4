@@ -1,27 +1,38 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureLoadTesting = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureLoadTesting = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={5.357} x2={5.357} y1={14.378} y2={0.358} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Load-Testing_svg__a"
+        x1={5.357}
+        x2={5.357}
+        y1={14.378}
+        y2={0.358}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.914} stopColor="#0078d4" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={13.151} x2={13.151} y1={9.42} y2={18.4} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Load-Testing_svg__b"
+        x1={13.151}
+        x2={13.151}
+        y1={9.42}
+        y2={18.4}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.346} stopColor="#0078d4" />
         <stop offset={0.605} stopColor="#006ec3" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Load-Testing_svg__a)"
       d="M10.714 8.118a5.2 5.2 0 0 0-1.18.85l-.86-1.26a.8.8 0 0 1-.15-.47v-2.08a.38.38 0 0 0-.38-.38h-1.89a.38.38 0 0 0-.38.38v1.95a1.2 1.2 0 0 1-.22.69l-3.32 4.84a.33.33 0 0 0-.05.16.29.29 0 0 0 .29.29h5.32a5 5 0 0 0 .23 1.29H.534c-.43 0-.68-.68-.44-1.03l4.59-6.7a.53.53 0 0 0 .09-.3v-4.44a.26.26 0 0 0-.26-.26h-.24a.53.53 0 0 1-.53-.52v-.24a.534.534 0 0 1 .53-.53h5.85a.534.534 0 0 1 .53.53v.24a.525.525 0 0 1-.52.53h-.25a.267.267 0 0 0-.27.26v4.44a.53.53 0 0 0 .09.3Z"
     />
-    <circle cx={13.151} cy={12.79} r={4.849} fill={`url(#b-${suffix})`} />
+    <circle cx={13.151} cy={12.79} r={4.849} fill="url(#Azure-Load-Testing_svg__b)" />
     <ellipse cx={13.151} cy={12.79} fill="#fff" rx={3.963} ry={3.947} />
     <path
       fill="#f78d1e"
@@ -41,5 +52,5 @@ return (
       d="M7.884 12.788c0 .1 0 .2.01.3h-5.32a.29.29 0 0 1-.29-.29.33.33 0 0 1 .05-.16L5.654 7.8a1.2 1.2 0 0 0 .22-.69V5.158a.38.38 0 0 1 .38-.38h1.89a.38.38 0 0 1 .38.38v2.08a.8.8 0 0 0 .15.47l.86 1.26a5.23 5.23 0 0 0-1.65 3.82"
     />
   </svg>
-)}
+)
 export default SvgAzureLoadTesting

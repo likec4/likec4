@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureWorkbooks = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureWorkbooks = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Azure-Workbooks_svg__a"
         x1={15.601}
         x2={2.537}
         y1={771.736}
@@ -20,7 +17,7 @@ return (
         <stop offset={1} stopColor="#289bf2" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Azure-Workbooks_svg__b"
         x1={5.138}
         x2={13.27}
         y1={789.264}
@@ -32,7 +29,7 @@ return (
         <stop offset={1} stopColor="#0095e6" />
       </linearGradient>
       <linearGradient
-        id={`c-${suffix}`}
+        id="Azure-Workbooks_svg__c"
         x1={5.768}
         x2={9.72}
         y1={791.577}
@@ -45,14 +42,17 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Workbooks_svg__a)"
       d="M7.773 3.682 0 11.455v4.909A1.637 1.637 0 0 0 1.636 18h14.728A1.637 1.637 0 0 0 18 16.364V1.636A1.637 1.637 0 0 0 16.364 0h-.819L9.818 5.727Z"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Azure-Workbooks_svg__b)"
       d="M7.773 8.591.586 15.778a1.194 1.194 0 0 0-.381 1.379A1.64 1.64 0 0 0 1.636 18h14.728A1.637 1.637 0 0 0 18 16.364V2.455l-8.182 8.181Z"
     />
-    <path fill={`url(#c-${suffix})`} d="M9.818 5.727 15.545 0H1.636A1.637 1.637 0 0 0 0 1.636v9.819l7.773-7.773Z" />
+    <path
+      fill="url(#Azure-Workbooks_svg__c)"
+      d="M9.818 5.727 15.545 0H1.636A1.637 1.637 0 0 0 0 1.636v9.819l7.773-7.773Z"
+    />
   </svg>
-)}
+)
 export default SvgAzureWorkbooks

@@ -1,18 +1,15 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDnsSecurityPolicy = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDnsSecurityPolicy = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <radialGradient id={`a-${suffix}`} cx={6.956} cy={6.908} r={6.77} gradientUnits="userSpaceOnUse">
+      <radialGradient id="DNS-Security-Policy_svg__a" cx={6.956} cy={6.908} r={6.77} gradientUnits="userSpaceOnUse">
         <stop offset={0.18} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="DNS-Security-Policy_svg__b"
         x1={-550.016}
         x2={-550.016}
         y1={1007.916}
@@ -27,7 +24,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#DNS-Security-Policy_svg__a)"
       d="M9.533 12.881V9.773a.7.7 0 0 1 .684-.696c1.178-.031 1.547-.288 1.938-.56.303-.211.64-.444 1.266-.533a6.77 6.77 0 0 0-10.71-6.639l-.072.048a6.773 6.773 0 0 0 6.896 11.543z"
     />
     <path
@@ -44,7 +41,7 @@ return (
       d="M17.984 12.881c0 2.581-3.177 4.659-3.868 5.083a.25.25 0 0 1-.263 0c-.691-.422-3.868-2.5-3.868-5.083V9.775c0-.135.11-.246.245-.247 2.472-.064 1.903-1.129 3.755-1.129s1.283 1.065 3.755 1.129a.25.25 0 0 1 .245.246z"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#DNS-Security-Policy_svg__b)"
       d="M17.654 12.907c0 2.367-2.914 4.273-3.548 4.659a.23.23 0 0 1-.242 0c-.636-.386-3.552-2.292-3.552-4.659v-2.849c0-.125.101-.226.226-.226 2.268-.06 1.746-1.037 3.445-1.037s1.177.977 3.445 1.037c.125 0 .226.101.226.226v2.848Z"
     />
     <path
@@ -62,5 +59,5 @@ return (
       opacity={0.09}
     />
   </svg>
-)}
+)
 export default SvgDnsSecurityPolicy

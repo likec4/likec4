@@ -1,21 +1,39 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgCollaborativeService = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgCollaborativeService = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={13.398} x2={13.398} y1={1.747} y2={7.447} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Collaborative-Service_svg__a"
+        x1={13.398}
+        x2={13.398}
+        y1={1.747}
+        y2={7.447}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={2.85} x2={2.85} y1={5.341} y2={11.041} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Collaborative-Service_svg__b"
+        x1={2.85}
+        x2={2.85}
+        y1={5.341}
+        y2={11.041}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#a67af4" />
         <stop offset={1} stopColor="#773adc" />
       </linearGradient>
-      <linearGradient id={`c-${suffix}`} x1={11.829} x2={11.829} y1={12.149} y2={20.004} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Collaborative-Service_svg__c"
+        x1={11.829}
+        x2={11.829}
+        y1={12.149}
+        y2={20.004}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#3cd4c2" />
         <stop offset={1} stopColor="#258277" />
       </linearGradient>
@@ -32,10 +50,16 @@ return (
       fill="#a67af4"
       d="M7.269 15.538H4.322a3.694 3.694 0 0 1-3.1-5.7l1.944-2.975a.525.525 0 0 1 .879.575L2.1 10.412a2.643 2.643 0 0 0 2.221 4.075h2.948a.526.526 0 0 1 0 1.051"
     />
-    <circle cx={13.398} cy={4.597} r={2.85} fill={`url(#a-${suffix})`} />
-    <path fill={`url(#b-${suffix})`} d="M2.849 5.382A2.85 2.85 0 1 0 5.7 8.231a2.85 2.85 0 0 0-2.851-2.849" />
-    <path fill={`url(#c-${suffix})`} d="M11.828 12.149A2.85 2.85 0 1 0 14.679 15a2.85 2.85 0 0 0-2.851-2.851" />
+    <circle cx={13.398} cy={4.597} r={2.85} fill="url(#Collaborative-Service_svg__a)" />
+    <path
+      fill="url(#Collaborative-Service_svg__b)"
+      d="M2.849 5.382A2.85 2.85 0 1 0 5.7 8.231a2.85 2.85 0 0 0-2.851-2.849"
+    />
+    <path
+      fill="url(#Collaborative-Service_svg__c)"
+      d="M11.828 12.149A2.85 2.85 0 1 0 14.679 15a2.85 2.85 0 0 0-2.851-2.851"
+    />
     {'\u200B'}
   </svg>
-)}
+)
 export default SvgCollaborativeService

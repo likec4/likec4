@@ -1,18 +1,22 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgServerlessSearch = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgServerlessSearch = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={15.049} y2={-2.891} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Serverless-Search_svg__a"
+        x1={9}
+        x2={9}
+        y1={15.049}
+        y2={-2.891}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.18} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Serverless-Search_svg__b"
         x1={-197.682}
         x2={-197.682}
         y1={1125.664}
@@ -28,7 +32,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Serverless-Search_svg__a)"
       d="M14.49 5.001a5.15 5.15 0 0 0-5.25-5 5.25 5.25 0 0 0-5 3.49A4.86 4.86 0 0 0 0 8.271a5 5 0 0 0 5.07 4.82h5.454l2.208-4.369.007-.013.007-.013a.87.87 0 0 1 .757-.446h2.402a.86.86 0 0 1 .857.806l.002.027v.027a.85.85 0 0 1-.172.502l-1.938 2.555h1.274a.84.84 0 0 1 .401.104A4.12 4.12 0 0 0 18 9.002a4.12 4.12 0 0 0-3.51-4Z"
     />
     <path
@@ -37,9 +41,9 @@ return (
     />
     <ellipse cx={9.69} cy={5.861} fill="#83b9f9" rx={2.15} ry={2.16} />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Serverless-Search_svg__b)"
       d="M13.101 14.007h-2.025a.11.11 0 0 1-.113-.102q0-.023.01-.042l2.428-4.803a.12.12 0 0 1 .105-.06h2.395a.11.11 0 0 1 .113.102.1.1 0 0 1-.02.056l-2.851 3.758h2.78a.11.11 0 0 1 .113.102.1.1 0 0 1-.029.069l-4.62 4.806c-.043.026-.352.282-.201-.107z"
     />
   </svg>
-)}
+)
 export default SvgServerlessSearch

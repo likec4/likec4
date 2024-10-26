@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgLauncher = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgLauncher = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -28,5 +25,5 @@ return (
       <path fill="#5C85DE" d="M12 .8v5.8c1.4 0 2.5 1.1 2.5 2.5s-1.1 2.5-2.5 2.5v8h2.9l2.3-8V6z" />
     </g>
   </svg>
-)}
+)
 export default SvgLauncher

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgFreeTrial = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgFreeTrial = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -28,5 +25,5 @@ return (
       <path fill="#5C85DE" d="M10.5 6.8h3V21h-3z" />
     </g>
   </svg>
-)}
+)
 export default SvgFreeTrial

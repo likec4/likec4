@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgTimeSeriesInsightsEnvironments = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgTimeSeriesInsightsEnvironments = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Time-Series-Insights-Environments_svg__a"
         x1={8.999}
         x2={8.999}
         y1={-3108.081}
@@ -23,7 +20,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Time-Series-Insights-Environments_svg__a)"
       d="M.407 6.621a8.914 8.914 0 0 1 17.183 0h-1.7a7.293 7.293 0 0 0-13.789 0Zm15.451 4.863a7.295 7.295 0 0 1-13.718 0H.437a8.914 8.914 0 0 0 17.123 0Z"
     />
     <path
@@ -31,5 +28,5 @@ return (
       d="M9.64 13.141 7.5 8.33l-.9 1.555H1.093a.811.811 0 0 1 0-1.622h4.573l2.025-3.5 2.332 5.246L11.4 8.246l5.51.012a.811.811 0 0 1 0 1.622l-4.716-.011Z"
     />
   </svg>
-)}
+)
 export default SvgTimeSeriesInsightsEnvironments

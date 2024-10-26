@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureOrbital = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureOrbital = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Azure-Orbital_svg__a"
         x1={-485.564}
         x2={-485.564}
         y1={-607.983}
@@ -20,7 +17,7 @@ return (
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Azure-Orbital_svg__b"
         x1={-465.421}
         x2={-465.421}
         y1={-302.323}
@@ -32,7 +29,7 @@ return (
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
       <linearGradient
-        id={`c-${suffix}`}
+        id="Azure-Orbital_svg__c"
         x1={-465.421}
         x2={-465.421}
         y1={-307.134}
@@ -63,12 +60,12 @@ return (
       height={3.541}
       x={2.842}
       y={6.296}
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Orbital_svg__a)"
       rx={0.49}
       transform="rotate(45 10.018 8.066)"
     />
     <path fill="#005ba1" d="m5.875 11.519.638.638-1.335 1.334-.638-.638z" />
-    <circle cx={4.202} cy={13.83} r={1.134} fill={`url(#b-${suffix})`} />
+    <circle cx={4.202} cy={13.83} r={1.134} fill="url(#Azure-Orbital_svg__b)" />
     <path
       fill="#005ba1"
       d="m7.085 7.635 3.313 3.313-.656.656-3.314-3.313zM12.102 4.187l1.743 1.743a.23.23 0 0 1 0 .324L12.84 7.26l-2.067-2.067 1.005-1.006a.23.23 0 0 1 .324 0"
@@ -78,9 +75,9 @@ return (
       d="m10.554 4.973 2.505 2.505a.576.576 0 0 1 0 .815l-2.663 2.663-3.323-3.323L9.736 4.97a.576.576 0 0 1 .818.003"
     />
     <path
-      fill={`url(#c-${suffix})`}
+      fill="url(#Azure-Orbital_svg__c)"
       d="m7.725 14.275-3.972-3.96a.786.786 0 0 1 .331-1.3l2.4-.767 3.324 3.324-.788 2.377a.787.787 0 0 1-1.295.326"
     />
   </svg>
-)}
+)
 export default SvgAzureOrbital

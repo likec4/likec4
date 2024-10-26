@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgCloudMediaEdge = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgCloudMediaEdge = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <circle cx={12.76} cy={7.69} r={2.06} fill="#4285f4" />
     <circle cx={11.24} cy={16.31} r={2.06} fill="#4285f4" />
@@ -23,5 +20,5 @@ return (
     <circle cx={5.23} cy={7.35} r={1.69} fill="#aecbfa" />
     <circle cx={18.77} cy={16.65} r={1.69} fill="#aecbfa" />
   </svg>
-)}
+)
 export default SvgCloudMediaEdge

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgIdentitySecureScore = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgIdentitySecureScore = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#ff8c00"
@@ -37,5 +34,5 @@ return (
       opacity={0.3}
     />
   </svg>
-)}
+)
 export default SvgIdentitySecureScore

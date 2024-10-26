@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDownload = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDownload = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Download_svg__a"
         x1={-4014.225}
         x2={-4014.225}
         y1={-119.864}
@@ -27,7 +24,7 @@ return (
     <rect width={16.34} height={11.571} x={0.83} y={1.665} fill="#1490df" rx={0.554} />
     <rect width={14.435} height={9.601} x={1.77} y={2.561} fill="#fff" rx={0.277} />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Download_svg__a)"
       d="M12.565 5.22 9.279 8.505a.39.39 0 0 1-.554 0L5.44 5.22a.175.175 0 0 1 .124-.3h2.02a.175.175 0 0 0 .175-.175V.64A.14.14 0 0 1 7.9.5h2.207a.14.14 0 0 1 .139.14v4.106a.176.176 0 0 0 .176.175h2.02a.175.175 0 0 1 .123.299"
     />
     <g fill="#999">
@@ -46,5 +43,5 @@ return (
     </g>
     <path fill="#949494" d="M4.228 10.735v-.7h9.544v.7a.32.32 0 0 1-.316.318h-8.91a.32.32 0 0 1-.318-.318" />
   </svg>
-)}
+)
 export default SvgDownload

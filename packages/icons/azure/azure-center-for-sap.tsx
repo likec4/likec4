@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureCenterForSap = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureCenterForSap = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path fill="#32bedd" d="M11.189 4.827v2.688l-2.323 1.35V6.174z" />
     <path fill="#9cebff" d="m11.189 4.827-2.323 1.35-2.325-1.353 2.325-1.35z" />
@@ -28,5 +25,5 @@ return (
       d="m1.506 12.31-.013-.249a.287.287 0 0 1 .418-.27l.221.113.575.294A7.062 7.062 0 0 1 8.662 1.941a.14.14 0 0 0 .065-.02l.782-.472a.287.287 0 0 0-.01-.5L8.722.523a.15.15 0 0 0-.077-.018 8.493 8.493 0 0 0-7.1 12.565Z"
     />
   </svg>
-)}
+)
 export default SvgAzureCenterForSap

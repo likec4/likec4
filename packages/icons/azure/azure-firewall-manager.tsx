@@ -1,13 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureFirewallManager = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureFirewallManager = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={13.45} x2={13.45} y1={6.3} y2={16.46} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Firewall-Manager_svg__a"
+        x1={13.45}
+        x2={13.45}
+        y1={6.3}
+        y2={16.46}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ffd70f" />
         <stop offset={0.12} stopColor="#fc1" />
         <stop offset={0.44} stopColor="#feb517" />
@@ -31,7 +35,7 @@ return (
       d="M18 11c0 3-3.6 5.38-4.38 5.87a.32.32 0 0 1-.3 0C12.51 16.39 8.91 14 8.91 11V7.43a.29.29 0 0 1 .28-.29c2.8-.07 2.15-1.3 4.25-1.3s1.45 1.23 4.25 1.3a.29.29 0 0 1 .28.29Z"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Firewall-Manager_svg__a)"
       d="M13.44 11.38V6.3c1.93 0 1.33 1.13 3.9 1.2a.26.26 0 0 1 .26.26v3.58Zm0 0H9.3c.25 2.57 3.32 4.61 4 5h.12Z"
     />
     <path
@@ -39,5 +43,5 @@ return (
       d="M9.54 7.5c2.57-.07 2-1.2 3.9-1.2v5.08H9.3V7.76a.26.26 0 0 1 .24-.26M17.58 11.38h-4.14v5.08h.11c.72-.46 3.78-2.46 4.03-5.08"
     />
   </svg>
-)}
+)
 export default SvgAzureFirewallManager

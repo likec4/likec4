@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgIbmSpssStatistics = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgIbmSpssStatistics = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#CC1E4C"
@@ -15,5 +12,5 @@ return (
       d="M0 10.7v3.5h24.9v-3.5zm28.4 0v3.5H64s-3.6-3.5-8.4-3.5zm42.5 0v3.5h21.5l-1.3-3.5zm36.9 0-1.3 3.5h21.3v-3.5zM0 17.5V21h24.9v-3.5zm28.4 0V21H68s-.5-2.7-1.3-3.5zm42.5 0V21h23.8l-1.2-3.5zm34.3 0L104 21h23.7v-3.5zm-98 6.8v3.5H18v-3.5zm28.4 0v3.5h10.8v-3.5zm21.3 0v3.5h10.8s.7-1.9.7-3.5zm21.2 0v3.5h19.1l-1.3-3.5zm24.8 0-1.3 3.5h19.2v-3.5zM7.2 31.2v3.5H18v-3.5zm28.4 0v3.5h27.6s2.3-1.8 3-3.5zm42.5 0v3.5h10.8v-1.9l.7 1.9h19.8l.7-1.9v1.9h10.8v-3.5h-20.3l-1.1 3-1.1-3zM7.2 38v3.5H18V38zm28.4 0v3.5h30.6c-.7-1.7-3-3.5-3-3.5zm42.5 0v3.5h10.8V38zm12.7 0 1.3 3.5h14.8l1.2-3.5zm19.3 0v3.5h10.8V38zM7.2 44.8v3.5H18v-3.5zm28.4 0v3.5h10.8v-3.5zm21.3 0v3.5h11.5c0-1.7-.7-3.5-.7-3.5zm21.2 0v3.5h10.8v-3.5zm15.2 0 1.3 3.5h9.9l1.3-3.5zm16.8 0v3.5h10.8v-3.5zM.2 51.6v3.5h24.9v-3.5zm28.2 0v3.5h38.4c.8-.8 1.3-3.5 1.3-3.5zm42.7 0v3.5h17.8v-3.5zm24.6 0 1.3 3.5h5.1l1.2-3.5zm14.4 0v3.5H128v-3.5zM.2 58.4v3.5h24.9v-3.5zm28.2 0v3.5h27.1c4.8 0 8.4-3.5 8.4-3.5zm42.7 0v3.5h17.8v-3.5zm27.1 0 1.3 3.5h.2l1.3-3.5zm11.9 0v3.5H128v-3.5z"
     />
   </svg>
-)}
+)
 export default SvgIbmSpssStatistics

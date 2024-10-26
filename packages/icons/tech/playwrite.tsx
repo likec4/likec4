@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgPlaywrite = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgPlaywrite = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#2D4552"
@@ -35,5 +32,5 @@ return (
       d="m45.423 78.544-3.48.988c.822 4.634 2.271 9.082 4.545 13.011.396-.087.788-.163 1.192-.273a25 25 0 0 0 2.98-1.023c-2.541-3.771-4.222-8.114-5.237-12.702Zm-1.359-32.64c-1.788 6.674-3.388 16.28-2.948 25.915a20 20 0 0 1 2.546-.923l.644-.144c-.785-10.292.912-20.78 2.825-27.915a139 139 0 0 1 1.455-5.05 45 45 0 0 1-2.578 1.53 132 132 0 0 0-1.944 6.587"
     />
   </svg>
-)}
+)
 export default SvgPlaywrite

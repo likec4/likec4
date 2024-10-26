@@ -1,20 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgWorkspaces = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgWorkspaces = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={17.5} y2={0.5} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Workspaces_svg__a" x1={9} x2={9} y1={17.5} y2={0.5} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.168} stopColor="#0063ae" />
         <stop offset={0.577} stopColor="#0072ca" />
         <stop offset={0.815} stopColor="#0078d4" />
       </linearGradient>
     </defs>
-    <circle cx={9} cy={9} r={8.5} fill={`url(#a-${suffix})`} />
+    <circle cx={9} cy={9} r={8.5} fill="url(#Workspaces_svg__a)" />
     <path
       fill="#7de2fb"
       fillRule="evenodd"
@@ -24,5 +21,5 @@ return (
       <path d="M4.675 7.5a.45.45 0 0 1 .451-.451h1.851a.45.45 0 0 1 .451.451v1.861a.45.45 0 0 1-.451.451H5.126a.45.45 0 0 1-.451-.451ZM4.675 11.008a.45.45 0 0 1 .451-.451h1.851a.45.45 0 0 1 .451.451v1.851a.45.45 0 0 1-.451.451H5.126a.45.45 0 0 1-.451-.451ZM8.127 10.963a.45.45 0 0 1 .452-.451h1.85a.45.45 0 0 1 .452.451v1.851a.45.45 0 0 1-.452.451h-1.85a.45.45 0 0 1-.452-.451Z" />
     </g>
   </svg>
-)}
+)
 export default SvgWorkspaces

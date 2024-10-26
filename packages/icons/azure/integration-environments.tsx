@@ -1,17 +1,14 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgIntegrationEnvironments = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgIntegrationEnvironments = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <clipPath id={`a-${suffix}`}>
+      <clipPath id="Integration-Environments_svg__a">
         <path fill="none" d="M0 0h18v18H0z" />
       </clipPath>
     </defs>
-    <g clipPath={`url(#a-${suffix})`}>
+    <g clipPath="url(#Integration-Environments_svg__a)">
       <path
         fill="#86d633"
         d="M7.167 7.943a1.06 1.06 0 0 1-.917.528H2.276a.52.52 0 0 1-.453-.261L.593 6.089a.53.53 0 0 1 0-.529l1.228-2.118a.53.53 0 0 1 .46-.265h2.437c.189 0 .364.101.46.265l.614 1.059 1.376 2.381c.19.329.19.734 0 1.062h-.001Z"
@@ -62,5 +59,5 @@ return (
       />
     </g>
   </svg>
-)}
+)
 export default SvgIntegrationEnvironments

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDefenderFreezerMonitor = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDefenderFreezerMonitor = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
     <path
       fill="#9CEBFF"
@@ -29,70 +26,112 @@ return (
       clipRule="evenodd"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Defender-Freezer-Monitor_svg__a)"
       d="M9.3 13.018a.817.817 0 0 1-.829.803.817.817 0 0 1-.829-.803c0-.347.227-.643.545-.755V7.982a.332.332 0 1 1 .663 0v4.321c.267.133.45.403.45.715"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Defender-Freezer-Monitor_svg__b)"
       d="M12.5 8.308c.055 0 .1.04.107.092v.489l.313-.27a.11.11 0 0 1 .152.01.106.106 0 0 1-.01.15l-.454.394v.413h.417l.4-.45a.11.11 0 0 1 .138-.018l.013.01c.04.034.048.093.02.137l-.01.012-.274.309h.48c.055 0 .1.04.107.092l.001.014c0 .054-.04.099-.093.106h-.495l.274.31c.035.04.035.099.001.138l-.011.011a.11.11 0 0 1-.14.002l-.012-.011-.4-.45h-.417v.413l.455.395c.04.036.048.094.02.138l-.01.013a.11.11 0 0 1-.14.019l-.013-.01-.312-.27v.474c0 .054-.04.099-.093.106H12.5c-.055 0-.1-.04-.107-.091l-.001-.015v-.475l-.311.271a.11.11 0 0 1-.152-.01.106.106 0 0 1 .01-.15l.453-.394v-.413h-.386l-.43.484a.11.11 0 0 1-.152.01.106.106 0 0 1-.01-.15l.306-.344h-.512c-.055 0-.1-.04-.107-.092l-.001-.015c0-.054.04-.098.093-.105l.015-.001h.448l-.242-.273a.106.106 0 0 1 .01-.15.11.11 0 0 1 .152.01l.367.413h.449v-.413l-.454-.395a.106.106 0 0 1-.02-.138l.01-.012a.11.11 0 0 1 .14-.02l.013.01.311.271v-.475c0-.049.034-.09.08-.102l.013-.003z"
     />
     <path
-      fill={`url(#c-${suffix})`}
+      fill="url(#Defender-Freezer-Monitor_svg__c)"
       d="M12.518 7.294c.458 0 .83-.36.83-.804a.817.817 0 0 0-.83-.803.817.817 0 0 0-.828.803c0 .444.37.804.828.804"
     />
     <path
-      fill={`url(#d-${suffix})`}
+      fill="url(#Defender-Freezer-Monitor_svg__d)"
       d="M13.347 3.696a.817.817 0 0 1-.829.804.817.817 0 0 1-.828-.804c0-.443.37-.803.828-.803s.83.36.83.803"
     />
     <path
-      fill={`url(#e-${suffix})`}
+      fill="url(#Defender-Freezer-Monitor_svg__e)"
       d="M12.31 8.308c.055 0 .1.04.107.092l.001.014v.475l.312-.27a.11.11 0 0 1 .152.01.106.106 0 0 1-.01.15l-.454.394v.413h.418l.399-.45a.11.11 0 0 1 .139-.018l.013.01c.04.034.048.093.02.137l-.01.012-.274.309h.48c.054 0 .1.04.107.092v.014c0 .054-.04.099-.093.106h-.494l.273.31c.036.04.036.099.002.138l-.012.011a.11.11 0 0 1-.14.002l-.012-.011-.399-.45h-.417v.413l.454.395c.04.036.048.094.02.138l-.01.013a.11.11 0 0 1-.14.019l-.012-.01-.312-.27v.474c0 .054-.04.099-.093.106h-.015c-.054 0-.1-.04-.107-.091v-.49l-.312.271a.11.11 0 0 1-.152-.01.106.106 0 0 1 .01-.15l.454-.394v-.413h-.386l-.43.484a.11.11 0 0 1-.152.01.106.106 0 0 1-.01-.15l.305-.344h-.512c-.054 0-.1-.04-.106-.092l-.001-.015c0-.054.04-.098.093-.105l.014-.001h.449l-.242-.273a.106.106 0 0 1 .01-.15.11.11 0 0 1 .152.01l.366.413h.45v-.413l-.454-.395a.106.106 0 0 1-.02-.138l.01-.012a.11.11 0 0 1 .14-.02l.012.01.312.271v-.475c0-.049.033-.09.079-.102l.014-.003z"
     />
     <path
-      fill={`url(#f-${suffix})`}
+      fill="url(#Defender-Freezer-Monitor_svg__f)"
       d="M12.329 7.294c.458 0 .829-.36.829-.804a.817.817 0 0 0-.829-.803.817.817 0 0 0-.829.803c0 .444.371.804.829.804"
     />
     <path
-      fill={`url(#g-${suffix})`}
+      fill="url(#Defender-Freezer-Monitor_svg__g)"
       d="M13.158 3.696a.817.817 0 0 1-.829.804.817.817 0 0 1-.829-.804c0-.443.371-.803.829-.803s.829.36.829.803"
     />
     <defs>
-      <linearGradient id={`b-${suffix}`} x1={10.295} x2={10.295} y1={11.077} y2={0} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Freezer-Monitor_svg__b"
+        x1={10.295}
+        x2={10.295}
+        y1={11.077}
+        y2={0}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`c-${suffix}`} x1={10.295} x2={10.295} y1={11.077} y2={0} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Freezer-Monitor_svg__c"
+        x1={10.295}
+        x2={10.295}
+        y1={11.077}
+        y2={0}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`d-${suffix}`} x1={10.295} x2={10.295} y1={11.077} y2={0} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Freezer-Monitor_svg__d"
+        x1={10.295}
+        x2={10.295}
+        y1={11.077}
+        y2={0}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`e-${suffix}`} x1={10.105} x2={10.105} y1={11.077} y2={0} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Freezer-Monitor_svg__e"
+        x1={10.105}
+        x2={10.105}
+        y1={11.077}
+        y2={0}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`f-${suffix}`} x1={10.105} x2={10.105} y1={11.077} y2={0} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Freezer-Monitor_svg__f"
+        x1={10.105}
+        x2={10.105}
+        y1={11.077}
+        y2={0}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`g-${suffix}`} x1={10.105} x2={10.105} y1={11.077} y2={0} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Freezer-Monitor_svg__g"
+        x1={10.105}
+        x2={10.105}
+        y1={11.077}
+        y2={0}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
@@ -100,7 +139,7 @@ return (
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
       <radialGradient
-        id={`a-${suffix}`}
+        id="Defender-Freezer-Monitor_svg__a"
         cx={0}
         cy={0}
         r={1}
@@ -114,5 +153,5 @@ return (
       </radialGradient>
     </defs>
   </svg>
-)}
+)
 export default SvgDefenderFreezerMonitor

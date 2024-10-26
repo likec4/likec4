@@ -1,17 +1,28 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgEventGridTopics = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgEventGridTopics = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={7.94} x2={7.94} y1={7.7} y2={3.75} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Event-Grid-Topics_svg__a"
+        x1={7.94}
+        x2={7.94}
+        y1={7.7}
+        y2={3.75}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5e9624" />
         <stop offset={1} stopColor="#76bc2d" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={7.94} x2={7.94} y1={14.26} y2={10.31} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Event-Grid-Topics_svg__b"
+        x1={7.94}
+        x2={7.94}
+        y1={14.26}
+        y2={10.31}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5e9624" />
         <stop offset={1} stopColor="#76bc2d" />
       </linearGradient>
@@ -45,13 +56,13 @@ return (
       d="M14.91 8.84 13.09 7a.09.09 0 0 0-.16.07V8.2a.09.09 0 0 1-.1.1H7.59a1.05 1.05 0 0 0-.83-.41 1.1 1.1 0 1 0 0 2.19 1.08 1.08 0 0 0 .84-.42h5.23a.09.09 0 0 1 .1.09v1.11a.09.09 0 0 0 .16.06l1.82-1.81a.2.2 0 0 0 0-.27"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Event-Grid-Topics_svg__a)"
       d="M11.55 5.59 9.73 3.78a.09.09 0 0 0-.16.07V5a.09.09 0 0 1-.09.1H6.2a1.07 1.07 0 0 0-.84-.41 1.1 1.1 0 1 0 .85 1.77h3.27a.09.09 0 0 1 .09.09v1.06a.09.09 0 0 0 .16.06l1.82-1.81a.2.2 0 0 0 0-.27"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Event-Grid-Topics_svg__b)"
       d="m11.55 12.15-1.82-1.81a.09.09 0 0 0-.16.07v1.1a.1.1 0 0 1-.09.1H6.2a1.07 1.07 0 0 0-.84-.41 1.1 1.1 0 1 0 .85 1.8h3.27a.09.09 0 0 1 .09.09v1.11a.09.09 0 0 0 .16.06l1.82-1.81a.2.2 0 0 0 0-.3"
     />
   </svg>
-)}
+)
 export default SvgEventGridTopics

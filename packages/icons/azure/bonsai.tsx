@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgBonsai = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgBonsai = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path
       fill="#52a646"
@@ -39,5 +36,5 @@ return (
       d="M6.307 9.992c-.316-.326-1.027-.936-1.25-1.127a.015.015 0 1 0-.023.019c.175.3.388.7.492.869a.048.048 0 0 1-.043.073c-.3-.017-.986-.039-1.381-.051a.018.018 0 1 0 0 .036 9 9 0 0 1 1.836.527.1.1 0 0 0 .1-.012q.123-.092.262-.185a.1.1 0 0 0 .024-.134L6.312 10m6.208 7.261a1.025 1.025 0 0 0 .949-.982.127.127 0 0 0-.111-.141H4.42a.126.126 0 0 0-.125.128v.013a1.03 1.03 0 0 0 .948.982Z"
     />
   </svg>
-)}
+)
 export default SvgBonsai

@@ -1,18 +1,22 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgContentSafety = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgContentSafety = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={7.997} x2={7.997} y1={14.863} y2={2.057} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Content-Safety_svg__a"
+        x1={7.997}
+        x2={7.997}
+        y1={14.863}
+        y2={2.057}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Content-Safety_svg__b"
         x1={-558.124}
         x2={-558.124}
         y1={1021.188}
@@ -33,7 +37,7 @@ return (
       d="M13.864 8.047c0 3.822-4.627 6.907-5.632 7.544a.4.4 0 0 1-.386 0c-1.073-.687-5.716-3.772-5.716-7.544V3.386a.37.37 0 0 1 .352-.369c3.604-.101 2.783-1.676 5.482-1.676s1.861 1.576 5.465 1.676a.37.37 0 0 1 .352.369l.084 4.66Z"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Content-Safety_svg__a)"
       d="M8.04 14.863c-4.683-3.064-5.194-5.781-5.194-6.816V3.719c1.873-.106 2.625-.637 3.236-1.068.489-.345.843-.594 1.881-.594s1.387.249 1.872.593c.607.431 1.355.962 3.235 1.069l.078 4.34c0 .817-.372 3.733-5.109 6.804Z"
     />
     <rect width={3.721} height={0.691} x={8.155} y={4.328} fill="#fff" opacity={0.7} rx={0.141} ry={0.141} />
@@ -42,7 +46,7 @@ return (
     <rect width={7.76} height={0.691} x={4.117} y={8.57} fill="#fff" opacity={0.4} rx={0.141} ry={0.141} />
     <rect width={7.076} height={0.691} x={4.117} y={7.156} fill="#fff" opacity={0.5} rx={0.14} ry={0.14} />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Content-Safety_svg__b)"
       d="M4.235 4.328h3.282c.065 0 .118.046.118.102v1.901c0 .057-.053.102-.118.102H4.235c-.065 0-.118-.046-.118-.102V4.43c0-.057.053-.102.118-.102"
     />
     <circle cx={12.449} cy={13.203} r={3.442} fill="#76bc2d" />
@@ -55,5 +59,5 @@ return (
       d="m11.591 14.676-.316-.316 2.888-2.888a.14.14 0 0 1 .195 0l.219.219a.14.14 0 0 1 0 .195l-2.791 2.791a.14.14 0 0 1-.195 0Z"
     />
   </svg>
-)}
+)
 export default SvgContentSafety

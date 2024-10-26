@@ -1,13 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgRemoteRendering = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgRemoteRendering = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={15.379} y2={2.798} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Remote-Rendering_svg__a" x1={9} x2={9} y1={15.379} y2={2.798} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.156} stopColor="#1380da" />
         <stop offset={0.528} stopColor="#3c91e5" />
@@ -15,7 +12,7 @@ return (
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Remote-Rendering_svg__b"
         x1={-416.202}
         x2={-416.202}
         y1={-210.743}
@@ -29,11 +26,11 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Remote-Rendering_svg__a)"
       d="M17.875 11.439a3.99 3.99 0 0 0-3.461-3.834A5.026 5.026 0 0 0 9.237 2.8a5.16 5.16 0 0 0-4.928 3.359 4.76 4.76 0 0 0-4.184 4.579 4.83 4.83 0 0 0 5 4.641q.222 0 .44-.019h8.094a.8.8 0 0 0 .213-.032 4.036 4.036 0 0 0 4.003-3.889"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Remote-Rendering_svg__b)"
       d="m8.371 9.669 2.3-4.522a.294.294 0 0 1 .522 0l2.29 4.32a1.57 1.57 0 0 1 .232.9c0 .948-1.248 1.716-2.788 1.716s-2.788-.768-2.788-1.716a1.18 1.18 0 0 1 .232-.698"
     />
     <path
@@ -52,5 +49,5 @@ return (
       d="M13.712 10.359a1.57 1.57 0 0 0-.232-.9l-2.29-4.32a.294.294 0 0 0-.522 0L9.141 8.151l.128.074L10.8 5.213a.14.14 0 0 1 .131-.081.14.14 0 0 1 .13.078l2.29 4.32v.012a1.2 1.2 0 0 1 .18.464 3.3 3.3 0 0 0-2.7-1.276 3.5 3.5 0 0 0-.608.053l.1.055.023-.013v.087a3.5 3.5 0 0 1 .489-.035c1.473 0 2.663.879 2.718 1.631-.127.8-1.257 1.42-2.629 1.42a4 4 0 0 1-.578-.04v.149a5 5 0 0 0 .578.038c1.429 0 2.605-.661 2.767-1.514h.014q.001-.026-.005-.051a1 1 0 0 0 .012-.151"
     />
   </svg>
-)}
+)
 export default SvgRemoteRendering

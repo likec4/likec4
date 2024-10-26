@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgJaeger = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgJaeger = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#231f20"
@@ -63,5 +60,5 @@ return (
       d="m56.957 78.383.184-.031.203-.043c2.703-.551 4.691-2.106 4.71-3.66a1.86 1.86 0 0 0-.222-.903c-.7-1.293-2.945-2.008-5.504-1.691l-.414.058c-3.09.512-5.363 2.328-5.074 4.059.02.101.043.2.078.293.531 1.55 3.129 2.402 6.039 1.918m0 0"
     />
   </svg>
-)}
+)
 export default SvgJaeger

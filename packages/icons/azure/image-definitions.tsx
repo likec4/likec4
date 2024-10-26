@@ -1,13 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgImageDefinitions = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgImageDefinitions = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={7.12} x2={7.12} y1={17.44} y2={0.56} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Image-Definitions_svg__a"
+        x1={7.12}
+        x2={7.12}
+        y1={17.44}
+        y2={0.56}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={0.36} stopColor="#34c1e0" />
         <stop offset={0.63} stopColor="#3ccbe8" />
@@ -15,7 +19,7 @@ return (
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
     </defs>
-    <rect width={13.49} height={16.88} x={0.38} y={0.56} fill={`url(#a-${suffix})`} rx={0.56} />
+    <rect width={13.49} height={16.88} x={0.38} y={0.56} fill="url(#Image-Definitions_svg__a)" rx={0.56} />
     <path
       fill="#773adc"
       d="m17.58 12.38-2.87-2.87a.15.15 0 0 0-.25.1v1.68c-3.45 0-6.9 1.84-6.9 5.16.49-.74 3-2.71 6.9-2.71v1.61a.15.15 0 0 0 .25.1l2.87-2.87a.15.15 0 0 0 0-.2"
@@ -26,5 +30,5 @@ return (
     <path fill="#c3f1ff" d="m3.19 10.18 3.94-2.29v4.59z" />
     <path fill="#9cebff" d="M11.06 10.18 7.13 7.89v4.59z" />
   </svg>
-)}
+)
 export default SvgImageDefinitions

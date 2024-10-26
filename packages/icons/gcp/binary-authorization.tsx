@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgBinaryAuthorization = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgBinaryAuthorization = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       d="M14.86 11.62h2v.06c0 5.91-3.44 8-4.58 8.54v1.53l.25-.08c.23-.08 5.77-2.08 5.77-10V10.2h-4.17Z"
@@ -16,5 +13,5 @@ return (
     />
     <path d="M12.24 20.22a9.28 9.28 0 0 1-5.06-8.76v-1.31H5.75v1.31c0 7.52 5.6 10 6.24 10.2l.24.09" fill="#aecbfa" />
   </svg>
-)}
+)
 export default SvgBinaryAuthorization

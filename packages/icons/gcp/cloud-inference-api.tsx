@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgCloudInferenceApi = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgCloudInferenceApi = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path d="m3 13-.68-.27v4.64h2.13v-3.79c-.53-.17-1.02-.37-1.45-.58" fill="#669df6" />
     <path
@@ -21,5 +18,5 @@ return (
     />
     <path d="m21.05 11 .69.27v-4.7h-2.18v3.88c.52.17 1.01.37 1.49.55" fill="#aecbfa" />
   </svg>
-)}
+)
 export default SvgCloudInferenceApi

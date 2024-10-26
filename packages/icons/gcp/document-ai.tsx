@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDocumentAi = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDocumentAi = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g fill="none" fillRule="evenodd">
       <g fill="#4285f4" transform="translate(5 3)">
@@ -23,5 +20,5 @@ return (
       />
     </g>
   </svg>
-)}
+)
 export default SvgDocumentAi

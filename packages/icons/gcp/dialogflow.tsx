@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDialogflow = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDialogflow = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g data-name="Product Icons">
       <g data-name="colored-32/dialogflow-enterprise">
@@ -17,5 +14,5 @@ return (
       <path d="m12 10 8-4-7.88-3.94a.25.25 0 0 0-.24 0L4 6Z" fill="#669df6" />
     </g>
   </svg>
-)}
+)
 export default SvgDialogflow

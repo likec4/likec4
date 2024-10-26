@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAdvancedAgentModeling = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAdvancedAgentModeling = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <g fill="none" fillRule="evenodd">
       <path d="M0 0h24v24H0z" />
@@ -24,5 +21,5 @@ return (
       </g>
     </g>
   </svg>
-)}
+)
 export default SvgAdvancedAgentModeling

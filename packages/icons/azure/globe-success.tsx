@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgGlobeSuccess = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgGlobeSuccess = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Globe-Success_svg__a"
         x1={-234.309}
         x2={-234.309}
         y1={776.485}
@@ -28,7 +25,7 @@ return (
       fill="#a3a3a3"
       d="M13.335 1.1a.57.57 0 0 1 .807 0l.026.028a8.32 8.32 0 0 1-11.736 11.73.57.57 0 0 1-.049-.8l.025-.026A.57.57 0 0 1 3.19 12 7.178 7.178 0 0 0 13.312 1.882a.573.573 0 0 1 .023-.782M11.946 17.5h-5.9a.476.476 0 0 1-.476-.476.476.476 0 0 1 .476-.476h5.9a.476.476 0 0 1 .475.476.476.476 0 0 1-.475.476"
     />
-    <circle cx={7.871} cy={6.563} r={6.063} fill={`url(#a-${suffix})`} />
+    <circle cx={7.871} cy={6.563} r={6.063} fill="url(#Globe-Success_svg__a)" />
     <path
       fill="#fff"
       d="m7.25 8.596-.557.557a.243.243 0 0 1-.343 0L4.137 6.941a.243.243 0 0 1 0-.344l.385-.385a.243.243 0 0 1 .344 0z"
@@ -38,5 +35,5 @@ return (
       d="M6.361 9.157 5.804 8.6l5.091-5.092a.243.243 0 0 1 .344 0l.385.386a.243.243 0 0 1 0 .343l-4.92 4.92a.243.243 0 0 1-.344 0Z"
     />
   </svg>
-)}
+)
 export default SvgGlobeSuccess

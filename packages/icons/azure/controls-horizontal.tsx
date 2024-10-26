@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgControlsHorizontal = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Controls-Horizontal_svg__a"
         x1={-655.644}
         x2={-655.644}
         y1={751.401}
@@ -21,7 +18,7 @@ return (
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Controls-Horizontal_svg__b"
         x1={-650.227}
         x2={-650.227}
         y1={759.495}
@@ -34,7 +31,7 @@ return (
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
       <linearGradient
-        id={`c-${suffix}`}
+        id="Controls-Horizontal_svg__c"
         x1={-644.724}
         x2={-644.724}
         y1={751.401}
@@ -55,7 +52,7 @@ return (
       height={11.838}
       x={10.834}
       y={8.557}
-      fill={`url(#a-${suffix})`}
+      fill="url(#Controls-Horizontal_svg__a)"
       rx={0.596}
       transform="rotate(-90 12.081 14.476)"
     />
@@ -64,7 +61,7 @@ return (
       height={3.744}
       x={14.881}
       y={7.187}
-      fill={`url(#b-${suffix})`}
+      fill="url(#Controls-Horizontal_svg__b)"
       rx={0.596}
       transform="rotate(-90 16.128 9.06)"
     />
@@ -73,7 +70,7 @@ return (
       height={11.838}
       x={10.834}
       y={-2.363}
-      fill={`url(#c-${suffix})`}
+      fill="url(#Controls-Horizontal_svg__c)"
       rx={0.596}
       transform="rotate(-90 12.081 3.556)"
     />
@@ -105,5 +102,5 @@ return (
       transform="rotate(-90 6.623 3.556)"
     />
   </svg>
-)}
+)
 export default SvgControlsHorizontal

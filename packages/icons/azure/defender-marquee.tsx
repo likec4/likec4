@@ -1,13 +1,15 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDefenderMarquee = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDefenderMarquee = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
-    <path fill={`url(#a-${suffix})`} fillRule="evenodd" d="M17.654 4.348H.348v10.104h17.306zM0 4v10.8h18V4z" clipRule="evenodd" />
-    <path fill={`url(#b-${suffix})`} d="M.348 4.348h17.306v10.104H.348z" />
+    <path
+      fill="url(#Defender-Marquee_svg__a)"
+      fillRule="evenodd"
+      d="M17.654 4.348H.348v10.104h17.306zM0 4v10.8h18V4z"
+      clipRule="evenodd"
+    />
+    <path fill="url(#Defender-Marquee_svg__b)" d="M.348 4.348h17.306v10.104H.348z" />
     <path
       fill="#fff"
       fillRule="evenodd"
@@ -15,7 +17,14 @@ return (
       clipRule="evenodd"
     />
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={-0.086} x2={17.914} y1={9.4} y2={9.4} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Marquee_svg__a"
+        x1={-0.086}
+        x2={17.914}
+        y1={9.4}
+        y2={9.4}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#005BA1" />
         <stop offset={0.07} stopColor="#0060A9" />
         <stop offset={0.36} stopColor="#0071C8" />
@@ -24,7 +33,14 @@ return (
         <stop offset={0.82} stopColor="#006ABB" />
         <stop offset={1} stopColor="#005BA1" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={-0.086} x2={17.914} y1={9.4} y2={9.4} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Marquee_svg__b"
+        x1={-0.086}
+        x2={17.914}
+        y1={9.4}
+        y2={9.4}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#005BA1" />
         <stop offset={0.07} stopColor="#0060A9" />
         <stop offset={0.36} stopColor="#0071C8" />
@@ -35,5 +51,5 @@ return (
       </linearGradient>
     </defs>
   </svg>
-)}
+)
 export default SvgDefenderMarquee

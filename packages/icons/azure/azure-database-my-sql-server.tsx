@@ -1,13 +1,17 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureDatabaseMySqlServer = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureDatabaseMySqlServer = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={2.59} x2={15.41} y1={10.16} y2={10.16} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Database-MySQL-Server_svg__a"
+        x1={2.59}
+        x2={15.41}
+        y1={10.16}
+        y2={10.16}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -18,7 +22,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Database-MySQL-Server_svg__a)"
       d="M9 5.14c-3.54 0-6.41-1-6.41-2.32v12.36c0 1.27 2.82 2.3 6.32 2.32H9c3.54 0 6.41-1 6.41-2.32V2.82c0 1.29-2.87 2.32-6.41 2.32"
     />
     <path fill="#e8e8e8" d="M15.41 2.82c0 1.29-2.87 2.32-6.41 2.32s-6.41-1-6.41-2.32S5.46.5 9 .5s6.41 1 6.41 2.32" />
@@ -35,5 +39,5 @@ return (
       d="M12.64 9v1.63h-1a.4.4 0 0 1-.29-.14V9H10v1.78a.92.92 0 0 0 1 .89h1.49l.26-.13s-.11.41-.26.43h-2.38v1h2.66A1.21 1.21 0 0 0 14 11.7V9ZM9.53 9v-.49a.7.7 0 0 0-.48-.77 1.7 1.7 0 0 0-.5-.08.94.94 0 0 0-.91.58l-.78 1.9-1-1.9A.93.93 0 0 0 5 7.66a1.4 1.4 0 0 0-.51.09c-.35.11-.43.34-.43.73v3.31h1.17V9.56l.63 1.57a1.08 1.08 0 0 0 1 .66c.44 0 .62-.26.8-.66l.67-1.51v2.15h1.18V9Z"
     />
   </svg>
-)}
+)
 export default SvgAzureDatabaseMySqlServer

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgYunoHost = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgYunoHost = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g transform="translate(-173.29 -80.936)scale(3.77953)">
       <rect width={33.867} height={33.867} x={45.85} y={21.414} ry={2.646} />
@@ -14,5 +11,5 @@ return (
       />
     </g>
   </svg>
-)}
+)
 export default SvgYunoHost

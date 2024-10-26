@@ -1,18 +1,22 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgScvmmManagementServers = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgScvmmManagementServers = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={7.516} x2={7.516} y1={1.264} y2={13.673} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="SCVMM-Management-Servers_svg__a"
+        x1={7.516}
+        x2={7.516}
+        y1={1.264}
+        y2={13.673}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#c3f1ff" />
         <stop offset={1} stopColor="#fff" stopOpacity={0} />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="SCVMM-Management-Servers_svg__b"
         x1={233.207}
         x2={233.207}
         y1={495.964}
@@ -40,14 +44,14 @@ return (
       d="M2.474 2.35a.68.68 0 0 1 .68-.68.68.68 0 0 1 .68.68.68.68 0 0 1-.68.679.68.68 0 0 1-.68-.679m4.66 0a.21.21 0 0 0-.211-.211H4.76a.211.211 0 0 0 0 .422h2.163a.21.21 0 0 0 .211-.211m0 4.628a.21.21 0 0 0-.211-.211H4.76a.211.211 0 0 0 0 .422h2.163a.21.21 0 0 0 .211-.211m0 4.629a.21.21 0 0 0-.211-.211H4.76a.211.211 0 1 0 0 .421h2.163a.21.21 0 0 0 .211-.21m-3.98-3.949a.68.68 0 0 0 .68-.68.68.68 0 0 0-.68-.68.68.68 0 0 0-.68.68.68.68 0 0 0 .68.68m0 4.629a.68.68 0 0 0 .68-.68.68.68 0 0 0-.68-.68.68.68 0 0 0-.68.68.68.68 0 0 0 .68.68"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#SCVMM-Management-Servers_svg__a)"
       d="M13.684 4.1V.6a.563.563 0 0 0-.563-.563H1.91A.563.563 0 0 0 1.347.6v3.5a.563.563 0 0 0 .563.563.563.563 0 0 0-.563.563v3.5a.563.563 0 0 0 .563.562.563.563 0 0 0-.563.563v3.5a.563.563 0 0 0 .563.563h11.211a.563.563 0 0 0 .563-.563v-3.5a.563.563 0 0 0-.563-.563.563.563 0 0 0 .563-.562v-3.5a.563.563 0 0 0-.563-.563.563.563 0 0 0 .563-.563"
       opacity={0.3}
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#SCVMM-Management-Servers_svg__b)"
       d="M16.653 11.9a2.02 2.02 0 0 0-1.729-1.944 2.55 2.55 0 0 0-2.593-2.466 2.59 2.59 0 0 0-2.482 1.724 2.4 2.4 0 0 0-2.088 2.327 2.444 2.444 0 0 0 2.5 2.379h4.388a2.04 2.04 0 0 0 2.004-2.02"
     />
   </svg>
-)}
+)
 export default SvgScvmmManagementServers

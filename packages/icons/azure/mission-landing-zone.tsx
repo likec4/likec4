@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgMissionLandingZone = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgMissionLandingZone = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Mission-Landing-Zone_svg__a"
         x1={-554.999}
         x2={-554.999}
         y1={1012.218}
@@ -33,9 +30,9 @@ return (
       d="M11.5 14.308c-4.087.3-8.518-.188-9.9-1.1s.814-1.888 4.9-2.191 8.516.188 9.9 1.1-.816 1.888-4.9 2.191"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Mission-Landing-Zone_svg__a)"
       d="M18 9.3a4.04 4.04 0 0 0-3.51-3.886A5.1 5.1 0 0 0 9.242.541a5.23 5.23 0 0 0-5 3.407A4.82 4.82 0 0 0 0 8.6a4.9 4.9 0 0 0 5.068 4.7q.227 0 .446-.02h8.205a.8.8 0 0 0 .217-.032A4.09 4.09 0 0 0 18 9.3"
     />
   </svg>
-)}
+)
 export default SvgMissionLandingZone

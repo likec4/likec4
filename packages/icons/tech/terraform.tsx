@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgTerraform = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgTerraform = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <g fillRule="evenodd">
       <path fill="#5c4ee5" d="M77.941 44.5v36.836L46.324 62.918V26.082zm0 0" />
@@ -15,5 +12,5 @@ return (
       />
     </g>
   </svg>
-)}
+)
 export default SvgTerraform

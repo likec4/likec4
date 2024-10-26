@@ -1,19 +1,16 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgCode = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgCode = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={15.834} y2={5.788} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Code_svg__a" x1={9} x2={9} y1={15.834} y2={5.788} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.502} stopColor="#4093e6" />
         <stop offset={0.775} stopColor="#5ea0ef" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Code_svg__b"
         x1={3.754}
         x2={6.975}
         y1={11.614}
@@ -27,7 +24,7 @@ return (
         <stop offset={1} stopColor="#fff" />
       </linearGradient>
       <linearGradient
-        id={`c-${suffix}`}
+        id="Code_svg__c"
         x1={10.83}
         x2={14.05}
         y1={11.614}
@@ -41,10 +38,10 @@ return (
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
-    <path fill={`url(#a-${suffix})`} d="M.5 5.788h17v9.478a.57.57 0 0 1-.568.568H1.068a.57.57 0 0 1-.568-.568z" />
+    <path fill="url(#Code_svg__a)" d="M.5 5.788h17v9.478a.57.57 0 0 1-.568.568H1.068a.57.57 0 0 1-.568-.568z" />
     <path fill="#0078d4" d="M1.071 2.166h15.858a.57.57 0 0 1 .568.568v3.054H.5V2.734a.57.57 0 0 1 .571-.568" />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Code_svg__b)"
       d="M5.244 9.632h.49V13.5a.157.157 0 0 1-.157.157h-.49a.157.157 0 0 1-.157-.157V9.945a.314.314 0 0 1 .314-.314Z"
       transform="rotate(-44.919 5.333 11.646)"
     />
@@ -53,7 +50,7 @@ return (
       d="m4.19 11.074-.347-.347a.314.314 0 0 1 0-.444l2.562-2.554a.157.157 0 0 1 .222 0l.346.347a.157.157 0 0 1 0 .222z"
     />
     <path
-      fill={`url(#c-${suffix})`}
+      fill="url(#Code_svg__c)"
       d="M12.228 9.632h.49a.157.157 0 0 1 .157.157v3.873h-.49a.314.314 0 0 1-.314-.314v-3.56a.157.157 0 0 1 .157-.157Z"
       transform="rotate(-135.081 12.473 11.647)"
     />
@@ -71,5 +68,5 @@ return (
       transform="rotate(17.752 8.95 10.416)"
     />
   </svg>
-)}
+)
 export default SvgCode

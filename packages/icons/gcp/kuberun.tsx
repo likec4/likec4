@@ -1,12 +1,9 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgKuberun = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgKuberun = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" {...props}>
-    <g clipPath={`url(#a-${suffix})`}>
+    <g clipPath="url(#Kuberun_svg__a)">
       <path
         fill="#669DF6"
         d="m21.602 11.27-2.553-.798a7.2 7.2 0 0 1 .085 2.6h2.47a.45.45 0 0 0 .38-.418v-.964a.45.45 0 0 0-.38-.417M12.047 4.78c.502.001 1.004.054 1.496.157l-.917-2.542a.45.45 0 0 0-.42-.38h-.382a.45.45 0 0 0-.42.38l-.797 2.532a7.2 7.2 0 0 1 1.435-.143M4.787 11.995c0-.513.054-1.026.162-1.528l-2.553.797a.45.45 0 0 0-.38.42v.964a.45.45 0 0 0 .38.418h2.47a7 7 0 0 1-.08-1.077z"
@@ -19,10 +16,10 @@ return (
       />
     </g>
     <defs>
-      <clipPath id={`a-${suffix}`}>
+      <clipPath id="Kuberun_svg__a">
         <path fill="#fff" d="M2.016 2.016h19.969v16.09H2.015z" />
       </clipPath>
     </defs>
   </svg>
-)}
+)
 export default SvgKuberun

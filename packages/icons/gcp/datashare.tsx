@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDatashare = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDatashare = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       fill="#4285f4"
@@ -25,5 +22,5 @@ return (
     />
     <path fill="#669df6" d="M13.64 2h2.22v20h-2.22z" />
   </svg>
-)}
+)
 export default SvgDatashare

@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgIdentityMultiFactorAuthentication = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgIdentityMultiFactorAuthentication = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Identity-Multi-Factor-Authentication_svg__a"
         x1={4.34}
         x2={4.34}
         y1={774.565}
@@ -20,7 +17,7 @@ return (
         <stop offset={1} stopColor="#f0fffd" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Identity-Multi-Factor-Authentication_svg__b"
         x1={10.15}
         x2={10.15}
         y1={764.096}
@@ -35,18 +32,51 @@ return (
         <stop offset={0.8} stopColor="#5a9eee" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id={`c-${suffix}`} x1={14.155} x2={14.155} y1={16.539} y2={6.209} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Identity-Multi-Factor-Authentication_svg__c"
+        x1={14.155}
+        x2={14.155}
+        y1={16.539}
+        y2={6.209}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#d2ebff" />
         <stop offset={1} stopColor="#f0fffd" />
       </linearGradient>
     </defs>
     <rect width={16.68} height={11.87} y={0.021} fill="#0078d4" rx={0.6} ry={0.6} />
-    <rect width={14.74} height={10.1} x={0.97} y={0.851} fill={`url(#a-${suffix})`} opacity={0.9} rx={0.3} ry={0.3} />
-    <rect width={7.7} height={12.85} x={10.3} y={5.129} fill={`url(#b-${suffix})`} rx={0.3} ry={0.3} />
+    <rect
+      width={14.74}
+      height={10.1}
+      x={0.97}
+      y={0.851}
+      fill="url(#Identity-Multi-Factor-Authentication_svg__a)"
+      opacity={0.9}
+      rx={0.3}
+      ry={0.3}
+    />
+    <rect
+      width={7.7}
+      height={12.85}
+      x={10.3}
+      y={5.129}
+      fill="url(#Identity-Multi-Factor-Authentication_svg__b)"
+      rx={0.3}
+      ry={0.3}
+    />
     <rect width={1.77} height={0.24} x={13.27} y={5.559} fill="#f2f2f2" rx={0.11} ry={0.11} />
     <rect width={1.77} height={0.24} x={7.48} y={0.391} fill="#f2f2f2" rx={0.11} ry={0.11} />
     <rect width={0.86} height={0.73} x={13.72} y={16.969} fill="#f2f2f2" rx={0.2} ry={0.2} />
-    <rect width={6.25} height={10.33} x={11.03} y={6.209} fill={`url(#c-${suffix})`} opacity={0.9} rx={0.14} ry={0.14} />
+    <rect
+      width={6.25}
+      height={10.33}
+      x={11.03}
+      y={6.209}
+      fill="url(#Identity-Multi-Factor-Authentication_svg__c)"
+      opacity={0.9}
+      rx={0.14}
+      ry={0.14}
+    />
     <circle cx={8.365} cy={11.904} r={4.288} fill="#86d633" />
     <path
       fill="#fff"
@@ -57,5 +87,5 @@ return (
       d="m7.296 13.739-.394-.394L10.5 9.747a.17.17 0 0 1 .243 0l.272.272a.17.17 0 0 1 0 .243l-3.477 3.477a.17.17 0 0 1-.243 0Z"
     />
   </svg>
-)}
+)
 export default SvgIdentityMultiFactorAuthentication

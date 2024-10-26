@@ -1,18 +1,15 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAutoMlVideoIntelligence = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAutoMlVideoIntelligence = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
-      <style>{'.cls-1{fill:#4285f4}'}</style>
+      <style>{'.AutoML-Video-Intelligence_svg__cls-1{fill:#4285f4}'}</style>
     </defs>
     <g data-name="Product Icons">
       <path
         d="m6.83 19.46 1 1.65h9.48L22 12.89 20.1 9.6l-4.74 8.21H7.78ZM17.17 4.54l-1-1.65H6.74L2 11.11l1.9 3.29 4.75-8.21h7.58Z"
-        className="cls-1"
+        className="AutoML-Video-Intelligence_svg__cls-1"
       />
       <path d="m15.47 9.99-1.33.99v2.08l1.33 1z" fill="#669df6" />
       <path
@@ -21,5 +18,5 @@ return (
       />
     </g>
   </svg>
-)}
+)
 export default SvgAutoMlVideoIntelligence

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgSecurity = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgSecurity = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -20,5 +17,5 @@ return (
     <path fill="#5C85DE" d="M12 1v22c5.2-1.3 9-6.4 9-12V5zm7 11c-.5 4.1-3.3 7.8-7 8.9V12z" />
     <path fill="#3367D6" fillRule="evenodd" d="M21 12h-2s0 .3-.1.6zM3 12h2v-.6z" />
   </svg>
-)}
+)
 export default SvgSecurity

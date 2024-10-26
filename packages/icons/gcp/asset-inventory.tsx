@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAssetInventory = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAssetInventory = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path d="M10.75 10.61h2.57v2.57h-2.57z" transform="rotate(-45.01 12.037 11.901)" fill="#4285f4" />
     <path
@@ -16,5 +13,5 @@ return (
     <path d="M13.94 17.6v2.1l-.06-.07-7.75-7.73 3.84-3.85 1.06 1.06-2.8 2.79z" fill="#669df6" fillRule="evenodd" />
     <path d="m13.94 17.6 5.7-5.7-6.75-6.76 1.05-1.06.06.07 7.75 7.75-.07.06-7.74 7.74z" fill="#4285f4" />
   </svg>
-)}
+)
 export default SvgAssetInventory

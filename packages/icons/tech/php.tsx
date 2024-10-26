@@ -1,13 +1,10 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgPhp = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgPhp = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#PHP_svg__a)"
       d="M0 64c0 18.593 28.654 33.667 64 33.667S128 82.593 128 64 99.345 30.333 64 30.333 0 45.407 0 64"
     />
     <path
@@ -31,7 +28,7 @@ return (
     />
     <defs>
       <radialGradient
-        id={`a-${suffix}`}
+        id="PHP_svg__a"
         cx={0}
         cy={0}
         r={1}
@@ -45,5 +42,5 @@ return (
       </radialGradient>
     </defs>
   </svg>
-)}
+)
 export default SvgPhp

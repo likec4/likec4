@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgJetbrains = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgJetbrains = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Jetbrains-_svg__a"
         x1={32.64}
         x2={82.77}
         y1={61.16}
@@ -20,7 +17,7 @@ return (
         <stop offset={1} stopColor="#293896" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Jetbrains-_svg__b"
         x1={17.38}
         x2={82.95}
         y1={69.86}
@@ -33,7 +30,7 @@ return (
         <stop offset={0.86} stopColor="#ff318c" />
       </linearGradient>
       <linearGradient
-        id={`c-${suffix}`}
+        id="Jetbrains-_svg__c"
         x1={74.17}
         x2={160.27}
         y1={21.58}
@@ -46,7 +43,7 @@ return (
         <stop offset={0.86} stopColor="#fdb60d" />
       </linearGradient>
       <linearGradient
-        id={`d-${suffix}`}
+        id="Jetbrains-_svg__d"
         x1={155.46}
         x2={55.07}
         y1={89.8}
@@ -59,19 +56,19 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Jetbrains-_svg__a)"
       d="m58 59.527-29.406-24.89a10.67 10.67 0 0 0-17.485 8.949 10.66 10.66 0 0 0 7.196 9.328h.105l.277.086 37.094 11.297c.266.098.551.148.836.152a2.654 2.654 0 0 0 1.375-4.914zm0 0"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Jetbrains-_svg__b)"
       d="M63.895 18.438A7.747 7.747 0 0 0 51.91 11.91L16 33.714a10.66 10.66 0 0 0-4.793 9.96A10.67 10.67 0 0 0 28.73 50.78l32.192-26.234.254-.211a7.78 7.78 0 0 0 2.719-5.898zm0 0"
     />
     <path
-      fill={`url(#c-${suffix})`}
+      fill="url(#Jetbrains-_svg__c)"
       d="M116.117 65.422 61.633 12.949a7.76 7.76 0 0 0-7.692-1.965 7.76 7.76 0 0 0-5.394 5.825 7.76 7.76 0 0 0 2.555 7.52l.097.085 57.887 48.766a5.24 5.24 0 0 0 5.578.734 5.24 5.24 0 0 0 3.02-4.75 5.28 5.28 0 0 0-1.567-3.742m0 0"
     />
     <path
-      fill={`url(#d-${suffix})`}
+      fill="url(#Jetbrains-_svg__d)"
       d="M117.688 69.184a5.226 5.226 0 0 0-8.297-4.266l-65.926 32.21a10.668 10.668 0 1 0 11.008 18.2l60.96-41.844a5.21 5.21 0 0 0 2.254-4.3zm0 0"
     />
     <path d="M42.668 42.668h42.664v42.664H42.668zm0 0" />
@@ -84,5 +81,5 @@ return (
       d="M61.93 57.25h1.777l2.848 6.715H64.57l-.476-1.203h-2.582L61.035 64H59.11zm1.62 4.078-.745-1.887-.754 1.887zm3.294-4.047h1.847v6.66h-1.847zm2.531 0h1.734l2.399 3.555V57.28h1.828v6.66h-1.613l-2.513-3.65v3.652h-1.836zm6.265 5.672 1.024-1.23a3.45 3.45 0 0 0 2.133.804c.508 0 .77-.175.77-.46 0-.294-.215-.434-1.13-.649-1.425-.328-2.511-.711-2.511-2.082 0-1.238.98-2.133 2.582-2.133a4.2 4.2 0 0 1 2.738.887l-.89 1.265a3.24 3.24 0 0 0-1.864-.652c-.449 0-.668.176-.668.426 0 .305.227.441 1.16.648 1.528.332 2.473.832 2.473 2.075 0 1.359-1.074 2.132-2.687 2.132a4.64 4.64 0 0 1-3.13-1.03zm0 0"
     />
   </svg>
-)}
+)
 export default SvgJetbrains

@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgManagedFileShares = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgManagedFileShares = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Managed-File-Shares_svg__a"
         x1={-2149.665}
         x2={-2149.665}
         y1={1022.157}
@@ -41,9 +38,9 @@ return (
       d="m15.015 5.237-6.804-.985h-.089a.57.57 0 0 0-.562.493l-.237 1.606h8.106l.069-.463a.57.57 0 0 0-.481-.65z"
     />
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Managed-File-Shares_svg__a)"
       d="M5.312 5.06h5.966a.32.32 0 0 1 .207.089l.986.985a.28.28 0 0 0 .207.089h4.536c.16 0 .291.126.296.286v7.319a.296.296 0 0 1-.296.286H5.381a.286.286 0 0 1-.326-.286V5.375a.295.295 0 0 1 .256-.315Z"
     />
   </svg>
-)}
+)
 export default SvgManagedFileShares

@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDefenderWebGuidingSystem = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDefenderWebGuidingSystem = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
-    <g clipPath={`url(#a-${suffix})`}>
+    <g clipPath="url(#Defender-Web-Guiding-System_svg__a)">
       <path
-        fill={`url(#b-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__b)"
         d="M4.722 12.08c0 .119.162.215.363.215h7.93a.5.5 0 0 0 .112-.014.3.3 0 0 0 .095-.039.2.2 0 0 0 .064-.06.13.13 0 0 0 .023-.07V8.836q-.001-.077-.085-.13a.4.4 0 0 0-.207-.054H5.082c-.2 0-.363.096-.363.214z"
       />
       <path
@@ -32,103 +29,166 @@ return (
         clipRule="evenodd"
       />
       <path
-        fill={`url(#c-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__c)"
         d="m3.296 8.785-.097-.147a1.78 1.78 0 0 0-1.37-.69h-.043a1.795 1.795 0 0 0-1.66 1.125l-.072.23q-.027.11-.038.22A2 2 0 0 0 0 9.681c0 .018.006.17.012.227s.006.098.014.146q.03.147.08.286c.009.023.013.047.022.07q.075.18.185.341l.004.005a1.79 1.79 0 0 0 3.26-1.02c-.001-.338-.099-.668-.281-.952m-1.918.951a.404.404 0 1 1 .808-.001.404.404 0 0 1-.808.001m1.9.508a1.63 1.63 0 0 0-.887-.504v-.004a.6.6 0 0 0-.158-.4c.206-.269.503-.454.835-.521a1.53 1.53 0 0 1 .21 1.429m-1.632-2.08c-.137.319-.17.672-.095 1.01a.6.6 0 0 0-.349.429 1.4 1.4 0 0 1-.914-.366 1.58 1.58 0 0 1 1.36-1.073zM.59 10.768c.343-.075.652-.258.884-.52.092.06.2.095.312.098a.6.6 0 0 0 .177-.036c.165.298.215.646.14.978q-.157.031-.316.032a1.58 1.58 0 0 1-1.195-.55z"
       />
       <path
-        fill={`url(#d-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__d)"
         d="M2.391 9.74c.342.069.653.246.887.504a1.53 1.53 0 0 0-.21-1.43 1.4 1.4 0 0 0-.835.522c.1.11.157.252.158.4z"
       />
       <path
-        fill={`url(#e-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__e)"
         d="M.59 10.767c.342-.075.651-.258.883-.52.092.06.2.095.312.098a.6.6 0 0 0 .177-.036c.165.298.215.646.14.978q-.157.031-.316.032a1.58 1.58 0 0 1-1.195-.55z"
       />
       <path
-        fill={`url(#f-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__f)"
         d="M1.646 8.165c-.137.318-.17.67-.095 1.009a.6.6 0 0 0-.349.429 1.4 1.4 0 0 1-.914-.366 1.58 1.58 0 0 1 1.36-1.073z"
       />
       <path
-        fill={`url(#g-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__g)"
         d="m17.72 8.808-.097-.146a1.78 1.78 0 0 0-1.37-.69h-.043a1.8 1.8 0 0 0-1.661 1.124l-.072.23q-.026.11-.037.22a1 1 0 0 0-.016.16c0 .018.006.17.011.227.006.057.006.098.015.146q.029.146.08.285.01.035.021.07.075.181.185.341l.005.006a1.789 1.789 0 0 0 3.26-1.021c-.002-.338-.099-.668-.282-.952m-1.918.952a.403.403 0 0 1 .483-.398.405.405 0 1 1-.483.398m1.9.507a1.63 1.63 0 0 0-.887-.503V9.76a.6.6 0 0 0-.159-.4c.207-.27.504-.454.836-.522a1.53 1.53 0 0 1 .21 1.43M16.07 8.188c-.138.318-.17.671-.095 1.01a.6.6 0 0 0-.349.428 1.4 1.4 0 0 1-.914-.366 1.58 1.58 0 0 1 1.36-1.072zm-1.057 2.603c.343-.075.652-.258.883-.521.093.061.201.095.312.098a.6.6 0 0 0 .178-.035c.165.297.214.645.14.977q-.157.031-.316.033a1.58 1.58 0 0 1-1.196-.551z"
       />
       <path
-        fill={`url(#h-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__h)"
         d="M16.815 9.764c.342.068.653.245.887.503a1.53 1.53 0 0 0-.21-1.429 1.4 1.4 0 0 0-.835.521c.1.11.157.252.158.4z"
       />
       <path
-        fill={`url(#i-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__i)"
         d="M15.013 10.79c.343-.074.652-.257.883-.52.093.061.201.095.312.098a.6.6 0 0 0 .178-.035c.165.297.214.645.14.977q-.157.031-.316.033a1.58 1.58 0 0 1-1.196-.551z"
       />
       <path
-        fill={`url(#j-${suffix})`}
+        fill="url(#Defender-Web-Guiding-System_svg__j)"
         d="M16.07 8.188c-.138.318-.17.671-.095 1.01a.6.6 0 0 0-.349.428 1.4 1.4 0 0 1-.914-.366 1.58 1.58 0 0 1 1.36-1.072z"
       />
     </g>
     <defs>
-      <linearGradient id={`b-${suffix}`} x1={8.585} x2={8.585} y1={8.294} y2={12.595} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__b"
+        x1={8.585}
+        x2={8.585}
+        y1={8.294}
+        y2={12.595}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#5EA0EF" />
         <stop offset={1} stopColor="#0078D4" />
       </linearGradient>
-      <linearGradient id={`c-${suffix}`} x1={1.788} x2={1.788} y1={11.525} y2={7.948} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__c"
+        x1={1.788}
+        x2={1.788}
+        y1={11.525}
+        y2={7.948}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`d-${suffix}`} x1={1.788} x2={1.788} y1={11.525} y2={7.948} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__d"
+        x1={1.788}
+        x2={1.788}
+        y1={11.525}
+        y2={7.948}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`e-${suffix}`} x1={1.788} x2={1.788} y1={11.525} y2={7.948} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__e"
+        x1={1.788}
+        x2={1.788}
+        y1={11.525}
+        y2={7.948}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`f-${suffix}`} x1={1.788} x2={1.788} y1={11.525} y2={7.948} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__f"
+        x1={1.788}
+        x2={1.788}
+        y1={11.525}
+        y2={7.948}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`g-${suffix}`} x1={16.212} x2={16.212} y1={11.548} y2={7.972} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__g"
+        x1={16.212}
+        x2={16.212}
+        y1={11.548}
+        y2={7.972}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`h-${suffix}`} x1={16.212} x2={16.212} y1={11.548} y2={7.972} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__h"
+        x1={16.212}
+        x2={16.212}
+        y1={11.548}
+        y2={7.972}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`i-${suffix}`} x1={16.212} x2={16.212} y1={11.548} y2={7.972} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__i"
+        x1={16.212}
+        x2={16.212}
+        y1={11.548}
+        y2={7.972}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <linearGradient id={`j-${suffix}`} x1={16.212} x2={16.212} y1={11.548} y2={7.972} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Web-Guiding-System_svg__j"
+        x1={16.212}
+        x2={16.212}
+        y1={11.548}
+        y2={7.972}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#0078D4" />
         <stop offset={0.156} stopColor="#1380DA" />
         <stop offset={0.528} stopColor="#3C91E5" />
         <stop offset={0.822} stopColor="#559CEC" />
         <stop offset={1} stopColor="#5EA0EF" />
       </linearGradient>
-      <clipPath id={`a-${suffix}`}>
+      <clipPath id="Defender-Web-Guiding-System_svg__a">
         <path fill="#fff" d="M0 0h18v18H0z" />
       </clipPath>
     </defs>
   </svg>
-)}
+)
 export default SvgDefenderWebGuidingSystem

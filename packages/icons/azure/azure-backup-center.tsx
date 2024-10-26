@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureBackupCenter = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureBackupCenter = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Azure-Backup-Center_svg__a"
         x1={11.176}
         x2={11.176}
         y1={7.698}
@@ -25,7 +22,7 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Azure-Backup-Center_svg__a)"
       d="M17.7 7.405a2.93 2.93 0 0 0-2.544-2.818 3.7 3.7 0 0 0-3.806-3.535 3.79 3.79 0 0 0-3.623 2.471A3.5 3.5 0 0 0 4.651 6.89a3.55 3.55 0 0 0 3.675 3.41 3 3 0 0 0 .324-.014h5.95a.6.6 0 0 0 .157-.024A2.966 2.966 0 0 0 17.7 7.405"
     />
     <path
@@ -46,5 +43,5 @@ return (
       d="M3.816 15.905a3.537 3.537 0 1 1 3.558-3.537H6.3a2.462 2.462 0 1 0-2.464 2.46h.784a.06.06 0 0 0 .056-.016.1.1 0 0 0 .016-.026.1.1 0 0 0 0-.03v-.872a.09.09 0 0 1 .052-.067.1.1 0 0 1 .083.018l1.5 1.5a.1.1 0 0 1 0 .049.1.1 0 0 1-.027.042l-1.5 1.5a.1.1 0 0 1-.042.018.1.1 0 0 1-.044-.007.1.1 0 0 1-.035-.029.1.1 0 0 1-.014-.043v-.886a.08.08 0 0 0-.022-.053.07.07 0 0 0-.054-.022z"
     />
   </svg>
-)}
+)
 export default SvgAzureBackupCenter

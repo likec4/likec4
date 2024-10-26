@@ -1,17 +1,21 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgVirtualWanHub = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgVirtualWanHub = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={9} x2={9} y1={13.48} y2={7.019} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Virtual-WAN-Hub_svg__a" x1={9} x2={9} y1={13.48} y2={7.019} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.775} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={9.017} x2={9.017} y1={9.518} y2={10.495} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Virtual-WAN-Hub_svg__b"
+        x1={9.017}
+        x2={9.017}
+        y1={9.518}
+        y2={10.495}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#fff" />
         <stop offset={1} stopColor="#fff" stopOpacity={0.6} />
       </linearGradient>
@@ -24,10 +28,13 @@ return (
       fill="#86d633"
       d="M18 9.037a1.294 1.294 0 1 1-1.294-1.294A1.294 1.294 0 0 1 18 9.037M1.294 7.743a1.294 1.294 0 1 0 1.294 1.294 1.294 1.294 0 0 0-1.294-1.294m3.479 7.646a1.294 1.294 0 1 0 1.293 1.294 1.294 1.294 0 0 0-1.293-1.294m8.68 0a1.294 1.294 0 1 0 1.293 1.294 1.294 1.294 0 0 0-1.293-1.294M4.632.024a1.294 1.294 0 1 0 1.294 1.293A1.293 1.293 0 0 0 4.632.024m8.916 0a1.294 1.294 0 1 0 1.293 1.293A1.293 1.293 0 0 0 13.548.024"
     />
-    <path fill={`url(#a-${suffix})`} d="M3.533 7.019h10.934v6.1a.365.365 0 0 1-.365.365H3.9a.365.365 0 0 1-.365-.365v-6.1z" />
+    <path
+      fill="url(#Virtual-WAN-Hub_svg__a)"
+      d="M3.533 7.019h10.934v6.1a.365.365 0 0 1-.365.365H3.9a.365.365 0 0 1-.365-.365v-6.1z"
+    />
     <path fill="#0078d4" d="M3.9 4.689h10.2a.365.365 0 0 1 .365.365v1.965H3.535V5.054a.365.365 0 0 1 .365-.365" />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Virtual-WAN-Hub_svg__b)"
       d="M10.57 9.515a.487.487 0 1 1-.487.487.487.487 0 0 1 .487-.487m-2.039.491a.487.487 0 1 0 .486-.487.487.487 0 0 0-.486.487m-1.553 0a.487.487 0 1 0 .487-.487.487.487 0 0 0-.487.487"
     />
     <path
@@ -40,5 +47,5 @@ return (
       opacity={0.8}
     />
   </svg>
-)}
+)
 export default SvgVirtualWanHub

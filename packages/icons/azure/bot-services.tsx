@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgBotServices = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgBotServices = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id={`a-${suffix}`}
+        id="Bot-Services_svg__a"
         cx={55.71}
         cy={71.92}
         r={9}
@@ -22,7 +19,7 @@ return (
         <stop offset={1} stopColor="#1b93eb" />
       </radialGradient>
     </defs>
-    <path fill={`url(#a-${suffix})`} d="M9 .5A8.5 8.5 0 1 0 17.5 9 8.5 8.5 0 0 0 9 .5" />
+    <path fill="url(#Bot-Services_svg__a)" d="M9 .5A8.5 8.5 0 1 0 17.5 9 8.5 8.5 0 0 0 9 .5" />
     <circle cx={9} cy={9} r={7.03} fill="#fff" />
     <circle cx={7.45} cy={9} r={0.77} fill="#32bedd" />
     <path
@@ -35,5 +32,5 @@ return (
       d="M12.42 4.6H7.23a.29.29 0 0 0-.29.3v.38a.29.29 0 0 0 .29.29h5a.15.15 0 0 1 .15.15v5.19a.29.29 0 0 0 .29.29h.38a.29.29 0 0 0 .29-.29V5.19a.59.59 0 0 0-.58-.59Z"
     />
   </svg>
-)}
+)
 export default SvgBotServices

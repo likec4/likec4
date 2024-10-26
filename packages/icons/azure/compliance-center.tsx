@@ -1,27 +1,38 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgComplianceCenter = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgComplianceCenter = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id={`a-${suffix}`} x1={7.944} x2={7.944} y1={0.233} y2={15.56} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Compliance-Center_svg__a"
+        x1={7.944}
+        x2={7.944}
+        y1={0.233}
+        y2={15.56}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.134} stopColor="#005ba1" />
         <stop offset={1} stopColor="#003067" />
       </linearGradient>
-      <linearGradient id={`b-${suffix}`} x1={7.945} x2={7.945} y1={-0.041} y2={15.754} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Compliance-Center_svg__b"
+        x1={7.945}
+        x2={7.945}
+        y1={-0.041}
+        y2={15.754}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#Compliance-Center_svg__a)"
       d="M15.888 7.947a8 8 0 0 1-.041.81.282.282 0 0 1-.4.226 4.921 4.921 0 0 0-6.471 6.468.283.283 0 0 1-.225.4 8 8 0 0 1-.809.041 7.945 7.945 0 1 1 7.943-7.943Z"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Compliance-Center_svg__b)"
       d="M14.443.528v8.143a4.921 4.921 0 0 0-5.464 6.78.283.283 0 0 1-.225.4 8 8 0 0 1-.809.041 7.93 7.93 0 0 1-6.5-3.373V.527A.53.53 0 0 1 1.976 0h11.938a.53.53 0 0 1 .529.528"
     />
     <path fill="#fff" d="M18 13.5A4.5 4.5 0 1 1 13.5 9a4.5 4.5 0 0 1 4.5 4.5" />
@@ -36,5 +47,5 @@ return (
       opacity={0.8}
     />
   </svg>
-)}
+)
 export default SvgComplianceCenter

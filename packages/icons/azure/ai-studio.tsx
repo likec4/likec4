@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAiStudio = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAiStudio = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="AI-Studio_svg__a"
         x1={-603.563}
         x2={-606.6}
         y1={-218.378}
@@ -30,7 +27,7 @@ return (
         <stop offset={1} stopColor="#712575" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="AI-Studio_svg__b"
         x1={-602.412}
         x2={-602.412}
         y1={-206.025}
@@ -49,7 +46,7 @@ return (
         <stop offset={1} stopColor="#1171ed" />
       </linearGradient>
       <linearGradient
-        id={`c-${suffix}`}
+        id="AI-Studio_svg__c"
         x1={-603.438}
         x2={-614.807}
         y1={-206.414}
@@ -70,19 +67,19 @@ return (
       </linearGradient>
     </defs>
     <path
-      fill={`url(#a-${suffix})`}
+      fill="url(#AI-Studio_svg__a)"
       fillRule="evenodd"
       d="M12.061.012c.534 0 1.008.401 1.178.984s1.166 4.19 1.166 4.19v7.166h-3.607L10.871 0h1.19z"
     />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#AI-Studio_svg__b)"
       d="M17.356 5.611a.45.45 0 0 0-.449-.449h-2.126a2.71 2.71 0 0 0-2.709 2.709v4.494h2.575a2.71 2.71 0 0 0 2.709-2.709z"
     />
     <path
-      fill={`url(#c-${suffix})`}
+      fill="url(#AI-Studio_svg__c)"
       fillRule="evenodd"
       d="M12.061.012a.736.736 0 0 0-.741.741l-.073 13.64A3.607 3.607 0 0 1 7.64 18H1.093a.447.447 0 0 1-.425-.595L5.915 2.429A3.61 3.61 0 0 1 9.316.012h2.757z"
     />
   </svg>
-)}
+)
 export default SvgAiStudio

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgEnvoy = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgEnvoy = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#b31aab"
@@ -19,5 +16,5 @@ return (
       d="M122.234 40.633 85.98 18.343c-1.335-.808-2.937-1.038-4.304-.605-.145.028-.262.086-.406.145l-35.383 15.11c-1.426.605-2.297 1.902-2.27 3.429l.903 37.371c.03 1.527.96 2.996 2.445 3.89l36.254 22.262c1.336.805 2.937 1.035 4.277.606.145-.031.262-.09.406-.145l35.383-15.11c1.426-.605 2.297-1.933 2.27-3.433l-.875-37.367c-.028-1.473-.961-2.969-2.446-3.863M85.398 91.64 53.891 72.293l-.79-32.496 30.727-13.121 31.512 19.347.785 32.497Zm0 0"
     />
   </svg>
-)}
+)
 export default SvgEnvoy

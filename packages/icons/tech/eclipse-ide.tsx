@@ -1,14 +1,11 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgEclipseIde = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgEclipseIde = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id={`a-${suffix}`}
+        id="Eclipse-IDE_svg__a"
         x1={0.5}
         x2={0.5}
         y1={10.894}
@@ -20,7 +17,7 @@ return (
         <stop offset={0.872} stopColor="#2c2255" />
       </linearGradient>
       <linearGradient
-        id={`b-${suffix}`}
+        id="Eclipse-IDE_svg__b"
         x1={0.5}
         x2={0.5}
         y1={8.965}
@@ -32,7 +29,7 @@ return (
         <stop offset={0.872} stopColor="#2c2255" />
       </linearGradient>
       <linearGradient
-        id={`c-${suffix}`}
+        id="Eclipse-IDE_svg__c"
         x1={0.5}
         x2={0.5}
         y1={2.152}
@@ -52,13 +49,16 @@ return (
       fill="#f7941e"
       d="M10.875 64.043c0-29.703 22.309-54.383 51.332-58.723-.719-.027-1.445-.058-2.172-.058-32.566.004-58.969 26.32-58.969 58.781 0 32.465 26.403 58.781 58.97 58.781.73 0 1.452-.027 2.175-.054-29.027-4.34-51.336-29.02-51.336-58.727m0 0"
     />
-    <path fill={`url(#a-${suffix})`} d="M108.707 60.89a38.4 38.4 0 0 0-1.164-6.78H33.34a38.4 38.4 0 0 0-1.164 6.78Zm0 0" />
     <path
-      fill={`url(#b-${suffix})`}
+      fill="url(#Eclipse-IDE_svg__a)"
+      d="M108.707 60.89a38.4 38.4 0 0 0-1.164-6.78H33.34a38.4 38.4 0 0 0-1.164 6.78Zm0 0"
+    />
+    <path
+      fill="url(#Eclipse-IDE_svg__b)"
       d="M108.707 67.191H32.176c.183 2.29.574 4.559 1.164 6.782h74.203a38.5 38.5 0 0 0 1.164-6.782m0 0"
     />
     <path
-      fill={`url(#c-${suffix})`}
+      fill="url(#Eclipse-IDE_svg__c)"
       d="M70.441 102.45c15.41 0 28.696-9.083 34.809-22.18H35.633c6.117 13.097 19.398 22.18 34.808 22.18m0 0"
     />
     <path
@@ -66,5 +66,5 @@ return (
       d="M26.504 67.191h100.082a56 56 0 0 0 .082-3.027c0-1.098-.04-2.187-.102-3.273H14.22a61 61 0 0 0-.102 3.273c0 1.016.031 2.023.082 3.027Zm8.906-19.379H16.371c-.625 2.051-1.031 4.157-1.418 6.301H125.57a55 55 0 0 0-1.515-6.3m-5.72 26.16H14.954c.375 2.14.805 4.246 1.422 6.297h108.05a56 56 0 0 0 1.49-6.297Zm0 0"
     />
   </svg>
-)}
+)
 export default SvgEclipseIde

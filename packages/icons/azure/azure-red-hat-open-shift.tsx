@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureRedHatOpenShift = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureRedHatOpenShift = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" data-name="FxSymbol0-087" viewBox="0 0 18 18" {...props}>
     <path
       fill="#c32034"
@@ -29,5 +26,5 @@ return (
       d="m2.726 13.744 2.845-1.018.858.8-2.992 1.1c.013.001-.711-.882-.711-.882m14.83-5.356-2.894 1.03-.208 1.141 3.09-1.08c-.013-.012.012-1.091.012-1.091"
     />
   </svg>
-)}
+)
 export default SvgAzureRedHatOpenShift

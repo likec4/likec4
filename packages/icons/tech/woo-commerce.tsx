@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgWooCommerce = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgWooCommerce = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#7f54b3"
@@ -16,5 +13,5 @@ return (
     />
     <path fill="#7f54b3" d="m61.3 89.1 22.3 13.1-4.7-13.1-12.8-3.6z" />
   </svg>
-)}
+)
 export default SvgWooCommerce

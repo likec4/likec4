@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAzureBlockchainService = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAzureBlockchainService = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <path fill="#773adc" d="M13.13 2.4v4.59L9.18 9.3V4.7z" />
     <path
@@ -36,5 +33,5 @@ return (
     <path fill="#b796f9" d="m18 11.01-3.95 2.31-3.95-2.31 3.95-2.31zM7.9 11l-3.95 2.3L0 11l3.95-2.31z" />
     <path fill="#a67af4" d="M9.18 4.71V9.3L5.24 6.99V2.4z" />
   </svg>
-)}
+)
 export default SvgAzureBlockchainService

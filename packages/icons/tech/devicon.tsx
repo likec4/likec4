@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgDevicon = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgDevicon = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path fill="#558d6c" d="m4.92 8 10.17 87.05L64 119.95V8z" />
     <path fill="#5aa579" d="M64 8v111.95l.05.05 48.93-24.91L123.08 8z" />
@@ -19,5 +16,5 @@ return (
       d="m56 69.39-21.79-9.6 23.3-10.37 1.76-.7V37.76l-3.4 1.44-33.93 15.69a2.26 2.26 0 0 0-1.28 2v5.77a2.22 2.22 0 0 0 1.24 2l33.44 15.52 2 .9 1.21-2.26L64 68.3V53.41z"
     />
   </svg>
-)}
+)
 export default SvgDevicon

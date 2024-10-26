@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgNetworkX = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgNetworkX = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" {...props}>
     <path
       fill="#FF7F0E"
@@ -37,5 +34,5 @@ return (
     />
     <path fill="#2c7fb8" d="m109.979 76.111-10.354 18 3.018 1.737 10.353-18z" />
   </svg>
-)}
+)
 export default SvgNetworkX

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgJenkins = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgJenkins = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#d33833"
@@ -75,5 +72,5 @@ return (
       d="M79.135 76.728a.94.94 0 1 1-1.881 0 .94.94 0 0 1 1.881 0m.941 4.361a.94.94 0 1 1-1.882 0 .94.94 0 0 1 1.882 0"
     />
   </svg>
-)}
+)
 export default SvgJenkins

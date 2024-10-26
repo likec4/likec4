@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgVertexAi = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgVertexAi = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       d="M20 13.89a.77.77 0 0 0-1-.16l-7 5.14v.22a.72.72 0 1 1 0 1.43.74.74 0 0 0 .45-.15l7.41-5.47a.76.76 0 0 0 .14-1.01"
@@ -39,5 +36,5 @@ return (
     <circle cx={8.99} cy={5.69} r={0.76} fill="#aecbfa" />
     <path d="M9 12.73a.76.76 0 0 1-.76-.73v-1.9a.75.75 0 1 1 1.5 0V12a.75.75 0 0 1-.74.73" fill="#aecbfa" />
   </svg>
-)}
+)
 export default SvgVertexAi

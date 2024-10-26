@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAngular = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAngular = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       d="m64 15.36-47.668 17 7.27 63.027L64 117.762l40.398-22.375 7.27-63.028Zm0 0"
@@ -28,5 +25,5 @@ return (
       fillOpacity={1}
     />
   </svg>
-)}
+)
 export default SvgAngular

@@ -1,10 +1,7 @@
 // @ts-nocheck
 
 import type { SVGProps } from 'react'
-import { randomString } from 'remeda'
-const SvgAdonisJs = (props: SVGProps<SVGSVGElement>) => {
-const suffix = randomString(6)
-return (
+const SvgAdonisJs = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" {...props}>
     <path
       fill="#5A45FF"
@@ -13,5 +10,5 @@ return (
       clipRule="evenodd"
     />
   </svg>
-)}
+)
 export default SvgAdonisJs
