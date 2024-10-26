@@ -76,7 +76,3 @@ export const stateAlert = style({
   left: '0.5rem',
   userSelect: 'none'
 })
-
-globalStyle(`${stateAlert} .mantine-Notification-description`, {
-  whiteSpace: 'pre-line'
-})

@@ -45,12 +45,22 @@ export const useIsModelLoaded = () => useStore($initialized)
 export const $viewId = atom(viewId)
 
 export const changeViewId = (viewId: ViewID) => {
+  if (viewId === $viewId.get()) {
+    return
+  }
+  if (!$likeC4Diagrams.get()[viewId]) {
+    $likeC4Diagrams.setKey(viewId, {
+      state: 'pending',
+      view: null,
+      error: null
+    })
+  }
   $viewId.set(viewId)
+  saveVscodeState({ viewId })
 }
 
 messenger.onNotification(OnOpenView, ({ viewId }) => {
-  $viewId.set(viewId)
-  saveVscodeState({ viewId })
+  changeViewId(viewId)
 })
 
 export type LikeC4DiagramsAtom = Record<
@@ -136,7 +146,7 @@ function updateLikeC4ModelSource(model: ComputedLikeC4Model) {
     $likeC4ModelSource.setKey('views.' + key as any, undefined)
   }
 
-  // Mark vies as not found
+  // Mark views as not found
   for (const [key, likeC4Diagram] of entries(likeC4Diagrams)) {
     if (!(key in model.views)) {
       $likeC4Diagrams.setKey(key as ViewID, {
@@ -192,33 +202,61 @@ onMount($likeC4ViewState, () => {
 })
 
 async function fetchDiagramView(viewId: ViewID) {
-  const {
-    error,
-    view
-  } = await ExtensionApi.fetchDiagramView(viewId)
-  const currentView = $likeC4Diagrams.get()[viewId]?.view ?? null
-  if (error) {
-    $likeC4Diagrams.setKey(viewId, {
-      state: 'error',
-      view: view || currentView,
-      error
-    })
-    return
-  }
-  if (!view) {
-    $likeC4Diagrams.setKey(viewId, {
-      state: 'error',
-      view: currentView,
-      error: `Invalid response without view`
-    })
-    return
-  }
+  try {
+    const {
+      error,
+      view
+    } = await ExtensionApi.fetchDiagramView(viewId)
+    const currentView = $likeC4Diagrams.get()[viewId]?.view ?? null
+    if (error) {
+      $likeC4Diagrams.setKey(viewId, {
+        state: 'error',
+        view: view || currentView,
+        error
+      })
+      return
+    }
+    if (!view) {
+      $likeC4Diagrams.setKey(viewId, {
+        state: 'error',
+        view: currentView,
+        error: `Invalid response without view`
+      })
+      return
+    }
 
-  $likeC4Diagrams.setKey(viewId, {
-    state: 'success',
-    view: currentView && isDeepEqual(view, currentView) ? currentView : view,
-    error: null
-  })
+    $likeC4Diagrams.setKey(viewId, {
+      state: 'success',
+      view: currentView && isDeepEqual(view, currentView) ? currentView : view,
+      error: null
+    })
+  } catch (e) {
+    $likeC4Diagrams.setKey(viewId, {
+      state: 'error',
+      view: $likeC4Diagrams.get()[viewId]?.view ?? null,
+      error: e instanceof Error ? (e.stack ?? e.message) : '' + e
+    })
+  }
+}
+
+export function refetchCurrentDiagram() {
+  const viewId = $viewId.get()
+  const view = $likeC4Diagrams.get()[viewId]?.view ?? null
+
+  $likeC4Diagrams.setKey(
+    viewId,
+    view
+      ? {
+        state: 'stale',
+        view,
+        error: null
+      }
+      : {
+        state: 'pending',
+        view: null,
+        error: null
+      }
+  )
 }
 
 export function useLikeC4View() {

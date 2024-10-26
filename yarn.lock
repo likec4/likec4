@@ -2090,7 +2090,7 @@ __metadata:
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/colors-generator": "npm:^7.13.2"
+    "@mantine/colors-generator": "npm:7.13.4"
     "@types/natural-compare-lite": "npm:^1.4.2"
     chroma-js: "npm:^3.1.2"
     defu: "npm:^6.1.4"
@@ -2112,9 +2112,9 @@ __metadata:
     "@dagrejs/dagre": "npm:^1.1.4"
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.13.2"
-    "@mantine/hooks": "npm:7.13.2"
-    "@mantine/vanilla-extract": "npm:7.13.2"
+    "@mantine/core": "npm:7.13.4"
+    "@mantine/hooks": "npm:7.13.4"
+    "@mantine/vanilla-extract": "npm:7.13.4"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:3.17.0"
     "@types/bezier-js": "npm:^4.1.3"
@@ -2301,9 +2301,9 @@ __metadata:
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@likec4/log": "workspace:*"
-    "@mantine/core": "npm:7.13.2"
-    "@mantine/hooks": "npm:7.13.2"
-    "@mantine/vanilla-extract": "npm:7.13.2"
+    "@mantine/core": "npm:7.13.4"
+    "@mantine/hooks": "npm:7.13.4"
+    "@mantine/vanilla-extract": "npm:7.13.4"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:3.17.0"
     "@tanstack/react-router": "npm:1.45.13"
@@ -2317,7 +2317,7 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.16.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.11"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.16"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.17"
     "@vitejs/plugin-react-swc": "npm:3.7.1"
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.0.0"
@@ -2365,9 +2365,9 @@ __metadata:
     "@likec4/diagram": "workspace:*"
     "@likec4/icons": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.13.2"
-    "@mantine/hooks": "npm:7.13.2"
-    "@mantine/vanilla-extract": "npm:7.13.2"
+    "@mantine/core": "npm:7.13.4"
+    "@mantine/hooks": "npm:7.13.4"
+    "@mantine/vanilla-extract": "npm:7.13.4"
     "@nanostores/react": "npm:0.8.0"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
@@ -2379,7 +2379,7 @@ __metadata:
     "@types/vscode": "npm:~1.92.0"
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.16.0"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.16"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.17"
     "@vitejs/plugin-react-swc": "npm:3.7.1"
     esm-env: "npm:1.0.0"
     nanostores: "npm:0.11.3"
@@ -2397,18 +2397,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mantine/colors-generator@npm:^7.13.2":
-  version: 7.13.2
-  resolution: "@mantine/colors-generator@npm:7.13.2"
+"@mantine/colors-generator@npm:7.13.4":
+  version: 7.13.4
+  resolution: "@mantine/colors-generator@npm:7.13.4"
   peerDependencies:
     chroma-js: ">=2.4.2"
-  checksum: 10c0/b9f7bfb40588c2decf72601c5577eb46887b679bf20f039f4af8cd067c48948ea721be6754dc8394de949208fdf9d919db158a78ecca68e50d01b0fa3ca15682
+  checksum: 10c0/d525cc22512c56f0d2bd1b015eee3f5cc607a86765517a827e904ae0a0bc1a25b87c0eb733c4d7e54b64fbf9706b85c7bcadb8c7239df79e663e90e0bc20a498
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:7.13.2":
-  version: 7.13.2
-  resolution: "@mantine/core@npm:7.13.2"
+"@mantine/core@npm:7.13.4":
+  version: 7.13.4
+  resolution: "@mantine/core@npm:7.13.4"
   dependencies:
     "@floating-ui/react": "npm:^0.26.9"
     clsx: "npm:^2.1.1"
@@ -2417,28 +2417,28 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^4.12.0"
   peerDependencies:
-    "@mantine/hooks": 7.13.2
+    "@mantine/hooks": 7.13.4
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/e5c41c73cea377a8c62683ab1abd24cc26394b68d0230f8df5b9925cd76dff52c6386a00f2c5f3221d7e9e82aeb988ca8e0f2aa042cc2378dea079e932a2290e
+  checksum: 10c0/981375992aa4804bb3a3d747b36a9e92d12769fc5fc5fe97d59d1b0773f84c16a47b94d32a8d662a6779e4368bc5b75b18468be854201d9fbdeb4174be2fce37
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:7.13.2":
-  version: 7.13.2
-  resolution: "@mantine/hooks@npm:7.13.2"
+"@mantine/hooks@npm:7.13.4":
+  version: 7.13.4
+  resolution: "@mantine/hooks@npm:7.13.4"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10c0/2d56c22e268689e0f25a2c3616af9e51aa3468338dccac5da03b18ecbce36424252ed7c8479da5861720763c714989f73d24bbfb1c3e0cc87647100480720268
+  checksum: 10c0/81261966b1a22fdefd8fa3e828fe4e85b0bb210d290c7e77e336ad56f7c91136f3be1a284eaa65f556524b084bb43efe110ec868fb51275ff43d1a4299213ed8
   languageName: node
   linkType: hard
 
-"@mantine/vanilla-extract@npm:7.13.2":
-  version: 7.13.2
-  resolution: "@mantine/vanilla-extract@npm:7.13.2"
+"@mantine/vanilla-extract@npm:7.13.4":
+  version: 7.13.4
+  resolution: "@mantine/vanilla-extract@npm:7.13.4"
   peerDependencies:
-    "@mantine/core": 7.13.2
-  checksum: 10c0/c0577190bfa5fd293d76330575c752dad658d7f560e5f8654f959d50e3d0f9c47a8b6815aa8220a86a1814bfd5794082849e247cf7cdc6546d882decb874edd9
+    "@mantine/core": 7.13.4
+  checksum: 10c0/574fdabf0ce3576aeb4bf60e8e2d36e6af4c0a8066226bab247a031c4ff8fd27ca460f6e83e1bd85955ac1bbf763527cd08f27b9a412aeb744f43ee7dceb0cb6
   languageName: node
   linkType: hard
 
@@ -4007,14 +4007,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/vite-plugin@npm:^4.0.16":
-  version: 4.0.16
-  resolution: "@vanilla-extract/vite-plugin@npm:4.0.16"
+"@vanilla-extract/vite-plugin@npm:^4.0.17":
+  version: 4.0.17
+  resolution: "@vanilla-extract/vite-plugin@npm:4.0.17"
   dependencies:
     "@vanilla-extract/integration": "npm:^7.1.10"
   peerDependencies:
     vite: ^4.0.3 || ^5.0.0
-  checksum: 10c0/fea4e1dcd31a272aa2afd31275b0d73c4df2af2d5c827b100ee0b528f555c418d0c8065df7e4831288954cff742c5a42552b1261d21f23ddefec298768bb3c3b
+  checksum: 10c0/e48c9d8d458dbdba7fba7e289307e59a0aab8eafede2b7443c0b38405314fdf097d70961a27157f7a5750e0a0351eeee6b9039452bf8b5f1e9be50559f4c6c43
   languageName: node
   linkType: hard
 
@@ -8608,9 +8608,9 @@ __metadata:
     "@likec4/layouts": "workspace:*"
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.13.2"
-    "@mantine/hooks": "npm:7.13.2"
-    "@mantine/vanilla-extract": "npm:7.13.2"
+    "@mantine/core": "npm:7.13.4"
+    "@mantine/hooks": "npm:7.13.4"
+    "@mantine/vanilla-extract": "npm:7.13.4"
     "@nanostores/react": "npm:0.8.0"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:3.17.0"
@@ -8625,7 +8625,7 @@ __metadata:
     "@types/yargs": "npm:^17.0.33"
     "@vanilla-extract/css": "npm:^1.16.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.16"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.17"
     "@vitejs/plugin-react-swc": "npm:3.7.1"
     "@xyflow/react": "npm:12.3.2"
     "@xyflow/system": "npm:0.0.43"

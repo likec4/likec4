@@ -1,20 +1,35 @@
 import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
 import Icon from '@likec4/icons/all'
-import { Box, Button, Loader, LoadingOverlay, Notification } from '@mantine/core'
+import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import * as css from './App.css'
 import { likec4Container, likec4ParsingScreen } from './App.css'
-import { changeViewId, setLastClickedNode, useLikeC4View, useVscodeAppState } from './state'
+import { changeViewId, refetchCurrentDiagram, setLastClickedNode, useLikeC4View, useVscodeAppState } from './state'
 import { ExtensionApi as extensionApi } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
   <Box className={css.stateAlert}>
     <Notification
       icon={<IconX style={{ width: 20, height: 20 }} />}
+      styles={{
+        icon: {
+          alignSelf: 'flex-start'
+        }
+      }}
       color={'red'}
+      title={'Oops, something went wrong'}
       withCloseButton={false}>
-      {error ?? 'Oops, something went wrong'}
+      <Text
+        style={{
+          whiteSpace: 'preserve-breaks'
+        }}>
+        {error ?? 'Unknown error'}
+      </Text>
+      <Group gap={'xs'} mt="sm">
+        <Button color="gray" variant="light" onClick={() => refetchCurrentDiagram()}>Refresh</Button>
+        <Button color="gray" variant="subtle" onClick={extensionApi.closeMe}>Close</Button>
+      </Group>
     </Notification>
   </Box>
 )
@@ -41,28 +56,18 @@ export default function App() {
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
-        {state === 'error' && (
-          <section>
-            <h3>Oops, invalid view</h3>
-            <p>
-              Failed to parse your model:<br />
-              {error ?? 'Unknown error'}
-            </p>
-          </section>
-        )}
+        {state === 'error' && <ErrorMessage error={error} />}
         {state !== 'error' && (
           <section>
             <p>Parsing your model...</p>
             <Loader />
+            <p>
+              <Button color="gray" onClick={extensionApi.closeMe}>
+                Close
+              </Button>
+            </p>
           </section>
         )}
-        <section>
-          <p>
-            <Button color="gray" onClick={extensionApi.closeMe}>
-              Close
-            </Button>
-          </p>
-        </section>
       </div>
     )
   }
