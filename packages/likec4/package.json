@@ -155,7 +155,7 @@
     "postcss": "^8.4.47",
     "postcss-preset-mantine": "^1.17.0",
     "pretty-ms": "^9.1.0",
-    "react-error-boundary": "^4.1.0",
+    "react-error-boundary": "^4.1.2",
     "react-resizable-panels": "^2.1.4",
     "react-shadow": "^20.5.0",
     "remeda": "^2.15.0",
