@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-import { invariant, type ViewID } from '@likec4/core'
+import { delay, invariant, type ViewID } from '@likec4/core'
 import * as vscode from 'vscode'
 import { ViewColumn, type Webview, type WebviewPanel } from 'vscode'
+import { isProd } from '../const'
 import { ExtensionController } from '../ExtensionController'
 import { logger } from '../logger'
 import type { DirectToWebviewProtocol } from '../Messenger'
@@ -105,14 +105,21 @@ export class PreviewPanel extends AbstractDisposable {
     const stylesUri = getUri(webview, ['dist', 'preview', 'style.css'])
     const scriptUri = getUri(webview, ['dist', 'preview', 'index.js'])
     const theme = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ? 'dark' : 'light'
-    const cspSource = webview.cspSource
+    const cspSource = webview.cspSource.replaceAll('"', '\'')
+    const cspDirectives = [
+      `default-src 'none';`,
+      `font-src ${cspSource} data: https: 'nonce-${nonce}';`,
+      isProd ? `style-src ${cspSource} 'nonce-${nonce}';` : `style-src ${cspSource} 'unsafe-inline';`,
+      `img-src ${cspSource} data: https:;`,
+      `script-src 'nonce-${nonce}';`
+    ]
     webview.html = /*html*/ `
 <!DOCTYPE html>
 <html data-mantine-color-scheme="${theme}" style="color-scheme:${theme}">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${cspSource} data: https: 'nonce-${nonce}'; style-src ${cspSource} 'unsafe-inline'; img-src ${cspSource} data: https:; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="${cspDirectives.join(' ')}">
     <link rel="stylesheet" type="text/css" href="${stylesUri}" nonce="${nonce}">
   </head>
   <body class="${theme}">
@@ -133,28 +140,26 @@ export namespace PreviewPanel {
       private readonly ctrl: ExtensionController
     ) {}
 
-    deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Thenable<void> {
+    async deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Promise<void> {
       invariant(!PreviewPanel.current, 'PreviewPanel already initialized')
-      return new Promise((resolve, reject) => {
-        let viewId: ViewID
-        if (
-          state != null
-          && typeof state === 'object'
-          && 'view' in state
-          && state.view != null
-          && typeof state.view === 'object'
-          && 'id' in state.view
-          && typeof state.view.id === 'string'
-        ) {
-          viewId = state.view.id as ViewID
-        } else {
-          viewId = 'index' as ViewID
-        }
-        logger.info(`[PreviewPanel.Serializer] deserializeWebviewPanel viewId=${viewId}`)
-        PreviewPanel.current = new PreviewPanel(viewId, panel, this.ctrl)
-        panel.reveal()
-        resolve()
-      })
+      let viewId: ViewID
+      if (
+        state != null
+        && typeof state === 'object'
+        && 'view' in state
+        && state.view != null
+        && typeof state.view === 'object'
+        && 'id' in state.view
+        && typeof state.view.id === 'string'
+      ) {
+        viewId = state.view.id as ViewID
+      } else {
+        viewId = 'index' as ViewID
+      }
+      logger.info(`[PreviewPanel.Serializer] deserializeWebviewPanel viewId=${viewId}`)
+      PreviewPanel.current = new PreviewPanel(viewId, panel, this.ctrl)
+      await delay(500)
+      panel.reveal()
     }
   }
 }

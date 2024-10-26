@@ -236,6 +236,7 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
 const isValidatableAstNode = validatableAstNodeGuards([
   ast.isGlobals,
   ast.isGlobalStyle,
+  ast.isGlobalStyleGroup,
   ast.isDynamicViewPredicateIterator,
   ast.isElementPredicateWith,
   ast.isRelationPredicateWith,

@@ -1,8 +1,8 @@
-import { invariant, isAncestor, nonNullable } from '@likec4/core'
+import { invariant, isAncestor, type NodeId, type NonEmptyArray, nonNullable } from '@likec4/core'
 import type { InternalNode, NodeChange, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
-import { isNullish } from 'remeda'
+import { filter, hasAtLeast, isNullish, map, pipe } from 'remeda'
 import { useDiagramStoreApi } from '../hooks'
 import { type XYStoreApi } from '../hooks/useXYFlow'
 import type { XYFlowNode } from './types'
@@ -99,10 +99,26 @@ type NodePositionUpdater = (
 
 export function createLayoutConstraints(
   xyflowApi: XYStoreApi,
-  editingNodeIds: Set<string>
+  editingNodeIds: NonEmptyArray<string>
 ) {
   const { parentLookup, nodeLookup } = xyflowApi.getState()
   const rects = new Map<string, Leaf | Compound>()
+
+  const ancestorsOf = (nodeId: string) => {
+    const ancestors = [] as string[]
+    const xynode = nodeLookup.get(nodeId)
+    let parent = xynode?.parentId
+    let parentNode: InternalNode<XYFlowNode> | undefined
+    while (parent && (parentNode = nodeLookup.get(parent))) {
+      ancestors.push(parentNode.id as NodeId)
+      parent = parentNode.parentId
+    }
+    return ancestors
+  }
+
+  const ancestorsOfDraggingNodes = new Set(
+    editingNodeIds.flatMap(ancestorsOf)
+  )
 
   const traverse = new Array<{ xynode: InternalNode<XYFlowNode>; parent: Compound | null }>()
 
@@ -117,11 +133,11 @@ export function createLayoutConstraints(
 
   while (traverse.length > 0) {
     const { xynode, parent } = traverse.shift()!
-    const isEditing = editingNodeIds.has(xynode.id)
+    const isEditing = editingNodeIds.includes(xynode.id)
 
     // Traverse children if the node is a compound, not dragging, and is an ancestor of the dragging node
     const shouldTraverse = !isEditing && xynode.type === 'compound'
-      && editingNodeIds.values().some(x => isAncestor(xynode.id, x))
+      && ancestorsOfDraggingNodes.has(xynode.id)
 
     const rect = shouldTraverse ? new Compound(xynode, parent) : new Leaf(xynode, parent)
     rects.set(xynode.id, rect)
@@ -156,7 +172,6 @@ export function createLayoutConstraints(
           maxX: -Infinity,
           maxY: -Infinity
         })
-
 
         r.minX = childrenBB.minX - Rect.LeftPadding
         r.minY = childrenBB.minY - Rect.TopPadding
@@ -200,11 +215,14 @@ export function createLayoutConstraints(
     animationFrameId ??= requestAnimationFrame(() => {
       animationFrameId = null
       updater(
-        [
-          ...editingNodeIds.values()
-            .filter(id => rects.has(id) && nodeLookup.has(id))
-            .map(id => ({ rect: nonNullable(rects.get(id)), node: nodeLookup.get(id)! }))
-        ]
+        pipe(
+          editingNodeIds,
+          filter(id => rects.has(id) && nodeLookup.has(id)),
+          map(id => ({
+            rect: nonNullable(rects.get(id)),
+            node: nonNullable(nodeLookup.get(id))
+          }))
+        )
       )
       updateXYFlowNodes()
     })
@@ -229,17 +247,18 @@ export function useLayoutConstraints(): LayoutConstraints {
       const { nodeLookup } = xystore.getState()
       cancelSaveManualLayout()
 
-      const draggingNodes = new Set(
-        nodeLookup.values()
-          .filter(x => x.dragging === true || x.id === xynode.id || x.selected)
-          .filter(x => x.draggable === true)
-          .map(x => x.id)
+      const draggingNodes = pipe(
+        Array.from(nodeLookup.values()),
+        filter(n => n.dragging === true || n.id === xynode.id || n.selected === true),
+        filter(n => n.draggable !== false),
+        map(x => x.id)
       )
-      solverRef.current = createLayoutConstraints(xystore, draggingNodes)
+      if (hasAtLeast(draggingNodes, 1)) {
+        solverRef.current = createLayoutConstraints(xystore, draggingNodes)
+      }
     },
     onNodeDrag: () => {
-      invariant(solverRef.current, 'solverRef.current should be defined')
-      solverRef.current.onMove((nodes) => {
+      solverRef.current?.onMove((nodes) => {
         nodes.forEach(({ rect, node }) => {
           rect.positionAbsolute = node.internals.positionAbsolute
         })

@@ -228,7 +228,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|metadata|mobile|actor|color|cylinder|description|dynamic|global|element|exclude|extends|extend|include|it|model|muted|notation|notes|of|parallel|par|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|where|with)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|metadata|mobile|actor|color|cylinder|description|dynamic|global|group|element|exclude|extends|extend|include|it|model|muted|notation|notes|of|parallel|par|person|primary|queue|rectangle|secondary|shape|specification|storage|styleGroup|style|tag|technology|this|title|view|views|where|with)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",

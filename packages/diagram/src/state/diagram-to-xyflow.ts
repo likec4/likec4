@@ -1,6 +1,7 @@
-import type { DiagramEdge, DiagramNode, DiagramView, Fqn } from '@likec4/core'
+import { type DiagramEdge, DiagramNode, type DiagramView, ElementKind, type Fqn } from '@likec4/core'
 import { nonNullable, whereOperatorAsPredicate } from '@likec4/core'
 import { hasAtLeast } from 'remeda'
+import type { UnionToIntersection } from 'type-fest'
 import type { WhereOperator } from '../LikeC4Diagram.props'
 import { ZIndexes } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
@@ -55,7 +56,7 @@ export function diagramViewToXYFlowData(
   let next: typeof traverse[0] | undefined
   while ((next = traverse.shift())) {
     const { node, parent } = next
-    const isCompound = hasAtLeast(node.children, 1)
+    const isCompound = hasAtLeast(node.children, 1) || node.kind == ElementKind.Group
     if (isCompound) {
       traverse.push(...node.children.map(child => ({ node: nodeById(child), parent: node })))
     }
@@ -69,35 +70,45 @@ export function diagramViewToXYFlowData(
       position.y -= parent.position[1]
     }
 
-    // const outEdges = node.outEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
-    // const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
-
     const id = ns + node.id
-    const draggable = opts.draggable
-    xynodes.push({
+
+    const base: Omit<UnionToIntersection<XYFlowNode>, 'data'> = {
       id,
-      type: isCompound ? 'compound' : 'element',
-      data: {
-        fqn: node.id,
-        element: node
-      },
-      draggable,
-      selectable: opts.selectable,
+      draggable: opts.draggable,
+      selectable: opts.selectable && node.kind !== ElementKind.Group,
       focusable: opts.selectable && !isCompound,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       width: node.width,
       height: node.height,
-      hidden: !visiblePredicate(node),
-      // parentId: parent ? ns + parent.id : null,
+      hidden: node.kind !== ElementKind.Group && !visiblePredicate(node),
       ...(parent && {
         parentId: ns + parent.id
-      }),
-      ...(isCompound && {
-        dragHandle: '.likec4-compound-title'
       })
-    })
+    }
+
+    xynodes.push(
+      isCompound
+        ? {
+          ...base,
+          type: 'compound',
+          data: {
+            fqn: node.id,
+            isViewGroup: node.kind === ElementKind.Group,
+            element: node
+          },
+          dragHandle: '.likec4-compound-title'
+        }
+        : {
+          ...base,
+          type: 'element',
+          data: {
+            fqn: node.id,
+            element: node
+          }
+        }
+    )
   }
 
   for (const edge of view.edges) {

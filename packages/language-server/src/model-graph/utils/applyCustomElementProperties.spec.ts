@@ -1,6 +1,6 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
-import { $custom, $include } from '../compute-view/__test__/fixture'
+import { $custom, $exclude, $group, $include } from '../compute-view/__test__/fixture'
 import { applyCustomElementProperties } from './applyCustomElementProperties'
 
 function nd(id: string): ComputedNode {
@@ -21,24 +21,72 @@ describe('applyElementCustomProperties', () => {
   })
 
   it('should apply custom properties to matching nodes', () => {
-    const nodes = [nd('cloud'), nd('2')]
+    const nodes = [nd('cloud'), nd('amazon')]
     const rules = [
-      $include($custom('cloud', {
+      $include('cloud', {
+        with: {
+          title: 'value1',
+          technology: 'value2'
+        }
+      }),
+      // EXCLUDE SHOULD BE IGNORED
+      $exclude($custom('amazon', {
         title: 'value1',
         technology: 'value2'
       }))
     ]
     const result = applyCustomElementProperties(rules, nodes)
-    expect(result).toEqual([{
-      id: 'cloud',
-      isCustomized: true,
-      title: 'value1',
-      technology: 'value2'
-    }, { id: '2' }])
+    expect(result).toEqual([
+      {
+        id: 'cloud',
+        isCustomized: true,
+        title: 'value1',
+        technology: 'value2'
+      },
+      { id: 'amazon' }
+    ])
     expect(result).not.toBe(nodes) // should return new array
     expect(result[0]).not.toBe(nodes[0]) // should return new node
     expect(nodes[0]).toEqual(nd('cloud')) // should not mutate original node
     expect(result[1]).toBe(nodes[1]) // shoud not change non-matching nodes
+  })
+
+  it('should apply custom properties to matching nodes from groups', () => {
+    const nodes = [nd('cloud'), nd('amazon')]
+    const rules = [
+      $group([
+        $include('*'),
+        $group([
+          $group([
+            $include($custom('cloud', {
+              title: 'value1'
+            }))
+          ]),
+          $group([
+            $include($custom('amazon', {
+              technology: 'amazon technology'
+            }))
+          ])
+        ])
+      ])
+    ]
+    const result = applyCustomElementProperties(rules, nodes)
+    expect(result).toEqual([
+      {
+        id: 'cloud',
+        isCustomized: true,
+        title: 'value1'
+      },
+      {
+        id: 'amazon',
+        isCustomized: true,
+        technology: 'amazon technology'
+      }
+    ])
+    expect(result).not.toBe(nodes) // should return new array
+    expect(result[0]).not.toBe(nodes[0]) // should return new node
+    expect(result[1]).not.toBe(nodes[1]) // should return new node
+    expect(nodes).toEqual([nd('cloud'), nd('amazon')]) // should not mutate original nodes
   })
 
   it('should apply custom properties to matching nodes and omit nils', () => {

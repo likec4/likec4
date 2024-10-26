@@ -477,16 +477,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.6.3":
-  version: 7.24.7
-  resolution: "@babel/runtime@npm:7.24.7"
-  dependencies:
-    regenerator-runtime: "npm:^0.14.0"
-  checksum: 10c0/b6fa3ec61a53402f3c1d75f4d808f48b35e0dfae0ec8e2bb5c6fc79fb95935da75766e0ca534d0f1c84871f6ae0d2ebdd950727cfadb745a2cdbef13faef5513
-  languageName: node
-  linkType: hard
-
-"@babel/runtime@npm:^7.23.2":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.6.3":
   version: 7.25.7
   resolution: "@babel/runtime@npm:7.25.7"
   dependencies:
@@ -898,58 +889,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dprint/darwin-arm64@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/darwin-arm64@npm:0.47.2"
+"@dprint/darwin-arm64@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/darwin-arm64@npm:0.47.4"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@dprint/darwin-x64@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/darwin-x64@npm:0.47.2"
+"@dprint/darwin-x64@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/darwin-x64@npm:0.47.4"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@dprint/linux-arm64-glibc@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/linux-arm64-glibc@npm:0.47.2"
+"@dprint/linux-arm64-glibc@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/linux-arm64-glibc@npm:0.47.4"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@dprint/linux-arm64-musl@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/linux-arm64-musl@npm:0.47.2"
+"@dprint/linux-arm64-musl@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/linux-arm64-musl@npm:0.47.4"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@dprint/linux-x64-glibc@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/linux-x64-glibc@npm:0.47.2"
+"@dprint/linux-x64-glibc@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/linux-x64-glibc@npm:0.47.4"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@dprint/linux-x64-musl@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/linux-x64-musl@npm:0.47.2"
+"@dprint/linux-x64-musl@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/linux-x64-musl@npm:0.47.4"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@dprint/win32-arm64@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/win32-arm64@npm:0.47.2"
+"@dprint/win32-arm64@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/win32-arm64@npm:0.47.4"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@dprint/win32-x64@npm:0.47.2":
-  version: 0.47.2
-  resolution: "@dprint/win32-x64@npm:0.47.2"
+"@dprint/win32-x64@npm:0.47.4":
+  version: 0.47.4
+  resolution: "@dprint/win32-x64@npm:0.47.4"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -2173,7 +2164,7 @@ __metadata:
     astro: "npm:~4.16.6"
     astro-og-canvas: "npm:^0.5.4"
     likec4: "workspace:*"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.6"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     starlight-heading-badges: "npm:^0.3.0"
@@ -2189,7 +2180,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     json5: "npm:^2.2.3"
     langium: "npm:3.2.0"
     remeda: "npm:^2.15.0"
@@ -2228,7 +2219,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@msgpack/msgpack": "npm:^3.0.0-beta2"
     "@smithy/util-base64": "npm:^3.0.0"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     "@types/object-hash": "npm:^3.0.6"
     "@types/string-hash": "npm:^1.1.3"
     "@vitest/coverage-v8": "npm:^2.1.3"
@@ -2238,7 +2229,7 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:3.2.0"
     langium-cli: "npm:3.2.0"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.6"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     remeda: "npm:^2.15.0"
@@ -2266,7 +2257,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     execa: "npm:^9.3.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
@@ -2288,7 +2279,7 @@ __metadata:
   resolution: "@likec4/log@workspace:packages/log"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     consola: "npm:^3.2.3"
     std-env: "npm:^3.7.0"
     typescript: "npm:^5.6.3"
@@ -2319,7 +2310,7 @@ __metadata:
     "@tanstack/router-cli": "npm:1.45.13"
     "@tanstack/router-vite-plugin": "npm:1.45.13"
     "@typefox/monaco-editor-react": "npm:4.5.3"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
     "@types/string-hash": "npm:^1.1.3"
@@ -2381,7 +2372,7 @@ __metadata:
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:3.17.0"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     "@types/object-hash": "npm:^3.0.6"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
@@ -3762,12 +3753,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.16.5":
-  version: 20.16.9
-  resolution: "@types/node@npm:20.16.9"
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.16.14":
+  version: 20.17.1
+  resolution: "@types/node@npm:20.17.1"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/52d7cbd6792a26e6757c913d1f6dd0fb0104ac44c93dd87480c011d1211b3a1ba282962996bf6aec03f633b5b39f61576f1bafe8436592ab08ad39464e53e4b0
+  checksum: 10c0/214cf1fffff9c80ae0d49d7dd1f04254215d49711276fff44ff6f61e36dc8d53520509a88add6955fe029b2259c87eaf284b43bc1236d4f4f06bd80c46f0e2b8
   languageName: node
   linkType: hard
 
@@ -5534,7 +5525,7 @@ __metadata:
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^9.3.1"
     prompts: "npm:^2.4.2"
@@ -6058,18 +6049,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dprint@npm:0.47.2":
-  version: 0.47.2
-  resolution: "dprint@npm:0.47.2"
+"dprint@npm:0.47.4":
+  version: 0.47.4
+  resolution: "dprint@npm:0.47.4"
   dependencies:
-    "@dprint/darwin-arm64": "npm:0.47.2"
-    "@dprint/darwin-x64": "npm:0.47.2"
-    "@dprint/linux-arm64-glibc": "npm:0.47.2"
-    "@dprint/linux-arm64-musl": "npm:0.47.2"
-    "@dprint/linux-x64-glibc": "npm:0.47.2"
-    "@dprint/linux-x64-musl": "npm:0.47.2"
-    "@dprint/win32-arm64": "npm:0.47.2"
-    "@dprint/win32-x64": "npm:0.47.2"
+    "@dprint/darwin-arm64": "npm:0.47.4"
+    "@dprint/darwin-x64": "npm:0.47.4"
+    "@dprint/linux-arm64-glibc": "npm:0.47.4"
+    "@dprint/linux-arm64-musl": "npm:0.47.4"
+    "@dprint/linux-x64-glibc": "npm:0.47.4"
+    "@dprint/linux-x64-musl": "npm:0.47.4"
+    "@dprint/win32-arm64": "npm:0.47.4"
+    "@dprint/win32-x64": "npm:0.47.4"
   dependenciesMeta:
     "@dprint/darwin-arm64":
       optional: true
@@ -6089,7 +6080,7 @@ __metadata:
       optional: true
   bin:
     dprint: bin.js
-  checksum: 10c0/9add4613862613d3c3085b0eb29fd663bf59be904a22b36f06e3bb309f8a8007f555f8a34982b7d8c0574a1e6870952484cebf04c4684f83316f54984f20d95a
+  checksum: 10c0/4d675258908e300f467fe646abac87a7626d83aa2dbe5138194ddbc66900c823ffdb4bd272b3d15103969b60984fd5f57175ec7194fe0f2a0d846fc8881e1b4b
   languageName: node
   linkType: hard
 
@@ -6849,15 +6840,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fdir@npm:^6.1.1, fdir@npm:^6.4.0":
-  version: 6.4.0
-  resolution: "fdir@npm:6.4.0"
+"fdir@npm:^6.1.1, fdir@npm:^6.4.0, fdir@npm:^6.4.2":
+  version: 6.4.2
+  resolution: "fdir@npm:6.4.2"
   peerDependencies:
     picomatch: ^3 || ^4
   peerDependenciesMeta:
     picomatch:
       optional: true
-  checksum: 10c0/9a03efa1335d78ea386b701799b08ad9e7e8da85d88567dc162cd28dd8e9486e8c269b3e95bfeb21dd6a5b14ebf69d230eb6e18f49d33fbda3cd97432f648c48
+  checksum: 10c0/34829886f34a3ca4170eca7c7180ec4de51a3abb4d380344063c0ae2e289b11d2ba8b724afee974598c83027fea363ff598caf2b51bc4e6b1e0d8b80cc530573
   languageName: node
   linkType: hard
 
@@ -8578,7 +8569,7 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     "@types/vscode": "npm:^1.89.0"
     "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.7"
@@ -8626,7 +8617,7 @@ __metadata:
     "@tanstack/react-router": "npm:1.45.13"
     "@tanstack/router-cli": "npm:1.45.13"
     "@tanstack/router-vite-plugin": "npm:1.45.13"
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     "@types/prop-types": "npm:^15.7.13"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
@@ -8647,7 +8638,7 @@ __metadata:
     esbuild-node-externals: "npm:^1.15.0"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
-    fdir: "npm:^6.4.0"
+    fdir: "npm:^6.4.2"
     framer-motion: "npm:^11.11.9"
     get-port: "npm:^7.1.0"
     glob: "npm:^11.0.0"
@@ -8656,7 +8647,7 @@ __metadata:
     langium: "npm:3.2.0"
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:0.11.3"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.6"
     p-limit: "npm:^6.1.0"
     package-up: "npm:^5.0.0"
     playwright: "npm:1.47.2"
@@ -10341,9 +10332,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:^6.2.2":
-  version: 6.2.2
-  resolution: "npm-run-all2@npm:6.2.2"
+"npm-run-all2@npm:^6.2.6":
+  version: 6.2.6
+  resolution: "npm-run-all2@npm:6.2.6"
   dependencies:
     ansi-styles: "npm:^6.2.1"
     cross-spawn: "npm:^7.0.3"
@@ -10352,12 +10343,13 @@ __metadata:
     pidtree: "npm:^0.6.0"
     read-package-json-fast: "npm:^3.0.2"
     shell-quote: "npm:^1.7.3"
+    which: "npm:^3.0.1"
   bin:
     npm-run-all: bin/npm-run-all/index.js
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10c0/b32984a1fb6b495415258f88f87269b4049c19a73a1d6e2b13e0dd36dd311a5a4d945c9fd1cc356eb10811febaa03cf1c85d04dc43decd4ab1d590b625918440
+  checksum: 10c0/043b0851958b22b1910002cacd996e2ee8d45fefd3aa0f6da2795c50f1eb1d520631f993f6c8c7d28aeca73882a95b35451024fcd796c26a7907e1a1dacb0a84
   languageName: node
   linkType: hard
 
@@ -12230,15 +12222,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root@workspace:."
   dependencies:
-    "@types/node": "npm:^20.16.5"
+    "@types/node": "npm:^20.16.14"
     "@vitest/ui": "npm:^2.1.3"
-    dprint: "npm:0.47.2"
+    dprint: "npm:0.47.4"
     esbuild: "npm:^0.24.0"
     execa: "npm:^9.3.1"
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
     lint-staged: "npm:15.2.10"
-    npm-run-all2: "npm:^6.2.2"
+    npm-run-all2: "npm:^6.2.6"
     shipjs: "npm:^0.26.4"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.1.3"
@@ -14439,6 +14431,17 @@ __metadata:
   bin:
     node-which: ./bin/node-which
   checksum: 10c0/66522872a768b60c2a65a57e8ad184e5372f5b6a9ca6d5f033d4b0dc98aff63995655a7503b9c0a2598936f532120e81dd8cc155e2e92ed662a2b9377cc4374f
+  languageName: node
+  linkType: hard
+
+"which@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "which@npm:3.0.1"
+  dependencies:
+    isexe: "npm:^2.0.0"
+  bin:
+    node-which: bin/which.js
+  checksum: 10c0/15263b06161a7c377328fd2066cb1f093f5e8a8f429618b63212b5b8847489be7bcab0ab3eb07f3ecc0eda99a5a7ea52105cf5fa8266bedd083cc5a9f6da24f1
   languageName: node
   linkType: hard
 

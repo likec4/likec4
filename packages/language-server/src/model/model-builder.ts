@@ -46,7 +46,6 @@ import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logger, logWarnError } from '../logger'
 import { computeDynamicView, computeView, LikeC4ModelGraph } from '../model-graph'
 import type { LikeC4Services } from '../module'
-import { printDocs } from '../utils/printDocs'
 import { assignNavigateTo, resolveGlobalRules, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {

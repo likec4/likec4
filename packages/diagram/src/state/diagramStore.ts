@@ -395,7 +395,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               selectable: nodesSelectable
             })
 
-            update.xynodes = update.xynodes.map(update => {
+            update.xynodes = update.xynodes.map((update) => {
               const existing = xynodes.find(n => n.id === update.id)
               if (
                 existing
@@ -403,18 +403,18 @@ export function createDiagramStore(props: DiagramInitialState) {
                 && eq(existing.parentId ?? null, update.parentId ?? null)
               ) {
                 if (
-                  existing.hidden === update.hidden
-                  && existing.width === update.width
+                  existing.width === update.width
                   && existing.height === update.height
+                  && eq(existing.hidden ?? false, update.hidden ?? false)
                   && eq(existing.position, update.position)
-                  && eq(existing.data.element, update.data.element)
+                  && eq(existing.data, update.data)
                 ) {
                   return existing
                 }
                 return {
                   ...existing,
                   ...update
-                }
+                } as XYFlowNode
               }
               return update
             })
@@ -425,7 +425,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 const existing = xyedges.find(n => n.id === update.id)
                 if (existing) {
                   if (
-                    existing.hidden === update.hidden
+                    eq(existing.hidden ?? false, update.hidden ?? false)
                     && eq(existing.data.label, update.data.label)
                     && eq(existing.data.controlPoints, update.data.controlPoints)
                     && eq(existing.data.edge, update.data.edge)
@@ -1065,7 +1065,12 @@ export function createDiagramStore(props: DiagramInitialState) {
             const { nodeLookup, parentLookup } = xystore.getState()
 
             const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
-            const nodesToAlign = new Set(selectedNodes.difference(new Set(parentLookup.keys())))
+            const nodesToAlign = [...selectedNodes.difference(new Set(parentLookup.keys()))]
+
+            if (!hasAtLeast(nodesToAlign, 2)) {
+              console.warn('At least 2 nodes must be selected to align')
+              return
+            }
             const constraints = createLayoutConstraints(xystore, nodesToAlign)
 
             let getEdgePosition: (nodes: InternalNode<XYFlowNode>[]) => number

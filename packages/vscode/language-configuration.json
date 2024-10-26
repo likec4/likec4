@@ -68,10 +68,10 @@
     },
     {
       "beforeText": {
-        "pattern": "\\s*\"$"
+        "pattern": "\\s*(\"|')$"
       },
       "afterText": {
-        "pattern": "^\"\\s*$"
+        "pattern": "^(\"|')\\s*$"
       },
       "action": {
         "indent": "indentOutdent"

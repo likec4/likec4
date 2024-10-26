@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -78,12 +78,12 @@ jobs:
     outputs:
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: ${{ github.ref }}
 
       - name: setup Node.js
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
         with:
           node-version: '20'
           cache: 'yarn'
@@ -96,7 +96,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f # v3
+        uses: cloudflare/wrangler-action@b2a0191ce60d21388e1a8dcc968b4e9966f938e1 # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -116,12 +116,12 @@ jobs:
     outputs:
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: ${{ github.ref }}
 
       - name: setup Node.js
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
         with:
           node-version: '20'
           cache: 'yarn'
@@ -134,7 +134,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f # v3
+        uses: cloudflare/wrangler-action@b2a0191ce60d21388e1a8dcc968b4e9966f938e1 # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}

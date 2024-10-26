@@ -346,7 +346,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
           </Button>
           <Space w={2} />
           <Group gap={'xs'} pos={'relative'} wrap="nowrap" flex={'1 0 auto'}>
-            <Box fz={'sm'} fw={'400'} style={{ whiteSpace: 'nowrap' }}>Relationships of</Box>
+            <Box fz={'sm'} fw={'400'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box>
             <Box flex={'1 0 auto'}>
               <SelectElement
                 scope={scope}

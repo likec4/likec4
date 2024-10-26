@@ -122,6 +122,7 @@ export const title = style({
   paddingLeft: 14,
   paddingTop: 13,
   paddingBottom: 6,
+  minHeight: 30,
   mixBlendMode: 'screen',
   selectors: {
     [`:where(.react-flow__node.draggable) &`]: {

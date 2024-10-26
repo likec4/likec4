@@ -27,22 +27,6 @@ test('${view.id} - compare snapshots', async ({ page }) => {
 });
   `
 })
-// const stories = views.map((view) => {
-//   return `
-// export const ${capitalize(toCamelCase(view.id))}: Story = () => (
-//   <LikeC4View viewId={${JSON.stringify(view.id)}} />
-// )
-//   `
-// })
-
-// const content = `
-// import type { Story } from "@ladle/react";
-// import { LikeC4View } from "./likec4-views";
-
-// ${stories.join('')}
-// `
-
-// await fs.writeFile('src/likec4-views.stories.tsx', content, { encoding: 'utf-8' })
 
 const content = `
 import { test, expect } from "@playwright/test";
