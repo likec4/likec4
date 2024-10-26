@@ -56,7 +56,7 @@ export function diagramViewToXYFlowData(
   let next: typeof traverse[0] | undefined
   while ((next = traverse.shift())) {
     const { node, parent } = next
-    const isCompound = hasAtLeast(node.children, 1)
+    const isCompound = hasAtLeast(node.children, 1) || node.kind == ElementKind.Group
     if (isCompound) {
       traverse.push(...node.children.map(child => ({ node: nodeById(child), parent: node })))
     }
@@ -74,9 +74,8 @@ export function diagramViewToXYFlowData(
 
     const base: Omit<UnionToIntersection<XYFlowNode>, 'data'> = {
       id,
-
       draggable: opts.draggable,
-      selectable: opts.selectable,
+      selectable: opts.selectable && node.kind !== ElementKind.Group,
       focusable: opts.selectable && !isCompound,
       deletable: false,
       position,
