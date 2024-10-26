@@ -47,7 +47,7 @@ jobs:
       - id: cloudflare
         if: ${{ failure() }}
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f # v3
+        uses: cloudflare/wrangler-action@b2a0191ce60d21388e1a8dcc968b4e9966f938e1 # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
