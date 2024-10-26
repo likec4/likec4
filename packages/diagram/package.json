@@ -23,7 +23,7 @@
   "exports": {
     ".": "./src/index.ts"
   },
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "yarn@4.5.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "run -T eslint src/ --fix",
