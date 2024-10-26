@@ -3,6 +3,7 @@ import { useMergedRef } from '@mantine/hooks'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { useAnimate } from 'framer-motion'
 import { createContext, type PropsWithChildren, useCallback, useEffect, useRef } from 'react'
+import { clone } from 'remeda'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../hooks/useXYFlow'
 import { createDiagramStore, type DiagramInitialState, type DiagramZustandStore } from './diagramStore'
@@ -39,7 +40,7 @@ export function DiagramContextProvider({
       xyflow,
       view,
       getContainer,
-      whereFilter: structuredClone(whereFilter),
+      whereFilter: clone(whereFilter),
       ...props
     })
   }
@@ -59,7 +60,7 @@ export function DiagramContextProvider({
       const current = store.current
       invariant(current, 'DiagramContext.store.current is not defined')
       if (!deepEqual(whereFilter, current.getState().whereFilter)) {
-        current.setState({ whereFilter: structuredClone(whereFilter) }, false, 'update where filter')
+        current.setState({ whereFilter: clone(whereFilter) }, false, 'update where filter')
       }
       current.getState().updateView(view)
     },

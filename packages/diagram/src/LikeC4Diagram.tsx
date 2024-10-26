@@ -67,10 +67,10 @@ export function LikeC4Diagram({
     initialWidth: initialWidth ?? view.bounds.width,
     initialHeight: initialHeight ?? view.bounds.height
   })
-  if (readonly !== true && !!where) {
-    console.warn('where filter is only supported in readonly mode')
-  }
   useEffect(() => {
+    if (readonly !== true && where != null) {
+      console.warn('Ignore filter, supported in readonly mode only\n', { where })
+    }
     if (hasLikec4model) {
       return
     }
@@ -80,7 +80,7 @@ export function LikeC4Diagram({
     if (enableRelationshipsBrowser) {
       console.warn('Invalid enableRelationshipsBrowser=true, requires LikeC4ModelProvider')
     }
-  }, [])
+  })
 
   return (
     <EnsureMantine>
@@ -111,7 +111,8 @@ export function LikeC4Diagram({
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableFocusMode={enableFocusMode}
             enableRelationshipsBrowser={enableRelationshipsBrowser && hasLikec4model}
-            whereFilter={readonly !== true ? (where ?? null) : null}
+            // Apply where filter only in readonly mode
+            whereFilter={readonly ? (where ?? null) : null}
             renderIcon={renderIcon ?? null}
             onCanvasClick={onCanvasClick ?? null}
             onCanvasContextMenu={onCanvasContextMenu ?? null}

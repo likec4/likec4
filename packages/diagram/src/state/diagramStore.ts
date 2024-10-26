@@ -425,7 +425,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 const existing = xyedges.find(n => n.id === update.id)
                 if (existing) {
                   if (
-                    existing.hidden === update.hidden
+                    eq(existing.hidden ?? false, update.hidden ?? false)
                     && eq(existing.data.label, update.data.label)
                     && eq(existing.data.controlPoints, update.data.controlPoints)
                     && eq(existing.data.edge, update.data.edge)
