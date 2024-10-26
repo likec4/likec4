@@ -721,6 +721,35 @@ views {
 }
 ```
 
+##### Shared global styles as shared local styles
+
+Global styles can be used as local styles:
+
+```likec4
+global {
+  // apply only to elements with a specific tag
+  style deprecated element.tag = #deprecated {
+    color muted
+  }
+
+  // apply to all elements
+  style all_elements * {
+    color muted
+    opacity 10%
+  }
+}
+
+views {
+  global style deprecated
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+
+    global style all_elements
+  }
+}
+```
+
 #### Shared style groups :badge[v1.15]{variant="success"}
 
 Global styles can be grouped and applied together:
@@ -763,6 +792,45 @@ views {
     }
     style element.tag != #deprecated {
       opacity 20%
+    }
+  }
+}
+```
+
+##### Shared style groups as local styles
+
+Global style groups can be used as local styles:
+
+```likec4
+global {
+  styleGroup common_styles {
+    style all_elements * {
+      color amber
+    }
+
+    style element.tag = #deprecated {
+      color muted
+    }
+
+    style element.tag != #undefined {
+      opacity 50%
+    }
+  }
+}
+
+views {
+  global style common_styles
+
+  view mobileApp of internetBankingSystem.mobileApplication {
+    include *
+  }
+
+  view apiApp of internetBankingSystem.apiApplication {
+    include *
+
+    // view-specific style predicates
+    style apiApplication.* {
+      color primary
     }
   }
 }

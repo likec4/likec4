@@ -334,7 +334,7 @@ export class LikeC4ModelParser {
     const viewBlocks = doc.parseResult.value.views.filter(v => isValid(v))
     for (const viewBlock of viewBlocks) {
       const localStyles = viewBlock.styles
-        .flatMap(s => this.parseViewRuleStyle(s, isValid))
+        .flatMap(s => this.parseViewRuleStyleOrGlobalRef(s, isValid))
       const stylesToApply = localStyles
 
       for (const view of viewBlock.views) {
@@ -653,17 +653,24 @@ export class LikeC4ModelParser {
     if (ast.isViewRulePredicate(astRule)) {
       return this.parseViewRulePredicate(astRule, isValid)
     }
-    if (ast.isViewRuleStyle(astRule)) {
-      return this.parseViewRuleStyle(astRule, isValid)
+    if (ast.isViewRuleStyleOrGlobalRef(astRule)) {
+      return this.parseViewRuleStyleOrGlobalRef(astRule, isValid)
     }
     if (ast.isViewRuleAutoLayout(astRule)) {
       return toAutoLayout(astRule)
     }
-    if (ast.isViewRuleGlobalStyle(astRule)) {
-      return this.parseViewRuleGlobalStyle(astRule, isValid)
-    }
     if (ast.isViewRuleGroup(astRule)) {
       return this.parseViewRuleGroup(astRule, isValid)
+    }
+    nonexhaustive(astRule)
+  }
+
+  private parseViewRuleStyleOrGlobalRef(astRule: ast.ViewRuleStyleOrGlobalRef, isValid: IsValidFn): c4.ViewRuleStyleOrGlobalRef {
+    if (ast.isViewRuleStyle(astRule)) {
+      return this.parseViewRuleStyle(astRule, isValid)
+    }
+    if (ast.isViewRuleGlobalStyle(astRule)) {
+      return this.parseViewRuleGlobalStyle(astRule, isValid)
     }
     nonexhaustive(astRule)
   }
@@ -824,7 +831,7 @@ export class LikeC4ModelParser {
 
   private parseElementView(
     astNode: ast.ElementView,
-    additionalStyles: c4.ViewRuleStyle[],
+    additionalStyles: c4.ViewRuleStyleOrGlobalRef[],
     isValid: IsValidFn
   ): ParsedAstElementView {
     const body = astNode.body
@@ -896,7 +903,7 @@ export class LikeC4ModelParser {
 
   private parseDynamicElementView(
     astNode: ast.DynamicView,
-    additionalStyles: c4.ViewRuleStyle[],
+    additionalStyles: c4.ViewRuleStyleOrGlobalRef[],
     isValid: IsValidFn
   ): ParsedAstDynamicView {
     const body = astNode.body
@@ -964,14 +971,11 @@ export class LikeC4ModelParser {
     if (ast.isDynamicViewIncludePredicate(astRule)) {
       return this.parseDynamicViewIncludePredicate(astRule, isValid)
     }
-    if (ast.isViewRuleStyle(astRule)) {
-      return this.parseViewRuleStyle(astRule, isValid)
+    if (ast.isViewRuleStyleOrGlobalRef(astRule)) {
+      return this.parseViewRuleStyleOrGlobalRef(astRule, isValid)
     }
     if (ast.isViewRuleAutoLayout(astRule)) {
       return toAutoLayout(astRule)
-    }
-    if (ast.isViewRuleGlobalStyle(astRule)) {
-      return this.parseViewRuleGlobalStyle(astRule, isValid)
     }
     nonexhaustive(astRule)
   }
