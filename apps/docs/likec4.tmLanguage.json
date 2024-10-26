@@ -281,11 +281,11 @@
     },
     {
       "name": "variable.other.constant.likec4",
-      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|auth|web|frontend|api|webApp|authService|messageBroker|system|mute_\\w+|applications)\\d*\\b"
+      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|auth|web|frontend|api|webApp|authService|messageBroker|system|common_styles|mute_\\w+|applications)\\d*\\b"
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|global|group|element|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|notes|odiamond|odot|of|onormal|opacity|open|or|parallel|par|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|where|with)\\b"
+      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|global|group|element|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|notes|odiamond|odot|of|onormal|opacity|open|or|parallel|par|person|queue|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|with)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",
