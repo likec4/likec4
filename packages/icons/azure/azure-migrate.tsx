@@ -4,14 +4,21 @@ import type { SVGProps } from 'react'
 const SvgAzureMigrate = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={10.75} x2={10.75} y1={13.54} y2={2.92} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Migrate_svg__a"
+        x1={10.75}
+        x2={10.75}
+        y1={13.54}
+        y2={2.92}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.16} stopColor="#1380da" />
         <stop offset={0.53} stopColor="#3c91e5" />
         <stop offset={0.82} stopColor="#559cec" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="b" x1={7.45} x2={7.45} y1={17.24} y2={1.19} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Azure-Migrate_svg__b" x1={7.45} x2={7.45} y1={17.24} y2={1.19} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#198ab3" />
         <stop offset={0} stopColor="#198ab3" />
         <stop offset={0.11} stopColor="#22a5cb" />
@@ -22,11 +29,11 @@ const SvgAzureMigrate = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-Migrate_svg__a)"
       d="M18 10.53a3.26 3.26 0 0 0-2.83-3.13 4.11 4.11 0 0 0-4.23-3.93 4.22 4.22 0 0 0-4 2.75A3.89 3.89 0 0 0 3.5 10a4 4 0 0 0 4.08 3.79h7.18A3.29 3.29 0 0 0 18 10.53"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Azure-Migrate_svg__b)"
       d="M14.9 11.22A3.35 3.35 0 0 0 12 8a4.21 4.21 0 0 0-4.35-4 4.33 4.33 0 0 0-4.14 2.79A4 4 0 0 0 0 10.63a4.06 4.06 0 0 0 4.2 3.9h7.34a3.38 3.38 0 0 0 3.36-3.31"
     />
     <path

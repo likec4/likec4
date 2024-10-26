@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgDefenderSensor = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
     <path
-      fill="url(#a)"
+      fill="url(#Defender-Sensor_svg__a)"
       d="M.02 5.557c.095.177.28.32.517.402l8.705 3.413c.332.13.702.203 1.08.21.378.009.753-.047 1.096-.163l6.124-2.635a.7.7 0 0 0 .245-.147.43.43 0 0 0 .125-.212.2.2 0 0 0 0-.08.63.63 0 0 0-.191-.283 1 1 0 0 0-.347-.19l-8.689-3.41a3.2 3.2 0 0 0-1.08-.211 3.2 3.2 0 0 0-1.096.163L.366 5.046a.56.56 0 0 0-.305.208.33.33 0 0 0-.04.303"
     />
     <path
@@ -22,7 +22,14 @@ const SvgDefenderSensor = (props: SVGProps<SVGSVGElement>) => (
       d="M15.615 9.604c-.23-.097-.23-.41 0-.701.23-.29.622-.451.84-.345s.226.41 0 .699c-.228.288-.62.444-.84.347"
     />
     <defs>
-      <linearGradient id="a" x1={8.958} x2={8.958} y1={2.25} y2={9.583} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Defender-Sensor_svg__a"
+        x1={8.958}
+        x2={8.958}
+        y1={2.25}
+        y2={9.583}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stopColor="#5EA0EF" />
         <stop offset={0.18} stopColor="#559CEC" />
         <stop offset={0.47} stopColor="#3C91E5" />

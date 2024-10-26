@@ -5,7 +5,7 @@ const SvgResourceGuard = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Resource-Guard_svg__a"
         x1={8.997}
         x2={8.997}
         y1={774.788}
@@ -26,7 +26,7 @@ const SvgResourceGuard = (props: SVGProps<SVGSVGElement>) => (
       d="M16.494 8.4c0 4.837-5.949 8.732-7.251 9.525a.45.45 0 0 1-.486 0c-1.3-.783-7.251-4.678-7.251-9.525V2.583a.466.466 0 0 1 .456-.466C6.6 2 5.528 0 9 0s2.4 2 7.038 2.117a.466.466 0 0 1 .456.466Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Resource-Guard_svg__a)"
       d="M15.451 8.48c0 4.169-5.121 7.513-6.243 8.188a.4.4 0 0 1-.417 0c-1.121-.675-6.242-4.019-6.242-8.188V3.518a.406.406 0 0 1 .331-.47.4.4 0 0 1 .066-.006C6.935 2.972 6.022 1.265 9 1.265s2.064 1.707 6.054 1.777a.407.407 0 0 1 .4.4Z"
     />
     <path fill="#50e6ff" d="M12.38 7.016v3.932l-3.37 1.986V8.982z" />

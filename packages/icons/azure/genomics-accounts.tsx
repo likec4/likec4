@@ -4,14 +4,21 @@ import type { SVGProps } from 'react'
 const SvgGenomicsAccounts = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={0.5} y2={17.5} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Genomics-Accounts_svg__a" x1={9} x2={9} y1={0.5} y2={17.5} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#faa21d" />
         <stop offset={0.28} stopColor="#f99e1b" />
         <stop offset={0.57} stopColor="#f69113" />
         <stop offset={0.87} stopColor="#f27d07" />
         <stop offset={1} stopColor="#ef7100" />
       </linearGradient>
-      <linearGradient id="b" x1={9.95} x2={10.08} y1={5.55} y2={5.82} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Genomics-Accounts_svg__b"
+        x1={9.95}
+        x2={10.08}
+        y1={5.55}
+        y2={5.82}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#003c90" />
         <stop offset={0.15} stopColor="#194f9b" stopOpacity={0.9} />
         <stop offset={1} stopColor="#194f9b" stopOpacity={0} />
@@ -22,11 +29,11 @@ const SvgGenomicsAccounts = (props: SVGProps<SVGSVGElement>) => (
       d="M11.69 9.11c0-1.6-1.57-2.66-2.69-3.22-1.12.56-2.69 1.62-2.69 3.22 0 .24.14 1.45 2.69 2.67 2.55-1.22 2.69-2.43 2.69-2.67"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Genomics-Accounts_svg__a)"
       d="m10 12.23-.25-.11c-.27-.11-.51-.21-.73-.32-.22.11-.46.21-.73.32l-.29.11-.68.3a10.6 10.6 0 0 0 1.68.86 10.6 10.6 0 0 0 1.69-.86Z"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Genomics-Accounts_svg__b)"
       d="M10.67 5.15a5.5 5.5 0 0 1-.74.36c-.35.12-.93.38-.93.38l.43.23.82-.33a5 5 0 0 0 .75-.42Z"
       opacity={0.3}
     />

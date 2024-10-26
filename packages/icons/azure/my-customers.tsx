@@ -4,11 +4,11 @@ import type { SVGProps } from 'react'
 const SvgMyCustomers = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={6.7} x2={6.7} y1={7.26} y2={18.36} gradientUnits="userSpaceOnUse">
+      <linearGradient id="My-Customers_svg__a" x1={6.7} x2={6.7} y1={7.26} y2={18.36} gradientUnits="userSpaceOnUse">
         <stop offset={0.22} stopColor="#32d4f5" />
         <stop offset={1} stopColor="#198ab3" />
       </linearGradient>
-      <linearGradient id="b" x1={6.42} x2={7.23} y1={1.32} y2={11.39} gradientUnits="userSpaceOnUse">
+      <linearGradient id="My-Customers_svg__b" x1={6.42} x2={7.23} y1={1.32} y2={11.39} gradientUnits="userSpaceOnUse">
         <stop offset={0.22} stopColor="#32d4f5" />
         <stop offset={1} stopColor="#198ab3" />
       </linearGradient>
@@ -24,11 +24,11 @@ const SvgMyCustomers = (props: SVGProps<SVGSVGElement>) => (
     />
     <circle cx={13.55} cy={6.58} r={2.51} fill="#0078d4" />
     <path
-      fill="url(#a)"
+      fill="url(#My-Customers_svg__a)"
       d="M12.19 16.36a1.19 1.19 0 0 0 1.19-1.19.7.7 0 0 0 0-.14c-.47-3.74-2.6-6.78-6.66-6.78S.44 10.83 0 15a1.2 1.2 0 0 0 1.07 1.31h11.1Z"
     />
     <path fill="#fff" d="M6.77 9.14a3.7 3.7 0 0 1-2-.6l2 5.25 2-5.21a3.8 3.8 0 0 1-2 .56" opacity={0.8} />
-    <circle cx={6.74} cy={5.39} r={3.75} fill="url(#b)" />
+    <circle cx={6.74} cy={5.39} r={3.75} fill="url(#My-Customers_svg__b)" />
   </svg>
 )
 export default SvgMyCustomers

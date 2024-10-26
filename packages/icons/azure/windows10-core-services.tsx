@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgWindows10CoreServices = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.41} x2={8.41} y1={17.49} y2={0.44} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Windows10-Core-Services_svg__a"
+        x1={8.41}
+        x2={8.41}
+        y1={17.49}
+        y2={0.44}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.06} stopColor="#0a7cd7" />
         <stop offset={0.34} stopColor="#2e8ce1" />
@@ -14,7 +21,7 @@ const SvgWindows10CoreServices = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Windows10-Core-Services_svg__a)"
       d="m15.23 3.76-1.38-1.34h-.14l-1.86 1-1.33-.59L9.68.44 7.75.46l-.09.27L7 2.81l-1.33.57-2.26-1-1.34 1.35.14.27 1 1.93-.53 1.33-2.32.87v1.95l.27.09 2.08.64.57 1.33-1 2.27 1.39 1.35.25-.14 1.93-1 .62.76 1.6 2.11H10l.09-.27.69-1.22 1.1-.55 2.18-.13 1.36-1.39v-.13l.27-1 .79-2.37Zm-6.36 9.57A4.37 4.37 0 1 1 13.23 9a4.36 4.36 0 0 1-4.36 4.33"
     />
     <path

@@ -4,13 +4,13 @@ import type { SVGProps } from 'react'
 const SvgFirewalls = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={14.14} y2={1.38} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Firewalls_svg__a" x1={9} x2={9} y1={14.14} y2={1.38} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Firewalls_svg__a)"
       d="M18 10.14a4.06 4.06 0 0 0-3.51-3.89 5.1 5.1 0 0 0-5.25-4.87 5.23 5.23 0 0 0-5 3.41A4.82 4.82 0 0 0 0 9.43a4.9 4.9 0 0 0 5.07 4.71h8.65a1.5 1.5 0 0 0 .22 0 4.1 4.1 0 0 0 4.06-4"
     />
     <path

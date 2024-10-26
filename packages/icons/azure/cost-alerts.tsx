@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgCostAlerts = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={17.198} y2={-3.282} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Cost-Alerts_svg__a" x1={9} x2={9} y1={17.198} y2={-3.282} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#5e9624" />
         <stop offset={0.183} stopColor="#629c25" />
         <stop offset={0.435} stopColor="#6dae2a" />
@@ -13,7 +13,7 @@ const SvgCostAlerts = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Cost-Alerts_svg__a)"
       d="M17.5 2.5v10.832a.583.583 0 0 1-.584.581H12.4a.14.14 0 0 0-.142.141V15.8a.284.284 0 0 1-.456.224l-2.723-2.081a.14.14 0 0 0-.087-.03H1.084a.583.583 0 0 1-.584-.581V2.5a.584.584 0 0 1 .584-.582h15.832a.584.584 0 0 1 .584.582"
     />
     <path

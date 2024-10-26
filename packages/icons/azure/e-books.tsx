@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgEBooks = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={15.8} y1={9} y2={9} gradientUnits="userSpaceOnUse">
+      <linearGradient id="eBooks_svg__a" x1={9} x2={15.8} y1={9} y2={9} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.32} stopColor="#dfdfdf" />
         <stop offset={0.67} stopColor="#ececec" />
@@ -21,7 +21,7 @@ const SvgEBooks = (props: SVGProps<SVGSVGElement>) => (
       d="M7.64 1.56h-5.1a.35.35 0 0 0-.34.34v13a.35.35 0 0 0 .34.35h5.1A1.24 1.24 0 0 1 9 16.43V2.93a1.37 1.37 0 0 0-1.36-1.37"
     />
     <path
-      fill="url(#a)"
+      fill="url(#eBooks_svg__a)"
       d="M10.36 1.56h5.1a.35.35 0 0 1 .34.34v13a.35.35 0 0 1-.34.35h-5.1A1.24 1.24 0 0 0 9 16.43V2.93a1.37 1.37 0 0 1 1.36-1.37"
     />
     <path

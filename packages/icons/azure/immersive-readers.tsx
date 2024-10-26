@@ -4,11 +4,25 @@ import type { SVGProps } from 'react'
 const SvgImmersiveReaders = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.355} x2={15.035} y1={7.806} y2={7.806} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Immersive-Readers_svg__a"
+        x1={8.355}
+        x2={15.035}
+        y1={7.806}
+        y2={7.806}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ccc" />
         <stop offset={1} stopColor="#f0f0f0" />
       </linearGradient>
-      <linearGradient id="b" x1={14.131} x2={14.131} y1={9.763} y2={17.501} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Immersive-Readers_svg__b"
+        x1={14.131}
+        x2={14.131}
+        y1={9.763}
+        y2={17.501}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#42e8ca" />
         <stop offset={1} stopColor="#3cd4c2" />
       </linearGradient>
@@ -26,10 +40,10 @@ const SvgImmersiveReaders = (props: SVGProps<SVGSVGElement>) => (
       d="M7.019.5h-5.01a.335.335 0 0 0-.334.336v12.748a.336.336 0 0 0 .334.336h5.01a1.22 1.22 0 0 1 1.336 1.192V1.843A1.34 1.34 0 0 0 7.019.5"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Immersive-Readers_svg__a)"
       d="M9.7 13.632A4.424 4.424 0 0 1 15.035 9.3V.835A.334.334 0 0 0 14.7.5H9.691a1.34 1.34 0 0 0-1.336 1.343v13.269a1.22 1.22 0 0 1 1.336-1.192h.028c-.006-.096-.019-.191-.019-.288"
     />
-    <circle cx={14.131} cy={13.632} r={3.869} fill="url(#b)" />
+    <circle cx={14.131} cy={13.632} r={3.869} fill="url(#Immersive-Readers_svg__b)" />
     <path
       fill="#b3b3b3"
       d="M6.991 3.747v.366a.15.15 0 0 1-.148.148H3.187a.147.147 0 0 1-.147-.148v-.366a.147.147 0 0 1 .147-.147h3.656a.15.15 0 0 1 .148.147m-.148 1.838H3.187a.147.147 0 0 0-.147.148V6.1a.147.147 0 0 0 .147.148h3.656a.15.15 0 0 0 .148-.148v-.367a.15.15 0 0 0-.148-.148m0-3.972H3.187a.147.147 0 0 0-.147.148v.366a.147.147 0 0 0 .147.148h3.656a.15.15 0 0 0 .148-.148v-.366a.15.15 0 0 0-.148-.148m0 5.958H3.187a.15.15 0 0 0-.147.148v.366a.147.147 0 0 0 .147.148h3.656a.15.15 0 0 0 .148-.148v-.366a.15.15 0 0 0-.148-.148m0 1.986H3.187a.15.15 0 0 0-.147.148v.366a.147.147 0 0 0 .147.148h3.656a.15.15 0 0 0 .148-.148v-.366a.15.15 0 0 0-.148-.148m-1.975 1.986H3.187a.15.15 0 0 0-.147.149v.365a.147.147 0 0 0 .147.148h1.681a.147.147 0 0 0 .147-.148v-.365a.15.15 0 0 0-.147-.149"

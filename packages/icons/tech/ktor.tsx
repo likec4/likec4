@@ -5,7 +5,7 @@ const SvgKtor = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Ktor_svg__a"
         x1={24.941}
         x2={52.306}
         y1={24.941}
@@ -18,7 +18,7 @@ const SvgKtor = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#945dff" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Ktor_svg__b"
         x1={53.151}
         x2={79.023}
         y1={53.151}
@@ -33,8 +33,8 @@ const SvgKtor = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.823} stopColor="#ff8900" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M80.457 47.543 47.543 14.629 14.629 47.543l32.914 32.914Zm0 0" />
-    <path fill="url(#b)" d="m47.543 80.457 32.914 32.914 32.914-32.914-32.914-32.914Zm0 0" />
+    <path fill="url(#Ktor_svg__a)" d="M80.457 47.543 47.543 14.629 14.629 47.543l32.914 32.914Zm0 0" />
+    <path fill="url(#Ktor_svg__b)" d="m47.543 80.457 32.914 32.914 32.914-32.914-32.914-32.914Zm0 0" />
     <path d="M80.457 47.543H47.543v32.914h32.914Zm0 0" />
   </svg>
 )

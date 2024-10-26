@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgLogStreaming = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.153} x2={8.153} y1={17.5} y2={2.093} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Log-Streaming_svg__a"
+        x1={8.153}
+        x2={8.153}
+        y1={17.5}
+        y2={2.093}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ef7100" />
         <stop offset={0.9} stopColor="#f78d1e" />
       </linearGradient>
@@ -18,7 +25,7 @@ const SvgLogStreaming = (props: SVGProps<SVGSVGElement>) => (
       d="m2.905 2.1.742-.846a.52.52 0 0 1 .394-.179h10.845a.52.52 0 0 1 .522.522v13.786a.52.52 0 0 1-.171.386l-1.158 1.055Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Log-Streaming_svg__a)"
       d="M14.008 2.093H1.969a.056.056 0 0 0-.056.056v14.966a.385.385 0 0 0 .387.385h11.71a.385.385 0 0 0 .385-.385V2.478a.386.386 0 0 0-.387-.385"
     />
     <path

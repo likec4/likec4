@@ -5,7 +5,7 @@ const SvgPartnerNamespace = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Partner-Namespace_svg__a"
         x1={3.907}
         x2={3.907}
         y1={835.989}
@@ -60,7 +60,7 @@ const SvgPartnerNamespace = (props: SVGProps<SVGSVGElement>) => (
       d="M13.672 9.409v-.795H8.709V5.263h4.14v-.795h-4.14a.8.8 0 0 0-.795.8v3.346H4.383v.8h3.54v3.328a.8.8 0 0 0 .8.794h4.131v-.795H8.718V9.409Z"
     />
     <circle cx={14.042} cy={8.97} r={1.213} fill="#5ea0ef" />
-    <circle cx={3.907} cy={9.008} r={1.72} fill="url(#a)" />
+    <circle cx={3.907} cy={9.008} r={1.72} fill="url(#Partner-Namespace_svg__a)" />
     <circle cx={12.947} cy={13.171} r={1.213} fill="#5ea0ef" />
     <circle cx={12.947} cy={4.829} r={1.213} fill="#5ea0ef" />
     {'\u200B'}

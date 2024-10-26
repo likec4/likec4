@@ -4,11 +4,25 @@ import type { SVGProps } from 'react'
 const SvgWorkerContainerApp = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.798} x2={14.683} y1={8.703} y2={8.703} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Worker-Container-App_svg__a"
+        x1={8.798}
+        x2={14.683}
+        y1={8.703}
+        y2={8.703}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.001} stopColor="#773adc" />
         <stop offset={1} stopColor="#552f99" />
       </linearGradient>
-      <linearGradient id="b" x1={5.764} x2={5.764} y1={3.777} y2={13.78} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Worker-Container-App_svg__b"
+        x1={5.764}
+        x2={5.764}
+        y1={3.777}
+        y2={13.78}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#a67af4" />
         <stop offset={0.999} stopColor="#773adc" />
       </linearGradient>
@@ -26,11 +40,11 @@ const SvgWorkerContainerApp = (props: SVGProps<SVGSVGElement>) => (
       d="m1.1 5.668 1.21-.23v6.55l-1.23-.27-.99-.22a.11.11 0 0 1-.09-.12v-5.4a.12.12 0 0 1 .09-.12Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Worker-Container-App_svg__a)"
       d="m10.072 11.908 2.54.56-3.94 1.632c-.02 0-.03.01-.05.01a.154.154 0 0 1-.15-.15V3.448a.154.154 0 0 1 .15-.15.1.1 0 0 1 .05.01l4.46 1.56-3.05.57a.565.565 0 0 0-.44.54v5.4a.54.54 0 0 0 .43.53"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Worker-Container-App_svg__b)"
       d="M8.586 3.3 2.878 4.378a.18.18 0 0 0-.14.175v8.127a.18.18 0 0 0 .137.174L8.581 14.1a.176.176 0 0 0 .21-.174V3.478a.175.175 0 0 0-.172-.178Z"
     />
     <path fill="#b796f9" d="M5.948 4.921v7.562l1.986.331v-8.25zM3.509 5.329v6.625l1.729.363V5.031z" opacity={0.5} />

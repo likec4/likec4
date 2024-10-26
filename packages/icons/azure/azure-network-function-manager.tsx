@@ -4,23 +4,44 @@ import type { SVGProps } from 'react'
 const SvgAzureNetworkFunctionManager = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.961} x2={7.961} y1={3.179} y2={0.271} gradientUnits="userSpaceOnUse">
-        <stop offset={0.001} stopColor="#37c2b1" />
-        <stop offset={0.496} stopColor="#3acebc" />
-        <stop offset={1} stopColor="#3cd4c2" />
-      </linearGradient>
-      <linearGradient id="b" x1={12.562} x2={12.562} y1={15.074} y2={12.166} gradientUnits="userSpaceOnUse">
-        <stop offset={0.001} stopColor="#37c2b1" />
-        <stop offset={0.496} stopColor="#3acebc" />
-        <stop offset={1} stopColor="#3cd4c2" />
-      </linearGradient>
-      <linearGradient id="c" x1={3.116} x2={3.116} y1={15.074} y2={12.166} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Network-Function-Manager_svg__a"
+        x1={7.961}
+        x2={7.961}
+        y1={3.179}
+        y2={0.271}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.001} stopColor="#37c2b1" />
         <stop offset={0.496} stopColor="#3acebc" />
         <stop offset={1} stopColor="#3cd4c2" />
       </linearGradient>
       <linearGradient
-        id="d"
+        id="Azure-Network-Function-Manager_svg__b"
+        x1={12.562}
+        x2={12.562}
+        y1={15.074}
+        y2={12.166}
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset={0.001} stopColor="#37c2b1" />
+        <stop offset={0.496} stopColor="#3acebc" />
+        <stop offset={1} stopColor="#3cd4c2" />
+      </linearGradient>
+      <linearGradient
+        id="Azure-Network-Function-Manager_svg__c"
+        x1={3.116}
+        x2={3.116}
+        y1={15.074}
+        y2={12.166}
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset={0.001} stopColor="#37c2b1" />
+        <stop offset={0.496} stopColor="#3acebc" />
+        <stop offset={1} stopColor="#3cd4c2" />
+      </linearGradient>
+      <linearGradient
+        id="Azure-Network-Function-Manager_svg__d"
         x1={-419.126}
         x2={-419.126}
         y1={-214.048}
@@ -32,18 +53,18 @@ const SvgAzureNetworkFunctionManager = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#7548d6" />
       </linearGradient>
     </defs>
-    <ellipse cx={7.961} cy={1.725} fill="url(#a)" rx={1.4} ry={1.454} />
+    <ellipse cx={7.961} cy={1.725} fill="url(#Azure-Network-Function-Manager_svg__a)" rx={1.4} ry={1.454} />
     <path
       fill="#37c2b1"
       d="M9.694 1.826a1.9 1.9 0 0 1-.172.689 6.32 6.32 0 0 1 4.6 6.147 6.5 6.5 0 0 1-.892 3.287 1.7 1.7 0 0 1 .571.4 7.23 7.23 0 0 0 1.006-3.685 7.02 7.02 0 0 0-5.113-6.838"
     />
-    <ellipse cx={12.562} cy={13.62} fill="url(#b)" rx={1.4} ry={1.454} />
-    <ellipse cx={3.116} cy={13.62} fill="url(#c)" rx={1.4} ry={1.454} />
+    <ellipse cx={12.562} cy={13.62} fill="url(#Azure-Network-Function-Manager_svg__b)" rx={1.4} ry={1.454} />
+    <ellipse cx={3.116} cy={13.62} fill="url(#Azure-Network-Function-Manager_svg__c)" rx={1.4} ry={1.454} />
     <g fill="#37c2b1">
       <path d="M10.931 14.238a5.89 5.89 0 0 1-6.131-.171 1.8 1.8 0 0 1-.3.645 6.56 6.56 0 0 0 6.793.135 1.8 1.8 0 0 1-.362-.609M2.721 11.861a6.5 6.5 0 0 1-.841-3.2 6.324 6.324 0 0 1 4.53-6.128 1.8 1.8 0 0 1-.18-.687A7.02 7.02 0 0 0 1.2 8.662a7.23 7.23 0 0 0 .9 3.5 1.7 1.7 0 0 1 .621-.301" />
     </g>
     <path
-      fill="url(#d)"
+      fill="url(#Azure-Network-Function-Manager_svg__d)"
       d="M10.84 12.012a2.455 2.455 0 0 0 2.36-2.406 2.406 2.406 0 0 0-2.027-2.366 3.037 3.037 0 0 0-5.916-.9 2.85 2.85 0 0 0 .478 5.672Z"
     />
     <path

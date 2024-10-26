@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgDnsPrivateResolver = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.049} x2={9.049} y1={1.196} y2={16.892} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="DNS-Private-Resolver_svg__a"
+        x1={9.049}
+        x2={9.049}
+        y1={1.196}
+        y2={16.892}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#DNS-Private-Resolver_svg__a)"
       d="M16.444 8.968a7.39 7.39 0 0 1-7.39 7.39 8 8 0 0 1-.96-.06 7.2 7.2 0 0 1-2.82-.98l-.08-.59-.09-.7-.06-.43a.74.74 0 0 0-.23-.41.64.64 0 0 0-.83.05l-.21.21-.33.33a7.33 7.33 0 0 1-1.78-4.55 2 2 0 0 1-.01-.26 7.4 7.4 0 0 1 7.4-7.4A7.25 7.25 0 0 1 12.8 2.6l.08.6.1.69.07.51a.67.67 0 0 0 .17.36.65.65 0 0 0 .44.18.6.6 0 0 0 .44-.18l.57-.57a7.28 7.28 0 0 1 1.774 4.778"
     />
     <path

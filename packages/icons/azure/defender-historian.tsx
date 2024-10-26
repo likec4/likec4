@@ -3,7 +3,7 @@
 import type { SVGProps } from 'react'
 const SvgDefenderHistorian = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" {...props}>
-    <g clipPath="url(#a)">
+    <g clipPath="url(#Defender-Historian_svg__a)">
       <path
         fill="#83B9F9"
         d="M10.381 9.7a4.9 4.9 0 0 0-1.8 3.629v.007q-.31.007-.625.006c-4.311 0-7.819-.81-7.927-1.817v-.048a.72.72 0 0 1 .331-.536c.976-.769 4.008-1.331 7.6-1.331.84.001 1.657.032 2.421.09M.005 6.681c0 1.03 3.55 1.865 7.929 1.865s7.929-.835 7.929-1.865-3.55-1.866-7.929-1.866S.005 5.65.005 6.681m0-4.815c0 1.03 3.55 1.865 7.929 1.865s7.929-.835 7.929-1.865S12.313 0 7.934 0 .005.835.005 1.866"
@@ -31,7 +31,7 @@ const SvgDefenderHistorian = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
     <defs>
-      <clipPath id="a">
+      <clipPath id="Defender-Historian_svg__a">
         <path fill="#fff" d="M0 0h18v18H0z" />
       </clipPath>
     </defs>

@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgAzureLighthouse = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={17.86} y2={4.06} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Azure-Lighthouse_svg__a" x1={9} x2={9} y1={17.86} y2={4.06} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.16} stopColor="#1380da" />
         <stop offset={0.53} stopColor="#3c91e5" />
@@ -13,7 +13,7 @@ const SvgAzureLighthouse = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-Lighthouse_svg__a)"
       d="m16.65 17.08-3.59-9.32a.28.28 0 0 0-.26-.18h-2.56V5.36a1.3 1.3 0 1 0-2.59 0v2.22H5.34a.29.29 0 0 0-.27.18l-3.72 9.32a.55.55 0 0 0 .45.78h14.4a.55.55 0 0 0 .45-.78"
     />
     <path

@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgNetworkInterfaces = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.01} x2={9.01} y1={16.5} y2={1.5} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Network-Interfaces_svg__a"
+        x1={9.01}
+        x2={9.01}
+        y1={16.5}
+        y2={1.5}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5e9641" />
         <stop offset={0.34} stopColor="#6baa42" />
         <stop offset={0.67} stopColor="#73b743" />
@@ -15,7 +22,7 @@ const SvgNetworkInterfaces = (props: SVGProps<SVGSVGElement>) => (
       fill="#ffca00"
       d="M15.89 2.91h1.27a.34.34 0 0 1 .34.34v3.5a.34.34 0 0 1-.34.34h-1.27zM15.89 9h1.27a.34.34 0 0 1 .34.34v5.86a.34.34 0 0 1-.34.34h-1.27z"
     />
-    <rect width={13.76} height={15} x={2.13} y={1.5} fill="url(#a)" rx={0.69} />
+    <rect width={13.76} height={15} x={2.13} y={1.5} fill="url(#Network-Interfaces_svg__a)" rx={0.69} />
     <path
       fill="#b4ec36"
       d="M5.9 12.9h-.71a.2.2 0 0 1-.19-.21V4.34a.19.19 0 0 1 .19-.2h1.93a.19.19 0 0 1 .19.2.2.2 0 0 1-.19.21H5.38v7.93h.52a.2.2 0 0 1 .19.21.21.21 0 0 1-.19.21"

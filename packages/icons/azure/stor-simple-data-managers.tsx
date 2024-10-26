@@ -5,7 +5,7 @@ const SvgStorSimpleDataManagers = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="StorSimple-Data-Managers_svg__a"
         x1={2.55}
         x2={15.3}
         y1={10.17}
@@ -23,7 +23,7 @@ const SvgStorSimpleDataManagers = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#StorSimple-Data-Managers_svg__a)"
       d="M9 5.14c-3.52 0-6.37-1-6.37-2.33v12.35c0 1.27 2.8 2.31 6.28 2.34H9c3.52 0 6.38-1 6.38-2.31V2.84c.01 1.28-2.85 2.31-6.38 2.3"
     />
     <path fill="#f2f2f2" d="M15.39 2.84c0 1.28-2.86 2.31-6.38 2.3s-6.37-1-6.37-2.33S5.5.49 9 .5s6.37 1.06 6.37 2.34" />

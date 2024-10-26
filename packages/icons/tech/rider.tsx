@@ -3,23 +3,26 @@
 import type { SVGProps } from 'react'
 const SvgRider = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <linearGradient id="a" x1={94.33} x2={20.33} y1={59.37} y2={16.91} gradientUnits="userSpaceOnUse">
+    <linearGradient id="Rider_svg__a" x1={94.33} x2={20.33} y1={59.37} y2={16.91} gradientUnits="userSpaceOnUse">
       <stop offset={0} stopColor="#dd1265" />
       <stop offset={0.48} stopColor="#dd1265" />
       <stop offset={0.94} stopColor="#fdb60d" />
     </linearGradient>
-    <linearGradient id="b" x1={50.33} x2={79.66} y1={12.76} y2={93.76} gradientUnits="userSpaceOnUse">
+    <linearGradient id="Rider_svg__b" x1={50.33} x2={79.66} y1={12.76} y2={93.76} gradientUnits="userSpaceOnUse">
       <stop offset={0.14} stopColor="#087cfa" />
       <stop offset={0.48} stopColor="#dd1265" />
       <stop offset={0.96} stopColor="#087cfa" />
     </linearGradient>
-    <linearGradient id="c" x1={28.36} x2={50.02} y1={15.26} y2={92.26} gradientUnits="userSpaceOnUse">
+    <linearGradient id="Rider_svg__c" x1={28.36} x2={50.02} y1={15.26} y2={92.26} gradientUnits="userSpaceOnUse">
       <stop offset={0.28} stopColor="#dd1265" />
       <stop offset={0.97} stopColor="#fdb60d" />
     </linearGradient>
-    <path fill="url(#a)" d="M122.514 50.871 40.472 5.339l54.93 81.615 11.288-7.4z" />
-    <path fill="url(#b)" d="M89.783 32.305 79.506 7.18 56.771 29.562l9.301 81.213L88.1 122.368l34.414-20.102z" />
-    <path fill="url(#c)" d="M40.472 5.339 5.486 28.904l13.007 80.372 33.548 12.898 43.362-35.218z" />
+    <path fill="url(#Rider_svg__a)" d="M122.514 50.871 40.472 5.339l54.93 81.615 11.288-7.4z" />
+    <path
+      fill="url(#Rider_svg__b)"
+      d="M89.783 32.305 79.506 7.18 56.771 29.562l9.301 81.213L88.1 122.368l34.414-20.102z"
+    />
+    <path fill="url(#Rider_svg__c)" d="M40.472 5.339 5.486 28.904l13.007 80.372 33.548 12.898 43.362-35.218z" />
     <path d="M27.429 27.429h73.143v73.143H27.429z" />
     <path
       fill="#fff"

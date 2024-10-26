@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgArcMachines = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.004} x2={9.004} y2={13.433} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Arc-Machines_svg__a" x1={9.004} x2={9.004} y2={13.433} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#a67af4" />
         <stop offset={0.999} stopColor="#773adc" />
       </linearGradient>
@@ -15,7 +15,7 @@ const SvgArcMachines = (props: SVGProps<SVGSVGElement>) => (
     />
     <ellipse cx={9.001} cy={13.295} fill="#50e6ff" rx={8.573} ry={2.964} transform="rotate(-.575 9.001 13.298)" />
     <path
-      fill="url(#a)"
+      fill="url(#Arc-Machines_svg__a)"
       d="M13.364 12.978a.48.48 0 0 1-.5.455H5.146a.48.48 0 0 1-.5-.455V.456a.48.48 0 0 1 .5-.456h7.715a.48.48 0 0 1 .5.455Z"
     />
     <path

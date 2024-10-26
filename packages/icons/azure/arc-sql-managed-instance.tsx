@@ -4,11 +4,24 @@ import type { SVGProps } from 'react'
 const SvgArcSqlManagedInstance = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={6.267} x2={6.267} y1={13.967} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Arc-SQL-Managed-Instance_svg__a"
+        x1={6.267}
+        x2={6.267}
+        y1={13.967}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#949494" />
         <stop offset={1} stopColor="#b3b3b3" />
       </linearGradient>
-      <linearGradient id="b" x1={10.135} x2={10.135} y1={14.02} y2={5.219} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Arc-SQL-Managed-Instance_svg__b"
+        x1={10.135}
+        x2={10.135}
+        y1={14.02}
+        y2={5.219}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
@@ -19,7 +32,7 @@ const SvgArcSqlManagedInstance = (props: SVGProps<SVGSVGElement>) => (
     />
     <ellipse cx={9.001} cy={13.246} fill="#50e6ff" rx={8.576} ry={2.965} transform="rotate(-.575 9.001 13.298)" />
     <path
-      fill="url(#a)"
+      fill="url(#Arc-SQL-Managed-Instance_svg__a)"
       d="M10.368 13.491a.484.484 0 0 1-.476.476H2.641a.476.476 0 0 1-.476-.476V.476A.47.47 0 0 1 2.624 0h7.268a.476.476 0 0 1 .476.476Z"
     />
     <path
@@ -28,7 +41,7 @@ const SvgArcSqlManagedInstance = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#50e6ff" d="M4.3 1.654a.6.6 0 1 1-.6.6.6.6 0 0 1 .6-.6m-.6 3.241a.6.6 0 1 0 .6-.6.6.6 0 0 0-.6.6" />
     <path
-      fill="url(#b)"
+      fill="url(#Arc-SQL-Managed-Instance_svg__b)"
       d="M16.366 11.252a2.806 2.806 0 0 0-2.431-2.689A3.524 3.524 0 0 0 10.3 5.221a3.61 3.61 0 0 0-3.457 2.322A3.34 3.34 0 0 0 3.9 10.76a3.39 3.39 0 0 0 3.508 3.257h6.174a2.83 2.83 0 0 0 2.784-2.765"
     />
     <path

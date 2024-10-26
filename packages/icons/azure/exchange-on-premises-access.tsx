@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgExchangeOnPremisesAccess = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={0.5} y2={17.5} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Exchange-On-Premises-Access_svg__a"
+        x1={9}
+        x2={9}
+        y1={0.5}
+        y2={17.5}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={0.18} stopColor="#559cec" />
         <stop offset={0.47} stopColor="#3c91e5" />
@@ -13,7 +20,7 @@ const SvgExchangeOnPremisesAccess = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Exchange-On-Premises-Access_svg__a)"
       d="M14 1.07v15.86a.56.56 0 0 1-.56.57H4.57a.56.56 0 0 1-.57-.57V1.07A.56.56 0 0 1 4.57.5h8.86a.56.56 0 0 1 .57.57"
     />
     <path

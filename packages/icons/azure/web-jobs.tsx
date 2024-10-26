@@ -4,18 +4,18 @@ import type { SVGProps } from 'react'
 const SvgWebJobs = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="b" x1={3.844} x2={3.817} y1={9.561} y2={6.165} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Web-Jobs_svg__b" x1={3.844} x2={3.817} y1={9.561} y2={6.165} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.123} stopColor="#d7d7d7" />
         <stop offset={1} stopColor="#fcfcfc" />
       </linearGradient>
-      <linearGradient id="c" x1={8.763} x2={8.763} y1={12.958} y2={9.913} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Web-Jobs_svg__c" x1={8.763} x2={8.763} y1={12.958} y2={9.913} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.123} stopColor="#d7d7d7" />
         <stop offset={1} stopColor="#fcfcfc" />
       </linearGradient>
       <linearGradient
-        id="d"
+        id="Web-Jobs_svg__d"
         x1={-105.292}
         x2={-105.292}
         y1={373.011}
@@ -28,7 +28,7 @@ const SvgWebJobs = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#32d4f5" />
       </linearGradient>
       <radialGradient
-        id="a"
+        id="Web-Jobs_svg__a"
         cx={4649.515}
         cy={3578.357}
         r={48.597}
@@ -40,7 +40,7 @@ const SvgWebJobs = (props: SVGProps<SVGSVGElement>) => (
       </radialGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Web-Jobs_svg__a)"
       d="M12.257 13.19A7.289 7.289 0 1 1 3.323 1.67l.077-.056a7.289 7.289 0 0 1 8.857 11.576"
       data-name="Path 1237"
     />
@@ -54,14 +54,14 @@ const SvgWebJobs = (props: SVGProps<SVGSVGElement>) => (
       d="M3.039 4.952a10.2 10.2 0 0 1-.591-2.526 7.3 7.3 0 0 0-.948 1.25A11.4 11.4 0 0 0 1.991 5.7a2.33 2.33 0 0 1 1.048-.748"
       opacity={0.55}
     />
-    <circle cx={3.825} cy={7.157} r={2.343} fill="url(#b)" />
+    <circle cx={3.825} cy={7.157} r={2.343} fill="url(#Web-Jobs_svg__b)" />
     <g fill="#f2f2f2">
       <path
         d="M7.241 11.435a1.52 1.52 0 0 1 .459-1.088 10.3 10.3 0 0 1-2.165-1.592 2.34 2.34 0 0 1-1.28.7 10 10 0 0 0 1.245 1.1 10.6 10.6 0 0 0 1.755 1.07 1.4 1.4 0 0 1-.014-.19M12.642 11.617a10.3 10.3 0 0 1-2.362-.275c0 .031.005.062.005.093a1.52 1.52 0 0 1-.433 1.065 12 12 0 0 0 2.925.209 7.2 7.2 0 0 0 .987-1.152 11 11 0 0 1-1.122.06"
         opacity={0.55}
       />
     </g>
-    <circle cx={8.763} cy={11.435} r={1.522} fill="url(#c)" />
+    <circle cx={8.763} cy={11.435} r={1.522} fill="url(#Web-Jobs_svg__c)" />
     <path
       fill="#f2f2f2"
       d="M10.635 7.368a1.6 1.6 0 0 1 .525-.848 21.7 21.7 0 0 1-3.827-3.558A14.6 14.6 0 0 1 5.632.457 7 7 0 0 0 4.7.816a15.2 15.2 0 0 0 1.829 2.732 22.6 22.6 0 0 0 4.106 3.82"
@@ -73,10 +73,10 @@ const SvgWebJobs = (props: SVGProps<SVGSVGElement>) => (
       d="M14.948 8.75c-.1-.05-.18-.094-.275-.145l-.026-.014q-.129-.068-.254-.137l-.047-.026-.229-.128-.056-.032q-.136-.075-.27-.154a1.54 1.54 0 0 1-.546.793q.158.093.321.184l.072.041.3.165.029.016q.361.197.739.391a7 7 0 0 0 .243-.955Z"
       opacity={0.55}
     />
-    <circle cx={3.825} cy={7.157} r={2.343} fill="url(#b)" />
+    <circle cx={3.825} cy={7.157} r={2.343} fill="url(#Web-Jobs_svg__b)" />
     <circle cx={8.763} cy={11.435} r={1.522} fill="#f2f2f2" />
     <path
-      fill="url(#d)"
+      fill="url(#Web-Jobs_svg__d)"
       d="m17.5 10.571-.317-.958h-1.287l-.485-.566.154-1.281-.895-.45-.112.112-.8.8-.744-.052-.8-1.02-.958.317-.006.151V8.76l-.566.485-1.26-.157-.449.894.112.112.8.8-.051.743-1.037.81.317.957.151.006h1.136l.485.566-.154 1.281.895.449.112-.112.8-.8.744.052.8 1.02.958-.317.006-.151v-1.135l.566-.486 1.281.154.45-.894-.112-.113-.8-.8.052-.744Zm-3.739 2.779a1.941 1.941 0 1 1 1.233-2.45 1.94 1.94 0 0 1-1.233 2.45"
     />
     <path

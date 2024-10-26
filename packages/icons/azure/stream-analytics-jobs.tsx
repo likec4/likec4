@@ -5,7 +5,7 @@ const SvgStreamAnalyticsJobs = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Stream-Analytics-Jobs_svg__a"
         x1={11.08}
         x2={11.08}
         y1={31.2}
@@ -20,7 +20,7 @@ const SvgStreamAnalyticsJobs = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Stream-Analytics-Jobs_svg__a)"
       d="M18 9.69V7.9l-.1-.09-1.84-.62L15.59 6l.91-1.88.1-.21-.6-.61-.7-.69-.24.12-1.8.91-1.21-.34-.78-2H9.48l-.09.09-.62 1.83-1.26.47-2.08-1-1.28 1.25.12.24L5.23 6a6 6 0 0 1 3.2-.86A6.26 6.26 0 0 1 12 6.28a3 3 0 0 1 .36.26 3.25 3.25 0 0 1 .93 1.35A3 3 0 0 1 13.5 9a3.23 3.23 0 0 1-3.25 3.23 3.27 3.27 0 0 1-1.87-.59 6.3 6.3 0 0 1-4 1.75l-.19.39 1.28 1.29.26-.07 1.8-1 1.24.51.79 2.16h1.8l.07-.25.64-1.91 1.22-.51 2.11 1 1.27-1.26-.12-.24-.93-1.79.38-1.25Z"
     />
     <path

@@ -5,12 +5,12 @@ const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 24 24" {...props}>
     <g transform="translate(16 4)">
       <defs>
-        <filter id="a" width={17} height={28} x={-9} y={-6} filterUnits="userSpaceOnUse">
+        <filter id="Security-Health-Advisor_svg__a" width={17} height={28} x={-9} y={-6} filterUnits="userSpaceOnUse">
           <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
         </filter>
       </defs>
-      <mask id="b" width={17} height={28} x={-9} y={-6} maskUnits="userSpaceOnUse">
-        <g filter="url(#a)">
+      <mask id="Security-Health-Advisor_svg__b" width={17} height={28} x={-9} y={-6} maskUnits="userSpaceOnUse">
+        <g filter="url(#Security-Health-Advisor_svg__a)">
           <path
             fill="#FFF"
             fillRule="evenodd"
@@ -19,16 +19,22 @@ const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => (
           />
         </g>
       </mask>
-      <path fill="#AECBFA" fillRule="evenodd" d="M-9 22H8V-6H-9z" clipRule="evenodd" mask="url(#b)" />
+      <path
+        fill="#AECBFA"
+        fillRule="evenodd"
+        d="M-9 22H8V-6H-9z"
+        clipRule="evenodd"
+        mask="url(#Security-Health-Advisor_svg__b)"
+      />
     </g>
     <g transform="translate(6.667 4)">
       <defs>
-        <filter id="c" width={17} height={28} x={-6.7} y={-6} filterUnits="userSpaceOnUse">
+        <filter id="Security-Health-Advisor_svg__c" width={17} height={28} x={-6.7} y={-6} filterUnits="userSpaceOnUse">
           <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
         </filter>
       </defs>
-      <mask id="d" width={17} height={28} x={-6.7} y={-6} maskUnits="userSpaceOnUse">
-        <g filter="url(#c)">
+      <mask id="Security-Health-Advisor_svg__d" width={17} height={28} x={-6.7} y={-6} maskUnits="userSpaceOnUse">
+        <g filter="url(#Security-Health-Advisor_svg__c)">
           <path
             fill="#FFF"
             fillRule="evenodd"
@@ -37,7 +43,13 @@ const SvgSecurityHealthAdvisor = (props: SVGProps<SVGSVGElement>) => (
           />
         </g>
       </mask>
-      <path fill="#669DF6" fillRule="evenodd" d="M-6.7 22h17V-6h-17z" clipRule="evenodd" mask="url(#d)" />
+      <path
+        fill="#669DF6"
+        fillRule="evenodd"
+        d="M-6.7 22h17V-6h-17z"
+        clipRule="evenodd"
+        mask="url(#Security-Health-Advisor_svg__d)"
+      />
     </g>
     <path
       fill="#4285F4"

@@ -4,14 +4,24 @@ import type { SVGProps } from 'react'
 const SvgStorageAccountsClassic = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={15.83} y2={5.79} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Storage-Accounts-(Classic)_svg__a"
+        x1={9}
+        x2={9}
+        y1={15.83}
+        y2={5.79}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={0.18} stopColor="#32caea" />
         <stop offset={0.41} stopColor="#32d2f2" />
         <stop offset={0.78} stopColor="#32d4f5" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M.5 5.79h17v9.48a.57.57 0 0 1-.57.57H1.07a.57.57 0 0 1-.57-.57z" />
+    <path
+      fill="url(#Storage-Accounts-(Classic)_svg__a)"
+      d="M.5 5.79h17v9.48a.57.57 0 0 1-.57.57H1.07a.57.57 0 0 1-.57-.57z"
+    />
     <path fill="#198ab3" d="M1.07 2.17h15.86a.57.57 0 0 1 .57.57v3.05H.5V2.73a.57.57 0 0 1 .57-.56" />
     <path
       fill="#fff"

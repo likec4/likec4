@@ -4,14 +4,14 @@ import type { SVGProps } from 'react'
 const SvgAzureSql = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.908} x2={7.516} y1={15.943} y2={2.383} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Azure-SQL_svg__a" x1={9.908} x2={7.516} y1={15.943} y2={2.383} gradientUnits="userSpaceOnUse">
         <stop offset={0.15} stopColor="#0078d4" />
         <stop offset={0.8} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#83b9f9" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-SQL_svg__a)"
       d="M14.49 7.15a5.147 5.147 0 0 0-5.25-4.986 5.27 5.27 0 0 0-5.024 3.489A4.87 4.87 0 0 0 0 10.4a4.946 4.946 0 0 0 5.068 4.814h8.752A4.29 4.29 0 0 0 18 11.127a4.105 4.105 0 0 0-3.51-3.977"
     />
     <path

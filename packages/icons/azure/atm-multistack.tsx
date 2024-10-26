@@ -5,7 +5,7 @@ const SvgAtmMultistack = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="ATM-Multistack_svg__a"
         x1={-555.066}
         x2={-555.066}
         y1={1011.491}
@@ -40,7 +40,7 @@ const SvgAtmMultistack = (props: SVGProps<SVGSVGElement>) => (
     <rect width={0.665} height={0.665} x={7.501} y={15.992} fill="#fff" rx={0.149} ry={0.149} />
     <rect width={0.665} height={0.665} x={7.501} y={16.909} fill="#fff" opacity={0.6} rx={0.149} ry={0.149} />
     <path
-      fill="url(#a)"
+      fill="url(#ATM-Multistack_svg__a)"
       d="M10.854 4.101H7.013a.33.33 0 0 0-.233.099L4.071 6.909a.33.33 0 0 0-.099.233v3.841c0 .088.036.172.099.233l2.709 2.709a.33.33 0 0 0 .233.099h3.841a.33.33 0 0 0 .233-.099l2.709-2.709a.33.33 0 0 0 .099-.233V7.142a.33.33 0 0 0-.099-.233L11.087 4.2a.33.33 0 0 0-.233-.099"
     />
     <path

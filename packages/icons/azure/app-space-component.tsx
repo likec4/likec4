@@ -5,7 +5,7 @@ const SvgAppSpaceComponent = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="App-Space-Component_svg__a"
         x1={9.355}
         x2={8.403}
         y1={790.98}
@@ -18,7 +18,7 @@ const SvgAppSpaceComponent = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#App-Space-Component_svg__a)"
       d="M10.036 0H2.264a.614.614 0 0 0-.614.615v16.77a.614.614 0 0 0 .614.615h13.472a.616.616 0 0 0 .614-.615V6.286a.614.614 0 0 0-.614-.614h-4.472a.614.614 0 0 1-.614-.614V.615A.614.614 0 0 0 10.036 0"
     />
     <path fill="#318581" d="M16.115 5.794 10.438.134v4.612a1.04 1.04 0 0 0 1.035 1.048z" />

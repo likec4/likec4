@@ -6,12 +6,12 @@ const SvgMyCloud = (props: SVGProps<SVGSVGElement>) => (
     <path fill="none" d="M0 1h24v24H0z" />
     <g transform="translate(2 8)">
       <defs>
-        <filter id="a" width={24} height={24} x={-2} y={-7} filterUnits="userSpaceOnUse">
+        <filter id="My-Cloud_svg__a" width={24} height={24} x={-2} y={-7} filterUnits="userSpaceOnUse">
           <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
         </filter>
       </defs>
-      <mask id="b" width={24} height={24} x={-2} y={-7} maskUnits="userSpaceOnUse">
-        <g filter="url(#a)">
+      <mask id="My-Cloud_svg__b" width={24} height={24} x={-2} y={-7} maskUnits="userSpaceOnUse">
+        <g filter="url(#My-Cloud_svg__a)">
           <path
             fill="#FFF"
             fillRule="evenodd"
@@ -20,7 +20,7 @@ const SvgMyCloud = (props: SVGProps<SVGSVGElement>) => (
           />
         </g>
       </mask>
-      <path fill="#5C85DE" fillRule="evenodd" d="M-2 17h24V-7H-2z" clipRule="evenodd" mask="url(#b)" />
+      <path fill="#5C85DE" fillRule="evenodd" d="M-2 17h24V-7H-2z" clipRule="evenodd" mask="url(#My-Cloud_svg__b)" />
     </g>
   </svg>
 )

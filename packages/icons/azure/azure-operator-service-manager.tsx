@@ -4,14 +4,21 @@ import type { SVGProps } from 'react'
 const SvgAzureOperatorServiceManager = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.776} x2={5.776} y1={17.93} y2={2.226} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Operator-Service-Manager_svg__a"
+        x1={5.776}
+        x2={5.776}
+        y1={17.93}
+        y2={2.226}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#7b7b7b" />
         <stop offset={1} stopColor="#fff" />
       </linearGradient>
     </defs>
     <path fill="#32bedd" d="M13.5 9c2.484 0 4.5 2.016 4.5 4.5S15.984 18 13.5 18H9v-4.5C9 11.016 11.016 9 13.5 9" />
     <path
-      fill="url(#a)"
+      fill="url(#Azure-Operator-Service-Manager_svg__a)"
       d="M8.578 14.564H4.233L6.59 6.712h.28l1.782 5.937a4.9 4.9 0 0 1 .655-1.726L7.938 6.361 6.729 2.225 5.52 6.361 2.944 14.95a3 3 0 0 0-.088.289 6 6 0 0 1-.14.447 10 10 0 0 0-.167.517l-.149.517q-.07.246-.114.421a1.3 1.3 0 0 0-.044.228q0 .228.167.394a.54.54 0 0 0 .394.167.53.53 0 0 0 .342-.114.6.6 0 0 0 .193-.289l.552-1.84h4.687z"
     />
     <path

@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgNetworkSecurityGroups = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.01} x2={9.01} y1={0.75} y2={17.25} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Network-Security-Groups_svg__a"
+        x1={9.01}
+        x2={9.01}
+        y1={0.75}
+        y2={17.25}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={0.18} stopColor="#559cec" />
         <stop offset={0.47} stopColor="#3c91e5" />
@@ -21,7 +28,7 @@ const SvgNetworkSecurityGroups = (props: SVGProps<SVGSVGElement>) => (
       d="M15.75 8.45c0 4.44-5.36 8-6.53 8.74a.43.43 0 0 1-.44 0c-1.17-.72-6.53-4.3-6.53-8.74V3.11a.42.42 0 0 1 .41-.42C6.83 2.58 5.87.75 9 .75s2.17 1.83 6.34 1.94a.42.42 0 0 1 .41.42Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Network-Security-Groups_svg__a)"
       d="M9 9V.75c3.13 0 2.17 1.83 6.34 1.94a.43.43 0 0 1 .41.43v5.34a5 5 0 0 1 0 .54Zm0 0H2.28c.4 4.18 5.38 7.5 6.5 8.19a.4.4 0 0 0 .18.06H9Z"
     />
     <path

@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgElasticJobAgents = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={2.59} x2={15.4} y1={8.18} y2={8.18} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Elastic-Job-Agents_svg__a"
+        x1={2.59}
+        x2={15.4}
+        y1={8.18}
+        y2={8.18}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -15,7 +22,7 @@ const SvgElasticJobAgents = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Elastic-Job-Agents_svg__a)"
       d="M9 5.15c-3.54 0-6.4-1-6.4-2.32v8.38c0 1.27 2.82 2.31 6.32 2.32H9c3.54 0 6.41-1 6.41-2.32V2.83C15.4 4.11 12.53 5.15 9 5.15"
     />
     <path fill="#eaeaea" d="M15.4 2.83c0 1.28-2.87 2.32-6.41 2.32s-6.4-1-6.4-2.32S5.45.51 9 .51s6.41 1 6.41 2.32" />

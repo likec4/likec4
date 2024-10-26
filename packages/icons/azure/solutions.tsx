@@ -5,7 +5,7 @@ const SvgSolutions = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Solutions_svg__a"
         x1={-6941.93}
         x2={-6941.93}
         y1={-2082.96}
@@ -20,7 +20,7 @@ const SvgSolutions = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.94} stopColor="#0a7cd7" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
-      <linearGradient id="b" x1={11.5} x2={11.5} y1={12.45} y2={0.55} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Solutions_svg__b" x1={11.5} x2={11.5} y1={12.45} y2={0.55} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#198ab3" />
         <stop offset={0.24} stopColor="#22a5cb" />
         <stop offset={0.53} stopColor="#2bbfe2" />
@@ -29,11 +29,11 @@ const SvgSolutions = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Solutions_svg__a)"
       d="M5.59 13.13h4.32V17a.5.5 0 0 1-.5.5H5.59Zm-4.44 4.32h3.72v-4.32H.55v3.72a.6.6 0 0 0 .6.6m-.6-5h4.32V8.09H1.05a.5.5 0 0 0-.5.5Z"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Solutions_svg__b)"
       fillRule="evenodd"
       d="M11.5.55a5.89 5.89 0 0 1 5.95 6 5.89 5.89 0 0 1-5.95 5.95H5.55v-6A5.89 5.89 0 0 1 11.5.55"
     />

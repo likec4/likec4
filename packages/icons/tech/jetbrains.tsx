@@ -5,7 +5,7 @@ const SvgJetbrains = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Jetbrains-_svg__a"
         x1={32.64}
         x2={82.77}
         y1={61.16}
@@ -17,7 +17,7 @@ const SvgJetbrains = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#293896" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Jetbrains-_svg__b"
         x1={17.38}
         x2={82.95}
         y1={69.86}
@@ -30,7 +30,7 @@ const SvgJetbrains = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.86} stopColor="#ff318c" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id="Jetbrains-_svg__c"
         x1={74.17}
         x2={160.27}
         y1={21.58}
@@ -43,7 +43,7 @@ const SvgJetbrains = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.86} stopColor="#fdb60d" />
       </linearGradient>
       <linearGradient
-        id="d"
+        id="Jetbrains-_svg__d"
         x1={155.46}
         x2={55.07}
         y1={89.8}
@@ -56,19 +56,19 @@ const SvgJetbrains = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Jetbrains-_svg__a)"
       d="m58 59.527-29.406-24.89a10.67 10.67 0 0 0-17.485 8.949 10.66 10.66 0 0 0 7.196 9.328h.105l.277.086 37.094 11.297c.266.098.551.148.836.152a2.654 2.654 0 0 0 1.375-4.914zm0 0"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Jetbrains-_svg__b)"
       d="M63.895 18.438A7.747 7.747 0 0 0 51.91 11.91L16 33.714a10.66 10.66 0 0 0-4.793 9.96A10.67 10.67 0 0 0 28.73 50.78l32.192-26.234.254-.211a7.78 7.78 0 0 0 2.719-5.898zm0 0"
     />
     <path
-      fill="url(#c)"
+      fill="url(#Jetbrains-_svg__c)"
       d="M116.117 65.422 61.633 12.949a7.76 7.76 0 0 0-7.692-1.965 7.76 7.76 0 0 0-5.394 5.825 7.76 7.76 0 0 0 2.555 7.52l.097.085 57.887 48.766a5.24 5.24 0 0 0 5.578.734 5.24 5.24 0 0 0 3.02-4.75 5.28 5.28 0 0 0-1.567-3.742m0 0"
     />
     <path
-      fill="url(#d)"
+      fill="url(#Jetbrains-_svg__d)"
       d="M117.688 69.184a5.226 5.226 0 0 0-8.297-4.266l-65.926 32.21a10.668 10.668 0 1 0 11.008 18.2l60.96-41.844a5.21 5.21 0 0 0 2.254-4.3zm0 0"
     />
     <path d="M42.668 42.668h42.664v42.664H42.668zm0 0" />

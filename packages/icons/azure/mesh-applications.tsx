@@ -4,11 +4,11 @@ import type { SVGProps } from 'react'
 const SvgMeshApplications = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={11.06} y2={7.53} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Mesh-Applications_svg__a" x1={9} x2={9} y1={11.06} y2={7.53} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#e26708" />
         <stop offset={1} stopColor="#f78d1e" />
       </linearGradient>
-      <linearGradient id="b" x1={9} x2={9} y1={17.7} y2={0.3} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Mesh-Applications_svg__b" x1={9} x2={9} y1={17.7} y2={0.3} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#e26708" />
         <stop offset={0.005} stopColor="#e26808" />
         <stop offset={0.117} stopColor="#ec7912" />
@@ -29,11 +29,11 @@ const SvgMeshApplications = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={5.4} cy={12.6} r={1.5} fill="#f78d1e" />
     <circle cx={12.6} cy={12.6} r={1.5} fill="#f78d1e" />
     <path
-      fill="url(#a)"
+      fill="url(#Mesh-Applications_svg__a)"
       d="M2.2 7.1A1.9 1.9 0 1 1 .3 9a1.9 1.9 0 0 1 1.9-1.9m13.6 0A1.9 1.9 0 1 1 13.9 9a1.9 1.9 0 0 1 1.9-1.9"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Mesh-Applications_svg__b)"
       d="M9 .3a1.9 1.9 0 1 1-1.9 1.9A1.9 1.9 0 0 1 9 .3m0 13.6a1.9 1.9 0 1 1-1.9 1.9A1.9 1.9 0 0 1 9 13.9"
     />
   </svg>

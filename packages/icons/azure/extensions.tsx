@@ -4,14 +4,14 @@ import type { SVGProps } from 'react'
 const SvgExtensions = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.144} x2={8.144} y1={13.837} y2={6.11} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Extensions_svg__a" x1={8.144} x2={8.144} y1={13.837} y2={6.11} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={0.175} stopColor="#32caea" />
         <stop offset={0.41} stopColor="#32d2f2" />
         <stop offset={0.775} stopColor="#32d4f5" />
       </linearGradient>
     </defs>
-    <rect width={7.726} height={7.726} x={4.281} y={6.11} fill="url(#a)" rx={0.303} />
+    <rect width={7.726} height={7.726} x={4.281} y={6.11} fill="url(#Extensions_svg__a)" rx={0.303} />
     <path
       fill="#773adc"
       d="M16.894.66h-7.3a.3.3 0 0 0-.3.3v1.327a.3.3 0 0 0 .3.3h5.371a.605.605 0 0 1 .605.606v5.458a.3.3 0 0 0 .3.3h1.33a.3.3 0 0 0 .3-.3V1.266a.606.606 0 0 0-.606-.606"

@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgAutoScale = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.777} x2={15.063} y1={-1.321} y2={13.028} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Auto-Scale_svg__a"
+        x1={9.777}
+        x2={15.063}
+        y1={-1.321}
+        y2={13.028}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#6bb9f2" />
         <stop offset={1} stopColor="#1b93eb" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Auto-Scale_svg__a)"
       d="M16.98 6.058V1.176A.176.176 0 0 0 16.8 1h-4.878a.175.175 0 0 0-.124.3l1.344 1.345.09.089a.177.177 0 0 1 0 .249L7.345 8.869a.177.177 0 0 0 0 .249l1.517 1.517a.177.177 0 0 0 .249 0L15 4.748a.176.176 0 0 1 .249 0l.089.089 1.342 1.345a.175.175 0 0 0 .3-.124"
     />
     <path

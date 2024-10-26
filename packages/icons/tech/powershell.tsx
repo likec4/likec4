@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgPowershell = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 128 128" {...props}>
     <linearGradient
-      id="a"
+      id="Powershell_svg__a"
       x1={96.306}
       x2={25.454}
       y1={35.144}
@@ -16,14 +16,14 @@ const SvgPowershell = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#c7e6ff" />
     </linearGradient>
     <path
-      fill="url(#a)"
+      fill="url(#Powershell_svg__a)"
       fillRule="evenodd"
       d="M7.2 110.5c-1.7 0-3.1-.7-4.1-1.9s-1.3-2.9-.9-4.6l18.6-80.5c.8-3.4 4-6 7.4-6h92.6c1.7 0 3.1.7 4.1 1.9s1.3 2.9.9 4.6l-18.6 80.5c-.8 3.4-4 6-7.4 6z"
       clipRule="evenodd"
       opacity={0.8}
     />
     <linearGradient
-      id="b"
+      id="Powershell_svg__b"
       x1={25.336}
       x2={94.569}
       y1={98.33}
@@ -38,7 +38,7 @@ const SvgPowershell = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} />
     </linearGradient>
     <path
-      fill="url(#b)"
+      fill="url(#Powershell_svg__b)"
       fillRule="evenodd"
       d="M120.3 18.5H28.5c-2.9 0-5.7 2.3-6.4 5.2L3.7 104.3c-.7 2.9 1.1 5.2 4 5.2h91.8c2.9 0 5.7-2.3 6.4-5.2l18.4-80.5c.7-2.9-1.1-5.3-4-5.3"
       clipRule="evenodd"

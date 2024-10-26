@@ -5,7 +5,7 @@ const SvgMobileNetworks = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Mobile-Networks_svg__a"
         x1={307}
         x2={307}
         y1={388.135}
@@ -19,17 +19,24 @@ const SvgMobileNetworks = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.67} stopColor="#0076d1" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
-      <linearGradient id="b" x1={4.738} x2={4.738} y1={15.38} y2={6.013} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Mobile-Networks_svg__b"
+        x1={4.738}
+        x2={4.738}
+        y1={15.38}
+        y2={6.013}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Mobile-Networks_svg__a)"
       d="M13.943 15.325A4.09 4.09 0 0 0 18 11.382 4.04 4.04 0 0 0 14.489 7.5 5.1 5.1 0 0 0 9.24 2.622a5.23 5.23 0 0 0-5 3.407A4.83 4.83 0 0 0 0 10.671a4.9 4.9 0 0 0 5.07 4.706"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Mobile-Networks_svg__b)"
       d="M9.473 15.38v-4.775a4.745 4.745 0 0 0-4.828-4.592A4.78 4.78 0 0 0 0 10.788a4.886 4.886 0 0 0 4.738 4.592Z"
     />
     <path

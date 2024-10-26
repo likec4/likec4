@@ -4,12 +4,19 @@ import type { SVGProps } from 'react'
 const SvgAzureMonitorDashboard = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.141} x2={8.141} y1={1.048} y2={13.741} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Monitor-Dashboard_svg__a"
+        x1={8.141}
+        x2={8.141}
+        y1={1.048}
+        y2={13.741}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
-    <rect width={16.282} height={13.678} y={0.609} fill="url(#a)" rx={0.761} />
+    <rect width={16.282} height={13.678} y={0.609} fill="url(#Azure-Monitor-Dashboard_svg__a)" rx={0.761} />
     <ellipse cx={6.524} cy={5.329} fill="#fff" rx={1.131} ry={1.137} />
     <ellipse cx={9.659} cy={7.46} fill="#fff" rx={1.131} ry={1.137} />
     <ellipse cx={12.695} cy={3.422} fill="#fff" rx={1.131} ry={1.137} />

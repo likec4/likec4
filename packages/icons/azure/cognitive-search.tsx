@@ -4,13 +4,13 @@ import type { SVGProps } from 'react'
 const SvgCognitiveSearch = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={0.36} y2={18.31} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Cognitive-Search_svg__a" x1={9} x2={9} y1={0.36} y2={18.31} gradientUnits="userSpaceOnUse">
         <stop offset={0.18} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Cognitive-Search_svg__a)"
       d="M18 11.32a4.12 4.12 0 0 0-3.51-4 5.15 5.15 0 0 0-5.25-5 5.25 5.25 0 0 0-5 3.49A4.86 4.86 0 0 0 0 10.59a5 5 0 0 0 5.07 4.82h8.65a.8.8 0 0 0 .22 0A4.13 4.13 0 0 0 18 11.32"
     />
     <path

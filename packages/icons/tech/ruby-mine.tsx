@@ -3,7 +3,7 @@
 import type { SVGProps } from 'react'
 const SvgRubyMine = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <linearGradient id="a" x1={65.05} x2={52.91} y1={60.03} y2={28.18} gradientUnits="userSpaceOnUse">
+    <linearGradient id="RubyMine_svg__a" x1={65.05} x2={52.91} y1={60.03} y2={28.18} gradientUnits="userSpaceOnUse">
       <stop offset={0} stopColor="#fe2857" />
       <stop offset={0.06} stopColor="#fe3052" />
       <stop offset={0.33} stopColor="#fd533b" />
@@ -11,11 +11,11 @@ const SvgRubyMine = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.81} stopColor="#fc7b20" />
       <stop offset={1} stopColor="#fc801d" />
     </linearGradient>
-    <linearGradient id="b" x1={41.93} x2={60.67} y1={14.45} y2={31.63} gradientUnits="userSpaceOnUse">
+    <linearGradient id="RubyMine_svg__b" x1={41.93} x2={60.67} y1={14.45} y2={31.63} gradientUnits="userSpaceOnUse">
       <stop offset={0} stopColor="#6b57ff" />
       <stop offset={1} stopColor="#fe2857" />
     </linearGradient>
-    <linearGradient id="c" x1={3.92} x2={65.63} y1={19.88} y2={98.32} gradientUnits="userSpaceOnUse">
+    <linearGradient id="RubyMine_svg__c" x1={3.92} x2={65.63} y1={19.88} y2={98.32} gradientUnits="userSpaceOnUse">
       <stop offset={0} stopColor="#6b57ff" />
       <stop offset={0.3} stopColor="#fe2857" />
       <stop offset={0.63} stopColor="#fe2857" />
@@ -26,12 +26,12 @@ const SvgRubyMine = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.85} stopColor="#fc801d" />
     </linearGradient>
     <path
-      fill="url(#a)"
+      fill="url(#RubyMine_svg__a)"
       d="M101.595 5.486 68.108 17.481 41.716 5.486 33.024 27.38h-5.62v64.634l81.274.707 12.617-64.366z"
     />
-    <path fill="url(#b)" d="m100.596 47.482-53.48-31.695 53.48 62.683z" />
+    <path fill="url(#RubyMine_svg__b)" d="m100.596 47.482-53.48-31.695 53.48 62.683z" />
     <path
-      fill="url(#c)"
+      fill="url(#RubyMine_svg__c)"
       d="m52.98 119.467 43.739-5.827-6.79-13.056h10.667V78.47L47.104 15.689 4.267 26.21l.049 61.44 24.625 34.865 23.906-3.035.11-.012z"
     />
     <path d="M27.429 27.429h73.143v73.143H27.429z" />

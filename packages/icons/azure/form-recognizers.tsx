@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgFormRecognizers = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.822} x2={7.822} y1={17.653} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Form-Recognizers_svg__a" x1={7.822} x2={7.822} y1={17.653} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.817} stopColor="#5ea0ef" />
       </linearGradient>
@@ -14,7 +14,7 @@ const SvgFormRecognizers = (props: SVGProps<SVGSVGElement>) => (
       d="M8.824.132H1.311a.594.594 0 0 0-.593.594v16.2a.594.594 0 0 0 .593.594h13.021a.594.594 0 0 0 .593-.594V6.205a.594.594 0 0 0-.593-.594H10.01a.594.594 0 0 1-.593-.594V.726a.593.593 0 0 0-.593-.594"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Form-Recognizers_svg__a)"
       d="M8.55.89v4.07a1.494 1.494 0 0 0 1.491 1.493h4.1v10.31H1.5V.89zM8.837 0H1.215a.6.6 0 0 0-.6.6v16.45a.6.6 0 0 0 .6.6h13.213a.6.6 0 0 0 .6-.6V6.165a.6.6 0 0 0-.6-.6h-4.387a.6.6 0 0 1-.6-.6V.6a.6.6 0 0 0-.6-.6Z"
     />
     <path fill="#0078d4" d="M14.8 5.683 9.232.132v4.523a1.02 1.02 0 0 0 1.015 1.028Z" />

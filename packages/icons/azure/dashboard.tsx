@@ -5,7 +5,7 @@ const SvgDashboard = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Dashboard_svg__a"
         x1={9}
         x2={9}
         y1={790.787}
@@ -21,7 +21,7 @@ const SvgDashboard = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Dashboard_svg__a)"
       d="M.549 2.636h16.912a.52.52 0 0 1 .539.489v11.75a.52.52 0 0 1-.539.489H.549A.53.53 0 0 1 0 14.875V3.145a.53.53 0 0 1 .548-.509Z"
     />
     <rect width={1.532} height={9.349} x={12.459} y={4.206} fill="#fff" opacity={0.9} rx={0.147} />

@@ -4,16 +4,30 @@ import type { SVGProps } from 'react'
 const SvgCognitiveServicesDecisions = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={12.062} x2={12.062} y1={5.427} y2={3.991} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Cognitive-Services-Decisions_svg__a"
+        x1={12.062}
+        x2={12.062}
+        y1={5.427}
+        y2={3.991}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#76bc2d" />
         <stop offset={1} stopColor="#86d633" />
       </linearGradient>
-      <linearGradient id="b" x1={2.902} x2={9.455} y1={6.762} y2={6.762} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Cognitive-Services-Decisions_svg__b"
+        x1={2.902}
+        x2={9.455}
+        y1={6.762}
+        y2={6.762}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#e6e6e6" />
         <stop offset={1} stopColor="#999" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id="Cognitive-Services-Decisions_svg__c"
         x1={-1288.505}
         x2={-1284.777}
         y1={-521.774}
@@ -24,12 +38,19 @@ const SvgCognitiveServicesDecisions = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0} stopColor="#86d633" />
         <stop offset={1} stopColor="#76bc2d" />
       </linearGradient>
-      <linearGradient id="d" x1={2.902} x2={9.455} y1={11.544} y2={11.544} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Cognitive-Services-Decisions_svg__d"
+        x1={2.902}
+        x2={9.455}
+        y1={11.544}
+        y2={11.544}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#e6e6e6" />
         <stop offset={1} stopColor="#999" />
       </linearGradient>
       <linearGradient
-        id="e"
+        id="Cognitive-Services-Decisions_svg__e"
         x1={-274.183}
         x2={-279.397}
         y1={-521.774}
@@ -41,7 +62,7 @@ const SvgCognitiveServicesDecisions = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.999} stopColor="#f78d1e" />
       </linearGradient>
       <linearGradient
-        id="f"
+        id="Cognitive-Services-Decisions_svg__f"
         x1={-140.646}
         x2={-143.764}
         y1={13.626}
@@ -54,15 +75,21 @@ const SvgCognitiveServicesDecisions = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Cognitive-Services-Decisions_svg__a)"
       d="m16.62 4.541-2.765-1.597a.194.194 0 0 0-.291.168v.822H7.406v1.55h6.158v.822c0 .149.161.242.291.168l2.765-1.597a.194.194 0 0 0 0-.336"
     />
-    <path fill="url(#b)" d="M4.495 9.616H2.903V4.982A1.07 1.07 0 0 1 3.97 3.909h5.486v1.592h-4.96z" />
-    <circle cx={9.455} cy={4.603} r={2.607} fill="url(#c)" />
-    <path fill="url(#d)" d="M9.455 14.4H3.971a1.07 1.07 0 0 1-1.069-1.071v-4.64h1.592v4.115h4.96z" />
-    <circle cx={9.455} cy={13.397} r={2.607} fill="url(#e)" />
     <path
-      fill="url(#f)"
+      fill="url(#Cognitive-Services-Decisions_svg__b)"
+      d="M4.495 9.616H2.903V4.982A1.07 1.07 0 0 1 3.97 3.909h5.486v1.592h-4.96z"
+    />
+    <circle cx={9.455} cy={4.603} r={2.607} fill="url(#Cognitive-Services-Decisions_svg__c)" />
+    <path
+      fill="url(#Cognitive-Services-Decisions_svg__d)"
+      d="M9.455 14.4H3.971a1.07 1.07 0 0 1-1.069-1.071v-4.64h1.592v4.115h4.96z"
+    />
+    <circle cx={9.455} cy={13.397} r={2.607} fill="url(#Cognitive-Services-Decisions_svg__e)" />
+    <path
+      fill="url(#Cognitive-Services-Decisions_svg__f)"
       d="M5.008 12.097H1.696c-.272 0-.453-.301-.405-.673l.584-4.534c.048-.372.307-.673.578-.673h3.312c.272 0 .453.301.405.673l-.584 4.534c-.048.372-.307.673-.578.673"
     />
     <path

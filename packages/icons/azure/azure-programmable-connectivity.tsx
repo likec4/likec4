@@ -5,7 +5,7 @@ const SvgAzureProgrammableConnectivity = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Azure-Programmable-Connectivity_svg__a"
         x1={8.4}
         x2={8.4}
         y1={767.514}
@@ -16,12 +16,19 @@ const SvgAzureProgrammableConnectivity = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
-      <linearGradient id="b" x1={12.399} x2={12.399} y1={11.383} y2={8.997} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Programmable-Connectivity_svg__b"
+        x1={12.399}
+        x2={12.399}
+        y1={11.383}
+        y2={8.997}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#34bddc" />
         <stop offset={1} stopColor="#34bddc" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id="Azure-Programmable-Connectivity_svg__c"
         x1={295.425}
         x2={295.405}
         y1={979.782}
@@ -33,8 +40,14 @@ const SvgAzureProgrammableConnectivity = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#fff" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M6.799 11.383H18v6.245a.374.374 0 0 1-.374.374H7.174a.374.374 0 0 1-.374-.374z" />
-    <path fill="url(#b)" d="M17.624 8.997H7.174a.374.374 0 0 0-.374.374v2.012h11.199V9.371a.374.374 0 0 0-.374-.374Z" />
+    <path
+      fill="url(#Azure-Programmable-Connectivity_svg__a)"
+      d="M6.799 11.383H18v6.245a.374.374 0 0 1-.374.374H7.174a.374.374 0 0 1-.374-.374z"
+    />
+    <path
+      fill="url(#Azure-Programmable-Connectivity_svg__b)"
+      d="M17.624 8.997H7.174a.374.374 0 0 0-.374.374v2.012h11.199V9.371a.374.374 0 0 0-.374-.374Z"
+    />
     <path
       fill="#f2f2f2"
       d="m9.005 14.344.229-.228 1.799 1.805c.04.04.04.106 0 .146l-.229.228a.104.104 0 0 1-.146 0l-1.654-1.659a.21.21 0 0 1 0-.293Z"
@@ -71,7 +84,7 @@ const SvgAzureProgrammableConnectivity = (props: SVGProps<SVGSVGElement>) => (
       d="M1.84 3.445a7.4 7.4 0 0 1-.428-1.827q-.392.412-.683.901.105.756.354 1.478c.195-.253.457-.445.758-.553Z"
       opacity={0.55}
     />
-    <circle cx={2.411} cy={5.042} r={1.696} fill="url(#c)" />
+    <circle cx={2.411} cy={5.042} r={1.696} fill="url(#Azure-Programmable-Connectivity_svg__c)" />
     <path
       fill="#f3f3f3"
       d="M4.886 8.143c0-.298.122-.582.336-.789a7.4 7.4 0 0 1-1.573-1.156 1.7 1.7 0 0 1-.928.516q.422.431.901.796.598.45 1.273.773a1 1 0 0 1-.01-.139Z"

@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgCloudServicesClassic = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.99} x2={8.99} y1={16.61} y2={-1.27} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Cloud-Services-(Classic)_svg__a"
+        x1={8.99}
+        x2={8.99}
+        y1={16.61}
+        y2={-1.27}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.16} stopColor="#1380da" />
         <stop offset={0.53} stopColor="#3c91e5" />
@@ -13,7 +20,7 @@ const SvgCloudServicesClassic = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Cloud-Services-(Classic)_svg__a)"
       d="M18 10.55a4.11 4.11 0 0 0-3.51-4 5.14 5.14 0 0 0-5.25-5 5.26 5.26 0 0 0-5 3.47A4.87 4.87 0 0 0 0 9.82a4.94 4.94 0 0 0 5.07 4.8h8.65a1.5 1.5 0 0 0 .22 0A4.13 4.13 0 0 0 18 10.55"
     />
     <circle cx={5.24} cy={9.65} r={0.71} fill="#e3e3e3" />

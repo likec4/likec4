@@ -5,7 +5,7 @@ const SvgIpGroups = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="IP-Groups_svg__a"
         x1={12.726}
         x2={12.726}
         y1={2199.244}
@@ -25,7 +25,10 @@ const SvgIpGroups = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#83b9f9" d="M4.221 7.187h9.558v5.326a.32.32 0 0 1-.321.321H4.542a.32.32 0 0 1-.321-.321Z" />
     <path fill="#1f56a3" d="M4.542 5.156h8.906a.32.32 0 0 1 .321.321v1.71H4.231v-1.71a.32.32 0 0 1 .311-.321" />
     <rect width={6.979} height={0.822} x={5.506} y={5.77} fill="#f2f2f2" rx={0.161} />
-    <path fill="url(#a)" d="M7.952 9.963H17.5v5.327a.32.32 0 0 1-.321.321H8.273a.32.32 0 0 1-.321-.321Z" />
+    <path
+      fill="url(#IP-Groups_svg__a)"
+      d="M7.952 9.963H17.5v5.327a.32.32 0 0 1-.321.321H8.273a.32.32 0 0 1-.321-.321Z"
+    />
     <path fill="#0078d4" d="M8.273 7.923h8.906a.32.32 0 0 1 .321.321v1.719H7.952V8.244a.32.32 0 0 1 .321-.321" />
     <g fill="#0078d4">
       <circle cx={14.874} cy={12.438} r={0.774} />

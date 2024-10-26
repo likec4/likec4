@@ -4,22 +4,43 @@ import type { SVGProps } from 'react'
 const SvgFolderWebsite = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.252} x2={8.842} y1={0.485} y2={16.966} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Folder-Website_svg__a"
+        x1={9.252}
+        x2={8.842}
+        y1={0.485}
+        y2={16.966}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ffd400" />
         <stop offset={1} stopColor="#ffbd02" />
       </linearGradient>
-      <linearGradient id="c" x1={6.874} x2={6.86} y1={11.261} y2={9.431} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Folder-Website_svg__c"
+        x1={6.874}
+        x2={6.86}
+        y1={11.261}
+        y2={9.431}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.123} stopColor="#d7d7d7" />
         <stop offset={1} stopColor="#fcfcfc" />
       </linearGradient>
-      <linearGradient id="d" x1={9.524} x2={9.524} y1={13.091} y2={11.45} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Folder-Website_svg__d"
+        x1={9.524}
+        x2={9.524}
+        y1={13.091}
+        y2={11.45}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.123} stopColor="#d7d7d7" />
         <stop offset={1} stopColor="#fcfcfc" />
       </linearGradient>
       <radialGradient
-        id="b"
+        id="Folder-Website_svg__b"
         cx={2073.6}
         cy={3109.478}
         r={26.184}
@@ -36,7 +57,7 @@ const SvgFolderWebsite = (props: SVGProps<SVGSVGElement>) => (
     />
     <rect width={4.091} height={0.818} x={1.636} y={2.455} fill="#fff" rx={0.172} />
     <path
-      fill="url(#a)"
+      fill="url(#Folder-Website_svg__a)"
       d="M17.579 3.263H8.956a.42.42 0 0 0-.3.123L7.272 4.773a.42.42 0 0 1-.3.123H.421a.42.42 0 0 0-.421.42V15.91a.42.42 0 0 0 .421.419h17.158A.42.42 0 0 0 18 15.91V3.683a.42.42 0 0 0-.421-.42"
     />
     <path fill="#f78d1e" d="M12.343 8.16v3.913l-3.382 1.966V10.12z" />
@@ -48,12 +69,15 @@ const SvgFolderWebsite = (props: SVGProps<SVGSVGElement>) => (
     />
     <rect width={4.091} height={0.818} x={1.636} y={2.455} fill="#fff" rx={0.172} />
     <path
-      fill="url(#a)"
+      fill="url(#Folder-Website_svg__a)"
       d="M17.579 3.263H8.956a.42.42 0 0 0-.3.123L7.272 4.773a.42.42 0 0 1-.3.123H.421a.42.42 0 0 0-.421.42V15.91a.42.42 0 0 0 .421.419h17.158A.42.42 0 0 0 18 15.91V3.683a.42.42 0 0 0-.421-.42"
     />
-    <path fill="url(#b)" d="M11.407 13.216a3.928 3.928 0 1 1-4.814-6.207l.04-.03a3.927 3.927 0 0 1 4.774 6.237" />
-    <circle cx={6.864} cy={9.965} r={1.262} fill="url(#c)" />
-    <circle cx={9.524} cy={12.271} r={0.82} fill="url(#d)" />
+    <path
+      fill="url(#Folder-Website_svg__b)"
+      d="M11.407 13.216a3.928 3.928 0 1 1-4.814-6.207l.04-.03a3.927 3.927 0 0 1 4.774 6.237"
+    />
+    <circle cx={6.864} cy={9.965} r={1.262} fill="url(#Folder-Website_svg__c)" />
+    <circle cx={9.524} cy={12.271} r={0.82} fill="url(#Folder-Website_svg__d)" />
     <circle cx={11.394} cy={10.236} r={0.871} fill="#fff" />
     <g fill="#f2f2f2">
       <path

@@ -4,12 +4,19 @@ import type { SVGProps } from 'react'
 const SvgLogAnalyticsQueryPack = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.819} x2={9.017} y1={13.816} y2={-4.795} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Log-Analytics-Query-Pack_svg__a"
+        x1={8.819}
+        x2={9.017}
+        y1={13.816}
+        y2={-4.795}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#773adc" />
         <stop offset={0.88} stopColor="#b796f9" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Log-Analytics-Query-Pack_svg__b"
         x1={6.427}
         x2={6.427}
         y1={768.784}
@@ -26,11 +33,11 @@ const SvgLogAnalyticsQueryPack = (props: SVGProps<SVGSVGElement>) => (
       d="M17.591.418A1.4 1.4 0 0 0 16.6.009H6.544a1.407 1.407 0 0 0-1.4 1.4v10.065a1.407 1.407 0 0 0 1.4 1.4H16.6a1.4 1.4 0 0 0 1.4-1.4V1.407a1.4 1.4 0 0 0-.409-.989"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Log-Analytics-Query-Pack_svg__a)"
       d="M14.886 3.123a1.4 1.4 0 0 0-.989-.409H3.839a1.407 1.407 0 0 0-1.4 1.4v10.065a1.407 1.407 0 0 0 1.4 1.4H13.9a1.4 1.4 0 0 0 1.4-1.4V4.112a1.4 1.4 0 0 0-.414-.989"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Log-Analytics-Query-Pack_svg__b)"
       d="M11.456 17.991H1.4a1.407 1.407 0 0 1-1.4-1.4V6.526a1.407 1.407 0 0 1 1.4-1.4h10.056a1.4 1.4 0 0 1 1.4 1.4v10.067a1.4 1.4 0 0 1-1.4 1.4Z"
     />
     <path

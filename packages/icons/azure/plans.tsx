@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgPlans = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={17.39} y2={0.61} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Plans_svg__a" x1={9} x2={9} y1={17.39} y2={0.61} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
@@ -14,7 +14,7 @@ const SvgPlans = (props: SVGProps<SVGSVGElement>) => (
       d="M10 .73H2.81a.57.57 0 0 0-.57.57v15.4a.57.57 0 0 0 .57.57h12.38a.57.57 0 0 0 .57-.57V6.51a.57.57 0 0 0-.57-.57h-4.11a.56.56 0 0 1-.56-.56V1.3A.56.56 0 0 0 10 .73"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Plans_svg__a)"
       d="M9.69 1.45v3.87a1.42 1.42 0 0 0 1.42 1.42H15v9.81H3V1.45h6.7m.3-.84H2.72a.57.57 0 0 0-.58.57v15.64a.57.57 0 0 0 .58.57h12.56a.57.57 0 0 0 .58-.57V6.47a.57.57 0 0 0-.58-.57h-4.17a.57.57 0 0 1-.57-.58V1.18A.57.57 0 0 0 10 .61"
     />
     <path fill="#0078d4" d="M15.64 6 10.34.73V5a1 1 0 0 0 1 1Z" />

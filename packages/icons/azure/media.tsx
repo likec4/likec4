@@ -5,7 +5,7 @@ const SvgMedia = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Media_svg__a"
         x1={-655.236}
         x2={-637.632}
         y1={2848.852}
@@ -18,7 +18,7 @@ const SvgMedia = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#003067" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Media_svg__b"
         x1={-4132.03}
         x2={-4110.646}
         y1={-451.06}
@@ -31,7 +31,7 @@ const SvgMedia = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#003067" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id="Media_svg__c"
         x1={5.986}
         x2={7.43}
         y1={506.861}
@@ -48,7 +48,7 @@ const SvgMedia = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Media_svg__a)"
       d="M9.226 3.927 13.6 6.442l3.048-1.76a8.79 8.79 0 0 0-13.93-1.858 10.02 10.02 0 0 1 6.508 1.103"
     />
     <path
@@ -60,7 +60,7 @@ const SvgMedia = (props: SVGProps<SVGSVGElement>) => (
       d="m13.535 11.646-4.552 2.63.071 3.5a8.8 8.8 0 0 0 8.764-8.8 8.5 8.5 0 0 0-.288-2.09 9.58 9.58 0 0 1-3.995 4.76"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Media_svg__b)"
       d="m8.983 14.276-4.555-2.63-3.02 1.812a8.782 8.782 0 0 0 13.672 1.881 9.9 9.9 0 0 1-6.097-1.063"
     />
     <path
@@ -72,7 +72,7 @@ const SvgMedia = (props: SVGProps<SVGSVGElement>) => (
       d="m4.583 6.3 4.4-2.543a10.57 10.57 0 0 0-5.942-1.245A8.75 8.75 0 0 0 .183 9 9 9 0 0 0 .5 11.32 10.25 10.25 0 0 1 4.583 6.3"
     />
     <path fill="#c3f1ff" d="M13.535 11.646v-5.26L8.98 3.757 4.425 6.386v5.26l4.555 2.63z" />
-    <path fill="url(#c)" d="M8.986 9.071v5.205l-4.561-2.63V6.404z" />
+    <path fill="url(#Media_svg__c)" d="M8.986 9.071v5.205l-4.561-2.63V6.404z" />
     <path fill="#50e6ff" d="M8.98 9.071v5.205l4.561-2.63V6.404z" />
   </svg>
 )

@@ -4,11 +4,25 @@ import type { SVGProps } from 'react'
 const SvgIntegrationAccounts = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.06} x2={5.06} y1={11.62} y2={14.5} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Integration-Accounts_svg__a"
+        x1={5.06}
+        x2={5.06}
+        y1={11.62}
+        y2={14.5}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#b77af4" />
         <stop offset={1} stopColor="#773adc" />
       </linearGradient>
-      <linearGradient id="b" x1={13.06} x2={13.06} y1={11.62} y2={14.5} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Integration-Accounts_svg__b"
+        x1={13.06}
+        x2={13.06}
+        y1={11.62}
+        y2={14.5}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#b77af4" />
         <stop offset={1} stopColor="#773adc" />
       </linearGradient>
@@ -20,9 +34,9 @@ const SvgIntegrationAccounts = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#ffca00" d="M3.62 3.62H6.5V6.5H3.62Z" />
     <path fill="#e62323" d="M3.62 7.62H6.5v2.88H3.62Z" />
     <path fill="#5ea0ef" d="M7.62 7.62h2.88v2.88H7.62Z" />
-    <path fill="url(#a)" d="M3.62 11.62H6.5v2.88H3.62Z" />
+    <path fill="url(#Integration-Accounts_svg__a)" d="M3.62 11.62H6.5v2.88H3.62Z" />
     <path fill="#e62323" d="M7.62 11.62h2.88v2.88H7.62Z" />
-    <path fill="url(#b)" d="M11.62 11.62h2.88v2.88h-2.88Z" />
+    <path fill="url(#Integration-Accounts_svg__b)" d="M11.62 11.62h2.88v2.88h-2.88Z" />
   </svg>
 )
 export default SvgIntegrationAccounts

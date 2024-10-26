@@ -4,11 +4,11 @@ import type { SVGProps } from 'react'
 const SvgArcSqlServer = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={9.628} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Arc-SQL-Server_svg__a" x1={9} x2={9} y1={9.628} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="b" x1={9} x2={9} y1={13.343} y2={9.628} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Arc-SQL-Server_svg__b" x1={9} x2={9} y1={13.343} y2={9.628} gradientUnits="userSpaceOnUse">
         <stop offset={0.151} stopColor="#ccc" />
         <stop offset={1} stopColor="#707070" />
       </linearGradient>
@@ -18,9 +18,9 @@ const SvgArcSqlServer = (props: SVGProps<SVGSVGElement>) => (
       d="M17.549 15.194c-.16.7-1.035 1.391-2.617 1.929a21.6 21.6 0 0 1-12.125.017C1.35 16.626.564 15.97.441 15.3c-.022-.118 0-1.966 0-1.966l17.136-.16s-.008 1.935-.028 2.02"
     />
     <ellipse cx={9.001} cy={13.294} fill="#50e6ff" rx={8.576} ry={2.965} transform="rotate(-.575 9.001 13.298)" />
-    <rect width={14.442} height={9.628} x={1.779} fill="url(#a)" rx={0.481} />
+    <rect width={14.442} height={9.628} x={1.779} fill="url(#Arc-SQL-Server_svg__a)" rx={0.481} />
     <path
-      fill="url(#b)"
+      fill="url(#Arc-SQL-Server_svg__b)"
       d="M11.9 12.54c-1.428-.224-1.484-1.251-1.484-2.912H7.58c0 1.661-.048 2.688-1.476 2.912a.8.8 0 0 0-.714.8h7.22a.8.8 0 0 0-.71-.8"
     />
     <path

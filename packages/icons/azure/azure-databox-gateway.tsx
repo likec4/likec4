@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgAzureDataboxGateway = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={15.342} y2={2.658} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Databox-Gateway_svg__a"
+        x1={9}
+        x2={9}
+        y1={15.342}
+        y2={2.658}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.817} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-Databox-Gateway_svg__a)"
       d="M17.947 11.369a4.02 4.02 0 0 0-3.489-3.864 5.07 5.07 0 0 0-5.22-4.847A5.2 5.2 0 0 0 4.27 6.046a4.8 4.8 0 0 0-4.217 4.616 4.87 4.87 0 0 0 5.038 4.68q.227-.001.444-.02H13.7a.8.8 0 0 0 .215-.032 4.07 4.07 0 0 0 4.032-3.921"
     />
     <path fill="#50e6ff" d="M9.468 10.545a4.708 4.708 0 1 0-4.707 4.8H9.47v-4.8Z" />

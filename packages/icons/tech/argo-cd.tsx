@@ -4,52 +4,52 @@ import type { SVGProps } from 'react'
 const SvgArgoCd = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 128 128" {...props}>
     <defs>
-      <clipPath id="e">
+      <clipPath id="Argo-CD_svg__e">
         <path d="M42 41h44v51H42zm0 0" />
       </clipPath>
-      <clipPath id="d">
+      <clipPath id="Argo-CD_svg__d">
         <path d="M0 0h128v128H0z" />
       </clipPath>
-      <clipPath id="c">
+      <clipPath id="Argo-CD_svg__c">
         <path d="M0 0h128v128H0z" />
       </clipPath>
-      <clipPath id="f">
+      <clipPath id="Argo-CD_svg__f">
         <path d="m85.695 41.133-2.55 58.238H44.887l-2.125-58.238" />
       </clipPath>
-      <clipPath id="b">
+      <clipPath id="Argo-CD_svg__b">
         <path d="M0 0h128v128H0z" />
       </clipPath>
-      <mask id="l">
-        <g filter="url(#a)">
+      <mask id="Argo-CD_svg__l">
+        <g filter="url(#Argo-CD_svg__a)">
           <path fillOpacity={0.251} d="M0 0h128v128H0z" />
         </g>
       </mask>
-      <mask id="h">
-        <g filter="url(#a)">
+      <mask id="Argo-CD_svg__h">
+        <g filter="url(#Argo-CD_svg__a)">
           <path fillOpacity={0.22} d="M0 0h128v128H0z" />
         </g>
       </mask>
-      <mask id="j">
-        <g filter="url(#a)">
+      <mask id="Argo-CD_svg__j">
+        <g filter="url(#Argo-CD_svg__a)">
           <path fillOpacity={0.502} d="M0 0h128v128H0z" />
         </g>
       </mask>
-      <g id="i" clipPath="url(#b)">
+      <g id="Argo-CD_svg__i" clipPath="url(#Argo-CD_svg__b)">
         <path fill="#fbdfc3" d="M58.488 30.508a2.974 2.974 0 1 1-5.948-.003 2.974 2.974 0 0 1 5.948.003m0 0" />
       </g>
-      <g id="g" clipPath="url(#c)">
+      <g id="Argo-CD_svg__g" clipPath="url(#Argo-CD_svg__c)">
         <path
           fill="#e34e3b"
           d="M84.422 65.363s2.55-22.531-.852-31.031C77.195 19.453 62.316 20.73 62.316 20.73s8.5 3.399 8.926 16.153c.426 8.926 0 22.105 0 22.105zm0 0"
         />
       </g>
-      <g id="k" clipPath="url(#d)">
+      <g id="Argo-CD_svg__k" clipPath="url(#Argo-CD_svg__d)">
         <path
           fill="#e9654b"
           d="M83.145 90.867V87.47c-5.95 3.398-12.329 6.8-19.977 6.8-8.504 0-14.031-3.824-19.555-6.8l.422 3.398s6.38 6.805 19.555 6.805c12.328-.426 19.555-6.805 19.555-6.805zm0 0"
         />
       </g>
-      <filter id="a" width="100%" height="100%" x="0%" y="0%" filterUnits="objectBoundingBox">
+      <filter id="Argo-CD_svg__a" width="100%" height="100%" x="0%" y="0%" filterUnits="objectBoundingBox">
         <feColorMatrix in="SourceGraphic" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0" />
       </filter>
     </defs>
@@ -77,16 +77,16 @@ const SvgArgoCd = (props: SVGProps<SVGSVGElement>) => (
       fill="#ee794b"
       d="M85.27 65.363s-2.973 48.035-2.973 48.887c0 .422-.426 1.273 1.7 2.125 2.124.848 8.925 2.55 8.925 2.55H82.719c-4.676 0-4.676-3.827-4.676-4.675 0-.852-1.273-19.129-1.273-19.129s-.426 21.68-.426 22.527c0 .852.426 2.125 3.402 2.977l8.5 1.7H78.47c-5.95 0-5.95-3.825-5.95-3.825l-1.277-19.129s-.426 19.129-.426 21.254c0 1.7 1.278 2.977 5.954 3.824 2.976.852 6.8 1.703 6.8 1.703H72.52c-5.528-.425-6.38-4.254-6.38-4.254L56.79 74.29zm.425-23.379c0 11.903-9.777 21.254-21.254 21.254-11.476 0-21.254-9.777-21.254-21.254 0-11.476 9.778-21.254 21.254-21.254s21.254 9.352 21.254 21.254m0 0"
     />
-    <g clipPath="url(#e)">
-      <g clipPath="url(#f)">
+    <g clipPath="url(#Argo-CD_svg__e)">
+      <g clipPath="url(#Argo-CD_svg__f)">
         <path
           fill="#ee794b"
           d="M102.273 53.46c0 20.895-16.937 37.833-37.832 37.833-20.894 0-37.832-16.938-37.832-37.832s16.938-37.832 37.832-37.832 37.832 16.937 37.832 37.832zm0 0"
         />
       </g>
     </g>
-    <use xlinkHref="#g" mask="url(#h)" />
-    <use xlinkHref="#i" mask="url(#j)" />
+    <use xlinkHref="#Argo-CD_svg__g" mask="url(#Argo-CD_svg__h)" />
+    <use xlinkHref="#Argo-CD_svg__i" mask="url(#Argo-CD_svg__j)" />
     <path
       fill="#010101"
       d="M71.668 73.863c0 7.227-3.402 11.907-7.652 11.907s-7.653-5.528-7.653-12.754c0 0 3.403 6.8 8.078 6.8 4.676 0 7.227-5.953 7.227-5.953m0 0"
@@ -115,7 +115,7 @@ const SvgArgoCd = (props: SVGProps<SVGSVGElement>) => (
       fill="#fff"
       d="M51.688 13.504a2.125 2.125 0 1 1-4.25 0 2.125 2.125 0 0 1 4.25 0M34.262 70.89a1.56 1.56 0 0 1-1.278-.425c-5.101-6.375-7.652-14.453-7.652-22.531a37.93 37.93 0 0 1 5.102-19.13 41.64 41.64 0 0 1 13.601-13.6 1.87 1.87 0 0 1 2.13.425 1.87 1.87 0 0 1-.427 2.125 34.3 34.3 0 0 0-17.43 29.754 33.5 33.5 0 0 0 7.227 20.832c.426.426.426 1.7-.426 2.125-.425.426-.425.426-.847.426zm0 0"
     />
-    <use xlinkHref="#k" mask="url(#l)" />
+    <use xlinkHref="#Argo-CD_svg__k" mask="url(#Argo-CD_svg__l)" />
   </svg>
 )
 export default SvgArgoCd

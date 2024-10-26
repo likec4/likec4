@@ -4,7 +4,13 @@ import type { SVGProps } from 'react'
 const SvgCostManagementAndBilling = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <radialGradient id="a" cx={7.18} cy={9.5} r={7.38} gradientUnits="userSpaceOnUse">
+      <radialGradient
+        id="Cost-Management-and-Billing_svg__a"
+        cx={7.18}
+        cy={9.5}
+        r={7.38}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#76bc2d" />
         <stop offset={0.41} stopColor="#74b92c" />
         <stop offset={0.66} stopColor="#6fb12a" />
@@ -18,7 +24,7 @@ const SvgCostManagementAndBilling = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#ffca00" d="M16.54 9.49h-3.6a4.43 4.43 0 0 1-1.48 3.3l2.39 2.69a8 8 0 0 0 2.69-6" />
     <path
-      fill="url(#a)"
+      fill="url(#Cost-Management-and-Billing_svg__a)"
       d="M8.52 13.93a4.43 4.43 0 0 1 0-8.86V1.49a8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 5.34-2l-2.4-2.69a4.38 4.38 0 0 1-2.94 1.13"
     />
     <path fill="#ccc" d="M8.15.48v4.16a5.09 5.09 0 0 1 5.17 5.18h4.18A9.34 9.34 0 0 0 8.15.48" />

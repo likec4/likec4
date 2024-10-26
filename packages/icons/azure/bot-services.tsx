@@ -5,7 +5,7 @@ const SvgBotServices = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id="Bot-Services_svg__a"
         cx={55.71}
         cy={71.92}
         r={9}
@@ -19,7 +19,7 @@ const SvgBotServices = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#1b93eb" />
       </radialGradient>
     </defs>
-    <path fill="url(#a)" d="M9 .5A8.5 8.5 0 1 0 17.5 9 8.5 8.5 0 0 0 9 .5" />
+    <path fill="url(#Bot-Services_svg__a)" d="M9 .5A8.5 8.5 0 1 0 17.5 9 8.5 8.5 0 0 0 9 .5" />
     <circle cx={9} cy={9} r={7.03} fill="#fff" />
     <circle cx={7.45} cy={9} r={0.77} fill="#32bedd" />
     <path

@@ -5,7 +5,7 @@ const SvgSchedulerJobCollections = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id="Scheduler-Job-Collections_svg__a"
         cx={-3179.5}
         cy={28295.77}
         r={40.52}
@@ -22,7 +22,7 @@ const SvgSchedulerJobCollections = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
     </defs>
-    <circle cx={9.39} cy={9} r={5.43} fill="url(#a)" />
+    <circle cx={9.39} cy={9} r={5.43} fill="url(#Scheduler-Job-Collections_svg__a)" />
     <circle cx={9.41} cy={9} r={4.73} fill="#fff" />
     <path
       fill="#7a7a7a"

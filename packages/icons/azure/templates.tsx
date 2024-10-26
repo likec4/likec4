@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgTemplates = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.63} x2={8.63} y1={17.59} y2={0.59} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Templates_svg__a" x1={8.63} x2={8.63} y1={17.59} y2={0.59} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
@@ -14,7 +14,7 @@ const SvgTemplates = (props: SVGProps<SVGSVGElement>) => (
       d="M9.59.72H2.36a.56.56 0 0 0-.57.57v15.6a.56.56 0 0 0 .57.57h12.53a.57.57 0 0 0 .58-.57V6.56a.58.58 0 0 0-.58-.56h-4.16a.57.57 0 0 1-.57-.57V1.29a.56.56 0 0 0-.57-.57"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Templates_svg__a)"
       d="M9.33 1.45v3.92a1.43 1.43 0 0 0 1.43 1.43h4v9.93H2.54V1.45zM9.6.59H2.26a.58.58 0 0 0-.58.58V17a.58.58 0 0 0 .58.58H15a.58.58 0 0 0 .58-.58V6.53A.58.58 0 0 0 15 6h-4.24a.58.58 0 0 1-.58-.58V1.17A.58.58 0 0 0 9.6.59"
     />
     <path fill="#0078d4" d="M15.35 6.06 10 .72v4.35a1 1 0 0 0 1 1Z" />

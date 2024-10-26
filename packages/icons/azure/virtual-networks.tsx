@@ -5,7 +5,7 @@ const SvgVirtualNetworks = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Virtual-Networks_svg__a"
         x1={9.88}
         x2={11.52}
         y1={8.59}
@@ -16,18 +16,32 @@ const SvgVirtualNetworks = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0} stopColor="#86d633" />
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
-      <linearGradient id="b" x1={6.18} x2={7.81} y1={8.59} y2={10.23} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Virtual-Networks_svg__b"
+        x1={6.18}
+        x2={7.81}
+        y1={8.59}
+        y2={10.23}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#86d633" />
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
-      <linearGradient id="c" x1={2.48} x2={4.11} y1={8.59} y2={10.23} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Virtual-Networks_svg__c"
+        x1={2.48}
+        x2={4.11}
+        y1={8.59}
+        y2={10.23}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#86d633" />
         <stop offset={1} stopColor="#5e9624" />
       </linearGradient>
     </defs>
-    <circle cx={12.74} cy={8.99} r={1.16} fill="url(#a)" />
-    <circle cx={9.04} cy={9} r={1.16} fill="url(#b)" />
-    <circle cx={5.34} cy={9} r={1.16} fill="url(#c)" />
+    <circle cx={12.74} cy={8.99} r={1.16} fill="url(#Virtual-Networks_svg__a)" />
+    <circle cx={9.04} cy={9} r={1.16} fill="url(#Virtual-Networks_svg__b)" />
+    <circle cx={5.34} cy={9} r={1.16} fill="url(#Virtual-Networks_svg__c)" />
     <path
       fill="#50e6ff"
       d="m6.182 13.638-.664.665a.3.3 0 0 1-.424 0L.18 9.404a.6.6 0 0 1-.001-.848l.663-.666 5.34 5.324a.3.3 0 0 1 0 .425"

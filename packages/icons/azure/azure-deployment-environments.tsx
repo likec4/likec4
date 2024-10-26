@@ -4,12 +4,19 @@ import type { SVGProps } from 'react'
 const SvgAzureDeploymentEnvironments = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={16.686} y2={13.377} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Deployment-Environments_svg__a"
+        x1={9}
+        x2={9}
+        y1={16.686}
+        y2={13.377}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.001} stopColor="#37c2b1" />
         <stop offset={1} stopColor="#3cd4c2" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Azure-Deployment-Environments_svg__b"
         x1={8.985}
         x2={8.985}
         y1={779.158}
@@ -24,10 +31,13 @@ const SvgAzureDeploymentEnvironments = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M18 16.686H0l3.332-3.149a.58.58 0 0 1 .4-.16H14.68a.58.58 0 0 1 .438.2z" />
+    <path
+      fill="url(#Azure-Deployment-Environments_svg__a)"
+      d="M18 16.686H0l3.332-3.149a.58.58 0 0 1 .4-.16H14.68a.58.58 0 0 1 .438.2z"
+    />
     <path fill="#3cd4c2" d="M0 16.686h18v.41a.584.584 0 0 1-.586.586H.586A.586.586 0 0 1 0 17.096z" />
     <path
-      fill="url(#b)"
+      fill="url(#Azure-Deployment-Environments_svg__b)"
       d="M17.43 8.618a3.78 3.78 0 0 0-3.29-3.64A4.772 4.772 0 0 0 9.22.408a4.91 4.91 0 0 0-4.68 3.19 4.525 4.525 0 0 0-4 4.35A4.6 4.6 0 0 0 2 11.175a4.6 4.6 0 0 0 3.321 1.233h8.309a3.84 3.84 0 0 0 3.8-3.79"
     />
     <path

@@ -4,12 +4,12 @@ import type { SVGProps } from 'react'
 const SvgPeeringService = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.123} x2={7.123} y2={13.962} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Peering-Service_svg__a" x1={7.123} x2={7.123} y2={13.962} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
     </defs>
-    <circle cx={7.123} cy={6.981} r={6.981} fill="url(#a)" />
+    <circle cx={7.123} cy={6.981} r={6.981} fill="url(#Peering-Service_svg__a)" />
     <circle cx={11.022} cy={11.164} r={6.684} fill="#0078d4" />
     <path
       fill="#83b9f9"

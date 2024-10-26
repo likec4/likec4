@@ -5,7 +5,7 @@ const SvgGear = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Gear_svg__a"
         x1={9}
         x2={9}
         y1={297.5}
@@ -18,7 +18,7 @@ const SvgGear = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Gear_svg__a)"
       d="M17.5 9.9V8l-.3-.1-2.1-.7-.5-1.3 1.1-2.2-1.4-1.4-.3.1-1.9 1-1.3-.5L9.9.5H8l-.1.3-.7 2-1.3.6-2.2-1.1-1.4 1.4.1.3 1 1.9-.5 1.3-2.4.9V10l.3.1 2.1.7.5 1.3-1.1 2.2 1.4 1.4.3-.1 1.9-1 1.3.5.9 2.3H10l.1-.3.7-2.1 1.3-.5 2.2 1.1 1.4-1.4-.1-.2-1-1.9.5-1.3Z"
     />
     <path

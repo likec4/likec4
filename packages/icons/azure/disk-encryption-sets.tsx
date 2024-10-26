@@ -5,7 +5,7 @@ const SvgDiskEncryptionSets = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id="Disk-Encryption-Sets_svg__a"
         cx={8.38}
         cy={445.94}
         r={4.05}
@@ -27,7 +27,7 @@ const SvgDiskEncryptionSets = (props: SVGProps<SVGSVGElement>) => (
       fill="#76bc2d"
       d="M10.3 11a1.5 1.5 0 0 1 0-2.11l.76-.76a12 12 0 0 0-2.67-.29c-3.07 0-5.55 1-5.55 2.28S5.3 12.4 8.38 12.4a11.8 11.8 0 0 0 2.93-.4z"
     />
-    <ellipse cx={8.38} cy={5.05} fill="url(#a)" rx={5.54} ry={2.28} />
+    <ellipse cx={8.38} cy={5.05} fill="url(#Disk-Encryption-Sets_svg__a)" rx={5.54} ry={2.28} />
     <ellipse cx={8.51} cy={5.02} fill="#005ba1" rx={1.84} ry={0.5} />
     <g fill="#0078d4">
       <path d="M15.58 10.65a1 1 0 0 0 0-1.44l-1.76-1.77a1 1 0 0 0-1.44 0L10.62 9.2a1 1 0 0 0 0 1.44l1.47 1.5a.32.32 0 0 1 .08.2v2.73a.35.35 0 0 0 .1.24l.67.67a.24.24 0 0 0 .33 0l1.02-1.02a.14.14 0 0 0 0-.19l-.3-.28a.13.13 0 0 1 0-.2l.27-.28a.14.14 0 0 0 0-.19l-.27-.27a.14.14 0 0 1 0-.21l.27-.27a.14.14 0 0 0 0-.19l-.38-.4v-.13zM13.1 7.87a.58.58 0 1 1 0 1.13.58.58 0 0 1 0-1.16z" />

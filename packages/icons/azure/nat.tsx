@@ -5,7 +5,7 @@ const SvgNat = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="NAT_svg__a"
         x1={9}
         x2={9}
         y1={18.17}
@@ -18,7 +18,15 @@ const SvgNat = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.775} stopColor="#3ed3f2" />
       </linearGradient>
     </defs>
-    <rect width={12.893} height={12.893} x={2.553} y={2.553} fill="url(#a)" rx={0.591} transform="rotate(-45 9 9)" />
+    <rect
+      width={12.893}
+      height={12.893}
+      x={2.553}
+      y={2.553}
+      fill="url(#NAT_svg__a)"
+      rx={0.591}
+      transform="rotate(-45 9 9)"
+    />
     <path
       fill="#9cebff"
       d="m14.092 10.067-.358-.358V8.33h-2.857v1.52h1.281L8.94 13.069 5.721 9.85h1.302V8.33H3.885v1.52h.119l-.216.217 4.498 4.498.654-.653.653.653z"

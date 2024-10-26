@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgRemoteRendering = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={15.379} y2={2.798} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Remote-Rendering_svg__a" x1={9} x2={9} y1={15.379} y2={2.798} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.156} stopColor="#1380da" />
         <stop offset={0.528} stopColor="#3c91e5" />
@@ -12,7 +12,7 @@ const SvgRemoteRendering = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Remote-Rendering_svg__b"
         x1={-416.202}
         x2={-416.202}
         y1={-210.743}
@@ -26,11 +26,11 @@ const SvgRemoteRendering = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Remote-Rendering_svg__a)"
       d="M17.875 11.439a3.99 3.99 0 0 0-3.461-3.834A5.026 5.026 0 0 0 9.237 2.8a5.16 5.16 0 0 0-4.928 3.359 4.76 4.76 0 0 0-4.184 4.579 4.83 4.83 0 0 0 5 4.641q.222 0 .44-.019h8.094a.8.8 0 0 0 .213-.032 4.036 4.036 0 0 0 4.003-3.889"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Remote-Rendering_svg__b)"
       d="m8.371 9.669 2.3-4.522a.294.294 0 0 1 .522 0l2.29 4.32a1.57 1.57 0 0 1 .232.9c0 .948-1.248 1.716-2.788 1.716s-2.788-.768-2.788-1.716a1.18 1.18 0 0 1 .232-.698"
     />
     <path

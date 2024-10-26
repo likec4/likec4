@@ -4,12 +4,26 @@ import type { SVGProps } from 'react'
 const SvgSqlManagedInstance = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.41} x2={5.41} y1={17.33} y2={0.61} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="SQL-Managed-Instance_svg__a"
+        x1={5.41}
+        x2={5.41}
+        y1={17.33}
+        y2={0.61}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#949494" />
         <stop offset={0.53} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#b3b3b3" />
       </linearGradient>
-      <linearGradient id="b" x1={10.04} x2={10.04} y1={17.39} y2={6.82} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="SQL-Managed-Instance_svg__b"
+        x1={10.04}
+        x2={10.04}
+        y1={17.39}
+        y2={6.82}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.16} stopColor="#1380da" />
         <stop offset={0.53} stopColor="#3c91e5" />
@@ -18,7 +32,7 @@ const SvgSqlManagedInstance = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#SQL-Managed-Instance_svg__a)"
       d="M10.32 16.76a.58.58 0 0 1-.57.57H1.07a.57.57 0 0 1-.57-.57V1.18a.56.56 0 0 1 .57-.57h8.68a.57.57 0 0 1 .57.57Z"
     />
     <path
@@ -28,7 +42,7 @@ const SvgSqlManagedInstance = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={3.06} cy={3.31} r={0.72} fill="#50e6ff" />
     <circle cx={3.06} cy={6.47} r={0.72} fill="#50e6ff" />
     <path
-      fill="url(#b)"
+      fill="url(#SQL-Managed-Instance_svg__b)"
       d="M17.5 14.08a3.36 3.36 0 0 0-2.91-3.22 4.22 4.22 0 0 0-4.35-4A4.32 4.32 0 0 0 6.1 9.64a4 4 0 0 0-3.52 3.85 4.06 4.06 0 0 0 4.2 3.9h7.39a3.39 3.39 0 0 0 3.33-3.31"
     />
     <path

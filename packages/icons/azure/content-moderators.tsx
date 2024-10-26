@@ -4,18 +4,32 @@ import type { SVGProps } from 'react'
 const SvgContentModerators = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={13.245} y2={1.245} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Content-Moderators_svg__a"
+        x1={9}
+        x2={9}
+        y1={13.245}
+        y2={1.245}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.817} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="b" x1={9.003} x2={9.003} y1={17.88} y2={13.245} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Content-Moderators_svg__b"
+        x1={9.003}
+        x2={9.003}
+        y1={17.88}
+        y2={13.245}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.149} stopColor="#ccc" />
         <stop offset={1} stopColor="#707070" />
       </linearGradient>
     </defs>
-    <rect width={18} height={12} y={1.245} fill="url(#a)" rx={0.601} />
+    <rect width={18} height={12} y={1.245} fill="url(#Content-Moderators_svg__a)" rx={0.601} />
     <path
-      fill="url(#b)"
+      fill="url(#Content-Moderators_svg__b)"
       d="M12.61 16.875c-1.78-.279-1.85-1.563-1.845-3.63h-3.53c0 2.067-.065 3.351-1.845 3.63a1.046 1.046 0 0 0-.887 1h9a1.05 1.05 0 0 0-.893-1"
     />
     <path

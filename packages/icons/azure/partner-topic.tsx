@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgPartnerTopic = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={10.275} x2={10.275} y1={11.03} y2={7.773} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Partner-Topic_svg__a"
+        x1={10.275}
+        x2={10.275}
+        y1={11.03}
+        y2={7.773}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
@@ -48,7 +55,7 @@ const SvgPartnerTopic = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#949494" d="M0 16.415V15.1h17.958v1.32a.6.6 0 0 1-.6.6H.6a.6.6 0 0 1-.6-.605" />
     <path
-      fill="url(#a)"
+      fill="url(#Partner-Topic_svg__a)"
       d="M12.919 11.292a.1.1 0 0 0 .082-.04l2.14-2.128a.234.234 0 0 0 0-.318l-2.14-2.163a.1.1 0 0 0-.148-.02.11.11 0 0 0-.04.1v1.331a.106.106 0 0 1-.093.117H7.736a1.24 1.24 0 0 0-.976-.482c-.042 0-.083-.006-.124-.006a1.294 1.294 0 0 0-.122 2.582h.246a1.27 1.27 0 0 0 .988-.494h4.963a.106.106 0 0 1 .105.094v1.318a.107.107 0 0 0 .103.109"
     />
     <path fill="#773adc" d="M8.886 10.57a2.747 2.747 0 1 1-.01-3.2h1.49a4.04 4.04 0 1 0 .006 3.2Z" />

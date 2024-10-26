@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgRegionManagement = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <radialGradient id="a" cx={7.98} cy={6.94} r={6.17} gradientUnits="userSpaceOnUse">
+      <radialGradient id="Region-Management_svg__a" cx={7.98} cy={6.94} r={6.17} gradientUnits="userSpaceOnUse">
         <stop offset={0.22} stopColor="#0078d4" />
         <stop offset={0.42} stopColor="#0075cf" />
         <stop offset={0.67} stopColor="#006dc0" />
@@ -17,7 +17,7 @@ const SvgRegionManagement = (props: SVGProps<SVGSVGElement>) => (
       d="M8.42 14.07h-.7a.26.26 0 0 0-.26.3c.15 1.56-.81 1.86-2.41 1.89a.26.26 0 0 0-.26.26V17a.27.27 0 0 0 .26.27h5.8a.27.27 0 0 0 .26-.27v-.47a.26.26 0 0 0-.26-.26c-1.58 0-2.34-.33-2.17-1.89a.26.26 0 0 0-.26-.31"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Region-Management_svg__a)"
       d="M8.71 11a.85.85 0 0 1 .29-.21.7.7 0 0 1 .29-.06.8.8 0 0 1 .3.06 1 1 0 0 1 .21.21L8.59 9.75a.75.75 0 0 1 0-1.08.73.73 0 0 1 .54-.23.76.76 0 0 1 .54.23L10 9l.25.22.59.6a.77.77 0 0 0 1.08 0 .76.76 0 0 0 0-1.09l-.59-.59-.33-.38L9.15 6a.75.75 0 0 1 0-1.08.73.73 0 0 1 .54-.23.76.76 0 0 1 .54.23l.79.79a.77.77 0 0 1 .54-1.31.8.8 0 0 1 .54.22l2 2.05A6.18 6.18 0 0 0 8.6.77l.92.92a1 1 0 0 1 .28.68 1 1 0 0 1-1 1 .94.94 0 0 1-.68-.29l-.63-.62a1 1 0 0 0-1.64.68.93.93 0 0 0 .28.68L7.39 5a.94.94 0 0 1 .29.68.92.92 0 0 1-.29.68 1 1 0 0 1-.68.29A1 1 0 0 1 6 6.39L4.67 5a.9.9 0 0 1 0 .65 1 1 0 0 1-1 .71 1 1 0 0 1-.6-.28l1 1a.93.93 0 0 1 .28.68 1 1 0 0 1-.07.37 1 1 0 0 1-.52.52 1 1 0 0 1-.37.07.9.9 0 0 1-.37-.07.85.85 0 0 1-.31-.21l-.92-.92a6.18 6.18 0 0 0 7.78 5.38l-.86-.9a.77.77 0 0 1 0-1.08Z"
     />
     <path

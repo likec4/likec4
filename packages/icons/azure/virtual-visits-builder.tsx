@@ -5,7 +5,7 @@ const SvgVirtualVisitsBuilder = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Virtual-Visits-Builder_svg__a"
         x1={-1516.205}
         x2={-1516.205}
         y1={1550.824}
@@ -20,7 +20,7 @@ const SvgVirtualVisitsBuilder = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#a67af4" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Virtual-Visits-Builder_svg__b"
         x1={-551.781}
         x2={-551.781}
         y1={1016.108}
@@ -32,7 +32,10 @@ const SvgVirtualVisitsBuilder = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#32bedd" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M.02 5.5h15.549v8.669a.52.52 0 0 1-.519.52H.54a.52.52 0 0 1-.52-.52z" />
+    <path
+      fill="url(#Virtual-Visits-Builder_svg__a)"
+      d="M.02 5.5h15.549v8.669a.52.52 0 0 1-.519.52H.54a.52.52 0 0 1-.52-.52z"
+    />
     <path fill="#773adc" d="M.542 2.19h14.505a.52.52 0 0 1 .519.52V5.5H.02V2.71a.52.52 0 0 1 .52-.52Z" />
     <path
       fill="#f2f2f2"
@@ -46,7 +49,7 @@ const SvgVirtualVisitsBuilder = (props: SVGProps<SVGSVGElement>) => (
       fill="#32bedd"
       d="m17.643 14.8-3.277-1.525a.38.38 0 0 1-.233-.389v-.526a.39.39 0 0 1 .233-.39l3.277-1.524c.175-.045.337.142.337.389v3.575c0 .248-.164.434-.337.39"
     />
-    <rect width={7.35} height={6.422} x={8.544} y={9.388} fill="url(#b)" rx={0.385} />
+    <rect width={7.35} height={6.422} x={8.544} y={9.388} fill="url(#Virtual-Visits-Builder_svg__b)" rx={0.385} />
     <path
       fill="#c3f1ff"
       d="M10.79 12.623v-1.379a.382.382 0 0 1 .573-.331l1.2.69 1.194.689a.383.383 0 0 1 0 .662l-1.194.689-1.2.69A.382.382 0 0 1 10.79 14Z"

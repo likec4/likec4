@@ -4,11 +4,25 @@ import type { SVGProps } from 'react'
 const SvgStorageActions = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={12.038} x2={12.038} y1={18} y2={12.007} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Storage-Actions_svg__a"
+        x1={12.038}
+        x2={12.038}
+        y1={18}
+        y2={12.007}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#552f99" />
         <stop offset={0.999} stopColor="#773adc" />
       </linearGradient>
-      <linearGradient id="b" x1={14.958} x2={14.958} y1={14.993} y2={9} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Storage-Actions_svg__b"
+        x1={14.958}
+        x2={14.958}
+        y1={14.993}
+        y2={9}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.489} stopColor="#a67af4" />
         <stop offset={0.999} stopColor="#b796f9" />
       </linearGradient>
@@ -34,11 +48,11 @@ const SvgStorageActions = (props: SVGProps<SVGSVGElement>) => (
       d="M0 1.716c0 .947 3.266 1.715 7.295 1.715s7.295-.768 7.295-1.715S11.324 0 7.295 0 0 .768 0 1.716"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Storage-Actions_svg__a)"
       d="M15.08 13.502v-1.495h-4.058a.6.6 0 0 0-.601.601v3.065a.106.106 0 0 1-.105.105H9.105a.106.106 0 0 0-.077.18l1.975 1.974a.235.235 0 0 0 .333 0l1.975-1.974a.1.1 0 0 0 .026-.065.107.107 0 0 0-.101-.11h-1.214a.105.105 0 0 1-.105-.105v-2.176z"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Storage-Actions_svg__b)"
       d="m17.969 11.043-1.975-1.974a.235.235 0 0 0-.333 0l-1.975 1.974a.1.1 0 0 0-.026.065.107.107 0 0 0 .101.11h1.214c.058 0 .105.047.105.105v2.176h-3.164v1.495h4.059a.6.6 0 0 0 .601-.601v-3.065c0-.058.048-.105.105-.105h1.211a.106.106 0 0 0 .077-.18"
     />
   </svg>

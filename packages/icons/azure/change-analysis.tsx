@@ -5,7 +5,7 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Change-Analysis_svg__a"
         x1={-28.849}
         x2={-28.849}
         y1={86.754}
@@ -17,7 +17,7 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.82} stopColor="#86d633" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Change-Analysis_svg__b"
         x1={7.82}
         x2={7.82}
         y1={16.227}
@@ -29,7 +29,7 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.82} stopColor="#86d633" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id="Change-Analysis_svg__c"
         x1={-20.227}
         x2={-20.227}
         y1={87.696}
@@ -41,7 +41,7 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.82} stopColor="#86d633" />
       </linearGradient>
       <linearGradient
-        id="d"
+        id="Change-Analysis_svg__d"
         x1={-33.251}
         x2={-33.251}
         y1={80.916}
@@ -54,10 +54,10 @@ const SvgChangeAnalysis = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path fill="#76bc2d" d="m2.59 16.55-1.06-.94 5.18-5.8 4.41 4.54 4.16-4.41 1.03.97-5.18 5.49-4.37-4.52z" />
-    <circle cx={6.732} cy={10.857} r={1.7} fill="url(#a)" />
-    <circle cx={11.122} cy={15.236} r={1.7} fill="url(#b)" />
-    <circle cx={15.799} cy={10.277} r={1.7} fill="url(#c)" />
-    <circle cx={2.203} cy={15.8} r={1.7} fill="url(#d)" />
+    <circle cx={6.732} cy={10.857} r={1.7} fill="url(#Change-Analysis_svg__a)" />
+    <circle cx={11.122} cy={15.236} r={1.7} fill="url(#Change-Analysis_svg__b)" />
+    <circle cx={15.799} cy={10.277} r={1.7} fill="url(#Change-Analysis_svg__c)" />
+    <circle cx={2.203} cy={15.8} r={1.7} fill="url(#Change-Analysis_svg__d)" />
     <path
       fill="#0078d4"
       fillRule="evenodd"

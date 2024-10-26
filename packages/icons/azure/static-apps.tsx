@@ -4,12 +4,12 @@ import type { SVGProps } from 'react'
 const SvgStaticApps = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={16.236} y2={5.599} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Static-Apps_svg__a" x1={9} x2={9} y1={16.236} y2={5.599} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.775} stopColor="#0078d4" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M0 5.6h18v10.035a.6.6 0 0 1-.6.6H.6a.6.6 0 0 1-.6-.6z" />
+    <path fill="url(#Static-Apps_svg__a)" d="M0 5.6h18v10.035a.6.6 0 0 1-.6.6H.6a.6.6 0 0 1-.6-.6z" />
     <rect width={15.527} height={8.514} x={1.309} y={6.657} fill="#5ea0ef" opacity={0.6} rx={0.6} />
     <path fill="#005ba1" d="M.6 1.764h16.8a.6.6 0 0 1 .6.6V5.6H0V2.365a.6.6 0 0 1 .6-.601" />
     <path

@@ -4,22 +4,22 @@ import type { SVGProps } from 'react'
 const SvgFreeServices = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={12.43} y2={1.26} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Free-Services_svg__a" x1={9} x2={9} y1={12.43} y2={1.26} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="b" x1={9} x2={9} y1={16.74} y2={12.43} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Free-Services_svg__b" x1={9} x2={9} y1={16.74} y2={12.43} gradientUnits="userSpaceOnUse">
         <stop offset={0.15} stopColor="#ccc" />
         <stop offset={1} stopColor="#707070" />
       </linearGradient>
     </defs>
-    <rect width={16.75} height={11.17} x={0.62} y={1.26} fill="url(#a)" rx={0.56} />
+    <rect width={16.75} height={11.17} x={0.62} y={1.26} fill="url(#Free-Services_svg__a)" rx={0.56} />
     <path fill="#50e6ff" d="M11.79 6.34v3.25L9 11.22V7.97z" />
     <path fill="#9cebff" d="M9 7.97v3.25L6.21 9.59V6.34z" />
     <path fill="#c3f1ff" d="M6.21 9.59 9 7.97v3.25z" />
     <path fill="#9cebff" d="M11.79 9.59 9 7.97v3.25z" />
     <path
-      fill="url(#b)"
+      fill="url(#Free-Services_svg__b)"
       d="M12.36 15.81c-1.66-.26-1.72-1.46-1.72-3.38H7.36c0 1.92-.06 3.12-1.72 3.38a1 1 0 0 0-.83.93h8.38a1 1 0 0 0-.83-.93"
     />
     <path

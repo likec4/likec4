@@ -10,7 +10,7 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
     />
     <circle cx={66.922} cy={71.999} r={21.072} fillOpacity={0.1} />
     <linearGradient
-      id="a"
+      id="Chrome_svg__a"
       x1={395.191}
       x2={395.191}
       y1={484.168}
@@ -21,9 +21,9 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0} stopColor="#81B4E0" />
       <stop offset={1} stopColor="#0C5A94" />
     </linearGradient>
-    <circle cx={64.149} cy={64.235} r={22.736} fill="url(#a)" />
+    <circle cx={64.149} cy={64.235} r={22.736} fill="url(#Chrome_svg__a)" />
     <linearGradient
-      id="b"
+      id="Chrome_svg__b"
       x1={-608.91}
       x2={-608.91}
       y1={-597.648}
@@ -35,11 +35,11 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#DF2227" />
     </linearGradient>
     <path
-      fill="url(#b)"
+      fill="url(#Chrome_svg__b)"
       d="M119.602 36.508C104.336 5.792 67.06-6.732 36.343 8.534A62.1 62.1 0 0 0 12.578 29.3l24.955 43.253c-4.597-14.606 3.521-30.174 18.127-34.77a27.7 27.7 0 0 1 7.935-1.274"
     />
     <linearGradient
-      id="c"
+      id="Chrome_svg__c"
       x1={-657.835}
       x2={-632.327}
       y1={-491.393}
@@ -51,11 +51,11 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#4CB749" />
     </linearGradient>
     <path
-      fill="url(#c)"
+      fill="url(#Chrome_svg__c)"
       d="M12.578 29.3c-19.1 28.492-11.486 67.071 17.005 86.171a62.13 62.13 0 0 0 29.575 10.319l26.063-44.363c-9.745 11.811-27.22 13.486-39.032 3.74a27.7 27.7 0 0 1-8.657-12.613"
     />
     <linearGradient
-      id="d"
+      id="Chrome_svg__d"
       x1={-572.385}
       x2={-599.557}
       y1={-486.91}
@@ -67,11 +67,11 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.3} stopColor="#FCD209" />
     </linearGradient>
     <path
-      fill="url(#d)"
+      fill="url(#Chrome_svg__d)"
       d="M59.158 125.791c34.204 2.585 64.027-23.047 66.613-57.25a62.1 62.1 0 0 0-6.17-32.031H63.595c15.312.07 27.67 12.541 27.598 27.854a27.73 27.73 0 0 1-5.972 17.064"
     />
     <linearGradient
-      id="e"
+      id="Chrome_svg__e"
       x1={-649.391}
       x2={-649.391}
       y1={-528.885}
@@ -83,9 +83,9 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.3} stopOpacity={0.06} />
       <stop offset={1} stopOpacity={0.03} />
     </linearGradient>
-    <path fill="url(#e)" d="m12.578 29.3 24.955 43.253a27.73 27.73 0 0 1 1.107-18.854L13.686 27.636" />
+    <path fill="url(#Chrome_svg__e)" d="m12.578 29.3 24.955 43.253a27.73 27.73 0 0 1 1.107-18.854L13.686 27.636" />
     <linearGradient
-      id="f"
+      id="Chrome_svg__f"
       x1={-588.158}
       x2={-618.657}
       y1={-514.559}
@@ -97,9 +97,9 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.3} stopOpacity={0.06} />
       <stop offset={1} stopOpacity={0.03} />
     </linearGradient>
-    <path fill="url(#f)" d="m59.158 125.791 26.063-44.363a27.73 27.73 0 0 1-16.082 9.426l-11.091 34.937" />
+    <path fill="url(#Chrome_svg__f)" d="m59.158 125.791 26.063-44.363a27.73 27.73 0 0 1-16.082 9.426l-11.091 34.937" />
     <linearGradient
-      id="g"
+      id="Chrome_svg__g"
       x1={-588.6}
       x2={-584.163}
       y1={-505.621}
@@ -111,7 +111,7 @@ const SvgChrome = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.3} stopOpacity={0.06} />
       <stop offset={1} stopOpacity={0.03} />
     </linearGradient>
-    <path fill="url(#g)" d="M119.602 36.508H63.595a27.73 27.73 0 0 1 21.626 10.537l35.491-8.873" />
+    <path fill="url(#Chrome_svg__g)" d="M119.602 36.508H63.595a27.73 27.73 0 0 1 21.626 10.537l35.491-8.873" />
   </svg>
 )
 export default SvgChrome

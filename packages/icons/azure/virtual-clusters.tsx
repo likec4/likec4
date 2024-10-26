@@ -4,13 +4,27 @@ import type { SVGProps } from 'react'
 const SvgVirtualClusters = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.35} x2={5.35} y1={7.02} y2={17.19} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Virtual-Clusters_svg__a"
+        x1={5.35}
+        x2={5.35}
+        y1={7.02}
+        y2={17.19}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#b3b2b3" />
         <stop offset={0.38} stopColor="#afaeaf" />
         <stop offset={0.76} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#979797" />
       </linearGradient>
-      <linearGradient id="b" x1={11.33} x2={11.33} y1={15.74} y2={6.99} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Virtual-Clusters_svg__b"
+        x1={11.33}
+        x2={11.33}
+        y1={15.74}
+        y2={6.99}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.16} stopColor="#1380da" />
         <stop offset={0.53} stopColor="#3c91e5" />
@@ -39,7 +53,7 @@ const SvgVirtualClusters = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={10.41} cy={2.81} r={0.53} fill="#50e6ff" />
     <circle cx={10.41} cy={5.16} r={0.53} fill="#50e6ff" />
     <path
-      fill="url(#a)"
+      fill="url(#Virtual-Clusters_svg__a)"
       d="M9 16.84a.39.39 0 0 1-.42.35H2.14a.39.39 0 0 1-.42-.35V7.37A.39.39 0 0 1 2.14 7h6.43a.39.39 0 0 1 .43.37Z"
     />
     <path
@@ -49,7 +63,7 @@ const SvgVirtualClusters = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={3.61} cy={9.02} r={0.53} fill="#50e6ff" />
     <circle cx={3.61} cy={11.37} r={0.53} fill="#50e6ff" />
     <path
-      fill="url(#b)"
+      fill="url(#Virtual-Clusters_svg__b)"
       d="M17.5 13a2.77 2.77 0 0 0-2.41-2.66A3.49 3.49 0 0 0 11.5 7a3.58 3.58 0 0 0-3.43 2.33 3.31 3.31 0 0 0-2.91 3.18 3.37 3.37 0 0 0 3.48 3.23h5.93a.4.4 0 0 0 .15 0A2.8 2.8 0 0 0 17.5 13"
     />
   </svg>

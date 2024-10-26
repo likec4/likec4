@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgSpeechServices = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.681} x2={5.681} y1={-0.862} y2={15.008} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Speech-Services_svg__a"
+        x1={5.681}
+        x2={5.681}
+        y1={-0.862}
+        y2={15.008}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
@@ -14,7 +21,7 @@ const SvgSpeechServices = (props: SVGProps<SVGSVGElement>) => (
       d="M7.3 7.019h10.041a.66.66 0 0 1 .659.658v7.981a.66.66 0 0 1-.659.658h-4.11a.1.1 0 0 0-.067.023l-2.108 1.615a.219.219 0 0 1-.353-.174v-1.354a.11.11 0 0 0-.109-.11H7.3a.66.66 0 0 1-.658-.658V7.677a.66.66 0 0 1 .658-.658"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Speech-Services_svg__a)"
       d="M11.361.659v7.98a.66.66 0 0 1-.661.661H7.4a.11.11 0 0 0-.109.11v1.355a.22.22 0 0 1-.353.174L4.836 9.32a.1.1 0 0 0-.067-.02H.659A.66.66 0 0 1 0 8.639V.659A.66.66 0 0 1 .659 0H10.7a.66.66 0 0 1 .661.659"
     />
     <path

@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgInternetAnalyzerProfiles = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.693} x2={8.693} y1={12.726} y2={0.705} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Internet-Analyzer-Profiles_svg__a"
+        x1={8.693}
+        x2={8.693}
+        y1={12.726}
+        y2={0.705}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.105} stopColor="#1480da" />
         <stop offset={0.306} stopColor="#348ee3" />
@@ -16,7 +23,7 @@ const SvgInternetAnalyzerProfiles = (props: SVGProps<SVGSVGElement>) => (
     <path fill="none" d="M0 0h18v18H0z" />
     <path fill="none" d="M0 0h18v18H0z" />
     <path
-      fill="url(#a)"
+      fill="url(#Internet-Analyzer-Profiles_svg__a)"
       d="M17.173 8.961A3.81 3.81 0 0 0 13.866 5.3 4.8 4.8 0 0 0 8.919.705a4.93 4.93 0 0 0-4.708 3.211 4.55 4.55 0 0 0-4 4.375 4.615 4.615 0 0 0 4.776 4.435q.211 0 .42-.018h7.734a.8.8 0 0 0 .2-.031 3.855 3.855 0 0 0 3.832-3.716"
     />
     <circle cx={9.101} cy={6.379} r={1.318} fill="#fff" />

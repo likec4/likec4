@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgWebSlots = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.929} x2={8.929} y1={7.745} y2={0.5} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Web-Slots_svg__a" x1={8.929} x2={8.929} y1={7.745} y2={0.5} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#37c2b1" />
         <stop offset={0.565} stopColor="#3fddc3" />
         <stop offset={0.908} stopColor="#42e8ca" />
@@ -19,7 +19,7 @@ const SvgWebSlots = (props: SVGProps<SVGSVGElement>) => (
     <rect width={2.879} height={7.754} x={7.55} y={7.275} fill="#0078d4" rx={0.375} />
     <rect width={2.879} height={7.754} x={11.391} y={7.275} fill="#37c2b1" rx={0.375} />
     <path
-      fill="url(#a)"
+      fill="url(#Web-Slots_svg__a)"
       d="M14.1 3.52 11.129.545a.152.152 0 0 0-.259.107v1.734c-3.581 0-7.162 1.913-7.162 5.359.512-.768 3.07-2.811 7.162-2.811V6.6a.152.152 0 0 0 .259.107L14.1 3.734a.15.15 0 0 0 0-.214"
     />
   </svg>

@@ -5,7 +5,7 @@ const SvgTemplateSpecs = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Template-Specs_svg__a"
         x1={-40}
         x2={-40}
         y1={74.181}
@@ -23,7 +23,7 @@ const SvgTemplateSpecs = (props: SVGProps<SVGSVGElement>) => (
       d="M6.216.5H2.845a1.026 1.026 0 0 0-1.026 1.026V4.9h2.052V2.552h2.345ZM15.155.5h-3.37v2.052h2.344V4.9h2.052V1.526A1.026 1.026 0 0 0 15.155.5M14.129 13.1v2.345h-2.344V17.5h3.37a1.026 1.026 0 0 0 1.026-1.026V13.1ZM3.871 15.448V13.1H1.819v3.371A1.026 1.026 0 0 0 2.845 17.5h3.371v-2.052Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Template-Specs_svg__a)"
       d="M3.724 16.181h10.552a.59.59 0 0 0 .586-.586V2.4a.59.59 0 0 0-.586-.586H3.724a.59.59 0 0 0-.586.586v13.2a.59.59 0 0 0 .586.581"
     />
     <path

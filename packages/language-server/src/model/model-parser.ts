@@ -545,7 +545,7 @@ export class LikeC4ModelParser {
 
   private parseRelationPredicate(astNode: ast.RelationPredicate, _isValid: IsValidFn): c4.RelationPredicateExpression {
     if (ast.isRelationPredicateWith(astNode)) {
-      let relation = ast.isRelationPredicateWhere(astNode.subject) 
+      let relation = ast.isRelationPredicateWhere(astNode.subject)
         ? this.parseRelationPredicateWhere(astNode.subject)
         : this.parseRelationExpr(astNode.subject)
 

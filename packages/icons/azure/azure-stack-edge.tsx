@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgAzureStackEdge = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.59} x2={9.59} y1={17.96} y2={-0.17} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Stack-Edge_svg__a"
+        x1={9.59}
+        x2={9.59}
+        y1={17.96}
+        y2={-0.17}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-Stack-Edge_svg__a)"
       d="M18 10.73a3.77 3.77 0 0 0-3.28-3.63 4.75 4.75 0 0 0-4.9-4.55 4.89 4.89 0 0 0-4.69 3.18 4.48 4.48 0 0 0-3.94 4.34 4.57 4.57 0 0 0 4.73 4.39h8.29A3.81 3.81 0 0 0 18 10.73"
     />
     <path

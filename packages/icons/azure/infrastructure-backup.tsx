@@ -4,12 +4,26 @@ import type { SVGProps } from 'react'
 const SvgInfrastructureBackup = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={6.49} x2={6.49} y1={17.38} y2={0.44} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Infrastructure-Backup_svg__a"
+        x1={6.49}
+        x2={6.49}
+        y1={17.38}
+        y2={0.44}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#949494" />
         <stop offset={0.53} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#b3b3b3" />
       </linearGradient>
-      <linearGradient id="b" x1={10.06} x2={16.48} y1={13.89} y2={13.89} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Infrastructure-Backup_svg__b"
+        x1={10.06}
+        x2={16.48}
+        y1={13.89}
+        y2={13.89}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -24,7 +38,7 @@ const SvgInfrastructureBackup = (props: SVGProps<SVGSVGElement>) => (
       d="M11 9.57a6.7 6.7 0 0 0-2.23.32 6.6 6.6 0 0 0 2.23.33 6.6 6.6 0 0 0 2.23-.33A6.6 6.6 0 0 0 11 9.57"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Infrastructure-Backup_svg__a)"
       d="M11.47 16.81a.57.57 0 0 1-.58.57h-8.8a.56.56 0 0 1-.57-.57V1a.57.57 0 0 1 .57-.56h8.8a.58.58 0 0 1 .58.57Z"
     />
     <path
@@ -34,7 +48,7 @@ const SvgInfrastructureBackup = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={4.11} cy={3.17} r={0.73} fill="#50e6ff" />
     <circle cx={4.11} cy={6.38} r={0.73} fill="#50e6ff" />
     <path
-      fill="url(#b)"
+      fill="url(#Infrastructure-Backup_svg__b)"
       d="M13.27 11.38c-1.77 0-3.21-.53-3.21-1.17v6.19c0 .63 1.42 1.15 3.17 1.16 1.78 0 3.21-.52 3.21-1.16v-6.19c.04.64-1.39 1.17-3.17 1.17"
     />
     <path

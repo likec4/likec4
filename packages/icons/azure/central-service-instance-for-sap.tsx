@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgCentralServiceInstanceForSap = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={13.712} y2={4.288} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Central-Service-Instance-For-SAP_svg__a"
+        x1={9}
+        x2={9}
+        y1={13.712}
+        y2={4.288}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Central-Service-Instance-For-SAP_svg__a)"
       d="M.609 13.712h8.663a.6.6 0 0 0 .432-.181l8.119-8.206a.609.609 0 0 0-.433-1.037H.609A.61.61 0 0 0 0 4.9v8.2a.61.61 0 0 0 .609.612"
     />
     <path fill="#fff" d="M8.329 7.767v2.247l-1.941 1.129v-2.25z" opacity={0.6} />

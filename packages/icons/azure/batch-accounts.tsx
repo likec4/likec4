@@ -4,11 +4,11 @@ import type { SVGProps } from 'react'
 const SvgBatchAccounts = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.05} x2={7.05} y1={8.98} y2={0.34} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Batch-Accounts_svg__a" x1={7.05} x2={7.05} y1={8.98} y2={0.34} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="b" x1={7.05} x2={7.05} y1={3.78} y2={2.4} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Batch-Accounts_svg__b" x1={7.05} x2={7.05} y1={3.78} y2={2.4} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#194f9b" stopOpacity={0} />
         <stop offset={0.26} stopColor="#194f9c" stopOpacity={0.01} />
         <stop offset={0.41} stopColor="#18519e" stopOpacity={0.05} />
@@ -25,9 +25,9 @@ const SvgBatchAccounts = (props: SVGProps<SVGSVGElement>) => (
       fill="#949494"
       d="M15.78 8.89 17.65 7c.15-.16.1-.29-.13-.29h-.93a.23.23 0 0 1-.23-.24c0-1.18-.3-4.47-4.8-4.58a.23.23 0 0 0-.24.23v1.14a.23.23 0 0 0 .25.23 2.75 2.75 0 0 1 3.33 3 .23.23 0 0 1-.23.24h-.87c-.23 0-.28.13-.13.3l1.74 1.9a.24.24 0 0 0 .37-.04"
     />
-    <rect width={12.46} height={8.64} x={0.82} y={0.34} fill="url(#a)" rx={0.57} />
+    <rect width={12.46} height={8.64} x={0.82} y={0.34} fill="url(#Batch-Accounts_svg__a)" rx={0.57} />
     <path fill="#83b9f9" d="M1.38.34h11.49a.41.41 0 0 1 .41.41V2.4H.82V.91a.57.57 0 0 1 .56-.57" />
-    <path fill="url(#b)" d="M.82 2.4h12.46v1.38H.82z" />
+    <path fill="url(#Batch-Accounts_svg__b)" d="M.82 2.4h12.46v1.38H.82z" />
     <rect width={7.92} height={5.49} x={9.9} y={10.95} fill="#005ba1" rx={0.36} />
     <path
       fill="#fff"

@@ -4,25 +4,25 @@ import type { SVGProps } from 'react'
 const SvgSpotVm = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={12.513} y2={1.065} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Spot-VM_svg__a" x1={9} x2={9} y1={12.513} y2={1.065} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.817} stopColor="#5ea0ef" />
       </linearGradient>
-      <linearGradient id="b" x1={9.003} x2={9.003} y1={16.935} y2={12.512} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Spot-VM_svg__b" x1={9.003} x2={9.003} y1={16.935} y2={12.512} gradientUnits="userSpaceOnUse">
         <stop offset={0.149} stopColor="#ccc" />
         <stop offset={1} stopColor="#707070" />
       </linearGradient>
-      <linearGradient id="c" x1={9.029} x2={9.029} y1={0.189} y2={10.695} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Spot-VM_svg__c" x1={9.029} x2={9.029} y1={0.189} y2={10.695} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
     </defs>
-    <rect width={17.171} height={11.447} x={0.415} y={1.065} fill="url(#a)" rx={0.548} />
+    <rect width={17.171} height={11.447} x={0.415} y={1.065} fill="url(#Spot-VM_svg__a)" rx={0.548} />
     <path
-      fill="url(#b)"
+      fill="url(#Spot-VM_svg__b)"
       d="M12.443 15.975c-1.7-.265-1.764-1.49-1.759-3.463H7.316c0 1.973-.062 3.2-1.76 3.463a1 1 0 0 0-.846.96h8.59a1 1 0 0 0-.857-.96"
     />
-    <circle cx={9.029} cy={6.685} r={4.045} fill="url(#c)" />
+    <circle cx={9.029} cy={6.685} r={4.045} fill="url(#Spot-VM_svg__c)" />
     <path fill="#50e6ff" d="M11.41 5.367v2.759L9.025 9.513V6.749z" />
     <path fill="#c3f1ff" d="M11.41 5.367 9.026 6.753 6.641 5.367 9.026 3.98z" />
     <path fill="#9cebff" d="m9.031 6.763-.024 2.76-2.372-1.407.024-2.76z" />

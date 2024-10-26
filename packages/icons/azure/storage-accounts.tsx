@@ -4,13 +4,13 @@ import type { SVGProps } from 'react'
 const SvgStorageAccounts = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={15.83} y2={5.79} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Storage-Accounts_svg__a" x1={9} x2={9} y1={15.83} y2={5.79} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#b3b3b3" />
         <stop offset={0.26} stopColor="#c1c1c1" />
         <stop offset={1} stopColor="#e6e6e6" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M.5 5.79h17v9.48a.57.57 0 0 1-.57.57H1.07a.57.57 0 0 1-.57-.57z" />
+    <path fill="url(#Storage-Accounts_svg__a)" d="M.5 5.79h17v9.48a.57.57 0 0 1-.57.57H1.07a.57.57 0 0 1-.57-.57z" />
     <path fill="#37c2b1" d="M1.07 2.17h15.86a.57.57 0 0 1 .57.57v3.05H.5V2.73a.57.57 0 0 1 .57-.56" />
     <path
       fill="#fff"

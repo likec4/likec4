@@ -4,18 +4,32 @@ import type { SVGProps } from 'react'
 const SvgWebsitePower = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="b" x1={7.243} x2={7.232} y1={9.904} y2={8.458} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Website-Power_svg__b"
+        x1={7.243}
+        x2={7.232}
+        y1={9.904}
+        y2={8.458}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.123} stopColor="#d7d7d7" />
         <stop offset={1} stopColor="#fcfcfc" />
       </linearGradient>
-      <linearGradient id="c" x1={9.337} x2={9.337} y1={11.349} y2={10.053} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Website-Power_svg__c"
+        x1={9.337}
+        x2={9.337}
+        y1={11.349}
+        y2={10.053}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ccc" />
         <stop offset={0.123} stopColor="#d7d7d7" />
         <stop offset={1} stopColor="#fcfcfc" />
       </linearGradient>
       <radialGradient
-        id="a"
+        id="Website-Power_svg__a"
         cx={1427.09}
         cy={3357.234}
         r={20.684}
@@ -37,9 +51,12 @@ const SvgWebsitePower = (props: SVGProps<SVGSVGElement>) => (
       fill="#b3b3b3"
       d="m2.8 8.303.692 1.072-.554.517-.842-1.293zM15.05 8.107a22 22 0 0 0-2.362-2.8 21.7 21.7 0 0 0-3.006-2.513q-.341.204-.682.431a20.7 20.7 0 0 1 3.165 2.609 20.6 20.6 0 0 1 2.4 2.877l.635.989c1.613 2.712 2.069 5.247.906 6.41s-3.7.707-6.41-.905q-.348.242-.7.459a10.45 10.45 0 0 0 5.23 1.84 3.28 3.28 0 0 0 2.4-.871c1.439-1.44 1.024-4.287-.8-7.327l.009-.005-.116-.182c-.024-.039-.042-.076-.066-.115v.006Z"
     />
-    <path fill="url(#a)" d="M10.824 11.448a3.1 3.1 0 1 1-3.8-4.9l.031-.024a3.1 3.1 0 0 1 3.771 4.927" />
-    <circle cx={7.235} cy={8.88} r={0.997} fill="url(#b)" />
-    <circle cx={9.337} cy={10.701} r={0.648} fill="url(#c)" />
+    <path
+      fill="url(#Website-Power_svg__a)"
+      d="M10.824 11.448a3.1 3.1 0 1 1-3.8-4.9l.031-.024a3.1 3.1 0 0 1 3.771 4.927"
+    />
+    <circle cx={7.235} cy={8.88} r={0.997} fill="url(#Website-Power_svg__b)" />
+    <circle cx={9.337} cy={10.701} r={0.648} fill="url(#Website-Power_svg__c)" />
     <circle cx={10.814} cy={9.094} r={0.688} fill="#fff" />
     <g fill="#f2f2f2">
       <path

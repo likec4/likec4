@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgAzureApiForFhir = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.09} x2={9.09} y1={17.5} y2={1.36} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-API-for-FHIR_svg__a"
+        x1={9.09}
+        x2={9.09}
+        y1={17.5}
+        y2={1.36}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#ef7100" />
         <stop offset={0.13} stopColor="#f27d07" />
         <stop offset={0.43} stopColor="#f69113" />
@@ -13,7 +20,7 @@ const SvgAzureApiForFhir = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-API-for-FHIR_svg__a)"
       d="M13.47 1.38a4.26 4.26 0 0 0-4.38 2.85A4.28 4.28 0 0 0 4.7 1.38C.75 1.69.54 5.6.6 7.1.63 8.17.84 11.54 9 17.4v.1l.07-.05.07.05v-.1c8.2-5.86 8.41-9.29 8.44-10.4.06-1.46-.16-5.31-4.11-5.62"
     />
     <g fill="#ffe452">

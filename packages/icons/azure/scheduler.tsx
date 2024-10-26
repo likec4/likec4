@@ -5,7 +5,7 @@ const SvgScheduler = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <radialGradient
-        id="a"
+        id="Scheduler_svg__a"
         cx={16.858}
         cy={14.328}
         r={8.737}
@@ -22,7 +22,7 @@ const SvgScheduler = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#0078d4" />
       </radialGradient>
       <radialGradient
-        id="b"
+        id="Scheduler_svg__b"
         cx={17.97}
         cy={15.337}
         r={1.223}
@@ -33,7 +33,7 @@ const SvgScheduler = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5e5e5e" />
       </radialGradient>
     </defs>
-    <circle cx={9.71} cy={8.252} r={8.252} fill="url(#a)" />
+    <circle cx={9.71} cy={8.252} r={8.252} fill="url(#Scheduler_svg__a)" />
     <circle cx={9.742} cy={8.252} r={7.185} fill="#fff" />
     <path
       fill="#7a7a7a"
@@ -49,7 +49,7 @@ const SvgScheduler = (props: SVGProps<SVGSVGElement>) => (
       rx={0.504}
       transform="rotate(135 11.274 9.802)"
     />
-    <circle cx={9.747} cy={8.238} r={1.169} fill="url(#b)" />
+    <circle cx={9.747} cy={8.238} r={1.169} fill="url(#Scheduler_svg__b)" />
     <path
       fill="#86d633"
       d="M8.078.146A8.294 8.294 0 0 0 5.4 15.353l.274-.726a.161.161 0 0 1 .275-.046l2.151 2.61a.161.161 0 0 1-.1.262L4.657 18a.162.162 0 0 1-.177-.216l.4-1.074a9.72 9.72 0 0 1-4.507-5.757A8.462 8.462 0 0 1 8.078.146"

@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgAzureDatabaseMySqlServer = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={2.59} x2={15.41} y1={10.16} y2={10.16} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Azure-Database-MySQL-Server_svg__a"
+        x1={2.59}
+        x2={15.41}
+        y1={10.16}
+        y2={10.16}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -15,7 +22,7 @@ const SvgAzureDatabaseMySqlServer = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-Database-MySQL-Server_svg__a)"
       d="M9 5.14c-3.54 0-6.41-1-6.41-2.32v12.36c0 1.27 2.82 2.3 6.32 2.32H9c3.54 0 6.41-1 6.41-2.32V2.82c0 1.29-2.87 2.32-6.41 2.32"
     />
     <path fill="#e8e8e8" d="M15.41 2.82c0 1.29-2.87 2.32-6.41 2.32s-6.41-1-6.41-2.32S5.46.5 9 .5s6.41 1 6.41 2.32" />

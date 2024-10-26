@@ -4,13 +4,27 @@ import type { SVGProps } from 'react'
 const SvgSqlDataWarehouses = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={7.37} x2={7.37} y1={0.5} y2={13.23} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="SQL-Data-Warehouses_svg__a"
+        x1={7.37}
+        x2={7.37}
+        y1={0.5}
+        y2={13.23}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#b3b2b3" />
         <stop offset={0.38} stopColor="#afaeaf" />
         <stop offset={0.76} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#979797" />
       </linearGradient>
-      <linearGradient id="b" x1={8.96} x2={17.32} y1={13.29} y2={13.29} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="SQL-Data-Warehouses_svg__b"
+        x1={8.96}
+        x2={17.32}
+        y1={13.29}
+        y2={13.29}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -20,13 +34,16 @@ const SvgSqlDataWarehouses = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#005ba1" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M7.37.5.68 4.38v.96h1.23v7.28h1.21V5.34h8.5v7.89h1.21V5.34h1.23v-.96z" />
+    <path
+      fill="url(#SQL-Data-Warehouses_svg__a)"
+      d="M7.37.5.68 4.38v.96h1.23v7.28h1.21V5.34h8.5v7.89h1.21V5.34h1.23v-.96z"
+    />
     <path
       fill="#50e6ff"
       d="M4.33 12.62h2.43V10.2H4.33Zm3.64 0h2.43V10.2H8ZM4.33 9h2.43V6.55H4.33ZM8 6.55V9h2.4V6.55Z"
     />
     <path
-      fill="url(#b)"
+      fill="url(#SQL-Data-Warehouses_svg__b)"
       d="M13.14 10.41c-2.31 0-4.14-.6-4.14-1.33v7.09c0 .73 1.84 1.32 4.12 1.33h.06c2.31 0 4.18-.6 4.18-1.33V9.08c-.04.73-1.91 1.33-4.22 1.33"
     />
     <path

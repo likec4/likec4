@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgDeviceSecurityGoogle = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={11.202} x2={2.831} y1={13.906} y2={-0.576} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Device-Security-Google_svg__a"
+        x1={11.202}
+        x2={2.831}
+        y1={13.906}
+        y2={-0.576}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5e9624" />
         <stop offset={1} stopColor="#b4ec36" />
       </linearGradient>
@@ -14,7 +21,7 @@ const SvgDeviceSecurityGoogle = (props: SVGProps<SVGSVGElement>) => (
       d="M12.574 7.01c0 4.036-4.969 7.286-6.049 7.945a.4.4 0 0 1-.412 0C5.032 14.3.064 11.046.064 7.01V2.153a.39.39 0 0 1 .384-.385C4.312 1.666 3.423 0 6.319 0s2.006 1.666 5.871 1.768a.39.39 0 0 1 .384.385Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Device-Security-Google_svg__a)"
       d="M12.055 7.051c0 3.7-4.556 6.682-5.547 7.286a.37.37 0 0 1-.378 0c-.991-.6-5.547-3.584-5.547-7.286V2.6a.357.357 0 0 1 .352-.353C4.479 2.15 3.663.623 6.319.623S8.159 2.15 11.7 2.244a.357.357 0 0 1 .352.353Z"
     />
     <path

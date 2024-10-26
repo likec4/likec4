@@ -4,14 +4,14 @@ import type { SVGProps } from 'react'
 const SvgLoadBalancers = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={19.85} y2={-1.02} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Load-Balancers_svg__a" x1={9} x2={9} y1={19.85} y2={-1.02} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#5e9624" />
         <stop offset={0.02} stopColor="#5f9724" />
         <stop offset={1} stopColor="#76bc2d" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Load-Balancers_svg__a)"
       d="M.18 8.57 8.57.18a.6.6 0 0 1 .86 0l8.39 8.39a.6.6 0 0 1 0 .86l-8.4 8.4a.6.6 0 0 1-.84 0l-8.4-8.4a.6.6 0 0 1 0-.86"
     />
     <path

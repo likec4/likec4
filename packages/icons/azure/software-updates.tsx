@@ -4,13 +4,13 @@ import type { SVGProps } from 'react'
 const SvgSoftwareUpdates = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={15.84} y2={0.52} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Software-Updates_svg__a" x1={9} x2={9} y1={15.84} y2={0.52} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#d2ebff" />
         <stop offset={1} stopColor="#f0fffd" />
       </linearGradient>
     </defs>
     <rect width={18} height={12.81} y={1.13} fill="#0078d4" rx={0.6} />
-    <rect width={15.91} height={10.9} x={1.05} y={2.03} fill="url(#a)" opacity={0.9} rx={0.33} />
+    <rect width={15.91} height={10.9} x={1.05} y={2.03} fill="url(#Software-Updates_svg__a)" opacity={0.9} rx={0.33} />
     <rect width={1.91} height={0.26} x={8.07} y={1.53} fill="#f2f2f2" rx={0.12} />
     <circle cx={12.87} cy={12.65} r={4.22} fill="#76bc2d" />
     <path

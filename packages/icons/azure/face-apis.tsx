@@ -4,13 +4,13 @@ import type { SVGProps } from 'react'
 const SvgFaceApIs = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.063} x2={9.063} y1={1.292} y2={16.959} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Face-APIs_svg__a" x1={9.063} x2={9.063} y1={1.292} y2={16.959} gradientUnits="userSpaceOnUse">
         <stop offset={0.225} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Face-APIs_svg__a)"
       d="M15.408 9.7c-.172-.4-1-.6-.821-1.535a6.58 6.58 0 0 0-.144-4.018 5.09 5.09 0 0 0-4.271-2.8 12.7 12.7 0 0 0-2.219 0 5.09 5.09 0 0 0-4.271 2.8 6.57 6.57 0 0 0-.143 4.018C3.717 9.1 2.89 9.3 2.718 9.7c-.3.691.4 2.293.621 2.97s1.25.325 1.512.918c.825 1.873 1.878 3.223 3.938 3.361a1.4 1.4 0 0 0 .193.014h.161a1.4 1.4 0 0 0 .193-.014c2.061-.138 3.114-1.488 3.939-3.361.261-.593 1.291-.24 1.512-.918s.913-2.283.621-2.97"
     />
     <g fill="#50e6ff">

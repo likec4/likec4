@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgTags = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.84} x2={9.84} y1={3.825} y2={17.5} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Tags_svg__a" x1={9.84} x2={9.84} y1={3.825} y2={17.5} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#c69aeb" />
         <stop offset={1} stopColor="#6f4bb2" />
       </linearGradient>
@@ -18,7 +18,7 @@ const SvgTags = (props: SVGProps<SVGSVGElement>) => (
       d="M12.711 1.383a1.512 1.512 0 1 0 1.52 1.511 1.515 1.515 0 0 0-1.52-1.511m.832 1.676a.848.848 0 1 1-1-.992.84.84 0 0 1 1 .992"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Tags_svg__a)"
       d="M16.658 5.828 14.78 3.96a.47.47 0 0 0-.346-.135l-3.483.126a.47.47 0 0 0-.312.135l-7.616 7.577a.46.46 0 0 0 0 .654L8.1 17.365a.467.467 0 0 0 .657 0l7.623-7.586a.46.46 0 0 0 .134-.288l.278-3.3a.46.46 0 0 0-.134-.363m-2.266 1.234a.843.843 0 1 1 .847-.843.846.846 0 0 1-.847.843"
     />
     <path

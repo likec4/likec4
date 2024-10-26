@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgDataLakeAnalytics = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.98} x2={8.98} y1={15.81} y2={2.19} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Data-Lake-Analytics_svg__a"
+        x1={8.98}
+        x2={8.98}
+        y1={15.81}
+        y2={2.19}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#1988d9" />
         <stop offset={0.9} stopColor="#54aef0" />
       </linearGradient>
@@ -14,7 +21,7 @@ const SvgDataLakeAnalytics = (props: SVGProps<SVGSVGElement>) => (
       d="M11.08 17.37 1.37 13a1.48 1.48 0 0 1-.74-1.95L5 1.37a1.48 1.48 0 0 1 2-.74L16.63 5a1.48 1.48 0 0 1 .74 2L13 16.63a1.48 1.48 0 0 1-1.92.74"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Data-Lake-Analytics_svg__a)"
       d="M14.3 15.81H3.65a1.49 1.49 0 0 1-1.48-1.48V3.67a1.49 1.49 0 0 1 1.48-1.48H14.3a1.48 1.48 0 0 1 1.48 1.48v10.66a1.48 1.48 0 0 1-1.48 1.48"
     />
     <path

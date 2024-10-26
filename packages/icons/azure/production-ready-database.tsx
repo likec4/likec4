@@ -5,7 +5,7 @@ const SvgProductionReadyDatabase = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Production-Ready-Database_svg__a"
         x1={0.072}
         x2={12.822}
         y1={12.971}
@@ -23,7 +23,7 @@ const SvgProductionReadyDatabase = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Production-Ready-Database_svg__a)"
       d="M9.01 5.145c-3.521-.009-6.372-1.056-6.369-2.339l-.032 12.355c0 1.272 2.8 2.312 6.282 2.338h.087c3.521.009 6.378-1.023 6.381-2.306l.032-12.355c-.003 1.284-2.86 2.316-6.381 2.307"
     />
     <path

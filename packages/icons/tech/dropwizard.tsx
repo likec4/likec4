@@ -5,7 +5,7 @@ const SvgDropwizard = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="b"
+        id="Dropwizard_svg__b"
         x2={1}
         gradientTransform="matrix(-3070 -1630 -1630 3070 3221.19 2903.28)"
         gradientUnits="userSpaceOnUse"
@@ -16,7 +16,7 @@ const SvgDropwizard = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#252761" />
       </linearGradient>
       <linearGradient
-        id="d"
+        id="Dropwizard_svg__d"
         x2={1}
         gradientTransform="scale(-1851.53798 1851.53798)rotate(-14.621 3.82 4.204)"
         gradientUnits="userSpaceOnUse"
@@ -26,22 +26,22 @@ const SvgDropwizard = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.865} stopColor="#24265d" />
         <stop offset={1} stopColor="#252761" />
       </linearGradient>
-      <clipPath id="a">
+      <clipPath id="Dropwizard_svg__a">
         <path d="M180.895 285.039S1320.7-280.582 2192.75 391.68c-227.41 610.38-626.72 2371.23-862.53 3148.89-50.27 165.81-58.48 182.34-79.05 227.87-115.09 254.71-236.16-494.3-433.061-1248.28-70.507-270.25-637.214-2235.121-637.214-2235.121" />
       </clipPath>
-      <clipPath id="c">
+      <clipPath id="Dropwizard_svg__c">
         <path d="M410.777 410.078S1385.91-162.09 2192.75 391.68c-21.6 96.371-76.64 251.09-114.02 395.218-198.64 765.722-558.14 2058.592-733.32 2700.432-189.87 694.95-251.29-117.65-472.781-982.33-67.293-262.93-461.852-2094.922-461.852-2094.922" />
       </clipPath>
     </defs>
-    <g clipPath="url(#a)" transform="matrix(.03194 0 0 -.03194 26.222 125.997)">
+    <g clipPath="url(#Dropwizard_svg__a)" transform="matrix(.03194 0 0 -.03194 26.222 125.997)">
       <path
-        fill="url(#b)"
+        fill="url(#Dropwizard_svg__b)"
         d="M180.895 285.039S1320.7-280.582 2192.75 391.68c-227.41 610.38-626.72 2371.23-862.53 3148.89-50.27 165.81-58.48 182.34-79.05 227.87-115.09 254.71-236.16-494.3-433.061-1248.28-70.507-270.25-637.214-2235.121-637.214-2235.121"
       />
     </g>
-    <g clipPath="url(#c)" transform="matrix(.03194 0 0 -.03194 26.222 125.997)">
+    <g clipPath="url(#Dropwizard_svg__c)" transform="matrix(.03194 0 0 -.03194 26.222 125.997)">
       <path
-        fill="url(#d)"
+        fill="url(#Dropwizard_svg__d)"
         d="M410.777 410.078S1385.91-162.09 2192.75 391.68c-21.6 96.371-76.64 251.09-114.02 395.218-198.64 765.722-558.14 2058.592-733.32 2700.432-189.87 694.95-251.29-117.65-472.781-982.33-67.293-262.93-461.852-2094.922-461.852-2094.922"
       />
     </g>

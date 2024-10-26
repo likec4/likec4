@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgTrafficManagerProfiles = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={17.5} y2={0.5} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Traffic-Manager-Profiles_svg__a"
+        x1={9}
+        x2={9}
+        y1={17.5}
+        y2={0.5}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.16} stopColor="#6f4bb2" />
         <stop offset={0.32} stopColor="#7450b5" />
         <stop offset={0.51} stopColor="#825dbf" />
@@ -14,7 +21,7 @@ const SvgTrafficManagerProfiles = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Traffic-Manager-Profiles_svg__a)"
       d="M12.29.5H5.71a.56.56 0 0 0-.4.17L.67 5.31a.56.56 0 0 0-.17.4v6.58a.56.56 0 0 0 .17.4l4.64 4.64a.56.56 0 0 0 .4.17h6.58a.56.56 0 0 0 .4-.17l4.64-4.64a.56.56 0 0 0 .17-.4V5.71a.56.56 0 0 0-.17-.4L12.69.67a.56.56 0 0 0-.4-.17"
     />
     <path

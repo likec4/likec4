@@ -4,12 +4,19 @@ import type { SVGProps } from 'react'
 const SvgEntraIdProtection = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={10.901} x2={10.901} y1={4.385} y2={18.783} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Entra-ID-Protection_svg__a"
+        x1={10.901}
+        x2={10.901}
+        y1={4.385}
+        y2={18.783}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.085} stopColor="#ef7100" />
         <stop offset={0.999} stopColor="#f78d1e" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Entra-ID-Protection_svg__b"
         x1={-79.452}
         x2={-79.452}
         y1={778.657}
@@ -32,7 +39,7 @@ const SvgEntraIdProtection = (props: SVGProps<SVGSVGElement>) => (
     />
     <path fill="#f78d1e" d="M13.365 9.985 9.001 5.062v7.65z" />
     <path
-      fill="url(#a)"
+      fill="url(#Entra-ID-Protection_svg__a)"
       d="m17.647 9.753-4.921-5.551a3.1 3.1 0 0 0-1.313-.291c-.925 0-1.752.399-2.302 1.026l-.109.123 4.364 4.924L9.1 12.65l-.099.062v.003L9 12.713l-1.805 1.128h-.002a3.1 3.1 0 0 1-1.676.487c-.682 0-1.327-.269-1.715-.511l4.374 2.734c.25.156.538.234.824.234h.001c.287 0 .573-.078.823-.234l1.73-1.081 5.77-3.607c.751-.468.902-1.456.323-2.11"
     />
     <path
@@ -40,7 +47,7 @@ const SvgEntraIdProtection = (props: SVGProps<SVGSVGElement>) => (
       d="M18 12.721c0 2.265-2.739 4.088-3.338 4.46a.21.21 0 0 1-.224 0c-.599-.367-3.338-2.19-3.338-4.46V9.996c0-.119.093-.215.21-.218 2.134-.055 1.642-.991 3.241-.991s1.106.937 3.241.991c.117.003.21.1.21.218v2.725Z"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Entra-ID-Protection_svg__b)"
       d="M17.717 12.741c0 2.081-2.515 3.751-3.065 4.088a.19.19 0 0 1-.205 0c-.551-.337-3.065-2.007-3.065-4.088v-2.478a.203.203 0 0 1 .195-.238c1.959-.035 1.511-.887 2.973-.887s1.014.852 2.973.887c.107.003.192.09.195.198v2.517Z"
     />
   </svg>

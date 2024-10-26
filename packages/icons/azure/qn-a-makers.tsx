@@ -5,7 +5,7 @@ const SvgQnAMakers = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="QnA-Makers_svg__a"
         x1={-1256.65}
         x2={-1256.65}
         y1={18.862}
@@ -16,17 +16,24 @@ const SvgQnAMakers = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0} stopColor="#32bedd" />
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
-      <linearGradient id="b" x1={5.872} x2={5.872} y1={-0.862} y2={15.008} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="QnA-Makers_svg__b"
+        x1={5.872}
+        x2={5.872}
+        y1={-0.862}
+        y2={15.008}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#QnA-Makers_svg__a)"
       d="M7.106 7.019H17.15a.66.66 0 0 1 .659.658v7.981a.66.66 0 0 1-.659.658h-4.11a.1.1 0 0 0-.067.023l-2.108 1.615a.219.219 0 0 1-.353-.174v-1.354a.11.11 0 0 0-.109-.11h-3.3a.66.66 0 0 1-.658-.658V7.677a.66.66 0 0 1 .661-.658"
     />
     <path
-      fill="url(#b)"
+      fill="url(#QnA-Makers_svg__b)"
       d="M11.552.659v7.98a.66.66 0 0 1-.658.658H7.6a.11.11 0 0 0-.109.11v1.355a.22.22 0 0 1-.353.174L5.027 9.32a.1.1 0 0 0-.067-.02H.85a.66.66 0 0 1-.659-.658V.659A.66.66 0 0 1 .85 0h10.044a.66.66 0 0 1 .658.659"
     />
     <path

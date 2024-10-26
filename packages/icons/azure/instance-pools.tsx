@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgInstancePools = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" data-name="azure-fluent-icons" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.41} x2={5.41} y1={17.33} y2={4.61} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Instance-Pools_svg__a"
+        x1={5.41}
+        x2={5.41}
+        y1={17.33}
+        y2={4.61}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#949494" />
         <stop offset={0.53} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#b3b3b3" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Instance-Pools_svg__b"
         x1={10.04}
         x2={10.04}
         y1={-1347.39}
@@ -34,7 +41,7 @@ const SvgInstancePools = (props: SVGProps<SVGSVGElement>) => (
       d="M12.32 14.76a.59.59 0 0 1-.57.57H3.07a.57.57 0 0 1-.57-.57V3.18a.55.55 0 0 1 .55-.57h8.7a.57.57 0 0 1 .57.57Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Instance-Pools_svg__a)"
       d="M10.32 16.76a.59.59 0 0 1-.57.57H1.07a.58.58 0 0 1-.57-.57V5.18a.55.55 0 0 1 .55-.57h8.7a.57.57 0 0 1 .57.57Z"
     />
     <path
@@ -43,7 +50,7 @@ const SvgInstancePools = (props: SVGProps<SVGSVGElement>) => (
     />
     <circle cx={3.06} cy={7.31} r={0.72} fill="#50e6ff" />
     <path
-      fill="url(#b)"
+      fill="url(#Instance-Pools_svg__b)"
       d="M17.5 14.08a3.35 3.35 0 0 0-2.91-3.22 4.21 4.21 0 0 0-4.35-4A4.31 4.31 0 0 0 6.1 9.64a4 4 0 0 0-3.52 3.85 4.06 4.06 0 0 0 4.2 3.9h7.39a3.38 3.38 0 0 0 3.33-3.31"
     />
     <path

@@ -5,7 +5,7 @@ const SvgAzureBackupCenter = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Azure-Backup-Center_svg__a"
         x1={11.176}
         x2={11.176}
         y1={7.698}
@@ -22,7 +22,7 @@ const SvgAzureBackupCenter = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Azure-Backup-Center_svg__a)"
       d="M17.7 7.405a2.93 2.93 0 0 0-2.544-2.818 3.7 3.7 0 0 0-3.806-3.535 3.79 3.79 0 0 0-3.623 2.471A3.5 3.5 0 0 0 4.651 6.89a3.55 3.55 0 0 0 3.675 3.41 3 3 0 0 0 .324-.014h5.95a.6.6 0 0 0 .157-.024A2.966 2.966 0 0 0 17.7 7.405"
     />
     <path

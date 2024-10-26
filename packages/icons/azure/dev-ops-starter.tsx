@@ -5,7 +5,7 @@ const SvgDevOpsStarter = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="DevOps-Starter_svg__a"
         x1={306.077}
         x2={305.834}
         y1={-363.569}
@@ -17,7 +17,7 @@ const SvgDevOpsStarter = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#50e6ff" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="DevOps-Starter_svg__b"
         x1={310.996}
         x2={305.457}
         y1={-367.576}
@@ -30,12 +30,12 @@ const SvgDevOpsStarter = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#DevOps-Starter_svg__a)"
       d="M17.85 9.71c-.545 1.979-1.868 2.634-3.293 3.239a1.8 1.8 0 0 1-.694.119H7.714c-1.159 0-2.923-.019-3.747-.028a1.95 1.95 0 0 1-.875-.2A5 5 0 0 1 .153 8.83C.071 8.1-.106 5.123 4.239 3.977A5.33 5.33 0 0 1 9.307.68a5.045 5.045 0 0 1 5.068 4.73c1.448.29 3.765 1.72 3.475 4.3"
     />
     <path fill="#fff" d="M16.764 11.866a5.454 5.454 0 1 1-5.454-5.454 5.454 5.454 0 0 1 5.454 5.454" />
     <path
-      fill="url(#b)"
+      fill="url(#DevOps-Starter_svg__b)"
       fillRule="evenodd"
       d="M11.31 16.6a4.736 4.736 0 1 0-4.736-4.736A4.736 4.736 0 0 0 11.31 16.6m0 .717a5.454 5.454 0 1 0-5.453-5.453 5.453 5.453 0 0 0 5.453 5.453"
     />

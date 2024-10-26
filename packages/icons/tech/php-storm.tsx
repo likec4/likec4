@@ -5,7 +5,7 @@ const SvgPhpStorm = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="PhpStorm_svg__a"
         x1={25.8}
         x2={33.95}
         y1={33.6}
@@ -19,7 +19,7 @@ const SvgPhpStorm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#ff318c" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="PhpStorm_svg__b"
         x1={1.56}
         x2={35.95}
         y1={67.23}
@@ -32,7 +32,7 @@ const SvgPhpStorm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.75} stopColor="#ff318c" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id="PhpStorm_svg__c"
         x1={89.3}
         x2={65.46}
         y1={65.79}
@@ -49,7 +49,7 @@ const SvgPhpStorm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#b74af7" />
       </linearGradient>
       <linearGradient
-        id="d"
+        id="PhpStorm_svg__d"
         x1={74.68}
         x2={58.6}
         y1={93.59}
@@ -61,10 +61,16 @@ const SvgPhpStorm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.78} stopColor="#b74af7" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="m70.082 27.281-3.898-11.8-40.73-8.778-19.97 22.59L27.43 40.52V27.28Zm0 0" />
-    <path fill="url(#b)" d="M27.43 34.96 5.484 29.294l11.157 67 10.75-.086Zm0 0" />
-    <path fill="url(#c)" d="M100.57 27.281H62.402l15.336-13.629 29.551 5.489 15.227 37.836-21.934 21.785Zm0 0" />
-    <path fill="url(#d)" d="m100.598 56.477-.028 43.949H37.742l1.621 9.558 39.45 13.75 43.703-26.16Zm0 0" />
+    <path fill="url(#PhpStorm_svg__a)" d="m70.082 27.281-3.898-11.8-40.73-8.778-19.97 22.59L27.43 40.52V27.28Zm0 0" />
+    <path fill="url(#PhpStorm_svg__b)" d="M27.43 34.96 5.484 29.294l11.157 67 10.75-.086Zm0 0" />
+    <path
+      fill="url(#PhpStorm_svg__c)"
+      d="M100.57 27.281H62.402l15.336-13.629 29.551 5.489 15.227 37.836-21.934 21.785Zm0 0"
+    />
+    <path
+      fill="url(#PhpStorm_svg__d)"
+      d="m100.598 56.477-.028 43.949H37.742l1.621 9.558 39.45 13.75 43.703-26.16Zm0 0"
+    />
     <path d="M27.43 27.43h73.14v73.14H27.43Zm0 0" />
     <path
       fill="#fff"

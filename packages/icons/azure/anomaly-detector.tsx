@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgAnomalyDetector = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={10.084} x2={10.084} y1={1.309} y2={17.627} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Anomaly-Detector_svg__a"
+        x1={10.084}
+        x2={10.084}
+        y1={1.309}
+        y2={17.627}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Anomaly-Detector_svg__a)"
       d="m17.8 16.141-2.928-2.929a7.281 7.281 0 1 0-1.3 1.193l2.981 2.981a.824.824 0 0 0 1.164 0l.08-.081a.82.82 0 0 0 .003-1.164"
     />
     <circle cx={9.358} cy={8.54} r={5.665} fill="#fff" />

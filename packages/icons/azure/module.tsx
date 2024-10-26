@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgModule = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={19.049} y2={1.048} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Module_svg__a" x1={9} x2={9} y1={19.049} y2={1.048} gradientUnits="userSpaceOnUse">
         <stop offset={0.2} stopColor="#0078d4" />
         <stop offset={0.287} stopColor="#1380da" />
         <stop offset={0.495} stopColor="#3c91e5" />
@@ -12,7 +12,7 @@ const SvgModule = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.759} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
-    <rect width={16} height={16} x={1} y={1} fill="url(#a)" rx={0.534} />
+    <rect width={16} height={16} x={1} y={1} fill="url(#Module_svg__a)" rx={0.534} />
     <g fill="#fff">
       <g opacity={0.95}>
         <rect width={3.617} height={3.368} x={2.361} y={2.777} rx={0.14} />

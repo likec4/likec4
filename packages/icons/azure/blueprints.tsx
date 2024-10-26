@@ -5,7 +5,7 @@ const SvgBlueprints = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Blueprints_svg__a"
         x1={6050.2}
         x2={6038.28}
         y1={-3638.83}
@@ -27,7 +27,7 @@ const SvgBlueprints = (props: SVGProps<SVGSVGElement>) => (
       d="M15.16 13.51a2.08 2.08 0 0 1 2.28 2.24A1.89 1.89 0 0 1 14.38 17a.67.67 0 0 1-.26-.54V13.5Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Blueprints_svg__a)"
       d="M17.49 13.5v-9a2.29 2.29 0 0 0-2.29-2.27H.51v9a2.29 2.29 0 0 0 2.29 2.29h9.92a26 26 0 0 1 3 0c2 .32 1.64 2.47 1.64 2.47a11 11 0 0 0 .13-2.49"
     />
     <path

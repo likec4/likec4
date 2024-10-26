@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <linearGradient
-      id="a"
+      id="Elixir_svg__a"
       x1={835.592}
       x2={821.211}
       y1={-36.546}
@@ -16,13 +16,13 @@ const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#fff" stopOpacity={0.385} />
     </linearGradient>
     <path
-      fill="url(#a)"
+      fill="url(#Elixir_svg__a)"
       fillRule="evenodd"
       d="M64.4.5C36.7 13.9 1.9 83.4 30.9 113.9c26.8 33.5 85.4 1.3 68.4-40.5-21.5-36-35-37.9-34.9-72.9"
       clipRule="evenodd"
     />
     <linearGradient
-      id="b"
+      id="Elixir_svg__b"
       x1={942.357}
       x2={824.692}
       y1={-40.593}
@@ -34,13 +34,13 @@ const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#9f8daf" />
     </linearGradient>
     <path
-      fill="url(#b)"
+      fill="url(#Elixir_svg__b)"
       fillRule="evenodd"
       d="M64.4.2C36.8 13.6 1.9 82.9 31 113.5c10.7 12.4 28 16.5 37.7 9.1 26.4-18.8 7.4-53.1 10.4-78.5C68.1 33.9 64.2 11.3 64.4.2"
       clipRule="evenodd"
     />
     <linearGradient
-      id="c"
+      id="Elixir_svg__c"
       x1={924.646}
       x2={924.646}
       y1={120.513}
@@ -52,13 +52,13 @@ const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#b7b4b4" stopOpacity={0.278} />
     </linearGradient>
     <path
-      fill="url(#c)"
+      fill="url(#Elixir_svg__c)"
       fillRule="evenodd"
       d="M56.7 4.3c-22.3 15.9-28.2 75-24.1 94.2 8.2 48.1 75.2 28.3 69.6-16.5-6-29.2-48.8-39.2-45.5-77.7"
       clipRule="evenodd"
     />
     <linearGradient
-      id="d"
+      id="Elixir_svg__d"
       x1={428.034}
       x2={607.325}
       y1={198.448}
@@ -70,13 +70,13 @@ const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#32054f" stopOpacity={0.54} />
     </linearGradient>
     <path
-      fill="url(#d)"
+      fill="url(#Elixir_svg__d)"
       fillRule="evenodd"
       d="M78.8 49.8c10.4 13.4 12.7 22.6 6.8 27.9-27.7 19.4-61.3 7.4-54-37.3C22.1 63 4.5 96.8 43.3 101.6c20.8 3.6 54 2 58.9-16.1-.2-15.9-10.8-22.9-23.4-35.7"
       clipRule="evenodd"
     />
     <linearGradient
-      id="e"
+      id="Elixir_svg__e"
       x1={907.895}
       x2={590.242}
       y1={540.636}
@@ -88,13 +88,13 @@ const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#340a50" stopOpacity={0.821} />
     </linearGradient>
     <path
-      fill="url(#e)"
+      fill="url(#Elixir_svg__e)"
       fillRule="evenodd"
       d="M38.1 36.4c-2.9 21.2 35.1 77.9 58.3 71-17.7 35.6-56.9-21.2-64-41.7 1.5-11 2.2-16.4 5.7-29.3"
       clipRule="evenodd"
     />
     <linearGradient
-      id="f"
+      id="Elixir_svg__f"
       x1={1102.297}
       x2={1008.071}
       y1={100.542}
@@ -106,13 +106,13 @@ const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#f4f4f4" stopOpacity={0.234} />
     </linearGradient>
     <path
-      fill="url(#f)"
+      fill="url(#Elixir_svg__f)"
       fillRule="evenodd"
       d="M60.4 49.7c.8 7.9 3.9 20.5 0 28.8S38.7 102 43.6 115.3c11.4 24.8 37.1-4.4 36.9-19 1.1-11.8-6.6-38.7-1.8-52.5L76.5 41l-13.6-4c-2.2 3.2-3 7.5-2.5 12.7"
       clipRule="evenodd"
     />
     <linearGradient
-      id="g"
+      id="Elixir_svg__g"
       x1={1354.664}
       x2={1059.233}
       y1={140.06}
@@ -124,7 +124,7 @@ const SvgElixir = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={1} stopColor="#370c50" stopOpacity={0.582} />
     </linearGradient>
     <path
-      fill="url(#g)"
+      fill="url(#Elixir_svg__g)"
       fillRule="evenodd"
       d="M65.3 10.8C36 27.4 48 53.4 49.3 81.6l19.1-55.4c-1.4-5.7-2.3-9.5-3.1-15.4"
       clipRule="evenodd"

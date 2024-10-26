@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgDataShares = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={0.5} x2={11.43} y1={9.99} y2={9.99} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Data-Shares_svg__a" x1={0.5} x2={11.43} y1={9.99} y2={9.99} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -32,7 +32,7 @@ const SvgDataShares = (props: SVGProps<SVGSVGElement>) => (
       d="M15.63 12.9a1.2 1.2 0 0 1 .64.19 1.17 1.17 0 0 1 .52.74 1.2 1.2 0 0 1-.15.9 1.21 1.21 0 0 1-1 .55 1.2 1.2 0 0 1-.64-.18 1.2 1.2 0 0 1-.53-.75 1.2 1.2 0 0 1 1.16-1.45m0-.68a1.87 1.87 0 1 0 1 .29 1.85 1.85 0 0 0-1-.29"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Data-Shares_svg__a)"
       d="M6 5.72C3 5.72.5 4.83.5 3.74v10.52c0 1.09 2.41 2 5.39 2H6c3 0 5.47-.88 5.47-2V3.74C11.43 4.83 9 5.72 6 5.72"
     />
     <path fill="#e8e8e8" d="M11.43 3.74c0 1.09-2.45 2-5.47 2S.5 4.83.5 3.74 3 1.76 6 1.76s5.47.88 5.47 2" />

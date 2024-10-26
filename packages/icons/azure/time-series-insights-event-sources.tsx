@@ -4,14 +4,28 @@ import type { SVGProps } from 'react'
 const SvgTimeSeriesInsightsEventSources = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.03} x2={9.03} y1={13.38} y2={4.63} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Time-Series-Insights-Event-Sources_svg__a"
+        x1={9.03}
+        x2={9.03}
+        y1={13.38}
+        y2={4.63}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#198ab3" />
         <stop offset={0.4} stopColor="#25aed3" />
         <stop offset={0.78} stopColor="#2fcaec" />
         <stop offset={1} stopColor="#32d4f5" />
       </linearGradient>
     </defs>
-    <rect width={8.75} height={8.75} x={4.65} y={4.63} fill="url(#a)" rx={0.41} />
+    <rect
+      width={8.75}
+      height={8.75}
+      x={4.65}
+      y={4.63}
+      fill="url(#Time-Series-Insights-Event-Sources_svg__a)"
+      rx={0.41}
+    />
     <path fill="#fff" d="M7.31 12.53" />
     <path
       fill="#c3f1ff"

@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgSsd = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={13.333} y2={1.244} gradientUnits="userSpaceOnUse">
+      <linearGradient id="SSD_svg__a" x1={9} x2={9} y1={13.333} y2={1.244} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.156} stopColor="#1380da" />
         <stop offset={0.528} stopColor="#3c91e5" />
@@ -12,7 +12,10 @@ const SvgSsd = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#5ea0ef" />
       </linearGradient>
     </defs>
-    <path fill="url(#a)" d="M17.5 13.333H.5L1.683 2.412a1.31 1.31 0 0 1 1.3-1.168h12.033a1.31 1.31 0 0 1 1.3 1.168Z" />
+    <path
+      fill="url(#SSD_svg__a)"
+      d="M17.5 13.333H.5L1.683 2.412a1.31 1.31 0 0 1 1.3-1.168h12.033a1.31 1.31 0 0 1 1.3 1.168Z"
+    />
     <path fill="#5ea0ef" d="M.5 13.333h17v2.114a1.31 1.31 0 0 1-1.309 1.309H1.809A1.31 1.31 0 0 1 .5 15.447z" />
     <path
       fill="#f2f2f2"

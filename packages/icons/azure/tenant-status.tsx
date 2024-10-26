@@ -4,21 +4,21 @@ import type { SVGProps } from 'react'
 const SvgTenantStatus = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.14} x2={8.14} y1={6.52} y2={18.39} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Tenant-Status_svg__a" x1={8.14} x2={8.14} y1={6.52} y2={18.39} gradientUnits="userSpaceOnUse">
         <stop offset={0.22} stopColor="#32d4f5" />
         <stop offset={1} stopColor="#198ab3" />
       </linearGradient>
-      <linearGradient id="b" x1={7.8} x2={8.67} y1={0.15} y2={10.93} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Tenant-Status_svg__b" x1={7.8} x2={8.67} y1={0.15} y2={10.93} gradientUnits="userSpaceOnUse">
         <stop offset={0.22} stopColor="#32d4f5" />
         <stop offset={1} stopColor="#198ab3" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Tenant-Status_svg__a)"
       d="M14 16.25A1.27 1.27 0 0 0 15.29 15a1 1 0 0 0 0-.15c-.5-4-2.78-7.25-7.13-7.25S1.44 10.33 1 14.84a1.28 1.28 0 0 0 1.14 1.4H14Z"
     />
     <path fill="#fff" d="M8.15 8.52A3.9 3.9 0 0 1 6 7.88l2.13 5.62 2.13-5.58a4 4 0 0 1-2.11.6" opacity={0.8} />
-    <circle cx={8.15} cy={4.51} r={4.01} fill="url(#b)" />
+    <circle cx={8.15} cy={4.51} r={4.01} fill="url(#Tenant-Status_svg__b)" />
     <path
       fill="#b31b1b"
       d="M15.31 10.82A1.77 1.77 0 0 0 13.5 12a1.76 1.76 0 0 0-1.81-1.18C10.05 11 10 12.57 10 13.19c0 .44.1 1.84 3.48 4.27C16.91 15 17 13.63 17 13.19c0-.62 0-2.19-1.69-2.37"

@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgCustomIpPrefix = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.44} x2={8.44} y1={4.529} y2={12.659} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Custom-IP-Prefix_svg__a"
+        x1={8.44}
+        x2={8.44}
+        y1={4.529}
+        y2={12.659}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0.196} stopColor="#5ea0ef" />
         <stop offset={1} stopColor="#0078d4" />
       </linearGradient>
@@ -13,7 +20,10 @@ const SvgCustomIpPrefix = (props: SVGProps<SVGSVGElement>) => (
       fill="#005ba1"
       d="M14.006.47v8.579h-.075l-.592.005h-.08A4.7 4.7 0 0 0 9.894 11q-.041.057-.078.112a.2.2 0 0 0-.027.039.2.2 0 0 0-.023.041l-.01.022-.013.04h-.678a.57.57 0 0 0-.076-.362 1 1 0 0 0-.183-.234L7.168 8.874a.7.7 0 0 0-.218-.181.7.7 0 0 0-.3-.072.66.66 0 0 0-.513.248l-1.76 1.818a.67.67 0 0 0-.232.568H.477a.47.47 0 0 1-.469-.47V.461A.47.47 0 0 1 .477 0h13.059a.47.47 0 0 1 .47.47"
     />
-    <path fill="url(#a)" d="M15.318 4.529v4.788a4.7 4.7 0 0 0-6.179 3.342H2.024a.46.46 0 0 1-.461-.461V4.529Z" />
+    <path
+      fill="url(#Custom-IP-Prefix_svg__a)"
+      d="M15.318 4.529v4.788a4.7 4.7 0 0 0-6.179 3.342H2.024a.46.46 0 0 1-.461-.461V4.529Z"
+    />
     <path fill="#0078d4" d="M2.025 1.6h12.831a.46.46 0 0 1 .462.461v2.468H1.564V2.053a.46.46 0 0 1 .461-.453" />
     <path
       fill="#fff"

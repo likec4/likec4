@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgCognitiveServices = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={19.13} y2={-0.29} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Cognitive-Services_svg__a" x1={9} x2={9} y1={19.13} y2={-0.29} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.16} stopColor="#1380da" />
         <stop offset={0.53} stopColor="#3c91e5" />
@@ -13,7 +13,7 @@ const SvgCognitiveServices = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Cognitive-Services_svg__a)"
       d="M18 11.38a4 4 0 0 0-3.51-3.88 5.1 5.1 0 0 0-5.25-4.88A5.25 5.25 0 0 0 4.22 6 4.8 4.8 0 0 0 0 10.67a4.9 4.9 0 0 0 5.07 4.71h8.65a.8.8 0 0 0 .22 0 4.1 4.1 0 0 0 4.06-4"
     />
     <path

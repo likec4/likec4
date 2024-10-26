@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgServiceCatalogMad = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.15} x2={8.15} y1={17.5} y2={2.1} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Service-Catalog-MAD_svg__a"
+        x1={8.15}
+        x2={8.15}
+        y1={17.5}
+        y2={2.1}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#773adc" />
         <stop offset={0.25} stopColor="#9255e6" />
         <stop offset={0.5} stopColor="#a669ee" />
@@ -20,7 +27,10 @@ const SvgServiceCatalogMad = (props: SVGProps<SVGSVGElement>) => (
       fill="#fff"
       d="m2.9 2.1.74-.85A.53.53 0 0 1 4 1.08h10.88a.52.52 0 0 1 .52.52v13.78a.52.52 0 0 1-.17.39l-1.15 1.05z"
     />
-    <path fill="url(#a)" d="M14 2.1H1.95v15a.39.39 0 0 0 .38.39H14a.39.39 0 0 0 .38-.39V2.48A.38.38 0 0 0 14 2.1" />
+    <path
+      fill="url(#Service-Catalog-MAD_svg__a)"
+      d="M14 2.1H1.95v15a.39.39 0 0 0 .38.39H14a.39.39 0 0 0 .38-.39V2.48A.38.38 0 0 0 14 2.1"
+    />
     <g fill="#fff">
       <path d="m8.35 11.18-1.6-.88V8.5l1.57.87v1.75M6.3 10l-1.6-.85v-1.8l1.57.87V10" />
       <path

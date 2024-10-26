@@ -4,13 +4,20 @@ import type { SVGProps } from 'react'
 const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={5.759} x2={5.759} y1={0.5} y2={16.523} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Server-Farm_svg__a" x1={5.759} x2={5.759} y1={0.5} y2={16.523} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#b3b2b3" />
         <stop offset={0.375} stopColor="#afaeaf" />
         <stop offset={0.763} stopColor="#a2a2a2" />
         <stop offset={1} stopColor="#979797" />
       </linearGradient>
-      <linearGradient id="b" x1={11.676} x2={11.676} y1={17.5} y2={8.901} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Server-Farm_svg__b"
+        x1={11.676}
+        x2={11.676}
+        y1={17.5}
+        y2={8.901}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.156} stopColor="#1380da" />
         <stop offset={0.528} stopColor="#3c91e5" />
@@ -19,7 +26,7 @@ const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Server-Farm_svg__a)"
       d="M10.96 15.98a.574.574 0 0 1-.6.543h-9.2a.574.574 0 0 1-.6-.543V1.043A.574.574 0 0 1 1.158.5h9.2a.574.574 0 0 1 .6.543Z"
     />
     <path
@@ -29,7 +36,7 @@ const SvgServerFarm = (props: SVGProps<SVGSVGElement>) => (
     <circle cx={3.542} cy={3.649} r={0.836} fill="#50e6ff" />
     <circle cx={3.542} cy={7.35} r={0.836} fill="#50e6ff" />
     <path
-      fill="url(#b)"
+      fill="url(#Server-Farm_svg__b)"
       d="M14.849 10.484 11.676 8.9l-3.288 1.584-1.2 2.35v4.381a.286.286 0 0 0 .286.285h8.405a.286.286 0 0 0 .286-.285v-4.381Z"
     />
     <path

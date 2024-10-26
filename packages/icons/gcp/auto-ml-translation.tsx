@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgAutoMlTranslation = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <defs>
-      <style>{'.cls-3{fill:#4285f4}'}</style>
+      <style>{'.AutoML-Translation_svg__cls-3{fill:#4285f4}'}</style>
     </defs>
     <g data-name="Product Icons">
       <path d="M15 10.32h.16v-1H12.5V8.18h-1.1v1.14H8.82v1H15" fill="#669df6" />
@@ -14,7 +14,7 @@ const SvgAutoMlTranslation = (props: SVGProps<SVGSVGElement>) => (
       />
       <path
         d="m6.82 19.46.95 1.65h9.49L22 12.89 20.1 9.6l-4.74 8.21H7.77ZM17.18 4.54l-.95-1.65H6.74L2 11.11l1.9 3.29 4.74-8.21h7.59Z"
-        className="cls-3"
+        className="AutoML-Translation_svg__cls-3"
       />
     </g>
   </svg>

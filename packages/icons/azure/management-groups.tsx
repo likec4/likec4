@@ -4,11 +4,18 @@ import type { SVGProps } from 'react'
 const SvgManagementGroups = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9} x2={9} y1={2.95} y2={6.34} gradientUnits="userSpaceOnUse">
+      <linearGradient id="Management-Groups_svg__a" x1={9} x2={9} y1={2.95} y2={6.34} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#c69aeb" />
         <stop offset={1} stopColor="#6f4bb2" />
       </linearGradient>
-      <linearGradient id="b" x1={8.99} x2={8.99} y1={6.76} y2={9.22} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Management-Groups_svg__b"
+        x1={8.99}
+        x2={8.99}
+        y1={6.76}
+        y2={9.22}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#54aef0" />
         <stop offset={1} stopColor="#1988d9" />
       </linearGradient>
@@ -17,9 +24,9 @@ const SvgManagementGroups = (props: SVGProps<SVGSVGElement>) => (
       fill="#949494"
       d="m13.69 11.22-1.5-3.3L9 4.2 5.79 7.91 4.28 11.2l.53.25 1.23-2.68 1.21 2.68.54-.24-1.4-3.09L9 5.1l2.6 3.03-1.42 3.08.53.25 1.23-2.67 1.21 2.68z"
     />
-    <circle cx={9} cy={4.65} r={1.69} fill="url(#a)" />
+    <circle cx={9} cy={4.65} r={1.69} fill="url(#Management-Groups_svg__a)" />
     <path
-      fill="url(#b)"
+      fill="url(#Management-Groups_svg__b)"
       d="M6 6.76A1.23 1.23 0 1 1 4.82 8 1.23 1.23 0 0 1 6 6.76M10.72 8a1.22 1.22 0 0 0 1.22 1.22A1.23 1.23 0 1 0 10.72 8"
     />
     <g fill="#37c2b1">

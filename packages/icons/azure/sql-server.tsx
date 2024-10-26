@@ -4,7 +4,7 @@ import type { SVGProps } from 'react'
 const SvgSqlServer = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={0.5} x2={13.18} y1={10.04} y2={10.04} gradientUnits="userSpaceOnUse">
+      <linearGradient id="SQL-Server_svg__a" x1={0.5} x2={13.18} y1={10.04} y2={10.04} gradientUnits="userSpaceOnUse">
         <stop offset={0} stopColor="#005ba1" />
         <stop offset={0.07} stopColor="#0060a9" />
         <stop offset={0.36} stopColor="#0071c8" />
@@ -15,7 +15,7 @@ const SvgSqlServer = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#SQL-Server_svg__a)"
       d="M6.84 5.09c-3.5 0-6.34-1-6.34-2.3V15c0 1.26 2.79 2.28 6.25 2.3h.09c3.5 0 6.34-1 6.34-2.3V2.79c0 1.27-2.84 2.3-6.34 2.3"
     />
     <path fill="#e8e8e8" d="M13.18 2.79c0 1.27-2.84 2.3-6.34 2.3S.5 4.06.5 2.79 3.34.49 6.84.49s6.34 1 6.34 2.3" />

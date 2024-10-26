@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgServiceHealth = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={8.66} x2={8.66} y1={17.12} y2={1.03} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Service-Health_svg__a"
+        x1={8.66}
+        x2={8.66}
+        y1={17.12}
+        y2={1.03}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#1988d9" />
         <stop offset={0.22} stopColor="#218ddc" />
         <stop offset={0.56} stopColor="#379ce5" />
@@ -12,7 +19,7 @@ const SvgServiceHealth = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Service-Health_svg__a)"
       d="M8.66 17.12c8.18-5.86 8.46-9.28 8.49-10.35.05-1.5-.15-5.41-4.15-5.72A4.26 4.26 0 0 0 8.66 3.9a4.28 4.28 0 0 0-4.39-2.85C.32 1.36.11 5.27.16 6.77c0 1.07.32 4.49 8.5 10.35"
     />
     <path

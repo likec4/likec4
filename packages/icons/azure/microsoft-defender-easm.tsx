@@ -5,7 +5,7 @@ const SvgMicrosoftDefenderEasm = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Microsoft-Defender-EASM_svg__a"
         x1={149.824}
         x2={159.281}
         y1={-352.541}
@@ -17,7 +17,7 @@ const SvgMicrosoftDefenderEasm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#508dfa" />
       </linearGradient>
       <linearGradient
-        id="b"
+        id="Microsoft-Defender-EASM_svg__b"
         x1={161.576}
         x2={148.34}
         y1={-367.038}
@@ -30,11 +30,11 @@ const SvgMicrosoftDefenderEasm = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#Microsoft-Defender-EASM_svg__a)"
       d="M15.926 8.436c0 4.572-5.5 8.253-6.7 9a.43.43 0 0 1-.456 0c-1.2-.746-6.7-4.427-6.7-9v-5.5A.435.435 0 0 1 2.5 2.5c4.28-.114 3.294-2 6.5-2s2.221 1.889 6.5 2a.435.435 0 0 1 .425.436z"
     />
     <path
-      fill="url(#b)"
+      fill="url(#Microsoft-Defender-EASM_svg__b)"
       d="M15.352 8.487c0 4.192-5.046 7.568-6.143 8.253a.39.39 0 0 1-.418 0c-1.1-.685-6.143-4.063-6.143-8.253V3.442a.4.4 0 0 1 .39-.4C6.963 2.936 6.059 1.206 9 1.206s2.037 1.73 5.962 1.836a.4.4 0 0 1 .276.121.4.4 0 0 1 .114.279z"
     />
     <path

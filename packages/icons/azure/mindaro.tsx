@@ -5,7 +5,7 @@ const SvgMindaro = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
       <linearGradient
-        id="a"
+        id="Mindaro_svg__a"
         x1={13.8}
         x2={13.8}
         y1={4.27}
@@ -28,7 +28,7 @@ const SvgMindaro = (props: SVGProps<SVGSVGElement>) => (
     <path fill="#e6e6e6" d="M4.47 13.1v4.82L.31 15.49v-4.82z" />
     <path fill="#50e6ff" d="m13.74 8.23-4.15 2.43v4.85l4.15 2.42 4.16-2.42v-4.85z" />
     <path
-      fill="url(#a)"
+      fill="url(#Mindaro_svg__a)"
       d="M16.75 15.74h-5.86a.57.57 0 0 1-.56-.58v-3.95a.51.51 0 0 1 .47-.55h5.91a.6.6 0 0 1 .56.59v3.9a.52.52 0 0 1-.43.59z"
     />
     <path

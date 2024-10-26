@@ -4,7 +4,14 @@ import type { SVGProps } from 'react'
 const SvgServiceEndpointPolicies = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
     <defs>
-      <linearGradient id="a" x1={9.19} x2={9.19} y1={17.5} y2={0.5} gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="Service-Endpoint-Policies_svg__a"
+        x1={9.19}
+        x2={9.19}
+        y1={17.5}
+        y2={0.5}
+        gradientUnits="userSpaceOnUse"
+      >
         <stop offset={0} stopColor="#0078d4" />
         <stop offset={0.82} stopColor="#5ea0ef" />
       </linearGradient>
@@ -14,7 +21,7 @@ const SvgServiceEndpointPolicies = (props: SVGProps<SVGSVGElement>) => (
       d="M13.35 2.88a2.31 2.31 0 0 1 2.3-2.32 1.86 1.86 0 0 1 1.59 1.88 1.86 1.86 0 0 1-.41 1.18.71.71 0 0 1-.55.26h-3Z"
     />
     <path
-      fill="url(#a)"
+      fill="url(#Service-Endpoint-Policies_svg__a)"
       d="M13.56.51h-9A2.29 2.29 0 0 0 2.29 2.8v14.69h9a2.29 2.29 0 0 0 2.29-2.29V5.29a26 26 0 0 1 0-3C13.94.3 16.09.65 16.09.65a11 11 0 0 0-2.53-.14"
     />
     <path
