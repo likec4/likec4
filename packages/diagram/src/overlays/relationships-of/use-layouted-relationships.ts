@@ -63,7 +63,7 @@ const Sizes = {
   // 0 means no spacer
   spacerHeight: 0,
 
-  compoundLabelHeight: 5
+  compoundLabelHeight: 1
 }
 
 export const ZIndexes = {
@@ -91,12 +91,11 @@ function createGraph() {
   columns.reduce((prev, column) => {
     const c = graphColumn(column)
     g.setNode(c.id, {})
-    g.setNode(c.anchor, { width: 40, height: 5 })
+    g.setNode(c.anchor, { width: 40, height: 2 })
     g.setParent(c.anchor, c.id)
     if (prev) {
       g.setEdge(prev, c.anchor, {
-        width: 0,
-        weight: 10
+        width: 0
       })
     }
     return c.anchor
@@ -258,9 +257,6 @@ function createNode(
 
   g.setNode(k.id, sized())
   if (xynode.type === 'compound') {
-    g.setNode(k.id, {
-      padding: 40
-    })
     g.setNode(k.port, {
       width: Sizes.nodeWidth - Sizes.dagre.ranksep,
       height: Sizes.compoundLabelHeight

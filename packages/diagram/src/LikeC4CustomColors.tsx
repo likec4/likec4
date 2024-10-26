@@ -1,12 +1,14 @@
 import { type ThemeColorValues } from '@likec4/core'
 import { useMantineStyleNonce } from '@mantine/core'
+import { deepEqual } from 'fast-equals'
+import { memo } from 'react'
 import { entries } from 'remeda'
 import type { LikeC4CustomColorsProperties } from './LikeC4CustomColors.props'
 import { vars } from './theme-vars'
 
 type CSSVarFunction = `var(--${string})` | `var(--${string}, ${string | number} )`
 
-export function LikeC4CustomColors({ customColors }: LikeC4CustomColorsProperties) {
+export const LikeC4CustomColors = memo<LikeC4CustomColorsProperties>(({ customColors }) => {
   function toStyle(name: String, colorValues: ThemeColorValues): String {
     const rules = new Array<String>(
       ...entries(colorValues.elements).map(([key, value]) => `${stripCssVarReference(vars.element[key])}: ${value};`),
@@ -34,7 +36,8 @@ export function LikeC4CustomColors({ customColors }: LikeC4CustomColorsPropertie
 
   return (
     <>
-      <style type="text/css" dangerouslySetInnerHTML={{ __html: styles }} {...(nonce && { nonce })} />
+      <style type="text/css" dangerouslySetInnerHTML={{ __html: styles }} nonce={nonce} />
     </>
   )
-}
+}, deepEqual)
+LikeC4CustomColors.displayName = 'LikeC4CustomColors'
