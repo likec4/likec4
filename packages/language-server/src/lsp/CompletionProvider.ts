@@ -5,6 +5,7 @@ import {
   type CompletionProviderOptions,
   DefaultCompletionProvider
 } from 'langium/lsp'
+import { anyPass } from 'remeda'
 import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 
@@ -73,16 +74,16 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           detail: `Insert ${keyword.value} block`,
           kind: CompletionItemKind.Module,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} \${1:name} \${2:*} {\n\tcolor \${0:primary}\n}`
+          insertText: `${keyword.value} \${1:name} \${2:*} {\n\t\${3|color,shape,border,opacity,icon|} \$0\n}`
         })
       }
-      if (AstUtils.hasContainerOfType(context.node, ast.isLikeC4View)) {
+      if (AstUtils.hasContainerOfType(context.node, anyPass([ast.isModelViews, ast.isGlobalStyleGroup]))) {
         return acceptor(context, {
           label: keyword.value,
           detail: `Insert ${keyword.value} block`,
           kind: CompletionItemKind.Module,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} \${1:*} {\n\tcolor \${0:primary}\n}`
+          insertText: `${keyword.value} \${1:*} {\n\t\${2|color,shape,border,opacity,icon|} \$0\n}`
         })
       }
       return acceptor(context, {
@@ -90,7 +91,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         detail: `Insert ${keyword.value} block`,
         kind: CompletionItemKind.Module,
         insertTextFormat: InsertTextFormat.Snippet,
-        insertText: `${keyword.value} {\n\tcolor \${0:primary}\n}`
+        insertText: `${keyword.value} {\n\t\${1|color,shape,border,opacity,icon|} \$0\n}`
       })
     }
     if (keyword.value === 'extend') {
