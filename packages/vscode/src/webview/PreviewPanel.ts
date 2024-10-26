@@ -1,4 +1,4 @@
-import { invariant, type ViewID } from '@likec4/core'
+import { delay, invariant, type ViewID } from '@likec4/core'
 import * as vscode from 'vscode'
 import { ViewColumn, type Webview, type WebviewPanel } from 'vscode'
 import { isProd } from '../const'
@@ -140,28 +140,26 @@ export namespace PreviewPanel {
       private readonly ctrl: ExtensionController
     ) {}
 
-    deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Thenable<void> {
+    async deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Promise<void> {
       invariant(!PreviewPanel.current, 'PreviewPanel already initialized')
-      return new Promise((resolve, reject) => {
-        let viewId: ViewID
-        if (
-          state != null
-          && typeof state === 'object'
-          && 'view' in state
-          && state.view != null
-          && typeof state.view === 'object'
-          && 'id' in state.view
-          && typeof state.view.id === 'string'
-        ) {
-          viewId = state.view.id as ViewID
-        } else {
-          viewId = 'index' as ViewID
-        }
-        logger.info(`[PreviewPanel.Serializer] deserializeWebviewPanel viewId=${viewId}`)
-        PreviewPanel.current = new PreviewPanel(viewId, panel, this.ctrl)
-        panel.reveal()
-        resolve()
-      })
+      let viewId: ViewID
+      if (
+        state != null
+        && typeof state === 'object'
+        && 'view' in state
+        && state.view != null
+        && typeof state.view === 'object'
+        && 'id' in state.view
+        && typeof state.view.id === 'string'
+      ) {
+        viewId = state.view.id as ViewID
+      } else {
+        viewId = 'index' as ViewID
+      }
+      logger.info(`[PreviewPanel.Serializer] deserializeWebviewPanel viewId=${viewId}`)
+      PreviewPanel.current = new PreviewPanel(viewId, panel, this.ctrl)
+      await delay(500)
+      panel.reveal()
     }
   }
 }
