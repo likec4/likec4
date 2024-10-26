@@ -2330,7 +2330,7 @@ __metadata:
     p-limit: "npm:^6.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-error-boundary: "npm:^4.1.0"
+    react-error-boundary: "npm:^4.1.2"
     react-resizable-panels: "npm:^2.1.4"
     remeda: "npm:^2.15.0"
     string-hash: "npm:^1.1.3"
@@ -2387,7 +2387,7 @@ __metadata:
     postcss: "npm:^8.4.47"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-error-boundary: "npm:^4.1.0"
+    react-error-boundary: "npm:^4.1.2"
     remeda: "npm:^2.15.0"
     tsx: "npm:~4.9.3"
     type-fest: "npm:4.26.1"
@@ -8656,7 +8656,7 @@ __metadata:
     pretty-ms: "npm:^9.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-error-boundary: "npm:^4.1.0"
+    react-error-boundary: "npm:^4.1.2"
     react-resizable-panels: "npm:^2.1.4"
     react-shadow: "npm:^20.5.0"
     remeda: "npm:^2.15.0"
@@ -11539,14 +11539,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-error-boundary@npm:^4.1.0":
-  version: 4.1.1
-  resolution: "react-error-boundary@npm:4.1.1"
+"react-error-boundary@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "react-error-boundary@npm:4.1.2"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
   peerDependencies:
     react: ">=16.13.1"
-  checksum: 10c0/0faa4236833a5d98844f84180c8f54316b555bb3e1b38b37d59e6edf8baa754c4fad4570155dc49de61558a0e912fb7143554657f9abccf8ccd08fbee1bd7ac4
+  checksum: 10c0/0737e5259bed40ce14eb0823b3c7b152171921f2179e604f48f3913490cdc594d6c22d43d7abb4ffb1512c832850228db07aa69d3b941db324953a5e393cb399
   languageName: node
   linkType: hard
 
