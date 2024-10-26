@@ -2161,7 +2161,7 @@ __metadata:
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
-    astro: "npm:~4.16.6"
+    astro: "npm:~4.16.7"
     astro-og-canvas: "npm:^0.5.4"
     likec4: "workspace:*"
     npm-run-all2: "npm:^6.2.6"
@@ -4351,6 +4351,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"acorn@npm:^8.13.0":
+  version: 8.13.0
+  resolution: "acorn@npm:8.13.0"
+  bin:
+    acorn: bin/acorn
+  checksum: 10c0/f35dd53d68177c90699f4c37d0bb205b8abe036d955d0eb011ddb7f14a81e6fd0f18893731c457c1b5bd96754683f4c3d80d9a5585ddecaa53cdf84e0b3d68f7
+  languageName: node
+  linkType: hard
+
 "add-stream@npm:^1.0.0":
   version: 1.0.0
   resolution: "add-stream@npm:1.0.0"
@@ -4570,9 +4579,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro@npm:~4.16.6":
-  version: 4.16.6
-  resolution: "astro@npm:4.16.6"
+"astro@npm:~4.16.7":
+  version: 4.16.7
+  resolution: "astro@npm:4.16.7"
   dependencies:
     "@astrojs/compiler": "npm:^2.10.3"
     "@astrojs/internal-helpers": "npm:0.4.1"
@@ -4585,7 +4594,7 @@ __metadata:
     "@rollup/pluginutils": "npm:^5.1.2"
     "@types/babel__core": "npm:^7.20.5"
     "@types/cookie": "npm:^0.6.0"
-    acorn: "npm:^8.12.1"
+    acorn: "npm:^8.13.0"
     aria-query: "npm:^5.3.2"
     axobject-query: "npm:^4.1.0"
     boxen: "npm:8.0.1"
@@ -4625,7 +4634,7 @@ __metadata:
     semver: "npm:^7.6.3"
     sharp: "npm:^0.33.3"
     shiki: "npm:^1.22.0"
-    tinyexec: "npm:^0.3.0"
+    tinyexec: "npm:^0.3.1"
     tsconfck: "npm:^3.1.4"
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.3"
@@ -4642,7 +4651,7 @@ __metadata:
       optional: true
   bin:
     astro: astro.js
-  checksum: 10c0/f5f768a6b8451c7e1ac4244fa007391ece569ca3f8359cac910765752fc4f0b2d3d73c9bc850eb4afbe6999cef08429179f0d305955bed35ec5441b2a3d073d2
+  checksum: 10c0/320f7d121f3611aae7289fce444093a4cc0d5ceb11350f4646ff7d9ed92d5d2418a197e22db256dbd78ba401391a43545e9cce009844144ae9397d8c6639abd5
   languageName: node
   linkType: hard
 
@@ -13226,6 +13235,13 @@ __metadata:
   version: 0.3.0
   resolution: "tinyexec@npm:0.3.0"
   checksum: 10c0/138a4f4241aea6b6312559508468ab275a31955e66e2f57ed206e0aaabecee622624f208c5740345f0a66e33478fd065e359ed1eb1269eb6fd4fa25d44d0ba3b
+  languageName: node
+  linkType: hard
+
+"tinyexec@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "tinyexec@npm:0.3.1"
+  checksum: 10c0/11e7a7c5d8b3bddf8b5cbe82a9290d70a6fad84d528421d5d18297f165723cb53d2e737d8f58dcce5ca56f2e4aa2d060f02510b1f8971784f97eb3e9aec28f09
   languageName: node
   linkType: hard
 
