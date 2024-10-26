@@ -85,7 +85,6 @@ import { LikeC4View } from './likec4.generated'
 // - and 
 // - tag is 'v1' or 'v2'
 const App = () => {
-
   return (
     <div>
       <LikeC4View
@@ -112,7 +111,7 @@ Be aware, `where` applies both to elements and relationships.
 ##### ReactLikeC4
 
 `LikeC4View` renders views from your model, and allows to explore your model.  
-All examples on this site use this component in MDX.  
+All examples on this site use [this component in MDX](https://github.com/likec4/likec4/blob/9e638f37d74b2a0133660dcc213143b1172304a1/apps/docs/src/components/dynamic-view/DynamicLikeC4View.astro#L9-L14).  
 Component works in most usecases, but if you need more - use `ReactLikeC4`:
 
 ```tsx
@@ -143,8 +142,8 @@ Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/L
 Feel free to share your ideas or ask questions in <a href="https://github.com/likec4/likec4/discussions/" target='_blank'>GitHub discussions</a>.
 
 <Aside type='tip' title="Generic version" >
-Code generation prepares component that is already "bound" to the model.  
-But it is also possible to use a generic from the library:
+Code generation prepares component, which is already "bound" to your model.  
+But it is possible to use generic from the library:
 
 ```tsx
 import { ReactLikeC4 } from 'likec4/react'
@@ -161,6 +160,9 @@ const App = () => {
   )
 }
 ```
+
+Though you lose type safety and need to handle more things manually.
+
 </Aside>
 
 #### Webcomponent

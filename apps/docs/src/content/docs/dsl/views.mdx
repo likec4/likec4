@@ -585,28 +585,7 @@ group {
     }
     include cloud -> amazon
   }
-  ```
-
-  
-</Aside>
-
-### Auto-layout
-
-```likec4
-view {
-  include *
-  autoLayout LeftRight 120 110
-}
-```
-
-Parameters are:
-- direction: possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
-- rank distance: optional, must be a positive number
-- node distance. optional, must be a positive number
-
-<Aside>
-Manual changes are supported in VSCode extension and functionality is limited.  
-Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is much appreciated.
+  ```  
 </Aside>
 
 ### Style predicates
@@ -650,6 +629,10 @@ view apiApp of internetBankingSystem.apiApplication {
   }
 }
 ```
+
+:::caution
+[`Group`](#groups) does not support nested `style` predicates (yet).
+:::
 
 #### Shared local styles :badge[v1.13]{variant="success"}
 
@@ -699,7 +682,7 @@ First, local styles from `views` block and then from `view`
 Styles can be shared globally.  
 Global styles must be named and defined in `global` block:
 
-```likec4
+```likec4  {4,9,15,25,33-34}
 global {
   // Format:
   //  style <name> <targets> { ... }
@@ -732,63 +715,78 @@ views {
     }
 
     // 3. and 4.
-    global style mute_deprecated
     global style applications
+    global style mute_deprecated    
   }  
 }
 ```
 
-#### Global style groups
+#### Shared style groups :badge[v1.15]{variant="success"}
 
-Global style predicates can be grouped.
-When a group is applied to a view, all predicates from the group are applied.
-A group can be applied to multiple views
+Global styles can be grouped and applied together:
 
-```likec4
+```likec4 showLineNumbers {3,22,30}
 global {
+  // Define style group
   styleGroup common_styles {
-    // apply to all elements
-    style all_elements * {
+    style * {
       color muted
       opacity 10%
     }
-
-    // apply only to these elements
     style singlePageApplication, mobileApp {
       color secondary
     }
-
-    // apply only to elements with specific tag
     style element.tag = #deprecated {
       color muted
     }
   }
 }
 
-views {
-  view mobileApp of internetBankingSystem.mobileApplication {
+views {  
+  view mobileApp of mobileApplication {
     include *
 
+    // Apply common styles
     global style common_styles
   }
 
-  view apiApp of internetBankingSystem.apiApplication {
+  view apiApp of apiApplication {
 
     include *
 
+    // Apply common styles
     global style common_styles
 
-    // view-specific style predicates
+    // View-specific styles
     style apiApplication.* {
       color primary
     }
-
     style element.tag != #deprecated {
       opacity 20%
     }
   }
 }
 ```
+
+### Auto-layout
+
+```likec4
+view {
+  include *
+  autoLayout LeftRight 120 110
+}
+```
+
+Parameters are:
+- direction: possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
+- rank distance: optional, must be a positive number
+- node distance. optional, must be a positive number
+
+<Aside>
+Manual changes are supported in VSCode extension, but functionality is limited.  
+Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is much appreciated.
+</Aside>
+
 
 ### Extend views
 
