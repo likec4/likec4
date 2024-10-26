@@ -13,7 +13,7 @@
     "directory": "packages/likec4"
   },
   "engines": {
-    "node": ">=20.17.0"
+    "node": ">=20"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
