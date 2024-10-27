@@ -1,3 +1,64 @@
+# [1.15.0](https://github.com/likec4/likec4/compare/v1.14.0...v1.15.0) (2024-10-26)
+
+### 🚀 Features  
+
+* **Style groups:**  
+  Global styles can be grouped and applied together:
+  ```zig
+  global {
+    // Define style group
+    styleGroup common_styles {
+      style * {
+        color muted
+        opacity 10%
+      }
+      style singlePageApplication, mobileApp {
+        color secondary
+      }
+    }
+  }
+  
+  views {
+    view mobileApp of mobileApplication {
+      include *
+  
+      // Apply common styles
+      global style common_styles
+    }
+  }
+  ```
+  Also, global styles and groups can be referenced in  `views {}` blocks (local styles) and applied to all views in a block.  
+  [Documentation](https://likec4.dev/dsl/views/#shared-style-groups) (thanks @hubertmis, [#1143](https://github.com/likec4/likec4/issues/1143), [#1161](https://github.com/likec4/likec4/issues/1161))
+
+* **Adhoc `group` elements**
+  ```zig
+  view {
+    group 'Third-parties' {
+      group 'Integrations' {
+        group 'Analytics' {
+          include * where tag is #analytics
+        }
+        group 'Marketing' {
+          include * where tag is #marketing
+        }
+      }
+      group 'Monitoring' {
+        include * where tag is #marketing
+      }
+    }
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/views/#groups) (thanks @davydkov, [#1140](https://github.com/likec4/likec4/issues/1140))
+
+### Fixes and improvements
+
+* **diagram**: bundled icons vary in color scheme (thanks @pavelpykhtin, [#1149](https://github.com/likec4/likec4/issues/1149), closes [#1097](https://github.com/likec4/likec4/issues/1097))
+* **diagram:** control points are not draggable under the edge label (thanks @pavelpykhtin, [#1104](https://github.com/likec4/likec4/issues/1104))
+* **lsp:** style for relationship predicates `where` together `with`, not work style on (thanks @pavelpykhtin, [#1147](https://github.com/likec4/likec4/issues/1147) closes [#1144](https://github.com/likec4/likec4/issues/1144))
+* **react:** react component filter stopped working (thanks @davydkov, closes [#1145](https://github.com/likec4/likec4/issues/1145)
+* **vscode:** enhance style completion snippets (thanks @davydkov)
+
+
 # [1.14.0](https://github.com/likec4/likec4/compare/v1.13.0...v1.14.0) (2024-10-20)
 
 ### 🚀 Features  
