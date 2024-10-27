@@ -255,13 +255,13 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
 
       return {
         ...model,
+        customColorDefinitions,
         tags,
         links,
         docUri,
         description,
         title,
-        id,
-        customColorDefinitions
+        id
       }
     }
   }
@@ -362,7 +362,7 @@ export class LikeC4ModelBuilder {
         logger.debug('[ModelBuilder] No documents to build model from')
         return null
       }
-      logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)`)
+      logger.debug(`[ModelBuilder] buildModel (${docs.length} docs)`)
       return buildModel(this.services, docs)
     })
   }
