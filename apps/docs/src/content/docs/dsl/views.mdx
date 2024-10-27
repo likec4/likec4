@@ -727,12 +727,10 @@ Global styles can be used as local styles:
 
 ```likec4
 global {
-  // apply only to elements with a specific tag
   style mute_deprecated element.tag = #deprecated {
     color muted
   }
 
-  // apply to all elements
   style mute_all * {
     color muted
     opacity 10%
@@ -742,7 +740,7 @@ global {
 views {
   global style mute_deprecated
 
-  view apiApp of internetBankingSystem.apiApplication {
+  view apiApp of apiApplication {
     include *
 
     global style mute_all
@@ -790,9 +788,6 @@ views {
     style apiApplication.* {
       color primary
     }
-    style element.tag != #deprecated {
-      opacity 20%
-    }
   }
 }
 ```
@@ -807,13 +802,8 @@ global {
     style * {
       color amber
     }
-
     style element.tag = #deprecated {
       color muted
-    }
-
-    style element.tag != #undefined {
-      opacity 50%
     }
   }
 }
@@ -821,17 +811,12 @@ global {
 views {
   global style common_styles
 
-  view mobileApp of internetBankingSystem.mobileApplication {
-    include *
+  view mobileApp of mobileApplication {
+    // common_styles are applied here ...
   }
 
-  view apiApp of internetBankingSystem.apiApplication {
-    include *
-
-    // view-specific style predicates
-    style apiApplication.* {
-      color primary
-    }
+  view apiApp of apiApplication {
+    // ... and here
   }
 }
 ```
