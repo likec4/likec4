@@ -266,7 +266,12 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     }
   }
 
-  const parsedViews = docs.flatMap(d => map(d.c4Views, toC4View(d)))
+  const parsedViews = pipe(
+    docs,
+    flatMap(d => map(d.c4Views, toC4View(d))),
+    // Resolve relative paths and sort by
+    resolveRelativePaths
+  )
   // Add index view if not present
   if (!parsedViews.some(v => v.id === 'index')) {
     parsedViews.unshift({
@@ -291,7 +296,6 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
 
   const views = pipe(
     parsedViews,
-    resolveRelativePaths,
     indexBy(prop('id')),
     resolveRulesExtendedViews
   )
