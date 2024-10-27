@@ -728,24 +728,24 @@ Global styles can be used as local styles:
 ```likec4
 global {
   // apply only to elements with a specific tag
-  style deprecated element.tag = #deprecated {
+  style mute_deprecated element.tag = #deprecated {
     color muted
   }
 
   // apply to all elements
-  style all_elements * {
+  style mute_all * {
     color muted
     opacity 10%
   }
 }
 
 views {
-  global style deprecated
+  global style mute_deprecated
 
   view apiApp of internetBankingSystem.apiApplication {
     include *
 
-    global style all_elements
+    global style mute_all
   }
 }
 ```
@@ -754,7 +754,7 @@ views {
 
 Global styles can be grouped and applied together:
 
-```likec4 showLineNumbers {3,22,30}
+```likec4 {3,22,30}
 global {
   // Define style group
   styleGroup common_styles {
@@ -804,7 +804,7 @@ Global style groups can be used as local styles:
 ```likec4
 global {
   styleGroup common_styles {
-    style all_elements * {
+    style * {
       color amber
     }
 
