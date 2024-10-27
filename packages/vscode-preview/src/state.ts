@@ -105,6 +105,8 @@ const EMPTY: ComputedLikeC4Model = {
   elements: {},
   relations: {},
   globals: {
+    predicates: {},
+    dynamicPredicates: {},
     styles: {}
   },
   views: {}

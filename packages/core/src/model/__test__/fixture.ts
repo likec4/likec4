@@ -335,6 +335,8 @@ export const fakeComputedModel = {
   elements: fakeElements,
   relations: fakeRelations,
   globals: {
+    predicates: {},
+    dynamicPredicates: {},
     styles: {}
   },
   views: {}

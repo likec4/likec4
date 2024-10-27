@@ -130,6 +130,27 @@ export const relationshipChecks = (
   }
 }
 
+export const globalPredicateChecks = (
+  services: LikeC4Services
+): ValidationCheck<ast.GlobalPredicateGroup | ast.GlobalDynamicPredicateGroup> => {
+  const index = services.shared.workspace.IndexManager
+  return (node, accept) => {
+    const predicateGroups = index.allElements(ast.GlobalPredicateGroup)
+    const dynamicPredicateGroups = index.allElements(ast.GlobalDynamicPredicateGroup)
+    const sameName = predicateGroups
+      .concat(dynamicPredicateGroups)
+      .filter(s => s.name === node.name)
+      .limit(2)
+      .count()
+    if (sameName > 1) {
+      accept('error', `Duplicate GlobalPredicateGroup or GlobalDynamicPredicateGroup name '${node.name}'`, {
+        node: node,
+        property: 'name'
+      })
+    }
+  }
+}
+
 export const globalStyleIdChecks = (
   services: LikeC4Services
 ): ValidationCheck<ast.GlobalStyleId> => {

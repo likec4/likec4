@@ -1,5 +1,5 @@
 import type { ElementKindSpecification, Tag, TypedElement } from './element'
-import type { GlobalStyle, GlobalStyleID } from './global'
+import type { GlobalDynamicElRel, GlobalElRel, GlobalElRelID, GlobalStyle, GlobalStyleID } from './global'
 import type { Relation, RelationID, RelationshipKindSpecification } from './relation'
 import type { ComputedView, DiagramView, LikeC4View, ViewID } from './view'
 
@@ -20,10 +20,14 @@ export interface ParsedLikeC4Model<
   }
   elements: Record<Fqns, TypedElement<Fqns, ElementKinds, Tags>>
   relations: Record<RelationID, Relation>
-  globals: {
-    styles: Record<GlobalStyleID, GlobalStyle>
-  }
+  globals: ParsedGlobals
   views: Record<Views, LikeC4View<Views, Tags>>
+}
+
+export interface ParsedGlobals {
+  predicates: Record<GlobalElRelID, GlobalElRel>
+  dynamicPredicates: Record<GlobalElRelID, GlobalDynamicElRel>
+  styles: Record<GlobalStyleID, GlobalStyle>
 }
 
 /**
