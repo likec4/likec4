@@ -1,23 +1,62 @@
 # [1.15.0](https://github.com/likec4/likec4/compare/v1.14.0...v1.15.0) (2024-10-26)
 
+### 🚀 Features  
 
-### Bug Fixes
+* **Style groups:**  
+  Global styles can be grouped and applied together:
+  ```zig
+  global {
+    // Define style group
+    styleGroup common_styles {
+      style * {
+        color muted
+        opacity 10%
+      }
+      style singlePageApplication, mobileApp {
+        color secondary
+      }
+    }
+  }
+  
+  views {
+    view mobileApp of mobileApplication {
+      include *
+  
+      // Apply common styles
+      global style common_styles
+    }
+  }
+  ```
+  Also, global styles and groups can be referenced in  `views {}` blocks (local styles) and applied to all views in a block.  
+  [Documentation](https://likec4.dev/dsl/views/#shared-style-groups) (thanks @hubertmis, [#1143](https://github.com/likec4/likec4/issues/1143), [#1161](https://github.com/likec4/likec4/issues/1161))
 
-* bundled icons vary in color scheme ([#1149](https://github.com/likec4/likec4/issues/1149)) ([410dede](https://github.com/likec4/likec4/commit/410dedec2f2db7340b4dcc12893916a8325b3d28))
-* **diagram:** control points are not draggable under the edge label [#1104](https://github.com/likec4/likec4/issues/1104) ([b9437ef](https://github.com/likec4/likec4/commit/b9437ef01ae3ccabb624b2f18141ef6ff8bec783))
-* **lsp:** style for relationship predicates `where` together `with`, not work style on [#1144](https://github.com/likec4/likec4/issues/1144) ([#1147](https://github.com/likec4/likec4/issues/1147)) ([19b5029](https://github.com/likec4/likec4/commit/19b5029080fb8c0929ea1c7be9fbe124e1fb7556))
-* **react:** react component filter stopped working ([5692c3a](https://github.com/likec4/likec4/commit/5692c3a5c453e6e987cea5641da317eb5174afe0)), closes [#1145](https://github.com/likec4/likec4/issues/1145)
-* **vscode:** return `nonce` csp directive for styles ([f4df870](https://github.com/likec4/likec4/commit/f4df87040ec6ccc081f08512bf19149cbcccf3c8))
+* **Adhoc `group` elements**
+  ```zig
+  view {
+    group 'Third-parties' {
+      group 'Integrations' {
+        group 'Analytics' {
+          include * where tag is #analytics
+        }
+        group 'Marketing' {
+          include * where tag is #marketing
+        }
+      }
+      group 'Monitoring' {
+        include * where tag is #marketing
+      }
+    }
+  }
+  ```
+  [Documentation](https://likec4.dev/dsl/views/#groups) (thanks @davydkov, [#1140](https://github.com/likec4/likec4/issues/1140))
 
+### Fixes and improvements
 
-### Features
-
-* `group` in views ([c811e4b](https://github.com/likec4/likec4/commit/c811e4b3cba7edd3641a5007a6aa14bd5f294000))
-* accept global styles as local styles ([#1161](https://github.com/likec4/likec4/issues/1161)) ([b8491ac](https://github.com/likec4/likec4/commit/b8491acd55fee13576618679b78cca4309f0a77a)), closes [#1058](https://github.com/likec4/likec4/issues/1058)
-* enhance style completion snippets ([a5889b4](https://github.com/likec4/likec4/commit/a5889b46d19951cc69bf58a2a46db10754550175))
-* global style groups ([#1143](https://github.com/likec4/likec4/issues/1143)) ([cf59edf](https://github.com/likec4/likec4/commit/cf59edf1343ae765750b3eaa3c85eef3a23a0159)), closes [#1058](https://github.com/likec4/likec4/issues/1058)
-* memoize LikeC4CustomColors component and improve layout styles ([e1d3960](https://github.com/likec4/likec4/commit/e1d3960b0bef240d0bc47d581288ad67c5797789))
-
+* **diagram**: bundled icons vary in color scheme (thanks @pavelpykhtin, [#1149](https://github.com/likec4/likec4/issues/1149), closes [#1097](https://github.com/likec4/likec4/issues/1097))
+* **diagram:** control points are not draggable under the edge label (thanks @pavelpykhtin, [#1104](https://github.com/likec4/likec4/issues/1104))
+* **lsp:** style for relationship predicates `where` together `with`, not work style on (thanks @pavelpykhtin, [#1147](https://github.com/likec4/likec4/issues/1147) closes [#1144](https://github.com/likec4/likec4/issues/1144))
+* **react:** react component filter stopped working (thanks @davydkov, closes [#1145](https://github.com/likec4/likec4/issues/1145)
+* **vscode:** enhance style completion snippets (thanks @davydkov)
 
 
 # [1.14.0](https://github.com/likec4/likec4/compare/v1.13.0...v1.14.0) (2024-10-20)
