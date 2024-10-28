@@ -17,20 +17,29 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.removeIndentFromTopLevelStatements(node)
     this.indentContentInBraces(node)
 
+    // Specification
     this.formatSpecificationRule(node)
+    
+    // Globals
     this.formatGlobals(node)
+
+    // Models
     this.formatElementDeclaration(node)
     this.formatRelation(node)
+    this.formatMetadataProperty(node)
+    
+    // Views
     this.formatView(node)
     this.formatViewRuleGroup(node)
     this.formatViewRuleGlobalStyle(node)
-    this.formatViewRuleStyle(node)
     this.formatIncludeExcludeExpressions(node)
     this.formatWhereExpression(node)
-    this.formatWithPredicate(node)
-    this.formatLeafProperty(node)
-    this.formatMetadataProperty(node)
     this.formatAutolayoutProperty(node)
+    this.formatWithPredicate(node)
+    
+    // Common
+    this.formatViewRuleStyle(node)
+    this.formatLeafProperty(node)
     this.formatLinkProperty(node)
     this.formatNavigateToProperty(node)
     this.formatTags(node)
