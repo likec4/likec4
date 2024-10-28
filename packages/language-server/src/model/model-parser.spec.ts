@@ -11,7 +11,7 @@ import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
   describe('parses relation predicate', () => {
-    it('comined of "with" and "where"', async ({ expect }) => {
+    it('combined of "with" and "where"', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -54,7 +54,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
       })
     })
-
+    
     it('"where"', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`

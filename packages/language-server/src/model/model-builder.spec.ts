@@ -1820,4 +1820,42 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     if (sys2View === null) return
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
+
+  it('includes both sides of inout relation', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+          element sys
+          tag tobe
+      }
+      model {
+          sys sys1
+          sys sys2
+          sys sys3
+
+          sys1 -> sys2 {
+              #tobe
+          }
+          sys2 -> sys3
+      }
+      views {
+          view index {
+              include
+                  *,
+                  -> sys2 -> where tag is #tobe with {
+                      color red
+                  },
+                  -> sys2 -> where tag is not #tobe with {
+                      color green
+                  }            
+          }
+      }
+    `)
+    expect(diagnostics.length).toBe(0)
+
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+
+    expect(indexView?.nodes.map(x => x.id)).toStrictEqual(['sys1', 'sys2', 'sys3'])
+    expect(indexView?.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
+  })
 })

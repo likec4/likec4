@@ -1,15 +1,24 @@
-import type { ComputedEdge, ComputedNode, Element, ViewRule } from '@likec4/core'
-import { Expr, nonexhaustive } from '@likec4/core'
-import { isNullish, omitBy } from 'remeda'
+import type { ComputedEdge, ComputedNode, Element, Relation, ViewRule } from '@likec4/core'
+import { Expr, nonexhaustive, whereOperatorAsPredicate } from '@likec4/core'
+import { isNullish, omitBy, pick } from 'remeda'
 import { flattenGroupRules } from './applyCustomElementProperties'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
-function relationExpressionToPredicates(
+type Predicate<T> = (x: T) => boolean
+type FilterableEdge = Pick<Relation, 'kind' | 'tags'> & {
+  source: Element
+  target: Element
+}
+
+function relationExpressionToPredicates<T extends FilterableEdge>(
   expr: Expr.RelationExpression | Expr.RelationWhereExpr
-): (edge: { source: Element; target: Element }) => boolean {
+): Predicate<T> {
   switch (true) {
     case Expr.isRelationWhere(expr):
-      return relationExpressionToPredicates(expr.where.expr)
+      const predicate = relationExpressionToPredicates(expr.where.expr)
+      const where = whereOperatorAsPredicate(expr.where.condition)
+
+      return e => predicate(e) && where(e)
     case Expr.isRelation(expr): {
       const isSource = elementExprToPredicate(expr.source)
       const isTarget = elementExprToPredicate(expr.target)
@@ -58,7 +67,7 @@ export function applyCustomRelationProperties(
       if (!source || !target) {
         return
       }
-      if (satisfies({ source, target })) {
+      if (satisfies({ source, target, ...pick(edge, ['kind', 'tags']) })) {
         edges[i] = {
           ...edge,
           label: title ?? edge.label,
