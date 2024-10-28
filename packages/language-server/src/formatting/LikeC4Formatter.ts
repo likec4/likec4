@@ -18,9 +18,12 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.indentContentInBraces(node)
 
     this.formatSpecificationRule(node)
+    this.formatGlobals(node)
     this.formatElementDeclaration(node)
     this.formatRelation(node)
     this.formatView(node)
+    this.formatViewRuleGroup(node)
+    this.formatViewRuleGlobalStyle(node)
     this.formatViewRuleStyle(node)
     this.formatIncludeExcludeExpressions(node)
     this.formatWhereExpression(node)
@@ -92,9 +95,10 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isSpecificationRule(node)
       || ast.isModelViews(node)
       || ast.isLikeC4Lib(node)
+      || ast.isGlobals(node)
     ) {
       const formatter = this.getNodeFormatter(node)
-      formatter.keywords('specification', 'model', 'views', 'likec4lib')
+      formatter.keywords('specification', 'model', 'views', 'likec4lib', 'globals')
         .prepend(FormattingOptions.noIndent)
     }
   }
@@ -105,6 +109,9 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isSpecificationRule(node)
       || ast.isSpecificationElementKind(node)
       || ast.isSpecificationRelationshipKind(node)
+      || ast.isGlobals(node)
+      || ast.isGlobalStyle(node)
+      || ast.isGlobalStyleGroup(node)
       || ast.isModel(node)
       || ast.isElementBody(node)
       || ast.isExtendElementBody(node)
@@ -115,6 +122,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isElementViewBody(node)
       || ast.isDynamicViewBody(node)
       || ast.isViewRuleStyle(node)
+      || ast.isViewRuleGroup(node)
       || ast.isCustomElementProperties(node)
       || ast.isCustomRelationProperties(node)
       || ast.isElementStyleProperty(node)
@@ -270,6 +278,17 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
   }
 
+  protected formatGlobals(node: AstNode) {
+    this.on(node, ast.isGlobalStyle, (n, f) => {
+      f.keyword('style').append(FormattingOptions.oneSpace)
+      f.property('id').append(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isGlobalStyleGroup, (n, f) => {
+      f.keyword('styleGroup').append(FormattingOptions.oneSpace)
+    })
+  }
+
   protected formatSpecificationRule(node: AstNode) {
     if (
       ast.isSpecificationElementKind(node)
@@ -298,6 +317,18 @@ export class LikeC4Formatter extends AbstractFormatter {
     ) {
       formatter.keyword('with').prepend(FormattingOptions.oneSpace)
     }
+  }
+
+  protected formatViewRuleGlobalStyle(node: AstNode) {
+    this.on(node, ast.isViewRuleGlobalStyle, (n, f) => {
+      f.keywords('global', 'style').append(FormattingOptions.oneSpace)
+    })
+  }
+
+  protected formatViewRuleGroup(node: AstNode) {
+    this.on(node, ast.isViewRuleGroup, (n, f) => {
+      f.keyword('group').append(FormattingOptions.oneSpace)
+    })
   }
 
   protected formatViewRuleStyle(node: AstNode) {

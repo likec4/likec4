@@ -400,6 +400,42 @@ specification{
   )
 
   it(
+    'formats globals',
+    async () =>
+      expect(
+        await format(
+          `
+global{
+style    global-style    *,   some{
+color red
+notation 'some description'
+}
+styleGroup    global-style-group{
+style    *,other   {
+opacity 20%
+}
+}
+}`
+        )
+      ).toMatchInlineSnapshot(
+        `
+        "
+        global {
+          style global-style *, some {
+            color red
+            notation 'some description'
+          }
+          styleGroup global-style-group {
+            style *, other {
+              opacity 20%
+            }
+          }
+        }"
+      `
+      )
+  )
+
+  it(
     'formats include/exclude expressions',
     async () =>
       expect(
@@ -427,6 +463,30 @@ views {
               test3
             include *, * -> *, * ->
             exclude *, * -> *, * ->
+          }
+        }"
+      `
+      )
+  )
+  
+  it(
+    'formats global style references',
+    async () =>
+      expect(
+        await format(
+          `
+views {
+view {
+global    style     global-style
+}
+}`
+        )
+      ).toMatchInlineSnapshot(
+        `
+        "
+        views {
+          view {
+            global style global-style
           }
         }"
       `
@@ -498,6 +558,62 @@ views {
             include -> * with {
             }
             include -> * where tag = #test with {
+            }
+          }
+        }"
+      `
+      )
+  )
+
+  it(
+    'formats groups',
+    async () =>
+      expect(
+        await format(
+          `
+views {
+  view {
+group   "group1"{
+color    red
+border    solid
+opacity   10%
+include    *  with{ }
+include * where tag = #test    with    {}    
+group   "nested-group"{
+}
+}
+  }
+view {
+group   "group3"{
+color  :    red ;
+border  :    solid ;
+opacity  :   10% ;
+}
+}
+}`
+        )
+      ).toMatchInlineSnapshot(
+        `
+        "
+        views {
+          view {
+            group "group1" {
+              color red
+              border solid
+              opacity 10%
+              include * with {
+              }
+              include * where tag = #test with {
+              }
+              group "nested-group" {
+              }
+            }
+          }
+          view {
+            group "group3" {
+              color: red;
+              border: solid;
+              opacity: 10%;
             }
           }
         }"
@@ -1260,6 +1376,17 @@ specification {
   relationship uses
   relationship requests
 }
+global {
+  style global-style *, some {
+    color red
+    notation 'some description'
+  }
+  styleGroup global-style-group {
+    style *, other {
+      opacity 20%
+    }
+  }
+}
 model {
   customer = actor 'Cloud System Customer' {
     description '
@@ -1330,8 +1457,20 @@ views {
       },
       supportUser
 
+    global style global-style
+
     style supportUser {
       color: indigo;
+    }
+  }
+
+  view groupped {
+    group "group1" {
+      include customer, cloud
+
+      group "group2" {
+        color green
+      }
     }
   }
 
