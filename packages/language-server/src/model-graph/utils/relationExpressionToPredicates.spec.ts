@@ -119,29 +119,29 @@ describe('relationExpressionToPredicates', () => {
     })
 
     it('returns false if condition is not met', () => {
-        const nonMatchingRelation = r('support:cloud', { tags: ['foo'] })
+      const nonMatchingRelation = r('support:cloud', { tags: ['foo'] })
 
-        const predicate = relationExpressionToPredicates(
-          $where(
-            $relation('support -> cloud'),
-            { tag: { eq: 'aws' } }
-          ) as RelationWhereExpr
-        )
-  
-        expect(predicate(nonMatchingRelation)).toBe(false)
+      const predicate = relationExpressionToPredicates(
+        $where(
+          $relation('support -> cloud'),
+          { tag: { eq: 'aws' } }
+        ) as RelationWhereExpr
+      )
+
+      expect(predicate(nonMatchingRelation)).toBe(false)
     })
 
     it('returns false if internal expression resolved to false', () => {
-        const nonMatchingRelation = r('support:b', { tags: ['aws'] })
+      const nonMatchingRelation = r('support:b', { tags: ['aws'] })
 
-        const predicate = relationExpressionToPredicates(
-          $where(
-            $relation('support -> cloud'),
-            { tag: { eq: 'aws' } }
-          ) as RelationWhereExpr
-        )
-  
-        expect(predicate(nonMatchingRelation)).toBe(false)
+      const predicate = relationExpressionToPredicates(
+        $where(
+          $relation('support -> cloud'),
+          { tag: { eq: 'aws' } }
+        ) as RelationWhereExpr
+      )
+
+      expect(predicate(nonMatchingRelation)).toBe(false)
     })
   })
 })
