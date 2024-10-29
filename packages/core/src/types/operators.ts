@@ -60,7 +60,7 @@ export type WhereOperator<Tag, Kind> =
   | AndOperator<Tag, Kind>
   | OrOperator<Tag, Kind>
 
-type Filterable<
+export type Filterable<
   FTag extends string = string,
   FKind extends string = string
 > = {
