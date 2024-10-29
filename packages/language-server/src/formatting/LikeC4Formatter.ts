@@ -107,7 +107,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isGlobals(node)
     ) {
       const formatter = this.getNodeFormatter(node)
-      formatter.keywords('specification', 'model', 'views', 'likec4lib', 'globals')
+      formatter.keywords('specification', 'model', 'views', 'likec4lib', 'global')
         .prepend(FormattingOptions.noIndent)
     }
   }
