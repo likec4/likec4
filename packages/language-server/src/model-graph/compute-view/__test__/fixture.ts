@@ -11,12 +11,16 @@ import {
   type ElementWhereExpr,
   type Expression as C4Expression,
   type Fqn,
+  type IncomingExpr as C4IncomingExpr,
+  type InOutExpr as C4InOutExpr,
   isElementRef,
   isElementWhere,
   isRelationExpression,
   isRelationWhere,
   type NonEmptyArray,
+  type OutgoingExpr as C4OutgoingExpr,
   type Relation,
+  type RelationExpr as C4RelationExpr,
   type RelationID,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -414,6 +418,49 @@ export function $where(
   }
 }
 
+export function $inout(
+  expr: InOutExpr | C4ElementExpression
+): C4InOutExpr {
+  const innerExpression = !isString(expr)
+    ? expr as C4Expression
+    : $expr(expr.replace(/->/g, '').trim() as ElementRefExpr) as any
+
+  return { inout: innerExpression }
+}
+
+export function $incoming(
+  expr: IncomingExpr | C4ElementExpression
+): C4IncomingExpr {
+  const innerExpression = !isString(expr)
+    ? expr as C4Expression
+    : $expr(expr.replace('-> ', '') as ElementRefExpr) as any
+
+  return { incoming: innerExpression }
+}
+
+export function $outgoing(
+  expr: OutgoingExpr | C4ElementExpression
+): C4OutgoingExpr {
+  const innerExpression = !isString(expr)
+    ? expr as C4Expression
+    : $expr(expr.replace(' ->', '') as ElementRefExpr) as any
+
+  return { outgoing: innerExpression }
+}
+
+export function $relation(
+  expr: RelationExpr
+): C4RelationExpr {
+  const [source, target] = expr.split(/ -> | <-> /)
+  const isBidirectional = expr.includes(' <-> ')
+
+  return {
+    source: $expr(source as ElementRefExpr) as any,
+    target: $expr(target as ElementRefExpr) as any,
+    ...(isBidirectional && { isBidirectional })
+  }
+}
+
 export function $expr(expr: Expression | C4Expression): C4Expression {
   if (!isString(expr)) {
     return expr as C4Expression
@@ -422,34 +469,13 @@ export function $expr(expr: Expression | C4Expression): C4Expression {
     return { wildcard: true }
   }
   if (expr.startsWith('->')) {
-    if (expr.endsWith('->')) {
-      return {
-        inout: $expr(expr.replace(/->/g, '').trim() as ElementRefExpr) as any
-      }
-    }
-    return {
-      incoming: $expr(expr.replace('-> ', '') as ElementRefExpr) as any
-    }
+    return expr.endsWith('->') ? $inout(expr as InOutExpr) : $incoming(expr as IncomingExpr)
   }
   if (expr.endsWith(' ->')) {
-    return {
-      outgoing: $expr(expr.replace(' ->', '') as ElementRefExpr) as any
-    }
+    return $outgoing(expr as OutgoingExpr)
   }
-  if (expr.includes(' <-> ')) {
-    const [source, target] = expr.split(' <-> ')
-    return {
-      source: $expr(source as ElementRefExpr) as any,
-      target: $expr(target as ElementRefExpr) as any,
-      isBidirectional: true
-    }
-  }
-  if (expr.includes(' -> ')) {
-    const [source, target] = expr.split(' -> ')
-    return {
-      source: $expr(source as ElementRefExpr) as any,
-      target: $expr(target as ElementRefExpr) as any
-    }
+  if (expr.includes(' -> ') || expr.includes(' <-> ')) {
+    return $relation(expr as RelationExpr)
   }
   if (expr.endsWith('._')) {
     return {
