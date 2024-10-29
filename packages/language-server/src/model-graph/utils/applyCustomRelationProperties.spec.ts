@@ -107,7 +107,16 @@ describe('applyRelationCustomProperties', () => {
       head: 'dot',
       tail: 'diamond'
     })
-    const propsToOverride: CustomRelationProperties = {}
+    const propsToOverride = ({
+      description: null,
+      technology: null,
+
+      notation: null,
+      navigateTo: null,
+      notes: null,
+
+      color: null,
+    } as unknown) as CustomRelationProperties
     const rules = [
       $include($inout('-> support ->'), { with: propsToOverride })
     ] as ViewRule[]
