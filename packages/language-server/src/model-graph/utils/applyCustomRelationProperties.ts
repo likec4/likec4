@@ -30,9 +30,9 @@ export function applyCustomRelationProperties(
       if (satisfies({ source, target, ...pick(edge, ['kind', 'tags']) })) {
         edges[i] = {
           ...edge,
+          ...props,
           label: title ?? edge.label,
-          isCustomized: true,
-          ...props
+          isCustomized: true
         }
       }
     })
