@@ -889,58 +889,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dprint/darwin-arm64@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/darwin-arm64@npm:0.47.4"
+"@dprint/darwin-arm64@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/darwin-arm64@npm:0.47.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@dprint/darwin-x64@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/darwin-x64@npm:0.47.4"
+"@dprint/darwin-x64@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/darwin-x64@npm:0.47.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@dprint/linux-arm64-glibc@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/linux-arm64-glibc@npm:0.47.4"
+"@dprint/linux-arm64-glibc@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/linux-arm64-glibc@npm:0.47.5"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@dprint/linux-arm64-musl@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/linux-arm64-musl@npm:0.47.4"
+"@dprint/linux-arm64-musl@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/linux-arm64-musl@npm:0.47.5"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@dprint/linux-x64-glibc@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/linux-x64-glibc@npm:0.47.4"
+"@dprint/linux-x64-glibc@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/linux-x64-glibc@npm:0.47.5"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@dprint/linux-x64-musl@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/linux-x64-musl@npm:0.47.4"
+"@dprint/linux-x64-musl@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/linux-x64-musl@npm:0.47.5"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@dprint/win32-arm64@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/win32-arm64@npm:0.47.4"
+"@dprint/win32-arm64@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/win32-arm64@npm:0.47.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@dprint/win32-x64@npm:0.47.4":
-  version: 0.47.4
-  resolution: "@dprint/win32-x64@npm:0.47.4"
+"@dprint/win32-x64@npm:0.47.5":
+  version: 0.47.5
+  resolution: "@dprint/win32-x64@npm:0.47.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -6058,18 +6058,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dprint@npm:0.47.4":
-  version: 0.47.4
-  resolution: "dprint@npm:0.47.4"
+"dprint@npm:0.47.5":
+  version: 0.47.5
+  resolution: "dprint@npm:0.47.5"
   dependencies:
-    "@dprint/darwin-arm64": "npm:0.47.4"
-    "@dprint/darwin-x64": "npm:0.47.4"
-    "@dprint/linux-arm64-glibc": "npm:0.47.4"
-    "@dprint/linux-arm64-musl": "npm:0.47.4"
-    "@dprint/linux-x64-glibc": "npm:0.47.4"
-    "@dprint/linux-x64-musl": "npm:0.47.4"
-    "@dprint/win32-arm64": "npm:0.47.4"
-    "@dprint/win32-x64": "npm:0.47.4"
+    "@dprint/darwin-arm64": "npm:0.47.5"
+    "@dprint/darwin-x64": "npm:0.47.5"
+    "@dprint/linux-arm64-glibc": "npm:0.47.5"
+    "@dprint/linux-arm64-musl": "npm:0.47.5"
+    "@dprint/linux-x64-glibc": "npm:0.47.5"
+    "@dprint/linux-x64-musl": "npm:0.47.5"
+    "@dprint/win32-arm64": "npm:0.47.5"
+    "@dprint/win32-x64": "npm:0.47.5"
   dependenciesMeta:
     "@dprint/darwin-arm64":
       optional: true
@@ -6089,7 +6089,7 @@ __metadata:
       optional: true
   bin:
     dprint: bin.js
-  checksum: 10c0/4d675258908e300f467fe646abac87a7626d83aa2dbe5138194ddbc66900c823ffdb4bd272b3d15103969b60984fd5f57175ec7194fe0f2a0d846fc8881e1b4b
+  checksum: 10c0/9d087e4143eec801d7399d028c1b5f0b10100d3e7838b2e329637d7e29bcfbbdf27a7db17a1adbbb5de38820e9dca2b2cd4b5662bc4127d023e19ed6af965e44
   languageName: node
   linkType: hard
 
@@ -12240,7 +12240,7 @@ __metadata:
   dependencies:
     "@types/node": "npm:^20.16.14"
     "@vitest/ui": "npm:^2.1.3"
-    dprint: "npm:0.47.4"
+    dprint: "npm:0.47.5"
     esbuild: "npm:^0.24.0"
     execa: "npm:^9.3.1"
     global: "npm:^4.4.0"
