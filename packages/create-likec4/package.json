@@ -34,7 +34,7 @@
     "@types/prompts": "^2.4.8",
     "execa": "^9.3.1",
     "prompts": "^2.4.2",
-    "tsx": "~4.9.3",
+    "tsx": "~4.19.2",
     "typescript": "^5.6.3",
     "unbuild": "^3.0.0-rc.11"
   },
