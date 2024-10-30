@@ -14,9 +14,6 @@
   labels: [
     'dependencies',
   ],
-  lockFileMaintenance: {
-    enabled: true,
-  },
   ignorePaths: [
     "e2e/**",
     "examples/**"
