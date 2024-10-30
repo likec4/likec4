@@ -1,3 +1,12 @@
+## [1.15.1](https://github.com/likec4/likec4/compare/v1.15.0...v1.15.1) (2024-10-30)
+
+### Fixes and improvements
+
+* apply global styles in all building scenarios (thanks @hubertmis, closes [#1180](https://github.com/likec4/likec4/issues/1180))
+* `where` predicate on apply custom properties to relation (thanks @pavelpykhtin, closes [#1176](https://github.com/likec4/likec4/issues/1176))
+* formatter support for groups and global styles (thanks @pavelpykhtin, [#1177](https://github.com/likec4/likec4/issues/1177))
+
+
 # [1.15.0](https://github.com/likec4/likec4/compare/v1.14.0...v1.15.0) (2024-10-26)
 
 ### 🚀 Features  
