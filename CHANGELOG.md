@@ -1,3 +1,24 @@
+## [1.15.1](https://github.com/likec4/likec4/compare/v1.15.0...v1.15.1) (2024-10-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency astro to ~4.16.7 ([#1166](https://github.com/likec4/likec4/issues/1166)) ([4e6e3d8](https://github.com/likec4/likec4/commit/4e6e3d8cba61861d88aecca20f9835ea7551f148))
+* **lsp:** 'where' predicate on apply custom properties to relation ([#1178](https://github.com/likec4/likec4/issues/1178)) ([ed33af0](https://github.com/likec4/likec4/commit/ed33af034701d8994037a492ba3b0c7d9b27f2b5)), closes [#1176](https://github.com/likec4/likec4/issues/1176)
+* **react:** dagre edge weights to improve layout ([4f15534](https://github.com/likec4/likec4/commit/4f15534e2c94ae7babd483f9b4846c63e1eb5c55))
+
+
+### Features
+
+* **vscode:** formatter support for groups and global styles ([#1177](https://github.com/likec4/likec4/issues/1177)) ([f8c7dac](https://github.com/likec4/likec4/commit/f8c7dac66e288d28740db17516e072aa6e79812d))
+
+
+### Reverts
+
+* Revert "chore(deps): update dependency @tabler/icons-react to v3.20.0" ([59e0555](https://github.com/likec4/likec4/commit/59e0555993c59a8f9912e8c411fdf67b17532265))
+
+
+
 # [1.15.0](https://github.com/likec4/likec4/compare/v1.14.0...v1.15.0) (2024-10-26)
 
 ### 🚀 Features  
