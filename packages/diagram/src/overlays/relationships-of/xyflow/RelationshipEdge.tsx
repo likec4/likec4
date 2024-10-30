@@ -56,6 +56,9 @@ export function RelationshipEdge({
               )}
               <Text
                 fw={isMultiRelation ? '500' : '400'}
+                style={{
+                  whiteSpace: isMultiRelation ? 'nowrap' : undefined
+                }}
                 component={'div'}
                 className={css.edgeLabelText}
                 lineClamp={3}>

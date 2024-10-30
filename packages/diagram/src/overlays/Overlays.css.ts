@@ -47,6 +47,13 @@ globalStyle(`:where(${container}) .react-flow__node-compound`, {
   mixBlendMode: 'hard-light'
 })
 
+globalStyle(`${container} .react-flow__edges > svg`, {
+  mixBlendMode: 'plus-lighter'
+})
+globalStyle(`:where([data-mantine-color-scheme="light"]) ${container} .react-flow__edges > svg`, {
+  mixBlendMode: 'screen'
+})
+
 // const dialogFadeIn = keyframes({
 //   '0%': {
 //     opacity: 0,
