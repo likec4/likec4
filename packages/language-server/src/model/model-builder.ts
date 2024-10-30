@@ -399,7 +399,10 @@ export class LikeC4ModelBuilder {
 
       const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
-        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
+        const resolvedView = resolveGlobalRules(view, model.globals.styles)
+        const result = isElementView(resolvedView)
+          ? computeView(resolvedView, index)
+          : computeDynamicView(resolvedView, index)
         if (!result.isSuccess) {
           logWarnError(result.error)
           continue
