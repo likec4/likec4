@@ -539,9 +539,6 @@ export class ComputeCtx {
       }),
       filter(isNonNull)
     )
-    if (excludedImplicits.size === 0) {
-      return
-    }
     this.ctxEdges = ctxEdges
     const remaining = this.includedElements
     if (remaining.size === 0) {
