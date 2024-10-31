@@ -1,6 +1,12 @@
-import type { ComputedNode, ElementWhereExpr, Expression as C4Expression, RelationWhereExpr } from '@likec4/core'
+import type {
+  ComputedNode,
+  CustomElementExpr,
+  ElementWhereExpr,
+  Expression as C4Expression,
+  RelationWhereExpr
+} from '@likec4/core'
 import { describe, expect, it } from 'vitest'
-import { $expr, $where, type Expression, type FakeElementIds } from '../compute-view/__test__/fixture'
+import { $expr, $where, $with, type Expression, type FakeElementIds } from '../compute-view/__test__/fixture'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 const toPredicate = (expr: C4Expression) => elementExprToPredicate(expr as any)
@@ -28,7 +34,7 @@ function nd(
   } as ComputedNode
 }
 
-function test$expr(expr: Expression | ElementWhereExpr | RelationWhereExpr) {
+function test$expr(expr: Expression | C4Expression) {
   const predicate = toPredicate($expr(expr))
   return {
     yes(node: Node) {
@@ -72,7 +78,7 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node id matches WHERE tag == clause', () => {
+  it('returns a function that checks if the node tag matches WHERE tag == clause', () => {
     const { yes, no } = test$expr($where('*', {
       tag: { eq: 'aws' }
     }))
@@ -80,12 +86,28 @@ describe('elementExprToPredicate', () => {
     yes({ id: 'customer', tags: ['aws'] })
   })
 
-  it('returns a function that checks if the node id matches WHERE tag != clause', () => {
+  it('returns a function that checks if the node tag matches WHERE tag != clause', () => {
     const { yes, no } = test$expr($where('*', {
       tag: { neq: 'next' }
     }))
     yes({ id: 'amazon' })
     yes({ id: 'amazon.s3', tags: ['aws'] })
     no({ id: 'customer', tags: ['next'] })
+  })
+
+  it('returns a function that checks if the node id matches internal condition of WHERE', () => {
+    const { yes, no } = test$expr($where('amazon', {
+      tag: { eq: 'aws' }
+    }))
+    yes({ id: 'amazon', tags: ['aws'] })
+    no({ id: 'customer', tags: ['aws'] })
+  })
+
+  it('returns a function that checks if the node id matches internal condition of custom properties expression', () => {
+    const { yes, no } = test$expr($with(
+      $where('*', { tag: { eq: 'aws' } })
+    ))
+    yes({ id: 'amazon', tags: ['aws'] })
+    no({ id: 'customer' })
   })
 })
