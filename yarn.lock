@@ -193,9 +193,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.28.3":
-  version: 0.28.3
-  resolution: "@astrojs/starlight@npm:0.28.3"
+"@astrojs/starlight@npm:^0.28.4":
+  version: 0.28.5
+  resolution: "@astrojs/starlight@npm:0.28.5"
   dependencies:
     "@astrojs/mdx": "npm:^3.1.3"
     "@astrojs/sitemap": "npm:^3.1.6"
@@ -221,7 +221,7 @@ __metadata:
     vfile: "npm:^6.0.2"
   peerDependencies:
     astro: ^4.14.0
-  checksum: 10c0/8038fa86484e1269b05005f898b793c9f42374462ab4542e2f8354becb39108794a250baf185762b344e6ee89766c6210a662b38b86865be0d13e2dc0adea36b
+  checksum: 10c0/f635475f9179e209b58fc83b485c8105f00834d24db461c4392b7c48299de04b9fee760c3c5a8ab5d13dc24e9a36636f1e880c49ecae4d6e86e779b117f2d506
   languageName: node
   linkType: hard
 
@@ -2154,7 +2154,7 @@ __metadata:
   dependencies:
     "@astrojs/check": "npm:^0.9.4"
     "@astrojs/react": "npm:^3.6.2"
-    "@astrojs/starlight": "npm:^0.28.3"
+    "@astrojs/starlight": "npm:^0.28.4"
     "@expressive-code/plugin-collapsible-sections": "npm:^0.37.1"
     "@expressive-code/plugin-line-numbers": "npm:^0.37.1"
     "@fontsource/ibm-plex-sans": "npm:^5.1.0"
