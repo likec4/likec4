@@ -562,9 +562,10 @@ export function $with(expr: C4Expression, props?: CustomProps['with']): C4Custom
 
   throw 'Unsupported type of internal expression'
 }
-export function $exclude(expr: Expression | C4Expression): ViewRulePredicate {
+export function $exclude(expr: Expression | C4Expression, where?: WhereOperator<TestTag, string>): ViewRulePredicate {
+  let _expr = where ? $where(expr, where) : $expr(expr)
   return {
-    exclude: [$expr(expr)]
+    exclude: [_expr]
   }
 }
 export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {

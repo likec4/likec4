@@ -8,6 +8,7 @@ import {
   ElementKind,
   type ElementPredicateExpression,
   type ElementView,
+  type Fqn,
   type NodeId,
   type NonEmptyArray,
   type Relation,
@@ -180,6 +181,29 @@ export class ComputeCtx {
 
   protected get activeGroup() {
     return this.activeGroupStack[0] ?? this.__rootGroup
+  } 
+
+  protected get includedElements() {
+    return new Set([
+      ...this.explicits,
+      ...this.ctxEdges.flatMap(e => [e.source, e.target])
+    ]) as ReadonlySet<Element>
+  }
+
+  protected get resolvedElements() {
+    return new Set([
+      ...this.explicits,
+      ...this.implicits,
+      ...this.ctxEdges.flatMap(e => [e.source, e.target])
+    ]) as ReadonlySet<Element>
+  }
+
+  protected get edges() {
+    return this.ctxEdges
+  }
+
+  protected get root() {
+    return isScopedElementView(this.view) ? this.view.viewOf : null
   }
 
   public static elementView(view: ElementView, graph: LikeC4ModelGraph) {
@@ -216,56 +240,10 @@ export class ComputeCtx {
     const elements = [...this.includedElements]
     const nodesMap = buildComputeNodes(elements, this.groups)
 
-    const ancestorsOf = (node: ComputedNode) => {
-      const ancestors = [] as ComputedNode[]
-      let parent = node.parent
-      while (parent) {
-        const parentNode = nodesMap.get(parent)
-        if (!parentNode) {
-          break
-        }
-        ancestors.push(parentNode)
-        parent = parentNode.parent
-      }
-      return ancestors
-    }
-
-    const edgesMap = new Map<EdgeId, ComputedEdge>()
     const edges = this.computeEdges()
-    for (const edge of edges) {
-      edgesMap.set(edge.id, edge)
-      const source = nodesMap.get(edge.source)
-      const target = nodesMap.get(edge.target)
-      invariant(source, `Source node ${edge.source} not found`)
-      invariant(target, `Target node ${edge.target} not found`)
-      // These ancestors are reversed: from bottom to top
-      const sourceAncestors = ancestorsOf(source)
-      const targetAncestors = ancestorsOf(target)
+    const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(edge => [edge.id, edge]))
 
-      const edgeParent = last(
-        commonHead(
-          reverse(sourceAncestors),
-          reverse(targetAncestors)
-        )
-      )
-      edge.parent = edgeParent?.id ?? null
-      source.outEdges.push(edge.id)
-      target.inEdges.push(edge.id)
-      // Process edge source ancestors
-      for (const sourceAncestor of sourceAncestors) {
-        if (sourceAncestor === edgeParent) {
-          break
-        }
-        sourceAncestor.outEdges.push(edge.id)
-      }
-      // Process target hierarchy
-      for (const targetAncestor of targetAncestors) {
-        if (targetAncestor === edgeParent) {
-          break
-        }
-        targetAncestor.inEdges.push(edge.id)
-      }
-    }
+    this.linkNodesAndEdges(nodesMap, edges)
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
@@ -313,10 +291,6 @@ export class ComputeCtx {
         }
       })
     })
-  }
-
-  protected get root() {
-    return isScopedElementView(this.view) ? this.view.viewOf : null
   }
 
   protected computeEdges(): ComputedEdge[] {
@@ -431,23 +405,40 @@ export class ComputeCtx {
     })
   }
 
-  protected get includedElements() {
-    return new Set([
-      ...this.explicits,
-      ...this.ctxEdges.flatMap(e => [e.source, e.target])
-    ]) as ReadonlySet<Element>
-  }
+  protected linkNodesAndEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
+    for (const edge of edges) {
+      const source = nodesMap.get(edge.source)
+      const target = nodesMap.get(edge.target)
+      invariant(source, `Source node ${edge.source} not found`)
+      invariant(target, `Target node ${edge.target} not found`)
+      // These ancestors are reversed: from bottom to top
+      const sourceAncestors = this.ancestorsOf(source, nodesMap)
+      const targetAncestors = this.ancestorsOf(target, nodesMap)
 
-  protected get resolvedElements() {
-    return new Set([
-      ...this.explicits,
-      ...this.implicits,
-      ...this.ctxEdges.flatMap(e => [e.source, e.target])
-    ]) as ReadonlySet<Element>
-  }
-
-  protected get edges() {
-    return this.ctxEdges
+      const edgeParent = last(
+        commonHead(
+          reverse(sourceAncestors),
+          reverse(targetAncestors)
+        )
+      )
+      edge.parent = edgeParent?.id ?? null
+      source.outEdges.push(edge.id)
+      target.inEdges.push(edge.id)
+      // Process edge source ancestors
+      for (const sourceAncestor of sourceAncestors) {
+        if (sourceAncestor === edgeParent) {
+          break
+        }
+        sourceAncestor.outEdges.push(edge.id)
+      }
+      // Process target hierarchy
+      for (const targetAncestor of targetAncestors) {
+        if (targetAncestor === edgeParent) {
+          break
+        }
+        targetAncestor.inEdges.push(edge.id)
+      }
+    }
   }
 
   protected addEdges(edges: ComputeCtx.Edge[]) {
@@ -753,6 +744,20 @@ export class ComputeCtx {
       return this
     }
     nonexhaustive(expr)
+  }
+
+  private ancestorsOf(node: ComputedNode, nodesMap: ReadonlyMap<Fqn, ComputedNode>): ComputedNode[] {
+    const ancestors = [] as ComputedNode[]
+    let parent = node.parent
+    while (parent) {
+      const parentNode = nodesMap.get(parent)
+      if (!parentNode) {
+        break
+      }
+      ancestors.push(parentNode)
+      parent = parentNode.parent
+    }
+    return ancestors
   }
 
   protected getEdgeLabel(
