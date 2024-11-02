@@ -95,13 +95,30 @@ export class LikeC4Model extends AbstractDisposable {
     this.onDispose(() => clearInterval(interval))
   }
 
+  private previousMetrics: Record<string, number> | null = null
   private async sendTelemetryMetrics() {
     try {
-      const { metrics, ms } = await this.fetchMetrics()
-      if (metrics) {
-        logger.debug(`[LikeC4Model] send telemetry`, { ...metrics, ms })
-        this.ctrl.telemetry?.sendTelemetryEvent('model-metrics', {}, { ...metrics, ms })
+      // if telemetry is off, do nothing
+      if (!this.ctrl.telemetry) {
+        return
       }
+      const { metrics, ms } = await this.fetchMetrics()
+      if (!metrics) {
+        return
+      }
+      // if no metrics, do nothing
+      const hasMetrics = keys(metrics).some(k => metrics[k] > 0)
+      if (!hasMetrics) {
+        return
+      }
+      const hasChanged = !this.previousMetrics || !isDeepEqual(this.previousMetrics, metrics)
+      // if metrics are the same, do nothing
+      if (!hasChanged) {
+        return
+      }
+      this.previousMetrics = metrics
+      logger.debug(`[LikeC4Model] send telemetry`, { ...metrics, ms })
+      this.ctrl.telemetry.sendTelemetryEvent('model-metrics', {}, { ...metrics, ms })
     } catch (e) {
       logger.warn(e)
     }
