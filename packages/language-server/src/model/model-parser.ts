@@ -293,7 +293,7 @@ export class LikeC4ModelParser {
     const elRelPredicates = globals.flatMap(r => r.predicates.filter(isValid))
     for (const predicate of elRelPredicates) {
       try {
-        const globalPredicateId = predicate.name as c4.GlobalElRelID
+        const globalPredicateId = predicate.name as c4.GlobalPredicateId
         if (!isTruthy(globalPredicateId)) {
           continue
         }
@@ -332,7 +332,7 @@ export class LikeC4ModelParser {
 
   private parseAndStoreGlobalPredicateGroupOrDynamic(
     astRule: ast.GlobalPredicateGroup | ast.GlobalDynamicPredicateGroup,
-    id: c4.GlobalElRelID,
+    id: c4.GlobalPredicateId,
     c4Globals: ParsedAstGlobals,
     isValid: IsValidFn
   ) {
@@ -372,7 +372,7 @@ export class LikeC4ModelParser {
     isValid: IsValidFn
   ): c4.ViewRuleStyle[] {
     if (ast.isGlobalStyle(astRule)) {
-      return [this.parseGlobalStyle(astRule, isValid)]
+      return [this.parseViewRuleStyle(astRule, isValid)]
     }
     if (ast.isGlobalStyleGroup(astRule)) {
       return astRule.styles.map(s => this.parseViewRuleStyle(s, isValid))
@@ -380,19 +380,17 @@ export class LikeC4ModelParser {
     nonexhaustive(astRule)
   }
 
-  private parseGlobalStyle(astRule: ast.GlobalStyle, isValid: IsValidFn): c4.ViewRuleStyle {
-    const styleProps = astRule.props.filter(ast.isStyleProperty)
-    const targets = astRule.target
-    const notation = astRule.props.find(ast.isNotationProperty)
-    return this.parseRuleStyle(styleProps, targets, isValid, notation)
-  }
-
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
     const viewBlocks = doc.parseResult.value.views.filter(v => isValid(v))
     for (const viewBlock of viewBlocks) {
-      const localStyles = viewBlock.styles
-        .flatMap(s => this.parseViewRuleStyleOrGlobalRef(s, isValid))
-      const stylesToApply = localStyles
+      const localStyles = viewBlock.styles.flatMap(s => {
+        try {
+          return this.parseViewRuleStyleOrGlobalRef(s, isValid)
+        } catch (e) {
+          logWarnError(e)
+          return []
+        }
+      })
 
       for (const view of viewBlock.views) {
         try {
@@ -401,8 +399,8 @@ export class LikeC4ModelParser {
           }
           doc.c4Views.push(
             ast.isElementView(view)
-              ? this.parseElementView(view, stylesToApply, isValid)
-              : this.parseDynamicElementView(view, stylesToApply, isValid)
+              ? this.parseElementView(view, localStyles, isValid)
+              : this.parseDynamicElementView(view, localStyles, isValid)
           )
         } catch (e) {
           logWarnError(e)
@@ -472,14 +470,14 @@ export class LikeC4ModelParser {
       }
     }
     if (ast.isElementKindExpression(astNode)) {
-      invariant(astNode.kind, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
+      invariant(astNode.kind?.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
       return {
-        elementKind: astNode.kind.$refText as c4.ElementKind,
+        elementKind: astNode.kind.ref.name as c4.ElementKind,
         isEqual: astNode.isEqual
       }
     }
     if (ast.isElementTagExpression(astNode)) {
-      invariant(astNode.tag, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
+      invariant(astNode.tag?.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
       let elementTag = astNode.tag.$refText
       if (elementTag.startsWith('#')) {
         elementTag = elementTag.slice(1)
@@ -726,11 +724,11 @@ export class LikeC4ModelParser {
   }
 
   private parseViewRuleGlobalPredicateRef(
-    astRule: ast.ViewRuleGlobalPredicateRef,
+    astRule: ast.ViewRuleGlobalPredicateRef | ast.DynamicViewGlobalPredicateRef,
     _isValid: IsValidFn
   ): c4.ViewRuleGlobalPredicateRef {
     return {
-      predicateId: astRule.predicate.$refText as c4.GlobalElRelID
+      predicateId: astRule.predicate.$refText as c4.GlobalPredicateId
     }
   }
 
@@ -747,7 +745,7 @@ export class LikeC4ModelParser {
     nonexhaustive(astRule)
   }
 
-  private parseViewRuleStyle(astRule: ast.ViewRuleStyle, isValid: IsValidFn): c4.ViewRuleStyle {
+  private parseViewRuleStyle(astRule: ast.ViewRuleStyle | ast.GlobalStyle, isValid: IsValidFn): c4.ViewRuleStyle {
     const styleProps = astRule.props.filter(ast.isStyleProperty)
     const targets = astRule.target
     const notation = astRule.props.find(ast.isNotationProperty)
@@ -1044,7 +1042,7 @@ export class LikeC4ModelParser {
       return this.parseDynamicViewIncludePredicate(astRule, isValid)
     }
     if (ast.isDynamicViewGlobalPredicateRef(astRule)) {
-      return this.parseDynamicViewGlobalPredicateRef(astRule, isValid)
+      return this.parseViewRuleGlobalPredicateRef(astRule, isValid)
     }
     if (ast.isViewRuleStyleOrGlobalRef(astRule)) {
       return this.parseViewRuleStyleOrGlobalRef(astRule, isValid)
@@ -1073,15 +1071,6 @@ export class LikeC4ModelParser {
       iter = iter.prev
     }
     return { include }
-  }
-
-  private parseDynamicViewGlobalPredicateRef(
-    astRule: ast.DynamicViewGlobalPredicateRef,
-    _isValid: IsValidFn
-  ): c4.ViewRuleGlobalPredicateRef {
-    return {
-      predicateId: astRule.predicate.$refText as c4.GlobalElRelID
-    }
   }
 
   protected resolveFqn(node: ast.Element | ast.ExtendElement) {

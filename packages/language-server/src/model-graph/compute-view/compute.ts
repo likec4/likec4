@@ -54,6 +54,7 @@ import {
   sort,
   unique
 } from 'remeda'
+import { resolveGlobalRulesInElementView } from '../../view-utils/resolve-global-rules'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -194,9 +195,11 @@ export class ComputeCtx {
     this.reset()
     const {
       docUri: _docUri, // exclude docUri
-      rules,
+      rules: _rules, // exclude rules
       ...view
     } = this.view
+
+    const rules = resolveGlobalRulesInElementView(this.view, this.graph.globals)
 
     const viewPredicates = rules.filter(anyPass([isViewRulePredicate, isViewRuleGroup])) as Array<
       ViewRulePredicate | ViewRuleGroup

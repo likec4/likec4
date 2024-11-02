@@ -11,7 +11,7 @@ import {
   type Tag
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
-import type { GlobalElRelID, GlobalStyleID } from './global'
+import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
@@ -35,7 +35,7 @@ export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate {
 }
 
 export interface ViewRuleGlobalPredicateRef {
-  predicateId: GlobalElRelID
+  predicateId: GlobalPredicateId
 }
 export function isViewRuleGlobalPredicateRef(rule: ViewRule): rule is ViewRuleGlobalPredicateRef {
   return 'predicateId' in rule
