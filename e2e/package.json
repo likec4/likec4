@@ -16,7 +16,7 @@
     "test:update-screenshots": "playwright test --update-snapshots"
   },
   "devDependencies": {
-    "@playwright/test": "1.47.2",
+    "@playwright/test": "1.48.2",
     "@types/react": "18.3.4",
     "likec4": "file:../packages/likec4/package.tgz",
     "react": "^18.3.1",
