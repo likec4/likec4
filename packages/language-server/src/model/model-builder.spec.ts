@@ -1801,4 +1801,74 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(indexView?.nodes.map(x => x.id)).toStrictEqual(['sys1', 'sys2', 'sys3'])
     expect(indexView?.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
   })
+
+  it('global predicate groups are applied', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+        tag deprecated
+      }
+      model {
+        component sys1
+        component sys2 {
+          #deprecated
+        }
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include *
+          global predicate global_predicate_group_name
+        }
+      }
+      global {
+        predicateGroup global_predicate_group_name {
+          exclude * where tag is #deprecated
+        }
+      }
+    `)
+    expect(diagnostics.length).toBe(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
+    expect(indexView.nodes.find(n => n.id === 'sys2')).toBeUndefined()
+  })
+
+  it('global dynamic predicate groups are applied', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+        tag important
+      }
+      model {
+        component sys1
+        component sys2
+        component sys3 {
+          #important
+        }
+        sys1 -> sys2
+      }
+      views {
+        dynamic view dynamic_view {
+          sys1 -> sys2 'performs an action'
+          global predicate global_predicate_group_name
+        }
+      }
+      global {
+        dynamicPredicateGroup global_predicate_group_name {
+          include sys3
+        }
+      }
+    `)
+    expect(diagnostics.length).toBe(0)
+    const model = await buildModel()
+    const dynamicView = model?.views['dynamic_view' as ViewID]!
+    expect(dynamicView).toBeDefined()
+    expect(dynamicView.nodes.find(n => n.id === 'sys1')).toBeDefined()
+    expect(dynamicView.nodes.find(n => n.id === 'sys2')).toBeDefined()
+    expect(dynamicView.nodes.find(n => n.id === 'sys3')).toBeDefined()
+  })
 })

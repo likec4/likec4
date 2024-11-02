@@ -332,9 +332,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'link',
         'include',
         'exclude',
+        'global',
         'group',
         'style',
-        'global',
         'autoLayout'
       ],
       disposeAfterCheck: true
@@ -372,9 +372,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'with',
         'include',
         'exclude',
+        'global',
         'group',
         'style',
-        'global',
         'autoLayout'
       ],
       disposeAfterCheck: true
@@ -529,9 +529,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'with',
         'include',
         'exclude',
+        'global',
         'group',
         'style',
-        'global',
         'autoLayout'
       ],
       disposeAfterCheck: true
@@ -592,9 +592,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'with',
         'include',
         'exclude',
+        'global',
         'group',
         'style',
-        'global',
         'autoLayout'
       ],
       disposeAfterCheck: true

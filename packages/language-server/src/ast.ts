@@ -94,6 +94,8 @@ export interface ParsedAstRelation {
 }
 
 export interface ParsedAstGlobals {
+  predicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.ViewRulePredicate>>
+  dynamicPredicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.DynamicViewIncludeRule>>
   styles: Record<c4.GlobalStyleID, c4.NonEmptyArray<c4.ViewRuleStyle>>
 }
 
@@ -196,6 +198,8 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
     c4Elements: [],
     c4Relations: [],
     c4Globals: {
+      predicates: {},
+      dynamicPredicates: {},
       styles: {}
     },
     c4Views: []
@@ -235,6 +239,8 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
 }
 const isValidatableAstNode = validatableAstNodeGuards([
   ast.isGlobals,
+  ast.isGlobalPredicateGroup,
+  ast.isGlobalDynamicPredicateGroup,
   ast.isGlobalStyle,
   ast.isGlobalStyleGroup,
   ast.isDynamicViewPredicateIterator,

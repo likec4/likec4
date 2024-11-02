@@ -5,32 +5,42 @@ import {
   type GlobalStyleID,
   isDynamicView,
   isElementView,
+  isViewRuleGlobalPredicateRef,
   isViewRuleGlobalStyle,
   type LikeC4View,
-  nonexhaustive
+  nonexhaustive,
+  type ParsedGlobals
 } from '@likec4/core'
 import { logger } from '@likec4/log'
 
 export function resolveGlobalRules(
   view: LikeC4View,
-  globalStyles: Record<GlobalStyleID, GlobalStyle>
+  globals: ParsedGlobals
 ): LikeC4View {
   if (isElementView(view)) {
-    return resolveGlobalStyleInElementView(view, globalStyles)
+    return resolveInElementView(view, globals)
   } else if (isDynamicView(view)) {
-    return resolveGlobalStyleInDynamicView(view, globalStyles)
+    return resolveInDynamicView(view, globals)
   }
   nonexhaustive(view)
 }
 
-function resolveGlobalStyleInElementView(
+function resolveInElementView(
   view: ElementView,
-  globalStyles: Record<GlobalStyleID, GlobalStyle>
+  globals: ParsedGlobals
 ): LikeC4View {
   const resolvedRules = view.rules
     .flatMap(rule => {
+      if (isViewRuleGlobalPredicateRef(rule)) {
+        const globalPredicate = globals.predicates[rule.predicateId]
+        if (globalPredicate === undefined) {
+          logger.warn(`Global predicate not found: ${rule.predicateId}`)
+          return []
+        }
+        return globalPredicate.predicates
+      }
       if (isViewRuleGlobalStyle(rule)) {
-        const globalStyle = globalStyles[rule.styleId]
+        const globalStyle = globals.styles[rule.styleId]
         if (globalStyle === undefined) {
           logger.warn(`Global style not found: ${rule.styleId}`)
           return []
@@ -47,14 +57,22 @@ function resolveGlobalStyleInElementView(
   }
 }
 
-function resolveGlobalStyleInDynamicView(
+function resolveInDynamicView(
   view: DynamicView,
-  globalStyles: Record<GlobalStyleID, GlobalStyle>
+  globals: ParsedGlobals
 ): LikeC4View {
   const resolvedRules = view.rules
     .flatMap(rule => {
+      if (isViewRuleGlobalPredicateRef(rule)) {
+        const globalPredicate = globals.dynamicPredicates[rule.predicateId]
+        if (globalPredicate === undefined) {
+          logger.warn(`Global predicate not found: ${rule.predicateId}`)
+          return []
+        }
+        return globalPredicate.dynamicPredicates
+      }
       if (isViewRuleGlobalStyle(rule)) {
-        const globalStyle = globalStyles[rule.styleId]
+        const globalStyle = globals.styles[rule.styleId]
         if (globalStyle === undefined) {
           logger.warn(`Global style not found: ${rule.styleId}`)
           return []

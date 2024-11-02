@@ -53,6 +53,8 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     },
   },
   "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
     "styles": {},
   },
   "relations": {
@@ -211,6 +213,8 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
     "styles": {},
   },
   "relations": {
@@ -525,6 +529,8 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     },
   },
   "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
     "styles": {},
   },
   "relations": {
@@ -651,6 +657,8 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     },
   },
   "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
     "styles": {},
   },
   "relations": {
@@ -773,6 +781,8 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     },
   },
   "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
     "styles": {},
   },
   "relations": {

@@ -10,6 +10,8 @@ import {
   type ElementShape,
   type ElementView,
   type Fqn,
+  type GlobalDynamicElRel,
+  type GlobalElRel,
   type GlobalStyle,
   type IconUrl,
   isScopedElementView,
@@ -220,7 +222,13 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
   _elements = new Map<string, Element>(),
   _relations = [] as Relation[],
-  _globals = { styles: [] } as {
+  _globals = {
+    predicates: [],
+    dynamicPredicates: [],
+    styles: []
+  } as {
+    predicates: GlobalElRel[]
+    dynamicPredicates: GlobalDynamicElRel[]
     styles: GlobalStyle[]
   },
   _views = new Map<string, LikeC4View>()
@@ -344,6 +352,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       elements: fromEntries(Array.from(_elements.entries())) as any,
       relations: mapToObj(_relations, r => [r.id, r]),
       globals: {
+        predicates: mapToObj(_globals.predicates, p => [p.id, p]),
+        dynamicPredicates: mapToObj(_globals.dynamicPredicates, p => [p.id, p]),
         styles: mapToObj(_globals.styles, s => [s.id, s])
       },
       views: fromEntries(Array.from(_views.entries())) as any

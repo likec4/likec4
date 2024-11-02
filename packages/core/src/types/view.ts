@@ -11,7 +11,7 @@ import {
   type Tag
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
-import type { GlobalStyleID } from './global'
+import type { GlobalElRelID, GlobalStyleID } from './global'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
@@ -32,6 +32,13 @@ export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate {
     ('include' in rule && Array.isArray(rule.include))
     || ('exclude' in rule && Array.isArray(rule.exclude))
   )
+}
+
+export interface ViewRuleGlobalPredicateRef {
+  predicateId: GlobalElRelID
+}
+export function isViewRuleGlobalPredicateRef(rule: ViewRule): rule is ViewRuleGlobalPredicateRef {
+  return 'predicateId' in rule
 }
 
 export interface ViewRuleStyle {
@@ -83,7 +90,13 @@ export function isViewRuleGroup(rule: ViewRule): rule is ViewRuleGroup {
   return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
 }
 
-export type ViewRule = ViewRulePredicate | ViewRuleGroup | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
+export type ViewRule =
+  | ViewRulePredicate
+  | ViewRuleGlobalPredicateRef
+  | ViewRuleGroup
+  | ViewRuleStyle
+  | ViewRuleGlobalStyle
+  | ViewRuleAutoLayout
 
 export interface BasicView<
   ViewType extends 'element' | 'dynamic',
@@ -178,7 +191,12 @@ export function isDynamicViewIncludeRule(rule: DynamicViewRule): rule is Dynamic
   return 'include' in rule && Array.isArray(rule.include)
 }
 
-export type DynamicViewRule = DynamicViewIncludeRule | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
+export type DynamicViewRule =
+  | DynamicViewIncludeRule
+  | ViewRuleGlobalPredicateRef
+  | ViewRuleStyle
+  | ViewRuleGlobalStyle
+  | ViewRuleAutoLayout
 export interface DynamicView<
   ViewIDs extends string = string,
   Tags extends string = string

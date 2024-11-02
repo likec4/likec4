@@ -212,15 +212,33 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   )
 
   const parsedGlobals: {
+    predicates: Record<c4.GlobalElRelID, c4.ViewRulePredicate[]>
+    dynamicPredicates: Record<c4.GlobalElRelID, c4.DynamicViewIncludeRule[]>
     styles: Record<c4.GlobalStyleID, c4.ViewRuleStyle[]>
   } = {
+    predicates: {},
+    dynamicPredicates: {},
     styles: {}
   }
+  Object.assign(parsedGlobals.predicates, ...docs.map(d => d.c4Globals.predicates))
+  Object.assign(parsedGlobals.dynamicPredicates, ...docs.map(d => d.c4Globals.dynamicPredicates))
   Object.assign(parsedGlobals.styles, ...docs.map(d => d.c4Globals.styles))
 
   const globals: {
+    predicates: Record<c4.GlobalElRelID, c4.GlobalElRel>
+    dynamicPredicates: Record<c4.GlobalElRelID, c4.GlobalDynamicElRel>
     styles: Record<c4.GlobalStyleID, c4.GlobalStyle>
   } = {
+    predicates: pipe(
+      entries(parsedGlobals.predicates),
+      map(([id, predicates]) => ({ id, predicates })),
+      indexBy(prop('id'))
+    ),
+    dynamicPredicates: pipe(
+      entries(parsedGlobals.dynamicPredicates),
+      map(([id, dynamicPredicates]) => ({ id, dynamicPredicates })),
+      indexBy(prop('id'))
+    ),
     styles: pipe(
       entries(parsedGlobals.styles),
       map(([id, styles]) => ({ id, styles })),
@@ -399,7 +417,7 @@ export class LikeC4ModelBuilder {
 
       const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
-        const resolvedView = resolveGlobalRules(view, model.globals.styles)
+        const resolvedView = resolveGlobalRules(view, model.globals)
         const result = isElementView(resolvedView)
           ? computeView(resolvedView, index)
           : computeDynamicView(resolvedView, index)
@@ -467,7 +485,7 @@ export class LikeC4ModelBuilder {
           return null
         }
         const index = new LikeC4ModelGraph(model)
-        const resolvedView = resolveGlobalRules(view, model.globals.styles)
+        const resolvedView = resolveGlobalRules(view, model.globals)
         const result = isElementView(resolvedView)
           ? computeView(resolvedView, index)
           : computeDynamicView(resolvedView, index)

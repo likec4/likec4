@@ -267,6 +267,7 @@ ViewLayoutDirection returns string:
 
 ViewRule:
   ViewRulePredicate |
+  ViewRuleGlobalPredicateRef |
   ViewRuleGroup |
   ViewRuleStyleOrGlobalRef |
   ViewRuleAutoLayout
@@ -287,6 +288,7 @@ ViewRuleGroup:
 
 DynamicViewRule:
   DynamicViewIncludePredicate |
+  DynamicViewGlobalPredicateRef |
   ViewRuleStyleOrGlobalRef |
   ViewRuleAutoLayout
 ;
@@ -317,6 +319,9 @@ Predicate:
   RelationPredicate |
   ElementPredicate
 ;
+
+ViewRuleGlobalPredicateRef:
+  'global' 'predicate' predicate=[GlobalPredicateGroup];
 
 ElementPredicate:
   ElementPredicates;
@@ -443,6 +448,9 @@ DynamicViewIncludePredicate:
   'include' predicates=DynamicViewPredicateIterator
 ;
 
+DynamicViewGlobalPredicateRef:
+  'global' 'predicate' predicate=[GlobalDynamicPredicateGroup];
+
 DynamicViewPredicateIterator:
   value=ElementPredicate ({infer DynamicViewPredicateIterator.prev=current} ',' (value=ElementPredicate)?)*
 ;
@@ -506,8 +514,19 @@ RelationNavigateToProperty:
 Globals:
   name='global' '{'
     (
+      predicates+=(GlobalPredicateGroup | GlobalDynamicPredicateGroup)*
       styles+=(GlobalStyle | GlobalStyleGroup)*
     )*
+  '}';
+
+GlobalPredicateGroup:
+  'predicateGroup' name=IdTerminal '{'
+    predicates+=ViewRulePredicate*
+  '}';
+
+GlobalDynamicPredicateGroup:
+  'dynamicPredicateGroup' name=IdTerminal '{'
+    predicates+=DynamicViewIncludePredicate*
   '}';
 
 GlobalStyleId:

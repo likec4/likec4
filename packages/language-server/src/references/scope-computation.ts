@@ -69,6 +69,16 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     if (isNullish(globals) || globals.length === 0) {
       return
     }
+    for (const globalPredicateAst of globals.flatMap(g => g.predicates)) {
+      try {
+        const id = globalPredicateAst
+        if (isTruthy(id.name)) {
+          docExports.push(this.descriptions.createDescription(id, id.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
     for (const globalStyleAst of globals.flatMap(g => g.styles)) {
       try {
         const id = globalStyleAst.id
