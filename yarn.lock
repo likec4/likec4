@@ -2326,7 +2326,7 @@ __metadata:
     monaco-editor: "npm:@codingame/monaco-vscode-editor-api@8.0.4"
     monaco-editor-wrapper: "npm:5.5.3"
     monaco-languageclient: "npm:8.8.3"
-    nanoid: "npm:^5.0.7"
+    nanoid: "npm:^5.0.8"
     p-limit: "npm:^6.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -10156,12 +10156,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^5.0.7":
-  version: 5.0.7
-  resolution: "nanoid@npm:5.0.7"
+"nanoid@npm:^5.0.8":
+  version: 5.0.8
+  resolution: "nanoid@npm:5.0.8"
   bin:
     nanoid: bin/nanoid.js
-  checksum: 10c0/a3fb1c157e3e35378f44e5a7130c70f80c9037f66c9a37285e5e3d8298e8405fcb2399baaa420980b0fe5fd9c2e4186a6a31c3526f21de03cf34c1b459871401
+  checksum: 10c0/0281d3cc0f3d03fb3010b479f28e8ddedfafb9b5d60e54315589ef0a54a0e9cfcb0bf382dd3b620fdad6b72b8c1f5b89a15d55c6b6a9134b58b16eb230b3a3d7
   languageName: node
   linkType: hard
 
