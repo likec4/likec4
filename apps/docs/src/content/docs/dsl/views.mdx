@@ -465,19 +465,17 @@ exclude * -> * where tag is not #commands
 
 ```
 
-Together with [extend views](#extend-views) you may define a "baseline" view (includes everything), and then filter out in inherited views.
+Together with [predicate groups](#global-predicate-groups) you may define a "baseline" (includes everything), and then filter out in inherited views.
 
 :::
 
-#### Global predicates
+#### Global predicate groups
 
-Element and relationship predicates can be defined in global groups.
-Each global group can be applied to multiple views.
-When a group is applied to a view, all predicates from the group are applied.
+If you find yourself repeating the same predicates in multiple views, you can define them as global group:
 
 ```likec4
 global {
-  predicateGroup new_cloud_service {
+  predicateGroup microservices {
     include cloud.*
       where kind is microservice
     exclude *
@@ -487,13 +485,14 @@ global {
 
 views {
   view of newServices {
-    include *
-    global predicate new_cloud_service
+    include cloud.new.*
+    global predicate microservices
   }
 
   view of newBackendServices {
-    include *
-    global predicate new_cloud_service
+    // Keep in mind that order is significant
+    global predicate microservices
+    include cloud.backend.*
   }
 }
 ```
@@ -663,7 +662,7 @@ view apiApp of internetBankingSystem.apiApplication {
 [`Group`](#groups) does not support nested `style` predicates (yet).
 :::
 
-#### Shared local styles :badge[v1.13]{variant="success"}
+#### Shared local styles
 
 Styles can be shared within `views` block (_"local styles"_):
 
@@ -706,7 +705,7 @@ First, local styles from `views` block and then from `view`
 :::
 
 
-#### Shared global styles :badge[v1.13]{variant="success"}
+#### Shared global styles
 
 Styles can be shared globally.  
 Global styles must be named and defined in `global` block:
@@ -750,45 +749,14 @@ views {
 }
 ```
 
-##### Shared global styles as shared local styles
+##### Shared style groups
 
-Global styles can be used as local styles:
+Global styles can be grouped:
 
-```likec4
-global {
-  style mute_deprecated element.tag = #deprecated {
-    color muted
-  }
-
-  style mute_all * {
-    color muted
-    opacity 10%
-  }
-}
-
-views {
-  global style mute_deprecated
-
-  view apiApp of apiApplication {
-    include *
-
-    global style mute_all
-  }
-}
-```
-
-#### Shared style groups :badge[v1.15]{variant="success"}
-
-Global styles can be grouped and applied together:
-
-```likec4 {3,22,30}
+```likec4 {3,18}
 global {
   // Define style group
   styleGroup common_styles {
-    style * {
-      color muted
-      opacity 10%
-    }
     style singlePageApplication, mobileApp {
       color secondary
     }
@@ -799,56 +767,45 @@ global {
 }
 
 views {  
-  view mobileApp of mobileApplication {
+  view mobileApp of mobileApp {
     include *
 
-    // Apply common styles
-    global style common_styles
-  }
-
-  view apiApp of apiApplication {
-
-    include *
-
-    // Apply common styles
+    // Apply styles from group
     global style common_styles
 
-    // View-specific styles
-    style apiApplication.* {
+    // Override
+    style mobileApp {
       color primary
     }
   }
 }
 ```
 
-##### Shared style groups as local styles
-
-Global style groups can be used as local styles:
+:::tip
+Global styles and groups can be used as `views`-locals:
 
 ```likec4
 global {
-  styleGroup common_styles {
-    style * {
-      color amber
-    }
-    style element.tag = #deprecated {
-      color muted
-    }
-  }
+  style mute_all * { color muted }
+  styleGroup theme1 { //...
+  styleGroup theme2 { //...
 }
 
+// All views within this block have styles from 'theme1'
 views {
-  global style common_styles
+  global style theme1
+  view view1 { //... 
+}
 
-  view mobileApp of mobileApplication {
-    // common_styles are applied here ...
-  }
-
-  view apiApp of apiApplication {
-    // ... and here
-  }
+// All views have 'mute_all' style and all from 'theme2'
+views {
+  global style mute_all
+  global style theme2
+  view view2 { //... 
 }
 ```
+:::
+
 
 ### Auto-layout
 

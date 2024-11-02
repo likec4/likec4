@@ -93,11 +93,13 @@ export interface ParsedAstRelation {
   metadata?: { [key: string]: string }
 }
 
-export interface ParsedAstGlobals {
-  predicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.ViewRulePredicate>>
-  dynamicPredicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.DynamicViewIncludeRule>>
-  styles: Record<c4.GlobalStyleID, c4.NonEmptyArray<c4.ViewRuleStyle>>
-}
+// export interface ParsedAstGlobals {
+//   predicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.ViewRulePredicate>>
+//   dynamicPredicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.DynamicViewIncludeRule>>
+//   styles: Record<c4.GlobalStyleID, c4.NonEmptyArray<c4.ViewRuleStyle>>
+// }
+// Alias for refactoring
+export type ParsedAstGlobals = c4.ModelGlobals
 
 export interface ParsedAstElementView {
   __: 'element'

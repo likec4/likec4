@@ -13,10 +13,8 @@ import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
 import {
-  entries,
   filter,
   flatMap,
-  forEach,
   groupBy,
   indexBy,
   isEmpty,
@@ -46,21 +44,37 @@ import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logger, logWarnError } from '../logger'
 import { computeDynamicView, computeView, LikeC4ModelGraph } from '../model-graph'
 import type { LikeC4Services } from '../module'
-import { assignNavigateTo, resolveGlobalRules, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
+import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
+  // Merge specifications and globals from all documents
   const c4Specification: ParsedAstSpecification = {
     tags: new Set(),
     elements: {},
     relationships: {},
     colors: {}
   }
-  forEach(map(docs, prop('c4Specification')), spec => {
+  const globals: c4.ModelGlobals = {
+    predicates: {},
+    dynamicPredicates: {},
+    styles: {}
+  }
+  for (const doc of docs) {
+    const {
+      c4Specification: spec,
+      c4Globals
+    } = doc
+
     spec.tags.forEach(t => c4Specification.tags.add(t))
     Object.assign(c4Specification.elements, spec.elements)
     Object.assign(c4Specification.relationships, spec.relationships)
     Object.assign(c4Specification.colors, spec.colors)
-  })
+
+    Object.assign(globals.predicates, c4Globals.predicates)
+    Object.assign(globals.dynamicPredicates, c4Globals.dynamicPredicates)
+    Object.assign(globals.styles, c4Globals.styles)
+  }
+
   function resolveLinks(doc: LangiumDocument, links: c4.NonEmptyArray<ParsedLink>) {
     return map(
       links,
@@ -210,41 +224,6 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     reverse(),
     indexBy(prop('id'))
   )
-
-  const parsedGlobals: {
-    predicates: Record<c4.GlobalElRelID, c4.ViewRulePredicate[]>
-    dynamicPredicates: Record<c4.GlobalElRelID, c4.DynamicViewIncludeRule[]>
-    styles: Record<c4.GlobalStyleID, c4.ViewRuleStyle[]>
-  } = {
-    predicates: {},
-    dynamicPredicates: {},
-    styles: {}
-  }
-  Object.assign(parsedGlobals.predicates, ...docs.map(d => d.c4Globals.predicates))
-  Object.assign(parsedGlobals.dynamicPredicates, ...docs.map(d => d.c4Globals.dynamicPredicates))
-  Object.assign(parsedGlobals.styles, ...docs.map(d => d.c4Globals.styles))
-
-  const globals: {
-    predicates: Record<c4.GlobalElRelID, c4.GlobalElRel>
-    dynamicPredicates: Record<c4.GlobalElRelID, c4.GlobalDynamicElRel>
-    styles: Record<c4.GlobalStyleID, c4.GlobalStyle>
-  } = {
-    predicates: pipe(
-      entries(parsedGlobals.predicates),
-      map(([id, predicates]) => ({ id, predicates })),
-      indexBy(prop('id'))
-    ),
-    dynamicPredicates: pipe(
-      entries(parsedGlobals.dynamicPredicates),
-      map(([id, dynamicPredicates]) => ({ id, dynamicPredicates })),
-      indexBy(prop('id'))
-    ),
-    styles: pipe(
-      entries(parsedGlobals.styles),
-      map(([id, styles]) => ({ id, styles })),
-      indexBy(prop('id'))
-    )
-  }
 
   function toC4View(doc: LangiumDocument) {
     const docUri = doc.uri.toString()
@@ -417,10 +396,9 @@ export class LikeC4ModelBuilder {
 
       const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
-        const resolvedView = resolveGlobalRules(view, model.globals)
-        const result = isElementView(resolvedView)
-          ? computeView(resolvedView, index)
-          : computeDynamicView(resolvedView, index)
+        const result = isElementView(view)
+          ? computeView(view, index)
+          : computeDynamicView(view, index)
         if (!result.isSuccess) {
           logWarnError(result.error)
           continue
@@ -485,10 +463,9 @@ export class LikeC4ModelBuilder {
           return null
         }
         const index = new LikeC4ModelGraph(model)
-        const resolvedView = resolveGlobalRules(view, model.globals)
-        const result = isElementView(resolvedView)
-          ? computeView(resolvedView, index)
-          : computeDynamicView(resolvedView, index)
+        const result = isElementView(view)
+          ? computeView(view, index)
+          : computeDynamicView(view, index)
         if (!result.isSuccess) {
           logError(result.error)
           return null

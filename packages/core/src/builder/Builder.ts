@@ -10,13 +10,11 @@ import {
   type ElementShape,
   type ElementView,
   type Fqn,
-  type GlobalDynamicElRel,
-  type GlobalElRel,
-  type GlobalStyle,
   type IconUrl,
   isScopedElementView,
   type LikeC4View,
   type Link,
+  type ModelGlobals,
   type NonEmptyArray,
   type Relation,
   type RelationID,
@@ -222,16 +220,12 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
   _elements = new Map<string, Element>(),
   _relations = [] as Relation[],
+  _views = new Map<string, LikeC4View>(),
   _globals = {
-    predicates: [],
-    dynamicPredicates: [],
-    styles: []
-  } as {
-    predicates: GlobalElRel[]
-    dynamicPredicates: GlobalDynamicElRel[]
-    styles: GlobalStyle[]
-  },
-  _views = new Map<string, LikeC4View>()
+    predicates: {},
+    dynamicPredicates: {},
+    styles: {}
+  } as ModelGlobals
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
     tags: (spec.tags ?? []) as Tag<T['Tag']>[],
@@ -295,8 +289,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(spec),
         structuredClone(_elements),
         structuredClone(_relations),
-        structuredClone(_globals),
-        structuredClone(_views)
+        structuredClone(_views),
+        structuredClone(_globals)
       ),
     __model: () => ({
       addElement: (element) => {
@@ -351,11 +345,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       specification: toLikeC4Specification(),
       elements: fromEntries(Array.from(_elements.entries())) as any,
       relations: mapToObj(_relations, r => [r.id, r]),
-      globals: {
-        predicates: mapToObj(_globals.predicates, p => [p.id, p]),
-        dynamicPredicates: mapToObj(_globals.dynamicPredicates, p => [p.id, p]),
-        styles: mapToObj(_globals.styles, s => [s.id, s])
-      },
+      globals: structuredClone(_globals),
       views: fromEntries(Array.from(_views.entries())) as any
     }),
     helpers: () => ({

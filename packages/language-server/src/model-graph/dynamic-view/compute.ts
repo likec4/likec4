@@ -26,6 +26,7 @@ import {
   StepEdgeId
 } from '@likec4/core'
 import { filter, flatMap, hasAtLeast, isTruthy, map, omit, only, pipe, unique } from 'remeda'
+import { resolveGlobalRulesInDynamicView } from '../../view-utils/resolve-global-rules'
 import { calcViewLayoutHash } from '../../view-utils/view-hash'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
@@ -111,7 +112,7 @@ export class DynamicViewComputeCtx {
   protected compute(): ComputedDynamicView {
     const {
       docUri: _docUri, // exclude docUri
-      rules,
+      rules: _rules, // exclude rules
       steps: viewSteps,
       ...view
     } = this.view
@@ -132,6 +133,8 @@ export class DynamicViewComputeCtx {
       }
       stepNum++
     }
+
+    const rules = resolveGlobalRulesInDynamicView(this.view, this.graph.globals)
 
     for (const rule of rules) {
       if (isDynamicViewIncludeRule(rule)) {

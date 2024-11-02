@@ -5,6 +5,7 @@ import {
   type Fqn,
   invariant,
   isSameHierarchy,
+  type ModelGlobals,
   parentFqn,
   type Relation,
   type RelationID
@@ -14,7 +15,8 @@ import { isArray, isString } from 'remeda'
 type Params = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
-  // views: ElementView[]
+  // Optional for tests
+  globals?: ModelGlobals
 }
 
 type RelationEdge = {
@@ -41,24 +43,33 @@ function intersection<T>(a: Set<T>, b: Set<T>) {
  * Subject to change.
  */
 export class LikeC4ModelGraph {
-  #elements = new Map<Fqn, Element>()
+  readonly #elements = new Map<Fqn, Element>()
   // Parent element for given FQN
-  #parents = new Map<Fqn, Element>()
+  readonly #parents = new Map<Fqn, Element>()
   // Children elements for given FQN
-  #children = new Map<Fqn, Element[]>()
-  #rootElements = new Set<Element>()
+  readonly #children = new Map<Fqn, Element[]>()
+  readonly #rootElements = new Set<Element>()
 
-  #relations = new Map<RelationID, Relation>()
+  readonly #relations = new Map<RelationID, Relation>()
   // Incoming to an element or its descendants
-  #incoming = new MapRelations()
+  readonly #incoming = new MapRelations()
   // Outgoing from an element or its descendants
-  #outgoing = new MapRelations()
+  readonly #outgoing = new MapRelations()
   // Relationships inside the element, among descendants
-  #internal = new MapRelations()
+  readonly #internal = new MapRelations()
 
-  #cacheAscendingSiblings = new Map<Fqn, Element[]>()
+  readonly #cacheAscendingSiblings = new Map<Fqn, Element[]>()
 
-  constructor({ elements, relations }: Params) {
+  public readonly globals: ModelGlobals
+
+  constructor(
+    { elements, relations, globals }: Params
+  ) {
+    this.globals = globals ?? {
+      predicates: {},
+      dynamicPredicates: {},
+      styles: {}
+    }
     for (const el of Object.values(elements)) {
       this.addElement(el)
     }

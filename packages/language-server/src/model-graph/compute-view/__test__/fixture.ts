@@ -11,6 +11,7 @@ import {
   type ElementWhereExpr,
   type Expression as C4Expression,
   type Fqn,
+  type GlobalStyleID,
   type IncomingExpr as C4IncomingExpr,
   type InOutExpr as C4InOutExpr,
   isElementRef,
@@ -28,6 +29,7 @@ import {
   type Tag,
   type ViewID,
   type ViewRule,
+  type ViewRuleGlobalStyle,
   type ViewRuleGroup,
   type ViewRulePredicate,
   type ViewRuleStyle,
@@ -331,11 +333,37 @@ export const fakeRelations = [
   })
 ]
 
+export const globalStyles = {
+  'mute_old': [{
+    targets: [$expr({
+      elementTag: 'old' as Tag,
+      isEqual: true
+    })],
+    style: {
+      color: 'muted'
+    }
+  }],
+  'red_next': [{
+    targets: [$expr({
+      elementTag: 'next' as Tag,
+      isEqual: true
+    })],
+    style: {
+      color: 'red'
+    }
+  }]
+} as const
+
 export type FakeRelationIds = (typeof fakeRelations)[number]['id']
 
 export const fakeModel = new LikeC4ModelGraph({
   elements: fakeElements,
-  relations: indexBy(fakeRelations, r => r.id)
+  relations: indexBy(fakeRelations, r => r.id),
+  globals: {
+    predicates: {},
+    dynamicPredicates: {},
+    styles: globalStyles
+  }
 })
 
 const emptyView = {
@@ -548,6 +576,18 @@ export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): 
     targets: [$expr(element) as C4ElementExpression],
     style: Object.assign({}, style)
   }
+}
+
+type GlobalStyles = keyof typeof globalStyles
+type GlobalExpr = `style ${GlobalStyles}`
+export function $global(expr: GlobalExpr): ViewRuleGlobalStyle {
+  const [_t, id] = expr.split(' ') as [string, string]
+  if (_t === 'style') {
+    return {
+      styleId: id as GlobalStyleID
+    }
+  }
+  throw new Error('Invalid global expression')
 }
 
 export function computeView(

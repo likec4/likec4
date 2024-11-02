@@ -1,22 +1,19 @@
-import type { Tagged } from 'type-fest'
+import type { NonEmptyTuple, Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { DynamicViewIncludeRule, ViewRulePredicate, ViewRuleStyle } from './view'
 
-export type GlobalElRelID = Tagged<string, 'GlobalElRelID'>
+export type GlobalPredicateId = Tagged<string, 'GlobalPredicateId'>
 
-export interface GlobalElRel {
-  readonly id: GlobalElRelID
-  readonly predicates: NonEmptyArray<ViewRulePredicate>
-}
+export type GlobalPredicates = NonEmptyArray<ViewRulePredicate>
 
-export interface GlobalDynamicElRel {
-  readonly id: GlobalElRelID
-  readonly dynamicPredicates: NonEmptyArray<DynamicViewIncludeRule>
-}
+export type GlobalDynamicPredicates = NonEmptyArray<DynamicViewIncludeRule>
 
 export type GlobalStyleID = Tagged<string, 'GlobalStyleID'>
 
-export interface GlobalStyle {
-  readonly id: GlobalStyleID
-  readonly styles: NonEmptyArray<ViewRuleStyle>
+export type GlobalStyles = NonEmptyTuple<ViewRuleStyle>
+
+export interface ModelGlobals {
+  predicates: Record<GlobalPredicateId, GlobalPredicates>
+  dynamicPredicates: Record<GlobalPredicateId, GlobalDynamicPredicates>
+  styles: Record<GlobalStyleID, GlobalStyles>
 }
