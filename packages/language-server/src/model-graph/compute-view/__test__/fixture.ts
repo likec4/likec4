@@ -538,30 +538,34 @@ type CustomProps = {
 }
 export function $include(expr: Expression | C4Expression, props?: CustomProps): ViewRulePredicate {
   let _expr = props?.where ? $where(expr, props.where) : $expr(expr)
-  if (props?.with) {
-    if (isRelationExpression(_expr) || isRelationWhere(_expr)) {
-      _expr = {
-        customRelation: {
-          relation: _expr,
-          ...props.with as any
-        }
-      }
-    } else if (isElementRef(_expr) || isElementWhere(_expr)) {
-      _expr = {
-        custom: {
-          expr: _expr,
-          ...props.with as any
-        }
-      }
-    }
-  }
+  _expr = props?.with ? $with(_expr, props.with) : _expr
   return {
     include: [_expr]
   }
 }
-export function $exclude(expr: Expression | C4Expression): ViewRulePredicate {
+export function $with(expr: C4Expression, props?: CustomProps['with']): C4CustomRelationExpr | C4CustomElementExpr {
+  if (isRelationExpression(expr) || isRelationWhere(expr)) {
+    return {
+      customRelation: {
+        relation: expr,
+        ...props as any
+      }
+    }
+  } else if (isElementRef(expr) || isElementWhere(expr)) {
+    return {
+      custom: {
+        expr: expr,
+        ...props as any
+      }
+    }
+  }
+
+  throw 'Unsupported type of internal expression'
+}
+export function $exclude(expr: Expression | C4Expression, where?: WhereOperator<TestTag, string>): ViewRulePredicate {
+  let _expr = where ? $where(expr, where) : $expr(expr)
   return {
-    exclude: [$expr(expr)]
+    exclude: [_expr]
   }
 }
 export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {

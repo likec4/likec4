@@ -13,10 +13,6 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
   for (const rule of rules) {
     const predicates = [] as Predicate<ComputedNode>[]
     for (const target of rule.targets) {
-      if (Expr.isWildcard(target)) {
-        predicates.push(() => true)
-        break
-      }
       predicates.push(elementExprToPredicate(target) as Predicate<ComputedNode>)
     }
     pipe(
