@@ -170,12 +170,12 @@ function DiagramPreview({
       </HoverCardTarget>
       <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
         <StaticLikeC4Diagram
-          // className={css.diagramPreview}
           view={diagram}
           keepAspectRatio={false}
           renderIcon={RenderIcon}
           fitView
           fitViewPadding={0}
+          showElementLinks={false}
           initialWidth={width}
           initialHeight={height}
         />
