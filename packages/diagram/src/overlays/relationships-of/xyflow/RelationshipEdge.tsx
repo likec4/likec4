@@ -14,7 +14,13 @@ export function RelationshipEdge({
   label,
   ...props
 }: EdgeProps<XYFlowTypes.Edge>) {
-  const onNavigateTo = useDiagramState(s => s.onNavigateTo)
+  const {
+    viewId,
+    onNavigateTo
+  } = useDiagramState(s => ({
+    viewId: s.view.id,
+    onNavigateTo: s.onNavigateTo
+  }))
   const [edgePath, labelX, labelY] = getBezierPath(props)
   const navigateTo = onNavigateTo ? only(data.relations)?.navigateTo : undefined
   const isMultiRelation = data.relations.length > 1
@@ -25,6 +31,7 @@ export function RelationshipEdge({
         className={css.edgePath}
         data-edge-dimmed={data.dimmed}
         data-edge-hovered={data.hovered}
+        data-likec4-color={data.includedInCurrentView ? 'gray' : 'amber'}
       >
         <BaseEdge
           path={edgePath}
@@ -46,6 +53,8 @@ export function RelationshipEdge({
           ])}
           data-edge-dimmed={data.dimmed}
           data-edge-hovered={data.hovered}
+          data-likec4-color={data.includedInCurrentView ? 'gray' : 'amber'}
+          // {...data.includedInCurrentView === false && { 'data-likec4-color': 'amber' }}
         >
           {label && (
             <Group gap={6} wrap="nowrap">
@@ -73,7 +82,7 @@ export function RelationshipEdge({
               {' ]'}
             </Text>
           )}
-          {navigateTo && (
+          {navigateTo && viewId !== navigateTo && (
             <Box ta={'center'} mt={4}>
               <ActionIcon
                 variant="default"

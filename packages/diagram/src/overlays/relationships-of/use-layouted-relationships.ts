@@ -8,7 +8,8 @@ import {
   isAncestor,
   type LikeC4Model,
   type NonEmptyArray,
-  type Relation
+  type Relation,
+  type RelationID
 } from '@likec4/core'
 import { MarkerType } from '@xyflow/system'
 import { useMemo } from 'react'
@@ -33,6 +34,7 @@ import {
 } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
+import type { RelationshipEdge } from '../../xyflow/types'
 import type { XYFlowTypes } from './_types'
 
 const graphColumn = <C extends 'incomers' | 'subject' | 'outgoers'>(c: C) => ({
@@ -314,12 +316,13 @@ function applyDagreLayout(g: dagre.graphlib.Graph) {
 function addEdge(
   ctx: Context,
   props: {
+    includedInCurrentView: boolean
     source: string
     target: string
     relations: XYFlowTypes.Edge['data']['relations']
   }
 ) {
-  const { source, target, relations } = props
+  const { source, target, relations, includedInCurrentView } = props
   const ids = relations.map(r => r.id).join('_')
   const label = only(relations)?.title ?? 'untitled'
 
@@ -332,6 +335,7 @@ function addEdge(
     sourceHandle: target,
     targetHandle: source,
     data: {
+      includedInCurrentView,
       relations
     },
     label: isMultiple ? `${relations.length} relationships` : label,
@@ -394,6 +398,7 @@ function layout(
 ): {
   view: DiagramView
   viewIncludesSubject: boolean
+  notIncludedRelations: number
   subject: LikeC4ModelElement
   nodes: XYFlowTypes.Node[]
   edges: XYFlowTypes.Edge[]
@@ -406,10 +411,31 @@ function layout(
 } {
   const diagramNodes = new Map(view.nodes.map(n => [n.id, n]))
   const subjectElement = likec4model.element(subjectId)
+  const viewIncludesSubject = diagramNodes.has(subjectId)
 
-  if (!diagramNodes.has(subjectId)) {
+  let viewIncludedRelations: Set<RelationID>
+  // Relations that are not included in the view
+  const notIncludedRelations = new Set<RelationID>()
+
+  if (!viewIncludesSubject) {
     // Reset scope to global if subject is not in the view
     scope = 'global'
+    viewIncludedRelations = new Set()
+  } else {
+    const subjectNode = diagramNodes.get(subjectId)!
+    viewIncludedRelations = new Set([
+      ...subjectNode.inEdges,
+      ...subjectNode.outEdges
+    ].flatMap((edgeId) => view.edges.find((edge) => edge.id === edgeId)?.relations ?? []))
+
+    forEach([
+      ...subjectElement.incoming().map(r => r.id),
+      ...subjectElement.outgoing().map(r => r.id)
+    ], (relationId) => {
+      if (!viewIncludedRelations.has(relationId)) {
+        notIncludedRelations.add(relationId)
+      }
+    })
   }
 
   const g = createGraph()
@@ -481,7 +507,8 @@ function layout(
       addEdge(ctx, {
         source: source.id,
         target: subject.id,
-        relations
+        relations,
+        includedInCurrentView: relations.every(r => viewIncludedRelations.has(r.id))
       })
     },
 
@@ -503,7 +530,8 @@ function layout(
       addEdge(ctx, {
         source: subjectElement.id,
         target: target.id,
-        relations
+        relations,
+        includedInCurrentView: relations.every(r => viewIncludedRelations.has(r.id))
       })
     }
   })
@@ -577,8 +605,9 @@ function layout(
   }
 
   return {
-    view: view,
-    viewIncludesSubject: diagramNodes.has(subjectId),
+    view,
+    viewIncludesSubject,
+    notIncludedRelations: notIncludedRelations.size,
     subject: subjectElement,
     edges: ctx.edges,
     nodes: xynodes,

@@ -15,6 +15,7 @@ import { stopPropagation, toDomPrecision } from '../../utils'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
+import { ElementDetails } from './ElementDetails'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
@@ -173,9 +174,12 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   }))
 
   const isNavigable = hasOnNavigateTo && !!element.navigateTo
-
-  const _isToolbarVisible = isEditable && (isHovered || (import.meta.env.DEV && selected))
+  const isHoveredOrSelected = isHovered || (import.meta.env.DEV && selected)
+  const _isToolbarVisible = isEditable && isHoveredOrSelected
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
+
+  const _isDetailsVisible = isHoveredOrSelected && isHovercards
+  const [isDetailsVisible] = useDebouncedValue(_isDetailsVisible, _isDetailsVisible ? 900 : 200)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -226,6 +230,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           onColorPreview={setPreviewColor}
         />
       )}
+      {isDetailsVisible && !dragging && <ElementDetails nodeId={id} />}
       <m.div
         id={id}
         className={clsx([

@@ -3,6 +3,7 @@ model {
   extend cloud.backend {
 
     graphql = app 'GraphQL' {
+      #v2 #next
       technology 'nodejs'
       description '
         The GraphQL API to access data
@@ -11,6 +12,7 @@ model {
     }
 
     cms = app 'CMS' {
+      #v1 #deprecated
       description 'The CMS of the cloud system'
     }
 

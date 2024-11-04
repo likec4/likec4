@@ -181,7 +181,7 @@ export class ComputeCtx {
 
   protected get activeGroup() {
     return this.activeGroupStack[0] ?? this.__rootGroup
-  } 
+  }
 
   protected get includedElements() {
     return new Set([
@@ -283,7 +283,7 @@ export class ComputeCtx {
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
         ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
       },
-      nodes: map(nodes, omit(['notation'])),
+      nodes,
       edges: applyCustomRelationProperties(rules, nodes, sortedEdges),
       ...(elementNotations.length > 0 && {
         notation: {

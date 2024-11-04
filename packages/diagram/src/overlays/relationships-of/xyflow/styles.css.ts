@@ -1,6 +1,7 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { mantine, vars, whereLight, xyvars } from '../../../theme-vars'
+import { mantine, vars, xyvars } from '../../../theme-vars'
+import { mixColor } from '../../Overlays.css'
 
 export const elementNode = style({
   width: '100%',
@@ -89,7 +90,10 @@ const DimmedTransitionDelay = '400ms'
 export const edgePath = style({
   opacity: 1,
   transition: 'all 0.2s ease-in-out',
-
+  vars: {
+    [xyvars.edge.stroke]: vars.relation.lineColor,
+    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`
+  },
   selectors: {
     [`&[data-edge-dimmed='true']`]: {
       opacity: 0.1,
@@ -104,8 +108,8 @@ export const edgeLabel = style({
   position: 'absolute',
   cursor: 'pointer',
   width: 'fit-content',
-  color: xyvars.edge.labelColor,
-  backgroundColor: xyvars.edge.labelBgColor,
+  color: vars.relation.labelColor,
+  backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`,
   borderRadius: 4,
   // everything inside EdgeLabelRenderer has no pointer events by default
   // if you have an interactive element, set pointer-events: all

@@ -1,7 +1,7 @@
 import { createVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { mantine, vars, whereDark, xyvars } from '../theme-vars'
 
-const mixColor = createVar('mix-color')
+export const mixColor = createVar('mix-color')
 export const container = style({
   position: 'absolute',
   top: 0,
@@ -29,14 +29,27 @@ export const container = style({
   selectors: {
     [`${whereDark} &`]: {
       vars: {
-        [mixColor]: `white`,
-        [xyvars.edge.labelColor]: vars.relation.labelColor,
-        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
+        [mixColor]: `white`
       }
     }
   }
 })
 
+globalStyle(`${container} .react-flow`, {
+  vars: {
+    [xyvars.edge.stroke]: vars.relation.lineColor,
+    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
+    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 50%)`,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 30%)`
+  }
+})
+
+globalStyle(`${whereDark} ${container} .react-flow`, {
+  vars: {
+    [xyvars.edge.labelColor]: vars.relation.labelColor,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
+  }
+})
 globalStyle(`:where(${container}) .react-flow__attribution`, {
   display: 'none'
 })

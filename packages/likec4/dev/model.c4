@@ -44,12 +44,14 @@ model {
     }
 
     backend = container 'Backend' {
+      #next #v2
       description 'The backend services of the cloud system'
       link ./cloud/backend.c4#L3
       icon tech:nodejs
     }
 
     reporting = service 'Reporting' {
+      #next #v2
       technology 'PowerBI'
       description 'Reporting services'
       link ./cloud/reporting.c4#L3
@@ -64,6 +66,7 @@ model {
     }
 
     billing = service 'Billing' {
+      #v1
       description '
         Billing services, process
         payments and subscriptions
@@ -71,6 +74,7 @@ model {
     }
 
     backoffice = service 'Back Office' {
+      #v2
       description '
         Back office services,
         providing tenant management,

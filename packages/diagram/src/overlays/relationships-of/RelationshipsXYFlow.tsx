@@ -91,6 +91,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
   const {
     view,
     viewIncludesSubject,
+    notIncludedRelations,
     edges,
     nodes,
     subject,
@@ -386,6 +387,27 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
               >
                 <Text fw={500} size="xs" c="orange" component="div">
                   Current view doesn't include this element, switched to Global
+                </Text>
+              </Box>
+            )}
+            {viewIncludesSubject && scope === 'view' && notIncludedRelations > 0 && (
+              <Box
+                pos={'absolute'}
+                top={'calc(100% + .5rem)'}
+                left={'50%'}
+                w={'max-content'}
+                style={{
+                  transform: 'translateX(-50%)',
+                  textAlign: 'center',
+                  cursor: 'pointer'
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setScope('global')
+                }}
+              >
+                <Text fw={500} size="xs" c="orange" component="div">
+                  Current view does not include {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's' : ''}
                 </Text>
               </Box>
             )}

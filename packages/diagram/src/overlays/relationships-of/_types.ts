@@ -55,6 +55,7 @@ export namespace XYFlowTypes {
   export type Edge = Omit<ReactFlowEdge, 'data' | 'type'> & {
     data: {
       relations: [Relation, ...Relation[]]
+      includedInCurrentView: boolean
       hovered?: boolean
       dimmed?: boolean
     }
