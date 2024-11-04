@@ -8653,7 +8653,7 @@ __metadata:
     postcss: "npm:^8.4.47"
     postcss-preset-mantine: "npm:^1.17.0"
     pretty-ms: "npm:^9.1.0"
-    prop-types: "npm:^15.0.0"
+    prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.1.2"
@@ -11460,7 +11460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.0.0, prop-types@npm:^15.7.2":
+"prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
