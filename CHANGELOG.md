@@ -1,3 +1,35 @@
+# [1.16.0](https://github.com/likec4/likec4/compare/v1.15.1...v1.16.0) (2024-11-04)
+
+### 🚀 Features  
+
+* Global predicates (thanks @hubertmis, [#1173](https://github.com/likec4/likec4/issues/1173))
+
+  ```zig
+  global {
+    predicateGroup new_cloud_service {
+      include cloud.*
+        where kind is microservice
+      exclude *
+        where tag is #deprecated
+    }
+  }
+  views {
+    view of newServices {
+      include *
+      global predicate new_cloud_service
+    }
+    view of newBackendServices {
+      include *
+      global predicate new_cloud_service
+    }
+  }
+  ```
+
+### Bug Fixes
+
+* relation excluded but edge is not updated (thanks @pavelpykhtin, closes [#1193](https://github.com/likec4/likec4/issues/1193))
+
+
 ## [1.15.1](https://github.com/likec4/likec4/compare/v1.15.0...v1.15.1) (2024-10-30)
 
 ### Fixes and improvements
