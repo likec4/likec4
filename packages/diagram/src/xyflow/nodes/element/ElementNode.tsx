@@ -327,7 +327,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 const ElementIcon = (
   { element, renderIcon: RenderIcon }: { element: DiagramNode; renderIcon: ElementIconRenderer | null }
 ) => {
-  if (!element.icon) {
+  if (!element.icon || element.icon === 'none') {
     return null
   }
   if (element.icon.startsWith('http://') || element.icon.startsWith('https://')) {

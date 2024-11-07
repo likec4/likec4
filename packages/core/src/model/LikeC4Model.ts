@@ -531,6 +531,13 @@ export namespace LikeC4Model {
     }
 
     /**
+     * First 'view of' current element
+     */
+    public viewOf() {
+      return this.model.views().find(v => v.viewOf?.id === this.id) ?? null
+    }
+
+    /**
      * All views 'view of' current element
      */
     public viewsOf() {

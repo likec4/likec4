@@ -12,6 +12,7 @@ import {
   type Expression as C4Expression,
   type Fqn,
   type GlobalStyleID,
+  type IconUrl,
   type IncomingExpr as C4IncomingExpr,
   type InOutExpr as C4InOutExpr,
   isElementRef,
@@ -163,6 +164,7 @@ export const fakeElements = {
     id: 'cloud',
     kind: 'system',
     title: 'cloud',
+    icon: 'none',
     tags: ['next', 'old']
   }),
   'cloud.backend': el({
@@ -179,6 +181,7 @@ export const fakeElements = {
   'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
     kind: 'component',
+    icon: 'tech:graphql' as IconUrl,
     title: 'graphql'
   }),
   'email': el({
@@ -202,12 +205,14 @@ export const fakeElements = {
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'dashboard',
+    icon: 'tech:react' as IconUrl,
     tags: ['next']
   }),
   'amazon': el({
     id: 'amazon',
     kind: 'system',
     title: 'amazon',
+    icon: 'tech:aws' as IconUrl,
     tags: ['aws']
   }),
   'amazon.s3': el({
@@ -215,6 +220,7 @@ export const fakeElements = {
     kind: 'component',
     title: 's3',
     shape: 'storage',
+    icon: 'aws:s3' as IconUrl,
     tags: ['aws', 'storage']
   })
 } satisfies Record<string, Element>

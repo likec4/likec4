@@ -557,7 +557,7 @@ OpacityProperty:
 
 // Element properties -------------------------------------
 IconProperty:
-  key='icon' ':'? (libicon=[LibIcon:IconId] | value=Uri) ';'?;
+  key='icon' ':'? (isNone?='none' | libicon=[LibIcon:IconId] | value=Uri) ';'?;
 
 ShapeProperty:
   key='shape' ':'? value=ElementShape ';'?;

@@ -4,10 +4,15 @@ import { $include, $style, computeView } from './fixture'
 describe('custom-element-expr', () => {
   it('include element and apply props', () => {
     const { nodes, nodeIds, edgeIds } = computeView([
-      $include('amazon'),
+      $include('amazon', {
+        with: {
+          icon: 'none'
+        }
+      }),
       $include('cloud', {
         with: {
           title: 'CHANGED',
+          icon: 'tech:cloud',
           navigateTo: 'custom'
         }
       }),
@@ -21,18 +26,26 @@ describe('custom-element-expr', () => {
     ])
     expect(nodeIds).toEqual(['customer', 'cloud', 'amazon'])
     expect(edgeIds).toEqual(['customer:cloud', 'cloud:amazon'])
+    const amazon = nodes.find(n => n.id === 'amazon')!
+    expect(amazon).toMatchObject({
+      title: 'amazon'
+    })
+    expect(amazon).not.toHaveProperty('icon')
+
     const customer = nodes.find(n => n.id === 'customer')!
     expect(customer).toMatchObject({
       title: 'customer',
       technology: '',
       description: null
     })
+    expect(customer).not.toHaveProperty('icon')
 
     const cloud = nodes.find(n => n.id === 'cloud')!
     expect(cloud).toMatchObject({
       title: 'CHANGED',
       technology: null,
       description: null,
+      icon: 'tech:cloud',
       navigateTo: 'custom'
     })
   })
@@ -71,6 +84,7 @@ describe('custom-element-expr', () => {
     const amazon = nodes.find(n => n.id === 'amazon')
     expect(amazon).toMatchObject({
       color: 'muted',
+      icon: 'tech:aws',
       shape: 'queue'
     })
     const frontend = nodes.find(n => n.id === 'cloud.frontend')
