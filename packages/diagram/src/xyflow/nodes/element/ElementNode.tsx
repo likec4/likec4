@@ -1,4 +1,4 @@
-import { type DiagramNode, type ThemeColor } from '@likec4/core'
+import { type ThemeColor } from '@likec4/core'
 import { ActionIcon, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
@@ -9,9 +9,9 @@ import { m, type Variants } from 'framer-motion'
 import { memo, useCallback, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
-import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
 import type { ElementXYFlowNode } from '../../types'
 import { stopPropagation, toDomPrecision } from '../../utils'
+import { ElementIcon } from '../shared/ElementIcon'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
@@ -202,6 +202,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const elementIcon = ElementIcon({
     element,
+    className: css.elementIcon,
     renderIcon
   })
 
@@ -323,33 +324,3 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     </>
   )
 }, isEqualProps)
-
-const ElementIcon = (
-  { element, renderIcon: RenderIcon }: { element: DiagramNode; renderIcon: ElementIconRenderer | null }
-) => {
-  if (!element.icon) {
-    return null
-  }
-  if (element.icon.startsWith('http://') || element.icon.startsWith('https://')) {
-    return (
-      <div className={clsx(css.elementIcon, 'likec4-element-icon')}>
-        <img src={element.icon} alt={element.title} />
-      </div>
-    )
-  }
-  const icon = RenderIcon ? <RenderIcon node={element} /> : null
-  if (!icon) {
-    return null
-  }
-  return (
-    <div
-      className={clsx(
-        css.elementIcon,
-        'likec4-element-icon'
-      )}
-      data-likec4-icon={element.icon}
-    >
-      {icon}
-    </div>
-  )
-}

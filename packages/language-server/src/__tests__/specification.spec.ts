@@ -114,6 +114,15 @@ describe.concurrent('specification', () => {
         }
       }`
 
+    test('kind with icon none').valid`
+      specification {
+        element frontend {
+          style {
+            icon none
+          }
+        }
+      }`
+
     test('kind the same name as color').valid`
       specification {
         element green {

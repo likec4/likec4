@@ -258,12 +258,7 @@ export const elementIcon = style({
   alignItems: 'center',
   justifyContent: 'center',
   mixBlendMode: 'hard-light',
-  alignSelf: 'flex-start',
-  selectors: {
-    '&[data-likec4-icon^="azure:"]': {
-      mixBlendMode: 'normal'
-    }
-  }
+  alignSelf: 'flex-start'
 })
 globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
   width: '100%',

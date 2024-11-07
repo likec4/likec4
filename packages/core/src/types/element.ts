@@ -1,4 +1,4 @@
-import type { IfNever, Tagged, TupleToUnion } from 'type-fest'
+import type { Tagged, TupleToUnion } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { Color, ThemeColor } from './theme'
 

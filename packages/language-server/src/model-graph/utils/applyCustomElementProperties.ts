@@ -1,7 +1,5 @@
-import { ComputedNode, type Expression, type ViewRule } from '@likec4/core'
-import { Expr, isViewRuleGroup, isViewRulePredicate } from '@likec4/core'
+import { ComputedNode, Expr, type Expression, isViewRuleGroup, isViewRulePredicate, type ViewRule } from '@likec4/core'
 import { isEmpty, isNullish, omitBy } from 'remeda'
-import { NodesGroup } from '../compute-view/compute'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 export function flattenGroupRules<T extends Expression>(guard: (expr: Expression) => expr is T) {

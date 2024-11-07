@@ -208,7 +208,14 @@ export class DynamicViewComputeCtx {
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
         ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
       },
-      nodes: map(nodes, omit(['notation'])),
+      nodes: map(nodes, n => {
+        // omit notation
+        delete n.notation
+        if (n.icon === 'none') {
+          delete n.icon
+        }
+        return n
+      }),
       edges,
       ...(elementNotations.length > 0 && {
         notation: {

@@ -196,19 +196,37 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'key',
         type: SemanticTokenTypes.property
       })
+      if (ast.isIconProperty(node)) {
+        if (node.libicon) {
+          acceptor({
+            node,
+            property: 'libicon',
+            type: SemanticTokenTypes.enum,
+            modifier: [SemanticTokenModifiers.defaultLibrary]
+          })
+        } else {
+          if (node.value === 'none') {
+            acceptor({
+              node,
+              property: 'value',
+              type: SemanticTokenTypes.enum,
+              modifier: [SemanticTokenModifiers.defaultLibrary]
+            })
+          } else {
+            acceptor({
+              node,
+              property: 'value',
+              type: SemanticTokenTypes.string
+            })
+          }
+        }
+        return 'prune'
+      }
       if ('value' in node && node.value) {
         acceptor({
           node,
           property: 'value',
           type: SemanticTokenTypes.string
-        })
-      }
-      if (ast.isIconProperty(node) && node.libicon) {
-        acceptor({
-          node,
-          property: 'libicon',
-          type: SemanticTokenTypes.enum,
-          modifier: [SemanticTokenModifiers.defaultLibrary]
         })
       }
       return 'prune'
