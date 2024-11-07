@@ -23,11 +23,7 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
         n.shape = rule.style.shape ?? n.shape
         n.color = rule.style.color ?? n.color
         if (isDefined(rule.style.icon)) {
-          if (rule.style.icon === 'none') {
-            delete n.icon
-          } else {
-            n.icon = rule.style.icon
-          }
+          n.icon = rule.style.icon
         }
         if (isDefined(rule.notation)) {
           n.notation = rule.notation

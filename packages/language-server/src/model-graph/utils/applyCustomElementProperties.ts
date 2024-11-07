@@ -39,9 +39,6 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
           isCustomized: true,
           ...rest
         }
-        if (rest.icon === 'none') {
-          delete node.icon
-        }
       }
 
       let styleOverride: ComputedNode['style'] | undefined

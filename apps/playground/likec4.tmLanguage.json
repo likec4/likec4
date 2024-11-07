@@ -106,7 +106,7 @@
     },
         {
       "name": "entity.name.class.likec4",
-      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate)\\b"
+      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate|none)\\b"
     },
     {
       "match": "\\b([^\\W]+)\\s*(=)\\s*([^\\W]+)\\b",

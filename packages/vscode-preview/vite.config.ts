@@ -17,6 +17,9 @@ export default defineConfig(({ mode }) => {
     define: isDev ? {} : {
       'process.env.NODE_ENV': JSON.stringify('production')
     },
+    esbuild: {
+      jsxDev: false
+    },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
