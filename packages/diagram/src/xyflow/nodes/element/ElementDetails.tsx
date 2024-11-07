@@ -1,39 +1,38 @@
-import { type EdgeId, invariant, nameFromFqn } from '@likec4/core'
+import { type ComputedView, type DiagramView, type EdgeId, invariant, nameFromFqn, type ViewID } from '@likec4/core'
 import {
   Anchor,
   Badge,
   Box,
   Button,
   CopyButton,
-  Divider,
+  Divider as MantineDivider,
   Flex,
   Group,
   Paper,
   ScrollAreaAutosize,
   Stack,
-  Tabs,
   Text
 } from '@mantine/core'
 import { useElementSize, useHotkeys } from '@mantine/hooks'
-import {
-  IconArrowLeft,
-  IconArrowRight,
-  IconCircleFilled,
-  IconInfoCircle,
-  IconTransform,
-  IconZoomScan
-} from '@tabler/icons-react'
+import { IconArrowRight, IconInfoCircle, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useInternalNode, useViewport, ViewportPortal } from '@xyflow/react'
 import { getNodeDimensions, getViewportForBounds, type Viewport } from '@xyflow/system'
 import clsx from 'clsx'
 import React, { memo, type ReactNode, useCallback, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { clamp, unique } from 'remeda'
-import { useDiagramStoreApi, useXYFlow, useXYStore } from '../../../hooks'
+import { useDiagramStoreApi, useXYStore } from '../../../hooks'
+import type { OnNavigateTo } from '../../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../../likec4model'
 import { MinZoom } from '../../const'
 import type { ElementXYFlowNode, XYFlowState } from '../../types'
 import * as css from './ElementDetails.css'
+
+const Divider = MantineDivider.withProps({
+  mb: 4,
+  labelPosition: 'left',
+  variant: 'dashed'
+})
 
 const selector = (state: XYFlowState) => state.domNode?.querySelector('.react-flow__renderer')
 // const selector = (state: XYFlowState) => state.domNode?.querySelector('.react-flow__nodes');
@@ -69,12 +68,13 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
     }
   } = hoveredNode
 
-  const elementModel = useLikeC4Model(true).element(element.id)
+  const likec4Model = useLikeC4Model(true)
+  const elementModel = likec4Model.element(element.id)
 
   const incoming = elementModel.incoming().map(r => r.id)
   const outgoing = elementModel.outgoing().map(r => r.id)
 
-  const { view: currentView, onNavigateTo, triggerOnNavigateTo } = diagramApi.getState()
+  const { view: currentView, onNavigateTo } = diagramApi.getState()
 
   const findRelationIds = (edgeId: EdgeId) => currentView.edges.find((edge) => edge.id === edgeId)?.relations ?? []
 
@@ -86,9 +86,15 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
     ...outgoing
   ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
 
-  const otherViews = elementModel.views().filter(v => v.id !== currentView.id).map(v => v.view)
+  const defaultView = (element.navigateTo && element.navigateTo !== currentView.id)
+    ? likec4Model.view(element.navigateTo).view
+    : null
+  const otherViews = elementModel.views().filter(v => v.id !== currentView.id && v.id !== element.navigateTo).map(v =>
+    v.view
+  )
 
-  const { width, height } = getNodeDimensions(hoveredNode)
+  const { width: nodeWidth, height } = getNodeDimensions(hoveredNode)
+  const width = Math.round(nodeWidth * 1.015)
   const left = positionAbsolute.x
   const top = positionAbsolute.y + height
 
@@ -132,6 +138,27 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
       : []
   )
 
+  const openRelationshipsOverlay = useCallback((e: React.MouseEvent): void => {
+    e.stopPropagation()
+    diagramApi.getState().openOverlay({
+      relationshipsOf: element.id
+    })
+  }, [element.id])
+
+  const onNavigateToCb = useCallback((toView: ViewID, e?: React.MouseEvent): void => {
+    e?.stopPropagation()
+    diagramApi.setState({
+      hoveredNodeId: null,
+      lastClickedNodeId: nodeId,
+      lastOnNavigate: {
+        fromView: currentView.id,
+        toView,
+        fromNode: element.id
+      }
+    })
+    diagramApi.getState().onNavigateTo?.(toView, e)
+  }, [element.id, currentView.id, nodeId])
+
   return (
     <ViewportPortal>
       <Paper
@@ -142,17 +169,14 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
         className={clsx(css.container, 'nodrag')}
         style={{
           transform: `translate(${left}px, ${top + 18}px)`,
-          width: Math.ceil(width * 1.015),
+          maxWidth: Math.max(width + 30, 450),
+          width: 'max-content',
+          minWidth: width,
           cursor: xyviewport.zoom < 1.01 ? 'pointer' : 'default'
         }}
         onClick={xyviewport.zoom < 1.01 ? zoomInOut : undefined}
       >
         <Group align="baseline" m="xs" wrap="nowrap" justify="space-between">
-          {
-            /* <Box>
-            <Text className={css.fqn} fz="xs" fw={600}>{hoveredNode.id}</Text>
-          </Box> */
-          }
           <Box flex={0}>
             <Text component="span" size="sm" c="dimmed">kind:</Text>
             <Text component="span" size="sm" fw={600}>{element.kind}</Text>
@@ -182,104 +206,102 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
           mah={MAX_HEIGHT}
           mt={10}
           className={clsx(
-            (previousViewport || xyviewport.zoom > 1.1) && (detailsHeight > MAX_HEIGHT) && 'nowheel'
+            (detailsHeight > MAX_HEIGHT) && (
+              (previousViewport || xyviewport.zoom > 1.1) ? 'nowheel' : css.noPointerEvents
+            )
           )}
           pb={'sm'}
           scrollbars="y"
           type="hover">
           <Stack gap={'sm'} px="xs" ref={ref}>
-            {element.notation && <Text>{element.notation}</Text>}
-            <Box>
-              <Divider label="relationships" labelPosition="left" mb={4} />
-              <Group gap={'xs'} justify="space-between" wrap="nowrap" align="baseline">
-                <Box>
-                  <Group gap={6} c={'dimmed'} mb={4}>
-                    <Text
-                      className={css.edgeNum}
-                      mod={{
-                        zero: incoming.length === 0,
-                        missing: incoming.length !== incomingInView.length
-                      }}>
-                      {incoming.length !== incomingInView.length
-                        ? (
-                          <>
-                            {incomingInView.length} / {incoming.length}
-                          </>
-                        )
-                        : (
-                          <>
-                            {incoming.length}
-                          </>
-                        )}
-                    </Text>
-                    <IconArrowRight style={{ width: 14 }} />
-                    <Text className={css.fqn}>{nameFromFqn(element.id)}</Text>
-                    <IconArrowRight style={{ width: 14 }} />
-                    <Text
-                      className={css.edgeNum}
-                      mod={{
-                        zero: outgoing.length === 0,
-                        missing: outgoing.length !== outgoingInView.length
-                      }}>
-                      {outgoing.length !== outgoingInView.length
-                        ? (
-                          <>
-                            {outgoingInView.length} / {outgoing.length}
-                          </>
-                        )
-                        : (
-                          <>
-                            {outgoing.length}
-                          </>
-                        )}
-                    </Text>
-                  </Group>
-                  {/* {notIncludedRelations === 0 && <Text size="xs" c="dimmed">View includes all relationships</Text>} */}
-                  {notIncludedRelations > 0 && (
-                    <Group
-                      gap={6}
-                      c="orange"
-                      style={{ cursor: 'pointer' }}
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagramApi.getState().openOverlay({
-                          relationshipsOf: element.id
-                        })
-                      }}>
-                      <IconInfoCircle style={{ width: 12 }} />
-                      <Text size="xs">
-                        {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} not included
+            {element.notation && <Text style={{ maxWidth: width }}>{element.notation}</Text>}
+            {defaultView && !!onNavigateTo && (
+              <Box>
+                <Divider label="view of this element" />
+                <ViewButton view={defaultView} onNavigateTo={onNavigateToCb} />
+              </Box>
+            )}
+            {(incoming.length + outgoing.length) > 0 && (
+              <Box>
+                <Divider label="relationships" />
+                <Group gap={'xs'} justify="space-between" wrap="nowrap" align="baseline">
+                  <Box>
+                    <Group gap={6} c={'dimmed'} mb={4} wrap="nowrap">
+                      <Text
+                        className={css.edgeNum}
+                        mod={{
+                          zero: incoming.length === 0,
+                          missing: incoming.length !== incomingInView.length
+                        }}>
+                        {incoming.length !== incomingInView.length
+                          ? (
+                            <>
+                              {incomingInView.length} / {incoming.length}
+                            </>
+                          )
+                          : (
+                            <>
+                              {incoming.length}
+                            </>
+                          )}
+                      </Text>
+                      <IconArrowRight style={{ width: 14 }} />
+                      <Text className={css.fqn}>{nameFromFqn(element.id)}</Text>
+                      <IconArrowRight style={{ width: 14 }} />
+                      <Text
+                        className={css.edgeNum}
+                        mod={{
+                          zero: outgoing.length === 0,
+                          missing: outgoing.length !== outgoingInView.length
+                        }}>
+                        {outgoing.length !== outgoingInView.length
+                          ? (
+                            <>
+                              {outgoingInView.length} / {outgoing.length}
+                            </>
+                          )
+                          : (
+                            <>
+                              {outgoing.length}
+                            </>
+                          )}
                       </Text>
                     </Group>
-                  )}
-                  {/* <Text size="sm">View includes all relationships</Text> */}
-                </Box>
-                <Box>
-                  <Button
-                    size="xs"
-                    color="gray"
-                    variant="light"
-                    radius="sm"
-                    leftSection={<IconTransform stroke={1.8} style={{ width: '67%' }} />}
-                    styles={{
-                      section: {
-                        marginInline: 0
-                      }
-                    }}
-                    onClick={e => {
-                      e.stopPropagation()
-                      diagramApi.getState().openOverlay({
-                        relationshipsOf: element.id
-                      })
-                    }}>
-                    Browse
-                  </Button>
-                </Box>
-              </Group>
-            </Box>
+                    {notIncludedRelations > 0 && (
+                      <Group
+                        gap={6}
+                        c="orange"
+                        style={{ cursor: 'pointer' }}
+                        onClick={openRelationshipsOverlay}>
+                        <IconInfoCircle style={{ width: 12 }} />
+                        <Text size="xs">
+                          {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} hidden
+                        </Text>
+                      </Group>
+                    )}
+                  </Box>
+                  <Box>
+                    <Button
+                      size="xs"
+                      color="gray"
+                      variant="light"
+                      radius="sm"
+                      leftSection={<IconTransform stroke={1.8} style={{ width: '67%' }} />}
+                      styles={{
+                        section: {
+                          marginInline: 0
+                        }
+                      }}
+                      onClick={openRelationshipsOverlay}>
+                      Browse
+                    </Button>
+                  </Box>
+                </Group>
+              </Box>
+            )}
             {element.links && (
               <Box>
-                <Divider label="links" labelPosition="left" mb={4} />
+                <Divider label="links" />
                 <Stack gap={'xs'}>
                   {element.links.map((link) => (
                     <Group key={link.url} wrap="nowrap" gap={'sm'}>
@@ -310,45 +332,14 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
             )}
             {otherViews.length > 0 && !!onNavigateTo && (
               <Box>
-                <Divider label="other views" labelPosition="left" mb={4} />
+                <Divider label="views including this element" />
                 <Stack gap={2}>
                   {otherViews.map((view) => (
-                    <Button
+                    <ViewButton
                       key={view.id}
-                      size="xs"
-                      variant="subtle"
-                      radius="sm"
-                      leftSection={<IconZoomScan stroke={1.8} style={{ width: '75%' }} />}
-                      styles={{
-                        section: {
-                          marginInline: 0
-                        }
-                      }}
-                      justify="start"
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagramApi.setState({
-                          lastClickedNodeId: nodeId,
-                          lastOnNavigate: {
-                            fromView: currentView.id,
-                            toView: view.id,
-                            fromNode: element.id
-                          }
-                        })
-                        onNavigateTo(view.id, e)
-                      }}>
-                      {view.title || 'untitled'}
-                    </Button>
-                    // <Group key={view.id} wrap="nowrap" gap={'sm'}>
-                    //   <Box
-                    //     flex={'1'}
-                    //     style={{ overflow: 'clip', maxWidth: clamp(element.width, { min: 200, max: 400 }) }}>
-                    //       {view.title}
-                    //     {/* <Anchor href={link.url} target="_blank" fz="13" truncate="end">
-                    //       {link.title || link.url}
-                    //     </Anchor> */}
-                    //   </Box>
-                    // </Group>
+                      view={view}
+                      onNavigateTo={onNavigateToCb}
+                    />
                   ))}
                 </Stack>
               </Box>
@@ -370,5 +361,32 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
   )
 })
 
-const Relationships = () => {
+const ViewButton = ({
+  view,
+  onNavigateTo
+}: {
+  view: ComputedView | DiagramView
+  onNavigateTo: OnNavigateTo
+}) => {
+  return (
+    <Button
+      className={css.viewButton}
+      variant="subtle"
+      radius="sm"
+      color="gray"
+      leftSection={<IconZoomScan stroke={1.8} />}
+      styles={{
+        section: {
+          marginInline: 0,
+          alignSelf: 'baseline'
+        }
+      }}
+      justify="start"
+      onClick={e => {
+        onNavigateTo(view.id, e)
+      }}>
+      <Text component="div">{view.title || 'untitled'}</Text>
+      <Text component="div" fz={'xs'} c="dimmed">id: {view.id}</Text>
+    </Button>
+  )
 }

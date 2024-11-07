@@ -1,12 +1,13 @@
 import { type DiagramNode, type ThemeColor } from '@likec4/core'
 import { ActionIcon, Text as MantineText, Tooltip } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
+import { useDebouncedEffect } from '@react-hookz/web'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
@@ -174,12 +175,10 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   }))
 
   const isNavigable = hasOnNavigateTo && !!element.navigateTo
+  // For development purposes, show the toolbar when the element is selected
   const isHoveredOrSelected = isHovered || (import.meta.env.DEV && selected)
   const _isToolbarVisible = isEditable && isHoveredOrSelected
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
-
-  const _isDetailsVisible = isHoveredOrSelected && isHovercards
-  const [isDetailsVisible] = useDebouncedValue(_isDetailsVisible, _isDetailsVisible ? 900 : 200)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -213,6 +212,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
+    detailsOps.close()
     triggerOnNavigateTo(id, e)
   }, [triggerOnNavigateTo, id])
 
@@ -220,6 +220,37 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     e.stopPropagation()
     openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
+
+  const _isDetailsVisible = isHoveredOrSelected && isHovercards
+  const [isDetailsVisible, detailsOps] = useDisclosure(_isDetailsVisible)
+
+  useDebouncedEffect(
+    () => {
+      if (_isDetailsVisible) {
+        detailsOps.open()
+      } else {
+        detailsOps.close()
+      }
+    },
+    [_isDetailsVisible],
+    // Delay onHover (opened immediately onTap)
+    _isDetailsVisible ? 3000 : 200
+  )
+
+  const onTap = useCallback((e: MouseEvent) => {
+    if (_isDetailsVisible) {
+      detailsOps.toggle()
+    }
+    // Open details on tap
+    animateHandlers.onTap(e)
+  }, [animateHandlers.onTap, _isDetailsVisible, detailsOps.toggle])
+
+  // Сlose details when dragging
+  useEffect(() => {
+    if (dragging) {
+      detailsOps.close()
+    }
+  }, [dragging])
 
   return (
     <>
@@ -230,7 +261,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           onColorPreview={setPreviewColor}
         />
       )}
-      {isDetailsVisible && !dragging && <ElementDetails nodeId={id} />}
+      {isDetailsVisible && <ElementDetails nodeId={id} />}
       <m.div
         id={id}
         className={clsx([
@@ -249,7 +280,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         tabIndex={-1}
         {...(isInteractive && {
           onTapStart: animateHandlers.onTapStart,
-          onTap: animateHandlers.onTap,
+          onTap,
           onTapCancel: animateHandlers.onTapCancel
         })}
       >

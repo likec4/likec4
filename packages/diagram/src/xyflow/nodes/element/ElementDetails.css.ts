@@ -2,7 +2,6 @@ import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine, vars, whereDark, whereLight } from '../../../theme-vars'
 
 const bg = createVar('bg')
-// const fill = createVar('bg')
 
 export const container = style({
   backgroundColor: mantine.colors.body,
@@ -11,8 +10,6 @@ export const container = style({
   top: 0,
   left: 0,
   zIndex: 100,
-  // WebkitBackdropFilter: 'blur(3px)',
-  // backdropFilter: 'blur(3px)',
   vars: {
     [bg]: `linear-gradient(180deg, ${vars.element.fill}, ${vars.element.fill} 3px, transparent 3px)`
   },
@@ -28,10 +25,10 @@ export const container = style({
       }
     }
   }
-  // paddingLeft: 60,
-  // paddingRight: 20,ody,
-  // overflow: 'hidden'
-  // border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+})
+
+export const noPointerEvents = style({
+  pointerEvents: 'none'
 })
 
 export const fqn = style({
@@ -83,20 +80,22 @@ export const edgeNum = style({
   }
 })
 
-// export const tagpill = style({
-//   display: 'inline-block',
-//   fontSize: mantine.fontSizes.xs,
-//   // fontWeight: 600,
-//   whiteSpace: 'nowrap',
-//   padding: '2px 5px',
-//   borderRadius: 2,
-//   // background: `color-mix(in srgb , ${vars.element.fill},  transparent 45%)`,
-//   background: mantine.colors.violet[6],
-//   lineHeight: 1,
-//   color: mantine.colors.violet[9],
-//   // selectors: {
-//   //   [`:where([data-mantine-color-scheme="dark"]) &`]: {
-//   //     color: vars.element.loContrast
-//   //   }
-//   // }
-// })
+export const viewButton = style({
+  paddingLeft: 2,
+  height: 'auto'
+})
+
+globalStyle(`${viewButton} .mantine-Button-label`, {
+  color: mantine.colors.text,
+  fontWeight: 500,
+  flexDirection: 'column',
+  alignItems: 'flex-start'
+})
+globalStyle(`${viewButton} .tabler-icon`, {
+  width: '75%',
+  opacity: 0.75
+})
+
+globalStyle(`${whereLight} ${viewButton} .mantine-Button-label`, {
+  color: mantine.colors.dark[3]
+})

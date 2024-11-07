@@ -1,7 +1,7 @@
 import { type Fqn, isAncestor, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useLocalStorage, useStateHistory } from '@mantine/hooks'
-import { useDebouncedCallback, useSyncedRef } from '@react-hookz/web'
+import { useDebouncedCallback } from '@react-hookz/web'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import {
   getViewportForBounds,
@@ -12,6 +12,7 @@ import {
   useStoreApi
 } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
+import { deepEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
 import { map, only, prop, unique } from 'remeda'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
@@ -150,6 +151,9 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     if (nextSubjectNode?.data.fqn === currentSubjectNode?.data.fqn) {
       setNodes(nodes)
       setEdges(edges)
+      if (!deepEqual(nextSubjectNode, currentSubjectNode)) {
+        fitview()
+      }
       return
     }
 
@@ -407,7 +411,8 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
                 }}
               >
                 <Text fw={500} size="xs" c="orange" component="div">
-                  Current view does not include {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's' : ''}
+                  Current view does not include {notIncludedRelations}{' '}
+                  relationship{notIncludedRelations > 1 ? 's' : ''}. Switch to Global
                 </Text>
               </Box>
             )}
