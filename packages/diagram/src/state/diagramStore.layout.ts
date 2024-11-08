@@ -37,6 +37,12 @@ class LinearAligner extends Aligner {
 }
 
 type NodeRect = Rect & { id: string }
+type Layer = {
+  primaryAxisSize: number
+  nodes: NodeRect[]
+  occupiedSpace: number
+  layoutOptions: Map<string, XYPosition>[]
+}
 
 class GridAligner extends Aligner {
   private layout: Map<string, XYPosition> = new Map()
@@ -70,7 +76,7 @@ class GridAligner extends Aligner {
   }
 
   override computeLayout(nodes: InternalNode<XYFlowNode>[]) {
-    // Sort by position
+    // Sort by primary axis
     const sortedNodeRects = pipe(
       nodes,
       map(n =>
@@ -83,20 +89,30 @@ class GridAligner extends Aligner {
       ),
       sortBy(r => r[this.axisPreset.primaryAxisCoord])
     )
-    const x = Math.min(...sortedNodeRects.map(n => n.x))
-    const y = Math.min(...sortedNodeRects.map(n => n.y))
-    const right = Math.max(...sortedNodeRects.map(n => n.x + n.width))
-    const bottom = Math.max(...sortedNodeRects.map(n => n.y + n.height))
 
-    const layoutRect: Rect = {
+    const layoutRect = this.getLayoutRect(sortedNodeRects)
+
+    const layers = this.getLayers(sortedNodeRects)
+
+    this.layout = this.buildLayout(layers, layoutRect)
+  }
+
+  private getLayoutRect(nodeRects: NodeRect[]): Rect {
+    const x = Math.min(...nodeRects.map(n => n.x))
+    const y = Math.min(...nodeRects.map(n => n.y))
+    const right = Math.max(...nodeRects.map(n => n.x + n.width))
+    const bottom = Math.max(...nodeRects.map(n => n.y + n.height))
+
+    return {
       x,
       y,
       width: right - x,
       height: bottom - y
     }
+  }
 
-    // Group by rows
-    const layers: { primaryAxisSize: number; nodes: NodeRect[] }[] = []
+  private getLayers(sortedNodeRects: NodeRect[]): Layer[] {
+    const layers: Layer[] = []
     let layerStart = 0
     let layerEnd = 0
     let layer = null
@@ -105,12 +121,18 @@ class GridAligner extends Aligner {
       if (!!layer && node[this.axisPreset.primaryAxisCoord] < layerEnd) {
         layer.nodes.push(node)
         layer.primaryAxisSize = Math.max(layer.primaryAxisSize, node[this.axisPreset.primaryAxisDimension])
+        layer.occupiedSpace += node[this.axisPreset.secondaryAxisDimension]
         layerEnd = Math.max(
           node[this.axisPreset.primaryAxisCoord] + node[this.axisPreset.primaryAxisDimension],
           layerEnd
         )
       } else {
-        layer = { primaryAxisSize: node[this.axisPreset.primaryAxisDimension], nodes: [node] }
+        layer = {
+          primaryAxisSize: node[this.axisPreset.primaryAxisDimension],
+          nodes: [node],
+          occupiedSpace: node[this.axisPreset.secondaryAxisDimension],
+          layoutOptions: []
+        }
         layers.push(layer)
         layerStart = node[this.axisPreset.primaryAxisCoord]
         layerEnd = node[this.axisPreset.primaryAxisCoord] + node[this.axisPreset.primaryAxisDimension]
@@ -118,62 +140,73 @@ class GridAligner extends Aligner {
       }
     }
 
-    // Find position in a row
+    return layers
+  }
+
+  private buildLayout(layers: Layer[], layoutRect: Rect): Map<string, XYPosition> {
+    const layout: [string, XYPosition][] = []
     const occupiedSpace = layers.reduce((a, b) => a + b.primaryAxisSize, 0)
     const rowMargin = layers.length > 1
       ? (layoutRect[this.axisPreset.primaryAxisDimension] - occupiedSpace) / (layers.length - 1)
       : 0
-    let placeNextRowAt = layoutRect[this.axisPreset.primaryAxisCoord]
+    let placeNextLayerAt = layoutRect[this.axisPreset.primaryAxisCoord]
     for (let layer of layers) {
-      if (layer.nodes.length == 1) {
-        this.centerInRow(layer, layoutRect, placeNextRowAt)
-      }
-      else {
-        this.fillRow(layer, layoutRect, placeNextRowAt)
+      if (layer.nodes.length != 1) {
+        layout.push(...this.spaceBetween(layer, layoutRect, placeNextLayerAt))
+      } else {
+        layout.push(...this.spaceAround(layer, layoutRect, placeNextLayerAt))
       }
 
-      placeNextRowAt += layer.primaryAxisSize + rowMargin
+      placeNextLayerAt += layer.primaryAxisSize + rowMargin
     }
+
+    return new Map(layout)
   }
 
-  private fillRow(
-    layer: { primaryAxisSize: number; nodes: NodeRect[] },
+  private spaceBetween(
+    layer: Layer,
     layoutRect: Rect,
     placeNextLayerAt: number
-  ) {
-    const occupiedSpace = layer.nodes.map(n => n[this.axisPreset.secondaryAxisDimension]).reduce((a, b) => a + b, 0)
-    const freeSpace = layoutRect[this.axisPreset.secondaryAxisDimension] - occupiedSpace
+  ): Map<string, XYPosition> {
+    const freeSpace = layoutRect[this.axisPreset.secondaryAxisDimension] - layer.occupiedSpace
 
     const margin = freeSpace / (layer.nodes.length - 1)
 
     let placeNextNodeAt = layoutRect[this.axisPreset.secondaryAxisCoord]
+    const result = new Map<string, XYPosition>()
+
     for (let node of sortBy(layer.nodes, n => n[this.axisPreset.secondaryAxisCoord])) {
-      this.layout.set(node.id, {
+      result.set(node.id, {
         [this.axisPreset.secondaryAxisCoord]: placeNextNodeAt,
         [this.axisPreset.primaryAxisCoord]: placeNextLayerAt
       } as XYPosition)
       placeNextNodeAt += node[this.axisPreset.secondaryAxisDimension] + margin
     }
+
+    return result
   }
 
-  private centerInRow(
-    layer: { primaryAxisSize: number; nodes: NodeRect[] },
+  private spaceAround(
+    layer: Layer,
     layoutRect: Rect,
     placeNextLayerAt: number
   ) {
-    const occupiedSpace = layer.nodes.map(n => n[this.axisPreset.secondaryAxisDimension]).reduce((a, b) => a + b, 0)
-    const freeSpace = layoutRect[this.axisPreset.secondaryAxisDimension] - occupiedSpace
+    const freeSpace = layoutRect[this.axisPreset.secondaryAxisDimension] - layer.occupiedSpace
 
     const margin = freeSpace / (layer.nodes.length + 1)
 
     let placeNextNodeAt = layoutRect[this.axisPreset.secondaryAxisCoord] + margin
+    const result = new Map<string, XYPosition>()
+
     for (let node of sortBy(layer.nodes, n => n[this.axisPreset.secondaryAxisCoord])) {
-      this.layout.set(node.id, {
+      result.set(node.id, {
         [this.axisPreset.secondaryAxisCoord]: placeNextNodeAt,
         [this.axisPreset.primaryAxisCoord]: placeNextLayerAt
       } as XYPosition)
       placeNextNodeAt += node[this.axisPreset.secondaryAxisDimension] + margin
     }
+
+    return result
   }
 }
 
