@@ -52,7 +52,9 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
         if (isDefined(el.body) && !isEmpty(el.body.elements)) {
           const fqn = getFqnElementRef(el.element)
           for (const child of el.body.elements) {
-            traverseStack.push([child, fqn])
+            if (!ast.isRelation(child)) {
+              traverseStack.push([child, fqn])
+            }
           }
         }
         continue
@@ -66,7 +68,9 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
         ElementOps.writeId(el, fqn)
         if (isDefined(el.body) && !isEmpty(el.body.elements)) {
           for (const child of el.body.elements) {
-            traverseStack.push([child, fqn])
+            if (!ast.isRelation(child)) {
+              traverseStack.push([child, fqn])
+            }
           }
         }
         continue

@@ -58,7 +58,7 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.views.layoutViews()
+  const views = await languageServices.viewsService.layoutViews()
   let succeeded = 0
   for (const { diagram, dot } of views) {
     try {
@@ -146,7 +146,7 @@ export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerPa
     graphviz: useDotBin ? 'binary' : 'wasm'
   })
 
-  const views = await languageServices.views.computedViews()
+  const views = await languageServices.viewsService.computedViews()
   if (views.length === 0) {
     logger.warn('no views found')
     process.exitCode = 1

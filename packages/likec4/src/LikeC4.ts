@@ -129,8 +129,6 @@ export class LikeC4 {
   private logger: Logger
   private langiumDocuments: LangiumDocuments
 
-  public readonly views: Views
-
   private constructor(
     public readonly workspace: string,
     private langium: LikeC4Langium,
@@ -138,11 +136,13 @@ export class LikeC4 {
   ) {
     this.logger = langium.logger
     this.langiumDocuments = langium.shared.workspace.LangiumDocuments
-    this.views = langium.likec4.Views
-
     if (this.isPrintErrorEnabled) {
       this.printErrors()
     }
+  }
+
+  get viewsService(): Views {
+    return this.langium.likec4.Views
   }
 
   /**
@@ -151,13 +151,6 @@ export class LikeC4 {
    */
   async diagrams(): Promise<DiagramView[]> {
     return await this.langium.likec4.Views.diagrams()
-  }
-
-  /**
-   * @deprecated use computedModel
-   */
-  model(): LikeC4Model.Computed {
-    return this.computedModel()
   }
 
   /**
@@ -190,7 +183,7 @@ export class LikeC4 {
       if (!computedModel) {
         throw new Error('Failed to build model')
       }
-      const diagrams = await this.views.diagrams()
+      const diagrams = await this.viewsService.diagrams()
       ref = LikeC4Model.layouted({
         __: 'layouted',
         ...computedModel,
