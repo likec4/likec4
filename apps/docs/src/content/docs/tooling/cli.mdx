@@ -89,15 +89,15 @@ likec4 dev
 ```
 
 This recursively searches for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams in a local web server.  
-Any changes in the sources trigger a super-fast hot update and you see changes in the browser immediately.
+Any change in the sources triggers hot update in the browser immediately.
 
 :::tip
-You can start the process in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
+You can start the process in a separate terminal window and keep it running while you're editing model in editor, or even serve multiple projects at once.
 :::
 
 #### Build static website
 
-Build a single HTML with diagrams, ready to be embedded into your website.
+Build a single HTML with diagrams, ready to be deployed or embedded into your website.
 When you deployed the website, you can use "Share" button to get a link to a specific diagram.
 
 The resulting website is strictly bound to the given base path (`/` by default).
@@ -119,7 +119,7 @@ likec4 build -o ./dist
 Internally, CLI uses Vite to build the website, and `likec4 build` calls `vite build`.  
 Vite [deploy documentation](https://vitejs.dev/guide/static-deploy.html) may also help you.
 
-Repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy to github pages.
+Repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy likec4 website to github pages.
 :::
 
 

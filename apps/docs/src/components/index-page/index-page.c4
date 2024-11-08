@@ -21,66 +21,26 @@ model {
 
   cloud = system 'Our SaaS' {
     description 'Our product allows customers to manage their data'
-    style {
-      color muted
-    }
 
     backend = component 'Backend' {
       icon tech:graphql
       description '
-        Implement business logic
+        Implements business logic
         and provides GraphQL API
       '
-
-      api = component 'GraphQL' {
-        technology 'Hasura'
-        description 'Provide access to the data from database or calls services'
-        icon tech:graphql
-      }
-
-      services = component 'Service Functions' {
-        technology 'serverless functions'
-        description '
-          Implement business logic,
-          process change requests and
-          comminucate with external services
-        '
-        icon aws:lambda
-      }
-
-      api -> services 'calls'
-      api -> infra.db 'reads'
-      services -> infra.db 'writes'
     }
 
     ui = component 'Frontend' {
       description 'NextJS application'
       style {
+        icon tech:nextjs
         shape browser
       }
     }
 
-    ui -[async]-> api 'requests via HTTPS'
+    ui -[async]-> backend 'requests via HTTPS'
 
   }
-
-  infra = system 'Infrastructure' {
-    description '
-      Cloud Infrastructure, Hosting
-      and Managed Services
-    '
-
-    db = component 'Database' {
-      description 'Managed PostgreSQL'
-      icon tech:postgresql
-      style {
-        shape storage
-      }
-    }
-  }
-
-  cloud -> infra 'uses'
-  backend -> infra 'uses'
 
   customer -> cloud 'uses to manage data'
   customer -> ui 'opens in browser'
@@ -89,7 +49,7 @@ model {
 // generate diagrams
 views {
 
-  view index of customer {
+  view index {
     title 'Landscape view'
     include customer, cloud, cloud.*
     style cloud {
@@ -99,57 +59,4 @@ views {
       color green
     }
   }
-
-  view cloud of cloud {
-    title 'Our Saas - Overview'
-    include *
-
-    style * {
-      color secondary
-    }
-    style cloud {
-      color muted
-    }
-    style cloud.* {
-      color green
-    }
-  }
-
-  view backend of backend {
-    include *, cloud
-
-    style * {
-      color secondary
-    }
-    style cloud {
-      opacity 1%
-      border solid
-      color muted
-    }
-    style backend, backend.* {
-      opacity 20%
-      border solid
-      color green
-    }
-  }
-
-
-  view infra of infra {
-    include
-      *,
-      backend,
-      backend.* -> infra
-
-    style * {
-      color secondary
-    }
-    style backend, infra {
-      opacity 40%
-      color muted
-    }
-    style infra.* {
-      color green
-    }
-  }
-
 }

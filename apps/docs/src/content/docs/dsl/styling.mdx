@@ -173,7 +173,7 @@ model {
 <LikeC4ThemeView viewId="icon_url_example" interactive={false}/>
 
 <Aside type='tip'>
-  To reduce boilerplate, `icon` may be defined as a property of the element.
+  `icon` can be defined as a property and skip `style` block
 
   ```likec4 copy
   model {
@@ -183,6 +183,16 @@ model {
   }
   ```
 </Aside>
+
+:::tip
+Use `none` to unset `icon`
+
+```likec4 copy
+pg = service 'PostgreSQL' {
+  icon none
+}
+```
+:::
 
 #### Bundled icons
 
