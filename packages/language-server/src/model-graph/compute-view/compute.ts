@@ -283,7 +283,14 @@ export class ComputeCtx {
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
         ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
       },
-      nodes,
+      nodes: map(nodes, n => {
+        // omit notation
+        delete n.notation
+        if (n.icon === 'none') {
+          delete n.icon
+        }
+        return n
+      }),
       edges: applyCustomRelationProperties(rules, nodes, sortedEdges),
       ...(elementNotations.length > 0 && {
         notation: {

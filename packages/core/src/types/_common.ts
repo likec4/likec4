@@ -4,7 +4,7 @@ export type NonEmptyArray<T> = [T, ...T[]]
 
 export type NonEmptyReadonlyArray<T> = readonly [T, ...T[]]
 
-export type IconUrl = Tagged<string, 'IconUrl'>
+export type IconUrl = Tagged<string, 'IconUrl'> | 'none'
 
 export type CustomColor = string
 

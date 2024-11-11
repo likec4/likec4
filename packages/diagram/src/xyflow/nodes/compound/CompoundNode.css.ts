@@ -11,12 +11,16 @@ export const containerForFramer = style({
   // transformOrigin: 'center center'
 })
 
+const iconSize = createVar('icon-size')
 export const container = style({
   width: '100%',
   height: '100%',
   position: 'relative',
   padding: 0,
   margin: 0,
+  vars: {
+    [iconSize]: '18px'
+  },
   ':before': {
     content: ' ',
     position: 'absolute',
@@ -88,6 +92,25 @@ export const compoundBody = style({
     background: vars.element.fill
   }
 })
+export const compoundTitle = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+  paddingLeft: 14,
+  paddingTop: 9,
+  minHeight: 30,
+  selectors: {
+    [`:where(.react-flow__node.draggable) &`]: {
+      cursor: 'grab'
+    },
+    [`:where(.likec4-compound-transparent) &`]: {
+      paddingTop: 4
+    }
+  }
+})
+export const withNavigation = style({
+  paddingLeft: 30
+})
 
 const opacityDeltaOnHover = createVar('opacityDeltaOnHover')
 export const transparent = style({
@@ -119,30 +142,19 @@ export const transparent = style({
 })
 
 export const title = style({
+  flex: 1,
   fontFamily: vars.compound.font,
-  textAlign: 'left',
   fontWeight: 600,
   fontSize: rem(15),
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  lineHeight: 1,
+  // lineHeight: 1,
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
-  paddingLeft: 14,
-  paddingTop: 13,
-  paddingBottom: 6,
-  minHeight: 30,
-  mixBlendMode: 'screen',
-  selectors: {
-    [`:where(.react-flow__node.draggable) &`]: {
-      cursor: 'grab'
-    },
-    [`:where(.likec4-compound-transparent) &`]: {
-      paddingTop: 10
-    }
-  }
-})
-export const titleWithNavigation = style({
-  paddingLeft: 32
+  // paddingLeft: 0,
+  // paddingTop: 13,
+  // paddingBottom: 6,
+  // minHeight: 20,
+  mixBlendMode: 'screen'
 })
 
 globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
@@ -245,4 +257,28 @@ export const navigateBtn = style({
       }
     }
   }
+})
+
+export const elementIcon = style({
+  flex: `0 0 ${iconSize}`,
+  height: iconSize,
+  width: iconSize,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  mixBlendMode: 'luminosity'
+})
+globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
+  width: '100%',
+  height: 'auto',
+  maxHeight: '100%',
+  pointerEvents: 'none',
+  filter: `
+    drop-shadow(0 0 3px rgb(0 0 0 / 10%))
+    drop-shadow(0 1px 8px rgb(0 0 0 / 8%))
+    drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))
+  `
+})
+globalStyle(`${elementIcon} img`, {
+  objectFit: 'contain'
 })

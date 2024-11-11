@@ -312,13 +312,14 @@ describe('compute-element-view', () => {
       $include('customer'),
       $include('amazon'),
       $include('cloud'),
-      $include('cloud.frontend'),
+      $include('cloud.frontend.dashboard'),
       // all elements
       // color: secondary
       {
         targets: [{ wildcard: true }],
         style: {
           color: 'secondary',
+          icon: 'none',
           shape: 'storage'
         }
       },
@@ -344,7 +345,7 @@ describe('compute-element-view', () => {
     const amazon = nodes.find(n => n.id === 'amazon')!
     const customer = nodes.find(n => n.id === 'customer')!
     const cloud = nodes.find(n => n.id === 'cloud')!
-    const frontend = nodes.find(n => n.id === 'cloud.frontend')!
+    const frontend = nodes.find(n => n.id === 'cloud.frontend.dashboard')!
 
     expect(amazon).toMatchObject({
       color: 'secondary',

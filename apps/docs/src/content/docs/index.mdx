@@ -27,47 +27,49 @@ hero:
       variant: secondary
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, LinkCard } from '@astrojs/starlight/components';
 import LikeC4View from '@components/index-page/LikeC4View.astro';
 import FooterIndex from '@components/FooterIndex.astro';
 
 ### What is LikeC4?
 
-LikeC4 is a set of tools and DSL, that describes architecture as a single model and then compiled into multiple diagrams.  
+LikeC4 is a powerful set of tools and a Domain-Specific Language (DSL) designed to describe your architecture as a single, cohesive model, which is then compiled into multiple diagrams.
 
-Your code is _**single source of truth**_.  
-Any change, refinement or deprecation is reflected automatically in the architecture diagrams.  
-No more outdated documentation!  
-And history of changes is your version control system.
+Your code is the _**single source of truth**_, and only you own it.   
+Any change, refinement or deprecation is reflected automatically.  
+No more outdated diagrams!  
+And with version control, your history of changes is always at your fingertips.
 
-LikeC4 provides:
+LikeC4 offers:
 
-- architecture-as-a-code with native [IDE support](/tooling/vscode/)
-- development server with live reload
-- static website generation - <a href="https://template.likec4.dev/view/cloud" target='_blank'>live demo</a>
-- React and Webcomponents generation to embed to your website
+- Architecture-as-a-code with [IDE support](/tooling/vscode/)
+- A development server with live reload capabilities
+- Static website generation — check out the <a href="https://template.likec4.dev/view/cloud" target="_blank">live demo</a>
+- React and Web Components for embedding in your website
 - API to traverse your model
 - CI/CD automation via CLI and GitHub Actions
-- export to various formats:
+- Export options to multiple formats:
   - PNG
   - Mermaid
   - D2
   - DOT (Graphviz)
 
-You can use LikeC4 standalone or integrate with existing toolchain.
+You can use LikeC4 as a standalone solution or integrate it into your existing toolchain.
 
 ### Why "like"?
 
-LikeC4 is inspired by the C4 model and Structurizr DSL, and goes beyond them by offering flexibility and customization.   
-You can _**use your ubiquitous language**_, your terms and any number of nested levels.  
+The name "LikeC4" reflects its inspiration from the <a href="https://c4model.com/" target="_blank">C4 Model</a>
+and <a href="https://docs.structurizr.com/" target='_blank'>Structurizr DSL</a>,
+while extending and offering enhanced flexibility and customization.
 
-If you never heard about _C4 Model_, check the <a href="https://c4model.com/" target='_blank'>website</a>.
-
+You can _**use your own ubiquitous language**_, define your terms, and create as many nested levels as needed.
 
 ### What does LikeC4 look like?
 
 ```likec4
-specification { // define "types" of architecture elements
+// You start with defining your terms and ...
+specification {
+  // ... "types" of your elements
   element actor {
     style {
       shape person // how to render
@@ -75,14 +77,17 @@ specification { // define "types" of architecture elements
   }
   element system
   element component
-  relationship async // allow "typed" relationship
+  // and "typed" relationships (if you need)
+  relationship async
 }
 
-model { // single source of truth
+// Here goes your model, the single source of truth
+model {
   customer = actor 'Customer' {
     description 'A user of our product with active subscription'
     -> ui 'opens in browser'
   }
+
   cloud = system 'Our SaaS' {
     backend = component 'Backend' {
       icon tech:graphql
@@ -92,6 +97,7 @@ model { // single source of truth
     ui = component 'Frontend' {
       description 'NextJS application'
       style {
+        icon tech:nextjs
         shape browser
       }
     }
@@ -100,6 +106,7 @@ model { // single source of truth
   }
 }
 
+// And finally, you define what to render
 views {
   view index {
     title 'Landscape view'
@@ -122,7 +129,11 @@ And this is rendered (click to explore):
 
 <LikeC4View viewId="index"/>
 
-Check the [Tutorial](/tutorial/) - for a quick overview of LikeC4.
 
+<LinkCard
+  title="Get started"
+  href="/tutorial/"
+  description="How to quickly start with LikeC4 and create your first architecture diagram"
+/>
 
 <FooterIndex/>

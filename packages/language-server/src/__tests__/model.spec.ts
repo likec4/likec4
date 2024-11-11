@@ -289,6 +289,20 @@ describe.concurrent('model', () => {
         }
       }
     }`
+  test('element with icon none').valid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        icon none
+      }
+      component system2 {
+        style {
+          icon none
+        }
+      }
+    }`
 
   test('element with metada').valid`
     specification {

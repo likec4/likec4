@@ -37,7 +37,7 @@ const dotSourcesModule = {
   virtualId: '\0likec4-plugin/dot-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/dot-sources'))
-    const views = await likec4.views.viewsAsGraphvizOut()
+    const views = await likec4.viewsService.viewsAsGraphvizOut()
     const sources = mapToObj(views, ({ id, svg, dot }) => [id, { dot, svg }])
     return generateDotSources(sources)
   }
@@ -48,7 +48,7 @@ const d2SourcesModule = {
   virtualId: '\0likec4-plugin/d2-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/d2-sources'))
-    const views = await likec4.views.computedViews()
+    const views = await likec4.viewsService.computedViews()
     return generateD2Sources(views)
   }
 } satisfies Module
@@ -58,7 +58,7 @@ const mmdSourcesModule = {
   virtualId: '\0likec4-plugin/mmd-sources.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/mmd-sources'))
-    const views = await likec4.views.computedViews()
+    const views = await likec4.viewsService.computedViews()
     return generateMmdSources(views)
   }
 } satisfies Module
@@ -68,7 +68,7 @@ const iconsModule = {
   virtualId: '\0likec4-plugin/icons.js',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/icons'))
-    const views = await likec4.views.computedViews()
+    const views = await likec4.viewsService.computedViews()
     return generateIconRendererSource(views)
   }
 } satisfies Module
@@ -80,7 +80,7 @@ const overviewGraphModule = {
     if (useOverviewGraph === true) {
       try {
         logger.info(k.dim('generating virtual:likec4/overview-graph'))
-        const overview = await likec4.views.overviewGraph()
+        const overview = await likec4.viewsService.overviewGraph()
         return generateOverviewGraphSource(overview)
       } catch (e) {
         logger.error(e)
@@ -100,7 +100,7 @@ const previewsModule = {
   virtualId: '\0likec4-plugin/previews.js',
   async load({ likec4, logger, assetsDir }) {
     logger.info(k.dim('generating virtual:likec4/previews'))
-    const views = await likec4.views.computedViews()
+    const views = await likec4.viewsService.computedViews()
     return diagramPreviewsSources(views, assetsDir)
   }
 } satisfies Module

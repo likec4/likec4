@@ -74,7 +74,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "email",
     },
   ],
-  "hash": "d063ebc7f8ca41575664a5cb0c9b60e059765267",
+  "hash": "3e66b5ad85ed469ae32e87604c15a6e7e186dcba",
   "id": "index",
   "links": null,
   "nodes": [
@@ -213,6 +213,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "children": [],
       "color": "primary",
       "description": null,
+      "icon": "tech:aws",
       "id": "amazon",
       "inEdges": [
         "cloud.backend:amazon",
@@ -298,7 +299,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "target": "cloud.backend",
     },
   ],
-  "hash": "d89856a7054a06fde86ad6b6ee168bd462e8f2dd",
+  "hash": "c187cb8d56ed752122754d1937d8598e8c1544f7",
   "id": "index",
   "links": null,
   "nodes": [
@@ -394,6 +395,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "children": [],
       "color": "primary",
       "description": null,
+      "icon": "tech:react",
       "id": "cloud.frontend.dashboard",
       "inEdges": [
         "customer:cloud.frontend.dashboard",

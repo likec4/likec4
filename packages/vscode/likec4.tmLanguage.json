@@ -89,7 +89,7 @@
     },
     {
       "name": "entity.name.type.enum.likec4",
-      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate)\\b"
+      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate|none)\\b"
     },
     {
       "name": "variable.other.property.likec4",

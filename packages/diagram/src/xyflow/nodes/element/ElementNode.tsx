@@ -1,4 +1,4 @@
-import { type DiagramNode, type ThemeColor } from '@likec4/core'
+import { type ThemeColor } from '@likec4/core'
 import { ActionIcon, Box, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId, IconZoomScan } from '@tabler/icons-react'
@@ -9,9 +9,9 @@ import { m, type Variants } from 'framer-motion'
 import React, { memo, useCallback, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
-import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
 import type { ElementXYFlowNode } from '../../types'
 import { stopPropagation, toDomPrecision } from '../../utils'
+import { ElementIcon } from '../shared/ElementIcon'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
@@ -178,6 +178,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const elementIcon = ElementIcon({
     element,
     viewId,
+    className: css.elementIcon,
     renderIcon
   })
 
@@ -340,37 +341,37 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   )
 }, isEqualProps)
 
-const ElementIcon = (
-  { element, viewId, renderIcon: RenderIcon }: {
-    element: DiagramNode
-    viewId: string
-    renderIcon: ElementIconRenderer | null
-  }
-) => {
-  if (!element.icon) {
-    return null
-  }
-  let icon = null as React.ReactNode
-  if (element.icon.startsWith('http://') || element.icon.startsWith('https://')) {
-    icon = <img src={element.icon} alt={element.title} />
-  } else if (RenderIcon) {
-    icon = <RenderIcon node={element} />
-  }
+// const ElementIcon = (
+//   { element, viewId, renderIcon: RenderIcon }: {
+//     element: DiagramNode
+//     viewId: string
+//     renderIcon: ElementIconRenderer | null
+//   }
+// ) => {
+//   if (!element.icon) {
+//     return null
+//   }
+//   let icon = null as React.ReactNode
+//   if (element.icon.startsWith('http://') || element.icon.startsWith('https://')) {
+//     icon = <img src={element.icon} alt={element.title} />
+//   } else if (RenderIcon) {
+//     icon = <RenderIcon node={element} />
+//   }
 
-  if (!icon) {
-    return null
-  }
-  return (
-    <m.div
-      // key={`${viewId}:element:icon:${element.id}`}
-      layoutId={`${viewId}:element:icon:${element.id}`}
-      className={clsx(
-        css.elementIcon,
-        'likec4-element-icon'
-      )}
-      data-likec4-icon={element.icon}
-    >
-      {icon}
-    </m.div>
-  )
-}
+//   if (!icon) {
+//     return null
+//   }
+//   return (
+//     <m.div
+//       // key={`${viewId}:element:icon:${element.id}`}
+//       layoutId={`${viewId}:element:icon:${element.id}`}
+//       className={clsx(
+//         css.elementIcon,
+//         'likec4-element-icon'
+//       )}
+//       data-likec4-icon={element.icon}
+//     >
+//       {icon}
+//     </m.div>
+//   )
+// }

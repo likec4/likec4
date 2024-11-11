@@ -1,10 +1,15 @@
-import { createCustomLanguageServices, type LikeC4Services, lspLogger, setLogLevel } from '@likec4/language-server'
+import {
+  createCustomLanguageServices,
+  LikeC4FileSystem,
+  type LikeC4Services,
+  lspLogger,
+  setLogLevel
+} from '@likec4/language-server'
 import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { consola, LogLevels } from '@likec4/log'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'
-import { NodeFileSystem } from 'langium/node'
 import { isError } from 'remeda'
 import k from 'tinyrainbow'
 import type { Constructor } from 'type-fest'
@@ -139,5 +144,5 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
     }])
   }
 
-  return createCustomLanguageServices(options.useFileSystem ? NodeFileSystem : {}, CliModule, module).likec4
+  return createCustomLanguageServices(options.useFileSystem ? LikeC4FileSystem : {}, CliModule, module).likec4
 }

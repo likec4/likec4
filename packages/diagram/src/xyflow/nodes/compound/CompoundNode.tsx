@@ -12,6 +12,7 @@ import { clamp, isNumber } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
 import { stopPropagation } from '../../utils'
+import { ElementIcon } from '../shared/ElementIcon'
 import { CompoundToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './CompoundNode.css'
@@ -118,15 +119,17 @@ const VariantsRelationsBtnSingle = {
   }
 }
 
-export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function CompoundNode({
-  id,
-  selected = false,
-  dragging = false,
-  data: {
-    isViewGroup,
-    element
+export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
+  {
+    id,
+    selected = false,
+    dragging = false,
+    data: {
+      isViewGroup,
+      element
+    }
   }
-}) {
+) => {
   const { depth, style, color } = element
   const isNotViewGroup = !isViewGroup
   const opacity = clamp((style.opacity ?? 100) / 100, {
@@ -147,6 +150,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     isDimmed,
     isInteractive,
     hasOnNavigateTo,
+    renderIcon,
     enableRelationshipsMode
   } = useDiagramState(s => ({
     viewId: s.view.id,
@@ -158,6 +162,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
       || (!!s.onNavigateTo && !!element.navigateTo),
     hasOnNavigateTo: !!s.onNavigateTo,
+    renderIcon: s.renderIcon,
     enableRelationshipsMode: s.enableRelationshipsBrowser
   }))
   // If this is a view group, we don't want to show the navigate button
@@ -198,6 +203,13 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     e.stopPropagation()
     openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
+
+  const elementIcon = ElementIcon({
+    element,
+    viewId,
+    className: css.elementIcon,
+    renderIcon
+  })
 
   return (
     <>
@@ -262,17 +274,21 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
               })
             }}
           >
-            <Text
-              component={m.div}
-              key={`${viewId}:element:title:${id}`}
-              layoutId={`${viewId}:element:title:${id}`}
+            <Box
               className={clsx(
-                css.title,
-                isNavigable && css.titleWithNavigation,
+                css.compoundTitle,
+                isNavigable && css.withNavigation,
                 'likec4-compound-title'
               )}>
-              {element.title}
-            </Text>
+              {elementIcon}
+              <Text
+                component={m.div}
+                key={`${viewId}:element:title:${id}`}
+                layoutId={`${viewId}:element:title:${id}`}
+                className={css.title}>
+                {element.title}
+              </Text>
+            </Box>
           </Box>
           {isNavigable && (
             <ActionIcon
