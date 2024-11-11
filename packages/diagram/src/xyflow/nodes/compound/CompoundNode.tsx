@@ -30,26 +30,14 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
 )
 
 const VariantsRoot = {
-  idle: (_, { translateY }) => ({
-    transition: isNumber(translateY) && translateY < 0
-      ? {
-        delay: 0.09,
-        delayChildren: 0.1
-        // staggerChildren: 0.08,
-        // staggerDirection: -1
-      }
-      : {}
-  }),
+  idle: {
+    transition: {
+      delayChildren: .1
+      // stagger
+    }
+  },
   selected: {},
-  hovered: (_, { translateY }) => ({
-    transition: !isNumber(translateY) || translateY === 0
-      ? {
-        // delay: 0.08,
-        delayChildren: 0.09
-        // staggerChildren: 0.15
-      }
-      : {}
-  }),
+  hovered: {},
   tap: {}
 } satisfies Variants
 
@@ -58,36 +46,38 @@ const VariantsNavigate = {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
     opacity: 0.8,
+    originX: 1,
+    originY: 0.25,
     translateX: 0,
     translateY: 0
   },
+  selected: {},
   hovered: {
-    display: 'block',
     '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.35,
+    scale: 1.25,
     opacity: 1,
-    translateX: -6,
-    translateY: 2
+    translateX: -1
   },
   'hovered:navigate': {
-    scale: 1.4
+    scale: 1.42
   },
   'hovered:relations': {},
   'tap:navigate': {
     scale: 1.15
   }
 } satisfies Variants
+VariantsNavigate['selected'] = VariantsNavigate['hovered']
 
 const VariantsDetailsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0.75
+    opacity: 0.3
   },
   selected: {},
   hovered: {
-    scale: 1.15,
-    opacity: 0.75
+    scale: 1.2,
+    opacity: 0.6
   },
   'hovered:details': {
     scale: 1.42,

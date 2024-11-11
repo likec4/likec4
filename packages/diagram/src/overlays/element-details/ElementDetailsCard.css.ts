@@ -302,12 +302,25 @@ export const tabsTab = style({
 
 export const tabsPanel = style({
   flex: 1,
-  overflow: 'scroll',
+  overflow: 'hidden',
+  display: 'flex'
+})
+
+globalStyle(`${tabsPanel}:not(:has(.mantine-ScrollArea-root))`, {
+  paddingLeft: 4,
+  paddingRight: 4
+})
+globalStyle(`${tabsPanel} .mantine-ScrollArea-root`, {
+  width: '100%',
+  height: '100%'
+})
+globalStyle(`${tabsPanel} .mantine-ScrollArea-viewport > div`, {
   paddingLeft: 4,
   paddingRight: 4
 })
 
 export const propertiesGrid = style({
+  flex: 1,
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',

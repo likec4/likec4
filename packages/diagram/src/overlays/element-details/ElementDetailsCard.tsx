@@ -24,6 +24,7 @@ import {
   FocusTrapInitialFocus,
   Group,
   Paper,
+  ScrollArea,
   Stack,
   Tabs,
   TabsList,
@@ -343,7 +344,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
           </TabsList>
 
           <TabsPanel value="Properties">
-            <Stack>
+            <ScrollArea scrollbars="y" type="auto">
               <Box className={css.propertiesGrid}>
                 <ElementProperty title="description" value={element.description} emptyValue="no description" />
                 <ElementProperty title="technology" value={element.technology} />
@@ -356,7 +357,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                   </>
                 )}
               </Box>
-            </Stack>
+            </ScrollArea>
           </TabsPanel>
 
           <TabsPanel value="Relationships">
@@ -409,36 +410,38 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
           </TabsPanel>
 
           <TabsPanel value="Views">
-            <Stack gap={'lg'}>
-              {viewsOf.length > 0 && !!onNavigateTo && (
-                <Box>
-                  <Divider label="views of the element (scoped)" />
-                  <Stack gap={'sm'}>
-                    {viewsOf.map((view) => (
-                      <ViewButton
-                        key={view.id}
-                        view={view}
-                        onNavigateTo={onNavigateToCb}
-                      />
-                    ))}
-                  </Stack>
-                </Box>
-              )}
-              {otherViews.length > 0 && !!onNavigateTo && (
-                <Box>
-                  <Divider label="views including this element" />
-                  <Stack gap={'sm'}>
-                    {otherViews.map((view) => (
-                      <ViewButton
-                        key={view.id}
-                        view={view}
-                        onNavigateTo={onNavigateToCb}
-                      />
-                    ))}
-                  </Stack>
-                </Box>
-              )}
-            </Stack>
+            <ScrollArea scrollbars="y" type="auto">
+              <Stack gap={'lg'}>
+                {viewsOf.length > 0 && !!onNavigateTo && (
+                  <Box>
+                    <Divider label="views of the element (scoped)" />
+                    <Stack gap={'sm'}>
+                      {viewsOf.map((view) => (
+                        <ViewButton
+                          key={view.id}
+                          view={view}
+                          onNavigateTo={onNavigateToCb}
+                        />
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+                {otherViews.length > 0 && !!onNavigateTo && (
+                  <Box>
+                    <Divider label="views including this element" />
+                    <Stack gap={'sm'}>
+                      {otherViews.map((view) => (
+                        <ViewButton
+                          key={view.id}
+                          view={view}
+                          onNavigateTo={onNavigateToCb}
+                        />
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+              </Stack>
+            </ScrollArea>
           </TabsPanel>
         </Tabs>
       </Card>

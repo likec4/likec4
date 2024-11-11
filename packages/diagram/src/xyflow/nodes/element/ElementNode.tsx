@@ -58,7 +58,7 @@ const VariantsNavigate = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0.75,
+    opacity: 0.5,
     translateX: '-50%',
     originY: 0.2
   },
@@ -82,12 +82,12 @@ const VariantsDetailsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0.75
+    opacity: 0.5
   },
   selected: {},
   hovered: {
-    scale: 1.15,
-    opacity: 0.75
+    scale: 1.2,
+    opacity: 0.7
   },
   'hovered:details': {
     scale: 1.42,
