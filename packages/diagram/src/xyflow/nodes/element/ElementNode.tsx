@@ -214,124 +214,108 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
       )}
       <Box
         component={m.div}
+        className={clsx([
+          css.container,
+          isDimmed && css.dimmed,
+          animate !== 'idle' && css.containerAnimated,
+          'likec4-element-node'
+        ])}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
-        className={css.containerForFramer}
-        // initial={{
-        //   opacity: 0,
-        //   scale: 0.8
-        // }}
-        // animate={{
-        //   opacity: 1,
-        //   scale: 1,
-        //   transition: {
-        //     delay: 0.3
-        //   }
-        // }}
+        data-hovered={!dragging && isHovered}
+        data-likec4-color={previewColor ?? element.color}
+        data-likec4-shape={element.shape}
+        data-animate-target=""
+        initial={false}
+        variants={VariantsRoot}
+        animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
+        tabIndex={-1}
+        {...(isInteractive && {
+          onTapStart: animateHandlers.onTapStart,
+          onTap: animateHandlers.onTap,
+          onTapCancel: animateHandlers.onTapCancel
+        })}
       >
+        <svg
+          className={clsx(css.shapeSvg)}
+          viewBox={`0 0 ${w} ${h}`}
+          width={w}
+          height={h}>
+          <g className={css.indicator}>
+            <SelectedIndicator shape={element.shape} w={w} h={h} />
+          </g>
+          <ElementShapeSvg shape={element.shape} w={w} h={h} />
+        </svg>
         <Box
-          component={m.div}
-          className={clsx([
-            css.container,
-            isDimmed && css.dimmed,
-            animate !== 'idle' && css.containerAnimated,
-            'likec4-element-node'
-          ])}
-          data-hovered={!dragging && isHovered}
-          data-likec4-color={previewColor ?? element.color}
-          data-likec4-shape={element.shape}
-          data-animate-target=""
-          initial={false}
-          variants={VariantsRoot}
-          animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
-          tabIndex={-1}
-          {...(isInteractive && {
-            onTapStart: animateHandlers.onTapStart,
-            onTap: animateHandlers.onTap,
-            onTapCancel: animateHandlers.onTapCancel
-          })}
+          className={clsx(
+            css.elementDataContainer,
+            isTruthy(elementIcon) && css.hasIcon,
+            'likec4-element'
+          )}
         >
-          <svg
-            className={clsx(css.shapeSvg)}
-            viewBox={`0 0 ${w} ${h}`}
-            width={w}
-            height={h}>
-            <g className={css.indicator}>
-              <SelectedIndicator shape={element.shape} w={w} h={h} />
-            </g>
-            <ElementShapeSvg shape={element.shape} w={w} h={h} />
-          </svg>
-          <Box
-            className={clsx(
-              css.elementDataContainer,
-              isTruthy(elementIcon) && css.hasIcon,
-              'likec4-element'
-            )}
-          >
-            {elementIcon}
-            <Box className={clsx(css.elementTextData, 'likec4-element-main-props')}>
-              <Text
-                component={m.div}
-                key={`${viewId}:element:title:${id}`}
-                layoutId={`${viewId}:element:title:${id}`}
-                className={clsx(css.title, 'likec4-element-title')}>
-                {element.title}
-              </Text>
+          {elementIcon}
+          <Box className={clsx(css.elementTextData, 'likec4-element-main-props')}>
+            <Text
+              component={m.div}
+              key={`${viewId}:element:title:${id}`}
+              layoutId={`${viewId}:element:title:${id}`}
+              className={clsx(css.title, 'likec4-element-title')}>
+              {element.title}
+            </Text>
 
-              {element.technology && (
-                <Text className={clsx(css.technology, 'likec4-element-technology')}>
-                  {element.technology}
-                </Text>
-              )}
-              {element.description && (
-                <Text className={clsx(css.description, 'likec4-element-description')} lineClamp={5}>
-                  {element.description}
-                </Text>
-              )}
-            </Box>
+            {element.technology && (
+              <Text className={clsx(css.technology, 'likec4-element-technology')}>
+                {element.technology}
+              </Text>
+            )}
+            {element.description && (
+              <Text className={clsx(css.description, 'likec4-element-description')} lineClamp={5}>
+                {element.description}
+              </Text>
+            )}
           </Box>
-          {/* {isHovercards && element.links && <ElementLink element={element} />} */}
-          {isNavigable && (
+        </Box>
+        {/* {isHovercards && element.links && <ElementLink element={element} />} */}
+        {isNavigable && (
+          <ActionIcon
+            component={m.div}
+            variants={VariantsNavigate}
+            data-animate-target="navigate"
+            className={clsx('nodrag nopan', css.navigateBtn)}
+            radius="md"
+            style={{ zIndex: 100 }}
+            role="button"
+            onClick={onNavigateTo}
+            onDoubleClick={stopPropagation}
+            {...isInteractive && animateHandlers}
+          >
+            <IconZoomScan style={{ width: '75%' }} />
+          </ActionIcon>
+        )}
+        {enableElementDetails && (
+          <Tooltip
+            fz="xs"
+            color="dark"
+            label="Open details"
+            withinPortal={false}
+            offset={2}
+            openDelay={600}>
             <ActionIcon
               component={m.div}
-              variants={VariantsNavigate}
-              data-animate-target="navigate"
-              className={clsx('nodrag nopan', css.navigateBtn)}
+              variants={VariantsDetailsBtn}
+              data-animate-target="details"
+              className={clsx('nodrag nopan', css.detailsBtn)}
               radius="md"
               style={{ zIndex: 100 }}
               role="button"
-              onClick={onNavigateTo}
+              onClick={onOpenDetails}
               onDoubleClick={stopPropagation}
               {...isInteractive && animateHandlers}
             >
-              <IconZoomScan style={{ width: '75%' }} />
+              <IconId style={{ width: '75%' }} />
             </ActionIcon>
-          )}
-          {enableElementDetails && (
-            <Tooltip
-              fz="xs"
-              color="dark"
-              label="Open details"
-              withinPortal={false}
-              offset={2}
-              openDelay={600}>
-              <ActionIcon
-                component={m.div}
-                variants={VariantsDetailsBtn}
-                data-animate-target="details"
-                className={clsx('nodrag nopan', css.detailsBtn)}
-                radius="md"
-                style={{ zIndex: 100 }}
-                role="button"
-                onClick={onOpenDetails}
-                onDoubleClick={stopPropagation}
-                {...isInteractive && animateHandlers}
-              >
-                <IconId style={{ width: '75%' }} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Box>
+          </Tooltip>
+        )}
       </Box>
       <Handle type="target" position={Position.Top} className={css.handleCenter} />
       <Handle type="source" position={Position.Top} className={css.handleCenter} />

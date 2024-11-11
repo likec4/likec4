@@ -1,5 +1,5 @@
+import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { calc } from '@vanilla-extract/css-utils'
 import { easings, mantine, transitions, vars, whereDark, whereLight } from '../../theme-vars'
 import { ZIndexes } from '../Overlays.css'
 
@@ -303,7 +303,7 @@ export const tabsTab = style({
 export const tabsPanel = style({
   flex: 1,
   overflow: 'hidden',
-  display: 'flex'
+  position: 'relative'
 })
 
 globalStyle(`${tabsPanel}:not(:has(.mantine-ScrollArea-root))`, {
@@ -324,7 +324,7 @@ export const propertiesGrid = style({
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: '16px 8px',
+  gap: `${rem(16)} ${rem(12)}`,
   alignItems: 'baseline',
   justifyItems: 'start'
 })
@@ -335,20 +335,28 @@ export const propertyLabel = style({
 
 export const elementLink = style({
   transition: transitions.fast,
-  border: `1px solid transparent`,
+  border: `1px dashed ${mantine.colors.defaultBorder}`,
   borderRadius: mantine.radius.sm,
   minHeight: 30,
-  padding: '2px 16px 4px 4px',
+  padding: '3px 16px 3px 3px',
   cursor: 'pointer',
   color: mantine.colors.gray[7],
   ':hover': {
+    transitionTimingFunction: easings.out,
+    borderStyle: 'solid',
     color: mantine.colors.defaultColor,
-    background: mantine.colors.defaultHover,
-    borderColor: mantine.colors.defaultBorder
+    background: mantine.colors.defaultHover
   },
   selectors: {
     [`${whereDark} &`]: {
       color: mantine.colors.dark[1]
     }
   }
+})
+globalStyle(`${elementLink} > *`, {
+  transition: transitions.fast
+})
+globalStyle(`${elementLink}:hover > *`, {
+  transitionTimingFunction: easings.out,
+  transform: 'translateX(1px)'
 })

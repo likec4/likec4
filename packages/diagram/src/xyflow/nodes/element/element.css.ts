@@ -37,15 +37,6 @@ export const container = style({
   }
 })
 
-// For framer motion
-export const containerForFramer = style({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  padding: 0,
-  margin: 0
-})
-
 export const handleCenter = style({
   top: '50%',
   left: '50%',

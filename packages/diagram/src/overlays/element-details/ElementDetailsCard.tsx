@@ -45,7 +45,7 @@ import {
   IconInfoCircle,
   IconZoomScan
 } from '@tabler/icons-react'
-import { ReactFlowProvider as XYFlowProvider, useInternalNode } from '@xyflow/react'
+import { useInternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { m, useDragControls } from 'framer-motion'
 import { type ReactNode, useCallback, useState } from 'react'
@@ -55,8 +55,8 @@ import { useDiagramState, useDiagramStoreApi, useXYFlow } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
 import { useOverlayDialog } from '../OverlayContext'
-import { RelationshipsXYFlow } from '../relationships-of/RelationshipsXYFlow'
 import * as css from './ElementDetailsCard.css'
+import { TabElementStructure } from './TabElementStructure'
 
 const Divider = MantineDivider.withProps({
   mb: 8,
@@ -122,7 +122,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
 
   const xynodeCenter = xyflow.flowToScreenPosition({
     x: xynode.internals.positionAbsolute.x + element.width / 2,
-    y: xynode.internals.positionAbsolute.y + element.height / 2
+    y: xynode.internals.positionAbsolute.y
   })
 
   const likec4Model = useLikeC4Model(true)
@@ -230,7 +230,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
         <Box component={m.div} layout className={css.cardHeader}>
           <Group align="start" gap={'sm'} mb={'sm'} onPointerDown={e => controls.start(e)}>
             {elementIcon}
-            <Box flex={1}>
+            <Box flex={'1 1 auto'}>
               <Text
                 component={m.div}
                 layout="position"
@@ -321,7 +321,6 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
           value={activeTab}
           onChange={v => setActiveTab(v as any)}
           variant="none"
-          keepMounted={false}
           classNames={{
             root: css.tabsRoot,
             list: css.tabsList,
@@ -338,7 +337,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
             <TabsTab value="Views">
               Views
             </TabsTab>
-            <TabsTab value="Structure" disabled>
+            <TabsTab value="Structure">
               Structure
             </TabsTab>
           </TabsList>
@@ -400,13 +399,15 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                 )}
               </Box>
             )}
-            <Box h={240}>
+            {
+              /* <Box h={240}>
               <XYFlowProvider
                 defaultNodes={[]}
                 defaultEdges={[]}>
                 <RelationshipsXYFlow subjectId={fqn} />
               </XYFlowProvider>
-            </Box>
+            </Box> */
+            }
           </TabsPanel>
 
           <TabsPanel value="Views">
@@ -441,6 +442,12 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                   </Box>
                 )}
               </Stack>
+            </ScrollArea>
+          </TabsPanel>
+
+          <TabsPanel value="Structure">
+            <ScrollArea scrollbars="y" type="auto">
+              <TabElementStructure element={elementModel} />
             </ScrollArea>
           </TabsPanel>
         </Tabs>
@@ -525,8 +532,8 @@ function ElementProperty({
     <>
       <PropertyLabel>{title}</PropertyLabel>
       <Text
-        lh={'sm'}
-        fz={'sm'}
+        // lh={'sm'}
+        fz={'md'}
         {...(isNullish(value) && { c: 'dimmed' })}
         style={{
           whiteSpace: 'preserve-breaks'
@@ -546,8 +553,8 @@ function ElementLink({
   return (
     <CopyButton value={url}>
       {({ copied, copy }) => (
-        <Anchor href={url} target="_blank" underline="never">
-          <Group className={css.elementLink} gap={4} align="center" wrap="nowrap">
+        <Anchor href={url} target="_blank" underline="never" className={css.elementLink}>
+          <Group gap={4} align="center" wrap="nowrap">
             <ActionIcon
               size={24}
               variant={copied ? 'light' : 'subtle'}
