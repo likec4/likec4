@@ -125,7 +125,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isHovered,
     isDimmed,
     hasOnNavigateTo,
-    isHovercards,
     isInteractive,
     enableElementDetails,
     triggerOnNavigateTo,
@@ -138,7 +137,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isDimmed: s.dimmed.has(id),
     isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
       || (!!s.onNavigateTo && !!element.navigateTo),
-    isHovercards: s.showElementLinks,
     hasOnNavigateTo: !!s.onNavigateTo,
     enableElementDetails: s.enableElementDetails,
     triggerOnNavigateTo: s.triggerOnNavigateTo,

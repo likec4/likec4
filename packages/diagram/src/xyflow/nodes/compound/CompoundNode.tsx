@@ -1,7 +1,7 @@
 import { type ThemeColor } from '@likec4/core'
 import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
@@ -34,9 +34,9 @@ const VariantsRoot = {
     transition: isNumber(translateY) && translateY < 0
       ? {
         delay: 0.09,
-        delayChildren: 0.1,
-        staggerChildren: 0.08,
-        staggerDirection: -1
+        delayChildren: 0.1
+        // staggerChildren: 0.08,
+        // staggerDirection: -1
       }
       : {}
   }),
@@ -44,7 +44,7 @@ const VariantsRoot = {
   hovered: (_, { translateY }) => ({
     transition: !isNumber(translateY) || translateY === 0
       ? {
-        delay: 0.08,
+        // delay: 0.08,
         delayChildren: 0.09
         // staggerChildren: 0.15
       }
@@ -78,46 +78,26 @@ const VariantsNavigate = {
   }
 } satisfies Variants
 
-const VariantsRelationsBtn = {
+const VariantsDetailsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0,
-    translateX: 2,
-    translateY: -8,
-    transitionEnd: {
-      display: 'none'
-    }
+    opacity: 0.75
   },
+  selected: {},
   hovered: {
-    display: 'block',
-    '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.2,
-    opacity: 1,
-    translateX: -5,
-    translateY: 2
+    scale: 1.15,
+    opacity: 0.75
   },
-  'hovered:relations': {
-    scale: 1.42
+  'hovered:details': {
+    scale: 1.42,
+    opacity: 1
   },
-  'tap:relations': {
+  'tap:details': {
     scale: 1.15
   }
 } satisfies Variants
-
-/**
- * Variants for the relationships button (when Navigate button is not visible)
- */
-const VariantsRelationsBtnSingle = {
-  ...VariantsNavigate,
-  idle: {
-    ...VariantsNavigate.idle,
-    opacity: 0,
-    transitionEnd: {
-      display: 'none'
-    }
-  }
-}
+VariantsDetailsBtn['selected'] = VariantsDetailsBtn['hovered']
 
 export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
   {
@@ -151,7 +131,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isInteractive,
     hasOnNavigateTo,
     renderIcon,
-    enableRelationshipsMode
+    enableElementDetails
   } = useDiagramState(s => ({
     viewId: s.view.id,
     triggerOnNavigateTo: s.triggerOnNavigateTo,
@@ -163,11 +143,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
       || (!!s.onNavigateTo && !!element.navigateTo),
     hasOnNavigateTo: !!s.onNavigateTo,
     renderIcon: s.renderIcon,
-    enableRelationshipsMode: s.enableRelationshipsBrowser
+    enableElementDetails: s.enableElementDetails
   }))
   // If this is a view group, we don't want to show the navigate button
   const isNavigable = isNotViewGroup && !!element.navigateTo && hasOnNavigateTo
-  const hasRelationshipsBrowser = isNotViewGroup && enableRelationshipsMode
+  const hasElementDetails = isNotViewGroup && enableElementDetails
 
   const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
@@ -199,9 +179,9 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     triggerOnNavigateTo(id, e)
   }, [triggerOnNavigateTo, id])
 
-  const onBrowseRelations = useCallback((e: React.MouseEvent) => {
+  const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    openOverlay({ relationshipsOf: element.id })
+    openOverlay({ elementDetails: element.id })
   }, [openOverlay, element.id])
 
   const elementIcon = ElementIcon({
@@ -288,6 +268,30 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                 className={css.title}>
                 {element.title}
               </Text>
+              {hasElementDetails && (
+                <Tooltip
+                  fz="xs"
+                  color="dark"
+                  label="Open details"
+                  withinPortal={false}
+                  offset={2}
+                  openDelay={600}>
+                  <ActionIcon
+                    component={m.div}
+                    variants={VariantsDetailsBtn}
+                    data-animate-target="details"
+                    className={clsx('nodrag nopan', css.detailsBtn)}
+                    radius="md"
+                    style={{ zIndex: 100 }}
+                    role="button"
+                    onClick={onOpenDetails}
+                    onDoubleClick={stopPropagation}
+                    {...isInteractive && animateHandlers}
+                  >
+                    <IconId style={{ width: '75%' }} />
+                  </ActionIcon>
+                </Tooltip>
+              )}
             </Box>
           </Box>
           {isNavigable && (
@@ -304,37 +308,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
               onDoubleClick={stopPropagation}
               {...isInteractive && animateHandlers}
             >
-              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
+              <IconZoomScan style={{ width: '75%' }} />
             </ActionIcon>
-          )}
-          {hasRelationshipsBrowser && (
-            <Tooltip
-              fz="xs"
-              color="dark"
-              label="Browse relationships"
-              withinPortal={false}
-              openDelay={600}
-              position="right">
-              <ActionIcon
-                component={m.div}
-                // Is is a second button, so we need to use a different variant
-                key={isNavigable ? 'relations' : 'relations-as-navigate'}
-                variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
-                data-animate-target={isNavigable ? 'relations' : 'navigate'}
-                className={clsx('nodrag nopan', css.navigateBtn)}
-                radius="md"
-                style={{
-                  top: isNavigable ? 50 : undefined,
-                  zIndex: 99
-                }}
-                role="button"
-                onClick={onBrowseRelations}
-                onDoubleClick={stopPropagation}
-                {...isInteractive && animateHandlers}
-              >
-                <IconTransform stroke={1.8} style={{ width: '66%' }} />
-              </ActionIcon>
-            </Tooltip>
           )}
         </Box>
       </Box>

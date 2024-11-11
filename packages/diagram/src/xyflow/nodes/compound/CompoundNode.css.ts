@@ -68,7 +68,7 @@ export const compoundBody = style({
   margin: 0,
   transition: 'all 200ms ease-out',
   backgroundClip: 'padding-box',
-  overflow: 'hidden',
+  // overflow: 'hidden',
   cursor: 'default',
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
@@ -229,11 +229,8 @@ globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transpa
   }
 })
 
-export const navigateBtn = style({
-  position: 'absolute',
+const btn = style({
   pointerEvents: 'all',
-  left: 3,
-  top: 6,
   cursor: 'pointer',
   color: `var(--_compound-title-color,${navigateBtnColor})`,
   opacity: 'var(--ai-opacity)',
@@ -252,12 +249,37 @@ export const navigateBtn = style({
     [`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) &`]: {
       opacity: 0.85,
       vars: {
-        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 60%)`,
-        '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`
+        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`,
+        '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`
       }
     }
   }
 })
+
+export const navigateBtn = style([btn, {
+  position: 'absolute',
+  left: 3,
+  top: 6
+}])
+
+export const detailsBtn = style([btn, {
+  // position: 'absolute',
+  // top: 2,
+  // right: 2,
+  // selectors: {
+  //   [`:where([data-likec4-shape='browser']) &`]: {
+  //     top: 3,
+  //     right: 5
+  //   },
+  //   ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+  //     top: 14
+  //   },
+  //   ':where([data-likec4-shape="queue"]) &': {
+  //     top: 1,
+  //     right: 12
+  //   }
+  // }
+}])
 
 export const elementIcon = style({
   flex: `0 0 ${iconSize}`,
