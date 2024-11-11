@@ -1,13 +1,12 @@
 import { type DiagramNode, type ThemeColor } from '@likec4/core'
 import { ActionIcon, Text as MantineText, Tooltip } from '@mantine/core'
-import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
-import { useDebouncedEffect } from '@react-hookz/web'
-import { IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { useDebouncedValue } from '@mantine/hooks'
+import { IconInfoSquareRounded, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
@@ -16,7 +15,6 @@ import { stopPropagation, toDomPrecision } from '../../utils'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
-import { ElementDetails } from './ElementDetails'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
@@ -89,17 +87,17 @@ const VariantsRelationsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0,
+    opacity: 0.75,
     originX: 0.25,
     originY: 0.1,
-    translateX: -8,
-    transitionEnd: {
-      display: 'none'
-    }
+    translateX: -8
+    // transitionEnd: {
+    //   display: 'none'
+    // }
   },
   selected: {},
   hovered: {
-    display: 'block',
+    // display: 'block',
     '--ai-bg': 'var(--ai-bg-hover)',
     scale: 1.25,
     opacity: 1,
@@ -150,6 +148,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   height
 }) {
   const {
+    viewId,
     isEditable,
     isHovered,
     isDimmed,
@@ -161,6 +160,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     openOverlay,
     renderIcon
   } = useDiagramState(s => ({
+    viewId: s.view.id,
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
@@ -205,6 +205,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const elementIcon = ElementIcon({
     element,
+    viewId,
     renderIcon
   })
 
@@ -212,45 +213,24 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    detailsOps.close()
     triggerOnNavigateTo(id, e)
   }, [triggerOnNavigateTo, id])
 
   const onBrowseRelations = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    openOverlay({ relationshipsOf: element.id })
+    openOverlay({ elementDetails: element.id })
   }, [openOverlay, element.id])
 
-  const _isDetailsVisible = isHoveredOrSelected && isHovercards
-  const [isDetailsVisible, detailsOps] = useDisclosure(_isDetailsVisible)
-
-  useDebouncedEffect(
-    () => {
-      if (_isDetailsVisible) {
-        detailsOps.open()
-      } else {
-        detailsOps.close()
-      }
-    },
-    [_isDetailsVisible],
-    // Delay onHover (opened immediately onTap)
-    _isDetailsVisible ? 3000 : 200
-  )
-
-  const onTap = useCallback((e: MouseEvent) => {
-    if (_isDetailsVisible) {
-      detailsOps.toggle()
-    }
-    // Open details on tap
-    animateHandlers.onTap(e)
-  }, [animateHandlers.onTap, _isDetailsVisible, detailsOps.toggle])
-
-  // Сlose details when dragging
-  useEffect(() => {
-    if (dragging) {
-      detailsOps.close()
-    }
-  }, [dragging])
+  // const onTap = useCallback((e: MouseEvent) => {
+  //   if (_isDetailsVisible) {
+  //     //detailsOps.toggle()
+  //     // openOverlay({
+  //     //   elementDetails: element.id
+  //     // })
+  //   }
+  //   // Open details on tap
+  //   animateHandlers.onTap(e)
+  // }, [animateHandlers.onTap, _isDetailsVisible, detailsOps.toggle])
 
   return (
     <>
@@ -261,98 +241,120 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           onColorPreview={setPreviewColor}
         />
       )}
-      {isDetailsVisible && <ElementDetails nodeId={id} />}
       <m.div
-        id={id}
-        className={clsx([
-          css.container,
-          isDimmed && css.dimmed,
-          animate !== 'idle' && css.containerAnimated,
-          'likec4-element-node'
-        ])}
-        data-hovered={!dragging && isHovered}
-        data-likec4-color={previewColor ?? element.color}
-        data-likec4-shape={element.shape}
-        data-animate-target=""
-        variants={VariantsRoot}
-        initial={false}
-        animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
-        tabIndex={-1}
-        {...(isInteractive && {
-          onTapStart: animateHandlers.onTapStart,
-          onTap,
-          onTapCancel: animateHandlers.onTapCancel
-        })}
-      >
-        <svg className={clsx(css.cssShapeSvg)} viewBox={`0 0 ${w} ${h}`} width={w} height={h}>
-          <g className={css.indicator}>
-            <SelectedIndicator shape={element.shape} w={w} h={h} />
-          </g>
-          <ElementShapeSvg shape={element.shape} w={w} h={h} />
-        </svg>
-        <div
-          className={clsx(
-            css.elementDataContainer,
-            isTruthy(elementIcon) && css.hasIcon,
-            'likec4-element'
-          )}
+        key={`${viewId}:element:${id}`}
+        layoutId={`${viewId}:element:${id}`}
+        className={css.containerBody}>
+        <m.div
+          className={clsx([
+            css.container,
+            isDimmed && css.dimmed,
+            animate !== 'idle' && css.containerAnimated,
+            'likec4-element-node'
+          ])}
+          data-hovered={!dragging && isHovered}
+          data-likec4-color={previewColor ?? element.color}
+          data-likec4-shape={element.shape}
+          data-animate-target=""
+          initial={false}
+          variants={VariantsRoot}
+          animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
+          tabIndex={-1}
+          {...(isInteractive && {
+            onTapStart: animateHandlers.onTapStart,
+            onTap: animateHandlers.onTap,
+            onTapCancel: animateHandlers.onTapCancel
+          })}
         >
-          {elementIcon}
-          <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
-            <Text className={clsx(css.title, 'likec4-element-title')} lineClamp={3}>
-              {element.title}
-            </Text>
-            {element.technology && (
-              <Text className={clsx(css.technology, 'likec4-element-technology')}>
-                {element.technology}
-              </Text>
+          <svg
+            className={clsx(css.shapeSvg)}
+            viewBox={`0 0 ${w} ${h}`}
+            width={w}
+            height={h}>
+            <g className={css.indicator}>
+              <SelectedIndicator shape={element.shape} w={w} h={h} />
+            </g>
+            <ElementShapeSvg shape={element.shape} w={w} h={h} />
+          </svg>
+          <div
+            className={clsx(
+              css.elementDataContainer,
+              isTruthy(elementIcon) && css.hasIcon,
+              'likec4-element'
             )}
-            {element.description && (
-              <Text className={clsx(css.description, 'likec4-element-description')} lineClamp={5}>
-                {element.description}
-              </Text>
-            )}
-          </div>
-        </div>
-        {isHovercards && element.links && <ElementLink element={element} />}
-        {isNavigable && (
-          <ActionIcon
-            component={m.div}
-            variants={VariantsNavigate}
-            data-animate-target="navigate"
-            className={clsx('nodrag nopan', css.navigateBtn)}
-            radius="md"
-            style={{ zIndex: 100 }}
-            role="button"
-            onClick={onNavigateTo}
-            onDoubleClick={stopPropagation}
-            {...isInteractive && animateHandlers}
           >
-            <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-          </ActionIcon>
-        )}
-        {enableRelationshipsMode && (
-          <Tooltip fz="xs" color="dark" label="Browse relationships" withinPortal={false} openDelay={600}>
+            {elementIcon}
+            <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
+              {
+                /* <m.div
+                initial={false}
+                key={`${viewId}:element:title:${id}`}
+                layoutId={`${viewId}:element:title:${id}`}
+                className={clsx(css.title, 'likec4-element-title')}
+              >
+                {element.title}
+              </m.div> */
+              }
+              <Text
+                component={m.div}
+                key={`${viewId}:element:title:${id}`}
+                layoutId={`${viewId}:element:title:${id}`}
+                className={clsx(css.title, 'likec4-element-title')}>
+                {element.title}
+              </Text>
+
+              {element.technology && (
+                <Text className={clsx(css.technology, 'likec4-element-technology')}>
+                  {element.technology}
+                </Text>
+              )}
+              {element.description && (
+                <Text className={clsx(css.description, 'likec4-element-description')} lineClamp={5}>
+                  {element.description}
+                </Text>
+              )}
+            </div>
+          </div>
+          {isHovercards && element.links && <ElementLink element={element} />}
+          {isNavigable && (
             <ActionIcon
               component={m.div}
-              // Is is a second button, so we need to use a different variant
-              variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
-              data-animate-target={isNavigable ? 'relations' : 'navigate'}
+              variants={VariantsNavigate}
+              data-animate-target="navigate"
               className={clsx('nodrag nopan', css.navigateBtn)}
               radius="md"
-              style={{
-                left: isNavigable ? 'calc(50% + 28px)' : '50%',
-                zIndex: 99
-              }}
+              style={{ zIndex: 100 }}
               role="button"
-              onClick={onBrowseRelations}
+              onClick={onNavigateTo}
               onDoubleClick={stopPropagation}
               {...isInteractive && animateHandlers}
             >
-              <IconTransform stroke={1.8} style={{ width: '67%' }} />
+              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
             </ActionIcon>
-          </Tooltip>
-        )}
+          )}
+          {enableRelationshipsMode && (
+            <Tooltip fz="xs" color="dark" label="Browse relationships" withinPortal={false} openDelay={600}>
+              <ActionIcon
+                component={m.div}
+                // Is is a second button, so we need to use a different variant
+                variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
+                data-animate-target={isNavigable ? 'relations' : 'navigate'}
+                className={clsx('nodrag nopan', css.navigateBtn)}
+                radius="md"
+                style={{
+                  left: isNavigable ? 'calc(50% + 28px)' : '50%',
+                  zIndex: 99
+                }}
+                role="button"
+                onClick={onBrowseRelations}
+                onDoubleClick={stopPropagation}
+                {...isInteractive && animateHandlers}
+              >
+                <IconInfoSquareRounded stroke={2} style={{ width: '70%' }} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </m.div>
       </m.div>
       <Handle type="target" position={Position.Top} className={css.handleCenter} />
       <Handle type="source" position={Position.Top} className={css.handleCenter} />
@@ -361,24 +363,29 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 }, isEqualProps)
 
 const ElementIcon = (
-  { element, renderIcon: RenderIcon }: { element: DiagramNode; renderIcon: ElementIconRenderer | null }
+  { element, viewId, renderIcon: RenderIcon }: {
+    element: DiagramNode
+    viewId: string
+    renderIcon: ElementIconRenderer | null
+  }
 ) => {
   if (!element.icon) {
     return null
   }
+  let icon = null as React.ReactNode
   if (element.icon.startsWith('http://') || element.icon.startsWith('https://')) {
-    return (
-      <div className={clsx(css.elementIcon, 'likec4-element-icon')}>
-        <img src={element.icon} alt={element.title} />
-      </div>
-    )
+    icon = <img src={element.icon} alt={element.title} />
+  } else if (RenderIcon) {
+    icon = <RenderIcon node={element} />
   }
-  const icon = RenderIcon ? <RenderIcon node={element} /> : null
+
   if (!icon) {
     return null
   }
   return (
-    <div
+    <m.div
+      // key={`${viewId}:element:icon:${element.id}`}
+      layoutId={`${viewId}:element:icon:${element.id}`}
       className={clsx(
         css.elementIcon,
         'likec4-element-icon'
@@ -386,6 +393,6 @@ const ElementIcon = (
       data-likec4-icon={element.icon}
     >
       {icon}
-    </div>
+    </m.div>
   )
 }

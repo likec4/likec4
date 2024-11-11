@@ -29,7 +29,7 @@ import type { ElementXYFlowNode, XYFlowState } from '../../types'
 import * as css from './ElementDetails.css'
 
 const Divider = MantineDivider.withProps({
-  mb: 4,
+  mb: 6,
   labelPosition: 'left',
   variant: 'dashed'
 })
@@ -213,7 +213,7 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
           pb={'sm'}
           scrollbars="y"
           type="hover">
-          <Stack gap={'sm'} px="xs" ref={ref}>
+          <Stack gap={'md'} px="xs" ref={ref}>
             {element.notation && <Text style={{ maxWidth: width }}>{element.notation}</Text>}
             {defaultView && !!onNavigateTo && (
               <Box>
@@ -269,6 +269,7 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
                     </Group>
                     {notIncludedRelations > 0 && (
                       <Group
+                        mt={'xs'}
                         gap={6}
                         c="orange"
                         style={{ cursor: 'pointer' }}
@@ -333,7 +334,7 @@ export const ElementDetails = memo<ElementDetailsProps>(({ nodeId }) => {
             {otherViews.length > 0 && !!onNavigateTo && (
               <Box>
                 <Divider label="views including this element" />
-                <Stack gap={2}>
+                <Stack gap={'xs'}>
                   {otherViews.map((view) => (
                     <ViewButton
                       key={view.id}
@@ -377,7 +378,7 @@ const ViewButton = ({
       leftSection={<IconZoomScan stroke={1.8} />}
       styles={{
         section: {
-          marginInline: 0,
+          marginInline: 2,
           alignSelf: 'baseline'
         }
       }}
@@ -386,7 +387,7 @@ const ViewButton = ({
         onNavigateTo(view.id, e)
       }}>
       <Text component="div">{view.title || 'untitled'}</Text>
-      <Text component="div" fz={'xs'} c="dimmed">id: {view.id}</Text>
+      <Text component="div" lh={1.2} fz={'xs'} c="dimmed">id: {view.id}</Text>
     </Button>
   )
 }

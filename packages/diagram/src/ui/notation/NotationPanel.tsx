@@ -22,6 +22,7 @@ import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { useState } from 'react'
 import { ceil, isNonNullish, isNullish } from 'remeda'
+import { useXYStore } from '../../hooks'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { vars } from '../../theme-vars'
@@ -120,16 +121,15 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
 const selector = (s: DiagramState) => ({
   id: s.view.id,
   notations: s.view.notation?.elements ?? [],
-  height: s.xystore.getState().height,
   isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough)
 })
 
 export function NotationPanel() {
+  const height = useXYStore(s => s.height)
   const {
     id,
     notations,
-    isVisible,
-    height
+    isVisible
   } = useDiagramState(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'notation-webview-collapsed',

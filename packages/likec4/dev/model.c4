@@ -54,6 +54,8 @@ model {
       #next #v2
       technology 'PowerBI'
       description 'Reporting services'
+      link https://github.com/likec4/likec4 'source'
+      link /view/reporting/editor
       link ./cloud/reporting.c4#L3
     }
 

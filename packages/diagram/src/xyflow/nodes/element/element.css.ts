@@ -5,6 +5,7 @@ import { mantine, vars } from '../../../theme-vars'
 export const stokeFillMix = createVar('stroke-fill-mix')
 
 export const container = style({
+  position: 'absolute',
   width: '100%',
   height: '100%',
   padding: 0,
@@ -24,6 +25,7 @@ export const container = style({
       willChange: 'transform'
     }
   },
+  // Catch pointer below the element
   ':after': {
     content: ' ',
     position: 'absolute',
@@ -34,6 +36,18 @@ export const container = style({
     background: 'transparent',
     pointerEvents: 'all'
   }
+})
+
+// For framer motion
+export const containerBody = style({
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  transformOrigin: 'center center'
+  // opacity: 0,
+  // zIndex: -1,
+  // backgroundColor: 'transparent'
+  // backgroundColor: vars.element.fill
 })
 
 export const handleCenter = style({
@@ -282,7 +296,7 @@ globalStyle(`${elementIcon} img`, {
 
 const filterShadow = createVar('filter-shadow')
 
-export const cssShapeSvgMultiple = style({
+export const shapeSvgMultiple = style({
   top: 0,
   left: 0,
   position: 'absolute',
@@ -310,7 +324,7 @@ export const cssShapeSvgMultiple = style({
     }
   }
 })
-export const cssShapeSvg = style({
+export const shapeSvg = style({
   top: 0,
   left: 0,
   position: 'absolute',

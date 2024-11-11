@@ -104,6 +104,7 @@ export type DiagramState = Simplify<
     activeOverlay:
       | null
       | RequireExactlyOne<{
+        elementDetails: Fqn
         relationshipsOf: Fqn
         edgeDetails: EdgeId
       }>
@@ -776,7 +777,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             }
             const xynode = xynodes.find(({ id }) => id === xynodeId)
             invariant(xynode, `xynode not found: ${xynodeId}`)
-            const element = view.nodes.find(({ id }) => id === xynodeId)
+            const element = xynode.data.element
             invariant(element?.navigateTo, `node is not navigable: ${xynodeId}`)
             cancelSaveManualLayout()
             set(
@@ -862,7 +863,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                   activeOverlay: null
                 },
                 noReplace,
-                'openOverlay'
+                'closeOverlay'
               )
             }
           },
