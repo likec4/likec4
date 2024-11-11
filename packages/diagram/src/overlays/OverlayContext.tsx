@@ -3,7 +3,7 @@ import type { DiagramState } from '../hooks'
 
 export const OverlayContext = createContext({} as {
   openOverlay: DiagramState['openOverlay']
-  close: () => void
+  close: (onClosed?: () => void) => void
 })
 
 export function useOverlayDialog() {

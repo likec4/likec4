@@ -5,12 +5,11 @@ import { mantine, vars } from '../../../theme-vars'
 export const stokeFillMix = createVar('stroke-fill-mix')
 
 export const container = style({
-  position: 'absolute',
+  position: 'relative',
   width: '100%',
   height: '100%',
   padding: 0,
   margin: 0,
-  flex: '1',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -39,15 +38,12 @@ export const container = style({
 })
 
 // For framer motion
-export const containerBody = style({
+export const containerForFramer = style({
   position: 'relative',
   width: '100%',
   height: '100%',
-  transformOrigin: 'center center'
-  // opacity: 0,
-  // zIndex: -1,
-  // backgroundColor: 'transparent'
-  // backgroundColor: vars.element.fill
+  padding: 0,
+  margin: 0
 })
 
 export const handleCenter = style({
@@ -352,12 +348,8 @@ export const shapeSvg = style({
   }
 })
 
-export const navigateBtn = style({
-  zIndex: 'calc(var(--layer-overlays, 1) + 1)',
-  position: 'absolute',
+const btn = style({
   pointerEvents: 'all',
-  left: '50%',
-  bottom: 0,
   color: vars.element.loContrast,
   cursor: 'pointer',
   backgroundColor: 'var(--ai-bg)',
@@ -367,12 +359,37 @@ export const navigateBtn = style({
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
   },
-  selectors: {
-    [`:where([data-likec4-shape='browser']) &`]: {
-      bottom: 4
-    }
-  },
   ':hover': {
     boxShadow: mantine.shadows.md
   }
 })
+
+export const navigateBtn = style([btn, {
+  position: 'absolute',
+  left: '50%',
+  bottom: 0,
+  selectors: {
+    [`:where([data-likec4-shape='browser']) &`]: {
+      bottom: 4
+    }
+  }
+}])
+
+export const detailsBtn = style([btn, {
+  position: 'absolute',
+  top: 2,
+  right: 2,
+  selectors: {
+    [`:where([data-likec4-shape='browser']) &`]: {
+      top: 3,
+      right: 5
+    },
+    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+      top: 14
+    },
+    ':where([data-likec4-shape="queue"]) &': {
+      top: 1,
+      right: 12
+    }
+  }
+}])

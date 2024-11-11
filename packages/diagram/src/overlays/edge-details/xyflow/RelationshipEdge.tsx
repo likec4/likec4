@@ -2,8 +2,9 @@ import { ActionIcon, Box, Stack, Text } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
-import { useDiagramState } from '../../../hooks/useDiagramState'
+import { useDiagramState, useDiagramStoreApi } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
+import { useOverlayDialog } from '../../OverlayContext'
 import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-edge-details'
 import * as css from './styles.css'
@@ -13,6 +14,7 @@ export function RelationshipEdge({
   label,
   ...props
 }: EdgeProps<XYFlowTypes.Edge>) {
+  const overlay = useOverlayDialog()
   const onNavigateTo = useDiagramState(s => s.onNavigateTo)
   const [edgePath, labelX, labelY] = getBezierPath(props)
   const navigateTo = data.relation.navigateTo
@@ -65,7 +67,9 @@ export function RelationshipEdge({
                 onPointerDownCapture={stopPropagation}
                 onClick={event => {
                   event.stopPropagation()
-                  onNavigateTo(navigateTo, event)
+                  overlay.close(() => {
+                    onNavigateTo(navigateTo)
+                  })
                 }}
                 role="button"
                 onDoubleClick={stopPropagation}

@@ -1,7 +1,7 @@
 import { type DiagramNode, type ThemeColor } from '@likec4/core'
 import { ActionIcon, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconInfoSquareRounded, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { IconId, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
@@ -15,7 +15,6 @@ import { stopPropagation, toDomPrecision } from '../../utils'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
-import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
 const Text = MantineText.withProps({
@@ -32,9 +31,9 @@ const VariantsRoot = {
     transition: isNumber(scale) && scale > selectedScale
       ? {
         delay: 0.1,
-        delayChildren: 0.06,
-        staggerChildren: 0.07,
-        staggerDirection: -1
+        delayChildren: 0.06
+        // staggerChildren: 0.07,
+        // staggerDirection: -1
       }
       : {}
   }),
@@ -46,8 +45,7 @@ const VariantsRoot = {
     transition: !isNumber(scale) || (scale >= 1 && scale < 1.06)
       ? {
         // delay: 0.09,
-        delayChildren: 0.07,
-        staggerChildren: 0.1
+        delayChildren: 0.08
       }
       : {}
   }),
@@ -62,12 +60,12 @@ const VariantsNavigate = {
     scale: 1,
     opacity: 0.75,
     translateX: '-50%',
-    originY: 0.1
+    originY: 0.2
   },
   selected: {},
   hovered: {
-    display: 'block',
     '--ai-bg': 'var(--ai-bg-hover)',
+    translateX: '-50%',
     scale: 1.35,
     opacity: 1
   },
@@ -80,52 +78,26 @@ const VariantsNavigate = {
 } satisfies Variants
 VariantsNavigate['selected'] = VariantsNavigate['hovered']
 
-/**
- * Variants for the relationships button (when Navigate button is visible)
- */
-const VariantsRelationsBtn = {
+const VariantsDetailsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0.75,
-    originX: 0.25,
-    originY: 0.1,
-    translateX: -8
-    // transitionEnd: {
-    //   display: 'none'
-    // }
+    opacity: 0.75
   },
   selected: {},
   hovered: {
-    // display: 'block',
-    '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.25,
-    opacity: 1,
-    translateX: 0
+    scale: 1.15,
+    opacity: 0.75
   },
-  'hovered:navigate': {},
-  'hovered:relations': {
-    scale: 1.42
+  'hovered:details': {
+    scale: 1.42,
+    opacity: 1
   },
-  'tap:relations': {
+  'tap:details': {
     scale: 1.15
   }
 } satisfies Variants
-VariantsRelationsBtn['selected'] = VariantsRelationsBtn['hovered']
-
-/**
- * Variants for the relationships button (when Navigate button is not visible)
- */
-const VariantsRelationsBtnSingle = {
-  ...VariantsNavigate,
-  idle: {
-    ...VariantsNavigate.idle,
-    opacity: 0,
-    transitionEnd: {
-      display: 'none'
-    }
-  }
-}
+VariantsDetailsBtn['selected'] = VariantsDetailsBtn['hovered']
 
 type ElementNodeProps = NodeProps<ElementXYFlowNode>
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
@@ -155,7 +127,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     hasOnNavigateTo,
     isHovercards,
     isInteractive,
-    enableRelationshipsMode,
+    enableElementDetails,
     triggerOnNavigateTo,
     openOverlay,
     renderIcon
@@ -168,7 +140,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
       || (!!s.onNavigateTo && !!element.navigateTo),
     isHovercards: s.showElementLinks,
     hasOnNavigateTo: !!s.onNavigateTo,
-    enableRelationshipsMode: s.enableRelationshipsBrowser,
+    enableElementDetails: s.enableElementDetails,
     triggerOnNavigateTo: s.triggerOnNavigateTo,
     openOverlay: s.openOverlay,
     renderIcon: s.renderIcon
@@ -216,7 +188,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     triggerOnNavigateTo(id, e)
   }, [triggerOnNavigateTo, id])
 
-  const onBrowseRelations = useCallback((e: React.MouseEvent) => {
+  const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     openOverlay({ elementDetails: element.id })
   }, [openOverlay, element.id])
@@ -244,7 +216,19 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
       <m.div
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
-        className={css.containerBody}>
+        className={css.containerForFramer}
+        // initial={{
+        //   opacity: 0,
+        //   scale: 0.8
+        // }}
+        // animate={{
+        //   opacity: 1,
+        //   scale: 1,
+        //   transition: {
+        //     delay: 0.3
+        //   }
+        // }}
+      >
         <m.div
           className={clsx([
             css.container,
@@ -285,16 +269,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           >
             {elementIcon}
             <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
-              {
-                /* <m.div
-                initial={false}
-                key={`${viewId}:element:title:${id}`}
-                layoutId={`${viewId}:element:title:${id}`}
-                className={clsx(css.title, 'likec4-element-title')}
-              >
-                {element.title}
-              </m.div> */
-              }
               <Text
                 component={m.div}
                 key={`${viewId}:element:title:${id}`}
@@ -315,7 +289,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
               )}
             </div>
           </div>
-          {isHovercards && element.links && <ElementLink element={element} />}
+          {/* {isHovercards && element.links && <ElementLink element={element} />} */}
           {isNavigable && (
             <ActionIcon
               component={m.div}
@@ -329,28 +303,30 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
               onDoubleClick={stopPropagation}
               {...isInteractive && animateHandlers}
             >
-              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
+              <IconZoomScan style={{ width: '75%' }} />
             </ActionIcon>
           )}
-          {enableRelationshipsMode && (
-            <Tooltip fz="xs" color="dark" label="Browse relationships" withinPortal={false} openDelay={600}>
+          {enableElementDetails && (
+            <Tooltip
+              fz="xs"
+              color="dark"
+              label="Open details"
+              withinPortal={false}
+              offset={2}
+              openDelay={600}>
               <ActionIcon
                 component={m.div}
-                // Is is a second button, so we need to use a different variant
-                variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
-                data-animate-target={isNavigable ? 'relations' : 'navigate'}
-                className={clsx('nodrag nopan', css.navigateBtn)}
+                variants={VariantsDetailsBtn}
+                data-animate-target="details"
+                className={clsx('nodrag nopan', css.detailsBtn)}
                 radius="md"
-                style={{
-                  left: isNavigable ? 'calc(50% + 28px)' : '50%',
-                  zIndex: 99
-                }}
+                style={{ zIndex: 100 }}
                 role="button"
-                onClick={onBrowseRelations}
+                onClick={onOpenDetails}
                 onDoubleClick={stopPropagation}
                 {...isInteractive && animateHandlers}
               >
-                <IconInfoSquareRounded stroke={2} style={{ width: '70%' }} />
+                <IconId style={{ width: '75%' }} />
               </ActionIcon>
             </Tooltip>
           )}

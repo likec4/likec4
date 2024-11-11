@@ -3,6 +3,14 @@ import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-
 import { calc } from '@vanilla-extract/css-utils'
 import { mantine, vars } from '../../../theme-vars'
 
+// For framer motion
+export const containerForFramer = style({
+  position: 'relative',
+  width: '100%',
+  height: '100%'
+  // transformOrigin: 'center center'
+})
+
 export const container = style({
   width: '100%',
   height: '100%',

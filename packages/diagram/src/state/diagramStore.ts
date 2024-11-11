@@ -72,6 +72,7 @@ export type DiagramInitialState = {
   nodesSelectable: boolean
   experimentalEdgeEditing: boolean
   enableFocusMode: boolean
+  enableElementDetails: boolean
   enableRelationshipsBrowser: boolean
   renderIcon: ElementIconRenderer | null
   whereFilter: WhereOperator<string, string> | null

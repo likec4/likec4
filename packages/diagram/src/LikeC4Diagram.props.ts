@@ -121,6 +121,7 @@ export interface LikeC4DiagramProperties {
   /**
    * Display hovercards with element links
    * @default true
+   * @deprecated
    */
   showElementLinks?: boolean | undefined
 
@@ -155,9 +156,15 @@ export interface LikeC4DiagramProperties {
   enableFocusMode?: boolean | undefined
 
   /**
+   * Enable element details popup
+   * @default true
+   */
+  enableElementDetails?: boolean | undefined
+
+  /**
    * Experimental feature to browse relationships
    *
-   * @default false
+   * @default true
    */
   enableRelationshipsBrowser?: boolean | undefined
 

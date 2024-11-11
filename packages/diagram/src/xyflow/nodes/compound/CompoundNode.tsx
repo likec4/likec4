@@ -143,6 +143,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   })
 
   const {
+    viewId,
     triggerOnNavigateTo,
     openOverlay,
     isEditable,
@@ -152,6 +153,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     hasOnNavigateTo,
     enableRelationshipsMode
   } = useDiagramState(s => ({
+    viewId: s.view.id,
     triggerOnNavigateTo: s.triggerOnNavigateTo,
     openOverlay: s.openOverlay,
     isEditable: s.readonly !== true,
@@ -210,112 +212,119 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           align="start"
           onColorPreview={setPreviewColor} />
       )}
-      <Box
-        component={m.div}
-        variants={VariantsRoot}
-        initial={false}
-        animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
-        className={clsx(
-          css.container,
-          'likec4-compound-node',
-          opacity < 1 && 'likec4-compound-transparent',
-          isDimmed && css.dimmed
-        )}
-        mod={{
-          'animate-target': '',
-          'compound-depth': depth,
-          'likec4-color': previewColor ?? color,
-          hovered: isHovered
-        }}
-        tabIndex={-1}
-        {...(isInteractive && {
-          onTapStart: animateHandlers.onTapStart,
-          onTap: animateHandlers.onTap,
-          onTapCancel: animateHandlers.onTapCancel
-        })}
-      >
-        <svg className={css.indicator}>
-          <rect
-            x={0}
-            y={0}
-            width={'100%'}
-            height={'100%'}
-            rx={6}
-          />
-        </svg>
-        <div
+      <m.div
+        key={`${viewId}:element:${id}`}
+        layoutId={`${viewId}:element:${id}`}
+        className={css.containerForFramer}>
+        <Box
+          component={m.div}
+          variants={VariantsRoot}
+          initial={false}
+          animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
           className={clsx(
-            css.compoundBody,
-            opacity < 1 && css.transparent,
-            'likec4-compound'
+            css.container,
+            'likec4-compound-node',
+            opacity < 1 && 'likec4-compound-transparent',
+            isDimmed && css.dimmed
           )}
-          style={{
-            ...(opacity < 1 && {
-              ...assignInlineVars({
-                [css.varBorderTransparency]: `${borderTransparency}%`,
-                [css.varOpacity]: opacity.toFixed(2)
-              }),
-              borderStyle: style.border ?? 'dashed'
-            })
+          mod={{
+            'animate-target': '',
+            'compound-depth': depth,
+            'likec4-color': previewColor ?? color,
+            hovered: isHovered
           }}
+          tabIndex={-1}
+          {...(isInteractive && {
+            onTapStart: animateHandlers.onTapStart,
+            onTap: animateHandlers.onTap,
+            onTapCancel: animateHandlers.onTapCancel
+          })}
         >
-          <Text
-            component="div"
+          <svg className={css.indicator}>
+            <rect
+              x={0}
+              y={0}
+              width={'100%'}
+              height={'100%'}
+              rx={6}
+            />
+          </svg>
+          <div
             className={clsx(
-              css.title,
-              (isNavigable || hasRelationshipsBrowser) && css.titleWithNavigation,
-              'likec4-compound-title'
-            )}>
-            {element.title}
-          </Text>
-        </div>
-        {isNavigable && (
-          <ActionIcon
-            key={'navigate'}
-            component={m.div}
-            variants={VariantsNavigate}
-            data-animate-target="navigate"
-            className={clsx('nodrag nopan', css.navigateBtn)}
-            radius="md"
-            style={{ zIndex: 100 }}
-            onClick={onNavigateTo}
-            role="button"
-            onDoubleClick={stopPropagation}
-            {...isInteractive && animateHandlers}
+              css.compoundBody,
+              opacity < 1 && css.transparent,
+              'likec4-compound'
+            )}
+            style={{
+              ...(opacity < 1 && {
+                ...assignInlineVars({
+                  [css.varBorderTransparency]: `${borderTransparency}%`,
+                  [css.varOpacity]: opacity.toFixed(2)
+                }),
+                borderStyle: style.border ?? 'dashed'
+              })
+            }}
           >
-            <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-          </ActionIcon>
-        )}
-        {hasRelationshipsBrowser && (
-          <Tooltip
-            fz="xs"
-            color="dark"
-            label="Browse relationships"
-            withinPortal={false}
-            openDelay={600}
-            position="right">
-            <ActionIcon
+            <Text
               component={m.div}
-              // Is is a second button, so we need to use a different variant
-              key={isNavigable ? 'relations' : 'relations-as-navigate'}
-              variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
-              data-animate-target={isNavigable ? 'relations' : 'navigate'}
+              key={`${viewId}:element:title:${id}`}
+              layoutId={`${viewId}:element:title:${id}`}
+              className={clsx(
+                css.title,
+                (isNavigable || hasRelationshipsBrowser) && css.titleWithNavigation,
+                'likec4-compound-title'
+              )}>
+              {element.title}
+            </Text>
+          </div>
+          {isNavigable && (
+            <ActionIcon
+              key={'navigate'}
+              component={m.div}
+              variants={VariantsNavigate}
+              data-animate-target="navigate"
               className={clsx('nodrag nopan', css.navigateBtn)}
               radius="md"
-              style={{
-                top: isNavigable ? 50 : undefined,
-                zIndex: 99
-              }}
+              style={{ zIndex: 100 }}
+              onClick={onNavigateTo}
               role="button"
-              onClick={onBrowseRelations}
               onDoubleClick={stopPropagation}
               {...isInteractive && animateHandlers}
             >
-              <IconTransform stroke={1.8} style={{ width: '66%' }} />
+              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
             </ActionIcon>
-          </Tooltip>
-        )}
-      </Box>
+          )}
+          {hasRelationshipsBrowser && (
+            <Tooltip
+              fz="xs"
+              color="dark"
+              label="Browse relationships"
+              withinPortal={false}
+              openDelay={600}
+              position="right">
+              <ActionIcon
+                component={m.div}
+                // Is is a second button, so we need to use a different variant
+                key={isNavigable ? 'relations' : 'relations-as-navigate'}
+                variants={isNavigable ? VariantsRelationsBtn : VariantsRelationsBtnSingle}
+                data-animate-target={isNavigable ? 'relations' : 'navigate'}
+                className={clsx('nodrag nopan', css.navigateBtn)}
+                radius="md"
+                style={{
+                  top: isNavigable ? 50 : undefined,
+                  zIndex: 99
+                }}
+                role="button"
+                onClick={onBrowseRelations}
+                onDoubleClick={stopPropagation}
+                {...isInteractive && animateHandlers}
+              >
+                <IconTransform stroke={1.8} style={{ width: '66%' }} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </Box>
+      </m.div>
       <Handle type="target" position={Position.Top} className={css.nodeHandlerInCenter} />
       <Handle type="source" position={Position.Top} className={css.nodeHandlerInCenter} />
     </>

@@ -96,8 +96,7 @@ export function ElementNode({
             <Action
               onClick={(event) => {
                 event.stopPropagation()
-                setTimeout(() => onNavigateTo(navigateTo), 100)
-                overlay.close()
+                overlay.close(() => onNavigateTo(navigateTo))
               }}>
               <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
             </Action>

@@ -51,7 +51,7 @@ import clsx from 'clsx'
 import { m, useDragControls } from 'framer-motion'
 import { type ReactNode, useCallback, useState } from 'react'
 import {} from 'react-remove-scroll'
-import { clamp, first, isNullish, map, only, partition, pipe, unique } from 'remeda'
+import { clamp, first, isNullish, map, only, partition, pipe, round, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
@@ -123,7 +123,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
 
   const xynodeCenter = xyflow.flowToScreenPosition({
     x: xynode.internals.positionAbsolute.x + element.width / 2,
-    y: xynode.internals.positionAbsolute.y + element.height / 2
+    y: xynode.internals.positionAbsolute.y + element.height / 3
   })
 
   const likec4Model = useLikeC4Model(true)
@@ -161,289 +161,305 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
 
   const onNavigateToCb = useCallback((toView: ViewID, e?: React.MouseEvent): void => {
     e?.stopPropagation()
-    diagramApi.setState({
-      activeOverlay: null,
-      hoveredNodeId: null,
-      lastClickedNodeId: fqn,
-      lastOnNavigate: {
-        fromView: currentView.id,
-        toView,
-        fromNode: fqn
-      }
+    overlay.close(() => {
+      diagramApi.setState({
+        lastOnNavigate: {
+          fromView: currentView.id,
+          toView,
+          fromNode: fqn
+        }
+      })
+      diagramApi.getState().onNavigateTo?.(toView)
     })
-    diagramApi.getState().onNavigateTo?.(toView, e)
   }, [fqn, currentView.id])
   const controls = useDragControls()
 
   const width = Math.min(700, windowWidth - MIN_PADDING * 2)
   const height = Math.min(650, windowHeight - MIN_PADDING * 2)
 
-  const left = clamp(xynodeCenter.x - width / 2, {
-    min: MIN_PADDING,
-    max: windowWidth - width - MIN_PADDING
-  })
-  const top = clamp(xynodeCenter.y, {
-    min: MIN_PADDING,
-    max: windowHeight - height - MIN_PADDING
-  })
+  const left = Math.round(
+    clamp(xynodeCenter.x - width / 2, {
+      min: MIN_PADDING,
+      max: windowWidth - width - MIN_PADDING
+    })
+  )
+  const top = Math.round(
+    clamp(xynodeCenter.y, {
+      min: MIN_PADDING,
+      max: windowHeight - height - MIN_PADDING
+    })
+  )
 
   return (
-    (
-      <RemoveScroll>
-        <FocusTrap>
-          <Card
-            drag
-            dragElastic={0}
-            dragListener={false}
-            dragTransition={{ power: 0.1, timeConstant: 100 }}
-            dragControls={controls}
-            withBorder
-            shadow="md"
-            component={m.div}
-            className={css.card}
-            layoutId={`${viewId}:element:${fqn}`}
-            initial={false}
-            animate={{
-              opacity: 1,
-              top,
-              left,
-              width,
-              height
-            }}
-            exit={{
-              opacity: 0
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Escape') {
-                e.preventDefault()
+    <FocusTrap>
+      <Card
+        drag
+        dragElastic={0}
+        dragListener={false}
+        dragTransition={{ power: 0.1, timeConstant: 100 }}
+        dragControls={controls}
+        withBorder
+        shadow="md"
+        component={m.div}
+        className={css.card}
+        layoutId={`${viewId}:element:${fqn}`}
+        initial={false}
+        animate={{
+          opacity: 1,
+          top,
+          left,
+          width,
+          height
+        }}
+        exit={{
+          opacity: 0,
+          transition: {
+            duration: .2
+          }
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Escape') {
+            e.preventDefault()
+            e.stopPropagation()
+            overlay.close()
+          }
+        }}
+        data-likec4-color={element.color}>
+        <FocusTrapInitialFocus />
+        <Box component={m.div} layout className={css.cardHeader}>
+          <Group align="start" gap={'sm'} mb={'sm'} onPointerDown={e => controls.start(e)}>
+            {elementIcon}
+            <Box flex={1}>
+              <Text
+                component={m.div}
+                layout="position"
+                layoutId={`${viewId}:element:title:${fqn}`}
+                className={css.title}>
+                {elementModel.title}
+              </Text>
+              {element.notation && (
+                <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
+                  {element.notation}
+                </Text>
+              )}
+            </Box>
+            <CloseButton
+              size={'lg'}
+              onClick={e => {
                 e.stopPropagation()
                 overlay.close()
-              }
-            }}
-            data-likec4-color={element.color}>
-            <FocusTrapInitialFocus />
-            <Box className={css.cardHeader}>
-              <Group align="start" gap={'sm'} mb={'sm'} onPointerDown={e => controls.start(e)}>
-                {elementIcon}
-                <Box flex={1}>
-                  <Text
-                    component={m.div}
-                    layout="position"
-                    layoutId={`${viewId}:element:title:${fqn}`}
-                    className={css.title}>
-                    {elementModel.title}
-                  </Text>
-                  {element.notation && (
-                    <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
-                      {element.notation}
-                    </Text>
-                  )}
-                </Box>
-                <CloseButton
-                  size={'lg'}
-                  onClick={e => {
-                    e.stopPropagation()
-                    overlay.close()
-                  }}
-                />
-              </Group>
-              <Group align="baseline" gap={'sm'}>
-                <Box>
-                  <SmallLabel>kind</SmallLabel>
-                  <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.kind}</Badge>
-                </Box>
-                {
-                  /* <Box>
+              }}
+            />
+          </Group>
+          <Group align="baseline" gap={'sm'}>
+            <Box>
+              <SmallLabel>kind</SmallLabel>
+              <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.kind}</Badge>
+            </Box>
+            {
+              /* <Box>
                   <SmallLabel>technology</SmallLabel>
                   <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.technology || '—'}</Badge>
                 </Box> */
-                }
-                <Box flex={1}>
-                  <SmallLabel>tags</SmallLabel>
-                  <Flex gap={4} flex={1} mt={6}>
-                    {element.tags?.map((tag) => (
-                      <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
-                    ))}
-                    {!element.tags && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
-                  </Flex>
-                </Box>
-                <ActionIconGroup
-                  style={{
-                    alignSelf: 'flex-end'
-                  }}>
-                  {defaultLink && (
-                    <ActionIcon
-                      component="a"
-                      href={defaultLink.url}
-                      target="_blank"
-                      size="lg"
-                      variant="default"
-                      radius="sm"
-                    >
-                      <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
-                    </ActionIcon>
-                  )}
-                  {onOpenSource && (
-                    <Tooltip label="Open source">
-                      <ActionIcon
-                        size="lg"
-                        variant="default"
-                        radius="sm"
-                        onClick={e => {
-                          e.stopPropagation()
-                          diagramApi.getState().onOpenSourceElement?.(fqn)
-                        }}
-                      >
-                        <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                  {defaultView && (
-                    <Tooltip label="Open default view">
-                      <ActionIcon
-                        size="lg"
-                        variant="default"
-                        radius="sm"
-                        onClick={e => {
-                          onNavigateToCb(defaultView.id, e)
-                        }}>
-                        <IconZoomScan style={{ width: '70%' }} />
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                </ActionIconGroup>
-              </Group>
+            }
+            <Box flex={1}>
+              <SmallLabel>tags</SmallLabel>
+              <Flex gap={4} flex={1} mt={6}>
+                {element.tags?.map((tag) => (
+                  <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
+                ))}
+                {!element.tags && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+              </Flex>
             </Box>
-
-            <Tabs
-              value={activeTab}
-              onChange={v => setActiveTab(v as any)}
-              variant="none"
-              keepMounted={false}
-              classNames={{
-                root: css.tabsRoot,
-                list: css.tabsList,
-                tab: css.tabsTab,
-                panel: css.tabsPanel
+            <ActionIconGroup
+              style={{
+                alignSelf: 'flex-end'
               }}>
-              <TabsList>
-                <TabsTab value="Properties">
-                  Properties
-                </TabsTab>
-                <TabsTab value="Relationships">
-                  Relationships
-                </TabsTab>
-                <TabsTab value="Views">
-                  Views
-                </TabsTab>
-                <TabsTab value="Structure">
-                  Structure
-                </TabsTab>
-              </TabsList>
+              {defaultLink && (
+                <ActionIcon
+                  component="a"
+                  href={defaultLink.url}
+                  target="_blank"
+                  size="lg"
+                  variant="default"
+                  radius="sm"
+                >
+                  <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
+                </ActionIcon>
+              )}
+              {onOpenSource && (
+                <Tooltip label="Open source">
+                  <ActionIcon
+                    size="lg"
+                    variant="default"
+                    radius="sm"
+                    onClick={e => {
+                      e.stopPropagation()
+                      diagramApi.getState().onOpenSourceElement?.(fqn)
+                    }}
+                  >
+                    <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
+                  </ActionIcon>
+                </Tooltip>
+              )}
+              {defaultView && (
+                <Tooltip label="Open default view">
+                  <ActionIcon
+                    size="lg"
+                    variant="default"
+                    radius="sm"
+                    onClick={e => {
+                      onNavigateToCb(defaultView.id, e)
+                    }}>
+                    <IconZoomScan style={{ width: '70%' }} />
+                  </ActionIcon>
+                </Tooltip>
+              )}
+            </ActionIconGroup>
+          </Group>
+        </Box>
 
-              <TabsPanel value="Properties">
-                <Stack>
-                  <Box className={css.propertiesGrid}>
-                    <ElementProperty title="description" value={element.description} emptyValue="no description" />
-                    <ElementProperty title="technology" value={element.technology} />
-                    {element.links && (
-                      <>
-                        <PropertyLabel>links</PropertyLabel>
-                        <Stack gap={4} align="flex-start">
-                          {element.links.map((link, i) => <ElementLink key={i} value={link} />)}
-                        </Stack>
-                      </>
-                    )}
-                  </Box>
-                </Stack>
-              </TabsPanel>
+        <Tabs
+          component={m.div}
+          layout
+          initial={{
+            opacity: 0
+          }}
+          animate={{
+            opacity: 1
+          }}
+          exit={{
+            opacity: 0,
+            transition: {
+              duration: 0.05
+            }
+          }}
+          value={activeTab}
+          onChange={v => setActiveTab(v as any)}
+          variant="none"
+          keepMounted={false}
+          classNames={{
+            root: css.tabsRoot,
+            list: css.tabsList,
+            tab: css.tabsTab,
+            panel: css.tabsPanel
+          }}>
+          <TabsList>
+            <TabsTab value="Properties">
+              Properties
+            </TabsTab>
+            <TabsTab value="Relationships">
+              Relationships
+            </TabsTab>
+            <TabsTab value="Views">
+              Views
+            </TabsTab>
+            <TabsTab value="Structure" disabled>
+              Structure
+            </TabsTab>
+          </TabsList>
 
-              <TabsPanel value="Relationships">
-                {(incoming.length + outgoing.length) > 0 && (
-                  <Box>
-                    <Group gap={'xs'} wrap="nowrap" align="center" justify="center">
-                      <Box>
-                        <Group gap={8} mb={4} wrap="nowrap">
-                          <RelationshipsStat
-                            title="incoming"
-                            total={incoming.length}
-                            included={incomingInView.length}
-                          />
-                          <ThemeIcon size={'sm'} variant="transparent" c="dimmed">
-                            <IconArrowRight style={{ width: 16 }} />
-                          </ThemeIcon>
-                          <Text className={css.fqn}>{nameFromFqn(element.id)}</Text>
-                          <ThemeIcon size={'sm'} variant="transparent" c="dimmed">
-                            <IconArrowRight style={{ width: 16 }} />
-                          </ThemeIcon>
-                          <RelationshipsStat
-                            title="outgoing"
-                            total={outgoing.length}
-                            included={outgoingInView.length}
-                          />
-                        </Group>
-                      </Box>
-                    </Group>
-                    {notIncludedRelations > 0 && (
-                      <Group
-                        mt={'xs'}
-                        gap={6}
-                        c="orange"
-                        style={{ cursor: 'pointer' }}>
-                        <IconInfoCircle style={{ width: 14 }} />
-                        <Text fz="sm">
-                          {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} hidden
-                        </Text>
-                      </Group>
-                    )}
-                  </Box>
+          <TabsPanel value="Properties">
+            <Stack>
+              <Box className={css.propertiesGrid}>
+                <ElementProperty title="description" value={element.description} emptyValue="no description" />
+                <ElementProperty title="technology" value={element.technology} />
+                {element.links && (
+                  <>
+                    <PropertyLabel>links</PropertyLabel>
+                    <Stack gap={4} align="flex-start">
+                      {element.links.map((link, i) => <ElementLink key={i} value={link} />)}
+                    </Stack>
+                  </>
                 )}
-                <Box h={240}>
-                  <XYFlowProvider
-                    defaultNodes={[]}
-                    defaultEdges={[]}>
-                    <RelationshipsXYFlow subjectId={fqn} />
-                  </XYFlowProvider>
-                </Box>
-              </TabsPanel>
+              </Box>
+            </Stack>
+          </TabsPanel>
 
-              <TabsPanel value="Views">
-                <Stack gap={'lg'}>
-                  {viewsOf.length > 0 && !!onNavigateTo && (
-                    <Box>
-                      <Divider label="views of the element (scoped)" />
-                      <Stack gap={'sm'}>
-                        {viewsOf.map((view) => (
-                          <ViewButton
-                            key={view.id}
-                            view={view}
-                            onNavigateTo={onNavigateToCb}
-                          />
-                        ))}
-                      </Stack>
-                    </Box>
-                  )}
-                  {otherViews.length > 0 && !!onNavigateTo && (
-                    <Box>
-                      <Divider label="views including this element" />
-                      <Stack gap={'sm'}>
-                        {otherViews.map((view) => (
-                          <ViewButton
-                            key={view.id}
-                            view={view}
-                            onNavigateTo={onNavigateToCb}
-                          />
-                        ))}
-                      </Stack>
-                    </Box>
-                  )}
-                </Stack>
-              </TabsPanel>
-            </Tabs>
-          </Card>
-        </FocusTrap>
-      </RemoveScroll>
-    )
+          <TabsPanel value="Relationships">
+            {(incoming.length + outgoing.length) > 0 && (
+              <Box>
+                <Group gap={'xs'} wrap="nowrap" align="center" justify="center">
+                  <Box>
+                    <Group gap={8} mb={4} wrap="nowrap">
+                      <RelationshipsStat
+                        title="incoming"
+                        total={incoming.length}
+                        included={incomingInView.length}
+                      />
+                      <ThemeIcon size={'sm'} variant="transparent" c="dimmed">
+                        <IconArrowRight style={{ width: 16 }} />
+                      </ThemeIcon>
+                      <Text className={css.fqn}>{nameFromFqn(element.id)}</Text>
+                      <ThemeIcon size={'sm'} variant="transparent" c="dimmed">
+                        <IconArrowRight style={{ width: 16 }} />
+                      </ThemeIcon>
+                      <RelationshipsStat
+                        title="outgoing"
+                        total={outgoing.length}
+                        included={outgoingInView.length}
+                      />
+                    </Group>
+                  </Box>
+                </Group>
+                {notIncludedRelations > 0 && (
+                  <Group
+                    mt={'xs'}
+                    gap={6}
+                    c="orange"
+                    style={{ cursor: 'pointer' }}>
+                    <IconInfoCircle style={{ width: 14 }} />
+                    <Text fz="sm">
+                      {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} hidden
+                    </Text>
+                  </Group>
+                )}
+              </Box>
+            )}
+            <Box h={240}>
+              <XYFlowProvider
+                defaultNodes={[]}
+                defaultEdges={[]}>
+                <RelationshipsXYFlow subjectId={fqn} />
+              </XYFlowProvider>
+            </Box>
+          </TabsPanel>
+
+          <TabsPanel value="Views">
+            <Stack gap={'lg'}>
+              {viewsOf.length > 0 && !!onNavigateTo && (
+                <Box>
+                  <Divider label="views of the element (scoped)" />
+                  <Stack gap={'sm'}>
+                    {viewsOf.map((view) => (
+                      <ViewButton
+                        key={view.id}
+                        view={view}
+                        onNavigateTo={onNavigateToCb}
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+              {otherViews.length > 0 && !!onNavigateTo && (
+                <Box>
+                  <Divider label="views including this element" />
+                  <Stack gap={'sm'}>
+                    {otherViews.map((view) => (
+                      <ViewButton
+                        key={view.id}
+                        view={view}
+                        onNavigateTo={onNavigateToCb}
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+            </Stack>
+          </TabsPanel>
+        </Tabs>
+      </Card>
+    </FocusTrap>
   )
 }
 
@@ -491,7 +507,7 @@ const ViewButton = ({
 }) => {
   return (
     <UnstyledButton className={css.viewButton} onClick={e => onNavigateTo(view.id, e)}>
-      <Group gap={6} align="start">
+      <Group gap={6} align="start" wrap="nowrap">
         <ThemeIcon size={'sm'} variant="transparent">
           <IconZoomScan stroke={1.8} />
         </ThemeIcon>

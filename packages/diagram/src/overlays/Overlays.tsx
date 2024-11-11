@@ -1,8 +1,9 @@
 import { ActionIcon, Box, FocusTrap, RemoveScroll } from '@mantine/core'
+import { useHotkeys } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { AnimatePresence, m } from 'framer-motion'
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
 import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
@@ -20,50 +21,73 @@ export const Overlays = memo(() => {
     viewId: s.view.id
   }))
 
+  const onCloseCbRef = useRef<(() => void)>()
+
   const ctxValue = useMemo(() => ({
     openOverlay: ((overlay) => {
       diagramStore.getState().openOverlay(overlay)
     }) as DiagramState['openOverlay'],
-    close: () => {
+    close: (cb?: () => void) => {
+      onCloseCbRef.current = cb
       diagramStore.getState().closeOverlay()
     }
   }), [diagramStore])
 
+  const onExitComplete = () => {
+    onCloseCbRef.current?.()
+    onCloseCbRef.current = undefined
+  }
+
+  const isActive = !!activeOverlay && isNullish(activeOverlay.elementDetails)
+  useHotkeys(
+    isActive
+      ? [
+        ['Escape', (e) => {
+          e.stopPropagation()
+          ctxValue.close()
+        }, { preventDefault: true }]
+      ]
+      : []
+  )
+
   return (
     <OverlayContext.Provider value={ctxValue}>
-      <AnimatePresence key={viewId}>
-        {activeOverlay?.elementDetails && (
-          <>
-            <m.div
-              className={css.overlayBackdrop}
-              initial={{
-                '--backdrop-blur': '0px',
-                opacity: 0
-              }}
-              animate={{
-                '--backdrop-blur': '2px',
-                opacity: 1
-              }}
-              exit={{
-                '--backdrop-blur': '0px',
-                opacity: 0
-              }}
-              whileHover={{
-                '--backdrop-blur': '0px',
-                opacity: .8
-              }}
-              onClick={e => {
-                e.stopPropagation()
-                ctxValue.close()
-              }}
-            />
-            <ElementDetailsCard fqn={activeOverlay.elementDetails} />
-          </>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {activeOverlay && isNullish(activeOverlay.elementDetails) && (
-          <RemoveScroll>
+      <RemoveScroll enabled={!!activeOverlay}>
+        <AnimatePresence initial={false} key={viewId} onExitComplete={onExitComplete}>
+          {activeOverlay?.elementDetails && (
+            <>
+              <m.div
+                className={css.overlayBackdrop}
+                initial={{
+                  '--backdrop-blur': '0px',
+                  opacity: 0
+                }}
+                animate={{
+                  '--backdrop-blur': '2px',
+                  opacity: 1
+                }}
+                exit={{
+                  '--backdrop-blur': '0px',
+                  opacity: 0,
+                  transition: {
+                    duration: .2
+                  }
+                }}
+                whileHover={{
+                  '--backdrop-blur': '0px',
+                  opacity: .8
+                }}
+                onClick={e => {
+                  e.stopPropagation()
+                  ctxValue.close()
+                }}
+              />
+              <ElementDetailsCard fqn={activeOverlay.elementDetails} />
+            </>
+          )}
+        </AnimatePresence>
+        <AnimatePresence onExitComplete={onExitComplete}>
+          {activeOverlay && isNullish(activeOverlay.elementDetails) && (
             <FocusTrap>
               <Box
                 component={m.div}
@@ -85,13 +109,9 @@ export const Overlays = memo(() => {
                   '--backdrop-blur': '1px',
                   '--backdrop-opacity': '90%',
                   translateY: -5,
-                  opacity: 0
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Escape') {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    ctxValue.close()
+                  opacity: 0,
+                  transition: {
+                    duration: .2
                   }
                 }}
               >
@@ -114,8 +134,8 @@ export const Overlays = memo(() => {
                     variant="default"
                     // color="gray"
                     size={'lg'}
-                    data-autofocus
-                    autoFocus
+                    // data-autofocus
+                    // autoFocus
                     onClick={(e) => {
                       e.stopPropagation()
                       ctxValue.close()
@@ -125,9 +145,9 @@ export const Overlays = memo(() => {
                 </Box>
               </Box>
             </FocusTrap>
-          </RemoveScroll>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </RemoveScroll>
     </OverlayContext.Provider>
   )
 })

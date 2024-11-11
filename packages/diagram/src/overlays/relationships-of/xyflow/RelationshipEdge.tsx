@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { only } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
+import { useOverlayDialog } from '../../OverlayContext'
 import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-relationships'
 import * as css from './styles.css'
@@ -21,6 +22,7 @@ export function RelationshipEdge({
     viewId: s.view.id,
     onNavigateTo: s.onNavigateTo
   }))
+  const overlay = useOverlayDialog()
   const [edgePath, labelX, labelY] = getBezierPath(props)
   const navigateTo = onNavigateTo ? only(data.relations)?.navigateTo : undefined
   const isMultiRelation = data.relations.length > 1
@@ -91,7 +93,9 @@ export function RelationshipEdge({
                 onPointerDownCapture={stopPropagation}
                 onClick={event => {
                   event.stopPropagation()
-                  onNavigateTo?.(navigateTo, event)
+                  overlay.close(() => {
+                    onNavigateTo?.(navigateTo, event)
+                  })
                 }}
                 role="button"
                 onDoubleClick={stopPropagation}
