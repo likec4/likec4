@@ -88,6 +88,12 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     styleNonce?: string | (() => string) | undefined
 
     /**
+     * Enable popup with element details
+     * @default false
+     */
+    enableElementDetails?: boolean | undefined
+
+    /**
      * Experimental feature to browse relationships
      *
      * @default false
@@ -113,6 +119,7 @@ export function LikeC4ViewEmbedded<
   enableFocusMode = false,
   showNotations = false,
   showRelationshipDetails = false,
+  enableElementDetails = false,
   enableRelationshipsBrowser = false,
   mantineTheme,
   where,
@@ -177,6 +184,7 @@ export function LikeC4ViewEmbedded<
             experimentalEdgeEditing={false}
             enableFocusMode={enableFocusMode}
             showRelationshipDetails={showRelationshipDetails}
+            enableElementDetails={enableElementDetails}
             enableRelationshipsBrowser={enableRelationshipsBrowser}
             controls={false}
             nodesSelectable={false}

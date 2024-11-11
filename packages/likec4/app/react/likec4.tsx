@@ -78,12 +78,12 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
   background = 'transparent',
   browserBackground = 'dots',
   where,
-  showElementLinks = true,
   showDiagramTitle = false,
   showNavigationButtons = false,
   showNotations = false,
   enableFocusMode = false,
   showRelationshipDetails = false,
+  enableElementDetails = false,
   enableRelationshipsBrowser = false,
   browserClassName,
   browserStyle,
@@ -124,7 +124,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
         onNavigateTo={interactive ? onNavigateTo : undefined}
         background={background}
         renderIcon={RenderIcon}
-        showElementLinks={showElementLinks}
+        enableElementDetails={false}
         showDiagramTitle={showDiagramTitle}
         showNavigationButtons={showNavigationButtons}
         showNotations={showNotations}
@@ -149,6 +149,7 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
           style={browserStyle}
           mantineTheme={mantineTheme}
           styleNonce={styleNonce}
+          enableElementDetails={enableElementDetails}
           enableRelationshipsBrowser={enableRelationshipsBrowser}
         />
       )}

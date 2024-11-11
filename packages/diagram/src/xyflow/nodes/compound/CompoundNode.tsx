@@ -30,8 +30,6 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
 
 const VariantsRoot = {
   idle: (_, { translateY }) => ({
-    translateX: 0,
-    translateY: 0,
     transition: isNumber(translateY) && translateY < 0
       ? {
         delay: 0.09,
@@ -43,13 +41,11 @@ const VariantsRoot = {
   }),
   selected: {},
   hovered: (_, { translateY }) => ({
-    translateX: -1,
-    translateY: -1,
     transition: !isNumber(translateY) || translateY === 0
       ? {
         delay: 0.08,
-        delayChildren: 0.09,
-        staggerChildren: 0.15
+        delayChildren: 0.09
+        // staggerChildren: 0.15
       }
       : {}
   }),
@@ -212,7 +208,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           align="start"
           onColorPreview={setPreviewColor} />
       )}
-      <m.div
+      <Box
+        component={m.div}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
         className={css.containerForFramer}>
@@ -249,7 +246,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
               rx={6}
             />
           </svg>
-          <div
+          <Box
             className={clsx(
               css.compoundBody,
               opacity < 1 && css.transparent,
@@ -271,12 +268,12 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
               layoutId={`${viewId}:element:title:${id}`}
               className={clsx(
                 css.title,
-                (isNavigable || hasRelationshipsBrowser) && css.titleWithNavigation,
+                isNavigable && css.titleWithNavigation,
                 'likec4-compound-title'
               )}>
               {element.title}
             </Text>
-          </div>
+          </Box>
           {isNavigable && (
             <ActionIcon
               key={'navigate'}
@@ -324,7 +321,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
             </Tooltip>
           )}
         </Box>
-      </m.div>
+      </Box>
       <Handle type="target" position={Position.Top} className={css.nodeHandlerInCenter} />
       <Handle type="source" position={Position.Top} className={css.nodeHandlerInCenter} />
     </>

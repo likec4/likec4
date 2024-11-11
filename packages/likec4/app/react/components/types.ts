@@ -56,12 +56,6 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
   injectFontCss?: boolean | undefined
 
   /**
-   * Display hovercards with element links
-   * @default true
-   */
-  showElementLinks?: boolean | undefined
-
-  /**
    * Display webview with diagram title / description
    * @default false
    */
@@ -92,6 +86,12 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
    * @default false
    */
   enableFocusMode?: boolean | undefined
+
+  /**
+   * Enable popup with element details
+   * @default false
+   */
+  enableElementDetails?: boolean | undefined
 
   /**
    * Experimental feature to browse relationships

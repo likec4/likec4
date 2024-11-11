@@ -227,7 +227,7 @@ export const navigateBtn = style({
   opacity: 'var(--ai-opacity)',
   backgroundColor: 'var(--ai-bg)',
   vars: {
-    '--ai-opacity': '0.75',
+    '--ai-opacity': '1',
     '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
     '--ai-bg': `var(--ai-bg-idle)`,
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,

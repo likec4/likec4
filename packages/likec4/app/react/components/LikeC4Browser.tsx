@@ -58,6 +58,12 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
      * @default false
      */
     enableRelationshipsBrowser?: boolean | undefined
+
+    /**
+     * Enable popup with element details
+     * @default false
+     */
+    enableElementDetails?: boolean | undefined
   }
 
 export function LikeC4Browser<
@@ -77,6 +83,7 @@ export function LikeC4Browser<
   mantineTheme,
   background = 'dots',
   styleNonce,
+  enableElementDetails = false,
   enableRelationshipsBrowser = false
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const onCloseRef = useSyncedRef(onClose)
@@ -234,6 +241,7 @@ export function LikeC4Browser<
                 showElementLinks
                 enableDynamicViewWalkthrough
                 enableFocusMode
+                enableElementDetails={enableElementDetails}
                 enableRelationshipsBrowser={enableRelationshipsBrowser}
                 showNavigationButtons
                 showRelationshipDetails

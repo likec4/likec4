@@ -23,9 +23,7 @@ import {
   FocusTrap,
   FocusTrapInitialFocus,
   Group,
-  Indicator,
   Paper,
-  RemoveScroll,
   Stack,
   Tabs,
   TabsList,
@@ -51,7 +49,7 @@ import clsx from 'clsx'
 import { m, useDragControls } from 'framer-motion'
 import { type ReactNode, useCallback, useState } from 'react'
 import {} from 'react-remove-scroll'
-import { clamp, first, isNullish, map, only, partition, pipe, round, unique } from 'remeda'
+import { clamp, first, isNullish, map, only, partition, pipe, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
@@ -123,7 +121,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
 
   const xynodeCenter = xyflow.flowToScreenPosition({
     x: xynode.internals.positionAbsolute.x + element.width / 2,
-    y: xynode.internals.positionAbsolute.y + element.height / 3
+    y: xynode.internals.positionAbsolute.y + element.height / 2
   })
 
   const likec4Model = useLikeC4Model(true)

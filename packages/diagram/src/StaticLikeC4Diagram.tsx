@@ -9,7 +9,6 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'fitView'
   | 'fitViewPadding'
   | 'background'
-  | 'showElementLinks'
   | 'enableElementDetails'
   | 'initialWidth'
   | 'initialHeight'
@@ -21,7 +20,6 @@ export function StaticLikeC4Diagram({
   view,
   fitView = true,
   fitViewPadding = 0,
-  showElementLinks = true,
   enableElementDetails = false,
   background = 'transparent',
   ...rest
@@ -36,7 +34,7 @@ export function StaticLikeC4Diagram({
       zoomable={false}
       controls={false}
       background={background}
-      showElementLinks={showElementLinks}
+      showElementLinks={enableElementDetails}
       enableElementDetails={enableElementDetails}
       showDiagramTitle={false}
       showNotations={false}

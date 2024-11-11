@@ -151,6 +151,7 @@ function ExportPage() {
         controls={false}
         background={'transparent'}
         enableDynamicViewWalkthrough={false}
+        enableElementDetails={false}
         enableRelationshipsBrowser={false}
         showNavigationButtons={false}
         showRelationshipDetails={false}

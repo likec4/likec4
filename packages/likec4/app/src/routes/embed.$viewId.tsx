@@ -53,6 +53,7 @@ function EmbedPage() {
         nodesSelectable={false}
         nodesDraggable={false}
         enableFocusMode={false}
+        enableElementDetails={false}
         enableRelationshipsBrowser={false}
         experimentalEdgeEditing={false}
         keepAspectRatio={false}

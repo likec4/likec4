@@ -1,5 +1,5 @@
 import { type DiagramNode, type ThemeColor } from '@likec4/core'
-import { ActionIcon, Text as MantineText, Tooltip } from '@mantine/core'
+import { ActionIcon, Box, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
@@ -213,7 +213,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           onColorPreview={setPreviewColor}
         />
       )}
-      <m.div
+      <Box
+        component={m.div}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
         className={css.containerForFramer}
@@ -229,7 +230,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         //   }
         // }}
       >
-        <m.div
+        <Box
+          component={m.div}
           className={clsx([
             css.container,
             isDimmed && css.dimmed,
@@ -260,7 +262,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             </g>
             <ElementShapeSvg shape={element.shape} w={w} h={h} />
           </svg>
-          <div
+          <Box
             className={clsx(
               css.elementDataContainer,
               isTruthy(elementIcon) && css.hasIcon,
@@ -268,7 +270,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             )}
           >
             {elementIcon}
-            <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
+            <Box className={clsx(css.elementTextData, 'likec4-element-main-props')}>
               <Text
                 component={m.div}
                 key={`${viewId}:element:title:${id}`}
@@ -287,8 +289,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
                   {element.description}
                 </Text>
               )}
-            </div>
-          </div>
+            </Box>
+          </Box>
           {/* {isHovercards && element.links && <ElementLink element={element} />} */}
           {isNavigable && (
             <ActionIcon
@@ -330,8 +332,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
               </ActionIcon>
             </Tooltip>
           )}
-        </m.div>
-      </m.div>
+        </Box>
+      </Box>
       <Handle type="target" position={Position.Top} className={css.handleCenter} />
       <Handle type="source" position={Position.Top} className={css.handleCenter} />
     </>

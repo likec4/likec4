@@ -43,6 +43,7 @@ function ViewReact() {
       showNavigationButtons
       enableFocusMode
       enableDynamicViewWalkthrough
+      enableElementDetails
       enableRelationshipsBrowser
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}

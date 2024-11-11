@@ -46,6 +46,7 @@ function ViewEditor() {
       showNotations={isDevelopment || hasNotations}
       enableDynamicViewWalkthrough
       enableFocusMode={false}
+      enableElementDetails
       enableRelationshipsBrowser
       onNavigateTo={onNavigateTo}
       renderIcon={RenderIcon}
