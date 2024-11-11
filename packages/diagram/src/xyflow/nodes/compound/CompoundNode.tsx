@@ -203,7 +203,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     <>
       {isToolbarVisible && (
         <CompoundToolbar
-          isVisible={isToolbarVisible}
+          isVisible
           element={element}
           align="start"
           onColorPreview={setPreviewColor} />

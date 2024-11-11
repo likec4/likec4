@@ -1,5 +1,6 @@
 import { invariant } from '@likec4/core'
-import { useMergedRef } from '@mantine/hooks'
+import { Box } from '@mantine/core'
+import { useMergedRef, useReducedMotion } from '@mantine/hooks'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { useAnimate } from 'framer-motion'
 import { createContext, type PropsWithChildren, useCallback, useEffect, useRef } from 'react'
@@ -25,6 +26,7 @@ export function DiagramContextProvider({
   whereFilter,
   ...props
 }: DiagramContextProviderProps) {
+  const isMotionReduced = useReducedMotion() ?? false
   const [scope, animate] = useAnimate()
   const containerRef = useRef<HTMLDivElement>(null)
   const ref = useMergedRef(scope, containerRef)
@@ -70,6 +72,9 @@ export function DiagramContextProvider({
 
   const api = store.current
   useEffect(() => {
+    if (isMotionReduced) {
+      return
+    }
     return api.subscribe(s => !!s.activeOverlay, (isActiveOverlay) => {
       animate('.likec4-diagram .react-flow__renderer', {
         filter: isActiveOverlay ? 'grayscale(0.5) brightness(0.5)' : 'grayscale(0) brightness()',
@@ -80,10 +85,10 @@ export function DiagramContextProvider({
     }, {
       fireImmediately: true
     })
-  }, [api])
+  }, [api, isMotionReduced])
 
   return (
-    <div
+    <Box
       ref={ref}
       className={className}
       {...(keepAspectRatio && {
@@ -95,7 +100,7 @@ export function DiagramContextProvider({
       <DiagramContext.Provider value={api}>
         {children}
       </DiagramContext.Provider>
-    </div>
+    </Box>
   )
 }
 DiagramContextProvider.displayName = 'DiagramContextProvider'

@@ -1,4 +1,4 @@
-import { isString, isTruthy, values } from 'remeda'
+import { isString, isTruthy, map, pipe, sort, values } from 'remeda'
 import type { Class } from 'type-fest'
 import { nonNullable } from '../errors'
 import type {
@@ -14,7 +14,8 @@ import type {
 } from '../types/model'
 import type { Relation as C4Relation } from '../types/relation'
 import type { Color as C4Color } from '../types/theme'
-import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
+import { compareNatural } from '../utils/compare-natural'
+import { ancestorsFqn, commonAncestor, parentFqn, sortNaturalByFqn } from '../utils/fqn'
 import { LikeC4DiagramModel } from './LikeC4DiagramModel'
 import { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { ElementOrFqn, Fqn, IncomingFilter, OutgoingFilter, RelationID, ViewID } from './types'
@@ -65,7 +66,11 @@ export class LikeC4Model<M extends LikeC4Model.ViewModel = LikeC4Model.ViewModel
       this.addRelation(rel)
     }
     this._views = new Map(
-      values(views).map(view => [view.id, new ViewModelClass(view, this)] as [Fqn, M])
+      pipe(
+        values(views),
+        sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
+        map(view => [view.id, new ViewModelClass(view, this)] as [Fqn, M])
+      )
     )
   }
 

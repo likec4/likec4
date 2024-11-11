@@ -201,18 +201,20 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
         component={m.div}
         className={css.card}
         layoutId={`${viewId}:element:${fqn}`}
-        initial={false}
-        animate={{
-          opacity: 1,
+        initial={{
+          opacity: 0,
           top,
           left,
           width,
           height
         }}
+        animate={{
+          opacity: 1
+        }}
         exit={{
           opacity: 0,
           transition: {
-            duration: .2
+            duration: .15
           }
         }}
         onKeyDown={e => {
@@ -254,12 +256,6 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
               <SmallLabel>kind</SmallLabel>
               <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.kind}</Badge>
             </Box>
-            {
-              /* <Box>
-                  <SmallLabel>technology</SmallLabel>
-                  <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.technology || '—'}</Badge>
-                </Box> */
-            }
             <Box flex={1}>
               <SmallLabel>tags</SmallLabel>
               <Flex gap={4} flex={1} mt={6}>
@@ -319,19 +315,8 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
 
         <Tabs
           component={m.div}
+          // @ts-expect-error invalid polymorphic types for Tabs
           layout
-          initial={{
-            opacity: 0
-          }}
-          animate={{
-            opacity: 1
-          }}
-          exit={{
-            opacity: 0,
-            transition: {
-              duration: 0.05
-            }
-          }}
           value={activeTab}
           onChange={v => setActiveTab(v as any)}
           variant="none"
@@ -483,7 +468,7 @@ const ElementIcon = (
   }
   return (
     <m.div
-      layout="position"
+      // layout="position"
       layoutId={`${viewId}:element:icon:${element.id}`}
       className={clsx(
         css.elementIcon,
