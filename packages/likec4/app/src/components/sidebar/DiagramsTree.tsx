@@ -175,7 +175,7 @@ function DiagramPreview({
           renderIcon={RenderIcon}
           fitView
           fitViewPadding={0}
-          showElementLinks={false}
+          enableElementDetails={false}
           initialWidth={width}
           initialHeight={height}
         />
