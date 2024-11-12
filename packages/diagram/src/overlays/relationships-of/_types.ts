@@ -18,7 +18,7 @@ export namespace XYFlowTypes {
 
   type NodeProps = {
     // level: number
-    column: 'incomers' | 'subject' | 'outgoers'
+    column: 'incomers' | 'subjects' | 'outgoers'
     fqn: Fqn
     existsInCurrentView: boolean
     element: Pick<ComputedNode, 'color' | 'title' | 'description' | 'shape' | 'kind'>
@@ -28,6 +28,7 @@ export namespace XYFlowTypes {
     }
     navigateTo: ViewID | null
     hovered?: boolean
+    skipInitialAnimation?: boolean
     /**
      * Whether the node is dimmed
      * 'immediate' means that the node is dimmed without delay
@@ -43,9 +44,10 @@ export namespace XYFlowTypes {
 
   export type EmptyNode = SetRequired<
     ReactFlowNode<{
-      column: 'incomers' | 'outgoers'
+      column: 'incomers' | 'subjects' | 'outgoers'
       hovered?: boolean
       dimmed?: boolean
+      skipInitialAnimation?: boolean
     }, 'empty'>,
     'type'
   >

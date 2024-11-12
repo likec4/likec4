@@ -4,6 +4,7 @@ import { mantine, vars, xyvars } from '../../../theme-vars'
 import { mixColor } from '../../Overlays.css'
 
 export const elementNode = style({
+  position: 'relative',
   width: '100%',
   height: '100%'
 })
@@ -28,7 +29,7 @@ export const elementNodeTitle = style({
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 500,
-  fontSize: 17,
+  fontSize: 18,
   lineHeight: 1.25,
   textWrap: 'balance',
   color: vars.element.hiContrast
@@ -41,30 +42,30 @@ export const elementNodeDescription = style({
   fontFamily: vars.element.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
-  fontSize: mantine.fontSizes.xs,
+  fontSize: mantine.fontSizes.sm,
   lineHeight: 1.25,
   textWrap: 'balance',
   color: vars.element.loContrast
 })
 
 export const compoundNodeBody = style({
+  position: 'relative',
   width: '100%',
   height: '100%',
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
-  background: `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
-  borderRadius: 4
+  // background: `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
+  background: vars.element.fill,
+  borderRadius: 6
 })
 
 export const compoundNodeTitle = style({
   fontFamily: vars.compound.font,
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
   fontWeight: 600,
-  fontSize: 14,
+  fontSize: 15,
   lineHeight: 1,
   textTransform: 'uppercase',
-  paddingTop: 12,
-  paddingLeft: 10,
+  paddingTop: 14,
+  paddingLeft: 12,
   mixBlendMode: 'screen',
   color: vars.compound.titleColor
 })
@@ -87,18 +88,27 @@ export const cssShapeSvg = style({
 
 const DimmedTransitionDelay = '400ms'
 
-export const edgePath = style({
+export const edge = style({
+  // vars: {
+  //   [xyvars.edge.stroke]: vars.relation.lineColor,
+  //   [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`
+  // },
+})
+
+export const edgeContainer = style({
   opacity: 1,
   transition: 'all 0.2s ease-in-out',
-  vars: {
-    [xyvars.edge.stroke]: vars.relation.lineColor,
-    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`
-  },
   selectors: {
     [`&[data-edge-dimmed='true']`]: {
       opacity: 0.1,
       transitionDelay: DimmedTransitionDelay
     }
+  },
+  vars: {
+    [xyvars.edge.stroke]: vars.relation.lineColor,
+    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
+    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 50%)`,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 30%)`
   }
 })
 
@@ -129,7 +139,7 @@ export const edgeLabel = style({
 export const edgeLabelText = style({
   textAlign: 'center',
   whiteSpaceCollapse: 'preserve-breaks',
-  fontSize: rem(15),
+  fontSize: mantine.fontSizes.md,
   lineHeight: mantine.lineHeights.xs
 })
 

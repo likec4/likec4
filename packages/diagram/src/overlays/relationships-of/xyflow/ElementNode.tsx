@@ -2,7 +2,9 @@ import { ActionIcon, Box, Group, Text as MantineText } from '@mantine/core'
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
+import { deepEqual } from 'fast-equals'
 import { m } from 'framer-motion'
+import { memo } from 'react'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { stopPropagation } from '../../../xyflow/utils'
@@ -32,23 +34,31 @@ function selector(s: DiagramState) {
   }
 }
 
-export function ElementNode({
+export const ElementNode = memo<ElementNodeProps>(({
+  id,
   data: {
     element,
     ports,
     navigateTo,
+    skipInitialAnimation = false,
     ...data
   },
   selectable = true,
   width: w = 100,
   height: h = 100
-}: ElementNodeProps) {
+}) => {
   const overlay = useOverlayDialog()
   const {
     currentViewId,
     onNavigateTo,
     onOpenSource
   } = useDiagramState(selector)
+
+  const scale = (diff: number) => ({
+    scaleX: (w + diff) / w,
+    scaleY: (h + diff) / h
+  })
+
   return (
     <>
       <m.div
@@ -56,22 +66,31 @@ export function ElementNode({
           css.elementNode,
           'likec4-element-node'
         ])}
+        layoutId={id}
         data-likec4-color={element.color}
+        initial={{
+          ...scale(-20),
+          opacity: 0
+        }}
         animate={{
+          ...scale(0),
           opacity: data.dimmed ? 0.15 : 1,
           transition: {
-            delay: data.dimmed === true ? .4 : 0
+            delay: data.dimmed === true ? .4 : 0,
+            ...(data.dimmed === 'immediate' && {
+              duration: 0
+            })
           }
         }}
         {...(selectable && {
           whileHover: {
-            scale: 1.045,
-            transition: {
-              delay: 0.15
-            }
+            ...scale(16)
+            // transition: {
+            //   delay: 0.1
+            // }
           },
           whileTap: {
-            scale: 0.97
+            ...scale(-8)
           }
         })}
       >
@@ -86,7 +105,9 @@ export function ElementNode({
           <ElementShapeSvg shape={element.shape} w={w} h={h} />
         </svg>
         <Box className={css.elementNodeContent}>
-          <Text className={css.elementNodeTitle} lineClamp={2}>{element.title}</Text>
+          <Text component={m.div} layoutId={`${id}:title`} className={css.elementNodeTitle} lineClamp={2}>
+            {element.title}
+          </Text>
           {element.description && (
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
@@ -101,7 +122,7 @@ export function ElementNode({
               <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
             </Action>
           )}
-          {data.column !== 'subject' && (
+          {data.column !== 'subjects' && (
             <Action
               onClick={(event) => {
                 event.stopPropagation()
@@ -147,4 +168,6 @@ export function ElementNode({
       ))}
     </>
   )
-}
+}, (prev, next) => {
+  return deepEqual(prev.data, next.data)
+})

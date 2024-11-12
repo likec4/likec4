@@ -19,8 +19,8 @@ export function distance(a: XYPosition, b: XYPosition) {
 export const nodeToRect = (nd: InternalXYFlowNode): Rect => ({
   x: nd.internals.positionAbsolute.x,
   y: nd.internals.positionAbsolute.y,
-  width: nd.width ?? nd.data.element.width,
-  height: nd.height ?? nd.data.element.height
+  width: nd.measured.width ?? nd.width ?? nd.data.element.width,
+  height: nd.measured.height ?? nd.height ?? nd.data.element.height
 })
 
 /**

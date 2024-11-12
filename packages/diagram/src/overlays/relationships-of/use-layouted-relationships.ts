@@ -1,31 +1,36 @@
-import dagre, { type GraphLabel, type Label } from '@dagrejs/dagre'
+import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import {
-  compareFqnHierarchically,
+  compareByFqnHierarchically,
+  compareNatural,
+  compareRelations,
   type DiagramNode,
   type DiagramView,
   type Fqn,
   invariant,
   isAncestor,
   type LikeC4Model,
-  type NonEmptyArray,
-  type Relation,
+  nonNullable,
+  parentFqn,
   type RelationID
 } from '@likec4/core'
-import { MarkerType } from '@xyflow/system'
+import { getBoundsOfRects, MarkerType, type Rect } from '@xyflow/system'
 import { useMemo } from 'react'
 import {
-  entries,
   filter,
   find,
   first,
+  flatMap,
   forEach,
-  fromKeys,
+  forEachObj,
   groupBy,
+  isNonNullish,
   isTruthy,
   map,
+  mapToObj,
   only,
   pipe,
   prop,
+  reduce,
   reverse,
   sort,
   sortBy,
@@ -34,38 +39,48 @@ import {
 } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
-import type { RelationshipEdge } from '../../xyflow/types'
 import type { XYFlowTypes } from './_types'
+import * as css from './xyflow/styles.css'
 
-const graphColumn = <C extends 'incomers' | 'subject' | 'outgoers'>(c: C) => ({
-  name: c,
-  id: `__${c}`,
-  anchor: `__${c}::anchor`
-})
+const columns = ['incomers', 'subjects', 'outgoers'] as const
+type ColumnKey = typeof columns[number]
+
+// const graphColumn = <C extends 'incomers' | 'subjects' | 'outgoers'>(c: C) => ({
+//   name: c,
+//   id: `__${c}`,
+//   anchor: `__${c}::anchor`
+// })
 
 /**
  * All constants related to the layout
  */
 const Sizes = {
   dagre: {
-    ranksep: 40,
-    nodesep: 20,
-    edgesep: 20
+    ranksep: 60,
+    nodesep: 35,
+    edgesep: 25
   } satisfies GraphLabel,
   edgeLabel: {
-    width: 65
-  } satisfies Label,
+    width: 150,
+    height: 10,
+    minlen: 1,
+    weight: 1
+  } satisfies EdgeConfig,
 
   emptyNodeOffset: 150,
 
-  nodeWidth: 270,
-  hodeHeight: 160,
+  nodeWidth: 320,
+  hodeHeight: 180,
 
   // Spacer between elements in a compound node
   // 0 means no spacer
   spacerHeight: 0,
 
-  compoundLabelHeight: 1
+  compound: {
+    labelHeight: 1,
+    paddingTop: 50,
+    paddingBottom: 32
+  }
 }
 
 export const ZIndexes = {
@@ -89,19 +104,18 @@ function createGraph() {
   g.setDefaultEdgeLabel(() => ({ ...Sizes.edgeLabel }))
   g.setDefaultNodeLabel(() => ({}))
 
-  const columns = ['incomers', 'subject', 'outgoers'] as const
-  columns.reduce((prev, column) => {
-    const c = graphColumn(column)
-    g.setNode(c.id, {})
-    g.setNode(c.anchor, { width: 40, height: 2 })
-    g.setParent(c.anchor, c.id)
-    if (prev) {
-      g.setEdge(prev, c.anchor, {
-        width: 0
-      })
-    }
-    return c.anchor
-  }, null as string | null)
+  // columns.reduce((prev, column) => {
+  //   const c = graphColumn(column)
+  //   g.setNode(c.id, {})
+  //   g.setNode(c.anchor, { width: 40, height: 2 })
+  //   g.setParent(c.anchor, c.id)
+  //   if (prev) {
+  //     g.setEdge(prev, c.anchor, {
+  //       width: 0
+  //     })
+  //   }
+  //   return c.anchor
+  // }, null as string | null)
 
   return g
 }
@@ -121,18 +135,16 @@ type Context = {
   // subject: LikeC4ModelElement
   connected: {
     incomers: Set<Fqn>
+    subjects: Set<Fqn>
     outgoers: Set<Fqn>
   }
   columns: {
-    // left
-    incomers: Map<string, XYFlowTypes.Node>
-    // right
-    outgoers: Map<string, XYFlowTypes.Node>
+    incomers: Map<Fqn, XYFlowTypes.Node>
+    subjects: Map<Fqn, XYFlowTypes.Node>
+    outgoers: Map<Fqn, XYFlowTypes.Node>
   }
   edges: XYFlowTypes.Edge[]
 }
-
-type ColumnKey = keyof Context['columns']
 
 const sized = (height: number = Sizes.hodeHeight) => ({
   width: Sizes.nodeWidth,
@@ -142,8 +154,6 @@ const sized = (height: number = Sizes.hodeHeight) => ({
 const graphId = (node: XYFlowTypes.Node) => ({
   id: node.id,
   port: node.type === 'compound' ? `${node.id}::port` : node.id,
-  // port: `${node.id}::port`,
-  // For nested nodes
   body: `${node.id}`,
   spacer: `${node.id}:spacer`
 })
@@ -188,7 +198,7 @@ function createEmptyNode(
   column: ColumnKey,
   ctx: Context
 ): XYFlowTypes.EmptyNode {
-  const id = `${column}::empty`
+  const id = `${column}__empty` as Fqn
   const xynodes = ctx.columns[column]
   let node = xynodes.get(id)
   if (node) {
@@ -207,11 +217,10 @@ function createEmptyNode(
   xynodes.set(id, xynode)
   const k = graphId(xynode)
 
-  ctx.g.setNode(k.id, {
-    width: 230,
-    height: 130
-  })
-  ctx.g.setParent(k.id, graphColumn(column).id)
+  const emptyContainer = id + '__container'
+  ctx.g.setNode(emptyContainer, sized())
+  ctx.g.setNode(k.id, sized())
+  ctx.g.setParent(k.id, emptyContainer)
   return xynode
 }
 
@@ -261,23 +270,14 @@ function createNode(
   if (xynode.type === 'compound') {
     g.setNode(k.port, {
       width: Sizes.nodeWidth - Sizes.dagre.ranksep,
-      height: Sizes.compoundLabelHeight
+      height: Sizes.compound.labelHeight
     })
     g.setParent(k.port, k.id)
   }
 
-  const parentGraphId = parent ? graphId(parent).body : graphColumn(column).id
-  g.setParent(k.id, parentGraphId)
-
-  // Add spacer after the last element
-  if (Sizes.spacerHeight > 0 && parent) {
-    g.setNode(k.spacer, {
-      width: Sizes.nodeWidth - Sizes.dagre.ranksep,
-      height: Sizes.compoundLabelHeight
-    })
-    g.setParent(k.spacer, parentGraphId)
+  if (parent) {
+    g.setParent(k.id, graphId(parent).body)
   }
-
   return xynode
 }
 
@@ -288,27 +288,15 @@ function createNode(
 function applyDagreLayout(g: dagre.graphlib.Graph) {
   type NodeBounds = Required<Pick<XYFlowTypes.Node, 'position' | 'width' | 'height'>>
   dagre.layout(g)
-  return function nodeBounds(nodeId: string, relativeTo?: string): NodeBounds {
+  return function nodeBounds(nodeId: string): NodeBounds {
     const { x, y, width, height } = g.node(nodeId)
-    const pos = {
+    return {
       position: {
         x: x - Math.round(width / 2),
         y: y - Math.round(height / 2)
       },
       width,
       height
-    }
-    if (!relativeTo) {
-      return pos
-    }
-    const offset = nodeBounds(relativeTo).position
-    return {
-      position: {
-        x: pos.position.x - offset.x,
-        y: pos.position.y - offset.y
-      },
-      width: pos.width,
-      height: pos.height
     }
   }
 }
@@ -344,50 +332,22 @@ function addEdge(
       type: MarkerType.ArrowClosed,
       width: isMultiple ? 7 : 9
     },
+    className: css.edge,
     style: {
-      strokeWidth: isMultiple ? 5 : 2.2,
+      strokeWidth: isMultiple ? 5 : 2.8,
       strokeDasharray: isMultiple ? undefined : '5, 5'
     }
   }
   ctx.edges.push(edge)
 }
 
-function processRelations(props: {
-  incoming: Relation[]
-  forEachIncoming: (sourceId: string, relations: NonEmptyArray<Relation>) => void
-  outgoing: Relation[]
-  forEachOutgoing: (targetId: string, relations: NonEmptyArray<Relation>) => void
-}) {
-  // Group by source, because might be multiple relations between the same elements
-  pipe(
-    props.incoming,
-    groupBy(r => r.source),
-    entries(),
-    sort((a, b) => compareFqnHierarchically(a[0], b[0])),
-    reverse(),
-    forEach(([sourceId, relations]) => {
-      try {
-        props.forEachIncoming(sourceId, relations)
-      } catch (e) {
-        console.error('Error in forEachIncoming', e)
-      }
-    })
-  )
-  // Group by target
-  pipe(
-    props.outgoing,
-    groupBy(r => r.target),
-    entries(),
-    sort((a, b) => compareFqnHierarchically(a[0], b[0])),
-    reverse(),
-    forEach(([targetId, relations]) => {
-      try {
-        props.forEachOutgoing(targetId, relations)
-      } catch (e) {
-        console.error('Error in forEachOutgoing', e)
-      }
-    })
-  )
+function findNodeOrFirstAncestor<N>(fqn: Fqn, nodes: Map<Fqn, N>) {
+  let node = nodes.get(fqn)
+  let parent: Fqn | null = fqn
+  while (!node && !!(parent = parentFqn(parent))) {
+    node = nodes.get(parent)
+  }
+  return node
 }
 
 function layout(
@@ -413,29 +373,41 @@ function layout(
   const subjectElement = likec4model.element(subjectId)
   const viewIncludesSubject = diagramNodes.has(subjectId)
 
-  let viewIncludedRelations: Set<RelationID>
+  const viewRelationships = new Set(
+    view.edges.flatMap(e => e.relations)
+  )
   // Relations that are not included in the view
   const notIncludedRelations = new Set<RelationID>()
 
   if (!viewIncludesSubject) {
     // Reset scope to global if subject is not in the view
     scope = 'global'
-    viewIncludedRelations = new Set()
   } else {
-    const subjectNode = diagramNodes.get(subjectId)!
-    viewIncludedRelations = new Set([
-      ...subjectNode.inEdges,
-      ...subjectNode.outEdges
-    ].flatMap((edgeId) => view.edges.find((edge) => edge.id === edgeId)?.relations ?? []))
-
     forEach([
       ...subjectElement.incoming().map(r => r.id),
       ...subjectElement.outgoing().map(r => r.id)
     ], (relationId) => {
-      if (!viewIncludedRelations.has(relationId)) {
+      if (!viewRelationships.has(relationId)) {
         notIncludedRelations.add(relationId)
       }
     })
+  }
+
+  let relationships
+
+  if (scope === 'global') {
+    relationships = {
+      incoming: subjectElement.incoming().map(r => r.relationship),
+      outgoing: subjectElement.outgoing().map(r => r.relationship)
+    }
+  } else {
+    const subjectViewModel = likec4model.view(view.id).element(subjectId)
+    relationships = {
+      incoming: subjectViewModel.incoming()
+        .flatMap(c => c.relationships().map(r => r.relationship)),
+      outgoing: subjectViewModel.outgoing()
+        .flatMap(c => c.relationships().map(r => r.relationship))
+    }
   }
 
   const g = createGraph()
@@ -444,136 +416,222 @@ function layout(
     scope,
     g,
     diagramNodes,
-    subjectId,
     subjectElement,
-    connected: fromKeys(
-      ['incomers', 'outgoers'] as const,
-      (column) => new Set(subjectElement[column]().map(m => m.id))
-    ),
+    subjectId,
+    connected: {
+      incomers: new Set<Fqn>(),
+      outgoers: new Set<Fqn>(),
+      subjects: new Set<Fqn>([subjectId])
+    },
     columns: {
       incomers: new Map(),
+      subjects: new Map(),
       outgoers: new Map()
     },
     edges: []
   }
 
-  const subject: XYFlowTypes.ElementNode = {
-    id: subjectElement.id,
-    type: 'element',
-    position: { x: 0, y: 0 },
-    data: {
-      ...nodeData(subjectElement, ctx),
-      column: 'subject'
-    },
-    zIndex: 3,
-    selectable: false,
-    focusable: false,
-    ...sized()
+  relationships.incoming.forEach(incoming => {
+    ctx.connected.incomers.add(incoming.source)
+    ctx.connected.subjects.add(incoming.target)
+  })
+  relationships.outgoing.forEach(outgoing => {
+    ctx.connected.subjects.add(outgoing.source)
+    ctx.connected.outgoers.add(outgoing.target)
+  })
+
+  if (viewIncludesSubject) {
+    const subjectViewModel = likec4model.view(view.id).element(subjectId)
+    subjectViewModel.incomers().forEach(incomer => {
+      ctx.connected.incomers.add(incomer.id)
+    })
+    subjectViewModel.outgoers().forEach(outgoer => {
+      ctx.connected.outgoers.add(outgoer.id)
+    })
   }
-  g.setNode(subject.id, sized())
-  g.setParent(subject.id, graphColumn('subject').id)
 
-  processRelations({
-    // Based on the scope we pick relationships
-    ...(scope === 'global'
-      ? {
-        incoming: subjectElement.incoming().map(r => r.relationship),
-        outgoing: subjectElement.outgoing().map(r => r.relationship)
+  // Created nodes per column
+  columns.forEach(column => {
+    pipe(
+      [...ctx.connected[column].values()],
+      map(id => likec4model.element(id)),
+      sort((a, b) => -1 * compareNatural(a.title, b.title)),
+      sort(compareByFqnHierarchically),
+      reverse(),
+      forEach(element => {
+        createNode(column, 'element', element, ctx)
+      })
+    )
+  })
+
+  pipe(
+    [
+      // Process incoming
+      {
+        sources: ctx.columns.incomers,
+        targets: ctx.columns.subjects,
+        relationships: relationships.incoming.sort(compareRelations).reverse()
+      },
+      // Process outgoing
+      {
+        sources: ctx.columns.subjects,
+        targets: ctx.columns.outgoers,
+        relationships: relationships.outgoing.sort(compareRelations).reverse()
       }
-      : {
-        incoming: likec4model.view(view.id).element(subjectId)
-          .incoming()
-          .flatMap(c => c.relationships().map(r => r.relationship)),
-        outgoing: likec4model.view(view.id).element(subjectId)
-          .outgoing()
-          .flatMap(c => c.relationships().map(r => r.relationship))
-      }),
-
-    forEachIncoming(sourceId, relations) {
-      const source = createNode('incomers', 'element', likec4model.element(sourceId), ctx)
-      g.setEdge(graphId(source).port, subject.id, {
-        width: Sizes.edgeLabel.width,
-        weight: source.type === 'compound' ? 0 : 1
+    ],
+    /**
+     * We select relationships, sources and targets
+     * If sourece or target of the relationship is not found - take first ancestor
+     */
+    flatMap(({ sources, targets, relationships }) => {
+      return relationships.map(relation => {
+        const source = findNodeOrFirstAncestor(relation.source, sources)
+        if (!source || source.type === 'empty') {
+          return null
+        }
+        const target = findNodeOrFirstAncestor(relation.target, targets)
+        if (!target || target.type === 'empty') {
+          return null
+        }
+        return ({
+          relation,
+          source,
+          target,
+          includedInCurrentView: viewRelationships.has(relation.id),
+          id: `${source.id}:${target.id}`
+        })
       })
+    }),
+    filter(isNonNullish),
+    // Group relations with saame source and target - make them one edge
+    groupBy(prop('id')),
+    forEachObj((grouped) => {
+      const { source, target } = grouped[0]
+      const relations = map(grouped, g => g.relation)
 
-      subject.data.ports.left.push({
-        id: source.id,
-        type: 'in'
-      })
       source.data.ports.right.push({
-        id: subject.id,
-        type: 'out'
-      })
-      addEdge(ctx, {
-        source: source.id,
-        target: subject.id,
-        relations,
-        includedInCurrentView: relations.every(r => viewIncludedRelations.has(r.id))
-      })
-    },
-
-    forEachOutgoing(targetId, relations) {
-      const target = createNode('outgoers', 'element', likec4model.element(targetId), ctx)
-      g.setEdge(subjectElement.id, graphId(target).port, {
-        width: Sizes.edgeLabel.width,
-        weight: target.type === 'compound' ? 1 : 2
-      })
-
-      subject.data.ports.right.push({
         id: target.id,
         type: 'out'
       })
       target.data.ports.left.push({
-        id: subject.id,
+        id: source.id,
         type: 'in'
       })
-      addEdge(ctx, {
-        source: subjectElement.id,
-        target: target.id,
-        relations,
-        includedInCurrentView: relations.every(r => viewIncludedRelations.has(r.id))
+
+      const isAnyCompound = source.type === 'compound' || target.type === 'compound'
+
+      g.setEdge(graphId(source).port, graphId(target).port, {
+        ...Sizes.edgeLabel,
+        weight: isAnyCompound ? 1 : 2
       })
-    }
-  })
+
+      addEdge(ctx, {
+        // if view does not include subject - do not highlight
+        includedInCurrentView: !viewIncludesSubject || grouped.every(g => g.includedInCurrentView),
+        source: source.id,
+        target: target.id,
+        relations
+      })
+    })
+  )
+
+  // Create empty nodes if there are no incomers or outgoers
+  const subjectPort = graphId(ctx.columns.subjects.get(subjectId)!).port
 
   if (ctx.columns.incomers.size == 0) {
     const source = createEmptyNode('incomers', ctx)
-    g.setEdge(graphId(source).port, subject.id)
+    g.setEdge(graphId(source).port, subjectPort)
   }
   if (ctx.columns.outgoers.size == 0) {
     const target = createEmptyNode('outgoers', ctx)
-    g.setEdge(subject.id, graphId(target).port)
+    g.setEdge(subjectPort, graphId(target).port)
   }
 
-  const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
-  if (subjectPortsCount > 3) {
-    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 5
+  // Grow nodes with more than 2 ports
+  for (const subject of ctx.columns.subjects.values()) {
+    if (subject.type !== 'element') {
+      continue
+    }
+    const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
+    if (subjectPortsCount > 2) {
+      g.node(subject.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 14
+    }
   }
 
-  const nodebounds = applyDagreLayout(ctx.g)
+  //
+  const dagreBounds = applyDagreLayout(ctx.g)
 
   const xynodes = [
-    subject,
     ...ctx.columns.incomers.values(),
+    ...ctx.columns.subjects.values(),
     ...ctx.columns.outgoers.values()
-  ].map((node) => {
-    return {
-      ...node,
-      ...nodebounds(node.id, node.parentId)
+  ]
+
+  // Calculate bounds for all nodes except compounds
+  // We shrink compounds to fit their children
+  const _calculatedNodeBounds = pipe(
+    xynodes,
+    filter(n => n.type !== 'compound'),
+    mapToObj(n => [n.id, dagreBounds(n.id)])
+  )
+
+  function nodeBounds(nodeId: string): ReturnType<typeof dagreBounds> {
+    return _calculatedNodeBounds[nodeId] ??= pipe(
+      xynodes,
+      filter(n => n.parentId === nodeId),
+      map(n => nodeBounds(n.id)),
+      tap(bounds => {
+        invariant(bounds.length > 0, `Node ${nodeId} has no nested nodes`)
+      }),
+      reduce((acc, bounds) => {
+        return {
+          minY: Math.min(acc.minY, bounds.position.y),
+          maxY: Math.max(acc.maxY, bounds.position.y + bounds.height)
+        }
+      }, { minY: Infinity, maxY: -Infinity }),
+      ({ minY, maxY }) => {
+        const {
+          position: { x },
+          width
+        } = dagreBounds(nodeId)
+        minY = minY - Sizes.compound.paddingTop
+        maxY = maxY + Sizes.compound.paddingBottom
+
+        return {
+          position: {
+            x,
+            y: minY
+          },
+          width,
+          height: maxY - minY
+        }
+      }
+    )
+  }
+
+  // update xynodes
+  for (const node of xynodes) {
+    const { position, width, height } = nodeBounds(node.id)
+    node.width = width
+    node.height = height
+    node.position = position
+    if (node.parentId) {
+      const parentPos = nodeBounds(node.parentId).position
+      node.position = {
+        x: position.x - parentPos.x,
+        y: position.y - parentPos.y
+      }
     }
-  })
+  }
 
   // Sort ports in subject vertically
   const sortedPorts = (ports: XYFlowTypes.Port[]) => {
-    if (ports.length < 2) {
-      return ports
-    }
     return pipe(
       ports,
       map(port => {
         return {
           port,
-          topY: nodebounds(port.id).position.y
+          topY: nodeBounds(port.id).position.y
         }
       }),
       sortBy(prop('topY')),
@@ -584,15 +642,15 @@ function layout(
   for (const node of xynodes) {
     // Grow empty nodes to fill the space
     if (node.type === 'empty') {
-      const subjectPosition = nodebounds(subject.id)
-      node.position.y = subjectPosition.position.y + subjectPosition.height / 2 - node.height / 2
-      if (node.data.column === 'incomers') {
-        node.width = subjectPosition.position.x - Sizes.emptyNodeOffset - node.position.x
-      } else {
-        const rightX = node.position.x + node.width
-        node.position.x = subjectPosition.position.x + subjectPosition.width + Sizes.emptyNodeOffset
-        node.width = rightX - node.position.x
-      }
+      // const subjectPosition = nodebounds(subject.id)
+      // node.position.y = subjectPosition.position.y + subjectPosition.height / 2 - node.height / 2
+      // if (node.data.column === 'incomers') {
+      //   node.width = subjectPosition.position.x - Sizes.emptyNodeOffset - node.position.x
+      // } else {
+      //   const rightX = node.position.x + node.width
+      //   node.position.x = subjectPosition.position.x + subjectPosition.width + Sizes.emptyNodeOffset
+      //   node.width = rightX - node.position.x
+      // }
       continue
     }
     // Sort ports by their position
@@ -614,8 +672,8 @@ function layout(
     bounds: {
       x: 0,
       y: 0,
-      width: g.graph().width ?? 0,
-      height: g.graph().height ?? 0
+      width: g.graph().width ?? 100,
+      height: g.graph().height ?? 100
     }
   }
 }

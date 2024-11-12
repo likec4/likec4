@@ -38,7 +38,7 @@ export const Overlays = memo(() => {
     onCloseCbRef.current = undefined
   }
 
-  const isActive = !!activeOverlay && isNullish(activeOverlay.elementDetails)
+  const isActive = !!activeOverlay
   useHotkeys(
     isActive
       ? [
@@ -57,6 +57,7 @@ export const Overlays = memo(() => {
           {activeOverlay?.elementDetails && (
             <>
               <m.div
+                key={'overlay-backdrop'}
                 className={css.overlayBackdrop}
                 initial={{
                   '--backdrop-blur': '0px',
@@ -82,39 +83,39 @@ export const Overlays = memo(() => {
                   ctxValue.close()
                 }}
               />
-              <ElementDetailsCard fqn={activeOverlay.elementDetails} />
+              <ElementDetailsCard key={'details card'} fqn={activeOverlay.elementDetails} />
             </>
           )}
         </AnimatePresence>
-        <AnimatePresence onExitComplete={onExitComplete}>
+        <AnimatePresence initial={false} onExitComplete={onExitComplete}>
           {activeOverlay && isNullish(activeOverlay.elementDetails) && (
-            <FocusTrap>
-              <Box
-                component={m.div}
-                className={css.container}
-                data-likec4-color="gray"
-                initial={{
-                  '--backdrop-blur': '0px',
-                  '--backdrop-opacity': '60%',
-                  opacity: 0,
-                  translateY: -15
-                }}
-                animate={{
-                  '--backdrop-blur': '10px',
-                  '--backdrop-opacity': '25%',
-                  opacity: 1,
-                  translateY: 0
-                }}
-                exit={{
-                  '--backdrop-blur': '1px',
-                  '--backdrop-opacity': '90%',
-                  translateY: -5,
-                  opacity: 0,
-                  transition: {
-                    duration: .2
-                  }
-                }}
-              >
+            <Box
+              component={m.div}
+              className={css.container}
+              data-likec4-color="gray"
+              initial={{
+                '--backdrop-blur': '0px',
+                '--backdrop-opacity': '60%',
+                opacity: 0,
+                translateY: -15
+              }}
+              animate={{
+                '--backdrop-blur': '10px',
+                '--backdrop-opacity': '25%',
+                opacity: 1,
+                translateY: 0
+              }}
+              exit={{
+                '--backdrop-blur': '1px',
+                '--backdrop-opacity': '90%',
+                translateY: -5,
+                opacity: 0,
+                transition: {
+                  duration: .2
+                }
+              }}
+            >
+              <FocusTrap>
                 {activeOverlay.relationshipsOf && (
                   <XYFlowProvider
                     defaultNodes={[]}
@@ -143,8 +144,8 @@ export const Overlays = memo(() => {
                     <IconX />
                   </ActionIcon>
                 </Box>
-              </Box>
-            </FocusTrap>
+              </FocusTrap>
+            </Box>
           )}
         </AnimatePresence>
       </RemoveScroll>

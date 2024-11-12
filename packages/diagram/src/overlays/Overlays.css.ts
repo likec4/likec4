@@ -1,5 +1,5 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine, vars, whereDark, xyvars } from '../theme-vars'
+import { mantine, vars, whereDark, whereLight, xyvars } from '../theme-vars'
 
 export const ZIndexes = {
   overlay: 100,
@@ -40,11 +40,7 @@ export const container = style({
   vars: {
     '--backdrop-blur': '3px',
     '--backdrop-opacity': '50%',
-    [mixColor]: `black`,
-    [xyvars.edge.stroke]: vars.relation.lineColor,
-    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
-    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 50%)`,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 30%)`
+    [mixColor]: `black`
   },
   selectors: {
     [`${whereDark} &`]: {
@@ -55,35 +51,34 @@ export const container = style({
   }
 })
 
-globalStyle(`${container} .react-flow`, {
+export const cssReactflowMarker = style({})
+globalStyle(`:where(.react-flow${cssReactflowMarker})`, {
   vars: {
-    [xyvars.edge.stroke]: vars.relation.lineColor,
-    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
-    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 50%)`,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 30%)`
+    [xyvars.background.color]: vars.likec4.background.color,
+    [xyvars.background.pattern.color]: vars.likec4.background.pattern.color
   }
 })
 
-globalStyle(`${whereDark} ${container} .react-flow`, {
+globalStyle(`${whereDark} :where(.react-flow${cssReactflowMarker})`, {
   vars: {
     [xyvars.edge.labelColor]: vars.relation.labelColor,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
   }
 })
-globalStyle(`:where(${container}) .react-flow__attribution`, {
+globalStyle(`:where(${cssReactflowMarker}) .react-flow__attribution`, {
   display: 'none'
 })
-globalStyle(`:where(${container}) .react-flow__edge-text`, {
+globalStyle(`:where(${cssReactflowMarker}) .react-flow__edge-text`, {
   fontSize: 14
 })
-globalStyle(`:where(${container}) .react-flow__node-compound`, {
+globalStyle(`:where(${cssReactflowMarker}) .react-flow__node-compound`, {
   mixBlendMode: 'hard-light'
 })
 
-globalStyle(`${container} .react-flow__edges > svg`, {
+globalStyle(`${cssReactflowMarker} .react-flow__edges > svg`, {
   mixBlendMode: 'plus-lighter'
 })
-globalStyle(`:where([data-mantine-color-scheme="light"]) ${container} .react-flow__edges > svg`, {
+globalStyle(`${whereLight} ${cssReactflowMarker} .react-flow__edges > svg`, {
   mixBlendMode: 'screen'
 })
 

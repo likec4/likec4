@@ -2,6 +2,7 @@ import { ActionIcon, Box, Group, Stack, Text, ThemeIcon } from '@mantine/core'
 import { IconBoxMultipleFilled, IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
+import { useEffect, useRef } from 'react'
 import { only } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
@@ -27,10 +28,11 @@ export function RelationshipEdge({
   const navigateTo = onNavigateTo ? only(data.relations)?.navigateTo : undefined
   const isMultiRelation = data.relations.length > 1
   const technology = only(data.relations)?.technology
+
   return (
     <>
       <g
-        className={css.edgePath}
+        className={css.edgeContainer}
         data-edge-dimmed={data.dimmed}
         data-edge-hovered={data.hovered}
         data-likec4-color={data.includedInCurrentView ? 'gray' : 'amber'}
@@ -46,7 +48,7 @@ export function RelationshipEdge({
           style={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            maxWidth: Math.abs(props.targetX - props.sourceX - 40),
+            maxWidth: Math.abs(props.targetX - props.sourceX - 50),
             zIndex: ZIndexes.max
           }}
           className={clsx([

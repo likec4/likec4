@@ -6,7 +6,6 @@ import {
   type Fqn,
   invariant,
   type Link,
-  nameFromFqn,
   type ViewID
 } from '@likec4/core'
 import {
@@ -23,7 +22,6 @@ import {
   FocusTrap,
   FocusTrapInitialFocus,
   Group,
-  Paper,
   ScrollArea,
   Stack,
   Tabs,
@@ -36,27 +34,20 @@ import {
   UnstyledButton
 } from '@mantine/core'
 import { useViewportSize } from '@mantine/hooks'
-import {
-  IconArrowRight,
-  IconCheck,
-  IconCopy,
-  IconExternalLink,
-  IconFileSymlink,
-  IconInfoCircle,
-  IconZoomScan
-} from '@tabler/icons-react'
+import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
 import { useInternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { m, useDragControls } from 'framer-motion'
 import { type ReactNode, useCallback, useState } from 'react'
 import {} from 'react-remove-scroll'
-import { clamp, first, isNullish, map, only, partition, pipe, unique } from 'remeda'
+import { clamp, find, isNullish, map, only, partition, pipe, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
 import { useOverlayDialog } from '../OverlayContext'
 import * as css from './ElementDetailsCard.css'
-import { TabElementStructure } from './TabElementStructure'
+import { TabPanelRelationships } from './TabPanelRelationships'
+import { TabElementStructure } from './TabPanelStructure'
 
 const Divider = MantineDivider.withProps({
   mb: 8,
@@ -154,7 +145,9 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
     partition(v => v.__ !== 'dynamic' && v.viewOf === fqn)
   )
 
-  const defaultView = element.navigateTo ? likec4Model.view(element.navigateTo).view : (first(viewsOf) ?? null)
+  const defaultView = element.navigateTo
+    ? likec4Model.view(element.navigateTo).view
+    : (find(viewsOf, v => v.id !== currentView.id) ?? null)
 
   const defaultLink = element.links && only(element.links)
 
@@ -227,7 +220,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
         }}
         data-likec4-color={element.color}>
         <FocusTrapInitialFocus />
-        <Box component={m.div} layout className={css.cardHeader}>
+        <Box className={css.cardHeader}>
           <Group align="start" gap={'sm'} mb={'sm'} onPointerDown={e => controls.start(e)}>
             {elementIcon}
             <Box flex={'1 1 auto'}>
@@ -315,9 +308,9 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
         </Box>
 
         <Tabs
-          component={m.div}
-          // @ts-expect-error invalid polymorphic types for Tabs
-          layout
+          // component={m.div}
+          // // @ts-expect-error invalid polymorphic types for Tabs
+          // layout
           value={activeTab}
           onChange={v => setActiveTab(v as any)}
           variant="none"
@@ -350,7 +343,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                 {element.links && (
                   <>
                     <PropertyLabel>links</PropertyLabel>
-                    <Stack gap={4} align="flex-start">
+                    <Stack gap={'xs'} align="flex-start">
                       {element.links.map((link, i) => <ElementLink key={i} value={link} />)}
                     </Stack>
                   </>
@@ -360,54 +353,11 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
           </TabsPanel>
 
           <TabsPanel value="Relationships">
-            {(incoming.length + outgoing.length) > 0 && (
-              <Box>
-                <Group gap={'xs'} wrap="nowrap" align="center" justify="center">
-                  <Box>
-                    <Group gap={8} mb={4} wrap="nowrap">
-                      <RelationshipsStat
-                        title="incoming"
-                        total={incoming.length}
-                        included={incomingInView.length}
-                      />
-                      <ThemeIcon size={'sm'} variant="transparent" c="dimmed">
-                        <IconArrowRight style={{ width: 16 }} />
-                      </ThemeIcon>
-                      <Text className={css.fqn}>{nameFromFqn(element.id)}</Text>
-                      <ThemeIcon size={'sm'} variant="transparent" c="dimmed">
-                        <IconArrowRight style={{ width: 16 }} />
-                      </ThemeIcon>
-                      <RelationshipsStat
-                        title="outgoing"
-                        total={outgoing.length}
-                        included={outgoingInView.length}
-                      />
-                    </Group>
-                  </Box>
-                </Group>
-                {notIncludedRelations > 0 && (
-                  <Group
-                    mt={'xs'}
-                    gap={6}
-                    c="orange"
-                    style={{ cursor: 'pointer' }}>
-                    <IconInfoCircle style={{ width: 14 }} />
-                    <Text fz="sm">
-                      {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} hidden
-                    </Text>
-                  </Group>
-                )}
-              </Box>
+            {activeTab === 'Relationships' && (
+              <TabPanelRelationships
+                element={elementModel}
+                currentView={currentView} />
             )}
-            {
-              /* <Box h={240}>
-              <XYFlowProvider
-                defaultNodes={[]}
-                defaultEdges={[]}>
-                <RelationshipsXYFlow subjectId={fqn} />
-              </XYFlowProvider>
-            </Box> */
-            }
           </TabsPanel>
 
           <TabsPanel value="Views">
@@ -589,68 +539,4 @@ function ElementLink({
   //   </Button>
   //  </Box>
   // )
-}
-
-function RelationshipsStat({
-  title,
-  total,
-  included
-}: {
-  title: string
-  total: number
-  included: number
-}) {
-  return (
-    <Paper
-      withBorder
-      shadow="none"
-      className={css.relationshipStat}
-      px="md"
-      py="xs"
-      radius="md"
-      mod={{
-        zero: total === 0,
-        missing: total !== included
-      }}>
-      <Stack gap={4} align="flex-end">
-        <Text component="div" c={total !== included ? 'orange' : 'dimmed'} tt="uppercase" fw={600} fz={10} lh={1}>
-          {title}
-        </Text>
-        <Text fw={600} fz={'xl'} component="div" lh={1}>
-          {total !== included
-            ? (
-              <>
-                {included} / {total}
-              </>
-            )
-            : (
-              <>
-                {total}
-              </>
-            )}
-        </Text>
-        {
-          /* <ThemeIcon
-          color="gray"
-          variant="light"
-          style={{
-            color: stat.diff > 0 ? 'var(--mantine-color-teal-6)' : 'var(--mantine-color-red-6)'
-          }}
-          size={38}
-          radius="md"
-        >
-          <DiffIcon size="1.8rem" stroke={1.5} />
-        </ThemeIcon> */
-        }
-      </Stack>
-      {
-        /* <Text c="dimmed" fz="sm" mt="md">
-          <Text component="span" c={stat.diff > 0 ? 'teal' : 'red'} fw={700}>
-            {stat.diff}%
-          </Text>{' '}
-          {stat.diff > 0 ? 'increase' : 'decrease'} compared to last month
-        </Text> */
-      }
-    </Paper>
-  )
 }

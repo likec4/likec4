@@ -1,22 +1,26 @@
 import { type Fqn, isAncestor, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
-import { useLocalStorage, useStateHistory } from '@mantine/hooks'
-import { useDebouncedCallback } from '@react-hookz/web'
+import { useId, useLocalStorage, useStateHistory } from '@mantine/hooks'
+import { useDebouncedCallback, useDeepCompareEffect, useSyncedRef } from '@react-hookz/web'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import {
+  Background,
+  BackgroundVariant,
   getViewportForBounds,
   Panel,
   ReactFlow,
   type ReactFlowInstance,
+  useOnViewportChange,
   useReactFlow,
   useStoreApi
 } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
-import { map, only, prop, unique } from 'remeda'
+import { isNullish, map, only, pipe, prop, set, setPath, unique } from 'remeda'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useOverlayDialog } from '../OverlayContext'
+import { cssReactflowMarker } from '../Overlays.css'
 import type { XYFlowTypes } from './_types'
 import { SelectElement } from './SelectElement'
 import { useLayoutedRelationships, ZIndexes } from './use-layouted-relationships'
@@ -34,8 +38,11 @@ const edgeTypes = {
   relation: RelationshipEdge
 }
 
-const findSubjectNode = (nodes: XYFlowTypes.Node[]) =>
-  nodes.find((n): n is XYFlowTypes.ElementNode => n.type === 'element' && n.data.column === 'subject')
+/**
+ * Root node in 'subjects' column
+ */
+const findRootSubject = (nodes: XYFlowTypes.Node[]) =>
+  nodes.find((n): n is XYFlowTypes.ElementNode => n.data.column === 'subjects' && isNullish(n.parentId))
 
 const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>) => {
   xyflow.setEdges(edges =>
@@ -82,6 +89,7 @@ const onlyOneUnique = <T extends keyof Relation>(
 }
 
 export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function RelationshipsXYFlow({ subjectId }) {
+  const id = useId()
   const diagramStore = useDiagramStoreApi()
   const lastClickedNodeRef = useRef<XYFlowTypes.NonEmptyNode | null>(null)
   const [_scope, setScope] = useLocalStorage<'global' | 'view'>({
@@ -121,20 +129,37 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     }
   }, [historySubjectId])
 
+  /**
+   * WORKAROUND - Called on viewport change
+   * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
+   * https://github.com/xyflow/xyflow/issues/3282
+   * https://github.com/likec4/likec4/issues/734
+   */
+  useOnViewportChange({
+    onEnd: ({ x, y, zoom }) => {
+      const roundedX = Math.round(x),
+        roundedY = Math.round(y)
+      if (x !== roundedX || y !== roundedY) {
+        xystore.setState({ transform: [roundedX, roundedY, zoom] })
+      }
+    }
+  })
+
+  const viewBounds = useSyncedRef(bounds)
+
   const fitview = useDebouncedCallback(
     () => {
-      xyflow.fitView({
-        padding: 0.2,
-        includeHiddenNodes: true,
-        maxZoom: 1,
-        duration: 500
-      })
+      const { width, height } = xystore.getState()
+      xyflow.setViewport(
+        getViewportForBounds(viewBounds.current, width, height, 0.2, 1, 0.2),
+        { duration: 500 }
+      )
     },
     [xyflow],
     150
   )
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     const {
       nodes: _nodes,
       edges: _edges,
@@ -144,16 +169,14 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
       height
     } = xystore.getState()
 
-    const nextSubjectNode = findSubjectNode(nodes)
-    const currentSubjectNode = findSubjectNode(_nodes)
+    const nextSubjectNode = findRootSubject(nodes)
+    const currentSubjectNode = findRootSubject(_nodes)
 
     // If subject node is the same, don't animate
-    if (nextSubjectNode?.data.fqn === currentSubjectNode?.data.fqn) {
+    if (currentSubjectNode && nextSubjectNode?.data.fqn === currentSubjectNode.data.fqn) {
       setNodes(nodes)
       setEdges(edges)
-      if (!deepEqual(nextSubjectNode, currentSubjectNode)) {
-        fitview()
-      }
+      fitview()
       return
     }
 
@@ -171,7 +194,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     }
 
     const existingNode = lastClickedNodeRef.current
-      ?? xyflow.getNodes().find(n => n.type !== 'empty' && n.data.column !== 'subject' && n.data.fqn === subject.id)
+      ?? xyflow.getNodes().find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subject.id)
     lastClickedNodeRef.current = null
     // Animate from existing node to next subject node
     if (nextSubjectCenter && existingNode) {
@@ -223,24 +246,24 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
         isCancelled = true
       }
     }
-    setNodes(nodes)
+    setNodes(map(nodes, setPath(['data', 'skipInitialAnimation'], true)))
     setEdges(edges)
     fitview()
     return undefined
   }, [nodes, edges])
 
   return (
-    <ReactFlow
-      defaultEdges={[] as XYFlowTypes.Edge[]}
-      defaultNodes={[] as XYFlowTypes.Node[]}
+    <ReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>
+      id={id}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
-      defaultMarkerColor="var(--xy-edge-stroke)"
+      defaultMarkerColor="var(--likec4-relation-lineColor)"
+      className={cssReactflowMarker}
       zoomOnPinch={true}
       zoomOnScroll={false}
       zoomOnDoubleClick={false}
-      maxZoom={1.5}
-      minZoom={0.1}
+      maxZoom={2}
+      minZoom={0.05}
       fitView
       fitViewOptions={{
         padding: 0.2,
@@ -324,6 +347,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
         }
       }}
     >
+      <Background variant={BackgroundVariant.Dots} size={2} gap={20} />
       <Panel position="top-center">
         <Group gap={'xs'} wrap={'nowrap'}>
           <Button
@@ -411,8 +435,8 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
                 }}
               >
                 <Text fw={500} size="xs" c="orange" component="div">
-                  Current view does not include {notIncludedRelations}{' '}
-                  relationship{notIncludedRelations > 1 ? 's' : ''}. Switch to Global
+                  View does not include {notIncludedRelations}{' '}
+                  relationship{notIncludedRelations > 1 ? 's' : ''}. Switch to Global to compare
                 </Text>
               </Box>
             )}

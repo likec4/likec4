@@ -190,6 +190,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     openOverlay({ elementDetails: element.id })
+    // openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
 
   // const onTap = useCallback((e: MouseEvent) => {
