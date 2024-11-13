@@ -81,7 +81,7 @@ export function LikeC4Diagram({
       console.warn('Invalid enableElementDetails=true, requires LikeC4ModelProvider')
     }
     if (enableRelationshipBrowser) {
-      console.warn('Invalid enableRelationshipsBrowser=true, requires LikeC4ModelProvider')
+      console.warn('Invalid enableRelationshipBrowser=true, requires LikeC4ModelProvider')
     }
   })
 

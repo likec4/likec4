@@ -96,7 +96,7 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
 
   /**
    * Display dropdown with details on relationship's label click
-   * @default enableRelationshipsBrowser
+   * @default enableRelationshipBrowser
    */
   enableRelationshipDetails?: boolean | undefined
 
