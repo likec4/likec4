@@ -31,6 +31,7 @@ import {
   TabsPanel,
   TabsTab,
   Text,
+  type TextProps,
   ThemeIcon,
   Tooltip as MantineTooltip,
   UnstyledButton
@@ -40,7 +41,7 @@ import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } 
 import { useInternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
-import { type ReactNode, useCallback, useState } from 'react'
+import { type PropsWithChildren, type ReactNode, useCallback, useState } from 'react'
 import {} from 'react-remove-scroll'
 import { clamp, find, isNullish, map, only, partition, pipe, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow } from '../../hooks'
@@ -352,8 +353,12 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
           <TabsPanel value="Properties">
             <ScrollArea scrollbars="y" type="auto">
               <Box className={css.propertiesGrid} pt={'xs'}>
-                <ElementProperty title="description" value={element.description} emptyValue="no description" />
-                <ElementProperty title="technology" value={element.technology} />
+                <ElementProperty title="description" emptyValue="no description">
+                  {element.description}
+                </ElementProperty>
+                <ElementProperty title="technology">
+                  {element.technology}
+                </ElementProperty>
                 {element.links && (
                   <>
                     <PropertyLabel>links</PropertyLabel>
@@ -494,24 +499,30 @@ const ViewButton = ({
 
 function ElementProperty({
   title,
-  value,
-  emptyValue = `undefined`
-}: {
-  title: string
-  value: ReactNode
-  emptyValue?: string
-}) {
+  emptyValue = `undefined`,
+  children,
+  style,
+  ...props
+}: PropsWithChildren<
+  Omit<TextProps, 'title'> & {
+    title: string
+    emptyValue?: string
+  }
+>) {
   return (
     <>
       <PropertyLabel>{title}</PropertyLabel>
       <Text
-        // lh={'sm'}
+        component="div"
+        {...(isNullish(children) && { c: 'dimmed' })}
         fz={'md'}
-        {...(isNullish(value) && { c: 'dimmed' })}
         style={{
-          whiteSpace: 'preserve-breaks'
-        }}>
-        {value || emptyValue}
+          whiteSpace: 'preserve-breaks',
+          ...style
+        }}
+        {...props}
+      >
+        {children || emptyValue}
       </Text>
     </>
   )
