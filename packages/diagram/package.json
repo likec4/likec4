@@ -27,7 +27,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -r -f -g 'dist/*' .tsbuildinfo"
+    "clean": "rm -r -f -g 'dist/*' .tsbuildinfo",
+    "test": "vitest run --no-isolate"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
@@ -68,6 +69,7 @@
     "execa": "^9.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
   }
 }
