@@ -43,7 +43,7 @@
     "bezier-js": "^6.1.4",
     "clsx": "^2.1.1",
     "d3-shape": "^3.2.0",
-    "esm-env": "^1.0.0",
+    "esm-env": "^1.1.4",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.11.11",
     "khroma": "^2.1.0",

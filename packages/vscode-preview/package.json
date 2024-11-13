@@ -42,7 +42,7 @@
     "@vanilla-extract/css": "^1.16.0",
     "@vanilla-extract/vite-plugin": "^4.0.17",
     "@vitejs/plugin-react-swc": "3.7.1",
-    "esm-env": "1.0.0",
+    "esm-env": "^1.1.4",
     "nanostores": "0.11.3",
     "object-hash": "^3.0.0",
     "postcss": "^8.4.47",
@@ -53,7 +53,7 @@
     "tsx": "~4.9.3",
     "type-fest": "4.26.1",
     "typescript": "^5.6.3",
-    "vite": "5.4.10",
+    "vite": "5.4.11",
     "vscode-messenger-webview": "^0.4.5"
   }
 }
