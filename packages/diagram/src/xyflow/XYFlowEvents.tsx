@@ -250,7 +250,7 @@ export function useXYFlowEvents() {
           activeWalkthrough,
           activateWalkthrough,
           openOverlay,
-          showRelationshipDetails
+          enableRelationshipDetails
         } = diagramApi.getState()
         // if we are in dynamic view, and clicked on an edge, activate the step
         if (isDynamicView && enableDynamicViewWalkthrough) {
@@ -262,7 +262,7 @@ export function useXYFlowEvents() {
           return
         }
 
-        if (showRelationshipDetails) {
+        if (enableRelationshipDetails) {
           openOverlay({
             edgeDetails: xyedge.data.edge.id
           })

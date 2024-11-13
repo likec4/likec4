@@ -2,11 +2,10 @@ import { type Fqn } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useLocalStorage, useStateHistory } from '@mantine/hooks'
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
-import { Panel, useReactFlow, useStoreApi } from '@xyflow/react'
+import { Panel } from '@xyflow/react'
 import { memo, useEffect } from 'react'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useOverlayDialog } from '../OverlayContext'
-import type { XYFlowTypes } from './_types'
 import { RelationshipsXYFlow } from './RelationshipsXYFlow'
 import { SelectElement } from './SelectElement'
 import { useLayoutedRelationships } from './use-layouted-relationships'
@@ -30,8 +29,6 @@ export const RelationshipsOverlay = memo<{ subjectId: Fqn }>(function Relationsh
   const showSubjectWarning = !viewIncludesSubject && _scope === 'view'
   const [historySubjectId, historyOps, { history, current }] = useStateHistory(subjectId)
 
-  const xyflow = useReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>()
-  const xystore = useStoreApi<XYFlowTypes.Node, XYFlowTypes.Edge>()
   const overlay = useOverlayDialog()
 
   useEffect(() => {

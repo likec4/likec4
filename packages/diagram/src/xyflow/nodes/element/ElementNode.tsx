@@ -135,7 +135,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipBrowser
       || (!!s.onNavigateTo && !!element.navigateTo),
     hasOnNavigateTo: !!s.onNavigateTo,
     enableElementDetails: s.enableElementDetails,

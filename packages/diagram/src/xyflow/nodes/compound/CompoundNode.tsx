@@ -129,7 +129,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipBrowser
       || (!!s.onNavigateTo && !!element.navigateTo),
     hasOnNavigateTo: !!s.onNavigateTo,
     renderIcon: s.renderIcon,

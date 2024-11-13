@@ -34,13 +34,12 @@ export function StaticLikeC4Diagram({
       zoomable={false}
       controls={false}
       background={background}
-      showElementLinks={enableElementDetails}
       enableElementDetails={enableElementDetails}
       showDiagramTitle={false}
       showNotations={false}
-      showRelationshipDetails={false}
+      enableRelationshipDetails={enableElementDetails}
       enableDynamicViewWalkthrough={false}
-      enableRelationshipsBrowser={false}
+      enableRelationshipBrowser={enableElementDetails}
       experimentalEdgeEditing={false}
       enableFocusMode={false}
       nodesSelectable={false}

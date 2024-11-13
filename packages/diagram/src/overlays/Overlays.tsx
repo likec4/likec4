@@ -11,7 +11,7 @@ import { ElementDetailsCard } from './element-details/ElementDetailsCard'
 import { OverlayContext } from './OverlayContext'
 import * as css from './Overlays.css'
 import { RelationshipsOverlay } from './relationships-of/RelationshipsOverlay'
-import { RelationshipsXYFlow } from './relationships-of/RelationshipsXYFlow'
+
 export const Overlays = memo(() => {
   const diagramStore = useDiagramStoreApi()
   const {

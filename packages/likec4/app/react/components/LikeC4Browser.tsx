@@ -53,17 +53,23 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
     styleNonce?: string | (() => string) | undefined
 
     /**
-     * Experimental feature to browse relationships
-     *
-     * @default false
-     */
-    enableRelationshipsBrowser?: boolean | undefined
-
-    /**
      * Enable popup with element details
      * @default false
      */
     enableElementDetails?: boolean | undefined
+
+    /**
+     * Experimental feature to browse relationships
+     *
+     * @default enableElementDetails
+     */
+    enableRelationshipBrowser?: boolean | undefined
+
+    /**
+     * Display dropdown with details on relationship's label click
+     * @default enableRelationshipBrowser
+     */
+    enableRelationshipDetails?: boolean | undefined
   }
 
 export function LikeC4Browser<
@@ -84,7 +90,8 @@ export function LikeC4Browser<
   background = 'dots',
   styleNonce,
   enableElementDetails = false,
-  enableRelationshipsBrowser = false
+  enableRelationshipBrowser = enableElementDetails,
+  enableRelationshipDetails = enableRelationshipBrowser
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const onCloseRef = useSyncedRef(onClose)
   const [opened, setOpened] = useState(false)
@@ -238,13 +245,12 @@ export function LikeC4Browser<
                 fitView
                 fitViewPadding={0.05}
                 showDiagramTitle
-                showElementLinks
                 enableDynamicViewWalkthrough
                 enableFocusMode
                 enableElementDetails={enableElementDetails}
-                enableRelationshipsBrowser={enableRelationshipsBrowser}
+                enableRelationshipBrowser={enableRelationshipBrowser}
+                enableRelationshipDetails={enableRelationshipDetails}
                 showNavigationButtons
-                showRelationshipDetails
                 showNotations={hasNotations}
                 background={background}
                 controls

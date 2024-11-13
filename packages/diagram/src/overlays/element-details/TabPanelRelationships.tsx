@@ -4,6 +4,7 @@ import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-
 import { Panel } from '@xyflow/react'
 import { useState } from 'react'
 import { unique } from 'remeda'
+import { useDiagramState } from '../../hooks'
 import { useOverlayDialog } from '../OverlayContext'
 import { RelationshipsXYFlow } from '../relationships-of/RelationshipsXYFlow'
 import { useLayoutedRelationships } from '../relationships-of/use-layouted-relationships'
@@ -18,6 +19,7 @@ export function TabPanelRelationships({
   currentView,
   element
 }: RelationshipsTabPanelProps) {
+  const enableRelationshipBrowser = useDiagramState(s => s.enableRelationshipBrowser)
   const overlay = useOverlayDialog()
   const [scope, setScope] = useState<'global' | 'view'>('view')
   const node = nonNullable(currentView.nodes.find((n) => n.id === element.id))
@@ -102,23 +104,25 @@ export function TabPanelRelationships({
               ]}
             />
           </Panel>
-          <Panel position="top-right">
-            <Button
-              size="compact-sm"
-              variant="default"
-              fz={'xs'}
-              fw={500}
-              rightSection={<IconExternalLink stroke={1.6} style={{ width: 16 }} />}
-              onClick={(e) => {
-                e.stopPropagation()
-                overlay.openOverlay({
-                  relationshipsOf: element.id
-                })
-              }}
-            >
-              Open
-            </Button>
-          </Panel>
+          {enableRelationshipBrowser && (
+            <Panel position="top-right">
+              <Button
+                size="compact-sm"
+                variant="default"
+                fz={'xs'}
+                fw={500}
+                rightSection={<IconExternalLink stroke={1.6} style={{ width: 16 }} />}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  overlay.openOverlay({
+                    relationshipsOf: element.id
+                  })
+                }}
+              >
+                Open
+              </Button>
+            </Panel>
+          )}
         </RelationshipsXYFlow>
       </Box>
     </Stack>

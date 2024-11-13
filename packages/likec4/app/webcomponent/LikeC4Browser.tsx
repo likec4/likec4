@@ -59,12 +59,12 @@ const BrowserModal = memo<{
                   fitView
                   fitViewPadding={0.08}
                   showDiagramTitle
-                  showElementLinks
                   enableDynamicViewWalkthrough
                   enableFocusMode
-                  enableRelationshipsBrowser
+                  enableElementDetails
+                  enableRelationshipBrowser
                   showNavigationButtons
-                  showRelationshipDetails
+                  enableRelationshipDetails
                   showNotations={hasNotations}
                   controls
                   nodesSelectable={false}

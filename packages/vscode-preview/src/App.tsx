@@ -87,11 +87,11 @@ export default function App() {
           experimentalEdgeEditing={edgesEditable}
           enableFocusMode
           enableDynamicViewWalkthrough
-          enableRelationshipsBrowser
+          enableElementDetails
+          enableRelationshipBrowser
           showNavigationButtons
-          showElementLinks
           showNotations
-          showRelationshipDetails
+          enableRelationshipDetails
           showDiagramTitle
           renderIcon={IconRenderer}
           onNavigateTo={(to, event) => {

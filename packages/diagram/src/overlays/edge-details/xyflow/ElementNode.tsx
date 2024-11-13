@@ -27,6 +27,7 @@ type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
 function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
+    enableRelationshipBrowser: s.enableRelationshipBrowser,
     onNavigateTo: s.onNavigateTo,
     onOpenSource: s.onOpenSourceElement
   }
@@ -47,7 +48,8 @@ export function ElementNode({
   const {
     currentViewId,
     onNavigateTo,
-    onOpenSource
+    onOpenSource,
+    enableRelationshipBrowser
   } = useDiagramState(selector)
   return (
     <>
@@ -102,15 +104,17 @@ export function ElementNode({
               <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
             </Action>
           )}
-          <Action
-            onClick={(event) => {
-              event.stopPropagation()
-              overlay.openOverlay({
-                relationshipsOf: data.fqn
-              })
-            }}>
-            <IconTransform stroke={1.8} style={{ width: '72%' }} />
-          </Action>
+          {enableRelationshipBrowser && (
+            <Action
+              onClick={(event) => {
+                event.stopPropagation()
+                overlay.openOverlay({
+                  relationshipsOf: data.fqn
+                })
+              }}>
+              <IconTransform stroke={1.8} style={{ width: '72%' }} />
+            </Action>
+          )}
           {onOpenSource && (
             <Action
               onClick={(event) => {

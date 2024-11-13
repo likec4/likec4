@@ -32,14 +32,13 @@ export function LikeC4Diagram({
   nodesDraggable = !readonly,
   background = 'dots',
   controls = !readonly,
-  showElementLinks = true,
   showDiagramTitle = true,
   showNotations = true,
-  showRelationshipDetails = true,
   enableDynamicViewWalkthrough = false,
   enableFocusMode = false,
-  enableElementDetails = true,
-  enableRelationshipsBrowser = true,
+  enableElementDetails = false,
+  enableRelationshipBrowser = enableElementDetails,
+  enableRelationshipDetails = enableRelationshipBrowser,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -75,13 +74,13 @@ export function LikeC4Diagram({
     if (hasLikec4model) {
       return
     }
-    if (showRelationshipDetails) {
+    if (enableRelationshipDetails) {
       console.warn('Invalid showRelationshipDetails=true, requires LikeC4ModelProvider')
     }
     if (enableElementDetails) {
       console.warn('Invalid enableElementDetails=true, requires LikeC4ModelProvider')
     }
-    if (enableRelationshipsBrowser) {
+    if (enableRelationshipBrowser) {
       console.warn('Invalid enableRelationshipsBrowser=true, requires LikeC4ModelProvider')
     }
   })
@@ -105,17 +104,16 @@ export function LikeC4Diagram({
             fitViewEnabled={fitView}
             fitViewPadding={fitViewPadding}
             controls={controls}
-            showElementLinks={showElementLinks}
             showNavigationButtons={showNavigationButtons && !!onNavigateTo}
             showNotations={showNotations}
-            showRelationshipDetails={showRelationshipDetails && hasLikec4model}
+            enableRelationshipDetails={enableRelationshipDetails && hasLikec4model}
             nodesDraggable={nodesDraggable}
             nodesSelectable={nodesSelectable}
             experimentalEdgeEditing={experimentalEdgeEditing}
             enableElementDetails={enableElementDetails && hasLikec4model}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableFocusMode={enableFocusMode}
-            enableRelationshipsBrowser={enableRelationshipsBrowser && hasLikec4model}
+            enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model}
             // Apply where filter only in readonly mode
             whereFilter={readonly ? (where ?? null) : null}
             renderIcon={renderIcon ?? null}
@@ -164,7 +162,8 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
     pannable: s.pannable,
     fitView: s.fitViewEnabled,
     enableFocusMode: s.enableFocusMode,
-    enableOverlays: s.hasLikeC4Model && (s.enableRelationshipsBrowser || s.showRelationshipDetails)
+    enableOverlays: s.hasLikeC4Model
+      && (s.enableRelationshipBrowser || s.enableRelationshipDetails || s.enableElementDetails)
   }))
 
   return (

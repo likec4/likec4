@@ -39,12 +39,11 @@ function ViewReact() {
       controls
       fitViewPadding={0.08}
       showDiagramTitle
-      showElementLinks
       showNavigationButtons
       enableFocusMode
       enableDynamicViewWalkthrough
       enableElementDetails
-      enableRelationshipsBrowser
+      enableRelationshipBrowser
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}
       nodesDraggable={false}
