@@ -26,8 +26,7 @@ type TabElementStructureProps = {
 }
 
 const ElementLabel = ({
-  element,
-  type
+  element
 }: { element: LikeC4Model.ElementModel; type: 'ancestor' | 'current' | 'descedant' }) => (
   <Box className={css.elementLabel}>
     <Text component="div" fz={'sm'} fw={'500'}>{element.title}</Text>
