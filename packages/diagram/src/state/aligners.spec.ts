@@ -119,5 +119,27 @@ describe('aligners', () => {
       expect(aligner.applyPosition(nodeRects[7]!)).toEqual({ x: 120, y: 40 })
       expect(aligner.applyPosition(nodeRects[8]!)).toEqual({ x: 155, y: 40 })
     })
+
+    it('spreads rows evenly', () => {
+      const nodeRects = [
+        n('a', 0, 0),
+        n('b', 0, 40),
+        n('c', 0, 80),
+        n('d', 0, 120),
+        n('e', 40, 120),
+        n('f', 0, 160)
+      ]
+
+      const aligner = new GridAligner('Row')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[0]!).y).toEqual(0)
+      expect(aligner.applyPosition(nodeRects[1]!).y).toEqual(40)
+      expect(aligner.applyPosition(nodeRects[2]!).y).toEqual(80)
+      expect(aligner.applyPosition(nodeRects[3]!).y).toEqual(120)
+      expect(aligner.applyPosition(nodeRects[4]!).y).toEqual(120)
+      expect(aligner.applyPosition(nodeRects[5]!).y).toEqual(160)
+    })
   })
 })

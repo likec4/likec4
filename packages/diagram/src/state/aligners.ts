@@ -98,7 +98,7 @@ export class GridAligner extends Aligner {
     }
   }
 
-  private getLayers(sortedNodeRects: NodeRect[]): Layer[] {
+  private getLayers(sortedNodeRects: NodeRect[]): NonEmptyArray<Layer> {
     const layers: Layer[] = []
     let layerEnd = 0
     let layer = null
@@ -125,10 +125,10 @@ export class GridAligner extends Aligner {
       }
     }
 
-    return layers
+    return layers as NonEmptyArray<Layer>
   }
 
-  private buildLayout(layers: Layer[], layoutRect: Rect, nodeRects: NodeRect[]): Map<string, XYPosition> {
+  private buildLayout(layers: NonEmptyArray<Layer>, layoutRect: Rect, nodeRects: NodeRect[]): Map<string, XYPosition> {
     const nodeMap = new Map(nodeRects.map(n => [n.id, n]))
     const layout: [string, XYPosition][] = []
     const occupiedSpace = layers.reduce((a, b) => a + b.primaryAxisSize, 0)
@@ -136,44 +136,90 @@ export class GridAligner extends Aligner {
       ? (layoutRect[this.axisPreset.primaryAxisDimension] - occupiedSpace) / (layers.length - 1)
       : 0
 
-    let placeNextLayerAt = layoutRect[this.axisPreset.primaryAxisCoord]
-    let previousLayerCells = null
-    for (let layer of layers) {
-      let bestLayerLayout = this.scoreLayout(
-        this.spaceAround(layer, layoutRect, placeNextLayerAt),
-        nodeMap
-      )
+    // Find the widest layer and layout diagram from there
+    const baseLayerIndex = layers.reduce(
+      (widestLayerIndex, layer, i) =>
+        layers[widestLayerIndex]!.occupiedSpace < layer.occupiedSpace ? i : widestLayerIndex,
+      0
+    )
+    const baseLayerPosition = layers.slice(0, baseLayerIndex).reduce(
+      (a, layer) => a + layer.primaryAxisSize + rowMargin,
+      layoutRect[this.axisPreset.primaryAxisCoord]
+    )
+    const baseLayerLayout = this.buildLayerLayout(
+      layers[baseLayerIndex]!,
+      layoutRect,
+      baseLayerPosition,
+      nodeMap,
+      null
+    )
+    layout.push(...baseLayerLayout[2])
 
-      if (layer.nodes.length != 1) {
-        const currentlayerLayout = this.scoreLayout(
-          this.spaceBetween(layer, layoutRect, placeNextLayerAt),
-          nodeMap
-        )
-        bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
-      }
+    // Layout layers after the base layer
+    let placeNextLayerAt = baseLayerPosition + layers[baseLayerIndex]!.primaryAxisSize + rowMargin
+    let previousLayerCells = baseLayerLayout[1]
+    for (let i = baseLayerIndex + 1; i < layers.length; i++) {
+      const layer = layers[i]!
+      let layerLayout = this.buildLayerLayout(layer, layoutRect, placeNextLayerAt, nodeMap, previousLayerCells)
 
-      if (previousLayerCells && previousLayerCells.length - 1 >= layer.nodes.length) {
-        const currentlayerLayout = this.scoreLayout(
-          this.placeInGaps(layer, placeNextLayerAt, previousLayerCells),
-          nodeMap
-        )
-        bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
-      }
-
-      if (previousLayerCells && previousLayerCells.length >= layer.nodes.length) {
-        const currentlayerLayout = this.scoreLayout(
-          this.placeInCells(layer, placeNextLayerAt, previousLayerCells),
-          nodeMap
-        )
-        bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
-      }
-
-      layout.push(...bestLayerLayout[2])
-      previousLayerCells = bestLayerLayout[1]
+      layout.push(...layerLayout[2])
+      previousLayerCells = layerLayout[1]
       placeNextLayerAt += layer.primaryAxisSize + rowMargin
     }
 
+    // Layout layers before the base layer
+    placeNextLayerAt = baseLayerPosition
+    previousLayerCells = baseLayerLayout[1]
+    for (let i = baseLayerIndex - 1; i >= 0; i--) {
+      const layer = layers[i]!
+      placeNextLayerAt -= layer.primaryAxisSize + rowMargin
+
+      let layerLayout = this.buildLayerLayout(layer, layoutRect, placeNextLayerAt, nodeMap, previousLayerCells)
+
+      layout.push(...layerLayout[2])
+      previousLayerCells = layerLayout[1]
+    }
+
     return new Map(layout)
+  }
+
+  private buildLayerLayout(
+    layer: Layer,
+    layoutRect: Rect,
+    placeNextLayerAt: number,
+    nodeMap: Map<string, NodeRect>,
+    previousLayerCells: NonEmptyArray<LayoutCell> | null
+  ): [number, NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
+    let bestLayerLayout = this.scoreLayout(
+      this.spaceAround(layer, layoutRect, placeNextLayerAt),
+      nodeMap
+    )
+
+    if (layer.nodes.length != 1) {
+      const currentlayerLayout = this.scoreLayout(
+        this.spaceBetween(layer, layoutRect, placeNextLayerAt),
+        nodeMap
+      )
+      bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
+    }
+
+    if (previousLayerCells && previousLayerCells.length - 1 >= layer.nodes.length) {
+      const currentlayerLayout = this.scoreLayout(
+        this.placeInGaps(layer, placeNextLayerAt, previousLayerCells),
+        nodeMap
+      )
+      bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
+    }
+
+    if (previousLayerCells && previousLayerCells.length >= layer.nodes.length) {
+      const currentlayerLayout = this.scoreLayout(
+        this.placeInCells(layer, placeNextLayerAt, previousLayerCells),
+        nodeMap
+      )
+      bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
+    }
+
+    return bestLayerLayout
   }
 
   private spaceBetween(
@@ -263,7 +309,7 @@ export class GridAligner extends Aligner {
           optionIndex++
         }
         else {
-          break;
+          break
         }
       }
 
@@ -279,7 +325,7 @@ export class GridAligner extends Aligner {
   private placeInCells(
     layer: Layer,
     placeNextLayerAt: number,
-    previousLayerCells: NonEmptyArray<LayoutCell>,
+    previousLayerCells: NonEmptyArray<LayoutCell>
   ): [NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
     invariant(previousLayerCells, 'Layout of the previous layer was not computed')
     const result = new Map<string, XYPosition>()
@@ -303,7 +349,7 @@ export class GridAligner extends Aligner {
 
           optionIndex++
         }
-        else{
+        else {
           break
         }
       }
