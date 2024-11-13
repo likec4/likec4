@@ -1,10 +1,9 @@
-import { delay } from '@likec4/core'
 import { Text as MantineText } from '@mantine/core'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { Handle, type NodeProps, Position, useStore } from '@xyflow/react'
 import clsx from 'clsx'
-import { deepEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { m } from 'framer-motion'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import type { XYFlowTypes } from '../_types'
 import * as css from './styles.css'
 
@@ -26,8 +25,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
   },
   width = 200,
   height = 100,
-
-  selectable = true
+  ...props
 }) => {
   const scale = (diff: number) => ({
     scaleX: (width + diff) / width,
@@ -41,6 +39,17 @@ export const CompoundNode = memo<CompoundNodeProps>(({
   if (leaving) {
     opacity = 0
   }
+
+  const {
+    elementsSelectable
+  } = useStore(
+    useCallback((s) => ({
+      elementsSelectable: s.elementsSelectable
+    }), []),
+    shallowEqual
+  )
+
+  const selectable = props.selectable ?? elementsSelectable
 
   return (
     <>

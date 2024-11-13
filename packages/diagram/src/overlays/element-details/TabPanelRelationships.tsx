@@ -5,6 +5,7 @@ import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { LayoutGroup } from 'framer-motion'
 import { unique } from 'remeda'
 import { RelationshipsXYFlow } from '../relationships-of/RelationshipsXYFlow'
+import { useLayoutedRelationships } from '../relationships-of/use-layouted-relationships'
 import * as css from './TabPanelRelationships.css'
 
 type RelationshipsTabPanelProps = {
@@ -30,6 +31,12 @@ export function TabPanelRelationships({
     ...incoming,
     ...outgoing
   ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
+
+  const {
+    edges,
+    nodes,
+    bounds
+  } = useLayoutedRelationships(element.id, currentView, 'view')
 
   return (
     <Stack gap={'xs'} pos={'relative'} w={'100%'} h={'100%'}>
@@ -71,15 +78,16 @@ export function TabPanelRelationships({
         </Group>
       )}
 
-      <XYFlowProvider
-        defaultNodes={[]}
-        defaultEdges={[]}>
-        <Box flex={'1 1 100%'} pos={'relative'} w={'100%'} h={'100%'}>
-          <LayoutGroup id={'relationships-' + element.id}>
-            <RelationshipsXYFlow subjectId={element.id} />
-          </LayoutGroup>
-        </Box>
-      </XYFlowProvider>
+      <Box className={css.xyflow}>
+        <RelationshipsXYFlow
+          subjectId={element.id}
+          bounds={bounds}
+          nodes={nodes}
+          edges={edges}
+          view={currentView}
+          elementsSelectable={false}
+        />
+      </Box>
     </Stack>
   )
 }

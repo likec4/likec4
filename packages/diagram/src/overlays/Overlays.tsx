@@ -10,6 +10,7 @@ import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
 import { ElementDetailsCard } from './element-details/ElementDetailsCard'
 import { OverlayContext } from './OverlayContext'
 import * as css from './Overlays.css'
+import { RelationshipsOverlay } from './relationships-of/RelationshipsOverlay'
 import { RelationshipsXYFlow } from './relationships-of/RelationshipsXYFlow'
 export const Overlays = memo(() => {
   const diagramStore = useDiagramStoreApi()
@@ -116,13 +117,7 @@ export const Overlays = memo(() => {
               }}
             >
               <FocusTrap>
-                {activeOverlay.relationshipsOf && (
-                  <XYFlowProvider
-                    defaultNodes={[]}
-                    defaultEdges={[]}>
-                    <RelationshipsXYFlow subjectId={activeOverlay.relationshipsOf} />
-                  </XYFlowProvider>
-                )}
+                {activeOverlay.relationshipsOf && <RelationshipsOverlay subjectId={activeOverlay.relationshipsOf} />}
                 {activeOverlay.edgeDetails && (
                   <XYFlowProvider
                     defaultNodes={[]}

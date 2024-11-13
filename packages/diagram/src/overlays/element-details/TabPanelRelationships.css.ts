@@ -10,21 +10,18 @@ export const fqn = style({
   borderRadius: 3,
   background: `color-mix(in srgb , ${vars.element.fill},  transparent 25%)`,
   lineHeight: 1.2,
-  color: vars.element.hiContrast,
-  selectors: {
-    [`${whereDark} &`]: {
-      // background: `color-mix(in srgb , ${vars.element.fill},  transparent 45%)`,
-      // color: vars.element.loContrast
-    }
-  }
+  color: vars.element.hiContrast
+  // selectors: {
+  //   [`${whereDark} &`]: {
+  //   }
+  // }
 })
 
 export const relationshipStat = style({
   selectors: {
-    // [`${whereLight} &`]: {
-    //   background: mantine.colors.gray[4],
-    //   color: mantine.colors.dark[6]
-    // },
+    [`${whereLight} &`]: {
+      background: mantine.colors.gray[1]
+    },
     // [`&[data-zero]`]: {
     //   color: mantine.colors.dimmed
     // },
@@ -38,6 +35,22 @@ export const relationshipStat = style({
     },
     [`${whereLight} &[data-missing]`]: {
       color: mantine.colors.orange[8]
+    }
+  }
+})
+
+export const xyflow = style({
+  flex: '1 1 100%',
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  background: mantine.colors.body,
+  border: `1px solid ${mantine.colors.defaultBorder}`,
+  borderRadius: mantine.radius.sm,
+  selectors: {
+    [`${whereLight} &`]: {
+      borderColor: mantine.colors.gray[3],
+      background: mantine.colors.gray[1]
     }
   }
 })

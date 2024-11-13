@@ -52,14 +52,14 @@ export const container = style({
 })
 
 export const cssReactflowMarker = style({})
-globalStyle(`:where(.react-flow${cssReactflowMarker})`, {
+globalStyle(`.react-flow${cssReactflowMarker}`, {
   vars: {
-    [xyvars.background.color]: vars.likec4.background.color,
+    // [xyvars.background.color]: vars.likec4.background.color,
     [xyvars.background.pattern.color]: vars.likec4.background.pattern.color
   }
 })
 
-globalStyle(`${whereDark} :where(.react-flow${cssReactflowMarker})`, {
+globalStyle(`${whereDark} .react-flow${cssReactflowMarker}`, {
   vars: {
     [xyvars.edge.labelColor]: vars.relation.labelColor,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`

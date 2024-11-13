@@ -48,7 +48,7 @@ export function RelationshipEdge({
           style={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            maxWidth: Math.abs(props.targetX - props.sourceX - 50),
+            maxWidth: Math.abs(props.targetX - props.sourceX - 70),
             zIndex: ZIndexes.max
           }}
           className={clsx([

@@ -1,4 +1,4 @@
-import { delay, type Fqn, isAncestor, type Relation } from '@likec4/core'
+import { delay, type DiagramView, type Fqn, isAncestor, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useId, useLocalStorage, useStateHistory } from '@mantine/hooks'
 import { useDebouncedCallback, useDeepCompareEffect, useSyncedRef } from '@react-hookz/web'
@@ -10,13 +10,18 @@ import {
   Panel,
   ReactFlow,
   type ReactFlowInstance,
+  type ReactFlowProps,
+  ReactFlowProvider,
+  type ReactFlowState,
   useOnViewportChange,
   useReactFlow,
+  useStore,
   useStoreApi
 } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
-import { memo, useEffect, useRef } from 'react'
+import { memo, type PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { isNullish, map, omit, only, prop, setPath, unique } from 'remeda'
+import { useUpdateEffect } from '../../hooks'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { centerXYInternalNode } from '../../xyflow/utils'
 import { useOverlayDialog } from '../OverlayContext'
@@ -88,46 +93,51 @@ const onlyOneUnique = <T extends keyof Relation>(
   return only(unique(map(data.relations, prop(property))))
 }
 
-export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function RelationshipsXYFlow({ subjectId }) {
-  const id = useId()
-  const diagramStore = useDiagramStoreApi()
-  const lastClickedNodeRef = useRef<XYFlowTypes.NonEmptyNode | null>(null)
-  const [_scope, setScope] = useLocalStorage<'global' | 'view'>({
-    key: 'likec4:scope-relationships-of',
-    getInitialValueInEffect: false,
-    defaultValue: 'view'
-  })
-  const {
-    view,
-    viewIncludesSubject,
-    notIncludedRelations,
-    edges,
-    nodes,
-    subject,
-    bounds
-  } = useLayoutedRelationships(subjectId, _scope)
-  const scope = viewIncludesSubject ? _scope : 'global'
-  const showSubjectWarning = !viewIncludesSubject && _scope === 'view'
+type RelationshipsXYFlowProps =
+  & PropsWithChildren<{
+    subjectId: Fqn
+    view: DiagramView
+    nodes: XYFlowTypes.Node[]
+    edges: XYFlowTypes.Edge[]
+    bounds: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+    viewportPadding?: number | undefined
+  }>
+  & Pick<
+    ReactFlowProps<XYFlowTypes.Node, XYFlowTypes.Edge>,
+    | 'onNodeClick'
+    | 'elementsSelectable'
+    | 'maxZoom'
+    | 'minZoom'
+  >
+const selectContainerViewport = (s: ReactFlowState) => `${s.width}x${s.height}`
 
-  const [historySubjectId, historyOps, { history, current }] = useStateHistory(subject.id)
+function RelationshipsXYFlowWrapped({
+  subjectId,
+  view,
+  nodes,
+  edges,
+  bounds,
+  children,
+  maxZoom = 2,
+  minZoom = 0.05,
+  viewportPadding = 0.1,
+  ...rest
+}: RelationshipsXYFlowProps) {
+  const id = useId()
+
+  const lastClickedNodeRef = useRef<XYFlowTypes.NonEmptyNode | null>(null)
 
   const xyflow = useReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>()
   const xystore = useStoreApi<XYFlowTypes.Node, XYFlowTypes.Edge>()
-  const overlay = useOverlayDialog()
 
-  useEffect(() => {
-    if (historySubjectId !== subject.id) {
-      historyOps.set(subject.id)
-    }
-  }, [subject.id])
+  const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(true)
 
-  useEffect(() => {
-    if (historySubjectId !== subject.id) {
-      overlay.openOverlay({
-        relationshipsOf: historySubjectId
-      })
-    }
-  }, [historySubjectId])
+  const containerviewport = useStore(selectContainerViewport)
 
   /**
    * WORKAROUND - Called on viewport change
@@ -142,6 +152,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
       if (x !== roundedX || y !== roundedY) {
         xystore.setState({ transform: [roundedX, roundedY, zoom] })
       }
+      setZoomOnDoubleClick(zoom < 0.7)
     }
   })
 
@@ -152,14 +163,18 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     () => {
       const { width, height } = xystore.getState()
       xyflow.setViewport(
-        getViewportForBounds(viewBoundsRef.current, width, height, 0.2, 1, 0.2),
+        getViewportForBounds(viewBoundsRef.current, width, height, minZoom, maxZoom, viewportPadding),
         initialFitviewFlagRef.current ? { duration: 500 } : undefined
       )
       initialFitviewFlagRef.current = true
     },
-    [xyflow],
-    150
+    [xyflow, minZoom, maxZoom, viewportPadding],
+    100
   )
+
+  useUpdateEffect(() => {
+    fitview()
+  }, [containerviewport])
 
   useDeepCompareEffect(() => {
     const {
@@ -184,11 +199,11 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
 
     if (!nextSubjectNode) {
       console.error('Subject node not found')
-    } else if (nextSubjectNode.data.fqn !== subject.id) {
-      console.error(`Subject node mismatch, expected: ${subject.id} got: ${nextSubjectNode.data.fqn}`)
+    } else if (nextSubjectNode.data.fqn !== subjectId) {
+      console.error(`Subject node mismatch, expected: ${subjectId} got: ${nextSubjectNode.data.fqn}`)
     }
 
-    const nextzoom = getViewportForBounds(bounds, width, height, 0.2, 1, 0.2).zoom
+    const nextzoom = getViewportForBounds(bounds, width, height, minZoom, maxZoom, viewportPadding).zoom
 
     const nextSubjectCenter = nextSubjectNode && {
       x: nextSubjectNode.position.x + (nextSubjectNode.width ?? 0) / 2,
@@ -196,7 +211,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     }
 
     const existingNode = lastClickedNodeRef.current
-      ?? xyflow.getNodes().find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subject.id)
+      ?? xyflow.getNodes().find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subjectId)
     lastClickedNodeRef.current = null
     // Animate from existing node to next subject node
     if (nextSubjectCenter && existingNode && currentSubjectNode) {
@@ -271,15 +286,6 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
         })
       }
       requestAnimationFrame(layout)
-
-      // xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 250 }).then(() => {
-      //   // If the component is unmounted, we don't want to update the state
-      //   if (isCancelled) return
-      //   setNodes(nodes)
-      //   setEdges(edges)
-      //   xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
-      //   fitview()
-      // })
       return () => {
         isCancelled = true
       }
@@ -288,7 +294,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     setEdges(edges)
     fitview()
     return undefined
-  }, [nodes, edges])
+  }, [nodes, edges, subjectId])
 
   return (
     <ReactFlow
@@ -301,14 +307,14 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
       className={cssReactflowMarker}
       zoomOnPinch={true}
       zoomOnScroll={false}
-      zoomOnDoubleClick={false}
-      maxZoom={2}
-      minZoom={0.05}
+      zoomOnDoubleClick={zoomOnDoubleClick}
+      maxZoom={maxZoom}
+      minZoom={minZoom}
       fitView
       fitViewOptions={{
-        padding: 0.2,
-        maxZoom: 1,
-        minZoom: 0.1,
+        padding: viewportPadding,
+        maxZoom,
+        minZoom,
         includeHiddenNodes: true
       }}
       preventScrolling={true}
@@ -316,7 +322,6 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
       noPanClassName="nopan"
       panOnScroll
       panOnDrag
-      elementsSelectable
       nodesFocusable={false}
       edgesFocusable={false}
       nodesDraggable={false}
@@ -353,159 +358,29 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
       onEdgeMouseLeave={() => {
         resetDimmedAndHovered(xyflow)
       }}
-      onNodeClick={(e, node) => {
-        e.stopPropagation()
-        if (node.type === 'empty') return
-        lastClickedNodeRef.current = node
-        overlay.openOverlay({
-          relationshipsOf: node.data.fqn
-        })
-      }}
       onNodeDoubleClick={(e) => {
         e.stopPropagation()
       }}
-      onDoubleClick={e => {
-        e.stopPropagation()
-        fitview()
-      }}
-      onEdgeClick={(e, edge) => {
-        e.stopPropagation()
-        // One relation in edge
-        const relationId = only(edge.data.relations)?.id
-        if (relationId) {
-          diagramStore.getState().onOpenSourceRelation?.(relationId)
-          return
-        }
-
-        const nodeId = onlyOneUnique(edge.data, 'source') ? edge.source : edge.target
-        const next = xyflow.getNode(nodeId)
-        if (next && next.type !== 'empty') {
-          lastClickedNodeRef.current = next
-          overlay.openOverlay({
-            relationshipsOf: next.data.fqn
-          })
+      {...!zoomOnDoubleClick && {
+        onDoubleClick: e => {
+          e.stopPropagation()
+          fitview()
         }
       }}
+      {...rest}
     >
-      <Background variant={BackgroundVariant.Dots} size={2} gap={20} />
-      <Panel position="top-center">
-        <Group gap={'xs'} wrap={'nowrap'}>
-          <Button
-            leftSection={<IconArrowLeft stroke={3} size={14} />}
-            color="dimmed"
-            variant="subtle"
-            style={{
-              visibility: current > 0 ? 'visible' : 'hidden',
-              padding: '0.25rem 0.75rem'
-            }}
-            styles={{
-              label: {
-                fontWeight: 400
-              },
-              section: {
-                marginInlineEnd: 6
-              }
-            }}
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              historyOps.back()
-            }}>
-            Back
-          </Button>
-          <Space w={2} />
-          <Group gap={'xs'} pos={'relative'} wrap="nowrap" flex={'1 0 auto'}>
-            <Box fz={'sm'} fw={'400'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box>
-            <Box flex={'1 0 auto'}>
-              <SelectElement
-                scope={scope}
-                subject={subject.element}
-                onSelect={fqn =>
-                  overlay.openOverlay({
-                    relationshipsOf: fqn
-                  })}
-                viewId={view.id} />
-            </Box>
-            <SegmentedControl
-              flex={'1 0 auto'}
-              size="xs"
-              withItemsBorders={false}
-              value={scope}
-              onChange={setScope as any}
-              data={[
-                { label: 'Global', value: 'global' },
-                { label: 'Current view', value: 'view', disabled: !viewIncludesSubject }
-              ]}
-            />
-            {showSubjectWarning && (
-              <Box
-                pos={'absolute'}
-                top={'calc(100% + .5rem)'}
-                left={'50%'}
-                w={'max-content'}
-                style={{
-                  transform: 'translateX(-50%)',
-                  textAlign: 'center',
-                  cursor: 'pointer'
-                }}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setScope('global')
-                }}
-              >
-                <Text fw={500} size="xs" c="orange" component="div">
-                  Current view doesn't include this element, switched to Global
-                </Text>
-              </Box>
-            )}
-            {viewIncludesSubject && scope === 'view' && notIncludedRelations > 0 && (
-              <Box
-                pos={'absolute'}
-                top={'calc(100% + .5rem)'}
-                left={'50%'}
-                w={'max-content'}
-                style={{
-                  transform: 'translateX(-50%)',
-                  textAlign: 'center',
-                  cursor: 'pointer'
-                }}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setScope('global')
-                }}
-              >
-                <Text fw={500} size="xs" c="orange" component="div">
-                  View does not include {notIncludedRelations}{' '}
-                  relationship{notIncludedRelations > 1 ? 's' : ''}. Switch to Global to compare
-                </Text>
-              </Box>
-            )}
-          </Group>
-          <Button
-            rightSection={<IconArrowRight stroke={3} size={14} />}
-            color="dimmed"
-            variant="subtle"
-            style={{
-              visibility: current + 1 < history.length ? 'visible' : 'hidden',
-              padding: '0.25rem 0.75rem'
-            }}
-            styles={{
-              label: {
-                fontWeight: 400
-              },
-              section: {
-                marginInlineStart: 4
-              }
-            }}
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              historyOps.forward()
-            }}>
-            Forward
-          </Button>
-        </Group>
-      </Panel>
+      {/* <Background variant={BackgroundVariant.Dots} size={2} gap={20} /> */}
+      {children}
     </ReactFlow>
   )
-})
+}
+
+export function RelationshipsXYFlow(props: RelationshipsXYFlowProps) {
+  return (
+    <ReactFlowProvider
+      defaultNodes={[]}
+      defaultEdges={[]}>
+      <RelationshipsXYFlowWrapped {...props} />
+    </ReactFlowProvider>
+  )
+}

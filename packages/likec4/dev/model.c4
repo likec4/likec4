@@ -17,10 +17,19 @@ model {
       description '
         All the frontend applications
         of the cloud system
-      '
+      '      
+      link https://react.dev
+      metadata {
+        attr1 'value 1'
+        attr2 '
+          multiline
+          value
+        '
+      }
       style {
         shape browser
       }
+      
 
       dashboard = app 'Customer Dashboard' {
         technology 'Nextjs'

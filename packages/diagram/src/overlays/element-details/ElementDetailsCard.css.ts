@@ -20,8 +20,8 @@ export const card = style({
   pointerEvents: 'all',
   gap: mantine.spacing.lg,
   justifyContent: 'stretch',
-  overflow: 'hidden',
-  transformOrigin: 'center center',
+  // overflow: 'hidden',
+  // transformOrigin: 'center center',
   vars: {
     [cardBg]: mantine.colors.body,
     [cardBgImage]: `linear-gradient(180deg, ${vars.element.fill}, ${vars.element.fill} 4px, transparent 4px)`
@@ -43,7 +43,8 @@ export const card = style({
 })
 
 export const cardHeader = style({
-  flex: 0
+  flex: 0,
+  cursor: 'move'
 })
 
 globalStyle(`:where(${card}) .react-flow__attribution`, {
@@ -71,6 +72,7 @@ export const elementIcon = style({
   alignItems: 'center',
   justifyContent: 'center',
   alignSelf: 'flex-start',
+  cursor: 'move',
   selectors: {
     [`${whereDark} &`]: {
       mixBlendMode: 'hard-light'
@@ -252,9 +254,9 @@ export const propertiesGrid = style({
   display: 'grid',
   gridTemplateColumns: 'min-content 1fr',
   gridAutoRows: 'min-content max-content',
-  gap: `${rem(16)} ${rem(12)}`,
+  gap: `${rem(20)} ${rem(16)}`,
   alignItems: 'baseline',
-  justifyItems: 'start'
+  justifyItems: 'stretch'
 })
 
 export const propertyLabel = style({
@@ -287,4 +289,22 @@ globalStyle(`${elementLink} > *`, {
 globalStyle(`${elementLink}:hover > *`, {
   transitionTimingFunction: easings.out,
   transform: 'translateX(1px)'
+})
+
+export const resizeHandle = style({
+  position: 'absolute',
+  width: 14,
+  height: 14,
+  border: `3.5px solid ${mantine.colors.dark[3]}`,
+  borderTop: 'none',
+  borderLeft: 'none',
+  borderRadius: 2,
+  bottom: 2,
+  right: 2,
+  transition: transitions.fast,
+  cursor: 'se-resize',
+  ':hover': {
+    borderWidth: 4,
+    borderColor: mantine.colors.dark[1]
+  }
 })

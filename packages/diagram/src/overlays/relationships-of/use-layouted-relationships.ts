@@ -358,7 +358,6 @@ function layout(
   likec4model: LikeC4Model,
   scope: 'global' | 'view'
 ): {
-  view: DiagramView
   viewIncludesSubject: boolean
   notIncludedRelations: number
   subject: LikeC4ModelElement
@@ -645,7 +644,8 @@ function layout(
     // Grow empty nodes to fill the space
     if (node.type === 'empty') {
       const subjectBounds = nodeBounds(nonNullable(ctx.columns.subjects.get(subjectId), 'Subject node is missing').id)
-      node.position.y = subjectBounds.position.y + subjectBounds.height / 2 - subjectBounds.height / 2
+      node.height = Math.min(subjectBounds.height, 300)
+      node.position.y = subjectBounds.position.y + subjectBounds.height / 2 - node.height / 2
       if (node.data.column === 'incomers') {
         node.width = subjectBounds.position.x - Sizes.emptyNodeOffset - node.position.x
       } else {
@@ -665,7 +665,6 @@ function layout(
   }
 
   return {
-    view,
     viewIncludesSubject,
     notIncludedRelations: notIncludedRelations.size,
     subject: subjectElement,
@@ -680,8 +679,11 @@ function layout(
   }
 }
 
-export function useLayoutedRelationships(subjectId: Fqn, scope: 'global' | 'view') {
-  const view = useDiagramState(s => s.view)
+export function useLayoutedRelationships(
+  subjectId: Fqn,
+  view: DiagramView,
+  scope: 'global' | 'view'
+) {
   const likec4model = useLikeC4Model(true)
   return useMemo(() =>
     layout(

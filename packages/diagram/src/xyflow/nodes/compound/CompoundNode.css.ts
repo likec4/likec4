@@ -1,7 +1,7 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { mantine, vars } from '../../../theme-vars'
+import { mantine, vars, whereLight } from '../../../theme-vars'
 
 // For framer motion
 export const containerForFramer = style({
@@ -119,8 +119,7 @@ export const transparent = style({
   boxShadow: 'none',
   borderColor: `color-mix(in srgb , ${vars.element.stroke}, transparent ${fallbackVar(varBorderTransparency, '10%')})`,
   vars: {
-    [opacityDeltaOnHover]: '0',
-    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
+    [opacityDeltaOnHover]: '0'
   },
   ':before': {
     borderRadius: 'unset',
@@ -246,11 +245,12 @@ const btn = style({
     boxShadow: mantine.shadows.md
   },
   selectors: {
-    [`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) &`]: {
+    [`${whereLight} .likec4-compound-transparent &`]: {
       opacity: 0.85,
       vars: {
         '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`,
-        '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`
+        '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
+        '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
       }
     }
   }

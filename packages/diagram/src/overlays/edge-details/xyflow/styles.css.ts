@@ -1,5 +1,6 @@
 import { globalStyle, style } from '@vanilla-extract/css'
-import { mantine, vars, whereLight, xyvars } from '../../../theme-vars'
+import { mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
+import { mixColor } from '../../Overlays.css'
 
 export const elementNode = style({
   width: '100%',
@@ -85,19 +86,32 @@ export const cssShapeSvg = style({
 
 const DimmedTransitionDelay = '400ms'
 
-export const edgePath = style({
+export const edgeContainer = style({
   opacity: 1,
-  transition: 'all 0.2s ease-in-out',
-
+  transition: transitions.fast,
+  vars: {
+    [xyvars.edge.stroke]: vars.relation.lineColor,
+    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
+    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 50%)`,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 20%)`
+  },
   selectors: {
     [`&[data-edge-dimmed='true']`]: {
-      opacity: 0.1,
+      opacity: 0.2,
       transitionDelay: DimmedTransitionDelay
+    },
+    [`&[data-edge-dimmed='immediate']`]: {
+      opacity: 0.2
+    },
+    [`${whereDark} &`]: {
+      vars: {
+        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
+      }
     }
   }
 })
 
-export const edgeLabel = style({
+export const edgeLabel = style([edgeContainer, {
   padding: '2px 5px',
   fontFamily: vars.likec4.font,
   position: 'absolute',
@@ -110,16 +124,8 @@ export const edgeLabel = style({
   // if you have an interactive element, set pointer-events: all
   pointerEvents: 'all',
   textWrap: 'pretty',
-  whiteSpace: 'preserve-breaks',
-  opacity: 1,
-  transition: 'all 0.2s ease-in-out',
-  selectors: {
-    [`&[data-edge-dimmed='true']`]: {
-      opacity: 0.1,
-      transitionDelay: DimmedTransitionDelay
-    }
-  }
-})
+  whiteSpace: 'preserve-breaks'
+}])
 
 export const edgeLabelText = style({
   textAlign: 'center',

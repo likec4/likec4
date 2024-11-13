@@ -21,7 +21,7 @@ export function RelationshipEdge({
   return (
     <>
       <g
-        className={css.edgePath}
+        className={css.edgeContainer}
         data-edge-dimmed={data.dimmed}
         data-edge-hovered={data.hovered}
       >

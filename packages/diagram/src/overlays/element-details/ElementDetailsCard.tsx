@@ -3,6 +3,7 @@ import {
   type DiagramNode,
   type DiagramView,
   type EdgeId,
+  type Element,
   type Fqn,
   invariant,
   type Link,
@@ -16,6 +17,7 @@ import {
   Box,
   Card,
   CloseButton,
+  Code,
   CopyButton,
   Divider as MantineDivider,
   Flex,
@@ -37,7 +39,7 @@ import { useViewportSize } from '@mantine/hooks'
 import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
 import { useInternalNode } from '@xyflow/react'
 import clsx from 'clsx'
-import { m, useDragControls } from 'framer-motion'
+import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
 import { type ReactNode, useCallback, useState } from 'react'
 import {} from 'react-remove-scroll'
 import { clamp, find, isNullish, map, only, partition, pipe, unique } from 'remeda'
@@ -111,11 +113,6 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
   }))
   invariant(element, `DiagramNode with fqn ${fqn} not found`)
 
-  const xynodeCenter = xyflow.flowToScreenPosition({
-    x: xynode.internals.positionAbsolute.x + element.width / 2,
-    y: xynode.internals.positionAbsolute.y
-  })
-
   const likec4Model = useLikeC4Model(true)
   const elementModel = likec4Model.element(fqn)
   const viewId = currentView.id
@@ -166,21 +163,34 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
   }, [fqn, currentView.id])
   const controls = useDragControls()
 
-  const width = Math.min(700, windowWidth - MIN_PADDING * 2)
-  const height = Math.min(650, windowHeight - MIN_PADDING * 2)
+  const xynodeCenter = xyflow.flowToScreenPosition({
+    x: xynode.internals.positionAbsolute.x + element.width / 2,
+    y: xynode.internals.positionAbsolute.y
+  })
+
+  const _width = Math.min(700, windowWidth - MIN_PADDING * 2)
+  const _height = Math.min(650, windowHeight - MIN_PADDING * 2)
 
   const left = Math.round(
-    clamp(xynodeCenter.x - width / 2, {
+    clamp(xynodeCenter.x - _width / 2, {
       min: MIN_PADDING,
-      max: windowWidth - width - MIN_PADDING
+      max: windowWidth - _width - MIN_PADDING
     })
   )
   const top = Math.round(
-    clamp(xynodeCenter.y, {
+    clamp(xynodeCenter.y + 16, {
       min: MIN_PADDING,
-      max: windowHeight - height - MIN_PADDING
+      max: windowHeight - _height - MIN_PADDING
     })
   )
+
+  const width = useMotionValue(_width)
+  const height = useMotionValue(_height)
+
+  const handleDrag = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    width.set(Math.max(width.get() + info.delta.x, 300))
+    height.set(Math.max(height.get() + info.delta.y, 300))
+  }, [])
 
   return (
     <FocusTrap>
@@ -199,8 +209,8 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
           opacity: 0,
           top,
           left,
-          width,
-          height
+          width: _width,
+          height: _height
         }}
         animate={{
           opacity: 1
@@ -211,6 +221,11 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
             duration: .15
           }
         }}
+        // @ts-expect-error mantine can't accept motion values
+        style={{
+          width: width,
+          height: height
+        }}
         onKeyDown={e => {
           if (e.key === 'Escape') {
             e.preventDefault()
@@ -220,23 +235,25 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
         }}
         data-likec4-color={element.color}>
         <FocusTrapInitialFocus />
-        <Box className={css.cardHeader}>
-          <Group align="start" gap={'sm'} mb={'sm'} onPointerDown={e => controls.start(e)}>
-            {elementIcon}
-            <Box flex={'1 1 auto'}>
-              <Text
-                component={m.div}
-                layout="position"
-                layoutId={`${viewId}:element:title:${fqn}`}
-                className={css.title}>
-                {elementModel.title}
-              </Text>
-              {element.notation && (
-                <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
-                  {element.notation}
+        <Box className={css.cardHeader} onPointerDown={e => controls.start(e)}>
+          <Group align="start" justify="space-between" gap={'sm'} mb={'sm'}>
+            <Group align="start" gap={'sm'} style={{ cursor: 'default' }}>
+              {elementIcon}
+              <Box>
+                <Text
+                  component={m.div}
+                  layout="position"
+                  layoutId={`${viewId}:element:title:${fqn}`}
+                  className={css.title}>
+                  {elementModel.title}
                 </Text>
-              )}
-            </Box>
+                {element.notation && (
+                  <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
+                    {element.notation}
+                  </Text>
+                )}
+              </Box>
+            </Group>
             <CloseButton
               size={'lg'}
               onClick={e => {
@@ -308,9 +325,6 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
         </Box>
 
         <Tabs
-          // component={m.div}
-          // // @ts-expect-error invalid polymorphic types for Tabs
-          // layout
           value={activeTab}
           onChange={v => setActiveTab(v as any)}
           variant="none"
@@ -337,7 +351,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
 
           <TabsPanel value="Properties">
             <ScrollArea scrollbars="y" type="auto">
-              <Box className={css.propertiesGrid}>
+              <Box className={css.propertiesGrid} pt={'xs'}>
                 <ElementProperty title="description" value={element.description} emptyValue="no description" />
                 <ElementProperty title="technology" value={element.technology} />
                 {element.links && (
@@ -348,6 +362,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                     </Stack>
                   </>
                 )}
+                {elementModel.element.metadata && <ElementMetata value={elementModel.element.metadata} />}
               </Box>
             </ScrollArea>
           </TabsPanel>
@@ -401,6 +416,14 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
             </ScrollArea>
           </TabsPanel>
         </Tabs>
+        <m.div
+          className={css.resizeHandle}
+          drag
+          dragElastic={0}
+          dragMomentum={false}
+          onDrag={handleDrag}
+          dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+        />
       </Card>
     </FocusTrap>
   )
@@ -539,4 +562,21 @@ function ElementLink({
   //   </Button>
   //  </Box>
   // )
+}
+
+function ElementMetata({
+  value
+}: {
+  value: NonNullable<Element['metadata']>
+}) {
+  return (
+    <>
+      <PropertyLabel>metadata</PropertyLabel>
+      <Box>
+        <Code block>
+          {JSON.stringify(value, null, 2)}
+        </Code>
+      </Box>
+    </>
+  )
 }

@@ -16,7 +16,7 @@ export function EmptyNode({
 }: EmptyNodeProps) {
   return (
     <Box className={css.emptyNode}>
-      <Text c={'dimmed'} fw={500}>No {column === 'incomers' ? 'incoming' : 'outgoing'}</Text>
+      <Text c={'dimmed'} fz={'lg'} fw={500}>No {column === 'incomers' ? 'incoming' : 'outgoing'}</Text>
     </Box>
   )
 }
