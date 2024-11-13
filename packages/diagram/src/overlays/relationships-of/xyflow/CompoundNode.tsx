@@ -1,3 +1,4 @@
+import { delay } from '@likec4/core'
 import { Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
@@ -18,17 +19,28 @@ export const CompoundNode = memo<CompoundNodeProps>(({
   data: {
     element,
     ports,
-    skipInitialAnimation = false,
+    layoutId = id,
+    leaving = false,
+    initialAnimation = true,
     ...data
   },
   width = 200,
   height = 100,
+
   selectable = true
 }) => {
   const scale = (diff: number) => ({
     scaleX: (width + diff) / width,
     scaleY: (height + diff) / height
   })
+
+  let opacity = 1
+  if (data.dimmed) {
+    opacity = data.dimmed === 'immediate' ? 0.05 : 0.15
+  }
+  if (leaving) {
+    opacity = 0
+  }
 
   return (
     <>
@@ -37,25 +49,34 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           css.compoundNodeBody,
           'likec4-compound-node'
         ])}
-        layoutId={id}
+        layoutId={layoutId}
         data-compound-depth={3}
         data-likec4-color={element.color}
-        initial={{
-          ...scale(-20),
-          opacity: 0
-        }}
+        initial={(layoutId === id && initialAnimation)
+          ? {
+            ...scale(-20),
+            opacity: 0,
+            width,
+            height
+          }
+          : false}
         animate={{
           ...scale(0),
-          opacity: data.dimmed ? 0.15 : 1,
+          opacity,
+          width,
+          height,
           transition: {
-            delay: data.dimmed === true ? .4 : 0,
-            ...(data.dimmed === 'immediate' && {
-              duration: 0
-            })
+            opacity: {
+              delay: !leaving && data.dimmed === true ? .4 : 0,
+              ...((leaving || data.dimmed === 'immediate') && {
+                duration: 0.09
+              })
+            }
           }
         }}
         {...(selectable && {
           whileHover: {
+            ...scale(12),
             scaleX: (width + 12) / width,
             scaleY: (height + 12) / height,
             transition: {
@@ -63,12 +84,11 @@ export const CompoundNode = memo<CompoundNodeProps>(({
             }
           },
           whileTap: {
-            scaleX: (width - 16) / width,
-            scaleY: (height - 16) / height
+            ...scale(-12)
           }
         })}
       >
-        <Text component={m.div} layoutId={`${id}:title`} className={css.compoundNodeTitle} maw={width - 20}>
+        <Text className={css.compoundNodeTitle} maw={width - 20}>
           {element.title}
         </Text>
       </m.div>

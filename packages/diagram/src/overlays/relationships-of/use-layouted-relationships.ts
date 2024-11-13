@@ -233,7 +233,10 @@ function createNode(
   const xynodes = ctx.columns[column]
   let node = xynodes.get(element.id)
   if (node) {
-    invariant(node.type !== 'empty', `Node ${element.id} is empty`)
+    invariant(node.type !== 'empty', `Unexpected empty Node type ${element.id}: ${node.type}, expect ${nodeType}`)
+    if (node.type === 'element' && nodeType === 'compound') {
+      throw new Error(`Unexpected Node type ${element.id}: ${node.type}, expect ${nodeType}`)
+    }
     return node
   }
   const g = ctx.g
@@ -332,7 +335,6 @@ function addEdge(
       type: MarkerType.ArrowClosed,
       width: isMultiple ? 7 : 9
     },
-    className: css.edge,
     style: {
       strokeWidth: isMultiple ? 5 : 2.8,
       strokeDasharray: isMultiple ? undefined : '5, 5'
@@ -521,8 +523,8 @@ function layout(
       const isAnyCompound = source.type === 'compound' || target.type === 'compound'
 
       g.setEdge(graphId(source).port, graphId(target).port, {
-        ...Sizes.edgeLabel,
-        weight: isAnyCompound ? 1 : 2
+        ...Sizes.edgeLabel
+        // weight: isAnyCompound ? 1 : 2
       })
 
       addEdge(ctx, {
@@ -642,15 +644,15 @@ function layout(
   for (const node of xynodes) {
     // Grow empty nodes to fill the space
     if (node.type === 'empty') {
-      // const subjectPosition = nodebounds(subject.id)
-      // node.position.y = subjectPosition.position.y + subjectPosition.height / 2 - node.height / 2
-      // if (node.data.column === 'incomers') {
-      //   node.width = subjectPosition.position.x - Sizes.emptyNodeOffset - node.position.x
-      // } else {
-      //   const rightX = node.position.x + node.width
-      //   node.position.x = subjectPosition.position.x + subjectPosition.width + Sizes.emptyNodeOffset
-      //   node.width = rightX - node.position.x
-      // }
+      const subjectBounds = nodeBounds(nonNullable(ctx.columns.subjects.get(subjectId), 'Subject node is missing').id)
+      node.position.y = subjectBounds.position.y + subjectBounds.height / 2 - subjectBounds.height / 2
+      if (node.data.column === 'incomers') {
+        node.width = subjectBounds.position.x - Sizes.emptyNodeOffset - node.position.x
+      } else {
+        const rightX = node.position.x + node.width!
+        node.position.x = subjectBounds.position.x + subjectBounds.width + Sizes.emptyNodeOffset
+        node.width = rightX - node.position.x
+      }
       continue
     }
     // Sort ports by their position

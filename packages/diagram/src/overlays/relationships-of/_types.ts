@@ -28,7 +28,12 @@ export namespace XYFlowTypes {
     }
     navigateTo: ViewID | null
     hovered?: boolean
-    skipInitialAnimation?: boolean
+    layoutId?: string
+    leaving?: boolean
+    /**
+     * @default true
+     */
+    initialAnimation?: boolean
     /**
      * Whether the node is dimmed
      * 'immediate' means that the node is dimmed without delay
@@ -47,7 +52,10 @@ export namespace XYFlowTypes {
       column: 'incomers' | 'subjects' | 'outgoers'
       hovered?: boolean
       dimmed?: boolean
-      skipInitialAnimation?: boolean
+      /**
+       * @default true
+       */
+      initialAnimation?: boolean
     }, 'empty'>,
     'type'
   >
@@ -59,7 +67,7 @@ export namespace XYFlowTypes {
       relations: [Relation, ...Relation[]]
       includedInCurrentView: boolean
       hovered?: boolean
-      dimmed?: boolean
+      dimmed?: 'immediate' | boolean
     }
     type: 'relation'
   }

@@ -1,6 +1,7 @@
 import { hasAtLeast, invariant } from '@likec4/core'
 import type { DiagramEdge, Point } from '@likec4/core'
-import type { Rect, XYPosition } from '@xyflow/react'
+import type { InternalNode, Rect, XYPosition } from '@xyflow/react'
+import { getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import { isArray } from 'remeda'
 import type { InternalXYFlowNode } from './types'
@@ -86,4 +87,12 @@ export function distanceBetweenPoints(a: XYPosition, b: XYPosition) {
 
 export function stopPropagation(e: React.MouseEvent) {
   return e.stopPropagation()
+}
+
+export function centerXYInternalNode<N extends InternalNode>(nd: N) {
+  const { width, height } = getNodeDimensions(nd)
+  return {
+    x: nd.internals.positionAbsolute.x + width / 2,
+    y: nd.internals.positionAbsolute.y + height / 2
+  }
 }

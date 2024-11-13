@@ -69,12 +69,8 @@ globalStyle(`:where(${cssReactflowMarker}) .react-flow__attribution`, {
   display: 'none'
 })
 globalStyle(`:where(${cssReactflowMarker}) .react-flow__edge-text`, {
-  fontSize: 14
+  fontSize: 16
 })
-globalStyle(`:where(${cssReactflowMarker}) .react-flow__node-compound`, {
-  mixBlendMode: 'hard-light'
-})
-
 globalStyle(`${cssReactflowMarker} .react-flow__edges > svg`, {
   mixBlendMode: 'plus-lighter'
 })

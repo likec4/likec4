@@ -187,8 +187,8 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
       <Card
         drag
         dragElastic={0}
+        dragMomentum={false}
         dragListener={false}
-        dragTransition={{ power: 0.1, timeConstant: 100 }}
         dragControls={controls}
         withBorder
         shadow="md"

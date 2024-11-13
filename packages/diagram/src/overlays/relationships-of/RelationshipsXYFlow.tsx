@@ -1,4 +1,4 @@
-import { type Fqn, isAncestor, type Relation } from '@likec4/core'
+import { delay, type Fqn, isAncestor, type Relation } from '@likec4/core'
 import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
 import { useId, useLocalStorage, useStateHistory } from '@mantine/hooks'
 import { useDebouncedCallback, useDeepCompareEffect, useSyncedRef } from '@react-hookz/web'
@@ -15,10 +15,10 @@ import {
   useStoreApi
 } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
-import { deepEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
-import { isNullish, map, only, pipe, prop, set, setPath, unique } from 'remeda'
+import { isNullish, map, omit, only, prop, setPath, unique } from 'remeda'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
+import { centerXYInternalNode } from '../../xyflow/utils'
 import { useOverlayDialog } from '../OverlayContext'
 import { cssReactflowMarker } from '../Overlays.css'
 import type { XYFlowTypes } from './_types'
@@ -145,15 +145,17 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
     }
   })
 
-  const viewBounds = useSyncedRef(bounds)
+  const initialFitviewFlagRef = useRef(false)
+  const viewBoundsRef = useSyncedRef(bounds)
 
   const fitview = useDebouncedCallback(
     () => {
       const { width, height } = xystore.getState()
       xyflow.setViewport(
-        getViewportForBounds(viewBounds.current, width, height, 0.2, 1, 0.2),
-        { duration: 500 }
+        getViewportForBounds(viewBoundsRef.current, width, height, 0.2, 1, 0.2),
+        initialFitviewFlagRef.current ? { duration: 500 } : undefined
       )
+      initialFitviewFlagRef.current = true
     },
     [xyflow],
     150
@@ -174,7 +176,7 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
 
     // If subject node is the same, don't animate
     if (currentSubjectNode && nextSubjectNode?.data.fqn === currentSubjectNode.data.fqn) {
-      setNodes(nodes)
+      setNodes(map(nodes, setPath(['data', 'initialAnimation'], false)))
       setEdges(edges)
       fitview()
       return
@@ -197,14 +199,41 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
       ?? xyflow.getNodes().find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subject.id)
     lastClickedNodeRef.current = null
     // Animate from existing node to next subject node
-    if (nextSubjectCenter && existingNode) {
+    if (nextSubjectCenter && existingNode && currentSubjectNode) {
+      // Center of current subject
+      const currentSubjectInternalNode = xyflow.getInternalNode(currentSubjectNode.id)!
+      const currentSubjectCenter = centerXYInternalNode(currentSubjectInternalNode)
+
+      // Move to center of existing node
+      const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
+      const existingDimensions = getNodeDimensions(existingInternalNode)
+      nextSubjectNode.data.layoutId = existingNode.id
+
       // Dim all nodes except the existing node
       setNodes(_nodes.map(n => {
+        if (n.id !== existingNode.id) {
+          return {
+            ...n,
+            data: {
+              ...n.data,
+              leaving: n.data.column === 'subjects',
+              dimmed: n.data.column === 'subjects' ? 'immediate' : false
+            }
+            // hidden: n.data.column === 'subjects'
+          } as XYFlowTypes.Node
+        }
+        // Move existing node
         return {
-          ...n,
+          ...omit(n, ['parentId']),
+          position: {
+            x: currentSubjectCenter.x - existingDimensions.width / 2,
+            y: currentSubjectCenter.y - existingDimensions.height / 2
+          },
+          zIndex: ZIndexes.max,
           data: {
             ...n.data,
-            dimmed: n.id !== existingNode.id ? 'immediate' : false
+            leaving: false,
+            dimmed: false
           }
         } as XYFlowTypes.Node
       }))
@@ -212,49 +241,60 @@ export const RelationshipsXYFlow = memo<{ subjectId: Fqn }>(function Relationshi
         ...e,
         data: {
           ...e.data,
-          dimmed: true
-        }
+          dimmed: 'immediate' as const
+        },
+        hidden: e.source === existingNode.id
+          || e.target === existingNode.id
+          || isAncestor(existingNode.id, e.source)
+          || isAncestor(existingNode.id, e.target)
       })))
-
-      // Move to center of existing node
-      const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
-      const existingDimensions = getNodeDimensions(existingInternalNode)
-      const existingCenter = {
-        x: existingInternalNode.internals.positionAbsolute.x + existingDimensions.width / 2,
-        y: existingInternalNode.internals.positionAbsolute.y + existingDimensions.height / 2
-      }
 
       // Pick the smaller zoom level
       const zoom = Math.min(
         xyflow.getViewport().zoom,
-        nextzoom,
-        nextSubjectNode.width! / existingDimensions.width,
-        nextSubjectNode.height! / existingDimensions.height
+        nextzoom
       )
 
       let isCancelled = false
 
-      xyflow.setCenter(existingCenter.x, existingCenter.y, { zoom, duration: 350 }).then(() => {
-        // If the component is unmounted, we don't want to update the state
+      const layout = async () => {
+        // allow frameer to render
+        await delay(150)
         if (isCancelled) return
-        setNodes(nodes)
-        setEdges(edges)
-        xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom: nextzoom })
-        fitview()
-      })
+        await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 250 })
+        requestAnimationFrame(() => {
+          if (isCancelled) return
+          xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
+          setNodes(nodes)
+          setEdges(edges)
+          fitview()
+        })
+      }
+      requestAnimationFrame(layout)
+
+      // xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 250 }).then(() => {
+      //   // If the component is unmounted, we don't want to update the state
+      //   if (isCancelled) return
+      //   setNodes(nodes)
+      //   setEdges(edges)
+      //   xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
+      //   fitview()
+      // })
       return () => {
         isCancelled = true
       }
     }
-    setNodes(map(nodes, setPath(['data', 'skipInitialAnimation'], true)))
+    setNodes(map(nodes, setPath(['data', 'initialAnimation'], false)))
     setEdges(edges)
     fitview()
     return undefined
   }, [nodes, edges])
 
   return (
-    <ReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>
+    <ReactFlow
       id={id}
+      defaultEdges={[] as XYFlowTypes.Edge[]}
+      defaultNodes={[] as XYFlowTypes.Node[]}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       defaultMarkerColor="var(--likec4-relation-lineColor)"

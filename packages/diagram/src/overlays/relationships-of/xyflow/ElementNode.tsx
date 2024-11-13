@@ -40,7 +40,9 @@ export const ElementNode = memo<ElementNodeProps>(({
     element,
     ports,
     navigateTo,
-    skipInitialAnimation = false,
+    layoutId = id,
+    leaving = false,
+    initialAnimation = true,
     ...data
   },
   selectable = true,
@@ -59,6 +61,14 @@ export const ElementNode = memo<ElementNodeProps>(({
     scaleY: (h + diff) / h
   })
 
+  let opacity = 1
+  if (data.dimmed) {
+    opacity = data.dimmed === 'immediate' ? 0.05 : 0.15
+  }
+  if (leaving) {
+    opacity = 0
+  }
+
   return (
     <>
       <m.div
@@ -66,20 +76,28 @@ export const ElementNode = memo<ElementNodeProps>(({
           css.elementNode,
           'likec4-element-node'
         ])}
-        layoutId={id}
+        layoutId={layoutId}
         data-likec4-color={element.color}
-        initial={{
-          ...scale(-20),
-          opacity: 0
-        }}
+        initial={(layoutId === id && initialAnimation)
+          ? {
+            ...scale(-20),
+            opacity: 0,
+            width: w,
+            height: h
+          }
+          : false}
         animate={{
           ...scale(0),
-          opacity: data.dimmed ? 0.15 : 1,
+          opacity,
+          width: w,
+          height: h,
           transition: {
-            delay: data.dimmed === true ? .4 : 0,
-            ...(data.dimmed === 'immediate' && {
-              duration: 0
-            })
+            opacity: {
+              delay: !leaving && data.dimmed === true ? .4 : 0,
+              ...((leaving || data.dimmed === 'immediate') && {
+                duration: 0.09
+              })
+            }
           }
         }}
         {...(selectable && {
@@ -105,7 +123,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           <ElementShapeSvg shape={element.shape} w={w} h={h} />
         </svg>
         <Box className={css.elementNodeContent}>
-          <Text component={m.div} layoutId={`${id}:title`} className={css.elementNodeTitle} lineClamp={2}>
+          <Text className={css.elementNodeTitle} lineClamp={2}>
             {element.title}
           </Text>
           {element.description && (
