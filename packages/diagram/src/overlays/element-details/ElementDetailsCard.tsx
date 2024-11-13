@@ -222,10 +222,10 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
             duration: .15
           }
         }}
-        // @ts-expect-error mantine can't accept motion values
         style={{
-          width: width,
-          height: height
+          // `style` prop in Mantine doesn't accept motion values
+          width: width as any,
+          height: height as any
         }}
         onKeyDown={e => {
           if (e.key === 'Escape') {
@@ -356,9 +356,11 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                 <ElementProperty title="description" emptyValue="no description">
                   {element.description}
                 </ElementProperty>
-                <ElementProperty title="technology">
-                  {element.technology}
-                </ElementProperty>
+                {element.technology && (
+                  <ElementProperty title="technology">
+                    {element.technology}
+                  </ElementProperty>
+                )}
                 {element.links && (
                   <>
                     <PropertyLabel>links</PropertyLabel>

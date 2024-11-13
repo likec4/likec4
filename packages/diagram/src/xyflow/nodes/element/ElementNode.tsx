@@ -313,7 +313,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
               onDoubleClick={stopPropagation}
               {...isInteractive && animateHandlers}
             >
-              <IconId style={{ width: '75%' }} />
+              <IconId stroke={1.8} style={{ width: '75%' }} />
             </ActionIcon>
           </Tooltip>
         )}

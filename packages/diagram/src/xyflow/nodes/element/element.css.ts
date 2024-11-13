@@ -367,7 +367,6 @@ export const detailsBtn = style([btn, {
   right: 2,
   selectors: {
     [`:where([data-likec4-shape='browser']) &`]: {
-      top: 3,
       right: 5
     },
     ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {

@@ -1,9 +1,10 @@
 import { type DiagramView, type EdgeId, type LikeC4Model, nameFromFqn, nonNullable } from '@likec4/core'
-import { Box, Group, Paper, Stack, Text, ThemeIcon } from '@mantine/core'
-import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
-import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
-import { LayoutGroup } from 'framer-motion'
+import { Box, Button, Group, Paper, SegmentedControl, Stack, Text, ThemeIcon } from '@mantine/core'
+import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
+import { Panel } from '@xyflow/react'
+import { useState } from 'react'
 import { unique } from 'remeda'
+import { useOverlayDialog } from '../OverlayContext'
 import { RelationshipsXYFlow } from '../relationships-of/RelationshipsXYFlow'
 import { useLayoutedRelationships } from '../relationships-of/use-layouted-relationships'
 import * as css from './TabPanelRelationships.css'
@@ -17,6 +18,8 @@ export function TabPanelRelationships({
   currentView,
   element
 }: RelationshipsTabPanelProps) {
+  const overlay = useOverlayDialog()
+  const [scope, setScope] = useState<'global' | 'view'>('view')
   const node = nonNullable(currentView.nodes.find((n) => n.id === element.id))
 
   const incoming = element.incoming().map(r => r.id)
@@ -36,7 +39,7 @@ export function TabPanelRelationships({
     edges,
     nodes,
     bounds
-  } = useLayoutedRelationships(element.id, currentView, 'view')
+  } = useLayoutedRelationships(element.id, currentView, scope)
 
   return (
     <Stack gap={'xs'} pos={'relative'} w={'100%'} h={'100%'}>
@@ -86,7 +89,37 @@ export function TabPanelRelationships({
           edges={edges}
           view={currentView}
           elementsSelectable={false}
-        />
+        >
+          <Panel position="top-left">
+            <SegmentedControl
+              size="xs"
+              withItemsBorders={false}
+              value={scope}
+              onChange={setScope as any}
+              data={[
+                { label: 'Global', value: 'global' },
+                { label: 'View', value: 'view' }
+              ]}
+            />
+          </Panel>
+          <Panel position="top-right">
+            <Button
+              size="compact-sm"
+              variant="default"
+              fz={'xs'}
+              fw={500}
+              rightSection={<IconExternalLink stroke={1.6} style={{ width: 16 }} />}
+              onClick={(e) => {
+                e.stopPropagation()
+                overlay.openOverlay({
+                  relationshipsOf: element.id
+                })
+              }}
+            >
+              Open
+            </Button>
+          </Panel>
+        </RelationshipsXYFlow>
       </Box>
     </Stack>
   )
