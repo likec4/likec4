@@ -54,7 +54,7 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
 
     /**
      * Enable popup with element details
-     * @default false
+     * @default true
      */
     enableElementDetails?: boolean | undefined
 
@@ -89,7 +89,7 @@ export function LikeC4Browser<
   mantineTheme,
   background = 'dots',
   styleNonce,
-  enableElementDetails = false,
+  enableElementDetails = true,
   enableRelationshipBrowser = enableElementDetails,
   enableRelationshipDetails = enableRelationshipBrowser
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {

@@ -149,7 +149,7 @@ export interface LikeC4DiagramProperties {
   enableFocusMode?: boolean | undefined
 
   /**
-   * Enable popup with element details
+   * Enable modal with element details
    * @default false
    */
   enableElementDetails?: boolean | undefined

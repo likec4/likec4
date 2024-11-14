@@ -1,6 +1,6 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
 import { isEmpty } from 'remeda'
 import { rootClassName } from './globals.css'
@@ -37,8 +37,8 @@ export function LikeC4Diagram({
   enableDynamicViewWalkthrough = false,
   enableFocusMode = false,
   enableElementDetails = false,
-  enableRelationshipBrowser = enableElementDetails,
-  enableRelationshipDetails = enableRelationshipBrowser,
+  enableRelationshipDetails = enableElementDetails,
+  enableRelationshipBrowser = enableRelationshipDetails,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -98,21 +98,21 @@ export function LikeC4Diagram({
             keepAspectRatio={keepAspectRatio}
             className={clsx(rootClassName, className)}
             readonly={readonly}
+            experimentalEdgeEditing={!readonly && experimentalEdgeEditing}
             pannable={pannable}
             zoomable={zoomable}
+            nodesDraggable={nodesDraggable}
+            nodesSelectable={nodesSelectable || enableFocusMode}
             hasLikeC4Model={hasLikec4model}
             fitViewEnabled={fitView}
             fitViewPadding={fitViewPadding}
             controls={controls}
             showNavigationButtons={showNavigationButtons && !!onNavigateTo}
             showNotations={showNotations}
+            enableFocusMode={enableFocusMode}
             enableRelationshipDetails={enableRelationshipDetails && hasLikec4model}
-            nodesDraggable={nodesDraggable}
-            nodesSelectable={nodesSelectable}
-            experimentalEdgeEditing={experimentalEdgeEditing}
             enableElementDetails={enableElementDetails && hasLikec4model}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-            enableFocusMode={enableFocusMode}
             enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model}
             // Apply where filter only in readonly mode
             whereFilter={readonly ? (where ?? null) : null}
@@ -162,8 +162,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
     pannable: s.pannable,
     fitView: s.fitViewEnabled,
     enableFocusMode: s.enableFocusMode,
-    enableOverlays: s.hasLikeC4Model
-      && (s.enableRelationshipBrowser || s.enableRelationshipDetails || s.enableElementDetails)
+    enableOverlays: s.hasLikeC4Model && (s.enableRelationshipBrowser || s.enableElementDetails)
   }))
 
   return (
@@ -192,5 +191,5 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
       )}
     </>
   )
-}, shallowEqual)
+}, deepEqual)
 LikeC4DiagramInnerMemo.displayName = 'LikeC4DiagramInnerMemo'

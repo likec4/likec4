@@ -112,8 +112,8 @@ export function LikeC4ViewEmbedded<
   enableFocusMode = false,
   showNotations = false,
   enableElementDetails = false,
-  enableRelationshipBrowser = enableElementDetails,
-  enableRelationshipDetails = enableRelationshipBrowser,
+  enableRelationshipDetails = enableElementDetails,
+  enableRelationshipBrowser = enableRelationshipDetails,
   mantineTheme,
   where,
   style,
@@ -123,6 +123,10 @@ export function LikeC4ViewEmbedded<
 
   const onNavigateTo = useCallbackRef((to: string) => {
     _onNavigateTo?.(to as ViewId)
+  })
+
+  const onNavigateToMe = useCallbackRef(() => {
+    _onNavigateTo?.(view.id)
   })
 
   const notations = view.notation?.elements ?? []
@@ -147,14 +151,7 @@ export function LikeC4ViewEmbedded<
         {...shadowRootProps}
         injectFontCss={injectFontCss}
         className={clsx('likec4-view', className)}
-        style={style}
-        {...(_onNavigateTo && {
-          onClick: (e) => {
-            e.stopPropagation()
-            onNavigateTo(view.id)
-          }
-        })}
-      >
+        style={style}>
         <ShadowRootMantineProvider
           theme={mantineTheme}
           colorScheme={colorScheme}
@@ -185,7 +182,9 @@ export function LikeC4ViewEmbedded<
             renderIcon={renderIcon}
             where={where}
             {...(_onNavigateTo && {
-              onNavigateTo
+              onNavigateTo,
+              onCanvasClick: onNavigateToMe,
+              onNodeClick: onNavigateToMe
             })}
           />
         </ShadowRootMantineProvider>

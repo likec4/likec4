@@ -1,27 +1,34 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { easings, mantine, transitions, vars, whereDark, whereLight } from '../../theme-vars'
-import { ZIndexes } from '../Overlays.css'
-
-// export const overlayPlaceInCenter = style({
-//   pointerEvents: 'none',
-//   position: 'fixed',
-//   // alignItems: 'start',
-//   inset: 0,
-//   zIndex: ZIndexes.container
-// })
 
 export const cardBg = createVar('card-bg')
 const cardBgImage = createVar('card-bg-top')
 
-export const card = style({
+export const dialog = style({
   position: 'fixed',
-  zIndex: ZIndexes.elementDetails,
+  inset: 0,
+  width: '100%',
+  height: '100%',
+  maxWidth: '100%',
+  maxHeight: '100%',
+  background: 'transparent',
+  vars: {
+    '--backdrop-blur': '0px'
+  },
+  selectors: {
+    [`&::backdrop`]: {
+      WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
+      backdropFilter: 'blur(var(--backdrop-blur))',
+      backgroundColor: `rgb(36 36 36 / 20%)`
+    }
+  }
+})
+export const card = style({
+  position: 'absolute',
   pointerEvents: 'all',
   gap: mantine.spacing.lg,
   justifyContent: 'stretch',
-  // overflow: 'hidden',
-  // transformOrigin: 'center center',
   vars: {
     [cardBg]: mantine.colors.body,
     [cardBgImage]: `linear-gradient(180deg, ${vars.element.fill}, ${vars.element.fill} 4px, transparent 4px)`

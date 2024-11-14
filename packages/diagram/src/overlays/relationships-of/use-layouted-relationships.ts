@@ -13,7 +13,7 @@ import {
   parentFqn,
   type RelationID
 } from '@likec4/core'
-import { getBoundsOfRects, MarkerType, type Rect } from '@xyflow/system'
+import { MarkerType } from '@xyflow/system'
 import { useMemo } from 'react'
 import {
   filter,
@@ -37,10 +37,8 @@ import {
   takeWhile,
   tap
 } from 'remeda'
-import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
 import type { XYFlowTypes } from './_types'
-import * as css from './xyflow/styles.css'
 
 const columns = ['incomers', 'subjects', 'outgoers'] as const
 type ColumnKey = typeof columns[number]
@@ -67,7 +65,7 @@ const Sizes = {
     weight: 1
   } satisfies EdgeConfig,
 
-  emptyNodeOffset: 150,
+  emptyNodeOffset: 120,
 
   nodeWidth: 320,
   hodeHeight: 180,
@@ -218,8 +216,11 @@ function createEmptyNode(
   const k = graphId(xynode)
 
   const emptyContainer = id + '__container'
-  ctx.g.setNode(emptyContainer, sized())
-  ctx.g.setNode(k.id, sized())
+  ctx.g.setNode(emptyContainer, {})
+  ctx.g.setNode(k.id, {
+    width: Sizes.nodeWidth - 20,
+    height: Sizes.hodeHeight
+  })
   ctx.g.setParent(k.id, emptyContainer)
   return xynode
 }

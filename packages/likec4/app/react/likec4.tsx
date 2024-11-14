@@ -83,8 +83,8 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
   showNotations = false,
   enableFocusMode = false,
   enableElementDetails = false,
-  enableRelationshipBrowser = enableElementDetails,
-  enableRelationshipDetails = enableRelationshipBrowser,
+  enableRelationshipDetails = false,
+  enableRelationshipBrowser = enableRelationshipDetails,
   browserClassName,
   browserStyle,
   mantineTheme,
@@ -124,13 +124,13 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
         onNavigateTo={interactive ? onNavigateTo : undefined}
         background={background}
         renderIcon={RenderIcon}
-        enableElementDetails={false}
-        enableRelationshipBrowser={false}
-        enableRelationshipDetails={false}
         showDiagramTitle={showDiagramTitle}
         showNavigationButtons={showNavigationButtons}
         showNotations={showNotations}
         enableFocusMode={enableFocusMode}
+        enableElementDetails={enableElementDetails}
+        enableRelationshipBrowser={enableRelationshipBrowser}
+        enableRelationshipDetails={enableRelationshipDetails}
         where={where}
         mantineTheme={mantineTheme}
         styleNonce={styleNonce}
@@ -150,9 +150,9 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
           style={browserStyle}
           mantineTheme={mantineTheme}
           styleNonce={styleNonce}
-          enableElementDetails={enableElementDetails}
-          enableRelationshipBrowser={enableRelationshipBrowser}
-          enableRelationshipDetails={enableRelationshipDetails}
+          enableElementDetails
+          enableRelationshipBrowser
+          enableRelationshipDetails
         />
       )}
     </LikeC4ModelProvider>

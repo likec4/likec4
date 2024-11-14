@@ -1,4 +1,4 @@
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { memo } from 'react'
 import { isNonNullish } from 'remeda'
 import { useDiagramState } from '../hooks/useDiagramState'
@@ -44,5 +44,5 @@ export const XYFlowInner = /* @__PURE__ */ memo(function XYFlowInnerR({
       {showNotations && <NotationPanel />}
     </>
   )
-}, shallowEqual)
+}, deepEqual)
 XYFlowInner.displayName = 'XYFlowInner'

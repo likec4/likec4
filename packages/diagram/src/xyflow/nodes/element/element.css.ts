@@ -5,7 +5,9 @@ import { mantine, vars } from '../../../theme-vars'
 export const stokeFillMix = createVar('stroke-fill-mix')
 
 export const container = style({
-  position: 'relative',
+  position: 'absolute',
+  top: 0,
+  left: 0,
   width: '100%',
   height: '100%',
   padding: 0,
@@ -310,6 +312,8 @@ export const shapeSvg = style({
   top: 0,
   left: 0,
   position: 'absolute',
+  width: '100%',
+  height: '100%',
   pointerEvents: 'none',
   fill: vars.element.fill,
   stroke: vars.element.stroke,

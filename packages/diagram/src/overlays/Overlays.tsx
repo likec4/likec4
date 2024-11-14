@@ -3,12 +3,12 @@ import { useHotkeys } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { AnimatePresence, m } from 'framer-motion'
-import { memo, useMemo, useRef } from 'react'
+import { memo, type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
 import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
 import { ElementDetailsCard } from './element-details/ElementDetailsCard'
-import { OverlayContext } from './OverlayContext'
+import { OverlayContext, useOverlayDialog } from './OverlayContext'
 import * as css from './Overlays.css'
 import { RelationshipsOverlay } from './relationships-of/RelationshipsOverlay'
 
@@ -53,69 +53,40 @@ export const Overlays = memo(() => {
 
   return (
     <OverlayContext.Provider value={ctxValue}>
-      <RemoveScroll enabled={!!activeOverlay}>
-        <AnimatePresence initial={false} key={viewId} onExitComplete={onExitComplete}>
-          {activeOverlay?.elementDetails && (
-            <>
-              <m.div
-                key={'overlay-backdrop'}
-                className={css.overlayBackdrop}
-                initial={{
-                  '--backdrop-blur': '0px',
-                  opacity: 0
-                }}
-                animate={{
-                  '--backdrop-blur': '2px',
-                  opacity: 1
-                }}
-                exit={{
-                  '--backdrop-blur': '0px',
-                  opacity: 0,
-                  transition: {
-                    duration: .2
-                  }
-                }}
-                whileHover={{
-                  '--backdrop-blur': '0px',
-                  opacity: .8
-                }}
-                onClick={e => {
-                  e.stopPropagation()
-                  ctxValue.close()
-                }}
-              />
-              <ElementDetailsCard key={'details card'} fqn={activeOverlay.elementDetails} />
-            </>
-          )}
-        </AnimatePresence>
-        <AnimatePresence initial={false} onExitComplete={onExitComplete}>
-          {activeOverlay && isNullish(activeOverlay.elementDetails) && (
-            <Box
-              component={m.div}
-              className={css.container}
-              data-likec4-color="gray"
-              initial={{
-                '--backdrop-blur': '0px',
-                '--backdrop-opacity': '60%',
-                opacity: 0,
-                translateY: -15
-              }}
-              animate={{
-                '--backdrop-blur': '10px',
-                '--backdrop-opacity': '25%',
-                opacity: 1,
-                translateY: 0
-              }}
-              exit={{
-                '--backdrop-blur': '1px',
-                '--backdrop-opacity': '90%',
-                translateY: -5,
-                opacity: 0,
-                transition: {
-                  duration: .2
-                }
-              }}
-            >
+      <AnimatePresence initial={false} key={viewId} onExitComplete={onExitComplete}>
+        {activeOverlay?.elementDetails && (
+          <ElementDetailsCard key={'details card'} fqn={activeOverlay.elementDetails} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence initial={false} onExitComplete={onExitComplete}>
+        {activeOverlay && isNullish(activeOverlay.elementDetails) && (
+          <Box
+            component={m.div}
+            className={css.container}
+            data-likec4-color="gray"
+            initial={{
+              '--backdrop-blur': '0px',
+              '--backdrop-opacity': '60%',
+              opacity: 0,
+              translateY: -15
+            }}
+            animate={{
+              '--backdrop-blur': '10px',
+              '--backdrop-opacity': '25%',
+              opacity: 1,
+              translateY: 0
+            }}
+            exit={{
+              '--backdrop-blur': '1px',
+              '--backdrop-opacity': '90%',
+              translateY: -5,
+              opacity: 0,
+              transition: {
+                duration: .2
+              }
+            }}
+          >
+            <RemoveScroll>
               <FocusTrap>
                 {activeOverlay.relationshipsOf && <RelationshipsOverlay subjectId={activeOverlay.relationshipsOf} />}
                 {activeOverlay.edgeDetails && (
@@ -140,10 +111,10 @@ export const Overlays = memo(() => {
                   </ActionIcon>
                 </Box>
               </FocusTrap>
-            </Box>
-          )}
-        </AnimatePresence>
-      </RemoveScroll>
+            </RemoveScroll>
+          </Box>
+        )}
+      </AnimatePresence>
     </OverlayContext.Provider>
   )
 })
@@ -259,3 +230,33 @@ export const Overlays = memo(() => {
 //     </Box>
 //   )
 // }
+const OverlayDialog = ({ children }: PropsWithChildren) => {
+  const overlay = useOverlayDialog()
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    ref.current?.showModal()
+  }, [])
+  return (
+    <m.dialog
+      ref={ref}
+      exit={{
+        opacity: 0,
+        transition: {
+          duration: .15
+        }
+      }}
+      onClick={e => {
+        if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
+          e.stopPropagation()
+          ref.current?.close()
+        }
+      }}
+      onClose={e => {
+        e.stopPropagation()
+        overlay.close()
+      }}
+    >
+      {children}
+    </m.dialog>
+  )
+}

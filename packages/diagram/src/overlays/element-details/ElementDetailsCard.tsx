@@ -24,6 +24,7 @@ import {
   FocusTrap,
   FocusTrapInitialFocus,
   Group,
+  RemoveScroll,
   ScrollArea,
   Stack,
   Tabs,
@@ -41,9 +42,8 @@ import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } 
 import { useInternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
-import { type PropsWithChildren, type ReactNode, useCallback, useState } from 'react'
-import {} from 'react-remove-scroll'
-import { clamp, find, isNullish, map, only, partition, pipe, unique } from 'remeda'
+import { type PropsWithChildren, type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { clamp, find, isNullish, map, only, partition, pick, pipe, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
@@ -100,18 +100,12 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
   const [activeTab, setActiveTab] = useState<'Properties' | 'Relationships' | 'Views'>('Properties')
   const diagramApi = useDiagramStoreApi()
   const {
-    currentView,
-    element,
+    view: currentView,
     renderIcon,
     onNavigateTo,
-    onOpenSource
-  } = useDiagramState(s => ({
-    currentView: s.view,
-    element: s.getElement(fqn),
-    renderIcon: s.renderIcon,
-    onOpenSource: s.onOpenSourceElement,
-    onNavigateTo: s.onNavigateTo
-  }))
+    onOpenSourceElement: onOpenSource
+  } = useDiagramState(pick(['view', 'renderIcon', 'onNavigateTo', 'onOpenSourceElement']))
+  const element = currentView.nodes.find(n => n.id === fqn)
   invariant(element, `DiagramNode with fqn ${fqn} not found`)
 
   const likec4Model = useLikeC4Model(true)
@@ -164,22 +158,24 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
   }, [fqn, currentView.id])
   const controls = useDragControls()
 
-  const xynodeCenter = xyflow.flowToScreenPosition({
+  const isCompound = element.children.length > 0
+
+  const fromPositon = xyflow.flowToScreenPosition({
     x: xynode.internals.positionAbsolute.x + element.width / 2,
-    y: xynode.internals.positionAbsolute.y
+    y: xynode.internals.positionAbsolute.y + (isCompound ? 0 : element.height / 2)
   })
 
   const _width = Math.min(700, windowWidth - MIN_PADDING * 2)
   const _height = Math.min(650, windowHeight - MIN_PADDING * 2)
 
   const left = Math.round(
-    clamp(xynodeCenter.x - _width / 2, {
+    clamp(fromPositon.x - _width / 2, {
       min: MIN_PADDING,
       max: windowWidth - _width - MIN_PADDING
     })
   )
   const top = Math.round(
-    clamp(xynodeCenter.y + 16, {
+    clamp(fromPositon.y - (isCompound ? 0 : 60), {
       min: MIN_PADDING,
       max: windowHeight - _height - MIN_PADDING
     })
@@ -189,250 +185,284 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
   const height = useMotionValue(_height)
 
   const handleDrag = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    width.set(Math.max(width.get() + info.delta.x, 300))
+    width.set(Math.max(width.get() + info.delta.x, 320))
     height.set(Math.max(height.get() + info.delta.y, 300))
   }, [])
 
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    ref.current?.showModal()
+  }, [])
+
   return (
-    <FocusTrap>
-      <Card
-        drag
-        dragElastic={0}
-        dragMomentum={false}
-        dragListener={false}
-        dragControls={controls}
-        withBorder
-        shadow="md"
-        component={m.div}
-        className={css.card}
-        layoutId={`${viewId}:element:${fqn}`}
-        initial={{
-          opacity: 0,
-          top,
-          left,
-          width: _width,
-          height: _height
-        }}
-        animate={{
-          opacity: 1
-        }}
-        exit={{
-          opacity: 0,
-          transition: {
-            duration: .15
-          }
-        }}
-        style={{
-          // `style` prop in Mantine doesn't accept motion values
-          width: width as any,
-          height: height as any
-        }}
-        onKeyDown={e => {
-          if (e.key === 'Escape') {
-            e.preventDefault()
-            e.stopPropagation()
-            overlay.close()
-          }
-        }}
-        data-likec4-color={element.color}>
-        <FocusTrapInitialFocus />
-        <Box className={css.cardHeader} onPointerDown={e => controls.start(e)}>
-          <Group align="start" justify="space-between" gap={'sm'} mb={'sm'}>
-            <Group align="start" gap={'sm'} style={{ cursor: 'default' }}>
-              {elementIcon}
-              <Box>
-                <Text
-                  component={m.div}
-                  layout="position"
-                  layoutId={`${viewId}:element:title:${fqn}`}
-                  className={css.title}>
-                  {elementModel.title}
-                </Text>
-                {element.notation && (
-                  <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
-                    {element.notation}
-                  </Text>
-                )}
-              </Box>
-            </Group>
-            <CloseButton
-              size={'lg'}
-              onClick={e => {
+    <m.dialog
+      ref={ref}
+      className={css.dialog}
+      initial={{
+        '--backdrop-blur': '0px'
+      }}
+      animate={{
+        '--backdrop-blur': '2px'
+      }}
+      exit={{
+        '--backdrop-blur': '0px'
+      }}
+      onClick={e => {
+        if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
+          e.stopPropagation()
+          overlay.close()
+        }
+      }}
+      onClose={e => {
+        e.stopPropagation()
+        overlay.close()
+      }}
+    >
+      <FocusTrap>
+        <RemoveScroll forwardProps>
+          <Card
+            drag
+            dragElastic={0}
+            dragMomentum={false}
+            dragListener={false}
+            dragControls={controls}
+            withBorder
+            shadow="md"
+            component={m.div}
+            className={css.card}
+            layoutId={`${viewId}:element:${fqn}`}
+            // initial={{
+            //   opacity: 1,
+            //   top,
+            //   left,
+            //   // transform: `translate(${left}px, ${top}px)`,
+            //   // translateX: left,
+            //   // translateY: top,
+            //   // width: _width,
+            //   // height: _height
+            // }}
+            initial={false}
+            animate={{
+              opacity: 1
+            }}
+            exit={{
+              opacity: 0
+            }}
+            style={{
+              top,
+              left,
+              // `style` prop in Mantine doesn't accept motion values
+              width: width as any,
+              height: height as any
+            }}
+            onKeyDown={e => {
+              if (e.key === 'Escape') {
+                e.preventDefault()
                 e.stopPropagation()
                 overlay.close()
-              }}
-            />
-          </Group>
-          <Group align="baseline" gap={'sm'}>
-            <Box>
-              <SmallLabel>kind</SmallLabel>
-              <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.kind}</Badge>
+              }
+            }}
+            data-likec4-color={element.color}>
+            <FocusTrapInitialFocus />
+            <Box className={css.cardHeader} onPointerDown={e => controls.start(e)}>
+              <Group align="start" justify="space-between" gap={'sm'} mb={'sm'}>
+                <Group align="start" gap={'sm'} style={{ cursor: 'default' }}>
+                  {elementIcon}
+                  <Box>
+                    <Text
+                      component={m.div}
+                      layout="position"
+                      layoutId={`${viewId}:element:title:${fqn}`}
+                      className={css.title}>
+                      {elementModel.title}
+                    </Text>
+                    {element.notation && (
+                      <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
+                        {element.notation}
+                      </Text>
+                    )}
+                  </Box>
+                </Group>
+                <CloseButton
+                  size={'lg'}
+                  onClick={e => {
+                    e.stopPropagation()
+                    overlay.close()
+                  }}
+                />
+              </Group>
+              <Group align="baseline" gap={'sm'}>
+                <Box>
+                  <SmallLabel>kind</SmallLabel>
+                  <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.kind}</Badge>
+                </Box>
+                <Box flex={1}>
+                  <SmallLabel>tags</SmallLabel>
+                  <Flex gap={4} flex={1} mt={6}>
+                    {element.tags?.map((tag) => (
+                      <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
+                    ))}
+                    {!element.tags && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+                  </Flex>
+                </Box>
+                <ActionIconGroup
+                  style={{
+                    alignSelf: 'flex-end'
+                  }}>
+                  {defaultLink && (
+                    <ActionIcon
+                      component="a"
+                      href={defaultLink.url}
+                      target="_blank"
+                      size="lg"
+                      variant="default"
+                      radius="sm"
+                    >
+                      <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
+                    </ActionIcon>
+                  )}
+                  {onOpenSource && (
+                    <Tooltip label="Open source">
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        radius="sm"
+                        onClick={e => {
+                          e.stopPropagation()
+                          diagramApi.getState().onOpenSourceElement?.(fqn)
+                        }}
+                      >
+                        <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                  {defaultView && (
+                    <Tooltip label="Open default view">
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        radius="sm"
+                        onClick={e => {
+                          onNavigateToCb(defaultView.id, e)
+                        }}>
+                        <IconZoomScan style={{ width: '70%' }} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </ActionIconGroup>
+              </Group>
             </Box>
-            <Box flex={1}>
-              <SmallLabel>tags</SmallLabel>
-              <Flex gap={4} flex={1} mt={6}>
-                {element.tags?.map((tag) => (
-                  <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
-                ))}
-                {!element.tags && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
-              </Flex>
-            </Box>
-            <ActionIconGroup
-              style={{
-                alignSelf: 'flex-end'
+
+            <Tabs
+              value={activeTab}
+              onChange={v => setActiveTab(v as any)}
+              variant="none"
+              classNames={{
+                root: css.tabsRoot,
+                list: css.tabsList,
+                tab: css.tabsTab,
+                panel: css.tabsPanel
               }}>
-              {defaultLink && (
-                <ActionIcon
-                  component="a"
-                  href={defaultLink.url}
-                  target="_blank"
-                  size="lg"
-                  variant="default"
-                  radius="sm"
-                >
-                  <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
-                </ActionIcon>
-              )}
-              {onOpenSource && (
-                <Tooltip label="Open source">
-                  <ActionIcon
-                    size="lg"
-                    variant="default"
-                    radius="sm"
-                    onClick={e => {
-                      e.stopPropagation()
-                      diagramApi.getState().onOpenSourceElement?.(fqn)
-                    }}
-                  >
-                    <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
-                  </ActionIcon>
-                </Tooltip>
-              )}
-              {defaultView && (
-                <Tooltip label="Open default view">
-                  <ActionIcon
-                    size="lg"
-                    variant="default"
-                    radius="sm"
-                    onClick={e => {
-                      onNavigateToCb(defaultView.id, e)
-                    }}>
-                    <IconZoomScan style={{ width: '70%' }} />
-                  </ActionIcon>
-                </Tooltip>
-              )}
-            </ActionIconGroup>
-          </Group>
-        </Box>
+              <TabsList>
+                <TabsTab value="Properties">
+                  Properties
+                </TabsTab>
+                <TabsTab value="Relationships">
+                  Relationships
+                </TabsTab>
+                <TabsTab value="Views">
+                  Views
+                </TabsTab>
+                <TabsTab value="Structure">
+                  Structure
+                </TabsTab>
+              </TabsList>
 
-        <Tabs
-          value={activeTab}
-          onChange={v => setActiveTab(v as any)}
-          variant="none"
-          classNames={{
-            root: css.tabsRoot,
-            list: css.tabsList,
-            tab: css.tabsTab,
-            panel: css.tabsPanel
-          }}>
-          <TabsList>
-            <TabsTab value="Properties">
-              Properties
-            </TabsTab>
-            <TabsTab value="Relationships">
-              Relationships
-            </TabsTab>
-            <TabsTab value="Views">
-              Views
-            </TabsTab>
-            <TabsTab value="Structure">
-              Structure
-            </TabsTab>
-          </TabsList>
-
-          <TabsPanel value="Properties">
-            <ScrollArea scrollbars="y" type="auto">
-              <Box className={css.propertiesGrid} pt={'xs'}>
-                <ElementProperty title="description" emptyValue="no description">
-                  {element.description}
-                </ElementProperty>
-                {element.technology && (
-                  <ElementProperty title="technology">
-                    {element.technology}
-                  </ElementProperty>
-                )}
-                {element.links && (
-                  <>
-                    <PropertyLabel>links</PropertyLabel>
-                    <Stack gap={'xs'} align="flex-start">
-                      {element.links.map((link, i) => <ElementLink key={i} value={link} />)}
-                    </Stack>
-                  </>
-                )}
-                {elementModel.element.metadata && <ElementMetata value={elementModel.element.metadata} />}
-              </Box>
-            </ScrollArea>
-          </TabsPanel>
-
-          <TabsPanel value="Relationships">
-            {activeTab === 'Relationships' && (
-              <TabPanelRelationships
-                element={elementModel}
-                currentView={currentView} />
-            )}
-          </TabsPanel>
-
-          <TabsPanel value="Views">
-            <ScrollArea scrollbars="y" type="auto">
-              <Stack gap={'lg'}>
-                {viewsOf.length > 0 && !!onNavigateTo && (
-                  <Box>
-                    <Divider label="views of the element (scoped)" />
-                    <Stack gap={'sm'}>
-                      {viewsOf.map((view) => (
-                        <ViewButton
-                          key={view.id}
-                          view={view}
-                          onNavigateTo={onNavigateToCb}
-                        />
-                      ))}
-                    </Stack>
+              <TabsPanel value="Properties">
+                <ScrollArea scrollbars="y" type="auto">
+                  <Box className={css.propertiesGrid} pt={'xs'}>
+                    <ElementProperty title="description" emptyValue="no description">
+                      {element.description}
+                    </ElementProperty>
+                    {element.technology && (
+                      <ElementProperty title="technology">
+                        {element.technology}
+                      </ElementProperty>
+                    )}
+                    {element.links && (
+                      <>
+                        <PropertyLabel>links</PropertyLabel>
+                        <Stack gap={'xs'} align="flex-start">
+                          {element.links.map((link, i) => <ElementLink key={i} value={link} />)}
+                        </Stack>
+                      </>
+                    )}
+                    {elementModel.element.metadata && <ElementMetata value={elementModel.element.metadata} />}
                   </Box>
-                )}
-                {otherViews.length > 0 && !!onNavigateTo && (
-                  <Box>
-                    <Divider label="views including this element" />
-                    <Stack gap={'sm'}>
-                      {otherViews.map((view) => (
-                        <ViewButton
-                          key={view.id}
-                          view={view}
-                          onNavigateTo={onNavigateToCb}
-                        />
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
-              </Stack>
-            </ScrollArea>
-          </TabsPanel>
+                </ScrollArea>
+              </TabsPanel>
 
-          <TabsPanel value="Structure">
-            <ScrollArea scrollbars="y" type="auto">
-              <TabElementStructure element={elementModel} />
-            </ScrollArea>
-          </TabsPanel>
-        </Tabs>
-        <m.div
-          className={css.resizeHandle}
-          drag
-          dragElastic={0}
-          dragMomentum={false}
-          onDrag={handleDrag}
-          dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-        />
-      </Card>
-    </FocusTrap>
+              <TabsPanel value="Relationships">
+                {activeTab === 'Relationships' && (
+                  <TabPanelRelationships
+                    element={elementModel}
+                    currentView={currentView} />
+                )}
+              </TabsPanel>
+
+              <TabsPanel value="Views">
+                <ScrollArea scrollbars="y" type="auto">
+                  <Stack gap={'lg'}>
+                    {viewsOf.length > 0 && !!onNavigateTo && (
+                      <Box>
+                        <Divider label="views of the element (scoped)" />
+                        <Stack gap={'sm'}>
+                          {viewsOf.map((view) => (
+                            <ViewButton
+                              key={view.id}
+                              view={view}
+                              onNavigateTo={onNavigateToCb}
+                            />
+                          ))}
+                        </Stack>
+                      </Box>
+                    )}
+                    {otherViews.length > 0 && !!onNavigateTo && (
+                      <Box>
+                        <Divider label="views including this element" />
+                        <Stack gap={'sm'}>
+                          {otherViews.map((view) => (
+                            <ViewButton
+                              key={view.id}
+                              view={view}
+                              onNavigateTo={onNavigateToCb}
+                            />
+                          ))}
+                        </Stack>
+                      </Box>
+                    )}
+                  </Stack>
+                </ScrollArea>
+              </TabsPanel>
+
+              <TabsPanel value="Structure">
+                <ScrollArea scrollbars="y" type="auto">
+                  <TabElementStructure element={elementModel} />
+                </ScrollArea>
+              </TabsPanel>
+            </Tabs>
+            <m.div
+              className={css.resizeHandle}
+              drag
+              dragElastic={0}
+              dragMomentum={false}
+              onDrag={handleDrag}
+              dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+            />
+          </Card>
+        </RemoveScroll>
+      </FocusTrap>
+    </m.dialog>
   )
 }
 
