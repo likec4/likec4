@@ -3,10 +3,9 @@ import {
   type ComputedNode,
   DefaultRelationshipColor,
   defaultTheme as Theme,
-  ElementColors as Colors,
   type ElementThemeColorValues
 } from '@likec4/core'
-import { isEmpty, isTruthy } from 'remeda'
+import { isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
 
@@ -14,28 +13,34 @@ export function sanitize(text: string) {
   return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 }
 
-export function wrap(text: string, maxChars: number) {
-  return wordWrap(text, {
+export function wrap(text: string, maxChars: number, maxLines?: number) {
+  let lines = wordWrap(text, {
     width: maxChars,
     indent: '',
     escape: sanitize
   }).split('\n')
+  if (isDefined(maxLines) && maxLines > 0 && lines.length > maxLines) {
+    lines = lines.slice(0, maxLines - 1)
+  }
+  return lines
 }
 
 function wrapWithFont({
   text,
   maxchars,
   fontsize,
+  maxLines,
   bold,
   color
 }: {
   text: string
   maxchars: number
   fontsize: number
+  maxLines?: number
   bold?: boolean
   color?: string | undefined
 }): string {
-  let html = wrap(text, maxchars).map(text => (isEmpty(text) ? ' ' : text)).join('<BR/>')
+  let html = wrap(text, maxchars, maxLines).join('<BR/>')
   if (bold) {
     html = `<B>${html}</B>`
   }
@@ -58,7 +63,8 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
     wrapWithFont({
       text: node.title,
       fontsize: 19,
-      maxchars: 35
+      maxchars: 35,
+      maxLines: 2
     })
   ]
   if (isTruthy(node.technology)) {
@@ -67,6 +73,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
         text: node.technology,
         fontsize: 12,
         maxchars: hasIcon ? 35 : 45,
+        maxLines: 1,
         color: colorValues.loContrast
       })
     )
@@ -77,6 +84,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
         text: node.description,
         fontsize: 14,
         maxchars: hasIcon ? 35 : 45,
+        maxLines: 5,
         color: colorValues.loContrast
       })
     )
@@ -97,9 +105,9 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
           leftwidth += 20
         }
         // prepend empty cell (left padding)
-        cell = `<TD${rowspan} WIDTH="${leftwidth}" FIXEDSIZE="TRUE"> </TD>${cell}`
+        cell = `<TD${rowspan} WIDTH="${leftwidth}" HEIGHT="16" FIXEDSIZE="TRUE"> </TD>${cell}`
         // append empty cell (right padding)
-        cell = `${cell}<TD${rowspan} WIDTH="16" FIXEDSIZE="TRUE"> </TD>`
+        cell = `${cell}<TD${rowspan} WIDTH="16" HEIGHT="16" FIXEDSIZE="TRUE"> </TD>`
       }
       return `<TR>${cell}</TR>`
     }
@@ -115,6 +123,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
     text: node.title.toUpperCase(),
     maxchars: 50,
     fontsize: 11,
+    maxLines: 1,
     bold: true,
     color
   })
@@ -134,6 +143,7 @@ export function edgelabel({ label, description, technology }: ComputedEdge) {
         text: label,
         maxchars: EDGE_LABEL_MAX_CHARS,
         fontsize: 14,
+        maxLines: 4,
         bold: label === '[...]'
       })
     )
@@ -143,6 +153,7 @@ export function edgelabel({ label, description, technology }: ComputedEdge) {
       wrapWithFont({
         text: description,
         maxchars: EDGE_LABEL_MAX_CHARS,
+        maxLines: 4,
         fontsize: 14
       })
     )
@@ -152,6 +163,7 @@ export function edgelabel({ label, description, technology }: ComputedEdge) {
       wrapWithFont({
         text: technology,
         fontsize: 12,
+        maxLines: 1,
         maxchars: EDGE_LABEL_MAX_CHARS
       })
     )
@@ -168,6 +180,7 @@ export function edgeLabel(text: string) {
     text,
     maxchars: EDGE_LABEL_MAX_CHARS,
     fontsize: 14,
+    maxLines: 5,
     bold: text === '[...]'
   })
   return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}><TR><TD ALIGN="TEXT" BALIGN="LEFT">${html}</TD></TR></TABLE>>`
