@@ -195,10 +195,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
       position,
       width,
       height,
-      labelBBox: nonNullable(
-        parseLabelBbox(obj._ldraw_, position),
-        `View ${view.id} Node ${computed.id} label bbox not found`
-      )
+      labelBBox: parseLabelBbox(obj._ldraw_, position) ?? { x, y, width, height }
     })
   }
 
