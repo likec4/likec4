@@ -1,3 +1,22 @@
+# [1.17.0](https://github.com/likec4/likec4/compare/v1.16.0...v1.17.0) (2024-11-15)
+
+### 🚀 Features  
+
+* **Element details**  
+  Notation, full description, links, metatdata, tags, relationships (global/view scopes), other views...   
+  Disabled by default in React components (to turn on use `enableElementDetails`)
+
+  https://github.com/user-attachments/assets/52966fab-9662-4132-974b-2c68a6a879cd
+  
+* Render icon on containers  (thanks @davydkov, closes [#1195](https://github.com/likec4/likec4/issues/1195))
+* Disable icon with `none`  (thanks @davydkov, closes [#1026](https://github.com/likec4/likec4/issues/1026))
+* Traverse symlinks in the workspace (thanks @hubertmis, [#1213](https://github.com/likec4/likec4/issues/1213))
+
+### Bug Fixes
+
+* **diagram:** do not render long description texts  (thanks @davydkov, closes [#1227](https://github.com/likec4/likec4/issues/1227))
+
+
 # [1.16.0](https://github.com/likec4/likec4/compare/v1.15.1...v1.16.0) (2024-11-04)
 
 ### 🚀 Features  
