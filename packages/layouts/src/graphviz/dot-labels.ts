@@ -13,12 +13,16 @@ export function sanitize(text: string) {
   return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 }
 
-export function wrap(text: string, maxChars: number) {
-  return wordWrap(text, {
+export function wrap(text: string, maxChars: number, maxLines?: number) {
+  let lines = wordWrap(text, {
     width: maxChars,
     indent: '',
     escape: sanitize
   }).split('\n')
+  if (isDefined(maxLines) && maxLines > 0 && lines.length > maxLines) {
+    lines = lines.slice(0, maxLines - 1)
+  }
+  return lines
 }
 
 function wrapWithFont({
@@ -36,12 +40,7 @@ function wrapWithFont({
   bold?: boolean
   color?: string | undefined
 }): string {
-  let lines = wrap(text, maxchars).map(text => (isEmpty(text) ? ' ' : text))
-  if (isDefined(maxLines) && maxLines > 0 && lines.length > maxLines) {
-    lines = lines.slice(0, maxLines - 1)
-    lines[lines.length - 1] = `${lines[lines.length - 1]}...`
-  }
-  let html = lines.join('<BR/>')
+  let html = wrap(text, maxchars, maxLines).join('<BR/>')
   if (bold) {
     html = `<B>${html}</B>`
   }
@@ -64,8 +63,8 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
     wrapWithFont({
       text: node.title,
       fontsize: 19,
-      maxchars: 35,
-      maxLines: 3
+      maxchars: hasIcon ? 35 : 40,
+      maxLines: 2
     })
   ]
   if (isTruthy(node.technology)) {
@@ -73,8 +72,8 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       wrapWithFont({
         text: node.technology,
         fontsize: 12,
-        maxchars: hasIcon ? 35 : 45,
-        maxLines: 2,
+        maxchars: 40,
+        maxLines: 1,
         color: colorValues.loContrast
       })
     )
@@ -84,7 +83,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       wrapWithFont({
         text: node.description,
         fontsize: 14,
-        maxchars: hasIcon ? 35 : 45,
+        maxchars: hasIcon ? 40 : 50,
         maxLines: 5,
         color: colorValues.loContrast
       })
@@ -124,6 +123,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
     text: node.title.toUpperCase(),
     maxchars: 50,
     fontsize: 11,
+    maxLines: 1,
     bold: true,
     color
   })
