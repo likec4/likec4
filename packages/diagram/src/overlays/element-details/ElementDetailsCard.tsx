@@ -278,8 +278,8 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
             <Box
               className={css.cardHeader}
               onPointerDown={e => controls.start(e)}>
-              <Group align="start" justify="space-between" gap={'sm'} mb={'sm'}>
-                <Group align="start" gap={'sm'} style={{ cursor: 'default' }}>
+              <Group align="start" justify="space-between" gap={'sm'} mb={'sm'} wrap="nowrap">
+                <Group align="start" gap={'sm'} style={{ cursor: 'default' }} wrap="nowrap">
                   {elementIcon}
                   <Box>
                     <Text
@@ -304,7 +304,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                   }}
                 />
               </Group>
-              <Group align="baseline" gap={'sm'}>
+              <Group align="baseline" gap={'sm'} wrap="nowrap">
                 <Box>
                   <SmallLabel>kind</SmallLabel>
                   <Badge radius={'sm'} size="sm" fw={600} color="gray">{element.kind}</Badge>
