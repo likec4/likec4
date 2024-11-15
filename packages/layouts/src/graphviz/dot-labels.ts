@@ -63,7 +63,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
     wrapWithFont({
       text: node.title,
       fontsize: 19,
-      maxchars: hasIcon ? 35 : 40,
+      maxchars: hasIcon ? 30 : 35,
       maxLines: 2
     })
   ]
@@ -83,7 +83,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       wrapWithFont({
         text: node.description,
         fontsize: 14,
-        maxchars: hasIcon ? 40 : 50,
+        maxchars: hasIcon ? 40 : 45,
         maxLines: 5,
         color: colorValues.loContrast
       })
