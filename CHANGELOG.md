@@ -1,19 +1,27 @@
 # [1.17.0](https://github.com/likec4/likec4/compare/v1.16.0...v1.17.0) (2024-11-15)
 
+### 🚀 Features  
+
+* **Element details**  
+  Notation, full description, links, metatdata, tags, relationships (global/view scopes), other views...   
+
+  https://github.com/user-attachments/assets/52966fab-9662-4132-974b-2c68a6a879cd
+  
+* Render icon on containers  (thanks @davydkov, closes [#1195](https://github.com/likec4/likec4/issues/1195))
+* Disable icon with `none`  (thanks @davydkov, closes [#1026](https://github.com/likec4/likec4/issues/1026))
+* Traverse symlinks in the workspace (thanks @hubertmis, [#1213](https://github.com/likec4/likec4/issues/1213))
 
 ### Bug Fixes
 
-* **diagram:** do not render long description texts ([#1230](https://github.com/likec4/likec4/issues/1230)) ([672e88f](https://github.com/likec4/likec4/commit/672e88fe00be79fb63f967ec52caac4cc17412e2)), closes [#1227](https://github.com/likec4/likec4/issues/1227)
-* **layout:** layout failed for groups without title ([#1231](https://github.com/likec4/likec4/issues/1231)) ([b71effb](https://github.com/likec4/likec4/commit/b71effb07e3854bacc9da2155e9e0772b9413979))
-* update DiagramsTree to use enableElementDetails prop instead of showElementLinks ([161c6f7](https://github.com/likec4/likec4/commit/161c6f797bb8a16d1d6082927439f63a0caecef1))
+* **diagram:** do not render long description texts  (thanks @davydkov, closes [#1227](https://github.com/likec4/likec4/issues/1227))
 
 
 ### Features
 
 * add enableElementDetails option and enhance overlay close functionality ([6404dfd](https://github.com/likec4/likec4/commit/6404dfd9b54ac900edd32196da08102ea342597a))
-* add support for 'none' icon value and icon on containers ([#1214](https://github.com/likec4/likec4/issues/1214)) ([f0f5186](https://github.com/likec4/likec4/commit/f0f518653c0c7aaa4fe34809de6fd2499746ecd6)), closes [#1026](https://github.com/likec4/likec4/issues/1026) [#1195](https://github.com/likec4/likec4/issues/1195)
+
 * element details hovercard ([e0b50fb](https://github.com/likec4/likec4/commit/e0b50fbd10eba5aac5e5255f254e14fca2a657e0))
-* traverse symlinks in the workspace ([#1213](https://github.com/likec4/likec4/issues/1213)) ([d2046da](https://github.com/likec4/likec4/commit/d2046dafba37d704175de660f453d8213f6e7427))
+
 
 
 
