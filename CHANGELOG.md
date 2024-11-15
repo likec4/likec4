@@ -4,6 +4,7 @@
 
 * **Element details**  
   Notation, full description, links, metatdata, tags, relationships (global/view scopes), other views...   
+  Disabled by default in React components (to turn on use `enableElementDetails`)
 
   https://github.com/user-attachments/assets/52966fab-9662-4132-974b-2c68a6a879cd
   
@@ -14,15 +15,6 @@
 ### Bug Fixes
 
 * **diagram:** do not render long description texts  (thanks @davydkov, closes [#1227](https://github.com/likec4/likec4/issues/1227))
-
-
-### Features
-
-* add enableElementDetails option and enhance overlay close functionality ([6404dfd](https://github.com/likec4/likec4/commit/6404dfd9b54ac900edd32196da08102ea342597a))
-
-* element details hovercard ([e0b50fb](https://github.com/likec4/likec4/commit/e0b50fbd10eba5aac5e5255f254e14fca2a657e0))
-
-
 
 
 # [1.16.0](https://github.com/likec4/likec4/compare/v1.15.1...v1.16.0) (2024-11-04)
