@@ -119,7 +119,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isHovered,
     isDimmed,
     isInteractive,
-    hasOnNavigateTo,
+    isNavigable,
     renderIcon,
     enableElementDetails
   } = useDiagramState(s => ({
@@ -129,16 +129,13 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableElementDetails
       || (!!s.onNavigateTo && !!element.navigateTo),
-    hasOnNavigateTo: !!s.onNavigateTo,
+    // If this is a view group, we don't want to show the navigate button
+    isNavigable: isNotViewGroup && !!s.onNavigateTo && !!element.navigateTo,
     renderIcon: s.renderIcon,
-    enableElementDetails: s.enableElementDetails
+    enableElementDetails: isNotViewGroup && s.enableElementDetails
   }))
-  // If this is a view group, we don't want to show the navigate button
-  const isNavigable = isNotViewGroup && !!element.navigateTo && hasOnNavigateTo
-  const hasElementDetails = isNotViewGroup && enableElementDetails
-
   const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
@@ -258,7 +255,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                 className={css.title}>
                 {element.title}
               </Text>
-              {hasElementDetails && (
+              {enableElementDetails && (
                 <Tooltip
                   fz="xs"
                   color="dark"

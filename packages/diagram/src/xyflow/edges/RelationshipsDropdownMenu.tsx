@@ -19,7 +19,7 @@ import {
 import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, useCallback } from 'react'
-import { filter, isTruthy, map, partition, pipe } from 'remeda'
+import { filter, isTruthy, map, partition, pick, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useXYNodesData } from '../../hooks'
 import type { RelationshipData } from '../types'
 import * as css from './RelationshipsDropdownMenu.css'
@@ -47,7 +47,10 @@ export function RelationshipsDropdownMenu({
   disabled?: boolean | undefined
   likec4model: LikeC4Model
 }>) {
-  const openOverlay = useDiagramState(s => s.openOverlay)
+  const {
+    openOverlay,
+    enableRelationshipBrowser
+  } = useDiagramState(pick(['openOverlay', 'enableRelationshipBrowser']))
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
 
@@ -72,6 +75,15 @@ export function RelationshipsDropdownMenu({
     partition(r => r.relationship.source === edge.source && r.relationship.target === edge.target)
   )
 
+  const onClickOpenOverlay = useCallback((e: React.MouseEvent): void => {
+    e.stopPropagation()
+    if (enableRelationshipBrowser) {
+      openOverlay({
+        edgeDetails: edge.id
+      })
+    }
+  }, [edge.id, openOverlay, enableRelationshipBrowser])
+
   const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship, index: number) => (
     <Fragment key={relationship.id}>
       {index > 0 && <MenuDivider opacity={0.65} />}
@@ -84,13 +96,6 @@ export function RelationshipsDropdownMenu({
         edge={edge} />
     </Fragment>
   )
-
-  const onClickOpenOverlay = useCallback((e: React.MouseEvent): void => {
-    e.stopPropagation()
-    openOverlay({
-      edgeDetails: edge.id
-    })
-  }, [edge.id, openOverlay])
 
   if (direct.length + nested.length === 0) {
     return <>{children}</>
@@ -131,15 +136,17 @@ export function RelationshipsDropdownMenu({
             {nested.map(renderRelationship)}
           </>
         )}
-        <Box pos={'absolute'} top={5} right={6}>
-          <ActionIcon
-            size={24}
-            variant="subtle"
-            onClick={onClickOpenOverlay}
-          >
-            <IconInfoCircle style={{ width: '70%' }} />
-          </ActionIcon>
-        </Box>
+        {enableRelationshipBrowser && (
+          <Box pos={'absolute'} top={5} right={6}>
+            <ActionIcon
+              size={24}
+              variant="subtle"
+              onClick={onClickOpenOverlay}
+            >
+              <IconInfoCircle style={{ width: '70%' }} />
+            </ActionIcon>
+          </Box>
+        )}
       </MenuDropdown>
     </Menu>
   )

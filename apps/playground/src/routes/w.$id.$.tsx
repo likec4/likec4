@@ -82,8 +82,10 @@ export function WorkspaceDiagramPage() {
           nodesSelectable
           nodesDraggable
           showNavigationButtons
+          enableElementDetails
           enableDynamicViewWalkthrough
-          enableRelationshipsBrowser
+          enableRelationshipBrowser
+          enableRelationshipDetails
           showNotations
           enableFocusMode
           renderIcon={RendererIcon}

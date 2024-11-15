@@ -59,7 +59,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           'likec4-compound-node'
         ])}
         layoutId={layoutId}
-        data-compound-depth={3}
+        data-compound-depth={data.depth ?? 1}
         data-likec4-color={element.color}
         initial={(layoutId === id && initialAnimation)
           ? {

@@ -60,10 +60,8 @@ export type DiagramInitialState = {
   // If LikeC4Model provided
   hasLikeC4Model: boolean
   controls: boolean
-  showElementLinks: boolean
   showNavigationButtons: boolean
   showNotations: boolean
-  showRelationshipDetails: boolean
   fitViewEnabled: boolean
   fitViewPadding: number
   zoomable: boolean
@@ -73,7 +71,8 @@ export type DiagramInitialState = {
   experimentalEdgeEditing: boolean
   enableFocusMode: boolean
   enableElementDetails: boolean
-  enableRelationshipsBrowser: boolean
+  enableRelationshipBrowser: boolean
+  enableRelationshipDetails: boolean
   renderIcon: ElementIconRenderer | null
   whereFilter: WhereOperator<string, string> | null
   // If Dynamic View
@@ -855,7 +854,14 @@ export function createDiagramStore(props: DiagramInitialState) {
             if (eq(overlay, get().activeOverlay)) {
               return
             }
-            set({ activeOverlay: overlay }, noReplace, 'openOverlay')
+            set(
+              {
+                activeWalkthrough: null,
+                activeOverlay: overlay
+              },
+              noReplace,
+              'openOverlay'
+            )
           },
           closeOverlay: () => {
             if (get().activeOverlay !== null) {

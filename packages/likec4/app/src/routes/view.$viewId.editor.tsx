@@ -41,13 +41,13 @@ function ViewEditor() {
       experimentalEdgeEditing
       fitViewPadding={0.08}
       showDiagramTitle
-      showElementLinks
       showNavigationButtons
       showNotations={isDevelopment || hasNotations}
       enableDynamicViewWalkthrough
       enableFocusMode={false}
       enableElementDetails
-      enableRelationshipsBrowser
+      enableRelationshipDetails
+      enableRelationshipBrowser
       onNavigateTo={onNavigateTo}
       renderIcon={RenderIcon}
       onChange={(e) => console.log(e)}

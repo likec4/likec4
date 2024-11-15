@@ -119,13 +119,6 @@ export interface LikeC4DiagramProperties {
   background?: 'transparent' | 'solid' | XYBackground | undefined
 
   /**
-   * Display hovercards with element links
-   * @default true
-   * @deprecated
-   */
-  showElementLinks?: boolean | undefined
-
-  /**
    * Display webview with diagram title / description
    * @default true
    */
@@ -145,9 +138,9 @@ export interface LikeC4DiagramProperties {
 
   /**
    * Display dropdown with details on relationship's label click
-   * @default true
+   * @default false
    */
-  showRelationshipDetails?: boolean | undefined
+  enableRelationshipDetails?: boolean | undefined
 
   /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
@@ -156,17 +149,17 @@ export interface LikeC4DiagramProperties {
   enableFocusMode?: boolean | undefined
 
   /**
-   * Enable popup with element details
-   * @default true
+   * Enable modal with element details
+   * @default false
    */
   enableElementDetails?: boolean | undefined
 
   /**
    * Experimental feature to browse relationships
    *
-   * @default true
+   * @default false
    */
-  enableRelationshipsBrowser?: boolean | undefined
+  enableRelationshipBrowser?: boolean | undefined
 
   /**
    * If Walkthrough for dynamic views should be enabled

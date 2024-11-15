@@ -52,7 +52,7 @@ export const compoundNodeBody = style({
   position: 'relative',
   width: '100%',
   height: '100%',
-  boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
+  boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 1px 1px 4px -1px rgba(0,0,0,0.3)',
   // background: `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
   background: vars.element.fill,
   borderRadius: 6

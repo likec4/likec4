@@ -45,12 +45,6 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     renderIcon?: ElementIconRenderer | undefined
 
     /**
-     * Display hovercards with element links
-     * @default true
-     */
-    showElementLinks?: boolean | undefined
-
-    /**
      * Display webview with diagram title / description
      * @default false
      */
@@ -67,12 +61,6 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
      * @default false
      */
     showNotations?: boolean | undefined
-
-    /**
-     * Display dropdown with details on relationship's label click
-     * @default false
-     */
-    showRelationshipDetails?: boolean | undefined
 
     /**
      * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
@@ -96,9 +84,15 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
     /**
      * Experimental feature to browse relationships
      *
-     * @default false
+     * @default enableElementDetails
      */
-    enableRelationshipsBrowser?: boolean | undefined
+    enableRelationshipBrowser?: boolean | undefined
+
+    /**
+     * Display dropdown with details on relationship's label click
+     * @default enableRelationshipBrowser
+     */
+    enableRelationshipDetails?: boolean | undefined
   }
 
 export function LikeC4ViewEmbedded<
@@ -114,13 +108,12 @@ export function LikeC4ViewEmbedded<
   background = 'transparent',
   renderIcon,
   showDiagramTitle = false,
-  showElementLinks = true,
   showNavigationButtons = false,
   enableFocusMode = false,
   showNotations = false,
-  showRelationshipDetails = false,
   enableElementDetails = false,
-  enableRelationshipsBrowser = false,
+  enableRelationshipDetails = enableElementDetails,
+  enableRelationshipBrowser = enableRelationshipDetails,
   mantineTheme,
   where,
   style,
@@ -130,6 +123,10 @@ export function LikeC4ViewEmbedded<
 
   const onNavigateTo = useCallbackRef((to: string) => {
     _onNavigateTo?.(to as ViewId)
+  })
+
+  const onNavigateToMe = useCallbackRef(() => {
+    _onNavigateTo?.(view.id)
   })
 
   const notations = view.notation?.elements ?? []
@@ -154,14 +151,7 @@ export function LikeC4ViewEmbedded<
         {...shadowRootProps}
         injectFontCss={injectFontCss}
         className={clsx('likec4-view', className)}
-        style={style}
-        {...(_onNavigateTo && {
-          onClick: (e) => {
-            e.stopPropagation()
-            onNavigateTo(view.id)
-          }
-        })}
-      >
+        style={style}>
         <ShadowRootMantineProvider
           theme={mantineTheme}
           colorScheme={colorScheme}
@@ -176,16 +166,15 @@ export function LikeC4ViewEmbedded<
             background={background}
             fitView
             fitViewPadding={0}
-            showElementLinks={showElementLinks}
             showDiagramTitle={showDiagramTitle}
             showNotations={showNotations && hasNotations}
             enableDynamicViewWalkthrough={enableFocusMode}
             showNavigationButtons={showNavigationButtons}
             experimentalEdgeEditing={false}
             enableFocusMode={enableFocusMode}
-            showRelationshipDetails={showRelationshipDetails}
+            enableRelationshipDetails={enableRelationshipDetails}
             enableElementDetails={enableElementDetails}
-            enableRelationshipsBrowser={enableRelationshipsBrowser}
+            enableRelationshipBrowser={enableRelationshipBrowser}
             controls={false}
             nodesSelectable={false}
             nodesDraggable={false}
@@ -193,7 +182,9 @@ export function LikeC4ViewEmbedded<
             renderIcon={renderIcon}
             where={where}
             {...(_onNavigateTo && {
-              onNavigateTo
+              onNavigateTo,
+              onCanvasClick: onNavigateToMe,
+              onNodeClick: onNavigateToMe
             })}
           />
         </ShadowRootMantineProvider>

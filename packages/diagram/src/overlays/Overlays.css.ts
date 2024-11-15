@@ -1,26 +1,6 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine, vars, whereDark, whereLight, xyvars } from '../theme-vars'
 
-export const ZIndexes = {
-  overlay: 100,
-  container: 105,
-  elementDetails: 120
-}
-
-export const overlayBackdrop = style({
-  position: 'fixed',
-  inset: 0,
-  WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
-  backdropFilter: 'blur(var(--backdrop-blur))',
-  backgroundColor: `rgb(36 36 36 / 50%)`,
-  zIndex: ZIndexes.overlay,
-  pointerEvents: 'all',
-  cursor: 'pointer',
-  vars: {
-    '--backdrop-blur': '0px'
-  }
-})
-
 export const mixColor = createVar('mix-color')
 export const container = style({
   position: 'absolute',
@@ -36,14 +16,15 @@ export const container = style({
   isolation: 'isolate',
   WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
   backdropFilter: 'blur(var(--backdrop-blur))',
-  backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent var(--backdrop-opacity))`,
+  backgroundColor: `rgb(200 200 200 / var(--backdrop-opacity))`,
   vars: {
-    '--backdrop-blur': '3px',
-    '--backdrop-opacity': '50%',
+    '--backdrop-blur': '0px',
+    '--backdrop-opacity': '0%',
     [mixColor]: `black`
   },
   selectors: {
     [`${whereDark} &`]: {
+      backgroundColor: `rgb(36 36 36 / var(--backdrop-opacity))`,
       vars: {
         [mixColor]: `white`
       }

@@ -124,27 +124,27 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isEditable,
     isHovered,
     isDimmed,
-    hasOnNavigateTo,
+    isNavigable,
     isInteractive,
     enableElementDetails,
     triggerOnNavigateTo,
     openOverlay,
+    isInActiveOverlay,
     renderIcon
   } = useDiagramState(s => ({
     viewId: s.view.id,
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableRelationshipsBrowser
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableElementDetails
       || (!!s.onNavigateTo && !!element.navigateTo),
-    hasOnNavigateTo: !!s.onNavigateTo,
+    isNavigable: (!!s.onNavigateTo && !!element.navigateTo),
     enableElementDetails: s.enableElementDetails,
     triggerOnNavigateTo: s.triggerOnNavigateTo,
     openOverlay: s.openOverlay,
+    isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     renderIcon: s.renderIcon
   }))
-
-  const isNavigable = hasOnNavigateTo && !!element.navigateTo
   // For development purposes, show the toolbar when the element is selected
   const isHoveredOrSelected = isHovered || (import.meta.env.DEV && selected)
   const _isToolbarVisible = isEditable && isHoveredOrSelected
@@ -157,6 +157,9 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   let animate: keyof typeof VariantsRoot
   switch (true) {
+    case isInActiveOverlay:
+      animate = 'idle'
+      break
     case dragging && selected:
       animate = 'selected'
       break
@@ -190,19 +193,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     openOverlay({ elementDetails: element.id })
-    // openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
-
-  // const onTap = useCallback((e: MouseEvent) => {
-  //   if (_isDetailsVisible) {
-  //     //detailsOps.toggle()
-  //     // openOverlay({
-  //     //   elementDetails: element.id
-  //     // })
-  //   }
-  //   // Open details on tap
-  //   animateHandlers.onTap(e)
-  // }, [animateHandlers.onTap, _isDetailsVisible, detailsOps.toggle])
 
   return (
     <>
@@ -229,7 +220,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         data-animate-target=""
         initial={false}
         variants={VariantsRoot}
-        animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
+        animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
         tabIndex={-1}
         {...(isInteractive && {
           onTapStart: animateHandlers.onTapStart,
@@ -239,9 +230,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
       >
         <svg
           className={clsx(css.shapeSvg)}
-          viewBox={`0 0 ${w} ${h}`}
-          width={w}
-          height={h}>
+          viewBox={`0 0 ${w} ${h}`}>
           <g className={css.indicator}>
             <SelectedIndicator shape={element.shape} w={w} h={h} />
           </g>

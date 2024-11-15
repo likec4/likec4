@@ -17,7 +17,7 @@ export namespace XYFlowTypes {
   }
 
   type NodeProps = {
-    // level: number
+    depth?: number
     column: 'incomers' | 'subjects' | 'outgoers'
     fqn: Fqn
     existsInCurrentView: boolean

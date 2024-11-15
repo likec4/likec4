@@ -41,11 +41,11 @@ export const EdgeLabel = ({
 }: EdgeLabelProps) => {
   const likec4model = useLikeC4Model()
   const {
-    showRelationshipDetails,
+    enableRelationshipDetails,
     isActiveWalkthroughStep,
     hasOnNavigateTo
   } = useDiagramState(s => ({
-    showRelationshipDetails: s.showRelationshipDetails,
+    enableRelationshipDetails: s.enableRelationshipDetails,
     isActiveWalkthroughStep: s.activeWalkthrough?.stepId === edge.id,
     hasOnNavigateTo: !!s.onNavigateTo
   }))
@@ -57,7 +57,7 @@ export const EdgeLabel = ({
     if (isTruthy(notes)) {
       return <NotePopover notes={notes}>{node}</NotePopover>
     }
-    if (showRelationshipDetails && likec4model && edge.relations.length > 0) {
+    if (enableRelationshipDetails && likec4model && edge.relations.length > 0) {
       return (
         <RelationshipsDropdownMenu
           disabled={isDimmed}

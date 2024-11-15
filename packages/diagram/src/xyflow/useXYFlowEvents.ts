@@ -146,22 +146,25 @@ export function useXYFlowEvents() {
               stopPropagation = true
               break
             }
-            case clickedRecently && focusedNodeId === xynode.id && enableElementDetails: {
-              openOverlay({
-                elementDetails: xynode.data.element.id
-              })
-              // reset clickedRecently
-              setLastClickedNode(null)
-              stopPropagation = true
-              break
-            }
-            case focusedNodeId === xynode.id: {
+            case clickedRecently && focusedNodeId === xynode.id: {
               focusOnNode(false)
               fitDiagram()
               stopPropagation = true
               break
             }
+            case !clickedRecently && focusedNodeId === xynode.id && enableElementDetails: {
+              openOverlay({
+                elementDetails: xynode.data.element.id
+              })
+              stopPropagation = true
+              break
+            }
           }
+        } else if (enableElementDetails && (clickedRecently || focusedNodeId === xynode.id) && !onNodeClick) {
+          openOverlay({
+            elementDetails: xynode.data.element.id
+          })
+          stopPropagation = true
         } else if (nodesSelectable) {
           xystore.getState().addSelectedNodes([xynode.id])
           stopPropagation = true
@@ -250,7 +253,7 @@ export function useXYFlowEvents() {
           activeWalkthrough,
           activateWalkthrough,
           openOverlay,
-          showRelationshipDetails
+          enableRelationshipDetails
         } = diagramApi.getState()
         // if we are in dynamic view, and clicked on an edge, activate the step
         if (isDynamicView && enableDynamicViewWalkthrough) {
@@ -262,7 +265,7 @@ export function useXYFlowEvents() {
           return
         }
 
-        if (showRelationshipDetails) {
+        if (enableRelationshipDetails) {
           openOverlay({
             edgeDetails: xyedge.data.edge.id
           })

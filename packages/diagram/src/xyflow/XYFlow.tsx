@@ -10,7 +10,7 @@ import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
 import { XYFlowEdge, XYFlowNode } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
-import { useXYFlowEvents } from './XYFlowEvents'
+import { useXYFlowEvents } from './useXYFlowEvents'
 
 const nodeTypes = {
   element: ElementNode,
@@ -87,7 +87,12 @@ export function XYFlow({
   } = useDiagramState(selector, shallowEqual)
   // const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(zoomable)
   const layoutConstraints = useLayoutConstraints()
-  const handlers = useXYFlowEvents()
+  const {
+    onNodeContextMenu,
+    onPaneContextMenu,
+    onEdgeContextMenu,
+    ...handlers
+  } = useXYFlowEvents()
 
   /**
    * WORKAROUND - Called on viewport change
@@ -118,6 +123,9 @@ export function XYFlow({
       {...colorMode && { colorMode }}
       nodes={nodes}
       edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onInit={onInit}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       zoomOnPinch={zoomable}
@@ -130,12 +138,12 @@ export function XYFlow({
       minZoom={zoomable ? MinZoom : 1}
       // Fitview is handled by store in onInit
       fitView={false}
-      fitViewOptions={useMemo(() => ({
+      fitViewOptions={{
         minZoom: MinZoom,
         maxZoom: 1,
         padding: fitViewPadding,
         includeHiddenNodes: true
-      }), [fitViewPadding])}
+      }}
       {...(!fitView && {
         viewport: {
           x: translateX,
@@ -156,41 +164,16 @@ export function XYFlow({
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
       nodesDraggable={nodesDraggable}
-      {...nodesDraggable && {
-        onNodeDragStart: layoutConstraints.onNodeDragStart,
-        onNodeDrag: layoutConstraints.onNodeDrag,
-        onNodeDragStop: layoutConstraints.onNodeDragStop
-      }}
+      {...nodesDraggable && layoutConstraints}
       nodeDragThreshold={4}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onDoubleClick={handlers.onDoubleClick}
-      onPaneClick={handlers.onPaneClick}
-      onMoveEnd={handlers.onMoveEnd}
-      onNodeMouseEnter={handlers.onNodeMouseEnter}
-      onNodeMouseLeave={handlers.onNodeMouseLeave}
-      onEdgeMouseEnter={handlers.onEdgeMouseEnter}
-      onEdgeMouseLeave={handlers.onEdgeMouseLeave}
-      onNodeClick={handlers.onNodeClick}
-      onNodeDoubleClick={handlers.onNodeDoubleClick}
-      onEdgeClick={handlers.onEdgeClick}
-      onEdgeDoubleClick={handlers.onEdgeDoubleClick}
-      onInit={onInit}
-      {...(hasOnNodeContextMenu && {
-        onNodeContextMenu: handlers.onNodeContextMenu
-      })}
-      {...(hasOnEdgeContextMenu && {
-        onEdgeContextMenu: handlers.onEdgeContextMenu
-      })}
-      {...(hasOnCanvasContextMenu && {
-        onPaneContextMenu: handlers.onPaneContextMenu
-      })}>
+      {...hasOnNodeContextMenu && { onNodeContextMenu }}
+      {...hasOnCanvasContextMenu && { onPaneContextMenu }}
+      {...hasOnEdgeContextMenu && { onEdgeContextMenu }}
+      {...handlers}
+    >
       {children}
     </ReactFlow>
   )
 }
-XYFlow.displayName = 'XYFlow'
-
-// export const XYFlow = memo(XYFlowWrapper) as typeof XYFlowWrapper

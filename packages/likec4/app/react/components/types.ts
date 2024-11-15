@@ -74,12 +74,6 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
   showNotations?: boolean | undefined
 
   /**
-   * Display dropdown with details on relationship's label click
-   * @default false
-   */
-  showRelationshipDetails?: boolean | undefined
-
-  /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
    * Conflicts with `interactive`
    *
@@ -96,9 +90,15 @@ export type LikeC4ViewProps<ViewId extends string, Tag extends string, Kind exte
   /**
    * Experimental feature to browse relationships
    *
-   * @default false
+   * @default enableElementDetails
    */
-  enableRelationshipsBrowser?: boolean | undefined
+  enableRelationshipBrowser?: boolean | undefined
+
+  /**
+   * Display dropdown with details on relationship's label click
+   * @default enableRelationshipBrowser
+   */
+  enableRelationshipDetails?: boolean | undefined
 
   where?: WhereOperator<Tag, Kind> | undefined
 

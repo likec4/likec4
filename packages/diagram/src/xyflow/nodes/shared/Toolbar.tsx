@@ -90,10 +90,10 @@ export function CompoundToolbar({
   const diagramApi = useDiagramStoreApi()
   const {
     hasGoToSource,
-    enableRelationshipsBrowser
+    enableRelationshipBrowser
   } = useDiagramState(s => ({
     hasGoToSource: !!s.onOpenSourceElement,
-    enableRelationshipsBrowser: s.enableRelationshipsBrowser
+    enableRelationshipBrowser: s.enableRelationshipBrowser
   }))
 
   const onChange: OnStyleChange = (style) => {
@@ -118,7 +118,7 @@ export function CompoundToolbar({
         onChange={onChange}
       />
       {hasGoToSource && <GoToSourceButton elementId={element.id} />}
-      {enableRelationshipsBrowser && <BrowseRelationshipsButton elementId={element.id} />}
+      {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
 }
@@ -160,10 +160,10 @@ export function ElementToolbar({
   const diagramApi = useDiagramStoreApi()
   const {
     hasGoToSource,
-    enableRelationshipsBrowser
+    enableRelationshipBrowser
   } = useDiagramState(s => ({
     hasGoToSource: !!s.onOpenSourceElement,
-    enableRelationshipsBrowser: s.enableRelationshipsBrowser
+    enableRelationshipBrowser: s.enableRelationshipBrowser
   }))
   const portalProps = useMantinePortalProps()
 
@@ -235,7 +235,7 @@ export function ElementToolbar({
         position="right-end"
       />
       {hasGoToSource && <GoToSourceButton elementId={element.id} />}
-      {enableRelationshipsBrowser && <BrowseRelationshipsButton elementId={element.id} />}
+      {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
 }

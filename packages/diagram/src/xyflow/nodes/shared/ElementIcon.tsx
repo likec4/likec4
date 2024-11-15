@@ -3,14 +3,17 @@ import clsx from 'clsx'
 import { m } from 'framer-motion'
 import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
 
-export const ElementIcon = (
-  { element, viewId, className, renderIcon: RenderIcon }: {
-    element: DiagramNode
-    viewId: string
-    className: string
-    renderIcon: ElementIconRenderer | null
-  }
-) => {
+export const ElementIcon = ({
+  element,
+  viewId,
+  className,
+  renderIcon: RenderIcon
+}: {
+  element: DiagramNode
+  viewId: string
+  className: string
+  renderIcon: ElementIconRenderer | null
+}) => {
   if (!element.icon) {
     return null
   }
