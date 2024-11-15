@@ -145,6 +145,10 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
 
   const onNavigateToCb = useCallback((toView: ViewID, e?: React.MouseEvent): void => {
     e?.stopPropagation()
+    const { onNavigateTo } = diagramApi.getState()
+    if (!onNavigateTo) {
+      return
+    }
     overlay.close(() => {
       diagramApi.setState({
         lastOnNavigate: {
@@ -153,7 +157,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
           fromNode: fqn
         }
       })
-      diagramApi.getState().onNavigateTo?.(toView)
+      onNavigateTo(toView)
     })
   }, [fqn, currentView.id])
   const controls = useDragControls()
@@ -199,13 +203,16 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
       ref={ref}
       className={css.dialog}
       initial={{
-        '--backdrop-blur': '0px'
+        '--backdrop-blur': '0px',
+        '--backdrop-opacity': '0%'
       }}
       animate={{
-        '--backdrop-blur': '2px'
+        '--backdrop-blur': '1px',
+        '--backdrop-opacity': '50%'
       }}
       exit={{
-        '--backdrop-blur': '0px'
+        '--backdrop-blur': '0px',
+        '--backdrop-opacity': '0%'
       }}
       onClick={e => {
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
@@ -218,53 +225,59 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
         overlay.close()
       }}
     >
-      <FocusTrap>
-        <RemoveScroll forwardProps>
-          <Card
-            drag
-            dragElastic={0}
-            dragMomentum={false}
-            dragListener={false}
-            dragControls={controls}
-            withBorder
-            shadow="md"
-            component={m.div}
-            className={css.card}
-            layoutId={`${viewId}:element:${fqn}`}
-            // initial={{
-            //   opacity: 1,
-            //   top,
-            //   left,
-            //   // transform: `translate(${left}px, ${top}px)`,
-            //   // translateX: left,
-            //   // translateY: top,
-            //   // width: _width,
-            //   // height: _height
-            // }}
-            initial={false}
-            animate={{
-              opacity: 1
-            }}
-            exit={{
-              opacity: 0
-            }}
-            style={{
-              top,
-              left,
-              // `style` prop in Mantine doesn't accept motion values
-              width: width as any,
-              height: height as any
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Escape') {
-                e.preventDefault()
-                e.stopPropagation()
-                overlay.close()
-              }
-            }}
-            data-likec4-color={element.color}>
+      <RemoveScroll forwardProps>
+        <Card
+          drag
+          dragElastic={0}
+          dragMomentum={false}
+          dragListener={false}
+          dragControls={controls}
+          withBorder
+          shadow="md"
+          component={m.div}
+          className={css.card}
+          layoutId={`${viewId}:element:${fqn}`}
+          // initial={{
+          //   opacity: 1,
+          //   top,
+          //   left,
+          //   // transform: `translate(${left}px, ${top}px)`,
+          //   // translateX: left,
+          //   // translateY: top,
+          //   // width: _width,
+          //   // height: _height
+          // }}
+          initial={{
+            top,
+            left,
+            width: _width,
+            height: _height,
+            opacity: 0
+          }}
+          animate={{
+            opacity: 1
+          }}
+          exit={{
+            opacity: 0
+          }}
+          style={{
+            // `style` prop in Mantine doesn't accept motion values
+            width: width as any,
+            height: height as any
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Escape') {
+              e.preventDefault()
+              e.stopPropagation()
+              overlay.close()
+            }
+          }}
+          data-likec4-color={element.color}>
+          <FocusTrap>
             <FocusTrapInitialFocus />
-            <Box className={css.cardHeader} onPointerDown={e => controls.start(e)}>
+            <Box
+              className={css.cardHeader}
+              onPointerDown={e => controls.start(e)}>
               <Group align="start" justify="space-between" gap={'sm'} mb={'sm'}>
                 <Group align="start" gap={'sm'} style={{ cursor: 'default' }}>
                   {elementIcon}
@@ -413,7 +426,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
               <TabsPanel value="Views">
                 <ScrollArea scrollbars="y" type="auto">
                   <Stack gap={'lg'}>
-                    {viewsOf.length > 0 && !!onNavigateTo && (
+                    {viewsOf.length > 0 && (
                       <Box>
                         <Divider label="views of the element (scoped)" />
                         <Stack gap={'sm'}>
@@ -427,7 +440,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
                         </Stack>
                       </Box>
                     )}
-                    {otherViews.length > 0 && !!onNavigateTo && (
+                    {otherViews.length > 0 && (
                       <Box>
                         <Divider label="views including this element" />
                         <Stack gap={'sm'}>
@@ -459,9 +472,9 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
               onDrag={handleDrag}
               dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
             />
-          </Card>
-        </RemoveScroll>
-      </FocusTrap>
+          </FocusTrap>
+        </Card>
+      </RemoveScroll>
     </m.dialog>
   )
 }
@@ -572,6 +585,7 @@ function ElementLink({
         <Anchor href={url} target="_blank" underline="never" className={css.elementLink}>
           <Group gap={4} align="center" wrap="nowrap">
             <ActionIcon
+              tabIndex={-1}
               size={24}
               variant={copied ? 'light' : 'subtle'}
               color={copied ? 'teal' : 'gray'}

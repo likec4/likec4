@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 import { mantine, vars, whereDark, whereLight } from '../../theme-vars'
 
 export const fqn = style({
@@ -53,6 +53,25 @@ export const xyflow = style({
       background: mantine.colors.gray[1]
     }
   }
+})
+
+export const panelScope = style({
+  ':before': {
+    content: 'scope:',
+    position: 'absolute',
+    top: 0,
+    left: 8,
+    fontSize: 9,
+    fontWeight: 500,
+    lineHeight: 1,
+    color: mantine.colors.dimmed,
+    opacity: 0.85,
+    transform: 'translateY(-100%) translateY(-2px)'
+  }
+})
+
+globalStyle(`${whereLight} ${panelScope} .mantine-SegmentedControl-root`, {
+  background: mantine.colors.gray[3]
 })
 
 export const edgeNum = style({

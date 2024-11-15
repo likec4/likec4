@@ -59,7 +59,7 @@ const Sizes = {
     edgesep: 25
   } satisfies GraphLabel,
   edgeLabel: {
-    width: 150,
+    width: 120,
     height: 10,
     minlen: 1,
     weight: 1
@@ -229,7 +229,8 @@ function createNode(
   column: ColumnKey,
   nodeType: Exclude<XYFlowTypes.Node['type'], 'empty'>,
   element: LikeC4Model.ElementModel,
-  ctx: Context
+  ctx: Context,
+  depth: number = 0
 ): XYFlowTypes.ElementNode | XYFlowTypes.CompoundNode {
   const xynodes = ctx.columns[column]
   let node = xynodes.get(element.id)
@@ -250,7 +251,7 @@ function createNode(
       ctx.diagramNodes.has(ancestor.id) || ctx.connected[column].has(ancestor.id)
       || (ctx.scope === 'global' && ctx.subjectElement.ascendingSiblings().some(s => s.id === ancestor.id))
     ),
-    found => found ? createNode(column, 'compound', found, ctx) : null
+    found => found ? createNode(column, 'compound', found, ctx, depth + 2) : null
   )
 
   const xynode: XYFlowTypes.NonEmptyNode = {
@@ -280,6 +281,7 @@ function createNode(
   }
 
   if (parent) {
+    parent.data.depth = Math.min(Math.max(parent.data.depth ?? 0, depth + 1), 6)
     g.setParent(k.id, graphId(parent).body)
   }
   return xynode

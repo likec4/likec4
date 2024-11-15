@@ -16,14 +16,15 @@ export const container = style({
   isolation: 'isolate',
   WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
   backdropFilter: 'blur(var(--backdrop-blur))',
-  backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent var(--backdrop-opacity))`,
+  backgroundColor: `rgb(200 200 200 / var(--backdrop-opacity))`,
   vars: {
-    '--backdrop-blur': '3px',
-    '--backdrop-opacity': '50%',
+    '--backdrop-blur': '0px',
+    '--backdrop-opacity': '0%',
     [mixColor]: `black`
   },
   selectors: {
     [`${whereDark} &`]: {
+      backgroundColor: `rgb(36 36 36 / var(--backdrop-opacity))`,
       vars: {
         [mixColor]: `white`
       }

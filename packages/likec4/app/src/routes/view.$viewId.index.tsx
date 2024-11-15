@@ -37,12 +37,13 @@ function ViewReact() {
       zoomable
       pannable
       controls
-      fitViewPadding={0.08}
+      fitViewPadding={0.1}
       showDiagramTitle
       showNavigationButtons
       enableFocusMode
       enableDynamicViewWalkthrough
       enableElementDetails
+      enableRelationshipDetails
       enableRelationshipBrowser
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}

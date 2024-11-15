@@ -46,6 +46,7 @@ function ViewEditor() {
       enableDynamicViewWalkthrough
       enableFocusMode={false}
       enableElementDetails
+      enableRelationshipDetails
       enableRelationshipBrowser
       onNavigateTo={onNavigateTo}
       renderIcon={RenderIcon}

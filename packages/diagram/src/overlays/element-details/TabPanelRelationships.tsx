@@ -1,7 +1,9 @@
 import { type DiagramView, type EdgeId, type LikeC4Model, nameFromFqn, nonNullable } from '@likec4/core'
 import { Box, Button, Group, Paper, SegmentedControl, Stack, Text, ThemeIcon } from '@mantine/core'
+import { useId } from '@mantine/hooks'
 import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
 import { Panel } from '@xyflow/react'
+import { LayoutGroup } from 'framer-motion'
 import { useState } from 'react'
 import { unique } from 'remeda'
 import { useDiagramState } from '../../hooks'
@@ -19,6 +21,7 @@ export function TabPanelRelationships({
   currentView,
   element
 }: RelationshipsTabPanelProps) {
+  const layoutId = useId()
   const enableRelationshipBrowser = useDiagramState(s => s.enableRelationshipBrowser)
   const overlay = useOverlayDialog()
   const [scope, setScope] = useState<'global' | 'view'>('view')
@@ -84,46 +87,50 @@ export function TabPanelRelationships({
       )}
 
       <Box className={css.xyflow}>
-        <RelationshipsXYFlow
-          subjectId={element.id}
-          bounds={bounds}
-          nodes={nodes}
-          edges={edges}
-          view={currentView}
-          elementsSelectable={false}
-        >
-          <Panel position="top-left">
-            <SegmentedControl
-              size="xs"
-              withItemsBorders={false}
-              value={scope}
-              onChange={setScope as any}
-              data={[
-                { label: 'Global', value: 'global' },
-                { label: 'View', value: 'view' }
-              ]}
-            />
-          </Panel>
-          {enableRelationshipBrowser && (
-            <Panel position="top-right">
-              <Button
-                size="compact-sm"
-                variant="default"
-                fz={'xs'}
-                fw={500}
-                rightSection={<IconExternalLink stroke={1.6} style={{ width: 16 }} />}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  overlay.openOverlay({
-                    relationshipsOf: element.id
-                  })
-                }}
-              >
-                Open
-              </Button>
+        <LayoutGroup id={layoutId}>
+          <RelationshipsXYFlow
+            subjectId={element.id}
+            bounds={bounds}
+            nodes={nodes}
+            edges={edges}
+            view={currentView}
+            elementsSelectable={false}
+          >
+            <Panel position="top-left" className={css.panelScope}>
+              <SegmentedControl
+                size="xs"
+                withItemsBorders={false}
+                value={scope}
+                onChange={setScope as any}
+                data={[
+                  { label: 'Global', value: 'global' },
+                  { label: 'View', value: 'view' }
+                ]}
+              />
             </Panel>
-          )}
-        </RelationshipsXYFlow>
+            {enableRelationshipBrowser && (
+              <Panel position="top-right">
+                <Button
+                  size="compact-sm"
+                  variant="default"
+                  fz={'xs'}
+                  fw={500}
+                  rightSection={<IconExternalLink stroke={1.6} style={{ width: 16 }} />}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    overlay.close(() => {
+                      overlay.openOverlay({
+                        relationshipsOf: element.id
+                      })
+                    })
+                  }}
+                >
+                  Open
+                </Button>
+              </Panel>
+            )}
+          </RelationshipsXYFlow>
+        </LayoutGroup>
       </Box>
     </Stack>
   )

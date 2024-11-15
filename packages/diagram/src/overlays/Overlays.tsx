@@ -60,33 +60,33 @@ export const Overlays = memo(() => {
       </AnimatePresence>
       <AnimatePresence initial={false} onExitComplete={onExitComplete}>
         {activeOverlay && isNullish(activeOverlay.elementDetails) && (
-          <Box
-            component={m.div}
-            className={css.container}
-            data-likec4-color="gray"
-            initial={{
-              '--backdrop-blur': '0px',
-              '--backdrop-opacity': '60%',
-              opacity: 0,
-              translateY: -15
-            }}
-            animate={{
-              '--backdrop-blur': '10px',
-              '--backdrop-opacity': '25%',
-              opacity: 1,
-              translateY: 0
-            }}
-            exit={{
-              '--backdrop-blur': '1px',
-              '--backdrop-opacity': '90%',
-              translateY: -5,
-              opacity: 0,
-              transition: {
-                duration: .2
-              }
-            }}
-          >
-            <RemoveScroll>
+          <RemoveScroll forwardProps>
+            <Box
+              component={m.div}
+              className={css.container}
+              data-likec4-color="gray"
+              initial={{
+                '--backdrop-blur': '0px',
+                '--backdrop-opacity': '0%',
+                opacity: 0,
+                translateY: -15
+              }}
+              animate={{
+                '--backdrop-blur': '10px',
+                '--backdrop-opacity': '70%',
+                opacity: 1,
+                translateY: 0
+              }}
+              exit={{
+                '--backdrop-blur': '1px',
+                '--backdrop-opacity': '0%',
+                translateY: -5,
+                opacity: 0,
+                transition: {
+                  duration: .2
+                }
+              }}
+            >
               <FocusTrap>
                 {activeOverlay.relationshipsOf && <RelationshipsOverlay subjectId={activeOverlay.relationshipsOf} />}
                 {activeOverlay.edgeDetails && (
@@ -111,8 +111,8 @@ export const Overlays = memo(() => {
                   </ActionIcon>
                 </Box>
               </FocusTrap>
-            </RemoveScroll>
-          </Box>
+            </Box>
+          </RemoveScroll>
         )}
       </AnimatePresence>
     </OverlayContext.Provider>

@@ -6,6 +6,9 @@ export const cardBg = createVar('card-bg')
 const cardBgImage = createVar('card-bg-top')
 
 export const dialog = style({
+  boxSizing: 'border-box',
+  margin: 0,
+  padding: 0,
   position: 'fixed',
   inset: 0,
   width: '100%',
@@ -13,14 +16,16 @@ export const dialog = style({
   maxWidth: '100%',
   maxHeight: '100%',
   background: 'transparent',
+  border: '0 solid transparent',
   vars: {
+    '--backdrop-opacity': '0%',
     '--backdrop-blur': '0px'
   },
   selectors: {
     [`&::backdrop`]: {
       WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
       backdropFilter: 'blur(var(--backdrop-blur))',
-      backgroundColor: `rgb(36 36 36 / 20%)`
+      backgroundColor: `rgb(36 36 36 / var(--backdrop-opacity))`
     }
   }
 })

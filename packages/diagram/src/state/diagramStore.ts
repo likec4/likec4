@@ -854,7 +854,14 @@ export function createDiagramStore(props: DiagramInitialState) {
             if (eq(overlay, get().activeOverlay)) {
               return
             }
-            set({ activeOverlay: overlay }, noReplace, 'openOverlay')
+            set(
+              {
+                activeWalkthrough: null,
+                activeOverlay: overlay
+              },
+              noReplace,
+              'openOverlay'
+            )
           },
           closeOverlay: () => {
             if (get().activeOverlay !== null) {
