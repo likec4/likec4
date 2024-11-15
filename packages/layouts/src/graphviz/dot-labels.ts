@@ -5,7 +5,7 @@ import {
   defaultTheme as Theme,
   type ElementThemeColorValues
 } from '@likec4/core'
-import { isDefined, isEmpty, isTruthy } from 'remeda'
+import { isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
 
