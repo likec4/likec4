@@ -14,7 +14,6 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   pack = 120;
   packmode = "array_3";
   pad = 0.209;
-  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;
@@ -23,7 +22,6 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
     margin = 50.1;
   ];
   edge [
-    nojustify = true;
     arrowsize = 0.75;
     fontname = "Arial";
     fontsize = 14;
@@ -33,7 +31,6 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   ];
   node [
     fontname = "Arial";
-    nojustify = true;
     shape = "rect";
     width = 4.445;
     height = 2.5;
@@ -105,7 +102,6 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   pack = 120;
   packmode = "array_3";
   pad = 0.209;
-  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;
@@ -114,7 +110,6 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
     margin = 50.1;
   ];
   edge [
-    nojustify = true;
     arrowsize = 0.75;
     fontname = "Arial";
     fontsize = 14;
@@ -124,7 +119,6 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   ];
   node [
     fontname = "Arial";
-    nojustify = true;
     shape = "rect";
     width = 4.445;
     height = 2.5;
@@ -277,7 +271,6 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   pack = 120;
   packmode = "array_3";
   pad = 0.209;
-  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;
@@ -286,7 +279,6 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     margin = 50.1;
   ];
   edge [
-    nojustify = true;
     arrowsize = 0.75;
     fontname = "Arial";
     fontsize = 14;
@@ -296,7 +288,6 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   ];
   node [
     fontname = "Arial";
-    nojustify = true;
     shape = "rect";
     width = 4.445;
     height = 2.5;
@@ -404,7 +395,6 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   pack = 120;
   packmode = "array_3";
   pad = 0.209;
-  forcelabels = true;
   fontname = "Arial";
   graph [
     fontsize = 15;
@@ -413,7 +403,6 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
     margin = 50.1;
   ];
   edge [
-    nojustify = true;
     arrowsize = 0.75;
     fontname = "Arial";
     fontsize = 14;
@@ -423,7 +412,6 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   ];
   node [
     fontname = "Arial";
-    nojustify = true;
     shape = "rect";
     width = 4.445;
     height = 2.5;

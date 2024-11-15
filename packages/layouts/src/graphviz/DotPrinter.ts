@@ -23,7 +23,7 @@ import type {
   XYPoint
 } from '@likec4/core/types'
 import { logger } from '@likec4/log'
-import { filter, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
+import { filter, isEmpty, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
 import {
   attribute as _,
   type AttributeListModel,
@@ -161,7 +161,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.pack]: pxToPoints(autoLayout.rankSep ?? 120),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15),
-      [_.forcelabels]: true,
       [_.fontname]: FontName
     })
     G.attributes.graph.apply({
@@ -177,7 +176,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected applyNodeAttributes(node: AttributeListModel<'Node', NodeAttributeKey>) {
     node.apply({
       [_.fontname]: FontName,
-      [_.nojustify]: true,
       [_.shape]: 'rect',
       [_.width]: pxToInch(320),
       [_.height]: pxToInch(180),
@@ -187,7 +185,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   }
   protected applyEdgeAttributes(edge: AttributeListModel<'Edge', EdgeAttributeKey>) {
     edge.apply({
-      [_.nojustify]: true,
       [_.arrowsize]: 0.75,
       [_.fontname]: FontName,
       [_.fontsize]: pxToPoints(14),
@@ -249,9 +246,11 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fillcolor]: compoundColor(colorValues.fill, compound.depth),
       [_.color]: compoundColor(colorValues.stroke, compound.depth),
       [_.style]: 'filled',
-      [_.margin]: pxToPoints(compound.children.length > 1 ? 40 : 32),
-      [_.label]: compoundLabel(compound, textColor)
+      [_.margin]: pxToPoints(compound.children.length > 1 ? 40 : 32)
     })
+    if (!isEmpty(compound.title.trim())) {
+      subgraph.set(_.label, compoundLabel(compound, textColor))
+    }
     return subgraph
   }
 

@@ -13,7 +13,7 @@ const likec4 = await LikeC4.fromWorkspace('src/likec4', {
   logger: 'default',
   throwIfInvalid: true
 })
-const views = await likec4.diagrams()
+const views = await likec4.viewsService.computedViews()
 
 const tests = views.map((view) => {
   return `
