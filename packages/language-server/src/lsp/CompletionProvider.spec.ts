@@ -35,6 +35,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'model',
         'views',
         'global',
+        'deployment',
         'likec4lib'
       ]
     })

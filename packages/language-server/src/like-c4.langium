@@ -6,6 +6,7 @@ entry LikeC4Grammar:
     models+=Model  |
     views+=ModelViews |
     globals+=Globals |
+    deployments+=ModelDeployments  |
     likec4lib+=LikeC4Lib
   )*
 ;
@@ -508,6 +509,56 @@ NavigateToProperty:
 
 RelationNavigateToProperty:
   key='navigateTo' value=DynamicViewRef;
+
+// Deployment -------------------------------------
+
+ModelDeployments:
+  name='deployment' '{'
+    (
+      nodes+=DeploymentNode |
+      refs+=DeploymentRef
+    )*
+  '}';
+
+DeploymentNode:
+  'node' name=Id title=String? body=DeploymentNodeBody?
+;
+
+DeployedArtifact:
+  (name=Id Eq)? 'instanceOf' element=ElementRef ';'?
+;
+
+DeploymentNodeBody: '{'
+  artifacts+=(
+    DeployedArtifact
+  )*
+'}';
+
+// DeploymentRef:
+//   DeployedElementRef
+
+// ;
+
+// DeployedElementRef infers DeploymentRef:
+//   DeployedArtifactRef
+//   ({infer DeployedElementRef} StickyDot element=ElementRef)?
+//   // artifact=DeployedArtifactRef StickyDot element=ElementRef
+// ;
+// DeployedElementRef infers DeploymentRef:
+//   DeployedArtifactRef ({infer DeployedElementRef.parent=current} StickyDot element=ElementRef)?
+// ;
+
+// DeployedArtifactRef infers DeploymentRef:
+//   {infer DeployedArtifactRef}  (
+//     {infer DeployedElementRef} StickyDot element=ElementRef
+//   )?
+// ;
+type DeploymentReference = DeploymentNode | DeployedArtifact | Element
+
+DeploymentRef:
+  current=[DeploymentReference:Id] ({infer DeploymentRef.parent=current} StickyDot current=[DeploymentReference:Id])*;
+
+
 
 // Global -------------------------------------
 

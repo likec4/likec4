@@ -108,6 +108,18 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
+    if (ast.isDeploymentRef(node)) {
+      acceptor({
+        node,
+        property: 'current',
+        type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly
+        ]
+      })
+      return !node.parent ? 'prune' : undefined
+    }
     if (ast.isElementRef(node) || ast.isFqnElementRef(node)) {
       acceptor({
         node,

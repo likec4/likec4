@@ -23,6 +23,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
       case hasType(
         ast.Model,
         ast.ModelViews,
+        ast.ModelDeployments,
+        ast.Globals,
         ast.SpecificationRule
       ):
         return SymbolKind.Namespace
@@ -73,6 +75,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
       case hasType(
         ast.Model,
         ast.ModelViews,
+        ast.ModelDeployments,
+        ast.Globals,
         ast.SpecificationRule
       ):
         return CompletionItemKind.Module

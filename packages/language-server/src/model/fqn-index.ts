@@ -6,7 +6,6 @@ import type { ast, DocFqnIndexAstNodeDescription, FqnIndexedDocument } from '../
 import { ElementOps, isFqnIndexedDocument, isLikeC4LangiumDocument } from '../ast'
 import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
-import { printDocs } from '../utils/printDocs'
 import { computeDocumentFqn } from './fqn-computation'
 
 export interface FqnIndexEntry {

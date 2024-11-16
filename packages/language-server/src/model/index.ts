@@ -1,3 +1,4 @@
+export * from './deployment-index'
 export * from './fqn-computation'
 export * from './fqn-index'
 export * from './model-builder'

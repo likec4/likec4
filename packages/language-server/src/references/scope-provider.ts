@@ -1,5 +1,5 @@
-import { invariant } from '@likec4/core'
 import type * as c4 from '@likec4/core'
+import { invariant, nonexhaustive } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
@@ -19,17 +19,19 @@ import {
 import { ast } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logger } from '../logger'
-import type { FqnIndex } from '../model/fqn-index'
+import type { FqnIndex, LikeC4DeploymentsIndex } from '../model'
 import type { LikeC4Services } from '../module'
 
 const { getDocument } = AstUtils
 
 export class LikeC4ScopeProvider extends DefaultScopeProvider {
+  private deploymentsIndex: LikeC4DeploymentsIndex
   private fqnIndex: FqnIndex
 
   constructor(services: LikeC4Services) {
     super(services)
     this.fqnIndex = services.likec4.FqnIndex
+    this.deploymentsIndex = services.likec4.DeploymentsIndex
   }
 
   private directChildrenOf(parent: c4.Fqn): Stream<AstNodeDescription> {
@@ -87,15 +89,37 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   override getScope(context: ReferenceInfo): Scope {
     try {
       const referenceType = this.reflection.getReferenceType(context)
-      if (referenceType !== ast.Element) {
-        return this.getGlobalScope(referenceType)
-      }
       try {
         const container = context.container
+        if (ast.isDeploymentRef(container)) {
+          const parent = container.parent
+          if (!parent) {
+            return this.getGlobalScope(ast.DeploymentNode, context)
+          }
+          const ref = parent.current.ref
+          if (!ref) {
+            return EMPTY_SCOPE
+          }
+          if (ast.isDeploymentNode(ref)) {
+            return new StreamScope(this.deploymentsIndex.artifacts(ref.name))
+          }
+          if (ast.isDeployedArtifact(ref)) {
+            return new StreamScope(this.scopeElementRef(ref.element))
+          }
+          if (ast.isElement(ref)) {
+            return new StreamScope(this.uniqueDescedants(() => ref))
+          }
+          return nonexhaustive(ref)
+        }
+
+        if (referenceType !== ast.Element) {
+          return this.getGlobalScope(referenceType, context)
+        }
+
         if (ast.isFqnElementRef(container) && context.property === 'el') {
           const parent = container.parent
           if (!parent) {
-            return this.getGlobalScope(referenceType)
+            return this.getGlobalScope(referenceType, context)
           }
           return new StreamScope(this.directChildrenOf(getFqnElementRef(parent)))
         }
@@ -119,7 +143,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         return this.computeScope(context)
       } catch (e) {
         logger.warn(e)
-        return this.getGlobalScope(referenceType)
+        return this.getGlobalScope(referenceType, context)
       }
     } catch (e) {
       logger.warn(e)
@@ -156,13 +180,6 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
     return scopes.reduceRight((outerScope, elements) => {
       return this.createScope(elements, outerScope)
-    }, this.getGlobalScope(referenceType))
-  }
-
-  /**
-   * Create a global scope filtered for the given reference type.
-   */
-  protected override getGlobalScope(referenceType: string): Scope {
-    return new StreamScope(this.indexManager.allElements(referenceType))
+    }, this.getGlobalScope(referenceType, context))
   }
 }

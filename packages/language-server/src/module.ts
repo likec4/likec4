@@ -1,4 +1,4 @@
-import { EmptyFileSystem, inject, type Module, WorkspaceCache } from 'langium'
+import { DocumentCache, EmptyFileSystem, inject, type Module, WorkspaceCache } from 'langium'
 import {
   createDefaultModule,
   createDefaultSharedModule,
@@ -8,6 +8,7 @@ import {
   type PartialLangiumServices,
   type PartialLangiumSharedServices
 } from 'langium/lsp'
+import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { logErrorToTelemetry, logToLspConnection } from './logger'
 import {
@@ -19,13 +20,12 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider
 } from './lsp'
-import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
+import { FqnIndex, LikeC4DeploymentsIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ModelChanges } from './model-change/ModelChanges'
-import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
+import { LikeC4NameProvider, LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
 import { registerValidationChecks } from './validation'
-import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
@@ -61,8 +61,10 @@ const LikeC4SharedModule: Module<
 export interface LikeC4AddedServices {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   WorkspaceCache: WorkspaceCache<string, any>
+  DocumentCache: DocumentCache<string, any>
   Rpc: Rpc
   likec4: {
+    DeploymentsIndex: LikeC4DeploymentsIndex
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
     ModelBuilder: LikeC4ModelBuilder
@@ -80,6 +82,7 @@ export interface LikeC4AddedServices {
     DocumentLinkProvider: LikeC4DocumentLinkProvider
   }
   references: {
+    NameProvider: LikeC4NameProvider
     ScopeComputation: LikeC4ScopeComputation
     ScopeProvider: LikeC4ScopeProvider
   }
@@ -94,8 +97,10 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 
 export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
   WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
+  DocumentCache: (services: LikeC4Services) => new DocumentCache(services.shared),
   Rpc: bind(Rpc),
   likec4: {
+    DeploymentsIndex: bind(LikeC4DeploymentsIndex),
     ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
@@ -114,6 +119,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     Formatter: bind(LikeC4Formatter)
   },
   references: {
+    NameProvider: bind(LikeC4NameProvider),
     ScopeComputation: bind(LikeC4ScopeComputation),
     ScopeProvider: bind(LikeC4ScopeProvider)
   }

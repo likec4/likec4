@@ -103,9 +103,16 @@ export class LikeC4ModelParser {
           continue
         }
         const style = props.find(ast.isElementStyleProperty)
+        // const bodyProps = pipe(
+        //   props,
+        //   filter(isValid),
+        //   filter(ast.isSpecificationElementStringProperty),
+        //   // filter(p => isNonNullish(p.value)),
+        //   mapToObj(p => [p.key, removeIndent(p.value) ?? undefined])
+        // )
         const bodyProps = mapToObj(
           props.filter(ast.isSpecificationElementStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, removeIndent(p.value)] as const
+          p => [p.key, removeIndent(p.value)] satisfies [string, string]
         )
         c4Specification.elements[kindName] = {
           ...bodyProps,
@@ -131,11 +138,11 @@ export class LikeC4ModelParser {
         }
         const bodyProps = mapToObj(
           props.filter(ast.isSpecificationRelationshipStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, removeIndent(p.value)]
+          p => [p.key, removeIndent(p.value)] satisfies [string, string]
         )
         c4Specification.relationships[kindName] = {
           ...bodyProps,
-          ...toRelationshipStyleExcludeDefaults(props)
+          ...toRelationshipStyleExcludeDefaults(props, isValid)
         }
       } catch (e) {
         logWarnError(e)
@@ -180,7 +187,7 @@ export class LikeC4ModelParser {
       }
       if (ast.isRelation(el)) {
         try {
-          doc.c4Relations.push(this.parseRelation(el))
+          doc.c4Relations.push(this.parseRelation(el, isValid))
         } catch (e) {
           logWarnError(e)
         }
@@ -201,9 +208,11 @@ export class LikeC4ModelParser {
 
     let [title, description, technology] = astNode.props ?? []
 
-    const bodyProps = mapToObj(
-      astNode.body?.props.filter(ast.isElementStringProperty) ?? [],
-      p => [p.key, p.value || undefined]
+    const bodyProps = pipe(
+      astNode.body?.props ?? [],
+      filter(isValid),
+      filter(ast.isElementStringProperty),
+      mapToObj(p => [p.key, p.value || undefined])
     )
 
     title = toSingleLine(title ?? bodyProps.title)
@@ -214,7 +223,7 @@ export class LikeC4ModelParser {
 
     // Property has higher priority than from style
     const iconProp = astNode.body?.props.find(ast.isIconProperty)
-    if (iconProp) {
+    if (iconProp && isValid(iconProp)) {
       const value = iconProp.libicon?.ref?.name ?? iconProp.value
       if (isTruthy(value)) {
         style.icon = value as c4.IconUrl
@@ -235,7 +244,7 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseRelation(astNode: ast.Relation): ParsedAstRelation {
+  private parseRelation(astNode: ast.Relation, isValid: IsValidFn): ParsedAstRelation {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
@@ -280,7 +289,7 @@ export class LikeC4ModelParser {
       ...(kind && { kind }),
       ...(tags && { tags }),
       ...(isNonEmptyArray(links) && { links }),
-      ...toRelationshipStyleExcludeDefaults(styleProp?.props),
+      ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
       ...(navigateTo && { navigateTo: navigateTo as c4.ViewID })
     }
   }

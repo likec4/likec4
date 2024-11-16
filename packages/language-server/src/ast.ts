@@ -1,5 +1,5 @@
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
 import type * as c4 from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
@@ -162,6 +162,12 @@ export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
   fqn: c4.Fqn
 }
 
+export interface DeployedArtifactAstNodeDescription extends AstNodeDescription {
+  /**
+   * Node name (where artifact is deployed)
+   */
+  deploymentTarget: string
+}
 // export type LikeC4AstNode = ast.LikeC4AstType[keyof ast.LikeC4AstType]
 export type LikeC4AstNode = ValueOf<ConditionalPick<ast.LikeC4AstType, AstNode>>
 type LikeC4DocumentDiagnostic = Diagnostic & DiagnosticInfo<LikeC4AstNode>
@@ -260,13 +266,13 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isElementViewBody,
   ast.isDynamicViewBody,
   ast.isLikeC4View,
+  ast.isDeployedArtifact,
   ast.isRelationProperty,
   ast.isRelationBody,
   ast.isRelation,
   ast.isElementProperty,
-  ast.isElementBody,
+  ast.isStringProperty,
   ast.isElement,
-  ast.isExtendElementBody,
   ast.isExtendElement,
   ast.isSpecificationElementKind,
   ast.isSpecificationRelationshipKind,
@@ -414,7 +420,7 @@ export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isVa
   return result
 }
 
-export function toRelationshipStyle(props?: ast.RelationshipStyleProperty[]) {
+export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | undefined, isValid: IsValidFn) {
   const result = {} as {
     color?: c4.Color
     line?: c4.RelationshipLineType
@@ -458,9 +464,10 @@ export function toRelationshipStyle(props?: ast.RelationshipStyleProperty[]) {
 }
 
 export function toRelationshipStyleExcludeDefaults(
-  props?: ast.SpecificationRelationshipKind['props']
+  props: ast.SpecificationRelationshipKind['props'] | undefined,
+  isValid: IsValidFn
 ) {
-  const { color, line, head, tail } = toRelationshipStyle(props?.filter(ast.isRelationshipStyleProperty))
+  const { color, line, head, tail } = toRelationshipStyle(props?.filter(ast.isRelationshipStyleProperty), isValid)
   return {
     ...(color && color !== DefaultRelationshipColor ? { color } : {}),
     ...(line && line !== DefaultLineStyle ? { line } : {}),

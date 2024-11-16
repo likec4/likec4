@@ -6,7 +6,6 @@
     "module": "esnext",
     "target": "ESNext",
     "composite": true,
-    "incremental": false,
     "tsBuildInfoFile": "scripts.tsbuildinfo",
     "types": [
       "node"

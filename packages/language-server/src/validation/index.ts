@@ -1,6 +1,7 @@
 import { type ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
+import { deployedArtifactChecks } from './deployment-checks'
 import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
@@ -29,6 +30,7 @@ export function registerValidationChecks(services: LikeC4Services) {
   logger.info('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
+    DeployedArtifact: deployedArtifactChecks(services),
     NotesProperty: notesPropertyRuleChecks(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),

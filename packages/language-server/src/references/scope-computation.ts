@@ -10,17 +10,22 @@ import { isNullish, isTruthy } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
+import type { LikeC4Services } from '../module'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
+  constructor(private services: LikeC4Services) {
+    super(services)
+  }
+
   override async computeExports(
     document: LikeC4LangiumDocument,
     _cancelToken?: CancellationToken
   ): Promise<AstNodeDescription[]> {
     const docExports: AstNodeDescription[] = []
     try {
-      const { specifications, models, views, globals, likec4lib } = document.parseResult.value
+      const { specifications, models, views, globals, likec4lib, deployments } = document.parseResult.value
 
       // Process library
       this.exportLibrary(likec4lib, docExports, document)
@@ -36,6 +41,8 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
       // Process global
       this.exportGlobals(globals, docExports, document)
+
+      this.exportDeployments(deployments, docExports, document)
     } catch (e) {
       logError(e)
     }
@@ -188,6 +195,18 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     }
   }
 
+  private exportDeployments(
+    deployments: ast.ModelDeployments[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument
+  ) {
+    if (isNullish(deployments) || deployments.length === 0) {
+      return
+    }
+    const deploymentsIndex = this.services.likec4.DeploymentsIndex.get(document)
+    docExports.push(...deploymentsIndex.nodes().toArray())
+  }
+
   override computeLocalScopes(
     document: LikeC4LangiumDocument,
     _cancelToken?: CancellationToken
@@ -214,6 +233,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ) {
     const localScope = new MultiMap<string, AstNodeDescription>()
     const nestedScopes = new MultiMap<string, AstNodeDescription>()
+
     for (const el of container.elements) {
       if (ast.isRelation(el)) {
         continue
@@ -250,6 +270,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       }
     }
     scopes.addAll(container, localScope.values())
+
     return localScope
   }
 }
