@@ -514,51 +514,41 @@ RelationNavigateToProperty:
 
 ModelDeployments:
   name='deployment' '{'
-    (
-      nodes+=DeploymentNode |
-      refs+=DeploymentRef
+    nested+=(
+      DeploymentNode |
+      DeploymentRelation
     )*
   '}';
 
 DeploymentNode:
-  'node' name=Id title=String? body=DeploymentNodeBody?
+  (name=Id Eq 'node' | 'node' name=Id) title=String? body=DeploymentNodeBody?
 ;
 
 DeployedArtifact:
-  (name=Id Eq)? 'instanceOf' element=ElementRef ';'?
+  (name=Id Eq)? ('instanceOf' | 'instance' 'of') element=ElementRef ';'?
 ;
 
 DeploymentNodeBody: '{'
-  artifacts+=(
-    DeployedArtifact
+  nested+=(
+    DeployedArtifact |
+    DeploymentNode
   )*
 '}';
 
-// DeploymentRef:
-//   DeployedElementRef
-
-// ;
-
-// DeployedElementRef infers DeploymentRef:
-//   DeployedArtifactRef
-//   ({infer DeployedElementRef} StickyDot element=ElementRef)?
-//   // artifact=DeployedArtifactRef StickyDot element=ElementRef
-// ;
-// DeployedElementRef infers DeploymentRef:
-//   DeployedArtifactRef ({infer DeployedElementRef.parent=current} StickyDot element=ElementRef)?
-// ;
-
-// DeployedArtifactRef infers DeploymentRef:
-//   {infer DeployedArtifactRef}  (
-//     {infer DeployedElementRef} StickyDot element=ElementRef
-//   )?
-// ;
-type DeploymentReference = DeploymentNode | DeployedArtifact | Element
-
+// Rules:
+// - DeployedArtifact can be referenced from DeploymentNode
+// - Element can be referenced from DeployedArtifact
+// Forced by scope computation
+type DeploymentReferenceable = DeploymentNode | DeployedArtifact | Element;
 DeploymentRef:
-  current=[DeploymentReference:Id] ({infer DeploymentRef.parent=current} StickyDot current=[DeploymentReference:Id])*;
+  current=[DeploymentReferenceable:Id] ({infer DeploymentRef.parent=current} StickyDot current=[DeploymentReferenceable:Id])*;
 
-
+DeploymentRelation:
+  source=DeploymentRef
+  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
+  target=DeploymentRef
+  title=String?
+;
 
 // Global -------------------------------------
 
@@ -686,7 +676,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group' | 'node' | 'deployment';
 
 fragment EqOperator:
   (

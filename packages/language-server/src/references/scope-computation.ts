@@ -204,7 +204,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       return
     }
     const deploymentsIndex = this.services.likec4.DeploymentsIndex.get(document)
-    docExports.push(...deploymentsIndex.nodes().toArray())
+    docExports.push(...deploymentsIndex.rootNodes())
   }
 
   override computeLocalScopes(

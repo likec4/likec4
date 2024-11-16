@@ -20,7 +20,7 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider
 } from './lsp'
-import { FqnIndex, LikeC4DeploymentsIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
+import { DeploymentsIndex, FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ModelChanges } from './model-change/ModelChanges'
 import { LikeC4NameProvider, LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { Rpc } from './Rpc'
@@ -64,7 +64,7 @@ export interface LikeC4AddedServices {
   DocumentCache: DocumentCache<string, any>
   Rpc: Rpc
   likec4: {
-    DeploymentsIndex: LikeC4DeploymentsIndex
+    DeploymentsIndex: DeploymentsIndex
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
     ModelBuilder: LikeC4ModelBuilder
@@ -100,7 +100,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   DocumentCache: (services: LikeC4Services) => new DocumentCache(services.shared),
   Rpc: bind(Rpc),
   likec4: {
-    DeploymentsIndex: bind(LikeC4DeploymentsIndex),
+    DeploymentsIndex: bind(DeploymentsIndex),
     ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),

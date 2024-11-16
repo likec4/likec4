@@ -10,6 +10,7 @@ import { elementRef } from './elementRef'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
+import type { DocumentDeploymentsIndex } from './model'
 
 export { ast }
 
@@ -162,41 +163,55 @@ export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
   fqn: c4.Fqn
 }
 
-export interface DeployedArtifactAstNodeDescription extends AstNodeDescription {
-  /**
-   * Node name (where artifact is deployed)
-   */
-  deploymentTarget: string
+export interface DeploymentAstNodeDescription extends AstNodeDescription {
+  // Fullname of the artifact or node
+  fqn: string
 }
+
 // export type LikeC4AstNode = ast.LikeC4AstType[keyof ast.LikeC4AstType]
 export type LikeC4AstNode = ValueOf<ConditionalPick<ast.LikeC4AstType, AstNode>>
 type LikeC4DocumentDiagnostic = Diagnostic & DiagnosticInfo<LikeC4AstNode>
 
-export interface LikeC4DocumentProps {
-  diagnostics?: Array<LikeC4DocumentDiagnostic>
-  c4Specification?: ParsedAstSpecification
-  c4Elements?: ParsedAstElement[]
-  c4Relations?: ParsedAstRelation[]
-  c4Globals?: ParsedAstGlobals
-  c4Views?: ParsedAstView[]
-  // Fqn -> Element
-  c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
+// export interface LikeC4DocumentProps {
+//   diagnostics?: Array<LikeC4DocumentDiagnostic>
+//   c4Specification?: ParsedAstSpecification
+//   c4Elements?: ParsedAstElement[]
+//   c4Relations?: ParsedAstRelation[]
+//   c4Globals?: ParsedAstGlobals
+//   c4Views?: ParsedAstView[]
+//   // Fqn -> Element
+//   c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
+
+//   c4DeploymentsIndex?: DocumentDeploymentsIndex
+// }
+
+export namespace LikeC4LangiumDocument {
+  export interface Props {
+    diagnostics?: Array<LikeC4DocumentDiagnostic>
+    c4Specification?: ParsedAstSpecification
+    c4Elements?: ParsedAstElement[]
+    c4Relations?: ParsedAstRelation[]
+    c4Globals?: ParsedAstGlobals
+    c4Views?: ParsedAstView[]
+    // Fqn -> Element
+    c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
+  }
 }
 
 export interface LikeC4LangiumDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, LikeC4DocumentProps
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, LikeC4LangiumDocument.Props
 {}
 export interface FqnIndexedDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4DocumentProps, 'c4fqnIndex'>
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4LangiumDocument.Props, 'c4fqnIndex'>
 {}
 
 // export type ParsedLikeC4LangiumDocument = SetRequired<FqnIndexedDocument, keyof  LikeC4DocumentProps>
 export interface ParsedLikeC4LangiumDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, Required<LikeC4DocumentProps>
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, Required<LikeC4LangiumDocument.Props>
 {}
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
+  const props: Required<Omit<LikeC4LangiumDocument.Props, 'c4fqnIndex' | 'c4DeploymentsIndex' | 'diagnostics'>> = {
     c4Specification: {
       tags: new Set(),
       elements: {},

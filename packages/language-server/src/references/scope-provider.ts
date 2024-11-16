@@ -19,13 +19,13 @@ import {
 import { ast } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logger } from '../logger'
-import type { FqnIndex, LikeC4DeploymentsIndex } from '../model'
+import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 
 const { getDocument } = AstUtils
 
 export class LikeC4ScopeProvider extends DefaultScopeProvider {
-  private deploymentsIndex: LikeC4DeploymentsIndex
+  private deploymentsIndex: DeploymentsIndex
   private fqnIndex: FqnIndex
 
   constructor(services: LikeC4Services) {
@@ -101,7 +101,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
             return EMPTY_SCOPE
           }
           if (ast.isDeploymentNode(ref)) {
-            return new StreamScope(this.deploymentsIndex.artifacts(ref.name))
+            return new StreamScope(this.deploymentsIndex.children(ref))
           }
           if (ast.isDeployedArtifact(ref)) {
             return new StreamScope(this.scopeElementRef(ref.element))

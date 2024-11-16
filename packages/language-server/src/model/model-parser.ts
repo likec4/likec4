@@ -269,7 +269,7 @@ export class LikeC4ModelParser {
 
     const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
     const description = removeIndent(bodyProps.description)
-    const technology = removeIndent(astNode.technology) ?? toSingleLine(bodyProps.technology)
+    const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
 
     const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
     const id = stringHash(
