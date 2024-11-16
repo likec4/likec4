@@ -29,7 +29,7 @@
     "@mantine/hooks": "7.13.4",
     "@mantine/vanilla-extract": "7.13.4",
     "@react-hookz/web": "^24.0.4",
-    "@tabler/icons-react": "3.17.0",
+    "@tabler/icons-react": "3.22.0",
     "@tanstack/react-router": "1.45.13",
     "@tanstack/router-cli": "1.45.13",
     "@tanstack/router-vite-plugin": "1.45.13",
