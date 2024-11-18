@@ -374,7 +374,7 @@ export class GridAligner extends Aligner {
   ): [number, Layout] {
     return [
       pipe(
-        layout.nodePositions.entries().toArray(),
+        Array.from(layout.nodePositions),
         map(([id, position]) => {
           const originalRect = originalRects.get(id)
           invariant(originalRect, `Could not find original rect for node ${id}`)
