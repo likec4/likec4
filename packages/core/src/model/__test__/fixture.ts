@@ -339,5 +339,9 @@ export const fakeComputedModel = {
     dynamicPredicates: {},
     styles: {}
   },
-  views: {}
+  views: {},
+  deployments: {
+    elements: {},
+    relations: {}
+  }
 } satisfies ComputedLikeC4Model

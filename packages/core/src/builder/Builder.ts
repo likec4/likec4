@@ -225,7 +225,11 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     predicates: {},
     dynamicPredicates: {},
     styles: {}
-  } as ModelGlobals
+  } as ModelGlobals,
+  _deployments = {
+    elements: {},
+    relations: {}
+  } as ParsedLikeC4Model['deployments']
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
     tags: (spec.tags ?? []) as Tag<T['Tag']>[],
@@ -284,14 +288,16 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     get Types(): T {
       throw new Error('Types are not available in runtime')
     },
-    clone: () =>
-      builder(
+    clone: () => {
+      return builder(
         structuredClone(spec),
         structuredClone(_elements),
         structuredClone(_relations),
         structuredClone(_views),
-        structuredClone(_globals)
-      ),
+        structuredClone(_globals),
+        structuredClone(_deployments)
+      )
+    },
     __model: () => ({
       addElement: (element) => {
         const parent = parentFqn(element.id)
@@ -346,6 +352,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       elements: fromEntries(Array.from(_elements.entries())) as any,
       relations: mapToObj(_relations, r => [r.id, r]),
       globals: structuredClone(_globals),
+      deployments: structuredClone(_deployments),
       views: fromEntries(Array.from(_views.entries())) as any
     }),
     helpers: () => ({

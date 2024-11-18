@@ -49,7 +49,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 2,
-      expectedItems: ['element', 'tag', 'relationship', 'color']
+      expectedItems: ['element', 'tag', 'relationship', 'color', 'deploymentNode']
     })
     await completion({
       text,

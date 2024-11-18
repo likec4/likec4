@@ -1,6 +1,7 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
+import type { DeploymentExpression } from './deployments'
 import {
   type BorderStyle,
   ElementKind,
@@ -27,6 +28,7 @@ export type ViewRulePredicate =
     include?: never
     exclude: Expression[]
   }
+
 export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate {
   return (
     ('include' in rule && Array.isArray(rule.include))
@@ -99,7 +101,7 @@ export type ViewRule =
   | ViewRuleAutoLayout
 
 export interface BasicView<
-  ViewType extends 'element' | 'dynamic',
+  ViewType extends 'element' | 'dynamic' | 'deployment',
   ViewIDs extends string,
   Tags extends string
 > {
@@ -214,15 +216,43 @@ export function isDynamicViewParallelSteps(step: DynamicViewStepOrParallel): ste
 
 export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
+export type DeploymentViewRulePredicate =
+  | {
+    include: DeploymentExpression[]
+    exclude?: never
+  }
+  | {
+    include?: never
+    exclude: DeploymentExpression[]
+  }
+export type DeploymentViewRule = DeploymentViewRulePredicate | ViewRuleAutoLayout
+
+export interface DeploymentView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends BasicView<'deployment', ViewIDs, Tags> {
+  readonly __: 'deployment'
+  readonly rules: DeploymentViewRule[]
+}
+
 export type LikeC4View<
   ViewIDs extends string = string,
   Tags extends string = string
-> = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags>
+> = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags> | DeploymentView<ViewIDs, Tags>
 
-export function isDynamicView(view: LikeC4View): view is DynamicView {
+export function isDeploymentView(view: ComputedView): view is ComputedDeploymentView
+export function isDeploymentView(view: LikeC4View): view is DeploymentView
+export function isDeploymentView(view: { __?: string }) {
+  return view.__ === 'deployment'
+}
+export function isDynamicView(view: ComputedView): view is ComputedDynamicView
+export function isDynamicView(view: LikeC4View): view is DynamicView
+export function isDynamicView(view: { __?: string }) {
   return view.__ === 'dynamic'
 }
-export function isElementView(view: LikeC4View): view is ElementView {
+export function isElementView(view: ComputedView): view is ComputedElementView
+export function isElementView(view: LikeC4View): view is ElementView
+export function isElementView(view: { __?: string }) {
   return isNullish(view.__) || view.__ === 'element'
 }
 
@@ -380,10 +410,21 @@ export function isComputedDynamicView(view: ComputedView): view is ComputedDynam
   return view.__ === 'dynamic'
 }
 
+export interface ComputedDeploymentView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends Omit<DeploymentView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
+  readonly autoLayout: ViewAutoLayout
+  readonly nodes: ComputedNode[]
+  readonly edges: ComputedEdge[]
+  rules?: never
+  docUri?: never
+}
+
 export type ComputedView<
   ViewIDs extends string = string,
   Tags extends string = string
-> = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags>
+> = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags> | ComputedDeploymentView<ViewIDs, Tags>
 
 export function isComputedElementView(view: ComputedView): view is ComputedElementView {
   return isNullish(view.__) || view.__ === 'element'

@@ -111,7 +111,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     if (ast.isDeploymentRef(node)) {
       acceptor({
         node,
-        property: 'current',
+        property: 'value',
         type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable,
         modifier: [
           SemanticTokenModifiers.definition,
@@ -149,7 +149,10 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if (ast.isSpecificationElementKind(node) || ast.isSpecificationRelationshipKind(node)) {
+    if (
+      ast.isSpecificationElementKind(node) || ast.isSpecificationRelationshipKind(node)
+      || ast.isSpecificationDeploymentNodeKind(node)
+    ) {
       acceptor({
         node,
         property: 'kind',
@@ -208,30 +211,13 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'key',
         type: SemanticTokenTypes.property
       })
-      if (ast.isIconProperty(node)) {
-        if (node.libicon) {
-          acceptor({
-            node,
-            property: 'libicon',
-            type: SemanticTokenTypes.enum,
-            modifier: [SemanticTokenModifiers.defaultLibrary]
-          })
-        } else {
-          if (node.value === 'none') {
-            acceptor({
-              node,
-              property: 'value',
-              type: SemanticTokenTypes.enum,
-              modifier: [SemanticTokenModifiers.defaultLibrary]
-            })
-          } else {
-            acceptor({
-              node,
-              property: 'value',
-              type: SemanticTokenTypes.string
-            })
-          }
-        }
+      if (ast.isIconProperty(node) && (node.libicon || node.value === 'none')) {
+        acceptor({
+          node,
+          property: node.libicon ? 'libicon' : 'value',
+          type: SemanticTokenTypes.enum,
+          modifier: [SemanticTokenModifiers.defaultLibrary]
+        })
         return 'prune'
       }
       if ('value' in node && node.value) {

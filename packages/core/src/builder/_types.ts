@@ -16,7 +16,9 @@ export type BuilderSpecification = {
   elements: {
     [kind: string]: Partial<ElementKindSpecification>
   }
-  relationships?: Record<string, Partial<RelationshipKindSpecification>>
+  relationships?: {
+    [kind: string]: Partial<RelationshipKindSpecification>
+  }
   tags?: [string, ...string[]]
   metadataKeys?: [string, ...string[]]
 }

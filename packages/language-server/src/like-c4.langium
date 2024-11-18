@@ -19,22 +19,15 @@ LikeC4Lib:
     '}'
   '}';
 
-LibIcon:
-  name=IconId;
+LibIcon: name=IconId;
 
 // Specification -------------------------------------
 
-ElementKind:
-  name=Id;
-
-Tag:
-  name=Id;
-
-RelationshipKind:
-  name=Id;
-
-CustomColor:
-  name=CustomColorId;
+ElementKind: name=Id;
+Tag: name=Id;
+RelationshipKind: name=Id;
+CustomColor: name=CustomColorId;
+DeploymentNodeKind: name=Id;
 
 SpecificationRule:
   name='specification' '{'
@@ -42,7 +35,8 @@ SpecificationRule:
       elements+=SpecificationElementKind |
       tags+=SpecificationTag |
       relationships+=SpecificationRelationshipKind |
-      colors+=SpecificationColor
+      colors+=SpecificationColor |
+      deploymentNodes+=SpecificationDeploymentNodeKind
     )*
   '}';
 
@@ -56,6 +50,9 @@ SpecificationElementKind:
 
 SpecificationElementStringProperty:
   key=('technology' | 'notation') ':'? value=String ';'?;
+
+SpecificationDeploymentNodeKind:
+  'deploymentNode' kind=DeploymentNodeKind;
 
 SpecificationTag:
   'tag' tag=Tag;
@@ -202,9 +199,9 @@ ModelViews:
     )*
   '}';
 
-type LikeC4View = ElementView | DynamicView;
+type LikeC4View = ElementView | DynamicView | DeploymentView;
 LikeC4ViewRule returns LikeC4View:
-  ElementView | DynamicView;
+  ElementView | DynamicView | DeploymentView;
 
 ElementView:
   'view' name=Id? (
@@ -521,27 +518,32 @@ ModelDeployments:
   '}';
 
 DeploymentNode:
-  (name=Id Eq 'node' | 'node' name=Id) title=String? body=DeploymentNodeBody?
+  (
+    kind=[DeploymentNodeKind] name=Id |
+    name=Id Eq kind=[DeploymentNodeKind]
+  )
+  title=String?
+  body=DeploymentNodeBody?
 ;
 
-DeployedArtifact:
+DeployedInstance:
   (name=Id Eq)? ('instanceOf' | 'instance' 'of') element=ElementRef ';'?
 ;
 
 DeploymentNodeBody: '{'
   nested+=(
-    DeployedArtifact |
+    DeployedInstance |
     DeploymentNode
   )*
 '}';
 
 // Rules:
-// - DeployedArtifact can be referenced from DeploymentNode
-// - Element can be referenced from DeployedArtifact
+// - DeployedInstance can be referenced from DeploymentNode
+// - Element can be referenced from DeployedInstance
 // Forced by scope computation
-type DeploymentReferenceable = DeploymentNode | DeployedArtifact | Element;
+type DeploymentReferenceable = DeploymentNode | DeployedInstance | Element;
 DeploymentRef:
-  current=[DeploymentReferenceable:Id] ({infer DeploymentRef.parent=current} StickyDot current=[DeploymentReferenceable:Id])*;
+  value=[DeploymentReferenceable:Id] ({infer DeploymentRef.parent=current} StickyDot value=[DeploymentReferenceable:Id])*;
 
 DeploymentRelation:
   source=DeploymentRef
@@ -550,6 +552,45 @@ DeploymentRelation:
   title=String?
 ;
 
+DeploymentView:
+  'deploymentView' name=Id body=DeploymentViewBody?
+;
+
+DeploymentViewBody: '{'
+  tags=Tags?
+  props+=ViewProperty*
+  rules+=DeploymentViewRule*
+'}';
+
+DeploymentViewRule:
+  DeploymentViewRulePredicate |
+  ViewRuleAutoLayout
+;
+
+DeploymentViewRulePredicate:
+  (isInclude?='include' | 'exclude')
+  expr=DeploymentExpression (
+    {infer DeploymentViewRulePredicate.prev=current} ',' (expr=DeploymentExpression)?
+  )*
+;
+
+DeploymentExpression:
+  {infer WildcardExpression} isWildcard?='*' |
+  DeploymentRefExpression
+  // node=DeploymentRef (
+  //   {infer ExpandDeploymentNode} DotUnderscore |
+  //   {infer ChildrenDeploymentDescedantsExpression} DotWildcard
+  // )?
+;
+
+DeploymentRefExpression infers DeploymentRefExpression:
+  ref=DeploymentRef (
+    isExpand?=DotUnderscore |
+    isNested?=DotWildcard
+    // {infer ExpandDeploymentNodeExpression} DotUnderscore |
+    // {infer NestedDeploymentNodeExpression} DotWildcard
+  )?
+;
 // Global -------------------------------------
 
 Globals:
@@ -585,6 +626,8 @@ GlobalStyleGroup:
   'styleGroup' id=GlobalStyleId '{'
     styles+=ViewRuleStyle*
   '}';
+
+type FqnReferenceable = DeploymentReferenceable | Element | ExtendElement;
 
 // Common properties -------------------------------------
 

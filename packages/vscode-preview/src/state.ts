@@ -109,7 +109,11 @@ const EMPTY: ComputedLikeC4Model = {
     dynamicPredicates: {},
     styles: {}
   },
-  views: {}
+  views: {},
+  deployments: {
+    elements: {},
+    relations: {}
+  }
 }
 
 export const $likeC4ModelSource = deepMap({ ...EMPTY })
@@ -119,9 +123,12 @@ function updateLikeC4ModelSource(model: ComputedLikeC4Model) {
 
   const likeC4Diagrams = $likeC4Diagrams.get()
 
-  $likeC4ModelSource.setKey('specification', model.specification)
-  $likeC4ModelSource.setKey('elements', model.elements)
-  $likeC4ModelSource.setKey('relations', model.relations)
+  keys(model).forEach(key => {
+    if (key === 'views') {
+      return
+    }
+    $likeC4ModelSource.setKey(key, model[key])
+  })
 
   const oldKeys = new Set([...keys(currentViews)] as ViewID[])
   for (const view of values(model.views)) {

@@ -1,4 +1,4 @@
-import { type ComputedView, type DiagramView, isComputedDynamicView, type OverviewGraph } from '@likec4/core'
+import { type ComputedView, type DiagramView, isDynamicView, isElementView, type OverviewGraph } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
@@ -14,8 +14,16 @@ export interface GraphvizPort {
   svg(dot: DotSource): Promise<string>
 }
 
-const getPrinter = (computedView: ComputedView) =>
-  isComputedDynamicView(computedView) ? new DynamicViewPrinter(computedView) : new ElementViewPrinter(computedView)
+const getPrinter = (computedView: ComputedView) => {
+  switch (true) {
+    case isDynamicView(computedView):
+      return new DynamicViewPrinter(computedView)
+    case isElementView(computedView):
+      return new ElementViewPrinter(computedView)
+    default:
+      throw new Error(`Unsupported view type: ${computedView.__}`)
+  }
+}
 
 export type LayoutResult = {
   dot: DotSource
@@ -84,7 +92,7 @@ export class GraphvizLayouter {
   async dot(computedView: ComputedView): Promise<DotSource> {
     const printer = getPrinter(computedView)
     let dot = printer.print()
-    if (isComputedDynamicView(computedView)) {
+    if (isDynamicView(computedView)) {
       return dot
     }
     try {

@@ -59,7 +59,7 @@ export class Views {
               }
               return result
             } catch (e) {
-              logger.error(e)
+              logger.warn(e)
               return null
             }
           })
@@ -82,25 +82,34 @@ export class Views {
   }
 
   async viewsAsGraphvizOut(): Promise<Array<GraphvizSvgOut>> {
+    const logger = this.services.logger
     const KEY = 'All-LayoutedViews-DotWithSvg'
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, GraphvizSvgOut[]>
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }
     const views = await this.computedViews()
-    const tasks = views.map(l =>
+    const tasks = views.map(view =>
       this.limit(async (): Promise<GraphvizSvgOut> => {
-        const { dot, svg } = await this.layouter.svg(l)
+        const { dot, svg } = await this.layouter.svg(view)
         return {
-          id: l.id,
+          id: view.id,
           dot,
           svg
         }
       })
     )
-    const results = await Promise.all(tasks)
-    cache.set(KEY, results)
-    return results
+    const succeed = [] as GraphvizSvgOut[]
+    const settledResult = await Promise.allSettled(tasks)
+    for (const result of settledResult) {
+      if (result.status === 'fulfilled') {
+        succeed.push(result.value)
+      } else {
+        logger.error(result.reason)
+      }
+    }
+    cache.set(KEY, succeed)
+    return succeed
   }
 
   async overviewGraph(): Promise<OverviewGraph> {

@@ -1,4 +1,5 @@
-import type { ElementKindSpecification, Tag, TypedElement } from './element'
+import type { PhysicalElement, PhysicalRelation, PhysicalRelationId } from './deployments'
+import type { ElementKindSpecification, Fqn, Tag, TypedElement } from './element'
 import type { ModelGlobals } from './global'
 import type { Relation, RelationID, RelationshipKindSpecification } from './relation'
 import type { ComputedView, DiagramView, LikeC4View, ViewID } from './view'
@@ -22,6 +23,13 @@ export interface ParsedLikeC4Model<
   relations: Record<RelationID, Relation>
   globals: ModelGlobals
   views: Record<Views, LikeC4View<Views, Tags>>
+  /**
+   * Deployment Model.
+   */
+  deployments: {
+    elements: Record<Fqn, PhysicalElement>
+    relations: Record<PhysicalRelationId, PhysicalRelation>
+  }
 }
 
 /**

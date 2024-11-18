@@ -1,13 +1,14 @@
-import { type HexColorLiteral, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type * as c4 from '@likec4/core'
+import { type HexColorLiteral, invariant, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
-import { filter, first, flatMap, isDefined, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, flatMap, isArray, isDefined, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Writable } from 'type-fest'
 import type {
   ChecksFromDiagnostics,
   FqnIndexedDocument,
+  ParsedAstDeploymentView,
   ParsedAstDynamicView,
   ParsedAstElement,
   ParsedAstElementView,
@@ -31,10 +32,11 @@ import {
   ViewOps
 } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
-import { isGlobalStyle, isGlobalStyleGroup, type NotationProperty } from '../generated/ast'
+import { type NotationProperty } from '../generated/ast'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
+import { instanceRef } from '../utils/deploymentRef'
 import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
@@ -83,14 +85,21 @@ export class LikeC4ModelParser {
     this.parseSpecification(doc, isValid)
     this.parseModel(doc, isValid)
     this.parseGlobal(doc, isValid)
+    this.parseDeployment(doc, isValid)
     this.parseViews(doc, isValid)
     return doc
   }
 
   private parseSpecification(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const { parseResult, c4Specification } = doc
+    const {
+      parseResult: {
+        value: {
+          specifications
+        }
+      },
+      c4Specification
+    } = doc
 
-    const specifications = parseResult.value.specifications.filter(isValid)
     const element_specs = specifications.flatMap(s => s.elements.filter(isValid))
     for (const { kind, props } of element_specs) {
       try {
@@ -103,16 +112,10 @@ export class LikeC4ModelParser {
           continue
         }
         const style = props.find(ast.isElementStyleProperty)
-        // const bodyProps = pipe(
-        //   props,
-        //   filter(isValid),
-        //   filter(ast.isSpecificationElementStringProperty),
-        //   // filter(p => isNonNullish(p.value)),
-        //   mapToObj(p => [p.key, removeIndent(p.value) ?? undefined])
-        // )
-        const bodyProps = mapToObj(
-          props.filter(ast.isSpecificationElementStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, removeIndent(p.value)] satisfies [string, string]
+        const bodyProps = pipe(
+          props.filter(ast.isSpecificationElementStringProperty) ?? [],
+          filter(p => isValid(p) && isNonNullish(p.value)),
+          mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string])
         )
         c4Specification.elements[kindName] = {
           ...bodyProps,
@@ -136,9 +139,10 @@ export class LikeC4ModelParser {
           logger.warn(`Relationship kind "${kindName}" is already defined`)
           continue
         }
-        const bodyProps = mapToObj(
-          props.filter(ast.isSpecificationRelationshipStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, removeIndent(p.value)] satisfies [string, string]
+        const bodyProps = pipe(
+          props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
+          filter(p => isValid(p) && isNonNullish(p.value)),
+          mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string])
         )
         c4Specification.relationships[kindName] = {
           ...bodyProps,
@@ -154,6 +158,14 @@ export class LikeC4ModelParser {
       const tag = tagSpec.tag.name as c4.Tag
       if (isTruthy(tag)) {
         c4Specification.tags.add(tag)
+      }
+    }
+
+    const deploymentNodes_specs = specifications.flatMap(s => s.deploymentNodes.filter(isValid))
+    for (const deploymentNode of deploymentNodes_specs) {
+      const kind = deploymentNode.kind.name as c4.DeploymentNodeKind
+      if (isTruthy(kind)) {
+        c4Specification.deploymentNodes.push(kind)
       }
     }
 
@@ -199,7 +211,7 @@ export class LikeC4ModelParser {
 
   private parseElement(astNode: ast.Element, isValid: IsValidFn): ParsedAstElement {
     const id = this.resolveFqn(astNode)
-    const kind = astNode.kind.$refText as c4.ElementKind
+    const kind = nonNullable(astNode.kind.ref, 'Element kind is not resolved').name as c4.ElementKind
     const tags = this.convertTags(astNode.body)
     const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
     const style = toElementStyle(stylePropsAst, isValid)
@@ -390,11 +402,10 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const viewBlocks = doc.parseResult.value.views.filter(v => isValid(v))
-    for (const viewBlock of viewBlocks) {
+    for (const viewBlock of doc.parseResult.value.views) {
       const localStyles = viewBlock.styles.flatMap(s => {
         try {
-          return this.parseViewRuleStyleOrGlobalRef(s, isValid)
+          return isValid(s) ? this.parseViewRuleStyleOrGlobalRef(s, isValid) : []
         } catch (e) {
           logWarnError(e)
           return []
@@ -406,11 +417,19 @@ export class LikeC4ModelParser {
           if (!isValid(view)) {
             continue
           }
-          doc.c4Views.push(
-            ast.isElementView(view)
-              ? this.parseElementView(view, localStyles, isValid)
-              : this.parseDynamicElementView(view, localStyles, isValid)
-          )
+          switch (true) {
+            case ast.isElementView(view):
+              doc.c4Views.push(this.parseElementView(view, localStyles, isValid))
+              break
+            case ast.isDynamicView(view):
+              doc.c4Views.push(this.parseDynamicElementView(view, localStyles, isValid))
+              break
+            case ast.isDeploymentView(view):
+              doc.c4Views.push(this.parseDeploymentView(view, isValid))
+              break
+            default:
+              nonexhaustive(view)
+          }
         } catch (e) {
           logWarnError(e)
         }
@@ -421,16 +440,20 @@ export class LikeC4ModelParser {
   // TODO validate view rules
   private parseViewRulePredicate(astNode: ast.ViewRulePredicate, _isValid: IsValidFn): c4.ViewRulePredicate {
     const exprs = [] as c4.Expression[]
-    let predicate: ast.Predicates | undefined = astNode.predicates
+    let predicate = astNode.predicates
     while (predicate) {
+      const { value, prev } = predicate
       try {
-        if (isTruthy(predicate.value) && _isValid(predicate.value as any)) {
-          exprs.unshift(this.parsePredicate(predicate.value, _isValid))
+        if (isTruthy(value) && _isValid(value as any)) {
+          exprs.unshift(this.parsePredicate(value, _isValid))
         }
       } catch (e) {
         logWarnError(e)
       }
-      predicate = predicate.prev
+      if (!prev) {
+        break
+      }
+      predicate = prev
     }
     return ast.isIncludePredicate(astNode) ? { include: exprs } : { exclude: exprs }
   }
@@ -532,6 +555,9 @@ export class LikeC4ModelParser {
     const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
+        if (!_isValid(prop)) {
+          return acc
+        }
         if (ast.isNavigateToProperty(prop)) {
           const viewId = prop.value.view.$refText
           if (isTruthy(viewId)) {
@@ -812,7 +838,7 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseViewManualLaout(node: ast.DynamicView | ast.ElementView): c4.ViewManualLayout | undefined {
+  private parseViewManualLayout(node: ast.DynamicView | ast.ElementView): c4.ViewManualLayout | undefined {
     const commentNode = CstUtils.findCommentNode(node.$cstNode, ['BLOCK_COMMENT'])
     if (!commentNode || !hasManualLayout(commentNode.text)) {
       return undefined
@@ -863,46 +889,52 @@ export class LikeC4ModelParser {
         isBackward: true
       }
     }
-    if (Array.isArray(node.custom?.props)) {
-      for (const prop of node.custom.props) {
-        try {
-          if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
+    if (!isArray(node.custom?.props)) {
+      return step
+    }
+    for (const prop of node.custom.props) {
+      try {
+        switch (true) {
+          case ast.isRelationStringProperty(prop):
+          case ast.isNotationProperty(prop):
+          case ast.isNotesProperty(prop): {
             if (isDefined(prop.value)) {
               step[prop.key] = removeIndent(prop.value) ?? ''
             }
-            continue
+            break
           }
-          if (ast.isArrowProperty(prop)) {
+          case ast.isArrowProperty(prop): {
             if (isDefined(prop.value)) {
               step[prop.key] = prop.value
             }
-            continue
+            break
           }
-          if (ast.isColorProperty(prop)) {
+          case ast.isColorProperty(prop): {
             const value = toColor(prop)
             if (isDefined(value)) {
               step[prop.key] = value
             }
-            continue
+            break
           }
-          if (ast.isLineProperty(prop)) {
+          case ast.isLineProperty(prop): {
             if (isDefined(prop.value)) {
               step[prop.key] = prop.value
             }
-            continue
+            break
           }
-          if (ast.isRelationNavigateToProperty(prop)) {
+          case ast.isRelationNavigateToProperty(prop): {
             const viewId = prop.value.view.ref?.name
             if (isTruthy(viewId)) {
               step.navigateTo = viewId as c4.ViewID
             }
-            continue
+            break
           }
-          nonexhaustive(prop)
+          default:
+            nonexhaustive(prop)
         }
-        catch (e) {
-          logWarnError(e)
-        }
+      }
+      catch (e) {
+        logWarnError(e)
       }
     }
     return step
@@ -943,7 +975,7 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(body)
     const links = this.convertLinks(body)
 
-    const manualLayout = this.parseViewManualLaout(astNode)
+    const manualLayout = this.parseViewManualLayout(astNode)
 
     const view: ParsedAstElementView = {
       __: 'element',
@@ -1007,7 +1039,7 @@ export class LikeC4ModelParser {
 
     ViewOps.writeId(astNode, id as c4.ViewID)
 
-    const manualLayout = this.parseViewManualLaout(astNode)
+    const manualLayout = this.parseViewManualLayout(astNode)
 
     return {
       __: 'dynamic',
@@ -1082,7 +1114,195 @@ export class LikeC4ModelParser {
     return { include }
   }
 
-  protected resolveFqn(node: ast.Element | ast.ExtendElement) {
+  private parseDeployment(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
+    type TraversePair = ast.DeployedInstance | ast.DeploymentNode | ast.DeploymentRelation
+    const traverseStack: TraversePair[] = doc.parseResult.value.deployments.flatMap(d => d.nested)
+
+    let next: TraversePair | undefined
+    while (!!(next = traverseStack.shift())) {
+      if (ast.isDeploymentRelation(next) || !isValid(next)) {
+        continue
+      }
+      try {
+        switch (true) {
+          case ast.isDeployedInstance(next):
+            doc.c4Deployments.push(this.parseDeployedInstance(next, isValid))
+            break
+          case ast.isDeploymentNode(next): {
+            doc.c4Deployments.push(this.parseDeploymentNode(next, isValid))
+            if (next.body && next.body.nested.length > 0) {
+              traverseStack.push(...next.body.nested)
+            }
+            break
+          }
+          default:
+            nonexhaustive(next)
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+    }
+  }
+
+  private parseDeploymentNode(
+    astNode: ast.DeploymentNode,
+    isValid: IsValidFn
+  ): c4.DeploymentNode {
+    const id = this.resolveFqn(astNode)
+    const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentNodeKind
+    const title = toSingleLine(astNode.title)
+    return {
+      id,
+      kind,
+      ...(title && { title })
+    }
+  }
+
+  private parseDeployedInstance(
+    astNode: ast.DeployedInstance,
+    _isValid: IsValidFn
+  ): c4.DeployedInstance {
+    const id = this.resolveFqn(astNode)
+    const element = this.resolveFqn(nonNullable(elementRef(astNode.element), 'DeployedInstance element not found'))
+    return {
+      id,
+      element
+    }
+  }
+
+  private parseDeploymentView(
+    astNode: ast.DeploymentView,
+    isValid: IsValidFn
+  ): ParsedAstDeploymentView {
+    const body = astNode.body
+    invariant(body, 'DynamicElementView body is not defined')
+    // only valid props
+    const props = body.props.filter(isValid)
+    const astPath = this.getAstNodePath(astNode)
+
+    let id = astNode.name
+    if (!id) {
+      id = 'dynamic_' + stringHash(
+        getDocument(astNode).uri.toString(),
+        astPath
+      ) as c4.ViewID
+    }
+
+    const title = toSingleLine(props.find(p => p.key === 'title')?.value) ?? null
+    const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
+
+    const tags = this.convertTags(body)
+    const links = this.convertLinks(body)
+
+    ViewOps.writeId(astNode, id as c4.ViewID)
+
+    return {
+      __: 'deployment',
+      id: id as c4.ViewID,
+      astPath,
+      title,
+      description,
+      tags,
+      links: isNonEmptyArray(links) ? links : null,
+      rules: body.rules.flatMap(n => {
+        try {
+          return isValid(n) ? this.parseDeploymentViewRule(n, isValid) : []
+        } catch (e) {
+          logWarnError(e)
+          return []
+        }
+      })
+    }
+  }
+
+  private parseDeploymentViewRule(astRule: ast.DeploymentViewRule, isValid: IsValidFn): c4.DeploymentViewRule {
+    if (ast.isDeploymentViewRulePredicate(astRule)) {
+      return this.parseDeploymentViewRulePredicate(astRule, isValid)
+    }
+    if (ast.isViewRuleAutoLayout(astRule)) {
+      return toAutoLayout(astRule)
+    }
+    nonexhaustive(astRule)
+  }
+
+  private parseDeploymentViewRulePredicate(
+    astRule: ast.DeploymentViewRulePredicate,
+    isValid: IsValidFn
+  ): c4.DeploymentViewRulePredicate {
+    const exprs = [] as c4.DeploymentExpression[]
+    let predicate = astRule
+    while (true) {
+      try {
+        if (isValid(predicate.expr)) {
+          exprs.unshift(this.parseDeploymentExpression(predicate.expr))
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+      if (!predicate.prev) {
+        break
+      }
+      predicate = predicate.prev
+    }
+    return astRule.isInclude ? { include: exprs } : { exclude: exprs }
+  }
+
+  private parseDeploymentExpression(astNode: ast.DeploymentExpression): c4.DeploymentExpression {
+    if (ast.isWildcardExpression(astNode)) {
+      return {
+        wildcard: true
+      }
+    }
+    if (ast.isDeploymentRefExpression(astNode)) {
+      const ref = this.parseDeploymentDef(astNode.ref)
+      switch (true) {
+        case astNode.isExpand:
+          return {
+            ref,
+            isExpanded: true
+          }
+        case astNode.isNested:
+          return {
+            ref,
+            isNested: true
+          }
+        default:
+          return { ref }
+      }
+    }
+    nonexhaustive(astNode)
+  }
+
+  private parseDeploymentDef(astNode: ast.DeploymentRef): c4.DeploymentRef {
+    const refValue = nonNullable(astNode.value.ref, 'Deployment ref is empty')
+
+    if (ast.isDeploymentNode(refValue)) {
+      return {
+        node: this.resolveFqn(refValue)
+      }
+    }
+    const deployedInstanceAst = nonNullable(instanceRef(astNode), 'Instance ref not found')
+    const instance = this.resolveFqn(deployedInstanceAst)
+
+    if (ast.isElement(refValue)) {
+      const element = this.resolveFqn(refValue)
+      return {
+        instance,
+        element
+      }
+    }
+
+    // To ensure with compiler we processed all types
+    invariant(ast.isDeployedInstance(refValue), 'Invalid deployment ref: ' + this.getAstNodePath(astNode))
+    return {
+      instance
+    }
+  }
+
+  protected resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
+    if (ast.isDeploymentNode(node) || ast.isDeployedInstance(node)) {
+      return this.services.likec4.DeploymentsIndex.getFqnName(node)
+    }
     if (ast.isExtendElement(node)) {
       return getFqnElementRef(node.element)
     }

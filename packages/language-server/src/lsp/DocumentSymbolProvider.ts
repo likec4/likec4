@@ -61,7 +61,10 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       [...astSpec.elements, ...astSpec.tags, ...astSpec.relationships],
       map(nd => {
         try {
-          if (ast.isSpecificationElementKind(nd) || ast.isSpecificationRelationshipKind(nd)) {
+          if (
+            ast.isSpecificationElementKind(nd) || ast.isSpecificationRelationshipKind(nd)
+            || ast.isSpecificationDeploymentNodeKind(nd)
+          ) {
             return this.getKindSymbol(nd)
           }
           if (ast.isSpecificationTag(nd)) {

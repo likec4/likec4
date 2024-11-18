@@ -19,7 +19,7 @@ export class LikeC4NameProvider extends DefaultNameProvider {
     if (isNamed(node)) {
       return node.name
     }
-    if (ast.isDeployedArtifact(node)) {
+    if (ast.isDeployedInstance(node)) {
       return node.element.el.$refText
     }
     return undefined
@@ -29,7 +29,7 @@ export class LikeC4NameProvider extends DefaultNameProvider {
     if (isNamed(node)) {
       return super.getNameNode(node)
     }
-    if (ast.isDeployedArtifact(node)) {
+    if (ast.isDeployedInstance(node)) {
       return node.element.el.$refNode
     }
     return undefined

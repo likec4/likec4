@@ -96,14 +96,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (!parent) {
             return this.getGlobalScope(ast.DeploymentNode, context)
           }
-          const ref = parent.current.ref
+          const ref = parent.value.ref
           if (!ref) {
             return EMPTY_SCOPE
           }
           if (ast.isDeploymentNode(ref)) {
             return new StreamScope(this.deploymentsIndex.children(ref))
           }
-          if (ast.isDeployedArtifact(ref)) {
+          if (ast.isDeployedInstance(ref)) {
             return new StreamScope(this.scopeElementRef(ref.element))
           }
           if (ast.isElement(ref)) {

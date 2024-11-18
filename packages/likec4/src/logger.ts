@@ -26,7 +26,16 @@ export function createLikeC4Logger(prefix: string) {
         ...options
       })
     },
-    warn(msg: string, options?: LogOptions) {
+    warn(msg: unknown, options?: LogOptions) {
+      if (msg instanceof Error) {
+        logger.warn(`${ERROR} ${k.red(msg.stack ?? msg.name + ' ' + msg.message)}`, {
+          timestamp,
+          // @ts-ignore
+          error: msg,
+          ...options
+        })
+        return
+      }
       logger.warn(`${WARN} ${msg}`, {
         timestamp,
         ...options
@@ -53,7 +62,7 @@ export type ViteLogger = ReturnType<typeof createLikeC4Logger>
 
 export type Logger = {
   info(msg: string): void
-  warn(msg: string): void
+  warn(msg: unknown): void
   error(err: unknown): void
 }
 const noop = () => void 0

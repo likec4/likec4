@@ -6,7 +6,7 @@ import {
   MultiMap,
   type PrecomputedScopes
 } from 'langium'
-import { isNullish, isTruthy } from 'remeda'
+import { entries, filter, flatMap, forEach, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -50,14 +50,15 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   }
 
   private exportViews(
-    views: ast.ModelViews[] | undefined,
+    modelViews: ast.ModelViews[] | undefined,
     docExports: AstNodeDescription[],
     document: LikeC4LangiumDocument
   ) {
+    const views = modelViews?.flatMap(m => m.views)
     if (isNullish(views) || views.length === 0) {
       return
     }
-    for (const viewAst of views.flatMap(v => v.views)) {
+    for (const viewAst of views) {
       try {
         if (isTruthy(viewAst.name)) {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
@@ -146,12 +147,14 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       const spec of specifications.flatMap(s => [
         ...s.elements,
         ...s.relationships,
+        ...s.deploymentNodes,
         ...s.tags,
         ...s.colors
       ])
     ) {
       try {
         switch (true) {
+          case ast.isSpecificationDeploymentNodeKind(spec):
           case ast.isSpecificationElementKind(spec): {
             if (isTruthy(spec.kind.name)) {
               docExports.push(
@@ -196,15 +199,23 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   }
 
   private exportDeployments(
-    deployments: ast.ModelDeployments[] | undefined,
+    modelDeployments: ast.ModelDeployments[] | undefined,
     docExports: AstNodeDescription[],
     document: LikeC4LangiumDocument
   ) {
-    if (isNullish(deployments) || deployments.length === 0) {
+    const nodes = modelDeployments?.flatMap(m => m.nested)
+    if (isNullish(nodes) || nodes.length === 0) {
       return
     }
-    const deploymentsIndex = this.services.likec4.DeploymentsIndex.get(document)
-    docExports.push(...deploymentsIndex.rootNodes())
+    for (const node of nodes) {
+      try {
+        if (ast.isDeploymentNode(node) && isTruthy(node.name)) {
+          docExports.push(this.descriptions.createDescription(node, node.name, document))
+        }
+      } catch (e) {
+        logError(e)
+      }
+    }
   }
 
   override computeLocalScopes(
@@ -213,15 +224,27 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<PrecomputedScopes> {
     return new Promise(resolve => {
       const root = document.parseResult.value
+      const descedants = [] as AstNodeDescription[]
       const scopes = new MultiMap<AstNode, AstNodeDescription>()
       for (const model of root.models) {
         try {
-          const nested = this.processContainer(model, scopes, document)
-          scopes.addAll(root, nested.values())
+          descedants.push(
+            ...this.processContainer(model, scopes, document)
+          )
         } catch (e) {
           logError(e)
         }
       }
+
+      pipe(
+        descedants,
+        groupBy(desc => desc.name),
+        forEachObj(descs => {
+          if (descs.length === 1) {
+            scopes.add(root, descs[0])
+          }
+        })
+      )
       resolve(scopes)
     })
   }
@@ -230,9 +253,9 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     container: ElementsContainer,
     scopes: PrecomputedScopes,
     document: LikeC4LangiumDocument
-  ) {
+  ): AstNodeDescription[] {
     const localScope = new MultiMap<string, AstNodeDescription>()
-    const nestedScopes = new MultiMap<string, AstNodeDescription>()
+    const descedants = [] as AstNodeDescription[]
 
     for (const el of container.elements) {
       if (ast.isRelation(el)) {
@@ -251,26 +274,29 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
       if (subcontainer && subcontainer.elements.length > 0) {
         try {
-          const nested = this.processContainer(subcontainer, scopes, document)
-          for (const [nestedName, desc] of nested) {
-            nestedScopes.add(nestedName, desc)
-          }
+          descedants.push(
+            ...this.processContainer(subcontainer, scopes, document)
+          )
         } catch (e) {
           logError(e)
         }
       }
     }
 
-    if (nestedScopes.size > 0) {
-      for (const [name, descriptions] of nestedScopes.entriesGroupedByKey()) {
-        // If name is unique for current scope
-        if (!localScope.has(name) && descriptions.length === 1) {
-          localScope.add(name, descriptions[0]!)
-        }
-      }
+    if (descedants.length) {
+      pipe(
+        descedants,
+        filter(desc => !localScope.has(desc.name)),
+        groupBy(desc => desc.name),
+        forEachObj((descs, name) => {
+          if (descs.length === 1) {
+            localScope.add(name, descs[0])
+          }
+        })
+      )
     }
-    scopes.addAll(container, localScope.values())
-
-    return localScope
+    const local = localScope.values().toArray()
+    scopes.addAll(container, local)
+    return local
   }
 }

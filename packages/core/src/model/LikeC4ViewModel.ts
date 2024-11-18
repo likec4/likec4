@@ -6,7 +6,7 @@ import {
   type Tag as C4Tag
 } from '../types/element'
 import type { Color as C4Color } from '../types/theme'
-import type { ComputedEdge, ComputedNode, ComputedView } from '../types/view'
+import { type ComputedEdge, type ComputedNode, type ComputedView, isElementView } from '../types/view'
 import type { LikeC4Model } from './LikeC4Model'
 import { type EdgeId, type ElementOrFqn, type Fqn, getId, type IncomingFilter, type OutgoingFilter } from './types'
 
@@ -43,7 +43,7 @@ export class LikeC4ViewModel {
   }
 
   get viewOf() {
-    if (this.view.__ !== 'dynamic') {
+    if (this.view.__ !== 'dynamic' && this.view.__ !== 'deployment') {
       return this.view.viewOf ? this.model.element(this.view.viewOf) : null
     }
     return null

@@ -6,6 +6,7 @@ import {
   type Element,
   type Fqn,
   invariant,
+  isElementView,
   type Link,
   type ViewID
 } from '@likec4/core'
@@ -134,7 +135,7 @@ export function ElementDetailsCard({ fqn }: ElementDetailsCardProps) {
   const [viewsOf, otherViews] = pipe(
     elementModel.views(),
     map(v => v.view as ComputedView),
-    partition(v => v.__ !== 'dynamic' && v.viewOf === fqn)
+    partition(v => isElementView(v) && v.viewOf === fqn)
   )
 
   const defaultView = element.navigateTo

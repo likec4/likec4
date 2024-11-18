@@ -3,21 +3,27 @@ import { test } from './asserts'
 
 describe.concurrent('deployments', () => {
   test('allow nested nodes').valid`
+    specification {
+      deploymentNode environment
+      deploymentNode node
+    }
     deployment {
-      node n1 {
-        node n2
-        node n3 {
-          n4 = node
-          node n5 {
-            n6 = node
+      environment dev {
+        node n1 {
+          node n2
+          node n3 {
+            n4 = node
+            node n5 {
+              n6 = node
+            }
           }
         }
-      }
 
-      n2 = node {
-        n3 = node {
-          n4 = node {
-            n5 = node
+        n2 = node {
+          n3 = node {
+            n4 = node {
+              n5 = node
+            }
           }
         }
       }
@@ -27,6 +33,7 @@ describe.concurrent('deployments', () => {
   test('resolve deployment ref').valid`
     specification {
       element component
+      deploymentNode node
     }
     model {
       component sys1 {

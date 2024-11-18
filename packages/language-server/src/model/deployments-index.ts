@@ -1,12 +1,13 @@
+import type { Fqn } from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
-import { AstUtils, DocumentState, EMPTY_STREAM, MultiMap, stream } from 'langium'
-import { entries, filter, flat, flatMap, groupBy, isTruthy, map, pipe, uniqueBy } from 'remeda'
-import { ast, type DeploymentAstNodeDescription, isFqnIndexedDocument, type LikeC4LangiumDocument } from '../ast'
+import { AstUtils, DocumentState, MultiMap } from 'langium'
+import { forEachObj, groupBy, isTruthy, pipe } from 'remeda'
+import { ast, type DeploymentAstNodeDescription, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
 
-const DeploymentsIndexKey = Symbol('DeploymentsIndex')
+const DeploymentsIndexKey = Symbol.for('DeploymentsIndex')
 
 type IndexedDocument = LangiumDocument & {
   [DeploymentsIndexKey]?: DocumentDeploymentsIndex
@@ -31,11 +32,13 @@ export class DeploymentsIndex {
   }
 
   private documents() {
-    return this.langiumDocuments.all.filter(isFqnIndexedDocument)
+    return this.langiumDocuments.all.filter((d): d is LikeC4LangiumDocument =>
+      isLikeC4LangiumDocument(d) && d.state >= DocumentState.IndexedContent
+    )
   }
 
   public get(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
-    if (!isFqnIndexedDocument(document)) {
+    if (document.state < DocumentState.IndexedContent) {
       logWarnError(`Document ${document.uri.path} is not indexed`)
     }
     return (document as IndexedDocument)[DeploymentsIndexKey] ??= this.createDocumentIndex(document)
@@ -65,16 +68,16 @@ export class DeploymentsIndex {
     return this.documents().flatMap(doc => this.get(doc).byFqn(fqnName))
   }
 
-  public getFqnName(node: ast.DeploymentNode | ast.DeployedArtifact): string {
+  public getFqnName(node: ast.DeploymentNode | ast.DeployedInstance): Fqn {
     const fqn = [
       this.Names.getNameStrict(node)
     ]
-    let container: ast.DeploymentNode | undefined
-    while (node.$container && !!(container = AstUtils.getContainerOfType(node.$container, ast.isDeploymentNode))) {
-      node = container
-      fqn.unshift(this.Names.getNameStrict(node))
+    let parentNode
+    while (parentNode = AstUtils.getContainerOfType(node.$container, ast.isDeploymentNode)) {
+      fqn.unshift(this.Names.getNameStrict(parentNode))
+      node = parentNode
     }
-    return fqn.join('.')
+    return fqn.join('.') as Fqn
   }
 
   public createDocumentIndex(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
@@ -89,7 +92,7 @@ export class DeploymentsIndex {
     const Descriptions = this.services.workspace.AstNodeDescriptionProvider
 
     const createAndSaveDescription = (
-      props: { node: ast.DeploymentNode | ast.DeployedArtifact; name: string; fqn: string }
+      props: { node: ast.DeploymentNode | ast.DeployedInstance; name: string; fqn: string }
     ) => {
       const desc = {
         ...Descriptions.createDescription(props.node, props.name, document),
@@ -112,9 +115,9 @@ export class DeploymentsIndex {
           if (isTruthy(name)) {
             const fqn = `${parentFqn}.${name}`
             const desc = createAndSaveDescription({ node, name, fqn })
-            if (!directChildren.has(name)) {
+            if (!directChildren.has(`${desc.type}.${desc.name}`)) {
               _nested.add(parentFqn, desc)
-              directChildren.add(name)
+              directChildren.add(`${desc.type}.${desc.name}`)
             }
             if (ast.isDeploymentNode(node) && node.body) {
               _descedants.push(...traverseNode(node, fqn))
@@ -125,16 +128,15 @@ export class DeploymentsIndex {
         }
       }
       if (_descedants.length > 0) {
-        _nested.addAll(
-          parentFqn,
-          // Unique descendent elements
-          pipe(
-            _descedants,
-            filter(desc => !directChildren.has(desc.name)),
-            groupBy(desc => `${desc.type}.${desc.name}`),
-            entries(),
-            flatMap(([_, descs]) => descs.length === 1 ? descs : [])
-          )
+        pipe(
+          _descedants,
+          groupBy(desc => `${desc.type}.${desc.name}`),
+          forEachObj((descs, key) => {
+            if (descs.length > 1 || directChildren.has(key)) {
+              return
+            }
+            _nested.add(parentFqn, descs[0])
+          })
         )
       }
       return _nested.get(parentFqn)
@@ -159,7 +161,7 @@ export class DeploymentsIndex {
 }
 
 export class DocumentDeploymentsIndex {
-  static EMPTY = new DocumentDeploymentsIndex([], new MultiMap(), new MultiMap())
+  static readonly EMPTY = new DocumentDeploymentsIndex([], new MultiMap(), new MultiMap())
 
   constructor(
     private _rootNodes: Array<DeploymentAstNodeDescription>,
