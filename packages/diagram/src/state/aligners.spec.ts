@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { GridAligner, type NodeRect } from './aligners'
+import { getLinearAligner, GridAligner, type NodeRect } from './aligners'
 
 const placementError = 5
 
@@ -107,7 +107,7 @@ describe('aligners', () => {
         n('f', 40 - placementError, 40),
         n('g', 80 - placementError, 40),
         n('h', 120 - placementError, 40),
-        n('i', 160 - placementError, 40),
+        n('i', 160 - placementError, 40)
       ]
 
       const aligner = new GridAligner('Row')
@@ -117,7 +117,30 @@ describe('aligners', () => {
       expect(aligner.applyPosition(nodeRects[5]!)).toEqual({ x: 40, y: 40 })
       expect(aligner.applyPosition(nodeRects[6]!)).toEqual({ x: 80, y: 40 })
       expect(aligner.applyPosition(nodeRects[7]!)).toEqual({ x: 120, y: 40 })
-      expect(aligner.applyPosition(nodeRects[8]!)).toEqual({ x: 155, y: 40 })
+      expect(aligner.applyPosition(nodeRects[8]!)).toEqual({ x: 160, y: 40 })
+    })
+
+    it('uses secondary axis to order rows in a row', () => {
+      const nodeRects = [
+        n('e', 160, 0),
+        n('b', 40, 0),
+        n('a', 0, 0),
+        n('d', 120, 0),
+        n('c', 80, 0),
+        n('f', 40 - placementError, 40),
+        n('g', 80 - placementError, 40),
+        n('h', 120 - placementError, 40),
+        n('i', 160 - placementError, 40)
+      ]
+
+      const aligner = new GridAligner('Row')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[5]!)).toEqual({ x: 40, y: 40 })
+      expect(aligner.applyPosition(nodeRects[6]!)).toEqual({ x: 80, y: 40 })
+      expect(aligner.applyPosition(nodeRects[7]!)).toEqual({ x: 120, y: 40 })
+      expect(aligner.applyPosition(nodeRects[8]!)).toEqual({ x: 160, y: 40 })
     })
 
     it('spreads rows evenly', () => {
@@ -140,6 +163,104 @@ describe('aligners', () => {
       expect(aligner.applyPosition(nodeRects[3]!).y).toEqual(120)
       expect(aligner.applyPosition(nodeRects[4]!).y).toEqual(120)
       expect(aligner.applyPosition(nodeRects[5]!).y).toEqual(160)
+    })
+  })
+
+  describe('LinearAligner', () => {
+    it('aligns to leftmost edge', () => {
+      const nodeRects = [
+        n('a', 20, 10),
+        n('b', 10, 20),
+        n('c', 40, 30)
+      ]
+
+      const aligner = getLinearAligner('Left')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ x: 10 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ x: 10 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ x: 10 })
+    })
+    
+    it('aligns rightmost edge', () => {
+      const nodeRects = [
+        n('a', 20, 10, 5),
+        n('b', 10, 20, 6),
+        n('c', 40, 30, 7)
+      ]
+
+      const aligner = getLinearAligner('Right')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ x: 42 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ x: 41 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ x: 40 })
+    })
+
+    it('aligns topmost edge', () => {
+      const nodeRects = [
+        n('a', 10, 20),
+        n('b', 20, 10),
+        n('c', 30, 40)
+      ]
+
+      const aligner = getLinearAligner('Top')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ y: 10 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ y: 10 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ y: 10 })
+    })
+    
+    it('aligns bottommost edge', () => {
+      const nodeRects = [
+        n('a', 10, 20, 10, 5),
+        n('b', 20, 10, 10, 6),
+        n('c', 30, 40, 10, 7)
+      ]
+
+      const aligner = getLinearAligner('Bottom')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ y: 42 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ y: 41 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ y: 40 })
+    })
+
+    it('aligns to leftmost node center', () => {
+      const nodeRects = [
+        n('a', 20, 10, 4),  // 22
+        n('b', 10, 20, 8),  // 14
+        n('c', 40, 30, 12)  // 46
+      ]
+
+      const aligner = getLinearAligner('Center')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ x: 12 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ x: 10 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ x: 8 })
+    })
+
+    it('aligns to topmost node middle', () => {
+      const nodeRects = [
+        n('a', 10, 20, 10, 4),  // 22
+        n('b', 20, 10, 10, 8),  // 14
+        n('c', 30, 40, 10, 12)  // 46
+      ]
+
+      const aligner = getLinearAligner('Middle')
+
+      aligner.computeLayout(nodeRects)
+
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ y: 12 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ y: 10 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ y: 8 })
     })
   })
 })

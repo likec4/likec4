@@ -3,6 +3,7 @@ import type { Rect, XYPosition } from '@xyflow/react'
 import { map, pick, pipe, reduce, sortBy } from 'remeda'
 
 export type GridAlignmentMode = 'Column' | 'Row'
+export type LinearAlignmentMode = 'Left' | 'Center' | 'Right' | 'Top' | 'Middle' | 'Bottom'
 
 export abstract class Aligner {
   abstract computeLayout(nodes: NodeRect[]): void
@@ -35,9 +36,12 @@ type Layer = {
   primaryAxisSize: number
   nodes: NodeRect[]
   occupiedSpace: number
-  cells: NonEmptyArray<LayoutCell> | null
+  layout: Layout | null
 }
-type LayoutCell = { offset: number; size: number }
+type Layout = {
+  nodePositions: Map<string, XYPosition>
+  refLayer: Layer | null
+}
 
 export class GridAligner extends Aligner {
   private layout: Map<string, XYPosition> = new Map()
@@ -46,6 +50,19 @@ export class GridAligner extends Aligner {
     secondaryAxisDimension: 'height' | 'width'
     primaryAxisCoord: 'x' | 'y'
     secondaryAxisCoord: 'x' | 'y'
+  }
+
+  private get primaryAxisCoord() {
+    return this.axisPreset.primaryAxisCoord
+  }
+  private get secondaryAxisCoord() {
+    return this.axisPreset.secondaryAxisCoord
+  }
+  private get primaryAxisDimension() {
+    return this.axisPreset.primaryAxisDimension
+  }
+  private get secondaryAxisDimension() {
+    return this.axisPreset.secondaryAxisDimension
   }
 
   constructor(alignmentMode: GridAlignmentMode) {
@@ -74,7 +91,7 @@ export class GridAligner extends Aligner {
     // Sort by primary axis
     const sortedNodeRects = pipe(
       nodes,
-      sortBy(r => r[this.axisPreset.primaryAxisCoord])
+      sortBy(r => r[this.primaryAxisCoord])
     )
 
     const layoutRect = this.getLayoutRect(sortedNodeRects)
@@ -104,26 +121,30 @@ export class GridAligner extends Aligner {
     let layer = null
 
     for (let node of sortedNodeRects) {
-      if (!!layer && node[this.axisPreset.primaryAxisCoord] < layerEnd) {
+      if (!!layer && node[this.primaryAxisCoord] < layerEnd) {
         layer.nodes.push(node)
-        layer.primaryAxisSize = Math.max(layer.primaryAxisSize, node[this.axisPreset.primaryAxisDimension])
-        layer.occupiedSpace += node[this.axisPreset.secondaryAxisDimension]
+        layer.primaryAxisSize = Math.max(layer.primaryAxisSize, node[this.primaryAxisDimension])
+        layer.occupiedSpace += node[this.secondaryAxisDimension]
         layerEnd = Math.max(
-          node[this.axisPreset.primaryAxisCoord] + node[this.axisPreset.primaryAxisDimension],
+          node[this.primaryAxisCoord] + node[this.primaryAxisDimension],
           layerEnd
         )
       } else {
         layer = {
-          primaryAxisSize: node[this.axisPreset.primaryAxisDimension],
+          primaryAxisSize: node[this.primaryAxisDimension],
           nodes: [node],
-          occupiedSpace: node[this.axisPreset.secondaryAxisDimension],
-          cells: null
+          occupiedSpace: node[this.secondaryAxisDimension],
+          layout: null
         }
         layers.push(layer)
-        layerEnd = node[this.axisPreset.primaryAxisCoord] + node[this.axisPreset.primaryAxisDimension]
+        layerEnd = node[this.primaryAxisCoord] + node[this.primaryAxisDimension]
         continue
       }
     }
+
+    layers.forEach(l =>
+      l.nodes.sort((a, b) => a[this.secondaryAxisCoord] - b[this.secondaryAxisCoord])
+    )
 
     return layers as NonEmptyArray<Layer>
   }
@@ -133,7 +154,7 @@ export class GridAligner extends Aligner {
     const layout: [string, XYPosition][] = []
     const occupiedSpace = layers.reduce((a, b) => a + b.primaryAxisSize, 0)
     const rowMargin = layers.length > 1
-      ? (layoutRect[this.axisPreset.primaryAxisDimension] - occupiedSpace) / (layers.length - 1)
+      ? (layoutRect[this.primaryAxisDimension] - occupiedSpace) / (layers.length - 1)
       : 0
 
     // Find the widest layer and layout diagram from there
@@ -142,42 +163,44 @@ export class GridAligner extends Aligner {
         layers[widestLayerIndex]!.occupiedSpace < layer.occupiedSpace ? i : widestLayerIndex,
       0
     )
+    const baseLayer = layers[baseLayerIndex]!
     const baseLayerPosition = layers.slice(0, baseLayerIndex).reduce(
       (a, layer) => a + layer.primaryAxisSize + rowMargin,
-      layoutRect[this.axisPreset.primaryAxisCoord]
+      layoutRect[this.primaryAxisCoord]
     )
     const baseLayerLayout = this.buildLayerLayout(
-      layers[baseLayerIndex]!,
+      baseLayer,
       layoutRect,
       baseLayerPosition,
       nodeMap,
       null
     )
-    layout.push(...baseLayerLayout[2])
+    baseLayer.layout = baseLayerLayout
+    layout.push(...baseLayerLayout.nodePositions)
 
     // Layout layers after the base layer
-    let placeNextLayerAt = baseLayerPosition + layers[baseLayerIndex]!.primaryAxisSize + rowMargin
-    let previousLayerCells = baseLayerLayout[1]
+    let placeNextLayerAt = baseLayerPosition + baseLayer.primaryAxisSize + rowMargin
+    let refLayer = baseLayer
     for (let i = baseLayerIndex + 1; i < layers.length; i++) {
       const layer = layers[i]!
-      let layerLayout = this.buildLayerLayout(layer, layoutRect, placeNextLayerAt, nodeMap, previousLayerCells)
+      layer.layout = this.buildLayerLayout(layer, layoutRect, placeNextLayerAt, nodeMap, refLayer)
 
-      layout.push(...layerLayout[2])
-      previousLayerCells = layerLayout[1]
+      layout.push(...layer.layout.nodePositions)
+      refLayer = layer.layout.refLayer ?? layer
       placeNextLayerAt += layer.primaryAxisSize + rowMargin
     }
 
     // Layout layers before the base layer
     placeNextLayerAt = baseLayerPosition
-    previousLayerCells = baseLayerLayout[1]
+    refLayer = baseLayer
     for (let i = baseLayerIndex - 1; i >= 0; i--) {
       const layer = layers[i]!
       placeNextLayerAt -= layer.primaryAxisSize + rowMargin
 
-      let layerLayout = this.buildLayerLayout(layer, layoutRect, placeNextLayerAt, nodeMap, previousLayerCells)
+      layer.layout = this.buildLayerLayout(layer, layoutRect, placeNextLayerAt, nodeMap, refLayer)
 
-      layout.push(...layerLayout[2])
-      previousLayerCells = layerLayout[1]
+      layout.push(...layer.layout.nodePositions)
+      refLayer = layer.layout.refLayer ?? layer
     }
 
     return new Map(layout)
@@ -188,8 +211,8 @@ export class GridAligner extends Aligner {
     layoutRect: Rect,
     placeNextLayerAt: number,
     nodeMap: Map<string, NodeRect>,
-    previousLayerCells: NonEmptyArray<LayoutCell> | null
-  ): [number, NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
+    refLayer: Layer | null
+  ): Layout {
     let bestLayerLayout = this.scoreLayout(
       this.spaceAround(layer, layoutRect, placeNextLayerAt),
       nodeMap
@@ -203,103 +226,87 @@ export class GridAligner extends Aligner {
       bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
     }
 
-    if (previousLayerCells && previousLayerCells.length - 1 >= layer.nodes.length) {
+    if (refLayer && refLayer.nodes.length - 1 >= layer.nodes.length) {
       const currentlayerLayout = this.scoreLayout(
-        this.placeInGaps(layer, placeNextLayerAt, previousLayerCells),
+        this.placeInGaps(layer, placeNextLayerAt, refLayer),
         nodeMap
       )
       bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
     }
 
-    if (previousLayerCells && previousLayerCells.length >= layer.nodes.length) {
+    if (refLayer && refLayer.nodes.length >= layer.nodes.length) {
       const currentlayerLayout = this.scoreLayout(
-        this.placeInCells(layer, placeNextLayerAt, previousLayerCells),
+        this.placeInCells(layer, placeNextLayerAt, refLayer),
         nodeMap
       )
       bestLayerLayout = currentlayerLayout[0] < bestLayerLayout[0] ? currentlayerLayout : bestLayerLayout
     }
 
-    return bestLayerLayout
+    return bestLayerLayout[1]
   }
 
   private spaceBetween(
     layer: Layer,
     layoutRect: Rect,
     placeNextLayerAt: number
-  ): [NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
-    const freeSpace = layoutRect[this.axisPreset.secondaryAxisDimension] - layer.occupiedSpace
+  ): Layout {
+    const freeSpace = layoutRect[this.secondaryAxisDimension] - layer.occupiedSpace
     const margin = freeSpace / (layer.nodes.length - 1)
 
-    let placeNextNodeAt = layoutRect[this.axisPreset.secondaryAxisCoord]
+    let placeNextNodeAt = layoutRect[this.secondaryAxisCoord]
     const result = new Map<string, XYPosition>()
-    const cells = []
 
     let i = 0
-    for (let node of sortBy(layer.nodes, n => n[this.axisPreset.secondaryAxisCoord])) {
-      const isFirst = i === 0
-      const isLast = i === layer.nodes.length - 1
-
-      cells.push({
-        offset: placeNextNodeAt - (isFirst ? 0 : margin / 2),
-        size: node[this.axisPreset.secondaryAxisDimension] + (isFirst || isLast ? margin / 2 : margin)
-      })
+    for (let node of layer.nodes) {
       result.set(node.id, {
-        [this.axisPreset.secondaryAxisCoord]: placeNextNodeAt,
-        [this.axisPreset.primaryAxisCoord]: placeNextLayerAt
+        [this.secondaryAxisCoord]: placeNextNodeAt,
+        [this.primaryAxisCoord]: placeNextLayerAt
       } as XYPosition)
-      placeNextNodeAt += node[this.axisPreset.secondaryAxisDimension] + margin
+      placeNextNodeAt += node[this.secondaryAxisDimension] + margin
       i++
     }
 
-    return [cells as NonEmptyArray<LayoutCell>, result]
+    return { nodePositions: result, refLayer: null }
   }
 
   private spaceAround(
     layer: Layer,
     layoutRect: Rect,
     placeNextLayerAt: number
-  ): [NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
-    const freeSpace = layoutRect[this.axisPreset.secondaryAxisDimension] - layer.occupiedSpace
+  ): Layout {
+    const freeSpace = layoutRect[this.secondaryAxisDimension] - layer.occupiedSpace
     const margin = freeSpace / (layer.nodes.length + 1)
 
-    let placeNextNodeAt = layoutRect[this.axisPreset.secondaryAxisCoord] + margin
+    let placeNextNodeAt = layoutRect[this.secondaryAxisCoord] + margin
     const result = new Map<string, XYPosition>()
-    const cells = []
 
-    for (let node of sortBy(layer.nodes, n => n[this.axisPreset.secondaryAxisCoord])) {
-      cells.push({
-        offset: placeNextNodeAt - margin / 2,
-        size: node[this.axisPreset.secondaryAxisDimension] + margin
-      })
+    for (let node of sortBy(layer.nodes, n => n[this.secondaryAxisCoord])) {
       result.set(node.id, {
-        [this.axisPreset.secondaryAxisCoord]: placeNextNodeAt,
-        [this.axisPreset.primaryAxisCoord]: placeNextLayerAt
+        [this.secondaryAxisCoord]: placeNextNodeAt,
+        [this.primaryAxisCoord]: placeNextLayerAt
       } as XYPosition)
-      placeNextNodeAt += node[this.axisPreset.secondaryAxisDimension] + margin
+      placeNextNodeAt += node[this.secondaryAxisDimension] + margin
     }
 
-    return [cells as NonEmptyArray<LayoutCell>, result]
+    return { nodePositions: result, refLayer: null }
   }
 
   private placeInGaps(
     layer: Layer,
     placeNextLayerAt: number,
-    previousLayerCells: NonEmptyArray<LayoutCell>
-  ): [NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
-    invariant(previousLayerCells, 'Layout of the previous layer was not computed')
+    refLayer: Layer
+  ): Layout {
     const result = new Map<string, XYPosition>()
 
-    const sortedNodes = sortBy(layer.nodes, n => n[this.axisPreset.secondaryAxisCoord])
-    const placementOptions = previousLayerCells
-      .map(cell => cell.offset + cell.size)
-      .slice(0, -1)
+    const nodes = layer.nodes
+    const placementOptions = this.getGapsPositions(refLayer)
 
     let optionIndex = 0
-    for (let i = 0, node = sortedNodes[i]!; i < sortedNodes.length; i++, node = sortedNodes[i]!) {
-      const nodeCenter = node[this.axisPreset.secondaryAxisCoord] + node[this.axisPreset.secondaryAxisDimension] / 2
+    for (let i = 0, node = nodes[i]!; i < nodes.length; i++, node = nodes[i]!) {
+      const nodeCenter = node[this.secondaryAxisCoord] + node[this.secondaryAxisDimension] / 2
 
       let bestOffset = Infinity
-      while (optionIndex - i <= placementOptions.length - sortedNodes.length) {
+      while (optionIndex - i <= placementOptions.length - nodes.length) {
         let position = placementOptions[optionIndex]!
         const offset = position - nodeCenter
 
@@ -314,33 +321,31 @@ export class GridAligner extends Aligner {
       }
 
       result.set(node.id, {
-        [this.axisPreset.secondaryAxisCoord]: node[this.axisPreset.secondaryAxisCoord] + bestOffset,
-        [this.axisPreset.primaryAxisCoord]: placeNextLayerAt
+        [this.secondaryAxisCoord]: node[this.secondaryAxisCoord] + bestOffset,
+        [this.primaryAxisCoord]: placeNextLayerAt
       } as XYPosition)
     }
 
-    return [previousLayerCells, result]
+    return { nodePositions: result, refLayer }
   }
 
   private placeInCells(
     layer: Layer,
     placeNextLayerAt: number,
-    previousLayerCells: NonEmptyArray<LayoutCell>
-  ): [NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
-    invariant(previousLayerCells, 'Layout of the previous layer was not computed')
+    refLayer: Layer
+  ): Layout {
     const result = new Map<string, XYPosition>()
 
-    const sortedNodes = sortBy(layer.nodes, n => n[this.axisPreset.secondaryAxisCoord])
-    const placementOptions = previousLayerCells
-      .map(cell => cell.offset + cell.size / 2)
+    const nodes = layer.nodes
+    const placementOptions = this.getNodePositions(refLayer)
 
     let optionIndex = 0
-    for (let i = 0, node = sortedNodes[i]!; i < sortedNodes.length; i++, node = sortedNodes[i]!) {
-      const nodeCenter = node[this.axisPreset.secondaryAxisCoord] + node[this.axisPreset.secondaryAxisDimension] / 2
+    for (let i = 0, node = nodes[i]!; i < nodes.length; i++, node = nodes[i]!) {
+      const nodeCenter = node[this.secondaryAxisCoord] + node[this.secondaryAxisDimension] / 2
 
       let bestOffset = Infinity
 
-      while (optionIndex - i <= placementOptions.length - sortedNodes.length) {
+      while (optionIndex - i <= placementOptions.length - nodes.length) {
         let position = placementOptions[optionIndex]!
         const offset = position - nodeCenter
 
@@ -355,33 +360,114 @@ export class GridAligner extends Aligner {
       }
 
       result.set(node.id, {
-        [this.axisPreset.secondaryAxisCoord]: node[this.axisPreset.secondaryAxisCoord] + bestOffset,
-        [this.axisPreset.primaryAxisCoord]: placeNextLayerAt
+        [this.secondaryAxisCoord]: node[this.secondaryAxisCoord] + bestOffset,
+        [this.primaryAxisCoord]: placeNextLayerAt
       } as XYPosition)
     }
 
-    return [previousLayerCells, result]
+    return { nodePositions: result, refLayer }
   }
 
   private scoreLayout(
-    [cells, layout]: [NonEmptyArray<LayoutCell>, Map<string, XYPosition>],
+    layout: Layout,
     originalRects: Map<string, NodeRect>
-  ): [number, NonEmptyArray<LayoutCell>, Map<string, XYPosition>] {
+  ): [number, Layout] {
     return [
       pipe(
-        layout.entries().toArray(),
+        layout.nodePositions.entries().toArray(),
         map(([id, position]) => {
           const originalRect = originalRects.get(id)
           invariant(originalRect, `Could not find original rect for node ${id}`)
           return [pick(originalRect, ['x', 'y']), position]
         }),
         map(([original, suggested]) =>
-          Math.abs(original![this.axisPreset.secondaryAxisCoord] - suggested![this.axisPreset.secondaryAxisCoord])
+          Math.abs(original![this.secondaryAxisCoord] - suggested![this.secondaryAxisCoord])
         ),
         reduce((a, b) => a + b, 0)
       ),
-      cells,
       layout
     ]
+  }
+
+  private getGapsPositions(layer: Layer): number[] {
+    const result = []
+    const { layout, nodes } = layer
+
+    invariant(layout, 'Layout of the layer must be computed before calling getGapsPositions')
+
+    for (let i = 1; i < nodes.length; i++) {
+      const previousNode = nodes[i - 1]!
+      const currentNode = nodes[i]!
+      const previousNodePosition = layout.nodePositions.get(previousNode.id)!
+      const currentNodePosition = layout.nodePositions.get(currentNode.id)!
+
+      result.push(
+        (currentNodePosition[this.secondaryAxisCoord]
+          + previousNodePosition[this.secondaryAxisCoord]
+          + previousNode[this.secondaryAxisDimension]) / 2
+      )
+    }
+
+    return result
+  }
+
+  private getNodePositions(layer: Layer): number[] {
+    const result = []
+    const { layout, nodes } = layer
+
+    invariant(layout, 'Layout of the layer must be computed before calling getGapsPositions')
+
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i]!
+      const nodePosition = layout.nodePositions.get(node.id)!
+
+      result.push(
+        nodePosition[this.secondaryAxisCoord]
+          + node[this.secondaryAxisDimension] / 2
+      )
+    }
+
+    return result
+  }
+}
+
+export function getLinearAligner(mode: LinearAlignmentMode): Aligner {
+  switch (mode) {
+    case 'Left':
+      return new LinearAligner(
+        nodes => Math.min(...nodes.map(n => n.x)),
+        (alignTo, _) => Math.floor(alignTo),
+        'x'
+      )
+    case 'Top':
+      return new LinearAligner(
+        nodes => Math.min(...nodes.map(n => n.y)),
+        (alignTo, _) => Math.floor(alignTo),
+        'y'
+      )
+    case 'Right':
+      return new LinearAligner(
+        nodes => Math.max(...nodes.map(n => n.x + n.width)),
+        (alignTo, node) => Math.floor(alignTo - node.width!),
+        'x'
+      )
+    case 'Bottom':
+      return new LinearAligner(
+        nodes => Math.max(...nodes.map(n => n.y + n.height)),
+        (alignTo, node) => Math.floor(alignTo - node.height!),
+        'y'
+      )
+    case 'Center':
+      return new LinearAligner(
+        nodes => Math.min(...nodes.map(n => n.x + n.width / 2)),
+        (alignTo, node) => Math.floor(alignTo - node.width / 2),
+        'x'
+      )
+    case 'Middle':
+      return new LinearAligner(
+        nodes => Math.min(...nodes.map(n => n.y + n.height / 2)),
+        (alignTo, node) => Math.floor(alignTo - node.height / 2),
+        'y'
+      )
   }
 }

@@ -5,10 +5,8 @@ import { hasAtLeast } from 'remeda'
 import type { DiagramState } from '../hooks'
 import type { XYFlowNode } from '../xyflow/types'
 import { createLayoutConstraints } from '../xyflow/useLayoutConstraints'
-import { type Aligner, GridAligner, LinearAligner, type NodeRect } from './aligners'
+import { type Aligner, getLinearAligner, GridAligner, type GridAlignmentMode, type LinearAlignmentMode, type NodeRect } from './aligners'
 
-type LinearAlignmentMode = 'Left' | 'Center' | 'Right' | 'Top' | 'Middle' | 'Bottom'
-type GridAlignmentMode = 'Column' | 'Row'
 export type AlignmentMode = LinearAlignmentMode | GridAlignmentMode
 
 export function align(get: () => DiagramState) {
@@ -65,46 +63,5 @@ function getAligner(mode: AlignmentMode): Aligner {
       return new GridAligner(mode)
     default:
       nonexhaustive(mode)
-  }
-}
-
-function getLinearAligner(mode: LinearAlignmentMode): Aligner {
-  switch (mode) {
-    case 'Left':
-      return new LinearAligner(
-        nodes => Math.min(...nodes.map(n => n.x)),
-        (alignTo, _) => Math.floor(alignTo),
-        'x'
-      )
-    case 'Top':
-      return new LinearAligner(
-        nodes => Math.min(...nodes.map(n => n.y)),
-        (alignTo, _) => Math.floor(alignTo),
-        'y'
-      )
-    case 'Right':
-      return new LinearAligner(
-        nodes => Math.max(...nodes.map(n => n.x + n.width)),
-        (alignTo, node) => Math.floor(alignTo - node.width!),
-        'x'
-      )
-    case 'Bottom':
-      return new LinearAligner(
-        nodes => Math.max(...nodes.map(n => n.y + n.height)),
-        (alignTo, node) => Math.floor(alignTo - node.height!),
-        'y'
-      )
-    case 'Center':
-      return new LinearAligner(
-        nodes => Math.max(...nodes.map(n => n.x + n.width / 2)),
-        (alignTo, node) => Math.floor(alignTo - node.width / 2),
-        'x'
-      )
-    case 'Middle':
-      return new LinearAligner(
-        nodes => Math.max(...nodes.map(n => n.y + n.height / 2)),
-        (alignTo, node) => Math.floor(alignTo - node.height / 2),
-        'y'
-      )
   }
 }
