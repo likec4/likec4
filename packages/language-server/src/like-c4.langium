@@ -758,7 +758,7 @@ terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
-terminal DotUnderscore: /\b\._/;
+terminal DotUnderscore: /\b\._(?![_a-zA-Z])/;
 terminal DotWildcard: /\b\.\*/;
 terminal Hash: '#';
 

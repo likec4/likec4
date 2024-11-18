@@ -20,6 +20,21 @@ describe.concurrent('elementref', () => {
     }
   `
 
+  test('valid nested starting with _').valid`
+    specification {
+      element component
+    }
+    model {
+      component _a1
+      component b2 {
+        it -> _a1
+        component _c3
+      }
+
+      b2._c3 -> _a1
+    }
+  `
+
   test('valid it').valid`
     specification {
       element component
