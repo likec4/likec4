@@ -6,6 +6,7 @@ import {
   IconLayoutAlignMiddle,
   IconLayoutAlignRight,
   IconLayoutAlignTop,
+  IconLayoutBoardSplit,
   IconLayoutCollage,
   IconRouteOff
 } from '@tabler/icons-react'
@@ -54,6 +55,13 @@ export const ManualLayoutToolsButton = (props: PopoverProps) => {
         <Group gap={'xs'}>
           <ActionIconGroup pos={'relative'}>
             <Action
+              label="Align in columns"
+              icon={<IconLayoutBoardSplit />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Column')
+              }} />
+            <Action
               label="Align left"
               icon={<IconLayoutAlignLeft />}
               onClick={e => {
@@ -73,6 +81,13 @@ export const ManualLayoutToolsButton = (props: PopoverProps) => {
               onClick={e => {
                 e.stopPropagation()
                 store.getState().align('Right')
+              }} />
+            <Action
+              label="Align in rows"
+              icon={<IconLayoutBoardSplit style={{ transform: 'rotate(90deg)' }} />}
+              onClick={e => {
+                e.stopPropagation()
+                store.getState().align('Row')
               }} />
             <Action
               label="Align top"
