@@ -1,7 +1,7 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { DeploymentExpression } from './deployments'
+import type { DeployedInstance, DeploymentExpression } from './deployments'
 import {
   type BorderStyle,
   ElementKind,
@@ -29,7 +29,10 @@ export type ViewRulePredicate =
     exclude: Expression[]
   }
 
-export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate {
+export function isViewRulePredicate(rule: DeploymentViewRule): rule is DeploymentViewRulePredicate
+export function isViewRulePredicate(rule: DynamicViewRule): rule is DynamicViewIncludeRule
+export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate
+export function isViewRulePredicate(rule: object) {
   return (
     ('include' in rule && Array.isArray(rule.include))
     || ('exclude' in rule && Array.isArray(rule.exclude))
@@ -75,7 +78,10 @@ export interface ViewRuleAutoLayout {
   nodeSep?: number
   rankSep?: number
 }
-export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout {
+export function isViewRuleAutoLayout(rule: DeploymentViewRule): rule is ViewRuleAutoLayout
+export function isViewRuleAutoLayout(rule: DynamicViewRule): rule is ViewRuleAutoLayout
+export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
+export function isViewRuleAutoLayout(rule: object) {
   return 'direction' in rule
 }
 
@@ -189,10 +195,6 @@ export type DynamicViewIncludeRule = {
   include: ElementPredicateExpression[]
 }
 
-export function isDynamicViewIncludeRule(rule: DynamicViewRule): rule is DynamicViewIncludeRule {
-  return 'include' in rule && Array.isArray(rule.include)
-}
-
 export type DynamicViewRule =
   | DynamicViewIncludeRule
   | ViewRuleGlobalPredicateRef
@@ -225,7 +227,16 @@ export type DeploymentViewRulePredicate =
     include?: never
     exclude: DeploymentExpression[]
   }
-export type DeploymentViewRule = DeploymentViewRulePredicate | ViewRuleAutoLayout
+export type DeploymentViewRuleStyle = {
+  targets: DeploymentExpression[]
+  notation?: string
+  style: ElementStyle & {
+    color?: Color
+    shape?: ElementShape
+    icon?: IconUrl
+  }
+}
+export type DeploymentViewRule = DeploymentViewRulePredicate | ViewRuleAutoLayout | DeploymentViewRuleStyle
 
 export interface DeploymentView<
   ViewIDs extends string = string,
@@ -298,6 +309,13 @@ export interface ComputedNode {
   id: NodeId
   kind: ElementKind
   parent: NodeId | null
+  // ref: {
+  //   // Reference to model
+  //   element: Fqn
+  // } | {
+  //   // Reference to deployment model
+  //   deployment: Fqn
+  // } | null
   title: string
   description: string | null
   technology: string | null
@@ -406,9 +424,6 @@ export interface ComputedDynamicView<
   rules?: never
   docUri?: never
 }
-export function isComputedDynamicView(view: ComputedView): view is ComputedDynamicView {
-  return view.__ === 'dynamic'
-}
 
 export interface ComputedDeploymentView<
   ViewIDs extends string = string,
@@ -425,10 +440,6 @@ export type ComputedView<
   ViewIDs extends string = string,
   Tags extends string = string
 > = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags> | ComputedDeploymentView<ViewIDs, Tags>
-
-export function isComputedElementView(view: ComputedView): view is ComputedElementView {
-  return isNullish(view.__) || view.__ === 'element'
-}
 
 // Bounding box
 export type BBox = {

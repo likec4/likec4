@@ -29,6 +29,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./compute-view": "./src/compute-view/index.ts",
     "./types": "./src/types/index.ts"
   },
   "publishConfig": {
@@ -43,6 +44,16 @@
         "require": {
           "types": "./dist/index.d.cts",
           "default": "./dist/index.cjs"
+        }
+      },
+      "./compute-view": {
+        "import": {
+          "types": "./dist/compute-view/index.d.mts",
+          "default": "./dist/compute-view/index.mjs"
+        },
+        "require": {
+          "types": "./dist/compute-view/index.d.cts",
+          "default": "./dist/compute-view/index.cjs"
         }
       },
       "./types": {
@@ -62,12 +73,15 @@
     "type-fest": "4.26.1"
   },
   "devDependencies": {
+    "@dagrejs/dagre": "^1.1.4",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "7.13.4",
     "@types/natural-compare-lite": "^1.4.2",
+    "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
     "execa": "^9.3.1",
     "natural-compare-lite": "^1.4.0",
+    "object-hash": "^3.0.0",
     "remeda": "^2.16.0",
     "turbo": "^2.2.3",
     "typescript": "^5.6.3",

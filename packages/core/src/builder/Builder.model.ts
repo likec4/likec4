@@ -1,5 +1,5 @@
 import type { Element, Fqn, Relation } from '../types'
-import type { AnyTypes, AnyTypesNested, Types, TypesNested } from './_types'
+import type { AnyTypes, AnyTypesNested } from './_types'
 import type { Builder } from './Builder'
 import type { AddElementHelpers } from './Builder.element'
 

@@ -6,6 +6,9 @@ export default defineBuildConfig({
   clean: isProduction,
   stub: !isProduction,
   declaration: true,
+  alias: {
+    'object-hash': 'object-hash/dist/object_hash'
+  },
   rollup: {
     emitCJS: true,
     inlineDependencies: true,

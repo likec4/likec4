@@ -1,6 +1,7 @@
 export * from './commonHead'
 export * from './compare-natural'
 export * from './fqn'
+export * from './getOrCreate'
 export * from './guards'
 export * from './promises'
 export * from './relations'

@@ -1,5 +1,4 @@
-import { isString } from 'remeda'
-import type { Merge, MergeExclusive, Simplify, Tagged, UnionToIntersection } from 'type-fest'
+import type { Merge, MergeExclusive, Simplify, Tagged, UnionToIntersection, Writable } from 'type-fest'
 import type { Fqn, Tag } from './element'
 
 export type DeploymentNodeKind<Kinds extends string = string> = Tagged<Kinds, 'DeploymentNodeKind'>
@@ -8,7 +7,7 @@ export interface DeploymentNode {
   // Full-qualified-name for Deployment model
   readonly id: Fqn
   readonly kind: DeploymentNodeKind
-  readonly title?: string
+  readonly title: string
 }
 
 export interface DeployedInstance {
@@ -20,7 +19,7 @@ export interface DeployedInstance {
   readonly element: Fqn
 }
 
-export type PhysicalElement = DeploymentNode | DeployedInstance
+export type PhysicalElement = Simplify<MergeExclusive<DeploymentNode, DeployedInstance>>
 
 export namespace PhysicalElement {
   export const isDeploymentNode = (el: PhysicalElement): el is DeploymentNode => {
@@ -73,25 +72,15 @@ export interface PhysicalRelation {
 type AllNever<Expressions> = UnionToIntersection<
   {
     [Name in keyof Expressions]: {
-      [Key in keyof Expressions[Name]]?: never
+      -readonly [Key in keyof Expressions[Name]]?: never
     }
   }[keyof Expressions]
 >
 
-// type PickExpression<Name extends keyof Expressions> = Simplify<AllNever<Name> & Expressions[Name]>
-
-// export type DeploymentExpression = {
-//   [Name in keyof Expressions]: PickExpression<Name>
-// }[keyof Expressions]
-
-// export namespace DeploymentExpression {
-//   export type DeploymentRef = PickExpression<'DeploymentRef'>
-//   export type Wildcard = PickExpression<'Wildcard'>
-// }
-
-type ExclusiveUnion<Expressions> = {
-  [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
-}[keyof Expressions]
+type ExclusiveUnion<Expressions> = Expressions extends object ? {
+    [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
+  }[keyof Expressions]
+  : Expressions
 
 export namespace DeploymentExpression {
   export type Ref = {
@@ -103,9 +92,15 @@ export namespace DeploymentExpression {
     isExpanded?: never
     isNested?: boolean
   }
+  export const isRef = (expr: DeploymentExpression): expr is Ref => {
+    return 'ref' in expr
+  }
 
   export type Wildcard = {
     wildcard: true
+  }
+  export const isWildcard = (expr: DeploymentExpression): expr is Wildcard => {
+    return 'wildcard' in expr && expr.wildcard === true
   }
 }
 
