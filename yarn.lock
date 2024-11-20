@@ -2144,6 +2144,7 @@ __metadata:
   peerDependencies:
     "@mantine/core": ^7.13.4
     "@mantine/hooks": ^7.13.4
+    "@mantine/spotlight": ^7.13.4
     react: ^18.3.1
     react-dom: ^18.3.1
   languageName: unknown
@@ -2304,6 +2305,7 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@mantine/core": "npm:7.13.4"
     "@mantine/hooks": "npm:7.13.4"
+    "@mantine/spotlight": "npm:7.13.4"
     "@mantine/vanilla-extract": "npm:7.13.4"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:3.17.0"
@@ -2368,6 +2370,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/core": "npm:7.13.4"
     "@mantine/hooks": "npm:7.13.4"
+    "@mantine/spotlight": "npm:7.13.4"
     "@mantine/vanilla-extract": "npm:7.13.4"
     "@nanostores/react": "npm:0.8.0"
     "@react-hookz/deep-equal": "npm:^2.0.2"
@@ -2431,6 +2434,29 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
   checksum: 10c0/81261966b1a22fdefd8fa3e828fe4e85b0bb210d290c7e77e336ad56f7c91136f3be1a284eaa65f556524b084bb43efe110ec868fb51275ff43d1a4299213ed8
+  languageName: node
+  linkType: hard
+
+"@mantine/spotlight@npm:7.13.4":
+  version: 7.13.4
+  resolution: "@mantine/spotlight@npm:7.13.4"
+  dependencies:
+    "@mantine/store": "npm:7.13.4"
+  peerDependencies:
+    "@mantine/core": 7.13.4
+    "@mantine/hooks": 7.13.4
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: 10c0/dba34f6b2e6a61852e92be6a772886465eccaf2f1976ae0620b9a576cc90a9f030b7b980374896c01fe009a453fb712a4ea5ddfdbd4d469275f88bd36eb4ff27
+  languageName: node
+  linkType: hard
+
+"@mantine/store@npm:7.13.4":
+  version: 7.13.4
+  resolution: "@mantine/store@npm:7.13.4"
+  peerDependencies:
+    react: ^18.2.0
+  checksum: 10c0/c4f881d0c6a167f80675464aaae3ea5382c6e33edace21d99cf5c364c9489d9304059aab5a23fa56a905c6aa469d9a1ed80f1459757a7a5cd375a33d9fa2677b
   languageName: node
   linkType: hard
 
@@ -8610,6 +8636,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/core": "npm:7.13.4"
     "@mantine/hooks": "npm:7.13.4"
+    "@mantine/spotlight": "npm:7.13.4"
     "@mantine/vanilla-extract": "npm:7.13.4"
     "@nanostores/react": "npm:0.8.0"
     "@react-hookz/web": "npm:^24.0.4"
