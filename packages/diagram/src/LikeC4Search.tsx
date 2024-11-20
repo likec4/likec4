@@ -1,6 +1,6 @@
 import type { DiagramView } from '@likec4/core'
 import { Spotlight, type SpotlightActionGroupData } from '@mantine/spotlight'
-import { IconRectangularPrism, IconSitemap } from '@tabler/icons-react'
+import { IconRectangularPrism, IconSitemap, IconSearch } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { filter, map, pipe } from 'remeda'
 import { useDiagramStoreApi } from './hooks'
@@ -68,5 +68,16 @@ export function LikeC4Search({ view }: { view: DiagramView }) {
     getViewActions()
   ], [model, store, view])
 
-  return <Spotlight actions={actions} shortcut={['ctrl + f']}></Spotlight>
+  return (
+    <Spotlight
+      actions={actions}
+      shortcut={['ctrl + f']}
+      nothingFound='Nothing found...'
+      searchProps={{
+        leftSection: <IconSearch />,
+        placeholder: 'Search elements in current view and other views...'        
+      }}
+    >
+    </Spotlight>
+  )
 }

@@ -40,6 +40,7 @@ export function LikeC4Diagram({
   enableElementDetails = false,
   enableRelationshipDetails = enableElementDetails,
   enableRelationshipBrowser = enableRelationshipDetails,
+  enableSearch = true,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -132,7 +133,7 @@ export function LikeC4Diagram({
             onOpenSourceRelation={onOpenSourceRelation ?? null}
             onBurgerMenuClick={onBurgerMenuClick ?? null}
           >
-            <LikeC4Search view={view}/>
+            {enableSearch && <LikeC4Search view={view} />}
 
             <LikeC4DiagramInnerMemo
               background={background}
