@@ -17,6 +17,7 @@ export function LikeC4Search() {
       actions: map(views, v => ({
         id: v.id,
         label: `${v.title ?? v.id}`,
+        keywords: [v.id, ...(v.tags ?? []), ...(v.view.description ? [v.view.description] : [])],
         onClick: () => {
           store.setState({
             hoveredNodeId: null,
@@ -37,11 +38,9 @@ export function LikeC4Search() {
     group: 'Elements',
     actions: map(view.nodes, n => ({
       id: n.id,
-      label: `${n.kind}: ${n.title}`,
-      onClick: () => {
-        focusOnNode(n.id)
-        
-      },
+      label: `${n.title}`,
+      keywords: [n.id, ...(n.tags ?? []), ...(n.description ? [n.description] : [])],
+      onClick: () => focusOnNode(n.id),
       leftSection: <IconRectangle />
     }))
   })
