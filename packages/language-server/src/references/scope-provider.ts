@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { invariant, nonexhaustive } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
@@ -16,7 +16,7 @@ import {
   StreamImpl,
   StreamScope
 } from 'langium'
-import { ast } from '../ast'
+import { ast, isLikeC4LangiumDocument } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logger } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
@@ -92,24 +92,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       try {
         const container = context.container
         if (ast.isDeploymentRef(container)) {
-          const parent = container.parent
-          if (!parent) {
-            return this.getGlobalScope(ast.DeploymentNode, context)
-          }
-          const ref = parent.value.ref
-          if (!ref) {
-            return EMPTY_SCOPE
-          }
-          if (ast.isDeploymentNode(ref)) {
-            return new StreamScope(this.deploymentsIndex.children(ref))
-          }
-          if (ast.isDeployedInstance(ref)) {
-            return new StreamScope(this.scopeElementRef(ref.element))
-          }
-          if (ast.isElement(ref)) {
-            return new StreamScope(this.uniqueDescedants(() => ref))
-          }
-          return nonexhaustive(ref)
+          return this.getScopeForDeploymentRef(container, context)
         }
 
         if (referenceType !== ast.Element) {
@@ -151,31 +134,61 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
   }
 
-  protected computeScope(context: ReferenceInfo) {
-    const referenceType = this.reflection.getReferenceType(context)
-    // computeScope is called only for elements
-    invariant(referenceType === ast.Element, 'Invalid reference type')
+  protected getScopeForDeploymentRef(container: ast.DeploymentRef, context: ReferenceInfo) {
+    const parent = container.parent
+    if (!parent) {
+      const doc = getDocument(container)
+      const globalScope = this.getGlobalScope(ast.DeploymentNode, context)
+      if (!isLikeC4LangiumDocument(doc)) {
+        return globalScope
+      }
+      return this.createScope(
+        globalScope.getAllElements(),
+        new MapScope(this.deploymentsIndex.get(doc).unique())
+      )
+    }
+    const ref = parent.value.ref
+    if (!ref) {
+      return EMPTY_SCOPE
+    }
+    if (ast.isDeploymentNode(ref)) {
+      return new StreamScope(this.deploymentsIndex.children(ref))
+    }
+    if (ast.isDeployedInstance(ref)) {
+      return new StreamScope(this.scopeElementRef(ref.element))
+    }
+    if (ast.isElement(ref)) {
+      return new StreamScope(this.uniqueDescedants(() => ref))
+    }
+    return nonexhaustive(ref)
+  }
+
+  protected computeScope(context: ReferenceInfo, referenceType = this.reflection.getReferenceType(context)) {
+    const isElementReference = this.reflection.isSubtype(referenceType, ast.Element)
+
     const scopes: Stream<AstNodeDescription>[] = []
     const doc = getDocument(context.container)
     const precomputed = doc.precomputedScopes
 
-    if (precomputed) {
-      const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
-      let container: AstNode | undefined = context.container
-      while (container) {
-        const elements = precomputed.get(container).filter(byReferenceType)
-        if (elements.length > 0) {
-          scopes.push(stream(elements))
-        }
+    if (!precomputed) {
+      return this.getGlobalScope(referenceType, context)
+    }
 
-        if (ast.isExtendElementBody(container)) {
-          scopes.push(this.scopeExtendElement(container.$container))
-        }
-        if (ast.isElementViewBody(container)) {
-          scopes.push(this.scopeElementView(container.$container))
-        }
-        container = container.$container
+    const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
+    let container: AstNode | undefined = context.container
+    while (container) {
+      const elements = precomputed.get(container).filter(byReferenceType)
+      if (elements.length > 0) {
+        scopes.push(stream(elements))
       }
+
+      if (isElementReference && ast.isExtendElementBody(container)) {
+        scopes.push(this.scopeExtendElement(container.$container))
+      }
+      if (isElementReference && ast.isElementViewBody(container)) {
+        scopes.push(this.scopeElementView(container.$container))
+      }
+      container = container.$container
     }
 
     return scopes.reduceRight((outerScope, elements) => {

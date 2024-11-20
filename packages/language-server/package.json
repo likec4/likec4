@@ -29,8 +29,7 @@
     },
     "./likec4lib": "./src/likec4lib.ts",
     "./browser": "./src/browser.ts",
-    "./protocol": "./src/protocol.ts",
-    "./model-graph": "./src/model-graph/index.ts"
+    "./protocol": "./src/protocol.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -62,11 +61,6 @@
         "types": "./dist/protocol.d.ts",
         "import": "./dist/protocol.mjs",
         "require": "./dist/protocol.cjs"
-      },
-      "./model-graph": {
-        "types": "./dist/model-graph/index.d.ts",
-        "import": "./dist/model-graph/index.mjs",
-        "require": "./dist/model-graph/index.cjs"
       }
     }
   },
@@ -87,7 +81,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@dagrejs/dagre": "^1.1.4",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "@msgpack/msgpack": "^3.0.0-beta2",
@@ -96,7 +89,6 @@
     "indent-string": "^5.0.0",
     "json5": "^2.2.3",
     "langium": "3.2.0",
-    "object-hash": "^3.0.0",
     "p-debounce": "^4.0.0",
     "remeda": "^2.16.0",
     "string-hash": "^1.1.3",
@@ -112,7 +104,6 @@
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.16.14",
-    "@types/object-hash": "^3.0.6",
     "@types/string-hash": "^1.1.3",
     "@vitest/coverage-v8": "^2.1.5",
     "execa": "^9.3.1",

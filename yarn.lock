@@ -2089,13 +2089,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
+    "@dagrejs/dagre": "npm:^1.1.4"
     "@likec4/tsconfig": "workspace:*"
     "@mantine/colors-generator": "npm:7.13.4"
     "@types/natural-compare-lite": "npm:^1.4.2"
+    "@types/object-hash": "npm:^3.0.6"
     chroma-js: "npm:^3.1.2"
     defu: "npm:^6.1.4"
     execa: "npm:^9.3.1"
     natural-compare-lite: "npm:^1.4.0"
+    object-hash: "npm:^3.0.0"
     remeda: "npm:^2.16.0"
     turbo: "npm:^2.2.3"
     type-fest: "npm:4.26.1"
@@ -2215,7 +2218,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
-    "@dagrejs/dagre": "npm:^1.1.4"
     "@likec4/core": "workspace:*"
     "@likec4/icons": "workspace:*"
     "@likec4/log": "workspace:*"
@@ -2223,7 +2225,6 @@ __metadata:
     "@msgpack/msgpack": "npm:^3.0.0-beta2"
     "@smithy/util-base64": "npm:^3.0.0"
     "@types/node": "npm:^20.16.14"
-    "@types/object-hash": "npm:^3.0.6"
     "@types/string-hash": "npm:^1.1.3"
     "@vitest/coverage-v8": "npm:^2.1.5"
     execa: "npm:^9.3.1"
@@ -2233,7 +2234,6 @@ __metadata:
     langium: "npm:3.2.0"
     langium-cli: "npm:3.2.0"
     npm-run-all2: "npm:^6.2.6"
-    object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     remeda: "npm:^2.16.0"
     string-hash: "npm:^1.1.3"

@@ -408,7 +408,7 @@ WhereRelationNegation:
 
 WhereRelation:
   {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind]?
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]?
 ;
 
 type WhereTagEqual = WhereElementTag | WhereRelationTag;
@@ -434,7 +434,7 @@ DirectedRelationExpressions infers RelationExpression:
 
 OutgoingRelationExpression:
   from=ElementExpression
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId])
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
 ;
 
 // Comma-separated list of ElementExpressions
@@ -564,8 +564,18 @@ DeploymentViewBody: '{'
 
 DeploymentViewRule:
   DeploymentViewRulePredicate |
+  DeploymentViewRuleStyle |
   ViewRuleAutoLayout
 ;
+
+DeploymentViewRuleStyle:
+  'style' target=DeploymentExpressionIterator '{'
+    props+=(
+      StyleProperty |
+      NotationProperty
+    )*
+  '}';
+
 
 DeploymentViewRulePredicate:
   (isInclude?='include' | 'exclude')
@@ -590,6 +600,10 @@ DeploymentRefExpression infers DeploymentRefExpression:
     // {infer ExpandDeploymentNodeExpression} DotUnderscore |
     // {infer NestedDeploymentNodeExpression} DotWildcard
   )?
+;
+
+DeploymentExpressionIterator:
+  value=DeploymentExpression ({infer DeploymentExpressionIterator.prev=current} ',' (value=DeploymentExpression)?)*
 ;
 // Global -------------------------------------
 

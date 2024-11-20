@@ -1,6 +1,15 @@
-import { type ComputedView, type DiagramView, isDynamicView, isElementView, type OverviewGraph } from '@likec4/core'
+import {
+  type ComputedView,
+  type DiagramView,
+  isDeploymentView,
+  isDynamicView,
+  isElementView,
+  nonexhaustive,
+  type OverviewGraph
+} from '@likec4/core'
 import { logger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
+import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson, parseOverviewGraphvizJson } from './GraphvizParser'
@@ -20,8 +29,10 @@ const getPrinter = (computedView: ComputedView) => {
       return new DynamicViewPrinter(computedView)
     case isElementView(computedView):
       return new ElementViewPrinter(computedView)
+    case isDeploymentView(computedView):
+      return new DeploymentViewPrinter(computedView)
     default:
-      throw new Error(`Unsupported view type: ${computedView.__}`)
+      nonexhaustive(computedView)
   }
 }
 

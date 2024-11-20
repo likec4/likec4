@@ -42,7 +42,6 @@ export function resolveGlobalRulesInElementView(
     if (isViewRuleGlobalPredicateRef(rule)) {
       const globalPredicates = globals.predicates[rule.predicateId]
       if (isNullish(globalPredicates)) {
-        console.warn(`Global predicate not found: ${rule.predicateId}`)
         return acc
       }
       return acc.concat(globalPredicates)
@@ -50,7 +49,6 @@ export function resolveGlobalRulesInElementView(
     if (isViewRuleGlobalStyle(rule)) {
       const globalStyles = globals.styles[rule.styleId]
       if (isNullish(globalStyles)) {
-        console.warn(`Global style not found: ${rule.styleId}`)
         return acc
       }
       return acc.concat(globalStyles)
@@ -68,7 +66,6 @@ export function resolveGlobalRulesInDynamicView(
     if (isViewRuleGlobalPredicateRef(rule)) {
       const globalPredicates = globals.dynamicPredicates[rule.predicateId]
       if (isNullish(globalPredicates)) {
-        console.warn(`Global predicate not found: ${rule.predicateId}`)
         return acc
       }
       return acc.concat(globalPredicates)
@@ -76,7 +73,6 @@ export function resolveGlobalRulesInDynamicView(
     if (isViewRuleGlobalStyle(rule)) {
       const globalStyles = globals.styles[rule.styleId]
       if (isNullish(globalStyles)) {
-        console.warn(`Global style not found: ${rule.styleId}`)
         return acc
       }
       return acc.concat(globalStyles)

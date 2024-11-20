@@ -59,7 +59,7 @@ describe('groups', () => {
     expect(edgeIds).toEqual(['support:cloud'])
   })
 
-  it('should include and keep elements in first-seen group', (ctx) => {
+  it('should include and keep elements in first-seen group', () => {
     const variant1 = computeView([
       $group([
         $include('customer'),

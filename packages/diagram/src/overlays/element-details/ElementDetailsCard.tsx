@@ -43,7 +43,7 @@ import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } 
 import { useInternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
-import { type PropsWithChildren, type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { type PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { clamp, find, isNullish, map, only, partition, pick, pipe, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'

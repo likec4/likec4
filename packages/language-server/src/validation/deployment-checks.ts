@@ -1,7 +1,6 @@
-import { type Fqn, isSameHierarchy, nonNullable } from '@likec4/core'
+import { nonNullable } from '@likec4/core'
 import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
-import { elementRef } from '../elementRef'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
@@ -46,7 +45,7 @@ export const deploymentNodeChecks = (services: LikeC4Services): ValidationCheck<
 export const deployedInstanceChecks = (services: LikeC4Services): ValidationCheck<ast.DeployedInstance> => {
   const DeploymentsIndex = services.likec4.DeploymentsIndex
   const Names = services.references.NameProvider as LikeC4NameProvider
-  const Locator = services.workspace.AstNodeLocator
+  // const Locator = services.workspace.AstNodeLocator
   return tryOrLog((el, accept) => {
     const artifactName = Names.getName(el)
     if (!artifactName) {
@@ -80,10 +79,10 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
 }
 
 export const deploymentRelationChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentRelation> => {
-  const DeploymentsIndex = services.likec4.DeploymentsIndex
-  const Names = services.references.NameProvider as LikeC4NameProvider
-  const Locator = services.workspace.AstNodeLocator
-  const fqnIndex = services.likec4.FqnIndex
+  // const DeploymentsIndex = services.likec4.DeploymentsIndex
+  // const Names = services.references.NameProvider as LikeC4NameProvider
+  // const Locator = services.workspace.AstNodeLocator
+  // const fqnIndex = services.likec4.FqnIndex
   return tryOrLog((el, accept) => {
     const source = el.source.value.ref
     const target = el.target.value.ref

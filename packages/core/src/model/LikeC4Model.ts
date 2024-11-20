@@ -15,7 +15,7 @@ import type {
 import type { Relation as C4Relation } from '../types/relation'
 import type { Color as C4Color } from '../types/theme'
 import { compareNatural } from '../utils/compare-natural'
-import { ancestorsFqn, commonAncestor, parentFqn, sortNaturalByFqn } from '../utils/fqn'
+import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
 import { LikeC4DiagramModel } from './LikeC4DiagramModel'
 import { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { ElementOrFqn, Fqn, IncomingFilter, OutgoingFilter, RelationID, ViewID } from './types'

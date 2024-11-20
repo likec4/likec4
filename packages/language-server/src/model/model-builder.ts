@@ -3,13 +3,12 @@ import {
   compareRelations,
   computeColorValues,
   type CustomColorDefinitions,
-  isDeploymentView,
-  isElementView,
   isScopedElementView,
   parentFqn,
   sortByFqnHierarchically,
   type ViewID
 } from '@likec4/core'
+import { prepareComputeView, resolveRulesExtendedViews } from '@likec4/core/compute-view'
 import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
@@ -44,9 +43,8 @@ import type {
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logger, logWarnError } from '../logger'
-import { computeDynamicView, computeView, LikeC4ModelGraph } from '../model-graph'
 import type { LikeC4Services } from '../module'
-import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
+import { assignNavigateTo, resolveRelativePaths } from '../view-utils'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
   // Merge specifications and globals from all documents
@@ -343,8 +341,6 @@ const CACHE_KEY_COMPUTED_MODEL = 'ComputedLikeC4Model'
 
 type ModelParsedListener = (docs: URI[]) => void
 
-type ComputedViewExcludeDeployment = Exclude<c4.ComputedView, c4.ComputedDeploymentView>
-
 export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
   private listeners: ModelParsedListener[] = []
@@ -411,7 +407,7 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  private previousViews: Record<ViewID, ComputedViewExcludeDeployment> = {}
+  private previousViews: Record<ViewID, c4.ComputedView> = {}
 
   /**
    * WARNING:
@@ -422,17 +418,10 @@ export class LikeC4ModelBuilder {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model>
     const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
-      const index = new LikeC4ModelGraph(model)
-
-      const allViews = [] as ComputedViewExcludeDeployment[]
+      const computeView = prepareComputeView(model)
+      const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
-        if (isDeploymentView(view)) {
-          continue
-        }
-
-        const result = isElementView(view)
-          ? computeView(view, index)
-          : computeDynamicView(view, index)
+        const result = computeView(view)
         if (!result.isSuccess) {
           logWarnError(result.error)
           continue
@@ -497,14 +486,11 @@ export class LikeC4ModelBuilder {
       return cache.get(cacheKey, () => {
         const model = this.unsafeSyncBuildModel()
         const view = model?.views[viewId]
-        if (!view || isDeploymentView(view)) {
+        if (!view) {
           logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
           return null
         }
-        const index = new LikeC4ModelGraph(model)
-        const result = isElementView(view)
-          ? computeView(view, index)
-          : computeDynamicView(view, index)
+        const result = prepareComputeView(model)(view)
         if (!result.isSuccess) {
           logError(result.error)
           return null

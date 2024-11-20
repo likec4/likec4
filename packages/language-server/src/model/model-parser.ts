@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { type HexColorLiteral, invariant, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
+import { type HexColorLiteral, invariant, isNonEmptyArray, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
 import { filter, first, flatMap, isArray, isDefined, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
@@ -1144,21 +1144,21 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseDeploymentNode(
+  public parseDeploymentNode(
     astNode: ast.DeploymentNode,
     isValid: IsValidFn
   ): c4.DeploymentNode {
     const id = this.resolveFqn(astNode)
     const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentNodeKind
-    const title = toSingleLine(astNode.title)
+    const title = toSingleLine(astNode.title) ?? nameFromFqn(id)
     return {
       id,
       kind,
-      ...(title && { title })
+      title
     }
   }
 
-  private parseDeployedInstance(
+  public parseDeployedInstance(
     astNode: ast.DeployedInstance,
     _isValid: IsValidFn
   ): c4.DeployedInstance {
@@ -1222,6 +1222,9 @@ export class LikeC4ModelParser {
     if (ast.isViewRuleAutoLayout(astRule)) {
       return toAutoLayout(astRule)
     }
+    if (ast.isDeploymentViewRuleStyle(astRule)) {
+      return this.parseDeploymentViewRuleStyle(astRule, isValid)
+    }
     nonexhaustive(astRule)
   }
 
@@ -1230,19 +1233,18 @@ export class LikeC4ModelParser {
     isValid: IsValidFn
   ): c4.DeploymentViewRulePredicate {
     const exprs = [] as c4.DeploymentExpression[]
-    let predicate = astRule
     while (true) {
       try {
-        if (isValid(predicate.expr)) {
-          exprs.unshift(this.parseDeploymentExpression(predicate.expr))
+        if (isValid(astRule.expr)) {
+          exprs.unshift(this.parseDeploymentExpression(astRule.expr))
         }
       } catch (e) {
         logWarnError(e)
       }
-      if (!predicate.prev) {
+      if (!astRule.prev) {
         break
       }
-      predicate = predicate.prev
+      astRule = astRule.prev
     }
     return astRule.isInclude ? { include: exprs } : { exclude: exprs }
   }
@@ -1273,6 +1275,25 @@ export class LikeC4ModelParser {
     nonexhaustive(astNode)
   }
 
+  private parseDeploymentExpressionIterator(
+    astNode: ast.DeploymentExpressionIterator,
+    isValid: IsValidFn
+  ): c4.DeploymentExpression[] {
+    const exprs = [] as c4.DeploymentExpression[]
+    let iter: ast.DeploymentExpressionIterator['prev'] = astNode
+    while (iter) {
+      try {
+        if (isValid(astNode.value)) {
+          exprs.unshift(this.parseDeploymentExpression(astNode.value))
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+      iter = iter.prev
+    }
+    return exprs
+  }
+
   private parseDeploymentDef(astNode: ast.DeploymentRef): c4.DeploymentRef {
     const refValue = nonNullable(astNode.value.ref, 'Deployment ref is empty')
 
@@ -1296,6 +1317,23 @@ export class LikeC4ModelParser {
     invariant(ast.isDeployedInstance(refValue), 'Invalid deployment ref: ' + this.getAstNodePath(astNode))
     return {
       instance
+    }
+  }
+
+  protected parseDeploymentViewRuleStyle(
+    astRule: ast.DeploymentViewRuleStyle,
+    isValid: IsValidFn
+  ): c4.DeploymentViewRuleStyle {
+    const styleProps = astRule.props.filter(ast.isStyleProperty)
+    const notationProperty = astRule.props.find(ast.isNotationProperty)
+    const notation = removeIndent(notationProperty?.value)
+    const targets = this.parseDeploymentExpressionIterator(astRule.target, isValid)
+    return {
+      targets,
+      ...(notation && { notation }),
+      style: {
+        ...toElementStyle(styleProps, isValid)
+      }
     }
   }
 

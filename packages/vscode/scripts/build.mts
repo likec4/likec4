@@ -44,7 +44,7 @@ const base = {
   },
   sourcemap: true,
   sourcesContent: false,
-  minify: true,
+  minify: isProduction,
   minifyIdentifiers: false,
   minifySyntax: isProduction,
   minifyWhitespace: isProduction,

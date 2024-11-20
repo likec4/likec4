@@ -5,11 +5,11 @@ import type {
   Fqn,
   IconUrl,
   NonEmptyArray,
+  ParsedLikeC4Model,
   Relation,
   RelationID,
   ViewID
 } from '@likec4/core'
-import { LikeC4ModelGraph } from '@likec4/language-server/model-graph'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -338,8 +338,22 @@ export const issue577View = (icon: string) => ({
   ]
 } satisfies ElementView)
 
-export const fakeModel = () =>
-  new LikeC4ModelGraph({
-    elements: fakeElements,
-    relations: fakeRelations
-  })
+export const FakeModel: ParsedLikeC4Model = {
+  elements: fakeElements,
+  relations: fakeRelations,
+  views: {},
+  specification: {
+    elements: {},
+    relationships: {},
+    tags: []
+  },
+  deployments: {
+    elements: {},
+    relations: {}
+  },
+  globals: {
+    dynamicPredicates: {},
+    predicates: {},
+    styles: {}
+  }
+}

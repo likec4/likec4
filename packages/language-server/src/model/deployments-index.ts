@@ -1,7 +1,7 @@
 import type { Fqn } from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
 import { AstUtils, DocumentState, MultiMap } from 'langium'
-import { forEachObj, groupBy, isTruthy, pipe } from 'remeda'
+import { entries, filter, forEachObj, groupBy, isTruthy, pipe } from 'remeda'
 import { ast, type DeploymentAstNodeDescription, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -43,17 +43,6 @@ export class DeploymentsIndex {
     }
     return (document as IndexedDocument)[DeploymentsIndexKey] ??= this.createDocumentIndex(document)
   }
-
-  // private workspace(): DocumentDeploymentsIndex {
-  //   return this.globalCache.get(CACHE_KEY, () => {
-  //     const [first, ...rest] = this.documents().map(doc => this.get(doc)).toArray()
-  //     if (first) {
-  //       return rest.reduce((acc, index) => acc.mergeWith(index), first)
-  //     }
-  //     return indexes.reduce((acc, index) => acc.mergeWith(index))
-  //   })
-  // }
-
   /**
    * Nested elements (nodes/artifacts) of the node
    * @param nodeName Name of the deployment node
@@ -72,7 +61,7 @@ export class DeploymentsIndex {
     const fqn = [
       this.Names.getNameStrict(node)
     ]
-    let parentNode
+    let parentNode: ast.DeploymentNode | undefined
     while (parentNode = AstUtils.getContainerOfType(node.$container, ast.isDeploymentNode)) {
       fqn.unshift(this.Names.getNameStrict(parentNode))
       node = parentNode
@@ -115,10 +104,8 @@ export class DeploymentsIndex {
           if (isTruthy(name)) {
             const fqn = `${parentFqn}.${name}`
             const desc = createAndSaveDescription({ node, name, fqn })
-            if (!directChildren.has(`${desc.type}.${desc.name}`)) {
-              _nested.add(parentFqn, desc)
-              directChildren.add(`${desc.type}.${desc.name}`)
-            }
+            _nested.add(parentFqn, desc)
+            directChildren.add(`${desc.type}.${desc.name}`)
             if (ast.isDeploymentNode(node) && node.body) {
               _descedants.push(...traverseNode(node, fqn))
             }
@@ -168,7 +155,7 @@ export class DocumentDeploymentsIndex {
     /**
      * Children of a deployment node
      */
-    private _children: MultiMap<string, DeploymentAstNodeDescription>,
+    private _nested: MultiMap<string, DeploymentAstNodeDescription>,
     /**
      * All elements by FQN
      */
@@ -189,6 +176,24 @@ export class DocumentDeploymentsIndex {
    * @returns Stream of artifacts
    */
   public children(nodeName: string): readonly DeploymentAstNodeDescription[] {
-    return this._children.get(nodeName)
+    return this._nested.get(nodeName)
+  }
+
+  /**
+   * Returns all deployment elements in the document,
+   * with unique combination "type and name"
+   */
+  public unique(): readonly DeploymentAstNodeDescription[] {
+    const result = [] as DeploymentAstNodeDescription[]
+    pipe(
+      this._byfqn.values().toArray(),
+      groupBy(desc => `${desc.type}.${desc.name}`),
+      forEachObj(descs => {
+        if (descs.length === 1) {
+          result.push(descs[0])
+        }
+      })
+    )
+    return result
   }
 }

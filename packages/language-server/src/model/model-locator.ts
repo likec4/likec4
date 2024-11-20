@@ -1,6 +1,7 @@
 import type * as c4 from '@likec4/core'
 import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
+import { isString } from 'remeda'
 import type { Location } from 'vscode-languageserver-types'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
@@ -23,10 +24,23 @@ export class LikeC4ModelLocator {
     return this.langiumDocuments.all.filter(isParsedLikeC4LangiumDocument)
   }
 
-  public getParsedElement(astNode: ast.Element): ParsedAstElement | null {
-    const fqn = this.fqnIndex.getFqn(astNode)
+  public getParsedElement(astNodeOrFqn: ast.Element | c4.Fqn): ParsedAstElement | null {
+    if (isString(astNodeOrFqn)) {
+      const fqn = astNodeOrFqn
+      const entry = this.fqnIndex.byFqn(astNodeOrFqn).head()
+      if (!entry) {
+        return null
+      }
+      const doc = this.langiumDocuments.getDocument(entry.documentUri)
+      if (!doc || !isParsedLikeC4LangiumDocument(doc)) {
+        return null
+      }
+      return doc.c4Elements.find(e => e.id === fqn) ?? null
+    }
+
+    const fqn = this.fqnIndex.getFqn(astNodeOrFqn)
     if (!fqn) return null
-    const doc = getDocument(astNode)
+    const doc = getDocument(astNodeOrFqn)
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return null
     }

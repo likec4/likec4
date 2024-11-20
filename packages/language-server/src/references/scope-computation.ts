@@ -6,7 +6,7 @@ import {
   MultiMap,
   type PrecomputedScopes
 } from 'langium'
-import { entries, filter, flatMap, forEach, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
+import { filter, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -15,7 +15,7 @@ import type { LikeC4Services } from '../module'
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
-  constructor(private services: LikeC4Services) {
+  constructor(services: LikeC4Services) {
     super(services)
   }
 

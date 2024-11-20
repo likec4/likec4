@@ -15,9 +15,19 @@ export const deploymentRefExpressionChecks = (
   // const fqnIndex = services.likec4.FqnIndex
   return tryOrLog((node, accept) => {
     const referenceTo = node.ref.value.ref
+    if (isNullish(referenceTo)) {
+      accept('error', 'Invalid empty reference', {
+        node
+      })
+      return
+    }
+
+    // Ignore follwoing checks for view rule style
+    if (AstUtils.hasContainerOfType(node, ast.isDeploymentViewRuleStyle)) {
+      return
+    }
+
     switch (true) {
-      case isNullish(referenceTo):
-        break
       case ast.isElement(referenceTo): {
         accept('error', 'Invalid reference, deployment nodes and instances are only allowed', {
           node

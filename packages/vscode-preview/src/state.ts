@@ -1,6 +1,6 @@
 import { type ComputedLikeC4Model, type DiagramNode, type DiagramView, LikeC4Model, type ViewID } from '@likec4/core'
 import { useStore } from '@nanostores/react'
-import { atom, batched, deepMap, map, onMount, onSet, task } from 'nanostores'
+import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'
 import { entries, isDeepEqual, isNullish, keys, values } from 'remeda'
 import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
