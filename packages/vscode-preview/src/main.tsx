@@ -12,6 +12,7 @@ import '@fontsource/ibm-plex-sans/cyrillic-ext-500.css'
 import '@fontsource/ibm-plex-sans/cyrillic-ext-600.css'
 
 import '@mantine/core/styles.css'
+import '@mantine/spotlight/styles.css'
 
 import { Box, MantineProvider, Notification } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
