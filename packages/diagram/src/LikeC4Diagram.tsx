@@ -132,7 +132,7 @@ export function LikeC4Diagram({
             onOpenSourceRelation={onOpenSourceRelation ?? null}
             onBurgerMenuClick={onBurgerMenuClick ?? null}
           >
-            <LikeC4Search />
+            <LikeC4Search view={view}/>
 
             <LikeC4DiagramInnerMemo
               background={background}

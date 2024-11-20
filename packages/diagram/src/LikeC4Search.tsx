@@ -1,23 +1,29 @@
+import type { DiagramView } from '@likec4/core'
 import { Spotlight, type SpotlightActionGroupData } from '@mantine/spotlight'
-import { IconRectangle, IconSitemap } from '@tabler/icons-react'
-import { map } from 'remeda'
+import { IconRectangularPrism, IconSitemap } from '@tabler/icons-react'
+import { useMemo } from 'react'
+import { filter, map, pipe } from 'remeda'
 import { useDiagramStoreApi } from './hooks'
 import { useLikeC4Model } from './likec4model'
 
-export function LikeC4Search() {
+export function LikeC4Search({ view }: { view: DiagramView }) {
   const model = useLikeC4Model(true)
   const store = useDiagramStoreApi()
-  const { view, focusOnNode, onNavigateTo } = store.getState()
 
   const getViewActions = (): SpotlightActionGroupData => {
+    const { onNavigateTo } = store.getState()
     const views = model.views()
 
     return {
       group: 'Views',
       actions: map(views, v => ({
         id: v.id,
-        label: `${v.title ?? v.id}`,
-        keywords: [v.id, ...(v.tags ?? []), ...(v.view.description ? [v.view.description] : [])],
+        label: v.title ?? v.id,
+        keywords: [
+          v.id,
+          ...(v.tags ?? []),
+          ...(v.view.description ? [v.view.description] : [])
+        ],
         onClick: () => {
           store.setState({
             hoveredNodeId: null,
@@ -34,21 +40,33 @@ export function LikeC4Search() {
     }
   }
 
-  const getNodeActions = (): SpotlightActionGroupData => ({
-    group: 'Elements',
-    actions: map(view.nodes, n => ({
-      id: n.id,
-      label: `${n.title}`,
-      keywords: [n.id, ...(n.tags ?? []), ...(n.description ? [n.description] : [])],
-      onClick: () => focusOnNode(n.id),
-      leftSection: <IconRectangle />
-    }))
-  })
+  const getNodeActions = (): SpotlightActionGroupData => {
+    const { focusOnNode } = store.getState()
 
-  const actions: SpotlightActionGroupData[] = [
+    return {
+      group: 'Elements',
+      actions: pipe(
+        view.nodes,
+        filter(n => !!n.title),
+        map(n => ({
+          id: n.id,
+          label: n.title,
+          keywords: [
+            n.id,
+            ...(n.tags ?? []),
+            ...(n.description ? [n.description] : [])
+          ],
+          onClick: () => focusOnNode(n.id),
+          leftSection: <IconRectangularPrism />
+        }))
+      )
+    }
+  }
+
+  const actions: SpotlightActionGroupData[] = useMemo(() => [
     getNodeActions(),
     getViewActions()
-  ]
+  ], [model, store, view])
 
   return <Spotlight actions={actions} shortcut={['ctrl + f']}></Spotlight>
 }
