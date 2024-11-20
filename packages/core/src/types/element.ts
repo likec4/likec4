@@ -33,7 +33,11 @@ export const DefaultElementShape = 'rectangle' satisfies ElementShape
 
 export interface ElementStyle {
   border?: BorderStyle
-  // 0-100
+  /**
+   * In percentage 0-100, 0 is fully transparent
+   *
+   * @default 100
+   */
   opacity?: number
 }
 

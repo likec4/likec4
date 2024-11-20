@@ -1,10 +1,11 @@
 import type {
+  ComputedNode,
   DiagramNode,
   DiagramView,
   EdgeId,
   ElementKind,
   ElementNotation,
-  Fqn,  
+  Fqn,
   NodeId,
   ViewChange,
   ViewID,
@@ -85,6 +86,8 @@ export type DiagramInitialState = {
   // Diagram Container, for Mantine Portal
   getContainer: () => HTMLDivElement | null
 } & RequiredOrNull<LikeC4DiagramEventHandlers>
+
+type NodeKind = ComputedNode['kind']
 
 const StringSet = Set<string>
 
@@ -185,7 +188,7 @@ export type DiagramState = Simplify<
     onNodesChange: OnNodesChange<XYFlowNode>
     onEdgesChange: OnEdgesChange<XYFlowEdge>
 
-    highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => void
+    highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: NodeKind) => void
 
     resetEdgeControlPoints: () => void
     align: (mode: AlignmentMode) => void
@@ -853,6 +856,14 @@ export function createDiagramStore(props: DiagramInitialState) {
             if (eq(overlay, get().activeOverlay)) {
               return
             }
+            if ('elementDetails' in overlay) {
+              const diagramNode = get().view.nodes.find(({ id }) => id === overlay.elementDetails)
+              if (!diagramNode || !diagramNode.modelRef) {
+                get().closeOverlay()
+                return
+              }
+            }
+
             set(
               {
                 activeWalkthrough: null,
@@ -991,7 +1002,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             }
           },
 
-          highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: ElementKind) => {
+          highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: NodeKind) => {
             const { xynodes, xyedges } = get()
             const dimmed = new StringSet(map(xyedges, prop('id')))
             xynodes.forEach(({ id, data }) => {

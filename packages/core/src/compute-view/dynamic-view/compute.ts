@@ -1,4 +1,4 @@
-import { filter, flatMap, hasAtLeast, isTruthy, map, omit, only, pipe, unique } from 'remeda'
+import { filter, flatMap, hasAtLeast, isTruthy, map, only, pipe, unique } from 'remeda'
 import { nonNullable } from '../../errors'
 import {
   type Color,
@@ -25,7 +25,7 @@ import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
-import { buildComputeNodes } from '../utils/buildComputeNodes'
+import { buildComputedNodesFromElements } from '../utils/buildComputedNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { resolveGlobalRulesInDynamicView } from '../utils/resolve-global-rules'
@@ -142,7 +142,7 @@ export class DynamicViewComputeCtx {
     }
 
     const elements = [...this.explicits]
-    const nodesMap = buildComputeNodes(elements)
+    const nodesMap = buildComputedNodesFromElements(elements)
 
     const edges = this.steps.map(({ source, target, relations, title, isBackward, ...step }) => {
       const sourceNode = nonNullable(nodesMap.get(source.id), `Source node ${source.id} not found`)

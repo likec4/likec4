@@ -2140,6 +2140,7 @@ __metadata:
     khroma: "npm:^2.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
+    react-error-boundary: "npm:^4.1.2"
     remeda: "npm:^2.16.0"
     type-fest: "npm:4.26.1"
     typescript: "npm:^5.6.3"

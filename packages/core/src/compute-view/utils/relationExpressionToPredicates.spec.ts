@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { Element } from '../../types/element'
 import type { RelationWhereExpr } from '../../types/expression'
+import type { ComputedNode } from '../../types/view'
 import { $incoming, $inout, $outgoing, $relation, $where } from '../element-view/__test__/fixture'
 import { type FilterableEdge, relationExpressionToPredicates } from './relationExpressionToPredicates'
 
-function el(id: string): Element {
-  return { id } as Element
+function el(id: string): ComputedNode {
+  return { id } as ComputedNode
 }
 
 function r(id: string, props = {}): FilterableEdge {

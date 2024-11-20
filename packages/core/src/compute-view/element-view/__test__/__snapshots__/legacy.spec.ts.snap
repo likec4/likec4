@@ -87,6 +87,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "customer:cloud.frontend",
       ],
@@ -106,6 +107,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "support:cloud.frontend",
       ],
@@ -132,6 +134,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "system",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend:amazon",
         "cloud.backend:email",
@@ -158,6 +161,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "container",
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.frontend:cloud.backend",
       ],
@@ -179,6 +183,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "container",
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend:amazon",
         "cloud.backend:email",
@@ -201,6 +206,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "system",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",
@@ -221,6 +227,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "kind": "system",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",
@@ -312,6 +319,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "support:cloud.frontend.adminPanel",
       ],
@@ -331,6 +339,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "actor",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "customer:cloud.frontend.dashboard",
       ],
@@ -357,6 +366,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "container",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.frontend.dashboard:cloud.backend",
         "cloud.frontend.adminPanel:cloud.backend",
@@ -379,6 +389,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "component",
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.frontend.adminPanel:cloud.backend",
       ],
@@ -403,6 +414,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "component",
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.frontend.dashboard:cloud.backend",
       ],
@@ -427,6 +439,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "kind": "container",
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": null,
       "shape": "rectangle",

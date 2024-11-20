@@ -6,11 +6,10 @@ import type {
   ComputedEdge,
   ComputedNode,
   DeploymentNode,
+  DeploymentNodeKind,
   DeploymentView,
   DeploymentViewRulePredicate,
   EdgeId,
-  Element,
-  ElementKind,
   NonEmptyArray,
   RelationshipArrowType,
   RelationshipKind,
@@ -18,20 +17,14 @@ import type {
   Tag,
   ViewID
 } from '../../types'
-import {
-  DefaultElementShape,
-  DefaultThemeColor,
-  DeploymentExpression,
-  type Fqn,
-  isViewRuleAutoLayout,
-  isViewRulePredicate
-} from '../../types'
+import { DeploymentExpression, type Fqn, isViewRuleAutoLayout, isViewRulePredicate } from '../../types'
 import { commonHead } from '../../utils/commonHead'
 import { ancestorsFqn, commonAncestor, isAncestor, nameFromFqn } from '../../utils/fqn'
 import { compareRelations } from '../../utils/relations'
 import type { LikeC4DeploymentGraph } from '../LikeC4DeploymentGraph'
 import { ancestorsOfNode } from '../utils/ancestorsOfNode'
-import { buildComputeNodes } from '../utils/buildComputeNodes'
+import { applyDeploymentViewRuleStyles } from '../utils/applyViewRuleStyles'
+import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
 import { sortNodes } from '../utils/sortNodes'
 import { uniqueTags } from '../utils/uniqueTags'
 import { calcViewLayoutHash } from '../utils/view-hash'
@@ -41,20 +34,21 @@ type DeploymentElement = LikeC4DeploymentGraph.Instance | DeploymentNode
 type DeploymentEdge = LikeC4DeploymentGraph.Edge
 type Edges = ReadonlyArray<DeploymentEdge>
 
-function toModelElement(el: DeploymentElement): Element {
+function toNodeSource(el: DeploymentElement): ComputedNodeSource {
   const isNode = 'kind' in el
   return {
     ...!isNode && el.element,
     id: el.id,
-    kind: (isNode ? el.kind : 'instance') as ElementKind,
+    kind: (isNode ? el.kind : 'instance' as DeploymentNodeKind),
     title: isNode ? (el.title ?? nameFromFqn(el.id)) : el.element.title,
-    description: isNode ? null : el.element.description,
-    technology: isNode ? null : el.element.technology,
-    tags: isNode ? null : el.element.tags,
-    links: isNode ? null : el.element.links,
-    shape: (!isNode && el.element.shape) || DefaultElementShape,
-    color: (!isNode && el.element.color) || DefaultThemeColor,
-    style: (!isNode && el.element.style) || {}
+    deploymentRef: 1,
+    ...(!isNode && {
+      modelRef: el.element.id
+    }),
+    style: (!isNode && el.element.style) || {
+      border: 'dashed',
+      opacity: 20
+    }
   }
 }
 
@@ -95,19 +89,12 @@ export class DeploymentViewComputeCtx {
     }
     this.removeRedundantImplicitEdges()
 
-    // Workaround - convert to model elements
-    const elements = [...this.includedElements].map(toModelElement)
-    const nodesMap = buildComputeNodes(elements)
-    // nodesMap.values().forEach(node => {
-    //   if (node.ref && 'element' in node.ref) {
-    //     node.ref = {
-    //       deployment: node.ref.element
-    //     }
-    //   }
-    // })
+    // Temporary workaround - transform deployment elements to model elements
+    // Because the rest of the code expects model elements and we want to minimize changes for now
+    const elements = [...this.includedElements].map(toNodeSource)
+    const nodesMap = buildComputedNodes(elements)
 
     const edges = this.computeEdges()
-    // const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(edge => [edge.id, edge]))
 
     this.linkNodesAndEdges(nodesMap, edges)
 
@@ -115,10 +102,14 @@ export class DeploymentViewComputeCtx {
     // but we need to keep the initial sort
     let initialSort = elements.map(e => nonNullable(nodesMap.get(e.id), `Node ${e.id} not found in nodesMap`))
 
-    const nodes = sortNodes({
-      nodes: initialSort,
-      edges
-    })
+    const nodes = applyDeploymentViewRuleStyles(
+      rules,
+      // Build graph and apply postorder sort
+      sortNodes({
+        nodes: initialSort,
+        edges
+      })
+    )
 
     return calcViewLayoutHash({
       ...view,

@@ -1,14 +1,14 @@
 import { type ThemeColor } from '@likec4/core'
 import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { IconId, IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo, useCallback, useState } from 'react'
-import { clamp, isNumber } from 'remeda'
+import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
 import { stopPropagation } from '../../utils'
@@ -121,6 +121,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isInteractive,
     isNavigable,
     renderIcon,
+    isInActiveOverlay,
     enableElementDetails
   } = useDiagramState(s => ({
     viewId: s.view.id,
@@ -134,6 +135,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     // If this is a view group, we don't want to show the navigate button
     isNavigable: isNotViewGroup && !!s.onNavigateTo && !!element.navigateTo,
     renderIcon: s.renderIcon,
+    isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     enableElementDetails: isNotViewGroup && s.enableElementDetails
   }))
   const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
@@ -143,6 +145,9 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
 
   let animate: keyof typeof VariantsRoot
   switch (true) {
+    case isInActiveOverlay:
+      animate = 'idle'
+      break
     case dragging && selected:
       animate = 'selected'
       break
@@ -169,7 +174,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     openOverlay({ elementDetails: element.id })
-  }, [openOverlay, element.id])
+  }, [openOverlay, element])
 
   const elementIcon = ElementIcon({
     element,
@@ -189,116 +194,112 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
       )}
       <Box
         component={m.div}
+        variants={VariantsRoot}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
-        className={css.containerForFramer}>
+        initial={false}
+        animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
+        className={clsx(
+          css.container,
+          'likec4-compound-node',
+          opacity < 1 && 'likec4-compound-transparent',
+          isDimmed && css.dimmed
+        )}
+        mod={{
+          'animate-target': '',
+          'compound-depth': depth,
+          'likec4-color': previewColor ?? color,
+          hovered: isHovered
+        }}
+        tabIndex={-1}
+        {...(isInteractive && {
+          onTapStart: animateHandlers.onTapStart,
+          onTap: animateHandlers.onTap,
+          onTapCancel: animateHandlers.onTapCancel
+        })}
+      >
+        <svg className={css.indicator}>
+          <rect
+            x={0}
+            y={0}
+            width={'100%'}
+            height={'100%'}
+            rx={6}
+          />
+        </svg>
         <Box
-          component={m.div}
-          variants={VariantsRoot}
-          initial={false}
-          animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
           className={clsx(
-            css.container,
-            'likec4-compound-node',
-            opacity < 1 && 'likec4-compound-transparent',
-            isDimmed && css.dimmed
+            css.compoundBody,
+            opacity < 1 && css.transparent,
+            'likec4-compound'
           )}
-          mod={{
-            'animate-target': '',
-            'compound-depth': depth,
-            'likec4-color': previewColor ?? color,
-            hovered: isHovered
+          style={{
+            ...(opacity < 1 && {
+              ...assignInlineVars({
+                [css.varBorderTransparency]: `${borderTransparency}%`,
+                [css.varOpacity]: opacity.toFixed(2)
+              }),
+              borderStyle: style.border ?? 'dashed'
+            })
           }}
-          tabIndex={-1}
-          {...(isInteractive && {
-            onTapStart: animateHandlers.onTapStart,
-            onTap: animateHandlers.onTap,
-            onTapCancel: animateHandlers.onTapCancel
-          })}
         >
-          <svg className={css.indicator}>
-            <rect
-              x={0}
-              y={0}
-              width={'100%'}
-              height={'100%'}
-              rx={6}
-            />
-          </svg>
           <Box
             className={clsx(
-              css.compoundBody,
-              opacity < 1 && css.transparent,
-              'likec4-compound'
-            )}
-            style={{
-              ...(opacity < 1 && {
-                ...assignInlineVars({
-                  [css.varBorderTransparency]: `${borderTransparency}%`,
-                  [css.varOpacity]: opacity.toFixed(2)
-                }),
-                borderStyle: style.border ?? 'dashed'
-              })
-            }}
-          >
-            <Box
-              className={clsx(
-                css.compoundTitle,
-                isNavigable && css.withNavigation,
-                'likec4-compound-title'
-              )}>
-              {elementIcon}
-              <Text
-                component={m.div}
-                key={`${viewId}:element:title:${id}`}
-                layoutId={`${viewId}:element:title:${id}`}
-                className={css.title}>
-                {element.title}
-              </Text>
-              {enableElementDetails && (
-                <Tooltip
-                  fz="xs"
-                  color="dark"
-                  label="Open details"
-                  withinPortal={false}
-                  offset={2}
-                  openDelay={600}>
-                  <ActionIcon
-                    component={m.div}
-                    variants={VariantsDetailsBtn}
-                    data-animate-target="details"
-                    className={clsx('nodrag nopan', css.detailsBtn)}
-                    radius="md"
-                    style={{ zIndex: 100 }}
-                    role="button"
-                    onClick={onOpenDetails}
-                    onDoubleClick={stopPropagation}
-                    {...isInteractive && animateHandlers}
-                  >
-                    <IconId stroke={1.8} style={{ width: '75%' }} />
-                  </ActionIcon>
-                </Tooltip>
-              )}
-            </Box>
-          </Box>
-          {isNavigable && (
-            <ActionIcon
-              key={'navigate'}
+              css.compoundTitle,
+              isNavigable && css.withNavigation,
+              'likec4-compound-title'
+            )}>
+            {elementIcon}
+            <Text
               component={m.div}
-              variants={VariantsNavigate}
-              data-animate-target="navigate"
-              className={clsx('nodrag nopan', css.navigateBtn)}
-              radius="md"
-              style={{ zIndex: 100 }}
-              onClick={onNavigateTo}
-              role="button"
-              onDoubleClick={stopPropagation}
-              {...isInteractive && animateHandlers}
-            >
-              <IconZoomScan style={{ width: '75%' }} />
-            </ActionIcon>
-          )}
+              key={`${viewId}:element:title:${id}`}
+              layoutId={`${viewId}:element:title:${id}`}
+              className={css.title}>
+              {element.title}
+            </Text>
+            {enableElementDetails && !!element.modelRef && (
+              <Tooltip
+                fz="xs"
+                color="dark"
+                label="Open details"
+                withinPortal={false}
+                offset={2}
+                openDelay={600}>
+                <ActionIcon
+                  component={m.div}
+                  variants={VariantsDetailsBtn}
+                  data-animate-target="details"
+                  className={clsx('nodrag nopan', css.detailsBtn)}
+                  radius="md"
+                  style={{ zIndex: 100 }}
+                  role="button"
+                  onClick={onOpenDetails}
+                  onDoubleClick={stopPropagation}
+                  {...isInteractive && animateHandlers}
+                >
+                  <IconId stroke={1.8} style={{ width: '75%' }} />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Box>
         </Box>
+        {isNavigable && (
+          <ActionIcon
+            key={'navigate'}
+            component={m.div}
+            variants={VariantsNavigate}
+            data-animate-target="navigate"
+            className={clsx('nodrag nopan', css.navigateBtn)}
+            radius="md"
+            style={{ zIndex: 100 }}
+            onClick={onNavigateTo}
+            role="button"
+            onDoubleClick={stopPropagation}
+            {...isInteractive && animateHandlers}
+          >
+            <IconZoomScan style={{ width: '75%' }} />
+          </ActionIcon>
+        )}
       </Box>
       <Handle type="target" position={Position.Top} className={css.nodeHandlerInCenter} />
       <Handle type="source" position={Position.Top} className={css.nodeHandlerInCenter} />

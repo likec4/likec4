@@ -1,6 +1,7 @@
 import {
   type BorderStyle,
   defaultTheme,
+  DiagramNode,
   type Element,
   ElementShapes,
   type Fqn,
@@ -75,7 +76,7 @@ const Tooltip = MantineTooltip.withProps({
 })
 
 type ToolbarProps = NodeToolbarProps & {
-  element: Element
+  element: DiagramNode
   onColorPreview: (color: ThemeColor | null) => void
 }
 
@@ -86,6 +87,7 @@ export function CompoundToolbar({
   onColorPreview,
   ...props
 }: ToolbarProps) {
+  const modelRef = DiagramNode.modelRef(element)
   const targets = [element.id] as NonEmptyArray<Fqn>
   const diagramApi = useDiagramStoreApi()
   const {
@@ -117,7 +119,7 @@ export function CompoundToolbar({
         elementBorderStyle={element.style?.border}
         onChange={onChange}
       />
-      {hasGoToSource && <GoToSourceButton elementId={element.id} />}
+      {hasGoToSource && modelRef && <GoToSourceButton elementId={modelRef} />}
       {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
@@ -156,6 +158,7 @@ export function ElementToolbar({
   onColorPreview,
   ...props
 }: ToolbarProps) {
+  const modelRef = DiagramNode.modelRef(element)
   const targets = [element.id] as NonEmptyArray<Fqn>
   const diagramApi = useDiagramStoreApi()
   const {
@@ -234,14 +237,14 @@ export function ElementToolbar({
         onChange={onChange}
         position="right-end"
       />
-      {hasGoToSource && <GoToSourceButton elementId={element.id} />}
+      {hasGoToSource && modelRef && <GoToSourceButton elementId={modelRef} />}
       {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
 }
 
 type ColorButtonProps = Omit<PopoverProps, 'onChange'> & {
-  element: Element
+  element: DiagramNode
   isOpacityEditable?: boolean
   onColorPreview: (color: ThemeColor | null) => void
   onChange: OnStyleChange

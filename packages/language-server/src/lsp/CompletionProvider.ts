@@ -22,6 +22,21 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
     if (!this.filterKeyword(context, keyword)) {
       return
     }
+    if (keyword.value === 'deployment' && AstUtils.hasContainerOfType(context.node, ast.isModelViews)) {
+      return acceptor(context, {
+        label: keyword.value,
+        detail: `Insert deployment view`,
+        kind: CompletionItemKind.Class,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: [
+          'deployment view ${1:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} {',
+          '\ttitle \'${2:Untitled}\'',
+          '\t',
+          '\t$0',
+          '}'
+        ].join('\n')
+      })
+    }
     if (['title', 'description', 'technology'].includes(keyword.value)) {
       return acceptor(context, {
         label: keyword.value,
@@ -30,7 +45,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         insertText: `${keyword.value} '\${0}'`
       })
     }
-    if (['views', 'specification', 'model', 'with'].includes(keyword.value)) {
+    if (['views', 'specification', 'model', 'deployment', 'with'].includes(keyword.value)) {
       return acceptor(context, {
         label: keyword.value,
         detail: `Insert ${keyword.value} block`,
@@ -52,7 +67,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         ].join('\n')
       })
     }
-    if (keyword.value === 'dynamic') {
+    if (keyword.value === 'dynamic' && AstUtils.hasContainerOfType(context.node, ast.isModelViews)) {
       return acceptor(context, {
         label: keyword.value,
         detail: `Insert dynamic view`,

@@ -22,7 +22,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1.c1
         }
       }
@@ -34,7 +34,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1.c1.c2
         }
       }
@@ -47,7 +47,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1.c1.c2._
         }
       }
@@ -61,7 +61,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1.c1._
         }
       }
@@ -73,7 +73,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1._
         }
       }
@@ -85,7 +85,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1.c1.c2.*
         }
       }
@@ -99,7 +99,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1.c1.*
         }
       }
@@ -111,7 +111,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`${model}
       views {
-        deploymentView dep1 {
+        deployment view dep1 {
           include n1.*
         }
       }

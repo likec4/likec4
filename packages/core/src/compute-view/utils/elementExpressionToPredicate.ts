@@ -1,6 +1,7 @@
 import { isNullish } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import {
+  type ComputedNode,
   type Element,
   type ElementPredicateExpression,
   isCustomElement,
@@ -16,7 +17,7 @@ import { parentFqn } from '../../utils'
 
 type Predicate<T> = (x: T) => boolean
 
-export function elementExprToPredicate<T extends Pick<Element, 'id' | 'kind' | 'tags'>>(
+export function elementExprToPredicate<T extends Pick<ComputedNode, 'id' | 'kind' | 'tags'>>(
   target: ElementPredicateExpression
 ): Predicate<T> {
   if (isElementWhere(target)) {

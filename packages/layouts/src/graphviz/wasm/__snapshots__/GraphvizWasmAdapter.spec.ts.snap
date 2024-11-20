@@ -75,6 +75,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend:amazon.s3",
       ],
@@ -106,6 +107,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend:amazon.s3",
       ],
@@ -142,6 +144,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": null,
       "position": [
@@ -173,6 +176,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       },
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": "amazon",
       "position": [
@@ -460,6 +464,7 @@ with sso authentification",
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "support:cloud.frontend.adminPanel",
       ],
@@ -491,6 +496,7 @@ with sso authentification",
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "customer:cloud.frontend.dashboard",
       ],
@@ -530,6 +536,7 @@ with sso authentification",
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend.storage:amazon",
       ],
@@ -563,6 +570,7 @@ with sso authentification",
       },
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
@@ -596,6 +604,7 @@ with sso authentification",
       },
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
@@ -634,6 +643,7 @@ with sso authentification",
       },
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend.storage:amazon",
       ],
@@ -668,6 +678,7 @@ with sso authentification",
       },
       "level": 2,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend.graphql:cloud.backend.storage",
       ],
@@ -701,6 +712,7 @@ with sso authentification",
       },
       "level": 2,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend.storage:amazon",
       ],
@@ -734,6 +746,7 @@ with sso authentification",
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": null,
       "position": [
@@ -932,6 +945,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "customer:cloud.frontend",
       ],
@@ -963,6 +977,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "support:cloud.frontend",
       ],
@@ -1001,6 +1016,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend:amazon",
       ],
@@ -1035,6 +1051,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.frontend:cloud.backend",
       ],
@@ -1068,6 +1085,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 1,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud.backend:amazon",
       ],
@@ -1101,6 +1119,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": null,
       "position": [
@@ -1263,6 +1282,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "customer:cloud",
       ],
@@ -1294,6 +1314,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "support:cloud",
       ],
@@ -1328,6 +1349,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [
         "cloud:amazon",
       ],
@@ -1361,6 +1383,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       },
       "level": 0,
       "links": null,
+      "modelRef": 1,
       "outEdges": [],
       "parent": null,
       "position": [

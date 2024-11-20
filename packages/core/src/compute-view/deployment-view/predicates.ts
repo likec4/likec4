@@ -8,7 +8,6 @@ type DeploymentElement = LikeC4DeploymentGraph.Element
 export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...expr }: Expr.Ref) {
   const currentElements = [...ctx.resolvedElements]
 
-  let element
   if ('node' in ref) {
     const node = ctx.graph.node(ref.node)
     if (expr.isExpanded) {

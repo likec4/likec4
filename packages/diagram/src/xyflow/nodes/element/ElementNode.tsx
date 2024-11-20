@@ -282,7 +282,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             <IconZoomScan style={{ width: '75%' }} />
           </ActionIcon>
         )}
-        {enableElementDetails && (
+        {enableElementDetails && element.modelRef && (
           <Tooltip
             fz="xs"
             color="dark"

@@ -9,7 +9,6 @@ import {
   isTruthy,
   last,
   map,
-  omit,
   only,
   pipe,
   reduce,
@@ -55,7 +54,7 @@ import { ancestorsOfNode } from '../utils/ancestorsOfNode'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
-import { buildComputeNodes } from '../utils/buildComputeNodes'
+import { buildComputedNodesFromElements } from '../utils/buildComputedNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { sortNodes } from '../utils/sortNodes'
@@ -234,7 +233,7 @@ export class ComputeCtx {
     }
 
     const elements = [...this.includedElements]
-    const nodesMap = buildComputeNodes(elements, this.groups)
+    const nodesMap = buildComputedNodesFromElements(elements, this.groups)
 
     const edges = this.computeEdges()
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(edge => [edge.id, edge]))

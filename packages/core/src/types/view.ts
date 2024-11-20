@@ -1,7 +1,7 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { DeployedInstance, DeploymentExpression } from './deployments'
+import type { DeployedInstance, DeploymentExpression, DeploymentNodeKind } from './deployments'
 import {
   type BorderStyle,
   ElementKind,
@@ -55,8 +55,10 @@ export interface ViewRuleStyle {
     icon?: IconUrl
   }
 }
-export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
-  return 'style' in rule && 'targets' in rule
+export function isViewRuleStyle(rule: DeploymentViewRule): rule is DeploymentViewRuleStyle
+export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle
+export function isViewRuleStyle(rule: object) {
+  return 'style' in rule && 'targets' in rule && Array.isArray(rule.targets)
 }
 
 export interface ViewRuleGlobalStyle {
@@ -307,15 +309,18 @@ export function getParallelStepsPrefix(id: string): string | null {
 
 export interface ComputedNode {
   id: NodeId
-  kind: ElementKind
+  kind: string // TODO: fix ElementKind | DeploymentNodeKind
   parent: NodeId | null
-  // ref: {
-  //   // Reference to model
-  //   element: Fqn
-  // } | {
-  //   // Reference to deployment model
-  //   deployment: Fqn
-  // } | null
+  /**
+   * Reference to model element
+   * If 1 - node id is a reference
+   */
+  modelRef?: 1 | Fqn
+  /**
+   * Reference to deployment element
+   * If 1 - node id is a reference
+   */
+  deploymentRef?: 1 | Fqn
   title: string
   description: string | null
   technology: string | null
@@ -326,9 +331,6 @@ export interface ComputedNode {
   inEdges: EdgeId[]
   outEdges: EdgeId[]
   shape: ElementShape
-  /**
-   * @deprecated Use `style` instead
-   */
   color: Color
   /**
    * @deprecated Use `style` instead
@@ -345,6 +347,12 @@ export interface ComputedNode {
   isCustomized?: boolean
 }
 export namespace ComputedNode {
+  export function modelRef(node: ComputedNode): Fqn | null {
+    return node.modelRef === 1 ? node.id : (node.modelRef ?? null)
+  }
+  export function deploymentRef(node: ComputedNode): Fqn | null {
+    return node.deploymentRef === 1 ? node.id : (node.deploymentRef ?? null)
+  }
   /**
    * Nodes group is a special kind of node, exisiting only in view
    */
@@ -470,6 +478,12 @@ export interface DiagramNode extends ComputedNode {
 }
 
 export namespace DiagramNode {
+  export function modelRef(node: DiagramNode): Fqn | null {
+    return node.modelRef === 1 ? node.id : (node.modelRef ?? null)
+  }
+  export function deploymentRef(node: DiagramNode): Fqn | null {
+    return node.deploymentRef === 1 ? node.id : (node.deploymentRef ?? null)
+  }
   /**
    * Nodes group is a special kind of node, exisiting only in view
    */

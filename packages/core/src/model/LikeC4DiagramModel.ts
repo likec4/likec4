@@ -210,7 +210,8 @@ export namespace LikeC4DiagramModel {
       return this.node.title
     }
 
-    get kind(): C4ElementKind {
+    // TODO: fix ElementKind | DeploymentNodeKind
+    get kind(): string {
       return this.node.kind
     }
 

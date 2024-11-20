@@ -553,7 +553,7 @@ DeploymentRelation:
 ;
 
 DeploymentView:
-  'deploymentView' name=Id body=DeploymentViewBody?
+  'deployment' 'view' name=Id body=DeploymentViewBody?
 ;
 
 DeploymentViewBody: '{'

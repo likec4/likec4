@@ -11,12 +11,13 @@ import {
 } from '../../types/expression'
 import { whereOperatorAsPredicate } from '../../types/operators'
 import type { Relation } from '../../types/relation'
+import type { ComputedNode } from '../../types/view'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
 export type FilterableEdge = Pick<Relation, 'kind' | 'tags'> & {
-  source: Element
-  target: Element
+  source: ComputedNode
+  target: ComputedNode
 }
 
 export function relationExpressionToPredicates<T extends FilterableEdge>(

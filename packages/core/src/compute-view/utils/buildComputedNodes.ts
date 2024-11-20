@@ -1,3 +1,4 @@
+import type { SetRequired, Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
   type ComputedNode,
@@ -24,7 +25,24 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, Comp
   }
 }
 
-export function buildComputeNodes(elements: Iterable<Element>, groups?: NodesGroup[]) {
+const modelElementAsNodeSource = (element: Element): ComputedNodeSource => {
+  return {
+    ...element,
+    modelRef: 1
+  }
+}
+
+// type ComputedNodeSource = Simplify<SetRequired<Partial<Omit<ComputedNode, 'parent' | 'children' | 'inEdges' | 'outEdges' | 'level' | 'depth'>>, 'id' | 'title' | 'kind'>>
+export type ComputedNodeSource = Simplify<
+  & Pick<ComputedNode, 'id' | 'title' | 'kind' | 'deploymentRef' | 'modelRef'>
+  & Partial<Omit<Element, 'id' | 'title' | 'kind'>>
+>
+
+export function buildComputedNodesFromElements(elements: ReadonlyArray<Element>, groups?: NodesGroup[]) {
+  return buildComputedNodes(elements.map(modelElementAsNodeSource), groups)
+}
+
+export function buildComputedNodes(elements: ReadonlyArray<ComputedNodeSource>, groups?: NodesGroup[]) {
   const nodesMap = new Map<Fqn, ComputedNode>()
 
   const elementToGroup = new Map<Fqn, NodeId>()
@@ -64,7 +82,7 @@ export function buildComputeNodes(elements: Iterable<Element>, groups?: NodesGro
       // Sort from Top to Bottom
       // So we can ensure that parent nodes are created before child nodes
       .sort(compareByFqnHierarchically)
-      .reduce((map, { id, color, shape, style, kind, title, ...el }) => {
+      .reduce((map, { id, style, kind, title, color, shape, ...el }) => {
         let parent = parentFqn(id)
         let level = 0
         let parentNd: ComputedNode | undefined
@@ -97,12 +115,16 @@ export function buildComputeNodes(elements: Iterable<Element>, groups?: NodesGro
           parent,
           kind,
           title,
+          level,
           color: color ?? DefaultThemeColor,
           shape: shape ?? DefaultElementShape,
+          description: null,
+          technology: null,
+          tags: null,
+          links: null,
           children: [],
           inEdges: [],
           outEdges: [],
-          level,
           ...el,
           style: {
             ...style

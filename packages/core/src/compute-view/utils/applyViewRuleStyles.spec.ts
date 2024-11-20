@@ -15,7 +15,7 @@ function nd(id: string, props?: any): ComputedNode {
 }
 
 function g(id: string): ComputedNode {
-  return { id, kind: ElementKind.Group } as ComputedNode
+  return { id, kind: ElementKind.Group } as any
 }
 
 function r(targets: NonEmptyArray<ElementExpression>, props: Partial<Omit<ViewRuleStyle, 'targets'>>): ViewRuleStyle {

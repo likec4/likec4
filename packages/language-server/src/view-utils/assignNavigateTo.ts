@@ -1,4 +1,4 @@
-import { type ComputedView, type Fqn, isElementView, type ViewID } from '@likec4/core'
+import { ComputedNode, type ComputedView, type Fqn, isElementView, type ViewID } from '@likec4/core'
 import { find, isNullish } from 'remeda'
 
 export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R {
@@ -15,11 +15,12 @@ export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R 
   // set default navigateTo
   for (const { id, nodes } of views) {
     for (const node of nodes) {
-      if (node.navigateTo) {
+      const modelRef = ComputedNode.modelRef(node)
+      if (node.navigateTo || !modelRef) {
         continue
       }
       // find first element view that is not the current one
-      const navigateTo = find(allElementViews.get(node.id) ?? [], v => v !== id)
+      const navigateTo = find(allElementViews.get(modelRef) ?? [], v => v !== id)
       if (navigateTo) {
         node.navigateTo = navigateTo
       }

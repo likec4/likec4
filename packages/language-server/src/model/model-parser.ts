@@ -838,7 +838,7 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseViewManualLayout(node: ast.DynamicView | ast.ElementView): c4.ViewManualLayout | undefined {
+  private parseViewManualLayout(node: ast.LikeC4View): c4.ViewManualLayout | undefined {
     const commentNode = CstUtils.findCommentNode(node.$cstNode, ['BLOCK_COMMENT'])
     if (!commentNode || !hasManualLayout(commentNode.text)) {
       return undefined
@@ -1182,7 +1182,7 @@ export class LikeC4ModelParser {
 
     let id = astNode.name
     if (!id) {
-      id = 'dynamic_' + stringHash(
+      id = 'deployment_' + stringHash(
         getDocument(astNode).uri.toString(),
         astPath
       ) as c4.ViewID
@@ -1195,6 +1195,8 @@ export class LikeC4ModelParser {
     const links = this.convertLinks(body)
 
     ViewOps.writeId(astNode, id as c4.ViewID)
+
+    const manualLayout = this.parseViewManualLayout(astNode)
 
     return {
       __: 'deployment',
@@ -1211,7 +1213,8 @@ export class LikeC4ModelParser {
           logWarnError(e)
           return []
         }
-      })
+      }),
+      ...(manualLayout && { manualLayout })
     }
   }
 

@@ -1,4 +1,4 @@
-import { invariant, isAncestor, type NodeId, type NonEmptyArray, nonNullable } from '@likec4/core'
+import { type NodeId, type NonEmptyArray, nonNullable } from '@likec4/core'
 import type { InternalNode, NodeChange, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
