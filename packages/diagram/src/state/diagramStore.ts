@@ -4,7 +4,7 @@ import type {
   EdgeId,
   ElementKind,
   ElementNotation,
-  Fqn,  
+  Fqn,
   NodeId,
   ViewChange,
   ViewID,
@@ -74,6 +74,7 @@ export type DiagramInitialState = {
   enableElementDetails: boolean
   enableRelationshipBrowser: boolean
   enableRelationshipDetails: boolean
+  enableSearch: boolean
   renderIcon: ElementIconRenderer | null
   whereFilter: WhereOperator<string, string> | null
   // If Dynamic View
