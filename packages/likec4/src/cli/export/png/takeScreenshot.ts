@@ -61,6 +61,11 @@ export async function takeScreenshot({
 
       page ??= await browserContext.newPage()
 
+      await page.setViewportSize({
+        width: view.bounds.width + padding * 2,
+        height: view.bounds.height + padding * 2
+      })
+
       await page.goto(url + `?padding=${padding}&theme=${theme}`)
 
       const diagramElement = page.getByRole('presentation')
@@ -82,7 +87,7 @@ export async function takeScreenshot({
       }
 
       const path = resolve(output, relativePath, `${view.id}.png`)
-      await diagramElement.screenshot({
+      await page.screenshot({
         path,
         omitBackground: true
       })
