@@ -203,7 +203,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     docExports: AstNodeDescription[],
     document: LikeC4LangiumDocument
   ) {
-    const nodes = modelDeployments?.flatMap(m => m.nested)
+    const nodes = modelDeployments?.flatMap(m => m.elements)
     if (isNullish(nodes) || nodes.length === 0) {
       return
     }

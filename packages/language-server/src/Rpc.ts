@@ -114,6 +114,9 @@ export class Rpc implements Disposable {
         if ('view' in params) {
           return modelLocator.locateView(params.view)
         }
+        if ('deployment' in params) {
+          return modelLocator.locateDeploymentElement(params.deployment, params.property ?? 'name')
+        }
         nonexhaustive(params)
       }),
       connection.onRequest(changeView, async (request, _cancelToken) => {

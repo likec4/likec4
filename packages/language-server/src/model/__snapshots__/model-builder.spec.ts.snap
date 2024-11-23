@@ -76,6 +76,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     },
   },
   "specification": {
+    "deployments": {},
     "elements": {
       "component": {
         "style": {},
@@ -242,6 +243,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "specification": {
+    "deployments": {},
     "elements": {
       "component": {
         "style": {},
@@ -568,6 +570,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     },
   },
   "specification": {
+    "deployments": {},
     "elements": {
       "person": {
         "style": {},
@@ -700,6 +703,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     },
   },
   "specification": {
+    "deployments": {},
     "elements": {
       "person": {
         "style": {},
@@ -832,6 +836,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     },
   },
   "specification": {
+    "deployments": {},
     "elements": {
       "person": {
         "style": {},

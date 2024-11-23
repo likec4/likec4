@@ -73,16 +73,25 @@ export const WebviewMsgs = {
 export type LocateParams =
   | {
     element: Fqn
+    deployment?: never
     relation?: never
     view?: never
   }
   | {
     relation: RelationID
+    deployment?: never
     element?: never
     view?: never
   }
   | {
     view: ViewID
+    deployment?: never
+    relation?: never
+    element?: never
+  }
+  | {
+    deployment: Fqn
+    view?: never
     relation?: never
     element?: never
   }

@@ -345,6 +345,7 @@ export const FakeModel: ParsedLikeC4Model = {
   specification: {
     elements: {},
     relationships: {},
+    deployments: {},
     tags: []
   },
   deployments: {

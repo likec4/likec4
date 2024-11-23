@@ -232,13 +232,16 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   } as ParsedLikeC4Model['deployments']
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
-    tags: (spec.tags ?? []) as Tag<T['Tag']>[],
     elements: {
       ...spec.elements as any
     },
+    deployments: {
+      ...spec.deployments as any
+    },
     relationships: {
       ...spec.relationships
-    }
+    },
+    tags: (spec.tags ?? []) as Tag<T['Tag']>[]
   })
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {

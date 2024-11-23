@@ -2,6 +2,7 @@ import type { IfNever, IsLiteral, Tagged, TupleToUnion } from 'type-fest'
 import type {
   BorderStyle,
   Color,
+  DeploymentNodeKindSpecification,
   ElementKindSpecification,
   ElementShape,
   ParsedLikeC4Model,
@@ -18,6 +19,9 @@ export type BuilderSpecification = {
   }
   relationships?: {
     [kind: string]: Partial<RelationshipKindSpecification>
+  }
+  deployments?: {
+    [kind: string]: Partial<DeploymentNodeKindSpecification>
   }
   tags?: [string, ...string[]]
   metadataKeys?: [string, ...string[]]

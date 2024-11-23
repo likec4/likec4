@@ -678,4 +678,55 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       disposeAfterCheck: true
     })
   })
+
+  it('should suggest deployment kind', async ({ expect }) => {
+    const text = `
+      specification {
+        deploymentNode env
+        deploymentNode node
+      }
+      deployment {
+        <|>env dev {
+          n1 = <|>node
+        }
+        dev.<|> -> <|>
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        expect(pluck('label', completions.items)).to.include.members(['env', 'node'])
+      }
+    })
+
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        'env',
+        'node'
+      ]
+    })
+
+    await completion({
+      text,
+      index: 2,
+      expectedItems: [
+        'n1'
+      ]
+    })
+
+    await completion({
+      text,
+      index: 3,
+      expectedItems: [
+        'dev',
+        'n1'
+      ]
+    })
+  })
 })

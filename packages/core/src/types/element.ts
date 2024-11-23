@@ -32,13 +32,13 @@ export const DefaultThemeColor = 'primary' satisfies ThemeColor
 export const DefaultElementShape = 'rectangle' satisfies ElementShape
 
 export interface ElementStyle {
-  border?: BorderStyle
+  readonly border?: BorderStyle
   /**
    * In percentage 0-100, 0 is fully transparent
    *
    * @default 100
    */
-  opacity?: number
+  readonly opacity?: number
 }
 
 export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>

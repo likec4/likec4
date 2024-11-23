@@ -8,7 +8,7 @@ import {
   sortByFqnHierarchically,
   type ViewID
 } from '@likec4/core'
-import { prepareComputeView, resolveRulesExtendedViews } from '@likec4/core/compute-view'
+import { mkComputeView, resolveRulesExtendedViews } from '@likec4/core/compute-view'
 import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
@@ -50,7 +50,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   // Merge specifications and globals from all documents
   const c4Specification: ParsedAstSpecification = {
     tags: new Set(),
-    deploymentNodes: [],
+    deployments: {},
     elements: {},
     relationships: {},
     colors: {}
@@ -70,8 +70,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     Object.assign(c4Specification.elements, spec.elements)
     Object.assign(c4Specification.relationships, spec.relationships)
     Object.assign(c4Specification.colors, spec.colors)
-    c4Specification.deploymentNodes.push(...spec.deploymentNodes)
-
+    Object.assign(c4Specification.deployments, spec.deployments)
     Object.assign(globals.predicates, c4Globals.predicates)
     Object.assign(globals.dynamicPredicates, c4Globals.dynamicPredicates)
     Object.assign(globals.styles, c4Globals.styles)
@@ -209,7 +208,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         } satisfies c4.Relation
       }
       return {
-        ...(links && { links }),
+        ...links && { links },
         ...model,
         source,
         target,
@@ -227,9 +226,54 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     indexBy(prop('id'))
   )
 
+  function toDeploymentElement(doc: LangiumDocument) {
+    return (parsed: c4.PhysicalElement): c4.PhysicalElement | null => {
+      const isDeploymentNode = c4.PhysicalElement.isDeploymentNode(parsed)
+      if (!isDeploymentNode) {
+        if (!parsed.links || parsed.links.length === 0) {
+          return parsed
+        }
+        const links = resolveLinks(doc, parsed.links)
+        return {
+          ...parsed,
+          links
+        }
+      }
+      try {
+        const __kind = c4Specification.deployments[parsed.kind]
+        if (!__kind) {
+          logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
+          return parsed
+        }
+        let {
+          technology = __kind.technology,
+          notation = __kind.notation,
+          links,
+          style
+        } = parsed
+        return {
+          ...parsed,
+          ...notation && { notation },
+          ...technology && { technology },
+          style: {
+            border: 'dashed',
+            opacity: 20,
+            ...__kind.style,
+            ...style
+          },
+          links: links ? resolveLinks(doc, links) : null
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+      return null
+    }
+  }
+
   const deploymentElements = pipe(
     docs,
-    flatMap(d => d.c4Deployments),
+    flatMap(d => map(d.c4Deployments, toDeploymentElement(d))),
+    filter(isTruthy),
     // sort from root elements to nested, so that parent is always present
     // Import to preserve the order from the source
     sortByFqnHierarchically,
@@ -323,7 +367,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     specification: {
       tags: Array.from(c4Specification.tags),
       elements: c4Specification.elements,
-      relationships: c4Specification.relationships
+      relationships: c4Specification.relationships,
+      deployments: c4Specification.deployments
     },
     elements,
     relations,
@@ -418,7 +463,7 @@ export class LikeC4ModelBuilder {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model>
     const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
-      const computeView = prepareComputeView(model)
+      const computeView = mkComputeView(model)
       const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
         const result = computeView(view)
@@ -490,7 +535,7 @@ export class LikeC4ModelBuilder {
           logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
           return null
         }
-        const result = prepareComputeView(model)(view)
+        const result = mkComputeView(model)(view)
         if (!result.isSuccess) {
           logError(result.error)
           return null

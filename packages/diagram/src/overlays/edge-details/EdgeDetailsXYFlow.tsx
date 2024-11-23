@@ -194,7 +194,9 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
       // }}
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
-        diagramStore.getState().onOpenSourceRelation?.(edge.data.relation.id)
+        diagramStore.getState().onOpenSource?.({
+          relation: edge.data.relation.id
+        })
       }}
       // onEdgeClick={(e, edge) => {
       //   e.stopPropagation()

@@ -30,7 +30,7 @@ function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
     onNavigateTo: s.onNavigateTo,
-    onOpenSource: s.onOpenSourceElement
+    onOpenSource: s.onOpenSource
   }
 }
 
@@ -155,7 +155,9 @@ export const ElementNode = memo<ElementNodeProps>(({
             <Action
               onClick={(event) => {
                 event.stopPropagation()
-                onOpenSource(data.fqn)
+                onOpenSource?.({
+                  element: data.fqn
+                })
               }}>
               <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
             </Action>

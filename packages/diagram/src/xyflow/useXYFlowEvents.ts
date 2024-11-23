@@ -124,10 +124,11 @@ export function useXYFlowEvents() {
           nodesSelectable,
           enableElementDetails,
           setLastClickedNode,
-          onOpenSourceElement,
+          onOpenSource,
           openOverlay
         } = diagramApi.getState()
         const modelRef = DiagramNode.modelRef(xynode.data.element)
+        const deploymentRef = DiagramNode.deploymentRef(xynode.data.element)
         setLastClickedNode(xynode.id)
         // if we focused on a node, and clicked on another node - focus on the clicked node
         const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
@@ -136,8 +137,16 @@ export function useXYFlowEvents() {
 
         let stopPropagation = false
 
-        if (clickedRecently && !!onOpenSourceElement && modelRef) {
-          onOpenSourceElement(modelRef)
+        if (clickedRecently && !!onOpenSource && (modelRef || deploymentRef)) {
+          if (modelRef) {
+            onOpenSource({
+              element: modelRef
+            })
+          } else if (deploymentRef) {
+            onOpenSource({
+              deployment: deploymentRef
+            })
+          }
           stopPropagation = true
         }
 

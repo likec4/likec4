@@ -10,6 +10,26 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     node: AstNode,
     acceptor: SemanticTokenAcceptor
   ): void | undefined | 'prune' {
+    if (ast.isElement(node) || ast.isDeploymentNode(node)) {
+      return this.highlightNameAndKind(node, acceptor)
+    }
+    if (ast.isDeployedInstance(node)) {
+      if ('name' in node) {
+        acceptor({
+          node,
+          property: 'name',
+          type: SemanticTokenTypes.variable,
+          modifier: [
+            SemanticTokenModifiers.definition,
+            SemanticTokenModifiers.readonly
+          ]
+        })
+      }
+      return
+    }
+    if (ast.isLikeC4View(node)) {
+      return this.highlightView(node, acceptor)
+    }
     if (ast.isRelationshipKind(node)) {
       return acceptor({
         node,
@@ -250,15 +270,9 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       }
       return 'prune'
     }
-    if (ast.isElement(node)) {
-      return this.highlightAstElement(node, acceptor)
-    }
-    if (ast.isLikeC4View(node)) {
-      return this.highlightView(node, acceptor)
-    }
   }
 
-  private highlightAstElement(node: ast.Element, acceptor: SemanticTokenAcceptor) {
+  private highlightNameAndKind(node: ast.Element | ast.DeploymentNode, acceptor: SemanticTokenAcceptor) {
     acceptor({
       node,
       property: 'name',

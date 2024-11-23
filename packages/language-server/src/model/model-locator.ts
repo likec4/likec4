@@ -6,6 +6,7 @@ import type { Location } from 'vscode-languageserver-types'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
+import type { DeploymentsIndex } from './deployments-index'
 import { type FqnIndex } from './fqn-index'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
@@ -13,10 +14,12 @@ const { getDocument } = AstUtils
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
+  private deploymentsIndex: DeploymentsIndex
   private langiumDocuments: LangiumDocuments
 
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
+    this.deploymentsIndex = services.likec4.DeploymentsIndex
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
   }
 
@@ -49,6 +52,17 @@ export class LikeC4ModelLocator {
 
   public locateElement(fqn: c4.Fqn, _prop?: string): Location | null {
     const entry = this.fqnIndex.byFqn(fqn).head()
+    const docsegment = entry?.nameSegment ?? entry?.selectionSegment
+    if (!entry || !docsegment) {
+      return null
+    }
+    return {
+      uri: entry.documentUri.toString(),
+      range: docsegment.range
+    }
+  }
+  public locateDeploymentElement(fqn: c4.Fqn, _prop?: string): Location | null {
+    const entry = this.deploymentsIndex.byFqn(fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
       return null

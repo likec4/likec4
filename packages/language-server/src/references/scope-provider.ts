@@ -17,10 +17,10 @@ import {
   StreamScope
 } from 'langium'
 import { ast, isLikeC4LangiumDocument } from '../ast'
-import { elementRef, getFqnElementRef } from '../elementRef'
 import { logger } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
+import { elementRef, getFqnElementRef } from '../utils/elementRef'
 
 const { getDocument } = AstUtils
 

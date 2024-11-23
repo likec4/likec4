@@ -50,6 +50,10 @@ export type LocateParams =
     relation: RelationID
   }
   | {
+    deployment: Fqn
+    property?: string
+  }
+  | {
     view: ViewID
   }
 export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')

@@ -52,7 +52,12 @@ SpecificationElementStringProperty:
   key=('technology' | 'notation') ':'? value=String ';'?;
 
 SpecificationDeploymentNodeKind:
-  'deploymentNode' kind=DeploymentNodeKind;
+  'deploymentNode' kind=DeploymentNodeKind ('{'
+    props+=(
+      SpecificationElementStringProperty |
+      ElementStyleProperty
+    )*
+  '}')?;
 
 SpecificationTag:
   'tag' tag=Tag;
@@ -511,7 +516,7 @@ RelationNavigateToProperty:
 
 ModelDeployments:
   name='deployment' '{'
-    nested+=(
+    elements+=(
       DeploymentNode |
       DeploymentRelation
     )*
@@ -519,22 +524,35 @@ ModelDeployments:
 
 DeploymentNode:
   (
-    kind=[DeploymentNodeKind] name=Id |
-    name=Id Eq kind=[DeploymentNodeKind]
+    kind=[DeploymentNodeKind:Id] name=Id |
+    name=Id Eq kind=[DeploymentNodeKind:Id]
   )
   title=String?
   body=DeploymentNodeBody?
 ;
 
-DeployedInstance:
-  (name=Id Eq)? ('instanceOf' | 'instance' 'of') element=ElementRef ';'?
-;
-
 DeploymentNodeBody: '{'
-  nested+=(
+  tags=Tags?
+  props+=ElementProperty*
+  elements+=(
     DeployedInstance |
+    DeploymentRelation |
     DeploymentNode
   )*
+'}';
+
+DeployedInstance:
+  (name=Id Eq)?
+  ('instanceOf' | 'instance' 'of')
+  element=ElementRef
+  title=String?
+  body=DeployedInstanceBody?
+  ';'?
+;
+
+DeployedInstanceBody: '{'
+  tags=Tags?
+  props+=ElementProperty*
 '}';
 
 // Rules:

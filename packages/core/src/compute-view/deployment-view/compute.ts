@@ -1,4 +1,18 @@
-import { filter, isTruthy, last, only, pipe, reduce, reverse, sort } from 'remeda'
+import {
+  filter,
+  hasAtLeast,
+  isEmpty,
+  isNonNullish,
+  isTruthy,
+  last,
+  omitBy,
+  only,
+  pickBy,
+  pipe,
+  reduce,
+  reverse,
+  sort
+} from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import type {
   Color,
@@ -36,19 +50,58 @@ type Edges = ReadonlyArray<DeploymentEdge>
 
 function toNodeSource(el: DeploymentElement): ComputedNodeSource {
   const isNode = 'kind' in el
-  return {
-    ...!isNode && el.element,
-    id: el.id,
-    kind: (isNode ? el.kind : 'instance' as DeploymentNodeKind),
-    title: isNode ? (el.title ?? nameFromFqn(el.id)) : el.element.title,
-    deploymentRef: 1,
-    ...(!isNode && {
-      modelRef: el.element.id
-    }),
-    style: (!isNode && el.element.style) || {
-      border: 'dashed',
-      opacity: 20
+  if (isNode) {
+    const {
+      icon,
+      color,
+      shape,
+      ...style
+    } = el.style ?? {}
+    return {
+      ...el,
+      ...icon && { icon },
+      ...color && { color },
+      ...shape && { shape },
+      style: {
+        border: 'dashed',
+        opacity: 20,
+        ...style
+      },
+      deploymentRef: 1
     }
+  }
+
+  const icon = el.instance.style?.icon ?? el.element.icon
+  const color = el.instance.style?.color ?? el.element.color
+  const shape = el.instance.style?.shape ?? el.element.shape
+
+  const links = [
+    ...(el.element.links ?? []),
+    ...(el.instance.links ?? [])
+  ]
+
+  const metadata = {
+    ...el.element.metadata,
+    ...el.instance.metadata
+  }
+
+  return {
+    ...pickBy(el.element, isNonNullish),
+    ...pickBy(el.instance, isNonNullish),
+    id: el.id,
+    kind: 'instance' as DeploymentNodeKind,
+    tags: uniqueTags([el.element, el.instance]) as NonEmptyArray<Tag>,
+    links: hasAtLeast(links, 1) ? links : null,
+    ...icon && { icon },
+    ...color && { color },
+    ...shape && { shape },
+    style: {
+      ...el.element.style,
+      ...el.instance.style
+    },
+    deploymentRef: el.id === el.instance.id ? 1 : el.instance.id,
+    modelRef: el.id === el.element.id ? 1 : el.element.id,
+    ...!isEmpty(metadata) && ({ metadata })
   }
 }
 

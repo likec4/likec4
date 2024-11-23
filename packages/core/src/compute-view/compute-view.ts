@@ -1,15 +1,27 @@
 import { values } from 'remeda'
-import { type ComputedView, isDeploymentView, isElementView, type LikeC4View, type ParsedLikeC4Model } from '../types'
+import {
+  type ComputedDeploymentView,
+  type ComputedDynamicView,
+  type ComputedElementView,
+  type ComputedView,
+  type DeploymentView,
+  type DynamicView,
+  type ElementView,
+  isDeploymentView,
+  isElementView,
+  type LikeC4View,
+  type ParsedLikeC4Model
+} from '../types'
 import { DeploymentViewComputeCtx } from './deployment-view/compute'
 import { DynamicViewComputeCtx } from './dynamic-view/compute'
 import { ComputeCtx } from './element-view/compute'
 import { LikeC4DeploymentGraph } from './LikeC4DeploymentGraph'
 import { LikeC4ModelGraph } from './LikeC4ModelGraph'
 
-type ComputeViewResult =
+type ComputeViewResult<V extends ComputedView = ComputedView> =
   | {
     isSuccess: true
-    view: ComputedView
+    view: V
   }
   | {
     isSuccess: false
@@ -17,33 +29,18 @@ type ComputeViewResult =
     view: undefined
   }
 
-// export function computeView(view: ElementView, graph: LikeC4ModelGraph): ComputeViewResult {
-//   try {
-//     return {
-//       isSuccess: true,
-//       view: computeElementView(view, graph)
-//     }
-//   } catch (e) {
-//     return {
-//       isSuccess: false,
-//       error: e instanceof Error ? e : new Error(`Unknown error: ${e}`),
-//       view: undefined
-//     }
-//   }
-// }
+interface ComputeView {
+  (viewsource: DeploymentView): ComputeViewResult<ComputedDeploymentView>
+  (viewsource: DynamicView): ComputeViewResult<ComputedDynamicView>
+  (viewsource: ElementView): ComputeViewResult<ComputedElementView>
+  (viewsource: LikeC4View): ComputeViewResult<ComputedView>
+}
 
-export function prepareComputeView(model: ParsedLikeC4Model) {
+export function mkComputeView(model: ParsedLikeC4Model): ComputeView {
   const index = new LikeC4ModelGraph(model)
   let deploymentGraph
 
-  // function computeView(view: ElementView): ComputedElementView
-  // // function computeView(view: DynamicView): ComputedDynamicView
-  // // function computeView(view: DeploymentView): ComputedDeploymentView
-  // function computeView(view: LikeC4View): ComputedView {
-
-  // }
-
-  return (viewsource: LikeC4View): ComputeViewResult => {
+  return function computeView(viewsource) {
     try {
       let view
       switch (true) {
@@ -64,7 +61,7 @@ export function prepareComputeView(model: ParsedLikeC4Model) {
       }
       return {
         isSuccess: true,
-        view
+        view: view as any
       }
     } catch (e) {
       return {

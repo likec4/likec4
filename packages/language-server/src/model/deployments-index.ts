@@ -70,7 +70,7 @@ export class DeploymentsIndex {
   }
 
   public createDocumentIndex(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
-    const rootNodes = document.parseResult.value.deployments.flatMap(m => m.nested)
+    const rootNodes = document.parseResult.value.deployments.flatMap(m => m.elements)
     if (rootNodes.length === 0) {
       return DocumentDeploymentsIndex.EMPTY
     }
@@ -93,12 +93,15 @@ export class DeploymentsIndex {
 
     const traverseNode = (node: ast.DeploymentNode, parentFqn: string): readonly DeploymentAstNodeDescription[] => {
       const _descedants = [] as DeploymentAstNodeDescription[]
-      const children = node.body?.nested
+      const children = node.body?.elements
       if (!children || children.length === 0) {
         return []
       }
       const directChildren = new Set<string>()
       for (const node of children) {
+        if (ast.isDeploymentRelation(node)) {
+          continue
+        }
         try {
           const name = Names.getName(node)
           if (isTruthy(name)) {

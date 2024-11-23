@@ -2,6 +2,25 @@ import { describe } from 'vitest'
 import { test } from './asserts'
 
 describe.concurrent('deployments', () => {
+  test('deployment node with properties').valid`
+     specification {
+      deploymentNode environment
+      deploymentNode node
+    }
+    deployment {
+      environment dev 'Development' {
+        node n1 {
+          title 'Node 1'
+        }
+        n2 = node {
+          title 'Node 2'
+        }
+      }
+      prod = environment 'Production' {
+        description 'Production environment'
+      }
+    }`
+
   test('allow nested nodes').valid`
     specification {
       deploymentNode environment

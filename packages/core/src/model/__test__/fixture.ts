@@ -317,6 +317,7 @@ export const fakeComputedModel = {
   specification: {
     tags: [],
     relationships: {},
+    deployments: {},
     elements: {
       actor: {
         style: {}

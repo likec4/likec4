@@ -17,5 +17,5 @@ export function uniqueTags<T extends { tags?: NonEmptyReadonlyArray<LiteralUnion
     unique(),
     sort(compareNatural)
   )
-  return hasAtLeast(tags, 1) ? tags : null
+  return hasAtLeast(tags, 1) ? tags as NonEmptyReadonlyArray<Tag> : null
 }

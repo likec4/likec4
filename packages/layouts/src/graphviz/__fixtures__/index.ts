@@ -1,8 +1,8 @@
 import type { ComputedElementView, LikeC4View } from '@likec4/core'
-import { prepareComputeView } from '@likec4/core/compute-view'
+import { mkComputeView } from '@likec4/core/compute-view'
 import { amazonView, cloud3levels, cloudView, FakeModel, indexView, issue577View } from './model'
 
-const computeView = prepareComputeView(FakeModel)
+const computeView = mkComputeView(FakeModel)
 const computeElementView = (view: LikeC4View): ComputedElementView => {
   const result = computeView(view)
   if (!result.isSuccess) {

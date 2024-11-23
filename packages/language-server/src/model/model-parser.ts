@@ -8,6 +8,7 @@ import type { Writable } from 'type-fest'
 import type {
   ChecksFromDiagnostics,
   FqnIndexedDocument,
+  ParsedAstDeployment,
   ParsedAstDeploymentView,
   ParsedAstDynamicView,
   ParsedAstElement,
@@ -31,12 +32,12 @@ import {
   toRelationshipStyleExcludeDefaults,
   ViewOps
 } from '../ast'
-import { elementRef, getFqnElementRef } from '../elementRef'
 import { type NotationProperty } from '../generated/ast'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
 import { instanceRef } from '../utils/deploymentRef'
+import { elementRef, getFqnElementRef } from '../utils/elementRef'
 import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
@@ -163,9 +164,10 @@ export class LikeC4ModelParser {
 
     const deploymentNodes_specs = specifications.flatMap(s => s.deploymentNodes.filter(isValid))
     for (const deploymentNode of deploymentNodes_specs) {
-      const kind = deploymentNode.kind.name as c4.DeploymentNodeKind
-      if (isTruthy(kind)) {
-        c4Specification.deploymentNodes.push(kind)
+      try {
+        Object.assign(c4Specification.deployments, this.parseSpecificationDeploymentNodeKind(deploymentNode, isValid))
+      } catch (e) {
+        logWarnError(e)
       }
     }
 
@@ -183,6 +185,31 @@ export class LikeC4ModelParser {
         }
       } catch (e) {
         logWarnError(e)
+      }
+    }
+  }
+
+  private parseSpecificationDeploymentNodeKind(
+    { kind, props }: ast.SpecificationDeploymentNodeKind,
+    isValid: IsValidFn
+  ): { [key: c4.DeploymentNodeKind]: c4.DeploymentNodeKindSpecification } {
+    const kindName = kind.name as c4.DeploymentNodeKind
+    if (!isTruthy(kindName)) {
+      throw new Error('DeploymentNodeKind name is not resolved')
+    }
+
+    const style = props.find(ast.isElementStyleProperty)
+    const bodyProps = pipe(
+      props.filter(ast.isSpecificationElementStringProperty) ?? [],
+      filter(p => isValid(p) && isNonNullish(p.value)),
+      mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string])
+    )
+    return {
+      [kindName]: {
+        ...bodyProps,
+        style: {
+          ...toElementStyle(style?.props, isValid)
+        }
       }
     }
   }
@@ -1116,7 +1143,7 @@ export class LikeC4ModelParser {
 
   private parseDeployment(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
     type TraversePair = ast.DeployedInstance | ast.DeploymentNode | ast.DeploymentRelation
-    const traverseStack: TraversePair[] = doc.parseResult.value.deployments.flatMap(d => d.nested)
+    const traverseStack: TraversePair[] = doc.parseResult.value.deployments.flatMap(d => d.elements)
 
     let next: TraversePair | undefined
     while (!!(next = traverseStack.shift())) {
@@ -1130,8 +1157,8 @@ export class LikeC4ModelParser {
             break
           case ast.isDeploymentNode(next): {
             doc.c4Deployments.push(this.parseDeploymentNode(next, isValid))
-            if (next.body && next.body.nested.length > 0) {
-              traverseStack.push(...next.body.nested)
+            if (next.body && next.body.elements.length > 0) {
+              traverseStack.push(...next.body.elements)
             }
             break
           }
@@ -1147,26 +1174,93 @@ export class LikeC4ModelParser {
   public parseDeploymentNode(
     astNode: ast.DeploymentNode,
     isValid: IsValidFn
-  ): c4.DeploymentNode {
+  ): ParsedAstDeployment.Node {
     const id = this.resolveFqn(astNode)
     const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentNodeKind
-    const title = toSingleLine(astNode.title) ?? nameFromFqn(id)
+    const tags = this.convertTags(astNode.body)
+    const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
+    const style = toElementStyle(stylePropsAst, isValid)
+    const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+
+    const bodyProps = pipe(
+      astNode.body?.props ?? [],
+      filter(isValid),
+      filter(ast.isElementStringProperty),
+      mapToObj(p => [p.key, p.value || undefined])
+    )
+
+    const title = toSingleLine(astNode.title ?? bodyProps.title)
+    const description = removeIndent(bodyProps.description)
+    const technology = toSingleLine(bodyProps.technology)
+
+    const links = this.convertLinks(astNode.body)
+
+    // Property has higher priority than from style
+    const iconProp = astNode.body?.props.find(ast.isIconProperty)
+    if (iconProp && isValid(iconProp)) {
+      const value = iconProp.libicon?.ref?.name ?? iconProp.value
+      if (isTruthy(value)) {
+        style.icon = value as c4.IconUrl
+      }
+    }
+
     return {
       id,
       kind,
-      title
+      title: title ?? nameFromFqn(id),
+      ...(metadata && { metadata }),
+      ...(tags && { tags }),
+      ...(links && isNonEmptyArray(links) && { links }),
+      ...(isTruthy(technology) && { technology }),
+      ...(isTruthy(description) && { description }),
+      style
     }
   }
 
   public parseDeployedInstance(
     astNode: ast.DeployedInstance,
-    _isValid: IsValidFn
-  ): c4.DeployedInstance {
+    isValid: IsValidFn
+  ): ParsedAstDeployment.Instance {
     const id = this.resolveFqn(astNode)
     const element = this.resolveFqn(nonNullable(elementRef(astNode.element), 'DeployedInstance element not found'))
+
+    const tags = this.convertTags(astNode.body)
+    const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
+    const style = toElementStyle(stylePropsAst, isValid)
+    const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+
+    const bodyProps = pipe(
+      astNode.body?.props ?? [],
+      filter(isValid),
+      filter(ast.isElementStringProperty),
+      mapToObj(p => [p.key, p.value || undefined])
+    )
+
+    const title = toSingleLine(astNode.title ?? bodyProps.title)
+    const description = removeIndent(bodyProps.description)
+    const technology = toSingleLine(bodyProps.technology)
+
+    const links = this.convertLinks(astNode.body)
+
+    // Property has higher priority than from style
+    const iconProp = astNode.body?.props.find(ast.isIconProperty)
+    if (iconProp && isValid(iconProp)) {
+      const value = iconProp.libicon?.ref?.name ?? iconProp.value
+      if (isTruthy(value)) {
+        style.icon = value as c4.IconUrl
+      }
+    }
+
     return {
       id,
-      element
+      element,
+      ...(metadata && { metadata }),
+      ...(title && { title }),
+      ...(tags && { tags }),
+      ...(links && isNonEmptyArray(links) && { links }),
+      ...(isTruthy(technology) && { technology }),
+      ...(isTruthy(description) && { description }),
+      style
     }
   }
 

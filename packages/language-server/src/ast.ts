@@ -6,10 +6,10 @@ import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
-import { elementRef } from './elementRef'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
+import { elementRef } from './utils/elementRef'
 
 export { ast }
 
@@ -62,7 +62,7 @@ export interface ParsedAstSpecification {
       color: c4.HexColorLiteral
     }
   >
-  deploymentNodes: Array<c4.DeploymentNodeKind>
+  deployments: Record<c4.DeploymentNodeKind, c4.DeploymentNodeKindSpecification>
 }
 
 export interface ParsedAstElement {
@@ -95,6 +95,13 @@ export interface ParsedAstRelation {
   links?: c4.NonEmptyArray<ParsedLink>
   navigateTo?: c4.ViewID
   metadata?: { [key: string]: string }
+}
+
+// Alias for easier refactoring
+export type ParsedAstDeployment = c4.PhysicalElement
+export namespace ParsedAstDeployment {
+  export type Node = c4.DeploymentNode
+  export type Instance = c4.DeployedInstance
 }
 
 // export interface ParsedAstGlobals {
@@ -193,7 +200,7 @@ export interface LikeC4DocumentProps {
   c4Relations?: ParsedAstRelation[]
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
-  c4Deployments?: c4.PhysicalElement[]
+  c4Deployments?: ParsedAstDeployment[]
   // Fqn -> Element
   c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
@@ -212,7 +219,7 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
       elements: {},
       relationships: {},
       colors: {},
-      deploymentNodes: []
+      deployments: {}
     },
     c4Elements: [],
     c4Relations: [],

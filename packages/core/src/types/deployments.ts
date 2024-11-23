@@ -1,13 +1,34 @@
-import type { Merge, MergeExclusive, Simplify, Tagged, UnionToIntersection, Writable } from 'type-fest'
-import type { Fqn, Tag } from './element'
+import type { MergeExclusive, Simplify, Tagged, UnionToIntersection } from 'type-fest'
+import type { IconUrl, NonEmptyArray } from './_common'
+import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
+import type { Color } from './theme'
 
 export type DeploymentNodeKind<Kinds extends string = string> = Tagged<Kinds, 'DeploymentNodeKind'>
+
+export type PhysicalElementStyle = ElementStyle & {
+  readonly icon?: IconUrl
+  readonly shape?: ElementShape
+  readonly color?: Color
+}
+
+export interface DeploymentNodeKindSpecification {
+  readonly technology?: string
+  readonly notation?: string
+  readonly style: PhysicalElementStyle
+}
 
 export interface DeploymentNode {
   // Full-qualified-name for Deployment model
   readonly id: Fqn
   readonly kind: DeploymentNodeKind
   readonly title: string
+  readonly description?: string | null
+  readonly technology?: string | null
+  readonly tags?: NonEmptyArray<Tag> | null
+  readonly links?: NonEmptyArray<Link> | null
+  readonly style?: PhysicalElementStyle
+  readonly notation?: string
+  readonly metadata?: Record<string, string>
 }
 
 export interface DeployedInstance {
@@ -17,6 +38,14 @@ export interface DeployedInstance {
    */
   readonly id: Fqn
   readonly element: Fqn
+  readonly title?: string
+  readonly description?: string | null
+  readonly technology?: string | null
+  readonly tags?: NonEmptyArray<Tag> | null
+  readonly links?: NonEmptyArray<Link> | null
+  readonly style?: PhysicalElementStyle
+  readonly notation?: string
+  readonly metadata?: Record<string, string>
 }
 
 export type PhysicalElement = Simplify<MergeExclusive<DeploymentNode, DeployedInstance>>

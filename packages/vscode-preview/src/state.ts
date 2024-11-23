@@ -100,7 +100,8 @@ const EMPTY: ComputedLikeC4Model = {
   specification: {
     tags: [],
     elements: {},
-    relationships: {}
+    relationships: {},
+    deployments: {}
   },
   elements: {},
   relations: {},

@@ -105,8 +105,8 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
     view: currentView,
     renderIcon,
     onNavigateTo,
-    onOpenSourceElement: onOpenSource
-  } = useDiagramState(pick(['view', 'renderIcon', 'onNavigateTo', 'onOpenSourceElement']))
+    onOpenSource
+  } = useDiagramState(pick(['view', 'renderIcon', 'onNavigateTo', 'onOpenSource']))
   const diagramNode = currentView.nodes.find(n => n.id === fqn)
   invariant(diagramNode, `DiagramNode with fqn ${fqn} not found`)
 
@@ -344,7 +344,9 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                         radius="sm"
                         onClick={e => {
                           e.stopPropagation()
-                          diagramApi.getState().onOpenSourceElement?.(fqn)
+                          diagramApi.getState().onOpenSource?.({
+                            element: fqn
+                          })
                         }}
                       >
                         <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />

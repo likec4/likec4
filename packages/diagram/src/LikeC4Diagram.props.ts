@@ -191,6 +191,22 @@ export interface LikeC4DiagramProperties {
   where?: WhereOperator<string, string> | undefined
 }
 
+export type OpenSourceParams =
+  | {
+    element: Fqn
+    property?: string
+  }
+  | {
+    relation: RelationID
+  }
+  | {
+    deployment: Fqn
+    property?: string
+  }
+  | {
+    view: ViewID
+  }
+
 export interface LikeC4DiagramEventHandlers {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo | null | undefined
@@ -205,12 +221,5 @@ export interface LikeC4DiagramEventHandlers {
   // if set, will render a burger menu icon in the top left corner
   onBurgerMenuClick?: null | undefined | (() => void)
 
-  // if set, will render a source code icon in the top left corner
-  onOpenSourceView?: null | undefined | (() => void)
-
-  // if set, will render an icon in properties webview for each element
-  onOpenSourceElement?: null | undefined | ((fqn: Fqn) => void)
-
-  // if set, will be called on edge click
-  onOpenSourceRelation?: null | undefined | ((id: RelationID) => void)
+  onOpenSource?: null | undefined | ((params: OpenSourceParams) => void)
 }

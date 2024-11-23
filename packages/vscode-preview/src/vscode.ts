@@ -31,19 +31,7 @@ export const ExtensionApi = {
   fetchComputedModel: () => messenger.sendRequest(FetchComputedModel, HOST_EXTENSION),
 
   // Layoted vuew
-  fetchDiagramView: (viewId: ViewID) => messenger.sendRequest(FetchDiagramView, HOST_EXTENSION, viewId),
-
-  goToElement: (element: Fqn) => {
-    ExtensionApi.locate({ element })
-  },
-
-  goToRelation: (relation: RelationID) => {
-    ExtensionApi.locate({ relation })
-  },
-
-  goToViewSource: (view: ViewID) => {
-    ExtensionApi.locate({ view })
-  }
+  fetchDiagramView: (viewId: ViewID) => messenger.sendRequest(FetchDiagramView, HOST_EXTENSION, viewId)
 }
 
 export function getVscodeState(): VscodeState {

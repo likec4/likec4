@@ -103,16 +103,8 @@ export function WorkspaceDiagramPage() {
             })
           }}
           onChange={ev => store.getState().onChanges(ev)}
-          onOpenSourceElement={fqn => {
-            showLocation({ element: fqn })
-          }}
-          onOpenSourceRelation={id => {
-            showLocation({ relation: id })
-          }}
-          onOpenSourceView={() => {
-            showLocation({
-              view: diagram.id
-            })
+          onOpenSource={params => {
+            showLocation(params)
           }}
         />
         {error && (

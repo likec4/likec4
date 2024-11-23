@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import type { ast } from './ast'
+import type { ast } from '../ast'
 /**
  * Returns referenced AST Element
  */

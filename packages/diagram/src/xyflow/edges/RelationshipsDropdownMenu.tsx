@@ -175,7 +175,7 @@ const Relationship = forwardRef<
     hasOnNavigateTo
   } = useDiagramState(s => ({
     viewId: s.view.id,
-    hasOnOpenSourceRelation: !!s.onOpenSourceRelation,
+    hasOnOpenSourceRelation: !!s.onOpenSource,
     hasOnNavigateTo: !!s.onNavigateTo
   }))
   const sourceId = nameFromFqn(edge.source) + r.source.id.slice(edge.source.length)
@@ -223,7 +223,9 @@ const Relationship = forwardRef<
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
                     event.stopPropagation()
-                    diagramApi.getState().onOpenSourceRelation?.(r.id)
+                    diagramApi.getState().onOpenSource?.({
+                      relation: r.id
+                    })
                   }}
                   role="button"
                 >

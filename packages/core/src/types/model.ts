@@ -1,4 +1,10 @@
-import type { PhysicalElement, PhysicalRelation, PhysicalRelationId } from './deployments'
+import type {
+  DeploymentNodeKind,
+  DeploymentNodeKindSpecification,
+  PhysicalElement,
+  PhysicalRelation,
+  PhysicalRelationId
+} from './deployments'
 import type { ElementKindSpecification, Fqn, Tag, TypedElement } from './element'
 import type { ModelGlobals } from './global'
 import type { Relation, RelationID, RelationshipKindSpecification } from './relation'
@@ -17,6 +23,7 @@ export interface ParsedLikeC4Model<
   specification: {
     tags: Tag<Tags>[]
     elements: Record<ElementKinds, ElementKindSpecification>
+    deployments: Record<DeploymentNodeKind, DeploymentNodeKindSpecification>
     relationships: Record<RelationKinds, RelationshipKindSpecification>
   }
   elements: Record<Fqns, TypedElement<Fqns, ElementKinds, Tags>>

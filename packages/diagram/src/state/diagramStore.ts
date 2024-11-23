@@ -20,6 +20,7 @@ import {
   nonNullable,
   StepEdgeId
 } from '@likec4/core'
+import { IconColumns1 } from '@tabler/icons-react'
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -192,6 +193,8 @@ export type DiagramState = Simplify<
 
     resetEdgeControlPoints: () => void
     align: (mode: AlignmentMode) => void
+
+    onOpenSourceView: () => void
   }
 >
 
@@ -850,6 +853,13 @@ export function createDiagramStore(props: DiagramInitialState) {
               )
               onNavigateTo(stepForward.viewId)
             }
+          },
+
+          onOpenSourceView: () => {
+            const { view, onOpenSource } = get()
+            onOpenSource?.({
+              view: view.id
+            })
           },
 
           openOverlay: (overlay) => {

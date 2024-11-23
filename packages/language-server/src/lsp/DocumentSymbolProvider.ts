@@ -4,9 +4,9 @@ import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
 import { ast, type LikeC4LangiumDocument } from '../ast'
-import { getFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { getFqnElementRef } from '../utils/elementRef'
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected readonly nodeKindProvider: NodeKindProvider

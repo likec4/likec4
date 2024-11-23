@@ -1,9 +1,9 @@
 import { isAncestor } from '@likec4/core'
 import type { ValidationCheck } from 'langium'
 import { ast } from '../ast'
-import { elementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { elementRef } from '../utils/elementRef'
 
 export const dynamicViewStep = (services: LikeC4Services): ValidationCheck<ast.DynamicViewStep> => {
   const fqnIndex = services.likec4.FqnIndex
