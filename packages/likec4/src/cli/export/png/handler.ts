@@ -68,6 +68,8 @@ export async function exportViewsToPNG(
     deviceScaleFactor: 2,
     colorScheme: theme,
     baseURL: serverUrl,
+    ignoreHTTPSErrors: true,
+    reducedMotion: 'reduce',
     isMobile: false
   })
   browserContext.setDefaultNavigationTimeout(timeoutMs)
