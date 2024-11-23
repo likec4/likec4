@@ -1,0 +1,77 @@
+specification {
+  deploymentNode node
+  deploymentNode zone
+  deploymentNode environment {
+    style {
+      color gray
+      opacity 0%
+    }
+  }
+}
+
+deployment {
+
+  node customer {
+    instanceOf customer
+  }
+
+  environment prod 'Production' {
+    eu = zone 'EU' {
+      zone zone1 {
+        instanceOf saas.ui
+        instanceOf saas.backend
+      }
+      zone zone2 {
+        instanceOf saas.ui
+        instanceOf saas.backend
+      }
+    }
+
+    us = zone 'US' {
+      zone zone1 {
+        instanceOf saas.ui
+        instanceOf saas.backend
+      }
+      zone zone2 {
+        instanceOf saas.ui
+        instanceOf saas.backend
+      }
+    }
+
+    instanceOf firebase
+  }
+
+}
+
+views {
+  deployment view index {
+    title 'Untitled'
+
+    include
+      customer,
+      prod._,
+      // prod.firebase,
+      // eu,
+      eu._,
+      eu.zone1.*,
+      eu.zone2.*,
+      // us,
+      us._,
+      us.zone1.*,
+      us.zone2.*,
+      // ,
+      //us.zone1.*,
+      //us.zone2.*
+
+    exclude
+      eu <-> us,
+      // eu.* <-> us._,
+      // us.* <-> eu._,
+      // eu.* <-> us.*,
+      eu.zone1._ <-> eu.zone2._,
+      us.zone1._ <-> us.zone2._,
+    //      us.zone1._ <-> us.zone2.*,
+    //      eu.* <-> us.*
+
+	}
+}

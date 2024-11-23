@@ -597,9 +597,11 @@ DeploymentViewRuleStyle:
 
 DeploymentViewRulePredicate:
   (isInclude?='include' | 'exclude')
-  expr=DeploymentExpression (
-    {infer DeploymentViewRulePredicate.prev=current} ',' (expr=DeploymentExpression)?
-  )*
+  expr=DeploymentViewRulePredicateExpression
+;
+
+DeploymentViewRulePredicateExpression:
+  value=DeploymentExpression ({infer DeploymentViewRulePredicateExpression.prev=current} ',' (value=DeploymentExpression)?)*
 ;
 
 DeploymentExpression:

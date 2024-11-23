@@ -1330,27 +1330,25 @@ export class LikeC4ModelParser {
     isValid: IsValidFn
   ): c4.DeploymentViewRulePredicate {
     const exprs = [] as c4.DeploymentExpression[]
-    while (true) {
+    let iterator: ast.DeploymentViewRulePredicateExpression | undefined = astRule.expr
+    while (iterator) {
       try {
-        if (isValid(astRule.expr)) {
+        if (isValid(iterator.value)) {
           switch (true) {
-            case ast.isDeploymentElementExpression(astRule.expr):
-              exprs.unshift(this.parseDeploymentElementExpression(astRule.expr))
+            case ast.isDeploymentElementExpression(iterator.value):
+              exprs.unshift(this.parseDeploymentElementExpression(iterator.value))
               break
-            case ast.isDeploymentRelationExpression(astRule.expr):
-              exprs.unshift(this.parseDeploymentRelationExpression(astRule.expr))
+            case ast.isDeploymentRelationExpression(iterator.value):
+              exprs.unshift(this.parseDeploymentRelationExpression(iterator.value))
               break
             default:
-              nonexhaustive(astRule.expr)
+              nonexhaustive(iterator.value)
           }
         }
       } catch (e) {
         logWarnError(e)
       }
-      if (!astRule.prev) {
-        break
-      }
-      astRule = astRule.prev
+      iterator = iterator.prev
     }
     return astRule.isInclude ? { include: exprs } : { exclude: exprs }
   }

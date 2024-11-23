@@ -1,6 +1,5 @@
 import { nonexhaustive } from '../../errors'
 import { DeploymentElementExpression, type Fqn } from '../../types'
-import { parentFqn } from '../../utils'
 
 type Predicate<T> = (x: T) => boolean
 
@@ -13,7 +12,7 @@ export function deploymentExpressionToPredicate<T extends { id: Fqn }>(
   if (DeploymentElementExpression.isRef(target)) {
     const fqn = target.ref.instance ?? target.ref.node
     if (target.isExpanded) {
-      return n => n.id === fqn || parentFqn(n.id) === fqn
+      return n => n.id === fqn || n.id.startsWith(fqn + '.')
     }
     if (target.isNested) {
       return n => n.id.startsWith(fqn + '.')

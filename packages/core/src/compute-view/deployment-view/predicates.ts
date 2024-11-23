@@ -7,16 +7,13 @@ import type { DeploymentViewComputeCtx } from './compute'
 
 type DeploymentElement = LikeC4DeploymentGraph.Element
 
+const isInstance = LikeC4DeploymentGraph.isInstance
+
 export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...expr }: Expr.Ref) {
   const currentElements = [...ctx.resolvedElements]
 
   if ('node' in ref) {
     const node = ctx.graph.node(ref.node)
-
-    // if node is in currentElements and implicit - make it explicit
-    if (ctx.isImplicit(node)) {
-      ctx.addElement(node)
-    }
 
     if (expr.isExpanded) {
       // const implicits = ctx.graph.allNestedInstances(node)
@@ -96,29 +93,35 @@ export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...ex
       //   )
       // }
       const implicits = ctx.graph.children(node)
-      ctx.addImplicit(node)
       ctx.addImplicit(...implicits)
 
       const edges = [...ctx.graph.anyEdgesBetween(node, currentElements)]
+      const includedImplicits = new Set<DeploymentElement>(implicits.filter(implicit => isInstance(implicit)))
+      for (const implicit of implicits) {
+        const edgesWithImplicit = [...ctx.graph.anyEdgesBetween(implicit, currentElements)]
+        if (edgesWithImplicit.length > 0) {
+          includedImplicits.add(implicit)
+          edges.push(...edgesWithImplicit)
+        }
+      }
+      if (includedImplicits.size > 1) {
+        edges.push(...ctx.graph.edgesWithin(includedImplicits))
+      }
       if (edges.length > 0) {
         ctx.addElement(node)
-        const includedImplicits = [] as DeploymentElement[]
-        for (const implicit of implicits) {
-          const edgesWithImplicit = [...ctx.graph.anyEdgesBetween(implicit, currentElements)]
-          if (edgesWithImplicit.length > 0) {
-            includedImplicits.push(implicit)
-            edges.push(...edgesWithImplicit)
-          }
-        }
-        if (includedImplicits.length > 0) {
-          edges.push(...ctx.graph.edgesWithin(includedImplicits))
-        }
         ctx.addEdges(edges)
+      } else {
+        ctx.addImplicit(node)
       }
+
       return
     }
 
     if (expr.isNested) {
+      // if node is in currentElements and implicit - make it explicit
+      if (ctx.isImplicit(node)) {
+        ctx.addElement(node)
+      }
       let elements = ctx.graph.children(node)
       if (elements.length > 1) {
         ctx.addEdges(ctx.graph.edgesWithin(elements))
@@ -165,7 +168,11 @@ export function excludeDeploymentRef(ctx: DeploymentViewComputeCtx, expr: Expr.R
 }
 
 export function includeWildcard(ctx: DeploymentViewComputeCtx) {
-  const root = ctx.graph.rootNodes()
+  const root = ctx.graph.rootNodes().map(node => {
+    const [child, ...rest] = ctx.graph.children(node)
+    // If there is only one child and it is a Instance, return it
+    return !!child && rest.length === 0 && isInstance(child) ? child : node
+  })
   ctx.addElement(...root)
   if (root.length > 1) {
     ctx.addEdges(ctx.graph.edgesWithin(root))
@@ -189,10 +196,10 @@ function resolveElements(ctx: DeploymentViewComputeCtx, expr: Expr) {
     const node = ctx.graph.node(expr.ref.node)
     if (expr.isNested) {
       const children = ctx.graph.children(node)
-      return children.length ? children : [node]
+      return children.length > 0 ? children : [node]
     }
     if (expr.isExpanded) {
-      return [node, ...ctx.graph.children(node)]
+      return [...ctx.graph.children(node), node]
     }
     return [node]
   }
@@ -230,11 +237,8 @@ export function excludeDirectRelation(ctx: DeploymentViewComputeCtx, expr: Deplo
     filter(edge =>
       (isSource(edge.source) && isTarget(edge.target))
       || (expr.isBidirectional === true && isSource(edge.target) && isTarget(edge.source))
-    ),
-    map(edge => [edge.source, edge.target] as const)
+    )
+    // map(edge => [edge.source, edge.target] as const)
   )
   ctx.removeEdges(edges)
-  ctx.excludeImplicit(
-    ...ctx.implicits.filter(e => isSource(e) || isTarget(e))
-  )
 }

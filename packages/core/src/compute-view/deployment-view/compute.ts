@@ -2,6 +2,7 @@ import {
   filter,
   flatMap,
   hasAtLeast,
+  isDeepEqual,
   isEmpty,
   isNonNullish,
   isTruthy,
@@ -35,6 +36,7 @@ import type {
   ViewID
 } from '../../types'
 import {
+  DefaultArrowType,
   DeploymentElementExpression,
   DeploymentExpression,
   DeploymentRelationExpression,
@@ -219,115 +221,56 @@ export class DeploymentViewComputeCtx {
   }
 
   protected computeEdges(): ComputedEdge[] {
-    return this._edges.map((e): ComputedEdge => {
+    return this._edges.reduce((acc, e) => {
       // invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
       const relations = sort([...e.relations], compareRelations)
       const source = e.source.id
       const target = e.target.id
+
+      const tags = uniqueTags(relations)
+      // Most closest relation
+      const relation = only(relations) // || relations.find(r => r.source === source && r.target === target)
+
+      // This edge represents mutliple relations
+      // We use label if only it is the same for all relations
+      const title = isTruthy(relation?.title) ? relation.title : pipe(
+        relations,
+        map(r => r.title),
+        filter(isTruthy),
+        unique(),
+        only()
+      )
+
+      const navigateTo = !!relation?.navigateTo ? relation.navigateTo : pipe(
+        relations,
+        map(r => r.navigateTo),
+        filter(isTruthy),
+        unique(),
+        only()
+      )
 
       const edge: ComputedEdge = {
         id: `${source}:${target}` as EdgeId,
         parent: commonAncestor(source, target),
         source,
         target,
-        label: null,
-        relations: relations.map(r => r.id)
+        label: title ?? null,
+        relations: relations.map(r => r.id),
+        ...tags && { tags: tags as NonEmptyArray<Tag> },
+        ...navigateTo && { navigateTo }
       }
 
-      let relation: {
-        // TODO refactor with type-fest
-        title: string
-        description?: string | undefined
-        technology?: string | undefined
-        kind?: RelationshipKind | undefined
-        color?: Color | undefined
-        line?: RelationshipLineType | undefined
-        head?: RelationshipArrowType | undefined
-        tail?: RelationshipArrowType | undefined
-        tags?: NonEmptyArray<Tag>
-        navigateTo?: ViewID | undefined
-      } | undefined
-      relation = only(relations) ?? pipe(
-        relations,
-        filter(r => r.source === source && r.target === target),
-        only()
-      )
-
-      // This edge represents mutliple relations
-      // We use label if only it is the same for all relations
-      if (!relation) {
-        const allprops = pipe(
-          relations,
-          reduce((acc, r) => {
-            if (isTruthy(r.title) && !acc.title.includes(r.title)) {
-              acc.title.push(r.title)
-            }
-            if (isTruthy(r.description) && !acc.description.includes(r.description)) {
-              acc.description.push(r.description)
-            }
-            if (isTruthy(r.technology) && !acc.technology.includes(r.technology)) {
-              acc.technology.push(r.technology)
-            }
-            if (isTruthy(r.kind) && !acc.kind.includes(r.kind)) {
-              acc.kind.push(r.kind)
-            }
-            if (isTruthy(r.color) && !acc.color.includes(r.color)) {
-              acc.color.push(r.color)
-            }
-            if (isTruthy(r.line) && !acc.line.includes(r.line)) {
-              acc.line.push(r.line)
-            }
-            if (isTruthy(r.head) && !acc.head.includes(r.head)) {
-              acc.head.push(r.head)
-            }
-            if (isTruthy(r.tail) && !acc.tail.includes(r.tail)) {
-              acc.tail.push(r.tail)
-            }
-            if (isTruthy(r.navigateTo) && !acc.navigateTo.includes(r.navigateTo)) {
-              acc.navigateTo.push(r.navigateTo)
-            }
-            return acc
-          }, {
-            title: [] as string[],
-            description: [] as string[],
-            technology: [] as string[],
-            kind: [] as RelationshipKind[],
-            head: [] as RelationshipArrowType[],
-            tail: [] as RelationshipArrowType[],
-            color: [] as Color[],
-            line: [] as RelationshipLineType[],
-            navigateTo: [] as ViewID[]
-          })
-        )
-        relation = {
-          title: only(allprops.title) ?? '[...]',
-          description: only(allprops.description),
-          technology: only(allprops.technology),
-          kind: only(allprops.kind),
-          head: only(allprops.head),
-          tail: only(allprops.tail),
-          color: only(allprops.color),
-          line: only(allprops.line),
-          navigateTo: only(allprops.navigateTo)
-        }
+      // If exists same edge but in opposite direction
+      const existing = acc.find(e => e.source === target && e.target === source)
+      if (existing && isDeepEqual(existing.relations, edge.relations)) {
+        existing.head = DefaultArrowType
+        existing.tail = DefaultArrowType
+        return acc
       }
 
-      const tags = uniqueTags(relations)
-
-      return Object.assign(
-        edge,
-        this.getEdgeLabel(relation),
-        isTruthy(relation.description) && { description: relation.description },
-        isTruthy(relation.technology) && { technology: relation.technology },
-        isTruthy(relation.kind) && { kind: relation.kind },
-        relation.color && { color: relation.color },
-        relation.line && { line: relation.line },
-        relation.head && { head: relation.head },
-        relation.tail && { tail: relation.tail },
-        relation.navigateTo && { navigateTo: relation.navigateTo },
-        tags && { tags }
-      )
-    })
+      acc.push(edge)
+      return acc
+    }, [] as ComputedEdge[])
   }
 
   /**
@@ -455,9 +398,7 @@ export class DeploymentViewComputeCtx {
         _e => _e.source.id === e.source.id && _e.target.id === e.target.id
       )
       if (existing) {
-        for (const rel of e.relations) {
-          existing.relations.add(rel)
-        }
+        existing.relations = new Set([...existing.relations, ...e.relations])
         added.push(existing)
         continue
       }
@@ -467,16 +408,15 @@ export class DeploymentViewComputeCtx {
     return added as ReadonlyArray<DeploymentEdge>
   }
 
-  public removeEdges(pairs: ReadonlyArray<readonly [source: DeploymentElement, target: DeploymentElement]>) {
+  public removeEdges<E extends Pick<DeploymentEdge, 'source' | 'target'>>(edges: ReadonlyArray<E>) {
     const ids = pipe(
-      pairs,
-      flatMap(([source, target]) => [
-        [source, target],
-        ...this.ancestors(source.id).map(e => [e, target] as const),
-        ...this.ancestors(target.id).map(e => [source, e] as const)
-      ]),
-      map(([source, target]) => `${source.id}:${target.id}`),
-      unique()
+      edges,
+      // flatMap(([source, target]) => [
+      //   [source, target],
+      //   ...this.ancestors(source.id).map(e => [e, target] as const),
+      //   ...this.ancestors(target.id).map(e => [source, e] as const)
+      // ]),
+      map(({ source, target }) => `${source.id}:${target.id}`)
     )
     const removed = [] as DeploymentEdge[]
     this._edges = this._edges.reduce((acc, e) => {
@@ -486,7 +426,7 @@ export class DeploymentViewComputeCtx {
       }
       acc.push(e)
       return acc
-    }, [] as DeploymentEdge[])
+    }, removed.slice())
     return removed as ReadonlyArray<DeploymentEdge>
   }
 

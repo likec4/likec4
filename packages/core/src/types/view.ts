@@ -1,7 +1,7 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { DeployedInstance, DeploymentExpression, DeploymentNodeKind } from './deployments'
+import type { DeploymentExpression } from './deployments'
 import {
   type BorderStyle,
   ElementKind,

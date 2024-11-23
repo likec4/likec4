@@ -1,0 +1,60 @@
+specification {
+  element actor
+  element system
+  element component
+}
+
+model {
+  customer = actor 'Customer' {
+    description 'The regular customer of the system'
+  }
+
+  saas = system 'Our SaaS' {
+    component ui 'Frontend' {
+      description 'Nextjs application, hosted on Vercel'
+      style {
+        icon tech:nextjs
+        shape browser
+      }
+    }
+    component backend 'Backend Services' {
+      description '
+        Implements business logic
+        and exposes as REST API
+      '
+      -> firebase 'reads/writes'
+    }
+
+    // UI requests data from the Backend
+    ui -> backend 'fetches via HTTPS'
+  }
+
+  firebase = system 'Firebase' {
+    icon tech:firebase
+  }
+
+  // Customer uses the UI
+  customer -> ui 'opens in browser'
+  customer -> saas 'enjoys our product'
+}
+
+views {
+
+  view overview {
+    title 'Landscape view'
+
+    include *
+  }
+
+  view saas of saas {
+    include *
+
+    style * {
+      opacity 25%
+    }
+    style customer {
+      color muted
+    }
+  }
+
+}

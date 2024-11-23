@@ -8,7 +8,7 @@ import {
   PhysicalElement,
   type Relation
 } from '../types'
-import { getOrCreate, isSameHierarchy, parentFqn, sortNaturalByFqn } from '../utils'
+import { commonAncestor, getOrCreate, isSameHierarchy, parentFqn, sortNaturalByFqn } from '../utils'
 import { intersection, type LikeC4ModelGraph } from './LikeC4ModelGraph'
 
 type Params = {
@@ -152,7 +152,7 @@ export class LikeC4DeploymentGraph {
 
   public allNestedInstances(element: FqnOrElement) {
     const el = isString(element) ? this.element(element) : element
-    if (el instanceof LikeC4DeploymentGraph.Instance) {
+    if (LikeC4DeploymentGraph.isInstance(el)) {
       return [el]
     }
     const id = el.id
@@ -161,7 +161,7 @@ export class LikeC4DeploymentGraph {
       const descendants = [...this.children(id)]
       let child
       while (child = descendants.shift()) {
-        if (child instanceof LikeC4DeploymentGraph.Instance) {
+        if (LikeC4DeploymentGraph.isInstance(child)) {
           instances.push(child)
         } else {
           descendants.push(...this.children(child.id))
@@ -378,6 +378,22 @@ export class LikeC4DeploymentGraph {
 }
 
 export namespace LikeC4DeploymentGraph {
+  export function mkedge(edge: { source: Element; target: Element; relations: Set<Relation> }): Edge {
+    const parentId = commonAncestor(edge.source.id, edge.target.id)
+    const parentDepth = parentId ? parentId.split('.').length : 0
+    const sourceDepth = edge.source.id.split('.').length - parentDepth
+    const targetDepth = edge.target.id.split('.').length - parentDepth
+
+    return {
+      ...edge,
+      parentId
+    }
+  }
+
+  export const isInstance = (el: Element): el is Instance => {
+    return el instanceof Instance
+  }
+
   export type Element = DeploymentNode | Instance
 
   export class Instance {
@@ -397,5 +413,6 @@ export namespace LikeC4DeploymentGraph {
     source: Element
     target: Element
     relations: Set<Relation>
+    parentId?: Fqn | null
   }
 }
