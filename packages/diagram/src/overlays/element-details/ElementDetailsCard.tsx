@@ -345,7 +345,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                         onClick={e => {
                           e.stopPropagation()
                           diagramApi.getState().onOpenSource?.({
-                            element: fqn
+                            element: elementModel.id
                           })
                         }}
                       >

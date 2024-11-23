@@ -70,7 +70,8 @@
   },
   "dependencies": {
     "defu": "^6.1.4",
-    "type-fest": "4.26.1"
+    "type-fest": "4.26.1",
+    "remeda": "^2.16.0"
   },
   "devDependencies": {
     "@dagrejs/dagre": "^1.1.4",
@@ -82,7 +83,6 @@
     "execa": "^9.3.1",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
-    "remeda": "^2.16.0",
     "turbo": "^2.2.3",
     "typescript": "^5.6.3",
     "unbuild": "^3.0.0-rc.11",

@@ -1333,7 +1333,16 @@ export class LikeC4ModelParser {
     while (true) {
       try {
         if (isValid(astRule.expr)) {
-          exprs.unshift(this.parseDeploymentExpression(astRule.expr))
+          switch (true) {
+            case ast.isDeploymentElementExpression(astRule.expr):
+              exprs.unshift(this.parseDeploymentElementExpression(astRule.expr))
+              break
+            case ast.isDeploymentRelationExpression(astRule.expr):
+              exprs.unshift(this.parseDeploymentRelationExpression(astRule.expr))
+              break
+            default:
+              nonexhaustive(astRule.expr)
+          }
         }
       } catch (e) {
         logWarnError(e)
@@ -1346,7 +1355,7 @@ export class LikeC4ModelParser {
     return astRule.isInclude ? { include: exprs } : { exclude: exprs }
   }
 
-  private parseDeploymentExpression(astNode: ast.DeploymentExpression): c4.DeploymentExpression {
+  private parseDeploymentElementExpression(astNode: ast.DeploymentElementExpression): c4.DeploymentExpression {
     if (ast.isWildcardExpression(astNode)) {
       return {
         wildcard: true
@@ -1372,6 +1381,34 @@ export class LikeC4ModelParser {
     nonexhaustive(astNode)
   }
 
+  private parseDeploymentRelationExpression(
+    astNode: ast.DeploymentRelationExpression
+  ): c4.DeploymentRelationExpression {
+    if (ast.isDirectedDeploymentRelationExpression(astNode)) {
+      return {
+        source: this.parseDeploymentElementExpression(astNode.source.from),
+        target: this.parseDeploymentElementExpression(astNode.target),
+        isBidirectional: astNode.source.isBidirectional
+      }
+    }
+    if (ast.isInOutDeploymentRelationExpression(astNode)) {
+      return {
+        inout: this.parseDeploymentElementExpression(astNode.inout.to)
+      }
+    }
+    if (ast.isOutgoingDeploymentRelationExpression(astNode)) {
+      return {
+        outgoing: this.parseDeploymentElementExpression(astNode.from)
+      }
+    }
+    if (ast.isIncomingDeploymentRelationExpression(astNode)) {
+      return {
+        incoming: this.parseDeploymentElementExpression(astNode.to)
+      }
+    }
+    nonexhaustive(astNode)
+  }
+
   private parseDeploymentExpressionIterator(
     astNode: ast.DeploymentExpressionIterator,
     isValid: IsValidFn
@@ -1381,7 +1418,7 @@ export class LikeC4ModelParser {
     while (iter) {
       try {
         if (isValid(astNode.value)) {
-          exprs.unshift(this.parseDeploymentExpression(astNode.value))
+          exprs.unshift(this.parseDeploymentElementExpression(astNode.value))
         }
       } catch (e) {
         logWarnError(e)

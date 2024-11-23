@@ -1,7 +1,8 @@
-import { flatMap } from 'remeda'
-import { DeploymentExpression as Expr } from '../../types/deployments'
+import { filter, flatMap, map, pipe } from 'remeda'
+import { DeploymentElementExpression as Expr, type DeploymentRelationExpression } from '../../types/deployments'
 import { isAncestor } from '../../utils'
 import { LikeC4DeploymentGraph } from '../LikeC4DeploymentGraph'
+import { deploymentExpressionToPredicate } from '../utils/deploymentExpressionToPredicate'
 import type { DeploymentViewComputeCtx } from './compute'
 
 type DeploymentElement = LikeC4DeploymentGraph.Element
@@ -157,32 +158,10 @@ export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...ex
   }
 }
 
-export function excludeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...expr }: Expr.Ref) {
-  let elements
-  switch (true) {
-    case 'instance' in ref:
-      elements = [ctx.graph.instance(ref.instance)]
-      break
-    case expr.isExpanded:
-      elements = [
-        ctx.graph.node(ref.node),
-        ...ctx.graph.children(ref.node)
-      ]
-      break
-    case expr.isNested:
-      elements = ctx.graph.children(ref.node)
-      break
-    default:
-      elements = [ctx.graph.node(ref.node)]
-      break
-  }
-  ctx.excludeElement(...elements)
-
-  // const elements = [...this.resolvedElements].filter(allPass([
-  //   elementExprToPredicate(expr),
-  //   where
-  // ]))
-  // this.excludeElement(...elements)
+export function excludeDeploymentRef(ctx: DeploymentViewComputeCtx, expr: Expr.Ref) {
+  ctx.excludeElement(
+    ...resolveElements(ctx, expr)
+  )
 }
 
 export function includeWildcard(ctx: DeploymentViewComputeCtx) {
@@ -192,6 +171,7 @@ export function includeWildcard(ctx: DeploymentViewComputeCtx) {
     ctx.addEdges(ctx.graph.edgesWithin(root))
   }
   const children = flatMap(root, n => ctx.graph.children(n))
+  ctx.addImplicit(...children)
   if (children.length > 1) {
     ctx.addEdges(ctx.graph.edgesWithin(children))
   }
@@ -199,4 +179,62 @@ export function includeWildcard(ctx: DeploymentViewComputeCtx) {
 
 export function excludeWildcard(ctx: DeploymentViewComputeCtx) {
   ctx.reset()
+}
+
+function resolveElements(ctx: DeploymentViewComputeCtx, expr: Expr) {
+  if (Expr.isWildcard(expr)) {
+    return ctx.graph.rootNodes()
+  }
+  if ('node' in expr.ref) {
+    const node = ctx.graph.node(expr.ref.node)
+    if (expr.isNested) {
+      const children = ctx.graph.children(node)
+      return children.length ? children : [node]
+    }
+    if (expr.isExpanded) {
+      return [node, ...ctx.graph.children(node)]
+    }
+    return [node]
+  }
+
+  return [ctx.graph.instance(expr.ref.instance)]
+}
+
+export function includeDirectRelation(ctx: DeploymentViewComputeCtx, expr: DeploymentRelationExpression.Direct) {
+  const sources = resolveElements(ctx, expr.source)
+  const targets = resolveElements(ctx, expr.target)
+  if (sources.length === 0 || targets.length === 0) {
+    return
+  }
+
+  const edges = [] as LikeC4DeploymentGraph.Edge[]
+  for (const source of sources) {
+    let newedges = ctx.graph.anyEdgesBetween(source, targets)
+    if (newedges.length === 0) {
+      continue
+    }
+    if (expr.isBidirectional !== true) {
+      newedges = newedges.filter(edge => edge.source.id === source.id)
+    }
+    edges.push(...newedges)
+  }
+
+  ctx.addEdges(edges)
+}
+
+export function excludeDirectRelation(ctx: DeploymentViewComputeCtx, expr: DeploymentRelationExpression.Direct) {
+  const isSource = deploymentExpressionToPredicate(expr.source)
+  const isTarget = deploymentExpressionToPredicate(expr.target)
+  const edges = pipe(
+    ctx.edges,
+    filter(edge =>
+      (isSource(edge.source) && isTarget(edge.target))
+      || (expr.isBidirectional === true && isSource(edge.target) && isTarget(edge.source))
+    ),
+    map(edge => [edge.source, edge.target] as const)
+  )
+  ctx.removeEdges(edges)
+  ctx.excludeImplicit(
+    ...ctx.implicits.filter(e => isSource(e) || isTarget(e))
+  )
 }

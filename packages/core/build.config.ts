@@ -19,6 +19,9 @@ export default defineBuildConfig({
         /\.d\.mts$/
       ]
     },
+    resolve: {
+      browser: true
+    },
     dts: {
       compilerOptions: {
         noEmitOnError: false,

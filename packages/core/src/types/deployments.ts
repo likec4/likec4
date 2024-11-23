@@ -111,7 +111,43 @@ type ExclusiveUnion<Expressions> = Expressions extends object ? {
   }[keyof Expressions]
   : Expressions
 
-export namespace DeploymentExpression {
+export namespace DeploymentRelationExpression {
+  export type Direct = {
+    source: DeploymentElementExpression
+    target: DeploymentElementExpression
+    isBidirectional?: boolean
+  }
+  export const isDirect = (expr: DeploymentExpression): expr is Direct => {
+    return 'source' in expr && 'target' in expr
+  }
+  export type Incoming = {
+    incoming: DeploymentElementExpression
+  }
+  export const isIncoming = (expr: DeploymentExpression): expr is Incoming => {
+    return 'incoming' in expr
+  }
+  export type Outgoing = {
+    outgoing: DeploymentElementExpression
+  }
+  export const isOutgoing = (expr: DeploymentExpression): expr is Outgoing => {
+    return 'outgoing' in expr
+  }
+  export type InOut = {
+    inout: DeploymentElementExpression
+  }
+  export const isInOut = (expr: DeploymentExpression): expr is InOut => {
+    return 'inout' in expr
+  }
+}
+
+export type DeploymentRelationExpression = ExclusiveUnion<{
+  Direct: DeploymentRelationExpression.Direct
+  Incoming: DeploymentRelationExpression.Incoming
+  Outgoing: DeploymentRelationExpression.Outgoing
+  InOut: DeploymentRelationExpression.InOut
+}>
+
+export namespace DeploymentElementExpression {
   export type Ref = {
     ref: DeploymentRef
     isExpanded?: boolean
@@ -133,7 +169,24 @@ export namespace DeploymentExpression {
   }
 }
 
-export type DeploymentExpression = ExclusiveUnion<{
-  DeploymentRef: DeploymentExpression.Ref
-  Wildcard: DeploymentExpression.Wildcard
+export type DeploymentElementExpression = ExclusiveUnion<{
+  DeploymentRef: DeploymentElementExpression.Ref
+  Wildcard: DeploymentElementExpression.Wildcard
 }>
+
+export type DeploymentExpression = ExclusiveUnion<{
+  Element: DeploymentElementExpression
+  Relation: DeploymentRelationExpression
+}>
+
+export namespace DeploymentExpression {
+  export type Element = DeploymentElementExpression
+  export type Relation = DeploymentRelationExpression
+
+  export const isElement = (expr: DeploymentExpression): expr is DeploymentElementExpression => {
+    return DeploymentElementExpression.isRef(expr) || DeploymentElementExpression.isWildcard(expr)
+  }
+  export const isRelation = (expr: DeploymentExpression): expr is DeploymentRelationExpression => {
+    return !DeploymentExpression.isElement(expr)
+  }
+}

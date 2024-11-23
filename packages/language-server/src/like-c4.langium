@@ -603,6 +603,11 @@ DeploymentViewRulePredicate:
 ;
 
 DeploymentExpression:
+  DeploymentRelationExpression |
+  DeploymentElementExpression
+;
+
+DeploymentElementExpression:
   {infer WildcardExpression} isWildcard?='*' |
   DeploymentRefExpression
   // node=DeploymentRef (
@@ -620,8 +625,29 @@ DeploymentRefExpression infers DeploymentRefExpression:
   )?
 ;
 
+DeploymentRelationExpression:
+  InOutDeploymentRelationExpression |
+  DirectedDeploymentRelationExpression
+;
+
+InOutDeploymentRelationExpression infers DeploymentRelationExpression:
+  IncomingDeploymentRelationExpression ({infer InOutDeploymentRelationExpression.inout=current} '->')?
+;
+
+IncomingDeploymentRelationExpression:
+  '->' to=DeploymentElementExpression;
+
+DirectedDeploymentRelationExpression infers DeploymentRelationExpression:
+  OutgoingDeploymentRelationExpression ({infer DirectedDeploymentRelationExpression.source=current} target=DeploymentElementExpression)?
+;
+
+OutgoingDeploymentRelationExpression:
+  from=DeploymentElementExpression
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
+;
+
 DeploymentExpressionIterator:
-  value=DeploymentExpression ({infer DeploymentExpressionIterator.prev=current} ',' (value=DeploymentExpression)?)*
+  value=DeploymentElementExpression ({infer DeploymentExpressionIterator.prev=current} ',' (value=DeploymentElementExpression)?)*
 ;
 // Global -------------------------------------
 

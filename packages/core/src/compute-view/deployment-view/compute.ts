@@ -1,17 +1,20 @@
 import {
   filter,
+  flatMap,
   hasAtLeast,
   isEmpty,
   isNonNullish,
   isTruthy,
   last,
+  map,
   omitBy,
   only,
   pickBy,
   pipe,
   reduce,
   reverse,
-  sort
+  sort,
+  unique
 } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import type {
@@ -31,7 +34,14 @@ import type {
   Tag,
   ViewID
 } from '../../types'
-import { DeploymentExpression, type Fqn, isViewRuleAutoLayout, isViewRulePredicate } from '../../types'
+import {
+  DeploymentElementExpression,
+  DeploymentExpression,
+  DeploymentRelationExpression,
+  type Fqn,
+  isViewRuleAutoLayout,
+  isViewRulePredicate
+} from '../../types'
 import { commonHead } from '../../utils/commonHead'
 import { ancestorsFqn, commonAncestor, isAncestor, nameFromFqn } from '../../utils/fqn'
 import { compareRelations } from '../../utils/relations'
@@ -42,7 +52,14 @@ import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildCompu
 import { sortNodes } from '../utils/sortNodes'
 import { uniqueTags } from '../utils/uniqueTags'
 import { calcViewLayoutHash } from '../utils/view-hash'
-import { excludeDeploymentRef, excludeWildcard, includeDeploymentRef, includeWildcard } from './predicates'
+import {
+  excludeDeploymentRef,
+  excludeDirectRelation,
+  excludeWildcard,
+  includeDeploymentRef,
+  includeDirectRelation,
+  includeWildcard
+} from './predicates'
 
 type DeploymentElement = LikeC4DeploymentGraph.Instance | DeploymentNode
 type DeploymentEdge = LikeC4DeploymentGraph.Edge
@@ -107,15 +124,15 @@ function toNodeSource(el: DeploymentElement): ComputedNodeSource {
 
 export class DeploymentViewComputeCtx {
   // Intermediate state
-  private explicits = new Map<Fqn, DeploymentElement>()
+  private _explicits = new Map<Fqn, DeploymentElement>()
 
   // Implicit elements (initiator -> what added)
-  private implicits = new Map<Fqn, DeploymentElement>()
+  private _implicits = new Map<Fqn, DeploymentElement>()
   // private implicits = new Map<DeploymentElement, Set<DeploymentElement>>()
   // Implicit backlinks (what added -> by whom)
   // private implicitBackLinks = new Map<DeploymentElement, Set<DeploymentElement>>()
 
-  private edges = [] as DeploymentEdge[]
+  private _edges = [] as DeploymentEdge[]
 
   public static compute(view: DeploymentView, graph: LikeC4DeploymentGraph): ComputedDeploymentView {
     return new DeploymentViewComputeCtx(view, graph).compute()
@@ -180,12 +197,20 @@ export class DeploymentViewComputeCtx {
     const isInclude = 'include' in rule
     const exprs = rule.include ?? rule.exclude
     for (const expr of exprs) {
-      if (DeploymentExpression.isRef(expr)) {
+      if (DeploymentElementExpression.isRef(expr)) {
         isInclude ? includeDeploymentRef(this, expr) : excludeDeploymentRef(this, expr)
         continue
       }
-      if (DeploymentExpression.isWildcard(expr)) {
+      if (DeploymentElementExpression.isWildcard(expr)) {
         isInclude ? includeWildcard(this) : excludeWildcard(this)
+        continue
+      }
+      if (DeploymentRelationExpression.isDirect(expr)) {
+        isInclude ? includeDirectRelation(this, expr) : excludeDirectRelation(this, expr)
+        continue
+      }
+      if (DeploymentExpression.isRelation(expr)) {
+        // Ignore for now
         continue
       }
       nonexhaustive(expr)
@@ -194,7 +219,7 @@ export class DeploymentViewComputeCtx {
   }
 
   protected computeEdges(): ComputedEdge[] {
-    return this.edges.map((e): ComputedEdge => {
+    return this._edges.map((e): ComputedEdge => {
       // invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
       const relations = sort([...e.relations], compareRelations)
       const source = e.source.id
@@ -345,7 +370,7 @@ export class DeploymentViewComputeCtx {
   }
 
   public isExplicit(el: DeploymentElement): boolean {
-    return this.explicits.has(el.id)
+    return this._explicits.has(el.id)
   }
 
   public isImplicit(el: DeploymentElement): boolean {
@@ -353,23 +378,35 @@ export class DeploymentViewComputeCtx {
   }
 
   public hasElement(el: DeploymentElement): boolean {
-    return this.explicits.has(el.id) || this.implicits.has(el.id)
-      || this.edges.some(e => e.source.id === el.id || e.target.id === el.id)
+    return this._explicits.has(el.id) || this._implicits.has(el.id)
+      || this._edges.some(e => e.source.id === el.id || e.target.id === el.id)
   }
 
   public get includedElements() {
     return new Set([
-      ...this.explicits.values(),
-      ...this.edges.flatMap(e => [e.source, e.target])
+      ...this._explicits.values(),
+      ...this._edges.flatMap(e => [e.source, e.target])
     ]) as ReadonlySet<DeploymentElement>
   }
 
   public get resolvedElements() {
     return new Set([
-      ...this.explicits.values(),
-      ...this.implicits.values(),
-      ...this.edges.flatMap(e => [e.source, e.target])
+      ...this._explicits.values(),
+      ...this._implicits.values(),
+      ...this._edges.flatMap(e => [e.source, e.target])
     ]) as ReadonlySet<DeploymentElement>
+  }
+
+  public get edges() {
+    return this._edges.slice() as ReadonlyArray<DeploymentEdge>
+  }
+
+  public get explicits() {
+    return [...this._explicits.values()] as ReadonlyArray<DeploymentElement>
+  }
+
+  public get implicits() {
+    return [...this._implicits.values()] as ReadonlyArray<DeploymentElement>
   }
 
   // public includedA(el: DeploymentElement) {
@@ -378,25 +415,34 @@ export class DeploymentViewComputeCtx {
 
   public addElement(...elements: DeploymentElement[]): void {
     for (const el of elements) {
-      this.explicits.set(el.id, el)
-      this.implicits.delete(el.id)
+      this._explicits.set(el.id, el)
+      this._implicits.delete(el.id)
     }
   }
 
   public addImplicit(...elements: DeploymentElement[]): void {
     for (const el of elements) {
-      this.implicits.set(el.id, el)
+      if (this._explicits.has(el.id)) {
+        continue
+      }
+      this._implicits.set(el.id, el)
     }
   }
 
   public excludeElement(...elements: DeploymentElement[]): void {
     const excluded = new Set<Fqn>()
     for (const el of elements) {
-      this.explicits.delete(el.id)
-      this.implicits.delete(el.id)
+      this._explicits.delete(el.id)
+      this._implicits.delete(el.id)
       excluded.add(el.id)
     }
-    this.edges = this.edges.filter(e => !excluded.has(e.source.id) && !excluded.has(e.target.id))
+    this._edges = this._edges.filter(e => !excluded.has(e.source.id) && !excluded.has(e.target.id))
+  }
+
+  public excludeImplicit(...elements: DeploymentElement[]): void {
+    for (const el of elements) {
+      this._implicits.delete(el.id)
+    }
   }
 
   public addEdges(edges: Edges) {
@@ -405,7 +451,7 @@ export class DeploymentViewComputeCtx {
       if (e.relations.size === 0) {
         continue
       }
-      const existing = this.edges.find(
+      const existing = this._edges.find(
         _e => _e.source.id === e.source.id && _e.target.id === e.target.id
       )
       if (existing) {
@@ -416,20 +462,43 @@ export class DeploymentViewComputeCtx {
         continue
       }
       added.push(e)
-      this.edges.push(e)
+      this._edges.push(e)
     }
-    return added
+    return added as ReadonlyArray<DeploymentEdge>
+  }
+
+  public removeEdges(pairs: ReadonlyArray<readonly [source: DeploymentElement, target: DeploymentElement]>) {
+    const ids = pipe(
+      pairs,
+      flatMap(([source, target]) => [
+        [source, target],
+        ...this.ancestors(source.id).map(e => [e, target] as const),
+        ...this.ancestors(target.id).map(e => [source, e] as const)
+      ]),
+      map(([source, target]) => `${source.id}:${target.id}`),
+      unique()
+    )
+    const removed = [] as DeploymentEdge[]
+    this._edges = this._edges.reduce((acc, e) => {
+      if (ids.includes(`${e.source.id}:${e.target.id}`)) {
+        removed.push(e)
+        return acc
+      }
+      acc.push(e)
+      return acc
+    }, [] as DeploymentEdge[])
+    return removed as ReadonlyArray<DeploymentEdge>
   }
 
   public reset(): void {
-    this.edges = []
-    this.explicits.clear()
-    this.implicits.clear()
+    this._edges = []
+    this._explicits.clear()
+    this._implicits.clear()
   }
 
   public *ancestors(fqn: Fqn) {
     for (const anc of ancestorsFqn(fqn)) {
-      const el = this.explicits.get(anc) || this.implicits.get(anc)
+      const el = this._explicits.get(anc) || this._implicits.get(anc)
       if (el) {
         yield el
       }
@@ -438,13 +507,13 @@ export class DeploymentViewComputeCtx {
 
   private removeRedundantImplicitEdges() {
     // copy edges to avoid mutationq
-    const alledges = this.edges.map(({ relations, ...e }) => {
+    const alledges = this._edges.map(({ relations, ...e }) => {
       return {
         relations: new Set(relations),
         ...e
       }
     })
-    this.edges = this.edges.filter(({ source, target, relations }) => {
+    this._edges = this._edges.filter(({ source, target, relations }) => {
       for (const e of alledges) {
         if (
           isAncestor(source.id, e.source.id) && isAncestor(target.id, e.target.id)

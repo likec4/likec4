@@ -6,6 +6,19 @@ import type { LikeC4Services } from '../../module'
 import type { LikeC4NameProvider } from '../../references'
 import { tryOrLog } from '../_shared'
 
+export const deploymentRelationExpressionChecks = (
+  services: LikeC4Services
+): ValidationCheck<ast.DeploymentRelationExpression> => {
+  return tryOrLog((node, accept) => {
+    if (!AstUtils.hasContainerOfType(node, ast.isDirectedDeploymentRelationExpression)) {
+      accept('warning', 'Not supported yet', {
+        node
+      })
+      return
+    }
+  })
+}
+
 export const deploymentRefExpressionChecks = (
   services: LikeC4Services
 ): ValidationCheck<ast.DeploymentRefExpression> => {

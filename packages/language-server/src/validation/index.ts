@@ -20,6 +20,7 @@ import {
 import { viewChecks } from './view'
 import {
   deploymentRefExpressionChecks,
+  deploymentRelationExpressionChecks,
   elementPredicateWithChecks,
   expandElementExprChecks,
   incomingExpressionChecks,
@@ -35,6 +36,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     DeploymentNode: deploymentNodeChecks(services),
     DeploymentRelation: deploymentRelationChecks(services),
     DeploymentRefExpression: deploymentRefExpressionChecks(services),
+    DeploymentRelationExpression: deploymentRelationExpressionChecks(services),
     NotesProperty: notesPropertyRuleChecks(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),

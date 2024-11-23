@@ -1,17 +1,17 @@
 import { nonexhaustive } from '../../errors'
-import { DeploymentExpression, type Fqn } from '../../types'
+import { DeploymentElementExpression, type Fqn } from '../../types'
 import { parentFqn } from '../../utils'
 
 type Predicate<T> = (x: T) => boolean
 
 export function deploymentExpressionToPredicate<T extends { id: Fqn }>(
-  target: DeploymentExpression
+  target: DeploymentElementExpression
 ): Predicate<T> {
-  if (DeploymentExpression.isWildcard(target)) {
+  if (DeploymentElementExpression.isWildcard(target)) {
     return () => true
   }
-  if (DeploymentExpression.isRef(target)) {
-    const fqn = target.ref.node ?? target.ref.instance
+  if (DeploymentElementExpression.isRef(target)) {
+    const fqn = target.ref.instance ?? target.ref.node
     if (target.isExpanded) {
       return n => n.id === fqn || parentFqn(n.id) === fqn
     }
