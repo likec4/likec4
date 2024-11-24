@@ -1,19 +1,18 @@
-import type { DiagramView } from '@likec4/core'
 import { Spotlight, type SpotlightActionGroupData } from '@mantine/spotlight'
-import { IconRectangularPrism, IconSitemap, IconSearch } from '@tabler/icons-react'
-import { useMemo } from 'react'
+import { IconRectangularPrism, IconSearch, IconSitemap } from '@tabler/icons-react'
+import { memo, useMemo } from 'react'
 import { filter, map, pipe } from 'remeda'
-import { useDiagramStoreApi } from './hooks'
+import { useDiagramState, useDiagramStoreApi, useMantinePortalProps } from './hooks'
 import { useLikeC4Model } from './likec4model'
 
-export function LikeC4Search({ view }: { view: DiagramView }) {
+export const LikeC4Search = memo(() => {
+  const view = useDiagramState(s => s.view)
   const model = useLikeC4Model(true)
   const store = useDiagramStoreApi()
+  const portalProps = useMantinePortalProps()
 
   const getViewActions = (): SpotlightActionGroupData => {
-    const { onNavigateTo } = store.getState()
     const views = model.views()
-
     return {
       group: 'Views',
       actions: map(views, v => ({
@@ -33,7 +32,7 @@ export function LikeC4Search({ view }: { view: DiagramView }) {
               fromNode: null
             }
           })
-          onNavigateTo?.(v.id)
+          store.getState().onNavigateTo?.(v.id)
         },
         leftSection: <IconSitemap />
       }))
@@ -41,8 +40,6 @@ export function LikeC4Search({ view }: { view: DiagramView }) {
   }
 
   const getNodeActions = (): SpotlightActionGroupData => {
-    const { focusOnNode } = store.getState()
-
     return {
       group: 'Elements',
       actions: pipe(
@@ -56,7 +53,7 @@ export function LikeC4Search({ view }: { view: DiagramView }) {
             ...(n.tags ?? []),
             ...(n.description ? [n.description] : [])
           ],
-          onClick: () => focusOnNode(n.id),
+          onClick: () => store.getState().focusOnNode(n.id),
           leftSection: <IconRectangularPrism />
         }))
       )
@@ -70,14 +67,17 @@ export function LikeC4Search({ view }: { view: DiagramView }) {
 
   return (
     <Spotlight
+      {...portalProps}
       actions={actions}
-      shortcut={['ctrl + f']}
+      shortcut={['mod + f', 'mod + k']}
       nothingFound='Nothing found...'
+      scrollable
+      maxHeight={'calc(100vh - 100px)'}
       searchProps={{
         leftSection: <IconSearch />,
-        placeholder: 'Search elements in current view and other views...'        
+        placeholder: 'Search elements in current view and other views...'
       }}
     >
     </Spotlight>
   )
-}
+})

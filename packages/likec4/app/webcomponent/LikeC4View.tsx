@@ -140,6 +140,7 @@ export class LikeC4View extends HTMLElement {
             enableRelationshipBrowser={false}
             experimentalEdgeEditing={false}
             enableFocusMode={false}
+            enableSearch={false}
             showNotations={false}
             controls={false}
             nodesSelectable={false}

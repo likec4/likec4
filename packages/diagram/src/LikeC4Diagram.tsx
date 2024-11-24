@@ -133,11 +133,10 @@ export function LikeC4Diagram({
             onOpenSourceRelation={onOpenSourceRelation ?? null}
             onBurgerMenuClick={onBurgerMenuClick ?? null}
           >
-            {enableSearch && <LikeC4Search view={view} />}
-
             <LikeC4DiagramInnerMemo
               background={background}
               showDiagramTitle={showDiagramTitle}
+              enableSearch={hasLikec4model && enableSearch}
             />
           </DiagramContextProvider>
         </XYFlowProvider>
@@ -150,10 +149,12 @@ LikeC4Diagram.displayName = 'LikeC4Diagram'
 type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
   showDiagramTitle: boolean
+  enableSearch: boolean
 }
 const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
-  showDiagramTitle
+  showDiagramTitle,
+  enableSearch
 }) {
   const {
     isInitialized,
@@ -187,6 +188,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         />
       </XYFlow>
       {enableOverlays && <Overlays />}
+      {enableSearch && <LikeC4Search />}
       {isInitialized && (
         <>
           {fitView && <FitViewOnDiagramChange />}

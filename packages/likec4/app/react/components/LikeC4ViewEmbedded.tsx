@@ -179,6 +179,9 @@ export function LikeC4ViewEmbedded<
             nodesSelectable={false}
             nodesDraggable={false}
             keepAspectRatio={false}
+            // We may have multiple embedded views on the same page
+            // so we don't want enable search and hotkeys
+            enableSearch={false}
             renderIcon={renderIcon}
             where={where}
             {...(_onNavigateTo && {
