@@ -2285,7 +2285,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.17.6"
     consola: "npm:^3.2.3"
-    std-env: "npm:^3.7.0"
+    std-env: "npm:^3.8.0"
     typescript: "npm:^5.6.3"
     unbuild: "npm:^3.0.0-rc.11"
   languageName: unknown
@@ -8659,7 +8659,7 @@ __metadata:
     langium: "npm:3.2.0"
     p-timeout: "npm:^6.1.3"
     remeda: "npm:^2.17.3"
-    std-env: "npm:^3.7.0"
+    std-env: "npm:^3.8.0"
     tslib: "npm:^2.8.1"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.3.0"
@@ -8742,7 +8742,7 @@ __metadata:
     react-resizable-panels: "npm:^2.1.7"
     react-shadow: "npm:^20.5.0"
     remeda: "npm:^2.17.3"
-    std-env: "npm:^3.7.0"
+    std-env: "npm:^3.8.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     terser: "npm:^5.33.0"
@@ -12994,7 +12994,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"std-env@npm:^3.7.0, std-env@npm:^3.8.0":
+"std-env@npm:^3.8.0":
   version: 3.8.0
   resolution: "std-env@npm:3.8.0"
   checksum: 10c0/f560a2902fd0fa3d648d7d0acecbd19d664006f7372c1fba197ed4c216b4c9e48db6e2769b5fe1616d42a9333c9f066c5011935035e85c59f45dc4f796272040
