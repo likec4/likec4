@@ -161,7 +161,7 @@
     "react-resizable-panels": "^2.1.7",
     "react-shadow": "^20.5.0",
     "remeda": "^2.17.3",
-    "std-env": "^3.7.0",
+    "std-env": "^3.8.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
     "terser": "^5.33.0",
