@@ -426,13 +426,13 @@ export class LikeC4ModelBuilder {
    * Otherwise, the model may be incomplete.
    */
   public unsafeSyncBuildModel(): c4.ParsedLikeC4Model | null {
+    const docs = this.documents()
+    if (docs.length === 0) {
+      logger.debug('[ModelBuilder] No documents to build model from')
+      return null
+    }
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
     return cache.get(CACHE_KEY_PARSED_MODEL, () => {
-      const docs = this.documents()
-      if (docs.length === 0) {
-        logger.debug('[ModelBuilder] No documents to build model from')
-        return null
-      }
       logger.debug(`[ModelBuilder] buildModel (${docs.length} docs)`)
       return buildModel(this.services, docs)
     })
@@ -440,8 +440,9 @@ export class LikeC4ModelBuilder {
 
   public async buildModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.ParsedLikeC4Model | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
-    if (cache.has(CACHE_KEY_PARSED_MODEL)) {
-      return cache.get(CACHE_KEY_PARSED_MODEL)!
+    const cached = cache.get(CACHE_KEY_PARSED_MODEL)
+    if (cached) {
+      return cached
     }
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {

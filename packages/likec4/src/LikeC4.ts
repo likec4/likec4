@@ -127,7 +127,6 @@ export class LikeC4 {
   private modelComputedRef: WeakRef<LikeC4Model.Computed> | undefined
   private modelLayoutedRef: WeakRef<LikeC4Model.Layouted> | undefined
   private logger: Logger
-  private langiumDocuments: LangiumDocuments
 
   private constructor(
     public readonly workspace: string,
@@ -135,7 +134,6 @@ export class LikeC4 {
     private isPrintErrorEnabled: boolean
   ) {
     this.logger = langium.logger
-    this.langiumDocuments = langium.shared.workspace.LangiumDocuments
     if (this.isPrintErrorEnabled) {
       this.printErrors()
     }
@@ -143,6 +141,10 @@ export class LikeC4 {
 
   get viewsService(): Views {
     return this.langium.likec4.Views
+  }
+
+  private get LangiumDocuments() {
+    return this.langium.shared.workspace.LangiumDocuments
   }
 
   /**
@@ -195,7 +197,7 @@ export class LikeC4 {
   }
 
   getErrors() {
-    const docs = this.langiumDocuments.all.toArray()
+    const docs = this.LangiumDocuments.all.toArray()
     return docs.flatMap(doc => {
       return (doc.diagnostics ?? [])
         .filter(d => d.severity === DiagnosticSeverity.Error)
@@ -209,7 +211,7 @@ export class LikeC4 {
   }
 
   hasErrors(): boolean {
-    return this.langiumDocuments.all.some(doc => {
+    return this.LangiumDocuments.all.some(doc => {
       return doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error) ?? false
     })
   }
@@ -219,7 +221,7 @@ export class LikeC4 {
    */
   printErrors(): boolean {
     let hasErrors = false
-    for (const doc of this.langiumDocuments.all) {
+    for (const doc of this.LangiumDocuments.all) {
       const errors = doc.diagnostics?.filter(e => e.severity === 1)
       if (errors && errors.length > 0) {
         hasErrors = true
