@@ -87,7 +87,7 @@ export async function takeScreenshot({
       }
 
       const path = resolve(output, relativePath, `${view.id}.png`)
-      await page.screenshot({
+      await diagramElement.screenshot({
         path,
         omitBackground: true
       })
