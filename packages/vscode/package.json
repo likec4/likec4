@@ -195,7 +195,7 @@
     "@types/node": "^20.16.14",
     "@types/vscode": "^1.89.0",
     "@types/which": "^3.0.4",
-    "@vscode/extension-telemetry": "^0.9.7",
+    "@vscode/extension-telemetry": "^0.9.8",
     "esbuild": "^0.24.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.7",
     "execa": "^9.3.1",
