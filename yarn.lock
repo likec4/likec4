@@ -2114,6 +2114,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/core": "npm:7.13.4"
     "@mantine/hooks": "npm:7.13.4"
+    "@mantine/spotlight": "npm:7.13.4"
     "@mantine/vanilla-extract": "npm:7.13.4"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:3.17.0"
