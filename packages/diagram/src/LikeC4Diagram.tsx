@@ -111,6 +111,7 @@ export function LikeC4Diagram({
             showNotations={showNotations}
             enableFocusMode={enableFocusMode}
             enableRelationshipDetails={enableRelationshipDetails && hasLikec4model}
+            enableSearch={hasLikec4model && enableSearch}
             enableElementDetails={enableElementDetails && hasLikec4model}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model}

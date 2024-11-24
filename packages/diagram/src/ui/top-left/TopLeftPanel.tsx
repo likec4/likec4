@@ -12,13 +12,15 @@ import {
   Text,
   TooltipGroup
 } from '@mantine/core'
+import { openSpotlight } from '@mantine/spotlight'
 import {
   IconAlertTriangle,
   IconChevronLeft,
   IconChevronRight,
   IconFileSymlink,
   IconFocusCentered,
-  IconMenu2
+  IconMenu2,
+  IconSearch
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
@@ -138,6 +140,7 @@ const LayoutDriftNotification = (props: PopoverProps) => (
 export const TopLeftPanel = () => {
   const store = useDiagramStoreApi()
   const {
+    enableSearch,
     showNavigationButtons,
     showFitDiagram,
     showLayoutDriftWarning,
@@ -150,6 +153,7 @@ export const TopLeftPanel = () => {
     const isNotFocused = isNullish(s.focusedNodeId)
     const isNotActive = isNotWalkthrough && isNotFocused
     return ({
+      enableSearch: s.enableSearch,
       showNavigationButtons: !!s.onBurgerMenuClick || (s.showNavigationButtons && !!s.onNavigateTo),
       showFitDiagram: s.controls && s.fitViewEnabled && s.zoomable && isNotWalkthrough,
       showLayoutDriftWarning: s.controls && !s.readonly && s.view.hasLayoutDrift === true && isNotActive,
@@ -174,6 +178,15 @@ export const TopLeftPanel = () => {
         gap={'xs'}>
         {showNavigationButtons && <BackwardForwardButtons />}
         <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
+          {enableSearch && (
+            <Tooltip label="Search">
+              <ActionIcon
+                onClick={() => openSpotlight()}
+              >
+                <IconSearch />
+              </ActionIcon>
+            </Tooltip>
+          )}
           {showGoToSource && (
             <Tooltip label="Open source" {...portalProps}>
               <ActionIcon
