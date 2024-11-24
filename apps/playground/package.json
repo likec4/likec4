@@ -27,6 +27,7 @@
     "@likec4/log": "workspace:*",
     "@mantine/core": "7.13.4",
     "@mantine/hooks": "7.13.4",
+    "@mantine/spotlight": "7.13.4",
     "@mantine/vanilla-extract": "7.13.4",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "3.17.0",

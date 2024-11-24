@@ -149,6 +149,12 @@ export interface LikeC4DiagramProperties {
   enableFocusMode?: boolean | undefined
 
   /**
+   * Enable search popup for elements and views
+   * @default true
+   */
+  enableSearch?: boolean | undefined
+
+  /**
    * Enable modal with element details
    * @default false
    */

@@ -28,6 +28,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "7.13.4",
     "@mantine/hooks": "7.13.4",
+    "@mantine/spotlight": "7.13.4",
     "@mantine/vanilla-extract": "7.13.4",
     "@nanostores/react": "0.8.0",
     "@react-hookz/deep-equal": "^2.0.2",

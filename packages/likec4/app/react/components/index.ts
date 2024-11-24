@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css'
+import '@mantine/spotlight/styles.css'
 import '@xyflow/react/dist/style.css'
 
 export { LikeC4Browser, type LikeC4BrowserProps } from './LikeC4Browser'

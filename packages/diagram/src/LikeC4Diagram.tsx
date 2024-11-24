@@ -1,6 +1,6 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
-import { deepEqual, shallowEqual } from 'fast-equals'
+import { deepEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
 import { isEmpty } from 'remeda'
 import { rootClassName } from './globals.css'
@@ -9,6 +9,7 @@ import { LikeC4CustomColors } from './LikeC4CustomColors'
 import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { useLikeC4Model } from './likec4model'
+import { LikeC4Search } from './LikeC4Search'
 import { Overlays } from './overlays'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { EnsureMantine } from './ui/EnsureMantine'
@@ -39,6 +40,7 @@ export function LikeC4Diagram({
   enableElementDetails = false,
   enableRelationshipDetails = enableElementDetails,
   enableRelationshipBrowser = enableRelationshipDetails,
+  enableSearch = true,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -134,6 +136,7 @@ export function LikeC4Diagram({
             <LikeC4DiagramInnerMemo
               background={background}
               showDiagramTitle={showDiagramTitle}
+              enableSearch={hasLikec4model && enableSearch}
             />
           </DiagramContextProvider>
         </XYFlowProvider>
@@ -146,10 +149,12 @@ LikeC4Diagram.displayName = 'LikeC4Diagram'
 type LikeC4DiagramInnerProps = {
   background: NonNullable<LikeC4DiagramProperties['background']>
   showDiagramTitle: boolean
+  enableSearch: boolean
 }
 const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
-  showDiagramTitle
+  showDiagramTitle,
+  enableSearch
 }) {
   const {
     isInitialized,
@@ -183,6 +188,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         />
       </XYFlow>
       {enableOverlays && <Overlays />}
+      {enableSearch && <LikeC4Search />}
       {isInitialized && (
         <>
           {fitView && <FitViewOnDiagramChange />}

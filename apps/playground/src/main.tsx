@@ -2,6 +2,7 @@
 import './font-ibm-plex-sans.css'
 import './font-fira-code.css'
 import '@mantine/core/styles.css'
+import '@mantine/spotlight/styles.css'
 import './main.css'
 import '@xyflow/react/dist/style.css'
 

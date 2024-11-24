@@ -160,6 +160,7 @@ function ExportPage() {
         nodesSelectable={false}
         nodesDraggable={false}
         enableFocusMode={false}
+        enableSearch={false}
         renderIcon={RenderIcon}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />

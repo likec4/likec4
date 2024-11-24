@@ -48,6 +48,7 @@ export function StaticLikeC4Diagram({
       enableFocusMode={false}
       nodesSelectable={false}
       nodesDraggable={false}
+      enableSearch={false}
       {...rest}
     />
   )

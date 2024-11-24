@@ -133,7 +133,7 @@ export type DiagramState = Simplify<
     lastOnNavigate: null | {
       fromView: ViewID
       toView: ViewID
-      fromNode: NodeId
+      fromNode: NodeId | null
     }
     navigationHistory: Array<{
       viewId: ViewID

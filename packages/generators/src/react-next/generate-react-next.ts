@@ -83,6 +83,7 @@ function generateIndex() {
     // You are safe to edit/move these style imports,
     // but they are required
     import "@mantine/core/styles.css";
+    import '@mantine/spotlight/styles.css'
     import "@likec4/diagram/style.css";
 
     export * from "./likec4-components";

@@ -247,6 +247,7 @@ export function LikeC4Browser<
                 showDiagramTitle
                 enableDynamicViewWalkthrough
                 enableFocusMode
+                enableSearch
                 enableElementDetails={enableElementDetails}
                 enableRelationshipBrowser={enableRelationshipBrowser}
                 enableRelationshipDetails={enableRelationshipDetails}

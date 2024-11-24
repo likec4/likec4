@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css'
+import '@mantine/spotlight/styles.css'
 import '@xyflow/react/dist/style.css'
 import './shadow.css'
 
