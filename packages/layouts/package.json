@@ -51,7 +51,7 @@
     "@hpcc-js/wasm-graphviz": "1.6.1",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
-    "execa": "^9.3.1",
+    "execa": "^9.5.1",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
     "p-limit": "^6.1.0",

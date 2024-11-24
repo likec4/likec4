@@ -2095,7 +2095,7 @@ __metadata:
     "@types/natural-compare-lite": "npm:^1.4.2"
     chroma-js: "npm:^3.1.2"
     defu: "npm:^6.1.4"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     natural-compare-lite: "npm:^1.4.0"
     remeda: "npm:^2.17.3"
     turbo: "npm:^2.3.0"
@@ -2132,7 +2132,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
     esm-env: "npm:^1.1.4"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     fast-equals: "npm:^5.0.1"
     framer-motion: "npm:^11.11.17"
     khroma: "npm:^2.1.0"
@@ -2201,7 +2201,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.1"
     consola: "npm:^3.2.3"
     esbuild: "npm:^0.24.0"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     glob: "npm:^11.0.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -2227,7 +2227,7 @@ __metadata:
     "@types/object-hash": "npm:^3.0.6"
     "@types/string-hash": "npm:^1.1.3"
     "@vitest/coverage-v8": "npm:^2.1.5"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     fast-equals: "npm:^5.0.1"
     indent-string: "npm:^5.0.0"
     json5: "npm:^2.2.3"
@@ -2262,7 +2262,7 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.17.6"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
     p-limit: "npm:^6.1.0"
@@ -5600,7 +5600,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.17.6"
     "@types/prompts": "npm:^2.4.8"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     prompts: "npm:^2.4.2"
     tsx: "npm:~4.9.3"
     typescript: "npm:^5.6.3"
@@ -6794,9 +6794,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:^9.3.1":
-  version: 9.3.1
-  resolution: "execa@npm:9.3.1"
+"execa@npm:^9.5.1":
+  version: 9.5.1
+  resolution: "execa@npm:9.5.1"
   dependencies:
     "@sindresorhus/merge-streams": "npm:^4.0.0"
     cross-spawn: "npm:^7.0.3"
@@ -6805,12 +6805,12 @@ __metadata:
     human-signals: "npm:^8.0.0"
     is-plain-obj: "npm:^4.1.0"
     is-stream: "npm:^4.0.1"
-    npm-run-path: "npm:^5.2.0"
+    npm-run-path: "npm:^6.0.0"
     pretty-ms: "npm:^9.0.0"
     signal-exit: "npm:^4.1.0"
     strip-final-newline: "npm:^4.0.0"
     yoctocolors: "npm:^2.0.0"
-  checksum: 10c0/113979ff56575f6cb69fd021eb3894a674fb59b264f5e8c2b9b30e301629abc4f44cee881e680f9fb3b7d4956645df76a2d8c0006869dea985f96ec65f07b226
+  checksum: 10c0/1a628d535c5a088f9e17a735bb3143efc4198095392b319ba877b2975d5c3c57724536dccb6f68f1cd9b3af331c5a9e8c1aeb338d52ab316b1e008ff453374a7
   languageName: node
   linkType: hard
 
@@ -8655,7 +8655,7 @@ __metadata:
     "@vscode/extension-telemetry": "npm:^0.9.7"
     esbuild: "npm:^0.24.0"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.8"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     langium: "npm:3.2.0"
     p-timeout: "npm:^6.1.3"
     remeda: "npm:^2.17.3"
@@ -8717,7 +8717,7 @@ __metadata:
     dts-bundle-generator: "npm:^9.5.1"
     esbuild: "npm:^0.24.0"
     esbuild-node-externals: "npm:^1.15.0"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     fast-equals: "npm:^5.0.1"
     fdir: "npm:^6.4.2"
     framer-motion: "npm:^11.11.17"
@@ -10442,12 +10442,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-path@npm:^5.1.0, npm-run-path@npm:^5.2.0":
+"npm-run-path@npm:^5.1.0":
   version: 5.3.0
   resolution: "npm-run-path@npm:5.3.0"
   dependencies:
     path-key: "npm:^4.0.0"
   checksum: 10c0/124df74820c40c2eb9a8612a254ea1d557ddfab1581c3e751f825e3e366d9f00b0d76a3c94ecd8398e7f3eee193018622677e95816e8491f0797b21e30b2deba
+  languageName: node
+  linkType: hard
+
+"npm-run-path@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "npm-run-path@npm:6.0.0"
+  dependencies:
+    path-key: "npm:^4.0.0"
+    unicorn-magic: "npm:^0.3.0"
+  checksum: 10c0/b223c8a0dcd608abf95363ea5c3c0ccc3cd877daf0102eaf1b0f2390d6858d8337fbb7c443af2403b067a7d2c116d10691ecd22ab3c5273c44da1ff8d07753bd
   languageName: node
   linkType: hard
 
@@ -12342,7 +12352,7 @@ __metadata:
     "@vitest/ui": "npm:^2.1.5"
     dprint: "npm:0.47.5"
     esbuild: "npm:^0.24.0"
-    execa: "npm:^9.3.1"
+    execa: "npm:^9.5.1"
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
     lint-staged: "npm:15.2.10"
@@ -13723,6 +13733,13 @@ __metadata:
   version: 6.19.8
   resolution: "undici-types@npm:6.19.8"
   checksum: 10c0/078afa5990fba110f6824823ace86073b4638f1d5112ee26e790155f481f2a868cc3e0615505b6f4282bdf74a3d8caad715fd809e870c2bb0704e3ea6082f344
+  languageName: node
+  linkType: hard
+
+"unicorn-magic@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "unicorn-magic@npm:0.3.0"
+  checksum: 10c0/0a32a997d6c15f1c2a077a15b1c4ca6f268d574cf5b8975e778bb98e6f8db4ef4e86dfcae4e158cd4c7e38fb4dd383b93b13eefddc7f178dea13d3ac8a603271
   languageName: node
   linkType: hard
 
