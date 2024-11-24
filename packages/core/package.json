@@ -76,7 +76,7 @@
   "devDependencies": {
     "@dagrejs/dagre": "^1.1.4",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/colors-generator": "7.13.4",
+    "@mantine/colors-generator": "7.14.1",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
