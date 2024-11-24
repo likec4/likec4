@@ -228,8 +228,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
 
   function toDeploymentElement(doc: LangiumDocument) {
     return (parsed: c4.PhysicalElement): c4.PhysicalElement | null => {
-      const isDeploymentNode = c4.PhysicalElement.isDeploymentNode(parsed)
-      if (!isDeploymentNode) {
+      if (!c4.PhysicalElement.isDeploymentNode(parsed)) {
         if (!parsed.links || parsed.links.length === 0) {
           return parsed
         }
@@ -257,7 +256,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...technology && { technology },
           style: {
             border: 'dashed',
-            opacity: 20,
+            opacity: 10,
             ...__kind.style,
             ...style
           },

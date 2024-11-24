@@ -500,7 +500,9 @@ export class LikeC4ModelParser {
     let iter: ast.ElementExpressionsIterator['prev'] = astNode
     while (iter) {
       try {
-        exprs.unshift(this.parseElementExpr(iter.value))
+        if (iter.value) {
+          exprs.unshift(this.parseElementExpr(iter.value))
+        }
       } catch (e) {
         logWarnError(e)
       }
@@ -1129,7 +1131,7 @@ export class LikeC4ModelParser {
     let iter: ast.DynamicViewPredicateIterator | undefined = astRule.predicates
     while (iter) {
       try {
-        if (isValid(iter.value as any)) {
+        if (isNonNullish(iter.value) && isValid(iter.value as any)) {
           const c4expr = this.parseElementPredicate(iter.value, isValid)
           include.unshift(c4expr)
         }
@@ -1333,16 +1335,17 @@ export class LikeC4ModelParser {
     let iterator: ast.DeploymentViewRulePredicateExpression | undefined = astRule.expr
     while (iterator) {
       try {
-        if (isValid(iterator.value)) {
+        const expr = iterator.value
+        if (isNonNullish(expr) && isValid(expr)) {
           switch (true) {
-            case ast.isDeploymentElementExpression(iterator.value):
-              exprs.unshift(this.parseDeploymentElementExpression(iterator.value))
+            case ast.isDeploymentElementExpression(expr):
+              exprs.unshift(this.parseDeploymentElementExpression(expr))
               break
-            case ast.isDeploymentRelationExpression(iterator.value):
-              exprs.unshift(this.parseDeploymentRelationExpression(iterator.value))
+            case ast.isDeploymentRelationExpression(expr):
+              exprs.unshift(this.parseDeploymentRelationExpression(expr))
               break
             default:
-              nonexhaustive(iterator.value)
+              nonexhaustive(expr)
           }
         }
       } catch (e) {
@@ -1415,7 +1418,7 @@ export class LikeC4ModelParser {
     let iter: ast.DeploymentExpressionIterator['prev'] = astNode
     while (iter) {
       try {
-        if (isValid(astNode.value)) {
+        if (isNonNullish(astNode.value) && isValid(astNode.value)) {
           exprs.unshift(this.parseDeploymentElementExpression(astNode.value))
         }
       } catch (e) {

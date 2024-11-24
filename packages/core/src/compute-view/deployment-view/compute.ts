@@ -82,14 +82,11 @@ function toNodeSource(el: DeploymentElement): ComputedNodeSource {
       ...color && { color },
       ...shape && { shape },
       style: {
-        border: 'dashed',
-        opacity: 20,
         ...style
       },
       deploymentRef: 1
     }
   }
-
   const icon = el.instance.style?.icon ?? el.element.icon
   const color = el.instance.style?.color ?? el.element.color
   const shape = el.instance.style?.shape ?? el.element.shape
@@ -104,11 +101,14 @@ function toNodeSource(el: DeploymentElement): ComputedNodeSource {
     ...el.instance.metadata
   }
 
+  const notation = el.instance.notation ?? el.element.notation
+
   return {
-    ...pickBy(el.element, isNonNullish),
-    ...pickBy(el.instance, isNonNullish),
     id: el.id,
     kind: 'instance' as DeploymentNodeKind,
+    title: el.instance.title ?? el.element.title,
+    description: el.instance.description ?? el.element.description,
+    technology: el.instance.technology ?? el.element.technology,
     tags: uniqueTags([el.element, el.instance]) as NonEmptyArray<Tag>,
     links: hasAtLeast(links, 1) ? links : null,
     ...icon && { icon },
@@ -120,6 +120,7 @@ function toNodeSource(el: DeploymentElement): ComputedNodeSource {
     },
     deploymentRef: el.id === el.instance.id ? 1 : el.instance.id,
     modelRef: el.id === el.element.id ? 1 : el.element.id,
+    ...notation && { notation },
     ...!isEmpty(metadata) && ({ metadata })
   }
 }

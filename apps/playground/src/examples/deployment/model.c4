@@ -1,5 +1,9 @@
 specification {
-  element actor
+  element actor {
+    style {
+      shape person
+    }
+  }
   element system
   element component
 }
@@ -31,6 +35,9 @@ model {
 
   firebase = system 'Firebase' {
     icon tech:firebase
+    style {
+      color amber
+    }
   }
 
   // Customer uses the UI

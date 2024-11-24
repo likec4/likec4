@@ -1,17 +1,19 @@
+// Define deployment node kinds
 specification {
   deploymentNode node
   deploymentNode zone
   deploymentNode environment {
     style {
       color gray
-      opacity 0%
     }
   }
 }
 
+// Deployment model
 deployment {
 
-  node customer {
+  node customerNode {
+    // References to model.c4
     instanceOf customer
   }
 
@@ -40,38 +42,32 @@ deployment {
 
     instanceOf firebase
   }
-
 }
 
 views {
   deployment view index {
-    title 'Untitled'
+    title 'Deployment view'
 
     include
       customer,
       prod._,
-      // prod.firebase,
-      // eu,
-      eu._,
-      eu.zone1.*,
-      eu.zone2.*,
-      // us,
       us._,
       us.zone1.*,
       us.zone2.*,
-      // ,
-      //us.zone1.*,
-      //us.zone2.*
+      eu._,
+      eu.zone1.*,
+      eu.zone2.*,
 
     exclude
-      eu <-> us,
-      // eu.* <-> us._,
-      // us.* <-> eu._,
-      // eu.* <-> us.*,
+      eu._ <-> us._,
       eu.zone1._ <-> eu.zone2._,
       us.zone1._ <-> us.zone2._,
-    //      us.zone1._ <-> us.zone2.*,
-    //      eu.* <-> us.*
 
+    style eu._ {
+      color green
+    }
+    style us._ {
+      color indigo
+    }
 	}
 }

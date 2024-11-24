@@ -144,8 +144,7 @@ export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...ex
   ctx.addElement(instance)
   ctx.addEdges(ctx.graph.anyEdgesBetween(instance, currentElements))
 
-  const isOnlyChild = ctx.graph.children(instance.parent).length === 1
-  if (isOnlyChild) {
+  if (instance.isOnlyChild) {
     return
   }
   // Check if any ancestor is already included

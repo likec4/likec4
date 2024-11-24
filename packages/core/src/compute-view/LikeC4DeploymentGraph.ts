@@ -340,7 +340,12 @@ export class LikeC4DeploymentGraph {
       throw new Error(`DeployedInstance ${el.id} already exists`)
     }
     const parent = nonNullable(this.parent(el.id), 'Instance must have a parent DeploymentNode')
-    const instance = new LikeC4DeploymentGraph.Instance(el, parent, this.modelGraph.element(el.element))
+    const instance = new LikeC4DeploymentGraph.Instance(
+      el,
+      parent,
+      this.modelGraph.element(el.element),
+      this
+    )
     this.#instances.set(el.id, instance)
     this._childrenOf(parent.id).push(instance)
   }
@@ -378,17 +383,17 @@ export class LikeC4DeploymentGraph {
 }
 
 export namespace LikeC4DeploymentGraph {
-  export function mkedge(edge: { source: Element; target: Element; relations: Set<Relation> }): Edge {
-    const parentId = commonAncestor(edge.source.id, edge.target.id)
-    const parentDepth = parentId ? parentId.split('.').length : 0
-    const sourceDepth = edge.source.id.split('.').length - parentDepth
-    const targetDepth = edge.target.id.split('.').length - parentDepth
+  // export function mkedge(edge: { source: Element; target: Element; relations: Set<Relation> }): Edge {
+  //   const parentId = commonAncestor(edge.source.id, edge.target.id)
+  //   const parentDepth = parentId ? parentId.split('.').length : 0
+  //   const sourceDepth = edge.source.id.split('.').length - parentDepth
+  //   const targetDepth = edge.target.id.split('.').length - parentDepth
 
-    return {
-      ...edge,
-      parentId
-    }
-  }
+  //   return {
+  //     ...edge,
+  //     parentId
+  //   }
+  // }
 
   export const isInstance = (el: Element): el is Instance => {
     return el instanceof Instance
@@ -400,12 +405,17 @@ export namespace LikeC4DeploymentGraph {
     constructor(
       public instance: DeployedInstance,
       public parent: DeploymentNode,
-      public element: ModelElement
+      public element: ModelElement,
+      private graph: LikeC4DeploymentGraph
     ) {
     }
 
     public get id() {
       return this.instance.id
+    }
+
+    public get isOnlyChild() {
+      return this.graph.children(this.parent).length === 1
     }
   }
 
