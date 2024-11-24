@@ -55,7 +55,7 @@
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
     "p-limit": "^6.1.0",
-    "remeda": "^2.16.0",
+    "remeda": "^2.17.3",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
     "type-fest": "4.27.0",
