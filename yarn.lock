@@ -2079,7 +2079,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jspm/core@npm:^2.0.1":
+"@jspm/core@npm:2.0.1":
   version: 2.0.1
   resolution: "@jspm/core@npm:2.0.1"
   checksum: 10c0/a827ea73198f483750cbb42922be26f87d2eea57871c957e0e170d76c55d15aa07e891b8ce5a0b8cc7b0ca2dfdc8430efe21ed7498e85c0c8ab17462f582139c
@@ -6313,16 +6313,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-plugins-node-modules-polyfill@npm:^1.6.7":
-  version: 1.6.7
-  resolution: "esbuild-plugins-node-modules-polyfill@npm:1.6.7"
+"esbuild-plugins-node-modules-polyfill@npm:^1.6.8":
+  version: 1.6.8
+  resolution: "esbuild-plugins-node-modules-polyfill@npm:1.6.8"
   dependencies:
-    "@jspm/core": "npm:^2.0.1"
+    "@jspm/core": "npm:2.0.1"
     local-pkg: "npm:^0.5.0"
     resolve.exports: "npm:^2.0.2"
   peerDependencies:
-    esbuild: ">=0.14.0 <=0.23.x"
-  checksum: 10c0/86c63cd6854e1f40bd8da9217ff6d5d10ff290bb6a630eaecffe2f0f3886039db98b5963e55dc67f3397e33ea9faccc236810bd365979bb6a0cecc39165a6b7d
+    esbuild: ">=0.14.0 <=0.24.x"
+  checksum: 10c0/5683b937db5250cea9e05e0d3cfd3dc9c6c95b99afbec3787fca3f822bb52773cd7cd1305f4623a7302c8ddcd7eaef18541402e6bff812a8e3f0f479ca5a12e1
   languageName: node
   linkType: hard
 
@@ -8654,7 +8654,7 @@ __metadata:
     "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.7"
     esbuild: "npm:^0.24.0"
-    esbuild-plugins-node-modules-polyfill: "npm:^1.6.7"
+    esbuild-plugins-node-modules-polyfill: "npm:^1.6.8"
     execa: "npm:^9.3.1"
     langium: "npm:3.2.0"
     p-timeout: "npm:^6.1.3"
