@@ -60,6 +60,12 @@
       ],
     },
     {
+      groupName: '@expressive-code',
+      matchPackageNames: [
+        '@expressive-code{/,}**',
+      ],
+    },
+    {
       automerge: true,
       matchPackageNames: [
        // '@tabler{/,}**',
