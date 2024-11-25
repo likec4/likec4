@@ -33,16 +33,15 @@ export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr, w
     return
   }
 
-  this.addElement(...elements)
+  for (const el of elements) {
+    this.addElement(el)
+    if (currentElements.length > 0) {
+      this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
+    }
+  }
 
   if (elements.length > 1) {
     this.addEdges(this.graph.edgesWithin(elements))
-  }
-
-  if (currentElements.length > 0 && elements.length > 0) {
-    for (const el of elements) {
-      this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
-    }
   }
 }
 
@@ -63,13 +62,19 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr, w
       return
     }
     const currentElements = [...this.resolvedElements]
-    this.addElement(...elements)
+
     this.addEdges(this.graph.edgesWithin(elements))
-    if (currentElements.length > 0) {
-      for (const el of elements) {
+
+    for (const el of elements) {
+      this.addElement(el)
+      if (currentElements.length > 0) {
         this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
       }
     }
+    if (elements.length > 1) {
+      this.addEdges(this.graph.edgesWithin(elements))
+    }
+
     return
   }
 
@@ -82,10 +87,13 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr, w
 
   const children = filter(this.graph.children(root))
   const hasChildren = children.length > 0
-  if (hasChildren) {
-    this.addElement(...children)
-    this.addEdges(this.graph.edgesWithin(children))
-  } else if (_elRoot) {
+  // if (hasChildren) {
+  //   this.addElement(...children)
+  //   this.addEdges(this.graph.edgesWithin(children))
+  // } else if (_elRoot) {
+  //   children.push(_elRoot)
+  // }
+  if (!hasChildren && _elRoot) {
     children.push(_elRoot)
   }
 
@@ -99,9 +107,14 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr, w
   ]
 
   for (const el of children) {
+    this.addElement(el)
     this.addEdges(this.graph.anyEdgesBetween(el, neighbours)).forEach(edge => {
       this.addImplicit(edge.source, edge.target)
     })
+  }
+
+  if (children.length > 1) {
+    this.addEdges(this.graph.edgesWithin(children))
   }
 
   // If root has no children

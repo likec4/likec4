@@ -1,6 +1,6 @@
 import { type DiagramView, LikeC4Model } from '@likec4/core'
 import defu from 'defu'
-import { type LangiumDocuments, URI, UriUtils } from 'langium'
+import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'

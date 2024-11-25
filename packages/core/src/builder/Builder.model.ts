@@ -1,7 +1,7 @@
 import type { Element, Fqn, Relation } from '../types'
-import type { AnyTypes, AnyTypesNested } from './_types'
+import type { AnyTypes, AnyTypesNested, Invalid, Types } from './_types'
 import type { Builder } from './Builder'
-import type { AddElementHelpers } from './Builder.element'
+import type { AddElement } from './Builder.element'
 
 export interface ModelBuilder<T extends AnyTypes> {
   addElement(element: Element): Builder<T>
@@ -338,6 +338,17 @@ export type NestedRelationshipHelper<Props = unknown> = <T extends AnyTypesNeste
   to: To,
   titleOrProps?: string | Props
 ) => (builder: ModelBuilder<T>) => ModelBuilder<T>
+
+type AddElementHelper<T = unknown> = <const Id extends string>(
+  id: Id,
+  titleOrProps?: string | T
+) => AddElement<Id>
+
+export type AddElementHelpers<T extends AnyTypes> = T extends
+  Types<infer Kinds extends string, any, any, any, any, any, any, any> ? {
+    [Kind in Kinds]: AddElementHelper<T['NewElementProps']>
+  }
+  : Invalid<'No Element Kinds'>
 
 export type ModelHelpers<T extends AnyTypes> = AddElementHelpers<T> & {
   model: typeof model

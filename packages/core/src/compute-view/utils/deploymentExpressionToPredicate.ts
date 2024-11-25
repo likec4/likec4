@@ -10,7 +10,7 @@ export function deploymentExpressionToPredicate<T extends { id: Fqn }>(
     return () => true
   }
   if (DeploymentElementExpression.isRef(target)) {
-    const fqn = target.ref.instance ?? target.ref.node
+    const fqn = target.ref.id
     if (target.isExpanded) {
       return n => n.id === fqn || n.id.startsWith(fqn + '.')
     }

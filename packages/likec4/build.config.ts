@@ -51,10 +51,7 @@ export default defineBuildConfig({
       platform: 'node',
       target: 'node20',
       legalComments: 'none',
-      minify: isProduction,
-      minifyIdentifiers: false,
-      minifySyntax: true,
-      minifyWhitespace: true
+      minify: isProduction
     },
     output: {
       compact: isProduction
@@ -75,7 +72,6 @@ export default defineBuildConfig({
     },
     dts: {
       tsconfig: 'tsconfig.cli.json',
-      respectExternal: true,
       compilerOptions: {
         noEmitOnError: false,
         strict: false,

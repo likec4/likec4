@@ -1,25 +1,6 @@
-import {
-  filter,
-  flatMap,
-  hasAtLeast,
-  isDeepEqual,
-  isEmpty,
-  isNonNullish,
-  isTruthy,
-  last,
-  map,
-  omitBy,
-  only,
-  pickBy,
-  pipe,
-  reduce,
-  reverse,
-  sort,
-  unique
-} from 'remeda'
+import { filter, hasAtLeast, isDeepEqual, isEmpty, isTruthy, last, map, only, pipe, reverse, unique } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import type {
-  Color,
   ComputedDeploymentView,
   ComputedEdge,
   ComputedNode,
@@ -29,11 +10,8 @@ import type {
   DeploymentViewRulePredicate,
   EdgeId,
   NonEmptyArray,
-  RelationshipArrowType,
-  RelationshipKind,
-  RelationshipLineType,
-  Tag,
-  ViewID
+  RelationID,
+  Tag
 } from '../../types'
 import {
   DefaultArrowType,
@@ -45,9 +23,8 @@ import {
   isViewRulePredicate
 } from '../../types'
 import { commonHead } from '../../utils/commonHead'
-import { ancestorsFqn, commonAncestor, isAncestor, nameFromFqn } from '../../utils/fqn'
-import { compareRelations } from '../../utils/relations'
-import type { LikeC4DeploymentGraph } from '../LikeC4DeploymentGraph'
+import { ancestorsFqn, commonAncestor, isAncestor } from '../../utils/fqn'
+import { LikeC4DeploymentGraph } from '../LikeC4DeploymentGraph'
 import { ancestorsOfNode } from '../utils/ancestorsOfNode'
 import { applyDeploymentViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
@@ -68,8 +45,9 @@ type DeploymentEdge = LikeC4DeploymentGraph.Edge
 type Edges = ReadonlyArray<DeploymentEdge>
 
 function toNodeSource(el: DeploymentElement): ComputedNodeSource {
-  const isNode = 'kind' in el
-  if (isNode) {
+  const isInstance = LikeC4DeploymentGraph.isInstance(el)
+
+  if (!isInstance) {
     const {
       icon,
       color,
@@ -224,7 +202,8 @@ export class DeploymentViewComputeCtx {
   protected computeEdges(): ComputedEdge[] {
     return this._edges.reduce((acc, e) => {
       // invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
-      const relations = sort([...e.relations], compareRelations)
+      // const relations = sort([...e.relations], compareRelations)
+      const relations = [...e.relations]
       const source = e.source.id
       const target = e.target.id
 
@@ -242,9 +221,9 @@ export class DeploymentViewComputeCtx {
         only()
       )
 
-      const navigateTo = !!relation?.navigateTo ? relation.navigateTo : pipe(
+      const navigateTo = relation && 'navigateTo' in relation ? relation.navigateTo : pipe(
         relations,
-        map(r => r.navigateTo),
+        map(r => 'navigateTo' in r ? r.navigateTo : null),
         filter(isTruthy),
         unique(),
         only()
@@ -256,7 +235,7 @@ export class DeploymentViewComputeCtx {
         source,
         target,
         label: title ?? null,
-        relations: relations.map(r => r.id),
+        relations: relations.map(r => r.id as RelationID),
         ...tags && { tags: tags as NonEmptyArray<Tag> },
         ...navigateTo && { navigateTo }
       }
@@ -329,15 +308,17 @@ export class DeploymentViewComputeCtx {
   public get includedElements() {
     return new Set([
       ...this._explicits.values(),
-      ...this._edges.flatMap(e => [e.source, e.target])
+      ...this._edges.map(e => e.source),
+      ...this._edges.map(e => e.target)
     ]) as ReadonlySet<DeploymentElement>
   }
 
   public get resolvedElements() {
     return new Set([
       ...this._explicits.values(),
-      ...this._implicits.values(),
-      ...this._edges.flatMap(e => [e.source, e.target])
+      ...this._edges.map(e => e.source),
+      ...this._edges.map(e => e.target),
+      ...this._implicits.values()
     ]) as ReadonlySet<DeploymentElement>
   }
 

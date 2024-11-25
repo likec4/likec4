@@ -21,16 +21,16 @@ describe('base', () => {
       'customer',
       'support',
       'cloud',
-      'email',
-      'amazon'
+      'amazon',
+      'email'
     ])
-    const [customer, support, cloud, email, amazon] = nodes
+    const [customer, support, cloud, amazon, email] = nodes
 
     expect(edgeIds).toEqual([
       'customer:cloud',
       'support:cloud',
-      'cloud:amazon',
       'cloud:email',
+      'cloud:amazon',
       'email:cloud'
     ])
 
@@ -40,8 +40,8 @@ describe('base', () => {
     })
     expect(cloud).toMatchObject({
       outEdges: [
-        'cloud:amazon',
-        'cloud:email'
+        'cloud:email',
+        'cloud:amazon'
       ],
       inEdges: [
         'email:cloud',

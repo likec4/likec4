@@ -1,4 +1,4 @@
-import { values } from 'remeda'
+import { nonexhaustive } from '../errors'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
@@ -8,6 +8,7 @@ import {
   type DynamicView,
   type ElementView,
   isDeploymentView,
+  isDynamicView,
   isElementView,
   type LikeC4View,
   type ParsedLikeC4Model
@@ -49,15 +50,17 @@ export function mkComputeView(model: ParsedLikeC4Model): ComputeView {
           break
         case isDeploymentView(viewsource): {
           deploymentGraph ??= new LikeC4DeploymentGraph({
-            elements: values(model.deployments.elements),
+            ...model.deployments,
             modelGraph: index
           })
           view = DeploymentViewComputeCtx.compute(viewsource, deploymentGraph)
           break
         }
-        default:
+        case isDynamicView(viewsource):
           view = DynamicViewComputeCtx.compute(viewsource, index)
           break
+        default:
+          nonexhaustive(viewsource)
       }
       return {
         isSuccess: true,

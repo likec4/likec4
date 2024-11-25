@@ -1,13 +1,18 @@
 import { isArray, isString, map } from 'remeda'
-import type { LiteralUnion, Simplify, Tagged } from 'type-fest'
+import type { LiteralUnion, Simplify, Tagged, Writable } from 'type-fest'
 import {
   type AutoLayoutDirection,
   type CustomElementExpr,
   type CustomRelationExpr,
+  type DeploymentExpression,
+  type DeploymentView,
   type ElementExpression as C4ElementExpression,
+  type ElementView,
   type Expression as C4Expression,
   type Fqn,
+  isDeploymentView,
   isElementPredicateExpr,
+  type LikeC4View,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator
@@ -15,25 +20,58 @@ import {
 import type { AnyTypes, Types } from './_types'
 import type { views, ViewsBuilder as Builder } from './Builder.views'
 
-export interface ViewBuilder<T extends AnyTypes> {
-  include(...exprs: C4Expression[]): ViewBuilder<T>
-  exclude(...exprs: C4Expression[]): ViewBuilder<T>
-  style(rule: ViewRuleStyle): ViewBuilder<T>
-  autoLayout(layout: AutoLayoutDirection): ViewBuilder<T>
+interface AViewBuilder<
+  Types extends AnyTypes,
+  Fqn extends string,
+  TypedExpr,
+  ElementExpr extends string = ViewPredicate.ElementExpr<Fqn>,
+  Expr extends string = ViewPredicate.AllExpression<ElementExpr>
+> {
+  Types: Types
+  ElementExpr: ElementExpr
+  Expr: Expr
+  TypedExpr: TypedExpr
+  $expr(expr: Expr | TypedExpr): TypedExpr
+  include(...exprs: Expr[]): this
+  exclude(...exprs: Expr[]): this
+  style(rule: ViewRuleStyle): this
+  autoLayout(layout: AutoLayoutDirection): this
+}
+
+export interface ViewBuilder<T extends AnyTypes> extends AViewBuilder<T, T['Fqn'], C4Expression> {
+  $expr(expr: ViewPredicate.Expression<T> | C4Expression): TypedC4Expression<T>
+  include(...exprs: C4Expression[]): this
+  exclude(...exprs: C4Expression[]): this
+  style(rule: ViewRuleStyle): this
+  autoLayout(layout: AutoLayoutDirection): this
+}
+
+export interface DeploymentViewBuilder<T extends AnyTypes>
+  extends AViewBuilder<T, T['DeploymentFqn'], DeploymentExpression>
+{
+  $expr(expr: ViewPredicate.DeploymentExpression<T> | DeploymentExpression): TypedDeploymentExpression<T>
+  include(...exprs: DeploymentExpression[]): this
+  exclude(...exprs: DeploymentExpression[]): this
+  style(rule: ViewRuleStyle): this
+  autoLayout(layout: AutoLayoutDirection): this
 }
 
 export namespace ViewPredicate {
   export type ElementExpr<Fqn extends string> = '*' | Fqn | `${Fqn}.*` | `${Fqn}._`
 
-  type AllExpression<ElementExpr extends string> =
+  export type AllExpression<ElementExpr extends string> =
     | ElementExpr
     | `-> ${ElementExpr} ->`
     | `-> ${ElementExpr}`
     | `${ElementExpr} ->`
     | `${ElementExpr} ${'->' | '<->'} ${ElementExpr}`
 
-  export type Expression<T extends AnyTypes> = T extends Types<any, infer F extends string, any, any, any, any>
-    ? AllExpression<ViewPredicate.ElementExpr<F>>
+  export type Expression<T extends AnyTypes> = T extends
+    Types<any, infer F extends string, any, any, any, any, any, any> ? AllExpression<ViewPredicate.ElementExpr<F>>
+    : never
+
+  export type DeploymentExpression<T extends AnyTypes> = T extends
+    Types<any, any, any, any, any, any, any, infer F extends string> ? AllExpression<ViewPredicate.ElementExpr<F>>
     : never
 
   export type WhereTag<Tag extends string> = `tag ${'is' | 'is not'} #${Tag}`
@@ -67,7 +105,11 @@ export namespace ViewPredicate {
   }
 }
 
+type Op<T> = (b: T) => T
 export type ViewRuleBuilderOp<Types extends AnyTypes> = (b: ViewBuilder<Types>) => ViewBuilder<Types>
+export type DeploymentViewRuleBuilderOp<Types extends AnyTypes> = (
+  b: DeploymentViewBuilder<Types>
+) => DeploymentViewBuilder<Types>
 
 export interface AddViewHelper<Props = unknown> {
   // <
@@ -145,8 +187,28 @@ export interface AddViewOfHelper<Props = unknown> {
   ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
 }
 
+export interface AddDeploymentViewHelper<Props = unknown> {
+  <
+    const Id extends string,
+    T extends AnyTypes
+  >(
+    id: Id,
+    builder: DeploymentViewRuleBuilderOp<T>
+  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+
+  <
+    const Id extends string,
+    T extends AnyTypes
+  >(
+    id: Id,
+    propsOrTitle: Props | string | undefined,
+    builder: DeploymentViewRuleBuilderOp<T>
+  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+}
+
 // To hook types
 type TypedC4Expression<Types extends AnyTypes> = Tagged<C4Expression, 'typed', Types>
+type TypedDeploymentExpression<Types extends AnyTypes> = Tagged<DeploymentExpression, 'typed', Types>
 
 function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<any, any> {
   if (isString(where)) {
@@ -200,15 +262,24 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
   throw new Error(`Unknown where operator: ${where}`)
 }
 
-function $include<Types extends AnyTypes>(
+function $include<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
-    | [ViewPredicate.Expression<Types>]
-    | [TypedC4Expression<Types>]
-    | [ViewPredicate.Expression<Types>, ViewPredicate.Custom<Types>]
-): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
+    | [B['Expr']]
+    | [B['Expr'], ViewPredicate.Custom<B['Types']>]
+  // | [B['TypedExpr']]
+  // | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
+  // ): (b: B) => B
+  // function $include<B extends ViewBuilder<AnyTypes>>(
+  //   ...args:
+  //     | [ViewPredicate.Expression<B['Types']>]
+  //     | [TypedC4Expression<B['Types']>]
+  //     | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
+  // ): (b: B) => B
+  // function $include<B extends ViewBuilder<AnyTypes> | DeploymentViewBuilder<AnyTypes>>(
+  //   ...args: any[]
+): (b: B) => B {
   return (b) => {
-    let expr = $expr(args[0]) as C4Expression
-    const isElement = isElementPredicateExpr(expr)
+    let expr = b.$expr(args[0])
     if (args.length === 2) {
       const condition = args[1].where ? parseWhere(args[1].where) : undefined
       if (condition) {
@@ -222,6 +293,7 @@ function $include<Types extends AnyTypes>(
 
       const custom = args[1].with
       if (custom) {
+        const isElement = isElementPredicateExpr(expr)
         if (isElement) {
           expr = {
             custom: {
@@ -239,19 +311,29 @@ function $include<Types extends AnyTypes>(
         }
       }
     }
-    b.include(expr)
+    b.include(expr as any)
     return b
   }
 }
 
-function $exclude<Types extends AnyTypes>(
+function $exclude<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
-    | [ViewPredicate.Expression<Types>]
-    | [TypedC4Expression<Types>]
-    | [ViewPredicate.Expression<Types>, ViewPredicate.Custom<Types>]
-): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
+    | [B['Expr']]
+    | [B['Expr'], ViewPredicate.Custom<B['Types']>]
+  // | [B['TypedExpr']]
+  // | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
+  // ): (b: B) => B
+  // function $include<B extends ViewBuilder<AnyTypes>>(
+  //   ...args:
+  //     | [ViewPredicate.Expression<B['Types']>]
+  //     | [TypedC4Expression<B['Types']>]
+  //     | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
+  // ): (b: B) => B
+  // function $include<B extends ViewBuilder<AnyTypes> | DeploymentViewBuilder<AnyTypes>>(
+  //   ...args: any[]
+): (b: B) => B {
   return (b) => {
-    let expr = $expr(args[0]) as C4Expression
+    let expr = b.$expr(args[0]) as C4Expression
     if (args.length === 2 && args[1].where) {
       const condition = parseWhere(args[1].where)
       expr = {
@@ -320,13 +402,75 @@ function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C
   } as TypedC4Expression<Types>
 }
 
-function $style<Types extends AnyTypes>(
-  element: ViewPredicate.ElementExpr<Types['Fqn']> | NonEmptyArray<ViewPredicate.ElementExpr<Types['Fqn']>>,
+function $deploymentExpr<Types extends AnyTypes>(
+  expr: ViewPredicate.DeploymentExpression<Types> | DeploymentExpression
+): TypedDeploymentExpression<Types> {
+  if (!isString(expr)) {
+    return expr as TypedDeploymentExpression<Types>
+  }
+  if (expr === '*') {
+    return { wildcard: true } as TypedDeploymentExpression<Types>
+  }
+  if (expr.startsWith('->')) {
+    if (expr.endsWith('->')) {
+      return {
+        inout: $deploymentExpr(expr.replace(/->/g, '').trim()) as any
+      } as TypedDeploymentExpression<Types>
+    }
+    return {
+      incoming: $deploymentExpr(expr.replace('-> ', '')) as any
+    } as TypedDeploymentExpression<Types>
+  }
+  if (expr.endsWith(' ->')) {
+    return {
+      outgoing: $deploymentExpr(expr.replace(' ->', '')) as any
+    } as TypedDeploymentExpression<Types>
+  }
+  if (expr.includes(' <-> ')) {
+    const [source, target] = expr.split(' <-> ')
+    return {
+      source: $deploymentExpr(source) as any,
+      target: $deploymentExpr(target) as any,
+      isBidirectional: true
+    } as TypedDeploymentExpression<Types>
+  }
+  if (expr.includes(' -> ')) {
+    const [source, target] = expr.split(' -> ')
+    return {
+      source: $deploymentExpr(source),
+      target: $deploymentExpr(target)
+    } as TypedDeploymentExpression<Types>
+  }
+  if (expr.endsWith('._')) {
+    return {
+      ref: {
+        id: expr.replace('._', '') as Fqn
+      },
+      isExpanded: true
+    } as TypedDeploymentExpression<Types>
+  }
+  if (expr.endsWith('.*')) {
+    return {
+      ref: {
+        id: expr.replace('.*', '') as Fqn
+      },
+      isNested: true
+    } as TypedDeploymentExpression<Types>
+  }
+  return {
+    ref: {
+      id: expr as any as Fqn
+    }
+  } as TypedDeploymentExpression<Types>
+}
+
+function $style<B extends AViewBuilder<AnyTypes, any, any>>(
+  element: B['ElementExpr'] | NonEmptyArray<B['ElementExpr']>,
   { notation, ...style }: ViewRuleStyle['style'] & { notation?: string }
-): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
+): (b: B) => B {
   return (b) =>
     b.style({
-      targets: (isArray(element) ? element : [element]).map(e => $expr(e) as C4ElementExpression),
+      targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as C4ElementExpression),
       ...notation ? { notation } : {},
       style: {
         ...style
@@ -334,25 +478,67 @@ function $style<Types extends AnyTypes>(
     })
 }
 
-function $autoLayout<Types extends AnyTypes>(
+function $autoLayout<B extends AViewBuilder<AnyTypes, any, any>>(
   layout: AutoLayoutDirection
-): (b: ViewBuilder<Types>) => ViewBuilder<Types> {
+): (b: B) => B {
   return (b) => b.autoLayout(layout)
 }
 
-function $rules<T extends AnyTypes>(...rules: ViewRuleBuilderOp<T>[]): (b: ViewBuilder<T>) => ViewBuilder<T> {
+function $rules<B extends AViewBuilder<AnyTypes, any, any>>(...rules: Op<B>[]): (b: B) => B {
   return (b) => rules.reduce((b, rule) => rule(b), b)
 }
 
-export { $autoLayout, $exclude, $expr, $include, $rules, $style }
+export { $autoLayout, $exclude, $include, $rules, $style }
 
 export type ViewHelpers<T = unknown> = {
   views: typeof views
   view: AddViewHelper<T>
   viewOf: AddViewOfHelper<T>
+  deploymentView: AddDeploymentViewHelper<T>
   $include: typeof $include
   $exclude: typeof $exclude
   $style: typeof $style
   $rules: typeof $rules
   $autoLayout: typeof $autoLayout
+}
+
+export function mkViewBuilder(view: Writable<DeploymentView>): DeploymentViewBuilder<AnyTypes>
+export function mkViewBuilder(view: Writable<ElementView>): ViewBuilder<AnyTypes>
+export function mkViewBuilder(
+  view: Writable<ElementView | DeploymentView>
+): DeploymentViewBuilder<AnyTypes> | ViewBuilder<AnyTypes> {
+  const viewBuilder = {
+    $expr: isDeploymentView(view) ? $deploymentExpr : $expr,
+    autoLayout(autoLayout: unknown) {
+      view.rules.push({
+        direction: autoLayout
+      } as any)
+      return viewBuilder
+    },
+    exclude(expr: unknown) {
+      view.rules.push({
+        exclude: [expr]
+      } as any)
+      return viewBuilder
+    },
+    include(expr: unknown) {
+      view.rules.push({
+        include: [expr]
+      } as any)
+      return viewBuilder
+    },
+    style(rule: any) {
+      view.rules.push(rule)
+      return viewBuilder
+    }
+    // title(title: string) {
+    //   view.title = title
+    //   return viewBuilder
+    // },
+    // description(description: string) {
+    //   view.description = description
+    //   return viewBuilder
+    // }
+  }
+  return viewBuilder as any
 }

@@ -1,4 +1,4 @@
-import { filter, flatMap, map, pipe } from 'remeda'
+import { filter, flatMap, pipe, reverse } from 'remeda'
 import { DeploymentElementExpression as Expr, type DeploymentRelationExpression } from '../../types/deployments'
 import { isAncestor } from '../../utils'
 import { LikeC4DeploymentGraph } from '../LikeC4DeploymentGraph'
@@ -7,14 +7,13 @@ import type { DeploymentViewComputeCtx } from './compute'
 
 type DeploymentElement = LikeC4DeploymentGraph.Element
 
+const isNode = LikeC4DeploymentGraph.isNode
 const isInstance = LikeC4DeploymentGraph.isInstance
 
 export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...expr }: Expr.Ref) {
   const currentElements = [...ctx.resolvedElements]
-
-  if ('node' in ref) {
-    const node = ctx.graph.node(ref.node)
-
+  const el = ctx.graph.element(ref.id)
+  if (isNode(el)) {
     if (expr.isExpanded) {
       // const implicits = ctx.graph.allNestedInstances(node)
 
@@ -92,66 +91,71 @@ export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...ex
       //     )
       //   )
       // }
-      const implicits = ctx.graph.children(node)
-      ctx.addImplicit(...implicits)
+      const implicits = ctx.graph.children(el)
 
-      const edges = [...ctx.graph.anyEdgesBetween(node, currentElements)]
-      const includedImplicits = new Set<DeploymentElement>(implicits.filter(implicit => isInstance(implicit)))
+      const edges = [...ctx.addEdges(ctx.graph.anyEdgesBetween(el, currentElements))]
+
+      const includedImplicits = [] as DeploymentElement[]
       for (const implicit of implicits) {
         const edgesWithImplicit = [...ctx.graph.anyEdgesBetween(implicit, currentElements)]
         if (edgesWithImplicit.length > 0) {
-          includedImplicits.add(implicit)
-          edges.push(...edgesWithImplicit)
+          ctx.addElement(implicit)
+          edges.push(...ctx.addEdges(edgesWithImplicit))
+          includedImplicits.push(implicit)
+        } else if (isInstance(implicit)) {
+          includedImplicits.push(implicit)
         }
       }
-      if (includedImplicits.size > 1) {
-        edges.push(...ctx.graph.edgesWithin(includedImplicits))
+      if (includedImplicits.length > 1) {
+        edges.push(...ctx.addEdges(ctx.graph.edgesWithin(includedImplicits)))
       }
+
       if (edges.length > 0) {
-        ctx.addElement(node)
-        ctx.addEdges(edges)
+        ctx.addElement(el)
       } else {
-        ctx.addImplicit(node)
+        ctx.addImplicit(el)
       }
+
+      ctx.addImplicit(...reverse(implicits))
 
       return
     }
 
     if (expr.isNested) {
       // if node is in currentElements and implicit - make it explicit
-      if (ctx.isImplicit(node)) {
-        ctx.addElement(node)
+      if (ctx.isImplicit(el)) {
+        ctx.addElement(el)
       }
-      let elements = ctx.graph.children(node)
-      if (elements.length > 1) {
-        ctx.addEdges(ctx.graph.edgesWithin(elements))
-      }
+      let elements = ctx.graph.children(el)
       for (const el of elements) {
         ctx.addElement(el)
         if (currentElements.length > 0) {
           ctx.addEdges(ctx.graph.anyEdgesBetween(el, currentElements))
         }
       }
+      if (elements.length > 1) {
+        ctx.addEdges(ctx.graph.edgesWithin(elements))
+      }
+
       return
     }
 
-    ctx.addElement(node)
-    ctx.addEdges(ctx.graph.anyEdgesBetween(node, currentElements))
+    ctx.addElement(el)
+    ctx.addEdges(ctx.graph.anyEdgesBetween(el, currentElements))
     return
   }
 
-  const instance = ctx.graph.instance(ref.instance)
-  ctx.addElement(instance)
-  ctx.addEdges(ctx.graph.anyEdgesBetween(instance, currentElements))
+  ctx.addElement(el)
+  ctx.addEdges(ctx.graph.anyEdgesBetween(el, currentElements))
 
-  if (instance.isOnlyChild) {
+  if (el.isOnlyChild) {
     return
   }
   // Check if any ancestor is already included
-  const ancestor = ctx.graph.ancestors(instance).find(ancestor =>
+  const ancestor = ctx.graph.ancestors(el).find(ancestor =>
     currentElements.includes(ancestor)
     || ctx.graph.siblings(ancestor).some(sibling =>
-      currentElements.some(current => current === sibling || isAncestor(sibling, current))
+      currentElements.some(current => current === sibling || isNode(current) && isAncestor(sibling, current))
     )
   )
   if (ancestor && !currentElements.includes(ancestor)) {
@@ -173,10 +177,7 @@ export function includeWildcard(ctx: DeploymentViewComputeCtx) {
     return !!child && rest.length === 0 && isInstance(child) ? child : node
   })
   ctx.addElement(...root)
-  if (root.length > 1) {
-    ctx.addEdges(ctx.graph.edgesWithin(root))
-  }
-  const children = flatMap(root, n => ctx.graph.children(n))
+  const children = flatMap(root, n => [n, ...ctx.graph.children(n)])
   ctx.addImplicit(...children)
   if (children.length > 1) {
     ctx.addEdges(ctx.graph.edgesWithin(children))
@@ -191,19 +192,19 @@ function resolveElements(ctx: DeploymentViewComputeCtx, expr: Expr) {
   if (Expr.isWildcard(expr)) {
     return ctx.graph.rootNodes()
   }
-  if ('node' in expr.ref) {
-    const node = ctx.graph.node(expr.ref.node)
+  const el = ctx.graph.element(expr.ref.id)
+  if (isNode(el)) {
     if (expr.isNested) {
-      const children = ctx.graph.children(node)
-      return children.length > 0 ? children : [node]
+      const children = ctx.graph.children(el)
+      return children.length > 0 ? children : [el]
     }
     if (expr.isExpanded) {
-      return [...ctx.graph.children(node), node]
+      return [...ctx.graph.children(el), el]
     }
-    return [node]
+    return [el]
   }
 
-  return [ctx.graph.instance(expr.ref.instance)]
+  return [el]
 }
 
 export function includeDirectRelation(ctx: DeploymentViewComputeCtx, expr: DeploymentRelationExpression.Direct) {

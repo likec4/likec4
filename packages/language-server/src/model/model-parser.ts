@@ -9,6 +9,7 @@ import type {
   ChecksFromDiagnostics,
   FqnIndexedDocument,
   ParsedAstDeployment,
+  ParsedAstDeploymentRelation,
   ParsedAstDeploymentView,
   ParsedAstDynamicView,
   ParsedAstElement,
@@ -1149,7 +1150,11 @@ export class LikeC4ModelParser {
 
     let next: TraversePair | undefined
     while (!!(next = traverseStack.shift())) {
-      if (ast.isDeploymentRelation(next) || !isValid(next)) {
+      if (ast.isDeploymentRelation(next)) {
+        doc.c4DeploymentRelations.push(this.parseDeploymentRelation(next, isValid))
+        continue
+      }
+      if (!isValid(next)) {
         continue
       }
       try {
@@ -1263,6 +1268,30 @@ export class LikeC4ModelParser {
       ...(isTruthy(technology) && { technology }),
       ...(isTruthy(description) && { description }),
       style
+    }
+  }
+
+  public parseDeploymentRelation(
+    astNode: ast.DeploymentRelation,
+    isValid: IsValidFn
+  ): ParsedAstDeploymentRelation {
+    const astPath = this.getAstNodePath(astNode)
+    const source = this.parseDeploymentDef(astNode.source)
+    const target = this.parseDeploymentDef(astNode.target)
+
+    const id = stringHash(
+      astPath,
+      astNode.source.$cstNode!.text,
+      astNode.target.$cstNode!.text
+    ) as c4.RelationID
+
+    const title = toSingleLine(astNode.title)
+
+    return {
+      id,
+      source,
+      target,
+      ...title && { title }
     }
   }
 
@@ -1431,19 +1460,18 @@ export class LikeC4ModelParser {
 
   private parseDeploymentDef(astNode: ast.DeploymentRef): c4.DeploymentRef {
     const refValue = nonNullable(astNode.value.ref, 'Deployment ref is empty')
-
     if (ast.isDeploymentNode(refValue)) {
       return {
-        node: this.resolveFqn(refValue)
+        id: this.resolveFqn(refValue)
       }
     }
     const deployedInstanceAst = nonNullable(instanceRef(astNode), 'Instance ref not found')
-    const instance = this.resolveFqn(deployedInstanceAst)
+    const id = this.resolveFqn(deployedInstanceAst)
 
     if (ast.isElement(refValue)) {
       const element = this.resolveFqn(refValue)
       return {
-        instance,
+        id,
         element
       }
     }
@@ -1451,7 +1479,7 @@ export class LikeC4ModelParser {
     // To ensure with compiler we processed all types
     invariant(ast.isDeployedInstance(refValue), 'Invalid deployment ref: ' + this.getAstNodePath(astNode))
     return {
-      instance
+      id
     }
   }
 
@@ -1490,7 +1518,7 @@ export class LikeC4ModelParser {
 
   private getMetadata(metadataAstNode: ast.MetadataProperty | undefined): { [key: string]: string } | undefined {
     return metadataAstNode?.props != null
-      ? mapToObj(metadataAstNode.props, (p) => [p.key, removeIndent(p.value)])
+      ? mapToObj(metadataAstNode.props, (p) => [p.key, removeIndent(p.value)] as [string, string])
       : undefined
   }
 

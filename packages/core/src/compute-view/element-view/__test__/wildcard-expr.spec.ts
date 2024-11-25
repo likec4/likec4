@@ -49,12 +49,12 @@ describe('wildcard-expr', () => {
     ])
     expect(nodeIds).toEqual([
       'cloud',
-      'email',
-      'amazon'
+      'amazon',
+      'email'
     ])
     expect(edgeIds).toEqual([
-      'cloud:amazon',
       'cloud:email',
+      'cloud:amazon',
       'email:cloud'
     ])
   })

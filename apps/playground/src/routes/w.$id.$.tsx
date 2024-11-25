@@ -88,6 +88,7 @@ export function WorkspaceDiagramPage() {
           enableRelationshipDetails
           showNotations
           enableFocusMode
+          enableSearch
           renderIcon={RendererIcon}
           onNavigateTo={(nextView, event) => {
             event?.stopPropagation()

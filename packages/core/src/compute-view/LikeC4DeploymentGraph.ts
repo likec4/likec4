@@ -1,18 +1,20 @@
-import { isArray, isString } from 'remeda'
+import { isArray, isString, reverse, values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import {
   type DeployedInstance,
+  DeploymentElement,
   type DeploymentNode,
+  type DeploymentRelation,
   type Element as ModelElement,
   type Fqn,
-  PhysicalElement,
-  type Relation
+  type ParsedLikeC4Model,
+  type Relation,
+  type RelationID
 } from '../types'
-import { commonAncestor, getOrCreate, isSameHierarchy, parentFqn, sortNaturalByFqn } from '../utils'
+import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn, sortNaturalByFqn } from '../utils'
 import { intersection, type LikeC4ModelGraph } from './LikeC4ModelGraph'
 
-type Params = {
-  elements: ReadonlyArray<PhysicalElement>
+type Params = ParsedLikeC4Model['deployments'] & {
   modelGraph: LikeC4ModelGraph
   // Optional for tests
   // globals?: ModelGlobals
@@ -35,33 +37,33 @@ type Edges = ReadonlyArray<LikeC4DeploymentGraph.Edge>
  * Subject to change.
  */
 export class LikeC4DeploymentGraph {
-  readonly #nodes = new Map<Fqn, DeploymentNode>()
   // Parent element for given FQN
   // readonly #parents = new Map<Fqn, DeploymentNode>()
   // Children elements for given FQN
   readonly #children = new Map<Fqn, Array<LikeC4DeploymentGraph.Element>>()
   readonly #rootNodes = new Set<DeploymentNode>()
-  readonly #instances = new Map<Fqn, LikeC4DeploymentGraph.Instance>()
+  readonly #elements = new Map<Fqn, LikeC4DeploymentGraph.Element>()
 
-  readonly #cacheAscendingSiblings = new Map<Fqn, DeploymentNode[]>()
+  readonly #cacheAscendingSiblings = new Map<Fqn, LikeC4DeploymentGraph.Element[]>()
 
-  // readonly #relations = new Map<RelationID, Relation>()
   // // Incoming to an element or its descendants
-  readonly #incoming = new Map<Fqn, ReadonlySet<Relation>>()
+  readonly #incoming = new Map<Fqn, ReadonlySet<LikeC4DeploymentGraph.EdgeRelation>>()
   // // Outgoing from an element or its descendants
-  readonly #outgoing = new Map<Fqn, ReadonlySet<Relation>>()
+  readonly #outgoing = new Map<Fqn, ReadonlySet<LikeC4DeploymentGraph.EdgeRelation>>()
   // // Relationships inside the element, among descendants
   // readonly #internal = new MapRelations()
 
   // readonly #cacheAscendingSiblings = new Map<Fqn, Element[]>()
 
+  readonly #deploymentRelations = new Map<RelationID, DeploymentRelation>()
+  readonly #deploymentIncoming = new Map<Fqn, Set<DeploymentRelation>>()
+  readonly #deploymentOutgoing = new Map<Fqn, Set<DeploymentRelation>>()
+
   readonly #nestedInstances = new Map<Fqn, ReadonlyArray<LikeC4DeploymentGraph.Instance>>()
 
   public readonly modelGraph: LikeC4ModelGraph
 
-  constructor(
-    { elements, modelGraph }: Params
-  ) {
+  constructor({ elements, relations, modelGraph }: Params) {
     this.modelGraph = modelGraph
     const instances: DeployedInstance[] = []
     // this.globals = globals ?? {
@@ -69,8 +71,8 @@ export class LikeC4DeploymentGraph {
     //   dynamicPredicates: {},
     //   styles: {}
     // }
-    for (const el of sortNaturalByFqn(elements)) {
-      if (PhysicalElement.isDeploymentNode(el)) {
+    for (const el of sortNaturalByFqn(values(elements))) {
+      if (DeploymentElement.isDeploymentNode(el)) {
         this.addDeploymentNode(el)
       } else {
         instances.push(el)
@@ -79,21 +81,26 @@ export class LikeC4DeploymentGraph {
     for (const el of instances) {
       this.addInstance(el)
     }
+    for (const rel of values(relations)) {
+      this.addRelation(rel)
+    }
   }
 
   public rootNodes(): ReadonlyArray<DeploymentNode> {
     return Array.from(this.#rootNodes)
   }
 
-  public node(id: Fqn) {
-    return nonNullable(this.#nodes.get(id), `Node ${id} not found`)
+  public node(id: Fqn): DeploymentNode {
+    const nd = this.element(id)
+    invariant(LikeC4DeploymentGraph.isNode(nd), `Element ${id} is not a DeploymentNode`)
+    return nd
   }
 
   public parent(element: FqnOrElement): DeploymentNode | null {
     const id = isString(element) ? element : element.id
     const parentId = parentFqn(id)
     if (parentId) {
-      invariant(this.#nodes.has(parentId), `Parent ${parentId} not found for ${id}`)
+      invariant(this.#elements.has(parentId), `Parent ${parentId} not found for ${id}`)
       return this.node(parentId)
     }
     return null
@@ -108,11 +115,13 @@ export class LikeC4DeploymentGraph {
   }
 
   public element(id: Fqn): LikeC4DeploymentGraph.Element {
-    return nonNullable(this.#instances.get(id) ?? this.#nodes.get(id), `Element ${id} not found`)
+    return nonNullable(this.#elements.get(id), `Element ${id} not found`)
   }
 
   public instance(id: Fqn) {
-    return nonNullable(this.#instances.get(id), `Instance ${id} not found`)
+    const nd = this.element(id)
+    invariant(LikeC4DeploymentGraph.isInstance(nd), `Element ${id} is not a DeployedInstance`)
+    return nd
   }
 
   // Get all sibling (i.e. same parent)
@@ -171,38 +180,32 @@ export class LikeC4DeploymentGraph {
     })
   }
 
-  public incoming(element: FqnOrElement): ReadonlySet<Relation> {
+  public incoming(element: FqnOrElement): ReadonlySet<LikeC4DeploymentGraph.EdgeRelation> {
     const id = isString(element) ? element : element.id
     return getOrCreate(this.#incoming, id, () => {
-      const relations = new Set<Relation>()
+      const relations = new Set<LikeC4DeploymentGraph.EdgeRelation>(
+        this._incomingTo(id).values()
+      )
       for (const instance of this.allNestedInstances(id)) {
         for (const rel of this.modelGraph.incoming(instance.element)) {
           relations.add(rel)
         }
       }
-      // for (const instance of this.allNestedInstances(id)) {
-      //   for (const rel of this.modelGraph.outgoing(instance.element)) {
-      //     relations.delete(rel)
-      //   }
-      // }
       return relations
     })
   }
 
-  public outgoing(element: FqnOrElement): ReadonlySet<Relation> {
+  public outgoing(element: FqnOrElement): ReadonlySet<LikeC4DeploymentGraph.EdgeRelation> {
     const id = isString(element) ? element : element.id
     return getOrCreate(this.#outgoing, id, () => {
-      const relations = new Set<Relation>()
+      const relations = new Set<LikeC4DeploymentGraph.EdgeRelation>(
+        this._outgoingFrom(id).values()
+      )
       for (const instance of this.allNestedInstances(id)) {
         for (const rel of this.modelGraph.outgoing(instance.element)) {
           relations.add(rel)
         }
       }
-      // for (const instance of this.allNestedInstances(id)) {
-      //   for (const rel of this.modelGraph.incoming(instance.element)) {
-      //     relations.delete(rel)
-      //   }
-      // }
       return relations
     })
   }
@@ -234,17 +237,6 @@ export class LikeC4DeploymentGraph {
         continue
       }
 
-      if (element_out.size > 0) {
-        const outcoming = intersection(this.incoming(other), element_out)
-        if (outcoming.size > 0) {
-          result.push({
-            source: element,
-            target: other,
-            relations: outcoming
-          })
-        }
-      }
-
       if (in_element.size > 0) {
         const incoming = intersection(this.outgoing(other), in_element)
         // const incoming = filter(other_out, isIncoming)
@@ -253,6 +245,17 @@ export class LikeC4DeploymentGraph {
             source: other,
             target: element,
             relations: incoming
+          })
+        }
+      }
+
+      if (element_out.size > 0) {
+        const outcoming = intersection(this.incoming(other), element_out)
+        if (outcoming.size > 0) {
+          result.push({
+            source: element,
+            target: other,
+            relations: outcoming
           })
         }
       }
@@ -275,7 +278,7 @@ export class LikeC4DeploymentGraph {
       if (index === array.length - 1) {
         return acc
       }
-      acc.push(...this.anyEdgesBetween(el, array.slice(index + 1)))
+      acc.push(...reverse(this.anyEdgesBetween(el, array.slice(index + 1))))
       return acc
     }, [] as LikeC4DeploymentGraph.Edge[])
   }
@@ -322,13 +325,13 @@ export class LikeC4DeploymentGraph {
   //   }
 
   private addDeploymentNode(el: DeploymentNode) {
-    if (this.#nodes.has(el.id)) {
+    if (this.#elements.has(el.id)) {
       throw new Error(`DeploymentNode ${el.id} already exists`)
     }
-    this.#nodes.set(el.id, el)
+    this.#elements.set(el.id, el)
     const parentId = parentFqn(el.id)
     if (parentId) {
-      invariant(this.#nodes.has(parentId), `Parent ${parentId} not found for ${el.id}`)
+      invariant(this.#elements.has(parentId), `Parent ${parentId} not found for ${el.id}`)
       this._childrenOf(parentId).push(el)
     } else {
       this.#rootNodes.add(el)
@@ -336,7 +339,7 @@ export class LikeC4DeploymentGraph {
   }
 
   private addInstance(el: DeployedInstance) {
-    if (this.#instances.has(el.id)) {
+    if (this.#elements.has(el.id)) {
       throw new Error(`DeployedInstance ${el.id} already exists`)
     }
     const parent = nonNullable(this.parent(el.id), 'Instance must have a parent DeploymentNode')
@@ -346,40 +349,58 @@ export class LikeC4DeploymentGraph {
       this.modelGraph.element(el.element),
       this
     )
-    this.#instances.set(el.id, instance)
+    this.#elements.set(el.id, instance)
     this._childrenOf(parent.id).push(instance)
+  }
+
+  private addRelation(rel: DeploymentRelation) {
+    if (this.#deploymentRelations.has(rel.id)) {
+      throw new Error(`Relation ${rel.id} already exists`)
+    }
+    const sourceFqn = rel.source.id
+    invariant(this.#elements.has(sourceFqn), `Source ${sourceFqn} not found for ${rel.id}`)
+    const targetFqn = rel.target.id
+    invariant(this.#elements.has(targetFqn), `Target ${targetFqn} not found for ${rel.id}`)
+
+    this.#deploymentRelations.set(rel.id, rel)
+
+    this._incomingTo(sourceFqn).add(rel)
+    this._outgoingFrom(targetFqn).add(rel)
+
+    const relParent = commonAncestor(sourceFqn, targetFqn)
+    // Process internal relationships
+    // if (relParent) {
+    //   for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
+    //     this._internalOf(ancestor).add(rel)
+    //   }
+    // }
+    // Process source hierarchy
+    for (const sourceAncestor of ancestorsFqn(sourceFqn)) {
+      if (sourceAncestor === relParent) {
+        break
+      }
+      this._outgoingFrom(sourceAncestor).add(rel)
+    }
+    // Process target hierarchy
+    for (const targetAncestor of ancestorsFqn(targetFqn)) {
+      if (targetAncestor === relParent) {
+        break
+      }
+      this._incomingTo(targetAncestor).add(rel)
+    }
   }
 
   private _childrenOf(id: Fqn) {
     return getOrCreate(this.#children, id, () => [])
   }
 
-  // private _incomingTo(id: Fqn) {
-  //   let incoming = this.#incoming.get(id)
-  //   if (!incoming) {
-  //     incoming = new RelationsSet()
-  //     this.#incoming.set(id, incoming)
-  //   }
-  //   return incoming
-  // }
+  private _incomingTo(id: Fqn) {
+    return getOrCreate(this.#deploymentIncoming, id, () => new Set())
+  }
 
-  // private _outgoingFrom(id: Fqn) {
-  //   let outgoing = this.#outgoing.get(id)
-  //   if (!outgoing) {
-  //     outgoing = new RelationsSet()
-  //     this.#outgoing.set(id, outgoing)
-  //   }
-  //   return outgoing
-  // }
-
-  // private _internalOf(id: Fqn) {
-  //   let internal = this.#internal.get(id)
-  //   if (!internal) {
-  //     internal = new RelationsSet()
-  //     this.#internal.set(id, internal)
-  //   }
-  //   return internal
-  // }
+  private _outgoingFrom(id: Fqn) {
+    return getOrCreate(this.#deploymentOutgoing, id, () => new Set())
+  }
 }
 
 export namespace LikeC4DeploymentGraph {
@@ -394,6 +415,10 @@ export namespace LikeC4DeploymentGraph {
   //     parentId
   //   }
   // }
+
+  export const isNode = (el: Element): el is DeploymentNode => {
+    return !(el instanceof Instance)
+  }
 
   export const isInstance = (el: Element): el is Instance => {
     return el instanceof Instance
@@ -419,10 +444,11 @@ export namespace LikeC4DeploymentGraph {
     }
   }
 
+  export type EdgeRelation = Relation | DeploymentRelation
   export interface Edge {
     source: Element
     target: Element
-    relations: Set<Relation>
+    relations: Set<EdgeRelation>
     parentId?: Fqn | null
   }
 }

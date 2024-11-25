@@ -2,7 +2,7 @@ import { difference, filter, map, pipe, sort, tap } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
 import type { Fqn } from '../../types/element'
 import type { ComputedEdge, ComputedNode, EdgeId } from '../../types/view'
-import { compareByFqnHierarchically } from '../../utils/fqn'
+import { compareByFqnHierarchically, compareFqnHierarchically } from '../../utils/fqn'
 import { Graph, postorder } from '../../utils/graphlib'
 import { compareRelations } from '../../utils/relations'
 
@@ -83,10 +83,10 @@ export function sortNodes({
     sources = pipe(
       nodes,
       filter(n => n.inEdges.length === 0 || n.parent === null),
-      sort(compareByFqnHierarchically),
       map(n => n.id)
     )
   }
+  // sources = sources.sort(compareFqnHierarchically)
   const orderedIds = postorder(g, sources).reverse() as Fqn[]
   const sorted = orderedIds.map(getNode)
   if (sorted.length < nodes.length) {

@@ -6,6 +6,8 @@ import {
   type Color,
   DefaultElementShape,
   DefaultThemeColor,
+  DeploymentElement,
+  type DeploymentView,
   type Element,
   type ElementShape,
   type ElementView,
@@ -23,16 +25,18 @@ import {
 import type { ParsedLikeC4Model } from '../types/model'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
-import type { AddElement, AddElementHelpers } from './Builder.element'
-import { type ModelBuilder, type ModelHelpers } from './Builder.model'
+import type { AddDeploymentNode } from './Builder.deployment'
+import type { AddDeploymentNodeHelpers, DeloymentModelHelpers, DeploymentModelBuilder } from './Builder.deploymentModel'
+import type { AddElement } from './Builder.element'
+import type { AddElementHelpers, ModelBuilder, ModelHelpers } from './Builder.model'
 import {
   $autoLayout,
   $exclude,
-  $expr,
   $include,
   $rules,
   $style,
-  type ViewBuilder,
+  type DeploymentViewRuleBuilderOp,
+  mkViewBuilder,
   type ViewHelpers,
   type ViewRuleBuilderOp
 } from './Builder.view'
@@ -52,10 +56,12 @@ export interface Builder<T extends AnyTypes> {
   helpers(): {
     model: ModelHelpers<T>
     views: ViewHelpers<T['NewViewProps']>
+    deployment: DeloymentModelHelpers<T>
   }
 
   __model(): ModelBuilder<T>
   __views(): ViewsBuilder<T>
+  __deployment(): DeploymentModelBuilder<T>
 
   build(): ParsedLikeC4Model<
     T['ElementKind'],
@@ -226,10 +232,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     dynamicPredicates: {},
     styles: {}
   } as ModelGlobals,
-  _deployments = {
-    elements: {},
-    relations: {}
-  } as ParsedLikeC4Model['deployments']
+  _deployments = new Map<string, DeploymentElement>()
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
     elements: {
@@ -249,42 +252,6 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return null
     }
     return map(links, l => (typeof l === 'string' ? { url: l } : l))
-  }
-
-  const mkViewBuilder = (view: Writable<ElementView>): ViewBuilder<T> => {
-    const viewBuilder: ViewBuilder<T> = {
-      autoLayout(autoLayout) {
-        view.rules.push({
-          direction: autoLayout
-        })
-        return viewBuilder
-      },
-      exclude(expr) {
-        view.rules.push({
-          exclude: [expr]
-        })
-        return viewBuilder
-      },
-      include(expr) {
-        view.rules.push({
-          include: [expr]
-        })
-        return viewBuilder
-      },
-      style(rule) {
-        view.rules.push(rule)
-        return viewBuilder
-      }
-      // title(title: string) {
-      //   view.title = title
-      //   return viewBuilder
-      // },
-      // description(description: string) {
-      //   view.description = description
-      //   return viewBuilder
-      // }
-    }
-    return viewBuilder
   }
 
   const self: Builder<T> = {
@@ -350,12 +317,35 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         return self
       }
     }),
+    __deployment: () => ({
+      addDeployment: (node: DeploymentElement) => {
+        if (_deployments.has(node.id)) {
+          throw new Error(`Deployment with id "${node.id}" already exists`)
+        }
+        const parent = parentFqn(node.id)
+        if (parent) {
+          invariant(
+            _deployments.get(parent),
+            `Parent element with id "${parent}" not found for node with id "${node.id}"`
+          )
+        }
+        if (DeploymentElement.isInstance(node)) {
+          invariant(parent, 'Instance must have parent')
+        }
+        _deployments.set(node.id, node)
+        return self
+      },
+      fqn: (id) => id as Fqn
+    }),
     build: () => ({
       specification: toLikeC4Specification(),
       elements: fromEntries(Array.from(_elements.entries())) as any,
       relations: mapToObj(_relations, r => [r.id, r]),
       globals: structuredClone(_globals),
-      deployments: structuredClone(_deployments),
+      deployments: {
+        elements: fromEntries(Array.from(_deployments.entries())) as any,
+        relations: {}
+      },
       views: fromEntries(Array.from(_views.entries())) as any
     }),
     helpers: () => ({
@@ -485,7 +475,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return b
           }
         },
-        view: (id, _props, builder?: ViewRuleBuilderOp<T>) => {
+        view: (id, _props, builder?: ViewRuleBuilderOp<any>) => {
           if (isFunction(_props)) {
             builder = _props
             _props = {}
@@ -522,8 +512,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         viewOf: (
           id,
           viewOf,
-          _props?: T['NewViewProps'] | string | ViewRuleBuilderOp<T>,
-          builder?: ViewRuleBuilderOp<T>
+          _props?: T['NewViewProps'] | string | ViewRuleBuilderOp<any>,
+          builder?: ViewRuleBuilderOp<any>
         ) => {
           if (isFunction(_props)) {
             builder = _props
@@ -559,12 +549,133 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return b
           }
         },
+        deploymentView: (
+          id,
+          _props?: T['NewViewProps'] | string | DeploymentViewRuleBuilderOp<any>,
+          builder?: DeploymentViewRuleBuilderOp<any>
+        ) => {
+          if (isFunction(_props)) {
+            builder = _props as any
+            _props = {}
+          }
+          return <T extends AnyTypes>(b: ViewsBuilder<T>): ViewsBuilder<T> => {
+            const {
+              links: _links = [],
+              title = null,
+              ...props
+            } = typeof _props === 'string' ? { title: _props } : { ..._props }
+
+            const links = mapLinks(_links)
+
+            const view: Writable<DeploymentView> = {
+              id: id as any,
+              __: 'deployment',
+              title,
+              description: null,
+              tags: null,
+              rules: [],
+              links,
+              customColorDefinitions: {},
+              ...props
+            }
+            b.addView(view)
+
+            if (builder) {
+              builder(mkViewBuilder(view))
+            }
+
+            return b
+          }
+        },
         $autoLayout,
         $exclude,
-        $expr,
         $include,
         $rules,
         $style
+      },
+      deployment: {
+        deployment: (...ops: ((b: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>)[]) => {
+          return (b: Builder<T>) => {
+            const v = b.__deployment()
+            for (const op of ops) {
+              op(v)
+            }
+            return b
+          }
+        },
+        instanceOf: <const Id extends string>(id: Id, to: string) => {
+          return <T extends AnyTypes>(
+            b: DeploymentModelBuilder<T>
+          ): DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>> => {
+            const _id = b.fqn(id)
+            invariant(_elements.has(to), `Target element with id "${to}" not found`)
+            b.addDeployment({
+              id: _id,
+              element: to as any
+            })
+            return b as any
+          }
+        },
+        ...mapValues(
+          spec.deployments ?? {},
+          ({ style: specStyle, ...spec }, kind) =>
+          <Id extends string>(
+            id: Id,
+            _props?: T['NewDeploymentNodeProps'] | string
+          ): AddDeploymentNode<Id> => {
+            const add = (<T extends AnyTypes>(b: DeploymentModelBuilder<T>) => {
+              const {
+                links: _links,
+                icon: _icon,
+                style,
+                title,
+                ...props
+              } = typeof _props === 'string' ? { title: _props } : { ..._props }
+
+              const links = mapLinks(_links)
+
+              const icon = _icon ?? specStyle?.icon
+
+              const _id = b.fqn(id)
+
+              b.addDeployment({
+                id: _id,
+                kind: kind as any,
+                title: title ?? nameFromFqn(_id),
+                description: null,
+                technology: null,
+                tags: null,
+                color: specStyle?.color ?? DefaultThemeColor as Color,
+                shape: specStyle?.shape ?? DefaultElementShape as ElementShape,
+                style: pickBy({
+                  border: specStyle?.border,
+                  opacity: specStyle?.opacity,
+                  ...style
+                }, isNonNullish),
+                links,
+                ...icon && { icon: icon as IconUrl },
+                ...spec,
+                ...props
+              })
+              return b
+            }) as AddDeploymentNode<Id>
+
+            add.with =
+              (...ops: Array<(input: DeploymentModelBuilder<any>) => DeploymentModelBuilder<any>>) =>
+              (b: DeploymentModelBuilder<any>) => {
+                add(b)
+                const nestedBuilder: DeploymentModelBuilder<any> = {
+                  ...b,
+                  fqn: (child) => `${b.fqn(id)}.${child}` as Fqn
+                }
+                for (const op of ops) {
+                  op(nestedBuilder)
+                }
+                return b
+              }
+            return add
+          }
+        ) as AddDeploymentNodeHelpers<T>
       }
     }),
     with: (...ops: ((b: Builder<T>) => Builder<T>)[]) => {
@@ -581,6 +692,7 @@ export namespace Builder {
   ): {
     builder: Builder<Types.FromSpecification<Spec>>
     model: ModelHelpers<Types.FromSpecification<Spec>>
+    deployment: DeloymentModelHelpers<Types.FromSpecification<Spec>>
     views: ViewHelpers<Types.FromSpecification<Spec>['NewViewProps']>
   } {
     const b = builder<Spec, Types.FromSpecification<Spec>>(spec)

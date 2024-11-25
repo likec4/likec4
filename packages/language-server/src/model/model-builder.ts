@@ -227,8 +227,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   )
 
   function toDeploymentElement(doc: LangiumDocument) {
-    return (parsed: c4.PhysicalElement): c4.PhysicalElement | null => {
-      if (!c4.PhysicalElement.isDeploymentNode(parsed)) {
+    return (parsed: c4.DeploymentElement): c4.DeploymentElement | null => {
+      if (!c4.DeploymentElement.isDeploymentNode(parsed)) {
         if (!parsed.links || parsed.links.length === 0) {
           return parsed
         }
@@ -287,6 +287,18 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         return acc
       },
       {} as c4.ParsedLikeC4Model['deployments']['elements']
+    )
+  )
+
+  const deploymentRelations = pipe(
+    docs,
+    flatMap(d => d.c4DeploymentRelations),
+    reduce(
+      (acc, el) => {
+        acc[el.id] = el
+        return acc
+      },
+      {} as c4.ParsedLikeC4Model['deployments']['relations']
     )
   )
 
@@ -375,7 +387,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     views,
     deployments: {
       elements: deploymentElements,
-      relations: {}
+      relations: deploymentRelations
     }
   }
 }

@@ -46,6 +46,23 @@ export type NewElementProps<Tag, Metadata> = {
   }
 }
 
+export type NewDeploymentNodeProps<Tag, Metadata> = {
+  title?: string
+  description?: string
+  technology?: string
+  tags?: IfNever<Tag, never, [Tag, ...Tag[]]>
+  metadata?: Metadata
+  icon?: string
+  shape?: ElementShape
+  color?: Color
+  links?: Array<string | { title?: string; url: string }>
+  style?: {
+    border?: BorderStyle
+    // 0-100
+    opacity?: number
+  }
+}
+
 export type NewViewProps<Tag> = {
   title?: string
   description?: string
@@ -80,7 +97,9 @@ export interface Types<
   ViewId extends string,
   RelationshipKind extends string,
   Tag extends string,
-  MetadataKey extends string
+  MetadataKey extends string,
+  DeploymentKind extends string,
+  DeploymentFqn extends string
 > {
   ElementKind: ElementKind
   Fqn: Fqn
@@ -88,6 +107,8 @@ export interface Types<
   RelationshipKind: RelationshipKind
   Tag: Tag
   MetadataKey: MetadataKey
+  DeploymentKind: DeploymentKind
+  DeploymentFqn: DeploymentFqn
 
   Tags: IfNever<Tag, never, [Tag, ...Tag[]]>
   // Metadata: Metadata<MetadataKey>
@@ -95,6 +116,8 @@ export interface Types<
   NewElementProps: NewElementProps<Tag, Metadata<MetadataKey>>
   NewRelationshipProps: NewRelationProps<RelationshipKind, Tag, Metadata<MetadataKey>>
   NewViewProps: NewViewProps<Tag>
+
+  NewDeploymentNodeProps: NewDeploymentNodeProps<Tag, Metadata<MetadataKey>>
 }
 
 /**
@@ -107,7 +130,9 @@ export interface TypesNested<
   ViewId extends string,
   RelationshipKind extends string,
   Tag extends string,
-  MetadataKey extends string
+  MetadataKey extends string,
+  DeploymentKind extends string,
+  DeploymentFqn extends string
 > extends
   Types<
     ElementKind,
@@ -115,7 +140,9 @@ export interface TypesNested<
     ViewId,
     RelationshipKind,
     Tag,
-    MetadataKey
+    MetadataKey,
+    DeploymentKind,
+    DeploymentFqn
   >
 {
   Parent: Parent
@@ -127,10 +154,14 @@ export type AnyTypes = Types<
   any,
   any,
   any,
+  any,
+  any,
   any
 >
 
 export type AnyTypesNested = TypesNested<
+  any,
+  any,
   any,
   any,
   any,
@@ -147,18 +178,23 @@ export namespace Types {
       never,
       KeysOf<Spec['relationships']>,
       TupleToUnion<Spec['tags']>,
-      TupleToUnion<Spec['metadataKeys']>
+      TupleToUnion<Spec['metadataKeys']>,
+      KeysOf<Spec['deployments']>,
+      never
     >
     : never
 
-  export type AddFqn<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any> ? TypesNested<
+  export type AddFqn<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, any>
+    ? TypesNested<
       P,
       T['ElementKind'],
       `${P}.${Id}` | T['Fqn'],
       T['ViewId'],
       T['RelationshipKind'],
       T['Tag'],
-      T['MetadataKey']
+      T['MetadataKey'],
+      T['DeploymentKind'],
+      T['DeploymentFqn']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -166,11 +202,37 @@ export namespace Types {
         T['ViewId'],
         T['RelationshipKind'],
         T['Tag'],
-        T['MetadataKey']
+        T['MetadataKey'],
+        T['DeploymentKind'],
+        T['DeploymentFqn']
       >
     : never
 
-  export type AddView<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any>
+  export type AddDeploymentFqn<T, Id extends string> = T extends
+    TypesNested<infer P, any, any, any, any, any, any, any, any> ? TypesNested<
+      P,
+      T['ElementKind'],
+      T['Fqn'],
+      T['ViewId'],
+      T['RelationshipKind'],
+      T['Tag'],
+      T['MetadataKey'],
+      T['DeploymentKind'],
+      `${P}.${Id}` | T['DeploymentFqn']
+    >
+    : T extends AnyTypes ? Types<
+        T['ElementKind'],
+        T['Fqn'],
+        T['ViewId'],
+        T['RelationshipKind'],
+        T['Tag'],
+        T['MetadataKey'],
+        T['DeploymentKind'],
+        Id | T['DeploymentFqn']
+      >
+    : never
+
+  export type AddView<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, any>
     ? TypesNested<
       P,
       T['ElementKind'],
@@ -178,7 +240,9 @@ export namespace Types {
       Id | T['ViewId'],
       T['RelationshipKind'],
       T['Tag'],
-      T['MetadataKey']
+      T['MetadataKey'],
+      T['DeploymentKind'],
+      T['DeploymentFqn']
     >
     : T extends AnyTypes ? Types<
         T['ElementKind'],
@@ -186,7 +250,9 @@ export namespace Types {
         Id | T['ViewId'],
         T['RelationshipKind'],
         T['Tag'],
-        T['MetadataKey']
+        T['MetadataKey'],
+        T['DeploymentKind'],
+        T['DeploymentFqn']
       >
     : never
 

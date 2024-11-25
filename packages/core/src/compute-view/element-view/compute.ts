@@ -181,15 +181,17 @@ export class ComputeCtx {
   protected get includedElements() {
     return new Set([
       ...this.explicits,
-      ...this.ctxEdges.flatMap(e => [e.source, e.target])
+      ...this.ctxEdges.map(e => e.source),
+      ...this.ctxEdges.map(e => e.target)
     ]) as ReadonlySet<Element>
   }
 
   protected get resolvedElements() {
     return new Set([
       ...this.explicits,
-      ...this.implicits,
-      ...this.ctxEdges.flatMap(e => [e.source, e.target])
+      ...this.ctxEdges.map(e => e.source),
+      ...this.ctxEdges.map(e => e.target),
+      ...this.implicits
     ]) as ReadonlySet<Element>
   }
 

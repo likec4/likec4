@@ -1,4 +1,4 @@
-import { isArray, isString } from 'remeda'
+import { isArray, isString, reverse } from 'remeda'
 import { invariant } from '../errors'
 import { type Element, type Fqn, type ModelGlobals, type Relation, type RelationID } from '../types'
 import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn } from '../utils'
@@ -164,18 +164,6 @@ export class LikeC4ModelGraph {
         continue
       }
 
-      if (element_out.size > 0) {
-        const outcoming = intersection(this._incomingTo(other.id), element_out)
-        // const outcoming = filter(in_other, isOutgoing)
-        if (outcoming.size > 0) {
-          result.push({
-            source: element,
-            target: other,
-            relations: [...outcoming]
-          })
-        }
-      }
-
       if (in_element.size > 0) {
         const incoming = intersection(this._outgoingFrom(other.id), in_element)
         // const incoming = filter(other_out, isIncoming)
@@ -184,6 +172,18 @@ export class LikeC4ModelGraph {
             source: other,
             target: element,
             relations: [...incoming]
+          })
+        }
+      }
+
+      if (element_out.size > 0) {
+        const outcoming = intersection(this._incomingTo(other.id), element_out)
+        // const outcoming = filter(in_other, isOutgoing)
+        if (outcoming.size > 0) {
+          result.push({
+            source: element,
+            target: other,
+            relations: [...outcoming]
           })
         }
       }
@@ -203,7 +203,7 @@ export class LikeC4ModelGraph {
       if (index === array.length - 1) {
         return acc
       }
-      acc.push(...this.anyEdgesBetween(el, array.slice(index + 1) as T))
+      acc.push(...reverse(this.anyEdgesBetween(el, array.slice(index + 1) as T)))
       return acc
     }, [] as RelationEdge[])
   }

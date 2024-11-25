@@ -98,12 +98,12 @@ export interface ParsedAstRelation {
 }
 
 // Alias for easier refactoring
-export type ParsedAstDeployment = c4.PhysicalElement
+export type ParsedAstDeployment = c4.DeploymentElement
 export namespace ParsedAstDeployment {
   export type Node = c4.DeploymentNode
   export type Instance = c4.DeployedInstance
 }
-
+export type ParsedAstDeploymentRelation = c4.DeploymentRelation
 // export interface ParsedAstGlobals {
 //   predicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.ViewRulePredicate>>
 //   dynamicPredicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.DynamicViewIncludeRule>>
@@ -201,6 +201,7 @@ export interface LikeC4DocumentProps {
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
   c4Deployments?: ParsedAstDeployment[]
+  c4DeploymentRelations?: ParsedAstDeploymentRelation[]
   // Fqn -> Element
   c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
@@ -224,6 +225,7 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
     c4Elements: [],
     c4Relations: [],
     c4Deployments: [],
+    c4DeploymentRelations: [],
     c4Globals: {
       predicates: {},
       dynamicPredicates: {},
@@ -253,6 +255,8 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Relations
     && !!doc.c4Views
     && !!doc.c4fqnIndex
+    && !!doc.c4Deployments
+    && !!doc.c4DeploymentRelations
   )
 }
 

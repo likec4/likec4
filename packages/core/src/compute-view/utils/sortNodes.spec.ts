@@ -242,7 +242,14 @@ describe('sortNodes', () => {
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'customer']
-      ]).toEqual(['customer', 'cloud', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'amazon'])
+      ]).toEqual([
+        'customer',
+        'cloud',
+        'cloud.frontend',
+        'cloud.backend',
+        'cloud.db',
+        'amazon'
+      ])
     })
   })
 

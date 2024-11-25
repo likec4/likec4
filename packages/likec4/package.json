@@ -70,7 +70,7 @@
     "bundle:react-dts": "tsx scripts/dts-react.ts",
     "bundle:webcomponent": "tsx scripts/bundle-webcomponent.ts",
     "generate": "tsx scripts/generate.ts",
-    "prepack": "turbo run build --log-prefix=none --log-order=grouped",
+    "prepack": "tsx scripts/prepack.ts",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist app/dist dev/.export dev/dist node_modules/.vite",
     "dev": "tsx watch src/cli/index.ts serve dev",

@@ -11,10 +11,18 @@ test('should have types', () => {
       component,
       relTo
     },
+    deployment: {
+      deployment,
+      instanceOf,
+      env,
+      vm
+    },
     views: {
+      deploymentView,
       views,
       view,
       viewOf,
+      $rules,
       $include
     },
     builder
@@ -27,6 +35,10 @@ test('should have types', () => {
       },
       system: {},
       component: {}
+    },
+    deployments: {
+      env: {},
+      vm: {}
     },
     relationships: {
       like: {},
@@ -50,20 +62,53 @@ test('should have types', () => {
           )
         )
       ),
+      deployment(
+        env('prod').with(
+          vm('vm1'),
+          vm('vm2')
+        ),
+        env('dev').with(
+          vm('vm1'),
+          instanceOf('api', 'cloud.backend.api'),
+          vm('vm2')
+        )
+      ),
       views(
         view('index', $include('*')),
-        viewOf('cloud', 'cloud', $include('*'))
+        viewOf(
+          'cloud',
+          'cloud',
+          $rules(
+            $include('*'),
+            $include('cloud.backend.*')
+          )
+        ),
+        deploymentView(
+          'prod',
+          $rules(
+            $include('prod.*')
+          )
+        )
       )
     )
-    .build()
 
-  expectTypeOf(m).toEqualTypeOf(
+  expectTypeOf(m.Types.Fqn).toEqualTypeOf(
+    '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
+  )
+  expectTypeOf(m.Types.ViewId).toEqualTypeOf(
+    '' as 'index' | 'cloud' | 'prod'
+  )
+  expectTypeOf(m.Types.DeploymentFqn).toEqualTypeOf(
+    '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
+  )
+
+  expectTypeOf(m.build()).toEqualTypeOf(
     {} as ParsedLikeC4Model<
       'actor' | 'system' | 'component',
       'like' | 'dislike',
       'tag1' | 'tag2',
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
-      'index' | 'cloud'
+      'index' | 'cloud' | 'prod'
     >
   )
 })

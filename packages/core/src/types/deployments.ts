@@ -1,6 +1,7 @@
 import type { MergeExclusive, Simplify, Tagged, UnionToIntersection } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
+import type { RelationID } from './relation'
 import type { Color } from './theme'
 
 export type DeploymentNodeKind<Kinds extends string = string> = Tagged<Kinds, 'DeploymentNodeKind'>
@@ -48,37 +49,47 @@ export interface DeployedInstance {
   readonly metadata?: Record<string, string>
 }
 
-export type PhysicalElement = Simplify<MergeExclusive<DeploymentNode, DeployedInstance>>
+export type DeploymentElement = Simplify<MergeExclusive<DeploymentNode, DeployedInstance>>
 
-export namespace PhysicalElement {
-  export const isDeploymentNode = (el: PhysicalElement): el is DeploymentNode => {
+export namespace DeploymentElement {
+  export const isDeploymentNode = (el: DeploymentElement): el is DeploymentNode => {
     return 'kind' in el && !('element' in el)
   }
-}
-
-export namespace DeploymentRef {
-  export interface Node {
-    readonly node: Fqn
-  }
-  export interface Instance {
-    readonly instance: Fqn
-    readonly element?: Fqn
+  export const isInstance = (el: DeploymentElement): el is DeployedInstance => {
+    return 'element' in el && !('kind' in el)
   }
 }
-export type DeploymentRef = ExclusiveUnion<{
-  Node: DeploymentRef.Node
-  Instance: DeploymentRef.Instance
-}>
 
-export type PhysicalRelationId = Tagged<string, 'PhysicalRelationId'>
+export interface DeploymentRef {
+  // Reference to DeploymentNode or DeployedInstance
+  readonly id: Fqn
+  // Reference to element within DeployedInstance
+  readonly element?: Fqn
+}
+
+// export namespace DeploymentRef {
+//   export interface Node {
+//     readonly node: Fqn
+//   }
+//   export interface Instance {
+//     readonly instance: Fqn
+//     readonly element?: Fqn
+//   }
+// }
+// export type DeploymentRef = ExclusiveUnion<{
+//   Node: DeploymentRef.Node
+//   Instance: DeploymentRef.Instance
+// }>
 
 /**
  * NOTE:
  */
-export interface PhysicalRelation {
-  readonly id: PhysicalRelationId
+export interface DeploymentRelation {
+  readonly id: RelationID
   readonly source: DeploymentRef
   readonly target: DeploymentRef
+  readonly title?: string
+  readonly tags?: NonEmptyArray<Tag> | null
 }
 // export interface DeploymentRelation
 
