@@ -167,7 +167,7 @@
     "terser": "^5.33.0",
     "tinyrainbow": "^1.2.0",
     "tsx": "~4.9.3",
-    "turbo": "^2.3.0",
+    "turbo": "^2.3.1",
     "typescript": "^5.6.3",
     "ufo": "^1.5.4",
     "unbuild": "^3.0.0-rc.11",
@@ -176,5 +176,5 @@
     "vitest": "^2.1.5",
     "yargs": "17.7.2"
   },
-  "packageManager": "yarn@4.5.1"
+  "packageManager": "yarn@4.5.2"
 }

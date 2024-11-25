@@ -2293,8 +2293,8 @@ __metadata:
     execa: "npm:^9.3.1"
     natural-compare-lite: "npm:^1.4.0"
     object-hash: "npm:^3.0.0"
-    remeda: "npm:^2.16.0"
-    turbo: "npm:^2.3.0"
+    remeda: "npm:^2.17.3"
+    turbo: "npm:^2.3.1"
     type-fest: "npm:4.27.0"
     typescript: "npm:^5.6.3"
     unbuild: "npm:^3.0.0-rc.11"
@@ -2434,7 +2434,7 @@ __metadata:
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.9.3"
-    turbo: "npm:^2.3.0"
+    turbo: "npm:^2.3.1"
     type-fest: "npm:4.27.0"
     typescript: "npm:^5.6.3"
     ufo: "npm:^1.5.4"
@@ -2463,7 +2463,7 @@ __metadata:
     remeda: "npm:^2.17.3"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    turbo: "npm:^2.3.0"
+    turbo: "npm:^2.3.1"
     type-fest: "npm:4.27.0"
     typescript: "npm:^5.6.3"
     unbuild: "npm:^3.0.0-rc.11"
@@ -2535,7 +2535,7 @@ __metadata:
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.9.3"
-    turbo: "npm:^2.3.0"
+    turbo: "npm:^2.3.1"
     type-fest: "npm:4.27.0"
     typescript: "npm:^5.6.3"
     ufo: "npm:^1.5.4"
@@ -8881,7 +8881,7 @@ __metadata:
     std-env: "npm:^3.8.0"
     tslib: "npm:^2.8.1"
     tsx: "npm:~4.9.3"
-    turbo: "npm:^2.3.0"
+    turbo: "npm:^2.3.1"
     typescript: "npm:^5.6.3"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
@@ -8967,7 +8967,7 @@ __metadata:
     terser: "npm:^5.33.0"
     tinyrainbow: "npm:^1.2.0"
     tsx: "npm:~4.9.3"
-    turbo: "npm:^2.3.0"
+    turbo: "npm:^2.3.1"
     type-fest: "npm:4.27.0"
     typescript: "npm:^5.6.3"
     ufo: "npm:^1.5.4"
@@ -12329,7 +12329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^2.16.0, remeda@npm:^2.17.3":
+"remeda@npm:^2.17.3":
   version: 2.17.3
   resolution: "remeda@npm:2.17.3"
   dependencies:
@@ -12593,7 +12593,7 @@ __metadata:
     npm-run-all2: "npm:^6.2.6"
     shipjs: "npm:^0.26.4"
     tsx: "npm:~4.9.3"
-    turbo: "npm:^2.3.0"
+    turbo: "npm:^2.3.1"
     typescript: "npm:^5.6.3"
     vite: "npm:5.4.11"
     vitest: "npm:^2.1.5"
@@ -13794,7 +13794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.3.0":
+"turbo@npm:^2.3.1":
   version: 2.3.1
   resolution: "turbo@npm:2.3.1"
   dependencies:
