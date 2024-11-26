@@ -2338,7 +2338,7 @@ __metadata:
     "@expressive-code/plugin-collapsible-sections": "npm:^0.38.3"
     "@expressive-code/plugin-line-numbers": "npm:^0.38.3"
     "@fontsource/ibm-plex-sans": "npm:^5.1.0"
-    "@types/picomatch": "npm:^2.3.4"
+    "@types/picomatch": "npm:^3.0.1"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
     astro: "npm:~4.16.13"
@@ -4065,10 +4065,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/picomatch@npm:^2.3.4":
-  version: 2.3.4
-  resolution: "@types/picomatch@npm:2.3.4"
-  checksum: 10c0/6eaa55e2867f8dd6c974261ff7f3e463c8f6afa8045225868ff45b25acc08c17c9705f213035700df51e4a6bb45633eb258b91b654eddd3f21acf0bab088d092
+"@types/picomatch@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@types/picomatch@npm:3.0.1"
+  checksum: 10c0/4f60d98668030e4a5b3d7dda1e0a6d86056f7e6201f013dcb411249dc9d9d34373d3e8de3b2f0c156be43e2b0da99d30e06a8292282dd5f84b105bf9ff654dec
   languageName: node
   linkType: hard
 
