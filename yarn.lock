@@ -1864,23 +1864,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/core@npm:^0.37.1":
-  version: 0.37.1
-  resolution: "@expressive-code/core@npm:0.37.1"
-  dependencies:
-    "@ctrl/tinycolor": "npm:^4.0.4"
-    hast-util-select: "npm:^6.0.2"
-    hast-util-to-html: "npm:^9.0.1"
-    hast-util-to-text: "npm:^4.0.1"
-    hastscript: "npm:^9.0.0"
-    postcss: "npm:^8.4.38"
-    postcss-nested: "npm:^6.0.1"
-    unist-util-visit: "npm:^5.0.0"
-    unist-util-visit-parents: "npm:^6.0.1"
-  checksum: 10c0/76f6a1c6829301e250e704246c55ee086d6eb83978ce019ce579f8188ff883119ba2467df4aaa725daf90060d8bf94242864c61a20f82502c251cce585d1a562
-  languageName: node
-  linkType: hard
-
 "@expressive-code/core@npm:^0.38.3":
   version: 0.38.3
   resolution: "@expressive-code/core@npm:0.38.3"
@@ -1898,12 +1881,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-collapsible-sections@npm:^0.37.1":
-  version: 0.37.1
-  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.37.1"
+"@expressive-code/plugin-collapsible-sections@npm:^0.38.3":
+  version: 0.38.3
+  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.38.3"
   dependencies:
-    "@expressive-code/core": "npm:^0.37.1"
-  checksum: 10c0/e50f4a451bdc50425edbbab2c5f1a89176d042dc7b34cff0bf0fe62d7b37ce6cb79531a9d38122a87face2ad6a33d96ae1f1ce3ea370c31b209f136ce1c27415
+    "@expressive-code/core": "npm:^0.38.3"
+  checksum: 10c0/bfb7a823c86a1e8c37ad0a674bd8e7c50c46500dd58ec910e3546fbcdf0cab6084de73beae94c6357b4fd36d453a7cc8f25395a0e904d27682f13db917b24958
   languageName: node
   linkType: hard
 
@@ -1916,12 +1899,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-line-numbers@npm:^0.37.1":
-  version: 0.37.1
-  resolution: "@expressive-code/plugin-line-numbers@npm:0.37.1"
+"@expressive-code/plugin-line-numbers@npm:^0.38.3":
+  version: 0.38.3
+  resolution: "@expressive-code/plugin-line-numbers@npm:0.38.3"
   dependencies:
-    "@expressive-code/core": "npm:^0.37.1"
-  checksum: 10c0/ea02d44f1fe106362d4fa0ca7c18f829a6ded77f8acedd0b29d0d0fb790ab9c916b6e39bfc0ecb53a7d4d6d2007e3bf2277e55174d018e73e2830869a4bc58a0
+    "@expressive-code/core": "npm:^0.38.3"
+  checksum: 10c0/f875173c3c8383b1476ef2b3339076cc97c95b029f09e2eafe38d4f4d80850a809c642383b543ac2b08ea42e83e960382349390fd94d50d3c594774bceb1867f
   languageName: node
   linkType: hard
 
@@ -2352,8 +2335,8 @@ __metadata:
     "@astrojs/check": "npm:^0.9.4"
     "@astrojs/react": "npm:^3.6.2"
     "@astrojs/starlight": "npm:^0.29.2"
-    "@expressive-code/plugin-collapsible-sections": "npm:^0.37.1"
-    "@expressive-code/plugin-line-numbers": "npm:^0.37.1"
+    "@expressive-code/plugin-collapsible-sections": "npm:^0.38.3"
+    "@expressive-code/plugin-line-numbers": "npm:^0.38.3"
     "@fontsource/ibm-plex-sans": "npm:^5.1.0"
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.11"
