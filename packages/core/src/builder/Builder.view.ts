@@ -311,12 +311,12 @@ function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C
   if (expr.endsWith('.*')) {
     return {
       element: expr.replace('.*', '') as Fqn,
-      isDescedants: true
+      isChildren: true
     } as TypedC4Expression<Types>
   }
   return {
     element: expr as any as Fqn,
-    isDescedants: false
+    isChildren: false
   } as TypedC4Expression<Types>
 }
 

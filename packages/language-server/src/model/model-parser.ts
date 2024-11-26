@@ -501,7 +501,7 @@ export class LikeC4ModelParser {
       const element = this.resolveFqn(elementNode)
       return {
         element,
-        isDescedants: true
+        isChildren: true
       }
     }
     if (ast.isElementRef(astNode)) {

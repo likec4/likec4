@@ -234,7 +234,7 @@ describe('Builder', () => {
               "include": [
                 {
                   "element": "2",
-                  "isDescedants": true,
+                  "isChildren": true,
                 },
               ],
             },
@@ -309,7 +309,7 @@ describe('Builder', () => {
                 {
                   "inout": {
                     "element": "2.3",
-                    "isDescedants": true,
+                    "isChildren": true,
                   },
                 },
               ],
@@ -322,7 +322,7 @@ describe('Builder', () => {
                   },
                   "target": {
                     "element": "2.3",
-                    "isDescedants": true,
+                    "isChildren": true,
                   },
                 },
               ],

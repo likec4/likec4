@@ -519,12 +519,12 @@ export function $expr(expr: Expression | C4Expression): C4Expression {
   if (expr.endsWith('.*')) {
     return {
       element: expr.replace('.*', '') as Fqn,
-      isDescedants: true
+      isChildren: true
     }
   }
   return {
     element: expr as Fqn,
-    isDescedants: false
+    isChildren: false
   }
 }
 
