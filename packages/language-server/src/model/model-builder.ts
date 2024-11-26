@@ -17,6 +17,7 @@ import {
   flatMap,
   groupBy,
   indexBy,
+  isDefined,
   isEmpty,
   isNonNullish,
   isNullish,
@@ -295,6 +296,10 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     flatMap(d => d.c4DeploymentRelations),
     reduce(
       (acc, el) => {
+        if (isDefined(acc[el.id])) {
+          logWarnError(`Duplicate deployment relation ${el.id}`)
+          return acc
+        }
         acc[el.id] = el
         return acc
       },
@@ -417,8 +422,8 @@ export class LikeC4ModelBuilder {
         let parsed = [] as URI[]
         try {
           logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)`)
-          for (const doc of parser.parse(docs)) {
-            parsed.push(doc.uri)
+          for (const doc of docs) {
+            parsed.push(parser.parse(doc).uri)
           }
         } catch (e) {
           logWarnError(e)

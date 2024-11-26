@@ -34,7 +34,7 @@ import {
   ViewOps
 } from '../ast'
 import { type NotationProperty } from '../generated/ast'
-import { logError, logger, logWarnError } from '../logger'
+import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
 import { instanceRef } from '../utils/deploymentRef'
@@ -64,21 +64,13 @@ export class LikeC4ModelParser {
     logger.debug(`[ModelParser] Created`)
   }
 
-  parse(doc: LangiumDocument | LangiumDocument[]): ParsedLikeC4LangiumDocument[] {
-    const docs = Array.isArray(doc) ? doc : [doc]
-    const result = [] as ParsedLikeC4LangiumDocument[]
-    for (const doc of docs) {
-      if (!isFqnIndexedDocument(doc)) {
-        logger.warn(`Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
-        continue
-      }
-      try {
-        result.push(this.parseLikeC4Document(doc))
-      } catch (cause) {
-        logError(new Error(`Error parsing document ${doc.uri.toString()}`, { cause }))
-      }
+  parse(doc: LangiumDocument): ParsedLikeC4LangiumDocument {
+    invariant(isFqnIndexedDocument(doc), `Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
+    try {
+      return this.parseLikeC4Document(doc)
+    } catch (cause) {
+      throw new Error(`Error parsing document ${doc.uri.toString()}`, { cause })
     }
-    return result
   }
 
   protected parseLikeC4Document(_doc: FqnIndexedDocument) {
@@ -925,6 +917,13 @@ export class LikeC4ModelParser {
     for (const prop of node.custom.props) {
       try {
         switch (true) {
+          case ast.isRelationNavigateToProperty(prop): {
+            const viewId = prop.value.view.ref?.name
+            if (isTruthy(viewId)) {
+              step.navigateTo = viewId as c4.ViewID
+            }
+            break
+          }
           case ast.isRelationStringProperty(prop):
           case ast.isNotationProperty(prop):
           case ast.isNotesProperty(prop): {
@@ -949,13 +948,6 @@ export class LikeC4ModelParser {
           case ast.isLineProperty(prop): {
             if (isDefined(prop.value)) {
               step[prop.key] = prop.value
-            }
-            break
-          }
-          case ast.isRelationNavigateToProperty(prop): {
-            const viewId = prop.value.view.ref?.name
-            if (isTruthy(viewId)) {
-              step.navigateTo = viewId as c4.ViewID
             }
             break
           }
@@ -1447,8 +1439,8 @@ export class LikeC4ModelParser {
     let iter: ast.DeploymentExpressionIterator['prev'] = astNode
     while (iter) {
       try {
-        if (isNonNullish(astNode.value) && isValid(astNode.value)) {
-          exprs.unshift(this.parseDeploymentElementExpression(astNode.value))
+        if (isNonNullish(iter.value) && isValid(iter.value)) {
+          exprs.unshift(this.parseDeploymentElementExpression(iter.value))
         }
       } catch (e) {
         logWarnError(e)
