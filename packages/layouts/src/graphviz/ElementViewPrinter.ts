@@ -8,9 +8,7 @@ import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { isCompound, toArrowType } from './utils'
 
 export class ElementViewPrinter<V extends ComputedView = ComputedElementView> extends DotPrinter<V> {
-  protected override buildGraphvizModel(G: RootGraphModel): void {
-    super.buildGraphvizModel(G)
-
+  protected override postBuild(G: RootGraphModel): void {
     this.assignGroups()
 
     // Below is custom made "tile" layout for compound nodes

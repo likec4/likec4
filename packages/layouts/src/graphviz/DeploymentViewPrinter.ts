@@ -1,5 +1,5 @@
 import { type ComputedDeploymentView, type ComputedEdge, DefaultArrowType, nonNullable } from '@likec4/core'
-import { first, isNonNullish, last } from 'remeda'
+import { first, forEachObj, groupBy, isNonNullish, isString, last, map, pipe } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
@@ -9,6 +9,37 @@ import { toArrowType } from './utils'
 
 // TODO: For now we use ElementViewPrinter for DeploymentView
 export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeploymentView> {
+  protected override postBuild(G: RootGraphModel): void {
+    pipe(
+      this.view.nodes,
+      map(nd => ({
+        node: nd,
+        graphvizNode: this.getGraphNode(nd.id)
+      })),
+      groupBy(({ node, graphvizNode }) => {
+        if (graphvizNode === null) {
+          return undefined
+        }
+        if (node.modelRef === 1) {
+          return node.id
+        }
+        if (isString(node.modelRef)) {
+          return node.modelRef
+        }
+        return undefined
+      }),
+      forEachObj((nodes) => {
+        if (nodes.length > 1) {
+          G.set(_.newrank, true)
+          const subgraph = G.createSubgraph({ [_.rank]: 'same' })
+          nodes.forEach(({ graphvizNode }) => {
+            subgraph.node(nonNullable(graphvizNode).id)
+          })
+        }
+      })
+    )
+  }
+
   override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
     const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
