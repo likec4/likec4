@@ -49,7 +49,7 @@
     "framer-motion": "^11.11.17",
     "khroma": "^2.1.0",
     "remeda": "^2.17.3",
-    "type-fest": "4.27.0",
+    "type-fest": "4.27.1",
     "zustand": "^4.5.5"
   },
   "peerDependencies": {
