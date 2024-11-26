@@ -299,6 +299,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                     error: null
                   }
                 } catch (e) {
+                  console.error(e)
                   diagrams[viewId] = {
                     view: currentDiagrams[viewId]?.view ?? null,
                     dot: currentDiagrams[viewId]?.dot ?? null,

@@ -26,19 +26,21 @@ model {
         Implements business logic
         and exposes as REST API
       '
-      -> firebase 'reads/writes'
+      -> db 'reads/writes'
+    }
+
+    db = component 'Database' {
+      icon tech:postgresql
+      style {
+        shape storage
+      }
     }
 
     // UI requests data from the Backend
     ui -> backend 'fetches via HTTPS'
   }
 
-  firebase = system 'Firebase' {
-    icon tech:firebase
-    style {
-      color amber
-    }
-  }
+
 
   // Customer uses the UI
   customer -> ui 'opens in browser'
@@ -65,3 +67,4 @@ views {
   }
 
 }
+

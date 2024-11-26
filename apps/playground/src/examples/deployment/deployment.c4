@@ -27,6 +27,7 @@ deployment {
         instanceOf saas.ui
         instanceOf saas.backend
       }
+      db = instanceOf saas.db
     }
 
     us = zone 'US' {
@@ -38,9 +39,11 @@ deployment {
         instanceOf saas.ui
         instanceOf saas.backend
       }
+      db = instanceOf saas.db
     }
 
-    instanceOf firebase
+    us.db -> eu.db 'sync'
+    eu.db -> us.db 'sync'
   }
 }
 
@@ -50,18 +53,21 @@ views {
 
     include
       customer,
-      prod._,
-      us._,
-      us.zone1.*,
-      us.zone2.*,
+      prod,
+      eu.zone1._,
+      eu.zone2._,
       eu._,
-      eu.zone1.*,
-      eu.zone2.*,
+      us.zone1._,
+      us.zone2._,
+      us._,
 
     exclude
       eu._ <-> us._,
       eu.zone1._ <-> eu.zone2._,
       us.zone1._ <-> us.zone2._,
+
+    include
+      eu.db <-> us.db
 
     style eu._ {
       color green
