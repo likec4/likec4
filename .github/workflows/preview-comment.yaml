@@ -61,7 +61,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@05f17c4a695b4d94b57b59997562c6a4624c64e4 # v3
+        uses: cloudflare/wrangler-action@6d58852c35a27e6034745c5d0bc373d739014f7f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -141,7 +141,7 @@ jobs:
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@05f17c4a695b4d94b57b59997562c6a4624c64e4 # v3
+        uses: cloudflare/wrangler-action@6d58852c35a27e6034745c5d0bc373d739014f7f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
