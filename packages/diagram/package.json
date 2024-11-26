@@ -50,7 +50,7 @@
     "khroma": "^2.1.0",
     "remeda": "^2.17.3",
     "type-fest": "4.27.1",
-    "zustand": "^4.5.5"
+    "zustand": "^5.0.1"
   },
   "peerDependencies": {
     "@mantine/core": "^7.14.1",
