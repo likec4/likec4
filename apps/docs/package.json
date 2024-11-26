@@ -25,25 +25,25 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/react": "^3.6.2",
+    "@astrojs/react": "^3.6.3",
     "@astrojs/starlight": "^0.29.2",
-    "@expressive-code/plugin-collapsible-sections": "^0.37.1",
-    "@expressive-code/plugin-line-numbers": "^0.37.1",
+    "@expressive-code/plugin-collapsible-sections": "^0.38.3",
+    "@expressive-code/plugin-line-numbers": "^0.38.3",
     "@fontsource/ibm-plex-sans": "^5.1.0",
-    "astro": "~4.16.13",
+    "astro": "~4.16.14",
     "astro-og-canvas": "^0.5.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "starlight-heading-badges": "^0.3.0",
-    "starlight-links-validator": "^0.12.3",
-    "typescript": "^5.6.3"
+    "starlight-links-validator": "^0.13.2",
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@types/picomatch": "^2.3.4",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.1",
     "likec4": "workspace:*",
-    "npm-run-all2": "^6.2.6",
+    "npm-run-all2": "^7.0.1",
     "tsx": "~4.9.3"
   }
 }

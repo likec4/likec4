@@ -142,6 +142,7 @@ describe('dynamic-view', () => {
       source: 'cloud.frontend.dashboard',
       target: 'cloud.backend.graphql',
       ...defaultStepProps,
+      line: 'solid', // inferred from relations
       label: 'requests' // inferred from relations
     })
     expect(step2).not.toHaveProperty('dir')
@@ -292,6 +293,7 @@ describe('dynamic-view', () => {
       id: 'step-02',
       source: 'cloud.frontend.dashboard',
       target: 'cloud.backend.graphql',
+      line: 'solid', // inferred from relations
       label: 'requests' // inferred from relations
     })
     expect(step2).not.toHaveProperty('dir')

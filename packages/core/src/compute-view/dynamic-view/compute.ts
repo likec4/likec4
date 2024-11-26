@@ -87,7 +87,12 @@ export class DynamicViewComputeCtx {
       title,
       relations,
       tags,
-      navigateTo: derivedNavigateTo
+      navigateTo: derivedNavigateTo,
+      head,
+      tail,
+      color,
+      line,
+      notation
     } = this.findRelations(source, target)
 
     const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id ? stepNavigateTo : derivedNavigateTo
@@ -101,7 +106,12 @@ export class DynamicViewComputeCtx {
       relations: relations ?? [],
       isBackward: isBackward ?? false,
       ...(navigateTo ? { navigateTo } : {}),
-      ...(tags ? { tags } : {})
+      ...(tags ? { tags } : {}),
+      ...(head ? { head } : {}),
+      ...(tail ? { tail } : {}),
+      ...(color ? { color } : {}),
+      ...(line ? { line } : {}),
+      ...(notation ? { notation } : {})
     })
   }
 
@@ -226,6 +236,11 @@ export class DynamicViewComputeCtx {
     tags: NonEmptyArray<Tag> | null
     relations: NonEmptyArray<RelationID> | null
     navigateTo: ViewID | null
+    tail: RelationshipArrowType | null
+    head: RelationshipArrowType | null
+    color: Color | null
+    line: RelationshipLineType | null
+    notation: string | null
   } {
     const relationships = unique(this.graph.edgesBetween(source, target).flatMap(e => e.relations))
     if (relationships.length === 0) {
@@ -233,7 +248,12 @@ export class DynamicViewComputeCtx {
         title: null,
         tags: null,
         relations: null,
-        navigateTo: null
+        navigateTo: null,
+        tail: null,
+        head: null,
+        color: null,
+        line: null,
+        notation: null
       }
     }
     const alltags = pipe(
@@ -248,16 +268,6 @@ export class DynamicViewComputeCtx {
     // Most closest relation
     const relation = only(relationships) || relationships.find(r => r.source === source.id && r.target === target.id)
 
-    // This edge represents mutliple relations
-    // We use label if only it is the same for all relations
-    const title = isTruthy(relation?.title) ? relation.title : pipe(
-      relationships,
-      map(r => r.title),
-      filter(isTruthy),
-      unique(),
-      only()
-    )
-
     const navigateTo = !!relation?.navigateTo && relation.navigateTo !== this.view.id ? relation.navigateTo : pipe(
       relationships,
       map(r => r.navigateTo),
@@ -267,11 +277,33 @@ export class DynamicViewComputeCtx {
       only()
     )
 
+    const commonProperties = relationships.reduce((acc, r) => {
+      isTruthy(r.title) && acc.title.push(r.title)
+      isTruthy(r.tail) && acc.tail.push(r.tail)
+      isTruthy(r.head) && acc.head.push(r.head)
+      isTruthy(r.color) && acc.color.push(r.color)
+      isTruthy(r.line) && acc.line.push(r.line)
+
+      return acc
+    }, {
+      title: [] as string[],
+      tail: [] as RelationshipArrowType[],
+      head: [] as RelationshipArrowType[],
+      color: [] as Color[],
+      line: [] as RelationshipLineType[],
+      notation: [] as string[]
+    })
+
     return {
-      title: title ?? null,
       tags,
       relations,
-      navigateTo: navigateTo ?? null
+      navigateTo: navigateTo ?? null,
+      title: pipe(commonProperties.title, unique(), only()) ?? null,
+      tail: pipe(commonProperties.tail, unique(), only()) ?? null,
+      head: pipe(commonProperties.head, unique(), only()) ?? null,
+      color: pipe(commonProperties.color, unique(), only()) ?? null,
+      line: pipe(commonProperties.line, unique(), only()) ?? null,
+      notation: pipe(commonProperties.notation, unique(), only()) ?? null
     }
   }
 }

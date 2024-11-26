@@ -33,7 +33,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@types/node": "^20.17.6",
+    "@types/node": "^20.17.7",
     "@vitest/ui": "^2.1.5",
     "dprint": "0.47.5",
     "esbuild": "^0.24.0",
@@ -41,11 +41,11 @@
     "global": "^4.4.0",
     "husky": "^8.0.3",
     "lint-staged": "15.2.10",
-    "npm-run-all2": "^6.2.6",
+    "npm-run-all2": "^7.0.1",
     "shipjs": "^0.26.4",
     "tsx": "~4.9.3",
     "turbo": "^2.3.1",
-    "typescript": "^5.6.3",
+    "typescript": "^5.7.2",
     "vite": "5.4.11",
     "vitest": "^2.1.5"
   },
