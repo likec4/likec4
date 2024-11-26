@@ -1,16 +1,16 @@
-import type { DeployedInstance, DeploymentElement, DeploymentNode, Fqn } from '../types'
-import type { AnyTypes, AnyTypesNested, Invalid, Types } from './_types'
+import type { DeploymentElement, DeploymentRelation, Fqn } from '../types'
+import type { AnyTypes, Invalid, Types } from './_types'
 import type { Builder } from './Builder'
 import type { AddDeploymentNode } from './Builder.deployment'
 
 export interface DeploymentModelBuilder<T extends AnyTypes> {
   addDeployment(node: DeploymentElement): Builder<T>
+  addDeploymentRelation(rel: Omit<DeploymentRelation, 'id'>): Builder<T>
   /**
    * Create a fully qualified name from an id (for nested models)
    */
   fqn(id: string): Fqn
 }
-
 export function deployment<
   A extends AnyTypes,
   B extends AnyTypes
@@ -322,13 +322,24 @@ export function deployment(...ops: any[]) {
   }
 }
 
-export type AddDeployedInstance = <
+export type AddDeploymentRelation<Props = unknown> = <
+  T extends AnyTypes,
+  Source extends string & T['DeploymentFqn'],
+  Target extends string & T['DeploymentFqn']
+>(
+  source: Source,
+  target: Target,
+  titleOrProps?: string | Props
+) => (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>
+
+export type AddDeployedInstance<Props = unknown> = <
   const Id extends string,
   T extends AnyTypes,
   To extends string & T['Fqn']
 >(
   id: Id,
-  to: To
+  to: To,
+  titleOrProps?: string | Props | undefined
 ) => (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>>
 
 type AddDeploymentNodeHelper<T = unknown> = <const Id extends string>(
@@ -343,6 +354,7 @@ export type AddDeploymentNodeHelpers<T extends AnyTypes> = T extends
   : Invalid<'No Deployment Kinds'>
 
 export type DeloymentModelHelpers<T extends AnyTypes> = AddDeploymentNodeHelpers<T> & {
-  instanceOf: AddDeployedInstance
+  instanceOf: AddDeployedInstance<T['NewDeploymentNodeProps']>
+  rel: AddDeploymentRelation<T['NewRelationshipProps']>
   deployment: typeof deployment
 }

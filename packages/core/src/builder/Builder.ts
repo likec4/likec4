@@ -7,6 +7,7 @@ import {
   DefaultElementShape,
   DefaultThemeColor,
   DeploymentElement,
+  type DeploymentRelation,
   type DeploymentView,
   type Element,
   type ElementShape,
@@ -232,7 +233,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     dynamicPredicates: {},
     styles: {}
   } as ModelGlobals,
-  _deployments = new Map<string, DeploymentElement>()
+  _deployments = new Map<string, DeploymentElement>(),
+  _deploymentRelations = [] as DeploymentRelation[]
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
     elements: {
@@ -265,7 +267,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_relations),
         structuredClone(_views),
         structuredClone(_globals),
-        structuredClone(_deployments)
+        structuredClone(_deployments),
+        structuredClone(_deploymentRelations)
       )
     },
     __model: () => ({
@@ -335,6 +338,13 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         _deployments.set(node.id, node)
         return self
       },
+      addDeploymentRelation: (relation) => {
+        _deploymentRelations.push({
+          id: `deploy_rel${_deploymentRelations.length + 1}` as RelationID,
+          ...relation
+        })
+        return self
+      },
       fqn: (id) => id as Fqn
     }),
     build: () => ({
@@ -344,7 +354,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       globals: structuredClone(_globals),
       deployments: {
         elements: fromEntries(Array.from(_deployments.entries())) as any,
-        relations: {}
+        relations: mapToObj(_deploymentRelations, r => [r.id, r])
       },
       views: fromEntries(Array.from(_views.entries())) as any
     }),
@@ -603,17 +613,47 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return b
           }
         },
-        instanceOf: <const Id extends string>(id: Id, to: string) => {
+        instanceOf: (id, to, _props?: string | T['NewDeploymentNodeProps']) => {
           return <T extends AnyTypes>(
             b: DeploymentModelBuilder<T>
-          ): DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>> => {
+          ): DeploymentModelBuilder<Types.AddDeploymentFqn<T, any>> => {
+            const {
+              links,
+              title,
+              ...props
+            } = typeof _props === 'string' ? { title: _props } : { ..._props }
             const _id = b.fqn(id)
             invariant(_elements.has(to), `Target element with id "${to}" not found`)
             b.addDeployment({
               id: _id,
-              element: to as any
+              element: to as any,
+              ...title && { title },
+              ...links && { links: mapLinks(links) },
+              ...props
             })
             return b as any
+          }
+        },
+        rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
+          return <T extends AnyTypes>(b: DeploymentModelBuilder<T>) => {
+            const {
+              title,
+              links,
+              ...props
+            } = typeof _props === 'string' ? { title: _props } : { ..._props }
+
+            b.addDeploymentRelation({
+              source: {
+                id: source as any
+              },
+              target: {
+                id: target as any
+              },
+              ...title && { title },
+              ...links && { links: mapLinks(links) },
+              ...props
+            })
+            return b
           }
         },
         ...mapValues(
@@ -625,14 +665,12 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           ): AddDeploymentNode<Id> => {
             const add = (<T extends AnyTypes>(b: DeploymentModelBuilder<T>) => {
               const {
-                links: _links,
+                links,
                 icon: _icon,
                 style,
                 title,
                 ...props
               } = typeof _props === 'string' ? { title: _props } : { ..._props }
-
-              const links = mapLinks(_links)
 
               const icon = _icon ?? specStyle?.icon
 
@@ -652,7 +690,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                   opacity: specStyle?.opacity,
                   ...style
                 }, isNonNullish),
-                links,
+                ...links && { links: mapLinks(links) },
                 ...icon && { icon: icon as IconUrl },
                 ...spec,
                 ...props

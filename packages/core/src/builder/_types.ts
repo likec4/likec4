@@ -5,6 +5,7 @@ import type {
   DeploymentNodeKindSpecification,
   ElementKindSpecification,
   ElementShape,
+  NonEmptyArray,
   ParsedLikeC4Model,
   RelationshipArrowType,
   RelationshipKindSpecification,
@@ -55,7 +56,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
   icon?: string
   shape?: ElementShape
   color?: Color
-  links?: Array<string | { title?: string; url: string }>
+  links?: NonEmptyArray<string | { title?: string; url: string }>
   style?: {
     border?: BorderStyle
     // 0-100
@@ -81,7 +82,7 @@ export type NewRelationProps<Kind, Tag, Metadata> = {
   tail?: RelationshipArrowType
   line?: RelationshipLineType
   color?: Color
-  links?: Array<string | { title?: string; url: string }>
+  links?: NonEmptyArray<string | { title?: string; url: string }>
 }
 
 export type Invalid<Message extends string> = Tagged<Message, 'Error'>

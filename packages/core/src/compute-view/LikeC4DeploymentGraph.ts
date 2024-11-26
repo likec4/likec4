@@ -364,8 +364,8 @@ export class LikeC4DeploymentGraph {
 
     this.#deploymentRelations.set(rel.id, rel)
 
-    this._incomingTo(sourceFqn).add(rel)
-    this._outgoingFrom(targetFqn).add(rel)
+    this._outgoingFrom(sourceFqn).add(rel)
+    this._incomingTo(targetFqn).add(rel)
 
     const relParent = commonAncestor(sourceFqn, targetFqn)
     // Process internal relationships

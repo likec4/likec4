@@ -9,10 +9,12 @@ describe('deployment view: wildcard', () => {
     expect(nodeIds).toEqual([
       'customer.instance',
       'prod',
-      'prod.eu'
+      'prod.eu',
+      'prod.us'
     ])
     expect(edgeIds).toEqual([
-      'customer.instance:prod.eu'
+      'customer.instance:prod.eu',
+      'prod.eu:prod.us'
     ])
   })
 })

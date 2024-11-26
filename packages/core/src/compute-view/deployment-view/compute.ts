@@ -1,4 +1,4 @@
-import { filter, hasAtLeast, isDeepEqual, isEmpty, isTruthy, last, map, only, pipe, reverse, unique } from 'remeda'
+import { filter, hasAtLeast, isEmpty, isTruthy, last, map, only, pipe, reverse, unique } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import type {
   ComputedDeploymentView,
@@ -242,7 +242,7 @@ export class DeploymentViewComputeCtx {
 
       // If exists same edge but in opposite direction
       const existing = acc.find(e => e.source === target && e.target === source)
-      if (existing && isDeepEqual(existing.relations, edge.relations)) {
+      if (existing && edge.label === existing.label && edge.relations.length === existing.relations.length) {
         existing.head = DefaultArrowType
         existing.tail = DefaultArrowType
         return acc

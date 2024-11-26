@@ -13,14 +13,15 @@ const {
     component,
     webapp,
     mobile,
-    rel
+    ...$m
   },
   deployment: {
     deployment,
     env,
     node,
     zone,
-    instanceOf
+    instanceOf,
+    ...$d
   },
   views: {
     view,
@@ -87,21 +88,21 @@ export const builder = b
       system('email')
     ),
     model(
-      rel('customer', 'cloud', 'uses services'),
-      rel('customer', 'cloud.frontend.mobile', 'opens mobile app'),
-      rel('customer', 'cloud.frontend.dashboard', 'opens in browser'),
-      rel('cloud.frontend.dashboard', 'cloud.auth', 'authenticates'),
-      rel('cloud.frontend.dashboard', 'cloud.backend.api', 'fetches data'),
-      rel('cloud.frontend.dashboard', 'cloud.media', 'fetches media'),
-      rel('cloud.frontend.mobile', 'cloud.auth', 'authenticates'),
-      rel('cloud.frontend.mobile', 'cloud.backend.api', 'fetches data'),
-      rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
-      rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
-      rel('cloud.backend.api', 'cloud.media', 'uploads media'),
-      rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
-      rel('cloud.backend.api', 'email', 'sends emails'),
-      rel('cloud.media', 'aws.s3', 'uploads'),
-      rel('email', 'customer', 'sends emails')
+      $m.rel('customer', 'cloud', 'uses services'),
+      $m.rel('customer', 'cloud.frontend.mobile', 'opens mobile app'),
+      $m.rel('customer', 'cloud.frontend.dashboard', 'opens in browser'),
+      $m.rel('cloud.frontend.dashboard', 'cloud.auth', 'authenticates'),
+      $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', 'fetches data'),
+      $m.rel('cloud.frontend.dashboard', 'cloud.media', 'fetches media'),
+      $m.rel('cloud.frontend.mobile', 'cloud.auth', 'authenticates'),
+      $m.rel('cloud.frontend.mobile', 'cloud.backend.api', 'fetches data'),
+      $m.rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
+      $m.rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
+      $m.rel('cloud.backend.api', 'cloud.media', 'uploads media'),
+      $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
+      $m.rel('cloud.backend.api', 'email', 'sends emails'),
+      $m.rel('cloud.media', 'aws.s3', 'uploads'),
+      $m.rel('email', 'customer', 'sends emails')
     ),
     deployment(
       node('customer').with(
@@ -117,9 +118,14 @@ export const builder = b
             instanceOf('ui', 'cloud.frontend.dashboard'),
             instanceOf('api', 'cloud.backend.api')
           ),
-          instanceOf('media', 'cloud.media')
+          instanceOf('media', 'cloud.media'),
+          instanceOf('db', 'aws.rds')
+        ),
+        zone('us').with(
+          instanceOf('db', 'aws.rds')
         )
-      )
+      ),
+      $d.rel('prod.eu.db', 'prod.us.db', 'replicates')
     )
     // views(
     //   view('index', $include('*')),

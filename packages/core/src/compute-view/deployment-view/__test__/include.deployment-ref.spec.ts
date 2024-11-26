@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, computeView } from './fixture'
+import { $exclude, $include, computeView } from './fixture'
 
 describe('deployment view: deployment ref', () => {
   it('should include nodes and edges', () => {
@@ -41,7 +41,8 @@ describe('deployment view: deployment ref', () => {
   it('should include children', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('customer'),
-      $include('prod.eu.*')
+      $include('prod.eu.*'),
+      $exclude('prod.eu.db')
     )
     expect(nodeIds).toEqual([
       'customer',
@@ -68,14 +69,17 @@ describe('deployment view: deployment ref', () => {
       'prod.eu',
       'prod.eu.zone1',
       'prod.eu.zone2',
+      'prod.eu.db',
       'prod.eu.media'
     ])
     expect(edgeIds).toEqual([
       'customer:prod.eu.zone1',
       'customer:prod.eu.zone2',
       'prod.eu.zone1:prod.eu.media',
+      'prod.eu.zone1:prod.eu.db',
       'prod.eu.zone1:prod.eu.zone2',
-      'prod.eu.zone2:prod.eu.media'
+      'prod.eu.zone2:prod.eu.media',
+      'prod.eu.zone2:prod.eu.db'
     ])
   })
 
@@ -128,6 +132,21 @@ describe('deployment view: deployment ref', () => {
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api'
+    ])
+  })
+
+  it('should include instances and deployment relation', () => {
+    const { nodeIds, edgeIds } = computeView(
+      $include('prod.us'),
+      $include('prod.eu.db')
+    )
+    expect(nodeIds).toEqual([
+      'prod.eu',
+      'prod.eu.db',
+      'prod.us'
+    ])
+    expect(edgeIds).toEqual([
+      'prod.eu.db:prod.us'
     ])
   })
 
