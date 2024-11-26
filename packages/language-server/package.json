@@ -117,7 +117,7 @@
     "@vitest/coverage-v8": "^2.1.5",
     "execa": "^9.3.1",
     "langium-cli": "3.2.0",
-    "npm-run-all2": "^6.2.6",
+    "npm-run-all2": "^7.0.1",
     "tsx": "~4.9.3",
     "turbo": "^2.3.1",
     "typescript": "^5.7.2",
