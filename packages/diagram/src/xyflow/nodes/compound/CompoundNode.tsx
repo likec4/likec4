@@ -106,9 +106,10 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     min: 0,
     max: 1
   })
-  const borderTransparency = clamp(50 - opacity * 50, {
+  const MAX_TRANSPARENCY = 40
+  const borderTransparency = clamp(MAX_TRANSPARENCY - opacity * MAX_TRANSPARENCY, {
     min: 0,
-    max: 50
+    max: MAX_TRANSPARENCY
   })
 
   const {
