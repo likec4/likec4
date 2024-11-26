@@ -192,7 +192,7 @@
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@types/node": "^20.17.6",
+    "@types/node": "^20.17.7",
     "@types/vscode": "^1.89.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.7",
