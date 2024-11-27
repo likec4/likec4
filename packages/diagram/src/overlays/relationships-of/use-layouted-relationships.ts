@@ -118,15 +118,12 @@ function createGraph() {
   return g
 }
 
-type LikeC4ModelElement = LikeC4Model.ElementModel
-// type LikeC4ModelElement = LikeC4ViewModel.Element
-
 type Context = {
   scope: 'global' | 'view'
   g: dagre.graphlib.Graph
   subjectId: Fqn
   diagramNodes: Map<Fqn, DiagramNode>
-  subjectElement: LikeC4ModelElement
+  subjectElement: LikeC4Model.Element
   // likec4model: LikeC4Model
   // subject: XYFlowTypes.ElementNode
   // Model
@@ -157,7 +154,7 @@ const graphId = (node: XYFlowTypes.Node) => ({
 })
 
 function nodeData(
-  element: LikeC4Model.ElementModel,
+  element: LikeC4Model.Element,
   ctx: Context
 ): Omit<XYFlowTypes.NonEmptyNode['data'], 'column'> {
   // We try to inherit style from existing diagram node
@@ -167,7 +164,7 @@ function nodeData(
   // color from it if there is no diagram node
   const ancestor = diagramNode ?? (ctx.scope === 'view'
     ? pipe(
-      element.ancestors(),
+      element.ancestors().toArray(),
       map(ancestor => ctx.diagramNodes.get(ancestor.id)),
       filter(isTruthy),
       first()
@@ -180,11 +177,11 @@ function nodeData(
     element: {
       kind: element.kind,
       title: diagramNode?.title ?? element.title,
-      description: diagramNode?.description ?? element.element.description,
+      description: diagramNode?.description ?? element.description,
       color: diagramNode?.color ?? ancestor?.color ?? element.color,
       shape: diagramNode?.shape ?? element.shape
     },
-    navigateTo: diagramNode?.navigateTo ?? first(element.viewsOf())?.id ?? null,
+    navigateTo: diagramNode?.navigateTo ?? element.viewOf()?.id ?? null,
     ports: {
       left: [],
       right: []
@@ -228,7 +225,7 @@ function createEmptyNode(
 function createNode(
   column: ColumnKey,
   nodeType: Exclude<XYFlowTypes.Node['type'], 'empty'>,
-  element: LikeC4Model.ElementModel,
+  element: LikeC4Model.Element,
   ctx: Context,
   depth: number = 0
 ): XYFlowTypes.ElementNode | XYFlowTypes.CompoundNode {
@@ -245,7 +242,7 @@ function createNode(
 
   // Create parent node
   const parent = pipe(
-    element.ancestors(),
+    element.ancestors().toArray(),
     takeWhile(ancestor => !isAncestor(ancestor.id, ctx.subjectId)),
     find(ancestor =>
       ctx.diagramNodes.has(ancestor.id) || ctx.connected[column].has(ancestor.id)
@@ -363,7 +360,7 @@ function layout(
 ): {
   viewIncludesSubject: boolean
   notIncludedRelations: number
-  subject: LikeC4ModelElement
+  subject: LikeC4Model.Element
   nodes: XYFlowTypes.Node[]
   edges: XYFlowTypes.Edge[]
   bounds: {
@@ -401,16 +398,18 @@ function layout(
 
   if (scope === 'global') {
     relationships = {
-      incoming: subjectElement.incoming().map(r => r.relationship),
-      outgoing: subjectElement.outgoing().map(r => r.relationship)
+      incoming: subjectElement.incoming().map(r => r.$relation).toArray(),
+      outgoing: subjectElement.outgoing().map(r => r.$relation).toArray()
     }
   } else {
-    const subjectViewModel = likec4model.view(view.id).element(subjectId)
+    const subjectViewModel = likec4model.view(view.id).node(subjectId)
     relationships = {
       incoming: subjectViewModel.incoming()
-        .flatMap(c => c.relationships().map(r => r.relationship)),
+        .flatMap(c => c.relationships().map(r => r.$relation))
+        .toArray(),
       outgoing: subjectViewModel.outgoing()
-        .flatMap(c => c.relationships().map(r => r.relationship))
+        .flatMap(c => c.relationships().map(r => r.$relation))
+        .toArray()
     }
   }
 
@@ -445,7 +444,7 @@ function layout(
   })
 
   if (viewIncludesSubject) {
-    const subjectViewModel = likec4model.view(view.id).element(subjectId)
+    const subjectViewModel = likec4model.view(view.id).node(subjectId)
     subjectViewModel.incomers().forEach(incomer => {
       ctx.connected.incomers.add(incomer.id)
     })

@@ -218,7 +218,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
                     // Merge new views with current views
                     const views = mapValues(model.views, (newView) => {
-                      const current = currentmodel?.sourcemodel.views[newView.id]
+                      const current = currentmodel?.$model.views[newView.id]
                       const next = current && deepEqual(newView, current) ? current : newView
 
                       let diagramState = diagrams[newView.id]
@@ -246,7 +246,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
                     set(
                       {
-                        likeC4Model: LikeC4Model.computed({
+                        likeC4Model: LikeC4Model.create({
                           ...model,
                           views
                         }),
@@ -277,7 +277,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               layoutLimit(async () => {
                 const { likeC4Model, diagrams: currentDiagrams } = get()
 
-                const computedView = likeC4Model?.sourcemodel.views[viewId as ViewID] ?? null
+                const computedView = likeC4Model?.$model.views[viewId as ViewID] ?? null
                 if (!computedView) {
                   // Do nothing
                   return

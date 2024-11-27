@@ -1,11 +1,4 @@
-import {
-  compareNatural,
-  type Fqn,
-  type LikeC4DiagramModel,
-  type LikeC4Model,
-  type LikeC4ViewModel,
-  type ViewID
-} from '@likec4/core'
+import { compareNatural, type Fqn, type LikeC4Model, type ViewID } from '@likec4/core'
 import { useMemo } from 'react'
 import { useLikeC4Model } from './useLikeC4Model'
 
@@ -18,12 +11,12 @@ interface LikeC4ModelTreeNodeData {
 const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeData) => compareNatural(a.label, b.label)
 
 function buildNode(
-  element: LikeC4Model.ElementModel | LikeC4DiagramModel.Element | LikeC4ViewModel.Element
+  element: LikeC4Model.Node | LikeC4Model.Element
 ): LikeC4ModelTreeNodeData {
   return {
     label: element.title,
     value: element.id,
-    children: element.children().map(buildNode).sort(sortByLabel)
+    children: element.children().toArray().map(buildNode).sort(sortByLabel)
   }
 }
 
@@ -36,9 +29,9 @@ export function useLikeC4ElementsTree(viewId?: ViewID): LikeC4ModelTreeNodeData[
   return useMemo(() => {
     if (viewId) {
       const view = model.view(viewId)
-      return view.roots().map(buildNode).sort(sortByLabel)
+      return view.roots().toArray().map(buildNode).sort(sortByLabel)
     } else {
-      return model.roots().map(buildNode).sort(sortByLabel)
+      return model.roots().toArray().map(buildNode).sort(sortByLabel)
     }
   }, [model, viewId ?? null])
 }

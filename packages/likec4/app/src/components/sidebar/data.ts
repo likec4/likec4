@@ -98,6 +98,6 @@ function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTr
 // const $diagramsTree = batched($views, views => buildDiagramTreeData(values(views)))
 
 export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
-  const views = useLikeC4ModelAtom().sourcemodel.views
+  const views = useLikeC4ModelAtom().$model.views
   return useMemo(() => buildDiagramTreeData(values(views), groupBy), [views, groupBy])
 }

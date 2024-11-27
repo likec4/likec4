@@ -72,7 +72,7 @@ export function RelationshipsDropdownMenu({
       }
     }),
     filter(isTruthy),
-    partition(r => r.relationship.source === edge.source && r.relationship.target === edge.target)
+    partition(r => r.source.id === edge.source && r.target.id === edge.target)
   )
 
   const onClickOpenOverlay = useCallback((e: React.MouseEvent): void => {
@@ -84,7 +84,7 @@ export function RelationshipsDropdownMenu({
     }
   }, [edge.id, openOverlay, enableRelationshipBrowser])
 
-  const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship, index: number) => (
+  const renderRelationship = (relationship: LikeC4Model.Relation, index: number) => (
     <Fragment key={relationship.id}>
       {index > 0 && <MenuDivider opacity={0.65} />}
       <MenuItem
@@ -155,7 +155,7 @@ export function RelationshipsDropdownMenu({
 const Relationship = forwardRef<
   HTMLDivElement,
   StackProps & {
-    relationship: LikeC4Model.ViewModel.Relationship
+    relationship: LikeC4Model.Relation
     edge: RelationshipData['edge']
     sourceNode: DiagramNode
     targetNode: DiagramNode
@@ -180,7 +180,7 @@ const Relationship = forwardRef<
   }))
   const sourceId = nameFromFqn(edge.source) + r.source.id.slice(edge.source.length)
   const targetId = nameFromFqn(edge.target) + r.target.id.slice(edge.target.length)
-  const navigateTo = hasOnNavigateTo && r.relationship.navigateTo !== viewId ? r.relationship.navigateTo : undefined
+  const navigateTo = hasOnNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
 
   return (
     <Stack ref={ref} className={clsx(css.menuItemRelationship, className)} {...props}>

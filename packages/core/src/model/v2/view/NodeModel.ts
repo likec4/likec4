@@ -3,16 +3,18 @@ import {
   type Color as C4Color,
   ComputedNode,
   type ComputedView,
+  type DeploymentNodeKind,
   type DiagramView,
+  ElementKind,
   type ElementShape as C4ElementShape,
-  type LayoutedLikeC4Model,
+  type Fqn,
+  type Link,
   type NodeId,
-  type Tag as C4Tag,
-  type ViewID
+  type Tag as C4Tag
 } from '../../../types'
 import type { IncomingFilter, OutgoingFilter } from '../../types'
+import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentModel'
 import type { ElementModel } from '../ElementModel'
-import type { ViewType } from '../LikeC4Model'
 import type { EdgeModel } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
@@ -29,6 +31,10 @@ export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
 
   get title(): string {
     return this.$node.title
+  }
+
+  get kind(): ElementKind | DeploymentNodeKind | typeof ElementKind.Group | 'instance' {
+    return this.$node.kind as any
   }
 
   get description(): string | null {
@@ -48,6 +54,11 @@ export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
     return modelRef ? this.view.model.element(modelRef) : null
   }
 
+  get deployment(): DeploymentElementModel<M> | null {
+    const modelRef = ComputedNode.deploymentRef(this.$node)
+    return modelRef ? this.view.model.deployment.element(modelRef) : null
+  }
+
   get shape(): C4ElementShape {
     return this.$node.shape
   }
@@ -58,6 +69,14 @@ export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
 
   get tags(): ReadonlyArray<C4Tag> {
     return this.$node.tags ?? []
+  }
+
+  get links(): ReadonlyArray<Link> {
+    return this.$node.links ?? []
+  }
+
+  get navigateTo(): LikeC4ViewModel<M> | null {
+    return this.$node.navigateTo ? this.view.model.view(this.$node.navigateTo) : null
   }
 
   public *ancestors(): IteratorObject<NodeModel<M, V>> {
@@ -77,12 +96,10 @@ export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
   }
 
   public *sublings(): IteratorObject<NodeModel<M, V>> {
-    const parent = this.parent
-    if (parent) {
-      for (const child of parent.$node.children) {
-        if (child !== this.id) {
-          yield this.view.node(child)
-        }
+    const sublings = this.parent?.children() ?? this.view.roots()
+    for (const subling of sublings) {
+      if (subling.id !== this.id) {
+        yield subling
       }
     }
     return
@@ -107,19 +124,13 @@ export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
   }
 
   public *incomers(filter: IncomingFilter = 'all'): IteratorObject<NodeModel<M, V>> {
-    for (const edgeId of this.$node.inEdges) {
-      const edge = this.view.edge(edgeId)
-      switch (true) {
-        case filter === 'all':
-          yield edge.source
-          break
-        case filter === 'direct' && edge.$edge.target === this.id:
-          yield edge.source
-          break
-        case filter === 'to-descendants' && edge.$edge.target !== this.id:
-          yield edge.source
-          break
+    const unique = new Set<NodeId>()
+    for (const r of this.incoming(filter)) {
+      if (unique.has(r.source.id)) {
+        continue
       }
+      unique.add(r.source.id)
+      yield r.source
     }
     return
   }
@@ -143,19 +154,13 @@ export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
   }
 
   public *outgoers(filter: OutgoingFilter = 'all'): IteratorObject<NodeModel<M, V>> {
-    for (const edgeId of this.$node.outEdges) {
-      const edge = this.view.edge(edgeId)
-      switch (true) {
-        case filter === 'all':
-          yield edge.target
-          break
-        case filter === 'direct' && edge.$edge.source === this.id:
-          yield edge.target
-          break
-        case filter === 'from-descendants' && edge.$edge.source !== this.id:
-          yield edge.target
-          break
+    const unique = new Set<NodeId>()
+    for (const r of this.outgoing(filter)) {
+      if (unique.has(r.target.id)) {
+        continue
       }
+      unique.add(r.target.id)
+      yield r.target
     }
     return
   }
@@ -172,11 +177,27 @@ export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
     return this.$node.parent !== null
   }
 
-  public hasElement(): this is NodeModel.WithElement<M, V> {
+  /**
+   * Check if this node references to logical model element.
+   */
+  public isElement(): this is NodeModel.WithElement<M, V> {
     return ComputedNode.modelRef(this.$node) !== null
   }
+  /**
+   * Check if this node references to deployment element (Node or Instance).
+   */
+  public isDeployment(): this is NodeModel.WithDeploymentElement<M, V> {
+    return ComputedNode.deploymentRef(this.$node) !== null
+  }
+  /**
+   * Check if this node references to deployed instance
+   * Deployed instance always references to element and deployment element.
+   */
+  public isDeployedInstance(): this is NodeModel.WithDeployedInstance<M, V> {
+    return this.isElement() && this.isDeployment()
+  }
 
-  public isGroup(): this is NodeModel.WithoutElement<M, V> {
+  public isGroup(): this is NodeModel.IsGroup<M, V> {
     return ComputedNode.isNodesGroup(this.$node)
   }
 }
@@ -186,11 +207,26 @@ export namespace NodeModel {
     parent: NodeModel<M, V>
   }
   export interface WithElement<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
+    kind: ElementKind
     element: ElementModel<M>
   }
-  export interface WithoutElement<M extends ALikeC4Model, V extends ComputedView | DiagramView>
+  export interface WithDeploymentElement<M extends ALikeC4Model, V extends ComputedView | DiagramView>
     extends NodeModel<M, V>
   {
+    kind: DeploymentNodeKind
+    deployment: DeploymentElementModel<M>
+  }
+  export interface WithDeployedInstance<M extends ALikeC4Model, V extends ComputedView | DiagramView>
+    extends NodeModel<M, V>
+  {
+    kind: 'instance'
+    element: ElementModel<M>
+    deployment: DeployedInstanceModel<M>
+  }
+
+  export interface IsGroup<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
+    kind: typeof ElementKind.Group
     element: null
+    deployment: null
   }
 }

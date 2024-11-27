@@ -1,25 +1,25 @@
 import { sort } from 'remeda'
-import type { SetFieldType } from 'type-fest'
 import { nonNullable } from '../../../errors'
-import type { ComputedEdge, ComputedNode, DiagramEdge, DiagramNode, RelationID } from '../../../types'
-import type { Fqn, Tag } from '../../../types/element'
-import type { ALikeC4Model, ComputedLikeC4Model, LayoutedLikeC4Model } from '../../../types/model'
+import type { RelationID as C4RelationID } from '../../../types'
+import type { Fqn as C4Fqn, Link, Tag } from '../../../types/element'
+import type { ALikeC4Model } from '../../../types/model'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
   type ComputedElementView,
   type ComputedView,
   type DiagramView,
+  type EdgeId as C4EdgeId,
   isDeploymentView,
   isDynamicView,
   isElementView,
-  type NodeId,
-  type ViewID
+  type NodeId as C4NodeId,
+  type ViewID as C4ViewID
 } from '../../../types/view'
 import { compareByFqnHierarchically, getOrCreate } from '../../../utils'
-import { type EdgeId, getId } from '../../types'
+import { type EdgeId, type Fqn, getId, type NodeId, type RelationID } from '../../types'
 import type { ElementModel } from '../ElementModel'
-import type { LikeC4Model, Source, ViewType } from '../LikeC4Model'
+import type { LikeC4Model, ViewType } from '../LikeC4Model'
 import { EdgeModel } from './EdgeModel'
 import { NodeModel } from './NodeModel'
 
@@ -28,11 +28,15 @@ type EdgeOrId = EdgeId | { id: EdgeId }
 
 export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | DiagramView = ViewType<M>> {
   readonly #rootnodes = new Set<NodeModel<M, V>>()
-  readonly #nodes = new Map<NodeId, NodeModel<M, V>>()
-  readonly #edges = new Map<EdgeId, EdgeModel<M, V>>()
-  readonly #includeElements = new Set<Fqn>()
-  readonly #includeRelations = new Set<RelationID>()
+  readonly #nodes = new Map<C4NodeId, NodeModel<M, V>>()
+  readonly #edges = new Map<C4EdgeId, EdgeModel<M, V>>()
+  readonly #includeElements = new Set<C4Fqn>()
+  readonly #includeDeployments = new Set<C4Fqn>()
+  readonly #includeRelations = new Set<C4RelationID>()
   readonly #allTags = new Map<Tag, Set<NodeModel<M, V> | EdgeModel<M, V>>>()
+
+  static Node = NodeModel
+  static Edge = EdgeModel
 
   constructor(
     public readonly model: LikeC4Model<M>,
@@ -44,7 +48,10 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
       if (!node.parent) {
         this.#rootnodes.add(el)
       }
-      if (el.hasElement()) {
+      if (el.isDeployment()) {
+        this.#includeDeployments.add(el.deployment.id)
+      }
+      if (el.isElement()) {
         this.#includeElements.add(el.element.id)
       }
       for (const tag of el.tags) {
@@ -68,7 +75,7 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
     return this.$view.__ ?? 'element'
   }
 
-  get id(): ViewID {
+  get id(): C4ViewID {
     return this.$view.id
   }
 
@@ -78,6 +85,10 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
 
   get tags(): ReadonlyArray<Tag> {
     return this.$view.tags ?? []
+  }
+
+  get links(): ReadonlyArray<Link> {
+    return this.$view.links ?? []
   }
 
   get viewOf(): ElementModel<M> | null {
@@ -94,7 +105,7 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
     return [...this.#allTags.keys()]
   }
 
-  public rootNodes(): IteratorObject<NodeModel<M, V>> {
+  public roots(): IteratorObject<NodeModel<M, V>> {
     return this.#rootnodes.values()
   }
 
@@ -109,8 +120,11 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
    * Find node by id.
    */
   public node(node: NodeOrId): NodeModel<M, V> {
-    const nodeId = getId(node)
+    const nodeId = getId(node) as C4NodeId
     return nonNullable(this.#nodes.get(nodeId), `Node ${nodeId} not found in view ${this.$view.id}`)
+  }
+  public findNode(node: NodeOrId): NodeModel<M, V> | null {
+    return this.#nodes.get(getId(node) as C4NodeId) ?? null
   }
   /**
    * Iterate over all nodes.
@@ -125,8 +139,11 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
    * @returns EdgeModel
    */
   public edge(edge: EdgeOrId): EdgeModel<M, V> {
-    const edgeId = getId(edge)
+    const edgeId = getId(edge) as C4EdgeId
     return nonNullable(this.#edges.get(edgeId), `Edge ${edgeId} not found in view ${this.$view.id}`)
+  }
+  public findEdge(edge: EdgeOrId): EdgeModel<M, V> | null {
+    return this.#edges.get(getId(edge) as C4EdgeId) ?? null
   }
   /**
    * Iterate over all edges.
@@ -146,15 +163,19 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
    * Nodes that have references to elements from logical model.
    */
   public elements(): IteratorObject<NodeModel.WithElement<M, V>> {
-    return this.#nodes.values().filter(node => node.hasElement())
+    return this.#nodes.values().filter(node => node.isElement())
   }
 
   public includesElement(elementId: Fqn): boolean {
-    return this.#includeElements.has(elementId)
+    return this.#includeElements.has(elementId as C4Fqn)
+  }
+
+  public includesDeployment(deploymentId: Fqn): boolean {
+    return this.#includeDeployments.has(deploymentId as C4Fqn)
   }
 
   public includesRelation(relationId: RelationID): boolean {
-    return this.#includeRelations.has(relationId)
+    return this.#includeRelations.has(relationId as C4RelationID)
   }
 
   /**

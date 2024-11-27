@@ -120,7 +120,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
 
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
-import type {
+import {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ViewData,
   LikeC4Model,
@@ -152,7 +152,7 @@ declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId;
 declare const likeC4Model: LikeC4Model.Layouted;
 declare function useLikeC4Model(): LikeC4Model.Layouted;
 declare function useLikeC4View(viewId: LikeC4ViewId): LikeC4ViewData;
-declare function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4Model.Layouted.ViewModel;
+declare function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4Model.View;
 
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
 

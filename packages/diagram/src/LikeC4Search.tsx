@@ -1,4 +1,3 @@
-import type { DiagramView } from '@likec4/core'
 import { Center, Group, Highlight, Text } from '@mantine/core'
 import { Spotlight, type SpotlightActionData, SpotlightActionsGroup } from '@mantine/spotlight'
 import { IconRectangularPrism, IconSearch, IconSitemap } from '@tabler/icons-react'
@@ -96,7 +95,7 @@ export const LikeC4Search = memo(() => {
 
   const getViewActionsData = (): SpotlightActionData[] => {
     const { onNavigateTo } = store.getState()
-    const views = model.views()
+    const views = model.views().toArray()
 
     return map(views, v => ({
       id: v.id,
@@ -104,7 +103,7 @@ export const LikeC4Search = memo(() => {
       keywords: [
         v.title ?? v.id,
         ...(v.tags ?? []),
-        ...(v.view.description ? [v.view.description] : [])
+        ...(v.$view.description ? [v.$view.description] : [])
       ],
       onClick: () => {
         store.setState({

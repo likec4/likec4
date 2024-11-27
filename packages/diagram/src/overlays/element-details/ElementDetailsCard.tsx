@@ -48,7 +48,7 @@ import { memo, type PropsWithChildren, useCallback, useEffect, useRef, useState 
 import { clamp, find, isNullish, map, only, partition, pick, pipe, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow, useXYInternalNode } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
-import { useLikeC4Model } from '../../likec4model'
+import { useLikeC4CurrentViewModel, useLikeC4Model } from '../../likec4model'
 import { useOverlayDialog } from '../OverlayContext'
 import * as css from './ElementDetailsCard.css'
 import { TabPanelRelationships } from './TabPanelRelationships'
@@ -101,6 +101,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   const overlay = useOverlayDialog()
   const [activeTab, setActiveTab] = useState<'Properties' | 'Relationships' | 'Views'>('Properties')
   const diagramApi = useDiagramStoreApi()
+  const viewModel = useLikeC4CurrentViewModel()
   const {
     view: currentView,
     renderIcon,
@@ -109,24 +110,22 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   } = useDiagramState(pick(['view', 'renderIcon', 'onNavigateTo', 'onOpenSource']))
   const diagramNode = currentView.nodes.find(n => n.id === fqn)
   invariant(diagramNode, `DiagramNode with fqn ${fqn} not found`)
-
-  const likec4Model = useLikeC4Model(true)
-  const elementModel = likec4Model.element(DiagramNode.modelRef(diagramNode) ?? fqn)
-  const viewId = currentView.id
+  const nodeModel = viewModel.findNode(fqn)
+  invariant(nodeModel && nodeModel.isElement(), `NodeModel with fqn ${fqn} not found`)
+  const elementModel = nodeModel.element
+  const viewId = viewModel.id
 
   const elementIcon = ElementIcon({
-    element: diagramNode,
+    element: nodeModel.$node,
     viewId,
     renderIcon
   })
 
-  const incoming = elementModel.incoming().map(r => r.id)
-  const outgoing = elementModel.outgoing().map(r => r.id)
+  const incoming = elementModel.incoming().map(r => r.id).toArray()
+  const outgoing = elementModel.outgoing().map(r => r.id).toArray()
 
-  const findRelationIds = (edgeId: EdgeId) => currentView.edges.find((edge) => edge.id === edgeId)?.relations ?? []
-
-  const incomingInView = unique(diagramNode.inEdges.flatMap(findRelationIds))
-  const outgoingInView = unique(diagramNode.outEdges.flatMap(findRelationIds))
+  const incomingInView = unique(nodeModel.incoming().flatMap(e => e.$edge.relations).toArray())
+  const outgoingInView = unique(nodeModel.outgoing().flatMap(e => e.$edge.relations).toArray())
 
   const notIncludedRelations = [
     ...incoming,
@@ -134,16 +133,15 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
 
   const [viewsOf, otherViews] = pipe(
-    elementModel.views(),
-    map(v => v.view as ComputedView),
+    elementModel.views().toArray(),
+    map(v => v.$view),
     partition(v => isElementView(v) && v.viewOf === fqn)
   )
 
-  const defaultView = diagramNode.navigateTo
-    ? likec4Model.view(diagramNode.navigateTo).view
-    : (find(viewsOf, v => v.id !== currentView.id) ?? null)
+  const defaultView = nodeModel.navigateTo?.$view
+    ?? find(viewsOf, v => v.id !== viewModel.id) ?? null
 
-  const defaultLink = diagramNode.links && only(diagramNode.links)
+  const defaultLink = only(nodeModel.links)
 
   const onNavigateToCb = useCallback((toView: ViewID, e?: React.MouseEvent): void => {
     e?.stopPropagation()
@@ -154,17 +152,17 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
     overlay.close(() => {
       diagramApi.setState({
         lastOnNavigate: {
-          fromView: currentView.id,
+          fromView: viewModel.id,
           toView,
           fromNode: fqn
         }
       })
       onNavigateTo(toView)
     })
-  }, [fqn, currentView.id])
+  }, [fqn, viewModel.id])
   const controls = useDragControls()
 
-  const isCompound = diagramNode.children.length > 0
+  const isCompound = nodeModel.children.length > 0
 
   const fromPositon = xyflow.flowToScreenPosition({
     x: xynode.internals.positionAbsolute.x + diagramNode.width / 2,
@@ -274,7 +272,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
               overlay.close()
             }
           }}
-          data-likec4-color={diagramNode.color}>
+          data-likec4-color={nodeModel.color}>
           <FocusTrap>
             <FocusTrapInitialFocus />
             <Box
@@ -291,9 +289,9 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                       className={css.title}>
                       {elementModel.title}
                     </Text>
-                    {diagramNode.notation && (
+                    {nodeModel.$node.notation && (
                       <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
-                        {diagramNode.notation}
+                        {nodeModel.$node.notation}
                       </Text>
                     )}
                   </Box>
@@ -309,15 +307,15 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
               <Group align="baseline" gap={'sm'} wrap="nowrap">
                 <Box>
                   <SmallLabel>kind</SmallLabel>
-                  <Badge radius={'sm'} size="sm" fw={600} color="gray">{diagramNode.kind}</Badge>
+                  <Badge radius={'sm'} size="sm" fw={600} color="gray">{nodeModel.kind}</Badge>
                 </Box>
                 <Box flex={1}>
                   <SmallLabel>tags</SmallLabel>
                   <Flex gap={4} flex={1} mt={6}>
-                    {diagramNode.tags?.map((tag) => (
+                    {nodeModel.tags?.map((tag) => (
                       <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
                     ))}
-                    {!diagramNode.tags && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+                    {!nodeModel.tags && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                   </Flex>
                 </Box>
                 <ActionIconGroup
@@ -399,22 +397,22 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                 <ScrollArea scrollbars="y" type="auto">
                   <Box className={css.propertiesGrid} pt={'xs'}>
                     <ElementProperty title="description" emptyValue="no description">
-                      {diagramNode.description}
+                      {nodeModel.description}
                     </ElementProperty>
-                    {diagramNode.technology && (
+                    {nodeModel.technology && (
                       <ElementProperty title="technology">
-                        {diagramNode.technology}
+                        {nodeModel.technology}
                       </ElementProperty>
                     )}
-                    {diagramNode.links && (
+                    {nodeModel.links.length > 0 && (
                       <>
                         <PropertyLabel>links</PropertyLabel>
                         <Stack gap={'xs'} align="flex-start">
-                          {diagramNode.links.map((link, i) => <ElementLink key={i} value={link} />)}
+                          {nodeModel.links.map((link, i) => <ElementLink key={i} value={link} />)}
                         </Stack>
                       </>
                     )}
-                    {elementModel.element.metadata && <ElementMetata value={elementModel.element.metadata} />}
+                    {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}
                   </Box>
                 </ScrollArea>
               </TabsPanel>
@@ -423,7 +421,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                 {activeTab === 'Relationships' && (
                   <TabPanelRelationships
                     element={elementModel}
-                    diagramNode={diagramNode}
+                    node={nodeModel}
                     currentView={currentView} />
                 )}
               </TabsPanel>
@@ -487,7 +485,7 @@ ElementDetailsCard.displayName = 'ElementDetailsCard'
 
 const ElementIcon = (
   { element, viewId, renderIcon: RenderIcon }: {
-    element: DiagramNode
+    element: ComputedNode
     viewId: string
     renderIcon: ElementIconRenderer | null
   }

@@ -168,7 +168,7 @@ export class LikeC4 {
         throw new Error('Failed to build model')
       }
       const computedModel = this.langium.likec4.ModelBuilder.unsafeSyncBuildComputedModel(parsedModel)
-      ref = LikeC4Model.computed(computedModel)
+      ref = LikeC4Model.create(computedModel)
       this.modelComputedRef = new WeakRef(ref)
     }
     return ref
@@ -186,9 +186,9 @@ export class LikeC4 {
         throw new Error('Failed to build model')
       }
       const diagrams = await this.viewsService.diagrams()
-      ref = LikeC4Model.layouted({
-        __: 'layouted',
+      ref = LikeC4Model.create({
         ...computedModel,
+        __: 'layouted' as const,
         views: indexBy(diagrams, prop('id'))
       })
       this.modelLayoutedRef = new WeakRef(ref)

@@ -1,51 +1,60 @@
 import { isString, pipe, sort, values } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
-import type { ViewID } from '../../types'
-import { type Element as C4Element, type Fqn, type Tag as C4Tag } from '../../types/element'
-import type { ALikeC4Model, ComputedLikeC4Model, LayoutedLikeC4Model as C4LayoutedLikeC4Model } from '../../types/model'
-import type { Relation, RelationID } from '../../types/relation'
+import type { ComputedView, DiagramView, ViewID as C4ViewID } from '../../types'
+import { type Element as C4Element, type Tag as C4Tag } from '../../types/element'
+import type { ALikeC4Model, ComputedLikeC4Model, LayoutedLikeC4Model } from '../../types/model'
+import type { Relation, RelationID as C4RelationID } from '../../types/relation'
 import { compareNatural, getOrCreate } from '../../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
-import { getId, type IncomingFilter, type OutgoingFilter } from '../types'
+import {
+  type ElementOrFqn,
+  type Fqn,
+  getId,
+  type IncomingFilter,
+  type OutgoingFilter,
+  type RelationID,
+  type ViewID
+} from '../types'
+import { LikeC4DeploymentModel } from './DeploymentModel'
 import { ElementModel } from './ElementModel'
 import { RelationModel } from './RelationModel'
+import { EdgeModel } from './view/EdgeModel'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { NodeModel } from './view/NodeModel'
 
-export type Source = ALikeC4Model
+export type ViewType<S extends ALikeC4Model> = S['views'][C4ViewID]
 
-export type ViewType<S extends Source> = S['views'][ViewID]
-
-type ElementOrFqn = Fqn | { id: Fqn }
-
-// type ViewModel<S extends Source> = LikeC4ViewModel<ViewType<S>, S>
-
-export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
-  #elements = new Map<Fqn, ElementModel<M>>()
+export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
+  readonly #elements = new Map<Fqn, ElementModel<M>>()
   // Parent element for given FQN
-  #parents = new Map<Fqn, ElementModel<M>>()
+  readonly #parents = new Map<Fqn, ElementModel<M>>()
   // Children elements for given FQN
-  #children = new Map<Fqn, Set<ElementModel<M>>>()
+  readonly #children = new Map<Fqn, Set<ElementModel<M>>>()
 
-  #rootElements = new Set<ElementModel<M>>()
+  readonly #rootElements = new Set<ElementModel<M>>()
 
-  #relations = new Map<RelationID, RelationModel<M>>()
+  readonly #relations = new Map<C4RelationID, RelationModel<M>>()
 
   // Incoming to an element or its descendants
-  #incoming = new Map<Fqn, Set<RelationModel<M>>>()
+  readonly #incoming = new Map<Fqn, Set<RelationModel<M>>>()
 
   // Outgoing from an element or its descendants
-  #outgoing = new Map<Fqn, Set<RelationModel<M>>>()
+  readonly #outgoing = new Map<Fqn, Set<RelationModel<M>>>()
 
   // Relationships inside the element, among descendants
-  #internal = new Map<Fqn, Set<RelationModel<M>>>()
+  readonly #internal = new Map<Fqn, Set<RelationModel<M>>>()
 
-  // private _cacheAscendingSiblings = new Map<Fqn, ElementModel<M>[]>()
+  readonly #views = new Map<ViewID, LikeC4ViewModel<M>>()
 
-  #views = new Map<ViewID, LikeC4ViewModel<M>>()
+  readonly #allTags = new Map<C4Tag, Set<ElementModel<M> | RelationModel<M>>>()
 
-  #allTags = new Map<C4Tag, Set<ElementModel<M> | RelationModel<M>>>()
+  public readonly deployment: LikeC4DeploymentModel<M>
 
-  constructor(
+  static create<M extends ALikeC4Model>(model: M): LikeC4Model<M> {
+    return new LikeC4Model(model)
+  }
+
+  private constructor(
     public readonly $model: M
   ) {
     for (const element of values($model.elements)) {
@@ -68,11 +77,19 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
       const vm = new LikeC4ViewModel(this, view as ViewType<M>)
       this.#views.set(view.id, vm)
     }
+    this.deployment = new LikeC4DeploymentModel(this, $model.deployments)
+  }
+
+  get type(): 'computed' | 'layouted' {
+    return this.$model.__ ?? 'computed'
   }
 
   public element(el: ElementOrFqn): ElementModel<M> {
-    const id = getId(el)
-    return nonNullable(this.#elements.get(id), `Element ${id} not found`)
+    return nonNullable(this.findElement(el), `Element ${getId(el)} not found`)
+  }
+  public findElement(el: ElementOrFqn): ElementModel<M> | null {
+    const id = getId(el) as Fqn
+    return this.#elements.get(id) ?? null
   }
 
   /**
@@ -99,8 +116,11 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
   /**
    * Returns a specific relationship by its ID.
    */
-  public relationship(id: RelationID) {
-    return nonNullable(this.#relations.get(id), `Relation ${id} not found`)
+  public relationship(id: RelationID): RelationModel<M> {
+    return nonNullable(this.#relations.get(id as C4RelationID), `Relation ${id} not found`)
+  }
+  public findRelationship(id: RelationID): RelationModel<M> | null {
+    return this.#relations.get(id as C4RelationID) ?? null
   }
 
   /**
@@ -241,17 +261,14 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
     if (this.#relations.has(relation.id)) {
       throw new Error(`Relation ${relation.id} already exists`)
     }
-    const source = this.element(relation.source)
-    const target = this.element(relation.target)
     const rel = new RelationModel(
       this,
-      relation,
-      source,
-      target
+      relation
     )
+    const { source, target } = rel
     this.#relations.set(rel.id, rel)
-    this._incomingTo(relation.target).add(rel)
-    this._outgoingFrom(relation.source).add(rel)
+    this._incomingTo(target.id).add(rel)
+    this._outgoingFrom(source.id).add(rel)
 
     const relParent = commonAncestor(source.id, target.id)
     // Process internal relationships
@@ -293,7 +310,39 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
     return getOrCreate(this.#internal, id, () => new Set())
   }
 
-  public isDiagramModel(): this is LikeC4Model<C4LayoutedLikeC4Model> {
+  public isLayouted(): this is LikeC4Model<LayoutedLikeC4Model> {
     return this.$model.__ === 'layouted'
   }
+}
+
+export namespace LikeC4Model {
+  export type Sources = ComputedLikeC4Model | LayoutedLikeC4Model
+
+  export const Element = ElementModel
+  export type Element<M extends ALikeC4Model = Sources> = ElementModel<M>
+
+  export const Relation = RelationModel
+  export type Relation<M extends ALikeC4Model = Sources> = RelationModel<M>
+
+  export const View = LikeC4ViewModel
+  export type View<M extends ALikeC4Model = Sources, V extends ComputedView | DiagramView = ViewType<M>> =
+    LikeC4ViewModel<M, V>
+
+  export const Node = NodeModel
+  export type Node<M extends ALikeC4Model = Sources, V extends ComputedView | DiagramView = ViewType<M>> = NodeModel<
+    M,
+    V
+  >
+
+  export const Edge = EdgeModel
+  export type Edge<M extends ALikeC4Model = Sources, V extends ComputedView | DiagramView = ViewType<M>> = EdgeModel<
+    M,
+    V
+  >
+
+  export const Deployment = LikeC4DeploymentModel
+  export type Deployment<M extends ALikeC4Model = Sources> = LikeC4DeploymentModel<M>
+
+  export type Computed = LikeC4Model<ComputedLikeC4Model>
+  export type Layouted = LikeC4Model<LayoutedLikeC4Model>
 }

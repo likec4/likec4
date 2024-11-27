@@ -3,15 +3,18 @@ import {
   type ComputedDynamicView,
   type ComputedView,
   type DiagramView,
+  type EdgeId as C4EdgeId,
   extractStep,
   isStepEdgeId,
-  type RelationID,
+  type Link,
+  type RelationID as C4RelationID,
   type StepEdgeId,
   type Tag as C4Tag,
   type ViewID
 } from '../../../types'
-import type { EdgeId } from '../../types'
+import type { EdgeId, RelationID } from '../../types'
 import type { ViewType } from '../LikeC4Model'
+import type { RelationModel } from '../RelationModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
@@ -24,7 +27,7 @@ export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
   ) {
   }
 
-  get id(): EdgeId {
+  get id(): C4EdgeId {
     return this.$edge.id
   }
 
@@ -44,18 +47,23 @@ export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
     return this.isStep() ? extractStep(this.id) : null
   }
 
+  get navigateTo(): LikeC4ViewModel<M> | null {
+    return this.$edge.navigateTo ? this.view.model.view(this.$edge.navigateTo) : null
+  }
+
   public isStep(): this is EdgeModel.StepEdge<M, ComputedDynamicView> {
     return isStepEdgeId(this.id)
   }
 
-  public *relationships() {
+  public *relationships(): IteratorObject<RelationModel<M>> {
     for (const rel of this.$edge.relations) {
       yield this.view.model.relationship(rel)
     }
+    return
   }
 
   public includesRelation(rel: RelationID): boolean {
-    return this.$edge.relations.includes(rel)
+    return this.$edge.relations.includes(rel as C4RelationID)
   }
 }
 

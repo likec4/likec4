@@ -21,13 +21,13 @@ import * as css from './TabPanelRelationships.css'
 
 type RelationshipsTabPanelProps = {
   currentView: DiagramView
-  diagramNode: DiagramNode
-  element: LikeC4Model.ElementModel
+  node: LikeC4Model.Node
+  element: LikeC4Model.Element
 }
 
 export function TabPanelRelationships({
   currentView,
-  diagramNode: node,
+  node,
   element
 }: RelationshipsTabPanelProps) {
   const layoutId = useId()
@@ -35,13 +35,11 @@ export function TabPanelRelationships({
   const overlay = useOverlayDialog()
   const [scope, setScope] = useState<'global' | 'view'>('view')
 
-  const incoming = element.incoming().map(r => r.id)
-  const outgoing = element.outgoing().map(r => r.id)
+  const incoming = element.incoming().map(r => r.id).toArray()
+  const outgoing = element.outgoing().map(r => r.id).toArray()
 
-  const findRelationIds = (edgeId: EdgeId) => currentView.edges.find((edge) => edge.id === edgeId)?.relations ?? []
-
-  const incomingInView = unique(node.inEdges.flatMap(findRelationIds))
-  const outgoingInView = unique(node.outEdges.flatMap(findRelationIds))
+  const incomingInView = unique(node.incoming().flatMap(e => e.$edge.relations).toArray())
+  const outgoingInView = unique(node.outgoing().flatMap(e => e.$edge.relations).toArray())
 
   const notIncludedRelations = [
     ...incoming,
