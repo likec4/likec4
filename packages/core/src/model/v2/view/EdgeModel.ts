@@ -1,23 +1,26 @@
-import type { SetNonNullable } from 'type-fest'
 import {
+  type ALikeC4Model,
   type ComputedDynamicView,
-  ComputedNode,
+  type ComputedView,
+  type DiagramView,
   extractStep,
   isStepEdgeId,
   type RelationID,
   type StepEdgeId,
-  type Tag as C4Tag
+  type Tag as C4Tag,
+  type ViewID
 } from '../../../types'
 import type { EdgeId } from '../../types'
-import type { ComputedOrDiagram, LikeC4ViewModel } from './LikeC4ViewModel'
+import type { ViewType } from '../LikeC4Model'
+import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
-export class EdgeModel<V extends ComputedOrDiagram> {
+export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramView> {
   constructor(
-    public readonly view: LikeC4ViewModel<V>,
+    public readonly view: LikeC4ViewModel<M, V>,
     public readonly $edge: V['edges'][number],
-    public readonly source: NodeModel<V>,
-    public readonly target: NodeModel<V>
+    public readonly source: NodeModel<M, V>,
+    public readonly target: NodeModel<M, V>
   ) {
   }
 
@@ -25,11 +28,11 @@ export class EdgeModel<V extends ComputedOrDiagram> {
     return this.$edge.id
   }
 
-  get parent(): NodeModel<V> | null {
+  get parent(): NodeModel<M, V> | null {
     return this.$edge.parent ? this.view.node(this.$edge.parent) : null
   }
 
-  public hasParent(): this is EdgeModel.WithParent<V> {
+  public hasParent(): this is EdgeModel.WithParent<M, V> {
     return this.$edge.parent !== null
   }
 
@@ -41,7 +44,7 @@ export class EdgeModel<V extends ComputedOrDiagram> {
     return this.isStep() ? extractStep(this.id) : null
   }
 
-  public isStep(): this is EdgeModel.StepEdge {
+  public isStep(): this is EdgeModel.StepEdge<M, ComputedDynamicView> {
     return isStepEdgeId(this.id)
   }
 
@@ -57,11 +60,11 @@ export class EdgeModel<V extends ComputedOrDiagram> {
 }
 
 export namespace EdgeModel {
-  export interface StepEdge extends EdgeModel<ComputedDynamicView> {
+  export interface StepEdge<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
     id: StepEdgeId
     stepNumber: number
   }
-  export interface WithParent<V extends ComputedOrDiagram> extends EdgeModel<V> {
-    parent: NodeModel<V>
+  export interface WithParent<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
+    parent: NodeModel<M, V>
   }
 }

@@ -1,6 +1,6 @@
 import { isString, pipe, sort, values } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
-import type { ComputedView, DiagramView, ViewID } from '../../types'
+import type { ViewID } from '../../types'
 import { type Element as C4Element, type Fqn, type Tag as C4Tag } from '../../types/element'
 import type { ALikeC4Model, ComputedLikeC4Model, LayoutedLikeC4Model as C4LayoutedLikeC4Model } from '../../types/model'
 import type { Relation, RelationID } from '../../types/relation'
@@ -13,7 +13,7 @@ import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type Source = ALikeC4Model
 
-export type ViewType<S extends Source> = S['__'] extends 'layouted' ? DiagramView : ComputedView
+export type ViewType<S extends Source> = S['views'][ViewID]
 
 type ElementOrFqn = Fqn | { id: Fqn }
 
@@ -41,7 +41,7 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
 
   // private _cacheAscendingSiblings = new Map<Fqn, ElementModel<M>[]>()
 
-  #views = new Map<ViewID, LikeC4ViewModel<ViewType<M>>>()
+  #views = new Map<ViewID, LikeC4ViewModel<M>>()
 
   #allTags = new Map<C4Tag, Set<ElementModel<M> | RelationModel<M>>>()
 
@@ -65,7 +65,7 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
       sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled'))
     )
     for (const view of views) {
-      const vm = new LikeC4ViewModel(this, view)
+      const vm = new LikeC4ViewModel(this, view as ViewType<M>)
       this.#views.set(view.id, vm)
     }
   }
@@ -113,7 +113,7 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
   /**
    * Returns a specific view by its ID.
    */
-  public view(viewId: ViewID): LikeC4ViewModel<ViewType<M>> {
+  public view(viewId: ViewID): LikeC4ViewModel<M> {
     return nonNullable(this.#views.get(viewId), `View ${viewId} not found`)
   }
 
@@ -294,6 +294,6 @@ export class LikeC4Model<M extends Source = ComputedLikeC4Model> {
   }
 
   public isDiagramModel(): this is LikeC4Model<C4LayoutedLikeC4Model> {
-    return this.$model.__ === 'diagram'
+    return this.$model.__ === 'layouted'
   }
 }

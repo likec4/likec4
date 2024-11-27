@@ -10,10 +10,11 @@ import {
   type ThemeColor
 } from '../../types'
 import type { IncomingFilter, OutgoingFilter } from '../types'
-import type { LikeC4Model, RelationModel, Source, ViewType } from './LikeC4Model'
+import type { LikeC4Model, Source } from './LikeC4Model'
+import type { RelationModel } from './RelationModel'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class ElementModel<M extends Source = Source> {
+export class ElementModel<M extends Source> {
   constructor(
     public readonly model: LikeC4Model<M>,
     public readonly $element: C4Element
@@ -77,11 +78,11 @@ export class ElementModel<M extends Source = Source> {
     return this.model.outgoing(this, filter).map(r => r.target)
   }
 
-  public views(): IteratorObject<LikeC4ViewModel<ViewType<M>>> {
+  public views(): IteratorObject<LikeC4ViewModel<M>> {
     return this.model.views().filter(vm => vm.includesElement(this.id))
   }
 
-  public viewsOf(): IteratorObject<LikeC4ViewModel<ComputedElementView>> {
+  public viewsOf(): IteratorObject<LikeC4ViewModel<M, ComputedElementView>> {
     return this.views()
       .filter((vm) => vm.isElementView())
       .filter(vm => vm.$view.viewOf === this.id)

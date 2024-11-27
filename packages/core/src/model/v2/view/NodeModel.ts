@@ -1,19 +1,24 @@
 import {
+  type ALikeC4Model,
   type Color as C4Color,
   ComputedNode,
+  type ComputedView,
   type DiagramView,
   type ElementShape as C4ElementShape,
+  type LayoutedLikeC4Model,
   type NodeId,
-  type Tag as C4Tag
+  type Tag as C4Tag,
+  type ViewID
 } from '../../../types'
 import type { IncomingFilter, OutgoingFilter } from '../../types'
 import type { ElementModel } from '../ElementModel'
+import type { ViewType } from '../LikeC4Model'
 import type { EdgeModel } from './EdgeModel'
-import type { ComputedOrDiagram, LikeC4ViewModel } from './LikeC4ViewModel'
+import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
-export class NodeModel<V extends ComputedOrDiagram> {
+export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramView> {
   constructor(
-    public readonly view: LikeC4ViewModel<V>,
+    public readonly view: LikeC4ViewModel<M, V>,
     public readonly $node: V['nodes'][number]
   ) {
   }
@@ -26,11 +31,19 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return this.$node.title
   }
 
-  get parent(): NodeModel<V> | null {
+  get description(): string | null {
+    return this.$node.description
+  }
+
+  get technology(): string | null {
+    return this.$node.technology
+  }
+
+  get parent(): NodeModel<M, V> | null {
     return this.$node.parent ? this.view.node(this.$node.parent) : null
   }
 
-  get element(): ElementModel | null {
+  get element(): ElementModel<M> | null {
     const modelRef = ComputedNode.modelRef(this.$node)
     return modelRef ? this.view.model.element(modelRef) : null
   }
@@ -47,7 +60,7 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return this.$node.tags ?? []
   }
 
-  public *ancestors(): IteratorObject<NodeModel<V>> {
+  public *ancestors(): IteratorObject<NodeModel<M, V>> {
     let parent = this.parent
     while (parent) {
       yield parent
@@ -56,14 +69,14 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return
   }
 
-  public *children(): IteratorObject<NodeModel<V>> {
+  public *children(): IteratorObject<NodeModel<M, V>> {
     for (const child of this.$node.children) {
       yield this.view.node(child)
     }
     return
   }
 
-  public *sublings(): IteratorObject<NodeModel<V>> {
+  public *sublings(): IteratorObject<NodeModel<M, V>> {
     const parent = this.parent
     if (parent) {
       for (const child of parent.$node.children) {
@@ -75,7 +88,7 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return
   }
 
-  public *incoming(filter: IncomingFilter = 'all'): IteratorObject<EdgeModel<V>> {
+  public *incoming(filter: IncomingFilter = 'all'): IteratorObject<EdgeModel<M, V>> {
     for (const edgeId of this.$node.inEdges) {
       const edge = this.view.edge(edgeId)
       switch (true) {
@@ -93,7 +106,7 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return
   }
 
-  public *incomers(filter: IncomingFilter = 'all'): IteratorObject<NodeModel<V>> {
+  public *incomers(filter: IncomingFilter = 'all'): IteratorObject<NodeModel<M, V>> {
     for (const edgeId of this.$node.inEdges) {
       const edge = this.view.edge(edgeId)
       switch (true) {
@@ -111,7 +124,7 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return
   }
 
-  public *outgoing(filter: OutgoingFilter = 'all'): IteratorObject<EdgeModel<V>> {
+  public *outgoing(filter: OutgoingFilter = 'all'): IteratorObject<EdgeModel<M, V>> {
     for (const edgeId of this.$node.outEdges) {
       const edge = this.view.edge(edgeId)
       switch (true) {
@@ -129,7 +142,7 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return
   }
 
-  public *outgoers(filter: OutgoingFilter = 'all'): IteratorObject<NodeModel<V>> {
+  public *outgoers(filter: OutgoingFilter = 'all'): IteratorObject<NodeModel<M, V>> {
     for (const edgeId of this.$node.outEdges) {
       const edge = this.view.edge(edgeId)
       switch (true) {
@@ -147,7 +160,7 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return
   }
 
-  public isDiagramNode(): this is NodeModel<DiagramView> {
+  public isDiagramNode(): this is NodeModel<M, DiagramView> {
     return 'width' in this.$node && 'height' in this.$node
   }
 
@@ -155,27 +168,29 @@ export class NodeModel<V extends ComputedOrDiagram> {
     return this.$node.children.length > 0
   }
 
-  public hasParent(): this is NodeModel.WithParent<V> {
+  public hasParent(): this is NodeModel.WithParent<M, V> {
     return this.$node.parent !== null
   }
 
-  public hasElement(): this is NodeModel.WithElement<V> {
+  public hasElement(): this is NodeModel.WithElement<M, V> {
     return ComputedNode.modelRef(this.$node) !== null
   }
 
-  public isGroup(): this is NodeModel.WithoutElement<V> {
+  public isGroup(): this is NodeModel.WithoutElement<M, V> {
     return ComputedNode.isNodesGroup(this.$node)
   }
 }
 
 export namespace NodeModel {
-  export interface WithParent<V extends ComputedOrDiagram> extends NodeModel<V> {
-    parent: NodeModel<V>
+  export interface WithParent<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
+    parent: NodeModel<M, V>
   }
-  export interface WithElement<V extends ComputedOrDiagram> extends NodeModel<V> {
-    element: ElementModel
+  export interface WithElement<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
+    element: ElementModel<M>
   }
-  export interface WithoutElement<V extends ComputedOrDiagram> extends NodeModel<V> {
+  export interface WithoutElement<M extends ALikeC4Model, V extends ComputedView | DiagramView>
+    extends NodeModel<M, V>
+  {
     element: null
   }
 }
