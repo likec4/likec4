@@ -11,10 +11,10 @@ import {
   type Link,
   type Tag as C4Tag,
   type ThemeColor
-} from '../../types'
-import type { IncomingFilter, OutgoingFilter } from '../types'
+} from '../types'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationModel } from './RelationModel'
+import type { IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export class ElementModel<M extends ALikeC4Model> {

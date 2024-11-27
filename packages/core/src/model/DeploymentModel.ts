@@ -1,6 +1,6 @@
 import { isEmpty, values } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import { invariant, nonNullable } from '../../errors'
+import { invariant, nonNullable } from '../errors'
 import {
   type ALikeC4Model,
   type ComputedDeploymentView,
@@ -21,13 +21,13 @@ import {
   type Tag,
   type Tag as C4Tag,
   type ThemeColor
-} from '../../types'
-import { ancestorsFqn, commonAncestor, nameFromFqn, parentFqn } from '../../utils/fqn'
-import { getOrCreate } from '../../utils/getOrCreate'
-import { isString } from '../../utils/guards'
-import { type Fqn, getId, type IncomingFilter, type OutgoingFilter, type RelationID } from '../types'
+} from '../types'
+import { ancestorsFqn, commonAncestor, nameFromFqn, parentFqn } from '../utils/fqn'
+import { getOrCreate } from '../utils/getOrCreate'
+import { isString } from '../utils/guards'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
+import { type Fqn, getId, type IncomingFilter, type OutgoingFilter, type RelationID } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 type ElementOrFqn = Fqn | { id: Fqn }

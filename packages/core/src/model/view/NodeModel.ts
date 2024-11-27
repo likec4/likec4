@@ -11,10 +11,10 @@ import {
   type Link,
   type NodeId,
   type Tag as C4Tag
-} from '../../../types'
-import type { IncomingFilter, OutgoingFilter } from '../../types'
+} from '../../types'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentModel'
 import type { ElementModel } from '../ElementModel'
+import type { IncomingFilter, OutgoingFilter } from '../types'
 import type { EdgeModel } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 

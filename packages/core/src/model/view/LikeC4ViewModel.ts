@@ -1,8 +1,8 @@
 import { sort } from 'remeda'
-import { nonNullable } from '../../../errors'
-import type { RelationID as C4RelationID } from '../../../types'
-import type { Fqn as C4Fqn, Link, Tag } from '../../../types/element'
-import type { ALikeC4Model } from '../../../types/model'
+import { nonNullable } from '../../errors'
+import type { RelationID as C4RelationID } from '../../types'
+import type { Fqn as C4Fqn, Link, Tag } from '../../types/element'
+import type { ALikeC4Model } from '../../types/model'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
@@ -15,11 +15,11 @@ import {
   isElementView,
   type NodeId as C4NodeId,
   type ViewID as C4ViewID
-} from '../../../types/view'
-import { compareByFqnHierarchically, getOrCreate } from '../../../utils'
-import { type EdgeId, type Fqn, getId, type NodeId, type RelationID } from '../../types'
+} from '../../types/view'
+import { compareByFqnHierarchically, getOrCreate } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model, ViewType } from '../LikeC4Model'
+import { type EdgeId, type Fqn, getId, type NodeId, type RelationID } from '../types'
 import { EdgeModel } from './EdgeModel'
 import { NodeModel } from './NodeModel'
 

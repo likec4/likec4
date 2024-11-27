@@ -1,8 +1,10 @@
+import { mapValues } from 'remeda'
 import { nonexhaustive } from '../errors'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
   type ComputedElementView,
+  type ComputedLikeC4Model,
   type ComputedView,
   type DeploymentView,
   type DynamicView,
@@ -73,5 +75,21 @@ export function mkComputeView(model: ParsedLikeC4Model): ComputeView {
         view: undefined
       }
     }
+  }
+}
+
+export function computeViews(model: ParsedLikeC4Model): ComputedLikeC4Model {
+  const _computeView = mkComputeView(model)
+  const computeView = (source: LikeC4View): ComputedView => {
+    const result = _computeView(source)
+    if (result.isSuccess) {
+      return result.view
+    } else {
+      throw result.error
+    }
+  }
+  return {
+    ...model,
+    views: mapValues(model.views, computeView)
   }
 }

@@ -1,7 +1,7 @@
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { Builder } from '../../builder/Builder'
-import { mkComputeView } from '../../compute-view'
+import { Builder } from '../builder/Builder'
+import { computeViews } from '../compute-view/compute-view'
 import { LikeC4Model } from './LikeC4Model'
 
 const {
@@ -143,7 +143,7 @@ const source = b
   .build()
 
 describe('LikeC4Model', () => {
-  const model = LikeC4Model.create(source)
+  const model = LikeC4Model.create(computeViews(source))
 
   it('roots', () => {
     expect(model.roots().toArray().map(prop('id'))).toEqual([

@@ -11,10 +11,10 @@ import {
   type StepEdgeId,
   type Tag as C4Tag,
   type ViewID
-} from '../../../types'
-import type { EdgeId, RelationID } from '../../types'
+} from '../../types'
 import type { ViewType } from '../LikeC4Model'
 import type { RelationModel } from '../RelationModel'
+import type { EdgeId, RelationID } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
