@@ -1,5 +1,6 @@
 import { type AstNode, GrammarUtils } from 'langium'
 import { AbstractFormatter, Formatting, type NodeFormatter } from 'langium/lsp'
+import { filter, isTruthy } from 'remeda'
 import * as ast from '../generated/ast'
 import * as utils from './utils'
 
@@ -19,7 +20,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     // Specification
     this.formatSpecificationRule(node)
-    
+
     // Globals
     this.formatGlobals(node)
 
@@ -27,7 +28,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatElementDeclaration(node)
     this.formatRelation(node)
     this.formatMetadataProperty(node)
-    
+
     // Views
     this.formatView(node)
     this.formatViewRuleGroup(node)
@@ -36,7 +37,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatWhereExpression(node)
     this.formatAutolayoutProperty(node)
     this.formatWithPredicate(node)
-    
+
     // Common
     this.formatViewRuleStyle(node)
     this.formatLeafProperty(node)
@@ -64,7 +65,11 @@ export class LikeC4Formatter extends AbstractFormatter {
       f.keywords(']->').prepend(FormattingOptions.noSpace)
       f.keywords('-[').append(FormattingOptions.noSpace)
 
-      f.properties('target', 'title', 'technology', 'tags').prepend(FormattingOptions.oneSpace)
+      f.nodes(...filter([
+        n.target,
+        n.tags
+      ], isTruthy)).prepend(FormattingOptions.oneSpace)
+      f.properties('title', 'technology').prepend(FormattingOptions.oneSpace)
     })
 
     this.on(node, ast.isDynamicViewStep, (n, f) => {
