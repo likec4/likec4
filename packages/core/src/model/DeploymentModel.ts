@@ -91,9 +91,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
   }
   public findNode(el: ElementOrFqn): DeploymentNodeModel<M> | null {
     const element = this.findElement(el)
-    if (element && !element.isDeploymentNode()) {
-      throw new Error(`Element ${element.id} is not a deployment node`)
-    }
+    invariant(!element || element.isDeploymentNode(), `Element ${element?.id} is not a deployment node`)
     return element
   }
 
@@ -104,9 +102,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
   }
   public findInstance(el: ElementOrFqn): DeployedInstanceModel<M> | null {
     const element = this.findElement(el)
-    if (element && !element.isInstance()) {
-      throw new Error(`Element ${element.id} is not a deployed instance`)
-    }
+    invariant(!element || element.isInstance(), `Element ${element?.id} is not a deployed instance`)
     return element
   }
 

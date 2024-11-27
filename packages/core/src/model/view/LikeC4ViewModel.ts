@@ -190,14 +190,14 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
   }
 
   public isElementView(): this is LikeC4ViewModel<M, ComputedElementView> {
-    return isElementView(this.$view)
+    return isElementView(this.$view as ComputedView)
   }
 
   public isDeploymentView(): this is LikeC4ViewModel<M, ComputedDeploymentView> {
-    return isDeploymentView(this.$view)
+    return isDeploymentView(this.$view as ComputedView)
   }
 
   public isDynamicView(): this is LikeC4ViewModel<M, ComputedDynamicView> {
-    return isDynamicView(this.$view)
+    return isDynamicView(this.$view as ComputedView)
   }
 }

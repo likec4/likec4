@@ -86,7 +86,7 @@ describe('LikeC4', () => {
     expect(model.element('system').children().toArray()).toHaveLength(2)
     expect(model.element('system').children().toArray()).toHaveLength(2)
     expect(model.view('index').elements().toArray()).toHaveLength(2)
-    expect(model.view('index').edges()).toHaveLength(1)
+    expect(model.view('index').edges().toArray()).toHaveLength(1)
     expect(model.view('index').node('system').$node).toMatchObject({
       width: expect.any(Number),
       height: expect.any(Number),
