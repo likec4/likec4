@@ -225,7 +225,7 @@ function layout(
 
   const relations = edge.relations
     .map(r => {
-      const relation = likec4model.relationship(r).$relation
+      const relation = likec4model.relationship(r).$relationship
       all.add(relation.source)
       all.add(relation.target)
       return relation

@@ -22,3 +22,5 @@ export type ElementOrFqn = Fqn | { id: Fqn }
 export function getId<Id extends string>(element: Id | { id: Id }): Id {
   return isString(element) ? element : element.id
 }
+
+export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn>

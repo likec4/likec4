@@ -19,12 +19,14 @@ import {
 import { compareByFqnHierarchically, getOrCreate } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model, ViewType } from '../LikeC4Model'
-import { type EdgeId, type Fqn, getId, type NodeId, type RelationID } from '../types'
-import { EdgeModel } from './EdgeModel'
-import { NodeModel } from './NodeModel'
+import { type EdgeId, type Fqn, getId, type IteratorLike, type NodeId, type RelationID } from '../types'
+import { EdgeModel, type EdgesIterator } from './EdgeModel'
+import { NodeModel, type NodesIterator } from './NodeModel'
 
 type NodeOrId = NodeId | { id: NodeId }
 type EdgeOrId = EdgeId | { id: EdgeId }
+
+export type ViewsIterator<M extends ALikeC4Model> = IteratorLike<LikeC4ViewModel<M>>
 
 export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | DiagramView = ViewType<M>> {
   readonly #rootnodes = new Set<NodeModel<M, V>>()
@@ -48,10 +50,10 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
       if (!node.parent) {
         this.#rootnodes.add(el)
       }
-      if (el.isDeployment()) {
+      if (el.hasDeployment()) {
         this.#includeDeployments.add(el.deployment.id)
       }
-      if (el.isElement()) {
+      if (el.hasElement()) {
         this.#includeElements.add(el.element.id)
       }
       for (const tag of el.tags) {
@@ -105,15 +107,20 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
     return [...this.#allTags.keys()]
   }
 
-  public roots(): IteratorObject<NodeModel<M, V>> {
+  public roots(): NodesIterator<M, V> {
     return this.#rootnodes.values()
   }
 
   /**
    * Iterate over all nodes that have children.
    */
-  public compounds(): IteratorObject<NodeModel<M, V>> {
-    return this.#nodes.values().filter(node => node.hasChildren())
+  public *compounds(): NodesIterator<M, V> {
+    for (const node of this.#nodes.values()) {
+      if (node.hasChildren()) {
+        yield node
+      }
+    }
+    return
   }
 
   /**
@@ -129,7 +136,7 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
   /**
    * Iterate over all nodes.
    */
-  public nodes(): IteratorObject<NodeModel<M, V>> {
+  public nodes(): NodesIterator<M, V> {
     return this.#nodes.values()
   }
 
@@ -148,22 +155,33 @@ export class LikeC4ViewModel<M extends ALikeC4Model, V extends ComputedView | Di
   /**
    * Iterate over all edges.
    */
-  public edges(): IteratorObject<EdgeModel<M, V>> {
+  public edges(): EdgesIterator<M, V> {
     return this.#edges.values()
   }
 
   /**
    * Iterate over all edges.
    */
-  public edgesWithRelation(relation: RelationID): IteratorObject<EdgeModel<M, V>> {
-    return this.#edges.values().filter(edge => edge.includesRelation(relation))
+  public *edgesWithRelation(relation: RelationID): EdgesIterator<M, V> {
+    for (const edge of this.#edges.values()) {
+      if (edge.includesRelation(relation)) {
+        yield edge
+      }
+    }
+    return
   }
 
   /**
    * Nodes that have references to elements from logical model.
    */
-  public elements(): IteratorObject<NodeModel.WithElement<M, V>> {
-    return this.#nodes.values().filter(node => node.isElement())
+  public *elements(): IteratorLike<NodeModel.WithElement<M, V>> {
+    // return this.#nodes.values().filter(node => node.hasElement())
+    for (const node of this.#nodes.values()) {
+      if (node.hasElement()) {
+        yield node
+      }
+    }
+    return
   }
 
   public includesElement(elementId: Fqn): boolean {

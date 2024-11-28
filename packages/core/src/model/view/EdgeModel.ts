@@ -6,17 +6,16 @@ import {
   type EdgeId as C4EdgeId,
   extractStep,
   isStepEdgeId,
-  type Link,
   type RelationID as C4RelationID,
   type StepEdgeId,
-  type Tag as C4Tag,
-  type ViewID
+  type Tag as C4Tag
 } from '../../types'
-import type { ViewType } from '../LikeC4Model'
-import type { RelationModel } from '../RelationModel'
-import type { EdgeId, RelationID } from '../types'
+import type { RelationshipsIterator } from '../RelationModel'
+import type { IteratorLike, RelationID } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
+
+export type EdgesIterator<M extends ALikeC4Model, V extends ComputedView | DiagramView> = IteratorLike<EdgeModel<M, V>>
 
 export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramView> {
   constructor(
@@ -55,7 +54,7 @@ export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
     return isStepEdgeId(this.id)
   }
 
-  public *relationships(): IteratorObject<RelationModel<M>> {
+  public *relationships(): RelationshipsIterator<M> {
     for (const rel of this.$edge.relations) {
       yield this.view.model.relationship(rel)
     }
@@ -67,7 +66,7 @@ export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
   }
 }
 
-export namespace EdgeModel {
+namespace EdgeModel {
   export interface StepEdge<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
     id: StepEdgeId
     stepNumber: number

@@ -1,9 +1,7 @@
 import {
   ComputedNode,
   type ComputedView,
-  DiagramNode,
   type DiagramView,
-  type EdgeId,
   type Element,
   type Fqn,
   invariant,
@@ -41,14 +39,13 @@ import {
 } from '@mantine/core'
 import { useViewportSize } from '@mantine/hooks'
 import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
-import { useInternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
 import { memo, type PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { clamp, find, isNullish, map, only, partition, pick, pipe, unique } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow, useXYInternalNode } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
-import { useLikeC4CurrentViewModel, useLikeC4Model } from '../../likec4model'
+import { useLikeC4CurrentViewModel } from '../../likec4model'
 import { useOverlayDialog } from '../OverlayContext'
 import * as css from './ElementDetailsCard.css'
 import { TabPanelRelationships } from './TabPanelRelationships'
@@ -105,13 +102,12 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   const {
     view: currentView,
     renderIcon,
-    onNavigateTo,
     onOpenSource
   } = useDiagramState(pick(['view', 'renderIcon', 'onNavigateTo', 'onOpenSource']))
   const diagramNode = currentView.nodes.find(n => n.id === fqn)
   invariant(diagramNode, `DiagramNode with fqn ${fqn} not found`)
   const nodeModel = viewModel.findNode(fqn)
-  invariant(nodeModel && nodeModel.isElement(), `NodeModel with fqn ${fqn} not found`)
+  invariant(nodeModel && nodeModel.hasElement(), `NodeModel with fqn ${fqn} not found`)
   const elementModel = nodeModel.element
   const viewId = viewModel.id
 
@@ -121,16 +117,16 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
     renderIcon
   })
 
-  const incoming = elementModel.incoming().map(r => r.id).toArray()
-  const outgoing = elementModel.outgoing().map(r => r.id).toArray()
+  // const incoming = elementModel.incoming().map(r => r.id).toArray()
+  // const outgoing = elementModel.outgoing().map(r => r.id).toArray()
 
-  const incomingInView = unique(nodeModel.incoming().flatMap(e => e.$edge.relations).toArray())
-  const outgoingInView = unique(nodeModel.outgoing().flatMap(e => e.$edge.relations).toArray())
+  // const incomingInView = unique(nodeModel.incoming().flatMap(e => e.$edge.relations).toArray())
+  // const outgoingInView = unique(nodeModel.outgoing().flatMap(e => e.$edge.relations).toArray())
 
-  const notIncludedRelations = [
-    ...incoming,
-    ...outgoing
-  ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
+  // const notIncludedRelations = [
+  //   ...incoming,
+  //   ...outgoing
+  // ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
 
   const [viewsOf, otherViews] = pipe(
     elementModel.views().toArray(),

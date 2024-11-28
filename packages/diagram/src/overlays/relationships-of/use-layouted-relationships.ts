@@ -398,17 +398,17 @@ function layout(
 
   if (scope === 'global') {
     relationships = {
-      incoming: subjectElement.incoming().map(r => r.$relation).toArray(),
-      outgoing: subjectElement.outgoing().map(r => r.$relation).toArray()
+      incoming: subjectElement.incoming().map(r => r.$relationship).toArray(),
+      outgoing: subjectElement.outgoing().map(r => r.$relationship).toArray()
     }
   } else {
     const subjectViewModel = likec4model.view(view.id).node(subjectId)
     relationships = {
       incoming: subjectViewModel.incoming()
-        .flatMap(c => c.relationships().map(r => r.$relation))
+        .flatMap(c => c.relationships().map(r => r.$relationship))
         .toArray(),
       outgoing: subjectViewModel.outgoing()
-        .flatMap(c => c.relationships().map(r => r.$relation))
+        .flatMap(c => c.relationships().map(r => r.$relationship))
         .toArray()
     }
   }

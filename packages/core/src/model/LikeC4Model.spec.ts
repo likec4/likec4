@@ -2,7 +2,7 @@ import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../builder/Builder'
 import { computeViews } from '../compute-view/compute-view'
-import { LikeC4Model } from './LikeC4Model'
+import { LikeC4Model } from './index'
 
 const {
   builder: b,
@@ -60,7 +60,7 @@ const {
   }
 })
 
-const source = b
+const builder = b
   .with(
     model(
       person('customer'),
@@ -127,26 +127,38 @@ const source = b
         )
       ),
       $d.rel('prod.eu.db', 'prod.us.db', 'replicates')
+    ),
+    views(
+      view('index', $include('*')),
+      viewOf(
+        'cloud',
+        'cloud',
+        $rules(
+          $include('*'),
+          $include('cloud.frontend.dashboard')
+        )
+      ),
+      deploymentView(
+        'prod',
+        $rules(
+          $include('customer.instance'),
+          $include('prod.eu.zone1.ui')
+        )
+      )
     )
-    // views(
-    //   view('index', $include('*')),
-    //   viewOf('cloud', 'cloud', $rules(
-    //     $include('*'),
-    //   )),
-    //   deploymentView('prod', $rules(
-    //     $include('customer.c'),
-    //     $include('prod._'),
-    //     $exclude('prod.eu.zone1 <-> prod.eu.zone2')
-    //   ))
-    // )
   )
-  .build()
+
+const source = builder.build()
+type Id = typeof builder.Types.Fqn
+type DeploymentId = typeof builder.Types.DeploymentFqn
 
 describe('LikeC4Model', () => {
+  const els = source.elements
+  const d = source.deployments.elements
   const model = LikeC4Model.create(computeViews(source))
 
   it('roots', () => {
-    expect(model.roots().toArray().map(prop('id'))).toEqual([
+    expect([...model.roots()].map(prop('id'))).toEqual([
       'customer',
       'cloud',
       'aws',
@@ -155,11 +167,11 @@ describe('LikeC4Model', () => {
   })
 
   it('parent and children', () => {
-    const parent = model.parent(source.elements['cloud.backend.api'])!
+    const parent = model.parent(els['cloud.backend.api'])!
     expect(parent.id).toEqual('cloud.backend')
-    expect(parent.$element).toStrictEqual(source.elements['cloud.backend'])
+    expect(parent.$element).toStrictEqual(els['cloud.backend'])
 
-    const children = parent.children().toArray()
+    const children = [...parent.children()]
 
     expect(map(children, prop('id'))).toEqual([
       'cloud.backend.api',
@@ -168,20 +180,20 @@ describe('LikeC4Model', () => {
   })
 
   it('ancestors in right order', () => {
-    const ancestors = model.element(source.elements['cloud.frontend.dashboard']).ancestors().toArray()
+    const ancestors = [...model.element(els['cloud.frontend.dashboard']).ancestors()]
     expect(ancestors).toHaveLength(2)
     expect(ancestors[0]).toMatchObject({
       id: 'cloud.frontend',
-      $element: source.elements['cloud.frontend']
+      $element: els['cloud.frontend']
     })
     expect(ancestors[1]).toMatchObject({
       id: 'cloud',
-      $element: source.elements['cloud']
+      $element: els['cloud']
     })
   })
 
   it('siblings of root', () => {
-    const siblings = model.element('cloud').siblings().toArray()
+    const siblings = [...model.element('cloud').siblings()]
     expect(siblings.map(prop('id'))).toEqual([
       'customer',
       'aws',
@@ -192,7 +204,7 @@ describe('LikeC4Model', () => {
   it('siblings', () => {
     const backend = model.element('cloud.backend')
 
-    const siblings = backend.siblings().toArray()
+    const siblings = [...backend.siblings()]
 
     expect(siblings.map(prop('id'))).toEqual([
       'cloud.frontend',
@@ -202,7 +214,7 @@ describe('LikeC4Model', () => {
   })
 
   it('descendants in right order', () => {
-    const descendants = model.element('cloud').descendants().map(prop('id')).toArray()
+    const descendants = [...model.element('cloud').descendants()].map(prop('id'))
     expect(descendants).toEqual([
       'cloud.frontend',
       'cloud.frontend.dashboard',
@@ -224,21 +236,21 @@ describe('LikeC4Model', () => {
   // })
 
   it('unique incomers', () => {
-    const incoming = model.element('cloud').incoming().toArray()
-    expect(incoming.map(r => `${r.source.id}:${r.target.id}`)).toEqual([
+    const incoming = [...model.element('cloud').incoming()].map(r => `${r.source.id}:${r.target.id}`)
+    expect(incoming).toEqual([
       'customer:cloud',
       'customer:cloud.frontend.mobile',
       'customer:cloud.frontend.dashboard'
     ])
-    const incomers = model.element('cloud').incomers().toArray()
-    expect(incomers.map(prop('id'))).toEqual([
+    const incomers = [...model.element('cloud').incomers()].map(prop('id'))
+    expect(incomers).toEqual([
       'customer'
     ])
   })
 
   it('unique outgoers', () => {
-    const outgoing = model.element('cloud.frontend').outgoing().toArray()
-    expect(outgoing.map(r => `${r.source.id}:${r.target.id}`)).toEqual([
+    const outgoing = [...model.element('cloud.frontend').outgoing()].map(r => `${r.source.id}:${r.target.id}`)
+    expect(outgoing).toEqual([
       'cloud.frontend.dashboard:cloud.auth',
       'cloud.frontend.dashboard:cloud.backend.api',
       'cloud.frontend.dashboard:cloud.media',
@@ -246,11 +258,31 @@ describe('LikeC4Model', () => {
       'cloud.frontend.mobile:cloud.backend.api',
       'cloud.frontend.mobile:cloud.media'
     ])
-    const outgoers = model.element('cloud.frontend').outgoers().toArray()
-    expect(outgoers.map(prop('id'))).toEqual([
+    const outgoers = [...model.element('cloud.frontend').outgoers()].map(prop('id'))
+    expect(outgoers).toEqual([
       'cloud.auth',
       'cloud.backend.api',
       'cloud.media'
+    ])
+  })
+
+  it('views with element', () => {
+    const views = (id: Id) => [...model.element(id).views()].map(prop('id'))
+
+    expect.soft(views('cloud')).toEqual([
+      'index',
+      'cloud'
+    ])
+
+    expect.soft(views('cloud.frontend.dashboard')).toEqual([
+      'cloud',
+      'prod'
+    ])
+
+    expect.soft(views('customer')).toEqual([
+      'index',
+      'cloud',
+      'prod'
     ])
   })
 })

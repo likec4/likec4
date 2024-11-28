@@ -5,54 +5,62 @@ import type { Relation, RelationID } from '../types/relation'
 import { commonAncestor } from '../utils/fqn'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import type { IteratorLike } from './types'
+import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
-export class RelationModel<M extends ALikeC4Model> {
+export type RelationshipsIterator<M extends ALikeC4Model> = IteratorLike<RelationshipModel<M>>
+
+export class RelationshipModel<M extends ALikeC4Model> {
   public parent: ElementModel<M> | null
   public readonly source: ElementModel<M>
   public readonly target: ElementModel<M>
 
   constructor(
     public readonly model: LikeC4Model<M>,
-    public readonly $relation: Relation
+    public readonly $relationship: Relation
   ) {
-    this.source = model.element($relation.source)
-    this.target = model.element($relation.target)
+    this.source = model.element($relationship.source)
+    this.target = model.element($relationship.target)
     const parent = commonAncestor(this.source.id, this.target.id)
     this.parent = parent ? this.model.element(parent) : null
   }
 
   get id(): RelationID {
-    return this.$relation.id
+    return this.$relationship.id
   }
 
   get title(): string | null {
-    if (isEmpty(this.$relation.title)) {
+    if (isEmpty(this.$relationship.title)) {
       return null
     }
-    return this.$relation.title
+    return this.$relationship.title
   }
 
   get description(): string | null {
-    if (isEmpty(this.$relation.description)) {
+    if (isEmpty(this.$relationship.description)) {
       return null
     }
-    return this.$relation.description
+    return this.$relationship.description
   }
 
   get navigateTo(): LikeC4ViewModel<M> | null {
-    return this.$relation.navigateTo ? this.model.view(this.$relation.navigateTo) : null
+    return this.$relationship.navigateTo ? this.model.view(this.$relationship.navigateTo) : null
   }
 
   get tags(): ReadonlyArray<Tag> {
-    return this.$relation.tags ?? []
+    return this.$relationship.tags ?? []
   }
 
   get links(): ReadonlyArray<Link> {
-    return this.$relation.links ?? []
+    return this.$relationship.links ?? []
   }
 
-  public views(): IteratorObject<LikeC4ViewModel<M>> {
-    return this.model.views().filter(vm => vm.includesRelation(this.id))
+  public *views(): ViewsIterator<M> {
+    for (const view of this.model.views()) {
+      if (view.includesRelation(this.id)) {
+        yield view
+      }
+    }
+    return
   }
 }

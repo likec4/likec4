@@ -13,9 +13,11 @@ import {
   type ThemeColor
 } from '../types'
 import type { LikeC4Model } from './LikeC4Model'
-import type { RelationModel } from './RelationModel'
-import type { IncomingFilter, OutgoingFilter } from './types'
-import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
+import type { IncomingFilter, IteratorLike, OutgoingFilter } from './types'
+import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
+
+export type ElementsIterator<M extends ALikeC4Model> = IteratorLike<ElementModel<M>>
 
 export class ElementModel<M extends ALikeC4Model> {
   constructor(
@@ -64,33 +66,33 @@ export class ElementModel<M extends ALikeC4Model> {
     return this.model.parent(this)
   }
 
-  public ancestors(): IteratorObject<ElementModel<M>> {
+  public ancestors(): ElementsIterator<M> {
     return this.model.ancestors(this)
   }
 
-  public children(): IteratorObject<ElementModel<M>> {
+  public children(): ElementsIterator<M> {
     return this.model.children(this)
   }
 
-  public descendants(): IteratorObject<ElementModel<M>> {
+  public descendants(): ElementsIterator<M> {
     return this.model.descendants(this)
   }
 
-  public siblings(): IteratorObject<ElementModel<M>> {
+  public siblings(): ElementsIterator<M> {
     return this.model.siblings(this)
   }
 
-  public *ascendingSiblings(): IteratorObject<ElementModel<M>> {
+  public *ascendingSiblings(): ElementsIterator<M> {
     for (const ancestor of this.ancestors()) {
       yield* ancestor.siblings()
     }
-    return null
+    return
   }
 
-  public incoming(filter: IncomingFilter = 'all'): IteratorObject<RelationModel<M>> {
+  public incoming(filter: IncomingFilter = 'all'): RelationshipsIterator<M> {
     return this.model.incoming(this, filter)
   }
-  public *incomers(filter: IncomingFilter = 'all'): IteratorObject<ElementModel<M>> {
+  public *incomers(filter: IncomingFilter = 'all'): ElementsIterator<M> {
     const unique = new Set<Fqn>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
@@ -101,10 +103,10 @@ export class ElementModel<M extends ALikeC4Model> {
     }
     return
   }
-  public outgoing(filter: OutgoingFilter = 'all'): IteratorObject<RelationModel<M>> {
+  public outgoing(filter: OutgoingFilter = 'all'): RelationshipsIterator<M> {
     return this.model.outgoing(this, filter)
   }
-  public *outgoers(filter: OutgoingFilter = 'all'): IteratorObject<ElementModel<M>> {
+  public *outgoers(filter: OutgoingFilter = 'all'): ElementsIterator<M> {
     const unique = new Set<Fqn>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
@@ -116,20 +118,28 @@ export class ElementModel<M extends ALikeC4Model> {
     return
   }
 
-  public views(): IteratorObject<LikeC4ViewModel<M>> {
-    return this.model.views().filter(vm => vm.includesElement(this.id))
+  public *views(): ViewsIterator<M> {
+    for (const view of this.model.views()) {
+      if (view.includesElement(this.id)) {
+        yield view
+      }
+    }
+    return
   }
 
-  public viewsOf(): IteratorObject<LikeC4ViewModel<M, ComputedElementView>> {
-    return this.views()
-      .filter((vm) => vm.isElementView())
-      .filter(vm => vm.$view.viewOf === this.id)
+  public *viewsOf(): ViewsIterator<M> {
+    for (const vm of this.views()) {
+      if (vm.isElementView() && vm.$view.viewOf === this.id) {
+        yield vm
+      }
+    }
+    return
   }
 
   /**
    * Default viewOf
    */
-  public viewOf(): LikeC4ViewModel<M, ComputedElementView> | null {
-    return first(this.viewsOf().take(1).toArray()) ?? null
+  public viewOf(): LikeC4ViewModel<M> | null {
+    return this.viewsOf().next().value ?? null
   }
 }

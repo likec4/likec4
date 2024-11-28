@@ -30,6 +30,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./compute-view": "./src/compute-view/index.ts",
+    "./model": "./src/model/index.ts",
     "./types": "./src/types/index.ts"
   },
   "publishConfig": {
@@ -37,40 +38,25 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": {
-          "types": "./dist/index.d.mts",
-          "default": "./dist/index.mjs"
-        },
-        "require": {
-          "types": "./dist/index.d.cts",
-          "default": "./dist/index.cjs"
-        }
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "./compute-view": {
-        "import": {
-          "types": "./dist/compute-view/index.d.mts",
-          "default": "./dist/compute-view/index.mjs"
-        },
-        "require": {
-          "types": "./dist/compute-view/index.d.cts",
-          "default": "./dist/compute-view/index.cjs"
-        }
+        "types": "./dist/compute-view/index.d.mts",
+        "default": "./dist/compute-view/index.mjs"
+      },
+      "./model": {
+        "types": "./dist/model/index.d.mts",
+        "default": "./dist/model/index.mjs"
       },
       "./types": {
-        "import": {
-          "types": "./dist/types/index.d.mts",
-          "default": "./dist/types/index.mjs"
-        },
-        "require": {
-          "types": "./dist/types/index.d.cts",
-          "default": "./dist/types/index.cjs"
-        }
+        "types": "./dist/types/index.d.mts",
+        "default": "./dist/types/index.mjs"
       }
     }
   },
   "dependencies": {
     "defu": "^6.1.4",
-    "remeda": "^2.17.3",
     "type-fest": "4.27.1"
   },
   "devDependencies": {
@@ -80,9 +66,9 @@
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
-    "execa": "^9.3.1",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
+    "remeda": "^2.17.3",
     "turbo": "^2.3.1",
     "typescript": "^5.7.2",
     "unbuild": "^3.0.0-rc.11",
