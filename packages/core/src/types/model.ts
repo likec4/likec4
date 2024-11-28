@@ -1,3 +1,4 @@
+import type { KeysOf } from './_common'
 import type {
   DeploymentElement,
   DeploymentNodeKind,
@@ -59,8 +60,9 @@ export interface AnyLikeC4Model<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
   Views extends string = string,
+  Tags extends string = string,
   T = 'computed' | 'layouted'
-> extends Omit<ParsedLikeC4Model<string, string, string, Fqns, Views, DeploymentFqns>, 'views'> {
+> extends Omit<ParsedLikeC4Model<string, string, Tags, Fqns, Views, DeploymentFqns>, 'views'> {
   __?: T
   views: Record<Views, ComputedView | DiagramView>
 }
@@ -71,20 +73,18 @@ export interface AnyLikeC4Model<
 export interface ComputedLikeC4Model<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
-  Views extends string = string
-> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, 'computed'>, 'views'> {
+  Views extends string = string,
+  Tags extends string = string
+> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'computed'>, 'views'> {
   views: Record<Views, ComputedView>
 }
-type FromParsed<M> = M extends ParsedLikeC4Model<
-  any,
-  any,
-  any,
-  infer Fqns extends string,
-  infer Views extends string,
-  infer DeploymentFqns extends string
-> ? ComputedLikeC4Model<Fqns, DeploymentFqns, Views>
+
+export type ComputedLikeC4ModelFromParsed<M> = M extends ParsedLikeC4Model ? ComputedLikeC4Model<
+    KeysOf<M['elements']>,
+    KeysOf<M['deployments']['elements']>,
+    KeysOf<M['views']>
+  >
   : ComputedLikeC4Model
-export type ComputedLikeC4ModelFromParsed<M> = FromParsed<M>
 
 /**
  * Same as `ParsedLikeC4Model` but with layouted views (DiagramView)
@@ -92,8 +92,9 @@ export type ComputedLikeC4ModelFromParsed<M> = FromParsed<M>
 export interface LayoutedLikeC4Model<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
-  Views extends string = string
-> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, 'layouted'>, 'views'> {
+  Views extends string = string,
+  Tags extends string = string
+> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'layouted'>, 'views'> {
   __: 'layouted'
-  views: Record<Views, DiagramView>
+  views: Record<Views, DiagramView<Views, Tags>>
 }

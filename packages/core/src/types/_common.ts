@@ -14,3 +14,5 @@ export interface XYPoint {
   x: number
   y: number
 }
+
+export type KeysOf<T> = keyof T extends infer K extends string ? K : never

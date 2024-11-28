@@ -24,7 +24,7 @@ import { NodeModel, type NodesIterator } from './NodeModel'
 
 export type ViewsIterator<M extends AnyAux> = IteratorLike<LikeC4ViewModel<M>>
 
-export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView = M['ViewType']> {
+export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
   readonly #rootnodes = new Set<NodeModel<M, V>>()
   readonly #nodes = new Map<C4NodeId, NodeModel<M, V>>()
   readonly #edges = new Map<C4EdgeId, EdgeModel<M, V>>()

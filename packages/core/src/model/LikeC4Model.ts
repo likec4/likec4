@@ -50,7 +50,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
   static create<const M extends AnyLikeC4Model>(model: M) {
     type T = Aux.FromModel<M>
-    return new LikeC4Model<T>(model)
+    return new LikeC4Model<T>(model as any)
   }
 
   /**
@@ -367,18 +367,18 @@ export namespace LikeC4Model {
     Elements extends string = string,
     Deployments extends string = string,
     Views extends string = string,
-    Model = DiagramView | ComputedView
-  > = Aux<Elements, Deployments, Views, Model>
+    ViewType = DiagramView<Views> | ComputedView<Views>
+  > = Aux<Elements, Deployments, Views, ViewType>
 
   export type Computed<
     Elements extends string = string,
     Deployments extends string = string,
     Views extends string = string
-  > = LikeC4Model<Typed<Elements, Deployments, Views, ComputedView>>
+  > = LikeC4Model<Typed<Elements, Deployments, Views, ComputedView<Views>>>
 
   export type Layouted<
     Elements extends string = string,
     Deployments extends string = string,
     Views extends string = string
-  > = LikeC4Model<Typed<Elements, Deployments, Views, DiagramView>>
+  > = LikeC4Model<Typed<Elements, Deployments, Views, DiagramView<Views>>>
 }

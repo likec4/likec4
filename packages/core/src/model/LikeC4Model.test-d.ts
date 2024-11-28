@@ -1,8 +1,7 @@
-import {} from 'type-fest'
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
 import { computeViews } from '../compute-view/compute-view'
-import type { Fqn, ViewId } from '../types'
+import type { ComputedView, Fqn, ViewId } from '../types'
 import { LikeC4Model } from './LikeC4Model'
 
 test('LikeC4Model: should have types', () => {
@@ -94,6 +93,9 @@ test('LikeC4Model: should have types', () => {
   )
   expectTypeOf(m.Aux.ViewId).toEqualTypeOf(
     '' as ViewId<'index' | 'prodview'>
+  )
+  expectTypeOf(m.Aux.ViewType).toEqualTypeOf(
+    {} as ComputedView<ViewId<'index' | 'prodview'>>
   )
   expectTypeOf(m.Aux.Deployment).toEqualTypeOf(
     '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'

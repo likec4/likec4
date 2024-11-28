@@ -81,7 +81,9 @@ export function mkComputeView(model: Params): ComputeView {
   }
 }
 
-export function computeViews<M extends ParsedLikeC4Model>({ views, ...model }: M): ComputedLikeC4ModelFromParsed<M> {
+export function computeViews<const M extends ParsedLikeC4Model>(
+  { views, ...model }: M
+): ComputedLikeC4ModelFromParsed<M> {
   const _computeView = mkComputeView(model)
   const computeView = (source: LikeC4View): ComputedView => {
     const result = _computeView(source)

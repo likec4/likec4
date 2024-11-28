@@ -29,6 +29,7 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "allowArbitraryExtensions": true,
+    "allowImportingTsExtensions": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,

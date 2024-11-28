@@ -17,7 +17,7 @@ import type { NodeModel } from './NodeModel'
 
 export type EdgesIterator<M extends AnyAux, V extends ComputedView | DiagramView> = IteratorLike<EdgeModel<M, V>>
 
-export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView> {
+export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
   constructor(
     public readonly view: LikeC4ViewModel<M, V>,
     public readonly $edge: V['edges'][number],

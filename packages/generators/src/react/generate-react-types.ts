@@ -81,7 +81,7 @@ declare const LikeC4Views: {
 };
 declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId;
 
-type Aux = GenericLikeC4Model.Aux.Layouted<LikeC4ElementId, LikeC4DeploymentId, LikeC4ViewId>;
+type Aux = GenericLikeC4Model.Typed<LikeC4ElementId, LikeC4DeploymentId, LikeC4ViewId, LikeC4ViewData>;
 type LikeC4Model = GenericLikeC4Model<Aux>;
 type LikeC4ViewModel = GenericLikeC4Model.View<Aux>;
 

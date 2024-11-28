@@ -5,6 +5,7 @@ import type {
   DiagramView,
   EdgeId,
   Fqn,
+  KeysOf,
   LayoutedLikeC4Model,
   NodeId,
   ParsedLikeC4ModelDump,
@@ -77,7 +78,8 @@ export namespace Aux {
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
-      M extends LayoutedLikeC4Model ? DiagramView : ComputedView
+      M extends LayoutedLikeC4Model ? DiagramView<ViewId<KeysOf<M['views']>>, string>
+        : ComputedView<ViewId<KeysOf<M['views']>>, string>
     >
     : never
 
@@ -85,12 +87,10 @@ export namespace Aux {
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
-      DiagramView
+      DiagramView<ViewId<KeysOf<M['views']>>, string>
     >
     : never
 }
-
-export type KeysOf<T> = keyof T extends infer K extends string ? K : never
 
 // export type FromModel<M> = LikeC4Model<
 //   M extends AnyLikeC4Model<

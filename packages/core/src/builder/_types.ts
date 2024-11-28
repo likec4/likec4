@@ -5,14 +5,13 @@ import type {
   DeploymentNodeKindSpecification,
   ElementKindSpecification,
   ElementShape,
+  KeysOf,
   NonEmptyArray,
   ParsedLikeC4Model,
   RelationshipArrowType,
   RelationshipKindSpecification,
   RelationshipLineType
 } from '../types'
-
-type KeysOf<T> = keyof T extends infer K extends string ? K : never
 
 export type BuilderSpecification = {
   elements: {

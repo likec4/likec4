@@ -47,7 +47,7 @@ export namespace NodeModel {
   }
 }
 
-export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView> {
+export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
   constructor(
     public readonly view: LikeC4ViewModel<M, V>,
     public readonly $node: V['nodes'][number]
