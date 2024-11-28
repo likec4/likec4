@@ -15,7 +15,7 @@ declare module 'virtual:likec4/icons' {
 }
 
 declare module 'virtual:likec4/overview-graph' {
-  import type { OverviewGraph as CoreOverviewGraph, ViewId } from '@likec4/core'
+  import type { OverviewGraph as CoreOverviewGraph, ViewId, ViewId } from '@likec4/core'
   export type OverviewGraph = CoreOverviewGraph
   export function useOverviewGraph(): OverviewGraph
 }
@@ -35,9 +35,7 @@ declare module 'virtual:likec4/model' {
 
   export type LikeC4ElementKind = 'likec4-element-kind'
 
-  export type DiagramView<ViewId extends LikeC4ViewId = LikeC4ViewId> = Omit<CoreDiagramView, 'id'> & {
-    id: ViewId
-  }
+  export type DiagramView<ViewId extends LikeC4ViewId = LikeC4ViewId> = CoreDiagramView<ViewId>
 
   export const LikeC4Views: Record<LikeC4ViewId, DiagramView>
 
