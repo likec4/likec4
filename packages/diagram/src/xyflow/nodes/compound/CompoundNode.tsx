@@ -30,14 +30,28 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
 )
 
 const VariantsRoot = {
-  idle: {
-    transition: {
-      delayChildren: .1
-      // stagger
+  idle: (_, { translateZ }) => ({
+    // Why? translateZ is used to determine state
+    ...translateZ !== 0 && {
+      transition: {
+        delayChildren: .08
+      }
+    },
+    transitionEnd: {
+      translateZ: 0
     }
-  },
+  }),
   selected: {},
-  hovered: {},
+  hovered: (_, { translateZ }) => ({
+    ...translateZ !== 1 && {
+      transition: {
+        delayChildren: .08
+      }
+    },
+    transitionEnd: {
+      translateZ: 1
+    }
+  }),
   tap: {}
 } satisfies Variants
 
@@ -61,18 +75,21 @@ const VariantsNavigate = {
   'hovered:navigate': {
     scale: 1.42
   },
-  'hovered:relations': {},
+  'hovered:details': {},
   'tap:navigate': {
     scale: 1.15
   }
 } satisfies Variants
-VariantsNavigate['selected'] = VariantsNavigate['hovered']
+VariantsNavigate['selected'] = VariantsNavigate.hovered
+VariantsNavigate['hovered:details'] = VariantsNavigate.idle
 
 const VariantsDetailsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0.3
+    opacity: 0.3,
+    originX: 0.45,
+    originY: 0.55
   },
   selected: {},
   hovered: {
@@ -237,7 +254,13 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                   [css.varBorderTransparency]: `${borderTransparency}%`,
                   [css.varOpacity]: opacity.toFixed(2)
                 }),
-                borderStyle: style.border ?? 'dashed'
+                ...style.border === 'none'
+                  ? {
+                    borderColor: 'transparent'
+                  }
+                  : {
+                    borderStyle: style.border ?? 'dashed'
+                  }
               })
             }}
           >
@@ -264,6 +287,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                   offset={2}
                   openDelay={600}>
                   <ActionIcon
+                    key={`${id}details`}
                     component={m.div}
                     variants={VariantsDetailsBtn}
                     data-animate-target="details"
@@ -283,7 +307,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           </Box>
           {isNavigable && (
             <ActionIcon
-              key={'navigate'}
+              key={`${id}navigate`}
               component={m.div}
               variants={VariantsNavigate}
               data-animate-target="navigate"
