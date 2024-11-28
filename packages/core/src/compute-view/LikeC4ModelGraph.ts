@@ -1,11 +1,11 @@
 import { isArray, isString, reverse } from 'remeda'
 import { invariant } from '../errors'
-import { type Element, type Fqn, type ModelGlobals, type Relation, type RelationID } from '../types'
+import { type Element, type Fqn, type ModelGlobals, type Relation, type RelationId } from '../types'
 import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn } from '../utils'
 
 export type Params = {
   elements: Record<Fqn, Element>
-  relations: Record<RelationID, Relation>
+  relations: Record<RelationId, Relation>
   // Optional for tests
   globals?: ModelGlobals
 }
@@ -41,7 +41,7 @@ export class LikeC4ModelGraph {
   readonly #children = new Map<Fqn, Element[]>()
   readonly #rootElements = new Set<Element>()
 
-  readonly #relations = new Map<RelationID, Relation>()
+  readonly #relations = new Map<RelationId, Relation>()
   // Incoming to an element or its descendants
   readonly #incoming = new MapRelations()
   // Outgoing from an element or its descendants

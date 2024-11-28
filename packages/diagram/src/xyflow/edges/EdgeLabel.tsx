@@ -1,4 +1,4 @@
-import { extractStep, isStepEdgeId, type ViewID } from '@likec4/core'
+import { extractStep, isStepEdgeId, type ViewId } from '@likec4/core'
 import {
   ActionIcon,
   Box,
@@ -162,7 +162,7 @@ const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) 
 }
 
 type NavigateToBtnProps = {
-  viewId: ViewID
+  viewId: ViewId
 }
 
 function NavigateToBtn({ viewId }: NavigateToBtnProps) {

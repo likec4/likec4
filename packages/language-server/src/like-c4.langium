@@ -612,19 +612,10 @@ DeploymentExpression:
 DeploymentElementExpression:
   {infer WildcardExpression} isWildcard?='*' |
   DeploymentRefExpression
-  // node=DeploymentRef (
-  //   {infer ExpandDeploymentNode} DotUnderscore |
-  //   {infer ChildrenDeploymentDescedantsExpression} DotWildcard
-  // )?
 ;
 
-DeploymentRefExpression infers DeploymentRefExpression:
-  ref=DeploymentRef (
-    isExpand?=DotUnderscore |
-    isNested?=DotWildcard
-    // {infer ExpandDeploymentNodeExpression} DotUnderscore |
-    // {infer NestedDeploymentNodeExpression} DotWildcard
-  )?
+DeploymentRefExpression:
+  ref=DeploymentRef suffix=(DotUnderscore | DotWildcard)?
 ;
 
 DeploymentRelationExpression:

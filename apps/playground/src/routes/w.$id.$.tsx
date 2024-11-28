@@ -1,4 +1,4 @@
-import type { ViewID } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
 import { type ElementIconRenderer, LikeC4Diagram } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
@@ -26,12 +26,12 @@ const RendererIcon: ElementIconRenderer = ({ node }) => {
 export function WorkspaceDiagramPage() {
   const router = useRouter()
   const { id, _splat } = Route.useParams()
-  const viewId = (_splat || 'index') as ViewID
+  const viewId = (_splat || 'index') as ViewId
 
   const store = useStoreApi()
 
   useEffect(() => {
-    store.setState({ viewId: viewId as ViewID })
+    store.setState({ viewId: viewId as ViewId })
     // If current view is stale or pending, trigger layout update
     return store.subscribe(s => s.diagrams[viewId]?.state ?? null, (state) => {
       if (state === 'pending' || state === 'stale') {

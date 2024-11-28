@@ -1,4 +1,4 @@
-import type { ComputedView, ViewID } from '@likec4/core'
+import type { ComputedView, ViewId } from '@likec4/core'
 import { defaultTheme as Theme } from '@likec4/core'
 import { isTruthy } from 'remeda'
 import type { GraphBaseModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
@@ -77,7 +77,7 @@ export class OverviewDiagramsPrinter {
         }
       })
     }
-    const edges = new Map<ViewID, Set<ViewID>>()
+    const edges = new Map<ViewId, Set<ViewId>>()
     sortedViews.forEach((view, i) => {
       this.addView(
         hasDifferentPaths ? view : { ...view, relativePath: '' },
@@ -89,7 +89,7 @@ export class OverviewDiagramsPrinter {
           acc.add(node.navigateTo)
         }
         return acc
-      }, new Set<ViewID>())
+      }, new Set<ViewId>())
       if (navigateTo.size > 0) {
         edges.set(view.id, navigateTo)
       }

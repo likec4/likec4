@@ -8,7 +8,7 @@ import type {
   Fqn,
   NodeId,
   ViewChange,
-  ViewID,
+  ViewId,
   XYPoint
 } from '@likec4/core'
 import {
@@ -136,12 +136,12 @@ export type DiagramState = Simplify<
     dimmed: ReadonlySet<string>
 
     lastOnNavigate: null | {
-      fromView: ViewID
-      toView: ViewID
+      fromView: ViewId
+      toView: ViewId
       fromNode: NodeId | null
     }
     navigationHistory: Array<{
-      viewId: ViewID
+      viewId: ViewId
       nodeId: NodeId | null
     }>
     navigationHistoryIndex: number

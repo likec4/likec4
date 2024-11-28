@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { ComputedEdge, ComputedNode, CustomRelationExpr, ViewID, ViewRule } from '../../types'
+import type { ComputedEdge, ComputedNode, CustomRelationExpr, ViewId, ViewRule } from '../../types'
 import { $include, $inout, $where } from '../element-view/__test__/fixture'
 import { applyCustomRelationProperties } from './applyCustomRelationProperties'
 
@@ -31,7 +31,7 @@ describe('applyRelationCustomProperties', () => {
       technology: 'some technology',
 
       notation: 'some notation',
-      navigateTo: 'some link' as ViewID,
+      navigateTo: 'some link' as ViewId,
       notes: 'some notes',
 
       color: 'red',
@@ -99,7 +99,7 @@ describe('applyRelationCustomProperties', () => {
       technology: 'some technology',
 
       notation: 'some notation',
-      navigateTo: 'some link' as ViewID,
+      navigateTo: 'some link' as ViewId,
       notes: 'some notes',
 
       color: 'red',

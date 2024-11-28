@@ -4,7 +4,7 @@ import {
   invariant,
   type LayoutedLikeC4Model,
   LikeC4Model,
-  type ViewID
+  type ViewId
 } from '@likec4/core'
 import { useContext } from 'react'
 import { isDefined, isNonNullish, isString } from 'remeda'
@@ -34,11 +34,11 @@ export function useLikeC4Model(strict?: boolean, type?: 'layouted' | 'computed')
   return model
 }
 
-export function useLikeC4Views(): Record<ViewID, ComputedView | DiagramView> {
+export function useLikeC4Views(): Record<ViewId, ComputedView | DiagramView> {
   return useLikeC4Model(true).$model.views
 }
 
-export function useLikeC4ViewModel(viewId: LiteralUnion<ViewID, string>): LikeC4Model.View {
+export function useLikeC4ViewModel(viewId: LiteralUnion<ViewId, string>): LikeC4Model.View {
   return useLikeC4Model(true).view(viewId)
 }
 
@@ -51,7 +51,7 @@ export function useLikeC4CurrentViewModel(): LikeC4Model.View {
 /**
  * Parsed view, computed or layouted
  */
-export function useLikeC4View(viewId: LiteralUnion<ViewID, string>): ComputedView | DiagramView | null {
+export function useLikeC4View(viewId: LiteralUnion<ViewId, string>): ComputedView | DiagramView | null {
   const model = useLikeC4Model(true)
   try {
     return model.view(viewId).$view
@@ -61,7 +61,7 @@ export function useLikeC4View(viewId: LiteralUnion<ViewID, string>): ComputedVie
   }
 }
 
-export function useLikeC4DiagramView(viewId: LiteralUnion<ViewID, string>): DiagramView | null {
+export function useLikeC4DiagramView(viewId: LiteralUnion<ViewId, string>): DiagramView | null {
   const model = useLikeC4Model(true, 'layouted')
   try {
     return model.view(viewId).$view

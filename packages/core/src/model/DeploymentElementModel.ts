@@ -14,7 +14,7 @@ import {
   type Fqn as C4Fqn,
   type Link,
   type PhysicalElementStyle,
-  type RelationID as C4RelationID,
+  type RelationId as C4RelationID,
   type Tag,
   type Tag as C4Tag,
   type ThemeColor
@@ -92,7 +92,7 @@ export abstract class DeploymentElementModel<M extends AnyAux> {
   }
 
   public *incomers(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<M>> {
-    const unique = new Set<M['DeploymentLiteral']>()
+    const unique = new Set<M['Deployment']>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -103,7 +103,7 @@ export abstract class DeploymentElementModel<M extends AnyAux> {
     return
   }
   public *outgoers(filter: OutgoingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<M>> {
-    const unique = new Set<M['DeploymentLiteral']>()
+    const unique = new Set<M['Deployment']>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue

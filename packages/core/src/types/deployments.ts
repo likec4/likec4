@@ -1,7 +1,7 @@
 import type { MergeExclusive, Simplify, Tagged, UnionToIntersection } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
-import type { RelationID } from './relation'
+import type { RelationId } from './relation'
 import type { Color } from './theme'
 
 export type DeploymentNodeKind<Kinds extends string = string> = Tagged<Kinds, 'DeploymentNodeKind'>
@@ -85,7 +85,7 @@ export interface DeploymentRef {
  * NOTE:
  */
 export interface DeploymentRelation {
-  readonly id: RelationID
+  readonly id: RelationId
   readonly source: DeploymentRef
   readonly target: DeploymentRef
   readonly title?: string

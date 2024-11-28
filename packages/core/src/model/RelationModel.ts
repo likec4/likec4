@@ -1,7 +1,6 @@
 import { isEmpty } from 'remeda'
-import type { AnyLikeC4Model } from '../types'
 import type { Link, Tag } from '../types/element'
-import type { Relation, RelationID } from '../types/relation'
+import type { Relation } from '../types/relation'
 import { commonAncestor } from '../utils/fqn'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
@@ -55,6 +54,9 @@ export class RelationshipModel<M extends AnyAux> {
     return this.$relationship.links ?? []
   }
 
+  /**
+   * Iterate over all views that include this relationship.
+   */
   public *views(): ViewsIterator<M> {
     for (const view of this.model.views()) {
       if (view.includesRelation(this.id)) {

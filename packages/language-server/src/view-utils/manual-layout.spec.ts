@@ -1,9 +1,9 @@
-import type { ElementView, Fqn, ViewID, ViewManualLayout } from '@likec4/core'
+import type { ElementView, Fqn, ViewId, ViewManualLayout } from '@likec4/core'
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { deserializeFromComment, serializeToComment } from './manual-layout'
 
-function views(...views: ElementView[]): Record<ViewID, ElementView> {
+function views(...views: ElementView[]): Record<ViewId, ElementView> {
   return mapToObj(views, view => [view.id, view])
 }
 

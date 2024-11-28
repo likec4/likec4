@@ -13,11 +13,11 @@ import {
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
-import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
+import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
-export type ViewID<Id extends string = string> = Tagged<Id, 'ViewID'>
+export type ViewId<Id extends string = string> = Tagged<Id, 'ViewID'>
 
 export type ViewRulePredicate =
   | {
@@ -114,7 +114,7 @@ export interface BasicView<
   Tags extends string
 > {
   readonly __?: ViewType
-  readonly id: ViewID<ViewIDs>
+  readonly id: ViewId<ViewIDs>
   readonly title: string | null
   readonly description: string | null
   readonly tags: NonEmptyArray<Tag<Tags>> | null
@@ -158,7 +158,7 @@ export interface ScopedElementView<ViewIDs extends string, Tags extends string>
 export interface ExtendsElementView<ViewIDs extends string, Tags extends string>
   extends BasicElementView<ViewIDs, Tags>
 {
-  readonly extends: ViewID<ViewIDs>
+  readonly extends: ViewId<ViewIDs>
 }
 export type ElementView<
   ViewIDs extends string = string,
@@ -183,7 +183,7 @@ export interface DynamicViewStep {
   readonly tail?: RelationshipArrowType
   readonly isBackward?: boolean
   // Link to dynamic view
-  readonly navigateTo?: ViewID
+  readonly navigateTo?: ViewId
   __parallel?: never
 }
 
@@ -253,19 +253,13 @@ export type LikeC4View<
   Tags extends string = string
 > = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags> | DeploymentView<ViewIDs, Tags>
 
-export function isDeploymentView(view: ComputedView): view is ComputedDeploymentView
-export function isDeploymentView(view: LikeC4View): view is DeploymentView
-export function isDeploymentView(view: { __?: string }) {
+export function isDeploymentView(view: LikeC4View): view is DeploymentView {
   return view.__ === 'deployment'
 }
-export function isDynamicView(view: ComputedView): view is ComputedDynamicView
-export function isDynamicView(view: LikeC4View): view is DynamicView
-export function isDynamicView(view: { __?: string }) {
+export function isDynamicView(view: LikeC4View): view is DynamicView {
   return view.__ === 'dynamic'
 }
-export function isElementView(view: ComputedView): view is ComputedElementView
-export function isElementView(view: LikeC4View): view is ElementView
-export function isElementView(view: { __?: string }) {
+export function isElementView(view: LikeC4View): view is ElementView {
   return isNullish(view.__) || view.__ === 'element'
 }
 
@@ -337,7 +331,7 @@ export interface ComputedNode {
    */
   icon?: IconUrl
   style: ElementStyle
-  navigateTo?: ViewID
+  navigateTo?: ViewId
   level: number
   // For compound nodes, the max depth of nested nodes
   depth?: number
@@ -369,7 +363,7 @@ export interface ComputedEdge {
   label: string | null
   description?: string
   technology?: string
-  relations: RelationID[]
+  relations: RelationId[]
   kind?: RelationshipKind
   notation?: string
   // Notes for walkthrough
@@ -380,7 +374,7 @@ export interface ComputedEdge {
   tail?: RelationshipArrowType
   tags?: NonEmptyArray<Tag>
   // Link to dynamic view
-  navigateTo?: ViewID
+  navigateTo?: ViewId
   /**
    * If this edge is derived from custom relationship predicate
    */
@@ -414,7 +408,7 @@ export interface ComputedElementView<
   ViewIDs extends string = string,
   Tags extends string = string
 > extends Omit<ElementView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
-  readonly extends?: ViewID<ViewIDs>
+  readonly extends?: ViewId<ViewIDs>
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
@@ -448,6 +442,18 @@ export type ComputedView<
   ViewIDs extends string = string,
   Tags extends string = string
 > = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags> | ComputedDeploymentView<ViewIDs, Tags>
+
+export namespace ComputedView {
+  export function isDeployment(view: ComputedView): view is ComputedDeploymentView {
+    return view.__ === 'deployment'
+  }
+  export function isDynamic(view: ComputedView): view is ComputedDynamicView {
+    return view.__ === 'dynamic'
+  }
+  export function isElement(view: ComputedView): view is ComputedElementView {
+    return isNullish(view.__) || view.__ === 'element'
+  }
+}
 
 // Bounding box
 export type BBox = {

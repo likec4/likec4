@@ -25,12 +25,12 @@ import {
   type OutgoingExpr as C4OutgoingExpr,
   type Relation,
   type RelationExpr as C4RelationExpr,
-  type RelationID,
+  type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
   type RelationWhereExpr,
   type Tag,
-  type ViewID,
+  type ViewId,
   type ViewRule,
   type ViewRuleGlobalStyle,
   type ViewRuleGroup,
@@ -249,7 +249,7 @@ const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
   tags?: NonEmptyArray<TestTag>
 }) =>
   ({
-    id: `${source}:${target}` as RelationID,
+    id: `${source}:${target}` as RelationId,
     title: title ?? '',
     source: source as Fqn,
     target: target as Fqn,
@@ -379,7 +379,7 @@ export const fakeModel = new LikeC4ModelGraph({
 
 const emptyView = {
   __: 'element' as const,
-  id: 'index' as ViewID,
+  id: 'index' as ViewId,
   title: null,
   description: null,
   tags: null,
@@ -621,7 +621,7 @@ export function computeView(
     result = computeElementView(
       {
         ...emptyView,
-        id: 'index' as ViewID,
+        id: 'index' as ViewId,
         viewOf: args[0] as Fqn,
         rules: [args[1]].flat()
       },

@@ -1,5 +1,5 @@
 import {
-  type ComputedView,
+  ComputedView,
   type DiagramView,
   isDeploymentView,
   isDynamicView,
@@ -25,11 +25,11 @@ export interface GraphvizPort {
 
 const getPrinter = (computedView: ComputedView) => {
   switch (true) {
-    case isDynamicView(computedView):
+    case ComputedView.isDynamic(computedView):
       return new DynamicViewPrinter(computedView)
-    case isElementView(computedView):
+    case ComputedView.isElement(computedView):
       return new ElementViewPrinter(computedView)
-    case isDeploymentView(computedView):
+    case ComputedView.isDeployment(computedView):
       return new DeploymentViewPrinter(computedView)
     default:
       nonexhaustive(computedView)
@@ -103,7 +103,7 @@ export class GraphvizLayouter {
   async dot(computedView: ComputedView): Promise<DotSource> {
     const printer = getPrinter(computedView)
     let dot = printer.print()
-    if (isDynamicView(computedView)) {
+    if (ComputedView.isDynamic(computedView)) {
       return dot
     }
     try {

@@ -1,4 +1,4 @@
-import { invariant, type ViewID } from '@likec4/core'
+import { invariant, type ViewId } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import { createRoot, type Root } from 'react-dom/client'
@@ -162,7 +162,7 @@ export class LikeC4View extends HTMLElement {
     )
   }
 
-  openBrowser(viewId?: ViewID) {
+  openBrowser(viewId?: ViewId) {
     const fs = document.createElement(ComponentName.Browser)
     fs.setAttribute('view-id', viewId ?? this.view.id)
     document.body.appendChild(fs)

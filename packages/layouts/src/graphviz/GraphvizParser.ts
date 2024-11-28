@@ -7,7 +7,7 @@ import type {
   EdgeId,
   OverviewGraph,
   Point,
-  ViewID
+  ViewId
 } from '@likec4/core'
 import { invariant, nonNullable } from '@likec4/core'
 import { logger } from '@likec4/log'
@@ -247,7 +247,7 @@ export function parseOverviewGraphvizJson(json: string): OverviewGraph {
         width,
         position,
         label: obj.label ?? '',
-        viewId: obj.likec4_id as any as ViewID
+        viewId: obj.likec4_id as any as ViewId
       })
     } else {
       const node: OverviewGraph.Node = {

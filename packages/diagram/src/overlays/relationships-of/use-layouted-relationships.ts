@@ -11,7 +11,7 @@ import {
   type LikeC4Model,
   nonNullable,
   parentFqn,
-  type RelationID
+  type RelationId
 } from '@likec4/core'
 import { MarkerType } from '@xyflow/system'
 import { useMemo } from 'react'
@@ -181,7 +181,7 @@ function nodeData(
       color: diagramNode?.color ?? ancestor?.color ?? element.color,
       shape: diagramNode?.shape ?? element.shape
     },
-    navigateTo: diagramNode?.navigateTo ?? element.viewOf()?.id ?? null,
+    navigateTo: diagramNode?.navigateTo ?? element.defaultView?.id ?? null,
     ports: {
       left: [],
       right: []
@@ -378,7 +378,7 @@ function layout(
     view.edges.flatMap(e => e.relations)
   )
   // Relations that are not included in the view
-  const notIncludedRelations = new Set<RelationID>()
+  const notIncludedRelations = new Set<RelationId>()
 
   if (!viewIncludesSubject) {
     // Reset scope to global if subject is not in the view

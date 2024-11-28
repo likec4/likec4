@@ -1,4 +1,4 @@
-import type { ComputedLikeC4Model, DiagramView, Fqn, RelationID, ViewChange, ViewID } from '@likec4/core'
+import type { ComputedLikeC4Model, DiagramView, Fqn, RelationId, ViewChange, ViewId } from '@likec4/core'
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 
 /**
@@ -12,14 +12,14 @@ export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4Model
   method: 'fetch-computed-model'
 }
 
-export const FetchDiagramView: RequestType<ViewID, {
+export const FetchDiagramView: RequestType<ViewId, {
   view: DiagramView | null
   error: string | null
 }> = {
   method: 'fetch-diagram-view'
 }
 
-export const OnOpenView: NotificationType<{ viewId: ViewID }> = {
+export const OnOpenView: NotificationType<{ viewId: ViewId }> = {
   method: 'on-open-view'
 }
 
@@ -30,8 +30,8 @@ export const GetLastClickedNode: RequestType<never, { elementId: Fqn | null }> =
 export const WebviewMsgs = {
   CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
   Locate: { method: 'webview:locate' } as NotificationType<LocateParams>,
-  NavigateTo: { method: 'webview:navigate' } as NotificationType<{ viewId: ViewID }>,
-  OnChange: { method: 'webview:change' } as NotificationType<{ viewId: ViewID; change: ViewChange }>
+  NavigateTo: { method: 'webview:navigate' } as NotificationType<{ viewId: ViewId }>,
+  OnChange: { method: 'webview:change' } as NotificationType<{ viewId: ViewId; change: ViewChange }>
 }
 
 // export namespace ExtensionToPanel {
@@ -78,13 +78,13 @@ export type LocateParams =
     view?: never
   }
   | {
-    relation: RelationID
+    relation: RelationId
     deployment?: never
     element?: never
     view?: never
   }
   | {
-    view: ViewID
+    view: ViewId
     deployment?: never
     relation?: never
     element?: never

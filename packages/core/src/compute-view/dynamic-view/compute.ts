@@ -14,12 +14,12 @@ import {
   isViewRuleAutoLayout,
   isViewRulePredicate,
   type NonEmptyArray,
-  type RelationID,
+  type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
   StepEdgeId,
   type Tag,
-  type ViewID
+  type ViewId
 } from '../../types'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
@@ -43,9 +43,9 @@ export namespace DynamicViewComputeCtx {
     line?: RelationshipLineType
     head?: RelationshipArrowType
     tail?: RelationshipArrowType
-    relations: RelationID[]
+    relations: RelationId[]
     isBackward: boolean
-    navigateTo?: ViewID
+    navigateTo?: ViewId
     tags?: NonEmptyArray<Tag>
   }
 }
@@ -234,8 +234,8 @@ export class DynamicViewComputeCtx {
   private findRelations(source: Element, target: Element): {
     title: string | null
     tags: NonEmptyArray<Tag> | null
-    relations: NonEmptyArray<RelationID> | null
-    navigateTo: ViewID | null
+    relations: NonEmptyArray<RelationId> | null
+    navigateTo: ViewId | null
     tail: RelationshipArrowType | null
     head: RelationshipArrowType | null
     color: Color | null

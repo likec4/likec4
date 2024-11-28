@@ -148,14 +148,11 @@ const builder = b
     )
   )
 
-const source = builder.build()
+export const source = builder.build()
 type Id = typeof builder.Types.Fqn
-type DeploymentId = typeof builder.Types.DeploymentFqn
 
 describe('LikeC4Model', () => {
   const els = source.elements
-  const d = source.deployments.elements
-  const c = computeViews(source)
   const model = LikeC4Model.create(computeViews(source))
 
   it('roots', () => {

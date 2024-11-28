@@ -2,7 +2,6 @@ import { mapValues } from 'remeda'
 import type { model } from '../builder/Builder.model'
 import { nonexhaustive } from '../errors'
 import {
-  type AnyParsedLikeC4Model,
   type ComputedDeploymentView,
   type ComputedDynamicView,
   type ComputedElementView,
@@ -42,7 +41,7 @@ interface ComputeView {
   (viewsource: LikeC4View): ComputeViewResult<ComputedView>
 }
 
-type Params = Pick<AnyParsedLikeC4Model, 'deployments' | 'elements' | 'globals' | 'relations'>
+type Params = Pick<ParsedLikeC4Model, 'deployments' | 'elements' | 'globals' | 'relations'>
 export function mkComputeView(model: Params): ComputeView {
   const index = new LikeC4ModelGraph(model)
   let deploymentGraph

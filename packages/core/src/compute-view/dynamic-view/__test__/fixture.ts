@@ -1,11 +1,11 @@
 import { partition } from 'remeda'
-import type { DynamicViewRule, DynamicViewStep, Fqn, ViewID, ViewRulePredicate } from '../../../types'
+import type { DynamicViewRule, DynamicViewStep, Fqn, ViewId, ViewRulePredicate } from '../../../types'
 import { type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
 import { DynamicViewComputeCtx } from '../compute'
 
 const emptyView = {
   __: 'dynamic' as const,
-  id: 'index' as ViewID,
+  id: 'index' as ViewId,
   title: null,
   description: null,
   tags: null,

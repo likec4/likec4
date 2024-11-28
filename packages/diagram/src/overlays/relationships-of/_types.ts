@@ -1,4 +1,4 @@
-import type { ComputedNode, Fqn, Relation, ViewID } from '@likec4/core'
+import type { ComputedNode, Fqn, Relation, ViewId } from '@likec4/core'
 import type {
   Edge as ReactFlowEdge,
   InternalNode as ReactFlowInternalNode,
@@ -26,7 +26,7 @@ export namespace XYFlowTypes {
       left: Port[]
       right: Port[]
     }
-    navigateTo: ViewID | null
+    navigateTo: ViewId | null
     hovered?: boolean
     layoutId?: string
     leaving?: boolean

@@ -6,7 +6,7 @@ import {
   type EdgeId as C4EdgeId,
   extractStep,
   isStepEdgeId,
-  type RelationID as C4RelationID,
+  type RelationId as C4RelationID,
   type StepEdgeId,
   type Tag as C4Tag
 } from '../../types'

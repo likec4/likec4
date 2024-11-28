@@ -34,11 +34,11 @@ export type {
   Point,
   Relation,
   RelationExpr,
-  RelationID,
+  RelationId,
   StepEdgeId,
   Tag,
   ThemeColor,
-  ViewID,
+  ViewId,
   XYPoint
 } from '@likec4/core'
 export {

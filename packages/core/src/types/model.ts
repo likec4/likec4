@@ -6,8 +6,8 @@ import type {
 } from './deployments'
 import type { ElementKindSpecification, Fqn, Tag, TypedElement } from './element'
 import type { ModelGlobals } from './global'
-import type { Relation, RelationID, RelationshipKindSpecification } from './relation'
-import type { ComputedView, DiagramView, LikeC4View, ViewID } from './view'
+import type { Relation, RelationId, RelationshipKindSpecification } from './relation'
+import type { ComputedView, DiagramView, LikeC4View, ViewId } from './view'
 
 /**
  * Parsed elements, relations, and views.
@@ -27,7 +27,7 @@ export interface ParsedLikeC4Model<
     relationships: Record<RelationKinds, RelationshipKindSpecification>
   }
   elements: Record<Fqns, TypedElement<Fqns, ElementKinds, Tags>>
-  relations: Record<RelationID, Relation>
+  relations: Record<RelationId, Relation>
   globals: ModelGlobals
   views: Record<Views, LikeC4View<Views, Tags>>
   /**
@@ -35,10 +35,25 @@ export interface ParsedLikeC4Model<
    */
   deployments: {
     elements: Record<DeploymentFqns, DeploymentElement>
-    relations: Record<RelationID, DeploymentRelation>
+    relations: Record<RelationId, DeploymentRelation>
   }
 }
-export type AnyParsedLikeC4Model = ParsedLikeC4Model<any, any, any, any, any, any>
+/**
+ * Hook to get types from dump
+ */
+export type ParsedLikeC4ModelDump = {
+  elements: {
+    [kind: string]: object
+  }
+  deployments: {
+    elements: {
+      [kind: string]: object
+    }
+  }
+  views: {
+    [kind: string]: object
+  }
+}
 
 export interface AnyLikeC4Model<
   Fqns extends string = string,

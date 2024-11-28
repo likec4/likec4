@@ -1,4 +1,4 @@
-import type { ComputedLikeC4Model, ComputedView, DiagramView, OverviewGraph, ViewID } from '@likec4/core'
+import type { ComputedLikeC4Model, ComputedView, DiagramView, OverviewGraph, ViewId } from '@likec4/core'
 import type { GraphvizLayouter } from '@likec4/layouts'
 import type { WorkspaceCache } from 'langium'
 import pLimit from 'p-limit'
@@ -11,7 +11,7 @@ type GraphvizOut = {
 }
 
 type GraphvizSvgOut = {
-  id: ViewID
+  id: ViewId
   dot: string
   svg: string
 }

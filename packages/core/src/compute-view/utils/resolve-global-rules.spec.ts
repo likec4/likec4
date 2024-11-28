@@ -5,7 +5,7 @@ import { resolveGlobalRules } from './resolve-global-rules'
 describe('resolveGlobalRulesInViews', () => {
   function generateElementView(): c4.ElementView {
     return {
-      id: 'viewId' as c4.ViewID,
+      id: 'viewId' as c4.ViewId,
       title: 'View Title',
       description: 'View Description',
       tags: null,

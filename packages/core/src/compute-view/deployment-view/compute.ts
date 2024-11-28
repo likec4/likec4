@@ -10,7 +10,7 @@ import type {
   DeploymentViewRulePredicate,
   EdgeId,
   NonEmptyArray,
-  RelationID,
+  RelationId,
   Tag
 } from '../../types'
 import {
@@ -235,7 +235,7 @@ export class DeploymentViewComputeCtx {
         source,
         target,
         label: title ?? null,
-        relations: relations.map(r => r.id as RelationID),
+        relations: relations.map(r => r.id as RelationId),
         ...tags && { tags: tags as NonEmptyArray<Tag> },
         ...navigateTo && { navigateTo }
       }

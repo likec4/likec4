@@ -1,6 +1,6 @@
 import { indexBy } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Element, ElementView, Relation, Tag, ViewID, ViewRule } from '../../types'
+import type { Element, ElementView, Relation, Tag, ViewId, ViewRule } from '../../types'
 import { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { $include, fakeElements } from './__test__/fixture'
 import { ComputeCtx } from './compute'
@@ -19,7 +19,7 @@ function r(source: string, target: string): Relation {
 
 function v(rules: ViewRule[]): ElementView {
   return {
-    id: 'index' as ViewID,
+    id: 'index' as ViewId,
     title: 'index',
     description: null,
     tags: ['tag' as Tag],

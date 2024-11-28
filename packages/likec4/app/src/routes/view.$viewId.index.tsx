@@ -1,4 +1,4 @@
-import type { ViewID } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
 import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
@@ -15,7 +15,7 @@ function ViewReact() {
   const { viewId } = Route.useParams()
   const view = useLikeC4DiagramView(viewId)
 
-  const onNavigateTo = useCallbackRef((viewId: ViewID) => {
+  const onNavigateTo = useCallbackRef((viewId: ViewId) => {
     router.navigate({
       to: '/view/$viewId',
       params: { viewId },

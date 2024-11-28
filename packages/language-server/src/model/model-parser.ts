@@ -308,7 +308,7 @@ export class LikeC4ModelParser {
       astPath,
       source,
       target
-    ) as c4.RelationID
+    ) as c4.RelationId
     return {
       id,
       astPath,
@@ -322,7 +322,7 @@ export class LikeC4ModelParser {
       ...(tags && { tags }),
       ...(isNonEmptyArray(links) && { links }),
       ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
-      ...(navigateTo && { navigateTo: navigateTo as c4.ViewID })
+      ...(navigateTo && { navigateTo: navigateTo as c4.ViewId })
     }
   }
 
@@ -583,7 +583,7 @@ export class LikeC4ModelParser {
         if (ast.isNavigateToProperty(prop)) {
           const viewId = prop.value.view.$refText
           if (isTruthy(viewId)) {
-            acc.custom.navigateTo = viewId as c4.ViewID
+            acc.custom.navigateTo = viewId as c4.ViewId
           }
           return acc
         }
@@ -721,7 +721,7 @@ export class LikeC4ModelParser {
         if (ast.isRelationNavigateToProperty(prop)) {
           const viewId = prop.value.view.ref?.name
           if (isTruthy(viewId)) {
-            acc.customRelation.navigateTo = viewId as c4.ViewID
+            acc.customRelation.navigateTo = viewId as c4.ViewId
           }
           return acc
         }
@@ -920,7 +920,7 @@ export class LikeC4ModelParser {
           case ast.isRelationNavigateToProperty(prop): {
             const viewId = prop.value.view.ref?.name
             if (isTruthy(viewId)) {
-              step.navigateTo = viewId as c4.ViewID
+              step.navigateTo = viewId as c4.ViewId
             }
             break
           }
@@ -988,7 +988,7 @@ export class LikeC4ModelParser {
         getDocument(astNode).uri.toString(),
         astPath,
         viewOf ?? ''
-      ) as c4.ViewID
+      ) as c4.ViewId
     }
 
     const title = toSingleLine(body.props.find(p => p.key === 'title')?.value) ?? null
@@ -1001,7 +1001,7 @@ export class LikeC4ModelParser {
 
     const view: ParsedAstElementView = {
       __: 'element',
-      id: id as c4.ViewID,
+      id: id as c4.ViewId,
       astPath,
       title,
       description,
@@ -1027,7 +1027,7 @@ export class LikeC4ModelParser {
       const extendsView = astNode.extends.view.ref
       invariant(extendsView?.name, 'view extends is not resolved: ' + astNode.$cstNode?.text)
       return Object.assign(view, {
-        extends: extendsView.name as c4.ViewID
+        extends: extendsView.name as c4.ViewId
       })
     }
 
@@ -1050,7 +1050,7 @@ export class LikeC4ModelParser {
       id = 'dynamic_' + stringHash(
         getDocument(astNode).uri.toString(),
         astPath
-      ) as c4.ViewID
+      ) as c4.ViewId
     }
 
     const title = toSingleLine(props.find(p => p.key === 'title')?.value) ?? null
@@ -1059,13 +1059,13 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(body)
     const links = this.convertLinks(body)
 
-    ViewOps.writeId(astNode, id as c4.ViewID)
+    ViewOps.writeId(astNode, id as c4.ViewId)
 
     const manualLayout = this.parseViewManualLayout(astNode)
 
     return {
       __: 'dynamic',
-      id: id as c4.ViewID,
+      id: id as c4.ViewId,
       astPath,
       title,
       description,
@@ -1275,7 +1275,7 @@ export class LikeC4ModelParser {
       astPath,
       astNode.source.$cstNode!.text,
       astNode.target.$cstNode!.text
-    ) as c4.RelationID
+    ) as c4.RelationId
 
     const title = toSingleLine(astNode.title)
 
@@ -1302,7 +1302,7 @@ export class LikeC4ModelParser {
       id = 'deployment_' + stringHash(
         getDocument(astNode).uri.toString(),
         astPath
-      ) as c4.ViewID
+      ) as c4.ViewId
     }
 
     const title = toSingleLine(props.find(p => p.key === 'title')?.value) ?? null
@@ -1311,13 +1311,13 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(body)
     const links = this.convertLinks(body)
 
-    ViewOps.writeId(astNode, id as c4.ViewID)
+    ViewOps.writeId(astNode, id as c4.ViewId)
 
     const manualLayout = this.parseViewManualLayout(astNode)
 
     return {
       __: 'deployment',
-      id: id as c4.ViewID,
+      id: id as c4.ViewId,
       astPath,
       title,
       description,
@@ -1386,12 +1386,12 @@ export class LikeC4ModelParser {
     if (ast.isDeploymentRefExpression(astNode)) {
       const ref = this.parseDeploymentDef(astNode.ref)
       switch (true) {
-        case astNode.isExpand:
+        case astNode.suffix === '._':
           return {
             ref,
             isExpanded: true
           }
-        case astNode.isNested:
+        case astNode.suffix === '.*':
           return {
             ref,
             isNested: true

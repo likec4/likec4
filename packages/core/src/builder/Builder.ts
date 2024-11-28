@@ -20,7 +20,7 @@ import {
   type ModelGlobals,
   type NonEmptyArray,
   type Relation,
-  type RelationID,
+  type RelationId,
   type Tag
 } from '../types'
 import type { ParsedLikeC4Model } from '../types/model'
@@ -297,7 +297,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           'Cannot create relationship between elements in the same hierarchy'
         )
         _relations.push({
-          id: `rel${_relations.length + 1}` as RelationID,
+          id: `rel${_relations.length + 1}` as RelationId,
           ...relation
         })
         return self
@@ -341,7 +341,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       },
       addDeploymentRelation: (relation) => {
         _deploymentRelations.push({
-          id: `deploy_rel${_deploymentRelations.length + 1}` as RelationID,
+          id: `deploy_rel${_deploymentRelations.length + 1}` as RelationId,
           ...relation
         })
         return self

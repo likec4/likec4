@@ -266,17 +266,6 @@ function $include<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
     | [B['Expr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
-  // | [B['TypedExpr']]
-  // | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
-  // ): (b: B) => B
-  // function $include<B extends ViewBuilder<AnyTypes>>(
-  //   ...args:
-  //     | [ViewPredicate.Expression<B['Types']>]
-  //     | [TypedC4Expression<B['Types']>]
-  //     | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
-  // ): (b: B) => B
-  // function $include<B extends ViewBuilder<AnyTypes> | DeploymentViewBuilder<AnyTypes>>(
-  //   ...args: any[]
 ): (b: B) => B {
   return (b) => {
     let expr = b.$expr(args[0])
@@ -320,17 +309,6 @@ function $exclude<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
     | [B['Expr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
-  // | [B['TypedExpr']]
-  // | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
-  // ): (b: B) => B
-  // function $include<B extends ViewBuilder<AnyTypes>>(
-  //   ...args:
-  //     | [ViewPredicate.Expression<B['Types']>]
-  //     | [TypedC4Expression<B['Types']>]
-  //     | [ViewPredicate.Expression<B['Types']>, ViewPredicate.Custom<B['Types']>]
-  // ): (b: B) => B
-  // function $include<B extends ViewBuilder<AnyTypes> | DeploymentViewBuilder<AnyTypes>>(
-  //   ...args: any[]
 ): (b: B) => B {
   return (b) => {
     let expr = b.$expr(args[0]) as C4Expression
@@ -508,7 +486,7 @@ export function mkViewBuilder(
   view: Writable<ElementView | DeploymentView>
 ): DeploymentViewBuilder<AnyTypes> | ViewBuilder<AnyTypes> {
   const viewBuilder = {
-    $expr: isDeploymentView(view) ? $deploymentExpr : $expr,
+    $expr: view.__ === 'deployment' ? $deploymentExpr : $expr,
     autoLayout(autoLayout: unknown) {
       view.rules.push({
         direction: autoLayout

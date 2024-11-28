@@ -3,9 +3,9 @@ import type {
   ComputedView,
   Fqn,
   ParsedLikeC4Model,
-  RelationID,
+  RelationId,
   ViewChange,
-  ViewID
+  ViewId
 } from '@likec4/core'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
@@ -30,7 +30,7 @@ export const fetchComputedModel = new RequestType<
 )
 export type FetchComputedModelRequest = typeof fetchComputedModel
 
-export const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
+export const computeView = new RequestType<{ viewId: ViewId }, { view: ComputedView | null }, void>(
   'likec4/computeView'
 )
 export type ComputeViewRequest = typeof computeView
@@ -47,21 +47,21 @@ export type LocateParams =
     property?: string
   }
   | {
-    relation: RelationID
+    relation: RelationId
   }
   | {
     deployment: Fqn
     property?: string
   }
   | {
-    view: ViewID
+    view: ViewId
   }
 export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
 export type LocateRequest = typeof locate
 // #endregion
 
 export interface ChangeViewRequestParams {
-  viewId: ViewID
+  viewId: ViewId
   change: ViewChange
 }
 export const changeView = new RequestType<ChangeViewRequestParams, Location | null, void>('likec4/change-view')

@@ -15,7 +15,7 @@ declare module 'virtual:likec4/icons' {
 }
 
 declare module 'virtual:likec4/overview-graph' {
-  import type { OverviewGraph as CoreOverviewGraph, ViewID } from '@likec4/core'
+  import type { OverviewGraph as CoreOverviewGraph, ViewId } from '@likec4/core'
   export type OverviewGraph = CoreOverviewGraph
   export function useOverviewGraph(): OverviewGraph
 }

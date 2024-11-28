@@ -1,4 +1,4 @@
-import type { ComputedNode, Fqn, Relation, ViewID } from '@likec4/core'
+import type { ComputedNode, Fqn, Relation, ViewId } from '@likec4/core'
 import type { Edge as ReactFlowEdge, Node as ReactFlowNode, ReactFlowInstance } from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
 
@@ -10,7 +10,7 @@ export namespace XYFlowTypes {
       in: string[]
       out: string[]
     }
-    navigateTo: ViewID | null
+    navigateTo: ViewId | null
     hovered?: boolean
     /**
      * Whether the node is dimmed

@@ -20,13 +20,13 @@ declare module './generated/ast' {
     [idattr]?: c4.Fqn | undefined
   }
   export interface ElementView {
-    [idattr]?: c4.ViewID | undefined
+    [idattr]?: c4.ViewId | undefined
   }
   export interface DynamicView {
-    [idattr]?: c4.ViewID | undefined
+    [idattr]?: c4.ViewId | undefined
   }
   export interface DeploymentView {
-    [idattr]?: c4.ViewID | undefined
+    [idattr]?: c4.ViewId | undefined
   }
 }
 
@@ -79,7 +79,7 @@ export interface ParsedAstElement {
 }
 
 export interface ParsedAstRelation {
-  id: c4.RelationID
+  id: c4.RelationId
   astPath: string
   source: c4.Fqn
   target: c4.Fqn
@@ -93,7 +93,7 @@ export interface ParsedAstRelation {
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
   links?: c4.NonEmptyArray<ParsedLink>
-  navigateTo?: c4.ViewID
+  navigateTo?: c4.ViewId
   metadata?: { [key: string]: string }
 }
 
@@ -114,9 +114,9 @@ export type ParsedAstGlobals = c4.ModelGlobals
 
 export interface ParsedAstElementView {
   __: 'element'
-  id: c4.ViewID
+  id: c4.ViewId
   viewOf?: c4.Fqn
-  extends?: c4.ViewID
+  extends?: c4.ViewId
   astPath: string
   title: string | null
   description: string | null
@@ -128,7 +128,7 @@ export interface ParsedAstElementView {
 
 export interface ParsedAstDynamicView {
   __: 'dynamic'
-  id: c4.ViewID
+  id: c4.ViewId
   astPath: string
   title: string | null
   description: string | null
@@ -141,7 +141,7 @@ export interface ParsedAstDynamicView {
 
 export interface ParsedAstDeploymentView {
   __: 'deployment'
-  id: c4.ViewID
+  id: c4.ViewId
   astPath: string
   title: string | null
   description: string | null
@@ -152,11 +152,11 @@ export interface ParsedAstDeploymentView {
 
 export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView | ParsedAstDeploymentView
 export const ViewOps = {
-  writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewID): T {
+  writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewId): T {
     node[idattr] = id
     return node
   },
-  readId(node: ast.LikeC4View): c4.ViewID | undefined {
+  readId(node: ast.LikeC4View): c4.ViewId | undefined {
     return node[idattr]
   }
 }

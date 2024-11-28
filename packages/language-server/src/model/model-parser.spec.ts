@@ -219,7 +219,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
         views {
           deployment view test {
-            style n1, n2._ {
+            style n1.*, n2._, n1 {
               color red
             }
           }
@@ -233,6 +233,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
         targets: [
           {
+            isNested: true,
             ref: {
               id: 'n1'
             }
@@ -241,6 +242,11 @@ describe.concurrent('LikeC4ModelParser', () => {
             isExpanded: true,
             ref: {
               id: 'n2'
+            }
+          },
+          {
+            ref: {
+              id: 'n1'
             }
           }
         ]

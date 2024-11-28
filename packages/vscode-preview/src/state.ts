@@ -1,4 +1,4 @@
-import { type ComputedLikeC4Model, type DiagramNode, type DiagramView, LikeC4Model, type ViewID } from '@likec4/core'
+import { type ComputedLikeC4Model, type DiagramNode, type DiagramView, LikeC4Model, type ViewId } from '@likec4/core'
 import { useStore } from '@nanostores/react'
 import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'
@@ -44,7 +44,7 @@ export const useIsModelLoaded = () => useStore($initialized)
  */
 export const $viewId = atom(viewId)
 
-export const changeViewId = (viewId: ViewID) => {
+export const changeViewId = (viewId: ViewId) => {
   if (viewId === $viewId.get()) {
     return
   }
@@ -64,7 +64,7 @@ messenger.onNotification(OnOpenView, ({ viewId }) => {
 })
 
 export type LikeC4DiagramsAtom = Record<
-  ViewID,
+  ViewId,
   {
     // Never loaded
     state: 'pending'
@@ -131,7 +131,7 @@ function updateLikeC4ModelSource(model: ComputedLikeC4Model) {
     $likeC4ModelSource.setKey(key, model[key])
   })
 
-  const oldKeys = new Set([...keys(currentViews)] as ViewID[])
+  const oldKeys = new Set([...keys(currentViews)] as ViewId[])
   for (const view of values(model.views)) {
     oldKeys.delete(view.id)
     const likeC4Diagram = likeC4Diagrams[view.id]
@@ -159,7 +159,7 @@ function updateLikeC4ModelSource(model: ComputedLikeC4Model) {
   // Mark views as not found
   for (const [key, likeC4Diagram] of entries(likeC4Diagrams)) {
     if (!(key in model.views)) {
-      $likeC4Diagrams.setKey(key as ViewID, {
+      $likeC4Diagrams.setKey(key as ViewId, {
         ...likeC4Diagram,
         error: 'View is not found',
         state: 'error'
@@ -211,7 +211,7 @@ onMount($likeC4ViewState, () => {
   })
 })
 
-async function fetchDiagramView(viewId: ViewID) {
+async function fetchDiagramView(viewId: ViewId) {
   try {
     const {
       error,

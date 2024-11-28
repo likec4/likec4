@@ -3,7 +3,7 @@ import type { BorderStyle, ElementKind, ElementShape, Fqn, Tag } from './element
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
 import type { Color } from './theme'
-import type { ViewID } from './view'
+import type { ViewId } from './view'
 
 interface BaseExpr {
   where?: never
@@ -50,7 +50,7 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
     icon?: IconUrl
     border?: BorderStyle
     opacity?: number
-    navigateTo?: ViewID
+    navigateTo?: ViewId
   }
 }
 
@@ -162,7 +162,7 @@ export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
     technology?: string
     notation?: string
     // Link to dynamic view
-    navigateTo?: ViewID
+    navigateTo?: ViewId
     // Notes for walkthrough
     notes?: string
     color?: Color

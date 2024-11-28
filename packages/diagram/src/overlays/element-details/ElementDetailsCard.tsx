@@ -5,9 +5,10 @@ import {
   type Element,
   type Fqn,
   invariant,
-  isElementView,
+  isScopedElementView,
+  type LikeC4View,
   type Link,
-  type ViewID
+  type ViewId
 } from '@likec4/core'
 import {
   ActionIcon,
@@ -42,7 +43,7 @@ import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } 
 import clsx from 'clsx'
 import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
 import { memo, type PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
-import { clamp, find, isNullish, map, only, partition, pick, pipe, unique } from 'remeda'
+import { clamp, find, isNullish, map, only, partition, pick, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow, useXYInternalNode } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4CurrentViewModel } from '../../likec4model'
@@ -131,7 +132,10 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   const [viewsOf, otherViews] = pipe(
     elementModel.views().toArray(),
     map(v => v.$view),
-    partition(v => isElementView(v) && v.viewOf === fqn)
+    partition(view => {
+      const v = view as LikeC4View
+      return isScopedElementView(v) && v.viewOf === fqn
+    })
   )
 
   const defaultView = nodeModel.navigateTo?.$view
@@ -139,7 +143,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
 
   const defaultLink = only(nodeModel.links)
 
-  const onNavigateToCb = useCallback((toView: ViewID, e?: React.MouseEvent): void => {
+  const onNavigateToCb = useCallback((toView: ViewId, e?: React.MouseEvent): void => {
     e?.stopPropagation()
     const { onNavigateTo } = diagramApi.getState()
     if (!onNavigateTo) {

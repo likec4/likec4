@@ -66,6 +66,10 @@ export class ElementModel<M extends AnyAux> {
     return this.model.parent(this)
   }
 
+  get defaultView(): LikeC4ViewModel<M> | null {
+    return this.scopedViews().next().value ?? null
+  }
+
   public ancestors(): ElementsIterator<M> {
     return this.model.ancestors(this)
   }
@@ -118,6 +122,9 @@ export class ElementModel<M extends AnyAux> {
     return
   }
 
+  /**
+   * Iterate over all views that include this element.
+   */
   public *views(): ViewsIterator<M> {
     for (const view of this.model.views()) {
       if (view.includesElement(this.id)) {
@@ -127,19 +134,15 @@ export class ElementModel<M extends AnyAux> {
     return
   }
 
-  public *viewsOf(): ViewsIterator<M> {
+  /**
+   * Iterate over all views that scope this element.
+   */
+  public *scopedViews(): ViewsIterator<M> {
     for (const vm of this.views()) {
       if (vm.isElementView() && vm.$view.viewOf === this.id) {
         yield vm
       }
     }
     return
-  }
-
-  /**
-   * Default viewOf
-   */
-  public viewOf(): LikeC4ViewModel<M> | null {
-    return this.viewsOf().next().value ?? null
   }
 }

@@ -73,7 +73,7 @@ export class LikeC4ModelLocator {
     }
   }
 
-  public locateRelation(relationId: c4.RelationID): Location | null {
+  public locateRelation(relationId: c4.RelationId): Location | null {
     for (const doc of this.documents()) {
       const relation = doc.c4Relations.find(r => r.id === relationId)
       if (!relation) {
@@ -104,7 +104,7 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  public locateViewAst(viewId: c4.ViewID) {
+  public locateViewAst(viewId: c4.ViewId) {
     for (const doc of this.documents()) {
       const view = doc.c4Views.find(r => r.id === viewId)
       if (!view) {
@@ -125,7 +125,7 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  public locateView(viewId: c4.ViewID): Location | null {
+  public locateView(viewId: c4.ViewId): Location | null {
     const res = this.locateViewAst(viewId)
     if (!res) {
       return null

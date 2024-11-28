@@ -40,7 +40,7 @@ import {
   type RelationshipKind,
   type RelationshipLineType,
   type Tag,
-  type ViewID,
+  type ViewId,
   type ViewRuleGroup,
   type ViewRulePredicate,
   whereOperatorAsPredicate
@@ -324,7 +324,7 @@ export class ComputeCtx {
         head?: RelationshipArrowType | undefined
         tail?: RelationshipArrowType | undefined
         tags?: NonEmptyArray<Tag>
-        navigateTo?: ViewID | undefined
+        navigateTo?: ViewId | undefined
       } | undefined
       relation = only(relations) ?? pipe(
         relations,
@@ -375,7 +375,7 @@ export class ComputeCtx {
             tail: [] as RelationshipArrowType[],
             color: [] as Color[],
             line: [] as RelationshipLineType[],
-            navigateTo: [] as ViewID[]
+            navigateTo: [] as ViewId[]
           })
         )
         relation = {

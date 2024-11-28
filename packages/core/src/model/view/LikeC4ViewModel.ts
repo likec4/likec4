@@ -11,6 +11,8 @@ import {
   isDeploymentView,
   isDynamicView,
   isElementView,
+  isScopedElementView,
+  type LikeC4View,
   type NodeId as C4NodeId
 } from '../../types/view'
 import { compareByFqnHierarchically, getOrCreate } from '../../utils'
@@ -22,12 +24,12 @@ import { NodeModel, type NodesIterator } from './NodeModel'
 
 export type ViewsIterator<M extends AnyAux> = IteratorLike<LikeC4ViewModel<M>>
 
-export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
+export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView = M['ViewType']> {
   readonly #rootnodes = new Set<NodeModel<M, V>>()
   readonly #nodes = new Map<C4NodeId, NodeModel<M, V>>()
   readonly #edges = new Map<C4EdgeId, EdgeModel<M, V>>()
-  readonly #includeElements = new Set<M['FqnLiteral']>()
-  readonly #includeDeployments = new Set<M['DeploymentLiteral']>()
+  readonly #includeElements = new Set<M['Element']>()
+  readonly #includeDeployments = new Set<M['Deployment']>()
   readonly #includeRelations = new Set<M['RelationId']>()
   readonly #allTags = new Map<Tag, Set<NodeModel<M, V> | EdgeModel<M, V>>>()
 
@@ -88,8 +90,9 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   }
 
   get viewOf(): ElementModel<M> | null {
-    if (isElementView(this.$view)) {
-      return this.$view.viewOf ? this.model.element(this.$view.viewOf) : null
+    const v = this.$view as LikeC4View
+    if (isScopedElementView(v)) {
+      return this.model.element(v.viewOf)
     }
     return null
   }
@@ -118,12 +121,17 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   }
 
   /**
-   * Find node by id.
+   * Get node by id.
+   * @throws Error if node is not found.
    */
   public node(node: M['NodeOrId']): NodeModel<M, V> {
     const nodeId = getId(node)
     return nonNullable(this.#nodes.get(nodeId), `Node ${nodeId} not found in view ${this.$view.id}`)
   }
+
+  /**
+   * Find node by id.
+   */
   public findNode(node: M['NodeOrId']): NodeModel<M, V> | null {
     return this.#nodes.get(getId(node) as C4NodeId) ?? null
   }
@@ -178,11 +186,11 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
     return
   }
 
-  public includesElement(elementId: M['FqnLiteral']): boolean {
+  public includesElement(elementId: M['Element']): boolean {
     return this.#includeElements.has(elementId)
   }
 
-  public includesDeployment(deploymentId: M['DeploymentLiteral']): boolean {
+  public includesDeployment(deploymentId: M['Deployment']): boolean {
     return this.#includeDeployments.has(deploymentId)
   }
 
@@ -202,14 +210,14 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   }
 
   public isElementView(): this is LikeC4ViewModel<M, ComputedElementView> {
-    return isElementView(this.$view as ComputedView)
+    return isElementView(this.$view as LikeC4View)
   }
 
   public isDeploymentView(): this is LikeC4ViewModel<M, ComputedDeploymentView> {
-    return isDeploymentView(this.$view as ComputedView)
+    return isDeploymentView(this.$view as LikeC4View)
   }
 
   public isDynamicView(): this is LikeC4ViewModel<M, ComputedDynamicView> {
-    return isDynamicView(this.$view as ComputedView)
+    return isDynamicView(this.$view as LikeC4View)
   }
 }

@@ -1,4 +1,4 @@
-import { compareNatural, type Fqn, type LikeC4Model, type ViewID } from '@likec4/core'
+import { compareNatural, type Fqn, type LikeC4Model, type ViewId } from '@likec4/core'
 import { useMemo } from 'react'
 import { useLikeC4Model } from './useLikeC4Model'
 
@@ -24,7 +24,7 @@ function buildNode(
  * Returns a tree of elements in the model.
  * If `viewId` is provided, returns the tree of elements in the view.
  */
-export function useLikeC4ElementsTree(viewId?: ViewID): LikeC4ModelTreeNodeData[] {
+export function useLikeC4ElementsTree(viewId?: ViewId): LikeC4ModelTreeNodeData[] {
   const model = useLikeC4Model(true)
   return useMemo(() => {
     if (viewId) {

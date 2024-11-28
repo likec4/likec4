@@ -3,9 +3,9 @@ import type {
   DiagramNode,
   DiagramView,
   Fqn,
-  RelationID,
+  RelationId,
   ViewChange,
-  ViewID,
+  ViewId,
   WhereOperator
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
@@ -13,7 +13,7 @@ import type { XYBackground } from './xyflow/XYFlowBackground'
 
 export type { WhereOperator }
 
-export type DiagramNodeWithNavigate<ID extends string = ViewID> = Omit<DiagramNode, 'navigateTo'> & {
+export type DiagramNodeWithNavigate<ID extends string = ViewId> = Omit<DiagramNode, 'navigateTo'> & {
   navigateTo: ID
 }
 
@@ -27,7 +27,7 @@ export type ElementIconRenderer = (props: {
   node: ElementIconNodeProps
 }) => ReactNode
 
-export type OnNavigateTo<ID extends string = ViewID> = (
+export type OnNavigateTo<ID extends string = ViewId> = (
   to: ID,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
@@ -197,14 +197,14 @@ export type OpenSourceParams =
     property?: string
   }
   | {
-    relation: RelationID
+    relation: RelationId
   }
   | {
     deployment: Fqn
     property?: string
   }
   | {
-    view: ViewID
+    view: ViewId
   }
 
 export interface LikeC4DiagramEventHandlers {

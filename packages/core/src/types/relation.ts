@@ -2,9 +2,9 @@ import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from './_common'
 import type { Fqn, Link, Tag } from './element'
 import type { Color, ThemeColor } from './theme'
-import type { ViewID } from './view'
+import type { ViewId } from './view'
 
-export type RelationID = Tagged<string, 'RelationID'>
+export type RelationId = Tagged<string, 'RelationID'>
 export type RelationshipKind<Kinds extends string = string> = Tagged<Kinds, 'RelationshipKind'>
 
 export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
@@ -28,7 +28,7 @@ export const DefaultRelationshipColor = 'gray' satisfies ThemeColor
 
 // TODO: rename to Relationship
 export interface Relation {
-  readonly id: RelationID
+  readonly id: RelationId
   readonly source: Fqn
   readonly target: Fqn
   readonly title: string
@@ -42,7 +42,7 @@ export interface Relation {
   readonly tail?: RelationshipArrowType
   readonly links?: NonEmptyArray<Link>
   // Link to dynamic view
-  readonly navigateTo?: ViewID
+  readonly navigateTo?: ViewId
   readonly metadata?: { [key: string]: string }
 }
 

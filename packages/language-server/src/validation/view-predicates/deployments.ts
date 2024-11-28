@@ -1,9 +1,7 @@
-import { nonexhaustive } from '@likec4/core'
 import { AstUtils, type ValidationCheck } from 'langium'
-import { isNullish } from 'remeda'
+import { isNonNullish, isNullish } from 'remeda'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
-import type { LikeC4NameProvider } from '../../references'
 import { tryOrLog } from '../_shared'
 
 export const deploymentRelationExpressionChecks = (
@@ -47,7 +45,7 @@ export const deploymentRefExpressionChecks = (
         })
         break
       }
-      case ast.isDeployedInstance(referenceTo) && (node.isExpand || node.isNested): {
+      case ast.isDeployedInstance(referenceTo) && isNonNullish(node.suffix): {
         accept('error', 'Only deployment nodes can be expanded', {
           node
         })

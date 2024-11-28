@@ -6,7 +6,7 @@ import {
   isScopedElementView,
   parentFqn,
   sortByFqnHierarchically,
-  type ViewID
+  type ViewId
 } from '@likec4/core'
 import { mkComputeView, resolveRulesExtendedViews } from '@likec4/core/compute-view'
 import { deepEqual as eq } from 'fast-equals'
@@ -355,7 +355,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   if (!parsedViews.some(v => v.id === 'index')) {
     parsedViews.unshift({
       __: 'element',
-      id: 'index' as ViewID,
+      id: 'index' as ViewId,
       title: 'Landscape view',
       description: null,
       tags: null,
@@ -469,7 +469,7 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  private previousViews: Record<ViewID, c4.ComputedView> = {}
+  private previousViews: Record<ViewId, c4.ComputedView> = {}
 
   /**
    * WARNING:
@@ -533,7 +533,7 @@ export class LikeC4ModelBuilder {
   }
 
   public async computeView(
-    viewId: ViewID,
+    viewId: ViewId,
     cancelToken?: Cancellation.CancellationToken
   ): Promise<c4.ComputedView | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>

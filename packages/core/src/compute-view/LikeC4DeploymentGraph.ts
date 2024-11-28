@@ -9,7 +9,7 @@ import {
   type Fqn,
   type ParsedLikeC4Model,
   type Relation,
-  type RelationID
+  type RelationId
 } from '../types'
 import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn, sortNaturalByFqn } from '../utils'
 import { intersection, type LikeC4ModelGraph } from './LikeC4ModelGraph'
@@ -55,7 +55,7 @@ export class LikeC4DeploymentGraph {
 
   // readonly #cacheAscendingSiblings = new Map<Fqn, Element[]>()
 
-  readonly #deploymentRelations = new Map<RelationID, DeploymentRelation>()
+  readonly #deploymentRelations = new Map<RelationId, DeploymentRelation>()
   readonly #deploymentIncoming = new Map<Fqn, Set<DeploymentRelation>>()
   readonly #deploymentOutgoing = new Map<Fqn, Set<DeploymentRelation>>()
 

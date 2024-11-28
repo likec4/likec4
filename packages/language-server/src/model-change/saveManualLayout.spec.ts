@@ -1,4 +1,4 @@
-import type { ViewID, ViewManualLayout } from '@likec4/core'
+import type { ViewId, ViewManualLayout } from '@likec4/core'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { saveManualLayout } from './saveManualLayout'
@@ -46,7 +46,7 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
         }
       }
     `)
-    const lookup = services.likec4.ModelLocator.locateViewAst('index' as ViewID)
+    const lookup = services.likec4.ModelLocator.locateViewAst('index' as ViewId)
     expect(lookup).toBeDefined()
 
     const textedit = saveManualLayout(services, {
@@ -82,7 +82,7 @@ describe('LikeC4ModelChanges - saveManualLayout', () => {
        }
       }
     `)
-    const lookup = services.likec4.ModelLocator.locateViewAst('index' as ViewID)
+    const lookup = services.likec4.ModelLocator.locateViewAst('index' as ViewId)
     expect(lookup).toBeDefined()
 
     const textedit = saveManualLayout(services, {

@@ -1,10 +1,10 @@
-import { type DiagramView, type Fqn, type RelationID, type ViewChange, type ViewID } from '@likec4/core'
+import { type DiagramView, type Fqn, type RelationId, type ViewChange, type ViewId } from '@likec4/core'
 import { HOST_EXTENSION } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
 import { FetchComputedModel, FetchDiagramView, type LocateParams, WebviewMsgs } from '../protocol'
 
 export type VscodeState = {
-  viewId: ViewID
+  viewId: ViewId
   view: DiagramView | null
   nodesDraggable: boolean
   edgesEditable: boolean
@@ -15,7 +15,7 @@ export const messenger = new Messenger(vscode)
 messenger.start()
 
 export const ExtensionApi = {
-  navigateTo: (viewId: ViewID) => {
+  navigateTo: (viewId: ViewId) => {
     messenger.sendNotification(WebviewMsgs.NavigateTo, HOST_EXTENSION, { viewId })
   },
   closeMe: () => {
@@ -24,14 +24,14 @@ export const ExtensionApi = {
   locate: (params: LocateParams) => {
     messenger.sendNotification(WebviewMsgs.Locate, HOST_EXTENSION, params)
   },
-  change: (viewId: ViewID, change: ViewChange) => {
+  change: (viewId: ViewId, change: ViewChange) => {
     messenger.sendNotification(WebviewMsgs.OnChange, HOST_EXTENSION, { viewId, change })
   },
 
   fetchComputedModel: () => messenger.sendRequest(FetchComputedModel, HOST_EXTENSION),
 
   // Layoted vuew
-  fetchDiagramView: (viewId: ViewID) => messenger.sendRequest(FetchDiagramView, HOST_EXTENSION, viewId)
+  fetchDiagramView: (viewId: ViewId) => messenger.sendRequest(FetchDiagramView, HOST_EXTENSION, viewId)
 }
 
 export function getVscodeState(): VscodeState {

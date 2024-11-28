@@ -1,10 +1,10 @@
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Fqn } from '../../types/element'
-import type { ElementView, ViewID, ViewRule } from '../../types/view'
+import type { ElementView, ViewId, ViewRule } from '../../types/view'
 import { resolveRulesExtendedViews } from './resolve-extended-views'
 
-function views(...views: ElementView[]): Record<ViewID, ElementView> {
+function views(...views: ElementView[]): Record<ViewId, ElementView> {
   return mapToObj(views, view => [view.id, view])
 }
 
