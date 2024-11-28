@@ -1,11 +1,11 @@
-import { ComputedNode, type ComputedView, type Fqn, isElementView, type ViewId } from '@likec4/core'
+import { ComputedNode, ComputedView, type Fqn, isElementView, type ViewId } from '@likec4/core'
 import { find, isNullish } from 'remeda'
 
 export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R {
   const allElementViews = new Map<Fqn, ViewId[]>()
 
   for (const v of views) {
-    if (isElementView(v) && v.viewOf && isNullish(v.extends)) {
+    if (ComputedView.isElement(v) && v.viewOf && isNullish(v.extends)) {
       const viewsOf = allElementViews.get(v.viewOf) ?? []
       viewsOf.push(v.id)
       allElementViews.set(v.viewOf, viewsOf)

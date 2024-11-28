@@ -1,7 +1,7 @@
 import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 
-import { nonNullable, type ViewID } from '@likec4/core'
+import { nonNullable, type ViewId as ViewID } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { LogLevels } from '@likec4/log'

@@ -1,4 +1,4 @@
-import { delay, invariant, type ViewID } from '@likec4/core'
+import { delay, invariant, type ViewId as ViewID } from '@likec4/core'
 import * as vscode from 'vscode'
 import { ViewColumn, type Webview, type WebviewPanel } from 'vscode'
 import { isProd } from '../const'
