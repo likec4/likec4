@@ -69,7 +69,8 @@ export interface Builder<T extends AnyTypes> {
     T['RelationshipKind'],
     T['Tag'],
     T['Fqn'],
-    T['ViewId']
+    T['ViewId'],
+    T['DeploymentFqn']
   >
 
   with<

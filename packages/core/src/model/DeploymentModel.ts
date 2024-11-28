@@ -1,7 +1,7 @@
 import { values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import {
-  type ALikeC4Model,
+  type AnyLikeC4Model,
   type ComputedDeploymentView,
   type ComputedLikeC4Model,
   DeploymentElement,
@@ -22,40 +22,41 @@ import {
   NestedElementOfDeployedInstanceModel
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import { type Fqn, getId, type IncomingFilter, type IteratorLike, type OutgoingFilter, type RelationID } from './types'
+import { type AnyAux, getId, type IncomingFilter, type IteratorLike, type OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-type ElementOrFqn = Fqn | { id: Fqn }
-
-export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model> {
-  readonly #elements = new Map<Fqn, DeploymentElementModel<M>>()
+export class LikeC4DeploymentModel<M extends AnyAux> {
+  readonly #elements = new Map<M['DeploymentLiteral'], DeploymentElementModel<M>>()
   // Parent element for given FQN
-  readonly #parents = new Map<Fqn, DeploymentNodeModel<M>>()
+  readonly #parents = new Map<M['DeploymentLiteral'], DeploymentNodeModel<M>>()
   // Children elements for given FQN
-  readonly #children = new Map<Fqn, Set<DeploymentElementModel<M>>>()
+  readonly #children = new Map<M['DeploymentLiteral'], Set<DeploymentElementModel<M>>>()
 
   readonly #rootElements = new Set<DeploymentNodeModel<M>>()
 
-  readonly #relations = new Map<RelationID, DeploymentRelationModel<M>>()
+  readonly #relations = new Map<M['RelationId'], DeploymentRelationModel<M>>()
 
   // Incoming to an element or its descendants
-  readonly #incoming = new Map<Fqn, Set<DeploymentRelationModel<M>>>()
+  readonly #incoming = new Map<M['DeploymentLiteral'], Set<DeploymentRelationModel<M>>>()
 
   // Outgoing from an element or its descendants
-  readonly #outgoing = new Map<Fqn, Set<DeploymentRelationModel<M>>>()
+  readonly #outgoing = new Map<M['DeploymentLiteral'], Set<DeploymentRelationModel<M>>>()
 
   // Relationships inside the element, among descendants
-  readonly #internal = new Map<Fqn, Set<DeploymentRelationModel<M>>>()
+  readonly #internal = new Map<M['DeploymentLiteral'], Set<DeploymentRelationModel<M>>>()
 
   // readonly #views = new Map<ViewID, LikeC4ViewModel<M>>()
 
   readonly #allTags = new Map<C4Tag, Set<DeploymentElementModel<M> | DeploymentRelationModel<M>>>()
 
-  readonly #nestedElementsOfDeployment = new Map<`${Fqn}@${Fqn}`, NestedElementOfDeployedInstanceModel<M>>()
+  readonly #nestedElementsOfDeployment = new Map<
+    `${M['DeploymentLiteral']}@${M['FqnLiteral']}`,
+    NestedElementOfDeployedInstanceModel<M>
+  >()
 
   constructor(
     public readonly model: LikeC4Model<M>,
-    public readonly $model: M['deployments']
+    public readonly $model: M['Model']['deployments']
   ) {
     for (const element of values($model.elements)) {
       const el = this.addElement(element)
@@ -71,31 +72,31 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
     }
   }
 
-  public element(el: ElementOrFqn): DeploymentElementModel<M> {
+  public element(el: M['DeploymentOrFqn']): DeploymentElementModel<M> {
     const id = getId(el)
     return nonNullable(this.#elements.get(id), `Element ${id} not found`)
   }
-  public findElement(el: ElementOrFqn): DeploymentElementModel<M> | null {
-    return this.#elements.get(getId(el)) ?? null
+  public findElement(el: M['DeploymentLiteral']): DeploymentElementModel<M> | null {
+    return this.#elements.get(el) ?? null
   }
 
-  public node(el: ElementOrFqn): DeploymentNodeModel<M> {
+  public node(el: M['DeploymentOrFqn']): DeploymentNodeModel<M> {
     const element = this.element(el)
     invariant(element.isDeploymentNode(), `Element ${element.id} is not a deployment node`)
     return element
   }
-  public findNode(el: ElementOrFqn): DeploymentNodeModel<M> | null {
+  public findNode(el: M['DeploymentLiteral']): DeploymentNodeModel<M> | null {
     const element = this.findElement(el)
     invariant(!element || element.isDeploymentNode(), `Element ${element?.id} is not a deployment node`)
     return element
   }
 
-  public instance(el: ElementOrFqn): DeployedInstanceModel<M> {
+  public instance(el: M['DeploymentOrFqn']): DeployedInstanceModel<M> {
     const element = this.element(el)
     invariant(element.isInstance(), `Element ${element.id} is not a deployed instance`)
     return element
   }
-  public findInstance(el: ElementOrFqn): DeployedInstanceModel<M> | null {
+  public findInstance(el: M['DeploymentLiteral']): DeployedInstanceModel<M> | null {
     const element = this.findElement(el)
     invariant(!element || element.isInstance(), `Element ${element?.id} is not a deployed instance`)
     return element
@@ -157,10 +158,10 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
   /**
    * Returns a specific relationship by its ID.
    */
-  public relationship(id: RelationID) {
+  public relationship(id: M['RelationId']): DeploymentRelationModel<M> {
     return nonNullable(this.#relations.get(id), `Relation ${id} not found`)
   }
-  public findRelationship(id: RelationID) {
+  public findRelationship(id: M['RelationId']): DeploymentRelationModel<M> | null {
     return this.#relations.get(id) ?? null
   }
 
@@ -180,7 +181,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
    * Returns the parent element of given element.
    * @see ancestors
    */
-  public parent(element: ElementOrFqn): DeploymentNodeModel<M> | null {
+  public parent(element: M['DeploymentOrFqn']): DeploymentNodeModel<M> | null {
     const id = getId(element)
     return this.#parents.get(id) || null
   }
@@ -189,7 +190,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: ElementOrFqn): DeploymentElementsIterator<M> {
+  public children(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
     const id = getId(element)
     return this._childrenOf(id).values()
   }
@@ -197,7 +198,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
   /**
    * Get all sibling (i.e. same parent)
    */
-  public siblings(element: ElementOrFqn): DeploymentElementsIterator<M> {
+  public siblings(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
     const id = getId(element)
     const siblings = this.parent(element)?.children() ?? this.roots()
     return siblings.filter(e => e.id !== id)
@@ -207,7 +208,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public *ancestors(element: ElementOrFqn): DeploymentNodesIterator<M> {
+  public *ancestors(element: M['DeploymentOrFqn']): DeploymentNodesIterator<M> {
     let id = isString(element) ? element : element.id
     let parent
     while (parent = this.#parents.get(id)) {
@@ -220,7 +221,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: ElementOrFqn): DeploymentElementsIterator<M> {
+  public *descendants(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
     for (const child of this.children(element)) {
       yield child
       yield* this.descendants(child.id)
@@ -233,7 +234,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
    * @see incomers
    */
   public *incoming(
-    element: ElementOrFqn,
+    element: M['DeploymentOrFqn'],
     filter: IncomingFilter = 'all'
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
@@ -258,7 +259,7 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
    * @see outgoers
    */
   public *outgoing(
-    element: ElementOrFqn,
+    element: M['DeploymentOrFqn'],
     filter: OutgoingFilter = 'all'
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
@@ -334,19 +335,19 @@ export class LikeC4DeploymentModel<M extends ALikeC4Model = ComputedLikeC4Model>
     return rel
   }
 
-  private _childrenOf(id: Fqn) {
+  private _childrenOf(id: M['DeploymentFqn']) {
     return getOrCreate(this.#children, id, () => new Set())
   }
 
-  private _incomingTo(id: Fqn) {
+  private _incomingTo(id: M['DeploymentFqn']) {
     return getOrCreate(this.#incoming, id, () => new Set())
   }
 
-  private _outgoingFrom(id: Fqn) {
+  private _outgoingFrom(id: M['DeploymentFqn']) {
     return getOrCreate(this.#outgoing, id, () => new Set())
   }
 
-  private _internalOf(id: Fqn) {
+  private _internalOf(id: M['DeploymentFqn']) {
     return getOrCreate(this.#internal, id, () => new Set())
   }
 

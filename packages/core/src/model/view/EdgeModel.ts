@@ -1,5 +1,5 @@
 import {
-  type ALikeC4Model,
+  type AnyLikeC4Model,
   type ComputedDynamicView,
   type ComputedView,
   type DiagramView,
@@ -11,13 +11,13 @@ import {
   type Tag as C4Tag
 } from '../../types'
 import type { RelationshipsIterator } from '../RelationModel'
-import type { IteratorLike, RelationID } from '../types'
+import type { AnyAux, IteratorLike } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
-export type EdgesIterator<M extends ALikeC4Model, V extends ComputedView | DiagramView> = IteratorLike<EdgeModel<M, V>>
+export type EdgesIterator<M extends AnyAux, V extends ComputedView | DiagramView> = IteratorLike<EdgeModel<M, V>>
 
-export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramView> {
+export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView> {
   constructor(
     public readonly view: LikeC4ViewModel<M, V>,
     public readonly $edge: V['edges'][number],
@@ -26,7 +26,7 @@ export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
   ) {
   }
 
-  get id(): C4EdgeId {
+  get id(): M['EdgeId'] {
     return this.$edge.id
   }
 
@@ -61,17 +61,17 @@ export class EdgeModel<M extends ALikeC4Model, V extends ComputedView | DiagramV
     return
   }
 
-  public includesRelation(rel: RelationID): boolean {
+  public includesRelation(rel: M['RelationId']): boolean {
     return this.$edge.relations.includes(rel as C4RelationID)
   }
 }
 
 namespace EdgeModel {
-  export interface StepEdge<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
+  export interface StepEdge<M extends AnyAux, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
     id: StepEdgeId
     stepNumber: number
   }
-  export interface WithParent<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
+  export interface WithParent<M extends AnyAux, V extends ComputedView | DiagramView> extends EdgeModel<M, V> {
     parent: NodeModel<M, V>
   }
 }

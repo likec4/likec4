@@ -1,16 +1,16 @@
 import { isEmpty } from 'remeda'
-import type { ALikeC4Model } from '../types'
+import type { AnyLikeC4Model } from '../types'
 import type { Link, Tag } from '../types/element'
 import type { Relation, RelationID } from '../types/relation'
 import { commonAncestor } from '../utils/fqn'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import type { IteratorLike } from './types'
+import type { AnyAux, IteratorLike } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
-export type RelationshipsIterator<M extends ALikeC4Model> = IteratorLike<RelationshipModel<M>>
+export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
 
-export class RelationshipModel<M extends ALikeC4Model> {
+export class RelationshipModel<M extends AnyAux> {
   public parent: ElementModel<M> | null
   public readonly source: ElementModel<M>
   public readonly target: ElementModel<M>
@@ -25,7 +25,7 @@ export class RelationshipModel<M extends ALikeC4Model> {
     this.parent = parent ? this.model.element(parent) : null
   }
 
-  get id(): RelationID {
+  get id(): M['RelationId'] {
     return this.$relationship.id
   }
 

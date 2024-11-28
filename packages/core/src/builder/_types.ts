@@ -28,7 +28,7 @@ export type BuilderSpecification = {
   metadataKeys?: [string, ...string[]]
 }
 
-type Metadata<MetadataKey extends string> = IfNever<MetadataKey, never, Record<MetadataKey, string>>
+export type Metadata<MetadataKey extends string> = IfNever<MetadataKey, never, Record<MetadataKey, string>>
 
 export type NewElementProps<Tag, Metadata> = {
   title?: string

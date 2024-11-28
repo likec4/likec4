@@ -1,62 +1,55 @@
-import { isString, pipe, sort, values } from 'remeda'
+import { pipe, sort, values } from 'remeda'
+import type { IsLiteral, LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
-import type { ComputedView, DiagramView, ViewID as C4ViewID } from '../types'
-import { type Element as C4Element, type Fqn as C4Fqn, type Tag as C4Tag } from '../types/element'
-import type { ALikeC4Model, ComputedLikeC4Model, LayoutedLikeC4Model } from '../types/model'
-import type { Relation, RelationID as C4RelationID } from '../types/relation'
+import type { ComputedView, DiagramView } from '../types'
+import { type Element as C4Element, type Tag as C4Tag } from '../types/element'
+import type { Fqn as C4Fqn } from '../types/element'
+import type { AnyLikeC4Model, ComputedLikeC4Model, LayoutedLikeC4Model } from '../types/model'
+import type { Relation } from '../types/relation'
+import type { RelationID as C4RelationID } from '../types/relation'
+import type { EdgeId as C4EdgeId, NodeId as C4NodeId, ViewID as C4ViewID } from '../types/view'
 import { compareNatural, getOrCreate } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
 import { LikeC4DeploymentModel } from './DeploymentModel'
 import { ElementModel, type ElementsIterator } from './ElementModel'
 import { RelationshipModel, type RelationshipsIterator } from './RelationModel'
-import {
-  type ElementOrFqn,
-  type Fqn,
-  getId,
-  type IncomingFilter,
-  type IteratorLike,
-  type OutgoingFilter,
-  type RelationID,
-  type ViewID
-} from './types'
+import { type AnyAux, getId, type IncomingFilter, type OutgoingFilter } from './types'
 import { EdgeModel } from './view/EdgeModel'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import { NodeModel } from './view/NodeModel'
 
-export type ViewType<S extends ALikeC4Model> = S['views'][C4ViewID]
-
-export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
-  readonly #elements = new Map<C4Fqn, ElementModel<M>>()
+export class LikeC4Model<M extends AnyAux = AnyAux> {
+  readonly #elements = new Map<M['FqnLiteral'], ElementModel<M>>()
   // Parent element for given FQN
-  readonly #parents = new Map<Fqn, ElementModel<M>>()
+  readonly #parents = new Map<M['FqnLiteral'], ElementModel<M>>()
   // Children elements for given FQN
-  readonly #children = new Map<C4Fqn, Set<ElementModel<M>>>()
+  readonly #children = new Map<M['FqnLiteral'], Set<ElementModel<M>>>()
 
   readonly #rootElements = new Set<ElementModel<M>>()
 
-  readonly #relations = new Map<C4RelationID, RelationshipModel<M>>()
+  readonly #relations = new Map<M['RelationId'], RelationshipModel<M>>()
 
   // Incoming to an element or its descendants
-  readonly #incoming = new Map<Fqn, Set<RelationshipModel<M>>>()
+  readonly #incoming = new Map<M['FqnLiteral'], Set<RelationshipModel<M>>>()
 
   // Outgoing from an element or its descendants
-  readonly #outgoing = new Map<Fqn, Set<RelationshipModel<M>>>()
+  readonly #outgoing = new Map<M['FqnLiteral'], Set<RelationshipModel<M>>>()
 
   // Relationships inside the element, among descendants
-  readonly #internal = new Map<Fqn, Set<RelationshipModel<M>>>()
+  readonly #internal = new Map<M['FqnLiteral'], Set<RelationshipModel<M>>>()
 
-  readonly #views = new Map<ViewID, LikeC4ViewModel<M>>()
+  readonly #views = new Map<M['ViewIdLiteral'], LikeC4ViewModel<M>>()
 
-  readonly #allTags = new Map<C4Tag, Set<ElementModel<M> | RelationshipModel<M>>>()
+  readonly #allTags = new Map<C4Tag, Set<ElementModel<M> | RelationshipModel<M> | LikeC4ViewModel<M>>>()
 
   public readonly deployment: LikeC4DeploymentModel<M>
 
-  static create<M extends ALikeC4Model>(model: M): LikeC4Model<M> {
+  static create<M extends AnyLikeC4Model>(model: M): LikeC4Model.FromModel<M> {
     return new LikeC4Model(model)
   }
 
   private constructor(
-    public readonly $model: M
+    public readonly $model: M['Model']
   ) {
     for (const element of values($model.elements)) {
       const el = this.addElement(element)
@@ -76,8 +69,11 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
       sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled'))
     )
     for (const view of views) {
-      const vm = new LikeC4ViewModel(this, view as ViewType<M>)
+      const vm = new LikeC4ViewModel(this, view as M['ViewType'])
       this.#views.set(view.id, vm)
+      for (const tag of vm.tags) {
+        getOrCreate(this.#allTags, tag, () => new Set()).add(vm)
+      }
     }
   }
 
@@ -85,12 +81,13 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
     return this.$model.__ ?? 'computed'
   }
 
-  public element(el: ElementOrFqn): ElementModel<M> {
-    return nonNullable(this.findElement(el), `Element ${getId(el)} not found`)
+  public element(el: M['ElementOrFqn']): ElementModel<M> {
+    const id = getId(el)
+    return nonNullable(this.findElement(id), `Element ${getId(el)} not found`)
   }
-  public findElement(el: ElementOrFqn): ElementModel<M> | null {
-    const id = getId(el) as C4Fqn
-    return this.#elements.get(id) ?? null
+  public findElement(el: LiteralUnion<M['FqnLiteral'], string>): ElementModel<M> | null {
+    // const id = getId(el) as C4Fqn
+    return this.#elements.get(el) ?? null
   }
 
   /**
@@ -117,11 +114,11 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
   /**
    * Returns a specific relationship by its ID.
    */
-  public relationship(id: RelationID): RelationshipModel<M> {
-    return nonNullable(this.#relations.get(id as C4RelationID), `Relation ${id} not found`)
+  public relationship(id: M['RelationId']): RelationshipModel<M> {
+    return nonNullable(this.#relations.get(id), `Relation ${id} not found`)
   }
-  public findRelationship(id: RelationID): RelationshipModel<M> | null {
-    return this.#relations.get(id as C4RelationID) ?? null
+  public findRelationship(id: LiteralUnion<M['RelationId'], string>): RelationshipModel<M> | null {
+    return this.#relations.get(id as M['RelationId']) ?? null
   }
 
   /**
@@ -134,7 +131,10 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
   /**
    * Returns a specific view by its ID.
    */
-  public view(viewId: ViewID): LikeC4ViewModel<M> {
+  public view(viewId: M['ViewIdLiteral']): LikeC4ViewModel<M> {
+    return nonNullable(this.#views.get(viewId), `View ${viewId} not found`)
+  }
+  public findView(viewId: LiteralUnion<M['ViewId'], string>): LikeC4ViewModel<M> {
     return nonNullable(this.#views.get(viewId), `View ${viewId} not found`)
   }
 
@@ -142,7 +142,7 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
    * Returns the parent element of given element.
    * @see ancestors
    */
-  public parent(element: ElementOrFqn): ElementModel<M> | null {
+  public parent(element: M['ElementOrFqn']): ElementModel<M> | null {
     const id = getId(element)
     return this.#parents.get(id) || null
   }
@@ -151,16 +151,16 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: ElementOrFqn) {
-    const id = getId(element)
+  public children(element: M['ElementOrFqn']) {
+    const id = getId(element) as M['Fqn']
     return this._childrenOf(id).values()
   }
 
   /**
    * Get all sibling (i.e. same parent)
    */
-  public *siblings(element: ElementOrFqn): ElementsIterator<M> {
-    const id = getId(element)
+  public *siblings(element: M['ElementOrFqn']): ElementsIterator<M> {
+    const id = getId(element) as M['Fqn']
     const parent = this.#parents.get(id)
     const siblings = parent ? this._childrenOf(parent.id).values() : this.roots()
     for (const sibling of siblings) {
@@ -175,8 +175,8 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
    */
-  public *ancestors(element: ElementOrFqn): ElementsIterator<M> {
-    let id = isString(element) ? element : element.id
+  public *ancestors(element: M['ElementOrFqn']): ElementsIterator<M> {
+    let id = getId(element) as M['Fqn']
     let parent
     while (parent = this.#parents.get(id)) {
       yield parent
@@ -188,7 +188,7 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: ElementOrFqn): ElementsIterator<M> {
+  public *descendants(element: M['ElementOrFqn']): ElementsIterator<M> {
     for (const child of this.children(element)) {
       yield child
       yield* this.descendants(child.id)
@@ -201,7 +201,7 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
    * @see incomers
    */
   public *incoming(
-    element: ElementOrFqn,
+    element: M['ElementOrFqn'],
     filter: IncomingFilter = 'all'
   ): RelationshipsIterator<M> {
     const id = getId(element)
@@ -226,7 +226,7 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
    * @see outgoers
    */
   public *outgoing(
-    element: ElementOrFqn,
+    element: M['ElementOrFqn'],
     filter: OutgoingFilter = 'all'
   ): RelationshipsIterator<M> {
     const id = getId(element)
@@ -300,55 +300,117 @@ export class LikeC4Model<M extends ALikeC4Model = LikeC4Model.Sources> {
     return rel
   }
 
-  private _childrenOf(id: Fqn) {
+  private _childrenOf(id: M['FqnLiteral']) {
     return getOrCreate(this.#children, id, () => new Set())
   }
 
-  private _incomingTo(id: Fqn) {
+  private _incomingTo(id: M['FqnLiteral']) {
     return getOrCreate(this.#incoming, id, () => new Set())
   }
 
-  private _outgoingFrom(id: Fqn) {
+  private _outgoingFrom(id: M['FqnLiteral']) {
     return getOrCreate(this.#outgoing, id, () => new Set())
   }
 
-  private _internalOf(id: Fqn) {
+  private _internalOf(id: M['FqnLiteral']) {
     return getOrCreate(this.#internal, id, () => new Set())
   }
 
-  public isLayouted(): this is LikeC4Model<LayoutedLikeC4Model> {
-    return this.$model.__ === 'layouted'
-  }
+  // public isLayouted(): this is LikeC4Model<LayoutedLikeC4Model> {
+  //   return this.$model.__ === 'layouted'
+  // }
 }
 
+type WithId<Id> = { id: Id }
+
 export namespace LikeC4Model {
-  export type Sources = ComputedLikeC4Model | LayoutedLikeC4Model
+  /**
+   * Auxilary type to keep track
+   */
+  export interface Aux<
+    Fqn extends string,
+    DeploymentFqn extends string,
+    ViewId extends string,
+    Model extends AnyLikeC4Model
+  > {
+    Model: Model
 
-  // export const Element = ElementModel
-  export type Element<M extends ALikeC4Model = Sources> = ElementModel<M>
+    // If Fqn is just a string, then we use generic Fqn to have better hints in the editor
+    Fqn: IsLiteral<Fqn> extends true ? C4Fqn<Fqn> : C4Fqn
+    FqnLiteral: Fqn
+    ElementOrFqn: Fqn | WithId<this['Fqn']>
 
-  // export const Relation = RelationshipModel
-  export type Relation<M extends ALikeC4Model = Sources> = RelationshipModel<M>
+    DeploymentFqn: IsLiteral<DeploymentFqn> extends true ? C4Fqn<DeploymentFqn> : C4Fqn
+    DeploymentLiteral: DeploymentFqn
+    DeploymentOrFqn: DeploymentFqn | WithId<this['DeploymentFqn']>
 
-  // export const View = LikeC4ViewModel
-  export type View<M extends ALikeC4Model = Sources, V extends ComputedView | DiagramView = ViewType<M>> =
-    LikeC4ViewModel<M, V>
+    ViewId: IsLiteral<ViewId> extends true ? C4ViewID<ViewId> : C4ViewID
+    ViewIdLiteral: ViewId
+    ViewType: Model['views'][ViewId]
 
-  // export const Node = NodeModel
-  export type Node<M extends ALikeC4Model = Sources, V extends ComputedView | DiagramView = ViewType<M>> = NodeModel<
-    M,
-    V
+    RelationId: C4RelationID
+    NodeId: C4NodeId
+    NodeIdLiteral: string
+    EdgeId: C4EdgeId
+    EdgeIdLiteral: string
+
+    NodeOrId: LiteralUnion<this['NodeIdLiteral'], string> | WithId<this['NodeId']>
+    EdgeOrId: LiteralUnion<this['EdgeIdLiteral'], string> | WithId<this['EdgeId']>
+  }
+
+  export namespace Aux {
+    export type Layouted<
+      Fqn extends string = string,
+      DeploymentFqn extends string = string,
+      ViewId extends string = string
+    > = Aux<Fqn, DeploymentFqn, ViewId, LayoutedLikeC4Model>
+  }
+
+  export type Any = Aux<
+    string,
+    string,
+    string,
+    AnyLikeC4Model
   >
 
-  // export const Edge = EdgeModel
-  export type Edge<M extends ALikeC4Model = Sources, V extends ComputedView | DiagramView = ViewType<M>> = EdgeModel<
-    M,
-    V
+  export type FromModel<M> = LikeC4Model<
+    M extends AnyLikeC4Model<
+      infer Fqn extends string,
+      infer DeploymentFqn extends string,
+      infer ViewId extends string,
+      any
+    > ? Aux<Fqn, DeploymentFqn, ViewId, M>
+      : Aux<string, string, string, ComputedLikeC4Model | LayoutedLikeC4Model>
   >
 
-  // export const Deployment = LikeC4DeploymentModel
-  export type Deployment<M extends ALikeC4Model = Sources> = LikeC4DeploymentModel<M>
+  export type Element<M extends AnyAux = AnyAux> = ElementModel<M>
 
-  export type Computed = LikeC4Model<ComputedLikeC4Model>
-  export type Layouted = LikeC4Model<LayoutedLikeC4Model>
+  export type Relation<M extends AnyAux = AnyAux> = RelationshipModel<M>
+
+  export type View<
+    M extends AnyAux = AnyAux,
+    V extends ComputedView | DiagramView = M['ViewType']
+  > = LikeC4ViewModel<M, V>
+
+  export type Node<
+    M extends AnyAux = AnyAux,
+    V extends ComputedView | DiagramView = M['ViewType']
+  > = NodeModel<M, V>
+
+  export type Edge<
+    M extends AnyAux = AnyAux,
+    V extends ComputedView | DiagramView = M['ViewType']
+  > = EdgeModel<M, V>
+
+  export type Deployment<M extends Any = Any> = LikeC4DeploymentModel<M>
+
+  export type Typed<
+    Model extends AnyLikeC4Model = ComputedLikeC4Model | LayoutedLikeC4Model,
+    Fqn extends string = string,
+    DeploymentFqn extends string = string,
+    ViewId extends string = string
+  > = LikeC4Model<Aux<Fqn, DeploymentFqn, ViewId, Model>>
+
+  export type Computed = LikeC4Model.Typed<ComputedLikeC4Model>
+  export type Layouted = LikeC4Model.Typed<LayoutedLikeC4Model>
 }

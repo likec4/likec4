@@ -1,5 +1,4 @@
 import {
-  type ALikeC4Model,
   type Color as C4Color,
   ComputedNode,
   type ComputedView,
@@ -13,29 +12,27 @@ import {
 } from '../../types'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
-import type { IncomingFilter, IteratorLike, OutgoingFilter } from '../types'
+import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
-export type NodesIterator<M extends ALikeC4Model, V extends ComputedView | DiagramView> = IteratorLike<NodeModel<M, V>>
+export type NodesIterator<M extends AnyAux, V extends ComputedView | DiagramView> = IteratorLike<NodeModel<M, V>>
 
 export namespace NodeModel {
-  export type Iterator<M extends ALikeC4Model, V extends ComputedView | DiagramView> = IteratorLike<NodeModel<M, V>>
-
-  export interface WithParent<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
+  export interface WithParent<M extends AnyAux, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
     parent: NodeModel<M, V>
   }
-  export interface WithElement<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
+  export interface WithElement<M extends AnyAux, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
     kind: ElementKind
     element: ElementModel<M>
   }
-  export interface WithDeploymentElement<M extends ALikeC4Model, V extends ComputedView | DiagramView>
+  export interface WithDeploymentElement<M extends AnyAux, V extends ComputedView | DiagramView>
     extends NodeModel<M, V>
   {
     kind: DeploymentNodeKind
     deployment: DeploymentElementModel<M>
   }
-  export interface WithDeployedInstance<M extends ALikeC4Model, V extends ComputedView | DiagramView>
+  export interface WithDeployedInstance<M extends AnyAux, V extends ComputedView | DiagramView>
     extends NodeModel<M, V>
   {
     kind: 'instance'
@@ -43,14 +40,14 @@ export namespace NodeModel {
     deployment: DeployedInstanceModel<M>
   }
 
-  export interface IsGroup<M extends ALikeC4Model, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
+  export interface IsGroup<M extends AnyAux, V extends ComputedView | DiagramView> extends NodeModel<M, V> {
     kind: typeof ElementKind.Group
     element: null
     deployment: null
   }
 }
 
-export class NodeModel<M extends ALikeC4Model, V extends ComputedView | DiagramView> {
+export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView> {
   constructor(
     public readonly view: LikeC4ViewModel<M, V>,
     public readonly $node: V['nodes'][number]

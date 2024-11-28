@@ -4,7 +4,7 @@ import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot }
 import { useTimeoutEffect } from '@react-hookz/web'
 import { memo, useEffect, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { type DiagramView, likec4model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
+import { type DiagramView, likeC4Model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
@@ -49,7 +49,7 @@ const BrowserModal = memo<{
         <ModalContent>
           <ModalCloseButton />
           <ModalBody w={'100%'} h={'100%'} p={0}>
-            <LikeC4ModelProvider likec4model={likec4model}>
+            <LikeC4ModelProvider likec4model={likeC4Model}>
               {visible && (
                 <LikeC4Diagram
                   view={view as any}

@@ -1,6 +1,6 @@
 import { first } from 'remeda'
 import {
-  type ALikeC4Model,
+  type AnyLikeC4Model,
   type ComputedElementView,
   DefaultElementShape,
   DefaultThemeColor,
@@ -14,19 +14,19 @@ import {
 } from '../types'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { IncomingFilter, IteratorLike, OutgoingFilter } from './types'
+import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
-export type ElementsIterator<M extends ALikeC4Model> = IteratorLike<ElementModel<M>>
+export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<M extends ALikeC4Model> {
+export class ElementModel<M extends AnyAux> {
   constructor(
     public readonly model: LikeC4Model<M>,
     public readonly $element: C4Element
   ) {
   }
 
-  get id(): Fqn {
+  get id(): M['Fqn'] {
     return this.$element.id
   }
 
@@ -93,7 +93,7 @@ export class ElementModel<M extends ALikeC4Model> {
     return this.model.incoming(this, filter)
   }
   public *incomers(filter: IncomingFilter = 'all'): ElementsIterator<M> {
-    const unique = new Set<Fqn>()
+    const unique = new Set<M['Fqn']>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -107,7 +107,7 @@ export class ElementModel<M extends ALikeC4Model> {
     return this.model.outgoing(this, filter)
   }
   public *outgoers(filter: OutgoingFilter = 'all'): ElementsIterator<M> {
-    const unique = new Set<Fqn>()
+    const unique = new Set<M['Fqn']>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue

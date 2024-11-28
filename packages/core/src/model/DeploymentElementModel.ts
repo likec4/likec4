@@ -2,7 +2,7 @@ import { isEmpty } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
-  type ALikeC4Model,
+  type AnyLikeC4Model,
   type ComputedDeploymentView,
   DefaultElementShape,
   DefaultThemeColor,
@@ -22,17 +22,17 @@ import {
 import { commonAncestor, nameFromFqn } from '../utils'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
-import type { Fqn, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
+import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export type DeploymentElementsIterator<M extends ALikeC4Model> = IteratorLike<DeploymentElementModel<M>>
-export type DeploymentNodesIterator<M extends ALikeC4Model> = IteratorLike<DeploymentNodeModel<M>>
+export type DeploymentElementsIterator<M extends AnyAux> = IteratorLike<DeploymentElementModel<M>>
+export type DeploymentNodesIterator<M extends AnyAux> = IteratorLike<DeploymentNodeModel<M>>
 
-export abstract class DeploymentElementModel<M extends ALikeC4Model> {
+export abstract class DeploymentElementModel<M extends AnyAux> {
   abstract readonly model: LikeC4DeploymentModel<M>
   abstract readonly $node: DeploymentNode | DeployedInstance
 
-  get id(): C4Fqn {
+  get id(): M['DeploymentFqn'] {
     return this.$node.id
   }
 
@@ -92,7 +92,7 @@ export abstract class DeploymentElementModel<M extends ALikeC4Model> {
   }
 
   public *incomers(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<M>> {
-    const unique = new Set<Fqn>()
+    const unique = new Set<M['DeploymentLiteral']>()
     for (const r of this.incoming(filter)) {
       if (unique.has(r.source.id)) {
         continue
@@ -103,7 +103,7 @@ export abstract class DeploymentElementModel<M extends ALikeC4Model> {
     return
   }
   public *outgoers(filter: OutgoingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<M>> {
-    const unique = new Set<Fqn>()
+    const unique = new Set<M['DeploymentLiteral']>()
     for (const r of this.outgoing(filter)) {
       if (unique.has(r.target.id)) {
         continue
@@ -131,7 +131,7 @@ export abstract class DeploymentElementModel<M extends ALikeC4Model> {
   }
 }
 
-export class DeploymentNodeModel<M extends ALikeC4Model> extends DeploymentElementModel<M> {
+export class DeploymentNodeModel<M extends AnyAux> extends DeploymentElementModel<M> {
   constructor(
     public readonly model: LikeC4DeploymentModel<M>,
     public readonly $node: DeploymentNode
@@ -156,7 +156,7 @@ export class DeploymentNodeModel<M extends ALikeC4Model> extends DeploymentEleme
   }
 }
 
-export class DeployedInstanceModel<M extends ALikeC4Model> extends DeploymentElementModel<M> {
+export class DeployedInstanceModel<M extends AnyAux> extends DeploymentElementModel<M> {
   constructor(
     public readonly model: LikeC4DeploymentModel<M>,
     public readonly $instance: DeployedInstance,
@@ -217,14 +217,14 @@ export class DeployedInstanceModel<M extends ALikeC4Model> extends DeploymentEle
   }
 }
 
-export class NestedElementOfDeployedInstanceModel<M extends ALikeC4Model> {
+export class NestedElementOfDeployedInstanceModel<M extends AnyAux> {
   constructor(
     public readonly instance: DeployedInstanceModel<M>,
     public readonly element: ElementModel<M>
   ) {
   }
 
-  get id(): C4Fqn {
+  get id(): M['DeploymentFqn'] {
     return this.instance.id
   }
 
@@ -266,11 +266,11 @@ export class NestedElementOfDeployedInstanceModel<M extends ALikeC4Model> {
   }
 }
 
-export type DeploymentRelationEndpoint<M extends ALikeC4Model> =
+export type DeploymentRelationEndpoint<M extends AnyAux> =
   | DeploymentElementModel<M>
   | NestedElementOfDeployedInstanceModel<M>
 
-export class DeploymentRelationModel<M extends ALikeC4Model> {
+export class DeploymentRelationModel<M extends AnyAux> {
   public parent: DeploymentNodeModel<M> | null
   public source: DeploymentRelationEndpoint<M>
   public target: DeploymentRelationEndpoint<M>
@@ -285,7 +285,7 @@ export class DeploymentRelationModel<M extends ALikeC4Model> {
     this.parent = parent ? this.model.node(parent) : null
   }
 
-  get id(): C4RelationID {
+  get id(): M['RelationId'] {
     return this.$relation.id
   }
 

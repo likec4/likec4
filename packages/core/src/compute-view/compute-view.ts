@@ -1,10 +1,13 @@
 import { mapValues } from 'remeda'
+import type { model } from '../builder/Builder.model'
 import { nonexhaustive } from '../errors'
 import {
+  type AnyParsedLikeC4Model,
   type ComputedDeploymentView,
   type ComputedDynamicView,
   type ComputedElementView,
   type ComputedLikeC4Model,
+  type ComputedLikeC4ModelFromParsed,
   type ComputedView,
   type DeploymentView,
   type DynamicView,
@@ -39,7 +42,8 @@ interface ComputeView {
   (viewsource: LikeC4View): ComputeViewResult<ComputedView>
 }
 
-export function mkComputeView(model: ParsedLikeC4Model): ComputeView {
+type Params = Pick<AnyParsedLikeC4Model, 'deployments' | 'elements' | 'globals' | 'relations'>
+export function mkComputeView(model: Params): ComputeView {
   const index = new LikeC4ModelGraph(model)
   let deploymentGraph
 
@@ -78,7 +82,7 @@ export function mkComputeView(model: ParsedLikeC4Model): ComputeView {
   }
 }
 
-export function computeViews(model: ParsedLikeC4Model): ComputedLikeC4Model {
+export function computeViews<M extends ParsedLikeC4Model>({ views, ...model }: M): ComputedLikeC4ModelFromParsed<M> {
   const _computeView = mkComputeView(model)
   const computeView = (source: LikeC4View): ComputedView => {
     const result = _computeView(source)
@@ -90,6 +94,7 @@ export function computeViews(model: ParsedLikeC4Model): ComputedLikeC4Model {
   }
   return {
     ...model,
-    views: mapValues(model.views, computeView)
-  }
+    __: 'computed',
+    views: mapValues(views, computeView)
+  } as any // TODO: fix this
 }

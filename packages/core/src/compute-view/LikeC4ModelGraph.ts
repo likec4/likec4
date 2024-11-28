@@ -3,7 +3,7 @@ import { invariant } from '../errors'
 import { type Element, type Fqn, type ModelGlobals, type Relation, type RelationID } from '../types'
 import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn } from '../utils'
 
-type Params = {
+export type Params = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
   // Optional for tests

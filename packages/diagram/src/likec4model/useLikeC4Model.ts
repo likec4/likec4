@@ -34,7 +34,7 @@ export function useLikeC4Model(strict?: boolean, type?: 'layouted' | 'computed')
   return model
 }
 
-export function useLikeC4Views(): LikeC4Model.Sources['views'] {
+export function useLikeC4Views(): Record<ViewID, ComputedView | DiagramView> {
   return useLikeC4Model(true).$model.views
 }
 

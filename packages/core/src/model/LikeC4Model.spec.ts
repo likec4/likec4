@@ -155,6 +155,7 @@ type DeploymentId = typeof builder.Types.DeploymentFqn
 describe('LikeC4Model', () => {
   const els = source.elements
   const d = source.deployments.elements
+  const c = computeViews(source)
   const model = LikeC4Model.create(computeViews(source))
 
   it('roots', () => {
@@ -167,7 +168,7 @@ describe('LikeC4Model', () => {
   })
 
   it('parent and children', () => {
-    const parent = model.parent(els['cloud.backend.api'])!
+    const parent = model.parent('cloud.backend.api')!
     expect(parent.id).toEqual('cloud.backend')
     expect(parent.$element).toStrictEqual(els['cloud.backend'])
 
@@ -180,7 +181,7 @@ describe('LikeC4Model', () => {
   })
 
   it('ancestors in right order', () => {
-    const ancestors = [...model.element(els['cloud.frontend.dashboard']).ancestors()]
+    const ancestors = [...model.element('cloud.frontend.dashboard').ancestors()]
     expect(ancestors).toHaveLength(2)
     expect(ancestors[0]).toMatchObject({
       id: 'cloud.frontend',
@@ -201,15 +202,24 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('siblings', () => {
-    const backend = model.element('cloud.backend')
-
-    const siblings = [...backend.siblings()]
-
+  it('siblings of nested', () => {
+    const siblings = [...model.element('cloud.backend').siblings()]
     expect(siblings.map(prop('id'))).toEqual([
       'cloud.frontend',
       'cloud.auth',
       'cloud.media'
+    ])
+  })
+
+  it('ascendingSiblings', () => {
+    const siblings = [...model.element('cloud.backend.graphql').ascendingSiblings()]
+    expect(siblings.map(prop('id'))).toEqual([
+      'cloud.frontend',
+      'cloud.auth',
+      'cloud.media',
+      'customer',
+      'aws',
+      'email'
     ])
   })
 

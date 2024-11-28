@@ -17,7 +17,8 @@ export interface ParsedLikeC4Model<
   RelationKinds extends string = string,
   Tags extends string = string,
   Fqns extends string = string,
-  Views extends string = string
+  Views extends string = string,
+  DeploymentFqns extends string = string
 > {
   specification: {
     tags: Tag<Tags>[]
@@ -33,27 +34,51 @@ export interface ParsedLikeC4Model<
    * Deployment Model.
    */
   deployments: {
-    elements: Record<Fqn, DeploymentElement>
+    elements: Record<DeploymentFqns, DeploymentElement>
     relations: Record<RelationID, DeploymentRelation>
   }
 }
+export type AnyParsedLikeC4Model = ParsedLikeC4Model<any, any, any, any, any, any>
 
-export interface ALikeC4Model<T = 'computed' | 'layouted'> extends Omit<ParsedLikeC4Model, 'views'> {
+export interface AnyLikeC4Model<
+  Fqns extends string = string,
+  DeploymentFqns extends string = string,
+  Views extends string = string,
+  T = 'computed' | 'layouted'
+> extends Omit<ParsedLikeC4Model<string, string, string, Fqns, Views, DeploymentFqns>, 'views'> {
   __?: T
-  views: Record<ViewID, ComputedView | DiagramView>
+  views: Record<Views, ComputedView | DiagramView>
 }
 
 /**
  * Same as `ParsedLikeC4Model` but with computed views.
  */
-export interface ComputedLikeC4Model extends Omit<ALikeC4Model<'computed'>, 'views'> {
-  views: Record<ViewID, ComputedView>
+export interface ComputedLikeC4Model<
+  Fqns extends string = string,
+  DeploymentFqns extends string = string,
+  Views extends string = string
+> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, 'computed'>, 'views'> {
+  views: Record<Views, ComputedView>
 }
+type FromParsed<M> = M extends ParsedLikeC4Model<
+  any,
+  any,
+  any,
+  infer Fqns extends string,
+  infer Views extends string,
+  infer DeploymentFqns extends string
+> ? ComputedLikeC4Model<Fqns, DeploymentFqns, Views>
+  : ComputedLikeC4Model
+export type ComputedLikeC4ModelFromParsed<M> = FromParsed<M>
 
 /**
  * Same as `ParsedLikeC4Model` but with layouted views (DiagramView)
  */
-export interface LayoutedLikeC4Model extends Omit<ALikeC4Model<'layouted'>, 'views'> {
+export interface LayoutedLikeC4Model<
+  Fqns extends string = string,
+  DeploymentFqns extends string = string,
+  Views extends string = string
+> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, 'layouted'>, 'views'> {
   __: 'layouted'
-  views: Record<ViewID, DiagramView>
+  views: Record<Views, DiagramView>
 }

@@ -41,11 +41,9 @@ declare module 'virtual:likec4/model' {
 
   export const LikeC4Views: Record<LikeC4ViewId, DiagramView>
 
-  export const likec4model: LikeC4Model.Layouted
+  export const likeC4Model: LikeC4Model.Layouted
 
-  export const $likec4model: ReadableAtom<LikeC4Model.Layouted>
-
-  export function useLikeC4ModelAtom(): LikeC4Model.Layouted
+  export function useLikeC4Model(): LikeC4Model.Layouted
 }
 
 declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {

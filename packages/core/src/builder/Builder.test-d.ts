@@ -108,7 +108,8 @@ test('should have types', () => {
       'like' | 'dislike',
       'tag1' | 'tag2',
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
-      'index' | 'cloud' | 'prod'
+      'index' | 'cloud' | 'prod',
+      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
     >
   )
 })
