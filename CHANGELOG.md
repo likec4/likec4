@@ -1,3 +1,26 @@
+## [1.17.1](https://github.com/likec4/likec4/compare/v1.17.0...v1.17.1) (2024-11-28)
+
+
+### Bug Fixes
+
+* **deps:** update [@expressive-code](https://github.com/expressive-code) to ^0.38.3 ([#1285](https://github.com/likec4/likec4/issues/1285)) ([11e1389](https://github.com/likec4/likec4/commit/11e138968627ee725faae838cf33f7af9e0cdd0b))
+* **deps:** update astro monorepo ([#1273](https://github.com/likec4/likec4/issues/1273)) ([1245485](https://github.com/likec4/likec4/commit/12454856c0fe1b05741a2bcfaacb601d9d34a4ff))
+* **deps:** update dependency @astrojs/starlight to ^0.29.2 ([#1203](https://github.com/likec4/likec4/issues/1203)) ([aca9201](https://github.com/likec4/likec4/commit/aca9201105298dd5e192837da6f36147f29a76d4))
+* **deps:** update dependency astro to ~4.16.13 ([#1262](https://github.com/likec4/likec4/issues/1262)) ([1d2852a](https://github.com/likec4/likec4/commit/1d2852a4555c7f3089987e46ff2b267c10176dd6))
+* **deps:** update dependency starlight-links-validator to ^0.13.2 ([#1287](https://github.com/likec4/likec4/issues/1287)) ([373852d](https://github.com/likec4/likec4/commit/373852de7c5336e32e7ada7fcb6cfb58fc3d84ea))
+* **export:** enhance PNG export with viewport sizing and HTTPS error handling ([#1247](https://github.com/likec4/likec4/issues/1247)) ([54bde6d](https://github.com/likec4/likec4/commit/54bde6db67fc33b5f2510053c7f663eab71c59f2))
+* **export:** update screenshot method to use diagramElement for PNG export ([3c350b4](https://github.com/likec4/likec4/commit/3c350b44f3602eaa3aaede2d57ff0e725b3d5c22))
+* style properties being ignored for dynamic relationships ([#1277](https://github.com/likec4/likec4/issues/1277)) ([#1280](https://github.com/likec4/likec4/issues/1280)) ([64f7e82](https://github.com/likec4/likec4/commit/64f7e8271a3ecff6e6297b1e9ff36cedd563fde7))
+
+
+### Features
+
+* Diagram search ([#1235](https://github.com/likec4/likec4/issues/1235)) ([#1244](https://github.com/likec4/likec4/issues/1244)) ([33677d3](https://github.com/likec4/likec4/commit/33677d396a11d28160ffa2ed7810c569566b07df))
+* **diagrams:** Smart Layout commands ([#1238](https://github.com/likec4/likec4/issues/1238)) ([be9ab8d](https://github.com/likec4/likec4/commit/be9ab8d4172d55c174fb047329008ab51959ba38))
+* Highlight in Diagram Search ([#1251](https://github.com/likec4/likec4/issues/1251)) ([cd9c4cf](https://github.com/likec4/likec4/commit/cd9c4cfc51dcd663d71dd9e71210be3a15724bf1)), closes [#1244](https://github.com/likec4/likec4/issues/1244)
+
+
+
 # [1.17.0](https://github.com/likec4/likec4/compare/v1.16.0...v1.17.0) (2024-11-15)
 
 ### 🚀 Features  
