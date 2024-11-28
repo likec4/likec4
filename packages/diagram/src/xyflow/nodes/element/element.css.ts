@@ -354,16 +354,25 @@ const btn = style({
   }
 })
 
-export const navigateBtn = style([btn, {
+export const navigateBtnBox = style({
+  zIndex: 100,
   position: 'absolute',
   left: '50%',
-  bottom: 0,
+  bottom: 2,
+  transform: 'translate(-50%, 0%)',
+  gap: 0,
   selectors: {
     [`:where([data-likec4-shape='browser']) &`]: {
       bottom: 4
     }
   }
-}])
+})
+globalStyle(`:where(.react-flow__node:hover) ${navigateBtnBox}`, {
+  transitionDelay: '20ms',
+  gap: 16
+})
+
+export const navigateBtn = style([btn, {}])
 
 export const detailsBtn = style([btn, {
   position: 'absolute',

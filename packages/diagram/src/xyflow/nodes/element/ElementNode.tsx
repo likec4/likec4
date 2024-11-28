@@ -1,7 +1,7 @@
 import { type ThemeColor } from '@likec4/core'
-import { ActionIcon, Box, Text as MantineText, Tooltip } from '@mantine/core'
+import { ActionIcon, Box, Group, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconId, IconZoomScan } from '@tabler/icons-react'
+import { IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
@@ -54,21 +54,24 @@ const VariantsRoot = {
   }
 } satisfies Variants
 
-const VariantsNavigate = {
+const VariantsNavigateBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
     opacity: 0.5,
-    translateX: '-50%',
-    originY: 0.2
+    originY: 0.5
   },
   selected: {},
   hovered: {
     '--ai-bg': 'var(--ai-bg-hover)',
-    translateX: '-50%',
     scale: 1.35,
     opacity: 1
-  },
+  }
+} satisfies Variants
+VariantsNavigateBtn['selected'] = VariantsNavigateBtn['hovered']
+
+const VariantsNavigate = {
+  ...VariantsNavigateBtn,
   'hovered:navigate': {
     scale: 1.42
   },
@@ -76,7 +79,16 @@ const VariantsNavigate = {
     scale: 1.15
   }
 } satisfies Variants
-VariantsNavigate['selected'] = VariantsNavigate['hovered']
+
+const VariantRealationships = {
+  ...VariantsNavigateBtn,
+  'hovered:relationships': {
+    scale: 1.42
+  },
+  'tap:relationships': {
+    scale: 1.15
+  }
+} satisfies Variants
 
 const VariantsDetailsBtn = {
   idle: {
@@ -127,6 +139,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isNavigable,
     isInteractive,
     enableElementDetails,
+    enableRelationshipBrowser,
     triggerOnNavigateTo,
     openOverlay,
     isInActiveOverlay,
@@ -136,10 +149,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
-    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableElementDetails
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableElementDetails || s.enableRelationshipBrowser
       || (!!s.onNavigateTo && !!element.navigateTo),
     isNavigable: (!!s.onNavigateTo && !!element.navigateTo),
     enableElementDetails: s.enableElementDetails,
+    enableRelationshipBrowser: s.enableRelationshipBrowser,
     triggerOnNavigateTo: s.triggerOnNavigateTo,
     openOverlay: s.openOverlay,
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
@@ -193,6 +207,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     openOverlay({ elementDetails: element.id })
+  }, [openOverlay, element.id])
+
+  const onOpenRelationships = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    openOverlay({ relationshipsOf: element.id })
   }, [openOverlay, element.id])
 
   return (
@@ -266,21 +285,40 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           </Box>
         </Box>
         {/* {isHovercards && element.links && <ElementLink element={element} />} */}
-        {isNavigable && (
-          <ActionIcon
-            component={m.div}
-            variants={VariantsNavigate}
-            data-animate-target="navigate"
-            className={clsx('nodrag nopan', css.navigateBtn)}
-            radius="md"
-            style={{ zIndex: 100 }}
-            role="button"
-            onClick={onNavigateTo}
-            onDoubleClick={stopPropagation}
-            {...isInteractive && animateHandlers}
-          >
-            <IconZoomScan style={{ width: '75%' }} />
-          </ActionIcon>
+
+        {(enableRelationshipBrowser || isNavigable) && (
+          <Group className={css.navigateBtnBox} align="center">
+            {enableRelationshipBrowser && (
+              <ActionIcon
+                component={m.div}
+                variants={VariantRealationships}
+                data-animate-target="relationships"
+                className={clsx('nodrag nopan', css.navigateBtn)}
+                radius="md"
+                role="button"
+                onClick={onOpenRelationships}
+                onDoubleClick={stopPropagation}
+                {...isInteractive && animateHandlers}
+              >
+                <IconTransform style={{ width: '75%' }} />
+              </ActionIcon>
+            )}
+            {isNavigable && (
+              <ActionIcon
+                component={m.div}
+                variants={VariantsNavigate}
+                data-animate-target="navigate"
+                className={clsx('nodrag nopan', css.navigateBtn)}
+                radius="md"
+                role="button"
+                onClick={onNavigateTo}
+                onDoubleClick={stopPropagation}
+                {...isInteractive && animateHandlers}
+              >
+                <IconZoomScan style={{ width: '75%' }} />
+              </ActionIcon>
+            )}
+          </Group>
         )}
         {enableElementDetails && element.modelRef && (
           <Tooltip

@@ -30,7 +30,7 @@
   backdrop-filter: blur(16px);
 
   &[data-mantine-color-scheme=light] {
-    --mantine-color-body: rgb(255 255 255 / 10%) !important;
+    --mantine-color-body: rgb(255 255 255) !important;
   }
 
   &[data-mantine-color-scheme=dark] {
