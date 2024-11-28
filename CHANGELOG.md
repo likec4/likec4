@@ -2,17 +2,17 @@
 
 ### Improvements
 
-* **diagrams:** Diagram search (thanks @pavelpykhtin, [#1244](https://github.com/likec4/likec4/issues/1244))
-* **diagrams:** Smart Layout commands (thanks @pavelpykhtin, [#1238](https://github.com/likec4/likec4/issues/1238))
-* **diagrams:** Highlight in Diagram Search (thanks @Cyclonit, [#1251](https://github.com/likec4/likec4/issues/1251))
-* **diagrams:** returned button to open relationships overlay (thanks @pavelpykhtin, [#1242](https://github.com/likec4/likec4/issues/1242))
-* **diagrams:** Fixed styles for webcomponent  (thanks @pavelpykhtin, [#1297](https://github.com/likec4/likec4/issues/1297))
+* **diagrams:** smart Layout commands (thanks @pavelpykhtin, [#1238](https://github.com/likec4/likec4/issues/1238))
+* **diagrams:** diagram search (thanks @pavelpykhtin, [#1244](https://github.com/likec4/likec4/issues/1244))
+* **diagrams:** highlight in Diagram Search (thanks @Cyclonit, [#1251](https://github.com/likec4/likec4/issues/1251))
+* **diagrams:** button to open relationships overlay (thanks @pavelpykhtin, [#1242](https://github.com/likec4/likec4/issues/1242))
   
 ### Bug Fixes
 
 * **export:** enhance PNG export with viewport sizing and HTTPS error handling (thanks @davydkov)
 * **diagrams:** style properties being ignored for dynamic relationships (thanks @pavelpykhtin, [#1280](https://github.com/likec4/likec4/issues/1280))
-
+* **diagrams:** styles for webcomponent  (thanks @pavelpykhtin, [#1297](https://github.com/likec4/likec4/issues/1297))
+  
 
 # [1.17.0](https://github.com/likec4/likec4/compare/v1.16.0...v1.17.0) (2024-11-15)
 
