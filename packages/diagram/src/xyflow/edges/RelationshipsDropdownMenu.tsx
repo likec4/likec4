@@ -16,7 +16,7 @@ import {
   Tooltip as MantineTooltip,
   TooltipGroup
 } from '@mantine/core'
-import { IconArrowRight, IconArrowsMaximize, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
+import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pick, pipe } from 'remeda'

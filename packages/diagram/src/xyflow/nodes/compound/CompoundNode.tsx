@@ -30,14 +30,28 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
 )
 
 const VariantsRoot = {
-  idle: {
-    transition: {
-      delayChildren: .1
-      // stagger
+  idle: (_, { translateZ }) => ({
+    // Why? translateZ is used to determine state
+    ...translateZ !== 0 && {
+      transition: {
+        delayChildren: .08
+      }
+    },
+    transitionEnd: {
+      translateZ: 0
     }
-  },
+  }),
   selected: {},
-  hovered: {},
+  hovered: (_, { translateZ }) => ({
+    ...translateZ !== 1 && {
+      transition: {
+        delayChildren: .08
+      }
+    },
+    transitionEnd: {
+      translateZ: 1
+    }
+  }),
   tap: {}
 } satisfies Variants
 
@@ -61,18 +75,21 @@ const VariantsNavigate = {
   'hovered:navigate': {
     scale: 1.42
   },
-  'hovered:relations': {},
+  'hovered:details': {},
   'tap:navigate': {
     scale: 1.15
   }
 } satisfies Variants
-VariantsNavigate['selected'] = VariantsNavigate['hovered']
+VariantsNavigate['selected'] = VariantsNavigate.hovered
+VariantsNavigate['hovered:details'] = VariantsNavigate.idle
 
 const VariantsDetailsBtn = {
   idle: {
     '--ai-bg': 'var(--ai-bg-idle)',
     scale: 1,
-    opacity: 0.3
+    opacity: 0.3,
+    originX: 0.45,
+    originY: 0.55
   },
   selected: {},
   hovered: {
@@ -198,109 +215,121 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
         variants={VariantsRoot}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
-        initial={false}
-        animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
-        className={clsx(
-          css.container,
-          'likec4-compound-node',
-          opacity < 1 && 'likec4-compound-transparent',
-          isDimmed && css.dimmed
-        )}
-        mod={{
-          'animate-target': '',
-          'compound-depth': depth,
-          'likec4-color': previewColor ?? color,
-          hovered: isHovered
-        }}
-        tabIndex={-1}
-        {...(isInteractive && {
-          onTapStart: animateHandlers.onTapStart,
-          onTap: animateHandlers.onTap,
-          onTapCancel: animateHandlers.onTapCancel
-        })}
-      >
-        <svg className={css.indicator}>
-          <rect
-            x={0}
-            y={0}
-            width={'100%'}
-            height={'100%'}
-            rx={6}
-          />
-        </svg>
+        className={css.containerForFramer}>
         <Box
+          component={m.div}
+          variants={VariantsRoot}
+          initial={false}
+          animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
           className={clsx(
-            css.compoundBody,
-            opacity < 1 && css.transparent,
-            'likec4-compound'
+            css.container,
+            'likec4-compound-node',
+            opacity < 1 && 'likec4-compound-transparent',
+            isDimmed && css.dimmed
           )}
-          style={{
-            ...(opacity < 1 && {
-              ...assignInlineVars({
-                [css.varBorderTransparency]: `${borderTransparency}%`,
-                [css.varOpacity]: opacity.toFixed(2)
-              }),
-              borderStyle: style.border ?? 'dashed'
-            })
+          mod={{
+            'animate-target': '',
+            'compound-depth': depth,
+            'likec4-color': previewColor ?? color,
+            hovered: isHovered
           }}
+          tabIndex={-1}
+          {...(isInteractive && {
+            onTapStart: animateHandlers.onTapStart,
+            onTap: animateHandlers.onTap,
+            onTapCancel: animateHandlers.onTapCancel
+          })}
         >
+          <svg className={css.indicator}>
+            <rect
+              x={0}
+              y={0}
+              width={'100%'}
+              height={'100%'}
+              rx={6}
+            />
+          </svg>
           <Box
             className={clsx(
-              css.compoundTitle,
-              isNavigable && css.withNavigation,
-              'likec4-compound-title'
-            )}>
-            {elementIcon}
-            <Text
-              component={m.div}
-              key={`${viewId}:element:title:${id}`}
-              layoutId={`${viewId}:element:title:${id}`}
-              className={css.title}>
-              {element.title}
-            </Text>
-            {enableElementDetails && !!element.modelRef && (
-              <Tooltip
-                fz="xs"
-                color="dark"
-                label="Open details"
-                withinPortal={false}
-                offset={2}
-                openDelay={600}>
-                <ActionIcon
-                  component={m.div}
-                  variants={VariantsDetailsBtn}
-                  data-animate-target="details"
-                  className={clsx('nodrag nopan', css.detailsBtn)}
-                  radius="md"
-                  style={{ zIndex: 100 }}
-                  role="button"
-                  onClick={onOpenDetails}
-                  onDoubleClick={stopPropagation}
-                  {...isInteractive && animateHandlers}
-                >
-                  <IconId stroke={1.8} style={{ width: '75%' }} />
-                </ActionIcon>
-              </Tooltip>
+              css.compoundBody,
+              opacity < 1 && css.transparent,
+              'likec4-compound'
             )}
-          </Box>
-        </Box>
-        {isNavigable && (
-          <ActionIcon
-            key={'navigate'}
-            component={m.div}
-            variants={VariantsNavigate}
-            data-animate-target="navigate"
-            className={clsx('nodrag nopan', css.navigateBtn)}
-            radius="md"
-            style={{ zIndex: 100 }}
-            onClick={onNavigateTo}
-            role="button"
-            onDoubleClick={stopPropagation}
-            {...isInteractive && animateHandlers}
+            style={{
+              ...(opacity < 1 && {
+                ...assignInlineVars({
+                  [css.varBorderTransparency]: `${borderTransparency}%`,
+                  [css.varOpacity]: opacity.toFixed(2)
+                }),
+                ...style.border === 'none'
+                  ? {
+                    borderColor: 'transparent'
+                  }
+                  : {
+                    borderStyle: style.border ?? 'dashed'
+                  }
+              })
+            }}
           >
-            <IconZoomScan style={{ width: '75%' }} />
-          </ActionIcon>
-        )}
+            <Box
+              className={clsx(
+                css.compoundTitle,
+                isNavigable && css.withNavigation,
+                'likec4-compound-title'
+              )}>
+              {elementIcon}
+              <Text
+                component={m.div}
+                key={`${viewId}:element:title:${id}`}
+                layoutId={`${viewId}:element:title:${id}`}
+                className={css.title}>
+                {element.title}
+              </Text>
+              {enableElementDetails && !!element.modelRef && (
+                <Tooltip
+                  fz="xs"
+                  color="dark"
+                  label="Open details"
+                  withinPortal={false}
+                  offset={2}
+                  openDelay={600}>
+                  <ActionIcon
+                    key={`${id}details`}
+                    component={m.div}
+                    variants={VariantsDetailsBtn}
+                    data-animate-target="details"
+                    className={clsx('nodrag nopan', css.detailsBtn)}
+                    radius="md"
+                    style={{ zIndex: 100 }}
+                    role="button"
+                    onClick={onOpenDetails}
+                    onDoubleClick={stopPropagation}
+                    {...isInteractive && animateHandlers}
+                  >
+                    <IconId stroke={1.8} style={{ width: '75%' }} />
+                  </ActionIcon>
+                </Tooltip>
+              )}
+            </Box>
+          </Box>
+          {isNavigable && (
+            <ActionIcon
+              key={`${id}navigate`}
+              component={m.div}
+              variants={VariantsNavigate}
+              data-animate-target="navigate"
+              className={clsx('nodrag nopan', css.navigateBtn)}
+              radius="md"
+              style={{ zIndex: 100 }}
+              onClick={onNavigateTo}
+              role="button"
+              onDoubleClick={stopPropagation}
+              {...isInteractive && animateHandlers}
+            >
+              <IconZoomScan style={{ width: '75%' }} />
+            </ActionIcon>
+          )}
+        </Box>
       </Box>
       <Handle type="target" position={Position.Top} className={css.nodeHandlerInCenter} />
       <Handle type="source" position={Position.Top} className={css.nodeHandlerInCenter} />

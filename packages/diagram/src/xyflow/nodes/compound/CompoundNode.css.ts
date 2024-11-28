@@ -62,6 +62,7 @@ globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transpa
 
 export const varOpacity = createVar('opacity')
 export const varBorderColor = createVar('border-color')
+export const varBorderRadius = createVar('border-transparency')
 export const varBorderTransparency = createVar('border-transparency')
 
 const outlineColor = fallbackVar(
@@ -74,14 +75,17 @@ export const compoundBody = style({
   width: '100%',
   height: '100%',
   position: 'relative',
-  borderRadius: 6,
+  borderRadius: varBorderRadius,
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
   padding: 0,
   margin: 0,
   transition: 'all 200ms ease-out',
-  backgroundClip: 'padding-box',
+  // backgroundClip: 'padding-box',
   // overflow: 'hidden',
   cursor: 'default',
+  vars: {
+    [varBorderRadius]: '6px'
+  },
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
       boxShadow: 'none'
@@ -100,8 +104,11 @@ export const compoundBody = style({
     width: '100%',
     height: '100%',
     pointerEvents: 'none',
+    border: '1px solid transparent',
+    borderRadius: varBorderRadius,
     transition: 'background 175ms ease-out, opacity 175ms ease-out',
-    background: vars.element.fill
+    background: vars.element.fill,
+    backgroundClip: 'border-box'
   }
 })
 export const compoundTitle = style({
@@ -109,19 +116,20 @@ export const compoundTitle = style({
   alignItems: 'center',
   gap: 6,
   paddingLeft: 14,
-  paddingTop: 9,
+  paddingTop: 6,
   minHeight: 30,
+  paddingRight: 2,
   selectors: {
     [`:where(.react-flow__node.draggable) &`]: {
       cursor: 'grab'
     },
     [`:where(.likec4-compound-transparent) &`]: {
-      paddingTop: 4
+      paddingTop: 3
     }
   }
 })
 export const withNavigation = style({
-  paddingLeft: 30
+  paddingLeft: 32
 })
 
 const opacityDeltaOnHover = createVar('opacityDeltaOnHover')

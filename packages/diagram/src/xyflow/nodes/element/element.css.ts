@@ -338,6 +338,56 @@ export const shapeSvg = style({
   }
 })
 
+export const bottomButtonsContainer = style({
+  zIndex: 100,
+  position: 'absolute',
+  left: 0,
+  width: '100%',
+  bottom: 2,
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  alignItems: 'center',
+  gap: 2,
+  justifyContent: 'center',
+  pointerEvents: 'none',
+  selectors: {
+    [`:where([data-likec4-shape='browser']) &`]: {
+      bottom: 4
+    }
+  }
+})
+
+//   --group-gap: var(--mantine-spacing-md);
+//   --group-align: center;
+//   --group-justify: flex-start;
+//   --group-wrap: wrap;
+//   gap: 0px;
+// }
+// <style>
+// .element_bottomButtonsContainer__14yllojn {
+//   z-index: 100;
+//   position: absolute;
+//   left: 50%;
+//   bottom: 2px;
+//   transform: translate(-50%, 0%);
+// }
+
+// <style>
+// .m_4081bf90 {
+//   display: flex
+// ;
+//   flex-direction: row;
+//   flex-wrap: var(--group-wrap, wrap);
+//   justify-content: var(--group-justify, flex-start);
+//   align-items: var(--group-align, center);
+//   gap: var(--group-gap, var(--mantine-spacing-md));
+// }
+// globalStyle(`:where(.react-flow__node:hover) ${bottomButtonsContainer}`, {
+//   transitionDelay: '20ms',
+//   gap: 16
+// })
+
 const btn = style({
   pointerEvents: 'all',
   color: vars.element.loContrast,
@@ -352,24 +402,6 @@ const btn = style({
   ':hover': {
     boxShadow: mantine.shadows.md
   }
-})
-
-export const navigateBtnBox = style({
-  zIndex: 100,
-  position: 'absolute',
-  left: '50%',
-  bottom: 2,
-  transform: 'translate(-50%, 0%)',
-  gap: 0,
-  selectors: {
-    [`:where([data-likec4-shape='browser']) &`]: {
-      bottom: 4
-    }
-  }
-})
-globalStyle(`:where(.react-flow__node:hover) ${navigateBtnBox}`, {
-  transitionDelay: '20ms',
-  gap: 16
 })
 
 export const navigateBtn = style([btn, {}])
