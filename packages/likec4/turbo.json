@@ -20,6 +20,20 @@
       ],
       "outputLogs": "new-only"
     },
+    "build-react-dts": {
+      "dependsOn": [
+        "@likec4/diagram#topo"
+      ],
+      "outputs": [
+        "react/*.d.ts"
+      ],
+      "inputs": [
+        "scripts/dts-react.ts",
+        "app/react/**",
+        "package.json"
+      ],
+      "outputLogs": "new-only"
+    },
     "build-app": {
       "dependsOn": [
         "@likec4/core#build",
@@ -28,7 +42,8 @@
       ],
       "outputs": [
         "dist/__app__/**",
-        "react/**"
+        "react/**",
+        "!react/*.d.ts"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
@@ -57,6 +72,7 @@
     },
     "build": {
       "dependsOn": [
+        "build-react-dts",
         "build-app",
         "build-cli"
       ],

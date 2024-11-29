@@ -26,6 +26,7 @@
   "packageManager": "yarn@4.5.3",
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "topo": "echo 'topo'",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f -g 'dist/*' .tsbuildinfo",
     "test": "vitest run --no-isolate"
