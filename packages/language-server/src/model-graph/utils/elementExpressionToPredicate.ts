@@ -27,8 +27,8 @@ export function elementExprToPredicate<T extends Pick<Element, 'id' | 'kind' | '
     return n => n.id === target.expanded || parentFqn(n.id) === target.expanded
   }
   if (Expr.isElementRef(target)) {
-    const { element, isChildren } = target
-    return isChildren
+    const { element, isChildren, isDescendants } = target
+    return isChildren || isDescendants
       ? n => n.id.startsWith(element + '.')
       : n => (n.id as string) === element
   }
