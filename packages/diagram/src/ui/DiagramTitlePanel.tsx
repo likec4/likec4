@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../hooks'
 import * as css from './DiagramTitlePanel.css'
+import { Link } from './Link'
 
 const selector = (s: DiagramState) => ({
   id: s.view.id,
@@ -151,35 +152,7 @@ export default function DiagramTitlePanel() {
                   gap={3}
                   justify="stretch"
                   align="stretch">
-                  {links.map((link) => (
-                    <Group key={link.url} wrap="nowrap" align="center" gap={'sm'}>
-                      <Box flex={'1'} style={{ overflow: 'hidden' }}>
-                        <Anchor
-                          href={link.url}
-                          target="_blank"
-                          fz="xs"
-                          truncate="end"
-                          display={'inline-block'}
-                          w={'100%'}>
-                          {link.title || link.url}
-                        </Anchor>
-                      </Box>
-                      <CopyButton value={link.url}>
-                        {({ copied, copy }) => (
-                          <Button
-                            size="compact-xs"
-                            fz={'10'}
-                            variant="light"
-                            onClick={copy}
-                            color={copied
-                              ? 'teal'
-                              : 'gray'}>
-                            {copied ? 'copied' : 'copy'}
-                          </Button>
-                        )}
-                      </CopyButton>
-                    </Group>
-                  ))}
+                  {links.map((link) => <Link link={link} />)}
                 </Stack>
               )}
             </>
