@@ -2,7 +2,7 @@
   "compilerOptions": {
     "noEmitOnError": false,
     "lib": ["esnext", "dom", "dom.iterable"],
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -12,6 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
+    "strictBuiltinIteratorReturn": true,
     "baseUrl": ".",
     "types": [
       "react",

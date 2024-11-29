@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -199,7 +199,7 @@
     "esbuild": "^0.24.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
     "execa": "^9.3.1",
-    "langium": "3.2.0",
+    "langium": "3.3.0",
     "p-timeout": "^6.1.3",
     "remeda": "^2.17.3",
     "std-env": "^3.8.0",
@@ -215,5 +215,5 @@
     "vscode-uri": "3.0.8",
     "which": "^4.0.0"
   },
-  "packageManager": "yarn@4.5.2"
+  "packageManager": "yarn@4.5.3"
 }

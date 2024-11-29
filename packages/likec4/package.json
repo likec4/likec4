@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -147,7 +147,7 @@
     "glob": "^11.0.0",
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
-    "langium": "3.2.0",
+    "langium": "3.3.0",
     "mkdirp": "^3.0.1",
     "nanostores": "0.11.3",
     "npm-run-all2": "^7.0.1",
@@ -176,5 +176,5 @@
     "vitest": "^2.1.5",
     "yargs": "17.7.2"
   },
-  "packageManager": "yarn@4.5.2"
+  "packageManager": "yarn@4.5.3"
 }

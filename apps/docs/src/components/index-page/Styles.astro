@@ -1,0 +1,25 @@
+<style is:global>
+  main:before {
+    content: ' ';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color:#c399ff;
+    opacity: 0.15;
+    z-index: -1;
+    background-image:
+      radial-gradient(at 78% 20%, hsla(293,75%,75%,1) 0px, transparent 50%),
+      radial-gradient(at 84% 4%, hsla(1,95%,64%,1) 0px, transparent 50%),
+      radial-gradient(at 65% 54%, hsla(53,85%,73%,1) 0px, transparent 50%),
+      radial-gradient(at 88% 14%, hsla(285,60%,69%,1) 0px, transparent 50%),
+      radial-gradient(at 0% 34%, hsla(190,85%,74%,1) 0px, transparent 50%),
+      radial-gradient(at 84% 93%, hsla(260,94%,60%,1) 0px, transparent 50%),
+      radial-gradient(at 12% 79%, hsla(63,65%,78%,1) 0px, transparent 50%);
+  }
+  :where([data-theme='dark']) main:before {
+    opacity: 0.03;
+  }
+</style>
