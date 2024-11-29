@@ -13,7 +13,6 @@ specification {
 deployment {
 
   node customerNode {
-    // References to model.c4
     instanceOf customer
   }
 
@@ -28,7 +27,6 @@ deployment {
         instanceOf saas.backend
       }
       db = instanceOf saas.db
-      zone1.ui -> zone2.backend   
     }
 
     us = zone 'US' {
@@ -43,8 +41,8 @@ deployment {
       db = instanceOf saas.db
     }
 
-    // us.db -> eu.db 'sync'
-    eu.db -> us.db 'sync'
+    us.db -> eu.db 'sync to eu'
+    eu.db -> us.db 'sync to us'
   }
 }
 
@@ -53,25 +51,14 @@ views {
     title 'Deployment view'
 
     include
-      customer,
-      prod,
+      *,
       us,
-      eu.zone1._,
-      eu.zone2.backend,
-    //   eu.zone2._,
       eu._,
-    //   us.zone1._,
-    //   us.zone2._,
-      us._,
+      eu.zone1._,
+      eu.zone2._,
 
-    // exclude
-    //   eu._ <-> us._,
-    //   eu.zone1._ <-> eu.zone2._,
-    //   us.zone1._ <-> us.zone2._,
-
-
-    // include
-    //   eu.db <-> us.db
+    exclude
+      eu._ <-> us._
 
     style eu._ {
       color green
