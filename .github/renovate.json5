@@ -70,12 +70,17 @@
       matchPackageNames: [
        // '@tabler{/,}**',
         '@fontsource{/,}**',
+      ],
+      matchDepNames: [
         'turbo',
         'yarn'
-      ],
+      ]
     },
     {
       enabled: false,
+      matchPackageNames: [
+        '@tanstack{/,}**',
+      ],
       matchDepNames: [
         '/^monaco/',
         '/^@monaco/',
