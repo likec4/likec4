@@ -13,7 +13,9 @@ interface BaseExpr {
   elementKind?: never
   elementTag?: never
   isEqual?: never
-  isDescedants?: never
+  isChildren?: never
+  isDescendants?: never
+  isLeafs?: never
   wildcard?: never
   source?: never
   target?: never
@@ -23,9 +25,10 @@ interface BaseExpr {
   customRelation?: never
 }
 
-export interface ElementRefExpr extends Omit<BaseExpr, 'element' | 'isDescedants'> {
+export interface ElementRefExpr extends Omit<BaseExpr, 'element' | 'isChildren' | 'isDescendants'> {
   element: Fqn
-  isDescedants?: boolean
+  isChildren?: boolean
+  isDescendants?: boolean
 }
 export function isElementRef(expr: Expression): expr is ElementRefExpr {
   return 'element' in expr

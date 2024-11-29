@@ -369,12 +369,18 @@ function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C
   if (expr.endsWith('.*')) {
     return {
       element: expr.replace('.*', '') as Fqn,
-      isDescedants: true
+      isChildren: true
+    } as TypedC4Expression<Types>
+  }
+  if (expr.endsWith('.**')) {
+    return {
+      element: expr.replace('.**', '') as Fqn,
+      isDescendants: true
     } as TypedC4Expression<Types>
   }
   return {
     element: expr as any as Fqn,
-    isDescedants: false
+    isChildren: false // TODO: why do we set this to false? Shouldn't undefined work too?
   } as TypedC4Expression<Types>
 }
 

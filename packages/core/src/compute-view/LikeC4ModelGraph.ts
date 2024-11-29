@@ -91,10 +91,15 @@ export class LikeC4ModelGraph {
     return this._childrenOf(id).slice()
   }
 
-  // Get children or element itself if no children
-  public childrenOrElement(id: Fqn) {
-    const children = this.children(id)
-    return children.length > 0 ? children : [this.element(id)]
+  public descendants(id: Fqn) {
+    const result: Element[] = []
+    this.descendantsDfs(id, result)
+    return result
+  }
+
+  private descendantsDfs(id: Fqn, result: Element[]) {
+    result.push(this.element(id))
+    this.children(id).forEach(c => this.descendantsDfs(c.id, result))
   }
 
   // Get all sibling (i.e. same parent)

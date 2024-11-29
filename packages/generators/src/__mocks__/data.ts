@@ -439,11 +439,11 @@ export const fakeComputedView3Levels: ComputedView = {
         },
         {
           element: 'cloud.frontend',
-          isDescedants: true
+          isChildren: true
         },
         {
           element: 'cloud.backend',
-          isDescedants: true
+          isChildren: true
         }
       ],
       isInclude: true
@@ -452,7 +452,7 @@ export const fakeComputedView3Levels: ComputedView = {
       exprs: [
         {
           element: 'cloud.frontend',
-          isDescedants: false
+          isChildren: false
         }
       ],
       isInclude: false

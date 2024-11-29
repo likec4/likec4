@@ -57,22 +57,22 @@
   },
   "dependencies": {
     "defu": "^6.1.4",
-    "type-fest": "4.27.1"
+    "type-fest": "4.28.1"
   },
   "devDependencies": {
     "@dagrejs/dagre": "^1.1.4",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/colors-generator": "7.14.1",
+    "@mantine/colors-generator": "7.14.2",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
-    "remeda": "^2.17.3",
-    "turbo": "^2.3.1",
+    "remeda": "^2.17.4",
+    "turbo": "^2.3.2",
     "typescript": "^5.7.2",
     "unbuild": "^3.0.0-rc.11",
-    "vitest": "^2.1.5"
+    "vitest": "^2.1.6"
   },
   "packageManager": "yarn@4.5.3"
 }

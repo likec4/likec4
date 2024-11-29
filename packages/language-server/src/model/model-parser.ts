@@ -555,7 +555,8 @@ export class LikeC4ModelParser {
       const element = this.resolveFqn(elementNode)
       return {
         element,
-        isDescedants: true
+        isChildren: astNode.suffix === '.*',
+        isDescendants: astNode.suffix === '.**'
       }
     }
     if (ast.isElementRef(astNode)) {

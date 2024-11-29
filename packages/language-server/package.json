@@ -90,9 +90,9 @@
     "json5": "^2.2.3",
     "langium": "3.3.0",
     "p-debounce": "^4.0.0",
-    "remeda": "^2.17.3",
+    "remeda": "^2.17.4",
     "strip-indent": "^4.0.0",
-    "type-fest": "4.27.1",
+    "type-fest": "4.28.1",
     "ufo": "^1.5.4",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageserver": "9.0.1",
@@ -103,15 +103,15 @@
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.7",
-    "@vitest/coverage-v8": "^2.1.5",
+    "@vitest/coverage-v8": "^2.1.6",
     "execa": "^9.3.1",
     "langium-cli": "3.3.0",
     "npm-run-all2": "^7.0.1",
     "tsx": "~4.9.3",
-    "turbo": "^2.3.1",
+    "turbo": "^2.3.2",
     "typescript": "^5.7.2",
     "unbuild": "^3.0.0-rc.11",
-    "vitest": "^2.1.5"
+    "vitest": "^2.1.6"
   },
   "packageManager": "yarn@4.5.3"
 }

@@ -179,7 +179,7 @@ export const TopLeftPanel = () => {
         {showNavigationButtons && <BackwardForwardButtons />}
         <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
           {enableSearch && (
-            <Tooltip label="Search">
+            <Tooltip label="Search (Ctrl+F or ⌘+F)">
               <ActionIcon
                 onClick={() => openSpotlight()}
               >

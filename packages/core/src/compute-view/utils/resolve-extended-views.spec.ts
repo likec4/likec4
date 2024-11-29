@@ -21,7 +21,7 @@ describe('resolveRulesExtendedViews', () => {
     exclude: [
       {
         element: 'cloud' as Fqn,
-        isDescedants: true
+        isChildren: true
       }
     ]
   }

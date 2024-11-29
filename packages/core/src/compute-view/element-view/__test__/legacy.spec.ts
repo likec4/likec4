@@ -335,7 +335,7 @@ describe('compute-element-view', () => {
       // cloud.*
       // shape: browser
       {
-        targets: [{ element: 'cloud' as Fqn, isDescedants: true }],
+        targets: [{ element: 'cloud' as Fqn, isChildren: true }],
         style: {
           shape: 'browser'
         }
