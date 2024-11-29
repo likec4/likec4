@@ -1,19 +1,18 @@
-import { first } from 'remeda'
+import { isTruthy } from 'remeda'
 import {
-  type AnyLikeC4Model,
-  type ComputedElementView,
   DefaultElementShape,
   DefaultThemeColor,
   type Element as C4Element,
   type ElementKind as C4ElementKind,
   type ElementShape as C4ElementShape,
-  type Fqn,
   type Link,
   type Tag as C4Tag,
   type ThemeColor
 } from '../types'
+import { commonAncestor } from '../utils'
+import type { DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
+import type { RelationshipsIterator } from './RelationModel'
 import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
@@ -70,23 +69,46 @@ export class ElementModel<M extends AnyAux> {
     return this.scopedViews().next().value ?? null
   }
 
+  /**
+   * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+   * (from closest to root)
+   */
   public ancestors(): ElementsIterator<M> {
     return this.model.ancestors(this)
+  }
+
+  /**
+   * Returns the common ancestor of this element and another element.
+   */
+  public commonAncestor(another: ElementModel<M>): ElementModel<M> | null {
+    const common = commonAncestor(this.id, another.id)
+    return common ? this.model.element(common) : null
   }
 
   public children(): ElementsIterator<M> {
     return this.model.children(this)
   }
 
+  /**
+   * Get all descendant elements (i.e. children, children’s children, etc.)
+   */
   public descendants(): ElementsIterator<M> {
     return this.model.descendants(this)
   }
 
+  /**
+   * Get all sibling (i.e. same parent)
+   */
   public siblings(): ElementsIterator<M> {
     return this.model.siblings(this)
   }
 
+  /**
+   * Resolve siblings of the element and its ancestors
+   *  (from closest to root)
+   */
   public *ascendingSiblings(): ElementsIterator<M> {
+    yield* this.siblings()
     for (const ancestor of this.ancestors()) {
       yield* ancestor.siblings()
     }
@@ -136,13 +158,25 @@ export class ElementModel<M extends AnyAux> {
 
   /**
    * Iterate over all views that scope this element.
+   * It is possible that element is not included in the view.
    */
   public *scopedViews(): ViewsIterator<M> {
-    for (const vm of this.views()) {
+    for (const vm of this.model.views()) {
       if (vm.isElementView() && vm.$view.viewOf === this.id) {
         yield vm
       }
     }
     return
+  }
+
+  /**
+   * @returns true if the element is deployed
+   */
+  public isDeployed(): boolean {
+    return isTruthy(this.deployments().next().value)
+  }
+
+  public deployments(): DeployedInstancesIterator<M> {
+    return this.model.deployment.instancesOf(this)
   }
 }

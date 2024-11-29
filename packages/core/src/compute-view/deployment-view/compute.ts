@@ -30,7 +30,10 @@ import { applyDeploymentViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
 import { sortNodes } from '../utils/sortNodes'
 import { uniqueTags } from '../utils/uniqueTags'
+import { updateNodeInOutEdges } from '../utils/update-node-inout-edges'
 import { calcViewLayoutHash } from '../utils/view-hash'
+import type { Edge, Node } from './_types'
+import { cleanEdges } from './compute-state'
 import {
   excludeDeploymentRef,
   excludeDirectRelation,
@@ -40,11 +43,11 @@ import {
   includeWildcard
 } from './predicates'
 
-type DeploymentElement = LikeC4DeploymentGraph.Instance | DeploymentNode
+type DeploymentElement = Node
 type DeploymentEdge = LikeC4DeploymentGraph.Edge
 type Edges = ReadonlyArray<DeploymentEdge>
 
-function toNodeSource(el: DeploymentElement): ComputedNodeSource {
+function toNodeSource(el: Node): ComputedNodeSource {
   const isInstance = LikeC4DeploymentGraph.isInstance(el)
 
   if (!isInstance) {
@@ -105,10 +108,10 @@ function toNodeSource(el: DeploymentElement): ComputedNodeSource {
 
 export class DeploymentViewComputeCtx {
   // Intermediate state
-  private _explicits = new Map<Fqn, DeploymentElement>()
+  private _explicits = new Map<Fqn, Node>()
 
   // Implicit elements (initiator -> what added)
-  private _implicits = new Map<Fqn, DeploymentElement>()
+  private _implicits = new Map<Fqn, Node>()
   // private implicits = new Map<DeploymentElement, Set<DeploymentElement>>()
   // Implicit backlinks (what added -> by whom)
   // private implicitBackLinks = new Map<DeploymentElement, Set<DeploymentElement>>()
@@ -138,7 +141,8 @@ export class DeploymentViewComputeCtx {
         this.processPredicate(rule)
       }
     }
-    this.removeRedundantImplicitEdges()
+    this._edges = cleanEdges([...this.includedElements], this._edges)
+    // this.removeRedundantImplicitEdges()
 
     // Temporary workaround - transform deployment elements to model elements
     // Because the rest of the code expects model elements and we want to minimize changes for now
@@ -147,7 +151,7 @@ export class DeploymentViewComputeCtx {
 
     const edges = this.computeEdges()
 
-    this.linkNodesAndEdges(nodesMap, edges)
+    updateNodeInOutEdges(nodesMap, edges)
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
@@ -253,54 +257,15 @@ export class DeploymentViewComputeCtx {
     }, [] as ComputedEdge[])
   }
 
-  /**
-   * Iterate over edges and assign `outEdges` and `inEdges` of nodes
-   */
-  protected linkNodesAndEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
-    for (const edge of edges) {
-      const source = nodesMap.get(edge.source)
-      const target = nodesMap.get(edge.target)
-      invariant(source, `Source node ${edge.source} not found`)
-      invariant(target, `Target node ${edge.target} not found`)
-      // These ancestors are reversed: from bottom to top
-      const sourceAncestors = [...ancestorsOfNode(source, nodesMap)]
-      const targetAncestors = [...ancestorsOfNode(target, nodesMap)]
-
-      const edgeParent = last(
-        commonHead(
-          reverse(sourceAncestors),
-          reverse(targetAncestors)
-        )
-      )
-      edge.parent = edgeParent?.id ?? null
-      source.outEdges.push(edge.id)
-      target.inEdges.push(edge.id)
-      // Process edge source ancestors
-      for (const sourceAncestor of sourceAncestors) {
-        if (sourceAncestor === edgeParent) {
-          break
-        }
-        sourceAncestor.outEdges.push(edge.id)
-      }
-      // Process target hierarchy
-      for (const targetAncestor of targetAncestors) {
-        if (targetAncestor === edgeParent) {
-          break
-        }
-        targetAncestor.inEdges.push(edge.id)
-      }
-    }
-  }
-
-  public isExplicit(el: DeploymentElement): boolean {
+  public isExplicit(el: Node): boolean {
     return this._explicits.has(el.id)
   }
 
-  public isImplicit(el: DeploymentElement): boolean {
+  public isImplicit(el: Node): boolean {
     return this.hasElement(el) && !this.isExplicit(el)
   }
 
-  public hasElement(el: DeploymentElement): boolean {
+  public hasElement(el: Node): boolean {
     return this._explicits.has(el.id) || this._implicits.has(el.id)
       || this._edges.some(e => e.source.id === el.id || e.target.id === el.id)
   }
@@ -310,7 +275,7 @@ export class DeploymentViewComputeCtx {
       ...this._explicits.values(),
       ...this._edges.map(e => e.source),
       ...this._edges.map(e => e.target)
-    ]) as ReadonlySet<DeploymentElement>
+    ]) as ReadonlySet<Node>
   }
 
   public get resolvedElements() {
@@ -319,7 +284,7 @@ export class DeploymentViewComputeCtx {
       ...this._edges.map(e => e.source),
       ...this._edges.map(e => e.target),
       ...this._implicits.values()
-    ]) as ReadonlySet<DeploymentElement>
+    ]) as ReadonlySet<Node>
   }
 
   public get edges() {
@@ -327,25 +292,25 @@ export class DeploymentViewComputeCtx {
   }
 
   public get explicits() {
-    return [...this._explicits.values()] as ReadonlyArray<DeploymentElement>
+    return [...this._explicits.values()] as ReadonlyArray<Node>
   }
 
   public get implicits() {
-    return [...this._implicits.values()] as ReadonlyArray<DeploymentElement>
+    return [...this._implicits.values()] as ReadonlyArray<Node>
   }
 
   // public includedA(el: DeploymentElement) {
   //   this.graph.ascendingSiblings(el).filter()
   // }
 
-  public addElement(...elements: DeploymentElement[]): void {
+  public addElement(...elements: Node[]): void {
     for (const el of elements) {
       this._explicits.set(el.id, el)
       this._implicits.delete(el.id)
     }
   }
 
-  public addImplicit(...elements: DeploymentElement[]): void {
+  public addImplicit(...elements: Node[]): void {
     for (const el of elements) {
       if (this._explicits.has(el.id)) {
         continue
@@ -354,7 +319,7 @@ export class DeploymentViewComputeCtx {
     }
   }
 
-  public excludeElement(...elements: DeploymentElement[]): void {
+  public excludeElement(...elements: Node[]): void {
     const excluded = new Set<Fqn>()
     for (const el of elements) {
       this._explicits.delete(el.id)
@@ -364,7 +329,7 @@ export class DeploymentViewComputeCtx {
     this._edges = this._edges.filter(e => !excluded.has(e.source.id) && !excluded.has(e.target.id))
   }
 
-  public excludeImplicit(...elements: DeploymentElement[]): void {
+  public excludeImplicit(...elements: Node[]): void {
     for (const el of elements) {
       this._implicits.delete(el.id)
     }

@@ -38,6 +38,43 @@ export function notDescendantOf(ancestors: Element[]): (e: Element) => boolean {
   return (e: Element) => !isDescendant(e)
 }
 
+/**
+ * How deep in the hierarchy the element is.
+ * Root element has depth 1
+ */
+export function hierarchyDepth<E extends string | { id: Fqn }>(elementOfFqn: E): number {
+  const first = isString(elementOfFqn) ? elementOfFqn : elementOfFqn.id
+  return first.split('.').length
+}
+
+/**
+ * Calculate the distance as number of steps from one element to another, i.e.
+ * going up to the common ancestor, then going down to the other element.
+ * Sibling distance is always 1
+ *
+ * Can be used for hierarchical clustering
+ */
+export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, another: E) {
+  const first = isString(one) ? one as Fqn : one.id
+  const second = isString(another) ? another as Fqn : another.id
+
+  if (first === second) {
+    return 0
+  }
+
+  const firstDepth = hierarchyDepth(first)
+  const secondDepth = hierarchyDepth(second)
+
+  if (isSameHierarchy(first, second)) {
+    return Math.abs(firstDepth - secondDepth)
+  }
+
+  const ancestor = commonAncestor(first as Fqn, second as Fqn)
+  const ancestorDepth = ancestor ? hierarchyDepth(ancestor) : 0
+
+  return firstDepth + secondDepth - (2 * ancestorDepth + 1)
+}
+
 export function commonAncestor<IDs extends string>(first: Fqn<IDs>, second: Fqn<IDs>) {
   const parentA = parentFqn(first)
   const parentB = parentFqn(second)
@@ -75,7 +112,7 @@ export function parentFqnPredicate<T extends { parent: Fqn | null }>(parent: Fqn
 
 /**
  * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
- * (from closest to root)
+ * going up from parent to the root
  */
 export function ancestorsFqn<IDs extends string>(fqn: Fqn<IDs>): Fqn<IDs>[] {
   const path = fqn.split('.') as Fqn<IDs>[]

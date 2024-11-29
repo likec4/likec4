@@ -5,6 +5,7 @@ import {
   ancestorsFqn as typedAncestorsFqn,
   commonAncestor as typedCommonAncestor,
   compareFqnHierarchically,
+  hierarchyDistance,
   isAncestor,
   isDescendantOf,
   notDescendantOf,
@@ -202,5 +203,42 @@ describe('sortByFqnHierarchically', () => {
       'a.c.c',
       'a.b2.c'
     ])
+  })
+})
+
+describe('hierarchyDistance', () => {
+  const d = hierarchyDistance
+
+  it('should return 0 if elements are the same', () => {
+    expect.soft(d('a', 'a')).toBe(0)
+    expect.soft(d('a.b.c', 'a.b.c')).toBe(0)
+  })
+
+  it('should return the correct distance for direct parent-child relationship', () => {
+    expect.soft(d('a', 'a.b.c')).toBe(2)
+    expect.soft(d('a.b', 'a.b.c')).toBe(1)
+    expect.soft(d('a.b', 'a.b.c.d')).toBe(2)
+    expect.soft(d('a.b.c', 'a.b')).toBe(1)
+  })
+
+  it('should return the correct distance for sibling elements', () => {
+    expect.soft(d('a', 'b')).toBe(1)
+    expect.soft(d('a.b.c', 'a.b.d')).toBe(1)
+    expect.soft(d('a.b.c.d.e1', 'a.b.c.d.e2')).toBe(1)
+  })
+
+  it('should return the correct distance for elements with a common ancestor', () => {
+    // d -> c -> e -> f
+    expect.soft(d('a.b.c.d', 'a.b.e.f')).toBe(3)
+    expect.soft(d('a.b.c1', 'a.b.c2.c3.c4.c5')).toBe(4)
+    // 3 -> 2 -> a1 -> b1 -> 2 -> 3 -> 4 -> 5
+    expect.soft(d('a.b.a1.2.3', 'a.b.b1.2.3.4.5')).toBe(7)
+  })
+
+  it('should return the correct distance for elements with no common ancestor', () => {
+    expect.soft(d('a', 'b.c')).toBe(2)
+    expect.soft(d('a', 'b.c.e')).toBe(3)
+    expect.soft(d('a.b', 'c.e')).toBe(3)
+    expect.soft(d('a.b.c', 'd.e.f.g')).toBe(6)
   })
 })

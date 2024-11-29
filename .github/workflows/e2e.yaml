@@ -46,7 +46,7 @@ jobs:
 
       - id: cloudflare
         if: ${{ failure() }}
-        name: publish to cloudflare
+        name: publish playwright-report
         uses: cloudflare/wrangler-action@6d58852c35a27e6034745c5d0bc373d739014f7f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -55,13 +55,18 @@ jobs:
           workingDirectory: e2e
           packageManager: yarn
 
+      - name: print url to published report
+        if: ${{ failure() }}
+        run: |
+          echo "::warning::Report published at ${{ steps.cloudflare.outputs.deployment-url }}"
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
           path: e2e/playwright-report/
           compression-level: 9
-          retention-days: 30
+          retention-days: 5
 
   update-screenshots:
     timeout-minutes: 15
@@ -99,6 +104,7 @@ jobs:
         run: yarn test:update-screenshots
 
       - name: create pull request
+        id: cpr
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ env.BOT_TOKEN }}
@@ -107,3 +113,9 @@ jobs:
           branch: update-screenshots/${{ github.ref_name }}
           add-paths: "e2e/tests/**"
           delete-branch: true
+
+      - name: enable automerge
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ env.BOT_TOKEN }}

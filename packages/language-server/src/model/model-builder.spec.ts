@@ -1,4 +1,5 @@
 import type { Element, ViewId } from '@likec4/core'
+import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
@@ -125,7 +126,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         technology: null
       }
     })
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with tags', async ({ expect }) => {
@@ -344,7 +345,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
     expect(model.views['index' as ViewId]).not.toHaveProperty('viewOf')
 
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model and views with links', async ({ expect }) => {
@@ -386,7 +387,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = viewsWithReadableEdges(await buildModel())
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       system1: {
@@ -638,7 +639,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       kind: 'async',
       tags: ['next']
     })
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with relationship spec with technology', async ({ expect }) => {
@@ -666,7 +667,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       kind: 'async',
       technology: 'Async'
     })
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with styled relationship', async ({ expect }) => {
@@ -703,7 +704,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
     expect(edge).not.toHaveProperty('description')
     expect(edge).not.toHaveProperty('technology')
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with relationship with properties', async ({ expect }) => {
@@ -1796,10 +1797,10 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
 
-    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewId)
+    const indexView = withReadableEdges((await services.likec4.ModelBuilder.computeView('index' as ViewId))!)
 
-    expect(indexView?.nodes.map(x => x.id)).toStrictEqual(['sys1', 'sys2', 'sys3'])
-    expect(indexView?.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
+    expect(indexView.nodes.map(x => x.id)).toStrictEqual(['sys1', 'sys2', 'sys3'])
+    expect(indexView.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
   })
 
   it('global predicate groups are applied', async ({ expect }) => {

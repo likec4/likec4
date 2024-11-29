@@ -1,5 +1,5 @@
 import type { ComputedElementView, LikeC4View } from '@likec4/core'
-import { mkComputeView } from '@likec4/core/compute-view'
+import { mkComputeView, withReadableEdges } from '@likec4/core/compute-view'
 import { amazonView, cloud3levels, cloudView, FakeModel, indexView, issue577View } from './model'
 
 const computeView = mkComputeView(FakeModel)
@@ -8,7 +8,7 @@ const computeElementView = (view: LikeC4View): ComputedElementView => {
   if (!result.isSuccess) {
     throw result.error
   }
-  return result.view as ComputedElementView
+  return withReadableEdges(result.view as ComputedElementView)
 }
 
 export const [computedIndexView, computedCloudView, computedCloud3levels, computedAmazonView] = [

@@ -3,7 +3,6 @@ import { invariant, nonNullable } from '../errors'
 import {
   type AnyLikeC4Model,
   type ComputedDeploymentView,
-  type ComputedLikeC4Model,
   DeploymentElement,
   type DeploymentRef,
   type DeploymentRelation,
@@ -14,6 +13,7 @@ import { getOrCreate } from '../utils/getOrCreate'
 import { isString } from '../utils/guards'
 import {
   DeployedInstanceModel,
+  type DeployedInstancesIterator,
   type DeploymentElementModel,
   type DeploymentElementsIterator,
   DeploymentNodeModel,
@@ -31,6 +31,9 @@ export class LikeC4DeploymentModel<M extends AnyAux> {
   readonly #parents = new Map<M['Deployment'], DeploymentNodeModel<M>>()
   // Children elements for given FQN
   readonly #children = new Map<M['Deployment'], Set<DeploymentElementModel<M>>>()
+
+  // Keep track of instances of the logical element
+  readonly #instancesOf = new Map<M['Element'], Set<DeployedInstanceModel<M>>>()
 
   readonly #rootElements = new Set<DeploymentNodeModel<M>>()
 
@@ -62,6 +65,9 @@ export class LikeC4DeploymentModel<M extends AnyAux> {
       const el = this.addElement(element)
       for (const tag of el.tags) {
         getOrCreate(this.#allTags, tag, () => new Set()).add(el)
+      }
+      if (el.isInstance()) {
+        getOrCreate(this.#instancesOf, el.element.id, () => new Set()).add(el)
       }
     }
     for (const relation of values($deployments.relations)) {
@@ -134,12 +140,23 @@ export class LikeC4DeploymentModel<M extends AnyAux> {
     return
   }
 
-  public *instances(): IteratorLike<DeployedInstanceModel<M>> {
-    // return this.#elements.values().filter(e => e.isInstance())
+  public *instances(): DeployedInstancesIterator<M> {
     for (const element of this.#elements.values()) {
       if (element.isInstance()) {
         yield element
       }
+    }
+    return
+  }
+
+  /**
+   * Iterate over all instances of the given logical element.
+   */
+  public *instancesOf(element: M['ElementOrFqn']): DeployedInstancesIterator<M> {
+    const id = getId(element)
+    const instances = this.#instancesOf.get(id)
+    if (instances) {
+      yield* instances
     }
     return
   }

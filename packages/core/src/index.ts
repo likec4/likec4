@@ -13,5 +13,6 @@ export * from './utils/getOrCreate'
 export * from './utils/guards'
 export * from './utils/promises'
 export { compareRelations } from './utils/relations'
+export * from './utils/stringHash'
 
 export * as Expr from './types/expression'

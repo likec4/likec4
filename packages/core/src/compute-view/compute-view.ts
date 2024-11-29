@@ -1,11 +1,9 @@
 import { mapValues } from 'remeda'
-import type { model } from '../builder/Builder.model'
 import { nonexhaustive } from '../errors'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
   type ComputedElementView,
-  type ComputedLikeC4Model,
   type ComputedLikeC4ModelFromParsed,
   type ComputedView,
   type DeploymentView,

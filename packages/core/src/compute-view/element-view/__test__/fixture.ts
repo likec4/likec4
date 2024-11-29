@@ -1,10 +1,11 @@
-import { indexBy, isString, map, prop } from 'remeda'
+import { forEach, indexBy, isString, map, mapToObj, prop, values } from 'remeda'
 import {
   type BorderStyle,
   type Color,
   type ComputedView,
   type CustomElementExpr as C4CustomElementExpr,
   type CustomRelationExpr as C4CustomRelationExpr,
+  type EdgeId,
   type Element,
   type ElementExpression as C4ElementExpression,
   type ElementKind,
@@ -39,6 +40,7 @@ import {
   type WhereOperator
 } from '../../../types'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
+import { withReadableEdges } from '../../utils/with-readable-edges'
 import { ComputeCtx } from '../compute'
 
 function computeElementView(view: ElementView, graph: LikeC4ModelGraph) {
@@ -628,6 +630,9 @@ export function computeView(
       fakeModel
     )
   }
+
+  result = withReadableEdges(result)
+
   return Object.assign(result, {
     nodeIds: map(result.nodes, prop('id')) as string[],
     edgeIds: map(result.edges, prop('id')) as string[]

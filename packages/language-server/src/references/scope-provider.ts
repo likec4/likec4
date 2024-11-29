@@ -138,12 +138,12 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const parent = container.parent
     if (!parent) {
       const doc = getDocument(container)
-      const globalScope = this.getGlobalScope(ast.DeploymentNode, context)
+      const localscope = this.computeScope(context, ast.DeploymentNode)
       if (!isLikeC4LangiumDocument(doc)) {
-        return globalScope
+        return localscope
       }
-      return this.createScope(
-        globalScope.getAllElements(),
+      return new StreamScope(
+        localscope.getAllElements(),
         new MapScope(this.deploymentsIndex.get(doc).unique())
       )
     }

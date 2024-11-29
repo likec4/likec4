@@ -1,4 +1,4 @@
-import type { AnyTypes, Invalid, Types, TypesNested } from './_types'
+import type { AnyTypes, Types, TypesNested } from './_types'
 import type { DeploymentModelBuilder } from './Builder.deploymentModel'
 
 type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, infer F>

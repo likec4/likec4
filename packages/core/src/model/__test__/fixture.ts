@@ -1,8 +1,5 @@
-import { Builder, LikeC4Model } from '@likec4/core'
-import { computeViews, withReadableEdges } from '@likec4/core/compute-view'
-import { mapValues } from 'remeda'
-import { describe, expect, it } from 'vitest'
-import { generateLikeC4Model } from './generate-likec4-model'
+import { Builder } from '../../builder/Builder'
+import { computeViews } from '../../compute-view/compute-view'
 
 const {
   builder: b,
@@ -60,7 +57,7 @@ const {
   }
 })
 
-const builder = b
+const local = b
   .with(
     model(
       person('customer'),
@@ -147,12 +144,10 @@ const builder = b
       )
     )
   )
-const computed = computeViews(builder.build())
-computed.views = mapValues(computed.views, withReadableEdges)
-const m = LikeC4Model.create(computed)
 
-describe('generateLikeC4Model', () => {
-  it('should generate', () => {
-    expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4-model.snap')
-  })
-})
+export const builder = local.clone()
+
+export const parsedModel = local.build()
+export type TestFqn = typeof local.Types.Fqn
+
+export const computedModel = computeViews(parsedModel)

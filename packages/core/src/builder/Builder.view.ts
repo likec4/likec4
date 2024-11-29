@@ -10,9 +10,7 @@ import {
   type ElementView,
   type Expression as C4Expression,
   type Fqn,
-  isDeploymentView,
   isElementPredicateExpr,
-  type LikeC4View,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator

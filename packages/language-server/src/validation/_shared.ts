@@ -8,6 +8,7 @@ export const RESERVED_WORDS = [
   'it',
   'self',
   'super',
+  'instance',
   'likec4lib',
   'global'
 ]

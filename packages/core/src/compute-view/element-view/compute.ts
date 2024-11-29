@@ -46,6 +46,7 @@ import {
   whereOperatorAsPredicate
 } from '../../types'
 import * as Expr from '../../types/expression'
+import { stringHash } from '../../utils'
 import { commonHead } from '../../utils/commonHead'
 import { commonAncestor, isAncestor } from '../../utils/fqn'
 import { compareRelations } from '../../utils/relations'
@@ -59,6 +60,7 @@ import { buildElementNotations } from '../utils/buildElementNotations'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { sortNodes } from '../utils/sortNodes'
 import { uniqueTags } from '../utils/uniqueTags'
+import { updateNodeInOutEdges } from '../utils/update-node-inout-edges'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import {
   type ElementPredicateFn,
@@ -240,7 +242,7 @@ export class ComputeCtx {
     const edges = this.computeEdges()
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(edge => [edge.id, edge]))
 
-    this.linkNodesAndEdges(nodesMap, edges)
+    updateNodeInOutEdges(nodesMap, edges)
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
@@ -305,7 +307,7 @@ export class ComputeCtx {
       const target = e.target.id
 
       const edge: ComputedEdge = {
-        id: `${source}:${target}` as EdgeId,
+        id: stringHash(`${source}:${target}`) as EdgeId,
         parent: commonAncestor(source, target),
         source,
         target,
@@ -407,45 +409,6 @@ export class ComputeCtx {
         tags && { tags }
       )
     })
-  }
-
-  /**
-   * Iterate over edges and assign `outEdges` and `inEdges` of nodes
-   */
-  protected linkNodesAndEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
-    for (const edge of edges) {
-      const source = nodesMap.get(edge.source)
-      const target = nodesMap.get(edge.target)
-      invariant(source, `Source node ${edge.source} not found`)
-      invariant(target, `Target node ${edge.target} not found`)
-      // These ancestors are reversed: from bottom to top
-      const sourceAncestors = [...ancestorsOfNode(source, nodesMap)]
-      const targetAncestors = [...ancestorsOfNode(target, nodesMap)]
-
-      const edgeParent = last(
-        commonHead(
-          reverse(sourceAncestors),
-          reverse(targetAncestors)
-        )
-      )
-      edge.parent = edgeParent?.id ?? null
-      source.outEdges.push(edge.id)
-      target.inEdges.push(edge.id)
-      // Process edge source ancestors
-      for (const sourceAncestor of sourceAncestors) {
-        if (sourceAncestor === edgeParent) {
-          break
-        }
-        sourceAncestor.outEdges.push(edge.id)
-      }
-      // Process target hierarchy
-      for (const targetAncestor of targetAncestors) {
-        if (targetAncestor === edgeParent) {
-          break
-        }
-        targetAncestor.inEdges.push(edge.id)
-      }
-    }
   }
 
   protected addEdges(edges: ComputeCtx.Edge[]) {

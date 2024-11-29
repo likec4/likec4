@@ -23,8 +23,6 @@ test('LikeC4Model: should have types', () => {
       deploymentView,
       views,
       view,
-      viewOf,
-      $rules,
       $include
     },
     builder

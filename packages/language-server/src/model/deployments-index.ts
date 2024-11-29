@@ -1,7 +1,7 @@
 import type { Fqn } from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
 import { AstUtils, DocumentState, MultiMap } from 'langium'
-import { entries, filter, forEachObj, groupBy, isTruthy, pipe } from 'remeda'
+import { forEachObj, groupBy, isTruthy, pipe } from 'remeda'
 import { ast, type DeploymentAstNodeDescription, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'

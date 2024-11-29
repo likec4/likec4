@@ -5,7 +5,7 @@ import { $exclude, $include, computeView } from './fixture'
 describe('compute-element-view', () => {
   it('should be empty if no root and no rules', () => {
     const { nodes, edges } = computeView([])
-    expect(nodes).toEqual([])
+    expect.soft(nodes).toEqual([])
     expect(edges).toEqual([])
   })
 
@@ -17,7 +17,7 @@ describe('compute-element-view', () => {
 
   it('should return landscape view on top `include *`', () => {
     const { nodes, nodeIds, edgeIds } = computeView([{ include: [{ wildcard: true }] }])
-    expect(nodeIds).toEqual([
+    expect.soft(nodeIds).toEqual([
       'customer',
       'support',
       'cloud',
@@ -32,11 +32,11 @@ describe('compute-element-view', () => {
       'email:cloud'
     ])
     const [customer, support, cloud, amazon, email] = nodes
-    expect(amazon).toMatchObject({
+    expect.soft(amazon).toMatchObject({
       outEdges: [],
       inEdges: ['cloud:amazon']
     })
-    expect(cloud).toMatchObject({
+    expect.soft(cloud).toMatchObject({
       outEdges: [
         'cloud:email',
         'cloud:amazon'
@@ -47,11 +47,11 @@ describe('compute-element-view', () => {
         'customer:cloud'
       ]
     })
-    expect(customer).toMatchObject({
+    expect.soft(customer).toMatchObject({
       outEdges: ['customer:cloud'],
       inEdges: []
     })
-    expect(support).toMatchObject({
+    expect.soft(support).toMatchObject({
       outEdges: ['support:cloud'],
       inEdges: []
     })
@@ -72,7 +72,7 @@ describe('compute-element-view', () => {
 
   it('view of cloud', () => {
     const { nodeIds, edgeIds, ...view } = computeView('cloud', [$include('*')])
-    expect(nodeIds).toEqual([
+    expect.soft(nodeIds).toEqual([
       'customer',
       'support',
       'cloud',
@@ -96,7 +96,7 @@ describe('compute-element-view', () => {
   it('view of cloud.backend', () => {
     const { nodeIds, edgeIds } = computeView('cloud.backend', [$include('*'), $include('customer')])
 
-    expect(nodeIds).toEqual([
+    expect.soft(nodeIds).toEqual([
       'customer',
       'cloud.frontend',
       'cloud.backend',
@@ -115,7 +115,7 @@ describe('compute-element-view', () => {
 
   it('view of cloud.frontend', () => {
     const { nodeIds, edgeIds, ...view } = computeView('cloud.frontend', [$include('*')])
-    expect(nodeIds).toEqual([
+    expect.soft(nodeIds).toEqual([
       'support',
       'customer',
       'cloud.frontend',

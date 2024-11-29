@@ -84,8 +84,8 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
   // const Locator = services.workspace.AstNodeLocator
   // const fqnIndex = services.likec4.FqnIndex
   return tryOrLog((el, accept) => {
-    const source = el.source.value.ref
-    const target = el.target.value.ref
+    const source = el.source?.value?.ref
+    const target = el.target?.value?.ref
 
     if (!source || !target) {
       return

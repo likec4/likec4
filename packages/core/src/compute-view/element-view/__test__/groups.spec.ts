@@ -1,4 +1,4 @@
-import { indexBy, mapValues, pipe, prop } from 'remeda'
+import { indexBy, map, mapValues, pipe, prop } from 'remeda'
 import type { BuildTuple } from 'type-fest/source/internal'
 import { describe, expect, it } from 'vitest'
 import type { ComputedNode } from '../../../types/view'
@@ -215,6 +215,10 @@ describe('groups', () => {
     expect(
       pipe(
         edges,
+        map(e => ({
+          ...e,
+          id: `${e.source}:${e.target}`
+        })),
         indexBy(prop('id')),
         mapValues(prop('parent'))
       )

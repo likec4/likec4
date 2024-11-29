@@ -108,6 +108,10 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
     return this.$node.navigateTo ? this.view.model.view(this.$node.navigateTo) : null
   }
 
+  /**
+   * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+   * (from closest to root)
+   */
   public *ancestors(): NodesIterator<M, V> {
     let parent = this.parent
     while (parent) {

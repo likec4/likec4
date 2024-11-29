@@ -2,7 +2,6 @@ import { isEmpty } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
-  type AnyLikeC4Model,
   type ComputedDeploymentView,
   DefaultElementShape,
   DefaultThemeColor,
@@ -11,10 +10,8 @@ import {
   type DeploymentNodeKind,
   type DeploymentRelation,
   type ElementShape as C4ElementShape,
-  type Fqn as C4Fqn,
   type Link,
   type PhysicalElementStyle,
-  type RelationId as C4RelationID,
   type Tag,
   type Tag as C4Tag,
   type ThemeColor
@@ -26,6 +23,7 @@ import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './typ
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<M extends AnyAux> = IteratorLike<DeploymentElementModel<M>>
+export type DeployedInstancesIterator<M extends AnyAux> = IteratorLike<DeployedInstanceModel<M>>
 export type DeploymentNodesIterator<M extends AnyAux> = IteratorLike<DeploymentNodeModel<M>>
 
 export abstract class DeploymentElementModel<M extends AnyAux> {
@@ -76,12 +74,39 @@ export abstract class DeploymentElementModel<M extends AnyAux> {
     return this.$node.links ?? []
   }
 
-  public ancestors(): DeploymentElementsIterator<M> {
+  /**
+   * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+   * (from closest to root)
+   */
+  public ancestors(): DeploymentNodesIterator<M> {
     return this.model.ancestors(this)
   }
 
+  /**
+   * Returns the common ancestor of this element and another element.
+   */
+  public commonAncestor(another: DeploymentElementModel<M>): DeploymentNodeModel<M> | null {
+    const common = commonAncestor(this.id, another.id)
+    return common ? this.model.node(common) : null
+  }
+
+  /**
+   * Get all sibling (i.e. same parent)
+   */
   public siblings(): DeploymentElementsIterator<M> {
     return this.model.siblings(this)
+  }
+
+  /**
+   * Resolve siblings of the element and its ancestors
+   *  (from closest to root)
+   */
+  public *ascendingSiblings(): DeploymentElementsIterator<M> {
+    yield* this.siblings()
+    for (const ancestor of this.ancestors()) {
+      yield* ancestor.siblings()
+    }
+    return
   }
 
   public incoming(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationModel<M>> {
@@ -114,8 +139,10 @@ export abstract class DeploymentElementModel<M extends AnyAux> {
     return
   }
 
+  /**
+   * Iterate over all views that include this deployment element.
+   */
   public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {
-    // return this.model.views().filter(vm => vm.includesDeployment(this.id))
     for (const view of this.model.views()) {
       if (view.includesDeployment(this.id)) {
         yield view
@@ -159,7 +186,7 @@ export class DeploymentNodeModel<M extends AnyAux> extends DeploymentElementMode
 export class DeployedInstanceModel<M extends AnyAux> extends DeploymentElementModel<M> {
   constructor(
     public readonly model: LikeC4DeploymentModel<M>,
-    public readonly $instance: DeployedInstance,
+    public readonly $node: DeployedInstance,
     public readonly element: ElementModel<M>
   ) {
     super()
@@ -169,8 +196,8 @@ export class DeployedInstanceModel<M extends AnyAux> extends DeploymentElementMo
     return nonNullable(this.model.parent(this), `Parent of ${this.id} not found`)
   }
 
-  get $node(): DeployedInstance {
-    return this.$instance
+  get $instance(): DeployedInstance {
+    return this.$node
   }
 
   override get style(): SetRequired<PhysicalElementStyle, 'shape' | 'color'> {

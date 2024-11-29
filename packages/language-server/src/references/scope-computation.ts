@@ -6,13 +6,25 @@ import {
   MultiMap,
   type PrecomputedScopes
 } from 'langium'
-import { filter, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
+import { entries, filter, flatMap, forEach, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
-import { logError } from '../logger'
+import { logError, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
+type DeploymentsContainer = ast.ModelDeployments | ast.DeploymentNodeBody
+
+function uniqueDescriptions(
+  descs: AstNodeDescription[]
+): AstNodeDescription[] {
+  return pipe(
+    descs,
+    groupBy(desc => `${desc.type}.${desc.name}`),
+    entries(),
+    flatMap(([_, descs]) => descs.length === 1 ? descs : [])
+  )
+}
 
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
   constructor(services: LikeC4Services) {
@@ -213,7 +225,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           docExports.push(this.descriptions.createDescription(node, node.name, document))
         }
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
   }
@@ -224,27 +236,32 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<PrecomputedScopes> {
     return new Promise(resolve => {
       const root = document.parseResult.value
-      const descedants = [] as AstNodeDescription[]
+      const descendants = [] as AstNodeDescription[]
       const scopes = new MultiMap<AstNode, AstNodeDescription>()
+
       for (const model of root.models) {
         try {
-          descedants.push(
+          descendants.push(
             ...this.processContainer(model, scopes, document)
           )
         } catch (e) {
           logError(e)
         }
       }
+      for (const deployment of root.deployments) {
+        try {
+          descendants.push(
+            ...this.processDeployments(deployment, scopes, document)
+          )
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
 
-      pipe(
-        descedants,
-        groupBy(desc => desc.name),
-        forEachObj(descs => {
-          if (descs.length === 1) {
-            scopes.add(root, descs[0])
-          }
-        })
-      )
+      uniqueDescriptions(descendants).forEach(desc => {
+        scopes.add(root, desc)
+      })
+
       resolve(scopes)
     })
   }
@@ -278,7 +295,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
             ...this.processContainer(subcontainer, scopes, document)
           )
         } catch (e) {
-          logError(e)
+          logWarnError(e)
         }
       }
     }
@@ -298,5 +315,47 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     const local = localScope.values().toArray()
     scopes.addAll(container, local)
     return local
+  }
+
+  protected processDeployments(
+    container: DeploymentsContainer,
+    scopes: PrecomputedScopes,
+    document: LikeC4LangiumDocument
+  ): AstNodeDescription[] {
+    const localnames = new Set<string>()
+    const descedants = [] as AstNodeDescription[]
+
+    for (const el of container.elements) {
+      if (ast.isDeploymentRelation(el)) {
+        continue
+      }
+
+      let name = this.nameProvider.getName(el)
+      if (isTruthy(name)) {
+        const desc = this.descriptions.createDescription(el, name, document)
+        scopes.add(container, desc)
+        localnames.add(`${desc.type}.${desc.name}`)
+      }
+
+      if (ast.isDeploymentNode(el) && el.body) {
+        try {
+          descedants.push(
+            ...this.processDeployments(el.body, scopes, document)
+          )
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
+    }
+
+    pipe(
+      descedants,
+      filter(desc => !localnames.has(`${desc.type}.${desc.name}`)),
+      uniqueDescriptions,
+      forEach(desc => {
+        scopes.add(container, desc)
+      })
+    )
+    return scopes.get(container).values().toArray()
   }
 }

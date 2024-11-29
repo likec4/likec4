@@ -2,6 +2,7 @@ import { indexBy } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Element, ElementView, Relation, Tag, ViewId, ViewRule } from '../../types'
 import { LikeC4ModelGraph } from '../LikeC4ModelGraph'
+import { withReadableEdges } from '../utils/with-readable-edges'
 import { $include, fakeElements } from './__test__/fixture'
 import { ComputeCtx } from './compute'
 
@@ -55,7 +56,7 @@ describe('compute', () => {
       relations: toRecord(relations)
     })
 
-    const context = ComputeCtx.elementView(view, graph)
+    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
 
     expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).includes(relations[0]!.id)
     expect(context.nodes.find(n => n.id === 'cloud.backend')?.outEdges).includes(relations[0]!.id)
@@ -84,7 +85,7 @@ describe('compute', () => {
       relations: toRecord(relations)
     })
 
-    const context = ComputeCtx.elementView(view, graph)
+    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
 
     expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).not.includes(relations[0]!.id)
     expect(context.nodes.find(n => n.id === 'cloud')?.inEdges).not.includes(relations[0]!.id)
@@ -111,7 +112,7 @@ describe('compute', () => {
       relations: toRecord(relations)
     })
 
-    const context = ComputeCtx.elementView(view, graph)
+    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
 
     expect(context.nodes.find(n => n.id === 'cloud')?.inEdges).includes(relations[0]!.id)
     expect(context.nodes.find(n => n.id === 'cloud.backend')?.inEdges).includes(relations[0]!.id)
@@ -140,7 +141,7 @@ describe('compute', () => {
       relations: toRecord(relations)
     })
 
-    const context = ComputeCtx.elementView(view, graph)
+    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
 
     expect(context.edges[0]!.parent).toBe('cloud')
   })
