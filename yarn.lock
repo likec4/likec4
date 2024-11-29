@@ -2285,7 +2285,7 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.12"
     "@vanilla-extract/vite-plugin": "npm:^4.0.18"
-    "@vitejs/plugin-react-swc": "npm:3.7.1"
+    "@vitejs/plugin-react-swc": "npm:3.7.2"
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.1.4"
     fast-equals: "npm:^5.0.1"
@@ -2348,7 +2348,7 @@ __metadata:
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.16.1"
     "@vanilla-extract/vite-plugin": "npm:^4.0.18"
-    "@vitejs/plugin-react-swc": "npm:3.7.1"
+    "@vitejs/plugin-react-swc": "npm:3.7.2"
     esm-env: "npm:^1.1.4"
     nanostores: "npm:0.11.3"
     object-hash: "npm:^3.0.0"
@@ -4009,14 +4009,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react-swc@npm:3.7.1":
-  version: 3.7.1
-  resolution: "@vitejs/plugin-react-swc@npm:3.7.1"
+"@vitejs/plugin-react-swc@npm:3.7.2":
+  version: 3.7.2
+  resolution: "@vitejs/plugin-react-swc@npm:3.7.2"
   dependencies:
     "@swc/core": "npm:^1.7.26"
   peerDependencies:
-    vite: ^4 || ^5
-  checksum: 10c0/2d613e69c0d0b809c94df80ca2b0caf39c50f0b98aa1f8599fd086bc37dac1449898eb6572000e1c133313137cac93440c4cb0861e05820c78bd2c07a52e64a8
+    vite: ^4 || ^5 || ^6
+  checksum: 10c0/9b9a5e0540791ba96a9fe4e8b8146ab274edcc730315535705f20126d6dfaffe72ae474bac9904ce841976e1959b6ecffd047bb2f0b7abf4d85aae7fbfdd00ab
   languageName: node
   linkType: hard
 
@@ -8581,7 +8581,7 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.16.1"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vanilla-extract/vite-plugin": "npm:^4.0.18"
-    "@vitejs/plugin-react-swc": "npm:3.7.1"
+    "@vitejs/plugin-react-swc": "npm:3.7.2"
     "@xyflow/react": "npm:12.3.5"
     "@xyflow/system": "npm:0.0.46"
     autoprefixer: "npm:^10.4.20"
