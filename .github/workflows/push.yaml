@@ -39,7 +39,8 @@ jobs:
         run: yarn ci:typecheck
 
       - name: likec4/react types
-        run: turbo run build-react-dts --filter='likec4'
+        run: |
+          yarn turbo run build-react-dts --filter='likec4'
 
   check-build:
     # If on pull request, run only if coming from forked repos
