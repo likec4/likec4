@@ -1,5 +1,5 @@
-import { delay, type ThemeColor } from '@likec4/core'
-import { ActionIcon, type ActionIconProps, Box, Group, Text as MantineText, Tooltip } from '@mantine/core'
+import { type ThemeColor } from '@likec4/core'
+import { ActionIcon, type ActionIconProps, Box, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { type HTMLMotionProps, m, type Variants } from 'framer-motion'
 import React, { memo, useCallback, useState } from 'react'
-import { isNumber, isTruthy, mergeDeep, set } from 'remeda'
+import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementXYFlowNode } from '../../types'
 import { stopPropagation, toDomPrecision } from '../../utils'
@@ -301,6 +301,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         </Box>
         {/* {isHovercards && element.links && <ElementLink element={element} />} */}
         <BottomButtons
+          keyPrefix={`${viewId}:element:${id}:`}
           onNavigateTo={isNavigable && onNavigateTo}
           onOpenRelationships={enableRelationshipBrowser && onOpenRelationships}
           {...isInteractive && animateHandlers}
@@ -338,10 +339,12 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 }, isEqualProps)
 
 type BottomButtonsProps = ActionIconProps & HTMLMotionProps<'div'> & {
+  keyPrefix: string
   onNavigateTo: ((e: React.MouseEvent) => void) | false
   onOpenRelationships: ((e: React.MouseEvent) => void) | false
 }
 const BottomButtons = ({
+  keyPrefix,
   onNavigateTo,
   onOpenRelationships,
   ...props
@@ -358,10 +361,11 @@ const BottomButtons = ({
       {enableNavigate && (
         <ActionIcon
           {...props}
-          key="navigate"
+          key={`${keyPrefix}navigate`}
           data-animate-target="navigate"
           component={m.div}
-          variants={variantsBottomButton('navigate', enableRelationships && 'left')}
+          // Weird, but dts-bundle-generator fails on "enableRelationships && 'left'"
+          variants={variantsBottomButton('navigate', enableRelationships ? 'left' : false)}
           className={clsx('nodrag nopan', css.navigateBtn)}
           radius="md"
           role="button"
@@ -378,10 +382,10 @@ const BottomButtons = ({
       {enableRelationships && (
         <ActionIcon
           {...props}
-          key="relationships"
+          key={`${keyPrefix}relationships`}
           data-animate-target="relationships"
           component={m.div}
-          variants={variantsBottomButton('relationships', enableNavigate && 'right')}
+          variants={variantsBottomButton('relationships', enableNavigate ? 'right' : false)}
           className={clsx('nodrag nopan', css.navigateBtn)}
           radius="md"
           role="button"
