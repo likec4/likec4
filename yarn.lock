@@ -2061,7 +2061,7 @@ __metadata:
     natural-compare-lite: "npm:^1.4.0"
     remeda: "npm:^2.17.3"
     turbo: "npm:^2.3.2"
-    type-fest: "npm:4.27.1"
+    type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     unbuild: "npm:^3.0.0-rc.11"
     vitest: "npm:^2.1.5"
@@ -2101,7 +2101,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     remeda: "npm:^2.17.3"
-    type-fest: "npm:4.27.1"
+    type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     vitest: "npm:^2.1.5"
     zustand: "npm:^4.5.5"
@@ -2203,7 +2203,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.3.2"
-    type-fest: "npm:4.27.1"
+    type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     ufo: "npm:^1.5.4"
     unbuild: "npm:^3.0.0-rc.11"
@@ -2232,7 +2232,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
     turbo: "npm:^2.3.2"
-    type-fest: "npm:4.27.1"
+    type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     unbuild: "npm:^3.0.0-rc.11"
     vitest: "npm:^2.1.5"
@@ -2304,7 +2304,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.3.2"
-    type-fest: "npm:4.27.1"
+    type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     ufo: "npm:^1.5.4"
     vite: "npm:5.4.11"
@@ -2358,7 +2358,7 @@ __metadata:
     react-error-boundary: "npm:^4.1.2"
     remeda: "npm:^2.17.3"
     tsx: "npm:~4.9.3"
-    type-fest: "npm:4.27.1"
+    type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     vite: "npm:5.4.11"
     vscode-messenger-webview: "npm:^0.4.5"
@@ -8623,7 +8623,7 @@ __metadata:
     tinyrainbow: "npm:^1.2.0"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.3.2"
-    type-fest: "npm:4.27.1"
+    type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     ufo: "npm:^1.5.4"
     unbuild: "npm:^3.0.0-rc.11"
@@ -13398,10 +13398,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:4.27.1":
-  version: 4.27.1
-  resolution: "type-fest@npm:4.27.1"
-  checksum: 10c0/00930b4b9273f0a9a3cf74d339fa96253c70815c97612381771290b89008a5b6719bbd2133f947658e624ae6f32d9742b22f4e44b09c4114993b09b72af1a29a
+"type-fest@npm:4.28.1":
+  version: 4.28.1
+  resolution: "type-fest@npm:4.28.1"
+  checksum: 10c0/8b0dabe2f063dff6dff1964d70f1d844ea13a7534e9aa454b48569d5837f76252bb4518bbd3ca98b4fb65e49a732c555649cf60fc02b0254a0d69eb00c518725
   languageName: node
   linkType: hard
 
