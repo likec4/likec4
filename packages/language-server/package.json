@@ -103,7 +103,7 @@
     "strip-indent": "^4.0.0",
     "type-fest": "4.28.1",
     "ufo": "^1.5.4",
-    "vscode-jsonrpc": "8.2.0",
+    "vscode-jsonrpc": "8.2.1",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-types": "3.17.5",
     "vscode-uri": "3.0.8"

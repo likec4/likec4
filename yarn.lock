@@ -2208,7 +2208,7 @@ __metadata:
     ufo: "npm:^1.5.4"
     unbuild: "npm:^3.0.0-rc.11"
     vitest: "npm:^2.1.6"
-    vscode-jsonrpc: "npm:8.2.0"
+    vscode-jsonrpc: "npm:8.2.1"
     vscode-languageserver: "npm:9.0.1"
     vscode-languageserver-types: "npm:3.17.5"
     vscode-uri: "npm:3.0.8"
@@ -8664,7 +8664,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.3.2"
     typescript: "npm:^5.7.2"
-    vscode-jsonrpc: "npm:8.2.0"
+    vscode-jsonrpc: "npm:8.2.1"
     vscode-languageclient: "npm:9.0.1"
     vscode-languageserver: "npm:9.0.1"
     vscode-languageserver-types: "npm:3.17.5"
@@ -14438,10 +14438,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-jsonrpc@npm:8.2.0":
-  version: 8.2.0
-  resolution: "vscode-jsonrpc@npm:8.2.0"
-  checksum: 10c0/0789c227057a844f5ead55c84679206227a639b9fb76e881185053abc4e9848aa487245966cc2393fcb342c4541241b015a1a2559fddd20ac1e68945c95344e6
+"vscode-jsonrpc@npm:8.2.1":
+  version: 8.2.1
+  resolution: "vscode-jsonrpc@npm:8.2.1"
+  checksum: 10c0/595e07f779112d979d9cd37a00e4b973c39da09dd7c35b149f9fb7857c87db00d0ece7772c5a6f65cc19e38afc4fc64f8130d2f0e6b5f7fc160a0fc6b94e8c07
   languageName: node
   linkType: hard
 

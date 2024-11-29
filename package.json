@@ -50,7 +50,7 @@
     "vitest": "^2.1.6"
   },
   "resolutions": {
-    "vscode-jsonrpc": "8.2.0",
+    "vscode-jsonrpc": "8.2.1",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "3.17.5",

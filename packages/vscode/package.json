@@ -207,7 +207,7 @@
     "tsx": "~4.9.3",
     "turbo": "^2.3.2",
     "typescript": "^5.7.2",
-    "vscode-jsonrpc": "8.2.0",
+    "vscode-jsonrpc": "8.2.1",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-types": "3.17.5",
