@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@codingame/esbuild-import-meta-url-plugin": "^1.0.2",
-    "@codingame/monaco-vscode-editor-service-override": "8.0.4",
+    "@codingame/monaco-vscode-editor-service-override": "11.1.1",
     "@codingame/monaco-vscode-theme-defaults-default-extension": "8.0.4",
     "@hpcc-js/wasm-graphviz": "1.6.1",
     "@likec4/core": "workspace:*",
