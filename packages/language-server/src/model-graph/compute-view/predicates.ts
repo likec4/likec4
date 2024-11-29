@@ -16,17 +16,24 @@ const Identity = <T>(x: T) => x
 const filterBy = <T>(pred: Predicate<T>) => pred === NoFilter ? Identity : remedaFilter(pred)
 const filterOne = <T>(pred: Predicate<T>) => pred === NoFilter ? Identity : (x: T) => pred(x) ? x : null
 
+export function expandWildcardRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
+  if (expr.isChildren) {
+    const children = this.graph.children(expr.element)
+    return children.length > 0 ? children : [this.graph.element(expr.element)];
+  } else if (expr.isDescendants) {
+    return this.graph.descendants(expr.element);
+  } else {
+    return [this.graph.element(expr.element)];
+  }
+}
+
 export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr, where = NoFilter) {
   // Get the elements that are already in the Ctx before any mutations
   // Because we need to add edges between them and the new elements
   const currentElements = [...this.resolvedElements]
   const filter = filterBy(where)
 
-  const elements = filter(
-    expr.isDescedants === true
-      ? this.graph.childrenOrElement(expr.element)
-      : [this.graph.element(expr.element)]
-  )
+  const elements = filter(expandWildcardRef.call(this, expr));
   if (elements.length === 0) {
     return
   }
@@ -266,15 +273,12 @@ function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Elemen
     return nonexhaustive(expr)
   }
 
-  if (this.root === expr.element && expr.isDescedants !== true) {
+  // TODO: Why do we include the root's children in this?
+  if (this.root === expr.element && expr.isChildren !== true && expr.isDescendants !== true) {
     return [...this.graph.children(this.root), this.graph.element(this.root)]
   }
 
-  if (expr.isDescedants) {
-    return this.graph.childrenOrElement(expr.element)
-  } else {
-    return [this.graph.element(expr.element)]
-  }
+  return expandWildcardRef.call(this, expr);
 }
 
 // --------------------------------
@@ -296,10 +300,10 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   let sources = [...this.resolvedElements]
   if (Expr.isElementRef(expr) || Expr.isExpandedElementExpr(expr)) {
     const exprElement = expr.element ?? expr.expanded
-    const isDescedants = expr.isDescedants ?? false
+    const isChildren = expr.isChildren ?? false
     sources = sources.filter(el =>
       // allow elements, that are not nested or are direct children
-      !isAncestor(exprElement, el.id) || (isDescedants && parentFqn(el.id) === exprElement)
+      !isAncestor(exprElement, el.id) || (isChildren && parentFqn(el.id) === exprElement)
     )
   }
   if (sources.length === 0) {
@@ -361,10 +365,10 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   let targets = [...this.resolvedElements]
   if (Expr.isElementRef(expr) || Expr.isExpandedElementExpr(expr)) {
     const sourceElement = expr.element ?? expr.expanded
-    const isDescedants = expr.isDescedants ?? false
+    const isChildren = expr.isChildren ?? false
     targets = targets.filter(el =>
       // allow elements, that are not nested or are direct children
-      !isAncestor(sourceElement, el.id) || (isDescedants && parentFqn(el.id) === sourceElement)
+      !isAncestor(sourceElement, el.id) || (isChildren && parentFqn(el.id) === sourceElement)
     )
   }
   if (targets.length === 0) {
@@ -419,10 +423,10 @@ function edgesInOutExpr(this: ComputeCtx, { inout }: Expr.InOutExpr, where?: Rel
 
   if (Expr.isElementRef(inout) || Expr.isExpandedElementExpr(inout)) {
     const exprElement = inout.element ?? inout.expanded
-    const isDescedants = inout.isDescedants ?? false
+    const isChildren = inout.isChildren ?? false
     currentElements = currentElements.filter(el =>
       // allow elements, that are not nested or are direct children
-      !isAncestor(exprElement, el.id) || (isDescedants && parentFqn(el.id) === exprElement)
+      !isAncestor(exprElement, el.id) || (isChildren && parentFqn(el.id) === exprElement)
     )
   }
   if (currentElements.length === 0) {
@@ -463,7 +467,7 @@ export function excludeInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr, where?:
  *   }
  */
 function resolveRelationExprElements(this: ComputeCtx, expr: Expr.ElementExpression) {
-  if (Expr.isElementRef(expr) && this.root === expr.element && expr.isDescedants !== true) {
+  if (Expr.isElementRef(expr) && this.root === expr.element && expr.isChildren !== true && expr.isDescendants !== true) {
     return [...this.graph.children(expr.element), this.graph.element(expr.element)]
   }
   if (Expr.isExpandedElementExpr(expr) && this.root === expr.expanded) {

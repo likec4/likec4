@@ -372,7 +372,7 @@ ElementSelectorExpression infers ElementExpression:
 ElementDescedantsExpression infers ElementExpression:
   ElementRef (
     {infer ExpandElementExpression.expand=current} DotUnderscore |
-    {infer ElementDescedantsExpression.parent=current} DotWildcard
+    {infer ElementDescedantsExpression.parent=current} suffix=DotWildcard
   )?
 ;
 
@@ -675,7 +675,7 @@ terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal DotUnderscore: /\b\._/;
-terminal DotWildcard: /\b\.\*/;
+terminal DotWildcard: /\b\.\*{1,2}/;
 terminal Hash: '#';
 
 // No space allowed before dot
