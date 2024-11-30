@@ -1,8 +1,11 @@
 import { map, prop } from 'remeda'
 import { Builder } from '../../../builder'
 import type { DeploymentViewRuleBuilderOp } from '../../../builder/Builder.view'
-import type { ComputedDeploymentView } from '../../../types'
+import { LikeC4Model } from '../../../model'
+import type { ComputedDeploymentView, DeploymentView } from '../../../types'
 import { mkComputeView } from '../../compute-view'
+import { withReadableEdges } from '../../utils/with-readable-edges'
+import { computeDeploymentView } from '../compute'
 
 const {
   builder: b,
@@ -111,12 +114,12 @@ export const builder = b
       env('prod').with(
         zone('eu').with(
           zone('zone1').with(
-            instanceOf('ui', 'cloud.frontend.dashboard'),
-            instanceOf('api', 'cloud.backend.api')
+            instanceOf('api', 'cloud.backend.api'),
+            instanceOf('ui', 'cloud.frontend.dashboard')
           ),
           zone('zone2').with(
-            instanceOf('ui', 'cloud.frontend.dashboard'),
-            instanceOf('api', 'cloud.backend.api')
+            instanceOf('api', 'cloud.backend.api'),
+            instanceOf('ui', 'cloud.frontend.dashboard')
           ),
           instanceOf('media', 'cloud.media'),
           instanceOf('db', 'aws.rds')
@@ -153,6 +156,26 @@ export function computeView(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
     )
   ).build()
   const view = compute(model.views.index).view as ComputedDeploymentView
+  return Object.assign(view, {
+    nodeIds: map(view.nodes, prop('id')) as string[],
+    edgeIds: map(view.edges, prop('id')) as string[]
+  })
+}
+
+export function computeView2(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
+  const modelsource = builder.with(
+    views(
+      deploymentView('index', $rules(...rules))
+    )
+  ).build()
+
+  const model = LikeC4Model.create({
+    ...modelsource,
+    views: {}
+  })
+
+  const view = withReadableEdges(computeDeploymentView(model, modelsource.views.index as DeploymentView))
+
   return Object.assign(view, {
     nodeIds: map(view.nodes, prop('id')) as string[],
     edgeIds: map(view.edges, prop('id')) as string[]

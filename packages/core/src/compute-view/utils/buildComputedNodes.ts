@@ -1,3 +1,4 @@
+import { map } from 'remeda'
 import type { SetRequired, Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
@@ -9,7 +10,7 @@ import {
   type Fqn,
   type NodeId
 } from '../../types'
-import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
+import { compareByFqnHierarchically, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/compute'
 
 function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, ComputedNode>) {
@@ -42,7 +43,10 @@ export function buildComputedNodesFromElements(elements: ReadonlyArray<Element>,
   return buildComputedNodes(elements.map(modelElementAsNodeSource), groups)
 }
 
-export function buildComputedNodes(elements: ReadonlyArray<ComputedNodeSource>, groups?: NodesGroup[]) {
+export function buildComputedNodes(
+  elements: ReadonlyArray<ComputedNodeSource>,
+  groups?: NodesGroup[]
+): ReadonlyMap<Fqn, ComputedNode> {
   const nodesMap = new Map<Fqn, ComputedNode>()
 
   const elementToGroup = new Map<Fqn, NodeId>()
@@ -77,61 +81,69 @@ export function buildComputedNodes(elements: ReadonlyArray<ComputedNodeSource>, 
     }
   })
 
-  return (
-    Array.from(elements)
-      // Sort from Top to Bottom
-      // So we can ensure that parent nodes are created before child nodes
-      .sort(compareByFqnHierarchically)
-      .reduce((map, { id, style, kind, title, color, shape, ...el }) => {
-        let parent = parentFqn(id)
-        let level = 0
-        let parentNd: ComputedNode | undefined
-        // Find the first ancestor that is already in the map
-        while (parent) {
-          parentNd = map.get(parent)
-          if (parentNd) {
-            break
-          }
-          parent = parentFqn(parent)
-        }
-        // If parent is not found in the map, check if it is in a group
-        if (!parentNd && elementToGroup.has(id)) {
-          parent = elementToGroup.get(id)!
-          parentNd = map.get(parent)!
-        }
+  // Ensure that parent nodes are created before child nodes
+  Array.from(elements)
+    .sort(compareByFqnHierarchically)
+    .forEach(({ id, style, kind, title, color, shape, ...el }) => {
+      let parent = parentFqn(id)
+      let level = 0
+      let parentNd: ComputedNode | undefined
+      // Find the first ancestor that is already in the map
+      while (parent) {
+        parentNd = nodesMap.get(parent)
         if (parentNd) {
-          // if parent has no children and we are about to add first one
-          // we need to set its depth to 1
-          if (parentNd.children.length == 0) {
-            parentNd.depth = 1
-            // go up the tree and update depth of all parents
-            updateDepthOfAncestors(parentNd, map)
-          }
-          parentNd.children.push(id)
-          level = parentNd.level + 1
+          break
         }
-        const node: ComputedNode = {
-          id,
-          parent,
-          kind,
-          title,
-          level,
-          color: color ?? DefaultThemeColor,
-          shape: shape ?? DefaultElementShape,
-          description: null,
-          technology: null,
-          tags: null,
-          links: null,
-          children: [],
-          inEdges: [],
-          outEdges: [],
-          ...el,
-          style: {
-            ...style
-          }
+        parent = parentFqn(parent)
+      }
+      // If parent is not found in the map, check if it is in a group
+      if (!parentNd && elementToGroup.has(id)) {
+        parent = elementToGroup.get(id)!
+        parentNd = nodesMap.get(parent)!
+      }
+      if (parentNd) {
+        // if parent has no children and we are about to add first one
+        // we need to set its depth to 1
+        if (parentNd.children.length == 0) {
+          parentNd.depth = 1
+          // go up the tree and update depth of all parents
+          updateDepthOfAncestors(parentNd, nodesMap)
         }
-        map.set(id, node)
-        return map
-      }, nodesMap) as ReadonlyMap<Fqn, ComputedNode>
-  )
+        parentNd.children.push(id)
+        level = parentNd.level + 1
+      }
+      const node: ComputedNode = {
+        id,
+        parent,
+        kind,
+        title,
+        level,
+        color: color ?? DefaultThemeColor,
+        shape: shape ?? DefaultElementShape,
+        description: null,
+        technology: null,
+        tags: null,
+        links: null,
+        children: [],
+        inEdges: [],
+        outEdges: [],
+        ...el,
+        style: {
+          ...style
+        }
+      }
+      nodesMap.set(id, node)
+    })
+
+  // Create new map and add elements in the same order as they were in the input
+  const orderedMap = new Map<Fqn, ComputedNode>()
+
+  groups?.forEach(({ id }) => {
+    orderedMap.set(id, nonNullable(nodesMap.get(id)))
+  })
+  elements.forEach(({ id }) => {
+    orderedMap.set(id, nonNullable(nodesMap.get(id)))
+  })
+
+  return orderedMap
 }

@@ -2058,7 +2058,11 @@ __metadata:
     "@types/natural-compare-lite": "npm:^1.4.2"
     "@types/object-hash": "npm:^3.0.6"
     chroma-js: "npm:^3.1.2"
+    core-js: "npm:^3.39.0"
     defu: "npm:^6.1.4"
+    graphology: "npm:^0.25.4"
+    graphology-dag: "npm:^0.4.1"
+    graphology-types: "npm:^0.24.8"
     natural-compare-lite: "npm:^1.4.0"
     object-hash: "npm:^3.0.0"
     remeda: "npm:^2.17.4"
@@ -5582,6 +5586,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"core-js@npm:^3.39.0":
+  version: 3.39.0
+  resolution: "core-js@npm:3.39.0"
+  checksum: 10c0/f7602069b6afb2e3298eec612a5c1e0c3e6a458930fbfc7a4c5f9ac03426507f49ce395eecdd2d9bae9024f820e44582b67ffe16f2272395af26964f174eeb6b
+  languageName: node
+  linkType: hard
+
 "core-util-is@npm:~1.0.0":
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
@@ -6775,6 +6786,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"events@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "events@npm:3.3.0"
+  checksum: 10c0/d6b6f2adbccbcda74ddbab52ed07db727ef52e31a61ed26db9feb7dc62af7fc8e060defa65e5f8af9449b86b52cc1a1f6a79f2eafcf4e62add2b7a1fa4a432f6
+  languageName: node
+  linkType: hard
+
 "execa@npm:^1.0.0":
   version: 1.0.0
   resolution: "execa@npm:1.0.0"
@@ -7395,6 +7413,46 @@ __metadata:
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
   checksum: 10c0/386d011a553e02bc594ac2ca0bd6d9e4c22d7fa8cfbfc448a6d148c59ea881b092db9dbe3547ae4b88e55f1b01f7c4a2ecc53b310c042793e63aa44cf6c257f2
+  languageName: node
+  linkType: hard
+
+"graphology-dag@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "graphology-dag@npm:0.4.1"
+  dependencies:
+    graphology-utils: "npm:^2.4.1"
+    mnemonist: "npm:^0.39.0"
+  peerDependencies:
+    graphology-types: ">=0.19.0"
+  checksum: 10c0/3077df57f20bd04b7c0188e192d1f131081b0ae7ef74af1dbe8537075d99c161d43f87e2371d10ab50c60a8c84ca589bdcac46e724b1902508c1f881121b58f4
+  languageName: node
+  linkType: hard
+
+"graphology-types@npm:^0.24.8":
+  version: 0.24.8
+  resolution: "graphology-types@npm:0.24.8"
+  checksum: 10c0/2c829a739ed2554934489b994140130007ae5b2281cb818f90371cae5cbeb27d574b552597af462d22694044abfeddfe179c2b94c736c8cfb2a7a35e43a8f894
+  languageName: node
+  linkType: hard
+
+"graphology-utils@npm:^2.4.1":
+  version: 2.5.2
+  resolution: "graphology-utils@npm:2.5.2"
+  peerDependencies:
+    graphology-types: ">=0.23.0"
+  checksum: 10c0/5817142b3b1fa677e9dc8f2a4ff71e52c36dbb02ecd02a73cd2299b5958336da33835b2a729f087251c37d66aaa1ab4ff119e17f4959e88eeb551cc09e5880fc
+  languageName: node
+  linkType: hard
+
+"graphology@npm:^0.25.4":
+  version: 0.25.4
+  resolution: "graphology@npm:0.25.4"
+  dependencies:
+    events: "npm:^3.3.0"
+    obliterator: "npm:^2.0.2"
+  peerDependencies:
+    graphology-types: ">=0.24.0"
+  checksum: 10c0/b650a43619ccd9201ab02bafcbbcca2e2c4de646b22659ff660ad0669b4a2df3a5afb2f38a9135b3753b748cf2e897acfe9a34f0f3324362d9cd522282d41937
   languageName: node
   linkType: hard
 
@@ -10091,6 +10149,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mnemonist@npm:^0.39.0":
+  version: 0.39.8
+  resolution: "mnemonist@npm:0.39.8"
+  dependencies:
+    obliterator: "npm:^2.0.1"
+  checksum: 10c0/fa810768d290919c4ecd3f8ba5c8458bc45df08d1c72fac8f3897721cd90ab42ee1c642cc5208cfd649d40222998dc011127702117c0ca676f243cc80f42cc11
+  languageName: node
+  linkType: hard
+
 "modern-ahocorasick@npm:^1.0.0":
   version: 1.0.1
   resolution: "modern-ahocorasick@npm:1.0.1"
@@ -10458,6 +10525,13 @@ __metadata:
   version: 3.0.0
   resolution: "object-hash@npm:3.0.0"
   checksum: 10c0/a06844537107b960c1c8b96cd2ac8592a265186bfa0f6ccafe0d34eabdb526f6fa81da1f37c43df7ed13b12a4ae3457a16071603bcd39d8beddb5f08c37b0f47
+  languageName: node
+  linkType: hard
+
+"obliterator@npm:^2.0.1, obliterator@npm:^2.0.2":
+  version: 2.0.4
+  resolution: "obliterator@npm:2.0.4"
+  checksum: 10c0/ff2c10d4de7d62cd1d588b4d18dfc42f246c9e3a259f60d5716f7f88e5b3a3f79856b3207db96ec9a836a01d0958a21c15afa62a3f4e73a1e0b75f2c2f6bab40
   languageName: node
   linkType: hard
 

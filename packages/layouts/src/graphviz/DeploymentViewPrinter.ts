@@ -60,15 +60,15 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
 
     const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
 
-    if (!hasCompoundEndpoint) {
-      const connected = new Set([
-        ...sourceNode.inEdges,
-        ...sourceNode.outEdges,
-        ...targetNode.inEdges,
-        ...targetNode.outEdges
-      ].filter(e => !this.edgesWithCompounds.has(e)))
-      e.attributes.set(_.weight, connected.size)
-    }
+    // if (!hasCompoundEndpoint) {
+    //   const connected = new Set([
+    //     ...sourceNode.inEdges,
+    //     ...sourceNode.outEdges,
+    //     ...targetNode.inEdges,
+    //     ...targetNode.outEdges
+    //   ].filter(e => !this.edgesWithCompounds.has(e)))
+    //   e.attributes.set(_.weight, connected.size)
+    // }
 
     const label = edgelabel(edge)
     if (label) {

@@ -95,6 +95,9 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   }
 
   public element(el: M['ElementOrFqn']): ElementModel<M> {
+    if (el instanceof ElementModel) {
+      return el
+    }
     const id = getId(el)
     return nonNullable(this.findElement(id), `Element ${getId(el)} not found`)
   }

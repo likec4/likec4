@@ -160,8 +160,8 @@ export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T)
   return compareFqnHierarchically(a.id, b.id)
 }
 
-type IterableContainer<T = unknown> = ReadonlyArray<T> | readonly []
-type ReorderedArray<T extends IterableContainer> = {
+export type IterableContainer<T = unknown> = ReadonlyArray<T> | readonly []
+export type ReorderedArray<T extends IterableContainer> = {
   -readonly [P in keyof T]: T[number]
 }
 
@@ -174,6 +174,26 @@ export function sortByFqnHierarchically<T extends { id: string }, A extends Iter
       return a.fqn.length - b.fqn.length
     })
     .map(({ item }) => item) as ReorderedArray<A>
+}
+
+/**
+ * Keeps initial order of the elements, but ensures that parents are before children
+ */
+export function sortParentsFirst<T extends { id: string }, A extends IterableContainer<T>>(
+  array: A
+): ReorderedArray<A> {
+  const result = [] as T[]
+  const items = [...array]
+  let item
+  while ((item = items.shift())) {
+    const itemId = item.id
+    let parentIndx
+    while ((parentIndx = items.findIndex(parent => isAncestor(parent.id, itemId))) !== -1) {
+      result.push(...items.splice(parentIndx, 1))
+    }
+    result.push(item)
+  }
+  return result as ReorderedArray<A>
 }
 
 export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(

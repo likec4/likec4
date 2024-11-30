@@ -52,8 +52,12 @@ export class GraphvizLayouter {
   }
 
   async layout(view: ComputedView): Promise<LayoutResult> {
+    logger.debug(`Layouting view ${view.id}`)
     let dot = await this.dot(view)
+    logger.debug('DOT:')
+    logger.debug(dot)
     const rawjson = await this.graphviz.layoutJson(dot)
+    logger.debug('layoutJson DONE')
     let diagram = parseGraphvizJson(rawjson, view)
 
     if (view.manualLayout) {

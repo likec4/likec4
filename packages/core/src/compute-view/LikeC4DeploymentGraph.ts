@@ -35,6 +35,7 @@ type Edges = ReadonlyArray<LikeC4DeploymentGraph.Edge>
 /**
  * Used only for views calculations.
  * Subject to change.
+ * @deprecated
  */
 export class LikeC4DeploymentGraph {
   // Parent element for given FQN

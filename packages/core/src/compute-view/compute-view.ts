@@ -1,5 +1,7 @@
 import { mapValues } from 'remeda'
+import type { SetOptional } from 'type-fest'
 import { nonexhaustive } from '../errors'
+import { LikeC4Model } from '../model'
 import {
   type ComputedDeploymentView,
   type ComputedDynamicView,
@@ -15,10 +17,9 @@ import {
   type LikeC4View,
   type ParsedLikeC4Model
 } from '../types'
-import { DeploymentViewComputeCtx } from './deployment-view/compute'
+import { computeDeploymentView } from './deployment-view/compute'
 import { DynamicViewComputeCtx } from './dynamic-view/compute'
 import { ComputeCtx } from './element-view/compute'
-import { LikeC4DeploymentGraph } from './LikeC4DeploymentGraph'
 import { LikeC4ModelGraph } from './LikeC4ModelGraph'
 
 type ComputeViewResult<V extends ComputedView = ComputedView> =
@@ -39,10 +40,10 @@ interface ComputeView {
   (viewsource: LikeC4View): ComputeViewResult<ComputedView>
 }
 
-type Params = Pick<ParsedLikeC4Model, 'deployments' | 'elements' | 'globals' | 'relations'>
+type Params = SetOptional<ParsedLikeC4Model, 'views'>
 export function mkComputeView(model: Params): ComputeView {
   const index = new LikeC4ModelGraph(model)
-  let deploymentGraph
+  let likec4model: LikeC4Model
 
   return function computeView(viewsource) {
     try {
@@ -52,11 +53,11 @@ export function mkComputeView(model: Params): ComputeView {
           view = ComputeCtx.elementView(viewsource, index)
           break
         case isDeploymentView(viewsource): {
-          deploymentGraph ??= new LikeC4DeploymentGraph({
-            ...model.deployments,
-            modelGraph: index
+          likec4model ??= LikeC4Model.create({
+            ...model,
+            views: {}
           })
-          view = DeploymentViewComputeCtx.compute(viewsource, deploymentGraph)
+          view = computeDeploymentView(likec4model, viewsource)
           break
         }
         case isDynamicView(viewsource):

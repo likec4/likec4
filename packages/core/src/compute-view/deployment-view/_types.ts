@@ -1,31 +1,18 @@
-import type { EdgeId, Fqn, Relation } from '../../types'
-import type { DeploymentNode, DeploymentRelation } from '../../types/deployments'
-import { commonAncestor, hierarchyDistance, stringHash } from '../../utils'
-import { LikeC4DeploymentGraph } from '../LikeC4DeploymentGraph'
+import { LikeC4DeploymentModel } from '../../model'
+import type { DeploymentConnectionModel } from '../../model/DeploymentConnectionModel'
+import type { DeploymentElementModel } from '../../model/DeploymentElementModel'
+import type { AnyAux } from '../../model/types'
+import type { DeploymentExpression } from '../../types'
+import type { Memory } from './Memory'
+import type { Stage } from './Stage'
 
-export type Node = LikeC4DeploymentGraph.Instance | DeploymentNode
+export type Elem = DeploymentElementModel<AnyAux>
 
-export type EdgeRelation = Relation | DeploymentRelation
+export type Connections<M extends AnyAux = AnyAux> = ReadonlyArray<DeploymentConnectionModel<M>>
 
-export function edgeId(source: Node, target: Node): EdgeId {
-  return stringHash(`${source.id} -> ${target.id}`) as EdgeId
+export type PredicateParams<Expr extends DeploymentExpression = any> = {
+  expr: Expr
+  model: LikeC4DeploymentModel
+  stage: Stage
+  memory: Memory
 }
-
-export class Edge {
-  public readonly id: EdgeId
-  public readonly commonAncestor: Fqn | null
-
-  public readonly distance: number
-
-  constructor(
-    public readonly source: Node,
-    public readonly target: Node,
-    public relations: Set<EdgeRelation>
-  ) {
-    this.id = edgeId(source, target)
-    this.commonAncestor = commonAncestor(source.id, target.id)
-    this.distance = hierarchyDistance(source.id, target.id)
-  }
-}
-
-export type Edges = ReadonlyArray<Edge>

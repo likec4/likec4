@@ -10,9 +10,14 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
 
 export class RelationshipModel<M extends AnyAux> {
-  public parent: ElementModel<M> | null
   public readonly source: ElementModel<M>
   public readonly target: ElementModel<M>
+
+  /**
+   * Common ancestor of the source and target elements.
+   * Represents the boundary of the Relation.
+   */
+  public readonly boundary: ElementModel<M> | null
 
   constructor(
     public readonly model: LikeC4Model<M>,
@@ -21,11 +26,15 @@ export class RelationshipModel<M extends AnyAux> {
     this.source = model.element($relationship.source)
     this.target = model.element($relationship.target)
     const parent = commonAncestor(this.source.id, this.target.id)
-    this.parent = parent ? this.model.element(parent) : null
+    this.boundary = parent ? this.model.element(parent) : null
   }
 
   get id(): M['RelationId'] {
     return this.$relationship.id
+  }
+
+  get expression(): string {
+    return `${this.source.id} -> ${this.target.id}`
   }
 
   get title(): string | null {

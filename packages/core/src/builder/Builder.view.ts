@@ -436,7 +436,7 @@ function $deploymentExpr<Types extends AnyTypes>(
       ref: {
         id: expr.replace('.*', '') as Fqn
       },
-      isNested: true
+      isChildren: true
     } as TypedDeploymentExpression<Types>
   }
   return {

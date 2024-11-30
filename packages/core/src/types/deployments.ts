@@ -162,11 +162,11 @@ export namespace DeploymentElementExpression {
   export type Ref = {
     ref: DeploymentRef
     isExpanded?: boolean
-    isNested?: never
+    isChildren?: never
   } | {
     ref: DeploymentRef
     isExpanded?: never
-    isNested?: boolean
+    isChildren?: boolean
   }
   export const isRef = (expr: DeploymentExpression): expr is Ref => {
     return 'ref' in expr

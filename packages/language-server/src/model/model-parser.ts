@@ -1142,7 +1142,7 @@ export class LikeC4ModelParser {
     const traverseStack: TraversePair[] = doc.parseResult.value.deployments.flatMap(d => d.elements)
 
     let next: TraversePair | undefined
-    while (!!(next = traverseStack.shift())) {
+    while ((next = traverseStack.shift())) {
       if (ast.isDeploymentRelation(next)) {
         doc.c4DeploymentRelations.push(this.parseDeploymentRelation(next, isValid))
         continue
@@ -1395,7 +1395,7 @@ export class LikeC4ModelParser {
         case astNode.suffix === '.*':
           return {
             ref,
-            isNested: true
+            isChildren: true
           }
         default:
           return { ref }

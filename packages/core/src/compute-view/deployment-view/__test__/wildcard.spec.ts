@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { $include, computeView } from './fixture'
+import { $exclude, $include, computeView, computeView2 } from './fixture'
 
 describe('deployment view: wildcard', () => {
   it('should include root nodes', () => {
-    const { nodeIds, edgeIds } = computeView(
+    const { nodeIds, edgeIds } = computeView2(
       $include('*')
     )
     expect(nodeIds).toEqual([
@@ -16,5 +16,15 @@ describe('deployment view: wildcard', () => {
       'customer.instance:prod.eu',
       'prod.eu:prod.us'
     ])
+  })
+
+  it('should exclude all', () => {
+    const { nodeIds, edgeIds } = computeView2(
+      $include('*'),
+      $include('prod'),
+      $exclude('*')
+    )
+    expect(nodeIds).toEqual([])
+    expect(edgeIds).toEqual([])
   })
 })

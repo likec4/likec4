@@ -3,7 +3,7 @@ import { DeploymentElementExpression, type Fqn } from '../../types'
 
 type Predicate<T> = (x: T) => boolean
 
-export function deploymentExpressionToPredicate<T extends { id: Fqn }>(
+export function deploymentExpressionToPredicate<T extends { id: string }>(
   target: DeploymentElementExpression
 ): Predicate<T> {
   if (DeploymentElementExpression.isWildcard(target)) {
@@ -14,7 +14,7 @@ export function deploymentExpressionToPredicate<T extends { id: Fqn }>(
     if (target.isExpanded) {
       return n => n.id === fqn || n.id.startsWith(fqn + '.')
     }
-    if (target.isNested) {
+    if (target.isChildren) {
       return n => n.id.startsWith(fqn + '.')
     }
     return n => n.id === fqn

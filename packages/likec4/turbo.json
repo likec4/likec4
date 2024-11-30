@@ -22,7 +22,8 @@
     },
     "build-react-dts": {
       "dependsOn": [
-        "@likec4/diagram#topo"
+        "@likec4/core#build",
+        "@likec4/diagram#build"
       ],
       "outputs": [
         "react/*.d.ts"

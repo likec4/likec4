@@ -19,6 +19,7 @@ import {
 import { commonAncestor, nameFromFqn } from '../utils'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
+import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
@@ -26,7 +27,7 @@ export type DeploymentElementsIterator<M extends AnyAux> = IteratorLike<Deployme
 export type DeployedInstancesIterator<M extends AnyAux> = IteratorLike<DeployedInstanceModel<M>>
 export type DeploymentNodesIterator<M extends AnyAux> = IteratorLike<DeploymentNodeModel<M>>
 
-export abstract class DeploymentElementModel<M extends AnyAux> {
+export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
   abstract readonly model: LikeC4DeploymentModel<M>
   abstract readonly $node: DeploymentNode | DeployedInstance
 
@@ -150,15 +151,51 @@ export abstract class DeploymentElementModel<M extends AnyAux> {
     }
   }
 
+  // type guard
   public isDeploymentNode(): this is DeploymentNodeModel<M> {
     return false
   }
+  // type guard
   public isInstance(): this is DeployedInstanceModel<M> {
     return false
   }
+
+  protected abstract outgoingModel(): RelationshipsIterator<M>
+  protected abstract incomingModel(): RelationshipsIterator<M>
+
+  // to reduce lookups - cache after first call
+  protected cachedOutgoingModel: ReadonlySet<RelationshipModel<M>> | null = null
+  protected cachedIncomingModel: ReadonlySet<RelationshipModel<M>> | null = null
+
+  public outgoingFromModel(): ReadonlySet<RelationshipModel<M>> {
+    return (this.cachedOutgoingModel ??= new Set(this.outgoingModel()))
+  }
+
+  public incomingFromModel(): ReadonlySet<RelationshipModel<M>> {
+    return (this.cachedIncomingModel ??= new Set(this.incomingModel()))
+  }
+
+  protected cachedOutgoing: RelationshipsAccum<M> | null = null
+  protected cachedIncoming: RelationshipsAccum<M> | null = null
+
+  public get allOutgoing(): RelationshipsAccum<M> {
+    this.cachedOutgoing ??= new RelationshipsAccum(
+      new Set(this.outgoingModel()),
+      new Set(this.outgoing())
+    )
+    return this.cachedOutgoing
+  }
+
+  public get allIncoming(): RelationshipsAccum<M> {
+    this.cachedIncoming ??= new RelationshipsAccum(
+      new Set(this.incomingModel()),
+      new Set(this.incoming())
+    )
+    return this.cachedIncoming
+  }
 }
 
-export class DeploymentNodeModel<M extends AnyAux> extends DeploymentElementModel<M> {
+export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentElementModel<M> {
   constructor(
     public readonly model: LikeC4DeploymentModel<M>,
     public readonly $node: DeploymentNode
@@ -181,9 +218,60 @@ export class DeploymentNodeModel<M extends AnyAux> extends DeploymentElementMode
   public override isDeploymentNode(): this is DeploymentNodeModel<M> {
     return true
   }
+
+  /**
+   * Iterate over all instances nested in this deployment node.
+   */
+  public *nestedInstances(): DeployedInstancesIterator<M> {
+    for (const nested of this.descendants()) {
+      if (nested.isInstance()) {
+        yield nested
+      }
+    }
+    return
+  }
+
+  /**
+   * Returns deployed instance inside this deployment node
+   * if only there are no more instances
+   */
+  public onlyOneInstance(): DeployedInstanceModel<M> | null {
+    const [one, two] = this.nestedInstances().take(2).toArray()
+    return one && !two ? one : null
+  }
+
+  protected override *outgoingModel(): RelationshipsIterator<M> {
+    const unique = new Set<RelationshipModel<M>>()
+    for (const nested of this.nestedInstances()) {
+      for (const r of nested.allOutgoing.model) {
+        if (unique.has(r)) {
+          continue
+        }
+        unique.add(r)
+        yield r
+      }
+    }
+    return
+  }
+
+  protected override *incomingModel(): RelationshipsIterator<M> {
+    const unique = new Set<RelationshipModel<M>>()
+    for (const nested of this.descendants()) {
+      if (nested.isInstance()) {
+        for (const r of nested.allIncoming.model) {
+          if (unique.has(r)) {
+            continue
+          }
+          unique.add(r)
+          yield r
+        }
+      }
+    }
+    return
+  }
 }
 
-export class DeployedInstanceModel<M extends AnyAux> extends DeploymentElementModel<M> {
+export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends DeploymentElementModel<M> {
   constructor(
     public readonly model: LikeC4DeploymentModel<M>,
     public readonly $node: DeployedInstance,
@@ -242,6 +330,13 @@ export class DeployedInstanceModel<M extends AnyAux> extends DeploymentElementMo
   public override isInstance(): this is DeployedInstanceModel<M> {
     return true
   }
+
+  protected override outgoingModel(): RelationshipsIterator<M> {
+    return this.element.outgoing()
+  }
+  protected override incomingModel(): RelationshipsIterator<M> {
+    return this.element.incoming()
+  }
 }
 
 export class NestedElementOfDeployedInstanceModel<M extends AnyAux> {
@@ -298,7 +393,7 @@ export type DeploymentRelationEndpoint<M extends AnyAux> =
   | NestedElementOfDeployedInstanceModel<M>
 
 export class DeploymentRelationModel<M extends AnyAux> {
-  public parent: DeploymentNodeModel<M> | null
+  public boundary: DeploymentNodeModel<M> | null
   public source: DeploymentRelationEndpoint<M>
   public target: DeploymentRelationEndpoint<M>
 
@@ -309,11 +404,14 @@ export class DeploymentRelationModel<M extends AnyAux> {
     this.source = model.deploymentRef($relation.source)
     this.target = model.deploymentRef($relation.target)
     const parent = commonAncestor(this.source.id, this.target.id)
-    this.parent = parent ? this.model.node(parent) : null
+    this.boundary = parent ? this.model.node(parent) : null
   }
-
   get id(): M['RelationId'] {
     return this.$relation.id
+  }
+
+  get expression(): string {
+    return `${this.source.id} -> ${this.target.id}`
   }
 
   get title(): string | null {
@@ -334,5 +432,49 @@ export class DeploymentRelationModel<M extends AnyAux> {
       }
     }
     return
+  }
+}
+
+export class RelationshipsAccum<M extends AnyAux> {
+  /**
+   * @param model relationships from logical model
+   * @param deployment relationships from deployment model
+   */
+  constructor(
+    public readonly model: ReadonlySet<RelationshipModel<M>>,
+    public readonly deployment: ReadonlySet<DeploymentRelationModel<M>>
+  ) {
+  }
+
+  get isEmpty(): boolean {
+    return this.model.size === 0 && this.deployment.size === 0
+  }
+
+  get nonEmpty(): boolean {
+    return this.model.size > 0 || this.deployment.size > 0
+  }
+
+  get size(): number {
+    return this.model.size + this.deployment.size
+  }
+
+  /**
+   * Returns new Accum containing all the elements which are both in this and otherAccum
+   */
+  public intersect(otherAccum: RelationshipsAccum<M>): RelationshipsAccum<M> {
+    return new RelationshipsAccum(
+      this.model.intersection(otherAccum.model),
+      this.deployment.intersection(otherAccum.deployment)
+    )
+  }
+
+  /**
+   * Returns new Accum containing all the elements from both
+   */
+  public union(otherAccum: RelationshipsAccum<M>): RelationshipsAccum<M> {
+    return new RelationshipsAccum(
+      this.model.union(otherAccum.model),
+      this.deployment.union(otherAccum.deployment)
+    )
   }
 }

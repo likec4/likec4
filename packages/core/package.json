@@ -56,6 +56,7 @@
     }
   },
   "dependencies": {
+    "core-js": "^3.39.0",
     "defu": "^6.1.4",
     "type-fest": "4.28.1"
   },
@@ -66,6 +67,9 @@
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
+    "graphology": "^0.25.4",
+    "graphology-dag": "^0.4.1",
+    "graphology-types": "^0.24.8",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
     "remeda": "^2.17.4",

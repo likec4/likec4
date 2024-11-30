@@ -14,7 +14,7 @@ import { isString } from '../utils/guards'
 import {
   DeployedInstanceModel,
   type DeployedInstancesIterator,
-  type DeploymentElementModel,
+  DeploymentElementModel,
   type DeploymentElementsIterator,
   DeploymentNodeModel,
   type DeploymentNodesIterator,
@@ -25,7 +25,7 @@ import type { LikeC4Model } from './LikeC4Model'
 import { type AnyAux, getId, type IncomingFilter, type IteratorLike, type OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
-export class LikeC4DeploymentModel<M extends AnyAux> {
+export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   readonly #elements = new Map<M['Deployment'], DeploymentElementModel<M>>()
   // Parent element for given FQN
   readonly #parents = new Map<M['Deployment'], DeploymentNodeModel<M>>()
@@ -79,6 +79,9 @@ export class LikeC4DeploymentModel<M extends AnyAux> {
   }
 
   public element(el: M['DeploymentOrFqn']): DeploymentElementModel<M> {
+    if (el instanceof DeploymentElementModel) {
+      return el
+    }
     const id = getId(el)
     return nonNullable(this.#elements.get(id), `Element ${id} not found`)
   }
@@ -334,7 +337,7 @@ export class LikeC4DeploymentModel<M extends AnyAux> {
     this._incomingTo(rel.target.id).add(rel)
     this._outgoingFrom(rel.source.id).add(rel)
 
-    const relParent = rel.parent?.id ?? null
+    const relParent = rel.boundary?.id ?? null
     // Process internal relationships
     if (relParent) {
       for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {

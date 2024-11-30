@@ -1,14 +1,16 @@
+// @ts-nocheck
 import { filter, flatMap, pipe, reverse } from 'remeda'
-import { DeploymentElementExpression as Expr, type DeploymentRelationExpression } from '../../types/deployments'
-import { isAncestor } from '../../utils'
-import { LikeC4DeploymentGraph } from '../LikeC4DeploymentGraph'
-import { deploymentExpressionToPredicate } from '../utils/deploymentExpressionToPredicate'
-import type { DeploymentViewComputeCtx } from './compute'
+import { DeploymentElementExpression as Expr, type DeploymentRelationExpression } from '../../../types/deployments'
+import { isAncestor } from '../../../utils'
+import { LikeC4DeploymentGraph } from '../../LikeC4DeploymentGraph'
+import { deploymentExpressionToPredicate } from '../../utils/deploymentExpressionToPredicate'
 
 type DeploymentElement = LikeC4DeploymentGraph.Element
 
 const isNode = LikeC4DeploymentGraph.isNode
 const isInstance = LikeC4DeploymentGraph.isInstance
+
+type DeploymentViewComputeCtx = any
 
 export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...expr }: Expr.Ref) {
   const currentElements = [...ctx.resolvedElements]
@@ -121,7 +123,7 @@ export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...ex
       return
     }
 
-    if (expr.isNested) {
+    if (expr.isChildren) {
       // if node is in currentElements and implicit - make it explicit
       if (ctx.isImplicit(el)) {
         ctx.addElement(el)
@@ -194,7 +196,7 @@ function resolveElements(ctx: DeploymentViewComputeCtx, expr: Expr) {
   }
   const el = ctx.graph.element(expr.ref.id)
   if (isNode(el)) {
-    if (expr.isNested) {
+    if (expr.isChildren) {
       const children = ctx.graph.children(el)
       return children.length > 0 ? children : [el]
     }

@@ -233,7 +233,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
         targets: [
           {
-            isNested: true,
+            isChildren: true,
             ref: {
               id: 'n1'
             }

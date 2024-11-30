@@ -165,6 +165,11 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
       return e
     }
 
+    if (!hasCompoundEndpoint && targetNode.outEdges.length === 0) {
+      e.attributes.set(_.dir, 'both')
+      return e
+    }
+
     // This heuristic removes the rank constraint from the edge
     // if it is the only edge within container.
     let otherEdges
