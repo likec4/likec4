@@ -322,7 +322,6 @@ function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C
   }
   return {
     element: expr as any as Fqn,
-    isChildren: false // TODO: why do we set this to false? Shouldn't undefined work too?
   } as TypedC4Expression<Types>
 }
 
