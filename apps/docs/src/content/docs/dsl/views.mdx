@@ -135,9 +135,13 @@ view {
   // and its relationships with visible (backend and frontend)
   include authService
 
-  // Add nested elements of messageBroker,
+  // Add children of messageBroker,
   // and their relationships among themselves and visible (backend, frontend and authService)
   include messageBroker.*
+
+  // Add all descendants of messageBroker,
+  // and their relationships among themselves and visible (backend, frontend and authService)
+  include messageBroker.**
 
   // Exclude emailsQueue and its relationships
   exclude messageBroker.emailsQueue
@@ -164,7 +168,6 @@ view {
   exclude messageBroker.emailsQueue
 }
 ```
-
 
 ###### Wildcard
 
@@ -257,7 +260,6 @@ view view3 {
   }
 }
 ```
-
 
 ###### By element kind or tag
 
@@ -399,10 +401,37 @@ include
   }
 ```
 
-#### Expand predicate
+#### Suffix predicates
 
-Expand predicate is a mix of element's and relationship's.  
-Include `cloud` element and its children that have in/out relationships with visible elements:
+##### Children `.*`
+
+The children suffix includes an alement's children and their relationships to other visible elements.
+
+```likec4
+include cloud.*
+
+// Same as
+include cloud.backend
+include cloud.ui
+```
+
+##### Descendants `.**`
+
+The descendants suffix includes all of an element's descendants and their relationships to other visible elements.
+
+```likec4
+include cloud.**
+
+// Same as
+include cloud.backend
+include cloud.ui
+include cloud.ui.webApp
+```
+
+##### Expand `._`
+
+The expand predicate includes an element's children **IF** they have a relationship with another visible element.
+All other children are omitted.
 
 ```likec4
 include cloud._
@@ -411,6 +440,7 @@ include cloud._
 include cloud
 include -> cloud.* ->
 ```
+
 #### Filter
 
 `where` operator narrows down results by applying additional conditions:

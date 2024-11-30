@@ -273,7 +273,6 @@ function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Elemen
     return nonexhaustive(expr)
   }
 
-  // TODO: Why do we include the root's children in this?
   if (this.root === expr.element && expr.isChildren !== true && expr.isDescendants !== true) {
     return [...this.graph.children(this.root), this.graph.element(this.root)]
   }
