@@ -155,22 +155,7 @@ export type Types = typeof builder['Types']
 
 export { $exclude, $include }
 
-const compute = mkComputeView(builder.build())
-
 export function computeView(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
-  const model = builder.with(
-    views(
-      deploymentView('index', $rules(...rules))
-    )
-  ).build()
-  const view = compute(model.views.index).view as ComputedDeploymentView
-  return Object.assign(view, {
-    nodeIds: map(view.nodes, prop('id')) as string[],
-    edgeIds: map(view.edges, prop('id')) as string[]
-  })
-}
-
-export function computeView2(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
   const modelsource = builder.with(
     views(
       deploymentView('index', $rules(...rules))
@@ -191,7 +176,7 @@ export function computeView2(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
 }
 
 export function computeNodesAndEdges(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
-  const { nodeIds, edgeIds } = computeView2(...rules)
+  const { nodeIds, edgeIds } = computeView(...rules)
   return {
     // Starts with capital letter to be first in snapshot
     Nodes: nodeIds,

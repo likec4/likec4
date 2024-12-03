@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeView, computeView2 } from './fixture'
+import { $include, computeView } from './fixture'
 
 describe('cleanCrossBoundaryConnections', () => {
   it('should keep relations inside boundary', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.zone1.*'),
       $include('prod.eu.zone2.*')
     )
@@ -20,7 +20,7 @@ describe('cleanCrossBoundaryConnections', () => {
   })
 
   it('should keep relations inside boundary and remove redundant edges', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.zone1'),
       $include('prod.eu.zone2'),
       $include('prod.eu.zone1.*'),
@@ -41,7 +41,7 @@ describe('cleanCrossBoundaryConnections', () => {
   })
 
   it('should exclude same-targeted relations from outer scope', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.zone1.*'),
       $include('prod.eu.zone2')
     )

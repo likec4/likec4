@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { $include, computeView2 } from './fixture'
+import { $include, computeView } from './fixture'
 
-describe('DeploymentRefExpression', () => {
+describe('DeploymentRefPredicate', () => {
   it('should include instance and node', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('customer.instance'),
       $include('prod.eu')
     )
@@ -17,7 +17,7 @@ describe('DeploymentRefExpression', () => {
   })
 
   it('should include nodes and edges', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('customer'),
       $include('prod.eu.zone1'),
       $include('prod.eu.zone2')
@@ -35,7 +35,7 @@ describe('DeploymentRefExpression', () => {
   })
 
   it('should include nodes and edges (preserve order)', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('customer'),
       $include('prod.eu.zone2'),
       $include('prod.eu.zone1'),
@@ -55,7 +55,7 @@ describe('DeploymentRefExpression', () => {
   })
 
   it('should include children', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.*')
     )
     expect.soft(nodeIds).toEqual([
@@ -74,7 +74,7 @@ describe('DeploymentRefExpression', () => {
   })
 
   it('should include children and ensure sort', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.zone1.*')
     )
     expect.soft(nodeIds).toEqual([
@@ -87,7 +87,7 @@ describe('DeploymentRefExpression', () => {
   })
 
   it('should expand node 1', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('customer'),
       $include('prod.eu.zone1._')
     )
@@ -104,7 +104,7 @@ describe('DeploymentRefExpression', () => {
   })
 
   it('should expand node 2', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('*'),
       $include('prod.eu.zone1._')
     )
@@ -130,7 +130,7 @@ describe('DeploymentRefExpression', () => {
   })
 
   it('should expand node 3', () => {
-    const { nodeIds, edgeIds } = computeView2(
+    const { nodeIds, edgeIds } = computeView(
       $include('customer'),
       $include('prod.eu._'),
       $include('prod.eu.zone2._')
