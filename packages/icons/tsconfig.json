@@ -5,6 +5,7 @@
       "es2020",
       "dom"
     ],
+    "noEmit": true,
     "strict": false,
     "target": "ESNext",
     "module": "ESNext",

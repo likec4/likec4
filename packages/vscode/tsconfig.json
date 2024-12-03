@@ -6,26 +6,11 @@
       "esnext",
       "dom",
       "WebWorker"
-    ]
+    ],
+    "jsx": "react-jsx",
+    "noEmit": true
   },
   "include": [
     "src"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../language-server"
-    },
-    {
-      "path": "../layouts"
-    },
-    {
-      "path": "../log"
-    },
-    {
-      "path": "../vscode-preview"
-    }
   ]
 }

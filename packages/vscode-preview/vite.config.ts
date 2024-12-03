@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
-      emptyOutDir: false,
+      emptyOutDir: true,
       cssCodeSplit: false,
       cssMinify: true,
       assetsInlineLimit: 1_000_000,

@@ -23,22 +23,5 @@
   "include": [
     "./src/",
     "package.json"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../generators"
-    },
-    {
-      "path": "../language-server"
-    },
-    {
-      "path": "../layouts"
-    },
-    {
-      "path": "../log"
-    }
   ]
 }

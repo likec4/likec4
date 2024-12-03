@@ -26,7 +26,7 @@
         "--skip-welcome",
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/cloud-system",
+        "${workspaceFolder}/apps/playground/src/examples/deployment",
       ],
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*.js"

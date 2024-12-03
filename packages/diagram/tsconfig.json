@@ -4,15 +4,10 @@
   "compilerOptions": {
     "rootDir": "src",
     "types": [
-      "vite/client"
+      "vite/client",
     ]
   },
   "include": [
     "./src/"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    }
   ]
 }

@@ -3,25 +3,17 @@
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "src",
-    "composite": true,
+    "noEmit": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "types": [
       "vite/client",
       "vscode-webview"
-    ]
+    ],
   },
   "include": [
+    "protocol.ts",
     "src"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../diagram"
-    }
   ]
 }

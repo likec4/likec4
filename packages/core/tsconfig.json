@@ -2,6 +2,6 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "composite": true
+    "noEmit": true
   }
 }

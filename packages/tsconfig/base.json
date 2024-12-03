@@ -37,7 +37,6 @@
     "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "noErrorTruncation": true,
     "verbatimModuleSyntax": true,
     "allowJs": true,
     "checkJs": false,
@@ -46,8 +45,8 @@
     "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
+    "pretty": true,
     "incremental": true,
-    "composite": true,
     "tsBuildInfoFile": "${configDir}/.tsbuildinfo",
     "types": []
   }

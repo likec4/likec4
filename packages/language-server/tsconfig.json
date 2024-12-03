@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "composite": true,
+    "noEmit": true,
     "module": "esnext",
     "lib": [
       "esnext",
@@ -13,13 +13,5 @@
   },
   "include": [
     "./src"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../log"
-    }
   ]
 }

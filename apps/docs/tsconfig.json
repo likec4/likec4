@@ -23,10 +23,5 @@
     "node_modules",
     "**/node_modules/**",
     "dist"
-  ],
-  "references": [
-    {
-      "path": "../../packages/likec4"
-    }
   ]
 }
