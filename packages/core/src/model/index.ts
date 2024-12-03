@@ -1,8 +1,3 @@
-import 'core-js/es/set/intersection'
-import 'core-js/es/set/union'
-import 'core-js/es/set/difference'
-import 'core-js/es/iterator'
-
 export { LikeC4DeploymentModel } from './DeploymentModel'
 export { LikeC4Model } from './LikeC4Model'
 export type * from './LikeC4Model'

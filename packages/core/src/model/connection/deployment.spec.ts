@@ -1,4 +1,4 @@
-import { prop } from 'remeda'
+import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 
 import { computedModel } from '../__test__/fixture'
@@ -16,7 +16,7 @@ describe('Find deployment connections', () => {
     )
     expect(connection).toBeDefined()
     expect(connection!.expression).toBe('customer -> prod.eu')
-    expect(connection!.values().map(prop('expression')).toArray()).toEqual([
+    expect(map([...connection!.values()], prop('expression'))).toEqual([
       'customer -> cloud.frontend.dashboard'
     ])
   })

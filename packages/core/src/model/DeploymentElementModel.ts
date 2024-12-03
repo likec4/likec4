@@ -17,6 +17,7 @@ import {
   type ThemeColor
 } from '../types'
 import { commonAncestor, nameFromFqn } from '../utils'
+import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
@@ -243,8 +244,13 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
    * if only there are no more instances
    */
   public onlyOneInstance(): DeployedInstanceModel<M> | null {
-    const [one, two] = this.instances().take(2).toArray()
-    return one && !two ? one : null
+    const it = this.instances()
+    const one = it.next().value
+    if (one) {
+      const two = it.next().value
+      return two ? null : one
+    }
+    return null
   }
 
   protected override *outgoingModel(): RelationshipsIterator<M> {
@@ -470,8 +476,18 @@ export class RelationshipsAccum<M extends AnyAux> {
    */
   public intersect(otherAccum: RelationshipsAccum<M>): RelationshipsAccum<M> {
     return new RelationshipsAccum(
-      this.model.intersection(otherAccum.model),
-      this.deployment.intersection(otherAccum.deployment)
+      intersection(this.model, otherAccum.model),
+      intersection(this.deployment, otherAccum.deployment)
+    )
+  }
+
+  /**
+   * Returns new Accum containing all the elements which are both in this and otherAccum
+   */
+  public difference(otherAccum: RelationshipsAccum<M>): RelationshipsAccum<M> {
+    return new RelationshipsAccum(
+      difference(this.model, otherAccum.model),
+      difference(this.deployment, otherAccum.deployment)
     )
   }
 
@@ -480,8 +496,8 @@ export class RelationshipsAccum<M extends AnyAux> {
    */
   public union(otherAccum: RelationshipsAccum<M>): RelationshipsAccum<M> {
     return new RelationshipsAccum(
-      this.model.union(otherAccum.model),
-      this.deployment.union(otherAccum.deployment)
+      union(this.model, otherAccum.model),
+      union(this.deployment, otherAccum.deployment)
     )
   }
 }

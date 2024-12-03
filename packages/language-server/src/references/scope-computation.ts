@@ -312,7 +312,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         })
       )
     }
-    const local = localScope.values().toArray()
+    const local = [...localScope.values()]
     scopes.addAll(container, local)
     return local
   }
@@ -356,6 +356,6 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         scopes.add(container, desc)
       })
     )
-    return scopes.get(container).values().toArray()
+    return [...scopes.get(container).values()]
   }
 }

@@ -224,10 +224,15 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Get all sibling (i.e. same parent)
    */
-  public siblings(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
+  public *siblings(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
     const id = getId(element)
     const siblings = this.parent(element)?.children() ?? this.roots()
-    return siblings.filter(e => e.id !== id)
+    for (const sibling of siblings) {
+      if (sibling.id !== id) {
+        yield sibling
+      }
+    }
+    return
   }
 
   /**

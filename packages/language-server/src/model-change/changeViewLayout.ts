@@ -1,6 +1,6 @@
 import { invariant, type ViewChange } from '@likec4/core'
 import { GrammarUtils } from 'langium'
-import { isNumber } from 'remeda'
+import { findLast, isNumber } from 'remeda'
 import { TextEdit } from 'vscode-languageserver-types'
 import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument, toAstViewLayoutDirection } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -24,7 +24,7 @@ export function changeViewLayout(_services: LikeC4Services, {
   const viewCstNode = viewAst.$cstNode
   invariant(viewCstNode, 'viewCstNode')
   const newdirection = toAstViewLayoutDirection(layout.direction)
-  const existingRule = viewAst.body.rules.findLast(ast.isViewRuleAutoLayout) as ast.ViewRuleAutoLayout | undefined
+  const existingRule = findLast(viewAst.body.rules, ast.isViewRuleAutoLayout) as ast.ViewRuleAutoLayout | undefined
 
   let newRule = `autoLayout ${newdirection}`
 

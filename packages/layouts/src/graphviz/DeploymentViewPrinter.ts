@@ -11,7 +11,6 @@ import { toArrowType } from './utils'
 export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeploymentView> {
   protected override createGraph(): RootGraphModel {
     const G = super.createGraph()
-    G.delete(_.pack)
     G.delete(_.TBbalance)
     return G
   }

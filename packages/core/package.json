@@ -56,7 +56,6 @@
     }
   },
   "dependencies": {
-    "core-js": "^3.39.0",
     "defu": "^6.1.4",
     "type-fest": "4.28.1"
   },

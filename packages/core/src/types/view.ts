@@ -80,10 +80,10 @@ export interface ViewRuleAutoLayout {
   nodeSep?: number
   rankSep?: number
 }
-export function isViewRuleAutoLayout(rule: DeploymentViewRule): rule is ViewRuleAutoLayout
-export function isViewRuleAutoLayout(rule: DynamicViewRule): rule is ViewRuleAutoLayout
-export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
-export function isViewRuleAutoLayout(rule: object) {
+
+export function isViewRuleAutoLayout(
+  rule: DeploymentViewRule | DynamicViewRule | ViewRule
+): rule is ViewRuleAutoLayout {
   return 'direction' in rule
 }
 

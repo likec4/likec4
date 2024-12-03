@@ -8,10 +8,6 @@ export default defineProject({
     },
     typecheck: {
       enabled: true
-    },
-    setupFiles: [
-      // because of import core-js
-      './src/model/index.ts'
-    ]
+    }
   }
 })

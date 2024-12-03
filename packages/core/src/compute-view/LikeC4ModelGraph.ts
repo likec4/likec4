@@ -2,6 +2,7 @@ import { isArray, isString, reverse } from 'remeda'
 import { invariant } from '../errors'
 import { type Element, type Fqn, type ModelGlobals, type Relation, type RelationId } from '../types'
 import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn } from '../utils'
+import { intersection } from '../utils/set'
 
 export type Params = {
   elements: Record<Fqn, Element>
@@ -21,14 +22,6 @@ type FqnsOrElements = ReadonlyArray<Fqn> | ReadonlyArray<Element>
 
 const RelationsSet = Set<Relation>
 const MapRelations = Map<Fqn, Set<Relation>>
-
-export function intersection<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
-  if (a.size === 0 || b.size === 0) {
-    return new Set<T>()
-  }
-  return new Set([...a].filter(value => b.has(value)))
-}
-
 /**
  * Used only for views calculations.
  * Subject to change.

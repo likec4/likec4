@@ -1,4 +1,5 @@
 import { isSameHierarchy } from '../../utils/fqn'
+import { intersection } from '../../utils/set'
 import type { ElementModel } from '../ElementModel'
 import type { AnyAux } from '../types'
 import { type Connection, ConnectionModel } from './ConnectionModel'
@@ -38,7 +39,7 @@ export function findConnection<M extends AnyAux>(
     return []
   }
 
-  const directedIntersection = source.allOutgoing.intersection(target.allIncoming)
+  const directedIntersection = intersection(source.allOutgoing, target.allIncoming)
 
   const directed = directedIntersection.size > 0
     ? [
@@ -54,7 +55,7 @@ export function findConnection<M extends AnyAux>(
     return directed
   }
 
-  const reverseIntersection = source.allIncoming.intersection(target.allOutgoing)
+  const reverseIntersection = intersection(source.allIncoming, target.allOutgoing)
   const reverse = reverseIntersection.size > 0
     ? [
       new ConnectionModel(

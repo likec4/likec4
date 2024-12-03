@@ -1,4 +1,5 @@
 import type { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
+import { difference } from '../../utils/set'
 import type { Connections, Elem } from './_types'
 
 export interface Memory {
@@ -51,9 +52,9 @@ export class MutableMemory implements Memory {
 
   public exclude(excluded: Set<Elem>): MutableMemory {
     const newMemory = this.clone()
-    newMemory.elements = this.elements.difference(excluded)
-    newMemory.explicits = this.explicits.difference(excluded)
-    newMemory.finalElements = this.finalElements.difference(excluded)
+    newMemory.elements = difference(this.elements, excluded)
+    newMemory.explicits = difference(this.explicits, excluded)
+    newMemory.finalElements = difference(this.finalElements, excluded)
     newMemory.connections = this.connections.filter(c => !excluded.has(c.source) && !excluded.has(c.target))
     return newMemory
   }
@@ -83,7 +84,7 @@ export class MutableMemory implements Memory {
       return acc
     }, [] as DeploymentConnectionModel[])
 
-    minusElements = minusElements.difference(newMemory.explicits)
+    minusElements = difference(minusElements, newMemory.explicits)
     if (minusElements.size > 0) {
       for (const stillExists of newMemory.connections) {
         minusElements.delete(stillExists.source)
@@ -91,8 +92,8 @@ export class MutableMemory implements Memory {
       }
     }
     if (minusElements.size > 0) {
-      newMemory.elements = newMemory.elements.difference(minusElements)
-      newMemory.finalElements = newMemory.finalElements.difference(minusElements)
+      newMemory.elements = difference(newMemory.elements, minusElements)
+      newMemory.finalElements = difference(newMemory.finalElements, minusElements)
     }
     return newMemory
   }

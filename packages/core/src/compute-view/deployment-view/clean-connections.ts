@@ -5,6 +5,7 @@ import { RelationshipsAccum } from '../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
 import { compareFqnHierarchically, getOrCreate, isAncestor } from '../../utils'
+import { difference } from '../../utils/set'
 import type { Connections, Elem } from './_types'
 import { type Patch } from './Memory'
 
@@ -67,7 +68,7 @@ function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Conn
           conn.source,
           conn.target,
           new RelationshipsAccum(
-            conn.relations.model.difference(excluded),
+            difference(conn.relations.model, excluded),
             conn.relations.deployment
           )
         )
@@ -104,8 +105,8 @@ const excludeRedundantRelationships: <M extends AnyAux>(connections: Connections
         || isAncestor(source.id, c.source.id) && c.target.id === target.id
         || isAncestor(target.id, c.target.id) && c.source.id === source.id
       ) {
-        modelRelations = modelRelations.difference(c.relations.model)
-        deploymentRelations = deploymentRelations.difference(c.relations.deployment)
+        modelRelations = difference(modelRelations, c.relations.model)
+        deploymentRelations = difference(deploymentRelations, c.relations.deployment)
         hasChanged = true
       }
     }

@@ -1,3 +1,4 @@
+import { sort } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Fqn, Relation, RelationId } from '../types'
 import { compareRelations, isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from './relations'
@@ -170,7 +171,7 @@ describe('compareRelations', () => {
     }
   }
   function sorted(...relations: Array<{ source: string; target: string }>) {
-    return relations.toSorted(compareRelations).map(r => r.source + ' -> ' + r.target)
+    return sort(relations, compareRelations).map(r => r.source + ' -> ' + r.target)
   }
 
   it('should sort by source and target', () => {

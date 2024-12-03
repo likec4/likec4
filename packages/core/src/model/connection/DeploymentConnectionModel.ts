@@ -1,5 +1,6 @@
 import { invariant } from '../../errors'
 import { stringHash } from '../../utils'
+import { equals } from '../../utils/set'
 import {
   type DeploymentElementModel,
   DeploymentNodeModel,
@@ -88,16 +89,13 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return new DeploymentConnectionModel(
       this.source,
       this.target,
-      new RelationshipsAccum(
-        this.relations.model.difference(other.relations.model),
-        this.relations.deployment.difference(other.relations.deployment)
-      )
+      this.relations.difference(other.relations)
     )
   }
 
   public equals(other: DeploymentConnectionModel<M>): boolean {
     return this.source.id === other.source.id && this.target.id === other.target.id
-      && this.relations.model.symmetricDifference(other.relations.model).size === 0
-      && this.relations.deployment.symmetricDifference(other.relations.deployment).size === 0
+      && equals(this.relations.model, other.relations.model)
+      && equals(this.relations.deployment, other.relations.deployment)
   }
 }

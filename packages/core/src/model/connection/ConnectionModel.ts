@@ -1,3 +1,4 @@
+import { difference } from 'remeda'
 import { invariant } from '../../errors'
 import { stringHash } from '../../utils'
 import type { ElementModel } from '../ElementModel'
@@ -50,7 +51,10 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return new ConnectionModel(
       this.source,
       this.target,
-      this.relations.union(other.relations)
+      new Set([
+        ...this.relations,
+        ...other.relations
+      ])
     )
   }
 
@@ -60,7 +64,10 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return new ConnectionModel(
       this.source,
       this.target,
-      this.relations.difference(other.relations)
+      new Set(difference(
+        [...this.relations],
+        [...other.relations]
+      ))
     )
   }
 }

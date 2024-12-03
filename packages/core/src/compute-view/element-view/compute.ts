@@ -3,6 +3,7 @@ import {
   concat,
   difference,
   filter,
+  findLast,
   first,
   hasAtLeast,
   isNonNull,
@@ -264,7 +265,7 @@ export class ComputeCtx {
       ...edges
     ])
 
-    const autoLayoutRule = this.view.rules.findLast(isViewRuleAutoLayout)
+    const autoLayoutRule = findLast(this.view.rules, isViewRuleAutoLayout)
 
     const elementNotations = buildElementNotations(nodes)
 

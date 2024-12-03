@@ -2,22 +2,11 @@ import { isArray, partition } from 'remeda'
 import { mergeConnections } from '../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
 import type { NonEmptyArray } from '../../types'
+import { union } from '../../utils/set'
 import type { Connections, Elem } from './_types'
 import { MutableMemory, type Patch } from './Memory'
 
 const asArray = <T>(value: T | ReadonlyArray<T>): ReadonlyArray<T> => isArray(value) ? value : [value]
-
-/**
- * Union of sets
- */
-const union = <T>(source: Set<T>, ...others: NonEmptyArray<Set<NoInfer<T>>>): Set<T> => {
-  for (const set of others) {
-    if (set.size > 0) {
-      source = source.union(set)
-    }
-  }
-  return source
-}
 
 /**
  * Stage is a single step in the computation of the view

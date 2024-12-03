@@ -1,4 +1,4 @@
-import { filter, hasAtLeast, isEmpty, isTruthy, map, only, pipe, unique } from 'remeda'
+import { filter, findLast, hasAtLeast, isEmpty, isTruthy, map, only, pipe, unique } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import { type LikeC4DeploymentModel, LikeC4Model } from '../../model'
 import { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
@@ -226,7 +226,7 @@ export function computeDeploymentView<M extends AnyAux>(
     sorted.nodes
   )
 
-  const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)
+  const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
 
   return calcViewLayoutHash({
     ...view,

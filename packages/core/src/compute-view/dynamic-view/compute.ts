@@ -1,4 +1,4 @@
-import { filter, flatMap, hasAtLeast, isTruthy, map, only, pipe, unique } from 'remeda'
+import { filter, findLast, flatMap, hasAtLeast, isTruthy, map, only, pipe, unique } from 'remeda'
 import { nonNullable } from '../../errors'
 import {
   type Color,
@@ -203,7 +203,7 @@ export class DynamicViewComputeCtx {
       )
     )
 
-    const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)
+    const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
 
     const elementNotations = buildElementNotations(nodes)
 

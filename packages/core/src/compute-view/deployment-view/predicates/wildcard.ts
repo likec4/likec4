@@ -7,8 +7,8 @@ export const WildcardPredicate: PredicateExecutor<DeploymentElementExpression.Wi
   include: (_, { model, stage }) => {
     const children = [] as Elem[]
 
-    const rootElements = model.roots().map(root => {
-      const [child, ...rest] = root.children().toArray()
+    const rootElements = [...model.roots()].map(root => {
+      const [child, ...rest] = [...root.children()]
       if (!child) {
         children.push(root)
         return root
@@ -21,7 +21,7 @@ export const WildcardPredicate: PredicateExecutor<DeploymentElementExpression.Wi
       children.push(child, ...rest)
 
       return root
-    }).toArray()
+    })
 
     stage.addExplicit(rootElements)
     if (rootElements.length > 1) {

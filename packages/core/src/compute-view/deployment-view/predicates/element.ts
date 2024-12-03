@@ -32,7 +32,7 @@ export const DeploymentRefPredicate: PredicateExecutor<DeploymentElementExpressi
 
   exclude: (expr, { stage, memory }) => {
     const exprPredicate = deploymentExpressionToPredicate(expr)
-    stage.exclude(memory.elements.values().filter(exprPredicate).toArray())
+    stage.exclude([...memory.elements].filter(exprPredicate))
     return stage.patch()
   }
 }
@@ -63,7 +63,7 @@ function includeDeployedNodeChildren(
   node: DeploymentNodeModel,
   { memory, stage }: PredicateCtx
 ) {
-  const children = node.children().toArray()
+  const children = [...node.children()]
   if (children.length === 0) {
     return
   }
@@ -84,7 +84,7 @@ function includeDeployedNodeWithExpanded(
   node: DeploymentNodeModel,
   { memory, stage }: PredicateCtx
 ) {
-  const children = node.children().toArray()
+  const children = [...node.children()]
   stage.addImplicit(node)
 
   const connections = [] as DeploymentConnectionModel[]
