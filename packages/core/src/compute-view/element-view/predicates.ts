@@ -1,8 +1,9 @@
 import { allPass, filter as remedaFilter, flatMap, isNullish as isNil, map, pipe, unique } from 'remeda'
+import type { Writable } from 'type-fest'
 import { nonexhaustive } from '../../errors'
 import type { Element, Relation } from '../../types'
 import * as Expr from '../../types/expression'
-import { isAncestor, parentFqn } from '../../utils'
+import { isAncestor, parentFqn } from '../../utils/fqn'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import type { ComputeCtx } from './compute'
 
@@ -40,15 +41,16 @@ export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr, w
     return
   }
 
-  for (const el of elements) {
-    this.addElement(el)
-    if (currentElements.length > 0) {
-      this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
-    }
-  }
+  this.addElement(...elements)
 
   if (elements.length > 1) {
     this.addEdges(this.graph.edgesWithin(elements))
+  }
+
+  if (currentElements.length > 0 && elements.length > 0) {
+    for (const el of elements) {
+      this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
+    }
   }
 }
 
@@ -69,19 +71,13 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr, w
       return
     }
     const currentElements = [...this.resolvedElements]
-
+    this.addElement(...elements)
     this.addEdges(this.graph.edgesWithin(elements))
-
-    for (const el of elements) {
-      this.addElement(el)
-      if (currentElements.length > 0) {
+    if (currentElements.length > 0) {
+      for (const el of elements) {
         this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
       }
     }
-    if (elements.length > 1) {
-      this.addEdges(this.graph.edgesWithin(elements))
-    }
-
     return
   }
 
@@ -94,13 +90,10 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr, w
 
   const children = filter(this.graph.children(root))
   const hasChildren = children.length > 0
-  // if (hasChildren) {
-  //   this.addElement(...children)
-  //   this.addEdges(this.graph.edgesWithin(children))
-  // } else if (_elRoot) {
-  //   children.push(_elRoot)
-  // }
-  if (!hasChildren && _elRoot) {
+  if (hasChildren) {
+    this.addElement(...children)
+    this.addEdges(this.graph.edgesWithin(children))
+  } else if (_elRoot) {
     children.push(_elRoot)
   }
 
@@ -114,14 +107,9 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr, w
   ]
 
   for (const el of children) {
-    this.addElement(el)
     this.addEdges(this.graph.anyEdgesBetween(el, neighbours)).forEach(edge => {
       this.addImplicit(edge.source, edge.target)
     })
-  }
-
-  if (children.length > 1) {
-    this.addEdges(this.graph.edgesWithin(children))
   }
 
   // If root has no children
@@ -249,9 +237,9 @@ export function excludeElementKindOrTag(
 
 function resolveNeighbours(this: ComputeCtx, expr: Expr.ElementExpression): Element[] {
   if (Expr.isElementRef(expr)) {
-    return this.graph.ascendingSiblings(expr.element).slice()
+    return this.graph.ascendingSiblings(expr.element) as Writable<Element[]>
   }
-  return this.root ? this.graph.ascendingSiblings(this.root).slice() : this.graph.rootElements
+  return this.root ? this.graph.ascendingSiblings(this.root) as Writable<Element[]> : this.graph.rootElements
 }
 
 function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Element[] {
@@ -288,7 +276,6 @@ function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Elemen
     return nonexhaustive(expr)
   }
 
-  // TODO: Why do we include the root's children in this?
   if (this.root === expr.element && expr.isChildren !== true && expr.isDescendants !== true) {
     return [...this.graph.children(this.root), this.graph.element(this.root)]
   }
@@ -387,7 +374,7 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
     )
   }
   if (targets.length === 0) {
-    targets = resolveNeighbours.call(this, expr)
+    targets = [...resolveNeighbours.call(this, expr)]
   }
   return this.graph.edgesBetween(sources, targets)
 }

@@ -169,18 +169,6 @@ export class LikeC4ModelGraph {
         continue
       }
 
-      if (in_element.size > 0) {
-        const incoming = intersection(this._outgoingFrom(other.id), in_element)
-        // const incoming = filter(other_out, isIncoming)
-        if (incoming.size > 0) {
-          result.push({
-            source: other,
-            target: element,
-            relations: [...incoming]
-          })
-        }
-      }
-
       if (element_out.size > 0) {
         const outcoming = intersection(this._incomingTo(other.id), element_out)
         // const outcoming = filter(in_other, isOutgoing)
@@ -189,6 +177,18 @@ export class LikeC4ModelGraph {
             source: element,
             target: other,
             relations: [...outcoming]
+          })
+        }
+      }
+
+      if (in_element.size > 0) {
+        const incoming = intersection(this._outgoingFrom(other.id), in_element)
+        // const incoming = filter(other_out, isIncoming)
+        if (incoming.size > 0) {
+          result.push({
+            source: other,
+            target: element,
+            relations: [...incoming]
           })
         }
       }
