@@ -57,6 +57,63 @@ export class ExtensionController extends AbstractDisposable {
       client.dispose()
     })
 
+    ctrl.onDispose(
+      vscode.window.registerWebviewPanelSerializer(
+        PreviewPanel.ViewType,
+        new PreviewPanel.Serializer(ctrl)
+      )
+    )
+
+    const rpc = ctrl._rpc = new Rpc(client)
+    ctrl.onDispose(rpc)
+
+    const messenger = ctrl._messenger = new Messenger(ctrl)
+    ctrl.onDispose(messenger)
+
+    const likeC4Model = ctrl._likec4model = new LikeC4Model(ctrl)
+    ctrl.onDispose(likeC4Model)
+
+    ctrl.registerCommand(cmdRebuild, () => {
+      void rebuildWorkspace(ctrl.rpc)
+      ctrl.telemetry?.sendTelemetryEvent('rebuild')
+    })
+
+    ctrl.registerCommand(cmdPreviewContextOpenSource, async () => {
+      if (!PreviewPanel.current) return
+      const { elementId } = await PreviewPanel.current.rpc.getLastClickedNode()
+      if (!elementId) return
+      await vscode.commands.executeCommand(
+        cmdLocate,
+        {
+          element: elementId
+        } satisfies LocateParams
+      )
+    })
+
+    ctrl.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
+      PreviewPanel.createOrReveal({
+        viewId: viewId ?? ('index' as ViewID),
+        ctrl
+      })
+      ctrl.telemetry?.sendTelemetryEvent('open-preview')
+    })
+
+    ctrl.registerCommand(cmdLocate, async (params: LocateParams) => {
+      const loc = await ctrl.rpc.locate(params)
+      if (!loc) return
+      const location = ctrl.client.protocol2CodeConverter.asLocation(loc)
+      let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
+      if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
+        viewColumn = vscode.ViewColumn.Beside
+      }
+      const editor = await vscode.window.showTextDocument(location.uri, {
+        viewColumn,
+        selection: location.range,
+        preserveFocus: viewColumn === vscode.ViewColumn.Beside
+      })
+      editor.revealRange(location.range)
+    })
+
     try {
       const telemetry = ctrl.telemetry = new TelemetryReporter(TelemetryConnectionString)
       ctrl.onDispose(telemetry)
@@ -153,63 +210,6 @@ export class ExtensionController extends AbstractDisposable {
         })
       }
 
-      const rpc = this._rpc = new Rpc(this.client)
-      this.onDispose(rpc)
-
-      const messenger = this._messenger = new Messenger(this)
-      this.onDispose(messenger)
-
-      const likeC4Model = this._likec4model = new LikeC4Model(this)
-      this.onDispose(likeC4Model)
-
-      this.onDispose(
-        vscode.window.registerWebviewPanelSerializer(
-          PreviewPanel.ViewType,
-          new PreviewPanel.Serializer(this)
-        )
-      )
-
-      this.registerCommand(cmdRebuild, () => {
-        void rebuildWorkspace(rpc)
-        this.telemetry?.sendTelemetryEvent('rebuild')
-      })
-
-      this.registerCommand(cmdPreviewContextOpenSource, async () => {
-        if (!PreviewPanel.current) return
-        const { elementId } = await PreviewPanel.current.rpc.getLastClickedNode()
-        if (!elementId) return
-        await vscode.commands.executeCommand(
-          cmdLocate,
-          {
-            element: elementId
-          } satisfies LocateParams
-        )
-      })
-
-      this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
-        PreviewPanel.createOrReveal({
-          viewId: viewId ?? ('index' as ViewID),
-          ctrl: this
-        })
-        this.telemetry?.sendTelemetryEvent('open-preview')
-      })
-
-      this.registerCommand(cmdLocate, async (params: LocateParams) => {
-        const loc = await rpc.locate(params)
-        if (!loc) return
-        const location = this.client.protocol2CodeConverter.asLocation(loc)
-        let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
-        if (PreviewPanel.current?.panel.viewColumn === viewColumn) {
-          viewColumn = vscode.ViewColumn.Beside
-        }
-        const editor = await vscode.window.showTextDocument(location.uri, {
-          viewColumn,
-          selection: location.range,
-          preserveFocus: viewColumn === vscode.ViewColumn.Beside
-        })
-        editor.revealRange(location.range)
-      })
-
       this.onDispose(() => {
         PreviewPanel.current?.dispose()
       })
@@ -217,7 +217,7 @@ export class ExtensionController extends AbstractDisposable {
       this.onDispose(
         vscode.workspace.onDidDeleteFiles(_ => {
           logger.debug(`onDidDeleteFiles`)
-          void rebuildWorkspace(rpc)
+          void rebuildWorkspace(this.rpc)
         })
       )
       if ((await startingPromise) !== true) {
@@ -227,7 +227,7 @@ Restart VSCode. Please report this issue, if it persists.`)
         return
       }
 
-      await initWorkspace(rpc)
+      await initWorkspace(this.rpc)
 
       if (isProd && this.telemetry && this.telemetry.telemetryLevel !== 'off') {
         this.telemetry?.sendTelemetryEvent(
@@ -237,7 +237,7 @@ Restart VSCode. Please report this issue, if it persists.`)
             workspaceFolders: workspaceFolders.length
           }
         )
-        likeC4Model.turnOnTelemetry()
+        this.likec4model.turnOnTelemetry()
       }
       //
     } catch (e) {

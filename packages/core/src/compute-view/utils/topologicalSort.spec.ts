@@ -1,93 +1,77 @@
 import { map, prop } from 'remeda'
+import type { TupleToUnion } from 'type-fest'
 import { describe, expect, it } from 'vitest'
 import type { Fqn } from '../../types/element'
-import type { ComputedEdge, ComputedNode } from '../../types/view'
-import { ancestorsFqn, commonAncestor } from '../../utils/fqn'
-import { sortNodes } from './sortNodes'
+import type { ComputedEdge, EdgeId } from '../../types/view'
+import { commonAncestor } from '../../utils/fqn'
+import { buildComputedNodes, type ComputedNodeSource } from './buildComputedNodes'
+import { linkNodeEdges } from './linkNodeEdges'
 import { topologicalSort } from './topologicalSort'
 
-export type TestComputedNode = {
-  id: string
-  parent?: string
-}
-
 describe('topologicalSort', () => {
-  const testnodes = (
-    _nodes: TestComputedNode[],
-    _edges: [source: string, target: string][] = []
-  ) => {
-    const nodes = _nodes.map(
-      ({ id, parent }) =>
-        ({
-          id,
-          parent: parent ?? null,
-          children: _nodes.flatMap(n => (n.parent === id ? n.id : [])),
-          inEdges: [],
-          outEdges: []
-        }) as unknown as ComputedNode
+  // #region
+  function testmodel<const NodeId extends string>(
+    nodes: readonly [NodeId, ...NodeId[]],
+    edges: Array<`${NoInfer<NodeId>} -> ${NoInfer<NodeId>}`> = []
+  ) {
+    const nodesMap = buildComputedNodes(
+      nodes.map(id => ({ id, title: id }) as any as ComputedNodeSource)
     )
-    const edges = _edges.map(([source, target]) => {
-      const parentId = commonAncestor(source as Fqn, target as Fqn)
-      const edge = {
-        id: `${source}:${target}`,
+    const _edges = edges.map(s => {
+      const [source, target] = s.split(' -> ') as [Fqn, Fqn]
+      return {
+        id: `${source} -> ${target}` as EdgeId,
         source,
         target,
-        parent: parentId
+        parent: commonAncestor(source as any as Fqn, target as any as Fqn),
+        label: null,
+        relations: []
       } as ComputedEdge
-
-      const sources = [source, ...ancestorsFqn(source as Fqn)]
-      while (sources.length > 0) {
-        const fqn = sources.shift()
-        if (!fqn || fqn === parentId) {
-          break
-        }
-        const node = nodes.find(n => n.id === fqn)
-        if (node) {
-          node.outEdges.push(edge.id)
-        }
-      }
-      const targets = [target, ...ancestorsFqn(target as Fqn)]
-      while (targets.length > 0) {
-        const fqn = targets.shift()
-        if (!fqn || fqn === parentId) {
-          break
-        }
-        const node = nodes.find(n => n.id === fqn)
-        if (node) {
-          node.inEdges.push(edge.id)
-        }
-      }
-
-      return edge
     })
-    return { nodes, edges }
+    linkNodeEdges(nodesMap, _edges)
+    return topologicalSort({
+      nodes: [...nodesMap.values()],
+      edges: _edges
+    })
   }
 
-  const expectSorting = (
-    _nodes: TestComputedNode[],
-    _edges: [source: string, target: string][] = []
-  ) => expect(topologicalSort(testnodes(_nodes, _edges)).map(n => n.id))
+  function expectOrder<const NodeIds extends readonly [string, ...string[]]>(
+    nodes: NodeIds,
+    edges: Array<`${TupleToUnion<NoInfer<NodeIds>>} -> ${TupleToUnion<NoInfer<NodeIds>>}`> = []
+  ) {
+    const sorted = testmodel(nodes, edges)
+
+    return expect({
+      nodes: map(sorted.nodes, prop('id')),
+      edges: map(sorted.edges, prop('id'))
+    })
+  }
+
+  function expectNodesOrder<const NodeIds extends readonly [string, ...string[]]>(
+    nodes: NodeIds,
+    edges: Array<`${TupleToUnion<NoInfer<NodeIds>>} -> ${TupleToUnion<NoInfer<NodeIds>>}`> = []
+  ) {
+    const sorted = testmodel(nodes, edges).nodes
+    return expect(map(sorted, prop('id')))
+  }
+  // #endregion
 
   describe('two nodes inside', () => {
     const nodes = [
-      { id: 'cloud' },
-      { id: 'customer' },
-      {
-        id: 'cloud.backend',
-        parent: 'cloud'
-      },
-      {
-        id: 'cloud.frontend',
-        parent: 'cloud'
-      }
-    ] satisfies TestComputedNode[]
+      'cloud',
+      'customer',
+      'cloud.backend',
+      'cloud.frontend'
+    ] as const
 
     it('should keep sorting, if no edges', () => {
-      expectSorting(nodes).toEqual(['cloud', 'customer', 'cloud.backend', 'cloud.frontend'])
+      expectNodesOrder(nodes).toEqual(['cloud', 'customer', 'cloud.backend', 'cloud.frontend'])
     })
 
     it('should sort nested nodes using edges', () => {
-      expectSorting(nodes, [['cloud.frontend', 'cloud.backend']]).toEqual([
+      expectNodesOrder(nodes, [
+        'cloud.frontend -> cloud.backend'
+      ]).toEqual([
         'cloud',
         'customer',
         'cloud.frontend',
@@ -96,46 +80,36 @@ describe('topologicalSort', () => {
     })
 
     it('should sort nodes using edges', () => {
-      expectSorting(nodes, [
-        ['customer', 'cloud.frontend'],
-        ['cloud.frontend', 'cloud.backend']
-      ]).toEqual(['customer', 'cloud', 'cloud.frontend', 'cloud.backend'])
+      expectNodesOrder(nodes, [
+        'customer -> cloud.frontend',
+        'cloud.frontend -> cloud.backend'
+      ]).toEqual([
+        'customer',
+        'cloud',
+        'cloud.frontend',
+        'cloud.backend'
+      ])
     })
   })
 
   describe('three nodes inside', () => {
     const nodes = [
-      {
-        id: 'customer'
-      },
-      {
-        id: 'amazon'
-      },
-      {
-        id: 'cloud.frontend',
-        parent: 'cloud'
-      },
-      {
-        id: 'cloud'
-      },
-      {
-        id: 'cloud.db',
-        parent: 'cloud'
-      },
-      {
-        id: 'cloud.backend',
-        parent: 'cloud'
-      }
-    ] satisfies TestComputedNode[]
+      'customer',
+      'cloud.frontend',
+      'cloud.db',
+      'cloud',
+      'amazon',
+      'cloud.backend'
+    ] as const
 
     it('should keep sorting, if no edges', () => {
-      const sorted = sortNodes(testnodes(nodes))
+      const sorted = testmodel(nodes).nodes
       expect(map(sorted, prop('id'))).toEqual([
         'customer',
-        'amazon',
         'cloud',
         'cloud.frontend',
         'cloud.db',
+        'amazon',
         'cloud.backend'
       ])
 
@@ -148,44 +122,25 @@ describe('topologicalSort', () => {
     })
 
     it('should sort nested nodes using edges', () => {
-      const sorted = sortNodes(
-        testnodes(nodes, [
-          ['cloud.frontend', 'cloud.backend'],
-          ['cloud.backend', 'cloud.db']
-        ])
-      )
-      expect(map(sorted, prop('id'))).toEqual([
+      expectNodesOrder(nodes, [
+        'cloud.frontend -> cloud.backend',
+        'cloud.backend -> cloud.db'
+      ]).toEqual([
+        'customer',
         'cloud',
+        'amazon',
         'cloud.frontend',
         'cloud.backend',
-        'cloud.db',
-        'amazon',
-        'customer'
+        'cloud.db'
       ])
-
-      const cloud = sorted.find(n => n.id === 'cloud')!
-      expect(cloud).toMatchObject({
-        id: 'cloud',
-        parent: null,
-        children: ['cloud.frontend', 'cloud.backend', 'cloud.db']
-      })
     })
 
     it('should sort nodes using edges', () => {
-      expectSorting(nodes, [
-        ['customer', 'cloud.frontend'],
-        ['cloud.frontend', 'cloud.backend'],
-        ['cloud.backend', 'cloud.db'],
-        ['cloud.db', 'amazon']
-      ]).toEqual(['customer', 'cloud', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'amazon'])
-    })
-
-    it('should sort nodes using edges and ignore cycles', () => {
-      expectSorting(nodes, [
-        ['cloud.frontend', 'cloud.backend'],
-        ['cloud.backend', 'cloud.db'],
-        ['cloud.db', 'amazon'],
-        ['amazon', 'cloud.backend']
+      expectNodesOrder(nodes, [
+        'customer -> cloud.frontend',
+        'cloud.frontend -> cloud.backend',
+        'cloud.backend -> cloud.db',
+        'cloud.db -> amazon'
       ]).toEqual([
         'customer',
         'cloud',
@@ -196,13 +151,37 @@ describe('topologicalSort', () => {
       ])
     })
 
+    it('should sort nodes using edges and ignore cycles', () => {
+      expectOrder(nodes, [
+        'amazon -> cloud.backend',
+        'cloud.db -> amazon',
+        'cloud.frontend -> cloud.backend',
+        'cloud.backend -> cloud.db'
+      ]).toMatchObject({
+        nodes: [
+          'customer',
+          'cloud',
+          'cloud.frontend',
+          'cloud.backend',
+          'cloud.db',
+          'amazon'
+        ],
+        edges: [
+          'cloud.frontend -> cloud.backend',
+          'cloud.backend -> cloud.db',
+          'cloud.db -> amazon',
+          'amazon -> cloud.backend'
+        ]
+      })
+    })
+
     it('should sort nodes using edges and ignore cycles (2)', () => {
-      expectSorting(nodes, [
-        ['customer', 'cloud.frontend'],
-        ['cloud.frontend', 'cloud.backend'],
-        ['cloud.backend', 'cloud.db'],
-        ['cloud.db', 'amazon'],
-        ['amazon', 'customer']
+      expectNodesOrder(nodes, [
+        'customer -> cloud.frontend',
+        'amazon -> customer',
+        'cloud.frontend -> cloud.backend',
+        'cloud.backend -> cloud.db',
+        'cloud.db -> amazon'
       ]).toEqual([
         'customer',
         'cloud',

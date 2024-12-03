@@ -5,7 +5,20 @@ import { isString } from './guards'
 
 type Predicate<T> = (x: T) => boolean
 
-export function nameFromFqn(fqn: LiteralUnion<Fqn, string>) {
+export function parentFqn<E extends string>(fqn: E): E | null {
+  const lastDot = fqn.lastIndexOf('.')
+  if (lastDot > 0) {
+    return fqn.slice(0, lastDot) as E
+  }
+  return null
+}
+
+export function parentFqnPredicate<T extends { parent: Fqn | null }>(parent: Fqn): Predicate<T> {
+  const prefix = parent + '.'
+  return (e: T) => !!e.parent && (e.parent === parent || e.parent.startsWith(prefix))
+}
+
+export function nameFromFqn<E extends string>(fqn: E) {
   const lastDot = fqn.lastIndexOf('.')
   if (lastDot > 0) {
     return fqn.slice(lastDot + 1)
@@ -14,7 +27,7 @@ export function nameFromFqn(fqn: LiteralUnion<Fqn, string>) {
   }
 }
 
-export function isAncestor<E extends { id: Fqn }>(
+export function isAncestor<E extends { id: string }>(
   ...args: [ancestor: string, another: string] | [ancestor: E, another: E]
 ) {
   const ancestor = isString(args[0]) ? args[0] : args[0].id
@@ -22,7 +35,7 @@ export function isAncestor<E extends { id: Fqn }>(
   return another.startsWith(ancestor + '.')
 }
 
-export function isSameHierarchy<E extends { id: Fqn }>(one: E | Fqn, another: E | Fqn) {
+export function isSameHierarchy<E extends string | { id: Fqn }>(one: E, another: E) {
   const first = isString(one) ? one : one.id
   const second = isString(another) ? another : another.id
   return first === second || second.startsWith(first + '.') || first.startsWith(second + '.')
@@ -75,7 +88,7 @@ export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, anothe
   return firstDepth + secondDepth - (2 * ancestorDepth + 1)
 }
 
-export function commonAncestor<IDs extends string>(first: Fqn<IDs>, second: Fqn<IDs>) {
+export function commonAncestor<E extends string>(first: E, second: E) {
   const parentA = parentFqn(first)
   const parentB = parentFqn(second)
   if (parentA === parentB) {
@@ -87,35 +100,22 @@ export function commonAncestor<IDs extends string>(first: Fqn<IDs>, second: Fqn<
 
   const a = first.split('.')
   const b = second.split('.')
-  let ancestor: Fqn<IDs> | null = null
+  let ancestor: E | null = null
 
   while (a.length > 1 && b.length > 1 && !!a[0] && a[0] === b[0]) {
-    ancestor = (ancestor ? `${ancestor}.${a[0]}` : a[0]) as Fqn<IDs>
+    ancestor = (ancestor ? `${ancestor}.${a[0]}` : a[0]) as E
     a.shift()
     b.shift()
   }
   return ancestor
 }
 
-export function parentFqn<IDs extends string>(fqn: Fqn<IDs>): Fqn<IDs> | null {
-  const lastDot = fqn.lastIndexOf('.')
-  if (lastDot > 0) {
-    return fqn.slice(0, lastDot) as Fqn<IDs>
-  }
-  return null
-}
-
-export function parentFqnPredicate<T extends { parent: Fqn | null }>(parent: Fqn): Predicate<T> {
-  const prefix = parent + '.'
-  return (e: T) => !!e.parent && (e.parent === parent || e.parent.startsWith(prefix))
-}
-
 /**
  * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
  * going up from parent to the root
  */
-export function ancestorsFqn<IDs extends string>(fqn: Fqn<IDs>): Fqn<IDs>[] {
-  const path = fqn.split('.') as Fqn<IDs>[]
+export function ancestorsFqn<Id extends string>(fqn: Id): Id[] {
+  const path = fqn.split('.') as Id[]
   path.pop()
   if (path.length === 0) {
     return []
@@ -125,9 +125,9 @@ export function ancestorsFqn<IDs extends string>(fqn: Fqn<IDs>): Fqn<IDs>[] {
       acc.push(part)
       return acc
     }
-    acc.unshift(`${acc[0]}.${part}` as Fqn<IDs>)
+    acc.unshift(`${acc[0]}.${part}` as Id)
     return acc
-  }, [] as Fqn<IDs>[])
+  }, [] as Id[])
 }
 
 /**

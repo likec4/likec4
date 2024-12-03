@@ -2,14 +2,14 @@ import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Element, Fqn } from '../types'
 import {
-  ancestorsFqn as typedAncestorsFqn,
-  commonAncestor as typedCommonAncestor,
+  ancestorsFqn,
+  commonAncestor,
   compareFqnHierarchically,
   hierarchyDistance,
   isAncestor,
   isDescendantOf,
   notDescendantOf,
-  parentFqn as typedParentFqn,
+  parentFqn,
   sortByFqnHierarchically,
   sortNaturalByFqn,
   sortParentsFirst
@@ -17,9 +17,9 @@ import {
 
 const el = (id: string): Element => ({ id }) as unknown as Element
 
-const parentFqn = typedParentFqn as (fqn: string) => string | null
-const ancestorsFqn = typedAncestorsFqn as (fqn: string) => string[]
-const commonAncestor = typedCommonAncestor as (a: string, b: string) => string | null
+// const parentFqn = typedParentFqn as (fqn: string) => string | null
+// const ancestorsFqn = typedAncestorsFqn as (fqn: string) => string[]
+// // const commonAncestor = typedCommonAncestor as (a: string, b: string) => string | null
 
 describe('fqn utils', () => {
   describe('parentFqn', () => {

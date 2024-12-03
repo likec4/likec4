@@ -125,8 +125,16 @@ export const builder = b
           instanceOf('db', 'aws.rds')
         ),
         zone('us').with(
+          zone('zone1').with(
+            instanceOf('api', 'cloud.backend.api'),
+            instanceOf('ui', 'cloud.frontend.dashboard')
+          ),
           instanceOf('db', 'aws.rds')
         )
+      ),
+      // Global
+      env('global').with(
+        instanceOf('email', 'email')
       ),
       $d.rel('prod.eu.db', 'prod.us.db', 'replicates')
     )
@@ -143,7 +151,7 @@ export const builder = b
     // )
   )
 
-type Types = typeof builder['Types']
+export type Types = typeof builder['Types']
 
 export { $exclude, $include }
 
@@ -180,4 +188,13 @@ export function computeView2(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
     nodeIds: map(view.nodes, prop('id')) as string[],
     edgeIds: map(view.edges, prop('id')) as string[]
   })
+}
+
+export function computeNodesAndEdges(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
+  const { nodeIds, edgeIds } = computeView2(...rules)
+  return {
+    // Starts with capital letter to be first in snapshot
+    Nodes: nodeIds,
+    edges: edgeIds
+  }
 }

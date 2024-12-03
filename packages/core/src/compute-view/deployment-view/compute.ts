@@ -1,15 +1,15 @@
 import { filter, hasAtLeast, isEmpty, isTruthy, map, only, pipe, unique } from 'remeda'
-import { invariant } from '../../errors'
-import { LikeC4Model } from '../../model'
-import { mergeConnections } from '../../model/connection/deployment'
+import { invariant, nonexhaustive, nonNullable } from '../../errors'
+import { type LikeC4DeploymentModel, LikeC4Model } from '../../model'
 import { DeploymentConnectionModel } from '../../model/DeploymentConnectionModel'
 import type { AnyAux } from '../../model/types'
-import type { DeploymentNodeKind, NonEmptyArray, Tag } from '../../types'
+import type { ComputedNode, DeploymentNodeKind, DeploymentViewRule, Fqn, NonEmptyArray, Tag } from '../../types'
 import {
   type ComputedDeploymentView,
   type ComputedEdge,
   DefaultArrowType,
   DeploymentElementExpression,
+  DeploymentRelationExpression,
   type DeploymentView,
   isViewRuleAutoLayout,
   isViewRulePredicate
@@ -17,32 +17,31 @@ import {
 import { applyDeploymentViewRuleStyles } from '../utils/applyViewRuleStyles'
 import type { ComputedNodeSource } from '../utils/buildComputedNodes'
 import { buildComputedNodes } from '../utils/buildComputedNodes'
+import { linkNodeEdges } from '../utils/linkNodeEdges'
 import { topologicalSort } from '../utils/topologicalSort'
 import { uniqueTags } from '../utils/uniqueTags'
-import { updateNodeInOutEdges } from '../utils/update-node-inout-edges'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import type { Elem } from './_types'
-import { cleanCrossBoundaryConnections } from './clean-cross-boundary'
-import { MutableMemory, type Patch } from './Memory'
-import { excludeDeploymentRef, includeDeploymentRef } from './predicates/deployment-ref'
-import { excludeWildcard, includeWildcard } from './predicates/wildcard'
+import { cleanConnections } from './clean-connections'
+import { type Memory, MutableMemory, type Patch } from './Memory'
+import { DeploymentRefPredicate } from './predicates/element'
+import { DirectRelationPredicate } from './predicates/relation-direct'
+import { InOutRelationPredicate } from './predicates/relation-in-out'
+import { IncomingRelationPredicate } from './predicates/relation-incoming'
+import { OutgoingRelationPredicate } from './predicates/relation-outgoing'
+import { WildcardPredicate } from './predicates/wildcard'
 import { Stage } from './Stage'
 
-export function computeDeploymentView<M extends AnyAux>(
-  likec4model: LikeC4Model<M>,
-  {
-    docUri: _docUri, // exclude docUri
-    rules, // exclude rules
-    ...view
-  }: DeploymentView
-): ComputedDeploymentView<M['ViewId']> {
-  const model = likec4model.deployment
-  let memory = new MutableMemory()
+function processPredicates<M extends AnyAux>(
+  model: LikeC4DeploymentModel<M>,
+  rules: DeploymentViewRule[]
+) {
+  let memory = MutableMemory.empty()
   let stage: Stage | null = null
 
   for (const rule of rules) {
     if (isViewRulePredicate(rule)) {
-      const isInclude = 'include' in rule
+      const op = 'include' in rule ? 'include' : 'exclude'
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
         stage = new Stage(stage)
@@ -50,57 +49,32 @@ export function computeDeploymentView<M extends AnyAux>(
         let patch: Patch | undefined
         switch (true) {
           case DeploymentElementExpression.isRef(expr):
-            patch = isInclude ? includeDeploymentRef({ ...ctx, expr }) : excludeDeploymentRef({ ...ctx, expr })
+            patch = DeploymentRefPredicate[op](expr, ctx)
             break
           case DeploymentElementExpression.isWildcard(expr):
-            patch = isInclude ? includeWildcard({ ...ctx, expr }) : excludeWildcard({ ...ctx, expr })
+            patch = WildcardPredicate[op](expr, ctx)
             break
+          case DeploymentRelationExpression.isDirect(expr):
+            patch = DirectRelationPredicate[op](expr, ctx)
+            break
+          case DeploymentRelationExpression.isInOut(expr):
+            patch = InOutRelationPredicate[op](expr, ctx)
+            break
+          case DeploymentRelationExpression.isOutgoing(expr):
+            patch = OutgoingRelationPredicate[op](expr, ctx)
+            break
+          case DeploymentRelationExpression.isIncoming(expr):
+            patch = IncomingRelationPredicate[op](expr, ctx)
+            break
+          default:
+            nonexhaustive(expr)
         }
         patch ??= stage.patch()
         memory = patch(memory)
       }
     }
   }
-
-  // Temporary workaround - transform deployment elements to model elements
-  // Because the rest of the code expects model elements and we want to minimize changes for now
-  const nodesMap = buildComputedNodes([...memory.finalElements].map(toNodeSource))
-
-  const edges = pipe(
-    memory.connections,
-    // Keep only connections between leafs
-    filter(c => {
-      const source = nodesMap.get(c.source.id)
-      const target = nodesMap.get(c.target.id)
-      return source?.children.length === 0 && target?.children.length === 0
-    }),
-    mergeConnections,
-    cleanCrossBoundaryConnections,
-    toComputedEdges
-  )
-
-  updateNodeInOutEdges(nodesMap, edges)
-
-  const nodes = applyDeploymentViewRuleStyles(
-    rules,
-    topologicalSort({
-      nodes: [...nodesMap.values()],
-      edges
-    })
-  )
-
-  const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)
-
-  return calcViewLayoutHash({
-    ...view,
-    autoLayout: {
-      direction: autoLayoutRule?.direction ?? 'TB',
-      ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
-      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
-    },
-    nodes,
-    edges
-  })
+  return cleanConnections(memory)
 }
 
 function toNodeSource(el: Elem): ComputedNodeSource {
@@ -218,4 +192,50 @@ function toComputedEdges<M extends AnyAux>(connections: ReadonlyArray<Deployment
     acc.push(edge)
     return acc
   }, [] as ComputedEdge[])
+}
+
+function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
+  // typecast to MutableMemory
+  invariant(memory instanceof MutableMemory, 'Expected MutableMemory')
+  return buildComputedNodes([...memory.finalElements].map(toNodeSource))
+}
+
+export function computeDeploymentView<M extends AnyAux>(
+  likec4model: LikeC4Model<M>,
+  {
+    docUri: _docUri, // exclude docUri
+    rules, // exclude rules
+    ...view
+  }: DeploymentView
+): ComputedDeploymentView<M['ViewId']> {
+  const memory = processPredicates<M>(likec4model.deployment, rules)
+
+  const nodesMap = buildNodes(memory)
+
+  const edges = toComputedEdges(memory.connections)
+
+  linkNodeEdges(nodesMap, edges)
+
+  const sorted = topologicalSort({
+    nodes: [...nodesMap.values()],
+    edges
+  })
+
+  const nodes = applyDeploymentViewRuleStyles(
+    rules,
+    sorted.nodes
+  )
+
+  const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)
+
+  return calcViewLayoutHash({
+    ...view,
+    autoLayout: {
+      direction: autoLayoutRule?.direction ?? 'TB',
+      ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
+      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
+    },
+    nodes,
+    edges: sorted.edges
+  })
 }

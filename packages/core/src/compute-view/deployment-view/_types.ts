@@ -3,7 +3,7 @@ import type { DeploymentConnectionModel } from '../../model/DeploymentConnection
 import type { DeploymentElementModel } from '../../model/DeploymentElementModel'
 import type { AnyAux } from '../../model/types'
 import type { DeploymentExpression } from '../../types'
-import type { Memory } from './Memory'
+import type { Memory, Patch } from './Memory'
 import type { Stage } from './Stage'
 
 export type Elem = DeploymentElementModel<AnyAux>
@@ -15,4 +15,15 @@ export type PredicateParams<Expr extends DeploymentExpression = any> = {
   model: LikeC4DeploymentModel
   stage: Stage
   memory: Memory
+}
+
+export interface PredicateCtx {
+  model: LikeC4DeploymentModel
+  stage: Stage
+  memory: Memory
+}
+
+export interface PredicateExecutor<Expr extends DeploymentExpression> {
+  include(expr: Expr, ctx: PredicateCtx): Patch
+  exclude(expr: Expr, ctx: PredicateCtx): Patch
 }

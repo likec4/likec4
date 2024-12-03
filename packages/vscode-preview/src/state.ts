@@ -3,7 +3,7 @@ import { useStore } from '@nanostores/react'
 import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'
 import { entries, isDeepEqual, isNullish, keys, values } from 'remeda'
-import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
+import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from './protocol'
 import { ExtensionApi, getVscodeState, messenger, saveVscodeState, type VscodeState } from './vscode'
 
 const {
@@ -20,7 +20,9 @@ const setVscodeAppstate = (state: Partial<VscodeAppState>) => {
     ...$appstate.get(),
     ...state
   }
-  $appstate.set(nextstate)
+  if (!isDeepEqual(nextstate, $appstate.get())) {
+    $appstate.set(nextstate)
+  }
   saveVscodeState(nextstate)
 }
 
@@ -45,17 +47,22 @@ export const useIsModelLoaded = () => useStore($initialized)
 export const $viewId = atom(viewId)
 
 export const changeViewId = (viewId: ViewId) => {
-  if (viewId === $viewId.get()) {
-    return
-  }
-  if (!$likeC4Diagrams.get()[viewId]) {
+  const diagramState = $likeC4Diagrams.get()[viewId]
+  if (!diagramState) {
     $likeC4Diagrams.setKey(viewId, {
       state: 'pending',
       view: null,
       error: null
     })
+  } else {
+    $likeC4Diagrams.setKey(viewId, {
+      ...diagramState,
+      state: 'stale'
+    })
   }
-  $viewId.set(viewId)
+  if (viewId !== $viewId.get()) {
+    $viewId.set(viewId)
+  }
   saveVscodeState({ viewId })
 }
 

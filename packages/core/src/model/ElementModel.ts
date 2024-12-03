@@ -10,9 +10,9 @@ import {
   type ThemeColor
 } from '../types'
 import { commonAncestor } from '../utils'
-import type { DeployedInstancesIterator } from './DeploymentElementModel'
+import { type DeployedInstancesIterator, RelationshipsAccum } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import type { RelationshipsIterator } from './RelationModel'
+import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
@@ -142,6 +142,19 @@ export class ElementModel<M extends AnyAux> {
       yield r.target
     }
     return
+  }
+
+  protected cachedOutgoing: Set<RelationshipModel<M>> | null = null
+  protected cachedIncoming: Set<RelationshipModel<M>> | null = null
+
+  public get allOutgoing(): ReadonlySet<RelationshipModel<M>> {
+    this.cachedOutgoing ??= new Set(this.outgoing())
+    return this.cachedOutgoing
+  }
+
+  public get allIncoming(): ReadonlySet<RelationshipModel<M>> {
+    this.cachedIncoming ??= new Set(this.incoming())
+    return this.cachedIncoming
   }
 
   /**

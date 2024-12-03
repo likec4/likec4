@@ -7,10 +7,10 @@ import { deploymentExpressionToPredicate } from '../../utils/deploymentExpressio
 
 type DeploymentElement = LikeC4DeploymentGraph.Element
 
-const isNode = LikeC4DeploymentGraph.isNode
+export const isNode = LikeC4DeploymentGraph.isNode
 const isInstance = LikeC4DeploymentGraph.isInstance
 
-type DeploymentViewComputeCtx = any
+export type DeploymentViewComputeCtx = any
 
 export function includeDeploymentRef(ctx: DeploymentViewComputeCtx, { ref, ...expr }: Expr.Ref) {
   const currentElements = [...ctx.resolvedElements]

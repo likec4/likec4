@@ -1,5 +1,6 @@
 import { invariant } from '../errors'
 import { stringHash } from '../utils'
+import type { Connection } from './ConnectionModel'
 import {
   type DeploymentElementModel,
   DeploymentNodeModel,
@@ -13,7 +14,9 @@ import type { AnyAux, IteratorLike } from './types'
  * Connection is ephemeral entity, result of a resolving relationships between source and target.
  * Includes direct relationships and/or between their nested elements.
  */
-export class DeploymentConnectionModel<M extends AnyAux = AnyAux> {
+export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
+  implements Connection<DeploymentConnectionModel<M>, DeploymentElementModel<M>, M['EdgeId']>
+{
   /**
    * Common ancestor of the source and target elements.
    * Represents the boundary of the connection.
@@ -43,6 +46,23 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux> {
     return this.relations.size
   }
 
+  nonEmpty(): boolean {
+    return this.relations.nonEmpty
+  }
+
+  /**
+   * Check if connection contains deployment relation,
+   * that is directly connected to source or target.
+   */
+  public hasDirectDeploymentRelation(): boolean {
+    for (const relation of this.relations.deployment) {
+      if (relation.source.id === this.source.id || relation.target.id === this.target.id) {
+        return true
+      }
+    }
+    return false
+  }
+
   public *values(): IteratorLike<RelationshipModel<M> | DeploymentRelationModel<M>> {
     yield* this.relations.model
     yield* this.relations.deployment
@@ -60,5 +80,24 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux> {
       this.target,
       this.relations.union(other.relations)
     )
+  }
+
+  public difference(other: DeploymentConnectionModel<M>): DeploymentConnectionModel<M> {
+    invariant(this.source.id === other.source.id, 'Cannot difference connection with different sources')
+    invariant(this.target.id === other.target.id, 'Cannot difference connection with different targets')
+    return new DeploymentConnectionModel(
+      this.source,
+      this.target,
+      new RelationshipsAccum(
+        this.relations.model.difference(other.relations.model),
+        this.relations.deployment.difference(other.relations.deployment)
+      )
+    )
+  }
+
+  public equals(other: DeploymentConnectionModel<M>): boolean {
+    return this.source.id === other.source.id && this.target.id === other.target.id
+      && this.relations.model.symmetricDifference(other.relations.model).size === 0
+      && this.relations.deployment.symmetricDifference(other.relations.deployment).size === 0
   }
 }

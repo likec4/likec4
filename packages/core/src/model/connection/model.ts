@@ -1,21 +1,34 @@
 import { isSameHierarchy } from '../../utils/fqn'
-import { DeploymentConnectionModel } from '../DeploymentConnectionModel'
-import type { DeploymentElementModel } from '../DeploymentElementModel'
+import { type Connection, ConnectionModel } from '../ConnectionModel'
+import type { ElementModel } from '../ElementModel'
 import type { AnyAux } from '../types'
 
-export { mergeConnections } from './model'
+export function mergeConnections<C extends Connection<C, any, string>>(
+  connections: Iterable<C>
+): C[] {
+  const map = new Map<string, C>()
+  for (const conn of connections) {
+    const existing = map.get(conn.id)
+    if (existing) {
+      map.set(conn.id, existing.mergeWith(conn))
+    } else {
+      map.set(conn.id, conn)
+    }
+  }
+  return [...map.values()]
+}
 
 /**
  * Resolve connection from source to target
  * If direction is `both`, also look for reverse connection
  */
 export function findConnection<M extends AnyAux>(
-  source: DeploymentElementModel<M>,
-  target: DeploymentElementModel<NoInfer<M>>,
+  source: ElementModel<M>,
+  target: ElementModel<NoInfer<M>>,
   direction: 'directed' | 'both' = 'directed'
 ):
-  | readonly [DeploymentConnectionModel<M>, DeploymentConnectionModel<M>]
-  | readonly [DeploymentConnectionModel<M>]
+  | readonly [ConnectionModel<M>, ConnectionModel<M>]
+  | readonly [ConnectionModel<M>]
   | readonly []
 {
   if (source === target) {
@@ -25,11 +38,11 @@ export function findConnection<M extends AnyAux>(
     return []
   }
 
-  const directedIntersection = source.allOutgoing.intersect(target.allIncoming)
+  const directedIntersection = source.allOutgoing.intersection(target.allIncoming)
 
-  const directed = directedIntersection.nonEmpty
+  const directed = directedIntersection.size > 0
     ? [
-      new DeploymentConnectionModel(
+      new ConnectionModel(
         source,
         target,
         directedIntersection
@@ -41,10 +54,10 @@ export function findConnection<M extends AnyAux>(
     return directed
   }
 
-  const reverseIntersection = source.allIncoming.intersect(target.allOutgoing)
-  const reverse = reverseIntersection.nonEmpty
+  const reverseIntersection = source.allIncoming.intersection(target.allOutgoing)
+  const reverse = reverseIntersection.size > 0
     ? [
-      new DeploymentConnectionModel(
+      new ConnectionModel(
         target,
         source,
         reverseIntersection
@@ -60,18 +73,18 @@ export function findConnection<M extends AnyAux>(
  * By default, look for both directions.
  */
 export function findConnectionsBetween<M extends AnyAux>(
-  element: DeploymentElementModel<M>,
-  others: Iterable<DeploymentElementModel<NoInfer<M>>>,
+  element: ElementModel<M>,
+  others: Iterable<ElementModel<NoInfer<M>>>,
   direction: 'directed' | 'both' = 'both'
-): readonly DeploymentConnectionModel<M>[] {
-  if (element.allIncoming.isEmpty && element.allOutgoing.isEmpty) {
+): readonly ConnectionModel<M>[] {
+  if (element.allIncoming.size === 0 && element.allOutgoing.size === 0) {
     return []
   }
 
   // We separate resolved connection,
   // because we want return outgoing first
-  const outgoing = [] as DeploymentConnectionModel<M>[]
-  const incoming = [] as DeploymentConnectionModel<M>[]
+  const outgoing = [] as ConnectionModel<M>[]
+  const incoming = [] as ConnectionModel<M>[]
   for (const _other of others) {
     if (element === _other) {
       continue
@@ -94,8 +107,8 @@ export function findConnectionsBetween<M extends AnyAux>(
  * Resolve all connections within a given set of elements
  */
 export function findConnectionsWithin<M extends AnyAux>(
-  elements: Iterable<DeploymentElementModel<M>>
-): readonly DeploymentConnectionModel<M>[] {
+  elements: Iterable<ElementModel<M>>
+): readonly ConnectionModel<M>[] {
   return [...elements].reduce((acc, el, index, array) => {
     // skip for last element
     if (index === array.length - 1) {
@@ -105,5 +118,5 @@ export function findConnectionsWithin<M extends AnyAux>(
       ...findConnectionsBetween(el, array.slice(index + 1), 'both')
     )
     return acc
-  }, [] as DeploymentConnectionModel<M>[])
+  }, [] as ConnectionModel<M>[])
 }

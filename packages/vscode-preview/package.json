@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./protocol": "./protocol.ts"
+    "./protocol": "./src/protocol.ts"
   },
   "sideEffects": false,
   "files": [

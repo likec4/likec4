@@ -99,6 +99,13 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
   }
 
   /**
+   * Check if the element is a sibling of another element
+   */
+  public isSibling(other: DeploymentElementModel<M>): boolean {
+    return this.parent === other.parent
+  }
+
+  /**
    * Resolve siblings of the element and its ancestors
    *  (from closest to root)
    */
@@ -222,7 +229,7 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
   /**
    * Iterate over all instances nested in this deployment node.
    */
-  public *nestedInstances(): DeployedInstancesIterator<M> {
+  public *instances(): DeployedInstancesIterator<M> {
     for (const nested of this.descendants()) {
       if (nested.isInstance()) {
         yield nested
@@ -236,13 +243,13 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
    * if only there are no more instances
    */
   public onlyOneInstance(): DeployedInstanceModel<M> | null {
-    const [one, two] = this.nestedInstances().take(2).toArray()
+    const [one, two] = this.instances().take(2).toArray()
     return one && !two ? one : null
   }
 
   protected override *outgoingModel(): RelationshipsIterator<M> {
     const unique = new Set<RelationshipModel<M>>()
-    for (const nested of this.nestedInstances()) {
+    for (const nested of this.instances()) {
       for (const r of nested.allOutgoing.model) {
         if (unique.has(r)) {
           continue

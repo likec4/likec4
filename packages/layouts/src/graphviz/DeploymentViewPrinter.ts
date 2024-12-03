@@ -9,6 +9,13 @@ import { toArrowType } from './utils'
 
 // TODO: For now we use ElementViewPrinter for DeploymentView
 export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeploymentView> {
+  protected override createGraph(): RootGraphModel {
+    const G = super.createGraph()
+    G.delete(_.pack)
+    G.delete(_.TBbalance)
+    return G
+  }
+
   protected override postBuild(G: RootGraphModel): void {
     pipe(
       this.view.nodes,
@@ -108,7 +115,6 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        [_.minlen]: 0,
         [_.constraint]: false
       })
       return e

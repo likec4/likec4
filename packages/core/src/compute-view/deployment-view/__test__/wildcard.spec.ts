@@ -7,14 +7,20 @@ describe('deployment view: wildcard', () => {
       $include('*')
     )
     expect(nodeIds).toEqual([
+      'global.email',
       'customer.instance',
       'prod',
       'prod.eu',
       'prod.us'
     ])
     expect(edgeIds).toEqual([
+      'prod.eu:prod.us',
+      'prod.us:prod.eu',
       'customer.instance:prod.eu',
-      'prod.eu:prod.us'
+      'customer.instance:prod.us',
+      'global.email:customer.instance',
+      'prod.eu:global.email',
+      'prod.us:global.email'
     ])
   })
 

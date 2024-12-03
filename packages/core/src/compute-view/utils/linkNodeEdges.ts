@@ -8,7 +8,7 @@ import { ancestorsOfNode } from './ancestorsOfNode'
 /**
  * Mutates nodes and updates their in/out edges
  */
-export function updateNodeInOutEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
+export function linkNodeEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
   for (const edge of edges) {
     const source = nodesMap.get(edge.source)
     const target = nodesMap.get(edge.target)
@@ -19,8 +19,8 @@ export function updateNodeInOutEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, e
     target.inEdges.push(edge.id)
 
     // These ancestors are reversed: from bottom to top
-    const sourceAncestors = [...ancestorsOfNode(source, nodesMap)]
-    const targetAncestors = [...ancestorsOfNode(target, nodesMap)]
+    const sourceAncestors = ancestorsOfNode(source, nodesMap)
+    const targetAncestors = ancestorsOfNode(target, nodesMap)
 
     const edgeParent = last(
       commonHead(

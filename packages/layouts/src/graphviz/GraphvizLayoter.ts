@@ -1,12 +1,4 @@
-import {
-  ComputedView,
-  type DiagramView,
-  isDeploymentView,
-  isDynamicView,
-  isElementView,
-  nonexhaustive,
-  type OverviewGraph
-} from '@likec4/core'
+import { ComputedView, type DiagramView, nonexhaustive, type OverviewGraph } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
@@ -52,12 +44,10 @@ export class GraphvizLayouter {
   }
 
   async layout(view: ComputedView): Promise<LayoutResult> {
-    logger.debug(`Layouting view ${view.id}`)
     let dot = await this.dot(view)
-    logger.debug('DOT:')
-    logger.debug(dot)
+    // logger.debug('View ${view.id} DOT:')
+    // logger.debug(dot)
     const rawjson = await this.graphviz.layoutJson(dot)
-    logger.debug('layoutJson DONE')
     let diagram = parseGraphvizJson(rawjson, view)
 
     if (view.manualLayout) {

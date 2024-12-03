@@ -1,7 +1,7 @@
 import { type DiagramView, type Fqn, type RelationId, type ViewChange, type ViewId } from '@likec4/core'
 import { HOST_EXTENSION } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
-import { FetchComputedModel, FetchDiagramView, type LocateParams, WebviewMsgs } from '../protocol'
+import { FetchComputedModel, FetchDiagramView, type LocateParams, WebviewMsgs } from './protocol'
 
 export type VscodeState = {
   viewId: ViewId

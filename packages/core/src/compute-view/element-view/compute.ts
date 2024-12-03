@@ -7,12 +7,10 @@ import {
   hasAtLeast,
   isNonNull,
   isTruthy,
-  last,
   map,
   only,
   pipe,
   reduce,
-  reverse,
   sort,
   unique
 } from 'remeda'
@@ -27,7 +25,6 @@ import {
   ElementKind,
   type ElementPredicateExpression,
   type ElementView,
-  type Fqn,
   isScopedElementView,
   isViewRuleAutoLayout,
   isViewRuleGroup,
@@ -47,20 +44,18 @@ import {
 } from '../../types'
 import * as Expr from '../../types/expression'
 import { stringHash } from '../../utils'
-import { commonHead } from '../../utils/commonHead'
 import { commonAncestor, isAncestor } from '../../utils/fqn'
 import { compareRelations } from '../../utils/relations'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
-import { ancestorsOfNode } from '../utils/ancestorsOfNode'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodesFromElements } from '../utils/buildComputedNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
+import { linkNodeEdges } from '../utils/linkNodeEdges'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { sortNodes } from '../utils/sortNodes'
 import { uniqueTags } from '../utils/uniqueTags'
-import { updateNodeInOutEdges } from '../utils/update-node-inout-edges'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import {
   type ElementPredicateFn,
@@ -242,7 +237,7 @@ export class ComputeCtx {
     const edges = this.computeEdges()
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(edge => [edge.id, edge]))
 
-    updateNodeInOutEdges(nodesMap, edges)
+    linkNodeEdges(nodesMap, edges)
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
