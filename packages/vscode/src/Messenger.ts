@@ -132,6 +132,7 @@ export class Messenger extends AbstractDisposable {
     const participantId = this.messenger.registerWebviewPanel(panel, {
       broadcastMethods: [BroadcastModelUpdate.method]
     })
+    logger.debug(`[Messenger] registerWebViewPanel participant: ${participantId.type}:${participantId.webviewId}`)
     return {
       notifyToChangeView: (viewId: ViewID) => {
         this.messenger.sendNotification(OnOpenView, participantId, { viewId })

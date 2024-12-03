@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {},
+  "files": [],
+  "include": [],
+  "exclude": [],
+  "references": [
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/diagram"
+    },
+    {
+      "path": "./packages/generators"
+    },
+    {
+      "path": "./packages/language-server"
+    },
+    {
+      "path": "./packages/layouts"
+    },
+    {
+      "path": "./packages/likec4"
+    },
+    {
+      "path": "./packages/log"
+    },
+    {
+      "path": "./packages/vscode"
+    },
+    {
+      "path": "./packages/vscode-preview"
+    },
+  ]
+}

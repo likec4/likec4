@@ -3,7 +3,11 @@
   "compilerOptions": {
     "composite": true,
     "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "module": "ESNext",
     "outDir": "../dist/__app__",
     "noEmit": true,
@@ -17,7 +21,9 @@
     "verbatimModuleSyntax": true,
     "jsx": "react-jsx",
     "rootDir": ".",
-    "types": ["vite/client"]
+    "types": [
+      "vite/client"
+    ]
   },
   "include": [
     "src",
@@ -27,6 +33,12 @@
   "references": [
     {
       "path": "../tsconfig.cli.json"
+    },
+    {
+      "path": "../../core"
+    },
+    {
+      "path": "../../diagram"
     }
   ]
 }

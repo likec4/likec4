@@ -10,11 +10,28 @@
     "paths": {
       "#monaco/*": [
         "./src/monaco/*"
-      ],
+      ]
     },
     "noUnusedParameters": false
   },
   "include": [
-    "./src",
+    "./src"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/diagram"
+    },
+    {
+      "path": "../../packages/language-server"
+    },
+    {
+      "path": "../../packages/layouts"
+    },
+    {
+      "path": "../../packages/log"
+    }
   ]
 }
