@@ -1,7 +1,7 @@
 import { hasAtLeast } from 'remeda'
 import { invariant } from '../../../errors'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
-import type { DeploymentConnectionModel } from '../../../model/DeploymentConnectionModel'
+import type { DeploymentConnectionModel } from '../../../model/connection/DeploymentConnectionModel'
 import type { DeployedInstanceModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
 import type { DeploymentElementExpression } from '../../../types'
 import { deploymentExpressionToPredicate } from '../../utils/deploymentExpressionToPredicate'

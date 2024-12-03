@@ -4,7 +4,6 @@ import willCreateCycle from 'graphology-dag/will-create-cycle'
 import { forEach, map, pipe, prop, sortBy } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
 import type { ComputedEdge, ComputedNode, NodeId } from '../../types'
-import { hierarchyDepth } from '../../utils'
 
 /**
  * Keeps initial order of the elements, but ensures that parents are before children

@@ -1,6 +1,6 @@
 import { isArray, partition } from 'remeda'
 import { mergeConnections } from '../../model/connection/deployment'
-import type { DeploymentConnectionModel } from '../../model/DeploymentConnectionModel'
+import type { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
 import type { NonEmptyArray } from '../../types'
 import type { Connections, Elem } from './_types'
 import { MutableMemory, type Patch } from './Memory'

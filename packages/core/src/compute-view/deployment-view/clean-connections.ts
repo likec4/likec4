@@ -1,6 +1,6 @@
 import { dropWhile, filter, flatMap, forEach, forEachObj, groupBy, hasAtLeast, map, pipe, prop, sort } from 'remeda'
 import { mergeConnections } from '../../model/connection/deployment'
-import { DeploymentConnectionModel } from '../../model/DeploymentConnectionModel'
+import { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
 import { RelationshipsAccum } from '../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'

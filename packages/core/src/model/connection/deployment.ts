@@ -1,7 +1,7 @@
 import { isSameHierarchy } from '../../utils/fqn'
-import { DeploymentConnectionModel } from '../DeploymentConnectionModel'
 import type { DeploymentElementModel } from '../DeploymentElementModel'
 import type { AnyAux } from '../types'
+import { DeploymentConnectionModel } from './DeploymentConnectionModel'
 
 export { mergeConnections } from './model'
 
@@ -29,7 +29,7 @@ export function findConnection<M extends AnyAux>(
 
   const directed = directedIntersection.nonEmpty
     ? [
-      new DeploymentConnectionModel(
+      new DeploymentConnectionModel<M>(
         source,
         target,
         directedIntersection

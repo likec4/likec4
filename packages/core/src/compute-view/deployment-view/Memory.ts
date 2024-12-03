@@ -1,12 +1,12 @@
-import type { DeploymentConnectionModel } from '../../model/DeploymentConnectionModel'
+import type { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
 import type { Connections, Elem } from './_types'
 
 export interface Memory {
   /**
    * All resolved elements, includes:
    * - explicit elements (added directly, always appear in the view unless excluded)
-   * - elements from resolved connections (may be excluded, if connection is redundant {@see })
-   * (including implicits, that
+   * - elements from resolved connections (may be excluded, if connection is redundant {@see excludeRedundantRelationships}
+   * - implicit elements (not added directly, not included in the view, used for resolving connections)
    */
   readonly elements: ReadonlySet<Elem>
   /**
@@ -30,20 +30,13 @@ export class MutableMemory implements Memory {
   }
   constructor(
     public elements: Set<Elem>,
-    /**
-     * Explicit elements (added directly)
-     */
     public explicits: Set<Elem>,
-    // // implicits = new Set<Elem>()
-    //
     public connections: DeploymentConnectionModel[],
-    //
-    // /**
-    //  * Final set of elements to be included in the view
-    //  * (excluding implicits)
-    //  *
-    //  * Keeps order in which elements were added
-    //  */
+    /**
+     * Final set of elements to be included in the view
+     * (`elements` excluding implicits)
+     * Keeps order in which elements were added
+     */
     public finalElements: Set<Elem>
   ) {
   }
@@ -55,10 +48,6 @@ export class MutableMemory implements Memory {
   public isExplicit(el: Elem): boolean {
     return this.explicits.has(el)
   }
-
-  // public isImplicit(el: Elem): boolean {
-  //   return this.has(el) && !this.explicits.has(el)
-  // }
 
   public exclude(excluded: Set<Elem>): MutableMemory {
     const newMemory = this.clone()
@@ -109,11 +98,6 @@ export class MutableMemory implements Memory {
   }
 
   public clone(): MutableMemory {
-    // const newMemory =
-    // newMemory.elements = new Set(this.elements)
-    // newMemory.explicits = new Set(this.explicits)
-    // newMemory.finalElements = new Set(this.finalElements)
-    // newMemory.connections = [...this.connections]
     return new MutableMemory(
       new Set(this.elements),
       new Set(this.explicits),

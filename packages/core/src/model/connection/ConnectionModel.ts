@@ -1,25 +1,19 @@
-import { hasAtLeast, intersection } from 'remeda'
-import { invariant } from '../errors'
-import type { NonEmptyReadonlyArray } from '../types'
-import { isSameHierarchy, stringHash } from '../utils'
-import { RelationshipsAccum } from './DeploymentElementModel'
-import type { ElementModel } from './ElementModel'
-import type { LikeC4Model } from './LikeC4Model'
-import type { RelationshipModel } from './RelationModel'
-import type { AnyAux } from './types'
+import { invariant } from '../../errors'
+import { stringHash } from '../../utils'
+import type { ElementModel } from '../ElementModel'
+import type { RelationshipModel } from '../RelationModel'
+import type { AnyAux } from '../types'
 
-// export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
-
-export interface Connection<Impl = unknown, Elem = unknown, Id = unknown> {
+export interface Connection<Elem = any, Id = any> {
   id: Id
   source: Elem
   target: Elem
 
-  mergeWith(other: Impl): Impl
+  mergeWith(this: Connection<any, any>, other: typeof this): typeof this
 
   nonEmpty(): boolean
 
-  difference(other: Impl): Impl
+  difference(this: Connection<Elem, Id>, other: Connection<Elem, Id>): typeof this
 }
 
 /**
@@ -28,9 +22,7 @@ export interface Connection<Impl = unknown, Elem = unknown, Id = unknown> {
  *
  * Merges relationships together to an single edge on the diagram.
  */
-export class ConnectionModel<M extends AnyAux = AnyAux>
-  implements Connection<ConnectionModel<M>, ElementModel<M>, M['EdgeId']>
-{
+export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<ElementModel<M>, M['EdgeId']> {
   public readonly id: M['EdgeId']
 
   /**

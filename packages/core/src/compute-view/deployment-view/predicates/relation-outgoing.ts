@@ -1,6 +1,6 @@
 import { identity } from 'remeda'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
-import type { DeploymentConnectionModel } from '../../../model/DeploymentConnectionModel'
+import type { DeploymentConnectionModel } from '../../../model/connection/DeploymentConnectionModel'
 import { DeploymentElementExpression, type DeploymentRelationExpression } from '../../../types/deployments'
 import { deploymentExpressionToPredicate } from '../../utils/deploymentExpressionToPredicate'
 import type { PredicateExecutor } from '../_types'

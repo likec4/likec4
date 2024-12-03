@@ -1,21 +1,21 @@
-import { invariant } from '../errors'
-import { stringHash } from '../utils'
-import type { Connection } from './ConnectionModel'
+import { invariant } from '../../errors'
+import { stringHash } from '../../utils'
 import {
   type DeploymentElementModel,
   DeploymentNodeModel,
   type DeploymentRelationModel,
   RelationshipsAccum
-} from './DeploymentElementModel'
-import type { RelationshipModel } from './RelationModel'
-import type { AnyAux, IteratorLike } from './types'
+} from '../DeploymentElementModel'
+import type { RelationshipModel } from '../RelationModel'
+import type { AnyAux, IteratorLike } from '../types'
+import type { Connection } from './ConnectionModel'
 
 /**
  * Connection is ephemeral entity, result of a resolving relationships between source and target.
  * Includes direct relationships and/or between their nested elements.
  */
 export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
-  implements Connection<DeploymentConnectionModel<M>, DeploymentElementModel<M>, M['EdgeId']>
+  implements Connection<DeploymentElementModel<M>, M['EdgeId']>
 {
   /**
    * Common ancestor of the source and target elements.

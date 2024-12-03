@@ -1,7 +1,7 @@
 import { filter, hasAtLeast, isEmpty, isTruthy, map, only, pipe, unique } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import { type LikeC4DeploymentModel, LikeC4Model } from '../../model'
-import { DeploymentConnectionModel } from '../../model/DeploymentConnectionModel'
+import { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
 import type { AnyAux } from '../../model/types'
 import type { ComputedNode, DeploymentNodeKind, DeploymentViewRule, Fqn, NonEmptyArray, Tag } from '../../types'
 import {

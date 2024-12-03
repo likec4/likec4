@@ -376,8 +376,4 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   private _internalOf(id: M['DeploymentFqn']) {
     return getOrCreate(this.#internal, id, () => new Set())
   }
-
-  // public isDiagramModel(): this is LikeC4Model<C4LayoutedLikeC4Model> {
-  //   return this.$model.__ === 'layouted'
-  // }
 }
