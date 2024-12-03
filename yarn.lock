@@ -2062,6 +2062,7 @@ __metadata:
     graphology: "npm:^0.25.4"
     graphology-dag: "npm:^0.4.1"
     graphology-types: "npm:^0.24.8"
+    mnemonist: "npm:^0.39.8"
     natural-compare-lite: "npm:^1.4.0"
     object-hash: "npm:^3.0.0"
     remeda: "npm:^2.17.4"
@@ -10015,7 +10016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mnemonist@npm:^0.39.0":
+"mnemonist@npm:^0.39.0, mnemonist@npm:^0.39.8":
   version: 0.39.8
   resolution: "mnemonist@npm:0.39.8"
   dependencies:

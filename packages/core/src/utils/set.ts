@@ -1,24 +1,24 @@
+import {
+  difference as _difference,
+  intersection as _intersection,
+  symmetricDifference as _symmetricDifference,
+  union as _union
+} from 'mnemonist/set'
 import type { NonEmptyArray } from '../types/_common'
 
 /**
  * Union of sets
  */
-export function union<T>(a: ReadonlySet<T>, ...others: NonEmptyArray<ReadonlySet<T>>): Set<T> {
-  return new Set<T>([...a].concat(...others.map(set => [...set])))
+export function union<T>(...sets: NonEmptyArray<ReadonlySet<T>>): Set<T> {
+  return _union(...sets as any)
 }
 
-export function intersection<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
-  if (a.size === 0 || b.size === 0) {
-    return new Set<T>()
-  }
-  return new Set([...a].filter(value => b.has(value)))
+export function intersection<T>(...sets: NonEmptyArray<ReadonlySet<T>>): Set<T> {
+  return _intersection(...sets as any)
 }
 
 export function difference<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
-  if (a.size === 0 || b.size === 0) {
-    return new Set<T>(a)
-  }
-  return new Set([...a].filter(value => !b.has(value)))
+  return _difference(a as Set<T>, b as Set<T>)
 }
 
 export function equals<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
@@ -26,8 +26,5 @@ export function equals<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
 }
 
 export function symmetricDifference<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
-  return union(
-    difference(a, b),
-    difference(b, a)
-  )
+  return _symmetricDifference(a as Set<T>, b as Set<T>)
 }

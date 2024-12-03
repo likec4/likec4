@@ -1,10 +1,11 @@
+import DefaultMap from 'mnemonist/default-map'
 import { dropWhile, filter, flatMap, forEach, forEachObj, groupBy, hasAtLeast, map, pipe, prop, sort } from 'remeda'
 import { mergeConnections } from '../../model/connection/deployment'
 import { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
 import { RelationshipsAccum } from '../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
-import { compareFqnHierarchically, getOrCreate, isAncestor } from '../../utils'
+import { compareFqnHierarchically, isAncestor } from '../../utils'
 import { difference } from '../../utils/set'
 import type { Connections, Elem } from './_types'
 import { type Patch } from './Memory'
@@ -14,16 +15,19 @@ const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.si
 function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Connections<M> {
   // Keep only connections between leafs
   // Also find connections based on same relation
-  const groupedByRelation = new Map<RelationshipModel<M>, Array<DeploymentConnectionModel<M>>>()
+  const groupedByRelation = new DefaultMap<RelationshipModel<M>, Array<DeploymentConnectionModel<M>>>(() => [])
   for (const conn of connections) {
     for (const relation of conn.relations.model) {
-      getOrCreate(groupedByRelation, relation, () => []).push(conn)
+      groupedByRelation.get(relation).push(conn)
     }
   }
 
   // DeploymentConnectionModel is immutables
   // So we create new instances without excluded relations
-  const excludedRelations = new Map<DeploymentConnectionModel<M>, Set<RelationshipModel<M>>>()
+  const excludedRelations = new DefaultMap<
+    DeploymentConnectionModel<M>,
+    Set<RelationshipModel<M>>
+  >(() => new Set())
 
   // In each group, find connected to same leaf
   for (const [relation, sameRelationGroup] of groupedByRelation) {
@@ -52,7 +56,7 @@ function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Conn
           dropWhile((conn, i, all) => i === 0 || conn.boundary === all[i - 1]!.boundary),
           // Clean relations from the rest
           forEach((conn) => {
-            getOrCreate(excludedRelations, conn, () => new Set()).add(relation)
+            excludedRelations.get(conn).add(relation)
           })
         )
       })
