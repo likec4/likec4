@@ -5,3 +5,4 @@ dev/export/**
 dev/dist/**
 .vscode/**
 app/src/routeTree.gen.ts
+__app__/**

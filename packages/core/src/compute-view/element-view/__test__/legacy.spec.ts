@@ -21,25 +21,27 @@ describe('compute-element-view', () => {
       'customer',
       'support',
       'cloud',
-      'amazon',
-      'email'
+      'email',
+      'amazon'
     ])
     expect(edgeIds).toEqual([
       'customer:cloud',
       'support:cloud',
-      'cloud:email',
       'cloud:amazon',
+      'cloud:email',
       'email:cloud'
     ])
-    const [customer, support, cloud, amazon, email] = nodes
+    const [customer, support, cloud, email, amazon] = nodes
     expect.soft(amazon).toMatchObject({
+      id: 'amazon',
       outEdges: [],
       inEdges: ['cloud:amazon']
     })
     expect.soft(cloud).toMatchObject({
+      id: 'cloud',
       outEdges: [
-        'cloud:email',
-        'cloud:amazon'
+        'cloud:amazon',
+        'cloud:email'
       ],
       inEdges: [
         'email:cloud',
@@ -48,10 +50,12 @@ describe('compute-element-view', () => {
       ]
     })
     expect.soft(customer).toMatchObject({
+      id: 'customer',
       outEdges: ['customer:cloud'],
       inEdges: []
     })
     expect.soft(support).toMatchObject({
+      id: 'support',
       outEdges: ['support:cloud'],
       inEdges: []
     })
@@ -381,10 +385,14 @@ describe('compute-element-view', () => {
       ]
     })
 
-    expect(nodeIds).toEqual(['cloud', 'amazon', 'email'])
+    expect(nodeIds).toEqual([
+      'cloud',
+      'email',
+      'amazon'
+    ])
     expect(edgeIds).toEqual([
-      'cloud:email',
       'cloud:amazon',
+      'cloud:email',
       'email:cloud'
     ])
   })

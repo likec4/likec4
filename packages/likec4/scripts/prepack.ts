@@ -11,6 +11,7 @@ if (!isProduction) {
 }
 
 emptyDir(resolve('react'))
+emptyDir(resolve('__app__'))
 emptyDir(resolve('dist'))
 
 consola.start('Building...')

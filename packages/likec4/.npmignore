@@ -6,6 +6,7 @@
 !dist/**
 !react/**
 !icons/**
+!__app__/**
 !package.json
 !LICENSE
 !README.md
@@ -13,5 +14,5 @@
 # Exclude the following
 **/*.map
 **/*.tsbuildinfo
-dist/__app__/react/components.mjs
+__app__/react/components.mjs
 dist/**/metafile.json

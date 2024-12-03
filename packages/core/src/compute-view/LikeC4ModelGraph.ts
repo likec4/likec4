@@ -201,7 +201,7 @@ export class LikeC4ModelGraph {
       if (index === array.length - 1) {
         return acc
       }
-      acc.push(...reverse(this.anyEdgesBetween(el, array.slice(index + 1) as T)))
+      acc.push(...this.anyEdgesBetween(el, array.slice(index + 1) as T))
       return acc
     }, [] as RelationEdge[])
   }

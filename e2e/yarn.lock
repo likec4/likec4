@@ -539,14 +539,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react-swc@npm:3.7.1":
-  version: 3.7.1
-  resolution: "@vitejs/plugin-react-swc@npm:3.7.1"
+"@vitejs/plugin-react-swc@npm:3.7.2":
+  version: 3.7.2
+  resolution: "@vitejs/plugin-react-swc@npm:3.7.2"
   dependencies:
     "@swc/core": "npm:^1.7.26"
   peerDependencies:
-    vite: ^4 || ^5
-  checksum: 10c0/2d613e69c0d0b809c94df80ca2b0caf39c50f0b98aa1f8599fd086bc37dac1449898eb6572000e1c133313137cac93440c4cb0861e05820c78bd2c07a52e64a8
+    vite: ^4 || ^5 || ^6
+  checksum: 10c0/9b9a5e0540791ba96a9fe4e8b8146ab274edcc730315535705f20126d6dfaffe72ae474bac9904ce841976e1959b6ecffd047bb2f0b7abf4d85aae7fbfdd00ab
   languageName: node
   linkType: hard
 
@@ -1038,19 +1038,19 @@ __metadata:
   linkType: hard
 
 "likec4@file:../packages/likec4/package.tgz::locator=%40likec4%2Fe2e%40workspace%3A.":
-  version: 1.16.0
-  resolution: "likec4@file:../packages/likec4/package.tgz#../packages/likec4/package.tgz::hash=d86865&locator=%40likec4%2Fe2e%40workspace%3A."
+  version: 1.17.1
+  resolution: "likec4@file:../packages/likec4/package.tgz#../packages/likec4/package.tgz::hash=d925bb&locator=%40likec4%2Fe2e%40workspace%3A."
   dependencies:
     "@hpcc-js/wasm-graphviz": "npm:1.6.1"
-    "@vitejs/plugin-react-swc": "npm:3.7.1"
+    "@vitejs/plugin-react-swc": "npm:3.7.2"
     playwright: "npm:1.48.2"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    type-fest: "npm:4.26.1"
+    type-fest: "npm:4.28.1"
     vite: "npm:5.4.11"
   bin:
     likec4: ./bin/likec4.mjs
-  checksum: 10c0/b3befc723527d7d2805524c891852b73fc8a566c17623bb0656c78e6ea185eddb0a821fe863490e5b41bd183af0934a13e3193bd7735c692eae5767a6c50fe20
+  checksum: 10c0/1a4a6ae62f8863cba0c4257c180d0abfd7d007e7b535e1f0da55aa5b9bc59a91e7030e300010d39408a3532c67089d72e80ee6dd5ce31f7f53134bfb5765860b
   languageName: node
   linkType: hard
 
@@ -1600,7 +1600,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:4.26.1, type-fest@npm:^4.26.1":
+"type-fest@npm:4.28.1":
+  version: 4.28.1
+  resolution: "type-fest@npm:4.28.1"
+  checksum: 10c0/8b0dabe2f063dff6dff1964d70f1d844ea13a7534e9aa454b48569d5837f76252bb4518bbd3ca98b4fb65e49a732c555649cf60fc02b0254a0d69eb00c518725
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.26.1":
   version: 4.26.1
   resolution: "type-fest@npm:4.26.1"
   checksum: 10c0/d2719ff8d380befe8a3c61068f37f28d6fa2849fd140c5d2f0f143099e371da6856aad7c97e56b83329d45bfe504afe9fd936a7cff600cc0d46aa9ffb008d6c6

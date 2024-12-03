@@ -7,7 +7,7 @@ export default defineBuildConfig({
     'src/index.ts',
     'src/cli/index.ts'
   ],
-  clean: false,
+  clean: isProduction,
   outDir: 'dist',
   stub: !isProduction,
   stubOptions: {

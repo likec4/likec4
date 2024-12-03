@@ -42,7 +42,7 @@
         "generate"
       ],
       "outputs": [
-        "dist/__app__/**",
+        "__app__/**",
         "react/**",
         "!react/*.d.ts"
       ],
@@ -59,8 +59,7 @@
         "^build"
       ],
       "outputs": [
-        "dist/**",
-        "!dist/__app__/**"
+        "dist/**"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

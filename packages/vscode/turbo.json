@@ -16,6 +16,7 @@
       ],
       "outputs": [
         "dist/**",
+        "!dist/src/**",
         "!**/*.metafile.json"
       ]
     }

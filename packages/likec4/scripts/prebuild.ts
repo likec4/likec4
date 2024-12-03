@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 import { emptyDir } from './_utils'
 
 emptyDir(resolve('react'))
+emptyDir(resolve('__app__'))
 emptyDir(resolve('dist'))
 
 await mkdir('dist/__app__/src', { recursive: true })

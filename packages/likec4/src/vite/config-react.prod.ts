@@ -20,6 +20,7 @@ export async function viteReactConfig({
   const customLogger = createLikeC4Logger('c4:react')
 
   const root = viteAppRoot()
+  customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
   return {

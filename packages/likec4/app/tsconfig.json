@@ -5,7 +5,7 @@
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
-    "outDir": "../dist/__app__",
+    "outDir": "../__app__",
     "noEmit": true,
     "esModuleInterop": true,
     "isolatedModules": true,

@@ -1,7 +1,7 @@
 import { consola } from 'consola'
 import { analyzeMetafileSync, build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { cp, mkdir } from 'node:fs/promises'
 import { isProduction } from 'std-env'
 
@@ -12,6 +12,17 @@ if (isDev) {
   consola.warn('VSCODE DEVELOPMENT BUILD')
 }
 
+function emptyDir(dir: string) {
+  if (!existsSync(dir)) {
+    return
+  }
+  consola.info('Cleaning: %s', dir)
+  for (const file of readdirSync(dir)) {
+    rmSync(resolve(dir, file), { recursive: true, force: true })
+  }
+}
+
+
 const vscodePreview = resolve('../vscode-preview/dist/')
 if (!existsSync(vscodePreview)) {
   consola.error(`"${vscodePreview}" not found`)
@@ -19,6 +30,7 @@ if (!existsSync(vscodePreview)) {
 }
 consola.info('Copy vscode preview')
 
+emptyDir('dist')
 await mkdir('dist/preview', { recursive: true })
 await cp(
   vscodePreview,
