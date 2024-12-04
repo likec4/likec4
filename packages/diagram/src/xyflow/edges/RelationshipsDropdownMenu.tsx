@@ -21,6 +21,7 @@ import clsx from 'clsx'
 import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pick, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useXYNodesData } from '../../hooks'
+import { Link } from '../../ui/Link'
 import type { RelationshipData } from '../types'
 import * as css from './RelationshipsDropdownMenu.css'
 
@@ -181,6 +182,7 @@ const Relationship = forwardRef<
   const sourceId = nameFromFqn(edge.source) + r.source.id.slice(edge.source.length)
   const targetId = nameFromFqn(edge.target) + r.target.id.slice(edge.target.length)
   const navigateTo = hasOnNavigateTo && r.relationship.navigateTo !== viewId ? r.relationship.navigateTo : undefined
+  const links = r.relationship.links
 
   return (
     <Stack ref={ref} className={clsx(css.menuItemRelationship, className)} {...props}>
@@ -235,6 +237,15 @@ const Relationship = forwardRef<
         )}
       </Group>
       <Box className={css.title}>{r.title || 'untitled'}</Box>
+      {r.relationship.description && <Text size="xs" c="dimmed">{r.relationship.description}</Text>}
+      {links && (
+        <Stack
+          gap={3}
+          justify="stretch"
+          align="stretch">
+          {links.map((link) => <Link link={link} />)}
+        </Stack>
+      )}
     </Stack>
   )
 })
