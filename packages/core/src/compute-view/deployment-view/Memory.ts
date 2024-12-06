@@ -1,4 +1,4 @@
-import type { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
+import type { DeploymentConnectionModel } from '../../model/connection/deployment'
 import { difference } from '../../utils/set'
 import type { Connections, Elem } from './_types'
 
@@ -6,7 +6,7 @@ export interface Memory {
   /**
    * All resolved elements, includes:
    * - explicit elements (added directly, always appear in the view unless excluded)
-   * - elements from resolved connections (may be excluded, if connection is redundant {@see excludeRedundantRelationships}
+   * - elements from resolved connections (may be excluded, if connection is redundant @see excludeRedundantRelationships
    * - implicit elements (not added directly, not included in the view, used for resolving connections)
    */
   readonly elements: ReadonlySet<Elem>
@@ -68,15 +68,14 @@ export class MutableMemory implements Memory {
     const excludedMap = new Map(excluded.map(c => [c.id, c]))
     let minusElements = new Set<Elem>()
 
-    newMemory.connections = this.connections.reduce((acc, c) => {
+    newMemory.connections = newMemory.connections.reduce((acc, c) => {
       const excluded = excludedMap.get(c.id)
       if (excluded) {
+        minusElements.add(c.source)
+        minusElements.add(c.target)
         const diff = c.difference(excluded)
-        if (diff.relations.nonEmpty) {
+        if (diff.nonEmpty()) {
           acc.push(diff)
-        } else {
-          minusElements.add(c.source)
-          minusElements.add(c.target)
         }
       } else {
         acc.push(c)

@@ -1387,15 +1387,20 @@ export class LikeC4ModelParser {
     if (ast.isDeploymentRefExpression(astNode)) {
       const ref = this.parseDeploymentDef(astNode.ref)
       switch (true) {
-        case astNode.suffix === '._':
+        case astNode.selector === '._':
           return {
             ref,
-            isExpanded: true
+            selector: 'expanded'
           }
-        case astNode.suffix === '.*':
+        case astNode.selector === '.**':
           return {
             ref,
-            isChildren: true
+            selector: 'descendants'
+          }
+        case astNode.selector === '.*':
+          return {
+            ref,
+            selector: 'children'
           }
         default:
           return { ref }

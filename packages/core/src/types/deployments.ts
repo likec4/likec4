@@ -161,12 +161,10 @@ export type DeploymentRelationExpression = ExclusiveUnion<{
 export namespace DeploymentElementExpression {
   export type Ref = {
     ref: DeploymentRef
-    isExpanded?: boolean
-    isChildren?: never
-  } | {
-    ref: DeploymentRef
-    isExpanded?: never
-    isChildren?: boolean
+    selector?:
+      | 'children' // ele.*
+      | 'expanded' // ele._
+      | 'descendants' // ele.**
   }
   export const isRef = (expr: DeploymentExpression): expr is Ref => {
     return 'ref' in expr

@@ -1,6 +1,6 @@
-import { difference } from 'remeda'
 import { invariant } from '../../errors'
-import { stringHash } from '../../utils'
+import { difference, equals, union } from '../../utils/set'
+import { stringHash } from '../../utils/stringHash'
 import type { ElementModel } from '../ElementModel'
 import type { RelationshipModel } from '../RelationModel'
 import type { AnyAux } from '../types'
@@ -51,10 +51,7 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return new ConnectionModel(
       this.source,
       this.target,
-      new Set([
-        ...this.relations,
-        ...other.relations
-      ])
+      union(this.relations, other.relations)
     )
   }
 
@@ -64,10 +61,12 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return new ConnectionModel(
       this.source,
       this.target,
-      new Set(difference(
-        [...this.relations],
-        [...other.relations]
-      ))
+      difference(this.relations, other.relations)
     )
+  }
+
+  equals(other: ConnectionModel<M>): boolean {
+    return this.source.id === other.source.id && this.target.id === other.target.id
+      && equals(this.relations, other.relations)
   }
 }

@@ -1,13 +1,12 @@
 import { anyPass, filter, forEach, isDefined, isNot, pipe } from 'remeda'
-import { ComputedNode, type DeploymentViewRule, isViewRuleStyle, type ViewRule, type ViewRuleStyle } from '../../types'
-import { deploymentExpressionToPredicate } from './deploymentExpressionToPredicate'
+import { ComputedNode, isViewRuleStyle, type ViewRule, type ViewRuleStyle } from '../../types'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
 
 type CommonViewRuleStyle = Pick<ViewRuleStyle, 'style' | 'notation'>
 
-function applyViewRuleStyle<Rule extends CommonViewRuleStyle>(
+export function applyViewRuleStyle<Rule extends CommonViewRuleStyle>(
   rule: Rule,
   predicates: Predicate<ComputedNode>[],
   nodes: ComputedNode[]
@@ -48,17 +47,6 @@ export function applyViewRuleStyles(rules: ViewRule[], nodes: ComputedNode[]) {
       continue
     }
     const predicates = rule.targets.map(elementExprToPredicate)
-    applyViewRuleStyle(rule, predicates, nodes)
-  }
-  return nodes
-}
-
-export function applyDeploymentViewRuleStyles(rules: DeploymentViewRule[], nodes: ComputedNode[]) {
-  for (const rule of rules) {
-    if (!isViewRuleStyle(rule) || rule.targets.length === 0) {
-      continue
-    }
-    const predicates = rule.targets.map(deploymentExpressionToPredicate)
     applyViewRuleStyle(rule, predicates, nodes)
   }
   return nodes

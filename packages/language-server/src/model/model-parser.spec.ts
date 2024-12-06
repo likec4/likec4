@@ -6,9 +6,7 @@ import {
   type RelationWhereExpr,
   type ViewRulePredicate
 } from '@likec4/core'
-import type { BuildTuple } from 'type-fest/source/internal'
 import { describe, it } from 'vitest'
-import type { ParsedAstDeploymentRelation } from '../ast'
 import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
@@ -233,13 +231,13 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
         targets: [
           {
-            isChildren: true,
+            selector: 'children',
             ref: {
               id: 'n1'
             }
           },
           {
-            isExpanded: true,
+            selector: 'expanded',
             ref: {
               id: 'n2'
             }

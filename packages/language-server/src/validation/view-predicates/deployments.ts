@@ -45,7 +45,7 @@ export const deploymentRefExpressionChecks = (
         })
         break
       }
-      case ast.isDeployedInstance(referenceTo) && isNonNullish(node.suffix): {
+      case ast.isDeployedInstance(referenceTo) && isNonNullish(node.selector): {
         accept('error', 'Only deployment nodes can be expanded', {
           node
         })

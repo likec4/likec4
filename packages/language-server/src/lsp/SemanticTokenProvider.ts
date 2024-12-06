@@ -90,6 +90,20 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
+    if (ast.isDeploymentRefExpression(node)) {
+      if (node.selector) {
+        acceptor({
+          node,
+          property: 'selector',
+          type: SemanticTokenTypes.variable,
+          modifier: [
+            SemanticTokenModifiers.definition,
+            SemanticTokenModifiers.readonly
+          ]
+        })
+      }
+      return
+    }
     if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
       acceptor({
         node,

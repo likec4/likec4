@@ -1,10 +1,9 @@
 import { identity } from 'remeda'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
-import type { DeploymentConnectionModel } from '../../../model/connection/DeploymentConnectionModel'
+import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { DeploymentElementExpression, type DeploymentRelationExpression } from '../../../types/deployments'
-import { deploymentExpressionToPredicate } from '../../utils/deploymentExpressionToPredicate'
 import type { PredicateExecutor } from '../_types'
-import { resolveElements } from './relation-direct'
+import { deploymentExpressionToPredicate, resolveElements } from '../utils'
 
 // from visible element incoming to this
 export const IncomingRelationPredicate: PredicateExecutor<DeploymentRelationExpression.Incoming> = {
@@ -16,12 +15,12 @@ export const IncomingRelationPredicate: PredicateExecutor<DeploymentRelationExpr
           continue
         }
         for (const target of source.ascendingSiblings()) {
-          stage.addConnections(findConnection(source, target, 'directed'))
           if (target.isDeploymentNode() && source.isInstance()) {
             for (const i of target.instances()) {
               stage.addConnections(findConnection(source, i, 'directed'))
             }
           }
+          stage.addConnections(findConnection(source, target, 'directed'))
         }
       }
       return stage.patch()

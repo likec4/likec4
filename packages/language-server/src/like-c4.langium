@@ -615,7 +615,7 @@ DeploymentElementExpression:
 ;
 
 DeploymentRefExpression:
-  ref=DeploymentRef suffix=(DotUnderscore | DotWildcard)?
+  ref=DeploymentRef selector=(DotUnderscore | DotWildcard)?
 ;
 
 DeploymentRelationExpression:

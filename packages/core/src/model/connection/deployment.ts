@@ -5,6 +5,8 @@ import { DeploymentConnectionModel } from './DeploymentConnectionModel'
 
 export { mergeConnections } from './model'
 
+export { DeploymentConnectionModel }
+
 /**
  * Resolve connection from source to target
  * If direction is `both`, also look for reverse connection

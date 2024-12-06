@@ -1,11 +1,11 @@
 import { hasAtLeast } from 'remeda'
 import { invariant } from '../../../errors'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
-import type { DeploymentConnectionModel } from '../../../model/connection/DeploymentConnectionModel'
+import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import type { DeployedInstanceModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
 import type { DeploymentElementExpression } from '../../../types'
-import { deploymentExpressionToPredicate } from '../../utils/deploymentExpressionToPredicate'
 import type { PredicateCtx, PredicateExecutor } from '../_types'
+import { deploymentExpressionToPredicate } from '../utils'
 
 export const DeploymentRefPredicate: PredicateExecutor<DeploymentElementExpression.Ref> = {
   include: (expr, ctx) => {
@@ -17,11 +17,14 @@ export const DeploymentRefPredicate: PredicateExecutor<DeploymentElementExpressi
     }
     invariant(el.isDeploymentNode(), 'Type inference failed')
     switch (true) {
-      case expr.isExpanded:
+      case expr.selector === 'expanded':
         includeDeployedNodeWithExpanded(el, ctx)
         break
-      case expr.isChildren:
+      case expr.selector === 'children':
         includeDeployedNodeChildren(el, ctx)
+        break
+      case expr.selector === 'descendants':
+        includeDeployedNodeDescendants(el, ctx)
         break
       default:
         includeDeployedNode(el, ctx)
@@ -112,4 +115,33 @@ function includeDeployedNodeWithExpanded(
   stage.addConnections(
     findConnectionsBetween(node, memory.elements)
   )
+}
+
+/**
+ * include node.**
+ */
+function includeDeployedNodeDescendants(
+  node: DeploymentNodeModel,
+  { memory, stage }: PredicateCtx
+) {
+  const descendants = [...node.descendants()]
+  if (descendants.length === 0) {
+    return
+  }
+  for (const child of descendants) {
+    if (child.isInstance()) {
+      stage.addExplicit(child)
+      stage.addImplicit(child.parent)
+      continue
+    }
+    stage.addImplicit(child)
+  }
+
+  if (hasAtLeast(descendants, 2)) {
+    stage.addConnections(findConnectionsWithin(descendants))
+  }
+
+  for (const child of descendants) {
+    stage.addConnections(findConnectionsBetween(child, memory.elements))
+  }
 }

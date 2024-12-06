@@ -55,7 +55,7 @@ export interface DeploymentViewBuilder<T extends AnyTypes>
 }
 
 export namespace ViewPredicate {
-  export type ElementExpr<Fqn extends string> = '*' | Fqn | `${Fqn}.*` | `${Fqn}._`
+  export type ElementExpr<Fqn extends string> = '*' | Fqn | `${Fqn}.*` | `${Fqn}._` | `${Fqn}.**`
 
   export type AllExpression<ElementExpr extends string> =
     | ElementExpr
@@ -324,64 +324,73 @@ function $exclude<B extends AViewBuilder<AnyTypes, any, any>>(
   }
 }
 
+const asTypedExpr = <Types extends AnyTypes>(expr: C4Expression): TypedC4Expression<Types> => {
+  return expr as TypedC4Expression<Types>
+}
 function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C4Expression): TypedC4Expression<Types> {
   if (!isString(expr)) {
     return expr as TypedC4Expression<Types>
   }
   if (expr === '*') {
-    return { wildcard: true } as TypedC4Expression<Types>
+    return asTypedExpr({ wildcard: true })
   }
   if (expr.startsWith('->')) {
     if (expr.endsWith('->')) {
-      return {
+      return asTypedExpr({
         inout: $expr(expr.replace(/->/g, '').trim()) as any
-      } as TypedC4Expression<Types>
+      })
     }
-    return {
+    return asTypedExpr({
       incoming: $expr(expr.replace('-> ', '')) as any
-    } as TypedC4Expression<Types>
+    })
   }
   if (expr.endsWith(' ->')) {
-    return {
+    return asTypedExpr({
       outgoing: $expr(expr.replace(' ->', '')) as any
-    } as TypedC4Expression<Types>
+    })
   }
   if (expr.includes(' <-> ')) {
     const [source, target] = expr.split(' <-> ')
-    return {
+    return asTypedExpr({
       source: $expr(source) as any,
       target: $expr(target) as any,
       isBidirectional: true
-    } as TypedC4Expression<Types>
+    })
   }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
-    return {
+    return asTypedExpr({
       source: $expr(source) as any,
       target: $expr(target) as any
-    } as TypedC4Expression<Types>
+    })
   }
   if (expr.endsWith('._')) {
-    return {
+    return asTypedExpr({
       expanded: expr.replace('._', '') as Fqn
-    } as TypedC4Expression<Types>
+    })
   }
   if (expr.endsWith('.*')) {
-    return {
+    return asTypedExpr({
       element: expr.replace('.*', '') as Fqn,
       isChildren: true
-    } as TypedC4Expression<Types>
+    })
   }
   if (expr.endsWith('.**')) {
-    return {
+    return asTypedExpr({
       element: expr.replace('.**', '') as Fqn,
       isDescendants: true
-    } as TypedC4Expression<Types>
+    })
   }
-  return {
+  return asTypedExpr({
     element: expr as any as Fqn,
     isChildren: false // TODO: why do we set this to false? Shouldn't undefined work too?
-  } as TypedC4Expression<Types>
+  })
+}
+
+const asTypedDeploymentExpression = <Types extends AnyTypes>(
+  expr: DeploymentExpression
+): TypedDeploymentExpression<Types> => {
+  return expr as TypedDeploymentExpression<Types>
 }
 
 function $deploymentExpr<Types extends AnyTypes>(
@@ -391,59 +400,67 @@ function $deploymentExpr<Types extends AnyTypes>(
     return expr as TypedDeploymentExpression<Types>
   }
   if (expr === '*') {
-    return { wildcard: true } as TypedDeploymentExpression<Types>
+    return asTypedDeploymentExpression({ wildcard: true })
   }
   if (expr.startsWith('->')) {
     if (expr.endsWith('->')) {
-      return {
+      return asTypedDeploymentExpression({
         inout: $deploymentExpr(expr.replace(/->/g, '').trim()) as any
-      } as TypedDeploymentExpression<Types>
+      })
     }
-    return {
+    return asTypedDeploymentExpression({
       incoming: $deploymentExpr(expr.replace('-> ', '')) as any
-    } as TypedDeploymentExpression<Types>
+    })
   }
   if (expr.endsWith(' ->')) {
-    return {
+    return asTypedDeploymentExpression({
       outgoing: $deploymentExpr(expr.replace(' ->', '')) as any
-    } as TypedDeploymentExpression<Types>
+    })
   }
   if (expr.includes(' <-> ')) {
     const [source, target] = expr.split(' <-> ')
-    return {
+    return asTypedDeploymentExpression({
       source: $deploymentExpr(source) as any,
       target: $deploymentExpr(target) as any,
       isBidirectional: true
-    } as TypedDeploymentExpression<Types>
+    })
   }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
-    return {
+    return asTypedDeploymentExpression({
       source: $deploymentExpr(source),
       target: $deploymentExpr(target)
-    } as TypedDeploymentExpression<Types>
+    })
   }
   if (expr.endsWith('._')) {
-    return {
+    return asTypedDeploymentExpression({
       ref: {
         id: expr.replace('._', '') as Fqn
       },
-      isExpanded: true
-    } as TypedDeploymentExpression<Types>
+      selector: 'expanded'
+    })
+  }
+  if (expr.endsWith('.**')) {
+    return asTypedDeploymentExpression({
+      ref: {
+        id: expr.replace('.**', '') as Fqn
+      },
+      selector: 'descendants'
+    })
   }
   if (expr.endsWith('.*')) {
-    return {
+    return asTypedDeploymentExpression({
       ref: {
         id: expr.replace('.*', '') as Fqn
       },
-      isChildren: true
-    } as TypedDeploymentExpression<Types>
+      selector: 'children'
+    })
   }
-  return {
+  return asTypedDeploymentExpression({
     ref: {
       id: expr as any as Fqn
     }
-  } as TypedDeploymentExpression<Types>
+  })
 }
 
 function $style<B extends AViewBuilder<AnyTypes, any, any>>(
@@ -453,7 +470,7 @@ function $style<B extends AViewBuilder<AnyTypes, any, any>>(
   return (b) =>
     b.style({
       targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as C4ElementExpression),
-      ...notation ? { notation } : {},
+      ...(notation ? { notation } : {}),
       style: {
         ...style
       }

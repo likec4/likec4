@@ -80,6 +80,7 @@ describe('DirectRelationPredicate', () => {
   })
 
   it('should include direct relations with instances and wildcards', () => {
+    // because predicate includes instance - we add "siblings" node for better result
     expectComputed(
       $include('customer.instance -> *')
     ).toMatchInlineSnapshot(`
@@ -140,10 +141,12 @@ describe('DirectRelationPredicate', () => {
 
   it('should include direct relations with expand predicate', () => {
     expectComputed(
+      $include('customer'), // should be visible, but has no connections
       $include('prod.eu.zone1._ <-> prod.eu.zone2._')
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
+          "customer",
           "prod.eu.zone1",
           "prod.eu.zone1.ui",
           "prod.eu.zone2",
@@ -171,6 +174,25 @@ describe('DirectRelationPredicate', () => {
         "edges": [
           "customer:prod.eu.zone1",
           "customer:prod.eu.zone2",
+        ],
+      }
+    `)
+
+    expectComputed(
+      $include('customer'),
+      $include('prod.eu.zone1._ <-> prod.eu.zone2._'),
+      $include('prod.eu.zone2._') // Because we included this, previous connections cleaned as cross-boundary
+    ).toMatchInlineSnapshot(`
+      {
+        "Nodes": [
+          "customer",
+          "prod.eu.zone2",
+          "prod.eu.zone2.ui",
+          "prod.eu.zone2.api",
+        ],
+        "edges": [
+          "prod.eu.zone2.ui:prod.eu.zone2.api",
+          "customer:prod.eu.zone2.ui",
         ],
       }
     `)

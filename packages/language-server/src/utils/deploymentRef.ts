@@ -1,14 +1,18 @@
 import { AstUtils } from 'langium'
+import { isNullish } from 'remeda'
 import { ast } from '../ast'
 
 export function instanceRef(deploymentRef: ast.DeploymentRef): ast.DeployedInstance | null {
   let referenceable
-  while (referenceable = deploymentRef.value.ref) {
+  while ((referenceable = deploymentRef.value?.ref)) {
+    if (ast.isDeploymentNode(referenceable)) {
+      return null
+    }
     if (ast.isDeployedInstance(referenceable)) {
       return referenceable
     }
-    if (ast.isDeploymentNode(referenceable) || !deploymentRef.parent) {
-      break
+    if (isNullish(deploymentRef.parent)) {
+      return null
     }
     deploymentRef = deploymentRef.parent
   }
