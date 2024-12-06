@@ -15,7 +15,6 @@ interface BaseExpr {
   isEqual?: never
   isChildren?: never
   isDescendants?: never
-  isLeafs?: never
   wildcard?: never
   source?: never
   target?: never

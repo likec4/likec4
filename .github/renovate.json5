@@ -70,9 +70,14 @@
       matchPackageNames: [
        // '@tabler{/,}**',
         '@fontsource{/,}**',
+      ]
+    },
+    {
+      automerge: true,
+      matchDepNames: [
         'turbo',
         'yarn'
-      ],
+      ]
     },
     {
       enabled: false,
@@ -84,6 +89,12 @@
         'vscode',
         '/^vscode-/',
       ],
+    },
+    {
+      enabled: false,
+      matchPackageNames: [
+        '@tanstack{/,}**',
+      ]
     },
   ],
 }
