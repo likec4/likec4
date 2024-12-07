@@ -8,4 +8,4 @@
 src/likec4-views.*
 test-results/*
 playwright-report/*
-tests/snapshot.spec.ts
+tests/*.spec.ts
