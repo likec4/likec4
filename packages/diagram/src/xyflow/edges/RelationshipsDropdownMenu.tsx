@@ -182,7 +182,7 @@ const Relationship = forwardRef<
   const sourceId = nameFromFqn(edge.source) + r.source.id.slice(edge.source.length)
   const targetId = nameFromFqn(edge.target) + r.target.id.slice(edge.target.length)
   const navigateTo = hasOnNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
-  const links = r.relationship.links
+  const links = r.links
 
   return (
     <Stack ref={ref} className={clsx(css.menuItemRelationship, className)} {...props}>
@@ -239,13 +239,13 @@ const Relationship = forwardRef<
         )}
       </Group>
       <Box className={css.title}>{r.title || 'untitled'}</Box>
-      {r.relationship.description && <Text size="xs" c="dimmed">{r.relationship.description}</Text>}
-      {links && (
+      {r.description && <Text size="xs" c="dimmed">{r.description}</Text>}
+      {links.length > 0 && (
         <Stack
           gap={3}
           justify="stretch"
           align="stretch">
-          {links.map((link) => <Link link={link} />)}
+          {links.map((link) => <Link key={link.url} link={link} />)}
         </Stack>
       )}
     </Stack>

@@ -4,6 +4,7 @@ import {
   type AutoLayoutDirection,
   type CustomElementExpr,
   type CustomRelationExpr,
+  type DeploymentElementExpression,
   type DeploymentExpression,
   type DeploymentView,
   type ElementExpression as C4ElementExpression,
@@ -419,16 +420,16 @@ function $deploymentExpr<Types extends AnyTypes>(
   if (expr.includes(' <-> ')) {
     const [source, target] = expr.split(' <-> ')
     return asTypedDeploymentExpression({
-      source: $deploymentExpr(source) as any,
-      target: $deploymentExpr(target) as any,
+      source: $deploymentExpr(source) as DeploymentElementExpression,
+      target: $deploymentExpr(target) as DeploymentElementExpression,
       isBidirectional: true
     })
   }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
     return asTypedDeploymentExpression({
-      source: $deploymentExpr(source),
-      target: $deploymentExpr(target)
+      source: $deploymentExpr(source) as DeploymentElementExpression,
+      target: $deploymentExpr(target) as DeploymentElementExpression
     })
   }
   if (expr.endsWith('._')) {
