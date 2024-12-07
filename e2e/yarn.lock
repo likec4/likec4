@@ -1039,7 +1039,7 @@ __metadata:
 
 "likec4@file:../packages/likec4/package.tgz::locator=%40likec4%2Fe2e%40workspace%3A.":
   version: 1.17.1
-  resolution: "likec4@file:../packages/likec4/package.tgz#../packages/likec4/package.tgz::hash=d925bb&locator=%40likec4%2Fe2e%40workspace%3A."
+  resolution: "likec4@file:../packages/likec4/package.tgz#../packages/likec4/package.tgz::hash=3e0cf4&locator=%40likec4%2Fe2e%40workspace%3A."
   dependencies:
     "@hpcc-js/wasm-graphviz": "npm:1.6.1"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
@@ -1050,7 +1050,7 @@ __metadata:
     vite: "npm:5.4.11"
   bin:
     likec4: ./bin/likec4.mjs
-  checksum: 10c0/1a4a6ae62f8863cba0c4257c180d0abfd7d007e7b535e1f0da55aa5b9bc59a91e7030e300010d39408a3532c67089d72e80ee6dd5ce31f7f53134bfb5765860b
+  checksum: 10c0/10b5c5f9b0098de6d32a35b588892a45864cd9edd43a1ffe89f1c97b630d01df1ae00d3cce30d2b38d49886addccdc019cf37f10951b015bd5471b067d493ad4
   languageName: node
   linkType: hard
 
