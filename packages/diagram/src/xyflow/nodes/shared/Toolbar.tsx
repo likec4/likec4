@@ -1,6 +1,7 @@
 import {
   type BorderStyle,
   defaultTheme,
+  DiagramNode,
   type Element,
   ElementShapes,
   type Fqn,
@@ -40,6 +41,7 @@ import { IconCheck, IconFileSymlink, IconSelector, IconTransform } from '@tabler
 import { NodeToolbar, type NodeToolbarProps } from '@xyflow/react'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
+import type { MergeExclusive } from 'type-fest'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useUpdateEffect } from '../../../hooks'
 import { stopPropagation } from '../../utils'
 
@@ -75,7 +77,7 @@ const Tooltip = MantineTooltip.withProps({
 })
 
 type ToolbarProps = NodeToolbarProps & {
-  element: Element
+  element: DiagramNode
   onColorPreview: (color: ThemeColor | null) => void
 }
 
@@ -86,13 +88,15 @@ export function CompoundToolbar({
   onColorPreview,
   ...props
 }: ToolbarProps) {
+  const modelRef = DiagramNode.modelRef(element)
+  const deploymentRef = DiagramNode.deploymentRef(element)
   const targets = [element.id] as NonEmptyArray<Fqn>
   const diagramApi = useDiagramStoreApi()
   const {
     hasGoToSource,
     enableRelationshipBrowser
   } = useDiagramState(s => ({
-    hasGoToSource: !!s.onOpenSourceElement,
+    hasGoToSource: !!s.onOpenSource,
     enableRelationshipBrowser: s.enableRelationshipBrowser
   }))
 
@@ -117,7 +121,8 @@ export function CompoundToolbar({
         elementBorderStyle={element.style?.border}
         onChange={onChange}
       />
-      {hasGoToSource && <GoToSourceButton elementId={element.id} />}
+      {hasGoToSource && modelRef && <GoToSourceButton elementId={modelRef} />}
+      {hasGoToSource && !modelRef && deploymentRef && <GoToSourceButton deploymentId={deploymentRef} />}
       {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
@@ -156,13 +161,15 @@ export function ElementToolbar({
   onColorPreview,
   ...props
 }: ToolbarProps) {
+  const modelRef = DiagramNode.modelRef(element)
+  const deploymentRef = DiagramNode.deploymentRef(element)
   const targets = [element.id] as NonEmptyArray<Fqn>
   const diagramApi = useDiagramStoreApi()
   const {
     hasGoToSource,
     enableRelationshipBrowser
   } = useDiagramState(s => ({
-    hasGoToSource: !!s.onOpenSourceElement,
+    hasGoToSource: !!s.onOpenSource,
     enableRelationshipBrowser: s.enableRelationshipBrowser
   }))
   const portalProps = useMantinePortalProps()
@@ -234,20 +241,21 @@ export function ElementToolbar({
         onChange={onChange}
         position="right-end"
       />
-      {hasGoToSource && <GoToSourceButton elementId={element.id} />}
+      {hasGoToSource && modelRef && <GoToSourceButton elementId={modelRef} />}
+      {hasGoToSource && !modelRef && deploymentRef && <GoToSourceButton deploymentId={deploymentRef} />}
       {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
     </Toolbar>
   )
 }
 
 type ColorButtonProps = Omit<PopoverProps, 'onChange'> & {
-  element: Element
+  element: DiagramNode
   isOpacityEditable?: boolean
   onColorPreview: (color: ThemeColor | null) => void
   onChange: OnStyleChange
 }
 
-function GoToSourceButton({ elementId }: { elementId: Fqn }) {
+function GoToSourceButton(props: MergeExclusive<{ elementId: Fqn }, { deploymentId: Fqn }>) {
   const diagramApi = useDiagramStoreApi()
   const portalProps = useMantinePortalProps()
   return (
@@ -258,7 +266,15 @@ function GoToSourceButton({ elementId }: { elementId: Fqn }) {
         color="gray"
         onClick={e => {
           e.stopPropagation()
-          diagramApi.getState().onOpenSourceElement?.(elementId)
+          if (props.elementId) {
+            diagramApi.getState().onOpenSource?.({
+              element: props.elementId
+            })
+          } else if (props.deploymentId) {
+            diagramApi.getState().onOpenSource?.({
+              deployment: props.deploymentId
+            })
+          }
         }}>
         <IconFileSymlink stroke={1.8} style={{ width: '70%' }} />
       </ActionIcon>

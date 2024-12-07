@@ -1,5 +1,5 @@
 import type { NonEmptyArray, Point, XYPoint } from './_common'
-import type { BBox, ViewID } from './view'
+import type { BBox, ViewId } from './view'
 
 /**
  * OverviewGraph is a graph representation of all views in a model
@@ -17,7 +17,7 @@ export namespace OverviewGraph {
   } | {
     id: string
     type: 'view'
-    viewId: ViewID
+    viewId: ViewId
     label: string
     parentId: string | null
     position: XYPoint

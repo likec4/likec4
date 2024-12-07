@@ -1,4 +1,4 @@
-import type { ViewID } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
 import { computedAmazonView, computedCloudView, computedIndexView } from './__fixtures__'
 import { GraphvizLayouter } from './GraphvizLayoter'
@@ -28,7 +28,7 @@ describe('OverviewDiagramsPrinter', () => {
     { ...computedIndexView, relativePath: 'subdirectory/sub1/sub2/sub3/index2.c4' },
     { ...computedIndexView, relativePath: 'subdirectory/sub1/sub2/sub3/index3.c4' },
     { ...computedIndexView, relativePath: 'subdirectory/sub1/sub2/sub3/index4.c4' }
-  ].map((view, i) => ({ ...view, id: String(i).padStart(3, '0') as ViewID }))
+  ].map((view, i) => ({ ...view, id: String(i).padStart(3, '0') as ViewId }))
 
   it('toDot', async ({ expect }) => {
     const diagram = OverviewDiagramsPrinter.toDot(computedViews)

@@ -70,7 +70,10 @@
       matchPackageNames: [
        // '@tabler{/,}**',
         '@fontsource{/,}**',
-      ],
+      ]
+    },
+    {
+      automerge: true,
       matchDepNames: [
         'turbo',
         'yarn'
@@ -78,9 +81,6 @@
     },
     {
       enabled: false,
-      matchPackageNames: [
-        '@tanstack{/,}**',
-      ],
       matchDepNames: [
         '/^monaco/',
         '/^@monaco/',
@@ -89,6 +89,12 @@
         'vscode',
         '/^vscode-/',
       ],
+    },
+    {
+      enabled: false,
+      matchPackageNames: [
+        '@tanstack{/,}**',
+      ]
     },
   ],
 }

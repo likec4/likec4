@@ -1,4 +1,5 @@
-import type { Element, ViewID } from '@likec4/core'
+import type { Element, ViewId } from '@likec4/core'
+import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
@@ -125,7 +126,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         technology: null
       }
     })
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with tags', async ({ expect }) => {
@@ -265,7 +266,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.views).toHaveProperty('index')
 
-    const indexView = model.views['index' as ViewID]!
+    const indexView = model.views['index' as ViewId]!
     expect(indexView.id).toEqual('index')
     expect(indexView.title).toEqual('Landscape view')
     expect(indexView.nodes).to.be.an('array').that.has.length(1)
@@ -342,9 +343,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         autoLayout: { direction: 'LR' }
       }
     })
-    expect(model.views['index' as ViewID]).not.toHaveProperty('viewOf')
+    expect(model.views['index' as ViewId]).not.toHaveProperty('viewOf')
 
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model and views with links', async ({ expect }) => {
@@ -386,7 +387,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = viewsWithReadableEdges(await buildModel())
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       system1: {
@@ -638,7 +639,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       kind: 'async',
       tags: ['next']
     })
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with relationship spec with technology', async ({ expect }) => {
@@ -666,7 +667,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       kind: 'async',
       technology: 'Async'
     })
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with styled relationship', async ({ expect }) => {
@@ -703,7 +704,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
     expect(edge).not.toHaveProperty('description')
     expect(edge).not.toHaveProperty('technology')
-    expect(model).toMatchSnapshot()
+    expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
   it('builds model with relationship with properties', async ({ expect }) => {
@@ -777,7 +778,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
 
     // Check that computeView method does not change navigateTo
-    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewId)
     let system1Node = indexView!.nodes.find(n => n.id === 'system1')
     expect(system1Node).toMatchObject({
       title: 'system1',
@@ -790,13 +791,13 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(views).toHaveProperty('index')
     expect(views).toHaveProperty('system1')
 
-    system1Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system1')!
+    system1Node = views['index' as ViewId]!.nodes.find(n => n.id === 'system1')!
     expect(system1Node).toBeDefined()
     expect(system1Node.description).toEqual('Custom description')
     expect(system1Node.navigateTo).toEqual('index')
     expect(system1Node.color).toEqual('amber')
 
-    const system2Node = views['system1' as ViewID]!.nodes.find(n => n.id === 'system2')
+    const system2Node = views['system1' as ViewId]!.nodes.find(n => n.id === 'system2')
     expect(system2Node).toMatchObject({
       title: 'Custom',
       navigateTo: 'system1'
@@ -831,7 +832,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
 
     // Check that computeView method does not change navigateTo
-    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewId)
     const [step1, step2, step3] = indexView!.edges
 
     expect(step1).not.toHaveProperty('notes')
@@ -958,7 +959,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView).toHaveProperty('manualLayout', {
       autoLayout: { direction: 'TB' },
@@ -995,7 +996,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView).toHaveProperty('customColorDefinitions', {
       'custom-color1': {
@@ -1056,7 +1057,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.edges[0]?.color).toBe('custom-color1')
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
@@ -1088,7 +1089,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.edges[0]?.color).toBe('custom-color1')
   })
@@ -1116,7 +1117,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
   })
@@ -1148,11 +1149,11 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
 
-    const sys2View = model?.views['sys2' as ViewID]!
+    const sys2View = model?.views['sys2' as ViewId]!
     expect(sys2View).toBeDefined()
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
@@ -1188,11 +1189,11 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
 
-    const sys2View = model?.views['sys2' as ViewID]!
+    const sys2View = model?.views['sys2' as ViewId]!
     expect(sys2View).toBeDefined()
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
@@ -1223,7 +1224,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
 
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
@@ -1255,7 +1256,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
   })
 
@@ -1287,7 +1288,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
@@ -1319,7 +1320,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(diagnostics[0]?.severity).toBe(1)
 
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
   })
 
@@ -1354,7 +1355,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBeGreaterThan(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
@@ -1385,7 +1386,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
@@ -1422,7 +1423,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
     expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('muted')
   })
@@ -1460,7 +1461,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
     expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
@@ -1496,7 +1497,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('secondary')
     expect(indexView.nodes.find(n => n.id === 'sys1')?.style.opacity).toBe(10)
   })
@@ -1533,7 +1534,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
     expect(indexView.nodes.find(n => n.id === 'sys1')?.style.opacity).toBe(50)
   })
@@ -1569,7 +1570,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBeGreaterThan(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('secondary')
   })
 
@@ -1606,7 +1607,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
     expect(indexView.nodes.find(n => n.id === 'sys1')?.style.opacity).toBe(70)
   })
@@ -1642,7 +1643,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBeGreaterThan(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
@@ -1676,10 +1677,10 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('amber')
 
-    const sys2View = model?.views['sys2' as ViewID]!
+    const sys2View = model?.views['sys2' as ViewId]!
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('amber')
   })
 
@@ -1715,10 +1716,10 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('amber')
 
-    const sys2View = model?.views['sys2' as ViewID]!
+    const sys2View = model?.views['sys2' as ViewId]!
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('amber')
   })
 
@@ -1757,10 +1758,10 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
 
-    const sys2View = model?.views['sys2' as ViewID]!
+    const sys2View = model?.views['sys2' as ViewId]!
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
 
@@ -1790,16 +1791,16 @@ describe.concurrent('LikeC4ModelBuilder', () => {
                   },
                   -> sys2 -> where tag is not #tobe with {
                       color green
-                  }            
+                  }
           }
       }
     `)
     expect(diagnostics.length).toBe(0)
 
-    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    const indexView = withReadableEdges((await services.likec4.ModelBuilder.computeView('index' as ViewId))!)
 
-    expect(indexView?.nodes.map(x => x.id)).toStrictEqual(['sys1', 'sys2', 'sys3'])
-    expect(indexView?.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
+    expect(indexView.nodes.map(x => x.id)).toStrictEqual(['sys1', 'sys2', 'sys3'])
+    expect(indexView.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
   })
 
   it('global predicate groups are applied', async ({ expect }) => {
@@ -1830,7 +1831,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const indexView = model?.views['index' as ViewID]!
+    const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
     expect(indexView.nodes.find(n => n.id === 'sys2')).toBeUndefined()
@@ -1865,7 +1866,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
-    const dynamicView = model?.views['dynamic_view' as ViewID]!
+    const dynamicView = model?.views['dynamic_view' as ViewId]!
     expect(dynamicView).toBeDefined()
     expect(dynamicView.nodes.find(n => n.id === 'sys1')).toBeDefined()
     expect(dynamicView.nodes.find(n => n.id === 'sys2')).toBeDefined()

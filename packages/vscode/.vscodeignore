@@ -11,3 +11,5 @@
 !README.md
 !language-configuration.json
 !likec4.tmLanguage.json
+
+dist/src/

@@ -10,6 +10,26 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     node: AstNode,
     acceptor: SemanticTokenAcceptor
   ): void | undefined | 'prune' {
+    if (ast.isElement(node) || ast.isDeploymentNode(node)) {
+      return this.highlightNameAndKind(node, acceptor)
+    }
+    if (ast.isDeployedInstance(node)) {
+      if ('name' in node) {
+        acceptor({
+          node,
+          property: 'name',
+          type: SemanticTokenTypes.variable,
+          modifier: [
+            SemanticTokenModifiers.definition,
+            SemanticTokenModifiers.readonly
+          ]
+        })
+      }
+      return
+    }
+    if (ast.isLikeC4View(node)) {
+      return this.highlightView(node, acceptor)
+    }
     if (ast.isRelationshipKind(node)) {
       return acceptor({
         node,
@@ -70,6 +90,20 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
+    if (ast.isDeploymentRefExpression(node)) {
+      if (node.selector) {
+        acceptor({
+          node,
+          property: 'selector',
+          type: SemanticTokenTypes.variable,
+          modifier: [
+            SemanticTokenModifiers.definition,
+            SemanticTokenModifiers.readonly
+          ]
+        })
+      }
+      return
+    }
     if (ast.isWhereRelationKind(node) && isTruthy(node.value)) {
       acceptor({
         node,
@@ -108,6 +142,18 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
+    if (ast.isDeploymentRef(node)) {
+      acceptor({
+        node,
+        property: 'value',
+        type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly
+        ]
+      })
+      return !node.parent ? 'prune' : undefined
+    }
     if (ast.isElementRef(node) || ast.isFqnElementRef(node)) {
       acceptor({
         node,
@@ -137,7 +183,10 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if (ast.isSpecificationElementKind(node) || ast.isSpecificationRelationshipKind(node)) {
+    if (
+      ast.isSpecificationElementKind(node) || ast.isSpecificationRelationshipKind(node)
+      || ast.isSpecificationDeploymentNodeKind(node)
+    ) {
       acceptor({
         node,
         property: 'kind',
@@ -196,30 +245,13 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'key',
         type: SemanticTokenTypes.property
       })
-      if (ast.isIconProperty(node)) {
-        if (node.libicon) {
-          acceptor({
-            node,
-            property: 'libicon',
-            type: SemanticTokenTypes.enum,
-            modifier: [SemanticTokenModifiers.defaultLibrary]
-          })
-        } else {
-          if (node.value === 'none') {
-            acceptor({
-              node,
-              property: 'value',
-              type: SemanticTokenTypes.enum,
-              modifier: [SemanticTokenModifiers.defaultLibrary]
-            })
-          } else {
-            acceptor({
-              node,
-              property: 'value',
-              type: SemanticTokenTypes.string
-            })
-          }
-        }
+      if (ast.isIconProperty(node) && (node.libicon || node.value === 'none')) {
+        acceptor({
+          node,
+          property: node.libicon ? 'libicon' : 'value',
+          type: SemanticTokenTypes.enum,
+          modifier: [SemanticTokenModifiers.defaultLibrary]
+        })
         return 'prune'
       }
       if ('value' in node && node.value) {
@@ -252,15 +284,9 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       }
       return 'prune'
     }
-    if (ast.isElement(node)) {
-      return this.highlightAstElement(node, acceptor)
-    }
-    if (ast.isLikeC4View(node)) {
-      return this.highlightView(node, acceptor)
-    }
   }
 
-  private highlightAstElement(node: ast.Element, acceptor: SemanticTokenAcceptor) {
+  private highlightNameAndKind(node: ast.Element | ast.DeploymentNode, acceptor: SemanticTokenAcceptor) {
     acceptor({
       node,
       property: 'name',

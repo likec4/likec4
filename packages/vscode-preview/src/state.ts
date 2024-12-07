@@ -1,9 +1,9 @@
-import { type ComputedLikeC4Model, type DiagramNode, type DiagramView, LikeC4Model, type ViewID } from '@likec4/core'
+import { type ComputedLikeC4Model, type DiagramNode, type DiagramView, LikeC4Model, type ViewId } from '@likec4/core'
 import { useStore } from '@nanostores/react'
-import { atom, batched, deepMap, map, onMount, onSet, task } from 'nanostores'
+import { atom, batched, deepMap, map, onMount, task } from 'nanostores'
 import { useRef } from 'react'
 import { entries, isDeepEqual, isNullish, keys, values } from 'remeda'
-import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from '../protocol'
+import { BroadcastModelUpdate, GetLastClickedNode, OnOpenView } from './protocol'
 import { ExtensionApi, getVscodeState, messenger, saveVscodeState, type VscodeState } from './vscode'
 
 const {
@@ -20,7 +20,9 @@ const setVscodeAppstate = (state: Partial<VscodeAppState>) => {
     ...$appstate.get(),
     ...state
   }
-  $appstate.set(nextstate)
+  if (!isDeepEqual(nextstate, $appstate.get())) {
+    $appstate.set(nextstate)
+  }
   saveVscodeState(nextstate)
 }
 
@@ -44,18 +46,23 @@ export const useIsModelLoaded = () => useStore($initialized)
  */
 export const $viewId = atom(viewId)
 
-export const changeViewId = (viewId: ViewID) => {
-  if (viewId === $viewId.get()) {
-    return
-  }
-  if (!$likeC4Diagrams.get()[viewId]) {
+export const changeViewId = (viewId: ViewId) => {
+  const diagramState = $likeC4Diagrams.get()[viewId]
+  if (!diagramState) {
     $likeC4Diagrams.setKey(viewId, {
       state: 'pending',
       view: null,
       error: null
     })
+  } else {
+    $likeC4Diagrams.setKey(viewId, {
+      ...diagramState,
+      state: 'stale'
+    })
   }
-  $viewId.set(viewId)
+  if (viewId !== $viewId.get()) {
+    $viewId.set(viewId)
+  }
   saveVscodeState({ viewId })
 }
 
@@ -64,7 +71,7 @@ messenger.onNotification(OnOpenView, ({ viewId }) => {
 })
 
 export type LikeC4DiagramsAtom = Record<
-  ViewID,
+  ViewId,
   {
     // Never loaded
     state: 'pending'
@@ -100,7 +107,8 @@ const EMPTY: ComputedLikeC4Model = {
   specification: {
     tags: [],
     elements: {},
-    relationships: {}
+    relationships: {},
+    deployments: {}
   },
   elements: {},
   relations: {},
@@ -109,7 +117,11 @@ const EMPTY: ComputedLikeC4Model = {
     dynamicPredicates: {},
     styles: {}
   },
-  views: {}
+  views: {},
+  deployments: {
+    elements: {},
+    relations: {}
+  }
 }
 
 export const $likeC4ModelSource = deepMap({ ...EMPTY })
@@ -119,11 +131,14 @@ function updateLikeC4ModelSource(model: ComputedLikeC4Model) {
 
   const likeC4Diagrams = $likeC4Diagrams.get()
 
-  $likeC4ModelSource.setKey('specification', model.specification)
-  $likeC4ModelSource.setKey('elements', model.elements)
-  $likeC4ModelSource.setKey('relations', model.relations)
+  keys(model).forEach(key => {
+    if (key === 'views') {
+      return
+    }
+    $likeC4ModelSource.setKey(key, model[key])
+  })
 
-  const oldKeys = new Set([...keys(currentViews)] as ViewID[])
+  const oldKeys = new Set([...keys(currentViews)] as ViewId[])
   for (const view of values(model.views)) {
     oldKeys.delete(view.id)
     const likeC4Diagram = likeC4Diagrams[view.id]
@@ -151,7 +166,7 @@ function updateLikeC4ModelSource(model: ComputedLikeC4Model) {
   // Mark views as not found
   for (const [key, likeC4Diagram] of entries(likeC4Diagrams)) {
     if (!(key in model.views)) {
-      $likeC4Diagrams.setKey(key as ViewID, {
+      $likeC4Diagrams.setKey(key as ViewId, {
         ...likeC4Diagram,
         error: 'View is not found',
         state: 'error'
@@ -178,7 +193,7 @@ messenger.onNotification(BroadcastModelUpdate, () => {
   fetchComputedModel()
 })
 
-export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.computed(m as any))
+export const $likeC4Model = batched($likeC4ModelSource, m => LikeC4Model.create(m as ComputedLikeC4Model))
 
 const $likeC4View = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.view ?? null)
 const $likeC4ViewState = batched([$viewId, $likeC4Diagrams], (viewId, diagrams) => diagrams[viewId]?.state ?? null)
@@ -203,7 +218,7 @@ onMount($likeC4ViewState, () => {
   })
 })
 
-async function fetchDiagramView(viewId: ViewID) {
+async function fetchDiagramView(viewId: ViewId) {
   try {
     const {
       error,

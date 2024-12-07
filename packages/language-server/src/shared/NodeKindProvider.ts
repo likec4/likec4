@@ -16,13 +16,17 @@ export class NodeKindProvider implements LspNodeKindProvider {
     switch (true) {
       case hasType(
         ast.Element,
-        ast.ExtendElement
+        ast.ExtendElement,
+        ast.DeploymentNode,
+        ast.DeployedInstance
       ):
         return SymbolKind.Constructor
 
       case hasType(
         ast.Model,
         ast.ModelViews,
+        ast.ModelDeployments,
+        ast.Globals,
         ast.SpecificationRule
       ):
         return SymbolKind.Namespace
@@ -46,7 +50,9 @@ export class NodeKindProvider implements LspNodeKindProvider {
 
       case hasType(
         ast.ElementKind,
-        ast.SpecificationElementKind
+        ast.DeploymentNodeKind,
+        ast.SpecificationElementKind,
+        ast.SpecificationDeploymentNodeKind
       ):
         return SymbolKind.TypeParameter
     }
@@ -66,6 +72,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
 
       case hasType(
         ast.Element,
+        ast.DeploymentNode,
+        ast.DeployedInstance,
         ast.ExtendElement
       ):
         return CompletionItemKind.Constructor
@@ -73,6 +81,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
       case hasType(
         ast.Model,
         ast.ModelViews,
+        ast.ModelDeployments,
+        ast.Globals,
         ast.SpecificationRule
       ):
         return CompletionItemKind.Module
@@ -98,7 +108,9 @@ export class NodeKindProvider implements LspNodeKindProvider {
 
       case hasType(
         ast.ElementKind,
-        ast.SpecificationElementKind
+        ast.SpecificationElementKind,
+        ast.DeploymentNodeKind,
+        ast.SpecificationDeploymentNodeKind
       ):
         return CompletionItemKind.TypeParameter
 

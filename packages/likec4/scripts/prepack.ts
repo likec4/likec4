@@ -10,10 +10,11 @@ if (!isProduction) {
   process.exit(1)
 }
 
-consola.start('Building...')
-
 emptyDir(resolve('react'))
+emptyDir(resolve('__app__'))
 emptyDir(resolve('dist'))
+
+consola.start('Building...')
 
 // Run build
 await $({

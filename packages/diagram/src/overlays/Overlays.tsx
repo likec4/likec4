@@ -1,9 +1,10 @@
-import { ActionIcon, Box, FocusTrap, RemoveScroll } from '@mantine/core'
+import { ActionIcon, Box, Button, FocusTrap, Group, Notification, RemoveScroll, Text } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { AnimatePresence, m } from 'framer-motion'
 import { memo, type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
 import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
@@ -11,6 +12,35 @@ import { ElementDetailsCard } from './element-details/ElementDetailsCard'
 import { OverlayContext, useOverlayDialog } from './OverlayContext'
 import * as css from './Overlays.css'
 import { RelationshipsOverlay } from './relationships-of/RelationshipsOverlay'
+
+function Fallback({ error, resetErrorBoundary }: FallbackProps) {
+  // Call resetErrorBoundary() to reset the error boundary and retry the render.
+  const errorString = error instanceof Error ? error.message : 'Unknown error'
+  return (
+    <Box className={css.container} p={'lg'}>
+      <Notification
+        icon={<IconX style={{ width: 20, height: 20 }} />}
+        styles={{
+          icon: {
+            alignSelf: 'flex-start'
+          }
+        }}
+        color={'red'}
+        title={'Oops, something went wrong'}
+        withCloseButton={false}>
+        <Text
+          style={{
+            whiteSpace: 'preserve-breaks'
+          }}>
+          {errorString}
+        </Text>
+        <Group gap={'xs'} mt="sm">
+          <Button color="gray" variant="light" onClick={() => resetErrorBoundary()}>Refresh</Button>
+        </Group>
+      </Notification>
+    </Box>
+  )
+}
 
 export const Overlays = memo(() => {
   const diagramStore = useDiagramStoreApi()
@@ -52,70 +82,72 @@ export const Overlays = memo(() => {
   )
 
   return (
-    <OverlayContext.Provider value={ctxValue}>
-      <AnimatePresence initial={false} key={viewId} onExitComplete={onExitComplete}>
-        {activeOverlay?.elementDetails && (
-          <ElementDetailsCard key={'details card'} fqn={activeOverlay.elementDetails} />
-        )}
-      </AnimatePresence>
-      <AnimatePresence initial={false} onExitComplete={onExitComplete}>
-        {activeOverlay && isNullish(activeOverlay.elementDetails) && (
-          <RemoveScroll forwardProps>
-            <Box
-              component={m.div}
-              className={css.container}
-              data-likec4-color="gray"
-              initial={{
-                '--backdrop-blur': '0px',
-                '--backdrop-opacity': '0%',
-                opacity: 0,
-                translateY: -15
-              }}
-              animate={{
-                '--backdrop-blur': '10px',
-                '--backdrop-opacity': '70%',
-                opacity: 1,
-                translateY: 0
-              }}
-              exit={{
-                '--backdrop-blur': '1px',
-                '--backdrop-opacity': '0%',
-                translateY: -5,
-                opacity: 0,
-                transition: {
-                  duration: .2
-                }
-              }}
-            >
-              <FocusTrap>
-                {activeOverlay.relationshipsOf && <RelationshipsOverlay subjectId={activeOverlay.relationshipsOf} />}
-                {activeOverlay.edgeDetails && (
-                  <XYFlowProvider
-                    defaultNodes={[]}
-                    defaultEdges={[]}>
-                    <EdgeDetailsXYFlow edgeId={activeOverlay.edgeDetails} />
-                  </XYFlowProvider>
-                )}
-                <Box pos={'absolute'} top={'1rem'} right={'1rem'}>
-                  <ActionIcon
-                    variant="default"
-                    // color="gray"
-                    size={'lg'}
-                    // data-autofocus
-                    // autoFocus
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      ctxValue.close()
-                    }}>
-                    <IconX />
-                  </ActionIcon>
-                </Box>
-              </FocusTrap>
-            </Box>
-          </RemoveScroll>
-        )}
-      </AnimatePresence>
-    </OverlayContext.Provider>
+    <ErrorBoundary FallbackComponent={Fallback} onReset={() => ctxValue.close()}>
+      <OverlayContext.Provider value={ctxValue}>
+        <AnimatePresence initial={false} key={viewId} onExitComplete={onExitComplete}>
+          {activeOverlay?.elementDetails && (
+            <ElementDetailsCard key={'details card'} fqn={activeOverlay.elementDetails} />
+          )}
+        </AnimatePresence>
+        <AnimatePresence initial={false} onExitComplete={onExitComplete}>
+          {activeOverlay && isNullish(activeOverlay.elementDetails) && (
+            <RemoveScroll forwardProps>
+              <Box
+                component={m.div}
+                className={css.container}
+                data-likec4-color="gray"
+                initial={{
+                  '--backdrop-blur': '0px',
+                  '--backdrop-opacity': '0%',
+                  opacity: 0,
+                  translateY: -15
+                }}
+                animate={{
+                  '--backdrop-blur': '10px',
+                  '--backdrop-opacity': '70%',
+                  opacity: 1,
+                  translateY: 0
+                }}
+                exit={{
+                  '--backdrop-blur': '1px',
+                  '--backdrop-opacity': '0%',
+                  translateY: -5,
+                  opacity: 0,
+                  transition: {
+                    duration: .2
+                  }
+                }}
+              >
+                <FocusTrap>
+                  {activeOverlay.relationshipsOf && <RelationshipsOverlay subjectId={activeOverlay.relationshipsOf} />}
+                  {activeOverlay.edgeDetails && (
+                    <XYFlowProvider
+                      defaultNodes={[]}
+                      defaultEdges={[]}>
+                      <EdgeDetailsXYFlow edgeId={activeOverlay.edgeDetails} />
+                    </XYFlowProvider>
+                  )}
+                  <Box pos={'absolute'} top={'1rem'} right={'1rem'}>
+                    <ActionIcon
+                      variant="default"
+                      // color="gray"
+                      size={'lg'}
+                      // data-autofocus
+                      // autoFocus
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        ctxValue.close()
+                      }}>
+                      <IconX />
+                    </ActionIcon>
+                  </Box>
+                </FocusTrap>
+              </Box>
+            </RemoveScroll>
+          )}
+        </AnimatePresence>
+      </OverlayContext.Provider>
+    </ErrorBoundary>
   )
 })
 

@@ -7,7 +7,7 @@ import * as css from './TabPanelStructure.css'
 interface ElementTreeNodeData {
   label: ReactNode
   value: string
-  element: LikeC4Model.ElementModel
+  element: LikeC4Model.Element
   type: 'ancestor' | 'current' | 'descedant'
   children: TreeNodeData[]
 }
@@ -22,12 +22,12 @@ interface MessageNodeData {
 type TreeNodeData = ElementTreeNodeData | MessageNodeData
 
 type TabElementStructureProps = {
-  element: LikeC4Model.ElementModel
+  element: LikeC4Model.Element
 }
 
 const ElementLabel = ({
   element
-}: { element: LikeC4Model.ElementModel; type: 'ancestor' | 'current' | 'descedant' }) => (
+}: { element: LikeC4Model.Element; type: 'ancestor' | 'current' | 'descedant' }) => (
   <Box className={css.elementLabel}>
     <Text component="div" fz={'sm'} fw={'500'}>{element.title}</Text>
   </Box>
@@ -60,7 +60,7 @@ export function TabElementStructure({
       value: element.id,
       element,
       type: 'current',
-      children: element.children().map((child): TreeNodeData => ({
+      children: element.children().toArray().map((child): TreeNodeData => ({
         label: <ElementLabel type="descedant" element={child} />,
         value: child.id,
         element: child,

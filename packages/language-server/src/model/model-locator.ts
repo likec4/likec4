@@ -1,10 +1,12 @@
 import type * as c4 from '@likec4/core'
 import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
+import { isString } from 'remeda'
 import type { Location } from 'vscode-languageserver-types'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
+import type { DeploymentsIndex } from './deployments-index'
 import { type FqnIndex } from './fqn-index'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
@@ -12,10 +14,12 @@ const { getDocument } = AstUtils
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
+  private deploymentsIndex: DeploymentsIndex
   private langiumDocuments: LangiumDocuments
 
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
+    this.deploymentsIndex = services.likec4.DeploymentsIndex
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
   }
 
@@ -23,10 +27,23 @@ export class LikeC4ModelLocator {
     return this.langiumDocuments.all.filter(isParsedLikeC4LangiumDocument)
   }
 
-  public getParsedElement(astNode: ast.Element): ParsedAstElement | null {
-    const fqn = this.fqnIndex.getFqn(astNode)
+  public getParsedElement(astNodeOrFqn: ast.Element | c4.Fqn): ParsedAstElement | null {
+    if (isString(astNodeOrFqn)) {
+      const fqn = astNodeOrFqn
+      const entry = this.fqnIndex.byFqn(astNodeOrFqn).head()
+      if (!entry) {
+        return null
+      }
+      const doc = this.langiumDocuments.getDocument(entry.documentUri)
+      if (!doc || !isParsedLikeC4LangiumDocument(doc)) {
+        return null
+      }
+      return doc.c4Elements.find(e => e.id === fqn) ?? null
+    }
+
+    const fqn = this.fqnIndex.getFqn(astNodeOrFqn)
     if (!fqn) return null
-    const doc = getDocument(astNode)
+    const doc = getDocument(astNodeOrFqn)
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return null
     }
@@ -44,8 +61,19 @@ export class LikeC4ModelLocator {
       range: docsegment.range
     }
   }
+  public locateDeploymentElement(fqn: c4.Fqn, _prop?: string): Location | null {
+    const entry = this.deploymentsIndex.byFqn(fqn).head()
+    const docsegment = entry?.nameSegment ?? entry?.selectionSegment
+    if (!entry || !docsegment) {
+      return null
+    }
+    return {
+      uri: entry.documentUri.toString(),
+      range: docsegment.range
+    }
+  }
 
-  public locateRelation(relationId: c4.RelationID): Location | null {
+  public locateRelation(relationId: c4.RelationId): Location | null {
     for (const doc of this.documents()) {
       const relation = doc.c4Relations.find(r => r.id === relationId)
       if (!relation) {
@@ -76,7 +104,7 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  public locateViewAst(viewId: c4.ViewID) {
+  public locateViewAst(viewId: c4.ViewId) {
     for (const doc of this.documents()) {
       const view = doc.c4Views.find(r => r.id === viewId)
       if (!view) {
@@ -97,7 +125,7 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  public locateView(viewId: c4.ViewID): Location | null {
+  public locateView(viewId: c4.ViewId): Location | null {
     const res = this.locateViewAst(viewId)
     if (!res) {
       return null

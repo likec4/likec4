@@ -1,4 +1,11 @@
-import { type DiagramView, type EdgeId, type LikeC4Model, nameFromFqn, nonNullable } from '@likec4/core'
+import {
+  type DiagramNode,
+  type DiagramView,
+  type EdgeId,
+  type LikeC4Model,
+  nameFromFqn,
+  nonNullable
+} from '@likec4/core'
 import { Box, Button, Group, Paper, SegmentedControl, Stack, Text, ThemeIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
@@ -14,26 +21,25 @@ import * as css from './TabPanelRelationships.css'
 
 type RelationshipsTabPanelProps = {
   currentView: DiagramView
-  element: LikeC4Model.ElementModel
+  node: LikeC4Model.Node
+  element: LikeC4Model.Element
 }
 
 export function TabPanelRelationships({
   currentView,
+  node,
   element
 }: RelationshipsTabPanelProps) {
   const layoutId = useId()
   const enableRelationshipBrowser = useDiagramState(s => s.enableRelationshipBrowser)
   const overlay = useOverlayDialog()
   const [scope, setScope] = useState<'global' | 'view'>('view')
-  const node = nonNullable(currentView.nodes.find((n) => n.id === element.id))
 
-  const incoming = element.incoming().map(r => r.id)
-  const outgoing = element.outgoing().map(r => r.id)
+  const incoming = element.incoming().map(r => r.id).toArray()
+  const outgoing = element.outgoing().map(r => r.id).toArray()
 
-  const findRelationIds = (edgeId: EdgeId) => currentView.edges.find((edge) => edge.id === edgeId)?.relations ?? []
-
-  const incomingInView = unique(node.inEdges.flatMap(findRelationIds))
-  const outgoingInView = unique(node.outEdges.flatMap(findRelationIds))
+  const incomingInView = unique(node.incoming().flatMap(e => e.$edge.relations).toArray())
+  const outgoingInView = unique(node.outgoing().flatMap(e => e.$edge.relations).toArray())
 
   const notIncludedRelations = [
     ...incoming,

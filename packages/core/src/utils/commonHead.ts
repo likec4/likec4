@@ -2,6 +2,8 @@ import { map, pipe, takeWhile, zip } from 'remeda'
 
 /**
  * Common head of two arrays
+ *
+ * @param equals - Equality function, defaults to `Object.is`
  */
 export function commonHead<T>(
   sources: ReadonlyArray<T>,

@@ -7,7 +7,7 @@ export default defineBuildConfig({
     'src/index.ts',
     'src/cli/index.ts'
   ],
-  clean: false,
+  clean: isProduction,
   outDir: 'dist',
   stub: !isProduction,
   stubOptions: {
@@ -29,17 +29,19 @@ export default defineBuildConfig({
       ? {
         '@likec4/layouts/graphviz/binary': resolve('../layouts/dist/graphviz/binary/index.mjs'),
         '@likec4/layouts': resolve('../layouts/dist/index.mjs'),
+        '@likec4/core/model': resolve('../core/dist/model/index.mjs'),
         '@likec4/core/types': resolve('../core/dist/types/index.mjs'),
+        '@likec4/core/compute-view': resolve('../core/dist/compute-view/index.mjs'),
         '@likec4/core': resolve('../core/dist/index.mjs'),
-        '@likec4/language-server/model-graph': resolve('../language-server/dist/model-graph/index.mjs'),
         '@likec4/language-server': resolve('../language-server/dist/index.mjs')
       }
       : {
         '@likec4/layouts/graphviz/binary': resolve('../layouts/src/graphviz/binary/index.ts'),
         '@likec4/layouts': resolve('../layouts/src/index.ts'),
         '@likec4/core/types': resolve('../core/src/types/index.ts'),
+        '@likec4/core/model': resolve('../core/src/model/index.ts'),
+        '@likec4/core/compute-view': resolve('../core/src/compute-view/index.ts'),
         '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/language-server/model-graph': resolve('../language-server/src/model-graph/index.ts'),
         '@likec4/language-server': resolve('../language-server/src/index.ts')
       })
   },
@@ -51,10 +53,7 @@ export default defineBuildConfig({
       platform: 'node',
       target: 'node20',
       legalComments: 'none',
-      minify: isProduction,
-      minifyIdentifiers: false,
-      minifySyntax: true,
-      minifyWhitespace: true
+      minify: isProduction
     },
     output: {
       compact: isProduction
@@ -75,7 +74,6 @@ export default defineBuildConfig({
     },
     dts: {
       tsconfig: 'tsconfig.cli.json',
-      respectExternal: true,
       compilerOptions: {
         noEmitOnError: false,
         strict: false,

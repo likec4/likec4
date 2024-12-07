@@ -1,4 +1,4 @@
-import type { ViewID } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
@@ -71,9 +71,9 @@ describe('LikeC4ModelBuilder -- caches', () => {
     expect(model1).not.toStrictEqual(model2)
 
     // index view has changed
-    expect(model1.views['index' as ViewID]).not.toStrictEqual(model2.views['index' as ViewID])
+    expect(model1.views['index' as ViewId]).not.toStrictEqual(model2.views['index' as ViewId])
 
     // expect that sys2 view is the same
-    expect(model1.views['sys2' as ViewID]).toStrictEqual(model2.views['sys2' as ViewID])
+    expect(model1.views['sys2' as ViewId]).toStrictEqual(model2.views['sys2' as ViewId])
   })
 })

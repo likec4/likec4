@@ -7,7 +7,7 @@ import type {
   EdgeId,
   OverviewGraph,
   Point,
-  ViewID
+  ViewId
 } from '@likec4/core'
 import { invariant, nonNullable } from '@likec4/core'
 import { logger } from '@likec4/log'
@@ -40,7 +40,7 @@ function parsePos(pos: string): GVPos {
       y: pointToPx(parseFloat(y))
     }
   } catch (e) {
-    logger.error(`failed on parsing pos: ${pos}`, e)
+    logger.warn(`failed on parsing pos: ${pos}`, e)
     throw e
   }
 }
@@ -99,7 +99,7 @@ function parseLabelBbox(
       }
     }
   } catch (e) {
-    logger.error(`Failed on parsing label draw ops: ${e}\n${JSON.stringify(labelDrawOps, null, 2)}`)
+    logger.warn(`Failed on parsing label draw ops: ${e}\n${JSON.stringify(labelDrawOps, null, 2)}`)
     return null
   }
 
@@ -134,7 +134,7 @@ function parseEdgePoints(
     invariant(hasAtLeast(points, 2), `view ${viewId} edge ${likec4_id} should have at least two points`)
     return points
   } catch (e) {
-    logger.error(`failed on parsing view ${viewId} edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
+    logger.warn(`failed on parsing view ${viewId} edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
     throw e
   }
 }
@@ -247,7 +247,7 @@ export function parseOverviewGraphvizJson(json: string): OverviewGraph {
         width,
         position,
         label: obj.label ?? '',
-        viewId: obj.likec4_id as any as ViewID
+        viewId: obj.likec4_id as any as ViewId
       })
     } else {
       const node: OverviewGraph.Node = {

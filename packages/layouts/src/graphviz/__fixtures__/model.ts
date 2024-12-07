@@ -5,11 +5,11 @@ import type {
   Fqn,
   IconUrl,
   NonEmptyArray,
+  ParsedLikeC4Model,
   Relation,
-  RelationID,
-  ViewID
+  RelationId,
+  ViewId
 } from '@likec4/core'
-import { LikeC4ModelGraph } from '@likec4/language-server/model-graph'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -182,38 +182,38 @@ export type FakeElementIds = keyof typeof fakeElements
 
 const fakeRelations = {
   'customer:cloud.frontend.dashboard': {
-    id: 'customer:cloud.frontend.dashboard' as RelationID,
+    id: 'customer:cloud.frontend.dashboard' as RelationId,
     source: 'customer' as Fqn,
     target: 'cloud.frontend.dashboard' as Fqn,
     title: 'opens in browser'
   },
   'support:cloud.frontend.adminPanel': {
-    id: 'support:cloud.frontend.adminPanel' as RelationID,
+    id: 'support:cloud.frontend.adminPanel' as RelationId,
     source: 'support' as Fqn,
     target: 'cloud.frontend.adminPanel' as Fqn,
     title: 'manages'
   },
   'cloud.backend.storage:amazon.s3': {
-    id: 'cloud.backend.storage:amazon.s3' as RelationID,
+    id: 'cloud.backend.storage:amazon.s3' as RelationId,
     source: 'cloud.backend.storage' as Fqn,
     target: 'amazon.s3' as Fqn,
     title: 'persists artifacts',
     tail: 'odiamond'
   },
   'cloud.backend.graphql:cloud.backend.storage': {
-    id: 'cloud.backend.graphql:cloud.backend.storage' as RelationID,
+    id: 'cloud.backend.graphql:cloud.backend.storage' as RelationId,
     source: 'cloud.backend.graphql' as Fqn,
     target: 'cloud.backend.storage' as Fqn,
     title: ''
   },
   'cloud.frontend.dashboard:cloud.backend.graphql': {
-    id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationID,
+    id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationId,
     source: 'cloud.frontend.dashboard' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
     title: 'fetches data'
   },
   'cloud.frontend.adminPanel:cloud.backend.graphql': {
-    id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationID,
+    id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationId,
     source: 'cloud.frontend.adminPanel' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
     title: 'fetches data in zero trust network with sso authentification'
@@ -222,7 +222,7 @@ const fakeRelations = {
 
 export const indexView = {
   __: 'element',
-  id: 'index' as ViewID,
+  id: 'index' as ViewId,
   title: '',
   description: null,
   tags: null,
@@ -241,7 +241,7 @@ export const indexView = {
 
 export const cloudView = {
   __: 'element',
-  id: 'cloudView' as ViewID,
+  id: 'cloudView' as ViewId,
   title: '',
   description: null,
   tags: null,
@@ -257,7 +257,7 @@ export const cloudView = {
 
 export const cloud3levels = {
   __: 'element',
-  id: 'cloud3levels' as ViewID,
+  id: 'cloud3levels' as ViewId,
   title: '',
   viewOf: 'cloud' as Fqn,
   description: null,
@@ -286,7 +286,7 @@ export const cloud3levels = {
 
 export const amazonView = {
   __: 'element',
-  id: 'amazon' as ViewID,
+  id: 'amazon' as ViewId,
   title: '',
   viewOf: 'amazon' as Fqn,
   description: null,
@@ -312,7 +312,7 @@ export const amazonView = {
 
 // see https://github.com/likec4/likec4/issues/577
 export const issue577View = (icon: string) => ({
-  id: 'issue577' as ViewID,
+  id: 'issue577' as ViewId,
   title: '',
   description: null,
   tags: null,
@@ -338,8 +338,23 @@ export const issue577View = (icon: string) => ({
   ]
 } satisfies ElementView)
 
-export const fakeModel = () =>
-  new LikeC4ModelGraph({
-    elements: fakeElements,
-    relations: fakeRelations
-  })
+export const FakeModel: ParsedLikeC4Model = {
+  elements: fakeElements,
+  relations: fakeRelations,
+  views: {},
+  specification: {
+    elements: {},
+    relationships: {},
+    deployments: {},
+    tags: []
+  },
+  deployments: {
+    elements: {},
+    relations: {}
+  },
+  globals: {
+    dynamicPredicates: {},
+    predicates: {},
+    styles: {}
+  }
+}

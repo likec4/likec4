@@ -84,7 +84,7 @@ const graphId = (node: XYFlowTypes.Node) => ({
 })
 
 function nodeData(
-  element: LikeC4Model.ElementModel,
+  element: LikeC4Model.Element,
   ctx: Context
 ): Omit<XYFlowTypes.Node['data'], 'column'> {
   // We try to inherit style from existing diagram node
@@ -93,7 +93,7 @@ function nodeData(
   // Ansector separetely, because we want to inherit
   // color from it if there is no diagram node
   const ancestor = diagramNode ?? pipe(
-    element.ancestors(),
+    element.ancestors().toArray(),
     map(ancestor => ctx.diagramNodes.get(ancestor.id)),
     filter(isTruthy),
     first()
@@ -104,11 +104,11 @@ function nodeData(
     element: {
       kind: element.kind,
       title: diagramNode?.title ?? element.title,
-      description: diagramNode?.description ?? element.element.description,
+      description: diagramNode?.description ?? element.description,
       color: diagramNode?.color ?? ancestor?.color ?? element.color,
       shape: diagramNode?.shape ?? element.shape
     },
-    navigateTo: diagramNode?.navigateTo ?? first(element.viewsOf())?.id ?? null,
+    navigateTo: diagramNode?.navigateTo ?? first(element.scopedViews().take(1).toArray())?.id ?? null,
     ports: {
       in: [],
       out: []
@@ -118,7 +118,7 @@ function nodeData(
 
 function createNode(
   nodeType: XYFlowTypes.Node['type'],
-  element: LikeC4Model.ElementModel,
+  element: LikeC4Model.Element,
   ctx: Context
 ): XYFlowTypes.Node {
   let node = ctx.xynodes.get(element.id)
@@ -129,7 +129,7 @@ function createNode(
 
   // Create parent node
   const parent = pipe(
-    element.ancestors(),
+    element.ancestors().toArray(),
     takeWhile(ancestor => !isAncestor(ancestor.id, ctx.edge.source) && !isAncestor(ancestor.id, ctx.edge.target)),
     first(),
     found => found ? createNode('compound', found, ctx) : null
@@ -225,7 +225,7 @@ function layout(
 
   const relations = edge.relations
     .map(r => {
-      const relation = likec4model.relationship(r).relationship
+      const relation = likec4model.relationship(r).$relationship
       all.add(relation.source)
       all.add(relation.target)
       return relation

@@ -1,46 +1,47 @@
+import { sort } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Fqn, Relation, RelationID } from '../types'
+import type { Fqn, Relation, RelationId } from '../types'
 import { compareRelations, isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from './relations'
 
 const relations = [
   {
-    id: 'customer:cloud.frontend.dashboard' as RelationID,
+    id: 'customer:cloud.frontend.dashboard' as RelationId,
     source: 'customer' as Fqn,
     target: 'cloud.frontend.dashboard' as Fqn,
     title: ''
   },
   {
-    id: 'support:cloud.frontend.adminPanel' as RelationID,
+    id: 'support:cloud.frontend.adminPanel' as RelationId,
     source: 'support' as Fqn,
     target: 'cloud.frontend.adminPanel' as Fqn,
     title: ''
   },
   {
-    id: 'cloud.backend.storage:amazon.s3' as RelationID,
+    id: 'cloud.backend.storage:amazon.s3' as RelationId,
     source: 'cloud.backend.storage' as Fqn,
     target: 'amazon.s3' as Fqn,
     title: ''
   },
   {
-    id: 'amazon.api:cloud.backend.graphql' as RelationID,
+    id: 'amazon.api:cloud.backend.graphql' as RelationId,
     source: 'amazon.api' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
     title: ''
   },
   {
-    id: 'cloud.backend.graphql:cloud.backend.storage' as RelationID,
+    id: 'cloud.backend.graphql:cloud.backend.storage' as RelationId,
     source: 'cloud.backend.graphql' as Fqn,
     target: 'cloud.backend.storage' as Fqn,
     title: ''
   },
   {
-    id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationID,
+    id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationId,
     source: 'cloud.frontend.dashboard' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
     title: ''
   },
   {
-    id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationID,
+    id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationId,
     source: 'cloud.frontend.adminPanel' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
     title: ''
@@ -170,7 +171,7 @@ describe('compareRelations', () => {
     }
   }
   function sorted(...relations: Array<{ source: string; target: string }>) {
-    return relations.toSorted(compareRelations).map(r => r.source + ' -> ' + r.target)
+    return sort(relations, compareRelations).map(r => r.source + ' -> ' + r.target)
   }
 
   it('should sort by source and target', () => {

@@ -1,4 +1,4 @@
-import { ancestorsFqn, type Element, type Fqn, type ViewID } from '@likec4/core'
+import { ancestorsFqn, type Element, type Fqn, type ViewId } from '@likec4/core'
 import {
   ActionIcon,
   Box,
@@ -25,7 +25,7 @@ export const SelectElement = ({
   onSelect
 }: {
   subject: Element
-  viewId: ViewID
+  viewId: ViewId
   scope: 'global' | 'view'
   onSelect: (id: Fqn) => void
 }) => {

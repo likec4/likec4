@@ -93,7 +93,7 @@ export default function App() {
           renderIcon={IconRenderer}
           onNavigateTo={(to, event) => {
             setLastClickedNode()
-            extensionApi.goToViewSource(to)
+            extensionApi.locate({ view: to })
             extensionApi.navigateTo(to)
             changeViewId(to)
             event?.stopPropagation()
@@ -114,17 +114,9 @@ export default function App() {
           onChange={({ change }) => {
             extensionApi.change(view.id, change)
           }}
-          onOpenSourceView={() => {
+          onOpenSource={(params) => {
             setLastClickedNode()
-            extensionApi.goToViewSource(view.id)
-          }}
-          onOpenSourceElement={fqn => {
-            setLastClickedNode()
-            extensionApi.goToElement(fqn)
-          }}
-          onOpenSourceRelation={id => {
-            setLastClickedNode()
-            extensionApi.goToRelation(id)
+            extensionApi.locate(params)
           }}
         />
       </div>

@@ -1,0 +1,48 @@
+// Define deployment node kinds
+specification {
+  deploymentNode node
+  deploymentNode zone
+  deploymentNode environment {
+    style {
+      color gray
+    }
+  }
+}
+
+// Deployment model
+deployment {
+
+  node customerNode {
+    instanceOf customer
+  }
+
+  environment prod 'Production' {
+    eu = zone 'EU' {
+      zone zone1 {
+        node server1 {
+          instanceOf cloud.ui.dashboard
+          instanceOf cloud.ui.supportPanel
+        }
+        node server2 {
+          api = instanceOf cloud.next.backend
+          instanceOf cloud.next.graphql
+          instanceOf cloud.next.events
+        }
+      }
+    }
+  }
+}
+
+views {
+
+  deployment view view_deployment_57 {
+    title 'Untited'
+    
+    include
+      *,
+      prod.zone1.server1._,
+      prod.zone1.server2._
+    
+  }
+
+}

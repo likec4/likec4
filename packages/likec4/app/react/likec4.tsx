@@ -6,12 +6,13 @@ import {
   type LikeC4ViewProps as BaseLikeC4ViewProps,
   ReactLikeC4 as GenericReactLikeC4,
   type ReactLikeC4Props as GenericReactLikeC4Props,
-  useColorScheme
+  useColorScheme,
+  ViewNotFound
 } from 'likec4/react'
 import { memo, type PropsWithChildren, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
 import type { DiagramView, LikeC4ElementKind, LikeC4Tag, LikeC4ViewId } from 'virtual:likec4/model'
-import { likec4model as likeC4Model, LikeC4Views, useLikeC4ModelAtom as useLikeC4Model } from 'virtual:likec4/model'
+import { likeC4Model, LikeC4Views, useLikeC4Model } from 'virtual:likec4/model'
 
 type IconRendererProps = {
   node: {
@@ -28,10 +29,10 @@ export function RenderIcon({ node }: IconRendererProps) {
 
 export { likeC4Model, LikeC4Views, useLikeC4Model }
 
-export const useLikeC4ViewModel = (viewId: LikeC4ViewId): LikeC4Model.Layouted.ViewModel =>
-  useLikeC4Model().view(viewId)
+export const useLikeC4ViewModel = (viewId: LikeC4ViewId): LikeC4Model.View => useLikeC4Model().view(viewId as any)
 
-export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView => useLikeC4Model().view(viewId).view as any
+export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView =>
+  useLikeC4Model().view(viewId as any).$view as DiagramView
 
 export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 
@@ -42,24 +43,6 @@ export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
     && value in LikeC4Views
   )
 }
-
-const NotFound = ({ viewId }: { viewId: string }) => (
-  <div
-    style={{
-      margin: '1rem 0'
-    }}>
-    <div
-      style={{
-        margin: '0 auto',
-        display: 'inline-block',
-        padding: '2rem',
-        background: 'rgba(250,82,82,.15)',
-        color: '#ffa8a8'
-      }}>
-      View <code>{viewId}</code> not found
-    </div>
-  </div>
-)
 
 export function LikeC4ModelProvider({ children }: PropsWithChildren) {
   const likeC4Model = useLikeC4Model()
@@ -104,11 +87,11 @@ const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View
   const colorScheme = useColorScheme(explicitColorScheme)
 
   if (!view) {
-    return <NotFound viewId={viewId} />
+    return <ViewNotFound viewId={viewId} />
   }
 
   if (browserViewId && !browserView) {
-    return <NotFound viewId={browserViewId} />
+    return <ViewNotFound viewId={browserViewId} />
   }
 
   if (interactive && enableFocusMode) {
@@ -169,7 +152,7 @@ export type ReactLikeC4Props =
 const ReactLikeC4Memo = /* @__PURE__ */ memo<ReactLikeC4Props>(function ReactLikeC4({ viewId, ...props }) {
   const view = LikeC4Views[viewId]
   if (!view) {
-    return <NotFound viewId={viewId} />
+    return <ViewNotFound viewId={viewId} />
   }
   return (
     <LikeC4ModelProvider>

@@ -29,6 +29,8 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./compute-view": "./src/compute-view/index.ts",
+    "./model": "./src/model/index.ts",
     "./types": "./src/types/index.ts"
   },
   "publishConfig": {
@@ -36,24 +38,20 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": {
-          "types": "./dist/index.d.mts",
-          "default": "./dist/index.mjs"
-        },
-        "require": {
-          "types": "./dist/index.d.cts",
-          "default": "./dist/index.cjs"
-        }
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "./compute-view": {
+        "types": "./dist/compute-view/index.d.mts",
+        "default": "./dist/compute-view/index.mjs"
+      },
+      "./model": {
+        "types": "./dist/model/index.d.mts",
+        "default": "./dist/model/index.mjs"
       },
       "./types": {
-        "import": {
-          "types": "./dist/types/index.d.mts",
-          "default": "./dist/types/index.mjs"
-        },
-        "require": {
-          "types": "./dist/types/index.d.cts",
-          "default": "./dist/types/index.cjs"
-        }
+        "types": "./dist/types/index.d.mts",
+        "default": "./dist/types/index.mjs"
       }
     }
   },
@@ -62,17 +60,23 @@
     "type-fest": "4.28.1"
   },
   "devDependencies": {
+    "@dagrejs/dagre": "^1.1.4",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "7.14.2",
     "@types/natural-compare-lite": "^1.4.2",
+    "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
-    "execa": "^9.3.1",
+    "graphology": "^0.25.4",
+    "graphology-dag": "^0.4.1",
+    "graphology-types": "^0.24.8",
+    "mnemonist": "^0.39.8",
     "natural-compare-lite": "^1.4.0",
+    "object-hash": "^3.0.0",
     "remeda": "^2.17.4",
     "turbo": "^2.3.2",
     "typescript": "^5.7.2",
     "unbuild": "^3.0.0-rc.11",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.8"
   },
   "packageManager": "yarn@4.5.3"
 }

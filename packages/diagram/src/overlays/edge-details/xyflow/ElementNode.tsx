@@ -29,7 +29,7 @@ function selector(s: DiagramState) {
     currentViewId: s.view.id,
     enableRelationshipBrowser: s.enableRelationshipBrowser,
     onNavigateTo: s.onNavigateTo,
-    onOpenSource: s.onOpenSourceElement
+    onOpenSource: s.onOpenSource
   }
 }
 
@@ -119,7 +119,9 @@ export function ElementNode({
             <Action
               onClick={(event) => {
                 event.stopPropagation()
-                onOpenSource(data.fqn)
+                onOpenSource({
+                  element: data.fqn
+                })
               }}>
               <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
             </Action>

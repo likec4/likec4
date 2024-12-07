@@ -49,7 +49,19 @@ globalStyle(`.react-flow__node-compound:has(${dimmed})`, {
   willChange: 'opacity, filter'
 })
 
+globalStyle(`:where([data-mantine-color-scheme='dark'] .likec4-compound-transparent)`, {
+  vars: {
+    ['--_compound-border-color']: `color-mix(in srgb, ${vars.compound.titleColor} 25%, ${vars.element.stroke})`
+  }
+})
+globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
+  vars: {
+    ['--_compound-title-color']: vars.element.stroke
+  }
+})
+
 export const varOpacity = createVar('opacity')
+export const varBorderColor = createVar('border-color')
 export const varBorderRadius = createVar('border-transparency')
 export const varBorderTransparency = createVar('border-transparency')
 
@@ -125,8 +137,9 @@ export const transparent = style({
   borderStyle: 'dashed',
   borderWidth: 3,
   boxShadow: 'none',
-  borderColor: `color-mix(in srgb , ${vars.element.stroke}, transparent ${fallbackVar(varBorderTransparency, '10%')})`,
+  borderColor: `color-mix(in srgb , ${varBorderColor}, transparent ${fallbackVar(varBorderTransparency, '5%')})`,
   vars: {
+    [varBorderColor]: `var(--_compound-border-color,${vars.element.stroke})`,
     [opacityDeltaOnHover]: '0'
   },
   ':before': {
@@ -162,12 +175,6 @@ export const title = style({
   // paddingBottom: 6,
   // minHeight: 20,
   mixBlendMode: 'screen'
-})
-
-globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
-  vars: {
-    ['--_compound-title-color']: vars.element.stroke
-  }
 })
 
 const indicatorKeyframes = keyframes({

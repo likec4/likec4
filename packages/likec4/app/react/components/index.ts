@@ -20,6 +20,8 @@ export {
   useLikeC4Views
 } from '@likec4/diagram'
 
+export { ViewNotFound } from './ViewNotFound'
+
 export { createLikeC4Model, LikeC4Model } from './createLikeC4Model'
 
 export type * from './types'

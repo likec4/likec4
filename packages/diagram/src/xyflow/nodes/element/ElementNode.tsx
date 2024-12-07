@@ -306,7 +306,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           onOpenRelationships={enableRelationshipBrowser && onOpenRelationships}
           {...isInteractive && animateHandlers}
         />
-        {enableElementDetails && (
+        {enableElementDetails && !!element.modelRef && (
           <Tooltip
             fz="xs"
             color="dark"

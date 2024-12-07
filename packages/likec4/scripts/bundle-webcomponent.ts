@@ -12,7 +12,7 @@ import { amIExecuted } from './_utils'
 
 export async function buildWebcomponentBundle(_isDev = false) {
   const root = resolve('app')
-  const outDir = resolve('dist/__app__/webcomponent')
+  const outDir = resolve('__app__/webcomponent')
   consola.start(`Bundling Webcomponent...`)
   consola.info(`root: ${root}`)
   consola.info(`outDir: ${outDir}`)

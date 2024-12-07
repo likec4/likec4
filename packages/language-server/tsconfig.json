@@ -5,10 +5,10 @@
     "noEmit": true,
     "module": "esnext",
     "lib": [
-      "esnext",
-      "dom",
+      "ES2022",
       "WebWorker"
     ],
+    "target": "ES2022",
     "noUnusedParameters": false
   },
   "include": [

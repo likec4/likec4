@@ -1,3 +1,4 @@
+export * from './deployments'
 export * from './element-with'
 export * from './expanded-element'
 export * from './incoming'

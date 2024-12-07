@@ -1,14 +1,14 @@
 import { type ThemeColor } from '@likec4/core'
 import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { IconId, IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo, useCallback, useState } from 'react'
-import { clamp, isNumber } from 'remeda'
+import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
 import { stopPropagation } from '../../utils'
@@ -123,9 +123,10 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     min: 0,
     max: 1
   })
-  const borderTransparency = clamp(50 - opacity * 50, {
+  const MAX_TRANSPARENCY = 40
+  const borderTransparency = clamp(MAX_TRANSPARENCY - opacity * MAX_TRANSPARENCY, {
     min: 0,
-    max: 50
+    max: MAX_TRANSPARENCY
   })
 
   const {
@@ -138,6 +139,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isInteractive,
     isNavigable,
     renderIcon,
+    isInActiveOverlay,
     enableElementDetails
   } = useDiagramState(s => ({
     viewId: s.view.id,
@@ -151,6 +153,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     // If this is a view group, we don't want to show the navigate button
     isNavigable: isNotViewGroup && !!s.onNavigateTo && !!element.navigateTo,
     renderIcon: s.renderIcon,
+    isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     enableElementDetails: isNotViewGroup && s.enableElementDetails
   }))
   const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
@@ -160,6 +163,9 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
 
   let animate: keyof typeof VariantsRoot
   switch (true) {
+    case isInActiveOverlay:
+      animate = 'idle'
+      break
     case dragging && selected:
       animate = 'selected'
       break
@@ -186,7 +192,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     openOverlay({ elementDetails: element.id })
-  }, [openOverlay, element.id])
+  }, [openOverlay, element])
 
   const elementIcon = ElementIcon({
     element,
@@ -206,6 +212,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
       )}
       <Box
         component={m.div}
+        variants={VariantsRoot}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
         className={css.containerForFramer}>
@@ -213,7 +220,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           component={m.div}
           variants={VariantsRoot}
           initial={false}
-          animate={(isHovered && !dragging) ? (animateVariants ?? animate) : animate}
+          animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
           className={clsx(
             css.container,
             'likec4-compound-node',
@@ -278,7 +285,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                 className={css.title}>
                 {element.title}
               </Text>
-              {enableElementDetails && (
+              {enableElementDetails && !!element.modelRef && (
                 <Tooltip
                   fz="xs"
                   color="dark"

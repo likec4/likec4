@@ -1,4 +1,4 @@
-import { type ElementKind, type ElementNotation as ElementNotationData } from '@likec4/core'
+import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
 import {
   ActionIcon,
   Badge,
@@ -29,13 +29,15 @@ import { vars } from '../../theme-vars'
 import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
 import * as css from './NotationPanel.css'
 
+type NodeKind = ComputedNode['kind']
+
 const ElementNotation = ({ value }: { value: ElementNotationData }) => {
   const {
     title,
     color = 'primary',
     shape = 'rectangle'
   } = value
-  const [onlyKind, setOnlyKind] = useState<ElementKind | null>(null)
+  const [onlyKind, setOnlyKind] = useState<NodeKind | null>(null)
   const diagramStore = useDiagramStoreApi()
   const w = 300
   const h = 200

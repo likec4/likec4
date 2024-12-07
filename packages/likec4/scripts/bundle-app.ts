@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react-swc'
 import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { $ } from 'execa'
-import { copyFile, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
@@ -18,7 +18,7 @@ export async function bundleApp() {
   await $`tsr generate`
 
   const root = resolve(cwd, 'app')
-  const outDir = resolve(cwd, 'dist/__app__/src')
+  const outDir = resolve(cwd, '__app__/src')
   consola.start(`Bundling App...`)
   consola.info(`root: ${root}`)
 
@@ -137,16 +137,17 @@ export async function bundleApp() {
     ]
   })
 
-  consola.info(`copy app files to dist/__app__`)
+  consola.info(`copy app files to __app__`)
   let indexHtml = await readFile('app/index.html', 'utf-8')
   indexHtml = indexHtml.replace('%VITE_HTML_DEV_INJECT%', '')
-  await writeFile('dist/__app__/index.html', indexHtml)
-
+  await writeFile('__app__/index.html', indexHtml)
+  await mkdir('__app__/react', { recursive: true })
   await Promise.all([
-    copyFile('app/robots.txt', 'dist/__app__/robots.txt'),
-    copyFile('app/favicon.ico', 'dist/__app__/favicon.ico'),
-    copyFile('app/favicon.svg', 'dist/__app__/favicon.svg'),
-    copyFile('app/src/const.js', 'dist/__app__/src/const.js')
+    copyFile('app/robots.txt', '__app__/robots.txt'),
+    copyFile('app/favicon.ico', '__app__/favicon.ico'),
+    copyFile('app/favicon.svg', '__app__/favicon.svg'),
+    copyFile('app/src/const.js', '__app__/src/const.js'),
+    copyFile('app/react/likec4.tsx', '__app__/react/likec4.tsx')
   ])
 }
 

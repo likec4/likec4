@@ -6,6 +6,7 @@ entry LikeC4Grammar:
     models+=Model  |
     views+=ModelViews |
     globals+=Globals |
+    deployments+=ModelDeployments  |
     likec4lib+=LikeC4Lib
   )*
 ;
@@ -18,22 +19,15 @@ LikeC4Lib:
     '}'
   '}';
 
-LibIcon:
-  name=IconId;
+LibIcon: name=IconId;
 
 // Specification -------------------------------------
 
-ElementKind:
-  name=Id;
-
-Tag:
-  name=Id;
-
-RelationshipKind:
-  name=Id;
-
-CustomColor:
-  name=CustomColorId;
+ElementKind: name=Id;
+Tag: name=Id;
+RelationshipKind: name=Id;
+CustomColor: name=CustomColorId;
+DeploymentNodeKind: name=Id;
 
 SpecificationRule:
   name='specification' '{'
@@ -41,7 +35,8 @@ SpecificationRule:
       elements+=SpecificationElementKind |
       tags+=SpecificationTag |
       relationships+=SpecificationRelationshipKind |
-      colors+=SpecificationColor
+      colors+=SpecificationColor |
+      deploymentNodes+=SpecificationDeploymentNodeKind
     )*
   '}';
 
@@ -55,6 +50,14 @@ SpecificationElementKind:
 
 SpecificationElementStringProperty:
   key=('technology' | 'notation') ':'? value=String ';'?;
+
+SpecificationDeploymentNodeKind:
+  'deploymentNode' kind=DeploymentNodeKind ('{'
+    props+=(
+      SpecificationElementStringProperty |
+      ElementStyleProperty
+    )*
+  '}')?;
 
 SpecificationTag:
   'tag' tag=Tag;
@@ -201,9 +204,9 @@ ModelViews:
     )*
   '}';
 
-type LikeC4View = ElementView | DynamicView;
+type LikeC4View = ElementView | DynamicView | DeploymentView;
 LikeC4ViewRule returns LikeC4View:
-  ElementView | DynamicView;
+  ElementView | DynamicView | DeploymentView;
 
 ElementView:
   'view' name=Id? (
@@ -410,7 +413,7 @@ WhereRelationNegation:
 
 WhereRelation:
   {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind]?
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]?
 ;
 
 type WhereTagEqual = WhereElementTag | WhereRelationTag;
@@ -436,7 +439,7 @@ DirectedRelationExpressions infers RelationExpression:
 
 OutgoingRelationExpression:
   from=ElementExpression
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId])
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
 ;
 
 // Comma-separated list of ElementExpressions
@@ -509,6 +512,136 @@ NavigateToProperty:
 RelationNavigateToProperty:
   key='navigateTo' value=DynamicViewRef;
 
+// Deployment -------------------------------------
+
+ModelDeployments:
+  name='deployment' '{'
+    elements+=(
+      DeploymentNode |
+      DeploymentRelation
+    )*
+  '}';
+
+DeploymentNode:
+  (
+    kind=[DeploymentNodeKind:Id] name=Id |
+    name=Id Eq kind=[DeploymentNodeKind:Id]
+  )
+  title=String?
+  body=DeploymentNodeBody?
+;
+
+DeploymentNodeBody: '{'
+  tags=Tags?
+  props+=ElementProperty*
+  elements+=(
+    DeployedInstance |
+    DeploymentRelation |
+    DeploymentNode
+  )*
+'}';
+
+DeployedInstance:
+  (name=Id Eq)?
+  ('instanceOf' | 'instance' 'of')
+  element=ElementRef
+  title=String?
+  body=DeployedInstanceBody?
+  ';'?
+;
+
+DeployedInstanceBody: '{'
+  tags=Tags?
+  props+=ElementProperty*
+'}';
+
+// Rules:
+// - DeployedInstance can be referenced from DeploymentNode
+// - Element can be referenced from DeployedInstance
+// Forced by scope computation
+type DeploymentReferenceable = DeploymentNode | DeployedInstance | Element;
+DeploymentRef:
+  value=[DeploymentReferenceable:Id] ({infer DeploymentRef.parent=current} StickyDot value=[DeploymentReferenceable:Id])*;
+
+DeploymentRelation:
+  source=DeploymentRef
+  ('->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
+  target=DeploymentRef
+  title=String?
+;
+
+DeploymentView:
+  'deployment' 'view' name=Id body=DeploymentViewBody?
+;
+
+DeploymentViewBody: '{'
+  tags=Tags?
+  props+=ViewProperty*
+  rules+=DeploymentViewRule*
+'}';
+
+DeploymentViewRule:
+  DeploymentViewRulePredicate |
+  DeploymentViewRuleStyle |
+  ViewRuleAutoLayout
+;
+
+DeploymentViewRuleStyle:
+  'style' target=DeploymentExpressionIterator '{'
+    props+=(
+      StyleProperty |
+      NotationProperty
+    )*
+  '}';
+
+
+DeploymentViewRulePredicate:
+  (isInclude?='include' | 'exclude')
+  expr=DeploymentViewRulePredicateExpression
+;
+
+DeploymentViewRulePredicateExpression:
+  value=DeploymentExpression ({infer DeploymentViewRulePredicateExpression.prev=current} ',' (value=DeploymentExpression)?)*
+;
+
+DeploymentExpression:
+  DeploymentRelationExpression |
+  DeploymentElementExpression
+;
+
+DeploymentElementExpression:
+  {infer WildcardExpression} isWildcard?='*' |
+  DeploymentRefExpression
+;
+
+DeploymentRefExpression:
+  ref=DeploymentRef selector=(DotUnderscore | DotWildcard)?
+;
+
+DeploymentRelationExpression:
+  InOutDeploymentRelationExpression |
+  DirectedDeploymentRelationExpression
+;
+
+InOutDeploymentRelationExpression infers DeploymentRelationExpression:
+  IncomingDeploymentRelationExpression ({infer InOutDeploymentRelationExpression.inout=current} '->')?
+;
+
+IncomingDeploymentRelationExpression:
+  '->' to=DeploymentElementExpression;
+
+DirectedDeploymentRelationExpression infers DeploymentRelationExpression:
+  OutgoingDeploymentRelationExpression ({infer DirectedDeploymentRelationExpression.source=current} target=DeploymentElementExpression)?
+;
+
+OutgoingDeploymentRelationExpression:
+  from=DeploymentElementExpression
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
+;
+
+DeploymentExpressionIterator:
+  value=DeploymentElementExpression ({infer DeploymentExpressionIterator.prev=current} ',' (value=DeploymentElementExpression)?)*
+;
 // Global -------------------------------------
 
 Globals:
@@ -544,6 +677,8 @@ GlobalStyleGroup:
   'styleGroup' id=GlobalStyleId '{'
     styles+=ViewRuleStyle*
   '}';
+
+type FqnReferenceable = DeploymentReferenceable | Element | ExtendElement;
 
 // Common properties -------------------------------------
 
@@ -635,7 +770,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group' | 'node' | 'deployment';
 
 fragment EqOperator:
   (
@@ -674,7 +809,7 @@ terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
-terminal DotUnderscore: /\b\._/;
+terminal DotUnderscore: /\b\._(?![_a-zA-Z])/;
 terminal DotWildcard: /\b\.\*{1,2}/;
 terminal Hash: '#';
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type ConsolaReporter, LogLevels, rootLogger as root } from '@likec4/log'
 import { isError } from 'remeda'
 import type { Connection } from 'vscode-languageserver'

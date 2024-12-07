@@ -12,9 +12,6 @@
       "dependsOn": [
         "^topo"
       ],
-      "inputs": [
-        "src/**"
-      ],
       "outputs": []
     },
     "generate": {

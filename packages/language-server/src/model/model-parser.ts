@@ -1,13 +1,16 @@
-import { type HexColorLiteral, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type * as c4 from '@likec4/core'
+import { type HexColorLiteral, invariant, isNonEmptyArray, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
-import { filter, first, flatMap, isDefined, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, flatMap, isArray, isDefined, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Writable } from 'type-fest'
 import type {
   ChecksFromDiagnostics,
   FqnIndexedDocument,
+  ParsedAstDeployment,
+  ParsedAstDeploymentRelation,
+  ParsedAstDeploymentView,
   ParsedAstDynamicView,
   ParsedAstElement,
   ParsedAstElementView,
@@ -30,11 +33,12 @@ import {
   toRelationshipStyleExcludeDefaults,
   ViewOps
 } from '../ast'
-import { elementRef, getFqnElementRef } from '../elementRef'
-import { isGlobalStyle, isGlobalStyleGroup, type NotationProperty } from '../generated/ast'
-import { logError, logger, logWarnError } from '../logger'
+import { type NotationProperty } from '../generated/ast'
+import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
+import { instanceRef } from '../utils/deploymentRef'
+import { elementRef, getFqnElementRef } from '../utils/elementRef'
 import { deserializeFromComment, hasManualLayout } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 import { parseWhereClause } from './model-parser-where'
@@ -60,21 +64,13 @@ export class LikeC4ModelParser {
     logger.debug(`[ModelParser] Created`)
   }
 
-  parse(doc: LangiumDocument | LangiumDocument[]): ParsedLikeC4LangiumDocument[] {
-    const docs = Array.isArray(doc) ? doc : [doc]
-    const result = [] as ParsedLikeC4LangiumDocument[]
-    for (const doc of docs) {
-      if (!isFqnIndexedDocument(doc)) {
-        logger.warn(`Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
-        continue
-      }
-      try {
-        result.push(this.parseLikeC4Document(doc))
-      } catch (cause) {
-        logError(new Error(`Error parsing document ${doc.uri.toString()}`, { cause }))
-      }
+  parse(doc: LangiumDocument): ParsedLikeC4LangiumDocument {
+    invariant(isFqnIndexedDocument(doc), `Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
+    try {
+      return this.parseLikeC4Document(doc)
+    } catch (cause) {
+      throw new Error(`Error parsing document ${doc.uri.toString()}`, { cause })
     }
-    return result
   }
 
   protected parseLikeC4Document(_doc: FqnIndexedDocument) {
@@ -83,14 +79,21 @@ export class LikeC4ModelParser {
     this.parseSpecification(doc, isValid)
     this.parseModel(doc, isValid)
     this.parseGlobal(doc, isValid)
+    this.parseDeployment(doc, isValid)
     this.parseViews(doc, isValid)
     return doc
   }
 
   private parseSpecification(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const { parseResult, c4Specification } = doc
+    const {
+      parseResult: {
+        value: {
+          specifications
+        }
+      },
+      c4Specification
+    } = doc
 
-    const specifications = parseResult.value.specifications.filter(isValid)
     const element_specs = specifications.flatMap(s => s.elements.filter(isValid))
     for (const { kind, props } of element_specs) {
       try {
@@ -103,9 +106,10 @@ export class LikeC4ModelParser {
           continue
         }
         const style = props.find(ast.isElementStyleProperty)
-        const bodyProps = mapToObj(
-          props.filter(ast.isSpecificationElementStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, removeIndent(p.value)] as const
+        const bodyProps = pipe(
+          props.filter(ast.isSpecificationElementStringProperty) ?? [],
+          filter(p => isValid(p) && isNonNullish(p.value)),
+          mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string])
         )
         c4Specification.elements[kindName] = {
           ...bodyProps,
@@ -129,13 +133,14 @@ export class LikeC4ModelParser {
           logger.warn(`Relationship kind "${kindName}" is already defined`)
           continue
         }
-        const bodyProps = mapToObj(
-          props.filter(ast.isSpecificationRelationshipStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-          p => [p.key, removeIndent(p.value)]
+        const bodyProps = pipe(
+          props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
+          filter(p => isValid(p) && isNonNullish(p.value)),
+          mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string])
         )
         c4Specification.relationships[kindName] = {
           ...bodyProps,
-          ...toRelationshipStyleExcludeDefaults(props)
+          ...toRelationshipStyleExcludeDefaults(props, isValid)
         }
       } catch (e) {
         logWarnError(e)
@@ -147,6 +152,15 @@ export class LikeC4ModelParser {
       const tag = tagSpec.tag.name as c4.Tag
       if (isTruthy(tag)) {
         c4Specification.tags.add(tag)
+      }
+    }
+
+    const deploymentNodes_specs = specifications.flatMap(s => s.deploymentNodes.filter(isValid))
+    for (const deploymentNode of deploymentNodes_specs) {
+      try {
+        Object.assign(c4Specification.deployments, this.parseSpecificationDeploymentNodeKind(deploymentNode, isValid))
+      } catch (e) {
+        logWarnError(e)
       }
     }
 
@@ -168,6 +182,31 @@ export class LikeC4ModelParser {
     }
   }
 
+  private parseSpecificationDeploymentNodeKind(
+    { kind, props }: ast.SpecificationDeploymentNodeKind,
+    isValid: IsValidFn
+  ): { [key: c4.DeploymentNodeKind]: c4.DeploymentNodeKindSpecification } {
+    const kindName = kind.name as c4.DeploymentNodeKind
+    if (!isTruthy(kindName)) {
+      throw new Error('DeploymentNodeKind name is not resolved')
+    }
+
+    const style = props.find(ast.isElementStyleProperty)
+    const bodyProps = pipe(
+      props.filter(ast.isSpecificationElementStringProperty) ?? [],
+      filter(p => isValid(p) && isNonNullish(p.value)),
+      mapToObj(p => [p.key, removeIndent(p.value)] satisfies [string, string])
+    )
+    return {
+      [kindName]: {
+        ...bodyProps,
+        style: {
+          ...toElementStyle(style?.props, isValid)
+        }
+      }
+    }
+  }
+
   private parseModel(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
     for (const el of streamModel(doc, isValid)) {
       if (ast.isElement(el)) {
@@ -180,7 +219,7 @@ export class LikeC4ModelParser {
       }
       if (ast.isRelation(el)) {
         try {
-          doc.c4Relations.push(this.parseRelation(el))
+          doc.c4Relations.push(this.parseRelation(el, isValid))
         } catch (e) {
           logWarnError(e)
         }
@@ -192,7 +231,7 @@ export class LikeC4ModelParser {
 
   private parseElement(astNode: ast.Element, isValid: IsValidFn): ParsedAstElement {
     const id = this.resolveFqn(astNode)
-    const kind = astNode.kind.$refText as c4.ElementKind
+    const kind = nonNullable(astNode.kind.ref, 'Element kind is not resolved').name as c4.ElementKind
     const tags = this.convertTags(astNode.body)
     const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
     const style = toElementStyle(stylePropsAst, isValid)
@@ -201,9 +240,11 @@ export class LikeC4ModelParser {
 
     let [title, description, technology] = astNode.props ?? []
 
-    const bodyProps = mapToObj(
-      astNode.body?.props.filter(ast.isElementStringProperty) ?? [],
-      p => [p.key, p.value || undefined]
+    const bodyProps = pipe(
+      astNode.body?.props ?? [],
+      filter(isValid),
+      filter(ast.isElementStringProperty),
+      mapToObj(p => [p.key, p.value || undefined])
     )
 
     title = toSingleLine(title ?? bodyProps.title)
@@ -214,7 +255,7 @@ export class LikeC4ModelParser {
 
     // Property has higher priority than from style
     const iconProp = astNode.body?.props.find(ast.isIconProperty)
-    if (iconProp) {
+    if (iconProp && isValid(iconProp)) {
       const value = iconProp.libicon?.ref?.name ?? iconProp.value
       if (isTruthy(value)) {
         style.icon = value as c4.IconUrl
@@ -235,7 +276,7 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseRelation(astNode: ast.Relation): ParsedAstRelation {
+  private parseRelation(astNode: ast.Relation, isValid: IsValidFn): ParsedAstRelation {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
@@ -260,14 +301,14 @@ export class LikeC4ModelParser {
 
     const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
     const description = removeIndent(bodyProps.description)
-    const technology = removeIndent(astNode.technology) ?? toSingleLine(bodyProps.technology)
+    const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
 
     const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
     const id = stringHash(
       astPath,
       source,
       target
-    ) as c4.RelationID
+    ) as c4.RelationId
     return {
       id,
       astPath,
@@ -280,8 +321,8 @@ export class LikeC4ModelParser {
       ...(kind && { kind }),
       ...(tags && { tags }),
       ...(isNonEmptyArray(links) && { links }),
-      ...toRelationshipStyleExcludeDefaults(styleProp?.props),
-      ...(navigateTo && { navigateTo: navigateTo as c4.ViewID })
+      ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
+      ...(navigateTo && { navigateTo: navigateTo as c4.ViewId })
     }
   }
 
@@ -381,11 +422,10 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
-    const viewBlocks = doc.parseResult.value.views.filter(v => isValid(v))
-    for (const viewBlock of viewBlocks) {
+    for (const viewBlock of doc.parseResult.value.views) {
       const localStyles = viewBlock.styles.flatMap(s => {
         try {
-          return this.parseViewRuleStyleOrGlobalRef(s, isValid)
+          return isValid(s) ? this.parseViewRuleStyleOrGlobalRef(s, isValid) : []
         } catch (e) {
           logWarnError(e)
           return []
@@ -397,11 +437,19 @@ export class LikeC4ModelParser {
           if (!isValid(view)) {
             continue
           }
-          doc.c4Views.push(
-            ast.isElementView(view)
-              ? this.parseElementView(view, localStyles, isValid)
-              : this.parseDynamicElementView(view, localStyles, isValid)
-          )
+          switch (true) {
+            case ast.isElementView(view):
+              doc.c4Views.push(this.parseElementView(view, localStyles, isValid))
+              break
+            case ast.isDynamicView(view):
+              doc.c4Views.push(this.parseDynamicElementView(view, localStyles, isValid))
+              break
+            case ast.isDeploymentView(view):
+              doc.c4Views.push(this.parseDeploymentView(view, isValid))
+              break
+            default:
+              nonexhaustive(view)
+          }
         } catch (e) {
           logWarnError(e)
         }
@@ -412,16 +460,20 @@ export class LikeC4ModelParser {
   // TODO validate view rules
   private parseViewRulePredicate(astNode: ast.ViewRulePredicate, _isValid: IsValidFn): c4.ViewRulePredicate {
     const exprs = [] as c4.Expression[]
-    let predicate: ast.Predicates | undefined = astNode.predicates
+    let predicate = astNode.predicates
     while (predicate) {
+      const { value, prev } = predicate
       try {
-        if (isTruthy(predicate.value) && _isValid(predicate.value as any)) {
-          exprs.unshift(this.parsePredicate(predicate.value, _isValid))
+        if (isTruthy(value) && _isValid(value as any)) {
+          exprs.unshift(this.parsePredicate(value, _isValid))
         }
       } catch (e) {
         logWarnError(e)
       }
-      predicate = predicate.prev
+      if (!prev) {
+        break
+      }
+      predicate = prev
     }
     return ast.isIncludePredicate(astNode) ? { include: exprs } : { exclude: exprs }
   }
@@ -441,7 +493,9 @@ export class LikeC4ModelParser {
     let iter: ast.ElementExpressionsIterator['prev'] = astNode
     while (iter) {
       try {
-        exprs.unshift(this.parseElementExpr(iter.value))
+        if (iter.value) {
+          exprs.unshift(this.parseElementExpr(iter.value))
+        }
       } catch (e) {
         logWarnError(e)
       }
@@ -524,10 +578,13 @@ export class LikeC4ModelParser {
     const props = astNode.custom?.props ?? []
     return props.reduce(
       (acc, prop) => {
+        if (!_isValid(prop)) {
+          return acc
+        }
         if (ast.isNavigateToProperty(prop)) {
           const viewId = prop.value.view.$refText
           if (isTruthy(viewId)) {
-            acc.custom.navigateTo = viewId as c4.ViewID
+            acc.custom.navigateTo = viewId as c4.ViewId
           }
           return acc
         }
@@ -665,7 +722,7 @@ export class LikeC4ModelParser {
         if (ast.isRelationNavigateToProperty(prop)) {
           const viewId = prop.value.view.ref?.name
           if (isTruthy(viewId)) {
-            acc.customRelation.navigateTo = viewId as c4.ViewID
+            acc.customRelation.navigateTo = viewId as c4.ViewId
           }
           return acc
         }
@@ -804,7 +861,7 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseViewManualLaout(node: ast.DynamicView | ast.ElementView): c4.ViewManualLayout | undefined {
+  private parseViewManualLayout(node: ast.LikeC4View): c4.ViewManualLayout | undefined {
     const commentNode = CstUtils.findCommentNode(node.$cstNode, ['BLOCK_COMMENT'])
     if (!commentNode || !hasManualLayout(commentNode.text)) {
       return undefined
@@ -855,46 +912,52 @@ export class LikeC4ModelParser {
         isBackward: true
       }
     }
-    if (Array.isArray(node.custom?.props)) {
-      for (const prop of node.custom.props) {
-        try {
-          if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop) || ast.isNotesProperty(prop)) {
+    if (!isArray(node.custom?.props)) {
+      return step
+    }
+    for (const prop of node.custom.props) {
+      try {
+        switch (true) {
+          case ast.isRelationNavigateToProperty(prop): {
+            const viewId = prop.value.view.ref?.name
+            if (isTruthy(viewId)) {
+              step.navigateTo = viewId as c4.ViewId
+            }
+            break
+          }
+          case ast.isRelationStringProperty(prop):
+          case ast.isNotationProperty(prop):
+          case ast.isNotesProperty(prop): {
             if (isDefined(prop.value)) {
               step[prop.key] = removeIndent(prop.value) ?? ''
             }
-            continue
+            break
           }
-          if (ast.isArrowProperty(prop)) {
+          case ast.isArrowProperty(prop): {
             if (isDefined(prop.value)) {
               step[prop.key] = prop.value
             }
-            continue
+            break
           }
-          if (ast.isColorProperty(prop)) {
+          case ast.isColorProperty(prop): {
             const value = toColor(prop)
             if (isDefined(value)) {
               step[prop.key] = value
             }
-            continue
+            break
           }
-          if (ast.isLineProperty(prop)) {
+          case ast.isLineProperty(prop): {
             if (isDefined(prop.value)) {
               step[prop.key] = prop.value
             }
-            continue
+            break
           }
-          if (ast.isRelationNavigateToProperty(prop)) {
-            const viewId = prop.value.view.ref?.name
-            if (isTruthy(viewId)) {
-              step.navigateTo = viewId as c4.ViewID
-            }
-            continue
-          }
-          nonexhaustive(prop)
+          default:
+            nonexhaustive(prop)
         }
-        catch (e) {
-          logWarnError(e)
-        }
+      }
+      catch (e) {
+        logWarnError(e)
       }
     }
     return step
@@ -926,7 +989,7 @@ export class LikeC4ModelParser {
         getDocument(astNode).uri.toString(),
         astPath,
         viewOf ?? ''
-      ) as c4.ViewID
+      ) as c4.ViewId
     }
 
     const title = toSingleLine(body.props.find(p => p.key === 'title')?.value) ?? null
@@ -935,11 +998,11 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(body)
     const links = this.convertLinks(body)
 
-    const manualLayout = this.parseViewManualLaout(astNode)
+    const manualLayout = this.parseViewManualLayout(astNode)
 
     const view: ParsedAstElementView = {
       __: 'element',
-      id: id as c4.ViewID,
+      id: id as c4.ViewId,
       astPath,
       title,
       description,
@@ -965,7 +1028,7 @@ export class LikeC4ModelParser {
       const extendsView = astNode.extends.view.ref
       invariant(extendsView?.name, 'view extends is not resolved: ' + astNode.$cstNode?.text)
       return Object.assign(view, {
-        extends: extendsView.name as c4.ViewID
+        extends: extendsView.name as c4.ViewId
       })
     }
 
@@ -988,7 +1051,7 @@ export class LikeC4ModelParser {
       id = 'dynamic_' + stringHash(
         getDocument(astNode).uri.toString(),
         astPath
-      ) as c4.ViewID
+      ) as c4.ViewId
     }
 
     const title = toSingleLine(props.find(p => p.key === 'title')?.value) ?? null
@@ -997,13 +1060,13 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(body)
     const links = this.convertLinks(body)
 
-    ViewOps.writeId(astNode, id as c4.ViewID)
+    ViewOps.writeId(astNode, id as c4.ViewId)
 
-    const manualLayout = this.parseViewManualLaout(astNode)
+    const manualLayout = this.parseViewManualLayout(astNode)
 
     return {
       __: 'dynamic',
-      id: id as c4.ViewID,
+      id: id as c4.ViewId,
       astPath,
       title,
       description,
@@ -1062,7 +1125,7 @@ export class LikeC4ModelParser {
     let iter: ast.DynamicViewPredicateIterator | undefined = astRule.predicates
     while (iter) {
       try {
-        if (isValid(iter.value as any)) {
+        if (isNonNullish(iter.value) && isValid(iter.value as any)) {
           const c4expr = this.parseElementPredicate(iter.value, isValid)
           include.unshift(c4expr)
         }
@@ -1074,7 +1137,371 @@ export class LikeC4ModelParser {
     return { include }
   }
 
-  protected resolveFqn(node: ast.Element | ast.ExtendElement) {
+  private parseDeployment(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
+    type TraversePair = ast.DeployedInstance | ast.DeploymentNode | ast.DeploymentRelation
+    const traverseStack: TraversePair[] = doc.parseResult.value.deployments.flatMap(d => d.elements)
+
+    let next: TraversePair | undefined
+    while ((next = traverseStack.shift())) {
+      if (ast.isDeploymentRelation(next)) {
+        doc.c4DeploymentRelations.push(this.parseDeploymentRelation(next, isValid))
+        continue
+      }
+      if (!isValid(next)) {
+        continue
+      }
+      try {
+        switch (true) {
+          case ast.isDeployedInstance(next):
+            doc.c4Deployments.push(this.parseDeployedInstance(next, isValid))
+            break
+          case ast.isDeploymentNode(next): {
+            doc.c4Deployments.push(this.parseDeploymentNode(next, isValid))
+            if (next.body && next.body.elements.length > 0) {
+              traverseStack.push(...next.body.elements)
+            }
+            break
+          }
+          default:
+            nonexhaustive(next)
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+    }
+  }
+
+  public parseDeploymentNode(
+    astNode: ast.DeploymentNode,
+    isValid: IsValidFn
+  ): ParsedAstDeployment.Node {
+    const id = this.resolveFqn(astNode)
+    const kind = nonNullable(astNode.kind.ref, 'DeploymentKind not resolved').name as c4.DeploymentNodeKind
+    const tags = this.convertTags(astNode.body)
+    const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
+    const style = toElementStyle(stylePropsAst, isValid)
+    const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+
+    const bodyProps = pipe(
+      astNode.body?.props ?? [],
+      filter(isValid),
+      filter(ast.isElementStringProperty),
+      mapToObj(p => [p.key, p.value || undefined])
+    )
+
+    const title = toSingleLine(astNode.title ?? bodyProps.title)
+    const description = removeIndent(bodyProps.description)
+    const technology = toSingleLine(bodyProps.technology)
+
+    const links = this.convertLinks(astNode.body)
+
+    // Property has higher priority than from style
+    const iconProp = astNode.body?.props.find(ast.isIconProperty)
+    if (iconProp && isValid(iconProp)) {
+      const value = iconProp.libicon?.ref?.name ?? iconProp.value
+      if (isTruthy(value)) {
+        style.icon = value as c4.IconUrl
+      }
+    }
+
+    return {
+      id,
+      kind,
+      title: title ?? nameFromFqn(id),
+      ...(metadata && { metadata }),
+      ...(tags && { tags }),
+      ...(links && isNonEmptyArray(links) && { links }),
+      ...(isTruthy(technology) && { technology }),
+      ...(isTruthy(description) && { description }),
+      style
+    }
+  }
+
+  public parseDeployedInstance(
+    astNode: ast.DeployedInstance,
+    isValid: IsValidFn
+  ): ParsedAstDeployment.Instance {
+    const id = this.resolveFqn(astNode)
+    const element = this.resolveFqn(nonNullable(elementRef(astNode.element), 'DeployedInstance element not found'))
+
+    const tags = this.convertTags(astNode.body)
+    const stylePropsAst = astNode.body?.props.find(ast.isElementStyleProperty)?.props
+    const style = toElementStyle(stylePropsAst, isValid)
+    const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+
+    const bodyProps = pipe(
+      astNode.body?.props ?? [],
+      filter(isValid),
+      filter(ast.isElementStringProperty),
+      mapToObj(p => [p.key, p.value || undefined])
+    )
+
+    const title = toSingleLine(astNode.title ?? bodyProps.title)
+    const description = removeIndent(bodyProps.description)
+    const technology = toSingleLine(bodyProps.technology)
+
+    const links = this.convertLinks(astNode.body)
+
+    // Property has higher priority than from style
+    const iconProp = astNode.body?.props.find(ast.isIconProperty)
+    if (iconProp && isValid(iconProp)) {
+      const value = iconProp.libicon?.ref?.name ?? iconProp.value
+      if (isTruthy(value)) {
+        style.icon = value as c4.IconUrl
+      }
+    }
+
+    return {
+      id,
+      element,
+      ...(metadata && { metadata }),
+      ...(title && { title }),
+      ...(tags && { tags }),
+      ...(links && isNonEmptyArray(links) && { links }),
+      ...(isTruthy(technology) && { technology }),
+      ...(isTruthy(description) && { description }),
+      style
+    }
+  }
+
+  public parseDeploymentRelation(
+    astNode: ast.DeploymentRelation,
+    isValid: IsValidFn
+  ): ParsedAstDeploymentRelation {
+    const astPath = this.getAstNodePath(astNode)
+    const source = this.parseDeploymentDef(astNode.source)
+    const target = this.parseDeploymentDef(astNode.target)
+
+    const id = stringHash(
+      astPath,
+      astNode.source.$cstNode!.text,
+      astNode.target.$cstNode!.text
+    ) as c4.RelationId
+
+    const title = toSingleLine(astNode.title)
+
+    return {
+      id,
+      source,
+      target,
+      ...title && { title }
+    }
+  }
+
+  private parseDeploymentView(
+    astNode: ast.DeploymentView,
+    isValid: IsValidFn
+  ): ParsedAstDeploymentView {
+    const body = astNode.body
+    invariant(body, 'DynamicElementView body is not defined')
+    // only valid props
+    const props = body.props.filter(isValid)
+    const astPath = this.getAstNodePath(astNode)
+
+    let id = astNode.name
+    if (!id) {
+      id = 'deployment_' + stringHash(
+        getDocument(astNode).uri.toString(),
+        astPath
+      ) as c4.ViewId
+    }
+
+    const title = toSingleLine(props.find(p => p.key === 'title')?.value) ?? null
+    const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
+
+    const tags = this.convertTags(body)
+    const links = this.convertLinks(body)
+
+    ViewOps.writeId(astNode, id as c4.ViewId)
+
+    const manualLayout = this.parseViewManualLayout(astNode)
+
+    return {
+      __: 'deployment',
+      id: id as c4.ViewId,
+      astPath,
+      title,
+      description,
+      tags,
+      links: isNonEmptyArray(links) ? links : null,
+      rules: body.rules.flatMap(n => {
+        try {
+          return isValid(n) ? this.parseDeploymentViewRule(n, isValid) : []
+        } catch (e) {
+          logWarnError(e)
+          return []
+        }
+      }),
+      ...(manualLayout && { manualLayout })
+    }
+  }
+
+  private parseDeploymentViewRule(astRule: ast.DeploymentViewRule, isValid: IsValidFn): c4.DeploymentViewRule {
+    if (ast.isDeploymentViewRulePredicate(astRule)) {
+      return this.parseDeploymentViewRulePredicate(astRule, isValid)
+    }
+    if (ast.isViewRuleAutoLayout(astRule)) {
+      return toAutoLayout(astRule)
+    }
+    if (ast.isDeploymentViewRuleStyle(astRule)) {
+      return this.parseDeploymentViewRuleStyle(astRule, isValid)
+    }
+    nonexhaustive(astRule)
+  }
+
+  private parseDeploymentViewRulePredicate(
+    astRule: ast.DeploymentViewRulePredicate,
+    isValid: IsValidFn
+  ): c4.DeploymentViewRulePredicate {
+    const exprs = [] as c4.DeploymentExpression[]
+    let iterator: ast.DeploymentViewRulePredicateExpression | undefined = astRule.expr
+    while (iterator) {
+      try {
+        const expr = iterator.value
+        if (isNonNullish(expr) && isValid(expr)) {
+          switch (true) {
+            case ast.isDeploymentElementExpression(expr):
+              exprs.unshift(this.parseDeploymentElementExpression(expr))
+              break
+            case ast.isDeploymentRelationExpression(expr):
+              exprs.unshift(this.parseDeploymentRelationExpression(expr))
+              break
+            default:
+              nonexhaustive(expr)
+          }
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+      iterator = iterator.prev
+    }
+    return astRule.isInclude ? { include: exprs } : { exclude: exprs }
+  }
+
+  private parseDeploymentElementExpression(astNode: ast.DeploymentElementExpression): c4.DeploymentExpression {
+    if (ast.isWildcardExpression(astNode)) {
+      return {
+        wildcard: true
+      }
+    }
+    if (ast.isDeploymentRefExpression(astNode)) {
+      const ref = this.parseDeploymentDef(astNode.ref)
+      switch (true) {
+        case astNode.selector === '._':
+          return {
+            ref,
+            selector: 'expanded'
+          }
+        case astNode.selector === '.**':
+          return {
+            ref,
+            selector: 'descendants'
+          }
+        case astNode.selector === '.*':
+          return {
+            ref,
+            selector: 'children'
+          }
+        default:
+          return { ref }
+      }
+    }
+    nonexhaustive(astNode)
+  }
+
+  private parseDeploymentRelationExpression(
+    astNode: ast.DeploymentRelationExpression
+  ): c4.DeploymentRelationExpression {
+    if (ast.isDirectedDeploymentRelationExpression(astNode)) {
+      return {
+        source: this.parseDeploymentElementExpression(astNode.source.from),
+        target: this.parseDeploymentElementExpression(astNode.target),
+        isBidirectional: astNode.source.isBidirectional
+      }
+    }
+    if (ast.isInOutDeploymentRelationExpression(astNode)) {
+      return {
+        inout: this.parseDeploymentElementExpression(astNode.inout.to)
+      }
+    }
+    if (ast.isOutgoingDeploymentRelationExpression(astNode)) {
+      return {
+        outgoing: this.parseDeploymentElementExpression(astNode.from)
+      }
+    }
+    if (ast.isIncomingDeploymentRelationExpression(astNode)) {
+      return {
+        incoming: this.parseDeploymentElementExpression(astNode.to)
+      }
+    }
+    nonexhaustive(astNode)
+  }
+
+  private parseDeploymentExpressionIterator(
+    astNode: ast.DeploymentExpressionIterator,
+    isValid: IsValidFn
+  ): c4.DeploymentExpression[] {
+    const exprs = [] as c4.DeploymentExpression[]
+    let iter: ast.DeploymentExpressionIterator['prev'] = astNode
+    while (iter) {
+      try {
+        if (isNonNullish(iter.value) && isValid(iter.value)) {
+          exprs.unshift(this.parseDeploymentElementExpression(iter.value))
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+      iter = iter.prev
+    }
+    return exprs
+  }
+
+  private parseDeploymentDef(astNode: ast.DeploymentRef): c4.DeploymentRef {
+    const refValue = nonNullable(astNode.value.ref, 'Deployment ref is empty')
+    if (ast.isDeploymentNode(refValue)) {
+      return {
+        id: this.resolveFqn(refValue)
+      }
+    }
+    const deployedInstanceAst = nonNullable(instanceRef(astNode), 'Instance ref not found')
+    const id = this.resolveFqn(deployedInstanceAst)
+
+    if (ast.isElement(refValue)) {
+      const element = this.resolveFqn(refValue)
+      return {
+        id,
+        element
+      }
+    }
+
+    // To ensure with compiler we processed all types
+    invariant(ast.isDeployedInstance(refValue), 'Invalid deployment ref: ' + this.getAstNodePath(astNode))
+    return {
+      id
+    }
+  }
+
+  protected parseDeploymentViewRuleStyle(
+    astRule: ast.DeploymentViewRuleStyle,
+    isValid: IsValidFn
+  ): c4.DeploymentViewRuleStyle {
+    const styleProps = astRule.props.filter(ast.isStyleProperty)
+    const notationProperty = astRule.props.find(ast.isNotationProperty)
+    const notation = removeIndent(notationProperty?.value)
+    const targets = this.parseDeploymentExpressionIterator(astRule.target, isValid)
+    return {
+      targets,
+      ...(notation && { notation }),
+      style: {
+        ...toElementStyle(styleProps, isValid)
+      }
+    }
+  }
+
+  protected resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
+    if (ast.isDeploymentNode(node) || ast.isDeployedInstance(node)) {
+      return this.services.likec4.DeploymentsIndex.getFqnName(node)
+    }
     if (ast.isExtendElement(node)) {
       return getFqnElementRef(node.element)
     }
@@ -1089,7 +1516,7 @@ export class LikeC4ModelParser {
 
   private getMetadata(metadataAstNode: ast.MetadataProperty | undefined): { [key: string]: string } | undefined {
     return metadataAstNode?.props != null
-      ? mapToObj(metadataAstNode.props, (p) => [p.key, removeIndent(p.value)])
+      ? mapToObj(metadataAstNode.props, (p) => [p.key, removeIndent(p.value)] as [string, string])
       : undefined
   }
 

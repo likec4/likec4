@@ -1,4 +1,4 @@
-import type { ComputedLikeC4Model, ComputedView, ViewID } from '@likec4/core'
+import type { ComputedLikeC4Model, ComputedView, ViewId as ViewID } from '@likec4/core'
 import type { LayoutResult } from '@likec4/layouts'
 import { isDeepEqual, keys, values } from 'remeda'
 import vscode from 'vscode'

@@ -12,6 +12,8 @@ const model = `
     component system {
       component backend {
         component model
+        component _underscore
+        component __underscore
         component api {
           #next
         }
@@ -221,6 +223,10 @@ describe.concurrent('views2', () => {
       const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
       await valid(`
         include system._
+        include
+          system._,
+          system._underscore,
+          system.__underscore,
       `)
       await valid(`
         include *

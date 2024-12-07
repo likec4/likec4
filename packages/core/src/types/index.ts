@@ -1,4 +1,5 @@
 export * from './_common'
+export * from './deployments'
 export * from './element'
 export * from './expression'
 export * from './global'

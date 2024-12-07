@@ -3,9 +3,9 @@ import type {
   DiagramNode,
   DiagramView,
   Fqn,
-  RelationID,
+  RelationId,
   ViewChange,
-  ViewID,
+  ViewId,
   WhereOperator
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
@@ -13,7 +13,7 @@ import type { XYBackground } from './xyflow/XYFlowBackground'
 
 export type { WhereOperator }
 
-export type DiagramNodeWithNavigate<ID extends string = ViewID> = Omit<DiagramNode, 'navigateTo'> & {
+export type DiagramNodeWithNavigate<ID extends string = ViewId> = Omit<DiagramNode, 'navigateTo'> & {
   navigateTo: ID
 }
 
@@ -27,7 +27,7 @@ export type ElementIconRenderer = (props: {
   node: ElementIconNodeProps
 }) => ReactNode
 
-export type OnNavigateTo<ID extends string = ViewID> = (
+export type OnNavigateTo<ID extends string = ViewId> = (
   to: ID,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
@@ -191,6 +191,22 @@ export interface LikeC4DiagramProperties {
   where?: WhereOperator<string, string> | undefined
 }
 
+export type OpenSourceParams =
+  | {
+    element: Fqn
+    property?: string
+  }
+  | {
+    relation: RelationId
+  }
+  | {
+    deployment: Fqn
+    property?: string
+  }
+  | {
+    view: ViewId
+  }
+
 export interface LikeC4DiagramEventHandlers {
   onChange?: OnChange | null | undefined
   onNavigateTo?: OnNavigateTo | null | undefined
@@ -205,12 +221,5 @@ export interface LikeC4DiagramEventHandlers {
   // if set, will render a burger menu icon in the top left corner
   onBurgerMenuClick?: null | undefined | (() => void)
 
-  // if set, will render a source code icon in the top left corner
-  onOpenSourceView?: null | undefined | (() => void)
-
-  // if set, will render an icon in properties webview for each element
-  onOpenSourceElement?: null | undefined | ((fqn: Fqn) => void)
-
-  // if set, will be called on edge click
-  onOpenSourceRelation?: null | undefined | ((id: RelationID) => void)
+  onOpenSource?: null | undefined | ((params: OpenSourceParams) => void)
 }

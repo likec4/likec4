@@ -1,4 +1,5 @@
-import type { ViewID } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
+import { withReadableEdges } from '@likec4/core/compute-view'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
@@ -41,7 +42,7 @@ describe('Issue 911 - Parent-relations cant contain comments', () => {
     // Uncomment to update snapshot
     // expect(views['index' as ViewID]!).toMatchSnapshot()
 
-    const { edges: [edge1, edge2] } = views['index' as ViewID]!
+    const { edges: [edge1, edge2] } = withReadableEdges(views['index' as ViewId]!)
     expect(edge1).toMatchObject({
       id: 'a1:a2',
       label: 'comment included'

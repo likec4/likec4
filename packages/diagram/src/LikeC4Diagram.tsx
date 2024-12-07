@@ -54,9 +54,7 @@ export function LikeC4Diagram({
   onNavigateTo,
   onNodeClick,
   onNodeContextMenu,
-  onOpenSourceElement,
-  onOpenSourceView,
-  onOpenSourceRelation,
+  onOpenSource,
   onBurgerMenuClick,
   renderIcon,
   where,
@@ -129,9 +127,7 @@ export function LikeC4Diagram({
             onChange={onChange ?? null}
             onNavigateTo={onNavigateTo ?? null}
             onCanvasDblClick={onCanvasDblClick ?? null}
-            onOpenSourceView={onOpenSourceView ?? null}
-            onOpenSourceElement={onOpenSourceElement ?? null}
-            onOpenSourceRelation={onOpenSourceRelation ?? null}
+            onOpenSource={onOpenSource ?? null}
             onBurgerMenuClick={onBurgerMenuClick ?? null}
           >
             <LikeC4DiagramInnerMemo

@@ -27,7 +27,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
         `)
 
-      const doc = services.likec4.ModelParser.parse(langiumDocument)[0]
+      const doc = services.likec4.ModelParser.parse(langiumDocument)!
 
       const rules = doc?.c4Views?.[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
@@ -54,7 +54,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
       })
     })
-    
+
     it('"where"', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
@@ -71,7 +71,7 @@ describe.concurrent('LikeC4ModelParser', () => {
           }
           `)
 
-      const doc = services.likec4.ModelParser.parse(langiumDocument)[0]
+      const doc = services.likec4.ModelParser.parse(langiumDocument)!
 
       const rules = doc?.c4Views?.[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
@@ -107,11 +107,11 @@ describe.concurrent('LikeC4ModelParser', () => {
             include * -> * with { color red }
           }
         }
-          `)
+      `)
 
-      const doc = services.likec4.ModelParser.parse(langiumDocument)[0]
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
 
-      const rules = doc?.c4Views?.[0]?.rules!
+      const rules = doc.c4Views[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
       const withPredicate = includeRule.include?.[0] as CustomRelationExpr
 
@@ -127,6 +127,128 @@ describe.concurrent('LikeC4ModelParser', () => {
           }
         }
       })
+    })
+  })
+
+  describe('parses deployment model', () => {
+    it('parses deployment relation', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element component
+          deploymentNode node
+        }
+        model {
+          component sys {
+            component c1 {
+              component c2
+            }
+          }
+        }
+        deployment {
+          node n1 {
+            sys1 = instanceOf sys
+          }
+          node n2 {
+            sys2 = instanceOf sys
+          }
+
+          n1 -> n2
+          sys1 -> sys2
+          n1.sys1 -> n2.sys2.c1 'title'
+          sys1.c1 -> sys2.c2
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4DeploymentRelations).toHaveLength(4)
+      expect(doc.c4DeploymentRelations).toEqual([
+        {
+          id: expect.any(String),
+          source: {
+            id: 'n1'
+          },
+          target: {
+            id: 'n2'
+          }
+        },
+        {
+          id: expect.any(String),
+          source: {
+            id: 'n1.sys1'
+          },
+          target: {
+            id: 'n2.sys2'
+          }
+        },
+        {
+          id: expect.any(String),
+          source: {
+            id: 'n1.sys1'
+          },
+          target: {
+            id: 'n2.sys2',
+            element: 'sys.c1'
+          },
+          title: 'title'
+        },
+        {
+          id: expect.any(String),
+          source: {
+            id: 'n1.sys1',
+            element: 'sys.c1'
+          },
+          target: {
+            id: 'n2.sys2',
+            element: 'sys.c1.c2'
+          }
+        }
+      ])
+    })
+
+    it('parses targets of deployment view rule style', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          deploymentNode node
+        }
+        deployment {
+          node n1
+          node n2
+        }
+        views {
+          deployment view test {
+            style n1.*, n2._, n1 {
+              color red
+            }
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Views).toHaveLength(1)
+      expect(doc.c4Views[0]!.rules).toEqual([{
+        style: {
+          color: 'red'
+        },
+        targets: [
+          {
+            selector: 'children',
+            ref: {
+              id: 'n1'
+            }
+          },
+          {
+            selector: 'expanded',
+            ref: {
+              id: 'n2'
+            }
+          },
+          {
+            ref: {
+              id: 'n1'
+            }
+          }
+        ]
+      }])
     })
   })
 })

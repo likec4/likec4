@@ -73,7 +73,7 @@ export function RelationshipsDropdownMenu({
       }
     }),
     filter(isTruthy),
-    partition(r => r.relationship.source === edge.source && r.relationship.target === edge.target)
+    partition(r => r.source.id === edge.source && r.target.id === edge.target)
   )
 
   const onClickOpenOverlay = useCallback((e: React.MouseEvent): void => {
@@ -85,7 +85,7 @@ export function RelationshipsDropdownMenu({
     }
   }, [edge.id, openOverlay, enableRelationshipBrowser])
 
-  const renderRelationship = (relationship: LikeC4Model.ViewModel.Relationship, index: number) => (
+  const renderRelationship = (relationship: LikeC4Model.Relation, index: number) => (
     <Fragment key={relationship.id}>
       {index > 0 && <MenuDivider opacity={0.65} />}
       <MenuItem
@@ -156,7 +156,7 @@ export function RelationshipsDropdownMenu({
 const Relationship = forwardRef<
   HTMLDivElement,
   StackProps & {
-    relationship: LikeC4Model.ViewModel.Relationship
+    relationship: LikeC4Model.Relation
     edge: RelationshipData['edge']
     sourceNode: DiagramNode
     targetNode: DiagramNode
@@ -176,13 +176,13 @@ const Relationship = forwardRef<
     hasOnNavigateTo
   } = useDiagramState(s => ({
     viewId: s.view.id,
-    hasOnOpenSourceRelation: !!s.onOpenSourceRelation,
+    hasOnOpenSourceRelation: !!s.onOpenSource,
     hasOnNavigateTo: !!s.onNavigateTo
   }))
   const sourceId = nameFromFqn(edge.source) + r.source.id.slice(edge.source.length)
   const targetId = nameFromFqn(edge.target) + r.target.id.slice(edge.target.length)
-  const navigateTo = hasOnNavigateTo && r.relationship.navigateTo !== viewId ? r.relationship.navigateTo : undefined
-  const links = r.relationship.links
+  const navigateTo = hasOnNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
+  const links = r.links
 
   return (
     <Stack ref={ref} className={clsx(css.menuItemRelationship, className)} {...props}>
@@ -225,7 +225,9 @@ const Relationship = forwardRef<
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
                     event.stopPropagation()
-                    diagramApi.getState().onOpenSourceRelation?.(r.id)
+                    diagramApi.getState().onOpenSource?.({
+                      relation: r.id
+                    })
                   }}
                   role="button"
                 >
@@ -237,13 +239,13 @@ const Relationship = forwardRef<
         )}
       </Group>
       <Box className={css.title}>{r.title || 'untitled'}</Box>
-      {r.relationship.description && <Text size="xs" c="dimmed">{r.relationship.description}</Text>}
-      {links && (
+      {r.description && <Text size="xs" c="dimmed">{r.description}</Text>}
+      {links.length > 0 && (
         <Stack
           gap={3}
           justify="stretch"
           align="stretch">
-          {links.map((link) => <Link link={link} />)}
+          {links.map((link) => <Link key={link.url} link={link} />)}
         </Stack>
       )}
     </Stack>

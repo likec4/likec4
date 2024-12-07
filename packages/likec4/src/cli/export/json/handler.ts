@@ -33,7 +33,7 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const generatedSource = JSON.stringify(model.sourcemodel, null, 2)
+  const generatedSource = JSON.stringify(model.$model, null, 2)
 
   await writeFile(outfile, generatedSource)
 

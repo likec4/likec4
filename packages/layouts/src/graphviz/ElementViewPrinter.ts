@@ -1,21 +1,14 @@
-import type { ComputedEdge, ComputedElementView, ComputedNode, Fqn } from '@likec4/core'
-import { DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
-import { chunk, difference, filter, first, intersection, isNonNullish, isTruthy, last, map, pipe, unique } from 'remeda'
+import type { ComputedEdge, ComputedElementView, ComputedNode, ComputedView, Fqn } from '@likec4/core'
+import { DefaultArrowType, nonNullable } from '@likec4/core'
+import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
-import { edgeLabel, edgelabel } from './dot-labels'
+import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
-import type { DotSource } from './types'
 import { isCompound, toArrowType } from './utils'
 
-export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
-  static toDot(view: ComputedElementView): DotSource {
-    return new ElementViewPrinter(view).print()
-  }
-
-  protected override buildGraphvizModel(G: RootGraphModel): void {
-    super.buildGraphvizModel(G)
-
+export class ElementViewPrinter<V extends ComputedView = ComputedElementView> extends DotPrinter<V> {
+  protected override postBuild(_g: RootGraphModel): void {
     this.assignGroups()
 
     // Below is custom made "tile" layout for compound nodes

@@ -4,14 +4,16 @@ import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Hover } from 'vscode-languageserver-types'
 import { ast } from '../ast'
-import type { LikeC4ModelLocator } from '../model'
+import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
 
 export class LikeC4HoverProvider extends AstNodeHoverProvider {
+  private parser: LikeC4ModelParser
   private locator: LikeC4ModelLocator
 
   constructor(services: LikeC4Services) {
     super(services)
+    this.parser = services.likec4.ModelParser
     this.locator = services.likec4.ModelLocator
   }
 
@@ -23,6 +25,36 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
           value: stripIndent(`
             tag: \`${node.name}\`
           `)
+        }
+      }
+    }
+
+    if (ast.isDeploymentNode(node)) {
+      const el = this.parser.parseDeploymentNode(node, () => true)
+      const lines = [el.id as string + '  ']
+      if (el.title !== node.name) {
+        lines.push(`### ${el.title}`)
+      }
+      lines.push('Deployment: `' + el.kind + '` ')
+      return {
+        contents: {
+          kind: 'markdown',
+          value: lines.join('\n')
+        }
+      }
+    }
+
+    if (ast.isDeployedInstance(node)) {
+      const instance = this.parser.parseDeployedInstance(node, () => true)
+      const el = this.locator.getParsedElement(instance.element)
+      const lines = [instance.id + '  ', `instance of \`${instance.element}\``]
+      if (el) {
+        lines.push(`### ${el.title}`, 'Element: `' + el.kind + '` ')
+      }
+      return {
+        contents: {
+          kind: 'markdown',
+          value: lines.join('\n')
         }
       }
     }
@@ -45,7 +77,7 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       if (!el) {
         return
       }
-      const lines = [el.id, `### ${el.title}`, '`' + el.kind + '` ']
+      const lines = [el.id, `### ${el.title}`, 'Element: `' + el.kind + '` ']
       return {
         contents: {
           kind: 'markdown',

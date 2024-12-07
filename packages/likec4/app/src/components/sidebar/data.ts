@@ -2,7 +2,7 @@ import { compareNatural, type DiagramView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find, values } from 'remeda'
-import { useLikeC4ModelAtom } from 'virtual:likec4/model'
+import { useLikeC4Model } from 'virtual:likec4/model'
 
 interface DiagramTreeNodeData {
   label: string
@@ -95,9 +95,7 @@ function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTr
   return root.children.sort(compareTreeNodes)
 }
 
-// const $diagramsTree = batched($views, views => buildDiagramTreeData(values(views)))
-
 export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
-  const views = useLikeC4ModelAtom().sourcemodel.views
+  const views = useLikeC4Model().$model.views
   return useMemo(() => buildDiagramTreeData(values(views), groupBy), [views, groupBy])
 }

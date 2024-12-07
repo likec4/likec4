@@ -87,14 +87,19 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     const G = this.graphvizModel = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
-    this.buildGraphvizModel(G)
+    this.build(G)
+    this.postBuild(G)
   }
 
   public get hasEdgesWithCompounds(): boolean {
     return this.edgesWithCompounds.size > 0
   }
 
-  protected buildGraphvizModel(G: RootGraphModel): void {
+  protected postBuild(_G: RootGraphModel): void {
+    // override in subclass
+  }
+
+  private build(G: RootGraphModel): void {
     // ----------------------------------------------
     // Traverse clusters first
     const traverseClusters = (element: ComputedNode, parent: GraphBaseModel) => {

@@ -7,7 +7,6 @@ import type { LikeC4Services } from '../module'
 
 export class LikeC4CodeLensProvider implements CodeLensProvider {
   constructor(private services: LikeC4Services) {
-    //
   }
 
   async provideCodeLens(

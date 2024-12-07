@@ -51,7 +51,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     resolve: {
       alias: {
         'likec4/previews': likec4AssetsDir
-        // 'likec4/icons': resolve(root, '../../icons')
       }
     },
     configFile: false,

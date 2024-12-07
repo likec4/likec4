@@ -39,6 +39,7 @@
     "**/.tsbuildinfo": true,
     "**/*.tsbuildinfo": true,
     "**/.turbo": true,
+    "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true
   },
   "exportall.config.semis": false,

@@ -1,0 +1,5 @@
+export { computeViews, mkComputeView } from './compute-view'
+export { LikeC4ModelGraph } from './LikeC4ModelGraph'
+export { resolveRulesExtendedViews } from './utils/resolve-extended-views'
+export { withReadableEdges } from './utils/with-readable-edges'
+export { viewsWithReadableEdges } from './utils/with-readable-edges'

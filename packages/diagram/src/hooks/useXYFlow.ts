@@ -1,4 +1,4 @@
-import { useNodesData, useReactFlow, useStore, useStoreApi } from '@xyflow/react'
+import { useInternalNode, useNodesData, useReactFlow, useStore, useStoreApi } from '@xyflow/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { useCallback } from 'react'
 import type { XYFlowEdge, XYFlowNode, XYFlowState } from '../xyflow/types'
@@ -6,6 +6,7 @@ import type { XYFlowEdge, XYFlowNode, XYFlowState } from '../xyflow/types'
 export const useXYFlow = useReactFlow<XYFlowNode, XYFlowEdge>
 
 export const useXYNodesData = useNodesData<XYFlowNode>
+export const useXYInternalNode = useInternalNode<XYFlowNode>
 
 export function useXYStore<StateSlice = unknown>(
   selector: (state: XYFlowState) => StateSlice,

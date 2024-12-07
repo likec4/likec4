@@ -3,11 +3,9 @@
   "compilerOptions": {
     "noUnusedParameters": false,
     "lib": [
-      "esnext",
-      "dom",
+      "ES2022",
       "WebWorker"
     ],
-    "jsx": "react-jsx",
     "noEmit": true
   },
   "include": [

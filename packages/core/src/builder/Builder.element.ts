@@ -1,14 +1,17 @@
-import type { AnyTypes, Invalid, Types, TypesNested } from './_types'
+import type { AnyTypes, Types, TypesNested } from './_types'
 import type { ModelBuilder } from './Builder.model'
 
-type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, infer F, any, any, any, any> ? TypesNested<
+type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, infer F, any, any, any, any, any, any>
+  ? TypesNested<
     `${P}.${Id}`,
     T['ElementKind'],
     `${P}.${Id}` | F,
     T['ViewId'],
     T['RelationshipKind'],
     T['Tag'],
-    T['MetadataKey']
+    T['MetadataKey'],
+    T['DeploymentKind'],
+    T['DeploymentFqn']
   >
   : T extends AnyTypes ? TypesNested<
       Id,
@@ -17,19 +20,23 @@ type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, infer 
       T['ViewId'],
       T['RelationshipKind'],
       T['Tag'],
-      T['MetadataKey']
+      T['MetadataKey'],
+      T['DeploymentKind'],
+      T['DeploymentFqn']
     >
   : never
 
-type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F, any, any, any, any>
-  ? T extends TypesNested<infer P, any, any, any, any, any, any> ? TypesNested<
+type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F, any, any, any, any, any, any>
+  ? T extends TypesNested<infer P, any, any, any, any, any, any, any, any> ? TypesNested<
       P,
       T['ElementKind'],
       F,
       T['ViewId'],
       T['RelationshipKind'],
       T['Tag'],
-      T['MetadataKey']
+      T['MetadataKey'],
+      T['DeploymentKind'],
+      T['DeploymentFqn']
     >
   : T extends AnyTypes ? Types<
       T['ElementKind'],
@@ -37,7 +44,9 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F
       T['ViewId'],
       T['RelationshipKind'],
       T['Tag'],
-      T['MetadataKey']
+      T['MetadataKey'],
+      T['DeploymentKind'],
+      T['DeploymentFqn']
     >
   : never
   : never
@@ -208,14 +217,3 @@ export interface AddElement<Id extends string> {
     op10: (input: ModelBuilder<I>) => ModelBuilder<J>
   ): (builder: ModelBuilder<T>) => ModelBuilder<FromNested<T, J>>
 }
-
-type AddElementHelper<T = unknown> = <const Id extends string>(
-  id: Id,
-  titleOrProps?: string | T
-) => AddElement<Id>
-
-export type AddElementHelpers<T extends AnyTypes> = T extends Types<infer Kinds extends string, any, any, any, any, any>
-  ? {
-    [Kind in Kinds]: AddElementHelper<T['NewElementProps']>
-  }
-  : Invalid<'No Element Kinds'>

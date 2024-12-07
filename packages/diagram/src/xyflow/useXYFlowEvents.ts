@@ -1,3 +1,4 @@
+import { DiagramNode } from '@likec4/core'
 import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
 import { isNonNullish, isTruthy } from 'remeda'
@@ -123,9 +124,11 @@ export function useXYFlowEvents() {
           nodesSelectable,
           enableElementDetails,
           setLastClickedNode,
-          onOpenSourceElement,
+          onOpenSource,
           openOverlay
         } = diagramApi.getState()
+        const modelRef = DiagramNode.modelRef(xynode.data.element)
+        const deploymentRef = DiagramNode.deploymentRef(xynode.data.element)
         setLastClickedNode(xynode.id)
         // if we focused on a node, and clicked on another node - focus on the clicked node
         const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
@@ -134,8 +137,16 @@ export function useXYFlowEvents() {
 
         let stopPropagation = false
 
-        if (clickedRecently && !!onOpenSourceElement) {
-          onOpenSourceElement(xynode.data.element.id)
+        if (clickedRecently && !!onOpenSource && (modelRef || deploymentRef)) {
+          if (modelRef) {
+            onOpenSource({
+              element: modelRef
+            })
+          } else if (deploymentRef) {
+            onOpenSource({
+              deployment: deploymentRef
+            })
+          }
           stopPropagation = true
         }
 
@@ -152,7 +163,7 @@ export function useXYFlowEvents() {
               stopPropagation = true
               break
             }
-            case !clickedRecently && focusedNodeId === xynode.id && enableElementDetails: {
+            case !clickedRecently && modelRef && focusedNodeId === xynode.id && enableElementDetails: {
               openOverlay({
                 elementDetails: xynode.data.element.id
               })
@@ -160,7 +171,9 @@ export function useXYFlowEvents() {
               break
             }
           }
-        } else if (enableElementDetails && (clickedRecently || focusedNodeId === xynode.id) && !onNodeClick) {
+        } else if (
+          enableElementDetails && modelRef && (clickedRecently || focusedNodeId === xynode.id) && !onNodeClick
+        ) {
           openOverlay({
             elementDetails: xynode.data.element.id
           })

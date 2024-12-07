@@ -1,4 +1,4 @@
-import { delay, invariant, type ViewID } from '@likec4/core'
+import { delay, invariant, type ViewId as ViewID } from '@likec4/core'
 import * as vscode from 'vscode'
 import { ViewColumn, type Webview, type WebviewPanel } from 'vscode'
 import { isProd } from '../const'
@@ -38,8 +38,7 @@ export class PreviewPanel extends AbstractDisposable {
 
     // Otherwise, create a new webview.
     const panel = vscode.window.createWebviewPanel(PreviewPanel.ViewType, 'Diagram preview', {
-      viewColumn: ViewColumn.Beside,
-      preserveFocus: true
+      viewColumn: ViewColumn.Beside
     }, {
       enableScripts: true,
       retainContextWhenHidden: false
@@ -78,17 +77,16 @@ export class PreviewPanel extends AbstractDisposable {
   }
 
   public open(viewId: ViewID) {
+    this._viewId = viewId
     this.panel.reveal()
-    if (this._viewId !== viewId) {
+    delay(150).finally(() => {
       this.rpc.notifyToChangeView(viewId)
-      this._viewId = viewId
-    }
+    })
   }
 
   private _update() {
     const webview = this.panel.webview
     webview.options = {
-      // retainContextWhenHidden: true,
       // Enable javascript in the webview
       enableScripts: true,
       localResourceRoots: [
@@ -146,13 +144,10 @@ export namespace PreviewPanel {
       if (
         state != null
         && typeof state === 'object'
-        && 'view' in state
-        && state.view != null
-        && typeof state.view === 'object'
-        && 'id' in state.view
-        && typeof state.view.id === 'string'
+        && 'viewId' in state
+        && typeof state.viewId === 'string'
       ) {
-        viewId = state.view.id as ViewID
+        viewId = state.viewId as ViewID
       } else {
         viewId = 'index' as ViewID
       }

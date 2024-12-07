@@ -1,6 +1,7 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
+import type { DeploymentExpression } from './deployments'
 import {
   type BorderStyle,
   ElementKind,
@@ -12,11 +13,11 @@ import {
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
-import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
+import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
-export type ViewID<Id extends string = string> = Tagged<Id, 'ViewID'>
+export type ViewId<Id extends string = string> = Tagged<Id, 'ViewID'>
 
 export type ViewRulePredicate =
   | {
@@ -27,7 +28,11 @@ export type ViewRulePredicate =
     include?: never
     exclude: Expression[]
   }
-export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate {
+
+export function isViewRulePredicate(rule: DeploymentViewRule): rule is DeploymentViewRulePredicate
+export function isViewRulePredicate(rule: DynamicViewRule): rule is DynamicViewIncludeRule
+export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate
+export function isViewRulePredicate(rule: object) {
   return (
     ('include' in rule && Array.isArray(rule.include))
     || ('exclude' in rule && Array.isArray(rule.exclude))
@@ -50,8 +55,10 @@ export interface ViewRuleStyle {
     icon?: IconUrl
   }
 }
-export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
-  return 'style' in rule && 'targets' in rule
+export function isViewRuleStyle(rule: DeploymentViewRule): rule is DeploymentViewRuleStyle
+export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle
+export function isViewRuleStyle(rule: object) {
+  return 'style' in rule && 'targets' in rule && Array.isArray(rule.targets)
 }
 
 export interface ViewRuleGlobalStyle {
@@ -73,7 +80,10 @@ export interface ViewRuleAutoLayout {
   nodeSep?: number
   rankSep?: number
 }
-export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout {
+
+export function isViewRuleAutoLayout(
+  rule: DeploymentViewRule | DynamicViewRule | ViewRule
+): rule is ViewRuleAutoLayout {
   return 'direction' in rule
 }
 
@@ -99,12 +109,12 @@ export type ViewRule =
   | ViewRuleAutoLayout
 
 export interface BasicView<
-  ViewType extends 'element' | 'dynamic',
+  ViewType extends 'element' | 'dynamic' | 'deployment',
   ViewIDs extends string,
   Tags extends string
 > {
   readonly __?: ViewType
-  readonly id: ViewID<ViewIDs>
+  readonly id: ViewId<ViewIDs>
   readonly title: string | null
   readonly description: string | null
   readonly tags: NonEmptyArray<Tag<Tags>> | null
@@ -148,7 +158,7 @@ export interface ScopedElementView<ViewIDs extends string, Tags extends string>
 export interface ExtendsElementView<ViewIDs extends string, Tags extends string>
   extends BasicElementView<ViewIDs, Tags>
 {
-  readonly extends: ViewID<ViewIDs>
+  readonly extends: ViewId<ViewIDs>
 }
 export type ElementView<
   ViewIDs extends string = string,
@@ -173,7 +183,7 @@ export interface DynamicViewStep {
   readonly tail?: RelationshipArrowType
   readonly isBackward?: boolean
   // Link to dynamic view
-  readonly navigateTo?: ViewID
+  readonly navigateTo?: ViewId
   __parallel?: never
 }
 
@@ -185,10 +195,6 @@ export type DynamicViewStepOrParallel = DynamicViewStep | DynamicViewParallelSte
 
 export type DynamicViewIncludeRule = {
   include: ElementPredicateExpression[]
-}
-
-export function isDynamicViewIncludeRule(rule: DynamicViewRule): rule is DynamicViewIncludeRule {
-  return 'include' in rule && Array.isArray(rule.include)
 }
 
 export type DynamicViewRule =
@@ -214,11 +220,42 @@ export function isDynamicViewParallelSteps(step: DynamicViewStepOrParallel): ste
 
 export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
+export type DeploymentViewRulePredicate =
+  | {
+    include: DeploymentExpression[]
+    exclude?: never
+  }
+  | {
+    include?: never
+    exclude: DeploymentExpression[]
+  }
+export type DeploymentViewRuleStyle = {
+  targets: DeploymentExpression[]
+  notation?: string
+  style: ElementStyle & {
+    color?: Color
+    shape?: ElementShape
+    icon?: IconUrl
+  }
+}
+export type DeploymentViewRule = DeploymentViewRulePredicate | ViewRuleAutoLayout | DeploymentViewRuleStyle
+
+export interface DeploymentView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends BasicView<'deployment', ViewIDs, Tags> {
+  readonly __: 'deployment'
+  readonly rules: DeploymentViewRule[]
+}
+
 export type LikeC4View<
   ViewIDs extends string = string,
   Tags extends string = string
-> = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags>
+> = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags> | DeploymentView<ViewIDs, Tags>
 
+export function isDeploymentView(view: LikeC4View): view is DeploymentView {
+  return view.__ === 'deployment'
+}
 export function isDynamicView(view: LikeC4View): view is DynamicView {
   return view.__ === 'dynamic'
 }
@@ -266,8 +303,18 @@ export function getParallelStepsPrefix(id: string): string | null {
 
 export interface ComputedNode {
   id: NodeId
-  kind: ElementKind
+  kind: string // TODO: fix ElementKind | DeploymentNodeKind
   parent: NodeId | null
+  /**
+   * Reference to model element
+   * If 1 - node id is a reference
+   */
+  modelRef?: 1 | Fqn
+  /**
+   * Reference to deployment element
+   * If 1 - node id is a reference
+   */
+  deploymentRef?: 1 | Fqn
   title: string
   description: string | null
   technology: string | null
@@ -278,16 +325,13 @@ export interface ComputedNode {
   inEdges: EdgeId[]
   outEdges: EdgeId[]
   shape: ElementShape
-  /**
-   * @deprecated Use `style` instead
-   */
   color: Color
   /**
    * @deprecated Use `style` instead
    */
   icon?: IconUrl
   style: ElementStyle
-  navigateTo?: ViewID
+  navigateTo?: ViewId
   level: number
   // For compound nodes, the max depth of nested nodes
   depth?: number
@@ -297,6 +341,12 @@ export interface ComputedNode {
   isCustomized?: boolean
 }
 export namespace ComputedNode {
+  export function modelRef(node: ComputedNode): Fqn | null {
+    return node.modelRef === 1 ? node.id : (node.modelRef ?? null)
+  }
+  export function deploymentRef(node: ComputedNode): Fqn | null {
+    return node.deploymentRef === 1 ? node.id : (node.deploymentRef ?? null)
+  }
   /**
    * Nodes group is a special kind of node, exisiting only in view
    */
@@ -313,7 +363,7 @@ export interface ComputedEdge {
   label: string | null
   description?: string
   technology?: string
-  relations: RelationID[]
+  relations: RelationId[]
   kind?: RelationshipKind
   notation?: string
   // Notes for walkthrough
@@ -324,7 +374,7 @@ export interface ComputedEdge {
   tail?: RelationshipArrowType
   tags?: NonEmptyArray<Tag>
   // Link to dynamic view
-  navigateTo?: ViewID
+  navigateTo?: ViewId
   /**
    * If this edge is derived from custom relationship predicate
    */
@@ -358,7 +408,7 @@ export interface ComputedElementView<
   ViewIDs extends string = string,
   Tags extends string = string
 > extends Omit<ElementView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
-  readonly extends?: ViewID<ViewIDs>
+  readonly extends?: ViewId<ViewIDs>
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
@@ -376,17 +426,33 @@ export interface ComputedDynamicView<
   rules?: never
   docUri?: never
 }
-export function isComputedDynamicView(view: ComputedView): view is ComputedDynamicView {
-  return view.__ === 'dynamic'
+
+export interface ComputedDeploymentView<
+  ViewIDs extends string = string,
+  Tags extends string = string
+> extends Omit<DeploymentView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
+  readonly autoLayout: ViewAutoLayout
+  readonly nodes: ComputedNode[]
+  readonly edges: ComputedEdge[]
+  rules?: never
+  docUri?: never
 }
 
 export type ComputedView<
   ViewIDs extends string = string,
   Tags extends string = string
-> = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags>
+> = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags> | ComputedDeploymentView<ViewIDs, Tags>
 
-export function isComputedElementView(view: ComputedView): view is ComputedElementView {
-  return isNullish(view.__) || view.__ === 'element'
+export namespace ComputedView {
+  export function isDeployment(view: ComputedView): view is ComputedDeploymentView {
+    return view.__ === 'deployment'
+  }
+  export function isDynamic(view: ComputedView): view is ComputedDynamicView {
+    return view.__ === 'dynamic'
+  }
+  export function isElement(view: ComputedView): view is ComputedElementView {
+    return isNullish(view.__) || view.__ === 'element'
+  }
 }
 
 // Bounding box
@@ -418,6 +484,12 @@ export interface DiagramNode extends ComputedNode {
 }
 
 export namespace DiagramNode {
+  export function modelRef(node: DiagramNode): Fqn | null {
+    return node.modelRef === 1 ? node.id : (node.modelRef ?? null)
+  }
+  export function deploymentRef(node: DiagramNode): Fqn | null {
+    return node.deploymentRef === 1 ? node.id : (node.deploymentRef ?? null)
+  }
   /**
    * Nodes group is a special kind of node, exisiting only in view
    */

@@ -1,15 +1,15 @@
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
 import type * as c4 from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
-import { elementRef } from './elementRef'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
+import { elementRef } from './utils/elementRef'
 
 export { ast }
 
@@ -20,10 +20,13 @@ declare module './generated/ast' {
     [idattr]?: c4.Fqn | undefined
   }
   export interface ElementView {
-    [idattr]?: c4.ViewID | undefined
+    [idattr]?: c4.ViewId | undefined
   }
   export interface DynamicView {
-    [idattr]?: c4.ViewID | undefined
+    [idattr]?: c4.ViewId | undefined
+  }
+  export interface DeploymentView {
+    [idattr]?: c4.ViewId | undefined
   }
 }
 
@@ -59,6 +62,7 @@ export interface ParsedAstSpecification {
       color: c4.HexColorLiteral
     }
   >
+  deployments: Record<c4.DeploymentNodeKind, c4.DeploymentNodeKindSpecification>
 }
 
 export interface ParsedAstElement {
@@ -75,7 +79,7 @@ export interface ParsedAstElement {
 }
 
 export interface ParsedAstRelation {
-  id: c4.RelationID
+  id: c4.RelationId
   astPath: string
   source: c4.Fqn
   target: c4.Fqn
@@ -89,10 +93,17 @@ export interface ParsedAstRelation {
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
   links?: c4.NonEmptyArray<ParsedLink>
-  navigateTo?: c4.ViewID
+  navigateTo?: c4.ViewId
   metadata?: { [key: string]: string }
 }
 
+// Alias for easier refactoring
+export type ParsedAstDeployment = c4.DeploymentElement
+export namespace ParsedAstDeployment {
+  export type Node = c4.DeploymentNode
+  export type Instance = c4.DeployedInstance
+}
+export type ParsedAstDeploymentRelation = c4.DeploymentRelation
 // export interface ParsedAstGlobals {
 //   predicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.ViewRulePredicate>>
 //   dynamicPredicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.DynamicViewIncludeRule>>
@@ -103,9 +114,9 @@ export type ParsedAstGlobals = c4.ModelGlobals
 
 export interface ParsedAstElementView {
   __: 'element'
-  id: c4.ViewID
+  id: c4.ViewId
   viewOf?: c4.Fqn
-  extends?: c4.ViewID
+  extends?: c4.ViewId
   astPath: string
   title: string | null
   description: string | null
@@ -117,7 +128,7 @@ export interface ParsedAstElementView {
 
 export interface ParsedAstDynamicView {
   __: 'dynamic'
-  id: c4.ViewID
+  id: c4.ViewId
   astPath: string
   title: string | null
   description: string | null
@@ -128,13 +139,24 @@ export interface ParsedAstDynamicView {
   manualLayout?: c4.ViewManualLayout
 }
 
-export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView
+export interface ParsedAstDeploymentView {
+  __: 'deployment'
+  id: c4.ViewId
+  astPath: string
+  title: string | null
+  description: string | null
+  tags: c4.NonEmptyArray<c4.Tag> | null
+  links: c4.NonEmptyArray<ParsedLink> | null
+  rules: Array<c4.DeploymentViewRule>
+}
+
+export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView | ParsedAstDeploymentView
 export const ViewOps = {
-  writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewID): T {
+  writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewId): T {
     node[idattr] = id
     return node
   },
-  readId(node: ast.LikeC4View): c4.ViewID | undefined {
+  readId(node: ast.LikeC4View): c4.ViewId | undefined {
     return node[idattr]
   }
 }
@@ -162,6 +184,11 @@ export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
   fqn: c4.Fqn
 }
 
+export interface DeploymentAstNodeDescription extends AstNodeDescription {
+  // Fullname of the artifact or node
+  fqn: string
+}
+
 // export type LikeC4AstNode = ast.LikeC4AstType[keyof ast.LikeC4AstType]
 export type LikeC4AstNode = ValueOf<ConditionalPick<ast.LikeC4AstType, AstNode>>
 type LikeC4DocumentDiagnostic = Diagnostic & DiagnosticInfo<LikeC4AstNode>
@@ -173,21 +200,18 @@ export interface LikeC4DocumentProps {
   c4Relations?: ParsedAstRelation[]
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
+  c4Deployments?: ParsedAstDeployment[]
+  c4DeploymentRelations?: ParsedAstDeploymentRelation[]
   // Fqn -> Element
   c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
 
-export interface LikeC4LangiumDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, LikeC4DocumentProps
-{}
-export interface FqnIndexedDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4DocumentProps, 'c4fqnIndex'>
-{}
+type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
-// export type ParsedLikeC4LangiumDocument = SetRequired<FqnIndexedDocument, keyof  LikeC4DocumentProps>
-export interface ParsedLikeC4LangiumDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, Required<LikeC4DocumentProps>
-{}
+export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {}
+export interface FqnIndexedDocument extends SetRequired<LikeC4LangiumDocument, 'c4fqnIndex'> {}
+
+export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {}
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
@@ -195,10 +219,13 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
       tags: new Set(),
       elements: {},
       relationships: {},
-      colors: {}
+      colors: {},
+      deployments: {}
     },
     c4Elements: [],
     c4Relations: [],
+    c4Deployments: [],
+    c4DeploymentRelations: [],
     c4Globals: {
       predicates: {},
       dynamicPredicates: {},
@@ -228,6 +255,8 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Relations
     && !!doc.c4Views
     && !!doc.c4fqnIndex
+    && !!doc.c4Deployments
+    && !!doc.c4DeploymentRelations
   )
 }
 
@@ -252,29 +281,32 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isRelationExpression,
   ast.isDynamicViewParallelSteps,
   ast.isDynamicViewStep,
+  ast.isDeploymentViewRule,
+  ast.isDeploymentViewRulePredicate,
+  ast.isDeploymentExpression,
   ast.isViewProperty,
   ast.isStyleProperty,
+  ast.isPredicate,
   ast.isTags,
   ast.isViewRule,
   ast.isDynamicViewRule,
-  ast.isElementViewBody,
-  ast.isDynamicViewBody,
   ast.isLikeC4View,
-  ast.isRelationProperty,
-  ast.isRelationBody,
+  ast.isViewRuleStyleOrGlobalRef,
+  ast.isDeployedInstance,
+  ast.isDeploymentNode,
+  ast.isRelationshipStyleProperty,
   ast.isRelation,
   ast.isElementProperty,
-  ast.isElementBody,
+  ast.isStringProperty,
+  ast.isNavigateToProperty,
   ast.isElement,
-  ast.isExtendElementBody,
   ast.isExtendElement,
   ast.isSpecificationElementKind,
   ast.isSpecificationRelationshipKind,
+  ast.isSpecificationDeploymentNodeKind,
   ast.isSpecificationTag,
   ast.isSpecificationColor,
-  ast.isSpecificationRule,
-  ast.isModelViews,
-  ast.isModel
+  ast.isSpecificationRule
 ])
 type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
 
@@ -291,12 +323,17 @@ const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefin
 
 export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   const errors = doc.diagnostics?.filter(d => d.severity === DiagnosticSeverity.Error) ?? []
-  const invalidNodes = new WeakSet(
-    errors.flatMap(d => {
-      return findInvalidContainer(d.node) ?? []
-    })
-  )
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const invalidNodes = new WeakSet()
+  for (const { node } of errors) {
+    if (isNullish(node) || invalidNodes.has(node)) {
+      continue
+    }
+    invalidNodes.add(node)
+    const container = findInvalidContainer(node)
+    if (container) {
+      invalidNodes.add(container)
+    }
+  }
   const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)
   return {
     isValid,
@@ -311,11 +348,8 @@ export function* streamModel(doc: LikeC4LangiumDocument, isValid: IsValidFn) {
   const relations = [] as ast.Relation[]
   let el
   while ((el = traverseStack.shift())) {
-    if (!isValid(el)) {
-      continue
-    }
     if (ast.isRelation(el)) {
-      relations.push(el)
+      isValid(el) && relations.push(el)
       continue
     }
     if (ast.isExtendElement(el)) {
@@ -326,6 +360,9 @@ export function* streamModel(doc: LikeC4LangiumDocument, isValid: IsValidFn) {
     }
     if (el.body && el.body.elements.length > 0) {
       traverseStack.push(...el.body.elements)
+    }
+    if (!isValid(el)) {
+      continue
     }
     yield el
   }
@@ -407,14 +444,13 @@ export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isVa
         break
       }
       default:
-        // @ts-expect-error
-        nonexhaustive(prop.$type)
+        nonexhaustive(prop)
     }
   }
   return result
 }
 
-export function toRelationshipStyle(props?: ast.RelationshipStyleProperty[]) {
+export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | undefined, isValid: IsValidFn) {
   const result = {} as {
     color?: c4.Color
     line?: c4.RelationshipLineType
@@ -425,42 +461,50 @@ export function toRelationshipStyle(props?: ast.RelationshipStyleProperty[]) {
     return result
   }
   for (const prop of props) {
-    if (ast.isColorProperty(prop)) {
-      const color = toColor(prop)
-      if (isTruthy(color)) {
-        result.color = color
+    if (!isValid(prop)) {
+      continue
+    }
+    switch (true) {
+      case ast.isColorProperty(prop): {
+        const color = toColor(prop)
+        if (isTruthy(color)) {
+          result.color = color
+        }
+        break
       }
-      continue
-    }
-    if (ast.isLineProperty(prop)) {
-      result.line = prop.value
-      continue
-    }
-    if (ast.isArrowProperty(prop)) {
-      switch (prop.key) {
-        case 'head': {
-          result.head = prop.value
-          break
-        }
-        case 'tail': {
-          result.tail = prop.value
-          break
-        }
-        default: {
-          nonexhaustive(prop)
-        }
+      case ast.isLineProperty(prop): {
+        result.line = prop.value
+        break
       }
-      continue
+      case ast.isArrowProperty(prop): {
+        switch (prop.key) {
+          case 'head': {
+            result.head = prop.value
+            break
+          }
+          case 'tail': {
+            result.tail = prop.value
+            break
+          }
+          default: {
+            nonexhaustive(prop)
+          }
+        }
+        break
+      }
+      default: {
+        nonexhaustive(prop)
+      }
     }
-    nonexhaustive(prop)
   }
   return result
 }
 
 export function toRelationshipStyleExcludeDefaults(
-  props?: ast.SpecificationRelationshipKind['props']
+  props: ast.SpecificationRelationshipKind['props'] | undefined,
+  isValid: IsValidFn
 ) {
-  const { color, line, head, tail } = toRelationshipStyle(props?.filter(ast.isRelationshipStyleProperty))
+  const { color, line, head, tail } = toRelationshipStyle(props?.filter(ast.isRelationshipStyleProperty), isValid)
   return {
     ...(color && color !== DefaultRelationshipColor ? { color } : {}),
     ...(line && line !== DefaultLineStyle ? { line } : {}),

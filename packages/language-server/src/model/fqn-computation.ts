@@ -3,9 +3,9 @@ import type * as c4 from '@likec4/core'
 import { type AstNodeDescription, type AstNodeLocator, AstUtils, CstUtils, GrammarUtils, MultiMap } from 'langium'
 import { isDefined, isEmpty } from 'remeda'
 import { ast, ElementOps, type LikeC4LangiumDocument } from '../ast'
-import { getFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { getFqnElementRef } from '../utils/elementRef'
 
 const { findNodeForProperty } = GrammarUtils
 const { toDocumentSegment } = CstUtils

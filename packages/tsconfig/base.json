@@ -3,6 +3,7 @@
   "display": "Base Strictest",
   "exclude": [
     "node_modules",
+    "**/node_modules/**",
     "${configDir}/node_modules",
     "dist",
     "${configDir}/dist"
@@ -22,6 +23,7 @@
     "declarationMap": true,
     "experimentalDecorators": true,
     "strict": true,
+    "strictBuiltinIteratorReturn": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowUnusedLabels": false,

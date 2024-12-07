@@ -1,8 +1,8 @@
-import { invariant, type ViewID } from '@likec4/core'
+import { invariant, type ViewId } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import { createRoot, type Root } from 'react-dom/client'
-import { type DiagramView, likec4model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
+import { type DiagramView, likeC4Model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
 import { ComponentName } from './const'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
@@ -123,7 +123,7 @@ export class LikeC4View extends HTMLElement {
         {...(colorScheme && { forceColorScheme: colorScheme })}
         getRootElement={() => this.rootEl}
         cssVariablesSelector={'.likec4-shadow-root'}>
-        <LikeC4ModelProvider likec4model={likec4model}>
+        <LikeC4ModelProvider likec4model={likeC4Model}>
           <LikeC4Diagram
             view={view as any}
             readonly
@@ -162,7 +162,7 @@ export class LikeC4View extends HTMLElement {
     )
   }
 
-  openBrowser(viewId?: ViewID) {
+  openBrowser(viewId?: ViewId) {
     const fs = document.createElement(ComponentName.Browser)
     fs.setAttribute('view-id', viewId ?? this.view.id)
     document.body.appendChild(fs)

@@ -12,6 +12,7 @@ import {
   Text,
   TooltipGroup
 } from '@mantine/core'
+import { openSpotlight } from '@mantine/spotlight'
 import {
   IconAlertTriangle,
   IconChevronLeft,
@@ -31,7 +32,6 @@ import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import { ManualLayoutToolsButton } from './ManualLayoutToolsButton'
 import * as css from './styles.css'
-import { openSpotlight } from '@mantine/spotlight'
 
 const historySelector = (s: DiagramState) => ({
   showBurgerMenu: !!s.onBurgerMenuClick,
@@ -158,7 +158,7 @@ export const TopLeftPanel = () => {
       showFitDiagram: s.controls && s.fitViewEnabled && s.zoomable && isNotWalkthrough,
       showLayoutDriftWarning: s.controls && !s.readonly && s.view.hasLayoutDrift === true && isNotActive,
       showChangeAutoLayout: s.controls && s.isEditable() && isNotActive,
-      showGoToSource: s.controls && !!s.onOpenSourceView && isNotWalkthrough,
+      showGoToSource: s.controls && !!s.onOpenSource && isNotWalkthrough,
       viewportChanged: s.viewportChanged,
       showManualLayoutTools: s.controls && s.readonly !== true && s.experimentalEdgeEditing === true
     })
@@ -182,7 +182,7 @@ export const TopLeftPanel = () => {
             <Tooltip label="Search (Ctrl+F or ⌘+F)">
               <ActionIcon
                 onClick={() => openSpotlight()}
-                >
+              >
                 <IconSearch />
               </ActionIcon>
             </Tooltip>
@@ -192,7 +192,7 @@ export const TopLeftPanel = () => {
               <ActionIcon
                 onClick={e => {
                   e.stopPropagation()
-                  store.getState().onOpenSourceView?.()
+                  store.getState().onOpenSourceView()
                 }}>
                 <IconFileSymlink stroke={1.5} />
               </ActionIcon>

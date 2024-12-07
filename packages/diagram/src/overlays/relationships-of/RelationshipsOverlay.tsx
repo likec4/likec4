@@ -93,7 +93,7 @@ export const RelationshipsOverlay = memo<{ subjectId: Fqn }>(function Relationsh
             <Box flex={'1 0 auto'}>
               <SelectElement
                 scope={scope}
-                subject={subject.element}
+                subject={subject.$element}
                 onSelect={fqn =>
                   overlay.openOverlay({
                     relationshipsOf: fqn

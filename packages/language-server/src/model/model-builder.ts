@@ -1,14 +1,14 @@
-import type * as c4 from '@likec4/core'
+import * as c4 from '@likec4/core'
 import {
   compareRelations,
   computeColorValues,
   type CustomColorDefinitions,
-  isElementView,
   isScopedElementView,
   parentFqn,
   sortByFqnHierarchically,
-  type ViewID
+  type ViewId
 } from '@likec4/core'
+import { mkComputeView, resolveRulesExtendedViews } from '@likec4/core/compute-view'
 import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
@@ -17,6 +17,7 @@ import {
   flatMap,
   groupBy,
   indexBy,
+  isDefined,
   isEmpty,
   isNonNullish,
   isNullish,
@@ -25,6 +26,7 @@ import {
   map,
   mapToObj,
   mapValues,
+  pick,
   pipe,
   prop,
   reduce,
@@ -42,14 +44,14 @@ import type {
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logger, logWarnError } from '../logger'
-import { computeDynamicView, computeView, LikeC4ModelGraph } from '../model-graph'
 import type { LikeC4Services } from '../module'
-import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
+import { assignNavigateTo, resolveRelativePaths } from '../view-utils'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
   // Merge specifications and globals from all documents
   const c4Specification: ParsedAstSpecification = {
     tags: new Set(),
+    deployments: {},
     elements: {},
     relationships: {},
     colors: {}
@@ -69,7 +71,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     Object.assign(c4Specification.elements, spec.elements)
     Object.assign(c4Specification.relationships, spec.relationships)
     Object.assign(c4Specification.colors, spec.colors)
-
+    Object.assign(c4Specification.deployments, spec.deployments)
     Object.assign(globals.predicates, c4Globals.predicates)
     Object.assign(globals.dynamicPredicates, c4Globals.dynamicPredicates)
     Object.assign(globals.styles, c4Globals.styles)
@@ -207,7 +209,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         } satisfies c4.Relation
       }
       return {
-        ...(links && { links }),
+        ...links && { links },
         ...model,
         source,
         target,
@@ -223,6 +225,86 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     sort(compareRelations),
     reverse(),
     indexBy(prop('id'))
+  )
+
+  function toDeploymentElement(doc: LangiumDocument) {
+    return (parsed: c4.DeploymentElement): c4.DeploymentElement | null => {
+      if (!c4.DeploymentElement.isDeploymentNode(parsed)) {
+        if (!parsed.links || parsed.links.length === 0) {
+          return parsed
+        }
+        const links = resolveLinks(doc, parsed.links)
+        return {
+          ...parsed,
+          links
+        }
+      }
+      try {
+        const __kind = c4Specification.deployments[parsed.kind]
+        if (!__kind) {
+          logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
+          return parsed
+        }
+        let {
+          technology = __kind.technology,
+          notation = __kind.notation,
+          links,
+          style
+        } = parsed
+        return {
+          ...parsed,
+          ...notation && { notation },
+          ...technology && { technology },
+          style: {
+            border: 'dashed',
+            opacity: 10,
+            ...__kind.style,
+            ...style
+          },
+          links: links ? resolveLinks(doc, links) : null
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+      return null
+    }
+  }
+
+  const deploymentElements = pipe(
+    docs,
+    flatMap(d => map(d.c4Deployments, toDeploymentElement(d))),
+    filter(isTruthy),
+    // sort from root elements to nested, so that parent is always present
+    // Import to preserve the order from the source
+    sortByFqnHierarchically,
+    reduce(
+      (acc, el) => {
+        const parent = parentFqn(el.id)
+        if (parent && isNullish(acc[parent])) {
+          logWarnError(`No parent found for deployment element ${el.id}`)
+          return acc
+        }
+        acc[el.id] = el
+        return acc
+      },
+      {} as c4.ParsedLikeC4Model['deployments']['elements']
+    )
+  )
+
+  const deploymentRelations = pipe(
+    docs,
+    flatMap(d => d.c4DeploymentRelations),
+    reduce(
+      (acc, el) => {
+        if (isDefined(acc[el.id])) {
+          logWarnError(`Duplicate deployment relation ${el.id}`)
+          return acc
+        }
+        acc[el.id] = el
+        return acc
+      },
+      {} as c4.ParsedLikeC4Model['deployments']['relations']
+    )
   )
 
   function toC4View(doc: LangiumDocument) {
@@ -273,7 +355,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   if (!parsedViews.some(v => v.id === 'index')) {
     parsedViews.unshift({
       __: 'element',
-      id: 'index' as ViewID,
+      id: 'index' as ViewId,
       title: 'Landscape view',
       description: null,
       tags: null,
@@ -301,12 +383,17 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     specification: {
       tags: Array.from(c4Specification.tags),
       elements: c4Specification.elements,
-      relationships: c4Specification.relationships
+      relationships: c4Specification.relationships,
+      deployments: c4Specification.deployments
     },
     elements,
     relations,
     globals,
-    views
+    views,
+    deployments: {
+      elements: deploymentElements,
+      relations: deploymentRelations
+    }
   }
 }
 
@@ -335,8 +422,8 @@ export class LikeC4ModelBuilder {
         let parsed = [] as URI[]
         try {
           logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)`)
-          for (const doc of parser.parse(docs)) {
-            parsed.push(doc.uri)
+          for (const doc of docs) {
+            parsed.push(parser.parse(doc).uri)
           }
         } catch (e) {
           logWarnError(e)
@@ -356,13 +443,13 @@ export class LikeC4ModelBuilder {
    * Otherwise, the model may be incomplete.
    */
   public unsafeSyncBuildModel(): c4.ParsedLikeC4Model | null {
+    const docs = this.documents()
+    if (docs.length === 0) {
+      logger.debug('[ModelBuilder] No documents to build model from')
+      return null
+    }
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
     return cache.get(CACHE_KEY_PARSED_MODEL, () => {
-      const docs = this.documents()
-      if (docs.length === 0) {
-        logger.debug('[ModelBuilder] No documents to build model from')
-        return null
-      }
       logger.debug(`[ModelBuilder] buildModel (${docs.length} docs)`)
       return buildModel(this.services, docs)
     })
@@ -370,8 +457,9 @@ export class LikeC4ModelBuilder {
 
   public async buildModel(cancelToken?: Cancellation.CancellationToken): Promise<c4.ParsedLikeC4Model | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
-    if (cache.has(CACHE_KEY_PARSED_MODEL)) {
-      return cache.get(CACHE_KEY_PARSED_MODEL)!
+    const cached = cache.get(CACHE_KEY_PARSED_MODEL)
+    if (cached) {
+      return cached
     }
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
@@ -381,7 +469,7 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  private previousViews: Record<ViewID, c4.ComputedView> = {}
+  private previousViews: Record<ViewId, c4.ComputedView> = {}
 
   /**
    * WARNING:
@@ -392,13 +480,10 @@ export class LikeC4ModelBuilder {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model>
     const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
-      const index = new LikeC4ModelGraph(model)
-
+      const computeView = mkComputeView(model)
       const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
-        const result = isElementView(view)
-          ? computeView(view, index)
-          : computeDynamicView(view, index)
+        const result = computeView(view)
         if (!result.isSuccess) {
           logWarnError(result.error)
           continue
@@ -414,10 +499,15 @@ export class LikeC4ModelBuilder {
       })
       this.previousViews = { ...views }
       return {
-        specification: model.specification,
-        elements: model.elements,
-        relations: model.relations,
-        globals: model.globals,
+        ...structuredClone(
+          pick(model, [
+            'specification',
+            'elements',
+            'relations',
+            'globals',
+            'deployments'
+          ])
+        ),
         views
       }
     })
@@ -443,7 +533,7 @@ export class LikeC4ModelBuilder {
   }
 
   public async computeView(
-    viewId: ViewID,
+    viewId: ViewId,
     cancelToken?: Cancellation.CancellationToken
   ): Promise<c4.ComputedView | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
@@ -462,10 +552,7 @@ export class LikeC4ModelBuilder {
           logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
           return null
         }
-        const index = new LikeC4ModelGraph(model)
-        const result = isElementView(view)
-          ? computeView(view, index)
-          : computeDynamicView(view, index)
+        const result = mkComputeView(model)(view)
         if (!result.isSuccess) {
           logError(result.error)
           return null
@@ -490,8 +577,11 @@ export class LikeC4ModelBuilder {
         }
 
         const previous = this.previousViews[viewId]
-        computedView = previous && eq(computedView, previous) ? previous : computedView
-        this.previousViews[viewId] = computedView
+        if (previous && eq(computedView, previous)) {
+          computedView = previous
+        } else {
+          this.previousViews[viewId] = computedView
+        }
 
         return computedView
       })

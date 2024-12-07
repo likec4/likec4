@@ -1,4 +1,4 @@
-import type { ViewID } from '@likec4/core'
+import type { ViewId as ViewID } from '@likec4/core'
 import type {
   BuildDocumentsRequest,
   ChangeViewRequest,

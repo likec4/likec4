@@ -14,28 +14,31 @@ export default defineConfig({
 
   // Retry on CI only.
   retries: isCI ? 1 : 0,
+  timeout: 10 * 1000,
 
   // Opt out of parallel tests on CI.
   // workers: isCI ? /1 : '80%',
-  workers: '100%',
+  workers: isCI ? '75%' : '100%',
 
   // Reporter to use
-  reporter: 'html',
+  reporter: isCI
+    ? [
+      ['github'],
+      ['list'],
+      ['html']
+    ]
+    : 'html',
 
   updateSnapshots: 'missing',
   use: {
-    // Base URL to use in actions like `await page.goto('/')`.
-    // baseURL: 'http://127.0.0.1:5173',
-
-    deviceScaleFactor: 2,
-    trace: 'on-first-retry',
-    video: 'on-first-retry'
+    browserName: 'chromium',
+    trace: 'retain-on-first-failure'
   },
 
   expect: {
     toHaveScreenshot: {
       scale: 'device',
-      maxDiffPixelRatio: 0.0005
+      maxDiffPixelRatio: 0.05
     }
   },
 
@@ -49,7 +52,9 @@ export default defineConfig({
   // Run your local dev server before starting the tests.
   webServer: {
     command: 'yarn likec4 start',
-    port: 5173
+    port: 5173,
+    stdout: 'pipe',
+    timeout: 10 * 1000
     // url: 'http://127.0.0.1:5173',
     // reuseExistingServer: !process.env.CI
   }

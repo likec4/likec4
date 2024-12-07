@@ -1,6 +1,7 @@
 import { type ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
+import { deployedInstanceChecks, deploymentNodeChecks, deploymentRelationChecks } from './deployment-checks'
 import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
@@ -18,6 +19,8 @@ import {
 } from './specification'
 import { viewChecks } from './view'
 import {
+  deploymentRefExpressionChecks,
+  deploymentRelationExpressionChecks,
   elementPredicateWithChecks,
   expandElementExprChecks,
   incomingExpressionChecks,
@@ -29,6 +32,11 @@ export function registerValidationChecks(services: LikeC4Services) {
   logger.info('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
+    DeployedInstance: deployedInstanceChecks(services),
+    DeploymentNode: deploymentNodeChecks(services),
+    DeploymentRelation: deploymentRelationChecks(services),
+    DeploymentRefExpression: deploymentRefExpressionChecks(services),
+    DeploymentRelationExpression: deploymentRelationExpressionChecks(services),
     NotesProperty: notesPropertyRuleChecks(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),

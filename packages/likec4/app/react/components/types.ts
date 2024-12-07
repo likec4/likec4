@@ -1,10 +1,9 @@
-import type { DiagramView, WhereOperator } from '@likec4/core'
+import type { DiagramView, ViewId, WhereOperator } from '@likec4/core'
 import type { MantineThemeOverride } from '@mantine/core'
 import type { CSSProperties, ReactNode } from 'react'
 
-export type ViewData<ViewId extends string> = Omit<DiagramView, 'id'> & {
-  id: ViewId
-}
+export type { DiagramView }
+export type ViewData<Views extends string> = DiagramView<Views, string>
 
 type ElementIconRendererProps = {
   node: {

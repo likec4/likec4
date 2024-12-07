@@ -1,6 +1,7 @@
-import { type ComputedView, type DiagramView, isComputedDynamicView, type OverviewGraph } from '@likec4/core'
+import { ComputedView, type DiagramView, nonexhaustive, type OverviewGraph } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
+import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson, parseOverviewGraphvizJson } from './GraphvizParser'
@@ -14,8 +15,18 @@ export interface GraphvizPort {
   svg(dot: DotSource): Promise<string>
 }
 
-const getPrinter = (computedView: ComputedView) =>
-  isComputedDynamicView(computedView) ? new DynamicViewPrinter(computedView) : new ElementViewPrinter(computedView)
+const getPrinter = (computedView: ComputedView) => {
+  switch (true) {
+    case ComputedView.isDynamic(computedView):
+      return new DynamicViewPrinter(computedView)
+    case ComputedView.isElement(computedView):
+      return new ElementViewPrinter(computedView)
+    case ComputedView.isDeployment(computedView):
+      return new DeploymentViewPrinter(computedView)
+    default:
+      nonexhaustive(computedView)
+  }
+}
 
 export type LayoutResult = {
   dot: DotSource
@@ -34,6 +45,8 @@ export class GraphvizLayouter {
 
   async layout(view: ComputedView): Promise<LayoutResult> {
     let dot = await this.dot(view)
+    // logger.debug('View ${view.id} DOT:')
+    // logger.debug(dot)
     const rawjson = await this.graphviz.layoutJson(dot)
     let diagram = parseGraphvizJson(rawjson, view)
 
@@ -84,7 +97,7 @@ export class GraphvizLayouter {
   async dot(computedView: ComputedView): Promise<DotSource> {
     const printer = getPrinter(computedView)
     let dot = printer.print()
-    if (isComputedDynamicView(computedView)) {
+    if (ComputedView.isDynamic(computedView)) {
       return dot
     }
     try {

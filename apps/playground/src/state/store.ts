@@ -1,4 +1,4 @@
-import { type DiagramView, invariant, LikeC4Model, type ViewID } from '@likec4/core'
+import { type DiagramView, invariant, LikeC4Model, type ViewId } from '@likec4/core'
 import { changeView, fetchComputedModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
@@ -56,10 +56,10 @@ export type WorkspaceStore = {
   /**
    * Current diagram.
    */
-  viewId: ViewID
+  viewId: ViewId
 
   diagrams: Record<
-    LiteralUnion<ViewID, string>,
+    LiteralUnion<ViewId, string>,
     {
       // Never loaded
       state: 'pending'
@@ -161,7 +161,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
             likeC4Model: null,
             modelFetched: false,
 
-            viewId: 'index' as ViewID,
+            viewId: 'index' as ViewId,
             diagrams: {},
             requestedLocation: null,
 
@@ -218,7 +218,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
                     // Merge new views with current views
                     const views = mapValues(model.views, (newView) => {
-                      const current = currentmodel?.sourcemodel.views[newView.id]
+                      const current = currentmodel?.$model.views[newView.id]
                       const next = current && deepEqual(newView, current) ? current : newView
 
                       let diagramState = diagrams[newView.id]
@@ -246,7 +246,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 
                     set(
                       {
-                        likeC4Model: LikeC4Model.computed({
+                        likeC4Model: LikeC4Model.create({
                           ...model,
                           views
                         }),
@@ -277,7 +277,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               layoutLimit(async () => {
                 const { likeC4Model, diagrams: currentDiagrams } = get()
 
-                const computedView = likeC4Model?.sourcemodel.views[viewId as ViewID] ?? null
+                const computedView = likeC4Model?.$model.views[viewId as ViewId] ?? null
                 if (!computedView) {
                   // Do nothing
                   return
@@ -299,6 +299,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                     error: null
                   }
                 } catch (e) {
+                  console.error(e)
                   diagrams[viewId] = {
                     view: currentDiagrams[viewId]?.view ?? null,
                     dot: currentDiagrams[viewId]?.dot ?? null,
