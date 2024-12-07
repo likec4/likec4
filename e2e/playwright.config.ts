@@ -17,7 +17,7 @@ export default defineConfig({
 
   // Opt out of parallel tests on CI.
   // workers: isCI ? /1 : '80%',
-  workers: '100%',
+  workers: isCI ? '75%' : '100%',
 
   // Reporter to use
   reporter: 'html',
@@ -29,7 +29,7 @@ export default defineConfig({
 
     deviceScaleFactor: 2,
     trace: 'on-first-retry',
-    video: 'on-first-retry'
+    video: 'off'
   },
 
   expect: {

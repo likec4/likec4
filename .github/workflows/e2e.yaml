@@ -19,7 +19,7 @@ env:
 
 jobs:
   e2e-tests:
-    timeout-minutes: 15
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'run tests' }}
     steps:
@@ -69,7 +69,7 @@ jobs:
           retention-days: 5
 
   update-screenshots:
-    timeout-minutes: 15
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
     steps:

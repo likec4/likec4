@@ -191,14 +191,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/e2e@workspace:."
   dependencies:
-    "@playwright/test": "npm:1.48.2"
+    "@playwright/test": "npm:^1.49.0"
     "@types/react": "npm:18.3.4"
     likec4: "file:../packages/likec4/package.tgz"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    remeda: "npm:^2.14.0"
     std-env: "npm:^3.7.0"
-    typescript: "npm:^5.6.2"
+    typescript: "npm:^5.7.2"
     zx: "npm:^8.1.8"
   languageName: unknown
   linkType: soft
@@ -232,14 +231,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:1.48.2":
-  version: 1.48.2
-  resolution: "@playwright/test@npm:1.48.2"
+"@playwright/test@npm:^1.49.0":
+  version: 1.49.0
+  resolution: "@playwright/test@npm:1.49.0"
   dependencies:
-    playwright: "npm:1.48.2"
+    playwright: "npm:1.49.0"
   bin:
     playwright: cli.js
-  checksum: 10c0/68bab3bee8d716111e9a166785e6c3c406b6a184fc46d03b5468fcbb92b6242e5628f6a75f9d286e2491ec0e9e59af67542a1f114b6659d790b5a1f41e4d305b
+  checksum: 10c0/2890d52ee45bd83b5501f17a77c77f12ba934d257fda4b288405c6d91f94b83c4fcbdff3c0be89c2aaeea3d13576b72ec9a70be667ff844b342044afd72a246e
   languageName: node
   linkType: hard
 
@@ -1297,6 +1296,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.49.0":
+  version: 1.49.0
+  resolution: "playwright-core@npm:1.49.0"
+  bin:
+    playwright-core: cli.js
+  checksum: 10c0/22c1a72fabdcc87bd1cd4d40a032d2c5b94cf94ba7484dc182048c3fa1c8ec26180b559d8cac4ca9870e8fd6bdf5ef9d9f54e7a31fd60d67d098fcffc5e4253b
+  languageName: node
+  linkType: hard
+
 "playwright@npm:1.48.2":
   version: 1.48.2
   resolution: "playwright@npm:1.48.2"
@@ -1309,6 +1317,21 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: 10c0/ecde4ee4767556868b24d7700f3502692a3cb14c8ef127052b51b48833ffcce80942954fb188a9b72505122b48b1b625d1bb486721e1c4f2e980215328ba1ad5
+  languageName: node
+  linkType: hard
+
+"playwright@npm:1.49.0":
+  version: 1.49.0
+  resolution: "playwright@npm:1.49.0"
+  dependencies:
+    fsevents: "npm:2.3.2"
+    playwright-core: "npm:1.49.0"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 10c0/e94d662747cd147d0573570fec90dadc013c1097595714036fc8934a075c5a82ab04a49111b03b1f762ea86429bdb7c94460901896901e20970b30ce817cc93f
   languageName: node
   linkType: hard
 
@@ -1358,15 +1381,6 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
-  languageName: node
-  linkType: hard
-
-"remeda@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "remeda@npm:2.14.0"
-  dependencies:
-    type-fest: "npm:^4.26.1"
-  checksum: 10c0/1f6ca80f9b896f7323c21de131129c2bae6251f2d723a5497a678461486fcf7111be94b9c30bed8fd7b9fced622cb6ab496960478f36e86fe479f3e54ae2cabf
   languageName: node
   linkType: hard
 
@@ -1607,30 +1621,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.26.1":
-  version: 4.26.1
-  resolution: "type-fest@npm:4.26.1"
-  checksum: 10c0/d2719ff8d380befe8a3c61068f37f28d6fa2849fd140c5d2f0f143099e371da6856aad7c97e56b83329d45bfe504afe9fd936a7cff600cc0d46aa9ffb008d6c6
-  languageName: node
-  linkType: hard
-
-"typescript@npm:^5.6.2":
-  version: 5.6.2
-  resolution: "typescript@npm:5.6.2"
+"typescript@npm:^5.7.2":
+  version: 5.7.2
+  resolution: "typescript@npm:5.7.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/3ed8297a8c7c56b7fec282532503d1ac795239d06e7c4966b42d4330c6cf433a170b53bcf93a130a7f14ccc5235de5560df4f1045eb7f3550b46ebed16d3c5e5
+  checksum: 10c0/a873118b5201b2ef332127ef5c63fb9d9c155e6fdbe211cbd9d8e65877283797cca76546bad742eea36ed7efbe3424a30376818f79c7318512064e8625d61622
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.6.2#optional!builtin<compat/typescript>":
-  version: 5.6.2
-  resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=8c6c40"
+"typescript@patch:typescript@npm%3A^5.7.2#optional!builtin<compat/typescript>":
+  version: 5.7.2
+  resolution: "typescript@patch:typescript@npm%3A5.7.2#optional!builtin<compat/typescript>::version=5.7.2&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/94eb47e130d3edd964b76da85975601dcb3604b0c848a36f63ac448d0104e93819d94c8bdf6b07c00120f2ce9c05256b8b6092d23cf5cf1c6fa911159e4d572f
+  checksum: 10c0/f3b8082c9d1d1629a215245c9087df56cb784f9fb6f27b5d55577a20e68afe2a889c040aacff6d27e35be165ecf9dca66e694c42eb9a50b3b2c451b36b5675cb
   languageName: node
   linkType: hard
 
