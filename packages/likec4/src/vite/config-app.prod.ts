@@ -63,7 +63,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client'
-      ]
+      ],
+      force: true
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),

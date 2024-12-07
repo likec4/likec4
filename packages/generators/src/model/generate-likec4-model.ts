@@ -7,10 +7,12 @@ export function generateLikeC4Model(model: LikeC4Model) {
   out.appendTemplate`
     /* prettier-ignore-start */
     /* eslint-disable */
+
     /******************************************************************************
      * This file was generated
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
+
     import { LikeC4Model } from 'likec4'
 
     export const likeC4Model = LikeC4Model.fromDump(${
@@ -22,6 +24,8 @@ export function generateLikeC4Model(model: LikeC4Model) {
 
     export type LikeC4ElementId = typeof likeC4Model.Aux.Fqn
     export type LikeC4ViewId = typeof likeC4Model.Aux.ViewId
+
+    /* prettier-ignore-end */
   `
   return toString(out)
 }

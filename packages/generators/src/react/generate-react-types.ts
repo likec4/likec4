@@ -52,7 +52,7 @@ export function generateReactTypes(model: LikeC4Model.Layouted) {
 
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
-import {
+import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ViewData,
   LikeC4Model as GenericLikeC4Model,

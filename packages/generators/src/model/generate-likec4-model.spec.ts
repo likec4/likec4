@@ -152,7 +152,7 @@ computed.views = mapValues(computed.views, withReadableEdges)
 const m = LikeC4Model.create(computed)
 
 describe('generateLikeC4Model', () => {
-  it('should generate', () => {
-    expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4-model.snap')
+  it('should generate', async ({ expect }) => {
+    await expect(generateLikeC4Model(m)).toMatchFileSnapshot('__snapshots__/likec4-model.snap')
   })
 })
