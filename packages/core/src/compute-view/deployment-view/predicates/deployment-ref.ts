@@ -131,10 +131,9 @@ function includeDeployedNodeDescendants(
   for (const child of descendants) {
     if (child.isInstance()) {
       stage.addExplicit(child)
-      stage.addImplicit(child.parent)
-      continue
+    } else {
+      stage.addImplicit(child)
     }
-    stage.addImplicit(child)
   }
 
   if (hasAtLeast(descendants, 2)) {

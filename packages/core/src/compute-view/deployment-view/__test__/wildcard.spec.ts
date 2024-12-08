@@ -15,7 +15,6 @@ describe('deployment view: wildcard', () => {
     ])
     expect(edgeIds).toEqual([
       'prod.eu:prod.us',
-      'prod.us:prod.eu',
       'prod.eu:global.email',
       'prod.us:global.email',
       'customer.instance:prod.eu',

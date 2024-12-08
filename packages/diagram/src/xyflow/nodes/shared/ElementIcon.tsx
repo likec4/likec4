@@ -14,7 +14,7 @@ export const ElementIcon = ({
   className: string
   renderIcon: ElementIconRenderer | null
 }) => {
-  if (!element.icon) {
+  if (!element.icon || element.icon === 'none') {
     return null
   }
   let icon = null as React.ReactNode
