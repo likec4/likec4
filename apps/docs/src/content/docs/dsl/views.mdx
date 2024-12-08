@@ -5,7 +5,7 @@ sidebar:
   label: Views
   order: 8
 tableOfContents:
-  minHeadingLevel: 3
+  minHeadingLevel: 2
   maxHeadingLevel: 6
 ---
 
@@ -19,7 +19,7 @@ LikeC4 is model-based, and views are projections of the model from various persp
 
 LikeC4 does not enforce specific rules, such as a strict number of levels or what should be included; it’s entirely up to you and your context.  
 
-### View definition
+## View definition
 
 Views are defined in `views` section.  
 They can be named (must be unique) or unnamed (can’t be referenced, but still can be exported):
@@ -70,7 +70,7 @@ Predicates specify which elements and relationships are visible.
   Connections represent merged relationships - direct between elements and/or those derived from their nested elements.
 </Aside>
 
-### Scoped views
+## Scoped views
 
 A view can be defined for a specific element (`view of ..`).  
 The view will then inherit the [scope](/dsl/references#scope) of that element:
@@ -113,12 +113,12 @@ views {
 
 You can define multiple views for the same element, with the default determined by their order.
 
-### View predicates
+## View predicates
 
 Views are not static, they are generated from the model. Any changes in the model are applied immediately and update views.
 Two types of predicates define what is visible: element and relationship predicates.
 
-##### Element predicates
+#### Element predicates
 
 Element predicates explicitly define which elements are visible. Each included element brings in its relationships with already visible elements.
 
@@ -153,7 +153,7 @@ view {
   Excludes apply only to elements/relationships included earlier.
 </Aside>
 
-###### Combining
+##### Combining
 
 Predicates can be combined. The following is the same as example above:
 
@@ -169,7 +169,7 @@ view {
 }
 ```
 
-###### Wildcard
+##### Wildcard
 
 Wildcard predicates can be used to reference "everything" (but it differs for scoped/unscoped views).  
 Consider the following model:
@@ -213,7 +213,7 @@ views {
 }
 ```
 
-###### With overrides
+##### With overrides
 
 You can modify element properties specifically for the view:
 
@@ -235,7 +235,7 @@ include cloud.* with {
 
 `with` may be used only within `include`.
 
-###### With custom navigation
+##### With custom navigation
 
 You can define custom navigation and links between views:
 
@@ -258,7 +258,7 @@ view view3 {
 }
 ```
 
-###### By element kind or tag
+##### By element kind or tag
 
 ```likec4
 // elements by kind
@@ -274,11 +274,11 @@ exclude element.tag = #next
 These predicates may be deprecated in the future, please consider [`where`](#filter) operator
 :::
 
-##### Relationship predicates
+#### Relationship predicates
 
 Relationship predicates include elements only if they have relationships that meet the specified predicate conditions.
 
-###### Directed relationships
+##### Directed relationships
 
 Include elements if they have **directed** relationships (or their nested elements):
 
@@ -290,7 +290,7 @@ include customer -> cloud
 include customer -> cloud.*
 ```
 
-###### Any relationship
+##### Any relationship
 
 Include elements if they have any relationships:
 
@@ -298,7 +298,7 @@ Include elements if they have any relationships:
 include customer <-> cloud
 ```
 
-###### Incoming
+##### Incoming
 
 Include elements if they have incoming relationships from already visible elements.  
 Here’s an example based on the model from the [wildcard example](#wildcard):
@@ -332,7 +332,7 @@ view {
 Relationship predicates are useful for refining your diagrams, allowing you to narrow the scope and focus on specific parts of the system.
 :::
 
-###### Outgoing
+##### Outgoing
 
 Include elements if only they have outgoing relationships to already visible elements:
 
@@ -341,7 +341,7 @@ include customer ->
 include cloud.* ->
 ```
 
-###### In/Out
+##### In/Out
 
 Include nested elements of `cloud`, that have any relationships with visible elements:
 
@@ -349,7 +349,7 @@ Include nested elements of `cloud`, that have any relationships with visible ele
 include -> cloud.* ->
 ```
 
-###### Relationship customization
+##### Relationship customization
 
 Relationships can be customized inside view:
 
@@ -387,7 +387,7 @@ It is possible to customize relationships with known endpoints only
 For example, `* -> *` can be customized (in other words, all relationships on the view), but outgoing `cloud.* ->` can not.
 :::
 
-###### Relationship navigation
+##### Relationship navigation
 
 To customize [navigation](/dsl/relationships/#navigate-to) from relationship:
 
@@ -398,9 +398,9 @@ include
   }
 ```
 
-#### Suffix predicates
+### Suffix predicates
 
-##### Children `.*`
+#### Children `.*`
 
 The children suffix includes an alement's children and their relationships to other visible elements.
 
@@ -412,7 +412,7 @@ include cloud.backend
 include cloud.ui
 ```
 
-##### Descendants `.**`
+#### Descendants `.**`
 
 The descendants suffix includes all of an element's descendants and their relationships to other visible elements.
 
@@ -425,7 +425,7 @@ include cloud.ui
 include cloud.ui.webApp
 ```
 
-##### Expand `._`
+#### Expand `._`
 
 The expand predicate includes an element's children **IF** they have a relationship with another visible element.
 All other children are omitted.
@@ -438,7 +438,7 @@ include cloud
 include -> cloud.* ->
 ```
 
-#### Filter
+### Filter
 
 `where` operator narrows down results by applying additional conditions:
 
@@ -513,7 +513,7 @@ Together with [predicate groups](#global-predicate-groups) you may define a "bas
 
 :::
 
-#### Global predicate groups
+### Global predicate groups
 
 If you find yourself repeating the same predicates in multiple views, you can define them as global group:
 
@@ -541,7 +541,7 @@ views {
 }
 ```
 
-### Groups
+## Groups
 
 It is possible to group elements, and this is rendered as a boundary around them:
 
@@ -660,7 +660,7 @@ group {
   ```  
 </Aside>
 
-### Style predicates
+## Style predicates
 
 Style predicates define how elements are rendered, and applied in the order they are defined merging with previous ones:
 
@@ -706,7 +706,7 @@ view apiApp of internetBankingSystem.apiApplication {
 [`Group`](#groups) does not support nested `style` predicates (yet).
 :::
 
-#### Shared local styles
+### Shared local styles
 
 Styles can be shared within `views` block (_"local styles"_):
 
@@ -749,7 +749,7 @@ First, local styles from `views` block and then from `view`
 :::
 
 
-#### Shared global styles
+### Shared global styles
 
 Styles can be shared globally.  
 Global styles must be named and defined in `global` block:
@@ -793,7 +793,7 @@ views {
 }
 ```
 
-##### Shared style groups
+### Shared style groups
 
 Global styles can be grouped:
 
@@ -851,7 +851,7 @@ views {
 :::
 
 
-### Auto-layout
+## Auto-layout
 
 ```likec4
 view {
@@ -871,7 +871,7 @@ Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">
 </Aside>
 
 
-### Extend views
+## Extend views
 
 Views can be extended to avoid duplication, to create a "baseline" or, for example, "slides" for a presentation:
 
