@@ -56,10 +56,14 @@ export const ElementNode = memo<ElementNodeProps>(({
     onOpenSource
   } = useDiagramState(selector)
 
-  const scale = (diff: number) => ({
-    scaleX: (w + diff) / w,
-    scaleY: (h + diff) / h
-  })
+  const maxWH = Math.max(w, h)
+  const scale = (diff: number) => {
+    const s = (maxWH + diff) / maxWH
+    return ({
+      scaleX: s,
+      scaleY: s
+    })
+  }
 
   let opacity = 1
   if (data.dimmed) {

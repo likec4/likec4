@@ -1,4 +1,4 @@
-import { type ThemeColor } from '@likec4/core'
+import { DiagramNode, type ThemeColor } from '@likec4/core'
 import { ActionIcon, type ActionIconProps, Box, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
@@ -144,6 +144,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   width,
   height
 }) {
+  const modelRef = DiagramNode.modelRef(element)
+  // const deploymentRef = DiagramNode.deploymentRef(element)
   const {
     viewId,
     isEditable,
@@ -303,10 +305,10 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         <BottomButtons
           keyPrefix={`${viewId}:element:${id}:`}
           onNavigateTo={isNavigable && onNavigateTo}
-          onOpenRelationships={enableRelationshipBrowser && onOpenRelationships}
+          onOpenRelationships={enableRelationshipBrowser && !!modelRef && onOpenRelationships}
           {...isInteractive && animateHandlers}
         />
-        {enableElementDetails && !!element.modelRef && (
+        {enableElementDetails && !!modelRef && (
           <Tooltip
             fz="xs"
             color="dark"

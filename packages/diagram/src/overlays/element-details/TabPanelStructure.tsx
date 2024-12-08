@@ -60,7 +60,7 @@ export function TabElementStructure({
       value: element.id,
       element,
       type: 'current',
-      children: element.children().toArray().map((child): TreeNodeData => ({
+      children: [...element.children()].map((child): TreeNodeData => ({
         label: <ElementLabel type="descedant" element={child} />,
         value: child.id,
         element: child,

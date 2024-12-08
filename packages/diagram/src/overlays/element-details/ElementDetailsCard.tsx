@@ -312,10 +312,10 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                 <Box flex={1}>
                   <SmallLabel>tags</SmallLabel>
                   <Flex gap={4} flex={1} mt={6}>
-                    {nodeModel.tags?.map((tag) => (
+                    {nodeModel.tags.map((tag) => (
                       <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
                     ))}
-                    {!nodeModel.tags && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+                    {nodeModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                   </Flex>
                 </Box>
                 <ActionIconGroup
@@ -490,7 +490,7 @@ const ElementIcon = (
     renderIcon: ElementIconRenderer | null
   }
 ) => {
-  if (!element.icon) {
+  if (!element.icon || element.icon === 'none') {
     return null
   }
   let icon = null as React.ReactNode

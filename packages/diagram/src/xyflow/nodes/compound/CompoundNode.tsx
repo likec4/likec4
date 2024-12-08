@@ -1,4 +1,4 @@
-import { type ThemeColor } from '@likec4/core'
+import { DiagramNode, type ThemeColor } from '@likec4/core'
 import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId, IconZoomScan } from '@tabler/icons-react'
@@ -117,6 +117,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     }
   }
 ) => {
+  const modelRef = DiagramNode.modelRef(element)
   const { depth, style, color } = element
   const isNotViewGroup = !isViewGroup
   const opacity = clamp((style.opacity ?? 100) / 100, {
@@ -285,7 +286,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                 className={css.title}>
                 {element.title}
               </Text>
-              {enableElementDetails && !!element.modelRef && (
+              {enableElementDetails && !!modelRef && (
                 <Tooltip
                   fz="xs"
                   color="dark"

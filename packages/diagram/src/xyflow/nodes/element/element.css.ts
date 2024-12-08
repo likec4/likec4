@@ -141,7 +141,8 @@ export const title = style({
   fontSize: 19,
   lineHeight: 1.15,
   textWrap: 'balance',
-  color: vars.element.hiContrast
+  color: vars.element.hiContrast,
+  whiteSpaceCollapse: 'preserve-breaks'
 })
 
 export const description = style({

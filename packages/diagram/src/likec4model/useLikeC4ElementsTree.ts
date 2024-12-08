@@ -16,7 +16,7 @@ function buildNode(
   return {
     label: element.title,
     value: element.id,
-    children: element.children().toArray().map(buildNode).sort(sortByLabel)
+    children: [...element.children()].map(buildNode).sort(sortByLabel)
   }
 }
 
@@ -29,9 +29,9 @@ export function useLikeC4ElementsTree(viewId?: ViewId): LikeC4ModelTreeNodeData[
   return useMemo(() => {
     if (viewId) {
       const view = model.view(viewId)
-      return view.roots().toArray().map(buildNode).sort(sortByLabel)
+      return [...view.roots()].map(buildNode).sort(sortByLabel)
     } else {
-      return model.roots().toArray().map(buildNode).sort(sortByLabel)
+      return [...model.roots()].map(buildNode).sort(sortByLabel)
     }
   }, [model, viewId ?? null])
 }

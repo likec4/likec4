@@ -86,14 +86,12 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         {...(selectable && {
           whileHover: {
             ...scale(12),
-            scaleX: (width + 12) / width,
-            scaleY: (height + 12) / height,
             transition: {
               delay: 0.1
             }
           },
           whileTap: {
-            ...scale(-12)
+            ...scale(-8)
           }
         })}
       >
