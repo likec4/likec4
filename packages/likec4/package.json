@@ -123,7 +123,7 @@
     "@tanstack/router-cli": "1.45.13",
     "@tanstack/router-vite-plugin": "1.45.13",
     "@types/node": "^20.17.7",
-    "@types/prop-types": "^15.7.13",
+    "@types/prop-types": "^15.7.14",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.1",
     "@types/yargs": "^17.0.33",
