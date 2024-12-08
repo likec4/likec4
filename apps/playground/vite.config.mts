@@ -124,6 +124,12 @@ export default defineConfig((env) => {
         },
         mode: 'production',
         resolve: {
+          dedupe: [
+            'react/jsx-runtime',
+            'react-dom/client',
+            'react',
+            'react-dom'
+          ],
           conditions: ['production'],
           alias: {
             '/src/style.css': resolve('prebuild/style.css'),
