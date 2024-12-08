@@ -85,7 +85,7 @@ export class ElementModel<M extends AnyAux> {
     return common ? this.model.element(common) : null
   }
 
-  public children(): ElementsIterator<M> {
+  public children(): ReadonlySet<ElementModel<M>> {
     return this.model.children(this)
   }
 

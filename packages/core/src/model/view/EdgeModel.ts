@@ -34,6 +34,18 @@ export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
     return this.$edge.parent ? this.view.node(this.$edge.parent) : null
   }
 
+  get label(): string | null {
+    return this.$edge.label
+  }
+
+  get description(): string | null {
+    return this.$edge.description ?? null
+  }
+
+  get technology(): string | null {
+    return this.$edge.technology ?? null
+  }
+
   public hasParent(): this is EdgeModel.WithParent<M, V> {
     return this.$edge.parent !== null
   }

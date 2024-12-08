@@ -203,7 +203,7 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
     return this.$node.kind
   }
 
-  public children(): DeploymentElementsIterator<M> {
+  public children(): ReadonlySet<DeploymentElementModel<M>> {
     return this.model.children(this)
   }
 

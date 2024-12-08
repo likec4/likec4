@@ -1,3 +1,4 @@
+import DefaultMap from 'mnemonist/default-map'
 import { values } from 'remeda'
 import { invariant, nonNullable } from '../errors'
 import {
@@ -30,27 +31,29 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   // Parent element for given FQN
   readonly #parents = new Map<M['Deployment'], DeploymentNodeModel<M>>()
   // Children elements for given FQN
-  readonly #children = new Map<M['Deployment'], Set<DeploymentElementModel<M>>>()
+  readonly #children = new DefaultMap<M['Deployment'], Set<DeploymentElementModel<M>>>(() => new Set())
 
   // Keep track of instances of the logical element
-  readonly #instancesOf = new Map<M['Element'], Set<DeployedInstanceModel<M>>>()
+  readonly #instancesOf = new DefaultMap<M['Element'], Set<DeployedInstanceModel<M>>>(() => new Set())
 
   readonly #rootElements = new Set<DeploymentNodeModel<M>>()
 
   readonly #relations = new Map<M['RelationId'], DeploymentRelationModel<M>>()
 
   // Incoming to an element or its descendants
-  readonly #incoming = new Map<M['Deployment'], Set<DeploymentRelationModel<M>>>()
+  readonly #incoming = new DefaultMap<M['Deployment'], Set<DeploymentRelationModel<M>>>(() => new Set())
 
   // Outgoing from an element or its descendants
-  readonly #outgoing = new Map<M['Deployment'], Set<DeploymentRelationModel<M>>>()
+  readonly #outgoing = new DefaultMap<M['Deployment'], Set<DeploymentRelationModel<M>>>(() => new Set())
 
   // Relationships inside the element, among descendants
-  readonly #internal = new Map<M['Deployment'], Set<DeploymentRelationModel<M>>>()
+  readonly #internal = new DefaultMap<M['Deployment'], Set<DeploymentRelationModel<M>>>(() => new Set())
 
   // readonly #views = new Map<ViewID, LikeC4ViewModel<M>>()
 
-  readonly #allTags = new Map<C4Tag, Set<DeploymentElementModel<M> | DeploymentRelationModel<M>>>()
+  readonly #allTags = new DefaultMap<C4Tag, Set<DeploymentElementModel<M> | DeploymentRelationModel<M>>>(() =>
+    new Set()
+  )
 
   readonly #nestedElementsOfDeployment = new Map<
     `${M['Deployment']}@${M['Element']}`,
@@ -64,16 +67,16 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     for (const element of values($deployments.elements)) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
-        getOrCreate(this.#allTags, tag, () => new Set()).add(el)
+        this.#allTags.get(tag).add(el)
       }
       if (el.isInstance()) {
-        getOrCreate(this.#instancesOf, el.element.id, () => new Set()).add(el)
+        this.#instancesOf.get(el.element.id).add(el)
       }
     }
     for (const relation of values($deployments.relations)) {
       const el = this.addRelation(relation)
       for (const tag of el.tags) {
-        getOrCreate(this.#allTags, tag, () => new Set()).add(el)
+        this.#allTags.get(tag).add(el)
       }
     }
   }
@@ -216,9 +219,9 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
+  public children(element: M['DeploymentOrFqn']): ReadonlySet<DeploymentElementModel<M>> {
     const id = getId(element)
-    return this._childrenOf(id).values()
+    return this.#children.get(id)
   }
 
   /**
@@ -269,7 +272,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     filter: IncomingFilter = 'all'
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
-    for (const rel of this._incomingTo(id).values()) {
+    for (const rel of this.#incoming.get(id)) {
       switch (true) {
         case filter === 'all':
           yield rel
@@ -294,7 +297,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     filter: OutgoingFilter = 'all'
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
-    for (const rel of this._outgoingFrom(id).values()) {
+    for (const rel of this.#outgoing.get(id)) {
       switch (true) {
         case filter === 'all':
           yield rel
@@ -322,7 +325,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     if (parentId) {
       invariant(this.#elements.has(parentId), `Parent ${parentId} of ${el.id} not found`)
       this.#parents.set(el.id, this.node(parentId))
-      this._childrenOf(parentId).add(el)
+      this.#children.get(parentId).add(el)
     } else {
       invariant(el.isDeploymentNode(), `Root element ${el.id} is not a deployment node`)
       this.#rootElements.add(el)
@@ -339,14 +342,14 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
       relation
     )
     this.#relations.set(rel.id, rel)
-    this._incomingTo(rel.target.id).add(rel)
-    this._outgoingFrom(rel.source.id).add(rel)
+    this.#incoming.get(rel.target.id).add(rel)
+    this.#outgoing.get(rel.source.id).add(rel)
 
     const relParent = rel.boundary?.id ?? null
     // Process internal relationships
     if (relParent) {
       for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
-        this._internalOf(ancestor).add(rel)
+        this.#internal.get(ancestor).add(rel)
       }
     }
     // Process source hierarchy
@@ -354,31 +357,15 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
       if (sourceAncestor === relParent) {
         break
       }
-      this._outgoingFrom(sourceAncestor).add(rel)
+      this.#outgoing.get(sourceAncestor).add(rel)
     }
     // Process target hierarchy
     for (const targetAncestor of ancestorsFqn(rel.target.id)) {
       if (targetAncestor === relParent) {
         break
       }
-      this._incomingTo(targetAncestor).add(rel)
+      this.#incoming.get(targetAncestor).add(rel)
     }
     return rel
-  }
-
-  private _childrenOf(id: M['DeploymentFqn']) {
-    return getOrCreate(this.#children, id, () => new Set())
-  }
-
-  private _incomingTo(id: M['DeploymentFqn']) {
-    return getOrCreate(this.#incoming, id, () => new Set())
-  }
-
-  private _outgoingFrom(id: M['DeploymentFqn']) {
-    return getOrCreate(this.#outgoing, id, () => new Set())
-  }
-
-  private _internalOf(id: M['DeploymentFqn']) {
-    return getOrCreate(this.#internal, id, () => new Set())
   }
 }

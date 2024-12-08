@@ -1,3 +1,4 @@
+import DefaultMap from 'mnemonist/default-map'
 import { pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
@@ -27,24 +28,26 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   // Parent element for given FQN
   readonly #parents = new Map<M['Element'], ElementModel<M>>()
   // Children elements for given FQN
-  readonly #children = new Map<M['Element'], Set<ElementModel<M>>>()
+  readonly #children = new DefaultMap<M['Element'], Set<ElementModel<M>>>(() => new Set())
 
   readonly #rootElements = new Set<ElementModel<M>>()
 
   readonly #relations = new Map<M['RelationId'], RelationshipModel<M>>()
 
   // Incoming to an element or its descendants
-  readonly #incoming = new Map<M['Element'], Set<RelationshipModel<M>>>()
+  readonly #incoming = new DefaultMap<M['Element'], Set<RelationshipModel<M>>>(() => new Set())
 
   // Outgoing from an element or its descendants
-  readonly #outgoing = new Map<M['Element'], Set<RelationshipModel<M>>>()
+  readonly #outgoing = new DefaultMap<M['Element'], Set<RelationshipModel<M>>>(() => new Set())
 
   // Relationships inside the element, among descendants
-  readonly #internal = new Map<M['Element'], Set<RelationshipModel<M>>>()
+  readonly #internal = new DefaultMap<M['Element'], Set<RelationshipModel<M>>>(() => new Set())
 
   readonly #views = new Map<M['ViewIdLiteral'], LikeC4ViewModel<M>>()
 
-  readonly #allTags = new Map<C4Tag, Set<ElementModel<M> | RelationshipModel<M> | LikeC4ViewModel<M>>>()
+  readonly #allTags = new DefaultMap<C4Tag, Set<ElementModel<M> | RelationshipModel<M> | LikeC4ViewModel<M>>>(() =>
+    new Set()
+  )
 
   public readonly deployment: LikeC4DeploymentModel<M>
 
@@ -67,13 +70,13 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     for (const element of values($model.elements)) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
-        getOrCreate(this.#allTags, tag, () => new Set()).add(el)
+        this.#allTags.get(tag).add(el)
       }
     }
     for (const relation of values($model.relations)) {
       const el = this.addRelation(relation)
       for (const tag of el.tags) {
-        getOrCreate(this.#allTags, tag, () => new Set()).add(el)
+        this.#allTags.get(tag).add(el)
       }
     }
     this.deployment = new LikeC4DeploymentModel(this, $model.deployments)
@@ -85,7 +88,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
       const vm = new LikeC4ViewModel(this, view as M['ViewType'])
       this.#views.set(view.id, vm)
       for (const tag of vm.tags) {
-        getOrCreate(this.#allTags, tag, () => new Set()).add(vm)
+        this.#allTags.get(tag).add(vm)
       }
     }
   }
@@ -167,9 +170,9 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    * Get all children of the element (only direct children),
    * @see descendants
    */
-  public children(element: M['ElementOrFqn']) {
+  public children(element: M['ElementOrFqn']): ReadonlySet<ElementModel<M>> {
     const id = getId(element) as M['Fqn']
-    return this._childrenOf(id).values()
+    return this.#children.get(id)
   }
 
   /**
@@ -178,7 +181,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   public *siblings(element: M['ElementOrFqn']): ElementsIterator<M> {
     const id = getId(element) as M['Fqn']
     const parent = this.#parents.get(id)
-    const siblings = parent ? this._childrenOf(parent.id).values() : this.roots()
+    const siblings = parent ? this.#children.get(parent.id).values() : this.roots()
     for (const sibling of siblings) {
       if (sibling.id !== id) {
         yield sibling
@@ -221,7 +224,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     filter: IncomingFilter = 'all'
   ): RelationshipsIterator<M> {
     const id = getId(element)
-    for (const rel of this._incomingTo(id).values()) {
+    for (const rel of this.#incoming.get(id)) {
       switch (true) {
         case filter === 'all':
           yield rel
@@ -246,7 +249,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     filter: OutgoingFilter = 'all'
   ): RelationshipsIterator<M> {
     const id = getId(element)
-    for (const rel of this._outgoingFrom(id).values()) {
+    for (const rel of this.#outgoing.get(id)) {
       switch (true) {
         case filter === 'all':
           yield rel
@@ -272,7 +275,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     if (parentId) {
       invariant(this.#elements.has(parentId), `Parent ${parentId} of ${el.id} not found`)
       this.#parents.set(el.id, this.element(parentId))
-      this._childrenOf(parentId).add(el)
+      this.#children.get(parentId).add(el)
     } else {
       this.#rootElements.add(el)
     }
@@ -289,14 +292,14 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     )
     const { source, target } = rel
     this.#relations.set(rel.id, rel)
-    this._incomingTo(target.id).add(rel)
-    this._outgoingFrom(source.id).add(rel)
+    this.#incoming.get(target.id).add(rel)
+    this.#outgoing.get(source.id).add(rel)
 
     const relParent = commonAncestor(source.id, target.id)
     // Process internal relationships
     if (relParent) {
       for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
-        this._internalOf(ancestor).add(rel)
+        this.#internal.get(ancestor).add(rel)
       }
     }
     // Process source hierarchy
@@ -304,32 +307,16 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
       if (sourceAncestor === relParent) {
         break
       }
-      this._outgoingFrom(sourceAncestor).add(rel)
+      this.#outgoing.get(sourceAncestor).add(rel)
     }
     // Process target hierarchy
     for (const targetAncestor of ancestorsFqn(relation.target)) {
       if (targetAncestor === relParent) {
         break
       }
-      this._incomingTo(targetAncestor).add(rel)
+      this.#incoming.get(targetAncestor).add(rel)
     }
     return rel
-  }
-
-  private _childrenOf(id: M['Element']) {
-    return getOrCreate(this.#children, id, () => new Set())
-  }
-
-  private _incomingTo(id: M['Element']) {
-    return getOrCreate(this.#incoming, id, () => new Set())
-  }
-
-  private _outgoingFrom(id: M['Element']) {
-    return getOrCreate(this.#outgoing, id, () => new Set())
-  }
-
-  private _internalOf(id: M['Element']) {
-    return getOrCreate(this.#internal, id, () => new Set())
   }
 }
 
@@ -360,9 +347,9 @@ export namespace LikeC4Model {
     V extends ComputedView | DiagramView = M['ViewType']
   > = EdgeModel<M, V>
 
-  export type Deployment<M extends AnyAux = AnyAux> = LikeC4DeploymentModel<M>
+  export type DeploymentModel<M extends AnyAux = AnyAux> = LikeC4DeploymentModel<M>
 
-  export type DeploymentElement<M extends AnyAux = AnyAux> = DeploymentElementModel<M>
+  export type Deployment<M extends AnyAux = AnyAux> = DeploymentElementModel<M>
   export type DeploymentNode<M extends AnyAux = AnyAux> = DeploymentNodeModel<M>
   export type DeployedInstance<M extends AnyAux = AnyAux> = DeployedInstanceModel<M>
 
