@@ -29,8 +29,7 @@ describe('DeploymentRefPredicate', () => {
     ])
     expect(edgeIds).toEqual([
       'customer:prod.eu.zone1',
-      'customer:prod.eu.zone2',
-      'prod.eu.zone1:prod.eu.zone2'
+      'customer:prod.eu.zone2'
     ])
   })
 
@@ -48,7 +47,6 @@ describe('DeploymentRefPredicate', () => {
       'prod.eu.zone1'
     ])
     expect(edgeIds).toEqual([
-      'prod.eu.zone2:prod.eu.zone1',
       'customer:prod.eu.zone2',
       'customer:prod.eu.zone1'
     ])
@@ -65,7 +63,6 @@ describe('DeploymentRefPredicate', () => {
       'prod.eu.db'
     ])
     expect(edgeIds).toEqual([
-      'prod.eu.zone1:prod.eu.zone2',
       'prod.eu.zone1:prod.eu.media',
       'prod.eu.zone1:prod.eu.db',
       'prod.eu.zone2:prod.eu.media',
@@ -83,6 +80,32 @@ describe('DeploymentRefPredicate', () => {
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api'
+    ])
+  })
+
+  it('should include descendants and ensure sort', () => {
+    const { nodeIds, edgeIds } = computeView(
+      $include('prod.eu.**')
+    )
+    expect.soft(nodeIds).toEqual([
+      'prod.eu.zone1',
+      'prod.eu.zone2',
+      'prod.eu.zone1.ui',
+      'prod.eu.zone2.ui',
+      'prod.eu.zone1.api',
+      'prod.eu.zone2.api',
+      'prod.eu.media',
+      'prod.eu.db'
+    ])
+    expect(edgeIds).toEqual([
+      'prod.eu.zone1.ui:prod.eu.zone1.api',
+      'prod.eu.zone2.ui:prod.eu.zone2.api',
+      'prod.eu.zone1.api:prod.eu.media',
+      'prod.eu.zone1.api:prod.eu.db',
+      'prod.eu.zone1.ui:prod.eu.media',
+      'prod.eu.zone2.api:prod.eu.media',
+      'prod.eu.zone2.api:prod.eu.db',
+      'prod.eu.zone2.ui:prod.eu.media'
     ])
   })
 
@@ -112,15 +135,14 @@ describe('DeploymentRefPredicate', () => {
       'customer.instance',
       'prod',
       'prod.eu',
+      'prod.us',
       'prod.eu.zone1',
       'prod.eu.zone1.ui',
       'prod.eu.zone1.api',
-      'prod.us',
       'global.email'
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api',
-      'prod.eu.zone1.api:prod.us',
       'prod.eu.zone1.api:global.email',
       'prod.us:global.email',
       'customer.instance:prod.eu.zone1.ui',

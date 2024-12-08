@@ -147,12 +147,10 @@ describe('DirectRelationPredicate', () => {
       {
         "Nodes": [
           "customer",
-          "prod.eu.zone1",
-          "prod.eu.zone1.ui",
-          "prod.eu.zone2",
-          "prod.eu.zone2.api",
           "prod.eu.zone2.ui",
+          "prod.eu.zone1.ui",
           "prod.eu.zone1.api",
+          "prod.eu.zone2.api",
         ],
         "edges": [
           "prod.eu.zone2.ui:prod.eu.zone1.api",
