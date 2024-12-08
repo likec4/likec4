@@ -38,19 +38,6 @@ export const pxToPoints = (px: number) => Math.ceil(px)
 
 export const IconSizePoints = pxToPoints(40).toString()
 
-export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
-  switch (align) {
-    case 'l':
-      return 'left'
-    case 'r':
-      return 'right'
-    case 'c':
-      return 'center'
-  }
-  // @ts-expect-error - Non-exhaustive switch statement
-  nonexhaustive(`Invalid align: ${align}`)
-}
-
 export function compoundColor(color: string, depth: number): Color {
   return toHex(
     scale(color, {

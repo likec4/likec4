@@ -44,41 +44,45 @@ export class GraphvizLayouter {
   }
 
   async layout(view: ComputedView): Promise<LayoutResult> {
-    let dot = await this.dot(view)
-    // logger.debug('View ${view.id} DOT:')
-    // logger.debug(dot)
-    const rawjson = await this.graphviz.layoutJson(dot)
-    let diagram = parseGraphvizJson(rawjson, view)
+    try {
+      let dot = await this.dot(view)
+      // logger.debug('View ${view.id} DOT:')
+      // logger.debug(dot)
+      const rawjson = await this.graphviz.layoutJson(dot)
+      let diagram = parseGraphvizJson(rawjson, view)
 
-    if (view.manualLayout) {
-      const result = applyManualLayout(diagram, view.manualLayout)
-      if (result.diagram) {
-        diagram = result.diagram
-      } else {
-        // apply manual layout if only new diagram has some nodes
-        // from the previous layout
-        if (result.relayout.nodes.length > 0) {
-          const printer = getPrinter(view)
-          // TODO: apply manual layout fails when there are edges with compounds
-          if (printer.hasEdgesWithCompounds) {
-            // edges with coumpoudns are using _.ltail, _.lhead
-            // This is not supported by FDP
-            logger.warn(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
-          } else {
-            printer.applyManualLayout(result.relayout)
-            const rawjson = await this.graphviz.layoutJson(printer.print())
-            diagram = parseGraphvizJson(rawjson, view)
+      if (view.manualLayout) {
+        const result = applyManualLayout(diagram, view.manualLayout)
+        if (result.diagram) {
+          diagram = result.diagram
+        } else {
+          // apply manual layout if only new diagram has some nodes
+          // from the previous layout
+          if (result.relayout.nodes.length > 0) {
+            const printer = getPrinter(view)
+            // TODO: apply manual layout fails when there are edges with compounds
+            if (printer.hasEdgesWithCompounds) {
+              // edges with coumpoudns are using _.ltail, _.lhead
+              // This is not supported by FDP
+              logger.warn(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
+            } else {
+              printer.applyManualLayout(result.relayout)
+              const rawjson = await this.graphviz.layoutJson(printer.print())
+              diagram = parseGraphvizJson(rawjson, view)
+            }
           }
+          diagram.hasLayoutDrift = true
         }
-        diagram.hasLayoutDrift = true
       }
-    }
 
-    dot = dot
-      .split('\n')
-      .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
-      .join('\n') as DotSource
-    return { dot, diagram }
+      dot = dot
+        .split('\n')
+        .filter((l) => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
+        .join('\n') as DotSource
+      return { dot, diagram }
+    } catch (e) {
+      throw new Error(`Error during layout: ${view.id}`, { cause: e })
+    }
   }
 
   async svg(view: ComputedView) {

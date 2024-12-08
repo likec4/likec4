@@ -40,16 +40,15 @@ function parsePos(pos: string): GVPos {
       y: pointToPx(parseFloat(y))
     }
   } catch (e) {
-    logger.warn(`failed on parsing pos: ${pos}`, e)
-    throw e
+    throw new Error(`Failed on parsing pos: ${pos}`, { cause: e })
   }
 }
 
-function parseNode({ pos, width, height }: GraphvizJson.GvNodeObject): BoundingBox {
+function parseNode(nodeObj: GraphvizJson.GvNodeObject): BoundingBox {
   // const cpos = prsePos(posStr, page)
-  const { x, y } = parsePos(pos)
-  const w = inchToPx(+width)
-  const h = inchToPx(+height)
+  const { x, y } = parsePos(nodeObj.pos)
+  const w = inchToPx(parseFloat(nodeObj.width))
+  const h = inchToPx(parseFloat(nodeObj.height))
   return {
     x: x - Math.round(w / 2),
     y: y - Math.round(h / 2),
@@ -134,8 +133,9 @@ function parseEdgePoints(
     invariant(hasAtLeast(points, 2), `view ${viewId} edge ${likec4_id} should have at least two points`)
     return points
   } catch (e) {
-    logger.warn(`failed on parsing view ${viewId} edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
-    throw e
+    throw new Error(`failed on parsing view ${viewId} edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`, {
+      cause: e
+    })
   }
 }
 
@@ -184,19 +184,22 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   const graphvizObjects = graphvizJson.objects ?? []
   for (const computed of computedNodes) {
     const obj = graphvizObjects.find(o => o.likec4_id === computed.id)
-    invariant(obj, `View ${view.id} element ${computed.id} not found in graphviz output`)
+    invariant(obj, `View ${view.id} node ${computed.id} not found in graphviz output`)
+    try {
+      const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
 
-    const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
+      const position = [x, y] as Point
 
-    const position = [x, y] as Point
-
-    diagram.nodes.push({
-      ...computed,
-      position,
-      width,
-      height,
-      labelBBox: parseLabelBbox(obj._ldraw_, position) ?? { x, y, width, height }
-    })
+      diagram.nodes.push({
+        ...computed,
+        position,
+        width,
+        height,
+        labelBBox: parseLabelBbox(obj._ldraw_, position) ?? { x, y, width, height }
+      })
+    } catch (e) {
+      throw new Error(`Failed on parsing node ${computed.id}:\n${JSON.stringify(obj, null, 2)}`, { cause: e })
+    }
   }
 
   const graphvizEdges = graphvizJson.edges ?? []
