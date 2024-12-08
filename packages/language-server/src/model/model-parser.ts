@@ -247,7 +247,7 @@ export class LikeC4ModelParser {
       mapToObj(p => [p.key, p.value || undefined])
     )
 
-    title = toSingleLine(title ?? bodyProps.title)
+    title = removeIndent(title ?? bodyProps.title)
     description = removeIndent(bodyProps.description ?? description)
     technology = toSingleLine(bodyProps.technology ?? technology)
 
@@ -590,8 +590,7 @@ export class LikeC4ModelParser {
         }
         if (ast.isElementStringProperty(prop)) {
           if (isDefined(prop.value)) {
-            let value = prop.key === 'description' ? removeIndent(prop.value) : toSingleLine(prop.value)
-            acc.custom[prop.key] = value || ''
+            acc.custom[prop.key] = removeIndent(prop.value) || ''
           }
           return acc
         }
@@ -1189,7 +1188,7 @@ export class LikeC4ModelParser {
       mapToObj(p => [p.key, p.value || undefined])
     )
 
-    const title = toSingleLine(astNode.title ?? bodyProps.title)
+    const title = removeIndent(astNode.title ?? bodyProps.title)
     const description = removeIndent(bodyProps.description)
     const technology = toSingleLine(bodyProps.technology)
 
@@ -1236,7 +1235,7 @@ export class LikeC4ModelParser {
       mapToObj(p => [p.key, p.value || undefined])
     )
 
-    const title = toSingleLine(astNode.title ?? bodyProps.title)
+    const title = removeIndent(astNode.title ?? bodyProps.title)
     const description = removeIndent(bodyProps.description)
     const technology = toSingleLine(bodyProps.technology)
 
@@ -1278,7 +1277,7 @@ export class LikeC4ModelParser {
       astNode.target.$cstNode!.text
     ) as c4.RelationId
 
-    const title = toSingleLine(astNode.title)
+    const title = removeIndent(astNode.title)
 
     return {
       id,

@@ -64,7 +64,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       text: node.title,
       fontsize: 19,
       maxchars: 35,
-      maxLines: 2
+      maxLines: 3
     })
   ]
   if (isTruthy(node.technology)) {
