@@ -43,10 +43,6 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return `${this.source.id} -> ${this.target.id}`
   }
 
-  get size(): number {
-    return this.relations.size
-  }
-
   nonEmpty(): boolean {
     return this.relations.nonEmpty
   }

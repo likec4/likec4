@@ -54,4 +54,21 @@ describe('cleanCrossBoundaryConnections', () => {
       'prod.eu.zone1.ui:prod.eu.zone1.api'
     ])
   })
+
+  it('should remove redundant edges based on deployment relations', () => {
+    const { nodeIds, edgeIds } = computeView(
+      $include('prod.*'),
+      $include('prod.eu.db'),
+      $include('prod.us.db')
+    )
+    expect.soft(nodeIds).toEqual([
+      'prod.eu',
+      'prod.eu.db',
+      'prod.us',
+      'prod.us.db'
+    ])
+    expect(edgeIds).toEqual([
+      'prod.eu.db:prod.us.db'
+    ])
+  })
 })

@@ -97,7 +97,7 @@ export class Stage {
 
       if (this.#connections.length > 0) {
         // To preserve order, we split new connections into two sets
-        // First are those, that outgoing from includedElements
+        // First are outgoing from included elements
         const [fromKnown, rest] = partition(
           this.#connections,
           c => memory.elements.has(c.source)
@@ -110,7 +110,7 @@ export class Stage {
         ])
 
         fromConnections = new Set([
-          // we have source in memory.includedElements
+          // we have source in memory.elements
           ...fromKnown.map(c => c.target),
           ...rest.flatMap(c => [c.source, c.target])
         ])

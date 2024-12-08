@@ -15,7 +15,7 @@ import {
   type NonEmptyArray,
   type Tag
 } from '../../types'
-import { parentFqn } from '../../utils'
+import { isAncestor, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
 import { uniqueTags } from '../utils/uniqueTags'

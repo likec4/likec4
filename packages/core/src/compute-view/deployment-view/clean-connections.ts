@@ -10,7 +10,7 @@ import { difference } from '../../utils/set'
 import type { Connections, Elem } from './_types'
 import { type Patch } from './Memory'
 
-const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.size > 0)
+const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.nonEmpty())
 
 function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Connections<M> {
   // Keep only connections between leafs
@@ -79,7 +79,8 @@ function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Conn
         return updated
       }
       return conn
-    })
+    }),
+    filterEmptyConnection
   )
 }
 
@@ -90,46 +91,50 @@ function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Conn
  * @returns New connection without redundant relationships
  *          Connection may be empty if all relationships are redundant, in this case it should be removed
  */
-const excludeRedundantRelationships: <M extends AnyAux>(connections: Connections<M>) => Connections<M> = map(
-  (connection, _, connections) => {
-    const { source, target } = connection
+function excludeRedundantRelationships<M extends AnyAux>(
+  connections: Connections<M>
+): Array<DeploymentConnectionModel<M>> {
+  return pipe(
+    connections,
+    map(connection => {
+      const { source, target } = connection
 
-    // Connection between instances is always explicit
-    if (source.isInstance() && target.isInstance()) {
-      return connection
-    }
-
-    let modelRelations = connection.relations.model
-    let deploymentRelations = connection.relations.deployment
-
-    let hasChanged = false
-    for (const c of connections) {
-      if (
-        isAncestor(source.id, c.source.id) && isAncestor(target.id, c.target.id)
-        || isAncestor(source.id, c.source.id) && c.target.id === target.id
-        || isAncestor(target.id, c.target.id) && c.source.id === source.id
-      ) {
-        modelRelations = difference(modelRelations, c.relations.model)
-        deploymentRelations = difference(deploymentRelations, c.relations.deployment)
-        hasChanged = true
+      // Connection between instances is always explicit
+      if (source.isInstance() && target.isInstance()) {
+        return connection
       }
-    }
 
-    if (!hasChanged) {
+      let modelRelations = connection.relations.model
+      let deploymentRelations = connection.relations.deployment
+
+      for (const c of connections) {
+        if (
+          isAncestor(source.id, c.source.id) && isAncestor(target.id, c.target.id)
+          || isAncestor(source.id, c.source.id) && c.target.id === target.id
+          || isAncestor(target.id, c.target.id) && c.source.id === source.id
+        ) {
+          modelRelations = difference(modelRelations, c.relations.model)
+          deploymentRelations = difference(deploymentRelations, c.relations.deployment)
+        }
+      }
+
+      // if any set changed, return new connection
+      if (modelRelations !== connection.relations.model || deploymentRelations !== connection.relations.deployment) {
+        return new DeploymentConnectionModel(
+          source,
+          target,
+          new RelationshipsAccum(
+            modelRelations,
+            deploymentRelations
+          )
+        )
+      }
+
       return connection
-    }
-
-    return new DeploymentConnectionModel(
-      source,
-      target,
-      new RelationshipsAccum(
-        modelRelations,
-        deploymentRelations
-      )
-    )
-  }
-)
-
+    }),
+    filterEmptyConnection
+  )
+}
 /**
  * This patch:
  * 1. Keeps connections between leafs or having direct deployment relations
@@ -150,15 +155,15 @@ export const cleanConnections: Patch = (memory) => {
       leafs.add(element)
       continue
     }
-    // Check if element is ancestor of any element in finalElements
-    let hasChild = false
+    // Check if element is ancestor of any element in elements
+    let isLeaf = true
     for (const el of memory.elements) {
       if (isAncestor(element.id, el.id)) {
-        hasChild = true
+        isLeaf = false
         break
       }
     }
-    if (!hasChild) {
+    if (isLeaf) {
       leafs.add(element)
     }
   }
@@ -175,16 +180,20 @@ export const cleanConnections: Patch = (memory) => {
       return (leafs.has(c.source) && leafs.has(c.target)) || c.hasDirectDeploymentRelation()
     }),
     cleanCrossBoundary,
-    filterEmptyConnection,
     excludeRedundantRelationships,
-    filterEmptyConnection,
     forEach((c) => {
       connectedElements.add(c.source)
       connectedElements.add(c.target)
+      if (c.boundary) {
+        connectedElements.add(c.boundary)
+      }
     })
   )
 
   const isAncestorOfConnected = (el: Elem) => {
+    if (el.isInstance()) {
+      return false
+    }
     for (const connected of connectedElements) {
       if (isAncestor(el.id, connected.id)) {
         return true
@@ -197,14 +206,14 @@ export const cleanConnections: Patch = (memory) => {
   const newMemory = memory.clone()
   newMemory.connections = connections
 
-  // Iterate over final elements (preserving order) and pick:
+  // Iterate over elements (preserving order) and pick:
   // - explicitly included
   // - connected elements
   // - ancestors of connected elements
   const finalElements = new Set<Elem>()
   for (const el of newMemory.finalElements) {
     if (
-      memory.isExplicit(el)
+      newMemory.isExplicit(el)
       || connectedElements.has(el)
       || isAncestorOfConnected(el)
     ) {
@@ -212,6 +221,5 @@ export const cleanConnections: Patch = (memory) => {
     }
   }
   newMemory.finalElements = finalElements
-
   return newMemory
 }

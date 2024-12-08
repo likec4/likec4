@@ -168,27 +168,15 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
     return false
   }
 
-  protected abstract outgoingModel(): RelationshipsIterator<M>
-  protected abstract incomingModel(): RelationshipsIterator<M>
-
-  // to reduce lookups - cache after first call
-  protected cachedOutgoingModel: ReadonlySet<RelationshipModel<M>> | null = null
-  protected cachedIncomingModel: ReadonlySet<RelationshipModel<M>> | null = null
-
-  public outgoingFromModel(): ReadonlySet<RelationshipModel<M>> {
-    return (this.cachedOutgoingModel ??= new Set(this.outgoingModel()))
-  }
-
-  public incomingFromModel(): ReadonlySet<RelationshipModel<M>> {
-    return (this.cachedIncomingModel ??= new Set(this.incomingModel()))
-  }
+  public abstract outgoingFromModel(): RelationshipsIterator<M>
+  public abstract incomingFromModel(): RelationshipsIterator<M>
 
   protected cachedOutgoing: RelationshipsAccum<M> | null = null
   protected cachedIncoming: RelationshipsAccum<M> | null = null
 
   public get allOutgoing(): RelationshipsAccum<M> {
     this.cachedOutgoing ??= new RelationshipsAccum(
-      new Set(this.outgoingModel()),
+      new Set(this.outgoingFromModel()),
       new Set(this.outgoing())
     )
     return this.cachedOutgoing
@@ -196,7 +184,7 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
 
   public get allIncoming(): RelationshipsAccum<M> {
     this.cachedIncoming ??= new RelationshipsAccum(
-      new Set(this.incomingModel()),
+      new Set(this.incomingFromModel()),
       new Set(this.incoming())
     )
     return this.cachedIncoming
@@ -253,34 +241,51 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
     return null
   }
 
-  protected override *outgoingModel(): RelationshipsIterator<M> {
-    const unique = new Set<RelationshipModel<M>>()
-    for (const nested of this.instances()) {
-      for (const r of nested.allOutgoing.model) {
-        if (unique.has(r)) {
-          continue
-        }
-        unique.add(r)
-        yield r
+  /**
+   * Cached result of relationships from instances
+   */
+  private _relationshipsFromInstances: {
+    outgoing: ReadonlySet<RelationshipModel<M>>
+    incoming: ReadonlySet<RelationshipModel<M>>
+  } | null = null
+
+  private relationshipsFromInstances() {
+    if (this._relationshipsFromInstances) {
+      return this._relationshipsFromInstances
+    }
+    const outgoing = new Set<RelationshipModel<M>>()
+    const incoming = new Set<RelationshipModel<M>>()
+    for (const instance of this.instances()) {
+      for (const r of instance.element.outgoing()) {
+        outgoing.add(r)
+      }
+      for (const r of instance.element.incoming()) {
+        incoming.add(r)
       }
     }
-    return
+    return (this._relationshipsFromInstances = { outgoing, incoming })
   }
 
-  protected override *incomingModel(): RelationshipsIterator<M> {
-    const unique = new Set<RelationshipModel<M>>()
-    for (const nested of this.descendants()) {
-      if (nested.isInstance()) {
-        for (const r of nested.allIncoming.model) {
-          if (unique.has(r)) {
-            continue
-          }
-          unique.add(r)
-          yield r
-        }
-      }
-    }
-    return
+  /**
+   * We return only relationships that are not already present in nested instances
+   */
+  public override outgoingFromModel(): RelationshipsIterator<M> {
+    const {
+      outgoing,
+      incoming
+    } = this.relationshipsFromInstances()
+    return difference(outgoing, incoming).values()
+  }
+
+  /**
+   * We return only relationships that are not already present in nested instances
+   */
+  public override incomingFromModel(): RelationshipsIterator<M> {
+    const {
+      outgoing,
+      incoming
+    } = this.relationshipsFromInstances()
+    return difference(incoming, outgoing).values()
   }
 }
 
@@ -344,10 +349,10 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends Deployment
     return true
   }
 
-  protected override outgoingModel(): RelationshipsIterator<M> {
+  public override outgoingFromModel(): RelationshipsIterator<M> {
     return this.element.outgoing()
   }
-  protected override incomingModel(): RelationshipsIterator<M> {
+  public override incomingFromModel(): RelationshipsIterator<M> {
     return this.element.incoming()
   }
 }

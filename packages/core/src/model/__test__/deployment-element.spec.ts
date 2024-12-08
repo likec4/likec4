@@ -8,18 +8,9 @@ describe('DeploymentElementModel', () => {
   const deployment = model.deployment
 
   it('Instance: incoming/outgoing from model', () => {
-    const it = deployment.node('customer').children()
-    let res = it.next()
-
-    expect(res.value).toBeDefined()
-
-    res = it.next()
-    console.log(res)
-    expect(res.done).toBe(true)
-
     const media = deployment.instance('prod.eu.media')
     const incoming = media.incomingFromModel()
-    expect([...incoming].map(prop('expression'))).toEqual([
+    expect.soft([...incoming].map(prop('expression'))).toEqual([
       'cloud.frontend.dashboard -> cloud.media',
       'cloud.frontend.mobile -> cloud.media',
       'cloud.backend.api -> cloud.media'
@@ -29,64 +20,52 @@ describe('DeploymentElementModel', () => {
     expect([...outgoing].map(prop('expression'))).toEqual([
       'cloud.media -> aws.s3'
     ])
-
-    // Should be cached
-    expect(media.incomingFromModel()).toBe(incoming)
-    expect(media.outgoingFromModel()).toBe(outgoing)
   })
 
   it('DeploymentNode: incoming/outgoing from model', () => {
     const zone1 = deployment.node('prod.eu.zone1')
     const incoming = zone1.incomingFromModel()
-    expect([...incoming].map(prop('expression'))).toEqual([
+    expect.soft([...incoming].map(prop('expression'))).toEqual([
       'customer -> cloud.frontend.dashboard',
-      'cloud.frontend.dashboard -> cloud.backend.api',
+      // 'cloud.frontend.dashboard -> cloud.backend.api', this is internal relation
       'cloud.frontend.mobile -> cloud.backend.api'
     ])
 
     const outgoing = zone1.outgoingFromModel()
     expect([...outgoing].map(prop('expression'))).toEqual([
       'cloud.frontend.dashboard -> cloud.auth',
-      'cloud.frontend.dashboard -> cloud.backend.api',
+      // 'cloud.frontend.dashboard -> cloud.backend.api', this is internal relation
       'cloud.frontend.dashboard -> cloud.media',
       'cloud.backend.api -> cloud.auth',
       'cloud.backend.api -> cloud.media',
       'cloud.backend.api -> aws.rds',
       'cloud.backend.api -> email'
     ])
-
-    // Should be cached
-    expect(zone1.incomingFromModel()).toBe(incoming)
-    expect(zone1.outgoingFromModel()).toBe(outgoing)
   })
 
   it('DeploymentNode: incoming/outgoing from model (unique only)', () => {
     const eu = deployment.node('prod.eu')
     const incoming = eu.incomingFromModel()
-    expect([...incoming].map(prop('expression'))).toEqual([
+    expect.soft([...incoming].map(prop('expression'))).toEqual([
       'customer -> cloud.frontend.dashboard',
-      'cloud.frontend.dashboard -> cloud.backend.api',
+      // 'cloud.frontend.dashboard -> cloud.backend.api', this is internal relation
       'cloud.frontend.mobile -> cloud.backend.api',
-      'cloud.frontend.dashboard -> cloud.media',
-      'cloud.frontend.mobile -> cloud.media',
-      'cloud.backend.api -> cloud.media',
-      'cloud.backend.api -> aws.rds'
+      // 'cloud.frontend.dashboard -> cloud.media', this is internal relation
+      'cloud.frontend.mobile -> cloud.media'
+      // 'cloud.backend.api -> cloud.media', this is internal relation
+      // 'cloud.backend.api -> aws.rds' this is internal relation
     ])
 
     const outgoing = eu.outgoingFromModel()
     expect([...outgoing].map(prop('expression'))).toEqual([
       'cloud.frontend.dashboard -> cloud.auth',
-      'cloud.frontend.dashboard -> cloud.backend.api',
-      'cloud.frontend.dashboard -> cloud.media',
+      // 'cloud.frontend.dashboard -> cloud.backend.api', this is internal relation
+      // 'cloud.frontend.dashboard -> cloud.media', this is internal relation
       'cloud.backend.api -> cloud.auth',
-      'cloud.backend.api -> cloud.media',
-      'cloud.backend.api -> aws.rds',
+      // 'cloud.backend.api -> cloud.media', this is internal relation
+      // 'cloud.backend.api -> aws.rds', this is internal relation
       'cloud.backend.api -> email',
       'cloud.media -> aws.s3'
     ])
-
-    // Should be cached
-    expect(eu.incomingFromModel()).toBe(incoming)
-    expect(eu.outgoingFromModel()).toBe(outgoing)
   })
 })

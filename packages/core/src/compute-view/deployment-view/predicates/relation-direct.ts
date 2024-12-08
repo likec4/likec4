@@ -80,7 +80,7 @@ export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpres
     }
 
     for (const c of stage.connections) {
-      if (c.boundary) {
+      if (c.source.isInstance() && c.target.isInstance() && c.boundary) {
         stage.addImplicit(c.boundary)
       }
     }
