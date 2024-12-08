@@ -37,7 +37,6 @@ Assume we have the following workspace:
     This file defines the specification:
 
     ```likec4
-    // specs.c4
     specification {
       element actor {
         style {
@@ -53,7 +52,6 @@ Assume we have the following workspace:
     This file defines the top-level elements and landscape view:
 
     ```likec4
-    // landscape.c4
     model {
       customer = actor 'Customer'
       cloud = system 'Cloud System'
@@ -67,10 +65,9 @@ Assume we have the following workspace:
     ```
   </TabItem>
   <TabItem label="externals/amazon.c4">
-    We keep definitions of external systems separate, inside the `externals/` folder:
+    We keep definitions of external systems separately, inside the `externals/` folder:
     
     ```likec4
-    // externals/amazon.c4
     model {
       amazon = system 'Amazon Web Services' {
         rds = service 'Database'

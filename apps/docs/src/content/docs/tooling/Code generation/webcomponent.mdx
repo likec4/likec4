@@ -1,0 +1,60 @@
+---
+title: Generate Webcomponents
+description: How to generate React components, Webcomponents, and TypeScript models from the LikeC4 DSL.
+head:
+  - tag: title
+    content: Webcomponents | LikeC4
+sidebar:
+  label: Webcomponents
+  order: 7
+tableOfContents:
+  # minHeadingLevel: 3
+  maxHeadingLevel: 6    
+---
+
+import { Card, Aside } from '@astrojs/starlight/components';
+
+<p>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+</p>
+
+Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your dependencies:
+
+```sh
+npm add likec4
+```
+
+## Webcomponent
+
+Generate javascript bundle with webcomponent:
+
+```sh
+npx likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
+```  
+
+Use it:
+
+```html
+<script src="./src/likec4-webcomponent.js"></script>
+<likec4-view view-id="index"></likec4-view>
+```
+
+By default, cli generates a `likec4-view` webcomponent.  
+You can change the `likec4` prefix by `-w, --webcomponent-prefix`.
+
+For example:
+
+```sh
+npx likec4 codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js
+```  
+
+And in HTML:
+
+```html
+<custom-c4-view view-id="index"></custom-c4-view>
+```
+
+:::note
+CLI command [build](/tooling/cli/#build-static-website) always generates javascript with webcomponents.  
+Check `Share` button on the top at <a href="https://template.likec4.dev/view/cloud" target="_blank">this example</a>
+:::

@@ -41,24 +41,18 @@ deployment {
       db = instanceOf saas.db
     }
 
-    us.db -> eu.db 'sync to eu'
-    eu.db -> us.db 'sync to us'
+    us.db -> eu.db 'replicates'
+    eu.db -> us.db 'replicates'
   }
 }
 
 views {
   deployment view index {
-    title 'Deployment view'
+    title 'Production Deployment'
 
     include
       *,
-      us,
-      eu._,
-      eu.zone1._,
-      eu.zone2._,
-
-    exclude
-      eu._ <-> us._
+      prod.**
 
     style eu._ {
       color green

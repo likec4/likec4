@@ -1,0 +1,176 @@
+---
+title: Deployment Model
+description: How to define deployment model in LikeC4
+sidebar: 
+  label: Model
+  order: 11
+---
+
+Deployment Model represents another layer, _physical model_ with its own structure and elements (deployment nodes).   
+It references the [logical model](/dsl/model) and inherits its relationships.
+
+## Specification
+
+First, following the [same approach](/dsl/specification/#element-kind), deployment node kinds have to defined within the specification:
+
+```likec4
+specification {
+  deploymentNode environment
+  deploymentNode zone
+  deploymentNode kubernetes {
+    // Nodes have same styling options
+    style {
+      color blue
+      icon tech:kubernetes
+    }
+  }
+  deploymentNode vm {
+    // Common properties for the kind
+    notation 'Virtual Machine'
+    technology 'VMware'
+  }
+}
+```
+
+You define whatever you need to represent your deployment model and your ubiquitous language.
+
+## Deployment nodes
+
+The deployment model is a set of nodes, organized in a hierarchical structure:
+
+```likec4
+deployment {
+  environment prod {
+    zone eu {
+      zone zone1 {
+        vm vm1
+        vm vm2
+      }
+      // You can also use '=' with the name coming first
+      zone2 = zone {        
+        vm1 = vm
+        vm2 = vm
+      }
+    }  
+  }
+}
+```
+
+Node names must be unique within its container (parent node); same rules as for element names in the logical model.
+
+Nodes can also have titles, descriptions, tags, style, and other properties just like [logical elements](/dsl/model/#element-properties).
+
+```likec4
+deployment {
+  environment prod 'Production' {
+    #live #sla-customer 
+    description 'Production environment'
+    technology 'OpenTofu'
+    link https://likec4.dev
+
+    zone eu {
+      title 'EU Region' 
+      // ...
+    }
+  }
+}
+```
+
+## Deployed instances
+
+Operator `instanceOf` _“deploys”_ elements from the logical model to deployment nodes:
+
+```likec4
+deployment {
+  environment prod {
+    zone eu {
+      zone zone1 {
+        // 'frontend.ui' is a logical element
+        // by default, instance has same name, 
+        // i.e. it becomes 'prod.eu.zone1.ui'
+        instanceOf frontend.ui
+        // this becomes 'prod.eu.zone1.api'
+        instanceOf backend.api
+      }
+
+      zone zone2 {
+        // or use '=' with the name coming first
+        ui = instanceOf frontend.ui
+
+        // two instances of same element
+        api1 = instanceOf backend.api
+        api2 = instanceOf backend.api
+      }
+
+      // Deploy to any level, not only leaf nodes
+      // Assume database shared between zones
+      db = instanceOf database
+    }    
+  }
+}
+```
+Deployed instance inherits properties and styling from the element.  
+It is possible to override:
+
+```likec4
+deployment {
+  environment prod {
+    zone eu { 
+      db = instanceOf database {
+        title 'Primary DB'
+        technology 'PostgreSQL with streaming replication'
+        icon tech:postgresql
+      }
+    }
+  }
+}
+```
+
+## Deployment relationships
+
+Deployment model inherits relationships from the logical model.  
+But also allows to define specific ones:
+
+```likec4
+deployment {
+  environment prod {
+    vm vm1 {          
+      db = instanceOf database 'Primary DB'
+    }
+    vm vm2 {
+      db = instanceOf database 'Standby DB'
+    }    
+    vm2.db -> vm1.db 'replicates' 
+  }
+}
+```
+This relationship is between different instances, but same logical element.  
+We don't need this relationship in the logical model, but it makes sense for deployments.
+
+:::tip
+Relationships can be defined for nested elements of deployed instances:
+
+```likec4
+model {
+  component database {
+    component repl_log
+  }
+}
+deployment {
+  vm vm1 {          
+    db = instanceOf database 'Primary DB'
+  }
+  vm vm2 {
+    db = instanceOf database 'Standby DB'
+  } 
+
+  // 'repl_log' is a nested element of deployed instance
+  vm2.db -> vm1.db.repl_log 'replicates'
+}
+```
+:::
+
+:::note
+Check this <a href="https://github.com/likec4/likec4/discussions/1269" target='_blank'>GitHub discussion</a> for futher development.  
+Feel free to share your ideas.
+:::

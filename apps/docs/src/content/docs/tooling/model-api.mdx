@@ -1,5 +1,5 @@
 ---
-title: LikeC4 Model API
+title: LikeC4 API
 description: How to access your architecture model programmatically.
 head:
   - tag: title
@@ -8,7 +8,7 @@ sidebar:
   label: LikeC4 API
   order: 3
 tableOfContents:
-  minHeadingLevel: 3
+  minHeadingLevel: 2
   maxHeadingLevel: 5    
 ---
 
@@ -26,18 +26,18 @@ Ensure you have `likec4` in your dependencies:
 npm add likec4
 ```
 
-### Usage
+## Usage
 
 You can initiate LikeC4 API from a directory with source files or from a string with DSL source.
 
-#### From workspace
+### From workspace
 
 Recursively searches and parses source files from workspace:
 
 ```ts
 import { LikeC4 } from 'likec4'
 
-const likec4 = await LikeC4.fromWorkspace('path to workspace')
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
 ```  
 
 Method also accepts options:
@@ -54,7 +54,7 @@ Method also accepts options:
   It is possible to notify about changes in the workspace via `likec4.notifyUpdate()` method.
 </Aside>
 
-#### From source
+### From source
 
 Parses the model from the string:
 
@@ -78,7 +78,7 @@ const likec4 = await LikeC4.fromSource(`
 `)
 ```
 
-### API
+## API
 
 When the model is initialized, you can use the following methods to query and traverse it.
 
@@ -87,7 +87,7 @@ Two types of model (with similar API):
 - **LikeC4Model.Computed** - includes computed views (from predicates), fast, synchronous, enough to traverse but not ready for rendering.
 - **LikeC4Model.Layouted** - extends computed model with layout data (dimensions, positions), that is needed for rendering.
 
-#### Example
+### Example
 
 ```ts
 import { LikeC4 } from "likec4"
@@ -109,7 +109,11 @@ const diagram = await likec4.layoutedModel().view('index')
 
 ```  
 
-#### LikeC4Model
+### LikeC4Model
+
+:::tip
+It is possible to generate Typed API from your model, see [Code generation](/tooling/code-generation/model/)
+:::
 
 Model API provides methods to query and traverse the whole model.
 
@@ -200,7 +204,17 @@ interface LikeC4Model {
 }
 ```
 
-#### LikeC4ViewModel
+### LikeC4ViewModel
 
 View model API provides methods to query and traverse elements and relationships that are included in the view.
-If this is from layouted model, you can also access layout data
+
+### LikeC4DeploymentModel
+
+API provides methods to query and traverse deployment model.
+
+
+## Model Builder
+
+<Aside type='caution' title="In progress" >
+  Documentation in progress
+</Aside>

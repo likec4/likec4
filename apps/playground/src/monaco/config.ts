@@ -1,6 +1,5 @@
 import getEditorServiceOverride from '@codingame/monaco-vscode-editor-service-override'
 import '@codingame/monaco-vscode-theme-defaults-default-extension'
-import { useOpenEditorStub } from 'monaco-editor-wrapper/vscode/services'
 
 import type { UserConfig } from 'monaco-editor-wrapper'
 import { joinURL, withLeadingSlash, withProtocol } from 'ufo'
@@ -9,6 +8,9 @@ import textmateGrammar from '../../likec4.tmLanguage.json?raw'
 import type { StoreApi } from '../state'
 
 import { DEV } from 'esm-env'
+import * as monaco from 'monaco-editor'
+import { first } from 'remeda'
+import type { ITextEditorOptions } from 'vscode/services'
 import LikeC4LspWorker from './lsp/likec4.worker?worker'
 
 export function createMonacoConfig(store: StoreApi) {
@@ -31,34 +33,33 @@ export function createMonacoConfig(store: StoreApi) {
     wrapperConfig: {
       serviceConfig: {
         userServices: {
-          ...getEditorServiceOverride(useOpenEditorStub)
-          // ...getEditorServiceOverride(async (modelRef, options, _sideBySide) => {
-          //   const editor = first(monaco.editor.getEditors())
-          //   if (!editor) {
-          //     return undefined
-          //   }
-          //   const nextFilename = modelRef.object.textEditorModel.uri.toString().substring(
-          //     workspaceUri.toString().length + 1
-          //   )
+          ...getEditorServiceOverride(async (modelRef, options, _sideBySide) => {
+            const editor = first(monaco.editor.getEditors())
+            if (!editor) {
+              return undefined
+            }
+            const nextFilename = modelRef.object.textEditorModel.uri.toString().substring(
+              workspaceUri.toString().length + 1
+            )
 
-          //   editor.setModel(modelRef.object.textEditorModel)
-          //   const opts = options as (ITextEditorOptions | undefined)
-          //   if (opts?.selection) {
-          //     editor.setSelection({
-          //       startLineNumber: opts.selection.startLineNumber,
-          //       startColumn: opts.selection.startColumn,
-          //       endLineNumber: opts.selection.endLineNumber ?? opts.selection.startLineNumber,
-          //       endColumn: opts.selection.endColumn ?? opts.selection.startColumn
-          //     }, opts.selectionSource)
-          //     editor.revealLineNearTop(opts.selection.startLineNumber, 0)
-          //   }
+            editor.setModel(modelRef.object.textEditorModel)
+            const opts = options as (ITextEditorOptions | undefined)
+            if (opts?.selection) {
+              editor.setSelection({
+                startLineNumber: opts.selection.startLineNumber,
+                startColumn: opts.selection.startColumn,
+                endLineNumber: opts.selection.endLineNumber ?? opts.selection.startLineNumber,
+                endColumn: opts.selection.endColumn ?? opts.selection.startColumn
+              }, opts.selectionSource)
+              editor.revealLineNearTop(opts.selection.startLineNumber, 0)
+            }
 
-          //   store.setState({
-          //     currentFilename: nextFilename
-          //   })
+            store.setState({
+              currentFilename: nextFilename
+            })
 
-          //   return editor
-          // })
+            return editor
+          })
         },
         debugLogging: DEV
       },
@@ -86,9 +87,9 @@ export function createMonacoConfig(store: StoreApi) {
             enabled: false
           },
           'guides': {
-            indentation: false,
-            bracketPairs: false,
-            bracketPairsHorizontal: 'active'
+            // indentation: false,
+            // bracketPairs: false,
+            // bracketPairsHorizontal: 'active'
             // bracketPairs: 'active',
             // highlightActiveIndentation: false
           },

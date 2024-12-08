@@ -1,14 +1,14 @@
 ---
-title: Code generation
+title: Generate React
 description: How to generate React components, Webcomponents, and TypeScript models from the LikeC4 DSL.
 head:
   - tag: title
-    content: Code generation with LikeC4
+    content: React components | LikeC4
 sidebar:
-  label: Code generation (React)
-  order: 2
+  label: React
+  order: 6
 tableOfContents:
-  minHeadingLevel: 3
+  minHeadingLevel: 2
   maxHeadingLevel: 6    
 ---
 
@@ -26,7 +26,7 @@ Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your depende
 npm add likec4 react react-dom
 ```
 
-#### React
+## React
 
 The following generates a JavaScript bundle with React Component (and `.d.ts`):
 
@@ -73,7 +73,7 @@ Check <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/app/re
 `LikeC4View` does not rehydrate correctly if rendered on the server, prefer client-side.
 :::
 
-##### Filter
+### Filter
 
 `where` is same [view predicate](/dsl/views#filter), but applies dynamically and enables to show/hide elements based on the context. For example:
 
@@ -108,7 +108,7 @@ const App = () => {
 Layout stays the same, i.e. elements are not rearranged.  
 Be aware, `where` applies both to elements and relationships.
 
-##### ReactLikeC4
+## ReactLikeC4
 
 `LikeC4View` renders views from your model, and allows to explore your model.  
 All examples on this site use [this component in MDX](https://github.com/likec4/likec4/blob/9e638f37d74b2a0133660dcc213143b1172304a1/apps/docs/src/components/dynamic-view/DynamicLikeC4View.astro#L9-L14).  
@@ -137,14 +137,14 @@ const App = () => {
 }
 ```
 
-`ReactLikeC4` is a low-level component with more control and events, but you need to handle interactions yourself.  
+`ReactLikeC4` is a low-level component, giving you more control and allowing react to the events. 
 Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/LikeC4Diagram.props.ts#L61" target="_blank">source code</a> for available options.
 
 Feel free to share your ideas or ask questions in <a href="https://github.com/likec4/likec4/discussions/" target='_blank'>GitHub discussions</a>.
 
 <Aside type='tip' title="Generic version" >
 Code generation prepares component, which is already "bound" to your model.  
-But it is possible to use generic from the library:
+But it is possible to use a generic from the library:
 
 ```tsx
 import { ReactLikeC4 } from 'likec4/react'
@@ -162,53 +162,4 @@ const App = () => {
 }
 ```
 
-Though you lose type safety and need to handle more things manually.
-
 </Aside>
-
-#### Webcomponent
-
-Generate javascript bundle with webcomponent:
-
-```sh
-npx likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
-```  
-
-And use it in HTML:
-
-```html
-<script src="./src/likec4-webcomponent.js"></script>
-<likec4-view view-id="index"></likec4-view>
-```
-
-By default, cli generates a `likec4-view` webcomponent, where `likec4` is a prefix.
-You can change the prefix by `-w, --webcomponent-prefix`.
-
-For example:
-
-```sh
-npx likec4 codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js
-```  
-
-And in HTML:
-
-```html
-<custom-c4-view view-id="index"></custom-c4-view>
-```
-
-:::note
-CLI command [build](/tooling/cli/#build-static-website) always generates javascript with webcomponents, and after deploy you can use it already.  
-Check `Share` button on the top at <a href="https://template.likec4.dev/view/cloud" target="_blank">this example</a>
-:::
-
-#### Typed Model
-
-Generate a TypeScript file with `LikeC4Views` object, which contains all diagrams and their metadata.
-
-```sh
-npx likec4 codegen views-data --outfile ./src/likec4.generated.ts
-
-#Aliases
-npx likec4 codegen views ...
-npx likec4 codegen ts ...
-```

@@ -163,7 +163,7 @@ view {
     backend,
     frontend,
     authService,
-    messageBroker.*
+    messageBroker.**
 
   exclude messageBroker.emailsQueue
 }
@@ -175,9 +175,6 @@ Wildcard predicates can be used to reference "everything" (but it differs for sc
 Consider the following model:
 
 ```likec4
-Consider the following model:
-
-```likec4 wrap title="example.c4"
 model {
   actor customer {
     -> webApp 'uses in browser via HTTPS'

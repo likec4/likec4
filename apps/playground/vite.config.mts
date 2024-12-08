@@ -94,7 +94,7 @@ export default defineConfig((env) => {
               'tslib',
               '#monaco/bootstrap',
               '#monaco/config',
-              /@likec4\/(icons|log|layouts|language-server).*/,
+              /@likec4\/(core|icons|log|layouts|language-server).*/,
               /d3-/,
               /hpcc-js/,
               /node_modules.*vscode/,
@@ -124,6 +124,7 @@ export default defineConfig((env) => {
         },
         mode: 'production',
         resolve: {
+          conditions: ['production'],
           alias: {
             '/src/style.css': resolve('prebuild/style.css'),
             '/src/main': resolve('prebuild/main.mjs')

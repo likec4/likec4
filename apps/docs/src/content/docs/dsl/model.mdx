@@ -5,7 +5,7 @@ sidebar:
   label: Model
   order: 3
 tableOfContents:
-  minHeadingLevel: 3
+  # minHeadingLevel: 3
   maxHeadingLevel: 4
 ---
 
@@ -13,7 +13,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 The `model` describes architecture as a set of hierarchical elements and any relationships among them.
 
-### Element
+## Element
 
 Element is a basic building block.  
 It represents a logical or physical part of the architecture.  
@@ -49,7 +49,7 @@ It can contain letters, digits and underscore, but can't start with a digit or c
 | a.pi       | ⛔️ |
 
 
-#### Element Properties
+### Element Properties
 
 Elements may have properties: _title_, _description_ and _technology_.  
 For example, Structurizr DSL style:
@@ -123,7 +123,7 @@ specification {
 ```
 :::
 
-#### Element Tags
+### Element Tags
 
 Tags are defined in nested block and before any properties:
 
@@ -148,7 +148,7 @@ model {
 }
 ```
 
-#### Element Links
+### Element Links
 
 Element may have multiple links:
 
@@ -167,7 +167,7 @@ model {
 }
 ```
 
-#### Element Metadata :badge[v1.8]{variant="success"}
+### Element Metadata
 
 Element metadata is a set of key-value pairs, defined in a nested block:
 
@@ -190,7 +190,7 @@ model {
 
 Only string values are allowed, but you can use JSON or YAML format for complex data.
 
-### Structure
+## Structure
 
 Any element is a container and can contain other elements.  
 This way you define the structure and internals of the element.

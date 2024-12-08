@@ -1,0 +1,44 @@
+---
+title: Generate LikeC4Model
+description: How to generate Typed LikeC4 from DSL to access your architecture model programmatically.
+head:
+  - tag: title
+    content: LikeC4Model Code generation
+sidebar:
+  label: LikeC4Model
+  order: 6
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6    
+---
+
+import { Card, Aside } from '@astrojs/starlight/components';
+
+<p>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+</p>
+
+Generate source code artifacts from architecture model.
+
+Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your dependencies:
+
+```sh
+npm add likec4
+```
+
+## Typed Model
+
+The following generates a JavaScript bundle with React Component (and `.d.ts`):
+
+```sh
+
+npx likec4 codegen model --outfile ./likec4-model.ts
+
+# Aliases
+npx likec4 gen ts -o ./likec4-model.ts
+
+```
+
+<Aside type='caution' title="In progress" >
+  Documentation in progress
+</Aside>
