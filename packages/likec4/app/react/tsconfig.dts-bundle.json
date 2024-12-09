@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "types": [
       "react",
+      "node",
       "vite/client"
     ],
     "paths": {
