@@ -1,8 +1,9 @@
 import type { MergeExclusive, Simplify, Tagged, UnionToIntersection } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
-import type { RelationId } from './relation'
+import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color } from './theme'
+import type { ViewId } from './view'
 
 export type DeploymentNodeKind<Kinds extends string = string> = Tagged<Kinds, 'DeploymentNodeKind'>
 
@@ -69,16 +70,28 @@ export interface DeploymentRef {
 
 // export namespace DeploymentRef {
 //   export interface Node {
-//     readonly node: Fqn
+//     readonly id: Fqn
 //   }
 //   export interface Instance {
-//     readonly instance: Fqn
+//     readonly id: Fqn
 //     readonly element?: Fqn
+//   }
+//   export interface LogicalElement {
+//     readonly element: Fqn
+//   }
+
+//   export const isDeploymentElement = (ref: DeploymentRef): ref is Node | Instance => {
+//     return 'id' in ref
+//   }
+
+//   export const isLogicalElement = (ref: DeploymentRef): ref is LogicalElement => {
+//     return 'element' in ref && !('id' in ref)
 //   }
 // }
 // export type DeploymentRef = ExclusiveUnion<{
 //   Node: DeploymentRef.Node
 //   Instance: DeploymentRef.Instance
+//   Element: DeploymentRef.LogicalElement
 // }>
 
 /**
@@ -90,6 +103,17 @@ export interface DeploymentRelation {
   readonly target: DeploymentRef
   readonly title?: string
   readonly tags?: NonEmptyArray<Tag> | null
+  readonly description?: string
+  readonly technology?: string
+  readonly kind?: RelationshipKind
+  readonly color?: Color
+  readonly line?: RelationshipLineType
+  readonly head?: RelationshipArrowType
+  readonly tail?: RelationshipArrowType
+  readonly links?: NonEmptyArray<Link> | null
+  // Link to dynamic view
+  readonly navigateTo?: ViewId
+  readonly metadata?: { [key: string]: string }
 }
 // export interface DeploymentRelation
 
@@ -123,6 +147,18 @@ type ExclusiveUnion<Expressions> = Expressions extends object ? {
   : Expressions
 
 export namespace DeploymentRelationExpression {
+  // type LogicalRefEndpoint = {
+  //   logicalRef: ElementRefExpr
+  // }
+  // export type DirectEndpoint = ExclusiveUnion<{
+  //   DeploymentElementExpression: DeploymentElementExpression
+  //   Logical: LogicalRefEndpoint
+  // }>
+
+  // export const isLogicalEndpoint = (expr: DirectEndpoint): expr is LogicalRefEndpoint => {
+  //   return 'logicalRef' in expr
+  // }
+
   export type Direct = {
     source: DeploymentElementExpression
     target: DeploymentElementExpression

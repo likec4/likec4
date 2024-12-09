@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { commonHead } from './commonHead'
+import { commonHead } from './common-head'
 
 test('commonHead of two empty arrays', () => {
   const sources: number[] = []

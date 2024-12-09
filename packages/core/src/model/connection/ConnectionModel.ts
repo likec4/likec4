@@ -1,6 +1,6 @@
 import { invariant } from '../../errors'
 import { difference, equals, union } from '../../utils/set'
-import { stringHash } from '../../utils/stringHash'
+import { stringHash } from '../../utils/string-hash'
 import type { ElementModel } from '../ElementModel'
 import type { RelationshipModel } from '../RelationModel'
 import type { AnyAux } from '../types'
