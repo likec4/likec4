@@ -1,11 +1,11 @@
 import { DiagramNode, type ThemeColor } from '@likec4/core'
-import { ActionIcon, type ActionIconProps, Box, Text as MantineText, Tooltip } from '@mantine/core'
+import { ActionIcon, Box, Text as MantineText, Tooltip } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { IconId } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
-import { type HTMLMotionProps, m, type Variants } from 'framer-motion'
+import { m, type Variants } from 'framer-motion'
 import React, { memo, useCallback, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
@@ -16,6 +16,7 @@ import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
+import { BottomButtons } from './BottomButtons'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -53,53 +54,6 @@ const VariantsRoot = {
     scale: 0.975
   }
 } satisfies Variants
-
-const variantsBottomButton = (target: 'navigate' | 'relationships', align: 'left' | 'right' | false) => {
-  const variants = {
-    idle: {
-      '--icon-scale': 'scale(1)',
-      '--ai-bg': 'var(--ai-bg-idle)',
-      scale: 1,
-      opacity: 0.5,
-      originX: 0.5,
-      originY: 0.35,
-      translateY: 0,
-      ...align === 'left' && {
-        originX: 0.75,
-        translateX: -1
-      },
-      ...align === 'right' && {
-        originX: 0.25,
-        translateX: 1
-      }
-    },
-    selected: {},
-    hovered: {
-      '--icon-scale': 'scale(1)',
-      '--ai-bg': 'var(--ai-bg-hover)',
-      translateY: 3,
-      scale: 1.32,
-      opacity: 1,
-      ...align === 'left' && {
-        translateX: -4
-      },
-      ...align === 'right' && {
-        translateX: 4
-      }
-    },
-    'hovered:details': {},
-    [`hovered:${target}`]: {
-      '--icon-scale': 'scale(1.08)',
-      scale: 1.45
-    },
-    [`tap:${target}`]: {
-      scale: 1.15
-    }
-  } satisfies Variants
-  variants['selected'] = variants['hovered']
-  variants['hovered:details'] = variants.idle
-  return variants
-}
 
 const VariantsDetailsBtn = {
   idle: {
@@ -303,7 +257,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         </Box>
         {/* {isHovercards && element.links && <ElementLink element={element} />} */}
         <BottomButtons
-          keyPrefix={`${viewId}:element:${id}:`}
           onNavigateTo={isNavigable && onNavigateTo}
           onOpenRelationships={enableRelationshipBrowser && !!modelRef && onOpenRelationships}
           {...isInteractive && animateHandlers}
@@ -339,68 +292,3 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     </>
   )
 }, isEqualProps)
-
-type BottomButtonsProps = ActionIconProps & HTMLMotionProps<'div'> & {
-  keyPrefix: string
-  onNavigateTo: ((e: React.MouseEvent) => void) | false
-  onOpenRelationships: ((e: React.MouseEvent) => void) | false
-}
-const BottomButtons = ({
-  keyPrefix,
-  onNavigateTo,
-  onOpenRelationships,
-  ...props
-}: BottomButtonsProps) => {
-  const enableRelationships = !!onOpenRelationships
-  const enableNavigate = !!onNavigateTo
-
-  if (!enableRelationships && !enableNavigate) {
-    return null
-  }
-
-  return (
-    <Box className={css.bottomButtonsContainer}>
-      {enableNavigate && (
-        <ActionIcon
-          {...props}
-          key={`${keyPrefix}navigate`}
-          data-animate-target="navigate"
-          component={m.div}
-          // Weird, but dts-bundle-generator fails on "enableRelationships && 'left'"
-          variants={variantsBottomButton('navigate', enableRelationships ? 'left' : false)}
-          className={clsx('nodrag nopan', css.navigateBtn)}
-          radius="md"
-          role="button"
-          onClick={onNavigateTo}
-          onDoubleClick={stopPropagation}
-        >
-          <IconZoomScan
-            style={{
-              width: '70%',
-              transform: 'var(--icon-scale)'
-            }} />
-        </ActionIcon>
-      )}
-      {enableRelationships && (
-        <ActionIcon
-          {...props}
-          key={`${keyPrefix}relationships`}
-          data-animate-target="relationships"
-          component={m.div}
-          variants={variantsBottomButton('relationships', enableNavigate ? 'right' : false)}
-          className={clsx('nodrag nopan', css.navigateBtn)}
-          radius="md"
-          role="button"
-          onClick={onOpenRelationships}
-          onDoubleClick={stopPropagation}
-        >
-          <IconTransform
-            style={{
-              width: '70%',
-              transform: 'var(--icon-scale)'
-            }} />
-        </ActionIcon>
-      )}
-    </Box>
-  )
-}
