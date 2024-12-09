@@ -137,6 +137,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         specification {
           element component
           deploymentNode node
+          tag next
         }
         model {
           component sys {
@@ -154,9 +155,16 @@ describe.concurrent('LikeC4ModelParser', () => {
           }
 
           n1 -> n2
-          sys1 -> sys2
+          sys1 -> sys2 {
+            title 'Nested'
+            style {
+              color red
+            }
+          }
           n1.sys1 -> n2.sys2.c1 'title'
-          sys1.c1 -> sys2.c2
+          sys1.c1 -> sys2.c2 {
+            #next
+          }
         }
       `)
       const doc = services.likec4.ModelParser.parse(langiumDocument)
@@ -178,7 +186,9 @@ describe.concurrent('LikeC4ModelParser', () => {
           },
           target: {
             id: 'n2.sys2'
-          }
+          },
+          title: 'Nested',
+          color: 'red'
         },
         {
           id: expect.any(String),
@@ -200,7 +210,8 @@ describe.concurrent('LikeC4ModelParser', () => {
           target: {
             id: 'n2.sys2',
             element: 'sys.c1.c2'
-          }
+          },
+          tags: ['next']
         }
       ])
     })

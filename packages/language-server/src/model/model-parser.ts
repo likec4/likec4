@@ -1271,19 +1271,49 @@ export class LikeC4ModelParser {
     const source = this.parseDeploymentDef(astNode.source)
     const target = this.parseDeploymentDef(astNode.target)
 
+    const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
+    const links = this.convertLinks(astNode.body)
+    const kind = astNode.kind?.ref?.name as (c4.RelationshipKind | undefined)
+    const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+
+    const bodyProps = mapToObj(
+      astNode.body?.props.filter(ast.isRelationStringProperty) ?? [],
+      p => [p.key, p.value as string | undefined]
+    )
+
+    const navigateTo = pipe(
+      astNode.body?.props ?? [],
+      filter(ast.isRelationNavigateToProperty),
+      map(p => p.value.view.ref?.name),
+      filter(isTruthy),
+      first()
+    )
+
+    const title = removeIndent(astNode.title ?? bodyProps.title)
+    const description = removeIndent(bodyProps.description)
+    const technology = toSingleLine(astNode.technology) ?? removeIndent(bodyProps.technology)
+
+    const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
+
     const id = stringHash(
       astPath,
       astNode.source.$cstNode!.text,
       astNode.target.$cstNode!.text
     ) as c4.RelationId
 
-    const title = removeIndent(astNode.title)
-
     return {
       id,
       source,
       target,
-      ...title && { title }
+      ...title && { title },
+      ...(metadata && { metadata }),
+      ...(isTruthy(technology) && { technology }),
+      ...(isTruthy(description) && { description }),
+      ...(kind && { kind }),
+      ...(tags && { tags }),
+      ...(isNonEmptyArray(links) && { links }),
+      ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
+      ...(navigateTo && { navigateTo: navigateTo as c4.ViewId })
     }
   }
 
@@ -1498,7 +1528,7 @@ export class LikeC4ModelParser {
   }
 
   protected resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
-    if (ast.isDeploymentNode(node) || ast.isDeployedInstance(node)) {
+    if (ast.isDeploymentElement(node)) {
       return this.services.likec4.DeploymentsIndex.getFqnName(node)
     }
     if (ast.isExtendElement(node)) {

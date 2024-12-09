@@ -42,9 +42,9 @@ export class Rpc implements Disposable {
         })
       },
       {
-        timing: 'both',
-        waitMs: 250,
-        maxWaitMs: 500
+        timing: 'trailing',
+        waitMs: 300,
+        maxWaitMs: 1000
       }
     )
 

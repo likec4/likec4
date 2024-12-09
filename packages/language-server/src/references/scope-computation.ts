@@ -334,7 +334,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       if (isTruthy(name)) {
         const desc = this.descriptions.createDescription(el, name, document)
         scopes.add(container, desc)
-        localnames.add(`${desc.type}.${desc.name}`)
+        localnames.add(desc.name)
       }
 
       if (ast.isDeploymentNode(el) && el.body) {
@@ -347,15 +347,18 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         }
       }
     }
-
-    pipe(
-      descedants,
-      filter(desc => !localnames.has(`${desc.type}.${desc.name}`)),
-      uniqueDescriptions,
-      forEach(desc => {
-        scopes.add(container, desc)
-      })
-    )
+    if (descedants.length > 0) {
+      pipe(
+        descedants,
+        filter(desc => !localnames.has(desc.name)),
+        groupBy(desc => desc.name),
+        forEachObj((descs, name) => {
+          if (descs.length === 1) {
+            scopes.add(container, descs[0])
+          }
+        })
+      )
+    }
     return [...scopes.get(container).values()]
   }
 }

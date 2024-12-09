@@ -5,13 +5,18 @@ import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle } from './DotPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
-import { toArrowType } from './utils'
+import { pxToInch, pxToPoints, toArrowType } from './utils'
 
 // TODO: For now we use ElementViewPrinter for DeploymentView
 export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeploymentView> {
   protected override createGraph(): RootGraphModel {
+    const autoLayout = this.view.autoLayout
     const G = super.createGraph()
     G.delete(_.TBbalance)
+    G.apply({
+      [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 130),
+      [_.ranksep]: pxToInch(autoLayout.rankSep ?? 130)
+    })
     return G
   }
 
@@ -47,7 +52,8 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
   }
 
   override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
-    const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
+    // const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
+    const [sourceFqn, targetFqn] = [edge.source, edge.target]
     const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
     const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
 
@@ -64,7 +70,7 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
+    // const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
 
     // if (!hasCompoundEndpoint) {
     //   const connected = new Set([
@@ -78,11 +84,7 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
 
     const label = edgelabel(edge)
     if (label) {
-      if (hasCompoundEndpoint) {
-        e.attributes.set(_.xlabel, label)
-      } else {
-        e.attributes.set(_.label, label)
-      }
+      e.attributes.set(_.label, label)
     }
     if (edge.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
@@ -94,27 +96,12 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
 
     let [head, tail] = [edge.head ?? DefaultArrowType, edge.tail ?? 'none']
 
-    if (edge.dir === 'back') {
-      e.attributes.apply({
-        [_.arrowtail]: toArrowType(head),
-        [_.dir]: 'back'
-      })
-      if (tail !== 'none') {
-        e.attributes.apply({
-          [_.arrowhead]: toArrowType(tail),
-          [_.dir]: 'both',
-          [_.minlen]: 0
-        })
-      }
-      return e
-    }
-
     if (head === 'none' && tail === 'none') {
       e.attributes.apply({
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
-        [_.dir]: 'none',
-        [_.constraint]: false
+        [_.dir]: 'none'
+        // [_.constraint]: false
       })
       return e
     }
@@ -123,8 +110,8 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
       e.attributes.apply({
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
-        [_.dir]: 'both',
-        [_.minlen]: 0
+        [_.dir]: 'both'
+        // [_.minlen]: 0
       })
       return e
     }

@@ -1,5 +1,6 @@
 import { consola } from '@likec4/log'
 import { hrtime } from 'node:process'
+import { inspect } from 'node:util'
 import prettyMilliseconds from 'pretty-ms'
 import { isCI } from 'std-env'
 import k from 'tinyrainbow'
@@ -28,10 +29,8 @@ export function createLikeC4Logger(prefix: string) {
     },
     warn(msg: unknown, options?: LogOptions) {
       if (msg instanceof Error) {
-        logger.warn(`${ERROR} ${k.red(msg.stack ?? msg.name + ' ' + msg.message)}`, {
+        logger.warn(`${WARN} ${k.red(msg.name + ' ' + msg.message)}\n${inspect(msg, { colors: true })}`, {
           timestamp,
-          // @ts-ignore
-          error: msg,
           ...options
         })
         return
@@ -43,7 +42,7 @@ export function createLikeC4Logger(prefix: string) {
     },
     error(err: unknown, options?: LogErrorOptions) {
       if (err instanceof Error) {
-        logger.error(`${ERROR} ${k.red(err.stack ?? err.name + ' ' + err.message)}`, {
+        logger.error(`${ERROR} ${k.red(err.name + ' ' + err.message)}\n${inspect(err, { colors: true })}`, {
           timestamp,
           error: err,
           ...options

@@ -1,15 +1,17 @@
-import type { ComputedLikeC4Model, ComputedView, ViewId as ViewID } from '@likec4/core'
+import type { ComputedLikeC4Model, ViewId as ViewID } from '@likec4/core'
+import { objectHash } from '@likec4/core'
 import type { LayoutResult } from '@likec4/layouts'
-import { isDeepEqual, keys, values } from 'remeda'
+import { deepEqual } from 'fast-equals'
+import LRUCache from 'mnemonist/lru-cache'
+import prettyMilliseconds from 'pretty-ms'
+import { keys } from 'remeda'
 import vscode from 'vscode'
 import type { ExtensionController } from './ExtensionController'
 import { logger } from './logger'
 import { AbstractDisposable } from './util'
 
 export class LikeC4Model extends AbstractDisposable {
-  private computedViews = new Map<ViewID, ComputedView>()
-
-  private cachedDiagrams = new WeakMap<ComputedView, LayoutResult>()
+  private cache = new LRUCache<string, LayoutResult>(500)
 
   private computedModelPromise: Promise<{ model: ComputedLikeC4Model | null }> | undefined
 
@@ -28,21 +30,17 @@ export class LikeC4Model extends AbstractDisposable {
     )
   }
 
-  public fetchComputedModel() {
+  public async fetchComputedModel() {
     this.computedModelPromise ??= Promise.resolve().then(() => this.fetchModelAndUpdateCaches())
-    return this.computedModelPromise
+    return await this.computedModelPromise
   }
 
   private async fetchModelAndUpdateCaches() {
+    const mark = performance.mark('fetchComputedModel:start')
     const model = await this.ctrl.rpc.fetchComputedModel()
-    if (model) {
-      for (const view of values(model.views)) {
-        let current = this.computedViews.get(view.id)
-        if (!current || !isDeepEqual(current, view)) {
-          this.computedViews.set(view.id, view)
-        }
-      }
-    }
+    const measure = performance.measure('FetchComputedModel', mark.name)
+    performance.clearMarks(mark.name)
+    logger.debug(`[LikeC4Model.fetchComputedModel] ${prettyMilliseconds(measure.duration)}`)
     return { model }
   }
 
@@ -52,16 +50,21 @@ export class LikeC4Model extends AbstractDisposable {
     if (!latest) {
       return null
     }
-    const computedView = this.computedViews.get(viewId) ?? latest
-    let layoutedView = this.cachedDiagrams.get(computedView)
+    const hash = objectHash(latest, {
+      ignoreUnknown: true,
+      unorderedArrays: true
+    })
+    let layoutedView = this.cache.get(hash)
     if (!layoutedView) {
+      const mark = performance.mark(`layoutView:${viewId}`)
       try {
-        layoutedView = await this.ctrl.graphviz.layout(computedView)
+        layoutedView = await this.ctrl.graphviz.layout(latest)
         if (!layoutedView) {
           return null
         }
         this.viewsWithReportedErrors.delete(viewId)
-        this.cachedDiagrams.set(computedView, layoutedView)
+        this.cache.set(hash, layoutedView)
+        // this.cachedDiagrams.set(computedView, layoutedView)
       } catch (err) {
         if (!this.viewsWithReportedErrors.has(viewId)) {
           const errMessage = err instanceof Error
@@ -72,6 +75,9 @@ export class LikeC4Model extends AbstractDisposable {
         }
         logger.warn(`[LikeC4Model.layoutView] failed ${viewId}`, err)
         return Promise.reject(err)
+      } finally {
+        const measure = performance.measure('LayoutView', mark.name)
+        logger.debug(`[LikeC4Model.layoutView] "${viewId}" in ${prettyMilliseconds(measure.duration)}`)
       }
     }
     return layoutedView
@@ -111,7 +117,7 @@ export class LikeC4Model extends AbstractDisposable {
       if (!hasMetrics) {
         return
       }
-      const hasChanged = !this.previousMetrics || !isDeepEqual(this.previousMetrics, metrics)
+      const hasChanged = !this.previousMetrics || !deepEqual(this.previousMetrics, metrics)
       // if metrics are the same, do nothing
       if (!hasChanged) {
         return

@@ -522,6 +522,8 @@ ModelDeployments:
     )*
   '}';
 
+type DeploymentElement = DeploymentNode | DeployedInstance;
+
 DeploymentNode:
   (
     kind=[DeploymentNodeKind:Id] name=Id |
@@ -567,7 +569,18 @@ DeploymentRelation:
   source=DeploymentRef
   ('->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
   target=DeploymentRef
-  title=String?
+  (
+    title=String
+    technology=String?
+  )?
+  tags=Tags?
+  body=DeploymentRelationBody?
+;
+
+DeploymentRelationBody: '{'
+  tags=Tags?
+  props+=RelationProperty*
+'}'
 ;
 
 DeploymentView:

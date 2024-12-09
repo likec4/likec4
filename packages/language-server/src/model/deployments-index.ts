@@ -1,8 +1,14 @@
 import type { Fqn } from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
 import { AstUtils, DocumentState, MultiMap } from 'langium'
-import { forEachObj, groupBy, isTruthy, pipe } from 'remeda'
-import { ast, type DeploymentAstNodeDescription, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
+import { forEachObj, groupBy, isTruthy, pipe, prop } from 'remeda'
+import {
+  ast,
+  type DeploymentAstNodeDescription,
+  ElementOps,
+  isLikeC4LangiumDocument,
+  type LikeC4LangiumDocument
+} from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
@@ -48,25 +54,29 @@ export class DeploymentsIndex {
    * @param nodeName Name of the deployment node
    * @returns Stream of artifacts
    */
-  public children(node: ast.DeploymentNode): Stream<DeploymentAstNodeDescription> {
+  public nested(node: ast.DeploymentNode): Stream<DeploymentAstNodeDescription> {
     const fqnName = this.getFqnName(node)
-    return this.documents().flatMap(doc => this.get(doc).children(fqnName))
+    return this.documents().flatMap(doc => this.get(doc).nested(fqnName))
   }
 
   public byFqn(fqnName: string): Stream<DeploymentAstNodeDescription> {
     return this.documents().flatMap(doc => this.get(doc).byFqn(fqnName))
   }
 
-  public getFqnName(node: ast.DeploymentNode | ast.DeployedInstance): Fqn {
+  public getFqnName(node: ast.DeploymentElement): Fqn {
+    const attr = ElementOps.readId(node)
+    if (isTruthy(attr)) {
+      return attr
+    }
     const fqn = [
       this.Names.getNameStrict(node)
     ]
     let parentNode: ast.DeploymentNode | undefined
-    while (parentNode = AstUtils.getContainerOfType(node.$container, ast.isDeploymentNode)) {
-      fqn.unshift(this.Names.getNameStrict(parentNode))
+    while ((parentNode = AstUtils.getContainerOfType(node.$container, ast.isDeploymentNode))) {
+      fqn.push(this.Names.getNameStrict(parentNode))
       node = parentNode
     }
-    return fqn.join('.') as Fqn
+    return fqn.reduceRight((acc, cur) => `${acc}.${cur}`) as Fqn
   }
 
   public createDocumentIndex(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
@@ -77,7 +87,7 @@ export class DeploymentsIndex {
     const _root = new Array<DeploymentAstNodeDescription>()
     const _nested = new MultiMap<string, DeploymentAstNodeDescription>()
     const _byfqn = new MultiMap<string, DeploymentAstNodeDescription>()
-    const Names = this.services.references.NameProvider
+    const Names = this.Names
     const Descriptions = this.services.workspace.AstNodeDescriptionProvider
 
     const createAndSaveDescription = (
@@ -87,13 +97,17 @@ export class DeploymentsIndex {
         ...Descriptions.createDescription(props.node, props.name, document),
         fqn: props.fqn
       }
+      ElementOps.writeId(props.node, props.fqn as Fqn)
       _byfqn.add(props.fqn, desc)
       return desc
     }
 
-    const traverseNode = (node: ast.DeploymentNode, parentFqn: string): readonly DeploymentAstNodeDescription[] => {
+    const traverseNode = (
+      container: ast.DeploymentNode,
+      parentFqn: string
+    ): readonly DeploymentAstNodeDescription[] => {
       const _descedants = [] as DeploymentAstNodeDescription[]
-      const children = node.body?.elements
+      const children = container.body?.elements
       if (!children || children.length === 0) {
         return []
       }
@@ -108,7 +122,7 @@ export class DeploymentsIndex {
             const fqn = `${parentFqn}.${name}`
             const desc = createAndSaveDescription({ node, name, fqn })
             _nested.add(parentFqn, desc)
-            directChildren.add(`${desc.type}.${desc.name}`)
+            directChildren.add(desc.name)
             if (ast.isDeploymentNode(node) && node.body) {
               _descedants.push(...traverseNode(node, fqn))
             }
@@ -120,7 +134,7 @@ export class DeploymentsIndex {
       if (_descedants.length > 0) {
         pipe(
           _descedants,
-          groupBy(desc => `${desc.type}.${desc.name}`),
+          groupBy(prop('name')),
           forEachObj((descs, key) => {
             if (descs.length > 1 || directChildren.has(key)) {
               return
@@ -134,7 +148,7 @@ export class DeploymentsIndex {
 
     for (const node of rootNodes) {
       try {
-        if (!ast.isDeploymentNode(node)) {
+        if (ast.isDeploymentRelation(node)) {
           continue
         }
         const name = Names.getName(node)
@@ -156,7 +170,7 @@ export class DocumentDeploymentsIndex {
   constructor(
     private _rootNodes: Array<DeploymentAstNodeDescription>,
     /**
-     * Children of a deployment node
+     * Nested of a deployment node
      */
     private _nested: MultiMap<string, DeploymentAstNodeDescription>,
     /**
@@ -178,7 +192,7 @@ export class DocumentDeploymentsIndex {
    * @param nodeName Name of the deployment node
    * @returns Stream of artifacts
    */
-  public children(nodeName: string): readonly DeploymentAstNodeDescription[] {
+  public nested(nodeName: string): readonly DeploymentAstNodeDescription[] {
     return this._nested.get(nodeName)
   }
 
@@ -189,8 +203,8 @@ export class DocumentDeploymentsIndex {
   public unique(): readonly DeploymentAstNodeDescription[] {
     const result = [] as DeploymentAstNodeDescription[]
     pipe(
-      this._byfqn.values().toArray(),
-      groupBy(desc => `${desc.type}.${desc.name}`),
+      [...this._byfqn.values()],
+      groupBy(prop('name')),
       forEachObj(descs => {
         if (descs.length === 1) {
           result.push(descs[0])

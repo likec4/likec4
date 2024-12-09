@@ -29,31 +29,21 @@ deployment {
 
       zone zone1 {
         node server1 {
-          instanceOf cloud.ui
-          instanceOf cloud.next.graphql
+          instanceOf cloud.ui.dashboard
+          instanceOf cloud.backend.graphql
         }
         node server2 {
-          instanceOf cloud.ui
-          instanceOf cloud.next.graphql          
+          instanceOf cloud.ui.dashboard
+          instanceOf cloud.backend.graphql
         }
         node server3 {
-          instanceOf cloud.next.backend
-          instanceOf cloud.legacy
-          instanceOf cloud.next.events
-        }
-        node server4 {
-          instanceOf cloud.next.backend
-          instanceOf cloud.legacy
+          instanceOf cloud.backend.cms
+          instanceOf cloud.data        
         }
 
         group amazon {
           instanceOf amazon.rds
-        }
-
-        server4.backend -> server3.events 'reuse' {
-          style {
-            color red
-          }
+          instanceOf amazon.sqs
         }
       }
     }
@@ -66,33 +56,27 @@ views {
     title 'Production deployment'
     
     include
-      * -> eu,
+      customer.customer,
       eu.**
 
     exclude
-      server1.ui -> server3.legacy,
-      server1.ui -> server4.legacy,
-      server2.ui -> server3.legacy,
-      server2.ui -> server4.legacy,
-      server1.ui -> zone1.rds,
-      server2.ui -> zone1.rds,
-      server3.legacy -> zone1.rds,
-      server4.legacy -> zone1.rds
+      amazon,
     
     style eu._ {
       color muted
     }
 
-    style server1._, server4._ {
+    style server1._, server2._ {
       color green
     }
-    style server2._ {
+    style server3._ {
       color indigo
     }
 
     style amazon._ {
       color amber
     }
-  }
+  	autoLayout TopBottom 100 100
+	}
 
 }

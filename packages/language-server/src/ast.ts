@@ -28,6 +28,12 @@ declare module './generated/ast' {
   export interface DeploymentView {
     [idattr]?: c4.ViewId | undefined
   }
+  export interface DeploymentNode {
+    [idattr]?: c4.Fqn | undefined
+  }
+  export interface DeployedInstance {
+    [idattr]?: c4.Fqn | undefined
+  }
 }
 
 type ParsedElementStyle = {
@@ -167,7 +173,7 @@ export interface ParsedLink {
 }
 
 export const ElementOps = {
-  writeId(node: ast.Element, id: c4.Fqn | null) {
+  writeId(node: ast.Element | ast.DeploymentElement, id: c4.Fqn | null) {
     if (isNullish(id)) {
       node[idattr] = undefined
     } else {
@@ -175,7 +181,7 @@ export const ElementOps = {
     }
     return node
   },
-  readId(node: ast.Element) {
+  readId(node: ast.Element | ast.DeploymentElement) {
     return node[idattr]
   }
 }

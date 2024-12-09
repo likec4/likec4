@@ -137,30 +137,27 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   protected getScopeForDeploymentRef(container: ast.DeploymentRef, context: ReferenceInfo) {
     const parent = container.parent
     if (!parent) {
-      const doc = getDocument(container)
-      const localscope = this.computeScope(context, ast.DeploymentNode)
-      if (!isLikeC4LangiumDocument(doc)) {
-        return localscope
-      }
-      return new StreamScope(
-        localscope.getAllElements(),
-        new MapScope(this.deploymentsIndex.get(doc).unique())
+      return new MapScope(
+        // First preference for deployment nodes
+        this.computeScope(context, ast.DeploymentNode).getAllElements(),
+        // Second preference for deployed instances
+        this.computeScope(context, ast.DeployedInstance)
       )
     }
-    const ref = parent.value.ref
-    if (!ref) {
+    const parentRef = parent.value.ref
+    if (!parentRef) {
       return EMPTY_SCOPE
     }
-    if (ast.isDeploymentNode(ref)) {
-      return new StreamScope(this.deploymentsIndex.children(ref))
+    if (ast.isDeploymentNode(parentRef)) {
+      return new StreamScope(this.deploymentsIndex.nested(parentRef))
     }
-    if (ast.isDeployedInstance(ref)) {
-      return new StreamScope(this.scopeElementRef(ref.element))
+    if (ast.isDeployedInstance(parentRef)) {
+      return new StreamScope(this.scopeElementRef(parentRef.element))
     }
-    if (ast.isElement(ref)) {
-      return new StreamScope(this.uniqueDescedants(() => ref))
+    if (ast.isElement(parentRef)) {
+      return new StreamScope(this.uniqueDescedants(() => parentRef))
     }
-    return nonexhaustive(ref)
+    return nonexhaustive(parentRef)
   }
 
   protected computeScope(context: ReferenceInfo, referenceType = this.reflection.getReferenceType(context)) {

@@ -23,7 +23,22 @@ import type {
   XYPoint
 } from '@likec4/core/types'
 import { logger } from '@likec4/log'
-import { filter, isEmpty, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take } from 'remeda'
+import {
+  concat,
+  difference,
+  filter,
+  flatMap,
+  isEmpty,
+  isNullish,
+  isNumber,
+  isTruthy,
+  map,
+  pipe,
+  reverse,
+  sort,
+  take,
+  unique
+} from 'remeda'
 import {
   attribute as _,
   type AttributeListModel,
@@ -318,10 +333,20 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     if (parentId === null) {
       return this.view.nodes.filter(n => !isCompound(n))
     }
-    const prefix = parentId + '.'
-    return this.view.nodes.filter(
-      n => !isCompound(n) && n.id.startsWith(prefix)
-    )
+    return this.viewElement(parentId).children.flatMap(childId => {
+      const child = this.viewElement(childId)
+      return isCompound(child) ? this.leafElements(child.id) : child
+    })
+  }
+
+  protected descendants(parentId: Fqn | null): ComputedNode[] {
+    if (parentId === null) {
+      return this.view.nodes.slice()
+    }
+    return this.viewElement(parentId).children.flatMap(childId => {
+      const child = this.viewElement(childId)
+      return [child, ...this.descendants(child.id)]
+    })
   }
 
   protected viewElement(id: Fqn) {
@@ -369,18 +394,21 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     return [element, endpoint, logicalEndpoint] as const
   }
 
-  protected hasInternalEdges(parentId: Fqn | null): boolean {
-    if (parentId === null) {
-      return this.view.edges.length > 0
-    }
-    return this.view.edges.some(parentFqnPredicate(parentId))
-  }
-
   protected findInternalEdges(parentId: Fqn | null): ComputedEdge[] {
     if (parentId === null) {
       return this.view.edges.slice()
     }
-    return this.view.edges.filter(parentFqnPredicate(parentId))
+    const parent = this.viewElement(parentId)
+    return pipe(
+      this.descendants(parentId),
+      flatMap(child => {
+        return concat(child.inEdges, child.outEdges)
+      }),
+      unique(),
+      difference(concat(parent.inEdges, parent.outEdges)),
+      map(edgeId => this.view.edges.find(e => e.id === edgeId)),
+      filter(isTruthy)
+    )
   }
 
   protected withoutCompoundEdges(element: ComputedNode) {

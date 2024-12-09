@@ -85,7 +85,6 @@ model {
 
 views {
 
-
   view cloud_next of cloud.next {
     include cloud.ui
 
@@ -99,7 +98,7 @@ views {
           color indigo
           line solid
         }
-        
+
     exclude
       cloud.ui -> amazon
 

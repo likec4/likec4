@@ -18,6 +18,9 @@ model {
         All the frontend applications
         of Cloud System
       '
+      style {
+        shape browser
+      }
       metadata {
         version '2.1.1'
       }
