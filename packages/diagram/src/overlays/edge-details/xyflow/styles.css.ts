@@ -1,4 +1,4 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 import { mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
 import { mixColor } from '../../Overlays.css'
 
@@ -140,63 +140,3 @@ export const edgeLabelTechnology = style({
   fontSize: mantine.fontSizes.sm,
   lineHeight: 1
 })
-
-export const navigateBtnBox = style({
-  zIndex: 100,
-  position: 'absolute',
-  left: '50%',
-  bottom: 2,
-  transform: 'translate(-50%, 0%)',
-  gap: 0,
-  transition: 'all 190ms cubic-bezier(0.5, 0, 0.4, 1)',
-  selectors: {
-    [`:where([data-likec4-shape='browser'],[data-likec4-shape='mobile']) &`]: {
-      bottom: 6
-    }
-  }
-})
-globalStyle(`:where(${elementNode}:hover) ${navigateBtnBox}`, {
-  transitionDelay: '20ms',
-  gap: 8,
-  transform: 'translate(-50%, 5px)'
-})
-
-export const navigateBtn = style({
-  opacity: 0.7,
-  pointerEvents: 'all',
-  cursor: 'pointer',
-  transform: 'scale(0.9)',
-  transition: 'all 190ms cubic-bezier(0.5, 0, 0.4, 1)',
-  'vars': {
-    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
-    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
-    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
-  },
-  ':hover': {
-    transitionDelay: '0ms',
-    transform: 'scale(1.25)',
-    boxShadow: mantine.shadows.lg
-  },
-  ':active': {
-    transform: 'scale(0.975)'
-  }
-})
-
-globalStyle(`:where(${elementNode}:hover) ${navigateBtn}`, {
-  transitionDelay: '40ms',
-  transitionTimingFunction: 'cubic-bezier(0, 0, 0.40, 1)',
-  opacity: 1,
-  transform: 'scale(1.07)',
-  boxShadow: mantine.shadows.md,
-  vars: {
-    '--ai-bg': `var(--ai-bg-hover)`
-  }
-})
-// globalStyle(`${elementNode}:hover ${navigateBtn}`, {
-//   opacity: 1,
-//   transform: 'scale(1.05)',
-//   boxShadow: mantine.shadows.md,
-//   vars: {
-//     '--ai-bg': `var(--ai-bg-hover)`
-//   }
-// })
