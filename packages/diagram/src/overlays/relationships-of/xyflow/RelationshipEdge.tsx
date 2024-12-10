@@ -2,14 +2,13 @@ import { ActionIcon, Box, Group, Stack, Text, ThemeIcon, Tooltip as MantineToolt
 import { IconBoxMultipleFilled, IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
-import { useEffect, useRef } from 'react'
 import { only } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
-import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-relationships'
 import * as css from './styles.css'
+import { type BaseTypes } from '../../../xyflow/_types'
 
 const Tooltip = MantineTooltip.withProps({
   color: 'dark',
@@ -26,7 +25,7 @@ export function RelationshipEdge({
   data,
   label,
   ...props
-}: EdgeProps<XYFlowTypes.Edge>) {
+}: EdgeProps<BaseTypes.Edge>) {
   const {
     viewId,
     onNavigateTo

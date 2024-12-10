@@ -2,14 +2,14 @@ import { Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
-import type { XYFlowTypes } from '../_types'
 import * as css from './styles.css'
+import { type BaseTypes } from '../../../xyflow/_types'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type CompoundNodeProps = NodeProps<XYFlowTypes.CompoundNode>
+type CompoundNodeProps = NodeProps<BaseTypes.CompoundNode>
 
 export function CompoundNode({
   data: {
@@ -20,6 +20,7 @@ export function CompoundNode({
   width = 200,
   selectable = true
 }: CompoundNodeProps) {
+
   return (
     <>
       <m.div
@@ -49,10 +50,10 @@ export function CompoundNode({
       >
         <Text className={css.compoundNodeTitle} maw={width - 20}>{element.title}</Text>
       </m.div>
-      {ports.out.map((id, i) => (
+      {ports.out.map((p, i) => (
         <Handle
-          key={id}
-          id={id}
+          key={p.id}
+          id={p.id}
           type={'source'}
           position={Position.Right}
           style={{
@@ -60,10 +61,10 @@ export function CompoundNode({
             top: `${16 + 20 * i}px`
           }} />
       ))}
-      {ports.in.map((id, i) => (
+      {ports.in.map((p, i) => (
         <Handle
-          key={id}
-          id={id}
+          key={p.id}
+          id={p.id}
           type={'target'}
           position={Position.Left}
           style={{

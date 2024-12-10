@@ -7,7 +7,7 @@ import { memo } from 'react'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { useOverlayDialog } from '../../OverlayContext'
-import type { XYFlowTypes } from '../_types'
+import { type RelationshipsOfTypes } from '../_types'
 import * as css from './styles.css'
 import { BottomButtons } from '../../../xyflow/nodes/element/BottomButtons'
 
@@ -15,7 +15,7 @@ const Text = MantineText.withProps({
   component: 'div'
 })
 
-type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
+type ElementNodeProps = NodeProps<RelationshipsOfTypes.ElementNode>
 
 function selector(s: DiagramState) {
   return {
@@ -33,7 +33,7 @@ export const ElementNode = memo<ElementNodeProps>(({
     navigateTo,
     layoutId = id,
     leaving = false,
-    initialAnimation = true,
+    entering: entering = true,
     ...data
   },
   selectable = true,
@@ -73,7 +73,7 @@ export const ElementNode = memo<ElementNodeProps>(({
         ])}
         layoutId={layoutId}
         data-likec4-color={element.color}
-        initial={(layoutId === id && initialAnimation)
+        initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,
@@ -145,7 +145,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           })}
         />
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.in.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -153,10 +153,10 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.left.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
-      {ports.right.map(({ id, type }, i) => (
+      {ports.out.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -164,7 +164,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.right.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
     </>

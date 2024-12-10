@@ -2,22 +2,23 @@ import { ActionIcon, Box, Stack, Text } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
-import { useDiagramState, useDiagramStoreApi } from '../../../hooks/useDiagramState'
+import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
-import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-edge-details'
 import * as css from './styles.css'
+import { only } from 'remeda'
+import { type BaseTypes } from '../../../xyflow/_types'
 
 export function RelationshipEdge({
   data,
   label,
   ...props
-}: EdgeProps<XYFlowTypes.Edge>) {
+}: EdgeProps<BaseTypes.Edge>) {
   const overlay = useOverlayDialog()
   const onNavigateTo = useDiagramState(s => s.onNavigateTo)
   const [edgePath, labelX, labelY] = getBezierPath(props)
-  const navigateTo = data.relation.navigateTo
+  const navigateTo = only(data.relations)?.navigateTo
   return (
     <>
       <g
@@ -51,10 +52,10 @@ export function RelationshipEdge({
               {label}
             </Text>
           )}
-          {data.relation.technology && (
+          {only(data.relations)?.technology && (
             <Text component={'div'} className={css.edgeLabelTechnology}>
               {'[ '}
-              {data.relation.technology}
+              {only(data.relations)?.technology}
               {' ]'}
             </Text>
           )}

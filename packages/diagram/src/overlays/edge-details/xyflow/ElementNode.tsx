@@ -5,15 +5,15 @@ import { m } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { useOverlayDialog } from '../../OverlayContext'
-import type { XYFlowTypes } from '../_types'
 import * as css from './styles.css'
 import { BottomButtons } from '../../../xyflow/nodes/element/BottomButtons'
+import { type BaseTypes } from '../../../xyflow/_types'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
+type ElementNodeProps = NodeProps<BaseTypes.ElementNode>
 
 function selector(s: DiagramState) {
   return {
@@ -42,6 +42,7 @@ export function ElementNode({
     onOpenSource,
     enableRelationshipBrowser
   } = useDiagramState(selector)
+
   return (
     <>
       <m.div
@@ -104,10 +105,10 @@ export function ElementNode({
           })}
         />
       </m.div>
-      {ports.out.map((id, i) => (
+      {ports.out.map((p, i) => (
         <Handle
-          key={id}
-          id={id}
+          key={p.id}
+          id={p.id}
           type="source"
           position={Position.Right}
           style={{
@@ -115,10 +116,10 @@ export function ElementNode({
             top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
-      {ports.in.map((id, i) => (
+      {ports.in.map((p, i) => (
         <Handle
-          key={id}
-          id={id}
+          key={p.id}
+          id={p.id}
           type="target"
           position={Position.Left}
           style={{
@@ -126,10 +127,6 @@ export function ElementNode({
             top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
-      {
-        /* <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} /> */
-      }
     </>
   )
 }

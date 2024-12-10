@@ -12,13 +12,14 @@ import {
 } from '@xyflow/react'
 import { memo, useEffect } from 'react'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
-import type { XYFlowTypes } from './_types'
 import { SelectEdge } from './SelectEdge'
 import * as css from './SelectEdge.css'
 import { useLayoutedEdgeDetails, ZIndexes } from './use-layouted-edge-details'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
 import { RelationshipEdge } from './xyflow/RelationshipEdge'
+import type { BaseTypes } from '../../xyflow/_types'
+import { only } from 'remeda'
 
 const nodeTypes = {
   element: ElementNode,
@@ -28,7 +29,7 @@ const edgeTypes = {
   relation: RelationshipEdge
 }
 
-const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>) => {
+const resetDimmedAndHovered = (xyflow: ReactFlowInstance<BaseTypes.NonEmptyNode, BaseTypes.Edge>) => {
   xyflow.setEdges(edges =>
     edges.map(edge => ({
       ...edge,
@@ -49,12 +50,12 @@ const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlo
           dimmed: false,
           hovered: false
         }
-      }) as XYFlowTypes.Node
+      }) as BaseTypes.NonEmptyNode
     )
   )
 }
 
-const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) => {
+const animateEdge = (node: BaseTypes.NonEmptyNode, animated = true) => (edges: BaseTypes.Edge[]) => {
   return edges.map(edge => {
     const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
       || isAncestor(node.id, edge.target)
@@ -78,8 +79,8 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
 
   const boundsRef = useSyncedRef(bounds)
 
-  const xyflow = useReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>()
-  const xystore = useStoreApi<XYFlowTypes.Node, XYFlowTypes.Edge>()
+  const xyflow = useReactFlow<BaseTypes.NonEmptyNode, BaseTypes.Edge>()
+  const xystore = useStoreApi<BaseTypes.NonEmptyNode, BaseTypes.Edge>()
 
   const fitview = useDebouncedCallback(
     () => {
@@ -115,8 +116,8 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
 
   return (
     <ReactFlow
-      defaultEdges={[] as XYFlowTypes.Edge[]}
-      defaultNodes={[] as XYFlowTypes.Node[]}
+      defaultEdges={[] as BaseTypes.Edge[]}
+      defaultNodes={[] as BaseTypes.NonEmptyNode[]}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       defaultMarkerColor="var(--xy-edge-stroke)"
@@ -168,7 +169,7 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
               ...n.data,
               dimmed: n.id !== edge.source && n.id !== edge.target
             }
-          } as XYFlowTypes.Node))
+          } as BaseTypes.NonEmptyNode))
         )
       }}
       onEdgeMouseLeave={() => {
@@ -194,9 +195,12 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
       // }}
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
-        diagramStore.getState().onOpenSource?.({
-          relation: edge.data.relation.id
-        })
+        const relation = only(edge.data.relations);
+        if (relation) {
+          diagramStore.getState().onOpenSource?.({
+            relation: relation.id
+          })
+        }
       }}
       // onEdgeClick={(e, edge) => {
       //   e.stopPropagation()
