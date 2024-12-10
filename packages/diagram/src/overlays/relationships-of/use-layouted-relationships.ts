@@ -38,7 +38,8 @@ import {
   tap
 } from 'remeda'
 import { useLikeC4Model } from '../../likec4model'
-import type { XYFlowTypes } from './_types'
+import type { RelationshipsOfTypes } from './_types'
+import type { BaseTypes } from '../../xyflow/_types'
 
 const columns = ['incomers', 'subjects', 'outgoers'] as const
 type ColumnKey = typeof columns[number]
@@ -134,11 +135,11 @@ type Context = {
     outgoers: Set<Fqn>
   }
   columns: {
-    incomers: Map<Fqn, XYFlowTypes.Node>
-    subjects: Map<Fqn, XYFlowTypes.Node>
-    outgoers: Map<Fqn, XYFlowTypes.Node>
+    incomers: Map<Fqn, RelationshipsOfTypes.Node>
+    subjects: Map<Fqn, RelationshipsOfTypes.Node>
+    outgoers: Map<Fqn, RelationshipsOfTypes.Node>
   }
-  edges: XYFlowTypes.Edge[]
+  edges: BaseTypes.Edge[]
 }
 
 const sized = (height: number = Sizes.hodeHeight) => ({
@@ -146,7 +147,7 @@ const sized = (height: number = Sizes.hodeHeight) => ({
   height
 })
 
-const graphId = (node: XYFlowTypes.Node) => ({
+const graphId = (node: RelationshipsOfTypes.Node) => ({
   id: node.id,
   port: node.type === 'compound' ? `${node.id}::port` : node.id,
   body: `${node.id}`,
@@ -156,7 +157,7 @@ const graphId = (node: XYFlowTypes.Node) => ({
 function nodeData(
   element: LikeC4Model.Element,
   ctx: Context
-): Omit<XYFlowTypes.NonEmptyNode['data'], 'column'> {
+): Omit<RelationshipsOfTypes.NonEmptyNode['data'], 'column'> {
   // We try to inherit style from existing diagram node
   let diagramNode = ctx.diagramNodes.get(element.id)
 
@@ -173,7 +174,6 @@ function nodeData(
 
   return {
     fqn: element.id,
-    existsInCurrentView: ctx.diagramNodes.has(element.id),
     element: {
       kind: element.kind,
       title: diagramNode?.title ?? element.title,
@@ -183,8 +183,8 @@ function nodeData(
     },
     navigateTo: diagramNode?.navigateTo ?? element.defaultView?.id ?? null,
     ports: {
-      left: [],
-      right: []
+      in: [],
+      out: []
     }
   }
 }
@@ -192,7 +192,7 @@ function nodeData(
 function createEmptyNode(
   column: ColumnKey,
   ctx: Context
-): XYFlowTypes.EmptyNode {
+): RelationshipsOfTypes.EmptyNode {
   const id = `${column}__empty` as Fqn
   const xynodes = ctx.columns[column]
   let node = xynodes.get(id)
@@ -200,7 +200,7 @@ function createEmptyNode(
     invariant(node.type === 'empty', 'Node is not empty')
     return node
   }
-  const xynode: XYFlowTypes.EmptyNode = {
+  const xynode: RelationshipsOfTypes.EmptyNode = {
     type: 'empty',
     id,
     position: { x: 0, y: 0 },
@@ -224,11 +224,11 @@ function createEmptyNode(
 
 function createNode(
   column: ColumnKey,
-  nodeType: Exclude<XYFlowTypes.Node['type'], 'empty'>,
+  nodeType: Exclude<RelationshipsOfTypes.Node['type'], 'empty'>,
   element: LikeC4Model.Element,
   ctx: Context,
   depth: number = 0
-): XYFlowTypes.ElementNode | XYFlowTypes.CompoundNode {
+): RelationshipsOfTypes.ElementNode | RelationshipsOfTypes.CompoundNode {
   const xynodes = ctx.columns[column]
   let node = xynodes.get(element.id)
   if (node) {
@@ -251,7 +251,7 @@ function createNode(
     found => found ? createNode(column, 'compound', found, ctx, depth + 2) : null
   )
 
-  const xynode: XYFlowTypes.NonEmptyNode = {
+  const xynode: RelationshipsOfTypes.NonEmptyNode = {
     type: nodeType,
     id: `${column}::${element.id}`,
     position: { x: 0, y: 0 },
@@ -289,7 +289,7 @@ function createNode(
  * And return a function to get node bounds for xyflow
  */
 function applyDagreLayout(g: dagre.graphlib.Graph) {
-  type NodeBounds = Required<Pick<XYFlowTypes.Node, 'position' | 'width' | 'height'>>
+  type NodeBounds = Required<Pick<RelationshipsOfTypes.Node, 'position' | 'width' | 'height'>>
   dagre.layout(g)
   return function nodeBounds(nodeId: string): NodeBounds {
     const { x, y, width, height } = g.node(nodeId)
@@ -310,7 +310,7 @@ function addEdge(
     includedInCurrentView: boolean
     source: string
     target: string
-    relations: XYFlowTypes.Edge['data']['relations']
+    relations: BaseTypes.Edge['data']['relations']
   }
 ) {
   const { source, target, relations, includedInCurrentView } = props
@@ -318,7 +318,7 @@ function addEdge(
   const label = only(relations)?.title ?? 'untitled'
 
   const isMultiple = relations.length > 1
-  const edge: XYFlowTypes.Edge = {
+  const edge: BaseTypes.Edge = {
     id: `rel${ctx.edges.length + 1}_${ids}`,
     type: 'relation',
     source,
@@ -361,8 +361,8 @@ function layout(
   viewIncludesSubject: boolean
   notIncludedRelations: number
   subject: LikeC4Model.Element
-  nodes: XYFlowTypes.Node[]
-  edges: XYFlowTypes.Edge[]
+  nodes: RelationshipsOfTypes.Node[]
+  edges: BaseTypes.Edge[]
   bounds: {
     x: number
     y: number
@@ -512,11 +512,11 @@ function layout(
       const { source, target } = grouped[0]
       const relations = map(grouped, g => g.relation)
 
-      source.data.ports.right.push({
+      source.data.ports.out.push({
         id: target.id,
         type: 'out'
       })
-      target.data.ports.left.push({
+      target.data.ports.in.push({
         id: source.id,
         type: 'in'
       })
@@ -555,7 +555,8 @@ function layout(
     if (subject.type !== 'element') {
       continue
     }
-    const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
+
+    const subjectPortsCount = Math.max(subject.data.ports.in.length, subject.data.ports.out.length)
     if (subjectPortsCount > 2) {
       g.node(subject.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 14
     }
@@ -628,7 +629,7 @@ function layout(
   }
 
   // Sort ports in subject vertically
-  const sortedPorts = (ports: XYFlowTypes.Port[]) => {
+  const sortedPorts = (ports: BaseTypes.Port[]) => {
     return pipe(
       ports,
       map(port => {
@@ -658,11 +659,11 @@ function layout(
       continue
     }
     // Sort ports by their position
-    if (node.data.ports.left.length > 1) {
-      node.data.ports.left = sortedPorts(node.data.ports.left)
+    if (node.data.ports.in.length > 1) {
+      node.data.ports.in = sortedPorts(node.data.ports.in)
     }
-    if (node.data.ports.right.length > 1) {
-      node.data.ports.right = sortedPorts(node.data.ports.right)
+    if (node.data.ports.out.length > 1) {
+      node.data.ports.out = sortedPorts(node.data.ports.out)
     }
   }
 

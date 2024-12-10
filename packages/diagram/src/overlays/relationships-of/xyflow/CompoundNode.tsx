@@ -4,14 +4,14 @@ import clsx from 'clsx'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo, useCallback } from 'react'
-import type { XYFlowTypes } from '../_types'
+import { type RelationshipsOfTypes } from '../_types'
 import * as css from './styles.css'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type CompoundNodeProps = NodeProps<XYFlowTypes.CompoundNode>
+type CompoundNodeProps = NodeProps<RelationshipsOfTypes.CompoundNode>
 
 export const CompoundNode = memo<CompoundNodeProps>(({
   id,
@@ -20,7 +20,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
     ports,
     layoutId = id,
     leaving = false,
-    initialAnimation = true,
+    entering = true,
     ...data
   },
   width = 200,
@@ -53,7 +53,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
 
   return (
     <>
-      <m.div
+    <m.div
         className={clsx([
           css.compoundNodeBody,
           'likec4-compound-node'
@@ -61,7 +61,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         layoutId={layoutId}
         data-compound-depth={data.depth ?? 1}
         data-likec4-color={element.color}
-        initial={(layoutId === id && initialAnimation)
+        initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,
@@ -99,7 +99,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           {element.title}
         </Text>
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.in.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -110,7 +110,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
             top: `${20 * (i + 1)}px`
           }} />
       ))}
-      {ports.right.map(({ id, type }, i) => (
+      {ports.out.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}

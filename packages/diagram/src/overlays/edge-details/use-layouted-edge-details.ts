@@ -16,7 +16,7 @@ import { useMemo } from 'react'
 import { filter, first, forEach, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
-import type { XYFlowTypes } from './_types'
+import { type BaseTypes } from '../../xyflow/_types'
 
 /**
  * All constants related to the layout
@@ -67,16 +67,16 @@ function createGraph() {
 type Context = {
   g: dagre.graphlib.Graph
   diagramNodes: Map<Fqn, DiagramNode>
-  xynodes: Map<Fqn, XYFlowTypes.Node>
+  xynodes: Map<Fqn, BaseTypes.NonEmptyNode>
   edge: DiagramEdge
-  edges: XYFlowTypes.Edge[]
+  edges: BaseTypes.Edge[]
 }
 const sized = (height: number = Sizes.hodeHeight) => ({
   width: Sizes.nodeWidth,
   height
 })
 
-const graphId = (node: XYFlowTypes.Node) => ({
+const graphId = (node: BaseTypes.NonEmptyNode) => ({
   id: node.id,
   port: node.type === 'compound' ? `${node.id}::port` : node.id,
   body: `${node.id}`,
@@ -86,7 +86,7 @@ const graphId = (node: XYFlowTypes.Node) => ({
 function nodeData(
   element: LikeC4Model.Element,
   ctx: Context
-): Omit<XYFlowTypes.Node['data'], 'column'> {
+): Omit<BaseTypes.NonEmptyNode['data'], 'column'> {
   // We try to inherit style from existing diagram node
   let diagramNode = ctx.diagramNodes.get(element.id)
 
@@ -117,10 +117,10 @@ function nodeData(
 }
 
 function createNode(
-  nodeType: XYFlowTypes.Node['type'],
+  nodeType: BaseTypes.NonEmptyNode['type'],
   element: LikeC4Model.Element,
   ctx: Context
-): XYFlowTypes.Node {
+): BaseTypes.NonEmptyNode {
   let node = ctx.xynodes.get(element.id)
   if (node) {
     return node
@@ -135,7 +135,7 @@ function createNode(
     found => found ? createNode('compound', found, ctx) : null
   )
 
-  const xynode: XYFlowTypes.Node = {
+  const xynode: BaseTypes.NonEmptyNode = {
     type: nodeType,
     id: element.id,
     position: { x: 0, y: 0 },
@@ -181,7 +181,7 @@ function createNode(
  * And return a function to get node bounds for xyflow
  */
 function applyDagreLayout(g: dagre.graphlib.Graph) {
-  type NodeBounds = Required<Pick<XYFlowTypes.Node, 'position' | 'width' | 'height'>>
+  type NodeBounds = Required<Pick<BaseTypes.NonEmptyNode, 'position' | 'width' | 'height'>>
   dagre.layout(g)
   return function nodeBounds(nodeId: string, relativeTo?: string): NodeBounds {
     const { x, y, width, height } = g.node(nodeId)
@@ -215,8 +215,8 @@ function layout(
 ): {
   view: DiagramView
   edge: DiagramEdge
-  nodes: XYFlowTypes.Node[]
-  edges: XYFlowTypes.Edge[]
+  nodes: BaseTypes.NonEmptyNode[]
+  edges: BaseTypes.Edge[]
   bounds: { x: number; y: number; width: number; height: number }
 } {
   const edge = view.edges.find(e => e.id === edgeId)
@@ -264,11 +264,17 @@ function layout(
     const target = ctx.xynodes.get(relation.target)
     invariant(target, 'target node not found')
 
-    source.data.ports.out.push(target.id)
-    target.data.ports.in.push(source.id)
+    source.data.ports.out.push({
+      id: target.id,
+      type: 'out'
+    })
+    target.data.ports.in.push({
+      id: source.id,
+      type: 'in'
+    })
 
     g.setEdge(graphId(source).port, graphId(target).port)
-    const edge: XYFlowTypes.Edge = {
+    const edge: BaseTypes.Edge = {
       id: relation.id,
       type: 'relation',
       source: source.id,
@@ -276,7 +282,8 @@ function layout(
       sourceHandle: target.id,
       targetHandle: source.id,
       data: {
-        relation
+        includedInCurrentView: true,
+        relations: [relation]
       },
       label: relation.title,
       zIndex: ZIndexes.edge,
@@ -295,7 +302,7 @@ function layout(
   const nodebounds = applyDagreLayout(ctx.g)
 
   // Sort ports
-  const sortedPorts = (ports: string[]) => {
+  const sortedPorts = (ports: BaseTypes.Port[]) => {
     if (ports.length < 2) {
       return ports
     }
@@ -304,7 +311,7 @@ function layout(
       map(port => {
         return {
           port,
-          topY: nodebounds(port).position.y
+          topY: nodebounds(port.id).position.y
         }
       }),
       sortBy(prop('topY')),

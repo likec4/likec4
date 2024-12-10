@@ -1,13 +1,13 @@
 import { Box, Text as MantineText } from '@mantine/core'
 import { type NodeProps } from '@xyflow/react'
-import type { XYFlowTypes } from '../_types'
+import { type RelationshipsOfTypes } from '../_types'
 import * as css from './styles.css'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type EmptyNodeProps = NodeProps<XYFlowTypes.EmptyNode>
+type EmptyNodeProps = NodeProps<RelationshipsOfTypes.EmptyNode>
 
 export function EmptyNode({
   data: {

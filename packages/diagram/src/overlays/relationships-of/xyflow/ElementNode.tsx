@@ -1,5 +1,4 @@
-import { ActionIcon, Box, Group, Text as MantineText } from '@mantine/core'
-import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { Box, Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
@@ -7,24 +6,16 @@ import { m } from 'framer-motion'
 import { memo } from 'react'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
-import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
-import type { XYFlowTypes } from '../_types'
+import { type RelationshipsOfTypes } from '../_types'
 import * as css from './styles.css'
-
-const Action = ActionIcon.withProps({
-  className: 'nodrag nopan ' + css.navigateBtn,
-  radius: 'md',
-  role: 'button',
-  onDoubleClick: stopPropagation,
-  onPointerDownCapture: stopPropagation
-})
+import { BottomButtons } from '../../../xyflow/nodes/element/BottomButtons'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
+type ElementNodeProps = NodeProps<RelationshipsOfTypes.ElementNode>
 
 function selector(s: DiagramState) {
   return {
@@ -42,7 +33,7 @@ export const ElementNode = memo<ElementNodeProps>(({
     navigateTo,
     layoutId = id,
     leaving = false,
-    initialAnimation = true,
+    entering: entering = true,
     ...data
   },
   selectable = true,
@@ -82,7 +73,7 @@ export const ElementNode = memo<ElementNodeProps>(({
         ])}
         layoutId={layoutId}
         data-likec4-color={element.color}
-        initial={(layoutId === id && initialAnimation)
+        initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,
@@ -134,41 +125,27 @@ export const ElementNode = memo<ElementNodeProps>(({
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
         </Box>
-        <Group className={css.navigateBtnBox}>
-          {navigateTo && onNavigateTo && navigateTo !== currentViewId && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.close(() => onNavigateTo(navigateTo))
-              }}>
-              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-            </Action>
-          )}
-          {data.column !== 'subjects' && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.openOverlay({
-                  relationshipsOf: data.fqn
-                })
-              }}>
-              <IconTransform stroke={1.8} style={{ width: '72%' }} />
-            </Action>
-          )}
-          {onOpenSource && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                onOpenSource?.({
-                  element: data.fqn
-                })
-              }}>
-              <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
-            </Action>
-          )}
-        </Group>
+        {/* Navigation */}
+        <BottomButtons
+          onNavigateTo={navigateTo && onNavigateTo && navigateTo !== currentViewId && ((event) => {
+            event.stopPropagation()
+            overlay.close(() => onNavigateTo(navigateTo))
+          })}
+          onOpenRelationships={data.column !== 'subjects' && ((event) => {
+            event.stopPropagation()
+            overlay.openOverlay({
+              relationshipsOf: data.fqn
+            })
+          })}
+          onOpenSource={onOpenSource && ((event) => {
+            event.stopPropagation()
+            onOpenSource?.({
+              element: data.fqn
+            })
+          })}
+        />
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.in.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -176,10 +153,10 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.left.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
-      {ports.right.map(({ id, type }, i) => (
+      {ports.out.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -187,7 +164,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.right.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
     </>
