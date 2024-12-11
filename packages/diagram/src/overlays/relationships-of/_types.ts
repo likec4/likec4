@@ -4,11 +4,11 @@ import type { BaseTypes } from '../../xyflow/_types'
 
 export namespace RelationshipsOfTypes {
 
-  type RelationshipsOfNodeProps = {
+  type RelationshipsOfNodeData = {
     column: 'incomers' | 'subjects' | 'outgoers'
   }
 
-  type NodeProps = RelationshipsOfNodeProps & BaseTypes.NodeProps
+  type NodeProps = RelationshipsOfNodeData & BaseTypes.NodeData
 
   export type ElementNode = SetRequired<ReactFlowNode<NodeProps, 'element'>, 'type'>
 
@@ -16,9 +16,9 @@ export namespace RelationshipsOfTypes {
 
   export type NonEmptyNode = ElementNode | CompoundNode
 
-  type EmptyNodeProps = BaseTypes.EmptyNodeProps & RelationshipsOfNodeProps;
+  type EmptyNodeData = BaseTypes.EmptyNodeData & RelationshipsOfNodeData;
 
-  export type EmptyNode = SetRequired<ReactFlowNode<EmptyNodeProps, 'empty'>, 'type'>
+  export type EmptyNode = SetRequired<ReactFlowNode<EmptyNodeData, 'empty'>, 'type'>
 
   export type Node = NonEmptyNode | EmptyNode
 }

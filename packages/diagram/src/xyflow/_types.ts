@@ -1,5 +1,5 @@
 import type { ComputedNode, Fqn, Relation, ViewId } from "@likec4/core"
-import type { Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
+import type { NodeProps, Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
 import type { SetRequired } from "type-fest"
 
 export namespace BaseTypes {
@@ -12,7 +12,7 @@ export namespace BaseTypes {
     type: 'in' | 'out'
   }
 
-  export type EmptyNodeProps = {
+  export type EmptyNodeData = {
     /**
      * The id of the layout the node belongs to
      */
@@ -36,7 +36,7 @@ export namespace BaseTypes {
     leaving?: boolean
   }
 
-  export type NodeProps = EmptyNodeProps & {
+  export type NodeData = EmptyNodeData & {
     fqn: Fqn
     element: Pick<ComputedNode, 'color' | 'title' | 'description' | 'shape' | 'kind'>
     ports: {
@@ -50,9 +50,9 @@ export namespace BaseTypes {
     depth?: number,
   }
 
-  export type ElementNode = SetRequired<ReactFlowNode<NodeProps, 'element'>, 'type'>
+  export type ElementNode = SetRequired<ReactFlowNode<NodeData, 'element'>, 'type'>
 
-  export type CompoundNode = SetRequired<ReactFlowNode<NodeProps, 'compound'>, 'type'>
+  export type CompoundNode = SetRequired<ReactFlowNode<NodeData, 'compound'>, 'type'>
 
   export type NonEmptyNode = ElementNode | CompoundNode
 
