@@ -105,7 +105,7 @@ export async function webcomponentHandler({
      ${relative(cwd(), outfilepath)}
 
     ${k.dim('Setup and usage instructions:')}
-     ${k.blue('https://likec4.dev/tooling/codegen/#webcomponent')}
+     ${k.blue('https://likec4.dev/tooling/code-generation/webcomponent/')}
   `)
   )
 

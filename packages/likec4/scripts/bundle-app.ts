@@ -31,11 +31,11 @@ export async function bundleApp() {
     clearScreen: false,
     resolve: {
       alias: {
-        '@likec4/core/types': resolve(cwd, '../core/src/types'),
         '@likec4/core': resolve(cwd, '../core/src'),
         '@likec4/diagram': resolve(cwd, '../diagram/src'),
         'react-dom/server': resolve(cwd, 'app/react/react-dom-server-mock.ts')
-      }
+      },
+      conditions: ['production']
     },
     mode: 'production',
     define: {

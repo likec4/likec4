@@ -24,6 +24,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
     root,
     configFile: false,
     resolve: {
+      conditions: ['production'],
       alias: {
         '@likec4/core': resolve('../core/src'),
         '@likec4/diagram': resolve('../diagram/src'),

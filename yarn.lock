@@ -2106,7 +2106,7 @@ __metadata:
     bezier-js: "npm:^6.1.4"
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
-    esm-env: "npm:^1.1.4"
+    esm-env: "npm:^1.2.1"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
     framer-motion: "npm:^11.11.17"
@@ -2296,7 +2296,7 @@ __metadata:
     "@vanilla-extract/vite-plugin": "npm:^4.0.18"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
     clsx: "npm:^2.1.1"
-    esm-env: "npm:^1.1.4"
+    esm-env: "npm:^1.2.1"
     fast-equals: "npm:^5.0.1"
     framer-motion: "npm:^11.11.17"
     monaco-editor: "npm:@codingame/monaco-vscode-editor-api@8.0.4"
@@ -2357,7 +2357,7 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.16.1"
     "@vanilla-extract/vite-plugin": "npm:^4.0.18"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
-    esm-env: "npm:^1.1.4"
+    esm-env: "npm:^1.2.1"
     nanostores: "npm:0.11.3"
     object-hash: "npm:^3.0.0"
     postcss: "npm:^8.4.49"
@@ -6555,13 +6555,6 @@ __metadata:
   version: 5.0.0
   resolution: "escape-string-regexp@npm:5.0.0"
   checksum: 10c0/6366f474c6f37a802800a435232395e04e9885919873e382b157ab7e8f0feb8fed71497f84a6f6a81a49aab41815522f5839112bd38026d203aea0c91622df95
-  languageName: node
-  linkType: hard
-
-"esm-env@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "esm-env@npm:1.1.4"
-  checksum: 10c0/bc6f24faf0022e0ec98a4747616f4d38f7db371609edc081f584b711d55167b0d9aa2e068badc49621a16df73488786a36bc67f2fbcfb319cc002f908e8eda0f
   languageName: node
   linkType: hard
 

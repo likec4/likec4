@@ -72,7 +72,7 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
-      ${k.underline('https://likec4.dev/tooling/codegen/#model')}
+      ${k.underline('https://likec4.dev/tooling/code-generation/model/')}
   `).trim(),
     style: {
       padding: 2,

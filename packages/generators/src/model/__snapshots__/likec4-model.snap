@@ -9,6 +9,7 @@
 import { LikeC4Model } from 'likec4'
 
 export const likeC4Model = LikeC4Model.fromDump({
+  __: 'computed',
   specification: {
     elements: {
       person: {
@@ -418,7 +419,6 @@ export const likeC4Model = LikeC4Model.fromDump({
       },
     },
   },
-  __: 'computed',
   views: {
     index: {
       id: 'index',
@@ -958,7 +958,9 @@ export const likeC4Model = LikeC4Model.fromDump({
   },
 })
 
-export type LikeC4ElementId = typeof likeC4Model.Aux.Fqn
-export type LikeC4ViewId = typeof likeC4Model.Aux.ViewId
+export type LikeC4ModelTypes = typeof likeC4Model.Aux
+export type LikeC4ElementId = LikeC4ModelTypes['Fqn']
+export type LikeC4DeploymentId = LikeC4ModelTypes['Deployment']
+export type LikeC4ViewId = LikeC4ModelTypes['ViewId']
 
 /* prettier-ignore-end */

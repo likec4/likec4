@@ -85,8 +85,8 @@ export function computeViews<const P extends ParsedLikeC4Model<any, any, any, an
     }
   }
   return {
-    ...parsed,
     __: 'computed',
+    ...parsed,
     views: mapValues(parsed.views, computeView)
   } as any // TODO: fix this
 }

@@ -91,7 +91,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
-      ${k.underline('https://likec4.dev/tooling/codegen/#react')}
+      ${k.underline('https://likec4.dev/tooling/code-generation/react/')}
   `).trim(),
     style: {
       padding: 2,
