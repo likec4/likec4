@@ -12,20 +12,20 @@ interface ElementTreeNodeData {
   children: TreeNodeData[]
 }
 
-interface MessageNodeData {
+export interface MessageNodeData {
   label: ReactNode
   value: string
   type: 'message'
   children: TreeNodeData[]
 }
 
-type TreeNodeData = ElementTreeNodeData | MessageNodeData
+export type TreeNodeData = ElementTreeNodeData | MessageNodeData
 
-type TabElementStructureProps = {
+type TabPanelStructureProps = {
   element: LikeC4Model.Element
 }
 
-const ElementLabel = ({
+export const ElementLabel = ({
   element
 }: { element: LikeC4Model.Element; type: 'ancestor' | 'current' | 'descedant' }) => (
   <Box className={css.elementLabel}>
@@ -38,9 +38,9 @@ const ElementLabel = ({
 // }: RenderTreeNodePayload) => {
 // }
 
-export function TabElementStructure({
+export function TabPanelStructure({
   element
-}: TabElementStructureProps) {
+}: TabPanelStructureProps) {
   const tree = useTree({
     multiple: false
   })

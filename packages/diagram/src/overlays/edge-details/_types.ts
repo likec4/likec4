@@ -1,4 +1,4 @@
-import type { ComputedNode, Fqn, Relation, ViewId } from '@likec4/core'
+import type { ComputedNode, Fqn, Relation, RelationId, ViewId } from '@likec4/core'
 import type { Edge as ReactFlowEdge, Node as ReactFlowNode, ReactFlowInstance } from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
 
@@ -27,7 +27,9 @@ export namespace XYFlowTypes {
 
   export type Edge = Omit<ReactFlowEdge, 'data' | 'type'> & {
     data: {
-      relation: Relation
+      relationId: RelationId
+      // relation: Relation
+      navigateTo: ViewId | null
       hovered?: boolean
       dimmed?: boolean
     }

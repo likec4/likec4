@@ -38,7 +38,7 @@ import {
   Tooltip as MantineTooltip,
   UnstyledButton
 } from '@mantine/core'
-import { useViewportSize } from '@mantine/hooks'
+import { useSessionStorage, useViewportSize } from '@mantine/hooks'
 import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
@@ -49,8 +49,9 @@ import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.prop
 import { useLikeC4CurrentViewModel } from '../../likec4model'
 import { useOverlayDialog } from '../OverlayContext'
 import * as css from './ElementDetailsCard.css'
+import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
-import { TabElementStructure } from './TabPanelStructure'
+import { TabPanelStructure } from './TabPanelStructure'
 
 const Divider = MantineDivider.withProps({
   mb: 8,
@@ -88,6 +89,9 @@ type ElementDetailsCardProps = {
 
 const MIN_PADDING = 24
 
+const TABS = ['Properties', 'Relationships', 'Views', 'Structure', 'Deployments'] as const
+type TabName = typeof TABS[number]
+
 export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   const windowSize = useViewportSize()
   const windowWidth = windowSize.width || window.innerWidth || 1200,
@@ -97,7 +101,10 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   invariant(xynode, `XYNode with id ${fqn} not found`)
 
   const overlay = useOverlayDialog()
-  const [activeTab, setActiveTab] = useState<'Properties' | 'Relationships' | 'Views'>('Properties')
+  const [activeTab, setActiveTab] = useSessionStorage<TabName>({
+    key: `likec4:element-details:active-tab`,
+    defaultValue: 'Properties'
+  })
   const diagramApi = useDiagramStoreApi()
   const viewModel = useLikeC4CurrentViewModel()
   const {
@@ -130,7 +137,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   // ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
 
   const [viewsOf, otherViews] = pipe(
-    elementModel.views().toArray(),
+    [...elementModel.views()],
     map(v => v.$view),
     partition(view => {
       const v = view as LikeC4View
@@ -307,15 +314,15 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
               <Group align="baseline" gap={'sm'} wrap="nowrap">
                 <Box>
                   <SmallLabel>kind</SmallLabel>
-                  <Badge radius={'sm'} size="sm" fw={600} color="gray">{nodeModel.kind}</Badge>
+                  <Badge radius={'sm'} size="sm" fw={600} color="gray">{elementModel.kind}</Badge>
                 </Box>
                 <Box flex={1}>
                   <SmallLabel>tags</SmallLabel>
                   <Flex gap={4} flex={1} mt={6}>
-                    {nodeModel.tags.map((tag) => (
+                    {elementModel.tags.map((tag) => (
                       <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
                     ))}
-                    {nodeModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+                    {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
                   </Flex>
                 </Box>
                 <ActionIconGroup
@@ -379,36 +386,29 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                 panel: css.tabsPanel
               }}>
               <TabsList>
-                <TabsTab value="Properties">
-                  Properties
-                </TabsTab>
-                <TabsTab value="Relationships">
-                  Relationships
-                </TabsTab>
-                <TabsTab value="Views">
-                  Views
-                </TabsTab>
-                <TabsTab value="Structure">
-                  Structure
-                </TabsTab>
+                {TABS.map(tab => (
+                  <TabsTab key={tab} value={tab}>
+                    {tab}
+                  </TabsTab>
+                ))}
               </TabsList>
 
               <TabsPanel value="Properties">
                 <ScrollArea scrollbars="y" type="auto">
                   <Box className={css.propertiesGrid} pt={'xs'}>
                     <ElementProperty title="description" emptyValue="no description">
-                      {nodeModel.description}
+                      {elementModel.description}
                     </ElementProperty>
-                    {nodeModel.technology && (
+                    {elementModel.technology && (
                       <ElementProperty title="technology">
-                        {nodeModel.technology}
+                        {elementModel.technology}
                       </ElementProperty>
                     )}
-                    {nodeModel.links.length > 0 && (
+                    {elementModel.links.length > 0 && (
                       <>
                         <PropertyLabel>links</PropertyLabel>
                         <Stack gap={'xs'} align="flex-start">
-                          {nodeModel.links.map((link, i) => <ElementLink key={i} value={link} />)}
+                          {elementModel.links.map((link, i) => <ElementLink key={i} value={link} />)}
                         </Stack>
                       </>
                     )}
@@ -463,7 +463,13 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
 
               <TabsPanel value="Structure">
                 <ScrollArea scrollbars="y" type="auto">
-                  <TabElementStructure element={elementModel} />
+                  <TabPanelStructure element={elementModel} />
+                </ScrollArea>
+              </TabsPanel>
+
+              <TabsPanel value="Deployments">
+                <ScrollArea scrollbars="y" type="auto">
+                  <TabPanelDeployments elementFqn={elementModel.id} />
                 </ScrollArea>
               </TabsPanel>
             </Tabs>

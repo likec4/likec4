@@ -85,7 +85,7 @@ export function RelationshipsDropdownMenu({
     }
   }, [edge.id, openOverlay, enableRelationshipBrowser])
 
-  const renderRelationship = (relationship: LikeC4Model.Relation, index: number) => (
+  const renderRelationship = (relationship: LikeC4Model.AnyRelation, index: number) => (
     <Fragment key={relationship.id}>
       {index > 0 && <MenuDivider opacity={0.65} />}
       <MenuItem
@@ -156,7 +156,7 @@ export function RelationshipsDropdownMenu({
 const Relationship = forwardRef<
   HTMLDivElement,
   StackProps & {
-    relationship: LikeC4Model.Relation
+    relationship: LikeC4Model.AnyRelation
     edge: RelationshipData['edge']
     sourceNode: DiagramNode
     targetNode: DiagramNode

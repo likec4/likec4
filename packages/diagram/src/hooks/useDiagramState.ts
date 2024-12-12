@@ -2,10 +2,16 @@ import { shallowEqual } from 'fast-equals'
 import { useContext } from 'react'
 import { useStoreWithEqualityFn as useZustandStore } from 'zustand/traditional'
 
+import type { ViewId } from '@likec4/core'
 import { DiagramContext } from '../state/DiagramContext'
 import type { DiagramState, DiagramStoreApi } from '../state/diagramStore'
 
-function useDiagramState<StateSlice = unknown>(
+const selectViewId = (state: DiagramState) => state.view.id
+export function useCurrentViewId(): ViewId {
+  return useDiagramState(selectViewId)
+}
+
+export function useDiagramState<StateSlice = unknown>(
   selector: (state: DiagramState) => StateSlice,
   equalityFn?: (a: StateSlice, b: StateSlice) => boolean
 ): StateSlice {
@@ -18,7 +24,7 @@ function useDiagramState<StateSlice = unknown>(
   return useZustandStore(store, selector, equalityFn ?? shallowEqual)
 }
 
-function useDiagramStoreApi(): DiagramStoreApi {
+export function useDiagramStoreApi(): DiagramStoreApi {
   const store = useContext(DiagramContext)
 
   if (store === null) {
@@ -28,4 +34,3 @@ function useDiagramStoreApi(): DiagramStoreApi {
   return store
 }
 export type { DiagramState, DiagramStoreApi }
-export { useDiagramState, useDiagramStoreApi }

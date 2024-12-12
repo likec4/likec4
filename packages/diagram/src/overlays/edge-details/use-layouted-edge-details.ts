@@ -225,10 +225,14 @@ function layout(
 
   const relations = edge.relations
     .map(r => {
-      const relation = likec4model.relationship(r).$relationship
-      all.add(relation.source)
-      all.add(relation.target)
-      return relation
+      const relation = likec4model.relationship(r)
+      all.add(relation.source.id)
+      all.add(relation.target.id)
+      return {
+        source: relation.source.id,
+        target: relation.target.id,
+        relation: relation.$relationship
+      }
     })
     .sort(compareRelations)
     .reverse()
@@ -258,10 +262,10 @@ function layout(
     g.setDefaultEdgeLabel(() => ({ width: 250 }))
   }
 
-  for (const relation of relations) {
-    const source = ctx.xynodes.get(relation.source)
+  for (const { relation, ...points } of relations) {
+    const source = ctx.xynodes.get(points.source)
     invariant(source, 'source node not found')
-    const target = ctx.xynodes.get(relation.target)
+    const target = ctx.xynodes.get(points.target)
     invariant(target, 'target node not found')
 
     source.data.ports.out.push(target.id)
@@ -276,7 +280,8 @@ function layout(
       sourceHandle: target.id,
       targetHandle: source.id,
       data: {
-        relation
+        relationId: relation.id,
+        navigateTo: relation.navigateTo ?? null
       },
       label: relation.title,
       zIndex: ZIndexes.edge,

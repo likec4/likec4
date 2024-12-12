@@ -405,10 +405,10 @@ function layout(
     const subjectViewModel = likec4model.view(view.id).node(subjectId)
     relationships = {
       incoming: subjectViewModel.incoming()
-        .flatMap(c => c.relationships().map(r => r.$relationship))
+        .flatMap(c => c.relationships('model').map(r => r.$relationship))
         .toArray(),
       outgoing: subjectViewModel.outgoing()
-        .flatMap(c => c.relationships().map(r => r.$relationship))
+        .flatMap(c => c.relationships('model').map(r => r.$relationship))
         .toArray()
     }
   }

@@ -19,7 +19,7 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <Box className={css.container} p={'lg'}>
       <Notification
-        icon={<IconX style={{ width: 20, height: 20 }} />}
+        icon={<IconX style={{ width: 16, height: 16 }} />}
         styles={{
           icon: {
             alignSelf: 'flex-start'
@@ -27,6 +27,7 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
         }}
         color={'red'}
         title={'Oops, something went wrong'}
+        py={'lg'}
         withCloseButton={false}>
         <Text
           style={{
@@ -35,7 +36,7 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
           {errorString}
         </Text>
         <Group gap={'xs'} mt="sm">
-          <Button color="gray" variant="light" onClick={() => resetErrorBoundary()}>Refresh</Button>
+          <Button color="gray" size="xs" variant="light" onClick={() => resetErrorBoundary()}>Reset</Button>
         </Group>
       </Notification>
     </Box>
@@ -82,8 +83,8 @@ export const Overlays = memo(() => {
   )
 
   return (
-    <ErrorBoundary FallbackComponent={Fallback} onReset={() => ctxValue.close()}>
-      <OverlayContext.Provider value={ctxValue}>
+    <OverlayContext.Provider value={ctxValue}>
+      <ErrorBoundary FallbackComponent={Fallback} onReset={() => ctxValue.close()}>
         <AnimatePresence initial={false} key={viewId} onExitComplete={onExitComplete}>
           {activeOverlay?.elementDetails && (
             <ElementDetailsCard key={'details card'} fqn={activeOverlay.elementDetails} />
@@ -146,8 +147,8 @@ export const Overlays = memo(() => {
             </RemoveScroll>
           )}
         </AnimatePresence>
-      </OverlayContext.Provider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </OverlayContext.Provider>
   )
 })
 

@@ -1,15 +1,8 @@
-import {
-  type ComputedView,
-  type DiagramView,
-  invariant,
-  type LayoutedLikeC4Model,
-  LikeC4Model,
-  type ViewId
-} from '@likec4/core'
+import { type ComputedView, type DiagramView, type Fqn, LikeC4Model, type ViewId } from '@likec4/core'
 import { useContext } from 'react'
 import { isDefined, isNonNullish, isString } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
-import { type DiagramState, useDiagramState } from '../hooks'
+import { useCurrentViewId } from '../hooks'
 import { LikeC4ModelContext } from './LikeC4ModelContext'
 
 export function useLikeC4Model(): LikeC4Model | null
@@ -42,9 +35,8 @@ export function useLikeC4ViewModel(viewId: LiteralUnion<ViewId, string>): LikeC4
   return useLikeC4Model(true).view(viewId)
 }
 
-const selectViewId = (state: DiagramState) => state.view.id
 export function useLikeC4CurrentViewModel(): LikeC4Model.View {
-  const viewId = useDiagramState(selectViewId)
+  const viewId = useCurrentViewId()
   return useLikeC4Model(true).view(viewId)
 }
 
@@ -69,4 +61,8 @@ export function useLikeC4DiagramView(viewId: LiteralUnion<ViewId, string>): Diag
     console.warn(error)
     return null
   }
+}
+
+export function useLikeC4ElementModel(fqn: LiteralUnion<Fqn, string>): LikeC4Model.Element {
+  return useLikeC4Model(true).element(fqn)
 }

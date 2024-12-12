@@ -80,9 +80,9 @@ export const EdgeLabel = ({
             </Box>
           )}
           {isTruthy(label?.text) && (
-            <Box className={edgesCss.edgeLabelText}>
+            <Text component="div" className={edgesCss.edgeLabelText} lineClamp={5}>
               {label.text}
-            </Box>
+            </Text>
           )}
           {navigateTo && <NavigateToBtn viewId={navigateTo} />}
         </Box>

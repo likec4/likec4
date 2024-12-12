@@ -227,9 +227,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   }, [openOverlay, element.id])
 
   const onOpenRelationships = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    openOverlay({ relationshipsOf: element.id })
-  }, [openOverlay, element.id])
+    if (modelRef) {
+      e.stopPropagation()
+      openOverlay({ relationshipsOf: modelRef })
+    }
+  }, [openOverlay, modelRef])
 
   return (
     <>
