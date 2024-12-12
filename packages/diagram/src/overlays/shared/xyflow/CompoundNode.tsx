@@ -4,8 +4,8 @@ import clsx from 'clsx'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo, useCallback } from 'react'
-import { type RelationshipsOfTypes } from '../_types'
-import * as css from './styles.css'
+import { type RelationshipsOfTypes } from '../../relationships-of/_types'
+import * as css from './CompoundNode.css'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -99,26 +99,26 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           {element.title}
         </Text>
       </m.div>
-      {ports.in.map(({ id, type }, i) => (
+      {ports.out.map((p, i) => (
         <Handle
-          key={id}
-          id={id}
-          type={type === 'in' ? 'target' : 'source'}
-          position={Position.Left}
-          style={{
-            visibility: 'hidden',
-            top: `${20 * (i + 1)}px`
-          }} />
-      ))}
-      {ports.out.map(({ id, type }, i) => (
-        <Handle
-          key={id}
-          id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          key={p.id}
+          id={p.id}
+          type={'source'}
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${20 * (i + 1)}px`
+            top: `${16 + 20 * i}px`
+          }} />
+      ))}
+      {ports.in.map((p, i) => (
+        <Handle
+          key={p.id}
+          id={p.id}
+          type={'target'}
+          position={Position.Left}
+          style={{
+            visibility: 'hidden',
+            top: `${16 + 20 * i}px`
           }} />
       ))}
     </>
