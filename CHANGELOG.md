@@ -1,3 +1,42 @@
+# [1.18.0](https://github.com/likec4/likec4/compare/v1.17.1...v1.18.0) (2024-12-12)
+
+
+### Bug Fixes
+
+* add compute-view resolution to build config ([edabb5b](https://github.com/likec4/likec4/commit/edabb5bcba542bc33a2c608b18c19d2185e2ccbe))
+* allow carriage return in title and description ([#1335](https://github.com/likec4/likec4/issues/1335)) ([3408ae3](https://github.com/likec4/likec4/commit/3408ae3852a500e0b321f7e05d79fd513fc674da)), closes [#1324](https://github.com/likec4/likec4/issues/1324)
+* **deps:** update dependency nanoid to ^5.0.9 ([#1311](https://github.com/likec4/likec4/issues/1311)) ([2d59ab9](https://github.com/likec4/likec4/commit/2d59ab91335aeeb65ffa2adab3a12af1f9745654))
+* **deps:** update dependency playwright to v1.49.0 ([#1268](https://github.com/likec4/likec4/issues/1268)) ([62d3836](https://github.com/likec4/likec4/commit/62d38365e35480878e363af3cb6182321d509cd7))
+* **diagram:** clean up imports and fix dts-bundle ([b32a4b6](https://github.com/likec4/likec4/commit/b32a4b6ddf23ac981f572c8386b70b700590aab9))
+* **diagram:** clean up imports and fix dts-bundle ([fabc79f](https://github.com/likec4/likec4/commit/fabc79ffc777f1a0ce1b4afe304c10a970c04759))
+* **diagram:** enhance button styles ([e5a1d29](https://github.com/likec4/likec4/commit/e5a1d2972407e2fd7e5fd6f61660fb509ca5dc78))
+* **diagram:** limit RelationshipsOverlay to display model relationships only ([3a37206](https://github.com/likec4/likec4/commit/3a37206537472d51c46048a23bdb9d07c556047b))
+* **dsl:** reference nested element starting with `_` ([989cdda](https://github.com/likec4/likec4/commit/989cdda0fb1220303da3be70cd101eff5290e5a9))
+* increase retries and timeout for e2e tests, adjust worker percentage, and enhance configuration ([d2f46e4](https://github.com/likec4/likec4/commit/d2f46e490305f804bfcd65182028ed5b0ca385b9))
+* **layouts:** improve error reporting ([920d69b](https://github.com/likec4/likec4/commit/920d69bbb7910c646c39b4883e5b17a2ba99a644))
+* reduce timeout for e2e jobs and update dependencies ([ac36dc6](https://github.com/likec4/likec4/commit/ac36dc6f7d2b5cfccad4c170ded0f4e29dbb125e))
+* redundant edges based on deployment relations ([#1334](https://github.com/likec4/likec4/issues/1334)) ([937a883](https://github.com/likec4/likec4/commit/937a883293476aa3ef4799a4ccebb5fef4dba237))
+* update e2e ([81fe5db](https://github.com/likec4/likec4/commit/81fe5db1889a4b0e7d39298aba3dde61ed9c4858))
+* update e2e tests configuration, enhance snapshot generation, and adjust retries and timeout settings ([6feb2ac](https://github.com/likec4/likec4/commit/6feb2ace03a2c86b11d066dd6540d31ede4b134b))
+
+
+### Features
+
+* **api:** Typed LikeC4Model ([d084cca](https://github.com/likec4/likec4/commit/d084cca4d51668060dde101cfaf05fb3e8d208dc))
+* deployment view ([dbddb17](https://github.com/likec4/likec4/commit/dbddb17461e89ccd3acbc1953507a20153b72ef0))
+* **dsl:** predicate to include all descendants `.**` ([#1310](https://github.com/likec4/likec4/issues/1310)) ([8de5045](https://github.com/likec4/likec4/commit/8de504547b51a48bcc1325a38453e4f7b6c56f47)), closes [#1259](https://github.com/likec4/likec4/issues/1259)
+* enhance deployment support in language server and core models ([c5166fa](https://github.com/likec4/likec4/commit/c5166fa5f02b85364c8ae540033365bc787a0a8f))
+* generate LikeC4Model ([8fb171d](https://github.com/likec4/likec4/commit/8fb171d5071d402947791367935209504cbe553b))
+* **lsp:** `deployment` support ([c12c166](https://github.com/likec4/likec4/commit/c12c166ab8c83ba10adc690ff250c1cbdbd64dac))
+* Typed LikeC4Model ([b7d9e06](https://github.com/likec4/likec4/commit/b7d9e064116e2bcdb8f351963ebc71ccb818fff2))
+
+
+### Reverts
+
+* Revert "typescript project references" ([6368dfe](https://github.com/likec4/likec4/commit/6368dfe04f1075fa6fb101f33b271050f1fd1e47))
+
+
+
 ## [1.17.1](https://github.com/likec4/likec4/compare/v1.17.0...v1.17.1) (2024-11-28)
 
 ### Improvements
