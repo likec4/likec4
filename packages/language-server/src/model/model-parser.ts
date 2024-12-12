@@ -1296,9 +1296,10 @@ export class LikeC4ModelParser {
     const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
 
     const id = stringHash(
+      'deployment',
       astPath,
-      astNode.source.$cstNode!.text,
-      astNode.target.$cstNode!.text
+      source.id,
+      target.id
     ) as c4.RelationId
 
     return {
@@ -1313,7 +1314,8 @@ export class LikeC4ModelParser {
       ...(tags && { tags }),
       ...(isNonEmptyArray(links) && { links }),
       ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
-      ...(navigateTo && { navigateTo: navigateTo as c4.ViewId })
+      ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
+      astPath
     }
   }
 
@@ -1486,7 +1488,10 @@ export class LikeC4ModelParser {
   }
 
   private parseDeploymentDef(astNode: ast.DeploymentRef): c4.DeploymentRef {
-    const refValue = nonNullable(astNode.value.ref, 'Deployment ref is empty')
+    const refValue = nonNullable(
+      astNode.value.ref,
+      `Deployment ref is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`
+    )
     if (ast.isDeploymentNode(refValue)) {
       return {
         id: this.resolveFqn(refValue)

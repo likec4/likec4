@@ -35,6 +35,7 @@ import {
   values
 } from 'remeda'
 import type {
+  ParsedAstDeploymentRelation,
   ParsedAstElement,
   ParsedAstRelation,
   ParsedAstSpecification,
@@ -191,7 +192,9 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     }: ParsedAstRelation): c4.Relation | null => {
       if (isNullish(elements[source]) || isNullish(elements[target])) {
         logger.warn(
-          `Invalid relation ${id}, source: ${source}(${!!elements[source]}), target: ${target}(${!!elements[target]})`
+          `Invalid relation ${id} at ${doc.uri.path} ${astPath}, source: ${source}(${!!elements[
+            source
+          ]}), target: ${target}(${!!elements[target]})`
         )
         return null
       }
@@ -243,7 +246,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         const __kind = c4Specification.deployments[parsed.kind]
         if (!__kind) {
           logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
-          return parsed
+          return null
         }
         let {
           technology = __kind.technology,
@@ -291,9 +294,51 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     )
   )
 
+  function toDeploymentRelation(doc: LangiumDocument) {
+    return ({
+      astPath,
+      source,
+      target,
+      kind,
+      links: unresolvedLinks,
+      id,
+      ...model
+    }: ParsedAstDeploymentRelation): c4.DeploymentRelation | null => {
+      if (isNullish(deploymentElements[source.id]) || isNullish(deploymentElements[target.id])) {
+        logger.warn(
+          `Invalid deployment relation ${id} at ${doc.uri.path} ${astPath}, source: ${source.id}(${!!deploymentElements[
+            source.id
+          ]}), target: ${target.id}(${!!deploymentElements[target.id]})`
+        )
+        return null
+      }
+      const links = unresolvedLinks ? resolveLinks(doc, unresolvedLinks) : null
+
+      if (isNonNullish(kind) && kind in c4Specification.relationships) {
+        return {
+          ...c4Specification.relationships[kind],
+          ...model,
+          ...(links && { links }),
+          source,
+          target,
+          kind,
+          id
+        } satisfies c4.DeploymentRelation
+      }
+      return {
+        ...links && { links },
+        ...model,
+        source,
+        target,
+        id
+      } satisfies c4.DeploymentRelation
+    }
+  }
+
   const deploymentRelations = pipe(
     docs,
-    flatMap(d => d.c4DeploymentRelations),
+    flatMap(d => map(d.c4DeploymentRelations, toDeploymentRelation(d))),
+    filter(isTruthy),
     reduce(
       (acc, el) => {
         if (isDefined(acc[el.id])) {

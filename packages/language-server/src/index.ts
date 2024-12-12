@@ -8,6 +8,7 @@ export type * from './model'
 export type * from './module'
 export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
 export { LikeC4FileSystem }
+
 export function startLanguageServer() {
   /* browser specific setup code */
   const connection = createConnection(ProposedFeatures.all)

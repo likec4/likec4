@@ -1,8 +1,10 @@
 import { type ConsolaReporter, LogLevels, rootLogger as root } from '@likec4/log'
+import { BROWSER } from 'esm-env'
 import { isError } from 'remeda'
 import type { Connection } from 'vscode-languageserver'
 
 export const logger = root.withTag('lsp')
+// export const logger = root
 
 export function logError(err: unknown): void {
   logger.error(err)
@@ -91,6 +93,10 @@ export function logToLspConnection(connection: Connection): void {
       }
     }
   }
-  root.setReporters([reporter])
+  if (BROWSER) {
+    root.addReporter(reporter)
+  } else {
+    root.setReporters([reporter])
+  }
   logger.setReporters(root.options.reporters)
 }

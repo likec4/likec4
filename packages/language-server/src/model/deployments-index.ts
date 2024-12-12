@@ -64,9 +64,9 @@ export class DeploymentsIndex {
   }
 
   public getFqnName(node: ast.DeploymentElement): Fqn {
-    const attr = ElementOps.readId(node)
-    if (isTruthy(attr)) {
-      return attr
+    let id = ElementOps.readId(node)
+    if (isTruthy(id)) {
+      return id
     }
     const fqn = [
       this.Names.getNameStrict(node)
@@ -76,7 +76,9 @@ export class DeploymentsIndex {
       fqn.push(this.Names.getNameStrict(parentNode))
       node = parentNode
     }
-    return fqn.reduceRight((acc, cur) => `${acc}.${cur}`) as Fqn
+    id = fqn.reduceRight((acc, cur) => `${acc}.${cur}`) as Fqn
+    ElementOps.writeId(node, id)
+    return id
   }
 
   public createDocumentIndex(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {

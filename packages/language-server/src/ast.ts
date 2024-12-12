@@ -109,7 +109,10 @@ export namespace ParsedAstDeployment {
   export type Node = c4.DeploymentNode
   export type Instance = c4.DeployedInstance
 }
-export type ParsedAstDeploymentRelation = c4.DeploymentRelation
+export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
+  astPath: string
+}
+
 // export interface ParsedAstGlobals {
 //   predicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.ViewRulePredicate>>
 //   dynamicPredicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.DynamicViewIncludeRule>>

@@ -85,6 +85,7 @@
     "@likec4/log": "workspace:*",
     "@msgpack/msgpack": "^3.0.0-beta2",
     "@smithy/util-base64": "^3.0.0",
+    "esm-env": "^1.2.1",
     "fast-equals": "^5.0.1",
     "indent-string": "^5.0.0",
     "json5": "^2.2.3",

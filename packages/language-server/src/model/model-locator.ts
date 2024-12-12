@@ -76,6 +76,7 @@ export class LikeC4ModelLocator {
   public locateRelation(relationId: c4.RelationId): Location | null {
     for (const doc of this.documents()) {
       const relation = doc.c4Relations.find(r => r.id === relationId)
+        ?? doc.c4DeploymentRelations.find(r => r.id === relationId)
       if (!relation) {
         continue
       }
@@ -83,7 +84,7 @@ export class LikeC4ModelLocator {
         doc.parseResult.value,
         relation.astPath
       )
-      if (!ast.isRelation(node)) {
+      if (!ast.isRelation(node) && !ast.isDeploymentRelation(node)) {
         continue
       }
 

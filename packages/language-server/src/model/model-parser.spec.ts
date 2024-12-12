@@ -172,6 +172,7 @@ describe.concurrent('LikeC4ModelParser', () => {
       expect(doc.c4DeploymentRelations).toEqual([
         {
           id: expect.any(String),
+          astPath: expect.any(String),
           source: {
             id: 'n1'
           },
@@ -181,6 +182,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
         {
           id: expect.any(String),
+          astPath: expect.any(String),
           source: {
             id: 'n1.sys1'
           },
@@ -192,6 +194,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
         {
           id: expect.any(String),
+          astPath: expect.any(String),
           source: {
             id: 'n1.sys1'
           },
@@ -203,6 +206,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         },
         {
           id: expect.any(String),
+          astPath: expect.any(String),
           source: {
             id: 'n1.sys1',
             element: 'sys.c1'
