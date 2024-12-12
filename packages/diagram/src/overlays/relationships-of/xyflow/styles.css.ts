@@ -58,13 +58,3 @@ export const edgeLabelTechnology = style({
   fontSize: mantine.fontSizes.sm,
   lineHeight: 1
 })
-
-export const emptyNode = style({
-  width: '100%',
-  height: '100%',
-  border: `3px dashed ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.md,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
