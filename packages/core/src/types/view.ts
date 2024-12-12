@@ -253,6 +253,8 @@ export type LikeC4View<
   Tags extends string = string
 > = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags> | DeploymentView<ViewIDs, Tags>
 
+export function isDeploymentView(view: LikeC4View): view is DeploymentView
+export function isDeploymentView<V extends { __?: string }>(view: V): boolean
 export function isDeploymentView(view: LikeC4View): view is DeploymentView {
   return view.__ === 'deployment'
 }

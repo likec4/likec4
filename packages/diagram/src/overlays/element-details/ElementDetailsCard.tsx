@@ -5,6 +5,7 @@ import {
   type Element,
   type Fqn,
   invariant,
+  isDeploymentView,
   isScopedElementView,
   type LikeC4View,
   type Link,
@@ -535,7 +536,7 @@ const ViewButton = ({
     <UnstyledButton className={css.viewButton} onClick={e => onNavigateTo(view.id, e)}>
       <Group gap={6} align="start" wrap="nowrap">
         <ThemeIcon size={'sm'} variant="transparent">
-          {ComputedView.isDeployment(view)
+          {isDeploymentView(view)
             ? <IconStack2 stroke={1.8} />
             : <IconZoomScan stroke={1.8} />}
         </ThemeIcon>
