@@ -40,20 +40,18 @@ export type RelationshipData = {
   }
 }
 
-export type RelationshipEdge = Simplify<
-  Edge<RelationshipData, 'relationship'> & {
-    type: 'relationship'
-    // Make field required
-    data: RelationshipData
-  }
+export type XYFlowEdge = Simplify<
+Edge<RelationshipData, 'relationship'> & {
+  type: 'relationship'
+  // Make field required
+  data: RelationshipData
+}
 >
-
-export type XYFlowEdge = RelationshipEdge
 
 export namespace XYFlowEdge {
   export type Data = RelationshipData
 
-  export const isRelationship = (e: Edge): e is RelationshipEdge => e.type === 'relationship' && isTruthy(e.data)
+  export const isRelationship = (e: Edge): e is XYFlowEdge => e.type === 'relationship' && isTruthy(e.data)
 }
 
 export type XYFlowInstance = ReactFlowInstance<XYFlowNode, XYFlowEdge>
