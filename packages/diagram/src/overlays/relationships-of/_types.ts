@@ -16,7 +16,7 @@ export namespace XYFlowTypes {
     type: 'in' | 'out'
   }
 
-  type NodeProps = {
+  type NodeData = {
     depth?: number
     column: 'incomers' | 'subjects' | 'outgoers'
     fqn: Fqn
@@ -41,36 +41,34 @@ export namespace XYFlowTypes {
     dimmed?: 'immediate' | boolean
   }
 
-  export type ElementNode = SetRequired<ReactFlowNode<NodeProps, 'element'>, 'type'>
+  export type ElementNode = SetRequired<ReactFlowNode<NodeData, 'element'>, 'type'>
 
-  export type CompoundNode = SetRequired<ReactFlowNode<NodeProps, 'compound'>, 'type'>
+  export type CompoundNode = SetRequired<ReactFlowNode<NodeData, 'compound'>, 'type'>
 
   export type NonEmptyNode = ElementNode | CompoundNode
 
-  export type EmptyNode = SetRequired<
-    ReactFlowNode<{
-      column: 'incomers' | 'subjects' | 'outgoers'
-      hovered?: boolean
-      dimmed?: boolean
-      /**
-       * @default true
-       */
-      initialAnimation?: boolean
-    }, 'empty'>,
-    'type'
-  >
+  type EmptyNodeData = {
+    column: 'incomers' | 'subjects' | 'outgoers'
+    hovered?: boolean
+    dimmed?: boolean
+    /**
+     * @default true
+     */
+    initialAnimation?: boolean
+  };
+
+  export type EmptyNode = SetRequired<ReactFlowNode<EmptyNodeData, 'empty'>, 'type'>
 
   export type Node = NonEmptyNode | EmptyNode
 
-  export type Edge = Omit<ReactFlowEdge, 'data' | 'type'> & {
-    data: {
-      relations: [Relation, ...Relation[]]
-      includedInCurrentView: boolean
-      hovered?: boolean
-      dimmed?: 'immediate' | boolean
-    }
-    type: 'relation'
+  type EdgeData = {
+    relations: [Relation, ...Relation[]]
+    includedInCurrentView: boolean
+    hovered?: boolean
+    dimmed?: 'immediate' | boolean
   }
+
+  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>;
 
   export type Instance = ReactFlowInstance<Node, Edge>
 

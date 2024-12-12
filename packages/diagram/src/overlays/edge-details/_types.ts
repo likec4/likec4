@@ -3,7 +3,7 @@ import type { Edge as ReactFlowEdge, Node as ReactFlowNode, ReactFlowInstance } 
 import type { SetRequired } from 'type-fest'
 
 export namespace XYFlowTypes {
-  type NodeProps = {
+  type NodeData = {
     fqn: Fqn
     element: Pick<ComputedNode, 'color' | 'title' | 'description' | 'shape' | 'kind'>
     ports: {
@@ -19,24 +19,23 @@ export namespace XYFlowTypes {
     dimmed?: 'immediate' | boolean
   }
 
-  export type ElementNode = SetRequired<ReactFlowNode<NodeProps, 'element'>, 'type'>
+  export type ElementNode = SetRequired<ReactFlowNode<NodeData, 'element'>, 'type'>
 
-  export type CompoundNode = SetRequired<ReactFlowNode<NodeProps, 'compound'>, 'type'>
+  export type CompoundNode = SetRequired<ReactFlowNode<NodeData, 'compound'>, 'type'>
 
   export type Node = ElementNode | CompoundNode
 
-  export type Edge = Omit<ReactFlowEdge, 'data' | 'type'> & {
-    data: {
-      technology: string | null
-      description: string | null
-      relationId: RelationId
-      // relation: Relation
-      navigateTo: ViewId | null
-      hovered?: boolean
-      dimmed?: boolean
-    }
-    type: 'relation'
+  type EdgeData = {
+    technology: string | null
+    description: string | null
+    relationId: RelationId
+    // relation: Relation
+    navigateTo: ViewId | null
+    hovered?: boolean
+    dimmed?: boolean
   }
+
+  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>;
 
   export type Instance = ReactFlowInstance<Node, Edge>
 }
