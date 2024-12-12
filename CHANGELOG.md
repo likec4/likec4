@@ -1,3 +1,39 @@
+# [1.18.0](https://github.com/likec4/likec4/compare/v1.17.1...v1.18.0) (2024-12-12)
+
+### 🚀 Features
+
+* **Deployment Model**  
+  One of the most highly requested additions to our project!
+  This feature introduces a physical model with its own structure and elements, referencing the logical model while inheriting its relationships.
+  
+  ![SCR-20241212-posb](https://github.com/user-attachments/assets/1db429ae-14c0-4f66-9fc1-294c7b6fc6c5)
+
+  The syntax and approach remain consistent with existing ones.  
+  This is just the first step, and we would love your feedback!  
+  [Documentation](https://likec4.dev/dsl/deployment/model/) and [RFC](https://github.com/likec4/likec4/discussions/1269)
+
+* **Include all descendants**  
+  New predicate selector `.**` lets you include all descendants, making it especially useful for deployment views.  
+  Thanks to @Cyclonit for contributing! 🎉 [#1310](https://github.com/likec4/likec4/issues/1310), closes [#1259](https://github.com/likec4/likec4/issues/1259)  
+
+* **Typesafe LikeC4 model**  
+  Generate TypeScript code from your model, complete with type definitions for elements and views. Enjoy code completion and type checks in every React hook or API call!
+
+  ![SCR-20241212-posb](https://github.com/user-attachments/assets/c6c4196d-43ae-4194-b947-45e9685a0a71)
+  
+  📖 Documentation is currently in progress. Stay tuned!
+
+* **UI improvements**
+
+  - Added descriptions and links to the relationship context menu.  
+    Thanks to @pavelpykhtin! [#1307](https://github.com/likec4/likec4/issues/1307)
+
+  - Now supports carriage returns in titles.  
+    Thanks, @davydkov! Closes [#1324](https://github.com/likec4/likec4/issues/1324)
+
+
+
+
 ## [1.17.1](https://github.com/likec4/likec4/compare/v1.17.0...v1.17.1) (2024-11-28)
 
 ### Improvements

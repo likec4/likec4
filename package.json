@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.17.1",
+  "version": "1.18.0",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.5.3",
