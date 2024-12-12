@@ -6,7 +6,7 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { type HTMLMotionProps, m, type Variants } from 'framer-motion'
-import React, { memo, useCallback, useState } from 'react'
+import React, { memo, type PropsWithoutRef, useCallback, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementXYFlowNode } from '../../types'
@@ -342,11 +342,13 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   )
 }, isEqualProps)
 
-type BottomButtonsProps = ActionIconProps & HTMLMotionProps<'div'> & {
-  keyPrefix: string
-  onNavigateTo: ((e: React.MouseEvent) => void) | false
-  onOpenRelationships: ((e: React.MouseEvent) => void) | false
-}
+type BottomButtonsProps = PropsWithoutRef<
+  ActionIconProps & HTMLMotionProps<'div'> & {
+    keyPrefix: string
+    onNavigateTo: ((e: React.MouseEvent) => void) | false
+    onOpenRelationships: ((e: React.MouseEvent) => void) | false
+  }
+>
 const BottomButtons = ({
   keyPrefix,
   onNavigateTo,

@@ -137,7 +137,7 @@ export const ChangeAutoLayoutButton = (props: PopoverProps) => {
 }
 
 const MAX_SPACING = 400
-const SpacingSliders = forwardRef<HTMLDivElement, {
+const SpacingSliders = forwardRef<HTMLDivElement | null, {
   isVertical: boolean
   nodeSep: number | undefined
   rankSep: number | undefined
@@ -160,7 +160,7 @@ const SpacingSliders = forwardRef<HTMLDivElement, {
       onChange(Math.round(x * MAX_SPACING), Math.round(y * MAX_SPACING))
     },
     [onChange, isVertical],
-    150,
+    250,
     2000
   )
 
