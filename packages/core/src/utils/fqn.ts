@@ -1,4 +1,3 @@
-import type { LiteralUnion } from 'type-fest'
 import type { Element, Fqn } from '../types'
 import { compareNatural } from './compare-natural'
 import { isString } from './guards'

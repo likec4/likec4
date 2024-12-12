@@ -142,13 +142,9 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
     for (const edgeId of this.$node.inEdges) {
       const edge = this.$view.edge(edgeId)
       switch (true) {
+        case filter === 'all':
         case filter === 'direct' && edge.target.id === this.id:
-          yield edge
-          break
         case filter === 'to-descendants' && edge.target.id !== this.id:
-          yield edge
-          break
-        default:
           yield edge
           break
       }
@@ -173,11 +169,7 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
       const edge = this.$view.edge(edgeId)
       switch (true) {
         case filter === 'all':
-          yield edge
-          break
         case filter === 'direct' && edge.source.id === this.id:
-          yield edge
-          break
         case filter === 'from-descendants' && edge.source.id !== this.id:
           yield edge
           break

@@ -48,7 +48,9 @@ const DeployedInstanceRenderer = (
         <Text component="div" fz={'sm'} fw={'500'} flex={'1 1 100%'}>{instance.title}</Text>
         <Box onClick={stopPropagation} pos={'relative'} data-no-transform flex={0}>
           {views.length === 0 && (
-            <Button size="compact-xs" variant="transparent" color="gray" disabled>{views.length} views</Button>
+            <Button size="compact-xs" variant="transparent" color="gray" disabled>
+              no views
+            </Button>
           )}
           {views.length > 0 && (
             <Menu
@@ -65,7 +67,9 @@ const DeployedInstanceRenderer = (
               trapFocus
             >
               <Menu.Target>
-                <Button size="compact-xs" variant="subtle" color="gray">{views.length} views</Button>
+                <Button size="compact-xs" variant="subtle" color="gray">
+                  {views.length} view{views.length > 1 ? 's' : ''}
+                </Button>
               </Menu.Target>
 
               <Menu.Dropdown>

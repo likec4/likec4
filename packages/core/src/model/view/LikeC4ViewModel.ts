@@ -33,9 +33,6 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   readonly #includeRelations = new Set<M['RelationId']>()
   readonly #allTags = new Map<Tag, Set<NodeModel<M, V> | EdgeModel<M, V>>>()
 
-  static Node = NodeModel
-  static Edge = EdgeModel
-
   constructor(
     public readonly $model: LikeC4Model<M>,
     public readonly $view: V

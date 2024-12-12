@@ -51,7 +51,7 @@ function highlightMatch(match: QueryMatch): JSX.Element {
 function buildSpotlightAction(matchedAction: QueryMatch): JSX.Element {
   const isMatchInLabel = matchedAction.keyword == matchedAction.data.label
   return (
-    <Spotlight.Action onClick={matchedAction.data.onClick}>
+    <Spotlight.Action key={matchedAction.data.id} onClick={matchedAction.data.onClick}>
       <Center style={{ marginRight: '8px ' }}>
         {matchedAction.data.leftSection}
       </Center>

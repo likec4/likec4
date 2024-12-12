@@ -7,7 +7,7 @@ import type { Element } from '../types/element'
 import { type Tag as C4Tag } from '../types/element'
 import type { AnyLikeC4Model, ParsedLikeC4ModelDump } from '../types/model'
 import type { Relation } from '../types/relation'
-import { compareNatural, getOrCreate } from '../utils'
+import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
 import type {
   DeployedInstanceModel,
@@ -271,11 +271,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     for (const rel of this.#incoming.get(id)) {
       switch (true) {
         case filter === 'all':
-          yield rel
-          break
         case filter === 'direct' && rel.target.id === id:
-          yield rel
-          break
         case filter === 'to-descendants' && rel.target.id !== id:
           yield rel
           break
@@ -296,11 +292,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     for (const rel of this.#outgoing.get(id)) {
       switch (true) {
         case filter === 'all':
-          yield rel
-          break
         case filter === 'direct' && rel.source.id === id:
-          yield rel
-          break
         case filter === 'from-descendants' && rel.source.id !== id:
           yield rel
           break

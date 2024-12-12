@@ -1,5 +1,4 @@
-import type { DeploymentNodeKind } from './deployments'
-import type { ElementKind, ElementShape } from './element'
+import type { ElementShape } from './element'
 import type { Color } from './theme'
 
 export type ElementNotation = {

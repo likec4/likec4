@@ -5,10 +5,10 @@ import type {
   DeploymentNodeKindSpecification,
   DeploymentRelation
 } from './deployments'
-import type { ElementKindSpecification, Fqn, Tag, TypedElement } from './element'
+import type { ElementKindSpecification, Tag, TypedElement } from './element'
 import type { ModelGlobals } from './global'
 import type { Relation, RelationId, RelationshipKindSpecification } from './relation'
-import type { ComputedView, DiagramView, LikeC4View, ViewId } from './view'
+import type { ComputedView, DiagramView, LikeC4View } from './view'
 
 /**
  * Parsed elements, relations, and views.

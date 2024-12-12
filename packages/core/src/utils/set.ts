@@ -1,5 +1,4 @@
 import {
-  difference as _difference,
   intersection as _intersection,
   symmetricDifference as _symmetricDifference,
   union as _union

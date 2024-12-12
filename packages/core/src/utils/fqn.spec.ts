@@ -1,6 +1,6 @@
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Element, Fqn } from '../types'
+import type { Element } from '../types'
 import {
   ancestorsFqn,
   commonAncestor,
