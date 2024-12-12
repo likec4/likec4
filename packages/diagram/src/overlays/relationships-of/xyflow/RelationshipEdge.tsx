@@ -7,7 +7,7 @@ import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import { ZIndexes } from '../use-layouted-relationships'
-import * as css from './styles.css'
+import * as css from '../../shared/xyflow/RelationshipEdge.css'
 import { type BaseTypes } from '../../shared/_types'
 
 const Tooltip = MantineTooltip.withProps({
