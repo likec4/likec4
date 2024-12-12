@@ -1,10 +1,24 @@
-import { createConsola, LogLevels } from 'consola/core'
-
-export { LogLevels } from 'consola/core'
+import { createConsola } from 'consola'
+import { LogLevels } from 'consola/core'
 
 export type * from 'consola/core'
 
-const logger = createConsola({
-  level: LogLevels.debug
+// function _getDefaultLogLevel(): LogLevel {
+//   return LogLevels.debug
+// }
+
+const level = LogLevels.debug
+
+const consola = createConsola({
+  level,
+  defaults: {
+    level
+  },
+  formatOptions: {
+    colors: true,
+    compact: false,
+    date: false
+  }
 })
-export { logger, logger as consola, logger as rootLogger }
+
+export { consola, consola as logger, consola as rootLogger, LogLevels }

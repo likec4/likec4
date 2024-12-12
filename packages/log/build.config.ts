@@ -2,13 +2,14 @@ import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig([
   {
-    entries: ['src/index.ts'],
+    entries: ['src/browser.ts'],
     failOnWarn: false,
-    declaration: true,
+    declaration: false,
+    clean: true,
     rollup: {
       emitCJS: true,
       esbuild: {
-        platform: 'neutral'
+        platform: 'browser'
       },
       commonjs: {
         exclude: [
@@ -30,9 +31,10 @@ export default defineBuildConfig([
     }
   },
   {
-    entries: ['src/node.ts'],
+    entries: ['src/index.ts'],
     declaration: true,
-    failOnWarn: false,
+    // failOnWarn: false,
+    clean: false,
     rollup: {
       emitCJS: true,
       esbuild: {

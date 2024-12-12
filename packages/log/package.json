@@ -6,7 +6,8 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "dist"
+    "dist",
+    "lib"
   ],
   "repository": {
     "type": "git",
@@ -14,19 +15,27 @@
     "directory": "packages/log"
   },
   "type": "module",
-  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/browser.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "node": {
-        "types": "./dist/node.d.ts",
-        "import": "./dist/node.mjs",
-        "require": "./dist/node.cjs"
-      },
-      "default": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.mjs",
         "require": "./dist/index.cjs"
+      },
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/browser.mjs",
+        "require": "./dist/browser.cjs"
       }
+    },
+    "./browser": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/browser.mjs",
+      "require": "./dist/browser.cjs"
     }
   },
   "publishConfig": {
