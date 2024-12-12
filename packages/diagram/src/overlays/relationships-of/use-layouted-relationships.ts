@@ -308,13 +308,13 @@ function applyDagreLayout(g: dagre.graphlib.Graph) {
 function addEdge(
   ctx: Context,
   props: {
-    includedInCurrentView: boolean
+    existsInCurrentView: boolean
     source: string
     target: string
     relations: XYFlowTypes.Edge['data']['relations']
   }
 ) {
-  const { source, target, relations, includedInCurrentView } = props
+  const { source, target, relations, existsInCurrentView } = props
   const ids = relations.map(r => r.id).join('_')
   const label = only(relations)?.title ?? 'untitled'
 
@@ -327,7 +327,7 @@ function addEdge(
     sourceHandle: target,
     targetHandle: source,
     data: {
-      includedInCurrentView,
+      existsInCurrentView: existsInCurrentView,
       relations
     },
     label: isMultiple ? `${relations.length} relationships` : label,
@@ -501,7 +501,7 @@ function layout(
           relation,
           source,
           target,
-          includedInCurrentView: viewRelationships.has(relation.id),
+          existsInCurrentView: viewRelationships.has(relation.id),
           id: `${source.id}:${target.id}`
         })
       })
@@ -531,7 +531,7 @@ function layout(
 
       addEdge(ctx, {
         // if view does not include subject - do not highlight
-        includedInCurrentView: !viewIncludesSubject || grouped.every(g => g.includedInCurrentView),
+        existsInCurrentView: !viewIncludesSubject || grouped.every(g => g.existsInCurrentView),
         source: source.id,
         target: target.id,
         relations

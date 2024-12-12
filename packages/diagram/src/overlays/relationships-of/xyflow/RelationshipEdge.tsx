@@ -45,7 +45,7 @@ export function RelationshipEdge({
         className={css.edgeContainer}
         data-edge-dimmed={data.dimmed}
         data-edge-hovered={data.hovered}
-        data-likec4-color={data.includedInCurrentView ? 'gray' : 'amber'}
+        data-likec4-color={data.existsInCurrentView ? 'gray' : 'amber'}
       >
         <BaseEdge
           path={edgePath}
@@ -67,11 +67,11 @@ export function RelationshipEdge({
           ])}
           data-edge-dimmed={data.dimmed}
           data-edge-hovered={data.hovered}
-          data-likec4-color={data.includedInCurrentView ? 'gray' : 'amber'}
-          // {...data.includedInCurrentView === false && { 'data-likec4-color': 'amber' }}
+          data-likec4-color={data.existsInCurrentView ? 'gray' : 'amber'}
+          // {...data.existsInCurrentView === false && { 'data-likec4-color': 'amber' }}
         >
           {label && (
-            <Tooltip label="Not included in current view" disabled={data.includedInCurrentView} color={'orange'}>
+            <Tooltip label="Not included in current view" disabled={data.existsInCurrentView} color={'orange'}>
               <Group gap={6} wrap="nowrap">
                 {isMultiRelation && (
                   <ThemeIcon size={'sm'} variant="transparent" color="orange">

@@ -52,7 +52,7 @@ export namespace XYFlowTypes {
 
   type EdgeData = {
     relations: [Relation, ...Relation[]]
-    includedInCurrentView: boolean
+    existsInCurrentView: boolean
     hovered?: boolean
     dimmed?: 'immediate' | boolean
   }
