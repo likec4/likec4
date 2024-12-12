@@ -39,6 +39,7 @@ import {
 } from 'remeda'
 import { useLikeC4Model } from '../../likec4model'
 import type { XYFlowTypes } from './_types'
+import type { SharedTypes } from '../shared/xyflow/_types'
 
 const columns = ['incomers', 'subjects', 'outgoers'] as const
 type ColumnKey = typeof columns[number]
@@ -183,8 +184,8 @@ function nodeData(
     },
     navigateTo: diagramNode?.navigateTo ?? element.defaultView?.id ?? null,
     ports: {
-      left: [],
-      right: []
+      in: [],
+      out: []
     }
   }
 }
@@ -512,11 +513,11 @@ function layout(
       const { source, target } = grouped[0]
       const relations = map(grouped, g => g.relation)
 
-      source.data.ports.right.push({
+      source.data.ports.out.push({
         id: target.id,
         type: 'out'
       })
-      target.data.ports.left.push({
+      target.data.ports.in.push({
         id: source.id,
         type: 'in'
       })
@@ -555,7 +556,7 @@ function layout(
     if (subject.type !== 'element') {
       continue
     }
-    const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
+    const subjectPortsCount = Math.max(subject.data.ports.in.length, subject.data.ports.out.length)
     if (subjectPortsCount > 2) {
       g.node(subject.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 14
     }
@@ -628,7 +629,7 @@ function layout(
   }
 
   // Sort ports in subject vertically
-  const sortedPorts = (ports: XYFlowTypes.Port[]) => {
+  const sortedPorts = (ports: SharedTypes.Port[]) => {
     return pipe(
       ports,
       map(port => {
@@ -658,11 +659,11 @@ function layout(
       continue
     }
     // Sort ports by their position
-    if (node.data.ports.left.length > 1) {
-      node.data.ports.left = sortedPorts(node.data.ports.left)
+    if (node.data.ports.in.length > 1) {
+      node.data.ports.in = sortedPorts(node.data.ports.in)
     }
-    if (node.data.ports.right.length > 1) {
-      node.data.ports.right = sortedPorts(node.data.ports.right)
+    if (node.data.ports.out.length > 1) {
+      node.data.ports.out = sortedPorts(node.data.ports.out)
     }
   }
 

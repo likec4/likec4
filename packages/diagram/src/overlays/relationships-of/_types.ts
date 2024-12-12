@@ -1,15 +1,9 @@
 import type { ComputedNode, Fqn, Relation, ViewId } from '@likec4/core'
 import type { Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
+import type { SharedTypes } from '../shared/xyflow/_types'
 
 export namespace XYFlowTypes {
-  /**
-   * Handle in ReactFlow terms
-   */
-  export type Port = {
-    id: string
-    type: 'in' | 'out'
-  }
 
   type NodeData = {
     depth?: number
@@ -18,8 +12,8 @@ export namespace XYFlowTypes {
     existsInCurrentView: boolean
     element: Pick<ComputedNode, 'color' | 'title' | 'description' | 'shape' | 'kind'>
     ports: {
-      left: Port[]
-      right: Port[]
+      in: SharedTypes.Port[]
+      out: SharedTypes.Port[]
     }
     navigateTo: ViewId | null
     hovered?: boolean

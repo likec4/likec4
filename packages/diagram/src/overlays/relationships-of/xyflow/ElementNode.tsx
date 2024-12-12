@@ -168,7 +168,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           )}
         </Group>
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.in.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -176,10 +176,10 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.left.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
-      {ports.right.map(({ id, type }, i) => (
+      {ports.out.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -187,7 +187,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.right.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
     </>

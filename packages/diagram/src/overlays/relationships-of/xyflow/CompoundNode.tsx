@@ -99,7 +99,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           {element.title}
         </Text>
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.in.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
@@ -110,7 +110,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
             top: `${20 * (i + 1)}px`
           }} />
       ))}
-      {ports.right.map(({ id, type }, i) => (
+      {ports.out.map(({ id, type }, i) => (
         <Handle
           key={id}
           id={id}
