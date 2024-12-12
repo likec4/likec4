@@ -54,6 +54,7 @@ const base = {
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
   },
+  conditions: [isProduction ? 'production' : 'development'],
   sourcemap: true,
   sourcesContent: false,
   minify: isProduction,

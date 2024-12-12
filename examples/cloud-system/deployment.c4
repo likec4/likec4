@@ -64,16 +64,15 @@ deployment {
       node serv1 {
         instanceOf cloud.ui
         instanceOf cloud.next.graphql
-         instanceOf cloud.next.events
+        // instanceOf cloud.next.events
       }
       node serv2 {
         instanceOf cloud.next.backend
-
       }
-       group amazon 'Amazon'  {
-          instanceOf amazon.rds
-          instanceOf amazon.sqs
-        }
+      group amazon 'Amazon'  {
+        instanceOf amazon.rds
+        instanceOf amazon.sqs
+      }
     }
 
     eu.rds -> us.rds 'replicates' {
@@ -100,23 +99,14 @@ views {
       prod.**
 
     exclude
-      //-> eu.rds,
-     //-> us.rds,
-      // * -> us.rds,
-    // exclude
-      // server1.* -> server3.legacy,
-      // server2.* -> server3.legacy,
-      // server2.* -> server3.legacy,
-      // server1.ui -> server4.legacy,
-      // server2.ui -> server3.legacy,
-    //   server2.ui -> server4.legacy,
-      //us.sqs,
+      us.sqs,
       server1.ui -> zone1.rds,
       server2.ui -> zone1.rds,
       serv1.ui -> us.rds,
       serv1.ui -> zone1.rds,
       server1.ui -> us.rds,
       server2.ui -> us.rds,
+
     //   server3.legacy -> zone1.rds,
     //   server4.legacy -> zone1.rds
     include
