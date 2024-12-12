@@ -1,4 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
+import type { LikeC4Model } from '../model/LikeC4Model'
 import type { ParsedLikeC4Model } from '../types'
 import { Builder } from './Builder'
 
@@ -110,6 +111,14 @@ test('should have types', () => {
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
       'index' | 'cloud' | 'prod',
       'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
+    >
+  )
+
+  expectTypeOf(m.buildComputedModel()).toEqualTypeOf(
+    {} as LikeC4Model.Computed<
+      'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
+      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api',
+      'index' | 'cloud' | 'prod'
     >
   )
 })

@@ -1,7 +1,9 @@
 import defu from 'defu'
 import { fromEntries, hasAtLeast, isFunction, isNonNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
 import type { Writable } from 'type-fest'
+import { computeViews } from '../compute-view'
 import { invariant } from '../errors'
+import { LikeC4Model } from '../model/LikeC4Model'
 import {
   type Color,
   DefaultElementShape,
@@ -64,6 +66,10 @@ export interface Builder<T extends AnyTypes> {
   __views(): ViewsBuilder<T>
   __deployment(): DeploymentModelBuilder<T>
 
+  /**
+   * Returns model as result of parsing only
+   * Model is not computed or layouted
+   */
   build(): ParsedLikeC4Model<
     T['ElementKind'],
     T['RelationshipKind'],
@@ -71,6 +77,15 @@ export interface Builder<T extends AnyTypes> {
     T['Fqn'],
     T['ViewId'],
     T['DeploymentFqn']
+  >
+
+  /**
+   * Returns model with computed views
+   */
+  buildComputedModel(): LikeC4Model.Computed<
+    T['Fqn'],
+    T['DeploymentFqn'],
+    T['ViewId']
   >
 
   with<
@@ -340,6 +355,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         return self
       },
       addDeploymentRelation: (relation) => {
+        invariant(
+          !isSameHierarchy(relation.source.id, relation.target.id),
+          'Cannot create relationship between elements in the same hierarchy'
+        )
         _deploymentRelations.push({
           id: `deploy_rel${_deploymentRelations.length + 1}` as RelationId,
           ...relation
@@ -359,6 +378,11 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       },
       views: fromEntries(Array.from(_views.entries())) as any
     }),
+    buildComputedModel: () => {
+      const parsed = self.build()
+      const computed = computeViews(parsed)
+      return LikeC4Model.create(computed)
+    },
     helpers: () => ({
       model: {
         model: (...ops: ((b: ModelBuilder<T>) => ModelBuilder<T>)[]) => {
