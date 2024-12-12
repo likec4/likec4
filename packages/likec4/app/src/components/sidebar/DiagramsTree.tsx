@@ -17,6 +17,7 @@ import {
   IconFolderFilled,
   IconFolderOpen,
   IconLayoutDashboard,
+  IconStack2,
   IconStarFilled
 } from '@tabler/icons-react'
 import { useParams, useRouter } from '@tanstack/react-router'
@@ -101,13 +102,18 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               justify="flex-start"
               styles={{
                 section: {
-                  opacity: 0.75
+                  opacity: 0.5
                 }
               }}
               leftSection={
                 <>
                   {!hasChildren && node.value === 'index' && <IconStarFilled size={14} opacity={0.7} />}
-                  {!hasChildren && node.value !== 'index' && <IconLayoutDashboard size={16} opacity={0.7} />}
+                  {!hasChildren && node.value !== 'index' && isTreeNodeData(node) && (
+                    <>
+                      {node.type === 'deployment-view' && <IconStack2 size={14} />}
+                      {node.type === 'view' && <IconLayoutDashboard size={14} />}
+                    </>
+                  )}
                   {hasChildren && <FolderIcon node={node} expanded={expanded} />}
                 </>
               }

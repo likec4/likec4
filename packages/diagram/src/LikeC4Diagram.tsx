@@ -1,3 +1,4 @@
+import { ComputedView } from '@likec4/core'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
@@ -110,11 +111,12 @@ export function LikeC4Diagram({
             showNavigationButtons={showNavigationButtons && !!onNavigateTo}
             showNotations={showNotations}
             enableFocusMode={enableFocusMode}
-            enableRelationshipDetails={enableRelationshipDetails && hasLikec4model}
             enableSearch={hasLikec4model && enableSearch}
             enableElementDetails={enableElementDetails && hasLikec4model}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
             enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model}
+            // TODO: temporary disable relationship details for deployment views
+            enableRelationshipDetails={enableRelationshipDetails && hasLikec4model && !ComputedView.isDeployment(view)}
             // Apply where filter only in readonly mode
             whereFilter={readonly ? (where ?? null) : null}
             renderIcon={renderIcon ?? null}

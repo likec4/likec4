@@ -1,4 +1,4 @@
-import { compareNatural, type DiagramView, nonexhaustive } from '@likec4/core'
+import { compareNatural, ComputedView, type DiagramView, nonexhaustive } from '@likec4/core'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find, values } from 'remeda'
@@ -7,14 +7,14 @@ import { useLikeC4Model } from 'virtual:likec4/model'
 interface DiagramTreeNodeData {
   label: string
   value: string
-  type: 'file' | 'folder' | 'diagram'
+  type: 'file' | 'folder' | 'view' | 'deployment-view'
   children: DiagramTreeNodeData[]
 }
 
 export type GroupBy = 'by-files' | 'by-folders' | 'none'
 
 export const isTreeNodeData = (node: TreeNodeData): node is DiagramTreeNodeData =>
-  'type' in node && ['file', 'folder', 'diagram'].includes(node.type as any)
+  'type' in node && ['file', 'folder', 'view', 'deployment-view'].includes(node.type as any)
 
 function dropFilename(relativePath: string) {
   if (relativePath === '') {
@@ -81,7 +81,7 @@ function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTr
     parent.children.push({
       value: view.id,
       label: view.title ?? view.id,
-      type: 'diagram',
+      type: ComputedView.isDeployment(view) ? 'deployment-view' : 'view',
       children: []
     })
     if (parent !== root) {

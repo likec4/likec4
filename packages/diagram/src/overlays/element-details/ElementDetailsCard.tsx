@@ -1,6 +1,6 @@
 import {
   ComputedNode,
-  type ComputedView,
+  ComputedView,
   type DiagramView,
   type Element,
   type Fqn,
@@ -39,10 +39,10 @@ import {
   UnstyledButton
 } from '@mantine/core'
 import { useSessionStorage, useViewportSize } from '@mantine/hooks'
-import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconZoomScan } from '@tabler/icons-react'
+import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { m, type PanInfo, useDragControls, useMotionValue } from 'framer-motion'
-import { memo, type PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, type PropsWithChildren, useCallback, useEffect, useRef } from 'react'
 import { clamp, find, isNullish, map, only, partition, pick, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useXYFlow, useXYInternalNode } from '../../hooks'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
@@ -535,7 +535,9 @@ const ViewButton = ({
     <UnstyledButton className={css.viewButton} onClick={e => onNavigateTo(view.id, e)}>
       <Group gap={6} align="start" wrap="nowrap">
         <ThemeIcon size={'sm'} variant="transparent">
-          <IconZoomScan stroke={1.8} />
+          {ComputedView.isDeployment(view)
+            ? <IconStack2 stroke={1.8} />
+            : <IconZoomScan stroke={1.8} />}
         </ThemeIcon>
         <Box>
           <Text component="div" className={css.viewButtonTitle} lineClamp={1}>
