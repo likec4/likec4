@@ -3,14 +3,8 @@ import type { SetOptional } from 'type-fest'
 import { nonexhaustive } from '../errors'
 import { LikeC4Model } from '../model'
 import {
-  type ComputedDeploymentView,
-  type ComputedDynamicView,
-  type ComputedElementView,
   type ComputedLikeC4ModelFromParsed,
   type ComputedView,
-  type DeploymentView,
-  type DynamicView,
-  type ElementView,
   isDeploymentView,
   isDynamicView,
   isElementView,
@@ -25,6 +19,7 @@ import { LikeC4ModelGraph } from './LikeC4ModelGraph'
 type ComputeViewResult<V extends ComputedView = ComputedView> =
   | {
     isSuccess: true
+    error?: undefined
     view: V
   }
   | {
@@ -33,42 +28,39 @@ type ComputeViewResult<V extends ComputedView = ComputedView> =
     view: undefined
   }
 
-interface ComputeView {
-  (viewsource: DeploymentView): ComputeViewResult<ComputedDeploymentView>
-  (viewsource: DynamicView): ComputeViewResult<ComputedDynamicView>
-  (viewsource: ElementView): ComputeViewResult<ComputedElementView>
-  (viewsource: LikeC4View): ComputeViewResult<ComputedView>
-}
+type ComputeViewFn = <V extends LikeC4View>(viewsource: V) => ComputeViewResult<ComputedView>
 
 type Params = SetOptional<ParsedLikeC4Model, 'views'>
-export function mkComputeView(model: Params): ComputeView {
+export function mkComputeView(model: Params): ComputeViewFn {
   const index = new LikeC4ModelGraph(model)
   let likec4model: LikeC4Model
 
   return function computeView(viewsource) {
     try {
-      let view
       switch (true) {
-        case isElementView(viewsource):
-          view = ComputeCtx.elementView(viewsource, index)
-          break
         case isDeploymentView(viewsource): {
           likec4model ??= LikeC4Model.create({
             ...model,
             views: {}
           })
-          view = computeDeploymentView(likec4model, viewsource)
-          break
+          return {
+            isSuccess: true,
+            view: computeDeploymentView(likec4model, viewsource)
+          }
         }
         case isDynamicView(viewsource):
-          view = DynamicViewComputeCtx.compute(viewsource, index)
-          break
+          return {
+            isSuccess: true,
+            view: DynamicViewComputeCtx.compute(viewsource, index)
+          }
+        case isElementView(viewsource):
+          return {
+            isSuccess: true,
+            view: ComputeCtx.elementView(viewsource, index)
+          }
+
         default:
           nonexhaustive(viewsource)
-      }
-      return {
-        isSuccess: true,
-        view: view as any
       }
     } catch (e) {
       return {
@@ -80,10 +72,10 @@ export function mkComputeView(model: Params): ComputeView {
   }
 }
 
-export function computeViews<const M extends ParsedLikeC4Model>(
-  { views, ...model }: M
-): ComputedLikeC4ModelFromParsed<M> {
-  const _computeView = mkComputeView(model)
+export function computeViews<const P extends ParsedLikeC4Model<any, any, any, any, any, any>>(
+  parsed: P
+): ComputedLikeC4ModelFromParsed<P> {
+  const _computeView = mkComputeView(parsed)
   const computeView = (source: LikeC4View): ComputedView => {
     const result = _computeView(source)
     if (result.isSuccess) {
@@ -93,8 +85,8 @@ export function computeViews<const M extends ParsedLikeC4Model>(
     }
   }
   return {
-    ...model,
+    ...parsed,
     __: 'computed',
-    views: mapValues(views, computeView)
+    views: mapValues(parsed.views, computeView)
   } as any // TODO: fix this
 }

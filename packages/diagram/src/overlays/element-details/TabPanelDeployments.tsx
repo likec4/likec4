@@ -1,22 +1,8 @@
-import type { DeployedInstance, Element, Fqn, LikeC4Model } from '@likec4/core'
-import {
-  Alert,
-  Anchor,
-  Box,
-  Button,
-  Group,
-  Menu,
-  Pill,
-  rem,
-  Text,
-  ThemeIcon,
-  Tree,
-  useComputedColorScheme,
-  useTree
-} from '@mantine/core'
+import type { Fqn, LikeC4Model } from '@likec4/core'
+import { Alert, Box, Button, Group, Menu, rem, Text, ThemeIcon, Tree, useTree } from '@mantine/core'
 import { IconInfoCircle, IconTarget, IconZoomScan } from '@tabler/icons-react'
 import { memo, type ReactNode, useEffect, useMemo } from 'react'
-import { useCurrentViewId, useDiagramStoreApi, useMantinePortalProps } from '../../hooks'
+import { useCurrentViewId, useDiagramStoreApi } from '../../hooks'
 import { useLikeC4ElementModel } from '../../likec4model/useLikeC4Model'
 import { stopPropagation } from '../../xyflow/utils'
 import * as css from './TabPanelDeployments.css'

@@ -252,8 +252,13 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
     if (this._relationshipsFromInstances) {
       return this._relationshipsFromInstances
     }
-    const outgoing = new Set<RelationshipModel<M>>()
-    const incoming = new Set<RelationshipModel<M>>()
+    const {
+      outgoing,
+      incoming
+    } = (this._relationshipsFromInstances = {
+      outgoing: new Set<RelationshipModel<M>>(),
+      incoming: new Set<RelationshipModel<M>>()
+    })
     for (const instance of this.instances()) {
       for (const r of instance.$element.outgoing()) {
         outgoing.add(r)
@@ -262,7 +267,7 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
         incoming.add(r)
       }
     }
-    return (this._relationshipsFromInstances = { outgoing, incoming })
+    return this._relationshipsFromInstances
   }
 
   /**

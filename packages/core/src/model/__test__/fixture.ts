@@ -95,6 +95,9 @@ const local = b
       $m.rel('cloud.frontend.mobile', 'cloud.auth', 'authenticates'),
       $m.rel('cloud.frontend.mobile', 'cloud.backend.api', 'fetches data'),
       $m.rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
+      $m.rel('cloud.frontend', 'cloud.backend')
+    ),
+    $m.model(
       $m.rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
       $m.rel('cloud.backend.api', 'cloud.media', 'uploads media'),
       $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),

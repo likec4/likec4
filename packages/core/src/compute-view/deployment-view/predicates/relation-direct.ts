@@ -14,9 +14,9 @@ const isRef = DeploymentElementExpression.isRef
 export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   const siblings = new Set<DeploymentElementModel>()
   for (let sibling of element.ascendingSiblings()) {
-    if (element.isInstance()) {
+    if (element.isInstance() && sibling.isDeploymentNode()) {
       // we flatten nodes that contain only one instance
-      sibling = sibling.isDeploymentNode() ? (sibling.onlyOneInstance() ?? sibling) : sibling
+      sibling = sibling.onlyOneInstance() ?? sibling
     }
     siblings.add(sibling)
   }

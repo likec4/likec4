@@ -434,14 +434,14 @@ function edgesInOutExpr(this: ComputeCtx, { inout }: Expr.InOutExpr, where?: Rel
   if (currentElements.length === 0) {
     currentElements = resolveNeighbours.call(this, inout)
   }
-  return elements.reduce<EdgePredicateResult>((acc, el) => {
+  return elements.reduce((acc, el) => {
     const edges = filterEdges(this.graph.anyEdgesBetween(el, currentElements), where)
     if (edges.length > 0) {
       acc.implicits.push(el)
       acc.edges.push(...edges)
     }
     return acc
-  }, { implicits: [], edges: [] })
+  }, { implicits: [], edges: [] } as EdgePredicateResult)
 }
 
 export function includeInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr, where?: RelationPredicateFn) {

@@ -276,11 +276,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     for (const rel of this.#incoming.get(id)) {
       switch (true) {
         case filter === 'all':
-          yield rel
-          break
         case filter === 'direct' && rel.target.id === id:
-          yield rel
-          break
         case filter === 'to-descendants' && rel.target.id !== id:
           yield rel
           break
@@ -301,11 +297,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     for (const rel of this.#outgoing.get(id)) {
       switch (true) {
         case filter === 'all':
-          yield rel
-          break
         case filter === 'direct' && rel.source.id === id:
-          yield rel
-          break
         case filter === 'from-descendants' && rel.source.id !== id:
           yield rel
           break
