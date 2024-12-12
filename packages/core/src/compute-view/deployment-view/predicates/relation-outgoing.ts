@@ -4,6 +4,7 @@ import type { DeploymentConnectionModel } from '../../../model/connection/deploy
 import { DeploymentElementExpression, type DeploymentRelationExpression } from '../../../types/deployments'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements } from '../utils'
+import { resolveAscendingSiblings } from './relation-direct'
 
 export const OutgoingRelationPredicate: PredicateExecutor<DeploymentRelationExpression.Outgoing> = {
   include: (expr, { model, memory, stage }) => {
@@ -16,13 +17,7 @@ export const OutgoingRelationPredicate: PredicateExecutor<DeploymentRelationExpr
         if (target.allIncoming.isEmpty) {
           continue
         }
-        for (const source of target.ascendingSiblings()) {
-          // Traverse deployment node if target is instance
-          if (source.isDeploymentNode() && target.isInstance()) {
-            for (const i of source.instances()) {
-              stage.addConnections(findConnection(i, target, 'directed'))
-            }
-          }
+        for (const source of resolveAscendingSiblings(target)) {
           stage.addConnections(findConnection(source, target, 'directed'))
         }
       }

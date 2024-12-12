@@ -19,6 +19,30 @@ describe('cleanCrossBoundaryConnections', () => {
     ])
   })
 
+  it('should keep relations inside boundary (2)', () => {
+    const { nodeIds, edgeIds } = computeView(
+      $include('customer'),
+      $include('acc.testCustomer'),
+      $include('prod._'),
+      $include('acc._')
+    )
+    expect.soft(nodeIds).toEqual([
+      'customer',
+      'acc',
+      'prod',
+      'acc.testCustomer',
+      'prod.eu',
+      'acc.eu',
+      'prod.us'
+    ])
+    expect(edgeIds).toEqual([
+      'acc.testCustomer:acc.eu',
+      'prod.eu:prod.us',
+      'customer:prod.eu',
+      'customer:prod.us'
+    ])
+  })
+
   it('should keep relations inside boundary and remove redundant edges', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.zone1'),
@@ -56,7 +80,7 @@ describe('cleanCrossBoundaryConnections', () => {
   })
 
   it('should remove redundant edges based on deployment relations', () => {
-    const { nodeIds, edgeIds } = computeView(
+    const { nodeIds, edgeIds, edges } = computeView(
       $include('prod.*'),
       $include('prod.eu.db'),
       $include('prod.us.db')
@@ -70,5 +94,10 @@ describe('cleanCrossBoundaryConnections', () => {
     expect(edgeIds).toEqual([
       'prod.eu.db:prod.us.db'
     ])
+    const [edge] = edges
+    expect(edge).toMatchObject({
+      label: 'replicates',
+      color: 'green'
+    })
   })
 })

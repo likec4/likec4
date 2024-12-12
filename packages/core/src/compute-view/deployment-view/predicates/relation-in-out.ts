@@ -1,9 +1,10 @@
 import { identity } from 'remeda'
-import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
+import { findConnectionsBetween } from '../../../model/connection/deployment'
 import { DeploymentElementExpression, type DeploymentRelationExpression } from '../../../types/deployments'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements } from '../utils'
+import { resolveAscendingSiblings } from './relation-direct'
 
 //
 export const InOutRelationPredicate: PredicateExecutor<DeploymentRelationExpression.InOut> = {
@@ -11,14 +12,8 @@ export const InOutRelationPredicate: PredicateExecutor<DeploymentRelationExpress
     const sources = [...memory.elements]
     if (DeploymentElementExpression.isWildcard(expr.inout)) {
       for (const source of sources) {
-        for (const target of source.ascendingSiblings()) {
-          if (target.isDeploymentNode() && source.isInstance()) {
-            for (const i of target.instances()) {
-              stage.addConnections(findConnection(source, i, 'both'))
-            }
-          }
-          stage.addConnections(findConnection(source, target, 'both'))
-        }
+        const targets = [...resolveAscendingSiblings(source)]
+        stage.addConnections(findConnectionsBetween(source, targets, 'both'))
       }
       return stage.patch()
     }

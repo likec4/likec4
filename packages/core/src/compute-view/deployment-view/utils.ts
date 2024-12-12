@@ -71,7 +71,7 @@ export function deploymentExpressionToPredicate<T extends { id: string }>(
 export function toNodeSource(el: Elem): ComputedNodeSource {
   if (el.isDeploymentNode()) {
     const onlyOneInstance = el.onlyOneInstance()
-    let { title, ...$node } = el.$node
+    let { title, kind, id, ...$node } = el.$node
     const { icon, color, shape, ...style } = el.$node.style ?? {}
 
     // If there is only one instance and title was not overriden
@@ -80,7 +80,10 @@ export function toNodeSource(el: Elem): ComputedNodeSource {
     }
 
     return {
-      ...(onlyOneInstance && toNodeSource(onlyOneInstance)),
+      ...(onlyOneInstance && {
+        ...toNodeSource(onlyOneInstance),
+        modelRef: onlyOneInstance.$element.id
+      }),
       title,
       ...$node,
       ...(icon && { icon }),
@@ -89,8 +92,9 @@ export function toNodeSource(el: Elem): ComputedNodeSource {
       style: {
         ...style
       },
-      ...(onlyOneInstance && { modelRef: onlyOneInstance.$element.id }),
-      deploymentRef: 1
+      deploymentRef: 1,
+      kind,
+      id
     }
   }
   invariant(el.isInstance(), 'Expected Instance')
@@ -172,6 +176,13 @@ export function toComputedEdges<M extends AnyAux>(
       const head = existing.head ?? edge.head ?? DefaultArrowType
       existing.head ??= head
       existing.tail ??= head
+
+      if (edge.color) {
+        existing.color ??= edge.color
+      }
+      if (edge.line) {
+        existing.line ??= edge.line
+      }
       return acc
     }
 

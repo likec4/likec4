@@ -1,5 +1,5 @@
 import { isSameHierarchy } from '../../utils/fqn'
-import type { DeploymentElementModel } from '../DeploymentElementModel'
+import { type DeploymentElementModel } from '../DeploymentElementModel'
 import type { AnyAux } from '../types'
 import { DeploymentConnectionModel } from './DeploymentConnectionModel'
 
@@ -10,23 +10,43 @@ export { DeploymentConnectionModel }
 /**
  * Resolve connection from source to target
  * If direction is `both`, also look for reverse connection
+ *
+ * @default direction directed
  */
 export function findConnection<M extends AnyAux>(
   source: DeploymentElementModel<M>,
   target: DeploymentElementModel<NoInfer<M>>,
-  direction: 'directed' | 'both' = 'directed'
+  direction: 'directed'
+):
+  | readonly [DeploymentConnectionModel<M>]
+  | readonly []
+export function findConnection<M extends AnyAux>(
+  source: DeploymentElementModel<M>,
+  target: DeploymentElementModel<NoInfer<M>>,
+  direction: 'both'
 ):
   | readonly [DeploymentConnectionModel<M>, DeploymentConnectionModel<M>]
   | readonly [DeploymentConnectionModel<M>]
   | readonly []
-{
+export function findConnection<M extends AnyAux>(
+  source: DeploymentElementModel<M>,
+  target: DeploymentElementModel<NoInfer<M>>,
+  direction?: 'directed' | 'both'
+):
+  | readonly [DeploymentConnectionModel<M>, DeploymentConnectionModel<M>]
+  | readonly [DeploymentConnectionModel<M>]
+  | readonly []
+export function findConnection<M extends AnyAux>(
+  source: DeploymentElementModel<M>,
+  target: DeploymentElementModel<NoInfer<M>>,
+  direction: 'directed' | 'both' = 'directed'
+) {
   if (source === target) {
     return []
   }
   if (isSameHierarchy(source, target)) {
     return []
   }
-
   const directedIntersection = source.allOutgoing.intersect(target.allIncoming)
 
   const directed = directedIntersection.nonEmpty
@@ -42,24 +62,17 @@ export function findConnection<M extends AnyAux>(
   if (direction === 'directed') {
     return directed
   }
-
-  const reverseIntersection = source.allIncoming.intersect(target.allOutgoing)
-  const reverse = reverseIntersection.nonEmpty
-    ? [
-      new DeploymentConnectionModel(
-        target,
-        source,
-        reverseIntersection
-      )
-    ] as const
-    : [] as const
-
-  return [...directed, ...reverse] as const
+  return [
+    ...directed,
+    ...findConnection(target, source, 'directed')
+  ] as const
 }
 
 /**
  * Resolve all connections between element and others
  * By default, look for both directions.
+ *
+ * @default direction both
  */
 export function findConnectionsBetween<M extends AnyAux>(
   element: DeploymentElementModel<M>,

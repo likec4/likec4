@@ -65,7 +65,9 @@ const {
 export const builder = b
   .with(
     model(
-      person('customer'),
+      person('customer', {
+        title: 'Happy Customer'
+      }),
       system('cloud').with(
         component('frontend').with(
           webapp('dashboard'),
@@ -93,10 +95,16 @@ export const builder = b
       $m.rel('customer', 'cloud', 'uses services'),
       $m.rel('customer', 'cloud.frontend.mobile', 'opens mobile app'),
       $m.rel('customer', 'cloud.frontend.dashboard', 'opens in browser'),
-      $m.rel('cloud.frontend.dashboard', 'cloud.auth', 'authenticates'),
+      $m.rel('cloud.frontend.dashboard', 'cloud.auth', {
+        title: 'authenticates',
+        color: 'green'
+      }),
       $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', 'fetches data'),
       $m.rel('cloud.frontend.dashboard', 'cloud.media', 'fetches media'),
-      $m.rel('cloud.frontend.mobile', 'cloud.auth', 'authenticates'),
+      $m.rel('cloud.frontend.mobile', 'cloud.auth', {
+        title: 'authenticates',
+        color: 'amber'
+      }),
       $m.rel('cloud.frontend.mobile', 'cloud.backend.api', 'fetches data'),
       $m.rel('cloud.frontend.mobile', 'cloud.media', 'fetches media'),
       $m.rel('cloud.backend.api', 'cloud.auth', 'authorizes'),
@@ -120,6 +128,7 @@ export const builder = b
             instanceOf('api', 'cloud.backend.api'),
             instanceOf('ui', 'cloud.frontend.dashboard')
           ),
+          instanceOf('auth', 'cloud.auth'),
           instanceOf('media', 'cloud.media'),
           instanceOf('db', 'aws.rds')
         ),
@@ -131,11 +140,28 @@ export const builder = b
           instanceOf('db', 'aws.rds')
         )
       ),
-      // Global
+      env('acc').with(
+        node('testCustomer').with(
+          instanceOf('instance', 'customer')
+        ),
+        zone('eu').with(
+          instanceOf('api', 'cloud.backend.api'),
+          instanceOf('ui', 'cloud.frontend.dashboard'),
+          instanceOf('auth', 'cloud.auth'),
+          instanceOf('db', 'aws.rds')
+        )
+      ),
       env('global').with(
         instanceOf('email', 'email')
       ),
-      $d.rel('prod.eu.db', 'prod.us.db', 'replicates')
+      $d.rel('prod.eu.db', 'prod.us.db', {
+        title: 'replicates',
+        color: 'green'
+      }),
+      $d.rel('prod.us.db', 'prod.eu.db', {
+        title: 'replicates',
+        color: 'amber'
+      })
     )
     // views(
     //   view('index', $include('*')),

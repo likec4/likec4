@@ -2200,6 +2200,7 @@ __metadata:
     "@smithy/util-base64": "npm:^3.0.0"
     "@types/node": "npm:^20.17.7"
     "@vitest/coverage-v8": "npm:^2.1.8"
+    esm-env: "npm:^1.2.1"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
     indent-string: "npm:^5.0.0"
@@ -6561,6 +6562,13 @@ __metadata:
   version: 1.1.4
   resolution: "esm-env@npm:1.1.4"
   checksum: 10c0/bc6f24faf0022e0ec98a4747616f4d38f7db371609edc081f584b711d55167b0d9aa2e068badc49621a16df73488786a36bc67f2fbcfb319cc002f908e8eda0f
+  languageName: node
+  linkType: hard
+
+"esm-env@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "esm-env@npm:1.2.1"
+  checksum: 10c0/3a7efb5943cac44c84359d0bb25a918f90f1002c0cf9fd3c24d57f27068ba3b508a9c19c8603f8c37ea5730ae4a35efad4735447fd91ae760e275cc081702e69
   languageName: node
   linkType: hard
 

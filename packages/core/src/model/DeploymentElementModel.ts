@@ -1,4 +1,4 @@
-import { isEmpty } from 'remeda'
+import { isEmpty, only } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
@@ -232,13 +232,12 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
    * if only there are no more instances
    */
   public onlyOneInstance(): DeployedInstanceModel<M> | null {
-    const it = this.instances()
-    const one = it.next().value
-    if (one) {
-      const two = it.next().value
-      return two ? null : one
+    const children = this.children()
+    if (children.size !== 1) {
+      return null
     }
-    return null
+    const child = only([...children])
+    return child?.isInstance() ? child : null
   }
 
   /**

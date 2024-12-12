@@ -34,51 +34,97 @@ deployment {
         }
         node server2 {
           instanceOf cloud.ui
-          instanceOf cloud.next.graphql          
+          instanceOf cloud.next.graphql
         }
         node server3 {
           instanceOf cloud.next.backend
-          instanceOf cloud.legacy
+         // instanceOf cloud.legacy
           instanceOf cloud.next.events
         }
         node server4 {
           instanceOf cloud.next.backend
-          instanceOf cloud.legacy
+          //instanceOf cloud.legacy
         }
 
-        group amazon {
+        group amazon 'Amazon' {
           instanceOf amazon.rds
         }
 
         server4.backend -> server3.events 'reuse' {
-          style {
-            color red
-          }
+
+        }
+        server3.events -> server4.backend 'reuse' {
+           style {
+              color red
+            }
         }
       }
     }
+    region us 'US' {
+      node serv1 {
+        instanceOf cloud.ui
+        instanceOf cloud.next.graphql
+         instanceOf cloud.next.events
+      }
+      node serv2 {
+        instanceOf cloud.next.backend
+
+      }
+       group amazon 'Amazon'  {
+          instanceOf amazon.rds
+          instanceOf amazon.sqs
+        }
+    }
+
+    eu.rds -> us.rds 'replicates' {
+      style {
+         color green
+      }
+    }
+    us.rds -> eu.rds 'replicates' {
+      style {
+       color green
+      }
+    }
   }
+
 }
 
 views {
 
   deployment view production {
     title 'Production deployment'
-    
+
     include
-      * -> eu,
-      eu.**
+      * -> prod,
+      prod.**
 
     exclude
-      server1.ui -> server3.legacy,
-      server1.ui -> server4.legacy,
-      server2.ui -> server3.legacy,
-      server2.ui -> server4.legacy,
+      //-> eu.rds,
+     //-> us.rds,
+      // * -> us.rds,
+    // exclude
+      // server1.* -> server3.legacy,
+      // server2.* -> server3.legacy,
+      // server2.* -> server3.legacy,
+      // server1.ui -> server4.legacy,
+      // server2.ui -> server3.legacy,
+    //   server2.ui -> server4.legacy,
+      //us.sqs,
       server1.ui -> zone1.rds,
       server2.ui -> zone1.rds,
-      server3.legacy -> zone1.rds,
-      server4.legacy -> zone1.rds
-    
+      serv1.ui -> us.rds,
+      serv1.ui -> zone1.rds,
+      server1.ui -> us.rds,
+      server2.ui -> us.rds,
+    //   server3.legacy -> zone1.rds,
+    //   server4.legacy -> zone1.rds
+    include
+      eu.amazon.* <-> us.amazon.*,
+      server3.backend -> eu.rds,
+      server4.backend -> eu.rds,
+      //serv1.backend -> us.amazon.*
+
     style eu._ {
       color muted
     }
@@ -90,9 +136,10 @@ views {
       color indigo
     }
 
-    style amazon._ {
+    style us.amazon._, eu.amazon._ {
       color amber
     }
-  }
+
+	}
 
 }

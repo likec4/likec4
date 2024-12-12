@@ -5,25 +5,32 @@ import { findConnectionsBetween } from '../../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { DeploymentElementModel } from '../../../model/DeploymentElementModel'
 import { DeploymentElementExpression, type DeploymentRelationExpression } from '../../../types/deployments'
+import { union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements } from '../utils'
 
 const isRef = DeploymentElementExpression.isRef
 
-const resolveIfWildcard = (model: LikeC4DeploymentModel, nonWildcard: DeploymentElementExpression.Ref) => {
-  const source = model.element(nonWildcard.ref)
-  const sources = resolveElements(model, nonWildcard)
-  const instanceInSources = source.isInstance() || sources.some(s => s.isInstance())
-  const targets = [] as DeploymentElementModel[]
-  for (const s of source.ascendingSiblings()) {
-    if (s.isDeploymentNode() && instanceInSources) {
-      for (const i of s.instances()) {
-        targets.push(i)
-      }
+export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
+  const siblings = new Set<DeploymentElementModel>()
+  for (let sibling of element.ascendingSiblings()) {
+    if (element.isInstance()) {
+      // we flatten nodes that contain only one instance
+      sibling = sibling.isDeploymentNode() ? (sibling.onlyOneInstance() ?? sibling) : sibling
     }
-    targets.push(s)
+    siblings.add(sibling)
   }
-  return [sources, targets] as const
+  return siblings
+}
+
+const resolveIfWildcard = (model: LikeC4DeploymentModel, nonWildcard: DeploymentElementExpression.Ref) => {
+  const sources = resolveElements(model, nonWildcard)
+  const [head, ...rest] = sources.map(s => resolveAscendingSiblings(s))
+  if (head) {
+    let targets = rest.length > 0 ? union(head, ...rest) : head
+    return [sources, [...targets]] as const
+  }
+  return [sources, []] as const
 }
 
 export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpression.Direct> = {

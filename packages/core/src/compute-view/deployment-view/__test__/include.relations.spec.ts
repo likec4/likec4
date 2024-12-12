@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { DeploymentViewRuleBuilderOp } from '../../../builder/Builder.view'
-import { $include, computeNodesAndEdges, type Types } from './fixture'
+import { $exclude, $include, computeNodesAndEdges, type Types } from './fixture'
 
 function expectComputed(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
   return expect(computeNodesAndEdges(...rules))
@@ -10,40 +10,58 @@ describe('DirectRelationPredicate', () => {
   it('should include with all wildcards', () => {
     expectComputed(
       $include('* -> *')
+      // $exclude('prod.eu.auth')
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
           "customer.instance",
+          "acc.eu.ui",
           "prod.eu.zone1.ui",
           "prod.eu.zone2.ui",
           "prod.us.zone1.ui",
+          "acc.eu.api",
           "prod.eu.zone1.api",
           "prod.eu.zone2.api",
           "prod.us.zone1.api",
+          "acc.eu.auth",
+          "acc.eu.db",
+          "prod.eu.auth",
           "prod.eu.media",
           "prod.eu.db",
           "global.email",
           "prod.us.db",
+          "acc.testCustomer.instance",
         ],
         "edges": [
           "customer.instance:prod.eu.zone1.ui",
           "customer.instance:prod.eu.zone2.ui",
           "customer.instance:prod.us.zone1.ui",
           "prod.eu.zone1.ui:prod.eu.zone1.api",
+          "prod.eu.zone1.ui:prod.eu.auth",
           "prod.eu.zone1.ui:prod.eu.media",
+          "prod.eu.zone2.ui:prod.eu.auth",
           "prod.eu.zone2.ui:prod.eu.media",
           "prod.eu.zone2.ui:prod.eu.zone2.api",
           "prod.us.zone1.ui:prod.us.zone1.api",
+          "acc.eu.ui:acc.eu.auth",
+          "acc.eu.ui:acc.eu.api",
+          "prod.eu.zone1.api:prod.eu.auth",
           "prod.eu.zone1.api:prod.eu.media",
           "prod.eu.zone1.api:prod.eu.db",
           "prod.eu.zone1.api:global.email",
           "prod.eu.db:prod.us.db",
           "global.email:customer.instance",
+          "global.email:acc.testCustomer.instance",
+          "prod.eu.zone2.api:prod.eu.auth",
           "prod.eu.zone2.api:prod.eu.media",
           "prod.eu.zone2.api:prod.eu.db",
           "prod.eu.zone2.api:global.email",
           "prod.us.zone1.api:prod.us.db",
           "prod.us.zone1.api:global.email",
+          "acc.eu.api:acc.eu.auth",
+          "acc.eu.api:acc.eu.db",
+          "acc.eu.api:global.email",
+          "acc.testCustomer.instance:acc.eu.ui",
         ],
       }
     `)
@@ -88,52 +106,47 @@ describe('DirectRelationPredicate', () => {
         "Nodes": [
           "customer.instance",
           "prod",
-          "prod.eu.zone1.ui",
-          "prod.eu.zone2.ui",
-          "prod.us.zone1.ui",
         ],
         "edges": [
-          "customer.instance:prod.eu.zone1.ui",
-          "customer.instance:prod.eu.zone2.ui",
-          "customer.instance:prod.us.zone1.ui",
+          "customer.instance:prod",
         ],
       }
     `)
 
     expectComputed(
-      $include('* <-> prod.eu.zone1.ui')
+      $include('* <-> prod')
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
           "customer",
-          "customer.instance",
-          "prod.eu.zone1.ui",
-          "prod.eu.zone1.api",
-          "prod.eu.media",
+          "prod",
+          "global",
         ],
         "edges": [
-          "customer.instance:prod.eu.zone1.ui",
-          "prod.eu.zone1.ui:prod.eu.zone1.api",
-          "prod.eu.zone1.ui:prod.eu.media",
+          "customer:prod",
+          "prod:global",
         ],
       }
     `)
 
+    // because predicate includes instance
+    // we flatten nodes that contain only one instance (customer -> customer.instance)
     expectComputed(
       $include('* <-> prod.eu.zone1.ui')
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
-          "customer",
           "customer.instance",
           "prod.eu.zone1.ui",
           "prod.eu.zone1.api",
+          "prod.eu.auth",
           "prod.eu.media",
         ],
         "edges": [
-          "customer.instance:prod.eu.zone1.ui",
           "prod.eu.zone1.ui:prod.eu.zone1.api",
+          "prod.eu.zone1.ui:prod.eu.auth",
           "prod.eu.zone1.ui:prod.eu.media",
+          "customer.instance:prod.eu.zone1.ui",
         ],
       }
     `)

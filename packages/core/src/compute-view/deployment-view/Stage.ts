@@ -1,10 +1,9 @@
 import { isArray, partition } from 'remeda'
 import { mergeConnections } from '../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
-import type { NonEmptyArray } from '../../types'
 import { union } from '../../utils/set'
 import type { Connections, Elem } from './_types'
-import { MutableMemory, type Patch } from './Memory'
+import { type Patch } from './Memory'
 
 const asArray = <T>(value: T | ReadonlyArray<T>): ReadonlyArray<T> => isArray(value) ? value : [value]
 
@@ -65,15 +64,12 @@ export class Stage {
     }
     if (this.#connections.length > 0) {
       console.warn('Excluding elements from the stage with existing connections')
-      this.#connections = this.#connections.filter(c => !this.#excluded.has(c.source) && !this.#excluded.has(c.target))
     }
   }
 
   public excludeConnections(connections: Connections): void {
     if (this.#connections.length > 0) {
       console.warn('Excluding connections from the stage with existing connections')
-      const ids = new Set(connections.map(c => c.id))
-      this.#connections = this.#connections.filter(c => !ids.has(c.id))
     }
     for (const c of connections) {
       this.#excludedConnections.push(c)
@@ -97,14 +93,14 @@ export class Stage {
 
       if (this.#connections.length > 0) {
         // To preserve order, we split new connections into two sets
-        // First are outgoing from included elements
+        // First are outgoing from known elements (in memory.elements)
         const [fromKnown, rest] = partition(
           this.#connections,
           c => memory.elements.has(c.source)
         )
 
         newMemory.connections = mergeConnections([
-          ...newMemory.connections,
+          ...memory.connections,
           ...fromKnown,
           ...rest
         ])
@@ -116,23 +112,25 @@ export class Stage {
         ])
       }
 
-      newMemory.explicits = union(
-        newMemory.explicits,
-        this.#explicits
-      )
+      if (this.#explicits.size > 0 || fromConnections.size > 0 || this.#implicits.size > 0) {
+        newMemory.explicits = union(
+          newMemory.explicits,
+          this.#explicits
+        )
 
-      newMemory.finalElements = union(
-        newMemory.finalElements,
-        this.#explicits,
-        fromConnections
-      )
+        newMemory.finalElements = union(
+          newMemory.finalElements,
+          this.#explicits,
+          fromConnections
+        )
 
-      newMemory.elements = union(
-        newMemory.elements,
-        this.#explicits,
-        fromConnections,
-        this.#implicits
-      )
+        newMemory.elements = union(
+          newMemory.elements,
+          this.#explicits,
+          fromConnections,
+          this.#implicits
+        )
+      }
 
       if (this.#excluded.size > 0) {
         newMemory = newMemory.exclude(this.#excluded)

@@ -12,6 +12,10 @@ import { type Patch } from './Memory'
 
 const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.nonEmpty())
 
+// We add '.' to distinguish between connections with boundary and without
+// This way we can sort them hierarchically
+const connectionBoundary = (conn: DeploymentConnectionModel<any>) => conn.boundary?.id ? `.${conn.boundary.id}` : ''
+
 function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Connections<M> {
   // Keep only connections between leafs
   // Also find connections based on same relation
@@ -51,8 +55,8 @@ function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Conn
           connections,
           map(prop('conn')),
           // Sort by hierarchy, first are deepest
-          sort((a, b) => compareFqnHierarchically(a.boundary?.id ?? '$$', b.boundary?.id ?? '$$') * -1),
-          // Skip connections in same deployment node
+          sort((a, b) => compareFqnHierarchically(connectionBoundary(a), connectionBoundary(b)) * -1),
+          // Skip connections until we reach another boundary
           dropWhile((conn, i, all) => i === 0 || conn.boundary === all[i - 1]!.boundary),
           // Clean relations from the rest
           forEach((conn) => {

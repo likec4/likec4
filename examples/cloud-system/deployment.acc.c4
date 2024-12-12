@@ -1,0 +1,104 @@
+
+// Deployment model
+deployment {
+
+  environment acc {
+
+    region eu 'EU' {
+
+      node server1 {
+        instanceOf cloud.ui
+        instanceOf cloud.next.graphql
+        instanceOf cloud.next.backend
+      }
+      node server2 {
+        instanceOf cloud.ui
+        instanceOf cloud.next.graphql
+        instanceOf cloud.next.backend
+      }
+
+      instanceOf cloud.next.backend
+      instanceOf cloud.next.events
+
+      group amazon 'Amazon' {
+        instanceOf amazon.rds
+        instanceOf amazon.sqs
+      }
+
+    }
+    region us 'US' {
+       node serv1 {
+          instanceOf cloud.ui
+          instanceOf cloud.next.graphql
+          instanceOf cloud.next.backend
+        }
+       group amazon 'Amazon'  {
+          instanceOf amazon.rds
+        }
+    }
+
+    eu.rds -> us.rds 'replicates' {
+      style {
+         color green
+      }
+    }
+    us.rds -> eu.rds 'replicates' {
+      style {
+       color green
+      }
+    }
+  }
+}
+
+views {
+
+  deployment view acceptance {
+    title 'Acceptance'
+
+    include
+      * -> acc.**,
+      //eu._,
+     // us.sqs
+
+    //exclude
+      //-> eu.rds,
+     //-> us.rds,
+      // * -> us.rds,
+    // exclude
+      // server1.* -> server3.legacy,
+      // server2.* -> server3.legacy,
+      // server2.* -> server3.legacy,
+      // server1.ui -> server4.legacy,
+      // server2.ui -> server3.legacy,
+    //   server2.ui -> server4.legacy,
+      //us.sqs,
+      //serv1.ui -> us.rds,
+      //server1.ui -> us.rds,
+      //server2.ui -> us.rds,
+    //   server3.legacy -> zone1.rds,
+    //   server4.legacy -> zone1.rds
+    //include
+      //eu.amazon.* <-> us.amazon.*,
+      //server3.backend -> eu.rds,
+      //server4.backend -> eu.rds,
+      //serv1.backend -> us.amazon.*
+
+
+    style eu._ {
+      color muted
+    }
+
+    style server1._ {
+      color green
+    }
+    style server2._ {
+      color indigo
+    }
+
+    style us.amazon._, eu.amazon._ {
+      color amber
+    }
+
+	}
+
+}

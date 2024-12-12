@@ -8,26 +8,16 @@ export const WildcardPredicate: PredicateExecutor<DeploymentElementExpression.Wi
     const children = [] as Elem[]
 
     const rootElements = [...model.roots()].map(root => {
-      const [child, ...rest] = [...root.children()]
-      if (!child) {
-        children.push(root)
-        return root
+      const onlyOneInstance = root.onlyOneInstance()
+      if (onlyOneInstance) {
+        children.push(onlyOneInstance)
+        return onlyOneInstance
       }
-      // If there is only one child and it is a Instance, return it
-      if (child.isInstance() && rest.length === 0) {
-        children.push(child)
-        return child
-      }
-      children.push(child, ...rest)
-
+      children.push(...root.children())
       return root
     })
 
     stage.addExplicit(rootElements)
-    if (rootElements.length > 1) {
-      stage.addConnections(findConnectionsWithin(rootElements))
-    }
-
     if (children.length > 1) {
       stage.addConnections(findConnectionsWithin(children))
     }
