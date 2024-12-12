@@ -19,10 +19,10 @@ const getPrinter = (computedView: ComputedView) => {
   switch (true) {
     case ComputedView.isDynamic(computedView):
       return new DynamicViewPrinter(computedView)
-    case ComputedView.isElement(computedView):
-      return new ElementViewPrinter(computedView)
     case ComputedView.isDeployment(computedView):
       return new DeploymentViewPrinter(computedView)
+    case ComputedView.isElement(computedView):
+      return new ElementViewPrinter(computedView)
     default:
       nonexhaustive(computedView)
   }

@@ -285,11 +285,11 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     {
       "dotpos": "e,242.87,680.87 233.12,511.86 235.92,560.29 239.38,620.37 242.27,670.36",
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
-      "label": "fetches data in zero trust network
-with sso authentification",
+      "label": "fetches data in zero trust network with
+sso authentification",
       "labelBBox": {
         "height": 34,
-        "width": 210,
+        "width": 239,
         "x": 240,
         "y": 572,
       },
@@ -319,55 +319,55 @@ with sso authentification",
       "target": "cloud.backend.graphql",
     },
     {
-      "dotpos": "e,369.95,680.84 585.5,511.9 554.3,545.54 516.46,582.65 478,611.6 471.96,616.14 469.44,615.65 463,619.6 435.12,636.69 405.96,656.01 378.43,674.97",
+      "dotpos": "e,355.91,680.95 608.69,511.57 582.66,548.09 547.96,587.44 507,611.6 489.88,621.7 481.35,611.95 463,619.6 429,633.77 395.02,653.98 364.44,675",
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
       "labelBBox": {
         "height": 18,
         "width": 80,
-        "x": 523,
+        "x": 555,
         "y": 580,
       },
       "parent": "cloud",
       "points": [
         [
-          586,
+          609,
           512,
         ],
         [
-          554,
-          546,
-        ],
-        [
-          516,
           583,
+          548,
         ],
         [
-          478,
+          548,
+          587,
+        ],
+        [
+          507,
           612,
         ],
         [
-          472,
-          616,
+          490,
+          622,
         ],
         [
-          469,
-          616,
+          481,
+          612,
         ],
         [
           463,
           620,
         ],
         [
-          435,
-          637,
+          429,
+          634,
         ],
         [
-          406,
-          656,
+          395,
+          654,
         ],
         [
-          378,
+          364,
           675,
         ],
       ],

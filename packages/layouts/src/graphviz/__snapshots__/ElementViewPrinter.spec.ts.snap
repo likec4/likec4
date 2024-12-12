@@ -223,7 +223,7 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
       likec4_id = "cloud.frontend.adminPanel:cloud.backend.graphql";
       style = "dashed";
       weight = 4;
-      label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches data in zero trust network<BR/>with sso authentification</FONT></TD></TR></TABLE>>;
+      label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches data in zero trust network with<BR/>sso authentification</FONT></TD></TR></TABLE>>;
     ];
     "dashboard" -> "graphql" [
       likec4_id = "cloud.frontend.dashboard:cloud.backend.graphql";

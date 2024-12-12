@@ -105,9 +105,9 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
           leftwidth += 20
         }
         // prepend empty cell (left padding)
-        cell = `<TD${rowspan} WIDTH="${leftwidth}" HEIGHT="16" FIXEDSIZE="TRUE"> </TD>${cell}`
+        cell = `<TD${rowspan} WIDTH="${leftwidth}"> </TD>${cell}`
         // append empty cell (right padding)
-        cell = `${cell}<TD${rowspan} WIDTH="16" HEIGHT="16" FIXEDSIZE="TRUE"> </TD>`
+        cell = `${cell}<TD${rowspan} WIDTH="16"> </TD>`
       }
       return `<TR>${cell}</TR>`
     }
@@ -133,7 +133,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
   return `<${html}>`
 }
 
-export const EDGE_LABEL_MAX_CHARS = 35
+export const EDGE_LABEL_MAX_CHARS = 40
 
 export function edgelabel({ label, description, technology }: ComputedEdge) {
   const lines = [] as string[]
@@ -143,31 +143,31 @@ export function edgelabel({ label, description, technology }: ComputedEdge) {
         text: label,
         maxchars: EDGE_LABEL_MAX_CHARS,
         fontsize: 14,
-        maxLines: 4,
+        maxLines: 5,
         bold: label === '[...]'
       })
     )
   }
-  if (isTruthy(description)) {
-    lines.push(
-      wrapWithFont({
-        text: description,
-        maxchars: EDGE_LABEL_MAX_CHARS,
-        maxLines: 4,
-        fontsize: 14
-      })
-    )
-  }
-  if (isTruthy(technology)) {
-    lines.push(
-      wrapWithFont({
-        text: technology,
-        fontsize: 12,
-        maxLines: 1,
-        maxchars: EDGE_LABEL_MAX_CHARS
-      })
-    )
-  }
+  // if (isTruthy(description)) {
+  //   lines.push(
+  //     wrapWithFont({
+  //       text: description,
+  //       maxchars: EDGE_LABEL_MAX_CHARS,
+  //       maxLines: 4,
+  //       fontsize: 14
+  //     })
+  //   )
+  // }
+  // if (isTruthy(technology)) {
+  //   lines.push(
+  //     wrapWithFont({
+  //       text: technology,
+  //       fontsize: 12,
+  //       maxLines: 1,
+  //       maxchars: EDGE_LABEL_MAX_CHARS
+  //     })
+  //   )
+  // }
   if (lines.length === 0) {
     return null
   }
@@ -189,10 +189,9 @@ export function edgeLabel(text: string) {
 const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
 
 export function stepEdgeLabel(step: number, text?: string | null) {
-  const num =
-    `<TABLE BORDER="0" CELLPADDING="6" ${BGCOLOR}><TR><TD FIXEDSIZE="TRUE" WIDTH="20" HEIGHT="20"><FONT POINT-SIZE="${
-      pxToPoints(14)
-    }"><B>${step}</B></FONT></TD></TR></TABLE>`
+  const num = `<TABLE BORDER="0" CELLPADDING="6" ${BGCOLOR}><TR><TD WIDTH="20" HEIGHT="20"><FONT POINT-SIZE="${
+    pxToPoints(14)
+  }"><B>${step}</B></FONT></TD></TR></TABLE>`
 
   if (!isTruthy(text)) {
     return `<${num}>`

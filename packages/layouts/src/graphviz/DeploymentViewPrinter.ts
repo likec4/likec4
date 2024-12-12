@@ -1,17 +1,23 @@
-import { type ComputedDeploymentView, type ComputedEdge, DefaultArrowType, nonNullable } from '@likec4/core'
+import {
+  type ComputedDeploymentView,
+  type ComputedEdge,
+  ComputedNode,
+  DefaultArrowType,
+  nonNullable
+} from '@likec4/core'
 import { first, forEachObj, groupBy, isNonNullish, isString, last, map, pipe } from 'remeda'
-import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
+import type { EdgeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
-import { DefaultEdgeStyle } from './DotPrinter'
+import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { pxToInch, pxToPoints, toArrowType } from './utils'
 
 // TODO: For now we use ElementViewPrinter for DeploymentView
-export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeploymentView> {
+export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
   protected override createGraph(): RootGraphModel {
-    const autoLayout = this.view.autoLayout
     const G = super.createGraph()
+    const autoLayout = this.view.autoLayout
     G.delete(_.TBbalance)
     G.apply({
       [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 130),
@@ -28,20 +34,15 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
         graphvizNode: this.getGraphNode(nd.id)
       })),
       groupBy(({ node, graphvizNode }) => {
-        if (graphvizNode === null) {
+        if (graphvizNode == null) {
           return undefined
         }
-        if (node.modelRef === 1) {
-          return node.id
-        }
-        if (isString(node.modelRef)) {
-          return node.modelRef
-        }
-        return undefined
+        return ComputedNode.modelRef(node) ?? undefined
       }),
       forEachObj((nodes) => {
         if (nodes.length > 1) {
           G.set(_.newrank, true)
+          G.set(_.clusterrank, 'global')
           const subgraph = G.createSubgraph({ [_.rank]: 'same' })
           nodes.forEach(({ graphvizNode }) => {
             subgraph.node(nonNullable(graphvizNode).id)
@@ -49,6 +50,14 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
         }
       })
     )
+  }
+
+  protected override elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {
+    const sub = super.elementToSubgraph(compound, subgraph)
+    if (compound.children.length > 1) {
+      sub.set(_.margin, pxToPoints(50))
+    }
+    return sub
   }
 
   override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
@@ -62,6 +71,8 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
       ? G
       : nonNullable(this.getSubgraph(edgeParentId), `Parent not found for edge ${edge.id}`)
 
+    const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
+
     const e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
       [_.style]: edge.line ?? DefaultEdgeStyle
@@ -70,17 +81,15 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    // const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
-
-    // if (!hasCompoundEndpoint) {
-    //   const connected = new Set([
-    //     ...sourceNode.inEdges,
-    //     ...sourceNode.outEdges,
-    //     ...targetNode.inEdges,
-    //     ...targetNode.outEdges
-    //   ].filter(e => !this.edgesWithCompounds.has(e)))
-    //   e.attributes.set(_.weight, connected.size)
-    // }
+    if (!hasCompoundEndpoint) {
+      const connected = new Set([
+        ...sourceNode.inEdges,
+        ...sourceNode.outEdges,
+        ...targetNode.inEdges,
+        ...targetNode.outEdges
+      ].filter(e => !this.edgesWithCompounds.has(e)))
+      e.attributes.set(_.weight, connected.size)
+    }
 
     const label = edgelabel(edge)
     if (label) {
@@ -100,19 +109,26 @@ export class DeploymentViewPrinter extends ElementViewPrinter<ComputedDeployment
       e.attributes.apply({
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
-        [_.dir]: 'none'
+        [_.dir]: 'none',
+        [_.weight]: 0
+        // [_.minlen]: 0
         // [_.constraint]: false
       })
       return e
     }
 
-    if (head !== 'none' && tail !== 'none') {
+    if (edge.dir === 'both') {
       e.attributes.apply({
         [_.arrowhead]: toArrowType(head),
-        [_.arrowtail]: toArrowType(tail),
-        [_.dir]: 'both'
+        [_.arrowtail]: toArrowType(edge.tail ?? head),
+        [_.dir]: 'both',
+        [_.weight]: 0
+        // [_.constraint]: false,
         // [_.minlen]: 0
       })
+      if (!hasCompoundEndpoint && ComputedNode.modelRef(sourceNode) !== ComputedNode.modelRef(targetNode)) {
+        e.attributes.set(_.constraint, false)
+      }
       return e
     }
 
