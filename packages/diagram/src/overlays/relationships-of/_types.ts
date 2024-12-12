@@ -1,10 +1,5 @@
 import type { ComputedNode, Fqn, Relation, ViewId } from '@likec4/core'
-import type {
-  Edge as ReactFlowEdge,
-  InternalNode as ReactFlowInternalNode,
-  Node as ReactFlowNode,
-  ReactFlowInstance
-} from '@xyflow/react'
+import type { Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
 
 export namespace XYFlowTypes {
@@ -68,9 +63,5 @@ export namespace XYFlowTypes {
     dimmed?: 'immediate' | boolean
   }
 
-  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>;
-
-  export type Instance = ReactFlowInstance<Node, Edge>
-
-  export type InternalNode = ReactFlowInternalNode<Node>
+  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>
 }
