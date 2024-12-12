@@ -7,7 +7,7 @@ import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { useOverlayDialog } from '../../OverlayContext'
 import * as css from './styles.css'
 import { BottomButtons } from '../../../xyflow/nodes/element/BottomButtons'
-import { type BaseTypes } from '../../../xyflow/_types'
+import { type BaseTypes } from '../../shared/_types'
 
 const Text = MantineText.withProps({
   component: 'div'

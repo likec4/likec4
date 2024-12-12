@@ -39,7 +39,7 @@ import {
 } from 'remeda'
 import { useLikeC4Model } from '../../likec4model'
 import type { RelationshipsOfTypes } from './_types'
-import type { BaseTypes } from '../../xyflow/_types'
+import type { BaseTypes } from '../shared/_types'
 
 const columns = ['incomers', 'subjects', 'outgoers'] as const
 type ColumnKey = typeof columns[number]

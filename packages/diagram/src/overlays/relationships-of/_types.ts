@@ -1,6 +1,6 @@
 import type { Node as ReactFlowNode } from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
-import type { BaseTypes } from '../../xyflow/_types'
+import type { BaseTypes } from '../shared/_types'
 
 export namespace RelationshipsOfTypes {
 

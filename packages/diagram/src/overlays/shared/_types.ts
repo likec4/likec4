@@ -1,5 +1,5 @@
 import type { ComputedNode, Fqn, Relation, ViewId } from "@likec4/core"
-import type { NodeProps, Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
+import type { Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
 import type { SetRequired } from "type-fest"
 
 export namespace BaseTypes {
@@ -58,8 +58,18 @@ export namespace BaseTypes {
 
   export type EdgeData = {
     relations: [Relation, ...Relation[]]
+    /**
+     * Whether the edge is explicitly included in the current view
+     */
     includedInCurrentView: boolean
+    /**
+     * Whether the cursor is hovering over the edge
+     */
     hovered?: boolean
+    /**
+     * Whether the edge is dimmed
+     * 'immediate' means that the node is dimmed without delay
+     */
     dimmed?: 'immediate' | boolean
   };
 

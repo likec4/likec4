@@ -8,7 +8,7 @@ import { useOverlayDialog } from '../../OverlayContext'
 import { ZIndexes } from '../use-layouted-edge-details'
 import * as css from './styles.css'
 import { only } from 'remeda'
-import { type BaseTypes } from '../../../xyflow/_types'
+import { type BaseTypes } from '../../shared/_types'
 
 export function RelationshipEdge({
   data,

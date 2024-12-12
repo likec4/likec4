@@ -8,7 +8,7 @@ import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import { ZIndexes } from '../use-layouted-relationships'
 import * as css from './styles.css'
-import { type BaseTypes } from '../../../xyflow/_types'
+import { type BaseTypes } from '../../shared/_types'
 
 const Tooltip = MantineTooltip.withProps({
   color: 'dark',

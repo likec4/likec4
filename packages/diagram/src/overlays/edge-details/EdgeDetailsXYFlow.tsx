@@ -18,7 +18,7 @@ import { useLayoutedEdgeDetails, ZIndexes } from './use-layouted-edge-details'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
 import { RelationshipEdge } from './xyflow/RelationshipEdge'
-import type { BaseTypes } from '../../xyflow/_types'
+import type { BaseTypes } from '../shared/_types'
 import { only } from 'remeda'
 
 const nodeTypes = {

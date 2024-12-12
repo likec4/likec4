@@ -25,7 +25,7 @@ import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
 import { EmptyNode } from './xyflow/EmptyNode'
 import { RelationshipEdge } from './xyflow/RelationshipEdge'
-import { type BaseTypes } from '../../xyflow/_types'
+import { type BaseTypes } from '../shared/_types'
 
 const nodeTypes = {
   element: ElementNode,
