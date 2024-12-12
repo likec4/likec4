@@ -1,10 +1,8 @@
 import { prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { LikeC4Model } from '../index'
-import { computedModel } from './fixture'
+import { model } from './fixture'
 
 describe('DeploymentElementModel', () => {
-  const model = LikeC4Model.create(computedModel)
   const deployment = model.deployment
 
   it('Instance: incoming/outgoing from model', () => {

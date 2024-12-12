@@ -6,9 +6,21 @@ import type { RelationshipModel } from '../RelationModel'
 import type { AnyAux } from '../types'
 
 export interface Connection<Elem = any, Id = any> {
-  id: Id
-  source: Elem
-  target: Elem
+  readonly id: Id
+  readonly source: Elem
+  readonly target: Elem
+
+  /**
+   * Common ancestor of the source and target elements.
+   * Represents the boundary of the connection.
+   */
+  readonly boundary: Elem | null
+
+  /**
+   * Human readable expression of the connection
+   * Mostly used for testing and debugging
+   */
+  readonly expression: string
 
   mergeWith(this: Connection<any, any>, other: typeof this): typeof this
 
@@ -37,8 +49,16 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     public readonly target: ElementModel<M>,
     public readonly relations: ReadonlySet<RelationshipModel<M>>
   ) {
-    this.id = stringHash(`${source.id}:${target.id}`) as M['EdgeId']
+    this.id = stringHash(`model:${source.id}:${target.id}`) as M['EdgeId']
     this.boundary = source.commonAncestor(target)
+  }
+
+  /**
+   * Human readable expression of the connection
+   * Mostly used for testing and debugging
+   */
+  get expression(): string {
+    return `${this.source.id} -> ${this.target.id}`
   }
 
   nonEmpty(): boolean {
@@ -66,7 +86,9 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
   }
 
   equals(other: ConnectionModel<M>): boolean {
-    return this.source.id === other.source.id && this.target.id === other.target.id
+    return this.id === other.id
+      && this.source.id === other.source.id
+      && this.target.id === other.target.id
       && equals(this.relations, other.relations)
   }
 }

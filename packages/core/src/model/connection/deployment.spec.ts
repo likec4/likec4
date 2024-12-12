@@ -1,12 +1,10 @@
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 
-import { computedModel } from '../__test__/fixture'
-import { LikeC4Model } from '../index'
+import { model } from '../__test__/fixture'
 import { findConnection, findConnectionsWithin } from './deployment'
 
 describe('Find deployment connections', () => {
-  const model = LikeC4Model.create(computedModel)
   const deployment = model.deployment
 
   it('findConnection', () => {

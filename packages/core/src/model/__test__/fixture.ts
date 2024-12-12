@@ -1,10 +1,10 @@
 import { Builder } from '../../builder/Builder'
 import { computeViews } from '../../compute-view/compute-view'
+import { LikeC4Model } from '../LikeC4Model'
 
 const {
   builder: b,
   model: {
-    model,
     person,
     system,
     component,
@@ -59,7 +59,7 @@ const {
 
 const local = b
   .with(
-    model(
+    $m.model(
       person('customer'),
       system('cloud').with(
         component('frontend').with(
@@ -85,7 +85,7 @@ const local = b
       ),
       system('email')
     ),
-    model(
+    $m.model(
       $m.rel('customer', 'cloud', 'uses services'),
       $m.rel('customer', 'cloud.frontend.mobile', 'opens mobile app'),
       $m.rel('customer', 'cloud.frontend.dashboard', 'opens in browser'),
@@ -147,7 +147,9 @@ const local = b
 
 export const builder = local.clone()
 
-export const parsedModel = local.build()
+export const parsed = local.build()
 export type TestFqn = typeof local.Types.Fqn
 
-export const computedModel = computeViews(parsedModel)
+export const computed = computeViews(parsed)
+
+export const model = LikeC4Model.create(computed)

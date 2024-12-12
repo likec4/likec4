@@ -4,7 +4,7 @@ import { computeViews } from '../compute-view/compute-view'
 import type { ComputedView, Fqn, ViewId } from '../types'
 import { LikeC4Model } from './LikeC4Model'
 
-test('LikeC4Model: should have types', () => {
+test('LikeC4Model.create: should have types', () => {
   const {
     model: {
       model,
@@ -103,7 +103,7 @@ test('LikeC4Model: should have types', () => {
   )
 })
 
-test('LikeC4Model: should have types from arguments', () => {
+test('LikeC4Model.fromDump: should have types', () => {
   const m = LikeC4Model.fromDump({
     specification: {
       tags: [],

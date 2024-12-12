@@ -29,7 +29,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     public readonly target: DeploymentElementModel<M>,
     public readonly relations: RelationshipsAccum<M>
   ) {
-    this.id = stringHash(`${source.id}:${target.id}`) as M['EdgeId']
+    this.id = stringHash(`deployment:${source.id}:${target.id}`) as M['EdgeId']
     this.boundary = source.commonAncestor(target)
   }
 
@@ -90,7 +90,9 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
   }
 
   public equals(other: DeploymentConnectionModel<M>): boolean {
-    return this.source.id === other.source.id && this.target.id === other.target.id
+    return this.id === other.id
+      && this.source.id === other.source.id
+      && this.target.id === other.target.id
       && equals(this.relations.model, other.relations.model)
       && equals(this.relations.deployment, other.relations.deployment)
   }

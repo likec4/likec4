@@ -1,16 +1,18 @@
+import { isNonNullish } from 'remeda'
+import type { LiteralUnion } from 'type-fest'
 import {
-  type AnyLikeC4Model,
   type ComputedDynamicView,
   type ComputedView,
   type DiagramView,
-  type EdgeId as C4EdgeId,
   extractStep,
   isStepEdgeId,
   type RelationId as C4RelationID,
   type StepEdgeId,
   type Tag as C4Tag
 } from '../../types'
-import type { RelationshipsIterator } from '../RelationModel'
+import type { DeploymentRelationModel } from '../DeploymentElementModel'
+import type { LikeC4Model } from '../LikeC4Model'
+import type { RelationshipModel } from '../RelationModel'
 import type { AnyAux, IteratorLike } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
@@ -59,16 +61,28 @@ export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
   }
 
   get navigateTo(): LikeC4ViewModel<M> | null {
-    return this.$edge.navigateTo ? this.view.model.view(this.$edge.navigateTo) : null
+    return this.$edge.navigateTo ? this.view.$model.view(this.$edge.navigateTo) : null
   }
 
   public isStep(): this is EdgeModel.StepEdge<M, ComputedDynamicView> {
     return isStepEdgeId(this.id)
   }
 
-  public *relationships(): RelationshipsIterator<M> {
-    for (const rel of this.$edge.relations) {
-      yield this.view.model.relationship(rel)
+  public relationships(type: 'model'): IteratorLike<RelationshipModel<M>>
+  public relationships(type: 'deployment'): IteratorLike<DeploymentRelationModel<M>>
+  public relationships(type?: 'model' | 'deployment'): IteratorLike<LikeC4Model.AnyRelation<M>>
+  public *relationships(type: 'model' | 'deployment' | undefined): IteratorLike<LikeC4Model.AnyRelation<M>> {
+    for (const id of this.$edge.relations) {
+      // if type is provided, then we need to filter relationships
+      if (type) {
+        yield this.view.$model.relationship(id, type)
+        const rel = this.view.$model.findRelationship(id, type)
+        if (rel) {
+          yield rel
+        }
+      } else {
+        yield this.view.$model.relationship(id)
+      }
     }
     return
   }

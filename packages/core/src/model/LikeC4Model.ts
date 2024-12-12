@@ -9,7 +9,12 @@ import type { AnyLikeC4Model, ParsedLikeC4ModelDump } from '../types/model'
 import type { Relation } from '../types/relation'
 import { compareNatural, getOrCreate } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
-import type { DeployedInstanceModel, DeploymentElementModel, DeploymentNodeModel } from './DeploymentElementModel'
+import type {
+  DeployedInstanceModel,
+  DeploymentElementModel,
+  DeploymentNodeModel,
+  DeploymentRelationModel
+} from './DeploymentElementModel'
 import { LikeC4DeploymentModel } from './DeploymentModel'
 import { ElementModel, type ElementsIterator } from './ElementModel'
 import { RelationshipModel, type RelationshipsIterator } from './RelationModel'
@@ -132,12 +137,51 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
   /**
    * Returns a specific relationship by its ID.
+   * If the relationship is not found in the model, it will be searched in the deployment model.
+   * Search can be limited to the model or deployment model only.
    */
-  public relationship(id: M['RelationId']): RelationshipModel<M> {
-    return nonNullable(this.#relations.get(id), `Relation ${id} not found`)
+  public relationship(id: M['RelationId'], type: 'model'): RelationshipModel<M>
+  public relationship(id: M['RelationId'], type: 'deployment'): DeploymentRelationModel<M>
+  public relationship(
+    id: M['RelationId'],
+    type?: 'model' | 'deployment'
+  ): RelationshipModel<M> | DeploymentRelationModel<M>
+  public relationship(
+    id: M['RelationId'],
+    type: 'model' | 'deployment' | undefined
+  ): RelationshipModel<M> | DeploymentRelationModel<M> {
+    if (type === 'deployment') {
+      return this.deployment.relationship(id)
+    }
+    let model = this.#relations.get(id) ?? null
+    if (model || type === 'model') {
+      return nonNullable(model, `Model relation ${id} not found`)
+    }
+    // We did not find the relation in the model, let's search in the deployment
+    return nonNullable(this.deployment.findRelationship(id), `No model/deployment relation ${id} not found`)
   }
-  public findRelationship(id: LiteralUnion<M['RelationId'], string>): RelationshipModel<M> | null {
-    return this.#relations.get(id as M['RelationId']) ?? null
+
+  public findRelationship(id: LiteralUnion<M['RelationId'], string>, type: 'model'): RelationshipModel<M> | null
+  public findRelationship(
+    id: LiteralUnion<M['RelationId'], string>,
+    type: 'deployment'
+  ): DeploymentRelationModel<M> | null
+  public findRelationship(
+    id: LiteralUnion<M['RelationId'], string>,
+    type?: 'model' | 'deployment'
+  ): RelationshipModel<M> | DeploymentRelationModel<M> | null
+  public findRelationship(
+    id: LiteralUnion<M['RelationId'], string>,
+    type: 'model' | 'deployment' | undefined
+  ): RelationshipModel<M> | DeploymentRelationModel<M> | null {
+    if (type === 'deployment') {
+      return this.deployment.findRelationship(id)
+    }
+    let model = this.#relations.get(id as M['RelationId']) ?? null
+    if (model || type === 'model') {
+      return model
+    }
+    return this.deployment.findRelationship(id)
   }
 
   /**
@@ -330,7 +374,11 @@ export namespace LikeC4Model {
 
   export type Element<M extends AnyAux = Any> = ElementModel<M>
 
+  // Relationship in logical model
   export type Relation<M extends AnyAux = Any> = RelationshipModel<M>
+
+  // Relationship in logical or deployment model
+  export type AnyRelation<M extends AnyAux = Any> = RelationshipModel<M> | DeploymentRelationModel<M>
 
   export type View<
     M extends AnyAux = Any,

@@ -44,6 +44,13 @@ export class RelationshipModel<M extends AnyAux> {
     return this.$relationship.title
   }
 
+  get technology(): string | null {
+    if (isEmpty(this.$relationship.technology)) {
+      return null
+    }
+    return this.$relationship.technology
+  }
+
   get description(): string | null {
     if (isEmpty(this.$relationship.description)) {
       return null

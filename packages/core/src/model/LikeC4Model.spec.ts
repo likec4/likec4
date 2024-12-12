@@ -1,13 +1,9 @@
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import { Builder } from '../builder/Builder'
-import { computeViews } from '../compute-view/compute-view'
-import { computedModel, type TestFqn } from './__test__/fixture'
-import { LikeC4Model } from './index'
+import { computed, model, type TestFqn } from './__test__/fixture'
 
 describe('LikeC4Model', () => {
-  const els = computedModel.elements
-  const model = LikeC4Model.create(computedModel)
+  const els = computed.elements
 
   it('roots', () => {
     expect([...model.roots()].map(prop('id'))).toEqual([

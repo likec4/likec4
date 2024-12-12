@@ -37,7 +37,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   static Edge = EdgeModel
 
   constructor(
-    public readonly model: LikeC4Model<M>,
+    public readonly $model: LikeC4Model<M>,
     public readonly $view: V
   ) {
     for (const node of sort($view.nodes, compareByFqnHierarchically)) {
@@ -92,7 +92,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   get viewOf(): ElementModel<M> | null {
     const v = this.$view as LikeC4View
     if (isScopedElementView(v)) {
-      return this.model.element(v.viewOf)
+      return this.$model.element(v.viewOf)
     }
     return null
   }

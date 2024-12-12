@@ -1,5 +1,6 @@
 import DefaultMap from 'mnemonist/default-map'
 import { values } from 'remeda'
+import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
 import {
   type AnyLikeC4Model,
@@ -70,7 +71,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
         this.#allTags.get(tag).add(el)
       }
       if (el.isInstance()) {
-        this.#instancesOf.get(el.element.id).add(el)
+        this.#instancesOf.get(el.$element.id).add(el)
       }
     }
     for (const relation of values($deployments.relations)) {
@@ -188,10 +189,10 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    * Returns a specific relationship by its ID.
    */
   public relationship(id: M['RelationId']): DeploymentRelationModel<M> {
-    return nonNullable(this.#relations.get(id), `Relation ${id} not found`)
+    return nonNullable(this.#relations.get(id), `DeploymentRelationModel ${id} not found`)
   }
-  public findRelationship(id: M['RelationId']): DeploymentRelationModel<M> | null {
-    return this.#relations.get(id) ?? null
+  public findRelationship(id: LiteralUnion<M['RelationId'], string>): DeploymentRelationModel<M> | null {
+    return this.#relations.get(id as M['RelationId']) ?? null
   }
 
   /**

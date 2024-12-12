@@ -10,7 +10,7 @@ import {
   type ThemeColor
 } from '../types'
 import { commonAncestor } from '../utils'
-import { type DeployedInstancesIterator, RelationshipsAccum } from './DeploymentElementModel'
+import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'

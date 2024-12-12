@@ -29,7 +29,7 @@ export type DeployedInstancesIterator<M extends AnyAux> = IteratorLike<DeployedI
 export type DeploymentNodesIterator<M extends AnyAux> = IteratorLike<DeploymentNodeModel<M>>
 
 export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
-  abstract readonly model: LikeC4DeploymentModel<M>
+  abstract readonly $model: LikeC4DeploymentModel<M>
   abstract readonly $node: DeploymentNode | DeployedInstance
 
   get id(): M['DeploymentFqn'] {
@@ -69,7 +69,7 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
   }
 
   get parent(): DeploymentNodeModel<M> | null {
-    return this.model.parent(this)
+    return this.$model.parent(this)
   }
 
   get links(): ReadonlyArray<Link> {
@@ -81,7 +81,7 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
    * (from closest to root)
    */
   public ancestors(): DeploymentNodesIterator<M> {
-    return this.model.ancestors(this)
+    return this.$model.ancestors(this)
   }
 
   /**
@@ -89,14 +89,14 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
    */
   public commonAncestor(another: DeploymentElementModel<M>): DeploymentNodeModel<M> | null {
     const common = commonAncestor(this.id, another.id)
-    return common ? this.model.node(common) : null
+    return common ? this.$model.node(common) : null
   }
 
   /**
    * Get all sibling (i.e. same parent)
    */
   public siblings(): DeploymentElementsIterator<M> {
-    return this.model.siblings(this)
+    return this.$model.siblings(this)
   }
 
   /**
@@ -119,10 +119,10 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
   }
 
   public incoming(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationModel<M>> {
-    return this.model.incoming(this, filter)
+    return this.$model.incoming(this, filter)
   }
   public outgoing(filter: OutgoingFilter = 'all'): IteratorLike<DeploymentRelationModel<M>> {
-    return this.model.outgoing(this, filter)
+    return this.$model.outgoing(this, filter)
   }
 
   public *incomers(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationEndpoint<M>> {
@@ -152,7 +152,7 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
    * Iterate over all views that include this deployment element.
    */
   public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {
-    for (const view of this.model.views()) {
+    for (const view of this.$model.views()) {
       if (view.includesDeployment(this.id)) {
         yield view
       }
@@ -193,7 +193,7 @@ export abstract class DeploymentElementModel<M extends AnyAux = AnyAux> {
 
 export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentElementModel<M> {
   constructor(
-    public readonly model: LikeC4DeploymentModel<M>,
+    public readonly $model: LikeC4DeploymentModel<M>,
     public readonly $node: DeploymentNode
   ) {
     super()
@@ -204,11 +204,11 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
   }
 
   public children(): ReadonlySet<DeploymentElementModel<M>> {
-    return this.model.children(this)
+    return this.$model.children(this)
   }
 
   public descendants(): DeploymentElementsIterator<M> {
-    return this.model.descendants(this)
+    return this.$model.descendants(this)
   }
 
   public override isDeploymentNode(): this is DeploymentNodeModel<M> {
@@ -256,10 +256,10 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
     const outgoing = new Set<RelationshipModel<M>>()
     const incoming = new Set<RelationshipModel<M>>()
     for (const instance of this.instances()) {
-      for (const r of instance.element.outgoing()) {
+      for (const r of instance.$element.outgoing()) {
         outgoing.add(r)
       }
-      for (const r of instance.element.incoming()) {
+      for (const r of instance.$element.incoming()) {
         incoming.add(r)
       }
     }
@@ -291,26 +291,26 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends DeploymentEl
 
 export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends DeploymentElementModel<M> {
   constructor(
-    public readonly model: LikeC4DeploymentModel<M>,
-    public readonly $node: DeployedInstance,
-    public readonly element: ElementModel<M>
+    public readonly $model: LikeC4DeploymentModel<M>,
+    public readonly $instance: DeployedInstance,
+    public readonly $element: ElementModel<M>
   ) {
     super()
   }
 
   override get parent(): DeploymentNodeModel<M> {
-    return nonNullable(this.model.parent(this), `Parent of ${this.id} not found`)
+    return nonNullable(this.$model.parent(this), `Parent of ${this.id} not found`)
   }
 
-  get $instance(): DeployedInstance {
-    return this.$node
+  get $node(): DeployedInstance {
+    return this.$instance
   }
 
   override get style(): SetRequired<PhysicalElementStyle, 'shape' | 'color'> {
-    const { icon, style } = this.element.$element
+    const { icon, style } = this.$element.$element
     return {
-      shape: this.element.shape,
-      color: this.element.color,
+      shape: this.$element.shape,
+      color: this.$element.color,
       ...icon && { icon },
       ...style,
       ...this.$instance.style
@@ -318,11 +318,11 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends Deployment
   }
 
   override get shape(): C4ElementShape {
-    return this.$instance.style?.shape ?? this.element.shape
+    return this.$instance.style?.shape ?? this.$element.shape
   }
 
   override get color(): ThemeColor {
-    return this.$instance.style?.color as ThemeColor ?? this.element.color
+    return this.$instance.style?.color as ThemeColor ?? this.$element.color
   }
 
   override get tags(): ReadonlyArray<C4Tag> {
@@ -330,19 +330,19 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends Deployment
   }
 
   override get title(): string {
-    return this.$instance.title ?? this.element.title
+    return this.$instance.title ?? this.$element.title
   }
 
   override get description(): string | null {
-    return this.$instance.description ?? this.element.description
+    return this.$instance.description ?? this.$element.description
   }
 
   override get technology(): string | null {
-    return this.$instance.technology ?? this.element.technology
+    return this.$instance.technology ?? this.$element.technology
   }
 
   override get links(): ReadonlyArray<Link> {
-    return this.$instance.links ?? this.element.links
+    return this.$instance.links ?? this.$element.links
   }
 
   public override isInstance(): this is DeployedInstanceModel<M> {
@@ -350,10 +350,10 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends Deployment
   }
 
   public override outgoingFromModel(): RelationshipsIterator<M> {
-    return this.element.outgoing()
+    return this.$element.outgoing()
   }
   public override incomingFromModel(): RelationshipsIterator<M> {
-    return this.element.incoming()
+    return this.$element.incoming()
   }
 }
 
@@ -416,16 +416,16 @@ export class DeploymentRelationModel<M extends AnyAux> {
   public target: DeploymentRelationEndpoint<M>
 
   constructor(
-    public readonly model: LikeC4DeploymentModel<M>,
-    public readonly $relation: DeploymentRelation
+    public readonly $model: LikeC4DeploymentModel<M>,
+    public readonly $relationship: DeploymentRelation
   ) {
-    this.source = model.deploymentRef($relation.source)
-    this.target = model.deploymentRef($relation.target)
+    this.source = $model.deploymentRef($relationship.source)
+    this.target = $model.deploymentRef($relationship.target)
     const parent = commonAncestor(this.source.id, this.target.id)
-    this.boundary = parent ? this.model.node(parent) : null
+    this.boundary = parent ? this.$model.node(parent) : null
   }
   get id(): M['RelationId'] {
-    return this.$relation.id
+    return this.$relationship.id
   }
 
   get expression(): string {
@@ -433,18 +433,40 @@ export class DeploymentRelationModel<M extends AnyAux> {
   }
 
   get title(): string | null {
-    if (isEmpty(this.$relation.title)) {
+    if (isEmpty(this.$relationship.title)) {
       return null
     }
-    return this.$relation.title
+    return this.$relationship.title
+  }
+
+  get technology(): string | null {
+    if (isEmpty(this.$relationship.technology)) {
+      return null
+    }
+    return this.$relationship.technology
+  }
+
+  get description(): string | null {
+    if (isEmpty(this.$relationship.description)) {
+      return null
+    }
+    return this.$relationship.description
   }
 
   get tags(): ReadonlyArray<Tag> {
-    return this.$relation.tags ?? []
+    return this.$relationship.tags ?? []
+  }
+
+  get navigateTo(): LikeC4ViewModel<M> | null {
+    return this.$relationship.navigateTo ? this.$model.$model.view(this.$relationship.navigateTo) : null
+  }
+
+  get links(): ReadonlyArray<Link> {
+    return this.$relationship.links ?? []
   }
 
   public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {
-    for (const view of this.model.views()) {
+    for (const view of this.$model.views()) {
       if (view.includesRelation(this.id)) {
         yield view
       }

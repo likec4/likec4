@@ -49,7 +49,7 @@ export namespace NodeModel {
 
 export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
   constructor(
-    public readonly view: LikeC4ViewModel<M, V>,
+    public readonly $view: LikeC4ViewModel<M, V>,
     public readonly $node: V['nodes'][number]
   ) {
   }
@@ -75,17 +75,17 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
   }
 
   get parent(): NodeModel<M, V> | null {
-    return this.$node.parent ? this.view.node(this.$node.parent) : null
+    return this.$node.parent ? this.$view.node(this.$node.parent) : null
   }
 
   get element(): ElementModel<M> | null {
     const modelRef = ComputedNode.modelRef(this.$node)
-    return modelRef ? this.view.model.element(modelRef) : null
+    return modelRef ? this.$view.$model.element(modelRef) : null
   }
 
   get deployment(): DeploymentElementModel<M> | null {
     const modelRef = ComputedNode.deploymentRef(this.$node)
-    return modelRef ? this.view.model.deployment.element(modelRef) : null
+    return modelRef ? this.$view.$model.deployment.element(modelRef) : null
   }
 
   get shape(): C4ElementShape {
@@ -105,7 +105,7 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
   }
 
   get navigateTo(): LikeC4ViewModel<M> | null {
-    return this.$node.navigateTo ? this.view.model.view(this.$node.navigateTo) : null
+    return this.$node.navigateTo ? this.$view.$model.view(this.$node.navigateTo) : null
   }
 
   /**
@@ -123,13 +123,13 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
 
   public *children(): NodesIterator<M, V> {
     for (const child of this.$node.children) {
-      yield this.view.node(child)
+      yield this.$view.node(child)
     }
     return
   }
 
   public *sublings(): NodesIterator<M, V> {
-    const sublings = this.parent?.children() ?? this.view.roots()
+    const sublings = this.parent?.children() ?? this.$view.roots()
     for (const subling of sublings) {
       if (subling.id !== this.id) {
         yield subling
@@ -140,7 +140,7 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
 
   public *incoming(filter: IncomingFilter = 'all'): EdgesIterator<M, V> {
     for (const edgeId of this.$node.inEdges) {
-      const edge = this.view.edge(edgeId)
+      const edge = this.$view.edge(edgeId)
       switch (true) {
         case filter === 'direct' && edge.target.id === this.id:
           yield edge
@@ -170,7 +170,7 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
 
   public *outgoing(filter: OutgoingFilter = 'all'): EdgesIterator<M, V> {
     for (const edgeId of this.$node.outEdges) {
-      const edge = this.view.edge(edgeId)
+      const edge = this.$view.edge(edgeId)
       switch (true) {
         case filter === 'all':
           yield edge
