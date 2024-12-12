@@ -39,7 +39,6 @@ import {
 } from 'remeda'
 import { useLikeC4Model } from '../../likec4model'
 import type { XYFlowTypes } from './_types'
-import type { SharedTypes } from '../shared/xyflow/_types'
 
 const columns = ['incomers', 'subjects', 'outgoers'] as const
 type ColumnKey = typeof columns[number]
@@ -513,14 +512,8 @@ function layout(
       const { source, target } = grouped[0]
       const relations = map(grouped, g => g.relation)
 
-      source.data.ports.out.push({
-        id: target.id,
-        type: 'out'
-      })
-      target.data.ports.in.push({
-        id: source.id,
-        type: 'in'
-      })
+      source.data.ports.out.push(target.id)
+      target.data.ports.in.push(source.id)
 
       const isAnyCompound = source.type === 'compound' || target.type === 'compound'
 
@@ -629,13 +622,13 @@ function layout(
   }
 
   // Sort ports in subject vertically
-  const sortedPorts = (ports: SharedTypes.Port[]) => {
+  const sortedPorts = (ports: string[]) => {
     return pipe(
       ports,
       map(port => {
         return {
           port,
-          topY: nodeBounds(port.id).position.y
+          topY: nodeBounds(port).position.y
         }
       }),
       sortBy(prop('topY')),

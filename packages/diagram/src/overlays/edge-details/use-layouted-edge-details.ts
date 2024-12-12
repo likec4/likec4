@@ -269,14 +269,8 @@ function layout(
     const target = ctx.xynodes.get(points.target)
     invariant(target, 'target node not found')
 
-    source.data.ports.out.push({
-      id: target.id,
-      type: 'out'
-    })
-    target.data.ports.in.push({
-      id: source.id,
-      type: 'in'
-    })
+    source.data.ports.out.push(target.id)
+    target.data.ports.in.push(source.id)
 
     g.setEdge(graphId(source).port, graphId(target).port)
     const edge: XYFlowTypes.Edge = {
@@ -309,7 +303,7 @@ function layout(
   const nodebounds = applyDagreLayout(ctx.g)
 
   // Sort ports
-  const sortedPorts = (ports: SharedTypes.Port[]) => {
+  const sortedPorts = (ports: string[]) => {
     if (ports.length < 2) {
       return ports
     }
@@ -318,7 +312,7 @@ function layout(
       map(port => {
         return {
           port,
-          topY: nodebounds(port.id).position.y
+          topY: nodebounds(port).position.y
         }
       }),
       sortBy(prop('topY')),

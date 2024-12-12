@@ -128,10 +128,10 @@ export function ElementNode({
           )}
         </Group>
       </m.div>
-      {ports.out.map((p, i) => (
+      {ports.out.map((id, i) => (
         <Handle
-          key={p.id}
-          id={p.id}
+          key={id}
+          id={id}
           type="source"
           position={Position.Right}
           style={{
@@ -139,10 +139,10 @@ export function ElementNode({
             top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
-      {ports.in.map((p, i) => (
+      {ports.in.map((id, i) => (
         <Handle
-          key={p.id}
-          id={p.id}
+          key={id}
+          id={id}
           type="target"
           position={Position.Left}
           style={{

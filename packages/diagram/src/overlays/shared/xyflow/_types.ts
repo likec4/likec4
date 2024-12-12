@@ -4,14 +4,6 @@ import type { Node as ReactFlowNode } from '@xyflow/react'
 
 export namespace SharedTypes {
 
-  /**
-   * Handle in ReactFlow terms
-   */
-  export type Port = {
-    id: string
-    type: 'in' | 'out'
-  }
-
   export type EmptyNodeData = {
     /**
      * Whether the cursor is hovering over the node
@@ -46,8 +38,8 @@ export namespace SharedTypes {
      * The node's incoming and outgoing ports
      */
     ports: {
-      in: Port[]
-      out: Port[]
+      in: string[]
+      out: string[]
     }
     /**
      * The id of the view that should be navigated to when clicking the navigate button

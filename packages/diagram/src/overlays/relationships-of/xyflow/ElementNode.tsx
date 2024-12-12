@@ -168,22 +168,22 @@ export const ElementNode = memo<ElementNodeProps>(({
           )}
         </Group>
       </m.div>
-      {ports.in.map(({ id, type }, i) => (
+      {ports.in.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type='target'
           position={Position.Left}
           style={{
             visibility: 'hidden',
             top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
-      {ports.out.map(({ id, type }, i) => (
+      {ports.out.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type='source'
           position={Position.Right}
           style={{
             visibility: 'hidden',

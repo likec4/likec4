@@ -49,10 +49,10 @@ export function CompoundNode({
       >
         <Text className={css.compoundNodeTitle} maw={width - 20}>{element.title}</Text>
       </m.div>
-      {ports.out.map((p, i) => (
+      {ports.out.map((id, i) => (
         <Handle
-          key={p.id}
-          id={p.id}
+          key={id}
+          id={id}
           type={'source'}
           position={Position.Right}
           style={{
@@ -60,10 +60,10 @@ export function CompoundNode({
             top: `${16 + 20 * i}px`
           }} />
       ))}
-      {ports.in.map((p, i) => (
+      {ports.in.map((id, i) => (
         <Handle
-          key={p.id}
-          id={p.id}
+          key={id}
+          id={id}
           type={'target'}
           position={Position.Left}
           style={{

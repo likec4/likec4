@@ -99,22 +99,22 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           {element.title}
         </Text>
       </m.div>
-      {ports.in.map(({ id, type }, i) => (
+      {ports.in.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type='target'
           position={Position.Left}
           style={{
             visibility: 'hidden',
             top: `${20 * (i + 1)}px`
           }} />
       ))}
-      {ports.out.map(({ id, type }, i) => (
+      {ports.out.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type='source'
           position={Position.Right}
           style={{
             visibility: 'hidden',
