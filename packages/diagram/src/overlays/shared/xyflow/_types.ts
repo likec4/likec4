@@ -1,0 +1,71 @@
+import type { ComputedNode, Fqn, ViewId } from "@likec4/core"
+import type { SetRequired } from "type-fest"
+import type { Node as ReactFlowNode } from '@xyflow/react'
+
+export namespace SharedTypes {
+
+  /**
+   * Handle in ReactFlow terms
+   */
+  export type Port = {
+    id: string
+    type: 'in' | 'out'
+  }
+
+  export type EmptyNodeData = {
+    /**
+     * Whether the cursor is hovering over the node
+     */
+    hovered?: boolean
+    /**
+     * Whether the node is currently leaving the overlay
+     */
+    leaving?: boolean
+    /**
+     * Whether the node is currently entering the overlay
+     * @default true
+     */
+    entering?: boolean
+    /**
+     * Whether the node is dimmed
+     * 'immediate' means that the node is dimmed without delay
+     */
+    dimmed?: 'immediate' | boolean
+  }
+
+  export type NodeData = EmptyNodeData & {
+    /**
+     * The node's fully qualified name
+     */
+    fqn: Fqn
+    /**
+     * The ComputedNode backing this node
+     */
+    element: Pick<ComputedNode, 'color' | 'title' | 'description' | 'shape' | 'kind'>
+    /**
+     * The node's incoming and outgoing ports
+     */
+    ports: {
+      in: Port[]
+      out: Port[]
+    }
+    /**
+     * The id of the view that should be navigated to when clicking the navigate button
+     */
+    navigateTo: ViewId | null
+    /**
+     * The node's visual depth on the screen, 1 being the highest
+     */
+    depth?: Number
+  }
+
+  export type ElementNode = SetRequired<ReactFlowNode<NodeData, 'element'>, 'type'>
+
+  export type CompoundNode = SetRequired<ReactFlowNode<NodeData, 'compound'>, 'type'>
+
+  export type NonEmptyNode = ElementNode | CompoundNode
+
+  export type EmptyNode = SetRequired<ReactFlowNode<EmptyNodeData, 'empty'>, 'type'>
+
+  export type Node = NonEmptyNode | EmptyNode
+}
