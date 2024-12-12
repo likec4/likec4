@@ -2,7 +2,6 @@ import { ActionIcon, Box, Group, Stack, Text, ThemeIcon, Tooltip as MantineToolt
 import { IconBoxMultipleFilled, IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
-import { useEffect, useRef } from 'react'
 import { only } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'

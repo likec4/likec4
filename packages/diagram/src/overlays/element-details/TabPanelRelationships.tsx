@@ -1,11 +1,4 @@
-import {
-  type DiagramNode,
-  type DiagramView,
-  type EdgeId,
-  type LikeC4Model,
-  nameFromFqn,
-  nonNullable
-} from '@likec4/core'
+import { type DiagramView, type LikeC4Model, nameFromFqn } from '@likec4/core'
 import { Box, Button, Group, Paper, SegmentedControl, Stack, Text, ThemeIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'

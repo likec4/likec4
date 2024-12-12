@@ -1,13 +1,8 @@
 import { delay, type DiagramView, type Fqn, isAncestor, type Relation } from '@likec4/core'
-import { Box, Button, Group, SegmentedControl, Space, Text } from '@mantine/core'
-import { useId, useLocalStorage, useStateHistory } from '@mantine/hooks'
+import { useId } from '@mantine/hooks'
 import { useDebouncedCallback, useDeepCompareEffect, useSyncedRef } from '@react-hookz/web'
-import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
 import {
-  Background,
-  BackgroundVariant,
   getViewportForBounds,
-  Panel,
   ReactFlow,
   type ReactFlowInstance,
   type ReactFlowProps,
@@ -19,16 +14,13 @@ import {
   useStoreApi
 } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
-import { memo, type PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { type PropsWithChildren, useRef, useState } from 'react'
 import { isNullish, map, omit, only, prop, setPath, unique } from 'remeda'
 import { useUpdateEffect } from '../../hooks'
-import { useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { centerXYInternalNode } from '../../xyflow/utils'
-import { useOverlayDialog } from '../OverlayContext'
 import { cssReactflowMarker } from '../Overlays.css'
 import type { XYFlowTypes } from './_types'
-import { SelectElement } from './SelectElement'
-import { useLayoutedRelationships, ZIndexes } from './use-layouted-relationships'
+import { ZIndexes } from './use-layouted-relationships'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
 import { EmptyNode } from './xyflow/EmptyNode'
