@@ -59,3 +59,19 @@ export function equals<T>(a: ReadonlySet<T>, b: ReadonlySet<T>): boolean {
 export function symmetricDifference<T>(a: ReadonlySet<T>, b: ReadonlySet<T>): Set<T> {
   return _symmetricDifference(a as Set<T>, b as Set<T>)
 }
+
+export function hasIntersection<T>(a: ReadonlySet<T>, b: ReadonlySet<T>): boolean {
+  if (a.size === 0 || b.size === 0) {
+    return false
+  }
+  // Swap sets to iterate over smaller set
+  if (b.size < a.size) {
+    ;[a, b] = [b, a]
+  }
+  for (const value of a) {
+    if (b.has(value)) {
+      return true
+    }
+  }
+  return false
+}

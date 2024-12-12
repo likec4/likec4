@@ -53,7 +53,7 @@ import { applyCustomRelationProperties } from '../utils/applyCustomRelationPrope
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodesFromElements } from '../utils/buildComputedNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
-import { linkNodeEdges } from '../utils/linkNodeEdges'
+import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { sortNodes } from '../utils/sortNodes'
 import { uniqueTags } from '../utils/uniqueTags'
@@ -236,7 +236,7 @@ export class ComputeCtx {
     const edges = this.computeEdges()
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(edge => [edge.id, edge]))
 
-    linkNodeEdges(nodesMap, edges)
+    linkNodesWithEdges(nodesMap, edges)
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort

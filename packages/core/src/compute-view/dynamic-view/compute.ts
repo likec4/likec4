@@ -17,7 +17,8 @@ import {
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
-  StepEdgeId,
+  type StepEdgeId,
+  stepEdgeId,
   type Tag,
   type ViewId
 } from '../../types'
@@ -76,7 +77,7 @@ export class DynamicViewComputeCtx {
     index: number,
     parent?: number
   ) {
-    const id = parent ? StepEdgeId(parent, index) : StepEdgeId(index)
+    const id = parent ? stepEdgeId(parent, index) : stepEdgeId(index)
     const source = this.graph.element(stepSource)
     const target = this.graph.element(stepTarget)
 

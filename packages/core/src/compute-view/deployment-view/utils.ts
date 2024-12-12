@@ -1,4 +1,4 @@
-import { filter, hasAtLeast, isEmpty, isTruthy, map, only, pipe, unique } from 'remeda'
+import { hasAtLeast, isEmpty } from 'remeda'
 import { invariant, nonexhaustive } from '../../errors'
 import type { LikeC4DeploymentModel } from '../../model'
 import type { DeploymentConnectionModel } from '../../model/connection/deployment'
@@ -15,26 +15,27 @@ import {
   type NonEmptyArray,
   type Tag
 } from '../../types'
-import { parentFqn } from '../../utils'
+import { nameFromFqn, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
+import { deriveEdgePropsFromRelationships } from '../utils/derive-edge-props-from-relationships'
 import { uniqueTags } from '../utils/uniqueTags'
 import type { Elem } from './_types'
 import { type Memory, MutableMemory } from './Memory'
 
 type Predicate<T> = (x: T) => boolean
 
-export function resolveElements(model: LikeC4DeploymentModel, expr: DeploymentElementExpression.Ref) {
+export function resolveElements(
+  model: LikeC4DeploymentModel,
+  expr: DeploymentElementExpression.Ref
+) {
   const ref = model.element(expr.ref)
   if (ref.isDeploymentNode()) {
     if (expr.selector === 'children') {
       return [...ref.children()]
     }
     if (expr.selector === 'expanded') {
-      return [
-        ref,
-        ...ref.children()
-      ]
+      return [ref, ...ref.children()]
     }
     if (expr.selector === 'descendants') {
       return [...ref.descendants()]
@@ -70,27 +71,31 @@ export function deploymentExpressionToPredicate<T extends { id: string }>(
 export function toNodeSource(el: Elem): ComputedNodeSource {
   if (el.isDeploymentNode()) {
     const onlyOneInstance = el.onlyOneInstance()
-    const {
-      icon,
-      color,
-      shape,
-      ...style
-    } = el.$node.style ?? {}
+    let { title, ...$node } = el.$node
+    const { icon, color, shape, ...style } = el.$node.style ?? {}
+
+    // If there is only one instance and title was not overriden
+    if (onlyOneInstance && title === nameFromFqn(el.id)) {
+      title = onlyOneInstance.title
+    }
+
     return {
-      ...onlyOneInstance && toNodeSource(onlyOneInstance),
-      ...el.$node,
-      ...icon && { icon },
-      ...color && { color },
-      ...shape && { shape },
+      ...(onlyOneInstance && toNodeSource(onlyOneInstance)),
+      title,
+      ...$node,
+      ...(icon && { icon }),
+      ...(color && { color }),
+      ...(shape && { shape }),
       style: {
         ...style
       },
+      ...(onlyOneInstance && { modelRef: onlyOneInstance.$element.id }),
       deploymentRef: 1
     }
   }
   invariant(el.isInstance(), 'Expected Instance')
   const instance = el.$instance
-  const element = el.element.$element
+  const element = el.$element.$element
 
   const icon = instance.style?.icon ?? element.icon
   const color = instance.style?.color ?? element.color
@@ -134,33 +139,21 @@ export function toComputedEdges<M extends AnyAux>(
   connections: ReadonlyArray<DeploymentConnectionModel<M>>
 ): ComputedEdge[] {
   return connections.reduce((acc, e) => {
-    // invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
-    // const relations = sort([...e.relations], compareRelations)
-    const relations = [...e.relations.model].map(r => r.$relationship)
+    // const modelRelations = []
+    // const deploymentRelations = []
+    const relations = [
+      ...e.relations.model,
+      ...e.relations.deployment
+    ]
+    invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
+
     const source = e.source.id
     const target = e.target.id
 
-    const tags = uniqueTags(relations)
-    // Most closest relation
-    const relation = only(relations) // || relations.find(r => r.source === source && r.target === target)
-
-    // This edge represents mutliple relations
-    // We use label if only it is the same for all relations
-    const title = isTruthy(relation?.title) ? relation.title : pipe(
-      relations,
-      map(r => r.title),
-      filter(isTruthy),
-      unique(),
-      only()
-    )
-
-    const navigateTo = relation && 'navigateTo' in relation ? relation.navigateTo : pipe(
-      relations,
-      map(r => 'navigateTo' in r ? r.navigateTo : null),
-      filter(isTruthy),
-      unique(),
-      only()
-    )
+    const {
+      title,
+      ...props
+    } = deriveEdgePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
 
     const edge: ComputedEdge = {
       id: e.id,
@@ -168,16 +161,17 @@ export function toComputedEdges<M extends AnyAux>(
       source,
       target,
       label: title ?? null,
-      relations: relations.map(r => r.id as M['RelationId']),
-      ...tags && { tags: tags as NonEmptyArray<Tag> },
-      ...navigateTo && { navigateTo }
+      relations: relations.map((r) => r.id as M['RelationId']),
+      ...props
     }
 
     // If exists same edge but in opposite direction
     const existing = acc.find(e => e.source === target && e.target === source)
-    if (existing && edge.label === existing.label && edge.relations.length === existing.relations.length) {
-      existing.head = DefaultArrowType
-      existing.tail = DefaultArrowType
+    if (existing && edge.label === existing.label) {
+      existing.dir = 'both'
+      const head = existing.head ?? edge.head ?? DefaultArrowType
+      existing.head ??= head
+      existing.tail ??= head
       return acc
     }
 
@@ -192,7 +186,10 @@ export function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
   return buildComputedNodes([...memory.finalElements].map(toNodeSource))
 }
 
-export function applyDeploymentViewRuleStyles(rules: DeploymentViewRule[], nodes: ComputedNode[]) {
+export function applyDeploymentViewRuleStyles(
+  rules: DeploymentViewRule[],
+  nodes: ComputedNode[]
+) {
   for (const rule of rules) {
     if (!isViewRuleStyle(rule) || rule.targets.length === 0) {
       continue

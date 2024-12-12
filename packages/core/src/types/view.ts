@@ -276,7 +276,7 @@ export type NodeId<IDs extends string = string> = Tagged<IDs, 'Fqn'>
 export type EdgeId = Tagged<string, 'EdgeId'>
 export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
 export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
-export function StepEdgeId(step: number, parallelStep?: number): StepEdgeId {
+export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
   const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
   return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
 }
@@ -383,7 +383,7 @@ export interface ComputedEdge {
    * For layouting purposes
    * @default 'forward'
    */
-  dir?: 'forward' | 'back'
+  dir?: 'forward' | 'back' | 'both'
 }
 
 export interface ViewWithHash {

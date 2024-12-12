@@ -2,7 +2,7 @@ import { nonNullable } from '../../errors'
 import type { ComputedNode, Fqn } from '../../types'
 
 /**
- * Returns the ancestors of the given node, starting with the direct parent and ending with the root node.
+ * Returns the ancestors of given computed node, starting with the direct parent and ending with the root node.
  */
 export function ancestorsOfNode(
   node: ComputedNode,

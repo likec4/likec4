@@ -6,9 +6,10 @@ import { commonHead } from '../../utils/common-head'
 import { ancestorsOfNode } from './ancestorsOfNode'
 
 /**
+ * Update `inEdges` and `outEdges` props of nodes based on the edges
  * Mutates nodes and updates their in/out edges
  */
-export function linkNodeEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
+export function linkNodesWithEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: ComputedEdge[]) {
   for (const edge of edges) {
     const source = nodesMap.get(edge.source)
     const target = nodesMap.get(edge.target)
@@ -18,17 +19,26 @@ export function linkNodeEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edges: C
     source.outEdges.push(edge.id)
     target.inEdges.push(edge.id)
 
+    if (edge.dir === 'both') {
+      source.inEdges.push(edge.id)
+      target.outEdges.push(edge.id)
+    }
+
     // These ancestors are reversed: from bottom to top
     const sourceAncestors = ancestorsOfNode(source, nodesMap)
     const targetAncestors = ancestorsOfNode(target, nodesMap)
 
-    const edgeParent = last(
-      commonHead(
-        reverse(sourceAncestors),
-        reverse(targetAncestors)
+    const hasAncestors = sourceAncestors.length > 0 && targetAncestors.length > 0
+
+    const edgeParent = hasAncestors
+      ? last(
+        commonHead(
+          reverse(sourceAncestors),
+          reverse(targetAncestors)
+        )
       )
-    )
-    edge.parent = edgeParent?.id ?? null
+      : null
+    edge.parent = edgeParent ? edgeParent.id : null
 
     // Process edge source ancestors
     for (const sourceAncestor of sourceAncestors) {

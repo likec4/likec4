@@ -11,8 +11,8 @@ import {
   isViewRuleAutoLayout,
   isViewRulePredicate
 } from '../../types'
-import { linkNodeEdges } from '../utils/linkNodeEdges'
-import { topologicalSort } from '../utils/topologicalSort'
+import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
+import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { cleanConnections } from './clean-connections'
 import { MutableMemory, type Patch } from './Memory'
@@ -84,7 +84,7 @@ export function computeDeploymentView<M extends AnyAux>(
 
   const computedEdges = toComputedEdges(memory.connections)
 
-  linkNodeEdges(nodesMap, computedEdges)
+  linkNodesWithEdges(nodesMap, computedEdges)
 
   const sorted = topologicalSort({
     nodes: [...nodesMap.values()],

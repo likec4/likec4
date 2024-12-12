@@ -3,10 +3,13 @@ import type { TupleToUnion } from 'type-fest'
 import { describe, expect, it } from 'vitest'
 import type { Fqn } from '../../types/element'
 import type { ComputedEdge, EdgeId } from '../../types/view'
-import { commonAncestor } from '../../utils/fqn'
 import { buildComputedNodes, type ComputedNodeSource } from './buildComputedNodes'
-import { linkNodeEdges } from './linkNodeEdges'
-import { topologicalSort } from './topologicalSort'
+import { linkNodesWithEdges } from './link-nodes-with-edges'
+import { topologicalSort } from './topological-sort'
+
+function ids<T extends { id: string }>(items: T[]) {
+  return map(items, prop('id'))
+}
 
 describe('topologicalSort', () => {
   // #region
@@ -23,12 +26,12 @@ describe('topologicalSort', () => {
         id: `${source} -> ${target}` as EdgeId,
         source,
         target,
-        parent: commonAncestor(source as any as Fqn, target as any as Fqn),
+        parent: null,
         label: null,
         relations: []
       } as ComputedEdge
     })
-    linkNodeEdges(nodesMap, _edges)
+    linkNodesWithEdges(nodesMap, _edges)
     return topologicalSort({
       nodes: [...nodesMap.values()],
       edges: _edges
@@ -42,8 +45,8 @@ describe('topologicalSort', () => {
     const sorted = testmodel(nodes, edges)
 
     return expect({
-      nodes: map(sorted.nodes, prop('id')),
-      edges: map(sorted.edges, prop('id'))
+      nodes: ids(sorted.nodes),
+      edges: ids(sorted.edges)
     })
   }
 
@@ -51,8 +54,8 @@ describe('topologicalSort', () => {
     nodes: NodeIds,
     edges: Array<`${TupleToUnion<NoInfer<NodeIds>>} -> ${TupleToUnion<NoInfer<NodeIds>>}`> = []
   ) {
-    const sorted = testmodel(nodes, edges).nodes
-    return expect(map(sorted, prop('id')))
+    const sorted = testmodel(nodes, edges)
+    return expect(ids(sorted.nodes))
   }
   // #endregion
 
@@ -104,7 +107,7 @@ describe('topologicalSort', () => {
 
     it('should keep sorting, if no edges', () => {
       const sorted = testmodel(nodes).nodes
-      expect(map(sorted, prop('id'))).toEqual([
+      expect(ids(sorted)).toEqual([
         'customer',
         'cloud',
         'cloud.frontend',

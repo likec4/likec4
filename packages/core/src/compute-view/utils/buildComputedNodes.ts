@@ -1,5 +1,4 @@
-import { map } from 'remeda'
-import type { SetRequired, Simplify } from 'type-fest'
+import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
   type ComputedNode,
@@ -10,7 +9,7 @@ import {
   type Fqn,
   type NodeId
 } from '../../types'
-import { compareByFqnHierarchically, parentFqn, sortParentsFirst } from '../../utils/fqn'
+import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/compute'
 
 function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, ComputedNode>) {
