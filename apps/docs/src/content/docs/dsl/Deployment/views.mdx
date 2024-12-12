@@ -38,6 +38,20 @@ views {
   }
 }
 ```
+
+## View predicates
+
+Deployment views are based on same [predicates](/dsl/views/#view-predicates) as model views.  
+But they refer to deployment nodes and instances.
+
+<Aside type='caution' title='In development'>
+  The following features are not supported yet or do not work as expected:
+ 
+  - `with` and `where` expressions
+  - Shared styles and predicates
+  - Relationships browser, Element and Relationship Details popups (work with logical model)
+</Aside>
+
 <br/>
 <br/>
   <LinkCard
@@ -46,11 +60,3 @@ views {
     href="https://playground.likec4.dev/w/deployment/index/"
     target="_blank"
   />
-
-## View predicates
-
-Deployment views use same [predicates](/dsl/views/#view-predicates) as model views, but refer to deployment nodes or instances.
-
-:::caution
-`with` and `where` expressions are not supported yet, in progress
-:::

@@ -6,6 +6,8 @@ sidebar:
   order: 11
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 Deployment Model represents another layer, _physical model_ with its own structure and elements (deployment nodes).   
 It references the [logical model](/dsl/model) and inherits its relationships.
 
@@ -76,6 +78,10 @@ deployment {
 }
 ```
 
+<Aside type='caution' title='Not implemented yet'>
+  [`extend`](/dsl/workspace/#extend-element) for deployment model is in progress...
+</Aside>
+
 ## Deployed instances
 
 Operator `instanceOf` _“deploys”_ elements from the logical model to deployment nodes:
@@ -120,6 +126,9 @@ deployment {
         title 'Primary DB'
         technology 'PostgreSQL with streaming replication'
         icon tech:postgresql
+        style {
+          color red
+        }
       }
     }
   }
@@ -144,8 +153,22 @@ deployment {
   }
 }
 ```
-This relationship is between different instances, but same logical element.  
-We don't need this relationship in the logical model, but it makes sense for deployments.
+As you see, relationship is between same logical element, but different instances.  
+Assume, we don't need this relationship in our logical model, but it makes sense for deployment.
+
+Deployment relationships can be kinded, and have [same properties](/dsl/relationships/#relationship-properties) as logical ones:
+
+```likec4
+deployment {
+  environment prod {
+    vm2.db -[streaming]-> vm1.db {
+      #next, #live
+      title 'replicates'
+      description 'Streaming replication'
+    }
+  }
+}
+```
 
 :::tip
 Relationships can be defined for nested elements of deployed instances:
