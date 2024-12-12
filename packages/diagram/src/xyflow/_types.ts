@@ -56,13 +56,12 @@ export namespace BaseTypes {
 
   export type NonEmptyNode = ElementNode | CompoundNode
 
-  export type Edge = Omit<ReactFlowEdge, 'data' | 'type'> & {
-    data: {
-      relations: [Relation, ...Relation[]]
-      includedInCurrentView: boolean
-      hovered?: boolean
-      dimmed?: 'immediate' | boolean
-    }
-    type: 'relation'
-  }
+  export type EdgeData = {
+    relations: [Relation, ...Relation[]]
+    includedInCurrentView: boolean
+    hovered?: boolean
+    dimmed?: 'immediate' | boolean
+  };
+
+  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>
 }
