@@ -13,8 +13,13 @@ const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
   '@likec4/core/types': resolve('../../packages/core/src/types'),
+  '@likec4/core/compute-view': resolve('../../packages/core/src/compute-view'),
+  '@likec4/core/model': resolve('../../packages/core/src/model'),
   '@likec4/core': resolve('../../packages/core/src'),
-  '@likec4/diagram': resolve('../../packages/diagram/src')
+  '@likec4/diagram': resolve('../../packages/diagram/src'),
+  '@likec4/layouts': resolve('../../packages/layouts/src/index.ts'),
+  '@likec4/language-server/protocol': resolve('../../packages/language-server/src/protocol.ts'),
+  '@likec4/language-server/browser': resolve('../../packages/language-server/src/browser.ts')
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
