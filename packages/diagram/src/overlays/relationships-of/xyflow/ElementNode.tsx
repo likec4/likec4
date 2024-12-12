@@ -42,7 +42,7 @@ export const ElementNode = memo<ElementNodeProps>(({
     navigateTo,
     layoutId = id,
     leaving = false,
-    initialAnimation = true,
+    entering = true,
     ...data
   },
   selectable = true,
@@ -82,7 +82,7 @@ export const ElementNode = memo<ElementNodeProps>(({
         ])}
         layoutId={layoutId}
         data-likec4-color={element.color}
-        initial={(layoutId === id && initialAnimation)
+        initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,

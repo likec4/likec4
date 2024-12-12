@@ -33,7 +33,7 @@ export namespace XYFlowTypes {
     /**
      * @default true
      */
-    initialAnimation?: boolean
+    entering?: boolean
     /**
      * Whether the node is dimmed
      * 'immediate' means that the node is dimmed without delay
@@ -54,7 +54,7 @@ export namespace XYFlowTypes {
     /**
      * @default true
      */
-    initialAnimation?: boolean
+    entering?: boolean
   };
 
   export type EmptyNode = SetRequired<ReactFlowNode<EmptyNodeData, 'empty'>, 'type'>

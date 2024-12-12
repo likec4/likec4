@@ -183,7 +183,7 @@ function RelationshipsXYFlowWrapped({
 
     // If subject node is the same, don't animate
     if (currentSubjectNode && nextSubjectNode?.data.fqn === currentSubjectNode.data.fqn) {
-      setNodes(map(nodes, setPath(['data', 'initialAnimation'], false)))
+      setNodes(map(nodes, setPath(['data', 'entering'], false)))
       setEdges(edges)
       fitview()
       return
@@ -282,7 +282,7 @@ function RelationshipsXYFlowWrapped({
         isCancelled = true
       }
     }
-    setNodes(map(nodes, setPath(['data', 'initialAnimation'], false)))
+    setNodes(map(nodes, setPath(['data', 'entering'], false)))
     setEdges(edges)
     fitview()
     return undefined

@@ -20,7 +20,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
     ports,
     layoutId = id,
     leaving = false,
-    initialAnimation = true,
+    entering = true,
     ...data
   },
   width = 200,
@@ -61,7 +61,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         layoutId={layoutId}
         data-compound-depth={data.depth ?? 1}
         data-likec4-color={element.color}
-        initial={(layoutId === id && initialAnimation)
+        initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,
