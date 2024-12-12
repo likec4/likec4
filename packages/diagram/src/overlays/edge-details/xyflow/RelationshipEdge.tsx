@@ -17,7 +17,7 @@ export function RelationshipEdge({
   const overlay = useOverlayDialog()
   const onNavigateTo = useDiagramState(s => s.onNavigateTo)
   const [edgePath, labelX, labelY] = getBezierPath(props)
-  const navigateTo = data.relation.navigateTo
+  const navigateTo = data.navigateTo
   return (
     <>
       <g
@@ -51,10 +51,10 @@ export function RelationshipEdge({
               {label}
             </Text>
           )}
-          {data.relation.technology && (
+          {data.technology && (
             <Text component={'div'} className={css.edgeLabelTechnology}>
               {'[ '}
-              {data.relation.technology}
+              {data.technology}
               {' ]'}
             </Text>
           )}

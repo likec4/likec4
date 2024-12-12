@@ -281,7 +281,9 @@ function layout(
       targetHandle: source.id,
       data: {
         relationId: relation.id,
-        navigateTo: relation.navigateTo ?? null
+        navigateTo: relation.navigateTo ?? null,
+        technology: relation.technology ?? null,
+        description: relation.description ?? null
       },
       label: relation.title,
       zIndex: ZIndexes.edge,

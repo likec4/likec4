@@ -3,7 +3,6 @@ import type {
   DiagramNode,
   DiagramView,
   EdgeId,
-  ElementKind,
   ElementNotation,
   Fqn,
   NodeId,
@@ -18,18 +17,16 @@ import {
   isStepEdgeId,
   nonexhaustive,
   nonNullable,
-  StepEdgeId
+  type StepEdgeId
 } from '@likec4/core'
-import { IconColumns1 } from '@tabler/icons-react'
 import {
   applyEdgeChanges,
   applyNodeChanges,
   getViewportForBounds,
-  type InternalNode,
   type OnEdgesChange,
   type OnNodesChange
 } from '@xyflow/react'
-import { boxToRect, getBoundsOfRects, getNodeDimensions, type XYPosition } from '@xyflow/system'
+import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
@@ -48,7 +45,6 @@ import type {
 import { type Vector, vector } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
-import { createLayoutConstraints } from '../xyflow/useLayoutConstraints'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 import { align, type AlignmentMode } from './diagramStore.layout'

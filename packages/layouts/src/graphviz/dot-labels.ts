@@ -135,7 +135,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
 
 export const EDGE_LABEL_MAX_CHARS = 40
 
-export function edgelabel({ label, description, technology }: ComputedEdge) {
+export function edgelabel({ label }: ComputedEdge) {
   const lines = [] as string[]
   if (isTruthy(label)) {
     lines.push(

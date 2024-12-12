@@ -192,11 +192,10 @@ export const TabPanelDeployments = memo<TabPanelDeploymentsProps>(({ elementFqn 
       }}
       data={data}
       tree={tree}
-      renderNode={({ node, selected, expanded, elementProps, hasChildren }) => (
+      renderNode={({ node, selected, elementProps, hasChildren }) => (
         <Box
           {...elementProps}
           style={{
-            // paddingInlineStart: 'var(--label-offset)',
             ...(!hasChildren && {
               marginBottom: rem(4)
             })
