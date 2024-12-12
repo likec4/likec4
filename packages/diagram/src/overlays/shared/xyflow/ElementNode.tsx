@@ -7,8 +7,8 @@ import { memo } from 'react'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { useOverlayDialog } from '../../OverlayContext'
-import { type RelationshipsOfTypes } from '../_types'
-import * as css from './styles.css'
+import { type RelationshipsOfTypes } from '../../relationships-of/_types'
+import * as css from './ElementNode.css'
 import { BottomButtons } from '../../../xyflow/nodes/element/BottomButtons'
 
 const Text = MantineText.withProps({
@@ -20,6 +20,7 @@ type ElementNodeProps = NodeProps<RelationshipsOfTypes.ElementNode>
 function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
+    enableRelationshipBrowser: s.enableRelationshipBrowser,
     onNavigateTo: s.onNavigateTo,
     onOpenSource: s.onOpenSource
   }
@@ -33,7 +34,7 @@ export const ElementNode = memo<ElementNodeProps>(({
     navigateTo,
     layoutId = id,
     leaving = false,
-    entering: entering = true,
+    entering = true,
     ...data
   },
   selectable = true,
@@ -44,7 +45,8 @@ export const ElementNode = memo<ElementNodeProps>(({
   const {
     currentViewId,
     onNavigateTo,
-    onOpenSource
+    onOpenSource,
+    enableRelationshipBrowser
   } = useDiagramState(selector)
 
   const maxWH = Math.max(w, h)
@@ -98,9 +100,6 @@ export const ElementNode = memo<ElementNodeProps>(({
         {...(selectable && {
           whileHover: {
             ...scale(16)
-            // transition: {
-            //   delay: 0.1
-            // }
           },
           whileTap: {
             ...scale(-8)
@@ -131,7 +130,7 @@ export const ElementNode = memo<ElementNodeProps>(({
             event.stopPropagation()
             overlay.close(() => onNavigateTo(navigateTo))
           })}
-          onOpenRelationships={data.column !== 'subjects' && ((event) => {
+          onOpenRelationships={enableRelationshipBrowser && ((event) => {
             event.stopPropagation()
             overlay.openOverlay({
               relationshipsOf: data.fqn
@@ -139,7 +138,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           })}
           onOpenSource={onOpenSource && ((event) => {
             event.stopPropagation()
-            onOpenSource?.({
+            onOpenSource({
               element: data.fqn
             })
           })}
