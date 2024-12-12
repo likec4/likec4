@@ -48,7 +48,7 @@
     "clean": "rm -r -f -g 'dist/**'"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "1.6.1",
+    "@hpcc-js/wasm-graphviz": "1.7.0",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "execa": "^9.3.1",
