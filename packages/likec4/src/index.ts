@@ -32,7 +32,7 @@ export type {
   NodeId,
   ParsedLikeC4Model,
   Point,
-  Relation,
+  AbstractRelation,
   RelationExpr,
   RelationId,
   StepEdgeId,
