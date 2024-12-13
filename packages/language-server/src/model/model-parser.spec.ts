@@ -382,5 +382,49 @@ describe.concurrent('LikeC4ModelParser', () => {
         }]
       }])
     })
+
+    it('should parse predicates', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element element
+          deploymentNode node
+        }
+        model {
+          element root {
+            element child1
+            element child2
+          }
+        }
+        deployment {
+          node nd {
+            ins = instanceOf root
+          }
+        }
+        views {
+          deployment view test {
+            include ins.child1 <-> child2
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Views).toHaveLength(1)
+      expect(doc.c4Views[0]!.rules).toEqual([{
+        include: [{
+          isBidirectional: true,
+          source: {
+            ref: {
+              deployment: 'nd.ins',
+              element: 'root.child1'
+            }
+          },
+          target: {
+            ref: {
+              model: 'root.child2'
+            }
+          }
+        }]
+      }])
+    })
   })
 })
