@@ -32,7 +32,7 @@ const DocumentParserFromMixins = GlobalsParser(
   )
 )
 
-class DocumentParser extends DocumentParserFromMixins {
+export class DocumentParser extends DocumentParserFromMixins {
 }
 
 export class LikeC4ModelParser {

@@ -1,4 +1,4 @@
-import { hasAtLeast, isEmpty } from 'remeda'
+import { hasAtLeast, isEmpty, isNumber, isString } from 'remeda'
 import { invariant, nonexhaustive } from '../../errors'
 import type { LikeC4DeploymentModel } from '../../model'
 import type { DeploymentConnectionModel } from '../../model/connection/deployment'
@@ -45,7 +45,24 @@ export function resolveElements(
   return [ref]
 }
 
-export function deploymentExpressionToPredicate<T extends { id: string }>(
+export function resolveModelElements(
+  model: LikeC4DeploymentModel,
+  expr: FqnExpr.ModelRef
+) {
+  const ref = model.$model.element(expr.ref.model)
+  if (expr.selector === 'children') {
+    return [...ref.children()]
+  }
+  if (expr.selector === 'expanded') {
+    return [ref, ...ref.children()]
+  }
+  if (expr.selector === 'descendants') {
+    return [...ref.descendants()]
+  }
+  return [ref]
+}
+
+export function deploymentExpressionToPredicate<T extends { id: string; modelRef?: number | string }>(
   target: FqnExpr
 ): Predicate<T> {
   if (FqnExpr.isWildcard(target)) {
@@ -67,7 +84,53 @@ export function deploymentExpressionToPredicate<T extends { id: string }>(
     return n => n.id === fqn
   }
   if (FqnExpr.isModelRef(target)) {
-    return () => false
+    const modelFqn = (node: T) => {
+      if (isString(node.modelRef)) {
+        return node.modelRef
+      }
+      if (isNumber(node.modelRef)) {
+        return node.id
+      }
+      return null
+    }
+
+    const fqn = target.ref.model
+    if (target.selector === 'expanded') {
+      const fqnWithDot = fqn + '.'
+      return (n) => {
+        const m = modelFqn(n)
+        if (!m) {
+          return true
+        }
+        return m === fqn || m.startsWith(fqnWithDot)
+      }
+    }
+    if (target.selector === 'descendants') {
+      const fqnWithDot = fqn + '.'
+      return (n) => {
+        const m = modelFqn(n)
+        if (!m) {
+          return true
+        }
+        return m.startsWith(fqnWithDot)
+      }
+    }
+    if (target.selector === 'children') {
+      return (n) => {
+        const m = modelFqn(n)
+        if (!m) {
+          return true
+        }
+        return parentFqn(m) === fqn
+      }
+    }
+    return (n) => {
+      const m = modelFqn(n)
+      if (!m) {
+        return true
+      }
+      return m === fqn
+    }
   }
   nonexhaustive(target)
 }

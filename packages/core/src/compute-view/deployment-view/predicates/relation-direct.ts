@@ -66,8 +66,8 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         break
       }
       default: {
-        invariant(FqnExpr.isDeploymentRef(expr.source), 'Type inference failed')
-        invariant(FqnExpr.isDeploymentRef(expr.target), 'Type inference failed')
+        invariant(FqnExpr.isDeploymentRef(expr.source), 'Only deployment refs are supported in include')
+        invariant(FqnExpr.isDeploymentRef(expr.target), 'Only deployment refs are supported in include')
         sources = resolveElements(model, expr.source)
         targets = resolveElements(model, expr.target)
       }
@@ -109,6 +109,10 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     ) {
       stage.excludeConnections(memory.connections)
       return stage.patch()
+    }
+
+    if (FqnExpr.isModelRef(expr.source) || FqnExpr.isModelRef(expr.target)) {
+      return identity()
     }
 
     const isSource = deploymentExpressionToPredicate(expr.source)

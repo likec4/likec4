@@ -5,27 +5,36 @@ import type { Fqn } from './element'
 
 export namespace FqnRef {
   /**
-   * Reference to descendant of deployed instance
+   * Represents a reference to an instance within a deployment.
+   *
+   * @template D - The type representing the deployment fqn. Defaults to `Fqn`.
+   * @template M - The type representing the model fqn. Defaults to `Fqn`.
+   *
+   * @property {D} deployment - TThe fully qualified name (FQN) of the deployed instance.
+   * @property {M} element - The element reference within the deployment.
    */
-  export type InsideInstanceRef = {
-    deployment: Fqn
-    element: Fqn
+  export type InsideInstanceRef<D = Fqn, M = Fqn> = {
+    deployment: D
+    element: M
   }
   export const isInsideInstanceRef = (ref: FqnRef): ref is InsideInstanceRef => {
     return 'deployment' in ref && 'element' in ref
   }
 
   /**
-   * Reference to deployment element
+   * Represents a reference to a deployment element.
+   *
+   * @template F - The type of the fully qualified name (FQN) of the deployment element. Defaults to `Fqn`.
+   * @property {F} deployment - The fully qualified name (FQN) of the deployment element.
    */
-  export type DeploymentElementRef = {
-    deployment: Fqn
+  export type DeploymentElementRef<F = Fqn> = {
+    deployment: F
   }
   export const isDeploymentElementRef = (ref: FqnRef): ref is DeploymentElementRef => {
     return 'deployment' in ref && !('element' in ref)
   }
 
-  export type DeploymentRef = DeploymentElementRef | InsideInstanceRef
+  export type DeploymentRef<D = Fqn, M = Fqn> = DeploymentElementRef<D> | InsideInstanceRef<D, M>
   export const isDeploymentRef = (ref: FqnRef): ref is DeploymentRef => {
     return !isModelRef(ref)
   }
@@ -33,8 +42,8 @@ export namespace FqnRef {
   /**
    * Reference to logical model element
    */
-  export type ModelRef = {
-    model: Fqn
+  export type ModelRef<F = Fqn> = {
+    model: F
   }
   export const isModelRef = (ref: FqnRef): ref is ModelRef => {
     return 'model' in ref
@@ -53,10 +62,10 @@ export namespace FqnRef {
   }
 }
 
-export type FqnRef = ExclusiveUnion<{
-  InsideInstanceRef: FqnRef.InsideInstanceRef
-  DeploymentRef: FqnRef.DeploymentRef
-  ModelRef: FqnRef.ModelRef
+export type FqnRef<D = Fqn, M = Fqn> = ExclusiveUnion<{
+  InsideInstanceRef: FqnRef.InsideInstanceRef<D, M>
+  DeploymentRef: FqnRef.DeploymentRef<D>
+  ModelRef: FqnRef.ModelRef<M>
 }>
 
 export namespace FqnExpr {
@@ -67,79 +76,84 @@ export namespace FqnExpr {
     return 'wildcard' in expr && expr.wildcard === true
   }
 
-  export type ModelRef = {
-    ref: FqnRef.ModelRef
+  export type ModelRef<M = Fqn> = {
+    ref: FqnRef.ModelRef<M>
     selector?: PredicateSelector
   }
   export const isModelRef = (ref: ExpressionV2): ref is ModelRef => {
     return 'ref' in ref && FqnRef.isModelRef(ref.ref)
   }
 
-  export type DeploymentRef = {
-    ref: FqnRef.DeploymentRef | FqnRef.InsideInstanceRef
+  export type DeploymentRef<D = Fqn, M = Fqn> = {
+    ref: FqnRef.DeploymentRef<D> | FqnRef.InsideInstanceRef<D, M>
     selector?: PredicateSelector
   }
   export const isDeploymentRef = (ref: ExpressionV2): ref is FqnExpr.DeploymentRef => {
     return 'ref' in ref && FqnRef.isDeploymentRef(ref.ref)
   }
 
-  export type Ref = ExclusiveUnion<{
-    ModelRef: ModelRef
-    DeploymentRef: DeploymentRef
+  export type Ref<D = Fqn, M = Fqn> = ExclusiveUnion<{
+    ModelRef: ModelRef<M>
+    DeploymentRef: DeploymentRef<D, M>
   }>
 }
 
-export type FqnExpr = ExclusiveUnion<{
+export type FqnExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
-  ModelRef: FqnExpr.ModelRef
-  DeploymentRef: FqnExpr.DeploymentRef
+  ModelRef: FqnExpr.ModelRef<M>
+  DeploymentRef: FqnExpr.DeploymentRef<D, M>
 }>
 
 export namespace RelationExpr {
-  export type Direct = {
-    source: FqnExpr
-    target: FqnExpr
+  export type Direct<D = Fqn, M = Fqn> = {
+    source: FqnExpr<D, M>
+    target: FqnExpr<D, M>
     isBidirectional?: boolean
   }
   export const isDirect = (expr: ExpressionV2): expr is Direct => {
     return 'source' in expr && 'target' in expr
   }
-  export type Incoming = {
-    incoming: FqnExpr
+  export type Incoming<D = Fqn, M = Fqn> = {
+    incoming: FqnExpr<D, M>
   }
   export const isIncoming = (expr: ExpressionV2): expr is Incoming => {
     return 'incoming' in expr
   }
-  export type Outgoing = {
-    outgoing: FqnExpr
+  export type Outgoing<D = Fqn, M = Fqn> = {
+    outgoing: FqnExpr<D, M>
   }
   export const isOutgoing = (expr: ExpressionV2): expr is Outgoing => {
     return 'outgoing' in expr
   }
-  export type InOut = {
-    inout: FqnExpr
+  export type InOut<D = Fqn, M = Fqn> = {
+    inout: FqnExpr<D, M>
   }
   export const isInOut = (expr: ExpressionV2): expr is InOut => {
     return 'inout' in expr
   }
 }
 
-export type RelationExpr = ExclusiveUnion<{
-  Direct: RelationExpr.Direct
-  Incoming: RelationExpr.Incoming
-  Outgoing: RelationExpr.Outgoing
-  InOut: RelationExpr.InOut
+export type RelationExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
+  Direct: RelationExpr.Direct<D, M>
+  Incoming: RelationExpr.Incoming<D, M>
+  Outgoing: RelationExpr.Outgoing<D, M>
+  InOut: RelationExpr.InOut<D, M>
 }>
 
-// ExpressionV2
-export type ExpressionV2 = ExclusiveUnion<{
+/**
+ * Represents a version 2 expression which can be one of several types.
+ *
+ * @template D - The type for the deployment FQN, defaults to `Fqn`.
+ * @template M - The type for the model FQN, defaults to `Fqn`.
+ */
+export type ExpressionV2<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Wildcard: FqnExpr.Wildcard
-  ModelRef: FqnExpr.ModelRef
-  DeploymentRef: FqnExpr.DeploymentRef
-  Direct: RelationExpr.Direct
-  Incoming: RelationExpr.Incoming
-  Outgoing: RelationExpr.Outgoing
-  InOut: RelationExpr.InOut
+  ModelRef: FqnExpr.ModelRef<M>
+  DeploymentRef: FqnExpr.DeploymentRef<D, M>
+  Direct: RelationExpr.Direct<D, M>
+  Incoming: RelationExpr.Incoming<D, M>
+  Outgoing: RelationExpr.Outgoing<D, M>
+  InOut: RelationExpr.InOut<D, M>
 }>
 
 export namespace ExpressionV2 {
@@ -156,25 +170,3 @@ export namespace ExpressionV2 {
       || RelationExpr.isInOut(expr)
   }
 }
-
-// export const isElement = (expr: FqnExpression): expr is FqnExpression.Element => {
-//   return FqnExpression.Element.isRef(expr)
-//     || FqnExpression.Element.isWildcard(expr)
-// }
-
-// export const isRelation = (expr: FqnExpression): expr is FqnExpression.Relation => {
-//   return FqnExpression.Relation.isDirect(expr)
-//     || FqnExpression.Relation.isIncoming(expr)
-//     || FqnExpression.Relation.isOutgoing(expr)
-//     || FqnExpression.Relation.isInOut(expr)
-// }
-// }
-
-// export type FqnExpression = ExclusiveUnion<{
-//   Ref: FqnExpression.Element.Ref
-//   Wildcard: FqnExpression.Element.Wildcard
-//   Direct: FqnExpression.Relation.Direct
-//   Incoming: FqnExpression.Relation.Incoming
-//   Outgoing: FqnExpression.Relation.Outgoing
-//   InOut: FqnExpression.Relation.InOut
-// }>

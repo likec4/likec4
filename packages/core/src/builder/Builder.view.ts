@@ -37,19 +37,11 @@ interface AViewBuilder<
 }
 
 export interface ViewBuilder<T extends AnyTypes> extends AViewBuilder<T, T['Fqn'], C4Expression> {
-  $expr(expr: ViewPredicate.Expression<T> | C4Expression): TypedC4Expression<T>
-  include(...exprs: C4Expression[]): this
-  exclude(...exprs: C4Expression[]): this
-  style(rule: ViewRuleStyle): this
-  autoLayout(layout: AutoLayoutDirection): this
 }
 
-export interface DeploymentViewBuilder<T extends AnyTypes> extends AViewBuilder<T, T['DeploymentFqn'], ExpressionV2> {
-  $expr(expr: ViewPredicate.DeploymentExpression<T> | ExpressionV2): TypedDeploymentExpression<T>
-  include(...exprs: ExpressionV2[]): this
-  exclude(...exprs: ExpressionV2[]): this
-  style(rule: ViewRuleStyle): this
-  autoLayout(layout: AutoLayoutDirection): this
+export interface DeploymentViewBuilder<T extends AnyTypes>
+  extends AViewBuilder<T, T['DeploymentFqn'], Types.ToExpression<T>>
+{
 }
 
 export namespace ViewPredicate {
@@ -261,6 +253,7 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
 function $include<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
     | [B['Expr']]
+    | [B['TypedExpr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
@@ -304,6 +297,7 @@ function $include<B extends AViewBuilder<AnyTypes, any, any>>(
 function $exclude<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
     | [B['Expr']]
+    | [B['TypedExpr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
@@ -461,7 +455,7 @@ function $deploymentExpr<Types extends AnyTypes>(
 }
 
 function $style<B extends AViewBuilder<AnyTypes, any, any>>(
-  element: B['ElementExpr'] | NonEmptyArray<B['ElementExpr']>,
+  element: B['ElementExpr'] | B['TypedExpr'] | NonEmptyArray<B['ElementExpr']>,
   { notation, ...style }: ViewRuleStyle['style'] & { notation?: string }
 ): (b: B) => B {
   return (b) =>

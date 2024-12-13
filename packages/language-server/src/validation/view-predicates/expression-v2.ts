@@ -5,29 +5,83 @@ import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
 
-// export const expressionV2Checks = (
-//   services: LikeC4Services
-// ): ValidationCheck<ast.ExpressionV2> => {
-//   return tryOrLog((node, accept) => {
-//     // if (!AstUtils.hasContainerOfType(node, ast.isDirectedDeploymentRelationExpression)) {
-//     //   accept('warning', 'Not supported yet', {
-//     //     node
-//     //   })
-//     //   return
-//     // }
-//   })
-// }
-
-export const relationExprChecks = (
-  services: LikeC4Services
-): ValidationCheck<ast.RelationExpr> => {
+export const relationExprChecks = (services: LikeC4Services): ValidationCheck<ast.RelationExpr> => {
+  const ModelParser = services.likec4.ModelParser
   return tryOrLog((node, accept) => {
-    // if (!AstUtils.hasContainerOfType(node, ast.isDirectedDeploymentRelationExpression)) {
-    //   accept('warning', 'Not supported yet', {
-    //     node
-    //   })
-    //   return
-    // }
+    if (node.$container.$type !== 'DeploymentViewRulePredicateExpression') {
+      // skip validation for this node, validated by container
+      return
+    }
+
+    const predicate = AstUtils.getContainerOfType(node, ast.isDeploymentViewRulePredicate)
+    if (!predicate) {
+      return
+    }
+
+    const doc = AstUtils.getDocument(node)
+    const parser = ModelParser.forDocument(doc)
+
+    const ModelRefOnlyExclude = 'Model reference is allowed in exclude predicate only'
+
+    if (ast.isDirectedRelationExpr(node)) {
+      if (FqnExpr.isModelRef(parser.parseFqnExpr(node.source.from))) {
+        if (predicate.isInclude === true) {
+          accept('error', ModelRefOnlyExclude, {
+            node: node.source,
+            property: 'from'
+          })
+        }
+        accept('warning', 'Model reference not yet supported by direct relationship predicate', {
+          node: node.source,
+          property: 'from'
+        })
+      }
+      if (FqnExpr.isModelRef(parser.parseFqnExpr(node.target))) {
+        if (predicate.isInclude === true) {
+          accept('error', ModelRefOnlyExclude, {
+            node,
+            property: 'target'
+          })
+        }
+        accept('warning', 'Model reference not yet supported by direct relationship predicate', {
+          node,
+          property: 'target'
+        })
+      }
+      // if (FqnExpr.isModelRef(parser.parseFqnExpr(node.source.from)) && predicate.isInclude === true) {
+      //   accept('error', ModelRefOnlyExclude, {
+      //     node: node.source,
+      //     property: 'from'
+      //   })
+      // }
+      // if (FqnExpr.isModelRef(parser.parseFqnExpr(node.target)) && predicate.isInclude === true) {
+      //   accept('error', ModelRefOnlyExclude, {
+      //     node: node,
+      //     property: 'target'
+      //   })
+      // }
+      return
+    }
+
+    if (predicate.isInclude !== true) {
+      // no restriction for exclude predicate
+      return
+    }
+
+    let expr: ast.FqnExpr
+    if (ast.isIncomingRelationExpr(node)) {
+      expr = node.to
+    } else if (ast.isOutgoingRelationExpr(node)) {
+      expr = node.from
+    } else {
+      expr = node.inout.to
+    }
+    if (FqnExpr.isModelRef(parser.parseFqnExpr(expr))) {
+      accept('error', ModelRefOnlyExclude, {
+        node
+      })
+      return
+    }
   })
 }
 

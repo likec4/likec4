@@ -73,8 +73,6 @@ export class Stage {
     }
     for (const c of connections) {
       this.#excludedConnections.push(c)
-      this.#implicits.delete(c.source)
-      this.#implicits.delete(c.target)
     }
   }
 
