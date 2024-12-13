@@ -1,5 +1,5 @@
-import type { MergeExclusive, Simplify, Tagged, UnionToIntersection } from 'type-fest'
-import type { IconUrl, NonEmptyArray } from './_common'
+import type { MergeExclusive, Simplify, Tagged } from 'type-fest'
+import type { ExclusiveUnion, IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color } from './theme'
@@ -61,6 +61,11 @@ export namespace DeploymentElement {
   }
 }
 
+export type PredicateSelector =
+  | 'children' // ele.*
+  | 'expanded' // ele._
+  | 'descendants' // ele.**
+
 export interface DeploymentRef {
   // Reference to DeploymentNode or DeployedInstance
   readonly id: Fqn
@@ -115,36 +120,6 @@ export interface DeploymentRelation {
   readonly navigateTo?: ViewId
   readonly metadata?: { [key: string]: string }
 }
-// export interface DeploymentRelation
-
-// interface Expressions {
-//   DeploymentRef: {
-//     ref: DeploymentRef
-//     isExpanded?: boolean
-//     isNested?: never
-//   } | {
-//     ref: DeploymentRef
-//     isExpanded?: never
-//     isNested?: boolean
-//   }
-
-//   Wildcard: {
-//     wildcard: true
-//   }
-// }
-
-type AllNever<Expressions> = UnionToIntersection<
-  {
-    [Name in keyof Expressions]: {
-      -readonly [Key in keyof Expressions[Name]]?: never
-    }
-  }[keyof Expressions]
->
-
-type ExclusiveUnion<Expressions> = Expressions extends object ? {
-    [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
-  }[keyof Expressions]
-  : Expressions
 
 export namespace DeploymentRelationExpression {
   // type LogicalRefEndpoint = {
@@ -197,10 +172,7 @@ export type DeploymentRelationExpression = ExclusiveUnion<{
 export namespace DeploymentElementExpression {
   export type Ref = {
     ref: DeploymentRef
-    selector?:
-      | 'children' // ele.*
-      | 'expanded' // ele._
-      | 'descendants' // ele.**
+    selector?: PredicateSelector
   }
   export const isRef = (expr: DeploymentExpression): expr is Ref => {
     return 'ref' in expr

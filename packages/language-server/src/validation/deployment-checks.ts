@@ -1,8 +1,9 @@
-import { nonNullable } from '@likec4/core'
+import { isSameHierarchy, nonNullable } from '@likec4/core'
 import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
+import { instanceRef } from '../utils/deploymentRef'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
@@ -79,7 +80,7 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
 }
 
 export const deploymentRelationChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentRelation> => {
-  // const DeploymentsIndex = services.likec4.DeploymentsIndex
+  const DeploymentsIndex = services.likec4.DeploymentsIndex
   // const Names = services.references.NameProvider as LikeC4NameProvider
   // const Locator = services.workspace.AstNodeLocator
   // const fqnIndex = services.likec4.FqnIndex
@@ -99,18 +100,40 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
         node: el,
         ...range && { range }
       })
+      return
     }
 
-    // const sourceEl = ast.isDeployedInstance(source)
-    //   ? elementRef(source.element)
-    //   : source
-    // const targetEl = ast.isDeployedInstance(target)
-    //   ? elementRef(target.element)
-    //   : target
+    const sourceEl = ast.isElement(source)
+      ? instanceRef(el.source)
+      : source
 
-    // if (!sourceEl || !targetEl) {
-    //   return
-    // }
+    if (!sourceEl) {
+      accept('error', 'Source not resolved', {
+        node: el,
+        property: 'source'
+      })
+      return
+    }
+    const sourceFqn = DeploymentsIndex.getFqnName(sourceEl)
+
+    const targetEl = ast.isElement(target)
+      ? instanceRef(el.target)
+      : target
+
+    if (!targetEl) {
+      accept('error', 'Target not resolved', {
+        node: el,
+        property: 'target'
+      })
+      return
+    }
+    const targetFqn = DeploymentsIndex.getFqnName(targetEl)
+
+    if (isSameHierarchy(sourceFqn, targetFqn)) {
+      accept('error', 'Invalid parent-child relationship', {
+        node: el
+      })
+    }
 
     // const sourceFqn = ast.isElement(sourceEl) ? fqnIndex.getFqn(sourceEl) : DeploymentsIndex.getFqnName(sourceEl) as Fqn
     // if (!sourceFqn) {

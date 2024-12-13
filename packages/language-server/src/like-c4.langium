@@ -545,7 +545,7 @@ DeploymentNodeBody: '{'
 
 DeployedInstance:
   (name=Id Eq)?
-  ('instanceOf' | 'instance' 'of')
+  'instanceOf'
   element=ElementRef
   title=String?
   body=DeployedInstanceBody?
@@ -557,13 +557,21 @@ DeployedInstanceBody: '{'
   props+=ElementProperty*
 '}';
 
+type Referenceable = DeploymentNode | DeployedInstance | Element;
+
+// DeploymentRef always refers to DeploymentNode, DeployedInstance, or Nested element in DeployedInstance
+// i.e. DeploymentRef is reference to deployment model
 // Rules:
 // - DeployedInstance can be referenced from DeploymentNode
 // - Element can be referenced from DeployedInstance
 // Forced by scope computation
-type DeploymentReferenceable = DeploymentNode | DeployedInstance | Element;
 DeploymentRef:
-  value=[DeploymentReferenceable:Id] ({infer DeploymentRef.parent=current} StickyDot value=[DeploymentReferenceable:Id])*;
+  value=[Referenceable:Id] ({infer DeploymentRef.parent=current} StickyDot value=[Referenceable:Id])*;
+
+// Reference to Element in logical model or DeploymentRef
+//  Mix of DeploymentRef and ElementRef
+FqnRef:
+  value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
 DeploymentRelation:
   source=DeploymentRef
@@ -600,7 +608,7 @@ DeploymentViewRule:
 ;
 
 DeploymentViewRuleStyle:
-  'style' target=DeploymentExpressionIterator '{'
+  'style' targets=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty
@@ -631,6 +639,15 @@ DeploymentRefExpression:
   ref=DeploymentRef selector=(DotUnderscore | DotWildcard)?
 ;
 
+FqnExpression:
+  {infer WildcardExpression} isWildcard?='*' |
+  FqnRefExpression
+;
+
+FqnRefExpression:
+  ref=FqnRef selector=(DotUnderscore | DotWildcard)?
+;
+
 DeploymentRelationExpression:
   InOutDeploymentRelationExpression |
   DirectedDeploymentRelationExpression
@@ -641,19 +658,19 @@ InOutDeploymentRelationExpression infers DeploymentRelationExpression:
 ;
 
 IncomingDeploymentRelationExpression:
-  '->' to=DeploymentElementExpression;
+  '->' to=FqnExpression;
 
 DirectedDeploymentRelationExpression infers DeploymentRelationExpression:
-  OutgoingDeploymentRelationExpression ({infer DirectedDeploymentRelationExpression.source=current} target=DeploymentElementExpression)?
+  OutgoingDeploymentRelationExpression ({infer DirectedDeploymentRelationExpression.source=current} target=FqnExpression)?
 ;
 
 OutgoingDeploymentRelationExpression:
-  from=DeploymentElementExpression
+  from=FqnExpression
   (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
 ;
 
-DeploymentExpressionIterator:
-  value=DeploymentElementExpression ({infer DeploymentExpressionIterator.prev=current} ',' (value=DeploymentElementExpression)?)*
+FqnExpressions:
+  value=FqnExpression ({infer FqnExpressions.prev=current} ',' (value=FqnExpression)?)*
 ;
 // Global -------------------------------------
 
@@ -691,7 +708,7 @@ GlobalStyleGroup:
     styles+=ViewRuleStyle*
   '}';
 
-type FqnReferenceable = DeploymentReferenceable | Element | ExtendElement;
+type FqnReferenceable = Referenceable | Element | ExtendElement;
 
 // Common properties -------------------------------------
 
@@ -783,7 +800,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group' | 'node' | 'deployment';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (

@@ -1,7 +1,7 @@
 import { DiagramNode } from '@likec4/core'
 import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
-import { isNonNullish, isTruthy } from 'remeda'
+import { first, isNonNullish, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../hooks/useDiagramState'
 import type { XYFlowEdge, XYFlowNode } from './types'
@@ -211,6 +211,7 @@ export function useXYFlowEvents() {
           focusedNodeId,
           xystore,
           nodesSelectable,
+          onOpenSource,
           focusOnNode,
           onEdgeClick,
           setLastClickedEdge
@@ -244,6 +245,12 @@ export function useXYFlowEvents() {
             event.stopPropagation()
             return
           }
+        } else if (onOpenSource && !onEdgeClick) {
+          onOpenSource({
+            relation: first(xyedge.data.edge.relations)!
+          })
+          event.stopPropagation()
+          return
         } else if (nodesSelectable) {
           xystore.getState().addSelectedEdges([xyedge.id])
           if (!onEdgeClick) {

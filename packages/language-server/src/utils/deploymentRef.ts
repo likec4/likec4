@@ -2,7 +2,7 @@ import { AstUtils } from 'langium'
 import { isNullish } from 'remeda'
 import { ast } from '../ast'
 
-export function instanceRef(deploymentRef: ast.DeploymentRef): ast.DeployedInstance | null {
+export function instanceRef(deploymentRef: ast.DeploymentRef | ast.FqnRef): ast.DeployedInstance | null {
   let referenceable
   while ((referenceable = deploymentRef.value?.ref)) {
     if (ast.isDeploymentNode(referenceable)) {
@@ -19,7 +19,7 @@ export function instanceRef(deploymentRef: ast.DeploymentRef): ast.DeployedInsta
   return null
 }
 
-export function deploymentNodeRef(deploymentRef: ast.DeploymentRef): ast.DeploymentNode | null {
+export function deploymentNodeRef(deploymentRef: ast.DeploymentRef | ast.FqnRef): ast.DeploymentNode | null {
   let referenceable = deploymentRef.value.ref ?? null
   if (!referenceable || ast.isDeploymentNode(referenceable)) {
     return referenceable

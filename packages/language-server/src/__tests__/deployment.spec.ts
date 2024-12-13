@@ -136,7 +136,7 @@ describe('Deployment model:', () => {
 
       const validation2 = await validateAll()
       expect(validation2.errors).toEqual([
-        `Could not resolve reference to DeploymentReferenceable named 'sys1'.`
+        `Could not resolve reference to Referenceable named 'sys1'.`
       ])
     })
   })

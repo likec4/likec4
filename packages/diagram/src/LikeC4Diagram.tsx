@@ -1,4 +1,4 @@
-import { ComputedView, isDeploymentView } from '@likec4/core'
+import { isDeploymentView } from '@likec4/core'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'

@@ -222,29 +222,6 @@ export interface FqnIndexedDocument extends SetRequired<LikeC4LangiumDocument, '
 
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {}
 
-export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
-    c4Specification: {
-      tags: new Set(),
-      elements: {},
-      relationships: {},
-      colors: {},
-      deployments: {}
-    },
-    c4Elements: [],
-    c4Relations: [],
-    c4Deployments: [],
-    c4DeploymentRelations: [],
-    c4Globals: {
-      predicates: {},
-      dynamicPredicates: {},
-      styles: {}
-    },
-    c4Views: []
-  }
-  return Object.assign(doc, props) as ParsedLikeC4LangiumDocument
-}
-
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }

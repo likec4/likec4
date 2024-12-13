@@ -1,4 +1,4 @@
-import { ComputedNode, ComputedView, type Fqn, isElementView, type ViewId } from '@likec4/core'
+import { ComputedNode, ComputedView, type Fqn, type ViewId } from '@likec4/core'
 import { find, isNullish } from 'remeda'
 
 export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R {

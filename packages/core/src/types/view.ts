@@ -258,9 +258,11 @@ export function isDeploymentView<V extends { __?: string }>(view: V): boolean
 export function isDeploymentView(view: LikeC4View): view is DeploymentView {
   return view.__ === 'deployment'
 }
+
 export function isDynamicView(view: LikeC4View): view is DynamicView {
   return view.__ === 'dynamic'
 }
+
 export function isElementView(view: LikeC4View): view is ElementView {
   return isNullish(view.__) || view.__ === 'element'
 }

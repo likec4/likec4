@@ -16,7 +16,7 @@ import {
   StreamImpl,
   StreamScope
 } from 'langium'
-import { ast, isLikeC4LangiumDocument } from '../ast'
+import { ast } from '../ast'
 import { logger } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
@@ -91,6 +91,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       const referenceType = this.reflection.getReferenceType(context)
       try {
         const container = context.container
+        if (ast.isFqnRef(container)) {
+          return this.getScopeForFqnRef(container, context)
+        }
+
         if (ast.isDeploymentRef(container)) {
           return this.getScopeForDeploymentRef(container, context)
         }
@@ -143,6 +147,27 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         // Second preference for deployed instances
         this.computeScope(context, ast.DeployedInstance)
       )
+    }
+    const parentRef = parent.value.ref
+    if (!parentRef) {
+      return EMPTY_SCOPE
+    }
+    if (ast.isDeploymentNode(parentRef)) {
+      return new StreamScope(this.deploymentsIndex.nested(parentRef))
+    }
+    if (ast.isDeployedInstance(parentRef)) {
+      return new StreamScope(this.scopeElementRef(parentRef.element))
+    }
+    if (ast.isElement(parentRef)) {
+      return new StreamScope(this.uniqueDescedants(() => parentRef))
+    }
+    return nonexhaustive(parentRef)
+  }
+
+  protected getScopeForFqnRef(container: ast.FqnRef, context: ReferenceInfo) {
+    const parent = container.parent
+    if (!parent) {
+      return this.computeScope(context, ast.Referenceable)
     }
     const parentRef = parent.value.ref
     if (!parentRef) {

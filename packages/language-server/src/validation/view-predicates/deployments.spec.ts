@@ -10,6 +10,7 @@ describe.concurrent('DeploymentRefExpressionChecks', () => {
     model {
       component c1 {
         component c2
+        component c3
       }
     }
     deployment {

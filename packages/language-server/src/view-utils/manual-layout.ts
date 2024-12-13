@@ -1,7 +1,13 @@
+import type * as c4 from '@likec4/core'
 import { isAutoLayoutDirection, type ViewManualLayout } from '@likec4/core'
 import { decode, encode } from '@msgpack/msgpack'
 import { fromBase64, toBase64 } from '@smithy/util-base64'
+import { AstUtils, CstUtils } from 'langium'
 import { mapValues } from 'remeda'
+import type { ast } from '../ast'
+import { logger } from '../logger'
+
+const { getDocument } = AstUtils
 
 function pack({
   nodes,
@@ -88,4 +94,23 @@ export function deserializeFromComment(comment: string): ViewManualLayout {
     .join('')
   const decodedb64 = fromBase64(b64)
   return unpack(decode(decodedb64) as any) as ViewManualLayout
+}
+
+export function parseViewManualLayout(node: ast.LikeC4View): c4.ViewManualLayout | undefined {
+  const commentNode = CstUtils.findCommentNode(node.$cstNode, ['BLOCK_COMMENT'])
+  if (!commentNode || !hasManualLayout(commentNode.text)) {
+    return undefined
+  }
+  try {
+    return deserializeFromComment(commentNode.text)
+  } catch (e) {
+    const doc = getDocument(node)
+    logger.warn(e)
+    logger.warn(
+      `Ignoring manual layout of "${node.name ?? 'unnamed'}" at ${doc.uri.fsPath}:${
+        1 + (commentNode.range.start.line || 0)
+      }`
+    )
+    return undefined
+  }
 }

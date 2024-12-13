@@ -32,7 +32,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           'deployment view ${1:view_${TM_FILENAME_BASE}_${CURRENT_SECOND}} {',
           '\ttitle \'${2:Untitled}\'',
           '\t',
-          '\t$0',
+          '\tinclude $0',
           '}'
         ].join('\n')
       })
@@ -89,7 +89,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           detail: `Insert ${keyword.value} block`,
           kind: CompletionItemKind.Module,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} \${1:name} \${2:*} {\n\t\${3|color,shape,border,opacity,icon|} \$0\n}`
+          insertText: `${keyword.value} \${1:name} \${2:*} {\n\t\${3|color,shape,border,opacity,icon|} $0\n}`
         })
       }
       if (AstUtils.hasContainerOfType(context.node, anyPass([ast.isModelViews, ast.isGlobalStyleGroup]))) {
@@ -98,7 +98,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           detail: `Insert ${keyword.value} block`,
           kind: CompletionItemKind.Module,
           insertTextFormat: InsertTextFormat.Snippet,
-          insertText: `${keyword.value} \${1:*} {\n\t\${2|color,shape,border,opacity,icon|} \$0\n}`
+          insertText: `${keyword.value} \${1:*} {\n\t\${2|color,shape,border,opacity,icon|} $0\n}`
         })
       }
       return acceptor(context, {
@@ -106,7 +106,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         detail: `Insert ${keyword.value} block`,
         kind: CompletionItemKind.Module,
         insertTextFormat: InsertTextFormat.Snippet,
-        insertText: `${keyword.value} {\n\t\${1|color,shape,border,opacity,icon|} \$0\n}`
+        insertText: `${keyword.value} {\n\t\${1|color,shape,border,opacity,icon|} $0\n}`
       })
     }
     if (keyword.value === 'extend') {
