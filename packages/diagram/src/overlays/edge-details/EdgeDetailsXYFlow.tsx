@@ -197,10 +197,12 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
         // edge-details only ever deals with edges that represent only one relation
-        let relationId = only(edge.data.relations)!.id;
-        diagramStore.getState().onOpenSource?.({
-          relation: relationId
-        })
+        let relationId = only(edge.data.relations)?.id;
+        if (relationId) {
+          diagramStore.getState().onOpenSource?.({
+            relation: relationId
+          })
+        }
       }}
       // onEdgeClick={(e, edge) => {
       //   e.stopPropagation()
