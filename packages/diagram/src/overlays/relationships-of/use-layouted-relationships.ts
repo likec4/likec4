@@ -205,7 +205,8 @@ function createEmptyNode(
     id,
     position: { x: 0, y: 0 },
     data: {
-      column
+      column,
+      existsInCurrentView: true
     },
     zIndex: ZIndexes.empty
   }
