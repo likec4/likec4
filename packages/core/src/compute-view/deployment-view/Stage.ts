@@ -53,7 +53,7 @@ export class Stage {
     return connections
   }
 
-  public exclude(elements: Elem | ReadonlyArray<Elem>): void {
+  public exclude(elements: Elem | ReadonlyArray<Elem>): this {
     if (this.#explicits.size + this.#implicits.size > 0) {
       console.warn('Excluding elements from the stage with existing elements')
     }
@@ -65,15 +65,17 @@ export class Stage {
     if (this.#connections.length > 0) {
       console.warn('Excluding elements from the stage with existing connections')
     }
+    return this
   }
 
-  public excludeConnections(connections: Connections): void {
+  public excludeConnections(connections: Connections): this {
     if (this.#connections.length > 0) {
       console.warn('Excluding connections from the stage with existing connections')
     }
     for (const c of connections) {
       this.#excludedConnections.push(c)
     }
+    return this
   }
 
   public hasConnections(): boolean {

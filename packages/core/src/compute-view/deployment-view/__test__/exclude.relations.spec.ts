@@ -18,30 +18,25 @@ describe('Exclude RelationExpr', () => {
           }
         }
       })
-    ).toMatchInlineSnapshot(`
-      {
-        "Nodes": [
-          "customer",
-          "prod.eu.db",
-          "prod.eu.zone1",
-          "prod.eu.zone2",
-          "prod.eu.zone1.api",
-          "prod.eu.zone1.ui",
-          "prod.eu.zone2.api",
-          "prod.eu.zone2.ui",
-          "prod.eu.auth",
-          "prod.eu.media",
-        ],
-        "edges": [
-          "prod.eu.zone1.ui:prod.eu.auth",
-          "prod.eu.zone1.ui:prod.eu.media",
-          "prod.eu.zone2.ui:prod.eu.auth",
-          "prod.eu.zone2.ui:prod.eu.media",
-          "customer:prod.eu.zone1.ui",
-          "customer:prod.eu.zone2.ui",
-        ],
-      }
-    `)
+    ).toEqual({
+      Nodes: [
+        'customer',
+        'prod.eu.zone1',
+        'prod.eu.zone2',
+        'prod.eu.zone1.ui',
+        'prod.eu.zone2.ui',
+        'prod.eu.auth',
+        'prod.eu.media'
+      ],
+      edges: [
+        'prod.eu.zone1.ui:prod.eu.auth',
+        'prod.eu.zone1.ui:prod.eu.media',
+        'prod.eu.zone2.ui:prod.eu.auth',
+        'prod.eu.zone2.ui:prod.eu.media',
+        'customer:prod.eu.zone1.ui',
+        'customer:prod.eu.zone2.ui'
+      ]
+    })
   })
 
   it('should exclude incoming', () => {
@@ -69,28 +64,24 @@ describe('Exclude RelationExpr', () => {
           }
         }
       })
-    ).toMatchInlineSnapshot(`
-      {
-        "Nodes": [
-          "customer",
-          "prod.eu.auth",
-          "prod.eu.media",
-          "prod.eu.zone1",
-          "prod.eu.zone2",
-          "prod.eu.zone1.api",
-          "prod.eu.zone1.ui",
-          "prod.eu.zone2.api",
-          "prod.eu.zone2.ui",
-          "prod.eu.db",
-        ],
-        "edges": [
-          "prod.eu.zone1.api:prod.eu.db",
-          "prod.eu.zone2.api:prod.eu.db",
-          "customer:prod.eu.zone1.ui",
-          "customer:prod.eu.zone2.ui",
-        ],
-      }
-    `)
+    ).toEqual({
+      Nodes: [
+        'customer',
+        'prod.eu.zone1',
+        'prod.eu.zone2',
+        'prod.eu.zone1.api',
+        'prod.eu.zone1.ui',
+        'prod.eu.zone2.api',
+        'prod.eu.zone2.ui',
+        'prod.eu.db'
+      ],
+      edges: [
+        'prod.eu.zone1.api:prod.eu.db',
+        'prod.eu.zone2.api:prod.eu.db',
+        'customer:prod.eu.zone1.ui',
+        'customer:prod.eu.zone2.ui'
+      ]
+    })
   })
 
   it('should exclude outgoing', () => {
@@ -107,22 +98,115 @@ describe('Exclude RelationExpr', () => {
       }),
       $include('prod.eu.zone1'),
       $include('prod.eu.zone2')
-    ).toMatchInlineSnapshot(`
-      {
-        "Nodes": [
-          "customer",
-          "prod.eu.zone1",
-          "prod.eu.zone2",
-          "prod.eu.zone1.api",
-          "prod.eu.zone1.ui",
-          "prod.eu.zone2.api",
-          "prod.eu.zone2.ui",
-        ],
-        "edges": [
-          "customer:prod.eu.zone1.ui",
-          "customer:prod.eu.zone2.ui",
-        ],
-      }
-    `)
+    ).toEqual({
+      Nodes: [
+        'customer',
+        'prod.eu.zone1',
+        'prod.eu.zone2',
+        'prod.eu.zone1.ui',
+        'prod.eu.zone2.ui'
+      ],
+      edges: [
+        'customer:prod.eu.zone1.ui',
+        'customer:prod.eu.zone2.ui'
+      ]
+    })
+  })
+
+  it('should exclude direct between model', () => {
+    expectComputed(
+      $include('prod.eu.*'),
+      $include('prod.eu.zone1.**'),
+      $exclude('prod.eu.zone2'),
+      $exclude({
+        source: {
+          ref: {
+            model: 'cloud.frontend'
+          },
+          selector: 'children'
+        },
+        target: {
+          ref: {
+            model: 'cloud.backend'
+          }
+        }
+      })
+    ).toEqual({
+      Nodes: [
+        'prod.eu.zone1',
+        'prod.eu.zone1.api',
+        'prod.eu.zone1.ui',
+        'prod.eu.db',
+        'prod.eu.auth',
+        'prod.eu.media'
+      ],
+      edges: [
+        'prod.eu.zone1.api:prod.eu.auth',
+        'prod.eu.zone1.api:prod.eu.media',
+        'prod.eu.zone1.api:prod.eu.db',
+        'prod.eu.zone1.ui:prod.eu.auth',
+        'prod.eu.zone1.ui:prod.eu.media'
+      ]
+    })
+  })
+
+  it('should exclude direct between model and wildcard', () => {
+    expectComputed(
+      $include('prod.eu.*'),
+      $include('prod.eu.zone1.**'),
+      $exclude('prod.eu.zone2'),
+      $exclude({
+        source: {
+          ref: {
+            model: 'cloud.backend'
+          }
+        },
+        target: {
+          wildcard: true
+        }
+      })
+    ).toEqual({
+      Nodes: [
+        'prod.eu.zone1',
+        'prod.eu.zone1.ui',
+        'prod.eu.zone1.api',
+        'prod.eu.auth',
+        'prod.eu.media'
+      ],
+      edges: [
+        'prod.eu.zone1.ui:prod.eu.zone1.api',
+        'prod.eu.zone1.ui:prod.eu.auth',
+        'prod.eu.zone1.ui:prod.eu.media'
+      ]
+    })
+  })
+
+  it('should exclude direct between model and deployment', () => {
+    expectComputed(
+      $include('prod.eu.zone1.**'),
+      $include('prod.eu.zone2.**'),
+      $exclude({
+        source: {
+          ref: {
+            deployment: 'prod.eu.zone1'
+          },
+          selector: 'children'
+        },
+        target: {
+          ref: {
+            model: 'cloud.backend'
+          }
+        }
+      })
+    ).toEqual({
+      'Nodes': [
+        'prod.eu.zone1.api',
+        'prod.eu.zone2.ui',
+        'prod.eu.zone2.api'
+      ],
+      'edges': [
+        'prod.eu.zone2.ui:prod.eu.zone2.api'
+      ]
+    })
   })
 })

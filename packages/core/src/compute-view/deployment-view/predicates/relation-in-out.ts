@@ -8,7 +8,7 @@ import { FqnExpr, type RelationExpr } from '../../../types/expression-v2'
 import { hasIntersection, union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
-import { resolveAscendingSiblings } from './relation-direct'
+import { excludeModelRelations, resolveAscendingSiblings } from './relation-direct'
 
 //
 export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
@@ -41,28 +41,7 @@ export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
         new Set<RelationshipModel<AnyAux>>(),
         ...elements.flatMap(e => [e.allIncoming, e.allOutgoing])
       )
-      if (excludedRelations.size === 0) {
-        return identity()
-      }
-
-      const toExclude = pipe(
-        memory.connections,
-        // Find connections that have at least one relation in common with the excluded relations
-        filter(c => hasIntersection(c.relations.model, excludedRelations)),
-        map(c =>
-          c.clone({
-            deployment: null,
-            model: excludedRelations
-          })
-        )
-      )
-
-      if (toExclude.length === 0) {
-        return identity()
-      }
-
-      stage.excludeConnections(toExclude)
-      return stage.patch()
+      return excludeModelRelations(excludedRelations, { stage, memory })
     }
 
     const isSourceOrTarget = deploymentExpressionToPredicate(expr.inout)

@@ -1,14 +1,12 @@
-import { filter, identity, map, pipe } from 'remeda'
+import { identity } from 'remeda'
 import { invariant } from '../../../errors'
-import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
+import type { LikeC4DeploymentModel } from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
-import type { RelationshipModel } from '../../../model/RelationModel'
-import type { AnyAux } from '../../../model/types'
+import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
 import { FqnExpr, type RelationExpr } from '../../../types'
-import { hasIntersection, union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
-import { resolveAscendingSiblings } from './relation-direct'
+import { excludeModelRelations, resolveAscendingSiblings } from './relation-direct'
 
 export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing> = {
   include: (expr, { model, memory, stage }) => {
@@ -39,36 +37,8 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
   exclude: (expr, { model, memory, stage }) => {
     // Exclude all connections that have model relationshps with the elements
     if (FqnExpr.isModelRef(expr.outgoing)) {
-      const sources = resolveModelElements(model, expr.outgoing)
-      if (sources.length === 0) {
-        return identity()
-      }
-      const excludedRelations = union(
-        new Set<RelationshipModel<AnyAux>>(),
-        ...sources.map(e => e.allOutgoing)
-      )
-      if (excludedRelations.size === 0) {
-        return identity()
-      }
-
-      const toExclude = pipe(
-        memory.connections,
-        // Find connections that have at least one relation in common with the excluded relations
-        filter(c => hasIntersection(c.relations.model, excludedRelations)),
-        map(c =>
-          c.clone({
-            deployment: null,
-            model: excludedRelations
-          })
-        )
-      )
-
-      if (toExclude.length === 0) {
-        return identity()
-      }
-
-      stage.excludeConnections(toExclude)
-      return stage.patch()
+      const excludedRelations = resolveAllOutgoingRelations(model, expr.outgoing)
+      return excludeModelRelations(excludedRelations, { stage, memory })
     }
 
     const isSource = deploymentExpressionToPredicate(expr.outgoing)
@@ -85,4 +55,12 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
     stage.excludeConnections(toExclude)
     return stage.patch()
   }
+}
+
+export function resolveAllOutgoingRelations(
+  model: LikeC4DeploymentModel,
+  moodelRef: FqnExpr.ModelRef
+) {
+  const targets = resolveModelElements(model, moodelRef)
+  return new Set(targets.flatMap(e => [...e.allOutgoing]))
 }

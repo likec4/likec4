@@ -97,7 +97,7 @@ describe.concurrent('ExpressionV2', () => {
       const { errors } = await invalid(`
         include e2
       `)
-      expect(errors).toEqual(['Must reference deployment model'])
+      expect(errors).toEqual(['Deployment view predicate must reference deployment model'])
     })
 
     it('should error if include model element with selector', async ({ expect }) => {
@@ -105,7 +105,7 @@ describe.concurrent('ExpressionV2', () => {
       const { errors } = await invalid(`
         include e2.**
       `)
-      expect(errors).toEqual(['Must reference deployment model'])
+      expect(errors).toEqual(['Deployment view predicate must reference deployment model'])
     })
 
     it('should error if include instances internals', async ({ expect }) => {
@@ -143,24 +143,18 @@ describe.concurrent('ExpressionV2', () => {
     })
 
     it('should error if model reference in include', async ({ expect }) => {
-      const { validateRules } = mkTestServices(expect)
-      const { errors, warnings } = await validateRules(`
+      const { invalid } = mkTestServices(expect)
+      const { errors } = await invalid(`
         include * -> e2
       `)
       expect(errors).toEqual(['Model reference is allowed in exclude predicate only'])
-      expect(warnings).toEqual([
-        'Model reference not yet supported by direct relationship predicate'
-      ])
     })
 
     it('should not warn if model reference in exclude', async ({ expect }) => {
-      const { onlyWarnings } = mkTestServices(expect)
-      const { warnings } = await onlyWarnings(`
+      const { valid } = mkTestServices(expect)
+      await valid(`
         exclude e2 -> *
       `)
-      expect(warnings).toEqual([
-        'Model reference not yet supported by direct relationship predicate'
-      ])
     })
   })
 

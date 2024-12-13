@@ -1,5 +1,5 @@
 import type { DeploymentConnectionModel } from '../../model/connection/deployment'
-import { difference } from '../../utils/set'
+import { difference, intersection } from '../../utils/set'
 import type { Connections, Elem } from './_types'
 
 export interface Memory {
@@ -66,13 +66,15 @@ export class MutableMemory implements Memory {
     const newMemory = this.clone()
 
     const excludedMap = new Map(excluded.map(c => [c.id, c]))
-    let minusElements = new Set<Elem>()
+
+    // were connected before and not anymore
+    let excludedElements = new Set<Elem>()
 
     newMemory.connections = newMemory.connections.reduce((acc, c) => {
       const excluded = excludedMap.get(c.id)
       if (excluded) {
-        minusElements.add(c.source)
-        minusElements.add(c.target)
+        excludedElements.add(c.source)
+        excludedElements.add(c.target)
         const diff = c.difference(excluded)
         if (diff.nonEmpty()) {
           acc.push(diff)
@@ -83,17 +85,32 @@ export class MutableMemory implements Memory {
       return acc
     }, [] as DeploymentConnectionModel[])
 
-    minusElements = difference(minusElements, newMemory.explicits)
-    if (minusElements.size > 0) {
-      for (const stillExists of newMemory.connections) {
-        minusElements.delete(stillExists.source)
-        minusElements.delete(stillExists.target)
-      }
+    for (const stillExists of newMemory.connections) {
+      excludedElements.delete(stillExists.source)
+      excludedElements.delete(stillExists.target)
     }
-    if (minusElements.size > 0) {
-      newMemory.elements = difference(newMemory.elements, minusElements)
-      newMemory.finalElements = difference(newMemory.finalElements, minusElements)
+
+    if (excludedElements.size === 0) {
+      return newMemory
     }
+
+    const explicitsBecomingImplicit = intersection(newMemory.explicits, excludedElements)
+    if (explicitsBecomingImplicit.size > 0) {
+      newMemory.explicits = difference(newMemory.explicits, explicitsBecomingImplicit)
+      // Exclude from final elements
+      newMemory.finalElements = difference(newMemory.finalElements, excludedElements)
+
+      // Exclude from elements (but keep implicits)
+      newMemory.elements = difference(
+        newMemory.elements,
+        difference(excludedElements, explicitsBecomingImplicit)
+      )
+      return newMemory
+    }
+
+    newMemory.elements = difference(newMemory.elements, excludedElements)
+    newMemory.finalElements = difference(newMemory.finalElements, excludedElements)
+
     return newMemory
   }
 

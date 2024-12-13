@@ -99,7 +99,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
 
   /**
    * Creates a clone of the current `DeploymentConnectionModel` instance with optional overrides.
-   * if onverride with `null` is provided, the corresponding relation set will be empty.
+   * if `null` is provided in overrides, the corresponding relation set will be empty.
    */
   public clone(overrides?: {
     model?: ReadonlySet<RelationshipModel<M>> | null

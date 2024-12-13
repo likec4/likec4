@@ -14,7 +14,8 @@ export const relationExprChecks = (services: LikeC4Services): ValidationCheck<as
     }
 
     const predicate = AstUtils.getContainerOfType(node, ast.isDeploymentViewRulePredicate)
-    if (!predicate) {
+    if (!predicate || predicate.isInclude !== true) {
+      // no restriction for exclude predicate
       return
     }
 
@@ -25,46 +26,18 @@ export const relationExprChecks = (services: LikeC4Services): ValidationCheck<as
 
     if (ast.isDirectedRelationExpr(node)) {
       if (FqnExpr.isModelRef(parser.parseFqnExpr(node.source.from))) {
-        if (predicate.isInclude === true) {
-          accept('error', ModelRefOnlyExclude, {
-            node: node.source,
-            property: 'from'
-          })
-        }
-        accept('warning', 'Model reference not yet supported by direct relationship predicate', {
+        accept('error', ModelRefOnlyExclude, {
           node: node.source,
           property: 'from'
         })
       }
+
       if (FqnExpr.isModelRef(parser.parseFqnExpr(node.target))) {
-        if (predicate.isInclude === true) {
-          accept('error', ModelRefOnlyExclude, {
-            node,
-            property: 'target'
-          })
-        }
-        accept('warning', 'Model reference not yet supported by direct relationship predicate', {
+        accept('error', ModelRefOnlyExclude, {
           node,
           property: 'target'
         })
       }
-      // if (FqnExpr.isModelRef(parser.parseFqnExpr(node.source.from)) && predicate.isInclude === true) {
-      //   accept('error', ModelRefOnlyExclude, {
-      //     node: node.source,
-      //     property: 'from'
-      //   })
-      // }
-      // if (FqnExpr.isModelRef(parser.parseFqnExpr(node.target)) && predicate.isInclude === true) {
-      //   accept('error', ModelRefOnlyExclude, {
-      //     node: node,
-      //     property: 'target'
-      //   })
-      // }
-      return
-    }
-
-    if (predicate.isInclude !== true) {
-      // no restriction for exclude predicate
       return
     }
 
@@ -105,7 +78,7 @@ export const fqnRefExprChecks = (services: LikeC4Services): ValidationCheck<ast.
     // This expression is part of element predicate
     if (node.$container.$type === 'DeploymentViewRulePredicateExpression') {
       if (FqnExpr.isModelRef(expr)) {
-        accept('error', 'Must reference deployment model', {
+        accept('error', 'Deployment view predicate must reference deployment model', {
           node
         })
         return
@@ -124,25 +97,5 @@ export const fqnRefExprChecks = (services: LikeC4Services): ValidationCheck<ast.
         property: 'selector'
       })
     }
-
-    // // Ignore follwoing checks for view rule style
-    // if (AstUtils.hasContainerOfType(node, ast.isDeploymentViewRuleStyle)) {
-    //   return
-    // }
-
-    // switch (true) {
-    //   case ast.isElement(referenceTo): {
-    //     accept('error', 'Invalid reference, deployment nodes and instances are only allowed', {
-    //       node
-    //     })
-    //     break
-    //   }
-    //   case ast.isDeployedInstance(referenceTo) && isNonNullish(node.selector): {
-    //     accept('error', 'Only deployment nodes can be expanded', {
-    //       node
-    //     })
-    //     break
-    //   }
-    // }
   })
 }
