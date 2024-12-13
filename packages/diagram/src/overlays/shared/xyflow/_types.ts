@@ -1,6 +1,6 @@
-import type { ComputedNode, Fqn, ViewId } from "@likec4/core"
+import type { AbstractRelation, ComputedNode, Fqn, ViewId } from "@likec4/core"
 import type { SetRequired } from "type-fest"
-import type { Node as ReactFlowNode } from '@xyflow/react'
+import type { Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
 
 export namespace SharedTypes {
 
@@ -60,4 +60,26 @@ export namespace SharedTypes {
   export type EmptyNode = SetRequired<ReactFlowNode<EmptyNodeData, 'empty'>, 'type'>
 
   export type Node = NonEmptyNode | EmptyNode
+
+  export type EdgeData = {
+    /**
+     * The model's relations represented by this edge
+     */
+    relations: [AbstractRelation, ...AbstractRelation[]]
+    /**
+     * Whether the cursor is hovering over the node
+     */
+    hovered?: boolean
+    /**
+     * Whether the node is dimmed
+     * 'immediate' means that the node is dimmed without delay
+     */
+    dimmed?: 'immediate' | boolean
+    /**
+     * The id of the view that should be navigated to when clicking the edge
+     */
+    navigateTo?: ViewId | null
+  }
+
+  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>
 }

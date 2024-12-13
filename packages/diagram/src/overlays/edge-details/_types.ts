@@ -1,18 +1,12 @@
-import type { AbstractRelation, ViewId } from '@likec4/core'
-import type { Edge as ReactFlowEdge } from '@xyflow/react'
-import type { SetRequired } from 'type-fest'
+import type { SharedTypes } from '../shared/xyflow/_types'
+import type { AddEdgeData } from '../../utils/types'
 
 export namespace XYFlowTypes {
 
-  type EdgeData = {
+  type EdgeDetailsEdgeData = {
     technology: string | null
     description: string | null
-    relations: [AbstractRelation, ...AbstractRelation[]]
-    // relation: Relation
-    navigateTo: ViewId | null
-    hovered?: boolean
-    dimmed?: boolean
   }
 
-  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>
+  export type Edge = AddEdgeData<SharedTypes.Edge, EdgeDetailsEdgeData>
 }

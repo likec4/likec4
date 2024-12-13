@@ -1,8 +1,5 @@
-import type { AbstractRelation } from '@likec4/core'
-import type { Edge as ReactFlowEdge } from '@xyflow/react'
-import type { SetRequired } from 'type-fest'
 import type { SharedTypes } from '../shared/xyflow/_types'
-import type { AddNodeData } from '../../utils/types'
+import type { AddEdgeData, AddNodeData } from '../../utils/types'
 
 export namespace XYFlowTypes {
 
@@ -23,12 +20,9 @@ export namespace XYFlowTypes {
 
   export type Node = NonEmptyNode | EmptyNode
 
-  type EdgeData = {
-    relations: [AbstractRelation, ...AbstractRelation[]]
+  type RelationshipsOfEdgeData = {
     existsInCurrentView: boolean
-    hovered?: boolean
-    dimmed?: 'immediate' | boolean
   }
 
-  export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>
+  export type Edge = AddEdgeData<SharedTypes.Edge, RelationshipsOfEdgeData>
 }
