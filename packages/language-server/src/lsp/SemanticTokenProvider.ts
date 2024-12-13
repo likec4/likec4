@@ -90,7 +90,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if (ast.isDeploymentRefExpression(node)) {
+    if (ast.isFqnRefExpr(node)) {
       if (node.selector) {
         acceptor({
           node,
@@ -142,7 +142,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if (ast.isDeploymentRef(node)) {
+    if (ast.isFqnRef(node)) {
       acceptor({
         node,
         property: 'value',

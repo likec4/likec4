@@ -4,12 +4,12 @@ import type { LikeC4DeploymentModel } from '../../../model'
 import { findConnectionsBetween } from '../../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { DeploymentElementModel } from '../../../model/DeploymentElementModel'
-import { DeploymentElementExpression, type DeploymentRelationExpression } from '../../../types/deployments'
+import { FqnExpr, type RelationExpr } from '../../../types'
 import { union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements } from '../utils'
 
-const isRef = DeploymentElementExpression.isRef
+// const isRef = DeploymentElementExpression.isRef
 
 export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   const siblings = new Set<DeploymentElementModel>()
@@ -23,7 +23,7 @@ export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   return siblings
 }
 
-const resolveIfWildcard = (model: LikeC4DeploymentModel, nonWildcard: DeploymentElementExpression.Ref) => {
+const resolveIfWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.DeploymentRef) => {
   const sources = resolveElements(model, nonWildcard)
   const [head, ...rest] = sources.map(s => resolveAscendingSiblings(s))
   if (head) {
@@ -33,10 +33,10 @@ const resolveIfWildcard = (model: LikeC4DeploymentModel, nonWildcard: Deployment
   return [sources, []] as const
 }
 
-export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpression.Direct> = {
+export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
   include: (expr, { model, stage }) => {
-    const sourceIsWildcard = DeploymentElementExpression.isWildcard(expr.source)
-    const targetIsWildcard = DeploymentElementExpression.isWildcard(expr.target)
+    const sourceIsWildcard = FqnExpr.isWildcard(expr.source)
+    const targetIsWildcard = FqnExpr.isWildcard(expr.target)
 
     let sources, targets
 
@@ -46,7 +46,7 @@ export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpres
         targets = sources.slice()
         break
       }
-      case targetIsWildcard && isRef(expr.source): {
+      case targetIsWildcard && FqnExpr.isDeploymentRef(expr.source): {
         const [
           resolvedSources,
           resolvedTargets
@@ -55,7 +55,7 @@ export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpres
         targets = resolvedTargets
         break
       }
-      case sourceIsWildcard && isRef(expr.target): {
+      case sourceIsWildcard && FqnExpr.isDeploymentRef(expr.target): {
         const [
           resolvedSources,
           resolvedTargets
@@ -66,8 +66,8 @@ export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpres
         break
       }
       default: {
-        invariant(isRef(expr.source), 'Type inference failed')
-        invariant(isRef(expr.target), 'Type inference failed')
+        invariant(FqnExpr.isDeploymentRef(expr.source), 'Type inference failed')
+        invariant(FqnExpr.isDeploymentRef(expr.target), 'Type inference failed')
         sources = resolveElements(model, expr.source)
         targets = resolveElements(model, expr.target)
       }
@@ -91,11 +91,11 @@ export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpres
         stage.addImplicit(c.boundary)
       }
     }
-    if (isRef(expr.source) && isNonNullish(expr.source.selector)) {
-      stage.addImplicit(model.element(expr.source.ref))
+    if (FqnExpr.isDeploymentRef(expr.source) && isNonNullish(expr.source.selector)) {
+      stage.addImplicit(model.element(expr.source.ref.deployment))
     }
-    if (isRef(expr.target) && isNonNullish(expr.target.selector)) {
-      stage.addImplicit(model.element(expr.target.ref))
+    if (FqnExpr.isDeploymentRef(expr.target) && isNonNullish(expr.target.selector)) {
+      stage.addImplicit(model.element(expr.target.ref.deployment))
     }
 
     return stage.patch()
@@ -104,8 +104,8 @@ export const DirectRelationPredicate: PredicateExecutor<DeploymentRelationExpres
     // * -> *
     // Exclude all connections
     if (
-      DeploymentElementExpression.isWildcard(expr.source)
-      && DeploymentElementExpression.isWildcard(expr.target)
+      FqnExpr.isWildcard(expr.source)
+      && FqnExpr.isWildcard(expr.target)
     ) {
       stage.excludeConnections(memory.connections)
       return stage.patch()

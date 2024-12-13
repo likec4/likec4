@@ -764,12 +764,12 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       text,
       index: 5,
       expectedItems: [
-        'c1',
-        'c2',
         'dev',
         'n1',
         'n2',
-        'i1'
+        'i1',
+        'c1',
+        'c2'
       ]
     })
 

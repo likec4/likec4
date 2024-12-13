@@ -71,10 +71,11 @@ export class DeploymentsIndex {
     const fqn = [
       this.Names.getNameStrict(node)
     ]
+    let _node = node
     let parentNode: ast.DeploymentNode | undefined
-    while ((parentNode = AstUtils.getContainerOfType(node.$container, ast.isDeploymentNode))) {
+    while ((parentNode = AstUtils.getContainerOfType(_node.$container, ast.isDeploymentNode))) {
       fqn.push(this.Names.getNameStrict(parentNode))
-      node = parentNode
+      _node = parentNode
     }
     id = fqn.reduceRight((acc, cur) => `${acc}.${cur}`) as Fqn
     ElementOps.writeId(node, id)

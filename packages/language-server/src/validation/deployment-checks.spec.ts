@@ -33,29 +33,29 @@ describe.concurrent('deployment relations check', () => {
     expect(errors).toEqual([])
   })
 
-  it('should report invalid relation between nodes and instance internals (source)', async ({ expect }) => {
-    const { validate } = createTestServices()
-    const { errors } = await validate(`${model}
-      deployment {
-        a1.a2 -> n1
-      }
-    `)
-    expect(errors).toEqual([
-      'Relations between deployment nodes and instance internals are not supported'
-    ])
-  })
+  // it('should report invalid relation between nodes and instance internals (source)', async ({ expect }) => {
+  //   const { validate } = createTestServices()
+  //   const { errors } = await validate(`${model}
+  //     deployment {
+  //       a1.a2 -> n1
+  //     }
+  //   `)
+  //   expect(errors).toEqual([
+  //     'Relations between deployment nodes and instance internals are not supported'
+  //   ])
+  // })
 
-  it('should report invalid relation between nodes and instance internals (target)', async ({ expect }) => {
-    const { validate } = createTestServices()
-    const { errors } = await validate(`${model}
-      deployment {
-        n2 -> a1.a2
-      }
-    `)
-    expect(errors).toEqual([
-      'Relations between deployment nodes and instance internals are not supported'
-    ])
-  })
+  // it('should report invalid relation between nodes and instance internals (target)', async ({ expect }) => {
+  //   const { validate } = createTestServices()
+  //   const { errors } = await validate(`${model}
+  //     deployment {
+  //       n2 -> a1.a2
+  //     }
+  //   `)
+  //   expect(errors).toEqual([
+  //     'Relations between deployment nodes and instance internals are not supported'
+  //   ])
+  // })
 
   it('should report invalid relation: parent -> child', async ({ expect }) => {
     const { validate } = createTestServices()

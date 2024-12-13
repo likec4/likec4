@@ -95,10 +95,6 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           return this.getScopeForFqnRef(container, context)
         }
 
-        if (ast.isDeploymentRef(container)) {
-          return this.getScopeForDeploymentRef(container, context)
-        }
-
         if (referenceType !== ast.Element) {
           return this.getGlobalScope(referenceType, context)
         }
@@ -138,36 +134,21 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
   }
 
-  protected getScopeForDeploymentRef(container: ast.DeploymentRef, context: ReferenceInfo) {
-    const parent = container.parent
-    if (!parent) {
-      return new MapScope(
-        // First preference for deployment nodes
-        this.computeScope(context, ast.DeploymentNode).getAllElements(),
-        // Second preference for deployed instances
-        this.computeScope(context, ast.DeployedInstance)
-      )
-    }
-    const parentRef = parent.value.ref
-    if (!parentRef) {
-      return EMPTY_SCOPE
-    }
-    if (ast.isDeploymentNode(parentRef)) {
-      return new StreamScope(this.deploymentsIndex.nested(parentRef))
-    }
-    if (ast.isDeployedInstance(parentRef)) {
-      return new StreamScope(this.scopeElementRef(parentRef.element))
-    }
-    if (ast.isElement(parentRef)) {
-      return new StreamScope(this.uniqueDescedants(() => parentRef))
-    }
-    return nonexhaustive(parentRef)
-  }
-
   protected getScopeForFqnRef(container: ast.FqnRef, context: ReferenceInfo) {
     const parent = container.parent
     if (!parent) {
-      return this.computeScope(context, ast.Referenceable)
+      return this.createScope(
+        // First preference for deployment nodes
+        this.computeScope(context, ast.DeploymentNode).getAllElements(),
+        this.createScope(
+          // Second preference for deployed instances
+          this.computeScope(context, ast.DeployedInstance).getAllElements(),
+          // Third preference for elements if we are in deployment view
+          AstUtils.hasContainerOfType(container, ast.isDeploymentView)
+            ? this.computeScope(context, ast.Element)
+            : EMPTY_SCOPE
+        )
+      )
     }
     const parentRef = parent.value.ref
     if (!parentRef) {

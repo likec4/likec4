@@ -111,12 +111,12 @@ export function isElementPredicateExpr(expr: Expression): expr is ElementPredica
   return isElement(expr) || isElementWhere(expr) || isCustomElement(expr)
 }
 
-export interface RelationExpr extends Omit<BaseExpr, 'source' | 'target'> {
+export interface RelationExpr_ extends Omit<BaseExpr, 'source' | 'target'> {
   source: ElementExpression
   target: ElementExpression
   isBidirectional?: boolean
 }
-export function isRelation(expr: Expression): expr is RelationExpr {
+export function isRelation(expr: Expression): expr is RelationExpr_ {
   return 'source' in expr && 'target' in expr
 }
 
@@ -140,7 +140,7 @@ export function isOutgoing(expr: Expression): expr is OutgoingExpr {
   return 'outgoing' in expr
 }
 
-export type RelationExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr
+export type RelationExpression = RelationExpr_ | InOutExpr | IncomingExpr | OutgoingExpr
 
 export function isRelationExpression(expr: Expression): expr is RelationExpression {
   return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr)

@@ -1,9 +1,8 @@
-import { isSameHierarchy, nonNullable } from '@likec4/core'
+import { FqnRef, isSameHierarchy, nonNullable } from '@likec4/core'
 import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
-import { instanceRef } from '../utils/deploymentRef'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
@@ -63,6 +62,7 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
         range
       })
     }
+
     const fqnName = DeploymentsIndex.getFqnName(el)
 
     const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
@@ -80,88 +80,52 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
 }
 
 export const deploymentRelationChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentRelation> => {
-  const DeploymentsIndex = services.likec4.DeploymentsIndex
-  // const Names = services.references.NameProvider as LikeC4NameProvider
-  // const Locator = services.workspace.AstNodeLocator
-  // const fqnIndex = services.likec4.FqnIndex
+  const ModelParser = services.likec4.ModelParser
   return tryOrLog((el, accept) => {
     const source = el.source?.value?.ref
-    const target = el.target?.value?.ref
-
-    if (!source || !target) {
-      return
-    }
-
-    if (
-      ast.isElement(source) && ast.isDeploymentNode(target) || ast.isElement(target) && ast.isDeploymentNode(source)
-    ) {
-      const range = el.target.$cstNode?.range ?? el.source.$cstNode?.range
-      accept('error', 'Relations between deployment nodes and instance internals are not supported', {
-        node: el,
-        ...range && { range }
-      })
-      return
-    }
-
-    const sourceEl = ast.isElement(source)
-      ? instanceRef(el.source)
-      : source
-
-    if (!sourceEl) {
-      accept('error', 'Source not resolved', {
+    if (!source) {
+      let sourceCstText = el.source?.$cstNode?.text ?? ''
+      accept('error', `DeploymentRelation source '${sourceCstText}' not resolved`, {
         node: el,
         property: 'source'
       })
       return
     }
-    const sourceFqn = DeploymentsIndex.getFqnName(sourceEl)
-
-    const targetEl = ast.isElement(target)
-      ? instanceRef(el.target)
-      : target
-
-    if (!targetEl) {
-      accept('error', 'Target not resolved', {
+    const target = el.target?.value?.ref
+    if (!target) {
+      let targetCstText = el.target?.$cstNode?.text ?? ''
+      accept('error', `DeploymentRelation target '${targetCstText}' not resolved`, {
         node: el,
         property: 'target'
       })
       return
     }
-    const targetFqn = DeploymentsIndex.getFqnName(targetEl)
 
-    if (isSameHierarchy(sourceFqn, targetFqn)) {
+    const doc = getDocument(el)
+    const parser = ModelParser.forDocument(doc)
+
+    const sourceFqnRef = parser.parseFqnRef(el.source)
+    if (FqnRef.isModelRef(sourceFqnRef)) {
+      accept('error', 'DeploymentRelation must refer deployment element', {
+        node: el,
+        property: 'source'
+      })
+      return
+    }
+
+    const targetFqnRef = parser.parseFqnRef(el.target)
+    if (FqnRef.isModelRef(targetFqnRef)) {
+      accept('error', 'DeploymentRelation must refer deployment element', {
+        node: el,
+        property: 'target'
+      })
+      return
+    }
+
+    if (isSameHierarchy(sourceFqnRef.deployment, targetFqnRef.deployment)) {
       accept('error', 'Invalid parent-child relationship', {
         node: el
       })
     }
-
-    // const sourceFqn = ast.isElement(sourceEl) ? fqnIndex.getFqn(sourceEl) : DeploymentsIndex.getFqnName(sourceEl) as Fqn
-    // if (!sourceFqn) {
-    //   accept('error', 'Source not resolved', {
-    //     node: el,
-    //     property: 'source'
-    //   })
-    // }
-
-    // const targetFqn = ast.isElement(targetEl) ? fqnIndex.getFqn(targetEl) : DeploymentsIndex.getFqnName(targetEl) as Fqn
-    // if (!targetFqn) {
-    //   accept('error', 'Target not resolved', {
-    //     node: el,
-    //     property: 'target'
-    //   })
-    // }
-
-    // if (!!sourceFqn && sourceFqn === targetFqn) {
-    //   accept('error', 'Self-relation is not allowed', {
-    //     node: el
-    //   })
-    //   return
-    // }
-
-    // if (sourceFqn && targetFqn && isSameHierarchy(sourceFqn, targetFqn)) {
-    //   accept('error', 'Invalid parent-child relationship', {
-    //     node: el
-    //   })
-    // }
   })
 }

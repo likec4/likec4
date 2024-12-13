@@ -14,7 +14,7 @@ import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
 import { type Base, removeIndent, toSingleLine } from './Base'
 
-export type WithModelParser = ReturnType<typeof ModelParser>
+export type WithModel = ReturnType<typeof ModelParser>
 
 export function ModelParser<TBase extends Base>(B: TBase) {
   return class ModelParser extends B {

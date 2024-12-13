@@ -1,34 +1,17 @@
 import type * as c4 from '@likec4/core'
-import { FqnExpression, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { FqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { isNonNullish } from 'remeda'
 import { ast, type ParsedAstDeploymentView, toAutoLayout, toElementStyle, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
 import { removeIndent, toSingleLine } from './Base'
-import type { WithDeploymentModelParser } from './DeploymentModelParser'
-import type { WithFqnRef } from './FqnRefParser'
+import type { WithDeploymentModel } from './DeploymentModelParser'
+import type { WithExpressionV2 } from './FqnRefParser'
 
-export type WithDeploymentViewParser = ReturnType<typeof DeploymentViewParser>
+export type WithDeploymentView = ReturnType<typeof DeploymentViewParser>
 
-const toDeploymentElementExpression = (ref: FqnExpression.Element): c4.DeploymentElementExpression => {
-  invariant(!FqnExpression.Element.isModelRef(ref), 'Unexpected refence to model element')
-
-  if (FqnExpression.Element.isWildcard(ref)) {
-    return ref
-  }
-  if (FqnExpression.Element.isDeploymentRef(ref)) {
-    return {
-      ...ref.selector && { selector: ref.selector },
-      ref: {
-        id: ref.ref.deployment
-      }
-    }
-  }
-  nonexhaustive(ref)
-}
-
-export function DeploymentViewParser<TBase extends WithFqnRef & WithDeploymentModelParser>(B: TBase) {
+export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploymentModel>(B: TBase) {
   return class DeploymentViewParser extends B {
     parseDeploymentView(
       astNode: ast.DeploymentView
@@ -91,18 +74,18 @@ export function DeploymentViewParser<TBase extends WithFqnRef & WithDeploymentMo
     }
 
     parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewRulePredicate {
-      const exprs = [] as c4.DeploymentExpression[]
+      const exprs = [] as c4.ExpressionV2[]
       let iterator: ast.DeploymentViewRulePredicateExpression | undefined = astRule.expr
       while (iterator) {
         try {
           const expr = iterator.value
           if (isNonNullish(expr) && this.isValid(expr)) {
             switch (true) {
-              case ast.isDeploymentElementExpression(expr):
-                exprs.unshift(this.parseDeploymentElementExpression(expr))
+              case ast.isFqnExpr(expr):
+                exprs.unshift(this.parseFqnExpr(expr))
                 break
-              case ast.isDeploymentRelationExpression(expr):
-                exprs.unshift(this.parseDeploymentRelationExpression(expr))
+              case ast.isRelationExpr(expr):
+                exprs.unshift(this.parseRelationExpr(expr))
                 break
               default:
                 nonexhaustive(expr)
@@ -120,7 +103,7 @@ export function DeploymentViewParser<TBase extends WithFqnRef & WithDeploymentMo
       const styleProps = astRule.props.filter(ast.isStyleProperty)
       const notationProperty = astRule.props.find(ast.isNotationProperty)
       const notation = removeIndent(notationProperty?.value)
-      const targets = this.parseFqnExpressions(astRule.targets).map(toDeploymentElementExpression)
+      const targets = this.parseFqnExpressions(astRule.targets)
       return {
         targets,
         ...(notation && { notation }),
@@ -128,81 +111,6 @@ export function DeploymentViewParser<TBase extends WithFqnRef & WithDeploymentMo
           ...toElementStyle(styleProps, this.isValid)
         }
       }
-    }
-
-    parseDeploymentElementExpression(astNode: ast.DeploymentElementExpression): c4.DeploymentExpression {
-      if (ast.isWildcardExpression(astNode)) {
-        return {
-          wildcard: true
-        }
-      }
-      if (ast.isDeploymentRefExpression(astNode)) {
-        const ref = this.parseDeploymentDef(astNode.ref)
-        switch (true) {
-          case astNode.selector === '._':
-            return {
-              ref,
-              selector: 'expanded'
-            }
-          case astNode.selector === '.**':
-            return {
-              ref,
-              selector: 'descendants'
-            }
-          case astNode.selector === '.*':
-            return {
-              ref,
-              selector: 'children'
-            }
-          default:
-            return { ref }
-        }
-      }
-      nonexhaustive(astNode)
-    }
-
-    parseDeploymentRelationExpression(astNode: ast.DeploymentRelationExpression): c4.DeploymentRelationExpression {
-      if (ast.isDirectedDeploymentRelationExpression(astNode)) {
-        return {
-          source: this.convertFqnRefToDeploymentElementExpression(astNode.source.from),
-          target: this.convertFqnRefToDeploymentElementExpression(astNode.target),
-          isBidirectional: astNode.source.isBidirectional
-        }
-      }
-      if (ast.isInOutDeploymentRelationExpression(astNode)) {
-        return {
-          inout: this.convertFqnRefToDeploymentElementExpression(astNode.inout.to)
-        }
-      }
-      if (ast.isOutgoingDeploymentRelationExpression(astNode)) {
-        return {
-          outgoing: this.convertFqnRefToDeploymentElementExpression(astNode.from)
-        }
-      }
-      if (ast.isIncomingDeploymentRelationExpression(astNode)) {
-        return {
-          incoming: this.convertFqnRefToDeploymentElementExpression(astNode.to)
-        }
-      }
-      nonexhaustive(astNode)
-    }
-
-    convertFqnRefToDeploymentElementExpression(node: ast.FqnExpression): c4.DeploymentElementExpression {
-      const ref = this.parseFqnExpression(node)
-      invariant(!FqnExpression.Element.isModelRef(ref), 'Unexpected refence to model element')
-
-      if (FqnExpression.Element.isWildcard(ref)) {
-        return ref
-      }
-      if (FqnExpression.Element.isDeploymentRef(ref)) {
-        return {
-          ...ref.selector && { selector: ref.selector },
-          ref: {
-            id: ref.ref.deployment
-          }
-        }
-      }
-      nonexhaustive(ref)
     }
   }
 }

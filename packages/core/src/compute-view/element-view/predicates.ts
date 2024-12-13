@@ -480,7 +480,7 @@ function resolveRelationExprElements(this: ComputeCtx, expr: Expr.ElementExpress
   return resolveElements.call(this, expr)
 }
 
-export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr, where?: RelationPredicateFn) {
+export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr_, where?: RelationPredicateFn) {
   let sources, targets
   if (Expr.isWildcard(expr.source) && !Expr.isWildcard(expr.target)) {
     sources = resolveNeighbours.call(this, expr.target)
@@ -501,7 +501,7 @@ export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr, w
   })
 }
 
-export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr, where?: RelationPredicateFn) {
+export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr_, where?: RelationPredicateFn) {
   const isSource = elementExprToPredicate(expr.source)
   const isTarget = elementExprToPredicate(expr.target)
   const satisfies = (edge: ComputeCtx.Edge) => {

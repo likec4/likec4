@@ -17,12 +17,12 @@ import { stringHash } from '../../utils'
 import { elementRef } from '../../utils/elementRef'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
 import { removeIndent, toSingleLine } from './Base'
-import type { WithDeploymentViewParser } from './DeploymentViewParser'
-import type { WithPredicatesParser } from './PredicatesParser'
+import type { WithDeploymentView } from './DeploymentViewParser'
+import type { WithPredicates } from './PredicatesParser'
 
 export type WithViewsParser = ReturnType<typeof ViewsParser>
 
-export function ViewsParser<TBase extends WithPredicatesParser & WithDeploymentViewParser>(B: TBase) {
+export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
     parseViews() {
       const isValid = this.isValid

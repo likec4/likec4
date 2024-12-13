@@ -7,7 +7,7 @@ import { elementRef } from '../../utils/elementRef'
 import { parseWhereClause } from '../model-parser-where'
 import { type Base, removeIndent } from './Base'
 
-export type WithPredicatesParser = ReturnType<typeof PredicatesParser>
+export type WithPredicates = ReturnType<typeof PredicatesParser>
 
 export function PredicatesParser<TBase extends Base>(B: TBase) {
   return class PredicatesParser extends B {
@@ -29,7 +29,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         return this.parseElementPredicateWhere(astNode)
       }
       if (ast.isElementExpression(astNode)) {
-        return this.parseElementExpr(astNode)
+        return this.parseElementExpression(astNode)
       }
       nonexhaustive(astNode)
     }
@@ -40,7 +40,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       while (iter) {
         try {
           if (iter.value) {
-            exprs.unshift(this.parseElementExpr(iter.value))
+            exprs.unshift(this.parseElementExpression(iter.value))
           }
         } catch (e) {
           logWarnError(e)
@@ -50,7 +50,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       return exprs
     }
 
-    parseElementExpr(astNode: ast.ElementExpression): c4.ElementExpression {
+    parseElementExpression(astNode: ast.ElementExpression): c4.ElementExpression {
       if (ast.isWildcardExpression(astNode)) {
         return {
           wildcard: true
@@ -104,7 +104,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
     }
 
     parseElementPredicateWhere(astNode: ast.ElementPredicateWhere): c4.ElementWhereExpr {
-      const expr = this.parseElementExpr(astNode.subject)
+      const expr = this.parseElementExpression(astNode.subject)
       return {
         where: {
           expr,
@@ -188,7 +188,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       if (ast.isRelationPredicateWith(astNode)) {
         let relation = ast.isRelationPredicateWhere(astNode.subject)
           ? this.parseRelationPredicateWhere(astNode.subject)
-          : this.parseRelationExpr(astNode.subject)
+          : this.parseRelationExpression(astNode.subject)
 
         return this.parseRelationPredicateWith(astNode, relation)
       }
@@ -196,13 +196,13 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         return this.parseRelationPredicateWhere(astNode)
       }
       if (ast.isRelationExpression(astNode)) {
-        return this.parseRelationExpr(astNode)
+        return this.parseRelationExpression(astNode)
       }
       nonexhaustive(astNode)
     }
 
     parseRelationPredicateWhere(astNode: ast.RelationPredicateWhere): c4.RelationWhereExpr {
-      const expr = this.parseRelationExpr(astNode.subject)
+      const expr = this.parseRelationExpression(astNode.subject)
       return {
         where: {
           expr,
@@ -262,27 +262,27 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
       )
     }
 
-    parseRelationExpr(astNode: ast.RelationExpression): c4.RelationExpression {
+    parseRelationExpression(astNode: ast.RelationExpression): c4.RelationExpression {
       if (ast.isDirectedRelationExpression(astNode)) {
         return {
-          source: this.parseElementExpr(astNode.source.from),
-          target: this.parseElementExpr(astNode.target),
+          source: this.parseElementExpression(astNode.source.from),
+          target: this.parseElementExpression(astNode.target),
           isBidirectional: astNode.source.isBidirectional
         }
       }
       if (ast.isInOutRelationExpression(astNode)) {
         return {
-          inout: this.parseElementExpr(astNode.inout.to)
+          inout: this.parseElementExpression(astNode.inout.to)
         }
       }
       if (ast.isOutgoingRelationExpression(astNode)) {
         return {
-          outgoing: this.parseElementExpr(astNode.from)
+          outgoing: this.parseElementExpression(astNode.from)
         }
       }
       if (ast.isIncomingRelationExpression(astNode)) {
         return {
-          incoming: this.parseElementExpr(astNode.to)
+          incoming: this.parseElementExpression(astNode.to)
         }
       }
       nonexhaustive(astNode)

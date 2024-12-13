@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { isNonEmptyArray, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
+import { FqnRef, isNonEmptyArray, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
 import { filter, first, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   ast,
@@ -9,14 +9,14 @@ import {
   toRelationshipStyleExcludeDefaults
 } from '../../ast'
 import { logWarnError } from '../../logger'
-import { instanceRef } from '../../utils/deploymentRef'
 import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
-import { type Base, removeIndent, toSingleLine } from './Base'
+import { removeIndent, toSingleLine } from './Base'
+import type { WithExpressionV2 } from './FqnRefParser'
 
-export type WithDeploymentModelParser = ReturnType<typeof DeploymentModelParser>
+export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
 
-export function DeploymentModelParser<TBase extends Base>(B: TBase) {
+export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) {
   return class DeploymentModelParser extends B {
     parseDeployment() {
       type TraversePair = ast.DeployedInstance | ast.DeploymentNode | ast.DeploymentRelation
@@ -146,8 +146,8 @@ export function DeploymentModelParser<TBase extends Base>(B: TBase) {
     parseDeploymentRelation(astNode: ast.DeploymentRelation): ParsedAstDeploymentRelation {
       const isValid = this.isValid
       const astPath = this.getAstNodePath(astNode)
-      const source = this.parseDeploymentDef(astNode.source)
-      const target = this.parseDeploymentDef(astNode.target)
+      const source = FqnRef.toDeploymentRef(this.parseFqnRef(astNode.source))
+      const target = FqnRef.toDeploymentRef(this.parseFqnRef(astNode.target))
 
       const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
       const links = this.convertLinks(astNode.body)
@@ -195,30 +195,6 @@ export function DeploymentModelParser<TBase extends Base>(B: TBase) {
         ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
         astPath
       }
-    }
-
-    parseDeploymentDef(astNode: ast.DeploymentRef): c4.DeploymentRef {
-      const refValue = nonNullable(
-        astNode.value.ref,
-        `Deployment ref is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`
-      )
-      if (ast.isElement(refValue)) {
-        const deployedInstanceAst = nonNullable(instanceRef(astNode), 'Instance ref not found')
-        const id = this.resolveFqn(deployedInstanceAst)
-        const element = this.resolveFqn(refValue)
-        return {
-          id,
-          element
-        }
-      }
-
-      if (ast.isDeploymentElement(refValue)) {
-        return {
-          id: this.resolveFqn(refValue)
-        }
-      }
-
-      nonexhaustive(refValue)
     }
   }
 }

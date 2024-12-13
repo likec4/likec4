@@ -1,16 +1,17 @@
 import { identity } from 'remeda'
+import { invariant } from '../../../errors'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
-import { DeploymentElementExpression, type DeploymentRelationExpression } from '../../../types/deployments'
+import { FqnExpr, type RelationExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements } from '../utils'
 import { resolveAscendingSiblings } from './relation-direct'
 
 // from visible element incoming to this
-export const IncomingRelationPredicate: PredicateExecutor<DeploymentRelationExpression.Incoming> = {
+export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming> = {
   include: (expr, { model, memory, stage }) => {
     const sources = [...memory.elements]
-    if (DeploymentElementExpression.isWildcard(expr.incoming)) {
+    if (FqnExpr.isWildcard(expr.incoming)) {
       for (const source of sources) {
         if (source.allOutgoing.isEmpty) {
           continue
@@ -20,6 +21,7 @@ export const IncomingRelationPredicate: PredicateExecutor<DeploymentRelationExpr
       }
       return stage.patch()
     }
+    invariant(FqnExpr.isDeploymentRef(expr.incoming), 'Expected DeploymentRef')
 
     const targets = resolveElements(model, expr.incoming)
     for (const source of sources) {

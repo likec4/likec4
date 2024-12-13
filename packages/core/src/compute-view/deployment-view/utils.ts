@@ -7,10 +7,11 @@ import {
   type ComputedEdge,
   type ComputedNode,
   DefaultArrowType,
-  DeploymentElementExpression,
   type DeploymentNodeKind,
   type DeploymentViewRule,
   type Fqn,
+  FqnExpr,
+  type FqnRef,
   isViewRuleStyle,
   type NonEmptyArray,
   type Tag
@@ -27,9 +28,9 @@ type Predicate<T> = (x: T) => boolean
 
 export function resolveElements(
   model: LikeC4DeploymentModel,
-  expr: DeploymentElementExpression.Ref
+  expr: FqnExpr.DeploymentRef
 ) {
-  const ref = model.element(expr.ref)
+  const ref = model.element(expr.ref.deployment)
   if (ref.isDeploymentNode()) {
     if (expr.selector === 'children') {
       return [...ref.children()]
@@ -45,13 +46,13 @@ export function resolveElements(
 }
 
 export function deploymentExpressionToPredicate<T extends { id: string }>(
-  target: DeploymentElementExpression
+  target: FqnExpr
 ): Predicate<T> {
-  if (DeploymentElementExpression.isWildcard(target)) {
+  if (FqnExpr.isWildcard(target)) {
     return () => true
   }
-  if (DeploymentElementExpression.isRef(target)) {
-    const fqn = target.ref.id
+  if (FqnExpr.isDeploymentRef(target)) {
+    const fqn = target.ref.deployment
     if (target.selector === 'expanded') {
       const fqnWithDot = fqn + '.'
       return n => n.id === fqn || n.id.startsWith(fqnWithDot)
@@ -64,6 +65,9 @@ export function deploymentExpressionToPredicate<T extends { id: string }>(
       return n => parentFqn(n.id) === fqn
     }
     return n => n.id === fqn
+  }
+  if (FqnExpr.isModelRef(target)) {
+    return () => false
   }
   nonexhaustive(target)
 }

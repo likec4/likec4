@@ -1,7 +1,6 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { DeploymentExpression } from './deployments'
 import {
   type BorderStyle,
   ElementKind,
@@ -12,6 +11,7 @@ import {
   type Tag
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
+import type { ExpressionV2, FqnExpr } from './expression-v2'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
@@ -222,15 +222,15 @@ export type CustomColorDefinitions = { [key: string]: ThemeColorValues }
 
 export type DeploymentViewRulePredicate =
   | {
-    include: DeploymentExpression[]
+    include: ExpressionV2[]
     exclude?: never
   }
   | {
     include?: never
-    exclude: DeploymentExpression[]
+    exclude: ExpressionV2[]
   }
 export type DeploymentViewRuleStyle = {
-  targets: DeploymentExpression[]
+  targets: FqnExpr[]
   notation?: string
   style: ElementStyle & {
     color?: Color

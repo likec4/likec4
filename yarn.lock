@@ -2207,6 +2207,7 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:3.3.0"
     langium-cli: "npm:3.3.0"
+    mnemonist: "npm:^0.39.8"
     npm-run-all2: "npm:^7.0.1"
     p-debounce: "npm:^4.0.0"
     remeda: "npm:^2.17.4"

@@ -6,6 +6,7 @@ import LRUCache from 'mnemonist/lru-cache'
 import prettyMilliseconds from 'pretty-ms'
 import { keys } from 'remeda'
 import vscode from 'vscode'
+import { isDev } from './const'
 import type { ExtensionController } from './ExtensionController'
 import { logger } from './logger'
 import { AbstractDisposable } from './util'
@@ -38,9 +39,11 @@ export class LikeC4Model extends AbstractDisposable {
   private async fetchModelAndUpdateCaches() {
     const mark = performance.mark('fetchComputedModel:start')
     const model = await this.ctrl.rpc.fetchComputedModel()
-    const measure = performance.measure('FetchComputedModel', mark.name)
-    performance.clearMarks(mark.name)
-    logger.debug(`[LikeC4Model.fetchComputedModel] ${prettyMilliseconds(measure.duration)}`)
+    if (isDev) {
+      const measure = performance.measure('FetchComputedModel', mark.name)
+      performance.clearMarks(mark.name)
+      logger.debug(`[LikeC4Model.fetchComputedModel] ${prettyMilliseconds(measure.duration)}`)
+    }
     return { model }
   }
 
@@ -76,8 +79,10 @@ export class LikeC4Model extends AbstractDisposable {
         logger.warn(`[LikeC4Model.layoutView] failed ${viewId}`, err)
         return Promise.reject(err)
       } finally {
-        const measure = performance.measure('LayoutView', mark.name)
-        logger.debug(`[LikeC4Model.layoutView] "${viewId}" in ${prettyMilliseconds(measure.duration)}`)
+        if (isDev) {
+          const measure = performance.measure('LayoutView', mark.name)
+          logger.debug(`[LikeC4Model.layoutView] "${viewId}" in ${prettyMilliseconds(measure.duration)}`)
+        }
       }
     }
     return layoutedView
