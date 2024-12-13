@@ -1,6 +1,6 @@
 import { isEmpty } from 'remeda'
 import type { Link, Tag } from '../types/element'
-import type { Relation } from '../types/relation'
+import type { ModelRelation } from '../types/relation'
 import { commonAncestor } from '../utils/fqn'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
@@ -21,7 +21,7 @@ export class RelationshipModel<M extends AnyAux> {
 
   constructor(
     public readonly model: LikeC4Model<M>,
-    public readonly $relationship: Relation
+    public readonly $relationship: ModelRelation
   ) {
     this.source = model.element($relationship.source)
     this.target = model.element($relationship.target)

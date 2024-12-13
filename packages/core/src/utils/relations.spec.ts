@@ -1,6 +1,6 @@
 import { sort } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Fqn, Relation, RelationId } from '../types'
+import type { Fqn, ModelRelation, RelationId } from '../types'
 import { compareRelations, isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from './relations'
 
 const relations = [
@@ -46,10 +46,10 @@ const relations = [
     target: 'cloud.backend.graphql' as Fqn,
     title: ''
   }
-] satisfies Relation[]
+] satisfies ModelRelation[]
 
 describe('relation predicates', () => {
-  const expectRelations = (predicate: (relation: Relation) => boolean) =>
+  const expectRelations = (predicate: (relation: ModelRelation) => boolean) =>
     expect(relations.filter(predicate).map(r => r.id))
 
   const customer = 'customer' as Fqn

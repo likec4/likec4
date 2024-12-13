@@ -183,8 +183,8 @@ function nodeData(
     },
     navigateTo: diagramNode?.navigateTo ?? element.defaultView?.id ?? null,
     ports: {
-      left: [],
-      right: []
+      in: [],
+      out: []
     }
   }
 }
@@ -205,7 +205,8 @@ function createEmptyNode(
     id,
     position: { x: 0, y: 0 },
     data: {
-      column
+      column,
+      existsInCurrentView: true
     },
     zIndex: ZIndexes.empty
   }
@@ -307,13 +308,13 @@ function applyDagreLayout(g: dagre.graphlib.Graph) {
 function addEdge(
   ctx: Context,
   props: {
-    includedInCurrentView: boolean
+    existsInCurrentView: boolean
     source: string
     target: string
     relations: XYFlowTypes.Edge['data']['relations']
   }
 ) {
-  const { source, target, relations, includedInCurrentView } = props
+  const { source, target, relations, existsInCurrentView } = props
   const ids = relations.map(r => r.id).join('_')
   const label = only(relations)?.title ?? 'untitled'
 
@@ -326,7 +327,7 @@ function addEdge(
     sourceHandle: target,
     targetHandle: source,
     data: {
-      includedInCurrentView,
+      existsInCurrentView: existsInCurrentView,
       relations
     },
     label: isMultiple ? `${relations.length} relationships` : label,
@@ -500,7 +501,7 @@ function layout(
           relation,
           source,
           target,
-          includedInCurrentView: viewRelationships.has(relation.id),
+          existsInCurrentView: viewRelationships.has(relation.id),
           id: `${source.id}:${target.id}`
         })
       })
@@ -512,14 +513,8 @@ function layout(
       const { source, target } = grouped[0]
       const relations = map(grouped, g => g.relation)
 
-      source.data.ports.right.push({
-        id: target.id,
-        type: 'out'
-      })
-      target.data.ports.left.push({
-        id: source.id,
-        type: 'in'
-      })
+      source.data.ports.out.push(target.id)
+      target.data.ports.in.push(source.id)
 
       const isAnyCompound = source.type === 'compound' || target.type === 'compound'
 
@@ -530,7 +525,7 @@ function layout(
 
       addEdge(ctx, {
         // if view does not include subject - do not highlight
-        includedInCurrentView: !viewIncludesSubject || grouped.every(g => g.includedInCurrentView),
+        existsInCurrentView: !viewIncludesSubject || grouped.every(g => g.existsInCurrentView),
         source: source.id,
         target: target.id,
         relations
@@ -555,7 +550,7 @@ function layout(
     if (subject.type !== 'element') {
       continue
     }
-    const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
+    const subjectPortsCount = Math.max(subject.data.ports.in.length, subject.data.ports.out.length)
     if (subjectPortsCount > 2) {
       g.node(subject.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 14
     }
@@ -628,13 +623,13 @@ function layout(
   }
 
   // Sort ports in subject vertically
-  const sortedPorts = (ports: XYFlowTypes.Port[]) => {
+  const sortedPorts = (ports: string[]) => {
     return pipe(
       ports,
       map(port => {
         return {
           port,
-          topY: nodeBounds(port.id).position.y
+          topY: nodeBounds(port).position.y
         }
       }),
       sortBy(prop('topY')),
@@ -658,11 +653,11 @@ function layout(
       continue
     }
     // Sort ports by their position
-    if (node.data.ports.left.length > 1) {
-      node.data.ports.left = sortedPorts(node.data.ports.left)
+    if (node.data.ports.in.length > 1) {
+      node.data.ports.in = sortedPorts(node.data.ports.in)
     }
-    if (node.data.ports.right.length > 1) {
-      node.data.ports.right = sortedPorts(node.data.ports.right)
+    if (node.data.ports.out.length > 1) {
+      node.data.ports.out = sortedPorts(node.data.ports.out)
     }
   }
 

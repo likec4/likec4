@@ -24,7 +24,7 @@ import {
   isRelationWhere,
   type NonEmptyArray,
   type OutgoingExpr as C4OutgoingExpr,
-  type Relation,
+  type ModelRelation,
   type RelationExpr as C4RelationExpr,
   type RelationId,
   type RelationshipArrowType,
@@ -256,7 +256,7 @@ const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
     source: source as Fqn,
     target: target as Fqn,
     ...(props as any)
-  }) as Omit<Relation, 'id'> & { id: `${Source}:${Target}` }
+  }) as Omit<ModelRelation, 'id'> & { id: `${Source}:${Target}` }
 
 export const fakeRelations = [
   rel({

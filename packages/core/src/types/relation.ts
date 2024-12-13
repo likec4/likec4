@@ -26,24 +26,28 @@ export const DefaultLineStyle = 'dashed' satisfies RelationshipLineType
 export const DefaultArrowType = 'normal' satisfies RelationshipArrowType
 export const DefaultRelationshipColor = 'gray' satisfies ThemeColor
 
-// TODO: rename to Relationship
-export interface Relation {
+export interface AbstractRelation {
   readonly id: RelationId
-  readonly source: Fqn
-  readonly target: Fqn
-  readonly title: string
+  readonly title?: string
   readonly description?: string
   readonly technology?: string
-  readonly tags?: NonEmptyArray<Tag>
+  readonly tags?: NonEmptyArray<Tag> | null
   readonly kind?: RelationshipKind
   readonly color?: Color
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
-  readonly links?: NonEmptyArray<Link>
+  readonly links?: NonEmptyArray<Link> | null
   // Link to dynamic view
   readonly navigateTo?: ViewId
   readonly metadata?: { [key: string]: string }
+}
+
+// TODO: rename to Relationship
+export interface ModelRelation extends AbstractRelation {
+  readonly source: Fqn
+  readonly target: Fqn
+  readonly title: string
 }
 
 export interface RelationshipKindSpecification {

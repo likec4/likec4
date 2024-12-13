@@ -7,8 +7,8 @@ import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
-import type { XYFlowTypes } from '../_types'
 import * as css from './styles.css'
+import type { SharedTypes } from '../../shared/xyflow/_types'
 
 const Action = ActionIcon.withProps({
   className: 'nodrag nopan ' + css.navigateBtn,
@@ -22,7 +22,7 @@ const Text = MantineText.withProps({
   component: 'div'
 })
 
-type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
+type ElementNodeProps = NodeProps<SharedTypes.ElementNode>
 
 function selector(s: DiagramState) {
   return {
@@ -150,10 +150,6 @@ export function ElementNode({
             top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
-      {
-        /* <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} /> */
-      }
     </>
   )
 }

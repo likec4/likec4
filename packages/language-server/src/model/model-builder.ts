@@ -189,7 +189,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       links: unresolvedLinks,
       id,
       ...model
-    }: ParsedAstRelation): c4.Relation | null => {
+    }: ParsedAstRelation): c4.ModelRelation | null => {
       if (isNullish(elements[source]) || isNullish(elements[target])) {
         logger.warn(
           `Invalid relation ${id} at ${doc.uri.path} ${astPath}, source: ${source}(${!!elements[
@@ -209,7 +209,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           target,
           kind,
           id
-        } satisfies c4.Relation
+        } satisfies c4.ModelRelation
       }
       return {
         ...links && { links },
@@ -217,7 +217,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         source,
         target,
         id
-      } satisfies c4.Relation
+      } satisfies c4.ModelRelation
     }
   }
 

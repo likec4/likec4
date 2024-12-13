@@ -21,7 +21,7 @@ import {
   type Link,
   type ModelGlobals,
   type NonEmptyArray,
-  type Relation,
+  type ModelRelation,
   type RelationId,
   type Tag
 } from '../types'
@@ -242,7 +242,7 @@ export interface Builder<T extends AnyTypes> {
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
   _elements = new Map<string, Element>(),
-  _relations = [] as Relation[],
+  _relations = [] as ModelRelation[],
   _views = new Map<string, LikeC4View>(),
   _globals = {
     predicates: {},

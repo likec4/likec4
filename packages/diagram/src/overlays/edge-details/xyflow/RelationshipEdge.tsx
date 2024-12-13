@@ -7,7 +7,7 @@ import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-edge-details'
-import * as css from './styles.css'
+import * as css from '../../shared/xyflow/RelationshipEdge.css'
 
 export function RelationshipEdge({
   data,
