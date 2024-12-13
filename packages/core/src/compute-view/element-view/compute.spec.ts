@@ -1,6 +1,6 @@
 import { indexBy } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Element, ElementView, Relation, Tag, ViewId, ViewRule } from '../../types'
+import type { Element, ElementView, ModelRelation, Tag, ViewId, ViewRule } from '../../types'
 import { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { $include, fakeElements } from './__test__/fixture'
@@ -10,12 +10,12 @@ function el(id: string): Element {
   return { id } as Element
 }
 
-function r(source: string, target: string): Relation {
+function r(source: string, target: string): ModelRelation {
   return {
     id: `${source}:${target}`,
     source,
     target
-  } as Relation
+  } as ModelRelation
 }
 
 function v(rules: ViewRule[]): ElementView {

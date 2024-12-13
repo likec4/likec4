@@ -20,6 +20,7 @@ import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
 import { RelationshipEdge } from './xyflow/RelationshipEdge'
 import type { SharedTypes } from '../shared/xyflow/_types'
+import { only } from 'remeda'
 
 const nodeTypes = {
   element: ElementNode,
@@ -195,8 +196,10 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
       // }}
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
+        // edge-details only ever deals with edges that represent only one relation
+        let relationId = only(edge.data.relations)!.id;
         diagramStore.getState().onOpenSource?.({
-          relation: edge.data.relationId
+          relation: relationId
         })
       }}
       // onEdgeClick={(e, edge) => {

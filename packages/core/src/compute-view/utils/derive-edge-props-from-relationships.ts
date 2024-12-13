@@ -1,9 +1,9 @@
 import { isTruthy, only, pick, pickBy, pipe, reduce, unique } from 'remeda'
 import type { Color, DeploymentRelation, Link, Tag, ViewId } from '../../types'
-import type { Relation, RelationshipArrowType, RelationshipKind, RelationshipLineType } from '../../types/relation'
+import type { ModelRelation, RelationshipArrowType, RelationshipKind, RelationshipLineType } from '../../types/relation'
 import { isNonEmptyArray } from '../../utils'
 
-export function pickRelationshipProps(relation: Relation | DeploymentRelation) {
+export function pickRelationshipProps(relation: ModelRelation | DeploymentRelation) {
   return pick(relation, [
     'title',
     'description',
@@ -20,7 +20,7 @@ export function pickRelationshipProps(relation: Relation | DeploymentRelation) {
 }
 type RelationshipProps = ReturnType<typeof pickRelationshipProps>
 
-export function deriveEdgePropsFromRelationships(relations: Array<Relation | DeploymentRelation>) {
+export function deriveEdgePropsFromRelationships(relations: Array<ModelRelation | DeploymentRelation>) {
   // TODO:
   const allprops = pipe(
     relations,

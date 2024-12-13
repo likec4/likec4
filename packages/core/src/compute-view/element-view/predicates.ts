@@ -1,7 +1,7 @@
 import { allPass, filter as remedaFilter, flatMap, isNullish as isNil, map, pipe, unique } from 'remeda'
 import type { Writable } from 'type-fest'
 import { nonexhaustive } from '../../errors'
-import type { Element, Relation } from '../../types'
+import type { Element, ModelRelation } from '../../types'
 import * as Expr from '../../types/expression'
 import { isAncestor, parentFqn } from '../../utils/fqn'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
@@ -9,7 +9,7 @@ import type { ComputeCtx } from './compute'
 
 type Predicate<T> = (x: T) => boolean
 export type ElementPredicateFn = Predicate<Element>
-export type RelationPredicateFn = Predicate<Relation>
+export type RelationPredicateFn = Predicate<ModelRelation>
 // // type ElementPredicate = Predicate<Element>
 // type ElementPredicates<T> = T extends Element[] ? (x: T) => T : (T extends Element ? (x: T) => (Element | null) : never)
 // type ElementPredicate = ElementPredicates<Element | Element[]>

@@ -1,12 +1,12 @@
 import { isArray, isString, reverse } from 'remeda'
 import { invariant } from '../errors'
-import { type Element, type Fqn, type ModelGlobals, type Relation, type RelationId } from '../types'
+import { type Element, type Fqn, type ModelGlobals, type ModelRelation, type RelationId } from '../types'
 import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn } from '../utils'
 import { intersection } from '../utils/set'
 
 export type Params = {
   elements: Record<Fqn, Element>
-  relations: Record<RelationId, Relation>
+  relations: Record<RelationId, ModelRelation>
   // Optional for tests
   globals?: ModelGlobals
 }
@@ -14,14 +14,14 @@ export type Params = {
 type RelationEdge = {
   source: Element
   target: Element
-  relations: Relation[]
+  relations: ModelRelation[]
 }
 
 type FqnOrElement = Fqn | Element
 type FqnsOrElements = ReadonlyArray<Fqn> | ReadonlyArray<Element>
 
-const RelationsSet = Set<Relation>
-const MapRelations = Map<Fqn, Set<Relation>>
+const RelationsSet = Set<ModelRelation>
+const MapRelations = Map<Fqn, Set<ModelRelation>>
 /**
  * Used only for views calculations.
  * Subject to change.
@@ -34,7 +34,7 @@ export class LikeC4ModelGraph {
   readonly #children = new Map<Fqn, Element[]>()
   readonly #rootElements = new Set<Element>()
 
-  readonly #relations = new Map<RelationId, Relation>()
+  readonly #relations = new Map<RelationId, ModelRelation>()
   // Incoming to an element or its descendants
   readonly #incoming = new MapRelations()
   // Outgoing from an element or its descendants
@@ -130,11 +130,11 @@ export class LikeC4ModelGraph {
     ])
   }
 
-  public incoming(element: Fqn | Element): ReadonlySet<Relation> {
+  public incoming(element: Fqn | Element): ReadonlySet<ModelRelation> {
     return this._incomingTo(isString(element) ? element : element.id)
   }
 
-  public outgoing(element: Fqn | Element): ReadonlySet<Relation> {
+  public outgoing(element: Fqn | Element): ReadonlySet<ModelRelation> {
     return this._outgoingFrom(isString(element) ? element : element.id)
   }
 
@@ -261,7 +261,7 @@ export class LikeC4ModelGraph {
     }
   }
 
-  private addRelation(rel: Relation) {
+  private addRelation(rel: ModelRelation) {
     if (this.#relations.has(rel.id)) {
       throw new Error(`Relation ${rel.id} already exists`)
     }

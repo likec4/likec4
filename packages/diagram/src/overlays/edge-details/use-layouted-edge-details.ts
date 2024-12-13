@@ -1,5 +1,6 @@
 import dagre, { type GraphLabel, type Label } from '@dagrejs/dagre'
 import {
+  type AbstractRelation,
   compareFqnHierarchically,
   compareRelations,
   type DiagramEdge,
@@ -232,7 +233,7 @@ function layout(
       return {
         source: relation.source.id,
         target: relation.target.id,
-        relation: relation.$relationship
+        relation: relation.$relationship as AbstractRelation
       }
     })
     .sort(compareRelations)
@@ -281,7 +282,7 @@ function layout(
       sourceHandle: target.id,
       targetHandle: source.id,
       data: {
-        relationId: relation.id,
+        relations: [relation],
         navigateTo: relation.navigateTo ?? null,
         technology: relation.technology ?? null,
         description: relation.description ?? null

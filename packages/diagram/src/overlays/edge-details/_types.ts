@@ -1,4 +1,4 @@
-import type { RelationId, ViewId } from '@likec4/core'
+import type { AbstractRelation, ViewId } from '@likec4/core'
 import type { Edge as ReactFlowEdge } from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
 
@@ -7,7 +7,7 @@ export namespace XYFlowTypes {
   type EdgeData = {
     technology: string | null
     description: string | null
-    relationId: RelationId
+    relations: [AbstractRelation, ...AbstractRelation[]]
     // relation: Relation
     navigateTo: ViewId | null
     hovered?: boolean

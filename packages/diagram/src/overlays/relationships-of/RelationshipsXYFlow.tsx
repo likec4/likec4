@@ -1,4 +1,4 @@
-import { delay, type DiagramView, type Fqn, isAncestor, type Relation } from '@likec4/core'
+import { type AbstractRelation, delay, type DiagramView, type Fqn, isAncestor } from '@likec4/core'
 import { useId } from '@mantine/hooks'
 import { useDebouncedCallback, useDeepCompareEffect, useSyncedRef } from '@react-hookz/web'
 import {
@@ -78,10 +78,10 @@ const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowT
   })
 }
 
-const onlyOneUnique = <T extends keyof Relation>(
+const onlyOneUnique = <T extends keyof AbstractRelation>(
   data: XYFlowTypes.Edge['data'],
   property: T
-): Relation[T] | undefined => {
+): AbstractRelation[T] | undefined => {
   return only(unique(map(data.relations, prop(property))))
 }
 

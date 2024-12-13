@@ -10,12 +10,12 @@ import {
   type RelationWhereExpr
 } from '../../types/expression'
 import { whereOperatorAsPredicate } from '../../types/operators'
-import type { Relation } from '../../types/relation'
+import type { ModelRelation } from '../../types/relation'
 import type { ComputedNode } from '../../types/view'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
-export type FilterableEdge = Pick<Relation, 'kind' | 'tags'> & {
+export type FilterableEdge = Pick<ModelRelation, 'kind' | 'tags'> & {
   source: ComputedNode
   target: ComputedNode
 }

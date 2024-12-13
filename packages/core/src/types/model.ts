@@ -7,7 +7,7 @@ import type {
 } from './deployments'
 import type { ElementKindSpecification, Tag, TypedElement } from './element'
 import type { ModelGlobals } from './global'
-import type { Relation, RelationId, RelationshipKindSpecification } from './relation'
+import type { ModelRelation, RelationId, RelationshipKindSpecification } from './relation'
 import type { ComputedView, DiagramView, LikeC4View } from './view'
 
 /**
@@ -28,7 +28,7 @@ export interface ParsedLikeC4Model<
     relationships: Record<RelationKinds, RelationshipKindSpecification>
   }
   elements: Record<Fqns, TypedElement<Fqns, ElementKinds, Tags>>
-  relations: Record<RelationId, Relation>
+  relations: Record<RelationId, ModelRelation>
   globals: ModelGlobals
   views: Record<Views, LikeC4View<Views, Tags>>
   /**
