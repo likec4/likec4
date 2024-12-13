@@ -48,7 +48,7 @@ export namespace SharedTypes {
     /**
      * The node's visual depth on the screen, 1 being the highest
      */
-    depth?: Number
+    depth?: number
   }
 
   export type ElementNode = SetRequired<ReactFlowNode<NodeData, 'element'>, 'type'>
