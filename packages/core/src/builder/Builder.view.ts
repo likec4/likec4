@@ -378,18 +378,16 @@ function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C
   })
 }
 
-const asTypedDeploymentExpression = <Types extends AnyTypes>(
-  expr: ExpressionV2
-): TypedDeploymentExpression<Types> => {
-  return expr as TypedDeploymentExpression<Types>
-}
-
-function $deploymentExpr<Types extends AnyTypes>(
-  expr: ViewPredicate.DeploymentExpression<Types> | ExpressionV2
-): TypedDeploymentExpression<Types> {
+function $deploymentExpr<T extends AnyTypes>(
+  expr: ViewPredicate.DeploymentExpression<T> | ExpressionV2
+): Types.ToExpression<T> {
   if (!isString(expr)) {
-    return expr as TypedDeploymentExpression<Types>
+    return expr as any
   }
+  const asTypedDeploymentExpression = (expr: ExpressionV2): Types.ToExpression<T> => {
+    return expr as any
+  }
+
   if (expr === '*') {
     return asTypedDeploymentExpression({ wildcard: true })
   }
@@ -411,16 +409,16 @@ function $deploymentExpr<Types extends AnyTypes>(
   if (expr.includes(' <-> ')) {
     const [source, target] = expr.split(' <-> ')
     return asTypedDeploymentExpression({
-      source: $deploymentExpr(source) as ExpressionV2,
-      target: $deploymentExpr(target) as ExpressionV2,
+      source: $deploymentExpr(source) as any,
+      target: $deploymentExpr(target) as any,
       isBidirectional: true
     })
   }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
     return asTypedDeploymentExpression({
-      source: $deploymentExpr(source) as ExpressionV2,
-      target: $deploymentExpr(target) as ExpressionV2
+      source: $deploymentExpr(source) as any,
+      target: $deploymentExpr(target) as any
     })
   }
   if (expr.endsWith('._')) {
