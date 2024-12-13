@@ -11,7 +11,9 @@ import {
   ViewportPortal
 } from '@xyflow/react'
 import { memo, useEffect } from 'react'
+import { only } from 'remeda'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
+import type { SharedTypes } from '../shared/xyflow/_types'
 import type { XYFlowTypes } from './_types'
 import { SelectEdge } from './SelectEdge'
 import * as css from './SelectEdge.css'
@@ -28,7 +30,7 @@ const edgeTypes = {
   relation: RelationshipEdge
 }
 
-const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>) => {
+const resetDimmedAndHovered = (xyflow: ReactFlowInstance<SharedTypes.Node, XYFlowTypes.Edge>) => {
   xyflow.setEdges(edges =>
     edges.map(edge => ({
       ...edge,
@@ -49,12 +51,12 @@ const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlo
           dimmed: false,
           hovered: false
         }
-      }) as XYFlowTypes.Node
+      }) as SharedTypes.Node
     )
   )
 }
 
-const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) => {
+const animateEdge = (node: SharedTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) => {
   return edges.map(edge => {
     const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
       || isAncestor(node.id, edge.target)
@@ -78,8 +80,8 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
 
   const boundsRef = useSyncedRef(bounds)
 
-  const xyflow = useReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>()
-  const xystore = useStoreApi<XYFlowTypes.Node, XYFlowTypes.Edge>()
+  const xyflow = useReactFlow<SharedTypes.Node, XYFlowTypes.Edge>()
+  const xystore = useStoreApi<SharedTypes.Node, XYFlowTypes.Edge>()
 
   const fitview = useDebouncedCallback(
     () => {
@@ -116,7 +118,7 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
   return (
     <ReactFlow
       defaultEdges={[] as XYFlowTypes.Edge[]}
-      defaultNodes={[] as XYFlowTypes.Node[]}
+      defaultNodes={[] as SharedTypes.Node[]}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       defaultMarkerColor="var(--xy-edge-stroke)"
@@ -168,7 +170,7 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
               ...n.data,
               dimmed: n.id !== edge.source && n.id !== edge.target
             }
-          } as XYFlowTypes.Node))
+          } as SharedTypes.Node))
         )
       }}
       onEdgeMouseLeave={() => {
@@ -194,9 +196,13 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
       // }}
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
-        diagramStore.getState().onOpenSource?.({
-          relation: edge.data.relationId
-        })
+        // edge-details only ever deals with edges that represent only one relation
+        let relationId = only(edge.data.relations)?.id
+        if (relationId) {
+          diagramStore.getState().onOpenSource?.({
+            relation: relationId
+          })
+        }
       }}
       // onEdgeClick={(e, edge) => {
       //   e.stopPropagation()

@@ -30,9 +30,9 @@ import {
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
+  type ModelRelation,
   type NodeId,
   type NonEmptyArray,
-  type Relation,
   type RelationPredicateExpression,
   type RelationshipArrowType,
   type RelationshipKind,
@@ -85,7 +85,7 @@ export namespace ComputeCtx {
   export interface Edge {
     source: Element
     target: Element
-    relations: Relation[]
+    relations: ModelRelation[]
   }
 }
 
@@ -319,7 +319,7 @@ export class ComputeCtx {
         line?: RelationshipLineType | undefined
         head?: RelationshipArrowType | undefined
         tail?: RelationshipArrowType | undefined
-        tags?: NonEmptyArray<Tag>
+        tags?: NonEmptyArray<Tag> | null
         navigateTo?: ViewId | undefined
       } | undefined
       relation = only(relations) ?? pipe(
@@ -473,7 +473,7 @@ export class ComputeCtx {
     })
   }
 
-  protected excludeRelation(...relations: Relation[]) {
+  protected excludeRelation(...relations: ModelRelation[]) {
     if (relations.length === 0) {
       return
     }
@@ -527,17 +527,17 @@ export class ComputeCtx {
   // Filter out edges if there are edges between descendants
   // i.e. remove implicit edges, derived from childs
   protected removeRedundantImplicitEdges() {
-    const processedRelations = new Set<Relation>()
+    const processedRelations = new Set<ModelRelation>()
 
     // Returns relations, that are not processed/included
-    const excludeProcessed = (relations: Relation[]) =>
+    const excludeProcessed = (relations: ModelRelation[]) =>
       relations.reduce((acc, rel) => {
         if (!processedRelations.has(rel)) {
           acc.push(rel)
           processedRelations.add(rel)
         }
         return acc
-      }, [] as Relation[])
+      }, [] as ModelRelation[])
 
     // Returns predicate
     const isNestedEdgeOf = (parent: ComputeCtx.Edge) => {

@@ -6,7 +6,7 @@ import type { ComputedView, DiagramView } from '../types'
 import type { Element } from '../types/element'
 import { type Tag as C4Tag } from '../types/element'
 import type { AnyLikeC4Model, ParsedLikeC4ModelDump } from '../types/model'
-import type { Relation } from '../types/relation'
+import type { ModelRelation } from '../types/relation'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
 import type {
@@ -318,7 +318,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return el
   }
 
-  private addRelation(relation: Relation) {
+  private addRelation(relation: ModelRelation) {
     if (this.#relations.has(relation.id)) {
       throw new Error(`Relation ${relation.id} already exists`)
     }

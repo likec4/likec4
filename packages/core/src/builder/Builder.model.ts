@@ -1,16 +1,16 @@
-import type { Element, Fqn, Relation } from '../types'
+import type { Element, Fqn, ModelRelation } from '../types'
 import type { AnyTypes, AnyTypesNested, Invalid, Types } from './_types'
 import type { Builder } from './Builder'
 import type { AddElement } from './Builder.element'
 
 export interface ModelBuilder<T extends AnyTypes> {
   addElement(element: Element): Builder<T>
-  addRelation(relation: Omit<Relation, 'id'>): Builder<T>
+  addRelation(relation: Omit<ModelRelation, 'id'>): Builder<T>
   /**
    * Create a fully qualified name from an id (for nested models)
    */
   fqn(id: string): Fqn
-  addSourcelessRelation(relation: Omit<Relation, 'id' | 'source'>): Builder<T>
+  addSourcelessRelation(relation: Omit<ModelRelation, 'id' | 'source'>): Builder<T>
 }
 
 export function model<

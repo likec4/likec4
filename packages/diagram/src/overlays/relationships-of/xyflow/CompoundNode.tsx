@@ -20,7 +20,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
     ports,
     layoutId = id,
     leaving = false,
-    initialAnimation = true,
+    entering = true,
     ...data
   },
   width = 200,
@@ -61,7 +61,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         layoutId={layoutId}
         data-compound-depth={data.depth ?? 1}
         data-likec4-color={element.color}
-        initial={(layoutId === id && initialAnimation)
+        initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,
@@ -99,22 +99,22 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           {element.title}
         </Text>
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.in.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type="target"
           position={Position.Left}
           style={{
             visibility: 'hidden',
             top: `${20 * (i + 1)}px`
           }} />
       ))}
-      {ports.right.map(({ id, type }, i) => (
+      {ports.out.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type="source"
           position={Position.Right}
           style={{
             visibility: 'hidden',

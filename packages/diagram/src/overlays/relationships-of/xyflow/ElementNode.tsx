@@ -42,7 +42,7 @@ export const ElementNode = memo<ElementNodeProps>(({
     navigateTo,
     layoutId = id,
     leaving = false,
-    initialAnimation = true,
+    entering = true,
     ...data
   },
   selectable = true,
@@ -82,7 +82,7 @@ export const ElementNode = memo<ElementNodeProps>(({
         ])}
         layoutId={layoutId}
         data-likec4-color={element.color}
-        initial={(layoutId === id && initialAnimation)
+        initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,
@@ -168,26 +168,26 @@ export const ElementNode = memo<ElementNodeProps>(({
           )}
         </Group>
       </m.div>
-      {ports.left.map(({ id, type }, i) => (
+      {ports.in.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type="target"
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.left.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
-      {ports.right.map(({ id, type }, i) => (
+      {ports.out.map((id, i) => (
         <Handle
           key={id}
           id={id}
-          type={type === 'in' ? 'target' : 'source'}
+          type="source"
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.right.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
     </>

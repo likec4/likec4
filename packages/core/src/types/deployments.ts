@@ -1,7 +1,13 @@
 import type { MergeExclusive, Simplify, Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
-import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
+import type {
+  AbstractRelation,
+  RelationId,
+  RelationshipArrowType,
+  RelationshipKind,
+  RelationshipLineType
+} from './relation'
 import type { Color } from './theme'
 import type { ViewId } from './view'
 
@@ -76,23 +82,10 @@ export interface DeploymentRef {
 /**
  * NOTE:
  */
-export interface DeploymentRelation {
+export interface DeploymentRelation extends AbstractRelation {
   readonly id: RelationId
   readonly source: DeploymentRef
   readonly target: DeploymentRef
-  readonly title?: string
-  readonly tags?: NonEmptyArray<Tag> | null
-  readonly description?: string
-  readonly technology?: string
-  readonly kind?: RelationshipKind
-  readonly color?: Color
-  readonly line?: RelationshipLineType
-  readonly head?: RelationshipArrowType
-  readonly tail?: RelationshipArrowType
-  readonly links?: NonEmptyArray<Link> | null
-  // Link to dynamic view
-  readonly navigateTo?: ViewId
-  readonly metadata?: { [key: string]: string }
 }
 
 // export namespace DeploymentRelationExpression {

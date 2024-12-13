@@ -1,4 +1,5 @@
 export type {
+  AbstractRelation,
   AutoLayoutDirection,
   BBox,
   Builder,
@@ -32,7 +33,6 @@ export type {
   NodeId,
   ParsedLikeC4Model,
   Point,
-  Relation,
   RelationExpr,
   RelationId,
   StepEdgeId,

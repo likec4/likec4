@@ -4,9 +4,9 @@ import type {
   ElementView,
   Fqn,
   IconUrl,
+  ModelRelation,
   NonEmptyArray,
   ParsedLikeC4Model,
-  Relation,
   RelationId,
   ViewId
 } from '@likec4/core'
@@ -218,7 +218,7 @@ const fakeRelations = {
     target: 'cloud.backend.graphql' as Fqn,
     title: 'fetches data in zero trust network with sso authentification'
   }
-} satisfies Record<string, Relation>
+} satisfies Record<string, ModelRelation>
 
 export const indexView = {
   __: 'element',

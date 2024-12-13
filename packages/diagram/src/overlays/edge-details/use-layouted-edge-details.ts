@@ -1,5 +1,6 @@
 import dagre, { type GraphLabel, type Label } from '@dagrejs/dagre'
 import {
+  type AbstractRelation,
   compareFqnHierarchically,
   compareRelations,
   type DiagramEdge,
@@ -16,6 +17,7 @@ import { useMemo } from 'react'
 import { filter, first, forEach, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
+import type { SharedTypes } from '../shared/xyflow/_types'
 import type { XYFlowTypes } from './_types'
 
 /**
@@ -67,7 +69,7 @@ function createGraph() {
 type Context = {
   g: dagre.graphlib.Graph
   diagramNodes: Map<Fqn, DiagramNode>
-  xynodes: Map<Fqn, XYFlowTypes.Node>
+  xynodes: Map<Fqn, SharedTypes.NonEmptyNode>
   edge: DiagramEdge
   edges: XYFlowTypes.Edge[]
 }
@@ -76,7 +78,7 @@ const sized = (height: number = Sizes.hodeHeight) => ({
   height
 })
 
-const graphId = (node: XYFlowTypes.Node) => ({
+const graphId = (node: SharedTypes.Node) => ({
   id: node.id,
   port: node.type === 'compound' ? `${node.id}::port` : node.id,
   body: `${node.id}`,
@@ -86,7 +88,7 @@ const graphId = (node: XYFlowTypes.Node) => ({
 function nodeData(
   element: LikeC4Model.Element,
   ctx: Context
-): Omit<XYFlowTypes.Node['data'], 'column'> {
+): SharedTypes.NodeData {
   // We try to inherit style from existing diagram node
   let diagramNode = ctx.diagramNodes.get(element.id)
 
@@ -117,10 +119,10 @@ function nodeData(
 }
 
 function createNode(
-  nodeType: XYFlowTypes.Node['type'],
+  nodeType: SharedTypes.NonEmptyNode['type'],
   element: LikeC4Model.Element,
   ctx: Context
-): XYFlowTypes.Node {
+): SharedTypes.Node {
   let node = ctx.xynodes.get(element.id)
   if (node) {
     return node
@@ -135,7 +137,7 @@ function createNode(
     found => found ? createNode('compound', found, ctx) : null
   )
 
-  const xynode: XYFlowTypes.Node = {
+  const xynode: SharedTypes.NonEmptyNode = {
     type: nodeType,
     id: element.id,
     position: { x: 0, y: 0 },
@@ -181,7 +183,7 @@ function createNode(
  * And return a function to get node bounds for xyflow
  */
 function applyDagreLayout(g: dagre.graphlib.Graph) {
-  type NodeBounds = Required<Pick<XYFlowTypes.Node, 'position' | 'width' | 'height'>>
+  type NodeBounds = Required<Pick<SharedTypes.Node, 'position' | 'width' | 'height'>>
   dagre.layout(g)
   return function nodeBounds(nodeId: string, relativeTo?: string): NodeBounds {
     const { x, y, width, height } = g.node(nodeId)
@@ -215,7 +217,7 @@ function layout(
 ): {
   view: DiagramView
   edge: DiagramEdge
-  nodes: XYFlowTypes.Node[]
+  nodes: SharedTypes.Node[]
   edges: XYFlowTypes.Edge[]
   bounds: { x: number; y: number; width: number; height: number }
 } {
@@ -231,7 +233,7 @@ function layout(
       return {
         source: relation.source.id,
         target: relation.target.id,
-        relation: relation.$relationship
+        relation: relation.$relationship as AbstractRelation
       }
     })
     .sort(compareRelations)
@@ -280,7 +282,7 @@ function layout(
       sourceHandle: target.id,
       targetHandle: source.id,
       data: {
-        relationId: relation.id,
+        relations: [relation],
         navigateTo: relation.navigateTo ?? null,
         technology: relation.technology ?? null,
         description: relation.description ?? null

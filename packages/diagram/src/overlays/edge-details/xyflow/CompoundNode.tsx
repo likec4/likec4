@@ -2,14 +2,14 @@ import { Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
-import type { XYFlowTypes } from '../_types'
+import type { SharedTypes } from '../../shared/xyflow/_types'
 import * as css from './styles.css'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type CompoundNodeProps = NodeProps<XYFlowTypes.CompoundNode>
+type CompoundNodeProps = NodeProps<SharedTypes.CompoundNode>
 
 export function CompoundNode({
   data: {
@@ -71,10 +71,6 @@ export function CompoundNode({
             top: `${16 + 20 * i}px`
           }} />
       ))}
-      {
-        /* <Handle type="target" position={Position.Left}/>
-      <Handle type="source" position={Position.Right}/> */
-      }
     </>
   )
 }
