@@ -4,21 +4,20 @@ import clsx from 'clsx'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo, useCallback } from 'react'
-import type { XYFlowTypes } from '../_types'
-import * as css from '../../shared/xyflow/CompoundNode.css'
+import * as css from './CompoundNode.css'
+import type { SharedTypes } from './_types'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type CompoundNodeProps = NodeProps<XYFlowTypes.CompoundNode>
+type CompoundNodeProps = NodeProps<SharedTypes.CompoundNode>
 
 export const CompoundNode = memo<CompoundNodeProps>(({
   id,
   data: {
     element,
     ports,
-    layoutId = id,
     leaving = false,
     entering = true,
     ...data
@@ -27,9 +26,11 @@ export const CompoundNode = memo<CompoundNodeProps>(({
   height = 100,
   ...props
 }) => {
-  const scale = (diff: number) => ({
-    scaleX: (width + diff) / width,
-    scaleY: (height + diff) / height
+
+  // Scale the node's width and height by the given difference in pixels.
+  const scaleBy = (pxDiff: number) => ({
+    scaleX: (width + pxDiff) / width,
+    scaleY: (height + pxDiff) / height
   })
 
   let opacity = 1
@@ -58,19 +59,18 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           css.compoundNodeBody,
           'likec4-compound-node'
         ])}
-        layoutId={layoutId}
         data-compound-depth={data.depth ?? 1}
         data-likec4-color={element.color}
-        initial={(layoutId === id && entering)
+        initial={entering
           ? {
-            ...scale(-20),
+            ...scaleBy(-20),
             opacity: 0,
             width,
             height
           }
           : false}
         animate={{
-          ...scale(0),
+          ...scaleBy(0),
           opacity,
           width,
           height,
@@ -85,13 +85,13 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         }}
         {...(selectable && {
           whileHover: {
-            ...scale(12),
+            ...scaleBy(12),
             transition: {
               delay: 0.1
             }
           },
           whileTap: {
-            ...scale(-8)
+            ...scaleBy(-8)
           }
         })}
       >
@@ -103,7 +103,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         <Handle
           key={id}
           id={id}
-          type="target"
+          type='target'
           position={Position.Left}
           style={{
             visibility: 'hidden',
@@ -114,7 +114,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         <Handle
           key={id}
           id={id}
-          type="source"
+          type='source'
           position={Position.Right}
           style={{
             visibility: 'hidden',

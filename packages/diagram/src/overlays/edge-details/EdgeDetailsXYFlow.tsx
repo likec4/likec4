@@ -18,7 +18,7 @@ import type { XYFlowTypes } from './_types'
 import { SelectEdge } from './SelectEdge'
 import * as css from './SelectEdge.css'
 import { useLayoutedEdgeDetails, ZIndexes } from './use-layouted-edge-details'
-import { CompoundNode } from './xyflow/CompoundNode'
+import { CompoundNode } from '../shared/xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
 import { RelationshipEdge } from './xyflow/RelationshipEdge'
 
