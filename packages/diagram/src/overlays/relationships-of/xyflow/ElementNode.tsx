@@ -10,7 +10,7 @@ import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import type { XYFlowTypes } from '../_types'
-import * as css from './styles.css'
+import * as css from '../../shared/xyflow/ElementNode.css'
 
 const Action = ActionIcon.withProps({
   className: 'nodrag nopan ' + css.navigateBtn,
