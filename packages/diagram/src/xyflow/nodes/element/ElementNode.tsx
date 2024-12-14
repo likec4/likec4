@@ -1,5 +1,5 @@
 import { DiagramNode, type ThemeColor } from '@likec4/core'
-import { ActionIcon, Box, Text as MantineText, Tooltip } from '@mantine/core'
+import { Box, Text as MantineText } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
@@ -10,13 +10,14 @@ import React, { memo, useCallback, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementXYFlowNode } from '../../types'
-import { stopPropagation, toDomPrecision } from '../../utils'
+import { toDomPrecision } from '../../utils'
 import { ElementIcon } from '../shared/ElementIcon'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 import { BottomButtons } from '../../BottomButtons/BottomButtons'
+import { ActionButton } from '../../ActionButton/ActionButton'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -54,29 +55,6 @@ const VariantsRoot = {
     scale: 0.975
   }
 } satisfies Variants
-
-const VariantsDetailsBtn = {
-  idle: {
-    '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 1,
-    opacity: 0.5,
-    originX: 0.45,
-    originY: 0.55
-  },
-  selected: {},
-  hovered: {
-    scale: 1.2,
-    opacity: 0.7
-  },
-  'hovered:details': {
-    scale: 1.44,
-    opacity: 1
-  },
-  'tap:details': {
-    scale: 1.15
-  }
-} satisfies Variants
-VariantsDetailsBtn['selected'] = VariantsDetailsBtn['hovered']
 
 type ElementNodeProps = NodeProps<ElementXYFlowNode>
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
@@ -265,29 +243,16 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           {...isInteractive && animateHandlers}
         />
         {enableElementDetails && !!modelRef && (
-          <Tooltip
-            fz="xs"
-            color="dark"
-            label="Open details"
-            withinPortal={false}
-            offset={2}
-            openDelay={600}>
-            <ActionIcon
-              key="details"
-              component={m.div}
-              variants={VariantsDetailsBtn}
-              data-animate-target="details"
-              className={clsx('nodrag nopan', css.detailsBtn)}
-              radius="md"
-              style={{ zIndex: 100 }}
-              role="button"
+          <Box className={clsx(css.detailsBtnContainer)}>
+            <ActionButton
+              key='details'
               onClick={onOpenDetails}
-              onDoubleClick={stopPropagation}
+              IconComponent={IconId}
+              translate={{x: 0, y: 0}}
+              tooltipLabel='Open details'
               {...isInteractive && animateHandlers}
-            >
-              <IconId stroke={1.8} style={{ width: '75%' }} />
-            </ActionIcon>
-          </Tooltip>
+              />
+          </Box>
         )}
       </Box>
       <Handle type="target" position={Position.Top} className={css.handleCenter} />

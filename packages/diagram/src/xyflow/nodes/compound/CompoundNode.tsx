@@ -1,5 +1,5 @@
 import { DiagramNode, type ThemeColor } from '@likec4/core'
-import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
+import { Box, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconId, IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
@@ -11,11 +11,11 @@ import { memo, useCallback, useState } from 'react'
 import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
-import { stopPropagation } from '../../utils'
 import { ElementIcon } from '../shared/ElementIcon'
 import { CompoundToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './CompoundNode.css'
+import { ActionButton } from '../../ActionButton/ActionButton'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
@@ -54,57 +54,6 @@ const VariantsRoot = {
   }),
   tap: {}
 } satisfies Variants
-
-const VariantsNavigate = {
-  idle: {
-    '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 1,
-    opacity: 0.8,
-    originX: 1,
-    originY: 0.25,
-    translateX: 0,
-    translateY: 0
-  },
-  selected: {},
-  hovered: {
-    '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.25,
-    opacity: 1,
-    translateX: -1
-  },
-  'hovered:navigate': {
-    scale: 1.42
-  },
-  'hovered:details': {},
-  'tap:navigate': {
-    scale: 1.15
-  }
-} satisfies Variants
-VariantsNavigate['selected'] = VariantsNavigate.hovered
-VariantsNavigate['hovered:details'] = VariantsNavigate.idle
-
-const VariantsDetailsBtn = {
-  idle: {
-    '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 1,
-    opacity: 0.3,
-    originX: 0.45,
-    originY: 0.55
-  },
-  selected: {},
-  hovered: {
-    scale: 1.2,
-    opacity: 0.6
-  },
-  'hovered:details': {
-    scale: 1.42,
-    opacity: 1
-  },
-  'tap:details': {
-    scale: 1.15
-  }
-} satisfies Variants
-VariantsDetailsBtn['selected'] = VariantsDetailsBtn['hovered']
 
 export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
   {
@@ -287,48 +236,30 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                 {element.title}
               </Text>
               {enableElementDetails && !!modelRef && (
-                <Tooltip
-                  fz="xs"
-                  color="dark"
-                  label="Open details"
-                  withinPortal={false}
-                  offset={2}
-                  openDelay={600}>
-                  <ActionIcon
-                    key={`${id}details`}
-                    component={m.div}
-                    variants={VariantsDetailsBtn}
-                    data-animate-target="details"
-                    className={clsx('nodrag nopan', css.detailsBtn)}
-                    radius="md"
-                    style={{ zIndex: 100 }}
-                    role="button"
+                <Box className={clsx(css.detailsBtnContainer)}>
+                  <ActionButton
+                    key="details"
                     onClick={onOpenDetails}
-                    onDoubleClick={stopPropagation}
+                    IconComponent={IconId}
+                    translate={{x: 0, y: 0}}
+                    tooltipLabel='Open details'
                     {...isInteractive && animateHandlers}
-                  >
-                    <IconId stroke={1.8} style={{ width: '75%' }} />
-                  </ActionIcon>
-                </Tooltip>
+                    />
+                </Box>
               )}
             </Box>
           </Box>
           {isNavigable && (
-            <ActionIcon
-              key={`${id}navigate`}
-              component={m.div}
-              variants={VariantsNavigate}
-              data-animate-target="navigate"
-              className={clsx('nodrag nopan', css.navigateBtn)}
-              radius="md"
-              style={{ zIndex: 100 }}
-              onClick={onNavigateTo}
-              role="button"
-              onDoubleClick={stopPropagation}
-              {...isInteractive && animateHandlers}
-            >
-              <IconZoomScan style={{ width: '75%' }} />
-            </ActionIcon>
+            <Box className={clsx(css.navigateBtnContainer)}>
+              <ActionButton
+                key={"${id}navigate"}
+                onClick={onNavigateTo}
+                IconComponent={IconZoomScan}
+                translate={{x: 0, y: 0}}
+                tooltipLabel='Open scoped view'
+                {...isInteractive && animateHandlers}
+                />
+            </Box>
           )}
         </Box>
       </Box>
