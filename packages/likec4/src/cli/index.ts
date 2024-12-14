@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 import { consola, LogLevels } from '@likec4/log'
+import { DEV } from 'esm-env'
 import { argv, exit, stdout } from 'node:process'
 import { clamp } from 'remeda'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import pkg from '../../package.json' with { type: 'json' }
+import { version } from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
 import codegenCmd from './codegen'
 import exportCmd from './export'
@@ -15,8 +16,7 @@ import serveCmd from './serve'
 
 consola.level = LogLevels.debug
 
-// @ts-expect-error
-if (process.env.NODE_ENV === 'development') {
+if (DEV) {
   consola.level = LogLevels.trace
   consola.warn('running cli in dev mode')
 }
@@ -30,7 +30,7 @@ const cli = yargs(hideBin(argv))
   .command(exportCmd)
   .command(previewCmd)
   .help('help')
-  .version(pkg.version)
+  .version(version)
   .alias('v', 'version')
   .alias('h', 'help')
   .demandCommand(1, 'Please run with valid command')

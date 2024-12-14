@@ -43,9 +43,6 @@ export async function buildReact(_isDev = false) {
     esbuild: {
       jsxDev: false,
       legalComments: 'none',
-      minifyIdentifiers: false,
-      minifyWhitespace: true,
-      minifySyntax: true,
       tsconfigRaw: readFileSync(tsconfig, { encoding: 'utf-8' })
     },
     build: {
