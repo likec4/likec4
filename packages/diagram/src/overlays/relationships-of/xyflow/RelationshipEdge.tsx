@@ -3,7 +3,7 @@ import { IconBoxMultipleFilled, IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
 import { only } from 'remeda'
-import { useDiagramState } from '../../../hooks/useDiagramState'
+import { useDiagramState, type DiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import * as css from '../../shared/xyflow/RelationshipEdge.css'
@@ -21,23 +21,32 @@ const Tooltip = MantineTooltip.withProps({
   offset: 4
 })
 
+function selector(s: DiagramState) {
+  return {
+    viewId: s.view.id,
+    onNavigateTo: s.onNavigateTo
+  }
+}
+
 export function RelationshipEdge({
-  data,
+  data: {
+    navigateTo,
+    ...data
+  },
   label,
   ...props
 }: EdgeProps<XYFlowTypes.Edge>) {
   const {
     viewId,
     onNavigateTo
-  } = useDiagramState(s => ({
-    viewId: s.view.id,
-    onNavigateTo: s.onNavigateTo
-  }))
+  } = useDiagramState(selector)
+
   const overlay = useOverlayDialog()
   const [edgePath, labelX, labelY] = getBezierPath(props)
-  const navigateTo = onNavigateTo ? only(data.relations)?.navigateTo : undefined
   const isMultiRelation = data.relations.length > 1
   const technology = only(data.relations)?.technology
+
+  console.log(`[relationships-of/RelationshipEdge]: navigateTo: ${navigateTo}`)
 
   return (
     <>
@@ -58,7 +67,7 @@ export function RelationshipEdge({
           style={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            maxWidth: Math.abs(props.targetX - props.sourceX - 70),
+            maxWidth: Math.abs(props.targetX - props.sourceX - 40),
             zIndex: ZIndexes.max
           }}
           className={clsx([
@@ -68,7 +77,6 @@ export function RelationshipEdge({
           data-edge-dimmed={data.dimmed}
           data-edge-hovered={data.hovered}
           data-likec4-color={data.existsInCurrentView ? 'gray' : 'amber'}
-          // {...data.existsInCurrentView === false && { 'data-likec4-color': 'amber' }}
         >
           {label && (
             <Tooltip label="Not included in current view" disabled={data.existsInCurrentView} color={'orange'}>
@@ -98,7 +106,7 @@ export function RelationshipEdge({
               {' ]'}
             </Text>
           )}
-          {navigateTo && viewId !== navigateTo && (
+          {navigateTo && viewId !== navigateTo && onNavigateTo && (
             <Box ta={'center'} mt={4}>
               <ActionIcon
                 variant="default"
@@ -108,7 +116,7 @@ export function RelationshipEdge({
                 onClick={event => {
                   event.stopPropagation()
                   overlay.close(() => {
-                    onNavigateTo?.(navigateTo, event)
+                    onNavigateTo(navigateTo, event)
                   })
                 }}
                 role="button"

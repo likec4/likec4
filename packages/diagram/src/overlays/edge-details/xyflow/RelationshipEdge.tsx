@@ -2,22 +2,40 @@ import { ActionIcon, Box, Stack, Text } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
-import { useDiagramState } from '../../../hooks/useDiagramState'
+import { useDiagramState, type DiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import * as css from '../../shared/xyflow/RelationshipEdge.css'
 import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-edge-details'
+import { only } from 'remeda'
+
+function selector(s: DiagramState) {
+  return {
+    viewId: s.view.id,
+    onNavigateTo: s.onNavigateTo
+  }
+}
 
 export function RelationshipEdge({
-  data,
+  data: {
+    navigateTo,
+    ...data
+  },
   label,
   ...props
 }: EdgeProps<XYFlowTypes.Edge>) {
+  const {
+    viewId,
+    onNavigateTo
+  } = useDiagramState(selector)
+
   const overlay = useOverlayDialog()
-  const onNavigateTo = useDiagramState(s => s.onNavigateTo)
   const [edgePath, labelX, labelY] = getBezierPath(props)
-  const navigateTo = data.navigateTo
+  const technology = only(data.relations)?.technology
+
+  console.log(`[relationships-of/RelationshipEdge]: navigateTo: ${navigateTo}`)
+
   return (
     <>
       <g
@@ -51,14 +69,14 @@ export function RelationshipEdge({
               {label}
             </Text>
           )}
-          {data.technology && (
+          {technology && (
             <Text component={'div'} className={css.edgeLabelTechnology}>
               {'[ '}
-              {data.technology}
+              {technology}
               {' ]'}
             </Text>
           )}
-          {navigateTo && onNavigateTo && (
+          {navigateTo && viewId !== navigateTo && onNavigateTo && (
             <Box ta={'center'} mt={4}>
               <ActionIcon
                 variant="default"
@@ -68,7 +86,7 @@ export function RelationshipEdge({
                 onClick={event => {
                   event.stopPropagation()
                   overlay.close(() => {
-                    onNavigateTo(navigateTo)
+                    onNavigateTo(navigateTo, event)
                   })
                 }}
                 role="button"
