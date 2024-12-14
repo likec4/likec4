@@ -1,4 +1,4 @@
-import { hasAtLeast, isEmpty } from 'remeda'
+import { hasAtLeast, isEmpty, isNumber, isString } from 'remeda'
 import { invariant, nonexhaustive } from '../../errors'
 import type { LikeC4DeploymentModel } from '../../model'
 import type { DeploymentConnectionModel } from '../../model/connection/deployment'
@@ -7,10 +7,11 @@ import {
   type ComputedEdge,
   type ComputedNode,
   DefaultArrowType,
-  DeploymentElementExpression,
   type DeploymentNodeKind,
   type DeploymentViewRule,
   type Fqn,
+  FqnExpr,
+  type FqnRef,
   isViewRuleStyle,
   type NonEmptyArray,
   type Tag
@@ -27,9 +28,9 @@ type Predicate<T> = (x: T) => boolean
 
 export function resolveElements(
   model: LikeC4DeploymentModel,
-  expr: DeploymentElementExpression.Ref
+  expr: FqnExpr.DeploymentRef
 ) {
-  const ref = model.element(expr.ref)
+  const ref = model.element(expr.ref.deployment)
   if (ref.isDeploymentNode()) {
     if (expr.selector === 'children') {
       return [...ref.children()]
@@ -44,14 +45,31 @@ export function resolveElements(
   return [ref]
 }
 
-export function deploymentExpressionToPredicate<T extends { id: string }>(
-  target: DeploymentElementExpression
+export function resolveModelElements(
+  model: LikeC4DeploymentModel,
+  expr: FqnExpr.ModelRef
+) {
+  const ref = model.$model.element(expr.ref.model)
+  if (expr.selector === 'children') {
+    return [...ref.children()]
+  }
+  if (expr.selector === 'expanded') {
+    return [ref, ...ref.children()]
+  }
+  if (expr.selector === 'descendants') {
+    return [...ref.descendants()]
+  }
+  return [ref]
+}
+
+export function deploymentExpressionToPredicate<T extends { id: string; modelRef?: number | string }>(
+  target: FqnExpr
 ): Predicate<T> {
-  if (DeploymentElementExpression.isWildcard(target)) {
+  if (FqnExpr.isWildcard(target)) {
     return () => true
   }
-  if (DeploymentElementExpression.isRef(target)) {
-    const fqn = target.ref.id
+  if (FqnExpr.isDeploymentRef(target)) {
+    const fqn = target.ref.deployment
     if (target.selector === 'expanded') {
       const fqnWithDot = fqn + '.'
       return n => n.id === fqn || n.id.startsWith(fqnWithDot)
@@ -64,6 +82,55 @@ export function deploymentExpressionToPredicate<T extends { id: string }>(
       return n => parentFqn(n.id) === fqn
     }
     return n => n.id === fqn
+  }
+  if (FqnExpr.isModelRef(target)) {
+    const modelFqn = (node: T) => {
+      if (isString(node.modelRef)) {
+        return node.modelRef
+      }
+      if (isNumber(node.modelRef)) {
+        return node.id
+      }
+      return null
+    }
+
+    const fqn = target.ref.model
+    if (target.selector === 'expanded') {
+      const fqnWithDot = fqn + '.'
+      return (n) => {
+        const m = modelFqn(n)
+        if (!m) {
+          return true
+        }
+        return m === fqn || m.startsWith(fqnWithDot)
+      }
+    }
+    if (target.selector === 'descendants') {
+      const fqnWithDot = fqn + '.'
+      return (n) => {
+        const m = modelFqn(n)
+        if (!m) {
+          return true
+        }
+        return m.startsWith(fqnWithDot)
+      }
+    }
+    if (target.selector === 'children') {
+      return (n) => {
+        const m = modelFqn(n)
+        if (!m) {
+          return true
+        }
+        return parentFqn(m) === fqn
+      }
+    }
+    return (n) => {
+      const m = modelFqn(n)
+      if (!m) {
+        return true
+      }
+      return m === fqn
+    }
   }
   nonexhaustive(target)
 }

@@ -103,7 +103,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         <Handle
           key={id}
           id={id}
-          type='target'
+          type="target"
           position={Position.Left}
           style={{
             visibility: 'hidden',
@@ -114,7 +114,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
         <Handle
           key={id}
           id={id}
-          type='source'
+          type="source"
           position={Position.Right}
           style={{
             visibility: 'hidden',

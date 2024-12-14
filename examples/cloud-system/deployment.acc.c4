@@ -56,7 +56,8 @@ views {
     title 'Acceptance'
 
     include
-      * -> acc.**,
+      acc.**
+      // * -> acc.**,
       //eu._,
      // us.sqs
 
@@ -82,7 +83,9 @@ views {
       //server3.backend -> eu.rds,
       //server4.backend -> eu.rds,
       //serv1.backend -> us.amazon.*
-
+    exclude
+      cloud.ui -> amazon.rds,
+      events -> *
 
     style eu._ {
       color muted

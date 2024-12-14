@@ -163,17 +163,6 @@ export const builder = b
         color: 'amber'
       })
     )
-    // views(
-    //   view('index', $include('*')),
-    //   viewOf('cloud', 'cloud', $rules(
-    //     $include('*'),
-    //   )),
-    //   deploymentView('prod', $rules(
-    //     $include('customer.c'),
-    //     $include('prod._'),
-    //     $exclude('prod.eu.zone1 <-> prod.eu.zone2')
-    //   ))
-    // )
   )
 
 export type Types = typeof builder['Types']

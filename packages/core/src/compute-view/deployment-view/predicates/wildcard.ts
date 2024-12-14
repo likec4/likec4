@@ -1,9 +1,9 @@
 import { findConnectionsWithin } from '../../../model/connection/deployment'
-import type { DeploymentElementExpression } from '../../../types/deployments'
+import type { FqnExpr } from '../../../types'
 import type { Elem, PredicateExecutor } from '../_types'
 import { MutableMemory } from '../Memory'
 
-export const WildcardPredicate: PredicateExecutor<DeploymentElementExpression.Wildcard> = {
+export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
   include: (_, { model, stage }) => {
     const children = [] as Elem[]
 

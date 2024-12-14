@@ -1,9 +1,8 @@
-import type { AbstractRelation, ComputedNode, Fqn, ViewId } from "@likec4/core"
-import type { SetRequired } from "type-fest"
+import type { AbstractRelation, ComputedNode, Fqn, ViewId } from '@likec4/core'
 import type { Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
+import type { SetRequired } from 'type-fest'
 
 export namespace SharedTypes {
-
   export type EmptyNodeData = {
     /**
      * Whether the cursor is hovering over the node

@@ -1,7 +1,13 @@
-import type { MergeExclusive, Simplify, Tagged, UnionToIntersection } from 'type-fest'
+import type { MergeExclusive, Simplify, Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
-import type { AbstractRelation, RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
+import type {
+  AbstractRelation,
+  RelationId,
+  RelationshipArrowType,
+  RelationshipKind,
+  RelationshipLineType
+} from './relation'
 import type { Color } from './theme'
 import type { ViewId } from './view'
 
@@ -61,38 +67,17 @@ export namespace DeploymentElement {
   }
 }
 
+export type PredicateSelector =
+  | 'children' // ele.*
+  | 'expanded' // ele._
+  | 'descendants' // ele.**
+
 export interface DeploymentRef {
   // Reference to DeploymentNode or DeployedInstance
   readonly id: Fqn
   // Reference to element within DeployedInstance
   readonly element?: Fqn
 }
-
-// export namespace DeploymentRef {
-//   export interface Node {
-//     readonly id: Fqn
-//   }
-//   export interface Instance {
-//     readonly id: Fqn
-//     readonly element?: Fqn
-//   }
-//   export interface LogicalElement {
-//     readonly element: Fqn
-//   }
-
-//   export const isDeploymentElement = (ref: DeploymentRef): ref is Node | Instance => {
-//     return 'id' in ref
-//   }
-
-//   export const isLogicalElement = (ref: DeploymentRef): ref is LogicalElement => {
-//     return 'element' in ref && !('id' in ref)
-//   }
-// }
-// export type DeploymentRef = ExclusiveUnion<{
-//   Node: DeploymentRef.Node
-//   Instance: DeploymentRef.Instance
-//   Element: DeploymentRef.LogicalElement
-// }>
 
 /**
  * NOTE:
@@ -102,123 +87,90 @@ export interface DeploymentRelation extends AbstractRelation {
   readonly source: DeploymentRef
   readonly target: DeploymentRef
 }
-// export interface DeploymentRelation
 
-// interface Expressions {
-//   DeploymentRef: {
-//     ref: DeploymentRef
-//     isExpanded?: boolean
-//     isNested?: never
-//   } | {
-//     ref: DeploymentRef
-//     isExpanded?: never
-//     isNested?: boolean
+// export namespace DeploymentRelationExpression {
+//   // type LogicalRefEndpoint = {
+//   //   logicalRef: ElementRefExpr
+//   // }
+//   // export type DirectEndpoint = ExclusiveUnion<{
+//   //   DeploymentElementExpression: DeploymentElementExpression
+//   //   Logical: LogicalRefEndpoint
+//   // }>
+
+//   // export const isLogicalEndpoint = (expr: DirectEndpoint): expr is LogicalRefEndpoint => {
+//   //   return 'logicalRef' in expr
+//   // }
+
+//   export type Direct = {
+//     source: FqnExpression.Element
+//     target: FqnExpression.Element
+//     isBidirectional?: boolean
 //   }
-
-//   Wildcard: {
-//     wildcard: true
+//   export const isDirect = (expr: DeploymentExpression): expr is Direct => {
+//     return 'source' in expr && 'target' in expr
+//   }
+//   export type Incoming = {
+//     incoming: FqnExpression.Element
+//   }
+//   export const isIncoming = (expr: DeploymentExpression): expr is Incoming => {
+//     return 'incoming' in expr
+//   }
+//   export type Outgoing = {
+//     outgoing: FqnExpression.Element
+//   }
+//   export const isOutgoing = (expr: DeploymentExpression): expr is Outgoing => {
+//     return 'outgoing' in expr
+//   }
+//   export type InOut = {
+//     inout: FqnExpression.Element
+//   }
+//   export const isInOut = (expr: DeploymentExpression): expr is InOut => {
+//     return 'inout' in expr
 //   }
 // }
 
-type AllNever<Expressions> = UnionToIntersection<
-  {
-    [Name in keyof Expressions]: {
-      -readonly [Key in keyof Expressions[Name]]?: never
-    }
-  }[keyof Expressions]
->
+// export type DeploymentRelationExpression = ExclusiveUnion<{
+//   Direct: DeploymentRelationExpression.Direct
+//   Incoming: DeploymentRelationExpression.Incoming
+//   Outgoing: DeploymentRelationExpression.Outgoing
+//   InOut: DeploymentRelationExpression.InOut
+// }>
 
-type ExclusiveUnion<Expressions> = Expressions extends object ? {
-    [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
-  }[keyof Expressions]
-  : Expressions
+// export namespace DeploymentElementExpression {
+//   export type Ref = {
+//     ref: DeploymentRef
+//     selector?: PredicateSelector
+//   }
+//   export const isRef = (expr: DeploymentExpression): expr is Ref => {
+//     return 'ref' in expr
+//   }
 
-export namespace DeploymentRelationExpression {
-  // type LogicalRefEndpoint = {
-  //   logicalRef: ElementRefExpr
-  // }
-  // export type DirectEndpoint = ExclusiveUnion<{
-  //   DeploymentElementExpression: DeploymentElementExpression
-  //   Logical: LogicalRefEndpoint
-  // }>
+//   export type Wildcard = {
+//     wildcard: true
+//   }
+//   export const isWildcard = (expr: DeploymentExpression): expr is Wildcard => {
+//     return 'wildcard' in expr && expr.wildcard === true
+//   }
+// }
 
-  // export const isLogicalEndpoint = (expr: DirectEndpoint): expr is LogicalRefEndpoint => {
-  //   return 'logicalRef' in expr
-  // }
+// export type DeploymentElementExpression = ExclusiveUnion<{
+//   DeploymentRef: DeploymentElementExpression.Ref
+//   Wildcard: DeploymentElementExpression.Wildcard
+// }>
 
-  export type Direct = {
-    source: DeploymentElementExpression
-    target: DeploymentElementExpression
-    isBidirectional?: boolean
-  }
-  export const isDirect = (expr: DeploymentExpression): expr is Direct => {
-    return 'source' in expr && 'target' in expr
-  }
-  export type Incoming = {
-    incoming: DeploymentElementExpression
-  }
-  export const isIncoming = (expr: DeploymentExpression): expr is Incoming => {
-    return 'incoming' in expr
-  }
-  export type Outgoing = {
-    outgoing: DeploymentElementExpression
-  }
-  export const isOutgoing = (expr: DeploymentExpression): expr is Outgoing => {
-    return 'outgoing' in expr
-  }
-  export type InOut = {
-    inout: DeploymentElementExpression
-  }
-  export const isInOut = (expr: DeploymentExpression): expr is InOut => {
-    return 'inout' in expr
-  }
-}
+// export type DeploymentExpression = ExclusiveUnion<{
+//   Element: DeploymentElementExpression
+//   Relation: DeploymentRelationExpression
+// }>
 
-export type DeploymentRelationExpression = ExclusiveUnion<{
-  Direct: DeploymentRelationExpression.Direct
-  Incoming: DeploymentRelationExpression.Incoming
-  Outgoing: DeploymentRelationExpression.Outgoing
-  InOut: DeploymentRelationExpression.InOut
-}>
+// export namespace DeploymentExpression {
+//   export type Element = DeploymentElementExpression
+//   export type Relation = DeploymentRelationExpression
 
-export namespace DeploymentElementExpression {
-  export type Ref = {
-    ref: DeploymentRef
-    selector?:
-      | 'children' // ele.*
-      | 'expanded' // ele._
-      | 'descendants' // ele.**
-  }
-  export const isRef = (expr: DeploymentExpression): expr is Ref => {
-    return 'ref' in expr
-  }
-
-  export type Wildcard = {
-    wildcard: true
-  }
-  export const isWildcard = (expr: DeploymentExpression): expr is Wildcard => {
-    return 'wildcard' in expr && expr.wildcard === true
-  }
-}
-
-export type DeploymentElementExpression = ExclusiveUnion<{
-  DeploymentRef: DeploymentElementExpression.Ref
-  Wildcard: DeploymentElementExpression.Wildcard
-}>
-
-export type DeploymentExpression = ExclusiveUnion<{
-  Element: DeploymentElementExpression
-  Relation: DeploymentRelationExpression
-}>
-
-export namespace DeploymentExpression {
-  export type Element = DeploymentElementExpression
-  export type Relation = DeploymentRelationExpression
-
-  export const isElement = (expr: DeploymentExpression): expr is DeploymentElementExpression => {
-    return DeploymentElementExpression.isRef(expr) || DeploymentElementExpression.isWildcard(expr)
-  }
-  export const isRelation = (expr: DeploymentExpression): expr is DeploymentRelationExpression => {
-    return !DeploymentExpression.isElement(expr)
-  }
-}
+//   export const isElement = (expr: DeploymentExpression): expr is DeploymentElementExpression => {
+//     return DeploymentElementExpression.isRef(expr) || DeploymentElementExpression.isWildcard(expr)
+//   }
+//   export const isRelation = (expr: DeploymentExpression): expr is DeploymentRelationExpression => {
+//     return !DeploymentExpression.isElement(expr)
+//   }
+// }

@@ -11,7 +11,9 @@ import {
   ViewportPortal
 } from '@xyflow/react'
 import { memo, useEffect } from 'react'
+import { only } from 'remeda'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
+import type { SharedTypes } from '../shared/xyflow/_types'
 import type { XYFlowTypes } from './_types'
 import { SelectEdge } from './SelectEdge'
 import * as css from './SelectEdge.css'
@@ -19,8 +21,6 @@ import { useLayoutedEdgeDetails, ZIndexes } from './use-layouted-edge-details'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
 import { RelationshipEdge } from './xyflow/RelationshipEdge'
-import type { SharedTypes } from '../shared/xyflow/_types'
-import { only } from 'remeda'
 
 const nodeTypes = {
   element: ElementNode,
@@ -197,7 +197,7 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
       onEdgeClick={(e, edge) => {
         e.stopPropagation()
         // edge-details only ever deals with edges that represent only one relation
-        let relationId = only(edge.data.relations)?.id;
+        let relationId = only(edge.data.relations)?.id
         if (relationId) {
           diagramStore.getState().onOpenSource?.({
             relation: relationId

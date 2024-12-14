@@ -248,21 +248,182 @@ describe.concurrent('LikeC4ModelParser', () => {
           {
             selector: 'children',
             ref: {
-              id: 'n1'
+              deployment: 'n1'
             }
           },
           {
             selector: 'expanded',
             ref: {
-              id: 'n2'
+              deployment: 'n2'
             }
           },
           {
             ref: {
-              id: 'n1'
+              deployment: 'n1'
             }
           }
         ]
+      }])
+    })
+
+    it('scope: prioritizes deployment nodes', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element element
+          deploymentNode node
+        }
+        model {
+          element root
+        }
+        deployment {
+          node root {
+            instanceOf root
+          }
+          node nd {
+            instanceOf root
+          }
+        }
+        views {
+          deployment view test {
+            include * -> root
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Views).toHaveLength(1)
+      expect(doc.c4Views[0]!.rules).toEqual([{
+        include: [{
+          isBidirectional: false,
+          source: {
+            wildcard: true
+          },
+          target: {
+            ref: {
+              deployment: 'root'
+            }
+          }
+        }]
+      }])
+    })
+
+    it('scope: prioritizes deployment instances', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element element
+          deploymentNode node
+        }
+        model {
+          element root
+        }
+        deployment {
+          node nd {
+            instanceOf root
+          }
+        }
+        views {
+          deployment view test {
+            include * -> root
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Views).toHaveLength(1)
+      expect(doc.c4Views[0]!.rules).toEqual([{
+        include: [{
+          isBidirectional: false,
+          source: {
+            wildcard: true
+          },
+          target: {
+            ref: {
+              deployment: 'nd.root'
+            }
+          }
+        }]
+      }])
+    })
+
+    it('scope: resolves to model', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element element
+          deploymentNode node
+        }
+        model {
+          element root
+        }
+        deployment {
+          node nd {
+            ins = instanceOf root
+          }
+        }
+        views {
+          deployment view test {
+            include * -> root
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Views).toHaveLength(1)
+      expect(doc.c4Views[0]!.rules).toEqual([{
+        include: [{
+          isBidirectional: false,
+          source: {
+            wildcard: true
+          },
+          target: {
+            ref: {
+              model: 'root'
+            }
+          }
+        }]
+      }])
+    })
+
+    it('should parse predicates', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element element
+          deploymentNode node
+        }
+        model {
+          element root {
+            element child1
+            element child2
+          }
+        }
+        deployment {
+          node nd {
+            ins = instanceOf root
+          }
+        }
+        views {
+          deployment view test {
+            include ins.child1 <-> child2
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Views).toHaveLength(1)
+      expect(doc.c4Views[0]!.rules).toEqual([{
+        include: [{
+          isBidirectional: true,
+          source: {
+            ref: {
+              deployment: 'nd.ins',
+              element: 'root.child1'
+            }
+          },
+          target: {
+            ref: {
+              model: 'root.child2'
+            }
+          }
+        }]
       }])
     })
   })

@@ -6,9 +6,9 @@ import { only } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
+import * as css from '../../shared/xyflow/RelationshipEdge.css'
 import type { XYFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-relationships'
-import * as css from '../../shared/xyflow/RelationshipEdge.css'
 
 const Tooltip = MantineTooltip.withProps({
   color: 'dark',

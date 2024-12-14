@@ -2,8 +2,8 @@ import { Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
-import * as css from './styles.css'
 import type { SharedTypes } from '../../shared/xyflow/_types'
+import * as css from './styles.css'
 
 const Text = MantineText.withProps({
   component: 'div'

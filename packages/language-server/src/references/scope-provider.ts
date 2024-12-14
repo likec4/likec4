@@ -16,7 +16,7 @@ import {
   StreamImpl,
   StreamScope
 } from 'langium'
-import { ast, isLikeC4LangiumDocument } from '../ast'
+import { ast } from '../ast'
 import { logger } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
@@ -91,8 +91,8 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       const referenceType = this.reflection.getReferenceType(context)
       try {
         const container = context.container
-        if (ast.isDeploymentRef(container)) {
-          return this.getScopeForDeploymentRef(container, context)
+        if (ast.isFqnRef(container)) {
+          return this.getScopeForFqnRef(container, context)
         }
 
         if (referenceType !== ast.Element) {
@@ -134,14 +134,20 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
   }
 
-  protected getScopeForDeploymentRef(container: ast.DeploymentRef, context: ReferenceInfo) {
+  protected getScopeForFqnRef(container: ast.FqnRef, context: ReferenceInfo) {
     const parent = container.parent
     if (!parent) {
-      return new MapScope(
+      return this.createScope(
         // First preference for deployment nodes
         this.computeScope(context, ast.DeploymentNode).getAllElements(),
-        // Second preference for deployed instances
-        this.computeScope(context, ast.DeployedInstance)
+        this.createScope(
+          // Second preference for deployed instances
+          this.computeScope(context, ast.DeployedInstance).getAllElements(),
+          // Third preference for elements if we are in deployment view
+          AstUtils.hasContainerOfType(container, ast.isDeploymentView)
+            ? this.computeScope(context, ast.Element)
+            : EMPTY_SCOPE
+        )
       )
     }
     const parentRef = parent.value.ref

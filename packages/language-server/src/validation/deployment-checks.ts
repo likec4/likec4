@@ -1,4 +1,4 @@
-import { nonNullable } from '@likec4/core'
+import { FqnRef, isSameHierarchy, nonNullable } from '@likec4/core'
 import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -62,6 +62,7 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
         range
       })
     }
+
     const fqnName = DeploymentsIndex.getFqnName(el)
 
     const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
@@ -79,66 +80,52 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
 }
 
 export const deploymentRelationChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentRelation> => {
-  // const DeploymentsIndex = services.likec4.DeploymentsIndex
-  // const Names = services.references.NameProvider as LikeC4NameProvider
-  // const Locator = services.workspace.AstNodeLocator
-  // const fqnIndex = services.likec4.FqnIndex
+  const ModelParser = services.likec4.ModelParser
   return tryOrLog((el, accept) => {
     const source = el.source?.value?.ref
+    if (!source) {
+      let sourceCstText = el.source?.$cstNode?.text ?? ''
+      accept('error', `DeploymentRelation source '${sourceCstText}' not resolved`, {
+        node: el,
+        property: 'source'
+      })
+      return
+    }
     const target = el.target?.value?.ref
-
-    if (!source || !target) {
+    if (!target) {
+      let targetCstText = el.target?.$cstNode?.text ?? ''
+      accept('error', `DeploymentRelation target '${targetCstText}' not resolved`, {
+        node: el,
+        property: 'target'
+      })
       return
     }
 
-    if (
-      ast.isElement(source) && ast.isDeploymentNode(target) || ast.isElement(target) && ast.isDeploymentNode(source)
-    ) {
-      const range = el.target.$cstNode?.range ?? el.source.$cstNode?.range
-      accept('error', 'Relations between deployment nodes and instance internals are not supported', {
+    const doc = getDocument(el)
+    const parser = ModelParser.forDocument(doc)
+
+    const sourceFqnRef = parser.parseFqnRef(el.source)
+    if (FqnRef.isModelRef(sourceFqnRef)) {
+      accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
-        ...range && { range }
+        property: 'source'
       })
+      return
     }
 
-    // const sourceEl = ast.isDeployedInstance(source)
-    //   ? elementRef(source.element)
-    //   : source
-    // const targetEl = ast.isDeployedInstance(target)
-    //   ? elementRef(target.element)
-    //   : target
+    const targetFqnRef = parser.parseFqnRef(el.target)
+    if (FqnRef.isModelRef(targetFqnRef)) {
+      accept('error', 'DeploymentRelation must refer deployment element', {
+        node: el,
+        property: 'target'
+      })
+      return
+    }
 
-    // if (!sourceEl || !targetEl) {
-    //   return
-    // }
-
-    // const sourceFqn = ast.isElement(sourceEl) ? fqnIndex.getFqn(sourceEl) : DeploymentsIndex.getFqnName(sourceEl) as Fqn
-    // if (!sourceFqn) {
-    //   accept('error', 'Source not resolved', {
-    //     node: el,
-    //     property: 'source'
-    //   })
-    // }
-
-    // const targetFqn = ast.isElement(targetEl) ? fqnIndex.getFqn(targetEl) : DeploymentsIndex.getFqnName(targetEl) as Fqn
-    // if (!targetFqn) {
-    //   accept('error', 'Target not resolved', {
-    //     node: el,
-    //     property: 'target'
-    //   })
-    // }
-
-    // if (!!sourceFqn && sourceFqn === targetFqn) {
-    //   accept('error', 'Self-relation is not allowed', {
-    //     node: el
-    //   })
-    //   return
-    // }
-
-    // if (sourceFqn && targetFqn && isSameHierarchy(sourceFqn, targetFqn)) {
-    //   accept('error', 'Invalid parent-child relationship', {
-    //     node: el
-    //   })
-    // }
+    if (isSameHierarchy(sourceFqnRef.deployment, targetFqnRef.deployment)) {
+      accept('error', 'Invalid parent-child relationship', {
+        node: el
+      })
+    }
   })
 }

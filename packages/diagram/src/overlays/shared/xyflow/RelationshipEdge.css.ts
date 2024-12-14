@@ -1,6 +1,6 @@
-import { style } from "@vanilla-extract/css"
-import { mantine, transitions, vars, whereDark, xyvars } from "../../../theme-vars"
-import { mixColor } from "../../Overlays.css"
+import { style } from '@vanilla-extract/css'
+import { mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
+import { mixColor } from '../../Overlays.css'
 
 const DimmedTransitionDelay = '400ms'
 

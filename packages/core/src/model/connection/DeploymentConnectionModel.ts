@@ -96,4 +96,31 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
       && equals(this.relations.model, other.relations.model)
       && equals(this.relations.deployment, other.relations.deployment)
   }
+
+  /**
+   * Creates a clone of the current `DeploymentConnectionModel` instance with optional overrides.
+   * if `null` is provided in overrides, the corresponding relation set will be empty.
+   */
+  public clone(overrides?: {
+    model?: ReadonlySet<RelationshipModel<M>> | null
+    deployment?: ReadonlySet<DeploymentRelationModel<M>> | null
+  }): DeploymentConnectionModel<M> {
+    if (overrides) {
+      overrides = {
+        model: this.relations.model,
+        deployment: this.relations.deployment,
+        ...overrides
+      }
+    }
+    return new DeploymentConnectionModel(
+      this.source,
+      this.target,
+      overrides
+        ? new RelationshipsAccum(
+          overrides.model ?? new Set(),
+          overrides.deployment ?? new Set()
+        )
+        : this.relations
+    )
+  }
 }

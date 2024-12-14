@@ -10,6 +10,7 @@ import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
 import { elementRef } from './utils/elementRef'
+import type { IsValidFn } from './validation'
 
 export { ast }
 
@@ -222,29 +223,6 @@ export interface FqnIndexedDocument extends SetRequired<LikeC4LangiumDocument, '
 
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {}
 
-export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
-    c4Specification: {
-      tags: new Set(),
-      elements: {},
-      relationships: {},
-      colors: {},
-      deployments: {}
-    },
-    c4Elements: [],
-    c4Relations: [],
-    c4Deployments: [],
-    c4DeploymentRelations: [],
-    c4Globals: {
-      predicates: {},
-      dynamicPredicates: {},
-      styles: {}
-    },
-    c4Views: []
-  }
-  return Object.assign(doc, props) as ParsedLikeC4LangiumDocument
-}
-
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
@@ -268,89 +246,6 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4DeploymentRelations
   )
 }
-
-type Guard<N extends AstNode> = (n: AstNode) => n is N
-type Guarded<G> = G extends Guard<infer N> ? N : never
-
-function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
-  predicates: Predicates
-) {
-  return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
-}
-const isValidatableAstNode = validatableAstNodeGuards([
-  ast.isGlobals,
-  ast.isGlobalPredicateGroup,
-  ast.isGlobalDynamicPredicateGroup,
-  ast.isGlobalStyle,
-  ast.isGlobalStyleGroup,
-  ast.isDynamicViewPredicateIterator,
-  ast.isElementPredicateWith,
-  ast.isRelationPredicateWith,
-  ast.isElementExpression,
-  ast.isRelationExpression,
-  ast.isDynamicViewParallelSteps,
-  ast.isDynamicViewStep,
-  ast.isDeploymentViewRule,
-  ast.isDeploymentViewRulePredicate,
-  ast.isDeploymentExpression,
-  ast.isViewProperty,
-  ast.isStyleProperty,
-  ast.isPredicate,
-  ast.isTags,
-  ast.isViewRule,
-  ast.isDynamicViewRule,
-  ast.isLikeC4View,
-  ast.isViewRuleStyleOrGlobalRef,
-  ast.isDeployedInstance,
-  ast.isDeploymentNode,
-  ast.isRelationshipStyleProperty,
-  ast.isRelation,
-  ast.isElementProperty,
-  ast.isStringProperty,
-  ast.isNavigateToProperty,
-  ast.isElement,
-  ast.isExtendElement,
-  ast.isSpecificationElementKind,
-  ast.isSpecificationRelationshipKind,
-  ast.isSpecificationDeploymentNodeKind,
-  ast.isSpecificationTag,
-  ast.isSpecificationColor,
-  ast.isSpecificationRule
-])
-type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
-
-const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefined => {
-  let nd = node as LikeC4AstNode['$container']
-  while (nd) {
-    if (isValidatableAstNode(nd)) {
-      return nd
-    }
-    nd = nd.$container
-  }
-  return undefined
-}
-
-export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
-  const errors = doc.diagnostics?.filter(d => d.severity === DiagnosticSeverity.Error) ?? []
-  const invalidNodes = new WeakSet()
-  for (const { node } of errors) {
-    if (isNullish(node) || invalidNodes.has(node)) {
-      continue
-    }
-    invalidNodes.add(node)
-    const container = findInvalidContainer(node)
-    if (container) {
-      invalidNodes.add(container)
-    }
-  }
-  const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)
-  return {
-    isValid,
-    invalidNodes
-  }
-}
-export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
-export type IsValidFn = ChecksFromDiagnostics['isValid']
 
 export function* streamModel(doc: LikeC4LangiumDocument, isValid: IsValidFn) {
   const traverseStack = doc.parseResult.value.models.flatMap(m => m.elements)

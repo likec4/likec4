@@ -545,7 +545,7 @@ DeploymentNodeBody: '{'
 
 DeployedInstance:
   (name=Id Eq)?
-  ('instanceOf' | 'instance' 'of')
+  'instanceOf'
   element=ElementRef
   title=String?
   body=DeployedInstanceBody?
@@ -557,18 +557,20 @@ DeployedInstanceBody: '{'
   props+=ElementProperty*
 '}';
 
-// Rules:
-// - DeployedInstance can be referenced from DeploymentNode
-// - Element can be referenced from DeployedInstance
-// Forced by scope computation
-type DeploymentReferenceable = DeploymentNode | DeployedInstance | Element;
-DeploymentRef:
-  value=[DeploymentReferenceable:Id] ({infer DeploymentRef.parent=current} StickyDot value=[DeploymentReferenceable:Id])*;
+type Referenceable = DeploymentNode | DeployedInstance | Element;
+// Reference to Elements in logical or deployment model
+// Scope computation is based on the parent element:
+//  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
+//  - If parent is DeployedInstance, then it can reference  nested  Element
+//  - If parent is Element, then it can reference  nested  Element
+//  Mix of DeploymentRef and ElementRef
+FqnRef:
+  value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
 DeploymentRelation:
-  source=DeploymentRef
+  source=FqnRef
   ('->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
-  target=DeploymentRef
+  target=FqnRef
   (
     title=String
     technology=String?
@@ -600,7 +602,7 @@ DeploymentViewRule:
 ;
 
 DeploymentViewRuleStyle:
-  'style' target=DeploymentExpressionIterator '{'
+  'style' targets=FqnExpressions '{'
     props+=(
       StyleProperty |
       NotationProperty
@@ -614,46 +616,47 @@ DeploymentViewRulePredicate:
 ;
 
 DeploymentViewRulePredicateExpression:
-  value=DeploymentExpression ({infer DeploymentViewRulePredicateExpression.prev=current} ',' (value=DeploymentExpression)?)*
+  value=ExpressionV2 ({infer DeploymentViewRulePredicateExpression.prev=current} ',' (value=ExpressionV2)?)*
 ;
 
-DeploymentExpression:
-  DeploymentRelationExpression |
-  DeploymentElementExpression
+ExpressionV2:
+  RelationExpr |
+  FqnExpr
 ;
 
-DeploymentElementExpression:
+
+FqnExpr:
   {infer WildcardExpression} isWildcard?='*' |
-  DeploymentRefExpression
+  FqnRefExpr
 ;
 
-DeploymentRefExpression:
-  ref=DeploymentRef selector=(DotUnderscore | DotWildcard)?
+FqnRefExpr:
+  ref=FqnRef selector=(DotUnderscore | DotWildcard)?
 ;
 
-DeploymentRelationExpression:
-  InOutDeploymentRelationExpression |
-  DirectedDeploymentRelationExpression
+RelationExpr:
+  InOutRelationExpr |
+  DirectedRelationExpr
 ;
 
-InOutDeploymentRelationExpression infers DeploymentRelationExpression:
-  IncomingDeploymentRelationExpression ({infer InOutDeploymentRelationExpression.inout=current} '->')?
+InOutRelationExpr infers RelationExpr:
+  IncomingRelationExpr ({infer InOutRelationExpr.inout=current} '->')?
 ;
 
-IncomingDeploymentRelationExpression:
-  '->' to=DeploymentElementExpression;
+IncomingRelationExpr:
+  '->' to=FqnExpr;
 
-DirectedDeploymentRelationExpression infers DeploymentRelationExpression:
-  OutgoingDeploymentRelationExpression ({infer DirectedDeploymentRelationExpression.source=current} target=DeploymentElementExpression)?
+DirectedRelationExpr infers RelationExpr:
+  OutgoingRelationExpr ({infer DirectedRelationExpr.source=current} target=FqnExpr)?
 ;
 
-OutgoingDeploymentRelationExpression:
-  from=DeploymentElementExpression
+OutgoingRelationExpr:
+  from=FqnExpr
   (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | kind=[RelationshipKind:DotId])
 ;
 
-DeploymentExpressionIterator:
-  value=DeploymentElementExpression ({infer DeploymentExpressionIterator.prev=current} ',' (value=DeploymentElementExpression)?)*
+FqnExpressions:
+  value=FqnExpr ({infer FqnExpressions.prev=current} ',' (value=FqnExpr)?)*
 ;
 // Global -------------------------------------
 
@@ -691,7 +694,7 @@ GlobalStyleGroup:
     styles+=ViewRuleStyle*
   '}';
 
-type FqnReferenceable = DeploymentReferenceable | Element | ExtendElement;
+type FqnReferenceable = Referenceable | Element | ExtendElement;
 
 // Common properties -------------------------------------
 
@@ -783,7 +786,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group' | 'node' | 'deployment';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (

@@ -22,10 +22,9 @@ import {
   isElementWhere,
   isRelationExpression,
   isRelationWhere,
+  type ModelRelation,
   type NonEmptyArray,
   type OutgoingExpr as C4OutgoingExpr,
-  type ModelRelation,
-  type RelationExpr as C4RelationExpr,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -39,6 +38,7 @@ import {
   type ViewRuleStyle,
   type WhereOperator
 } from '../../../types'
+import { type RelationExpr_ as C4RelationExpr } from '../../../types/expression'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { ComputeCtx } from '../compute'

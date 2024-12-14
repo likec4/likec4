@@ -3,13 +3,13 @@ import { invariant } from '../../../errors'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import type { DeployedInstanceModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
-import type { DeploymentElementExpression } from '../../../types'
+import type { FqnExpr } from '../../../types'
 import type { PredicateCtx, PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate } from '../utils'
 
-export const DeploymentRefPredicate: PredicateExecutor<DeploymentElementExpression.Ref> = {
+export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = {
   include: (expr, ctx) => {
-    const el = ctx.model.element(expr.ref.id)
+    const el = ctx.model.element(expr.ref.deployment)
 
     if (el.isInstance()) {
       includeDeployedInstance(el, ctx)

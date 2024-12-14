@@ -1,4 +1,4 @@
-import { type AstNode, type MaybePromise } from 'langium'
+import { type AstNode, AstUtils, type MaybePromise } from 'langium'
 import { AstNodeHoverProvider } from 'langium/lsp'
 import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
@@ -30,7 +30,8 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     }
 
     if (ast.isDeploymentNode(node)) {
-      const el = this.parser.parseDeploymentNode(node, () => true)
+      const doc = AstUtils.getDocument(node)
+      const el = this.parser.forDocument(doc).parseDeploymentNode(node)
       const lines = [el.id as string + '  ']
       if (el.title !== node.name) {
         lines.push(`### ${el.title}`)
@@ -45,7 +46,8 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     }
 
     if (ast.isDeployedInstance(node)) {
-      const instance = this.parser.parseDeployedInstance(node, () => true)
+      const doc = AstUtils.getDocument(node)
+      const instance = this.parser.forDocument(doc).parseDeployedInstance(node)
       const el = this.locator.getParsedElement(instance.element)
       const lines = [instance.id + '  ', `instance of \`${instance.element}\``]
       if (el) {

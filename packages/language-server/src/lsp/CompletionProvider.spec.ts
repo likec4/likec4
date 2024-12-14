@@ -682,14 +682,32 @@ describe.concurrent('LikeC4CompletionProvider', () => {
   it('should suggest deployment kind', async ({ expect }) => {
     const text = `
       specification {
+        element component
         deploymentNode env
         deploymentNode node
       }
+      model {
+        c1 = component {
+          c2 = component
+        }
+        c2 = component {
+          c1 = component
+        }
+      }
       deployment {
         <|>env dev {
-          n1 = <|>node
+          n1 = node
+          n2 = <|>node
+          i1 = instanceOf <|>
         }
         dev.<|> -> <|>
+      }
+      views {
+        deployment view test {
+          include
+            <|>,
+            -> dev.<|>
+        }
       }
     `
     const completion = expectCompletion()
@@ -716,7 +734,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       text,
       index: 2,
       expectedItems: [
-        'n1'
+        'c1',
+        'c2'
       ]
     })
 
@@ -724,8 +743,43 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       text,
       index: 3,
       expectedItems: [
+        'n1',
+        'n2',
+        'i1'
+      ]
+    })
+
+    await completion({
+      text,
+      index: 4,
+      expectedItems: [
         'dev',
-        'n1'
+        'n1',
+        'n2',
+        'i1'
+      ]
+    })
+
+    await completion({
+      text,
+      index: 5,
+      expectedItems: [
+        'dev',
+        'n1',
+        'n2',
+        'i1',
+        'c1',
+        'c2'
+      ]
+    })
+
+    await completion({
+      text,
+      index: 6,
+      expectedItems: [
+        'n1',
+        'n2',
+        'i1'
       ]
     })
   })

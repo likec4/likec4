@@ -4,12 +4,11 @@ import {
   type AutoLayoutDirection,
   type CustomElementExpr,
   type CustomRelationExpr,
-  type DeploymentElementExpression,
-  type DeploymentExpression,
   type DeploymentView,
   type ElementExpression as C4ElementExpression,
   type ElementView,
   type Expression as C4Expression,
+  type ExpressionV2,
   type Fqn,
   isElementPredicateExpr,
   type NonEmptyArray,
@@ -38,21 +37,11 @@ interface AViewBuilder<
 }
 
 export interface ViewBuilder<T extends AnyTypes> extends AViewBuilder<T, T['Fqn'], C4Expression> {
-  $expr(expr: ViewPredicate.Expression<T> | C4Expression): TypedC4Expression<T>
-  include(...exprs: C4Expression[]): this
-  exclude(...exprs: C4Expression[]): this
-  style(rule: ViewRuleStyle): this
-  autoLayout(layout: AutoLayoutDirection): this
 }
 
 export interface DeploymentViewBuilder<T extends AnyTypes>
-  extends AViewBuilder<T, T['DeploymentFqn'], DeploymentExpression>
+  extends AViewBuilder<T, T['DeploymentFqn'], Types.ToExpression<T>>
 {
-  $expr(expr: ViewPredicate.DeploymentExpression<T> | DeploymentExpression): TypedDeploymentExpression<T>
-  include(...exprs: DeploymentExpression[]): this
-  exclude(...exprs: DeploymentExpression[]): this
-  style(rule: ViewRuleStyle): this
-  autoLayout(layout: AutoLayoutDirection): this
 }
 
 export namespace ViewPredicate {
@@ -207,7 +196,7 @@ export interface AddDeploymentViewHelper<Props = unknown> {
 
 // To hook types
 type TypedC4Expression<Types extends AnyTypes> = Tagged<C4Expression, 'typed', Types>
-type TypedDeploymentExpression<Types extends AnyTypes> = Tagged<DeploymentExpression, 'typed', Types>
+type TypedDeploymentExpression<Types extends AnyTypes> = Tagged<ExpressionV2, 'typed', Types>
 
 function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<any, any> {
   if (isString(where)) {
@@ -264,6 +253,7 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
 function $include<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
     | [B['Expr']]
+    | [B['TypedExpr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
@@ -307,6 +297,7 @@ function $include<B extends AViewBuilder<AnyTypes, any, any>>(
 function $exclude<B extends AViewBuilder<AnyTypes, any, any>>(
   ...args:
     | [B['Expr']]
+    | [B['TypedExpr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
@@ -387,18 +378,16 @@ function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Types> | C
   })
 }
 
-const asTypedDeploymentExpression = <Types extends AnyTypes>(
-  expr: DeploymentExpression
-): TypedDeploymentExpression<Types> => {
-  return expr as TypedDeploymentExpression<Types>
-}
-
-function $deploymentExpr<Types extends AnyTypes>(
-  expr: ViewPredicate.DeploymentExpression<Types> | DeploymentExpression
-): TypedDeploymentExpression<Types> {
+function $deploymentExpr<T extends AnyTypes>(
+  expr: ViewPredicate.DeploymentExpression<T> | ExpressionV2
+): Types.ToExpression<T> {
   if (!isString(expr)) {
-    return expr as TypedDeploymentExpression<Types>
+    return expr as any
   }
+  const asTypedDeploymentExpression = (expr: ExpressionV2): Types.ToExpression<T> => {
+    return expr as any
+  }
+
   if (expr === '*') {
     return asTypedDeploymentExpression({ wildcard: true })
   }
@@ -420,22 +409,22 @@ function $deploymentExpr<Types extends AnyTypes>(
   if (expr.includes(' <-> ')) {
     const [source, target] = expr.split(' <-> ')
     return asTypedDeploymentExpression({
-      source: $deploymentExpr(source) as DeploymentElementExpression,
-      target: $deploymentExpr(target) as DeploymentElementExpression,
+      source: $deploymentExpr(source) as any,
+      target: $deploymentExpr(target) as any,
       isBidirectional: true
     })
   }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
     return asTypedDeploymentExpression({
-      source: $deploymentExpr(source) as DeploymentElementExpression,
-      target: $deploymentExpr(target) as DeploymentElementExpression
+      source: $deploymentExpr(source) as any,
+      target: $deploymentExpr(target) as any
     })
   }
   if (expr.endsWith('._')) {
     return asTypedDeploymentExpression({
       ref: {
-        id: expr.replace('._', '') as Fqn
+        deployment: expr.replace('._', '') as Fqn
       },
       selector: 'expanded'
     })
@@ -443,7 +432,7 @@ function $deploymentExpr<Types extends AnyTypes>(
   if (expr.endsWith('.**')) {
     return asTypedDeploymentExpression({
       ref: {
-        id: expr.replace('.**', '') as Fqn
+        deployment: expr.replace('.**', '') as Fqn
       },
       selector: 'descendants'
     })
@@ -451,20 +440,20 @@ function $deploymentExpr<Types extends AnyTypes>(
   if (expr.endsWith('.*')) {
     return asTypedDeploymentExpression({
       ref: {
-        id: expr.replace('.*', '') as Fqn
+        deployment: expr.replace('.*', '') as Fqn
       },
       selector: 'children'
     })
   }
   return asTypedDeploymentExpression({
     ref: {
-      id: expr as any as Fqn
+      deployment: expr as any as Fqn
     }
   })
 }
 
 function $style<B extends AViewBuilder<AnyTypes, any, any>>(
-  element: B['ElementExpr'] | NonEmptyArray<B['ElementExpr']>,
+  element: B['ElementExpr'] | B['TypedExpr'] | NonEmptyArray<B['ElementExpr']>,
   { notation, ...style }: ViewRuleStyle['style'] & { notation?: string }
 ): (b: B) => B {
   return (b) =>

@@ -17,8 +17,8 @@ import { useMemo } from 'react'
 import { filter, first, forEach, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
-import type { XYFlowTypes } from './_types'
 import type { SharedTypes } from '../shared/xyflow/_types'
+import type { XYFlowTypes } from './_types'
 
 /**
  * All constants related to the layout

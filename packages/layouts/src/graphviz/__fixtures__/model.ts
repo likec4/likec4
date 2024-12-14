@@ -4,9 +4,9 @@ import type {
   ElementView,
   Fqn,
   IconUrl,
+  ModelRelation,
   NonEmptyArray,
   ParsedLikeC4Model,
-  ModelRelation,
   RelationId,
   ViewId
 } from '@likec4/core'

@@ -12,6 +12,7 @@ import type {
   RelationshipKindSpecification,
   RelationshipLineType
 } from '../types'
+import type { ExpressionV2 } from '../types/expression-v2'
 
 export type BuilderSpecification = {
   elements: {
@@ -264,4 +265,6 @@ export namespace Types {
       T['ViewId']
     >
     : never
+
+  export type ToExpression<T> = T extends AnyTypes ? ExpressionV2<T['DeploymentFqn'], T['Fqn']> : never
 }

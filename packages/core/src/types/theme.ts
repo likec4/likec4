@@ -1,5 +1,4 @@
 import type { LiteralUnion } from 'type-fest'
-import type { CustomColor } from './_common'
 
 const ThemeColors = [
   'amber',

@@ -1,22 +1,23 @@
-import { findLast } from 'remeda'
+import { findLast, map } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import { type LikeC4DeploymentModel, LikeC4Model } from '../../model'
 import type { AnyAux } from '../../model/types'
 import type { DeploymentViewRule } from '../../types'
 import {
   type ComputedDeploymentView,
-  DeploymentElementExpression,
-  DeploymentRelationExpression,
   type DeploymentView,
+  FqnExpr,
   isViewRuleAutoLayout,
   isViewRulePredicate
 } from '../../types'
+import { RelationExpr } from '../../types/expression-v2'
+import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { cleanConnections } from './clean-connections'
 import { MutableMemory, type Patch } from './Memory'
-import { DeploymentRefPredicate } from './predicates/deployment-ref'
+import { DeploymentRefPredicate } from './predicates/elements'
 import { DirectRelationPredicate } from './predicates/relation-direct'
 import { InOutRelationPredicate } from './predicates/relation-in-out'
 import { IncomingRelationPredicate } from './predicates/relation-incoming'
@@ -41,22 +42,25 @@ function processPredicates<M extends AnyAux>(
         const ctx = { model, stage, memory }
         let patch: Patch | undefined
         switch (true) {
-          case DeploymentElementExpression.isRef(expr):
+          case FqnExpr.isModelRef(expr):
+            // Ignore model refs in deployment view
+            break
+          case FqnExpr.isDeploymentRef(expr):
             patch = DeploymentRefPredicate[op](expr, ctx)
             break
-          case DeploymentElementExpression.isWildcard(expr):
+          case FqnExpr.isWildcard(expr):
             patch = WildcardPredicate[op](expr, ctx)
             break
-          case DeploymentRelationExpression.isDirect(expr):
+          case RelationExpr.isDirect(expr):
             patch = DirectRelationPredicate[op](expr, ctx)
             break
-          case DeploymentRelationExpression.isInOut(expr):
+          case RelationExpr.isInOut(expr):
             patch = InOutRelationPredicate[op](expr, ctx)
             break
-          case DeploymentRelationExpression.isOutgoing(expr):
+          case RelationExpr.isOutgoing(expr):
             patch = OutgoingRelationPredicate[op](expr, ctx)
             break
-          case DeploymentRelationExpression.isIncoming(expr):
+          case RelationExpr.isIncoming(expr):
             patch = IncomingRelationPredicate[op](expr, ctx)
             break
           default:
@@ -98,6 +102,8 @@ export function computeDeploymentView<M extends AnyAux>(
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
 
+  const elementNotations = buildElementNotations(nodes)
+
   return calcViewLayoutHash({
     ...view,
     autoLayout: {
@@ -105,7 +111,19 @@ export function computeDeploymentView<M extends AnyAux>(
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
       ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
     },
-    nodes,
-    edges: sorted.edges
+    edges: sorted.edges,
+    nodes: map(nodes, n => {
+      // omit notation
+      delete n.notation
+      if (n.icon === 'none') {
+        delete n.icon
+      }
+      return n
+    }),
+    ...(elementNotations.length > 0 && {
+      notation: {
+        elements: elementNotations
+      }
+    })
   })
 }

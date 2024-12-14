@@ -90,7 +90,7 @@ async function mkTestServices({ expect }: TestContext) {
 
   const validateRules = (rules: string) =>
     validateView(`
-      view {
+      deployment view view {
         ${rules}
       }
     `)

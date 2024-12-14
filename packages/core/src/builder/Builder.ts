@@ -20,8 +20,8 @@ import {
   type LikeC4View,
   type Link,
   type ModelGlobals,
-  type NonEmptyArray,
   type ModelRelation,
+  type NonEmptyArray,
   type RelationId,
   type Tag
 } from '../types'
