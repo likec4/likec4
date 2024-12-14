@@ -1,6 +1,11 @@
+import { consola } from 'consola'
 import { resolve } from 'node:path'
 import { isProduction } from 'std-env'
 import { defineBuildConfig } from 'unbuild'
+
+if (!isProduction) {
+  consola.warn('Bundling CLI in development mode')
+}
 
 export default defineBuildConfig({
   entries: [
@@ -59,7 +64,7 @@ export default defineBuildConfig({
       compact: isProduction
     },
     resolve: {
-      exportConditions: ['node']
+      exportConditions: ['node', isProduction ? 'production' : 'development']
     },
     commonjs: {
       ignoreTryCatch: 'remove',
@@ -74,6 +79,7 @@ export default defineBuildConfig({
     },
     dts: {
       tsconfig: 'tsconfig.cli.json',
+      respectExternal: true,
       compilerOptions: {
         noEmitOnError: false,
         strict: false,

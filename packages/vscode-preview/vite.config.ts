@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
         '@likec4/core/types': resolve(__dirname, '../core/src/types'),
         '@likec4/core': resolve(__dirname, '../core/src'),
         '@likec4/diagram': resolve(__dirname, '../diagram/src')
-      }
+      },
+      dedupe: ['react', 'react-dom']
     },
     define: isDev ? {} : {
       'process.env.NODE_ENV': JSON.stringify('production')

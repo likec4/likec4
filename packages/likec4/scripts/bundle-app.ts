@@ -43,9 +43,6 @@ export async function bundleApp() {
     },
     esbuild: {
       jsxDev: false,
-      minifyIdentifiers: false,
-      minifyWhitespace: true,
-      minifySyntax: true,
       tsconfigRaw: {
         compilerOptions: {
           useDefineForClassFields: true,
@@ -61,7 +58,7 @@ export async function bundleApp() {
       chunkSizeWarningLimit: 2000,
       cssCodeSplit: false,
       cssMinify: 'esbuild',
-      minify: 'esbuild',
+      minify: true,
       target: 'esnext',
       sourcemap: false,
       assetsInlineLimit: 1_000_000,
