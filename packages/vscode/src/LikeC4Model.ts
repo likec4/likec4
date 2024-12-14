@@ -40,8 +40,7 @@ export class LikeC4Model extends AbstractDisposable {
     const mark = performance.mark('fetchComputedModel:start')
     const model = await this.ctrl.rpc.fetchComputedModel()
     if (isDev) {
-      const measure = performance.measure('FetchComputedModel', mark.name)
-      performance.clearMarks(mark.name)
+      const measure = performance.measure('FetchComputedModel', mark)
       logger.debug(`[LikeC4Model.fetchComputedModel] ${prettyMilliseconds(measure.duration)}`)
     }
     return { model }
@@ -80,7 +79,7 @@ export class LikeC4Model extends AbstractDisposable {
         return Promise.reject(err)
       } finally {
         if (isDev) {
-          const measure = performance.measure('LayoutView', mark.name)
+          const measure = performance.measure('LayoutView', mark)
           logger.debug(`[LikeC4Model.layoutView] "${viewId}" in ${prettyMilliseconds(measure.duration)}`)
         }
       }
