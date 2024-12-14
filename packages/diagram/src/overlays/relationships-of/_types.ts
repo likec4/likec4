@@ -3,7 +3,6 @@ import type { SharedTypes } from '../shared/xyflow/_types'
 
 export namespace XYFlowTypes {
   type RelationshipsOfNodeData = {
-    depth?: number
     column: 'incomers' | 'subjects' | 'outgoers'
     existsInCurrentView: boolean
     layoutId?: string
