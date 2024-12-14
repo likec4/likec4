@@ -45,28 +45,6 @@ export const elementNodeDescription = style({
   color: vars.element.loContrast
 })
 
-export const compoundNodeBody = style({
-  width: '100%',
-  height: '100%',
-  boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
-  background: `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
-  borderRadius: 4
-})
-
-export const compoundNodeTitle = style({
-  fontFamily: vars.compound.font,
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
-  fontWeight: 600,
-  fontSize: 14,
-  lineHeight: 1,
-  textTransform: 'uppercase',
-  paddingTop: 12,
-  paddingLeft: 10,
-  mixBlendMode: 'screen',
-  color: vars.compound.titleColor
-})
-
 export const cssShapeSvg = style({
   top: 0,
   left: 0,
