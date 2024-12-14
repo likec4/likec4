@@ -40,7 +40,7 @@
     "execa": "^9.3.1",
     "global": "^4.4.0",
     "husky": "^8.0.3",
-    "lint-staged": "15.2.10",
+    "lint-staged": "15.2.11",
     "npm-run-all2": "^7.0.1",
     "shipjs": "^0.26.4",
     "tsx": "~4.9.3",
