@@ -2346,7 +2346,7 @@ __metadata:
     "@mantine/spotlight": "npm:7.15.1"
     "@mantine/vanilla-extract": "npm:7.15.1"
     "@nanostores/react": "npm:0.8.2"
-    "@react-hookz/deep-equal": "npm:^2.0.2"
+    "@react-hookz/deep-equal": "npm:^2.0.3"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:3.17.0"
     "@types/node": "npm:^20.17.7"
@@ -2876,10 +2876,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-hookz/deep-equal@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@react-hookz/deep-equal@npm:2.0.2"
-  checksum: 10c0/06974f17dfdc15bf6453a43f0ab471a36ffa3fdf6cecee2ab9f9cfcbe0ed4421cdb5011983a3ce6904bf83c521568ea64e915c169e9d5d64fcf7bc80959f37c2
+"@react-hookz/deep-equal@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@react-hookz/deep-equal@npm:2.0.3"
+  checksum: 10c0/4caea62076b0084cbab5f113b46d9d84b1373061a7fbbf322d99764d173a0ebade93fc244a26a269acdcabd9b0507b4b991ac2189e557b74cf8a8169e3e2acf6
   languageName: node
   linkType: hard
 
