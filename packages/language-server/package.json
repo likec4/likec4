@@ -103,7 +103,7 @@
   "devDependencies": {
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.17.7",
+    "@types/node": "^20.17.10",
     "@vitest/coverage-v8": "^2.1.8",
     "execa": "^9.3.1",
     "langium-cli": "3.3.0",
