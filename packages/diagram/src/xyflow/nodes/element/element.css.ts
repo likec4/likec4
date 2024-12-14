@@ -339,26 +339,6 @@ export const shapeSvg = style({
   }
 })
 
-export const bottomButtonsContainer = style({
-  zIndex: 100,
-  position: 'absolute',
-  left: 0,
-  width: '100%',
-  bottom: 2,
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'nowrap',
-  alignItems: 'center',
-  gap: 2,
-  justifyContent: 'center',
-  pointerEvents: 'none',
-  selectors: {
-    [`:where([data-likec4-shape='browser']) &`]: {
-      bottom: 4
-    }
-  }
-})
-
 //   --group-gap: var(--mantine-spacing-md);
 //   --group-align: center;
 //   --group-justify: flex-start;
@@ -404,8 +384,6 @@ const btn = style({
     boxShadow: mantine.shadows.md
   }
 })
-
-export const navigateBtn = style([btn, {}])
 
 export const detailsBtn = style([btn, {
   position: 'absolute',
