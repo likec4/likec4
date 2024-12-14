@@ -42,7 +42,7 @@
     "husky": "^8.0.3",
     "lint-staged": "15.2.10",
     "npm-run-all2": "^7.0.1",
-    "shipjs": "^0.26.4",
+    "shipjs": "^0.27.0",
     "tsx": "~4.9.3",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2",

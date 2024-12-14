@@ -5998,7 +5998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^8.1.0, dotenv@npm:^8.2.0":
+"dotenv@npm:^8.2.0":
   version: 8.6.0
   resolution: "dotenv@npm:8.6.0"
   checksum: 10c0/6750431dea8efbd54b9f2d9681b04e1ccc7989486461dcf058bb708d9e3d63b04115fcdf8840e38ad1e24a4a2e1e7c1560626c5e3ac7bc09371b127c49e2d45f
@@ -6563,13 +6563,6 @@ __metadata:
   version: 1.2.1
   resolution: "esm-env@npm:1.2.1"
   checksum: 10c0/3a7efb5943cac44c84359d0bb25a918f90f1002c0cf9fd3c24d57f27068ba3b508a9c19c8603f8c37ea5730ae4a35efad4735447fd91ae760e275cc081702e69
-  languageName: node
-  linkType: hard
-
-"esm@npm:3.2.25":
-  version: 3.2.25
-  resolution: "esm@npm:3.2.25"
-  checksum: 10c0/8e60e8075506a7ce28681c30c8f54623fe18a251c364cd481d86719fc77f58aa055b293d80632d9686d5408aaf865ffa434897dc9fd9153c8b3f469fad23f094
   languageName: node
   linkType: hard
 
@@ -12287,7 +12280,7 @@ __metadata:
     husky: "npm:^8.0.3"
     lint-staged: "npm:15.2.10"
     npm-run-all2: "npm:^7.0.1"
-    shipjs: "npm:^0.26.4"
+    shipjs: "npm:^0.27.0"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.3.3"
     typescript: "npm:^5.7.2"
@@ -12566,22 +12559,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shipjs-lib@npm:0.26.4":
-  version: 0.26.4
-  resolution: "shipjs-lib@npm:0.26.4"
+"shipjs-lib@npm:0.27.0":
+  version: 0.27.0
+  resolution: "shipjs-lib@npm:0.27.0"
   dependencies:
     deepmerge: "npm:^4.2.2"
-    dotenv: "npm:^8.1.0"
     parse-github-url: "npm:1.0.2"
     semver: "npm:6.3.0"
     shelljs: "npm:0.8.5"
-  checksum: 10c0/28e96648c2096e4f10a8eec82fc831ca62231398297057f22e15a2430b251389efd7096f63e5861f4d5f7da99e17aa58eeb93fcc80bead34063fe0835bc4e6cd
+  checksum: 10c0/23d6e8aced3085aac7ad7d9098bb346f8bdf42df17123bb1c32256b39a36acb3869247ff11f226a59982789b91a9995081d0c60eaa62b35f500cffae62a6d5e9
   languageName: node
   linkType: hard
 
-"shipjs@npm:^0.26.4":
-  version: 0.26.4
-  resolution: "shipjs@npm:0.26.4"
+"shipjs@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "shipjs@npm:0.27.0"
   dependencies:
     "@babel/runtime": "npm:^7.6.3"
     "@octokit/rest": "npm:^17.11.0"
@@ -12596,7 +12588,6 @@ __metadata:
     deepmerge: "npm:^4.2.2"
     dotenv: "npm:^8.2.0"
     ejs: "npm:^3.0.0"
-    esm: "npm:3.2.25"
     globby: "npm:^10.0.1"
     inquirer: "npm:7.1.0"
     mkdirp: "npm:^1.0.0"
@@ -12604,12 +12595,12 @@ __metadata:
     prettier: "npm:^2.0.0"
     serialize-javascript: "npm:^3.0.0"
     shell-quote: "npm:^1.7.2"
-    shipjs-lib: "npm:0.26.4"
+    shipjs-lib: "npm:0.27.0"
     temp-write: "npm:4.0.0"
     tempfile: "npm:^3.0.0"
   bin:
     shipjs: bin/shipjs
-  checksum: 10c0/e18d4dc3336d16b9ab60008651b25bb1544f38d6a196c0fef1656a6e6dcf8e8bf55cce8d524b634f80f0e7616616e785cac3f280e720e429ec7eb8082cfc598a
+  checksum: 10c0/d90e090e83fff4f353fd3df381ba1ec5a2b019b3aaf007e5116d525b187fb058b3bbad7c2822b12668f37ae4e529e9d3bff959e55ae08b25692304bceef20696
   languageName: node
   linkType: hard
 
