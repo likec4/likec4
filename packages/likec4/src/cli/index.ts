@@ -16,7 +16,6 @@ import serveCmd from './serve'
 
 consola.level = LogLevels.debug
 
-// @ts-expect-error
 if (DEV) {
   consola.level = LogLevels.trace
   consola.warn('running cli in dev mode')
