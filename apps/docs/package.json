@@ -31,7 +31,7 @@
     "@expressive-code/plugin-line-numbers": "^0.38.3",
     "@fontsource/ibm-plex-sans": "^5.1.0",
     "astro": "~4.16.14",
-    "astro-og-canvas": "^0.5.4",
+    "astro-og-canvas": "^0.5.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "starlight-heading-badges": "^0.3.0",
