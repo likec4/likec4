@@ -1,3 +1,4 @@
+import { anyPass } from 'remeda'
 import type { Element, Fqn } from '../types'
 import { compareNatural } from './compare-natural'
 import { isString } from './guards'
@@ -26,28 +27,55 @@ export function nameFromFqn<E extends string>(fqn: E) {
   }
 }
 
-export function isAncestor<E extends { id: string }>(
-  ...args: [ancestor: string, another: string] | [ancestor: E, another: E]
+const asString: <E extends string | { id: string }>(e: E) => string = e => (isString(e) ? e : e.id)
+
+/**
+ * Check if one element is an ancestor of another
+ * @signature
+ *   isAncestor(ancestor, another)
+ */
+export function isAncestor<E extends string | { id: string }>(ancestor: E, another: E): boolean
+/**
+ * Check if one element is an ancestor of another
+ * Composable version
+ * @signature
+ *  isAncestor(another)(ancestor)
+ */
+export function isAncestor<E extends string | { id: string }>(another: E): (ancestor: E) => boolean
+
+export function isAncestor<E extends string | { id: string }>(
+  arg1: E,
+  arg2?: E
 ) {
-  const ancestor = isString(args[0]) ? args[0] : args[0].id
-  const another = isString(args[1]) ? args[1] : args[1].id
-  return another.startsWith(ancestor + '.')
+  const arg1Id = asString(arg1)
+  if (arg2) {
+    const arg2Id = asString(arg2)
+    return arg2Id.startsWith(arg1Id + '.')
+  }
+  return (ancestor: E) => {
+    const ancestorId = asString(ancestor)
+    return arg1Id.startsWith(ancestorId + '.')
+  }
 }
 
 export function isSameHierarchy<E extends string | { id: Fqn }>(one: E, another: E) {
-  const first = isString(one) ? one : one.id
-  const second = isString(another) ? another : another.id
+  const first = asString(one)
+  const second = asString(another)
   return first === second || second.startsWith(first + '.') || first.startsWith(second + '.')
 }
 
-export function isDescendantOf<E extends { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
-  const predicates = ancestors.flatMap(a => [(e: E) => e.id === a.id, (e: E) => isAncestor(a, e)])
-  return (e: E) => predicates.some(p => p(e))
+export function isDescendantOf<E extends string | { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
+  const predicates = ancestors.map(a => {
+    const ancestorPrefix = asString(a) + '.'
+    return (e: E) => asString(e).startsWith(ancestorPrefix)
+  })
+  return anyPass(predicates)
 }
 
-export function notDescendantOf(ancestors: Element[]): (e: Element) => boolean {
+export function notDescendantOf<E extends string | { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
+  const ancestorIds = ancestors.map(asString)
   const isDescendant = isDescendantOf(ancestors)
-  return (e: Element) => !isDescendant(e)
+  return (e) => !isDescendant(e) && !ancestorIds.includes(asString(e))
 }
 
 /**
@@ -175,6 +203,16 @@ export function sortByFqnHierarchically<T extends { id: string }, A extends Iter
     .map(({ item }) => item) as ReorderedArray<A>
 }
 
+function findTopAncestor<T extends { id: string }>(items: T[], item: T): T | null {
+  let parent = item
+  for (const e of items) {
+    if (isAncestor(e, parent)) {
+      parent = e
+    }
+  }
+  return parent !== item ? parent : null
+}
+
 /**
  * Keeps initial order of the elements, but ensures that parents are before children
  */
@@ -185,10 +223,9 @@ export function sortParentsFirst<T extends { id: string }, A extends IterableCon
   const items = [...array]
   let item
   while ((item = items.shift())) {
-    const itemId = item.id
-    let parentIndx
-    while ((parentIndx = items.findIndex(parent => isAncestor(parent.id, itemId))) !== -1) {
-      result.push(...items.splice(parentIndx, 1))
+    let parent
+    while ((parent = findTopAncestor(items, item))) {
+      result.push(items.splice(items.indexOf(parent), 1)[0]!)
     }
     result.push(item)
   }

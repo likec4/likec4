@@ -102,6 +102,7 @@ const local = b
       $m.rel('cloud.backend.api', 'cloud.media', 'uploads media'),
       $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
       $m.rel('cloud.backend.api', 'email', 'sends emails'),
+      $m.rel('cloud', 'email', 'uses'),
       $m.rel('cloud.media', 'aws.s3', 'uploads'),
       $m.rel('email', 'customer', 'sends emails')
     ),

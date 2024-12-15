@@ -1,8 +1,8 @@
-import { hasAtLeast, identity } from 'remeda'
+import { hasAtLeast } from 'remeda'
 import { invariant } from '../../errors'
-import { type ComputedEdge, type ComputedNode, type Fqn, type RelationId } from '../../types'
+import { type ComputedEdge, type ComputedNode, type Fqn } from '../../types'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
-import { deriveEdgePropsFromRelationships } from '../utils/derive-edge-props-from-relationships'
+import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { Connection, Elem } from './_types'
 import { type Memory, MutableMemory } from './Memory'
 
@@ -33,7 +33,10 @@ export function toComputedEdges(
     const {
       title,
       ...props
-    } = deriveEdgePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
+    } = mergePropsFromRelationships(
+      relations.map(r => r.$relationship),
+      relations.find(r => r.source.id === source && r.target.id === target)?.$relationship
+    )
 
     const edge: ComputedEdge = {
       id: e.id,

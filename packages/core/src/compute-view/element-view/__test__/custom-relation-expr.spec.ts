@@ -148,8 +148,8 @@ describe('custom-relation-expr', () => {
         "source": "cloud.backend",
         "tags": [
           "aws",
-          "legacy",
           "storage",
+          "legacy",
         ],
         "target": "amazon.s3",
       }

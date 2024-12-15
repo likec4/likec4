@@ -8,23 +8,23 @@ describe('deployment view: wildcard', () => {
     )
     expect(nodeIds).toEqual([
       'customer.instance',
-      'acc',
-      'acc.testCustomer',
       'prod',
-      'acc.eu',
       'prod.eu',
       'prod.us',
-      'global.email'
+      'global.email',
+      'acc',
+      'acc.testCustomer',
+      'acc.eu'
     ])
     expect(edgeIds).toEqual([
       'prod.eu:prod.us',
       'acc.testCustomer:acc.eu',
-      'prod.eu:global.email',
-      'prod.us:global.email',
-      'acc.eu:global.email',
       'customer.instance:prod.eu',
       'customer.instance:prod.us',
       'global.email:acc.testCustomer',
+      'prod.eu:global.email',
+      'prod.us:global.email',
+      'acc.eu:global.email',
       'global.email:customer.instance'
     ])
   })

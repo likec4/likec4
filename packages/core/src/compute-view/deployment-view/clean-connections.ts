@@ -1,7 +1,7 @@
 import DefaultMap from 'mnemonist/default-map'
 import { dropWhile, filter, flatMap, forEach, forEachObj, groupBy, hasAtLeast, map, pipe, prop, sort } from 'remeda'
 import { mergeConnections } from '../../model/connection/deployment'
-import { DeploymentConnectionModel } from '../../model/connection/DeploymentConnectionModel'
+import { DeploymentConnectionModel } from '../../model/connection/deployment/DeploymentConnectionModel'
 import { RelationshipsAccum } from '../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'

@@ -14,11 +14,11 @@ describe('wildcard-expr', () => {
       'amazon'
     ])
     expect(edgeIds).to.have.same.members([
+      'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'support:cloud.frontend',
-      'cloud.frontend:cloud.backend',
-      'cloud.backend:amazon',
-      'cloud.backend:email'
+      'cloud.backend:email',
+      'cloud.backend:amazon'
     ])
   })
 

@@ -4,6 +4,47 @@ import willCreateCycle from 'graphology-dag/will-create-cycle'
 import { forEach, map, pipe, prop, sortBy } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
 import type { ComputedEdge, ComputedNode, NodeId } from '../../types'
+import { isAncestor } from '../../utils'
+
+const isNested = (nested: ComputedEdge, parent: ComputedEdge) => {
+  const isSameSource = nested.source === parent.source
+  const isSameTarget = nested.target === parent.target
+  if (isSameSource && isSameTarget) {
+    return false
+  }
+  const isSourceNested = isAncestor(parent.source, nested.source)
+  const isTargetNested = isAncestor(parent.target, nested.target)
+  return (
+    (isSourceNested && isTargetNested)
+    || (isSameSource && isTargetNested)
+    || (isSameTarget && isSourceNested)
+  )
+}
+
+const findDeepestNestedEdge = (connections: ReadonlyArray<ComputedEdge>, edge: ComputedEdge) => {
+  let deepest = edge
+  for (const c of connections) {
+    if (isNested(c, deepest)) {
+      deepest = c
+    }
+  }
+  return deepest !== edge ? deepest : null
+}
+
+const sortDeepestFirst = (edges: ReadonlyArray<ComputedEdge>) => {
+  const sorted = [] as ComputedEdge[]
+  const unsorted = edges.slice()
+  let next
+  while (next = unsorted.shift()) {
+    let deepest
+    while (deepest = findDeepestNestedEdge(unsorted, next)) {
+      const index = unsorted.indexOf(deepest)
+      sorted.push(unsorted.splice(index, 1)[0]!)
+    }
+    sorted.push(next)
+  }
+  return sorted
+}
 
 /**
  * Keeps initial order of the elements, but ensures that parents are before children
@@ -101,19 +142,19 @@ export function topologicalSort(
     map(e => ({
       e,
       parentLevel: e.parent ? nodeLevel(e.parent) : 0,
-      sourceLevel: nodeLevel(e.source),
-      targetLevel: nodeLevel(e.target),
+      nodeLevel: Math.max(nodeLevel(e.source), nodeLevel(e.target)),
       sourceIndex: nodes.findIndex(n => n.id === e.source),
       targetIndex: nodes.findIndex(n => n.id === e.target)
     })),
     sortBy(
       [prop('parentLevel'), 'desc'],
-      [prop('sourceLevel'), 'desc'],
-      [prop('targetLevel'), 'desc'],
+      [prop('nodeLevel'), 'desc'],
       [prop('sourceIndex'), 'asc'],
       [prop('targetIndex'), 'asc']
     ),
-    forEach(({ e }, idx, _all) => {
+    map(prop('e')),
+    sortDeepestFirst,
+    forEach((e, idx, _all) => {
       sortedEdges.push(e)
       if (idx === 0 || !willCreateCycle(g, e.source, e.target)) {
         g.mergeDirectedEdge(e.source, e.target)

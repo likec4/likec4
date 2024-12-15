@@ -43,17 +43,17 @@ describe('incoming-expr', () => {
       ])
       expect(edgeIds).toEqual([
         'cloud.frontend:cloud.backend',
-        'cloud.backend:email',
-        'cloud.backend:amazon',
         'customer:cloud.frontend.dashboard',
-        'support:cloud.frontend.adminPanel'
+        'support:cloud.frontend.adminPanel',
+        'cloud.backend:email',
+        'cloud.backend:amazon'
       ])
     })
 
     it('exclude -> amazon', () => {
       const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
-        $exclude('-> email'),
+        $exclude('-> email ->'),
         $exclude('-> amazon')
       ])
       expect(nodeIds).toEqual([
@@ -74,6 +74,7 @@ describe('incoming-expr', () => {
     it('exclude cloud ->', () => {
       const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
+        $exclude('email ->'),
         $exclude('cloud ->')
       ])
       expect(nodeIds).toEqual([
@@ -110,12 +111,13 @@ describe('incoming-expr', () => {
     })
 
     it('exclude -> cloud.frontend.dashboard', () => {
-      const { nodeIds, edgeIds } = computeView('cloud', [
+      const { nodeIds, edges, edgeIds } = computeView('cloud', [
         $include('*'),
         $exclude('email'),
         $exclude('-> cloud.frontend.dashboard')
       ])
       expect(nodeIds).toEqual([
+        'customer',
         'support',
         'cloud',
         'cloud.frontend',
@@ -124,8 +126,9 @@ describe('incoming-expr', () => {
       ])
       expect(edgeIds).to.have.same.members([
         'cloud.frontend:cloud.backend',
+        'support:cloud.frontend',
         'cloud.backend:amazon',
-        'support:cloud.frontend'
+        'customer:cloud'
       ])
     })
   })
@@ -137,12 +140,12 @@ describe('incoming-expr', () => {
         $include('-> cloud.backend.*')
       ])
       expect(nodeIds).toEqual([
-        'support',
         'customer',
+        'support',
         'cloud.frontend',
         'cloud.frontend.adminPanel',
         'cloud.frontend.dashboard',
-        // 'cloud.backend', // implicit is removed, due to `-> cloud.backend.*`
+        'cloud.backend',
         'cloud.backend.graphql'
       ])
       expect(edgeIds).to.have.same.members([

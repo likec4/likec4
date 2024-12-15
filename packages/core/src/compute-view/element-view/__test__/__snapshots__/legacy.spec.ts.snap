@@ -10,6 +10,22 @@ exports[`compute-element-view > view of cloud 1`] = `
   "description": null,
   "edges": [
     {
+      "id": "cloud.frontend:cloud.backend",
+      "label": "requests",
+      "parent": "cloud",
+      "relations": [
+        "cloud.frontend:cloud.backend",
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend",
+      "tags": [
+        "next",
+        "old",
+      ],
+      "target": "cloud.backend",
+    },
+    {
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
       "parent": null,
@@ -30,37 +46,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "cloud.frontend",
     },
     {
-      "id": "cloud.frontend:cloud.backend",
-      "label": "requests",
-      "parent": "cloud",
-      "relations": [
-        "cloud.frontend:cloud.backend",
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend",
-      "tags": [
-        "next",
-        "old",
-      ],
-      "target": "cloud.backend",
-    },
-    {
-      "id": "cloud.backend:amazon",
-      "label": "uploads",
-      "parent": null,
-      "relations": [
-        "cloud.backend.storage:amazon.s3",
-      ],
-      "source": "cloud.backend",
-      "tags": [
-        "aws",
-        "legacy",
-        "storage",
-      ],
-      "target": "amazon",
-    },
-    {
       "id": "cloud.backend:email",
       "label": "schedule",
       "parent": null,
@@ -72,6 +57,21 @@ exports[`compute-element-view > view of cloud 1`] = `
         "communication",
       ],
       "target": "email",
+    },
+    {
+      "id": "cloud.backend:amazon",
+      "label": "uploads",
+      "parent": null,
+      "relations": [
+        "cloud.backend.storage:amazon.s3",
+      ],
+      "source": "cloud.backend",
+      "tags": [
+        "aws",
+        "storage",
+        "legacy",
+      ],
+      "target": "amazon",
     },
   ],
   "hash": "3e66b5ad85ed469ae32e87604c15a6e7e186dcba",
@@ -128,16 +128,16 @@ exports[`compute-element-view > view of cloud 1`] = `
       "description": null,
       "id": "cloud",
       "inEdges": [
-        "support:cloud.frontend",
         "customer:cloud.frontend",
+        "support:cloud.frontend",
       ],
       "kind": "system",
       "level": 0,
       "links": null,
       "modelRef": 1,
       "outEdges": [
-        "cloud.backend:amazon",
         "cloud.backend:email",
+        "cloud.backend:amazon",
       ],
       "parent": null,
       "shape": "rectangle",
@@ -155,8 +155,8 @@ exports[`compute-element-view > view of cloud 1`] = `
       "description": null,
       "id": "cloud.frontend",
       "inEdges": [
-        "support:cloud.frontend",
         "customer:cloud.frontend",
+        "support:cloud.frontend",
       ],
       "kind": "container",
       "level": 1,
@@ -185,8 +185,8 @@ exports[`compute-element-view > view of cloud 1`] = `
       "links": null,
       "modelRef": 1,
       "outEdges": [
-        "cloud.backend:amazon",
         "cloud.backend:email",
+        "cloud.backend:amazon",
       ],
       "parent": "cloud",
       "shape": "rectangle",
@@ -255,16 +255,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
   "description": null,
   "edges": [
     {
-      "id": "support:cloud.frontend.adminPanel",
-      "label": "manages",
-      "parent": null,
-      "relations": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend.adminPanel",
-    },
-    {
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
       "parent": null,
@@ -273,6 +263,16 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       ],
       "source": "customer",
       "target": "cloud.frontend.dashboard",
+    },
+    {
+      "id": "support:cloud.frontend.adminPanel",
+      "label": "manages",
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend.adminPanel",
     },
     {
       "id": "cloud.frontend.adminPanel:cloud.backend",
@@ -314,26 +314,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "children": [],
       "color": "primary",
       "description": null,
-      "id": "support",
-      "inEdges": [],
-      "kind": "actor",
-      "level": 0,
-      "links": null,
-      "modelRef": 1,
-      "outEdges": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "parent": null,
-      "shape": "person",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "support",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
       "id": "customer",
       "inEdges": [],
       "kind": "actor",
@@ -349,6 +329,26 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "tags": null,
       "technology": null,
       "title": "customer",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "id": "support",
+      "inEdges": [],
+      "kind": "actor",
+      "level": 0,
+      "links": null,
+      "modelRef": 1,
+      "outEdges": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "parent": null,
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "support",
     },
     {
       "children": [
@@ -368,8 +368,8 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "links": null,
       "modelRef": 1,
       "outEdges": [
-        "cloud.frontend.dashboard:cloud.backend",
         "cloud.frontend.adminPanel:cloud.backend",
+        "cloud.frontend.dashboard:cloud.backend",
       ],
       "parent": null,
       "shape": "browser",
@@ -433,8 +433,8 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "description": null,
       "id": "cloud.backend",
       "inEdges": [
-        "cloud.frontend.dashboard:cloud.backend",
         "cloud.frontend.adminPanel:cloud.backend",
+        "cloud.frontend.dashboard:cloud.backend",
       ],
       "kind": "container",
       "level": 0,

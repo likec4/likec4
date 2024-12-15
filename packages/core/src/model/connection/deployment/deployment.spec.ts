@@ -1,8 +1,8 @@
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 
-import { model } from '../__test__/fixture'
-import { findConnection, findConnectionsWithin } from './deployment'
+import { model } from '../../__test__/fixture'
+import { findConnection, findConnectionsWithin } from '../deployment'
 
 describe('Find deployment connections', () => {
   const deployment = model.deployment

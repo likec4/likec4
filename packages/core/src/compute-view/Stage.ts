@@ -1,17 +1,18 @@
 import { identity, isArray, partition } from 'remeda'
-import type { Connection } from '../model/connection/ConnectionModel'
+import type { Connection } from '../model/connection/model'
 import { mergeConnections } from '../model/connection/model'
+import { isIterable } from '../utils'
 import { union } from '../utils/set'
 import type { Memory, Patch } from './Memory'
 
-const asArray = <T>(value: T | ReadonlyArray<T>): ReadonlyArray<T> => isArray(value) ? value : [value]
-
 type Connections<C> = ReadonlyArray<C>
+
+type WithId = { readonly id: string }
 
 /**
  * Stage is a single step in the computation of the view
  */
-export class Stage<Elem, C extends Connection<Elem, any>> {
+export class Stage<Elem extends WithId, C extends Connection<Elem, any>> {
   // New elements
   protected readonly explicits = new Set<Elem>()
   protected readonly implicits = new Set<Elem>()
@@ -39,26 +40,40 @@ export class Stage<Elem, C extends Connection<Elem, any>> {
       || this._connections.length > 0
   }
 
-  public addExplicit(elements: Elem | ReadonlyArray<Elem> | false | undefined | null): void {
+  private _addExplicit(elements: Elem): void {
+    this.explicits.add(elements)
+    this.implicits.delete(elements)
+  }
+  public addExplicit(elements: Elem | Iterable<Elem> | false | undefined | null): void {
     if (!elements) {
       return
     }
-    for (const el of asArray(elements)) {
-      this.explicits.add(el)
-      this.implicits.delete(el)
+    if (isIterable(elements)) {
+      for (const el of elements) {
+        this._addExplicit(el)
+      }
+      return
     }
+    this._addExplicit(elements)
   }
 
-  public addImplicit(elements: Elem | ReadonlyArray<Elem> | false | undefined | null): void {
+  private _addImplicit(elements: Elem): void {
+    if (this.explicits.has(elements)) {
+      return
+    }
+    this.implicits.add(elements)
+  }
+  public addImplicit(elements: Elem | Iterable<Elem> | false | undefined | null): void {
     if (!elements) {
       return
     }
-    for (const el of asArray(elements)) {
-      if (this.explicits.has(el)) {
-        continue
+    if (isIterable(elements)) {
+      for (const el of elements) {
+        this._addImplicit(el)
       }
-      this.implicits.add(el)
+      return
     }
+    this._addImplicit(elements)
   }
 
   public addConnections(connections: Connections<C>): Connections<C> {
@@ -69,19 +84,23 @@ export class Stage<Elem, C extends Connection<Elem, any>> {
     return connections
   }
 
-  public exclude(elements: Elem | ReadonlyArray<Elem>): this {
-    if (this.explicits.size + this.implicits.size > 0) {
-      console.warn('Excluding elements from the stage with existing elements')
-    }
-    for (const el of asArray(elements)) {
-      this.excluded.add(el)
-      this.explicits.delete(el)
-      this.implicits.delete(el)
-    }
-    if (this.connections.length > 0) {
-      console.warn('Excluding elements from the stage with existing connections')
-    }
+  private _exclude(el: Elem): this {
+    this.excluded.add(el)
+    this.explicits.delete(el)
+    this.implicits.delete(el)
     return this
+  }
+  public exclude(elements: Elem | Iterable<Elem> | false | undefined | null): this {
+    if (!elements) {
+      return this
+    }
+    if (isIterable(elements)) {
+      for (const el of elements) {
+        this._exclude(el)
+      }
+      return this
+    }
+    return this._exclude(elements)
   }
 
   public excludeConnections(connections: Connections<C>): this {

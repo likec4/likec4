@@ -70,11 +70,11 @@ describe('fqn utils', () => {
     const predicate = isDescendantOf(['a', 'b', 'a.b', 'a.b.c'].map(el))
 
     it('should return true if isDescendantOf', () => {
-      expect(predicate(el('a'))).toBe(true)
       expect(predicate(el('b.c'))).toBe(true)
       expect(predicate(el('a.b.c.d.e'))).toBe(true)
     })
     it('should return false if not descendantOf', () => {
+      expect(predicate(el('a'))).toBe(false)
       expect(predicate(el('c'))).toBe(false)
       expect(predicate(el('ac'))).toBe(false)
       expect(predicate(el('d.a.c'))).toBe(false)

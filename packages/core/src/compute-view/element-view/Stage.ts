@@ -1,8 +1,8 @@
-import { filter, forEach, isArray, map, pipe } from 'remeda'
+import { filter, forEach, isArray, pipe } from 'remeda'
 import { findConnection, findConnectionsBetween } from '../../model/connection/model'
 import { ElementModel } from '../../model/ElementModel'
 import { RelationshipModel } from '../../model/RelationModel'
-import { difference, hasIntersection, intersection } from '../../utils'
+import { hasIntersection, intersection, isIterable } from '../../utils'
 import { Stage as GenericStage } from '../Stage'
 import type { Connection, Elem } from './_types'
 import type { Memory } from './Memory'
@@ -22,19 +22,15 @@ export class Stage extends GenericStage<Elem, Connection> {
     super(previous)
   }
 
-  public excludeRelations(relations: Iterable<Connection>): this {
-    let toExclude = new Set<RelationshipModel>()
-    for (const r of relations) {
-      toExclude = new Set([
-        ...toExclude,
-        ...r.relations
-      ])
-    }
+  public excludeRelations(excluded: ReadonlySet<RelationshipModel>): this {
     pipe(
       this.memory.connections,
-      filter(c => hasIntersection(c.relations, toExclude)),
-      map(c => c.updateRelations(intersection(c.relations, toExclude))),
-      forEach(c => this.excludedConnections.push(c))
+      filter(c => hasIntersection(c.relations, excluded)),
+      forEach(c => {
+        this.excludedConnections.push(
+          c.updateRelations(intersection(c.relations, excluded))
+        )
+      })
     )
     return this
   }
@@ -48,7 +44,7 @@ export class Stage extends GenericStage<Elem, Connection> {
   ): boolean {
     const before = this._connections.length
     const hasChanged = () => this._connections.length > before
-    if (elements instanceof ElementModel) {
+    if (!isIterable(elements)) {
       if (direction === 'in') {
         for (const el of this.memory.elements) {
           this.addConnections(findConnection(el, elements, 'directed'))

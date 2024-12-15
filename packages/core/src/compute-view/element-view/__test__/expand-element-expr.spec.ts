@@ -39,8 +39,8 @@ describe('expand-element-expr', () => {
       'amazon'
     ])
     expect(edgeIds).toEqual([
-      'cloud.backend:amazon',
-      'customer:cloud.frontend'
+      'customer:cloud.frontend',
+      'cloud.backend:amazon'
     ])
   })
 
@@ -59,8 +59,8 @@ describe('expand-element-expr', () => {
     ])
     expect(edgeIds).toEqual([
       'cloud.frontend:cloud.backend',
-      'cloud.backend:amazon.s3',
-      'customer:cloud.frontend'
+      'customer:cloud.frontend',
+      'cloud.backend:amazon.s3'
     ])
   })
 

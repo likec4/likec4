@@ -1,9 +1,11 @@
-import type { Connection } from '../model/connection/ConnectionModel'
+import { type Connection, findAscendingConnections } from '../model/connection'
 import { difference, intersection } from '../utils/set'
 
 type Connections<C> = ReadonlyArray<C>
 
-export interface Memory<Elem, C extends Connection<Elem, any>> {
+type WithId = { readonly id: string }
+
+export interface Memory<Elem extends WithId, C extends Connection<Elem, any>> {
   /**
    * All resolved elements, includes:
    * - explicit elements (included by element predicates, always appear in the view unless excluded)
@@ -28,7 +30,7 @@ export interface Memory<Elem, C extends Connection<Elem, any>> {
 
 export type Patch<M extends Memory<any, any>> = (memory: M) => M
 
-export class MutableMemory<Elem, C extends Connection<Elem, any>> implements Memory<Elem, C> {
+export class MutableMemory<Elem extends WithId, C extends Connection<Elem, any>> implements Memory<Elem, C> {
   constructor(
     public elements: Set<Elem>,
     public explicits: Set<Elem>,
@@ -60,9 +62,23 @@ export class MutableMemory<Elem, C extends Connection<Elem, any>> implements Mem
     newMemory.explicits = difference(this.explicits, excluded)
     newMemory.finalElements = difference(this.finalElements, excluded)
 
-    const excludedConnections = this.connections.filter(c => excluded.has(c.source) || excluded.has(c.target))
+    const excludedConnections = this.connections
+      .filter(c => excluded.has(c.source) || excluded.has(c.target))
+
+    const ascConnections = excludedConnections.flatMap(c =>
+      findAscendingConnections(this.connections, c).map(asc => asc.intersect(c) as C)
+    )
+
+    // )
+    //   .flatMap(c => [
+    //     c,
+    //     ...findAscendingConnections(this.connections, c).map(asc => asc.intersect(c) as C)
+    //   ])
     if (excludedConnections.length > 0) {
-      return newMemory.excludeConnections(excludedConnections)
+      return newMemory.excludeConnections([
+        ...excludedConnections,
+        ...ascConnections
+      ])
     }
     return newMemory
   }
@@ -73,7 +89,15 @@ export class MutableMemory<Elem, C extends Connection<Elem, any>> implements Mem
     }
     const newMemory = this.clone()
 
-    const excludedMap = new Map(excluded.map(c => [c.id, c]))
+    const excludedMap = excluded.reduce((acc, c) => {
+      const existing = acc.get(c.id)
+      if (existing) {
+        acc.set(c.id, existing.mergeWith(c) as C)
+      } else {
+        acc.set(c.id, c)
+      }
+      return acc
+    }, new Map<string, C>())
 
     // were connected before and not anymore
     let excludedElements = new Set<Elem>()
@@ -102,7 +126,7 @@ export class MutableMemory<Elem, C extends Connection<Elem, any>> implements Mem
       return newMemory
     }
 
-    // Check if explicit elements are becoming implicit
+    // Check if EXPLICIT elements are becoming IMPLICIT
     // (it means that they are not connected anymore)
     const explicitsBecomingImplicit = intersection(newMemory.explicits, excludedElements)
     if (explicitsBecomingImplicit.size > 0) {

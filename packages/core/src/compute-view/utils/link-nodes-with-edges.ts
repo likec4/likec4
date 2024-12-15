@@ -25,6 +25,7 @@ export function linkNodesWithEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edg
     }
 
     // These ancestors are reversed: from bottom to top
+    // Ensure that ancestors are in computed nodes
     const sourceAncestors = ancestorsOfNode(source, nodesMap)
     const targetAncestors = ancestorsOfNode(target, nodesMap)
 

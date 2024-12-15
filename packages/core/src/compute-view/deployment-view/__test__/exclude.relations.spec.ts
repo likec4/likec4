@@ -29,12 +29,12 @@ describe('Exclude RelationExpr', () => {
         'prod.eu.media'
       ],
       edges: [
+        'customer:prod.eu.zone1.ui',
+        'customer:prod.eu.zone2.ui',
         'prod.eu.zone1.ui:prod.eu.auth',
         'prod.eu.zone1.ui:prod.eu.media',
         'prod.eu.zone2.ui:prod.eu.auth',
-        'prod.eu.zone2.ui:prod.eu.media',
-        'customer:prod.eu.zone1.ui',
-        'customer:prod.eu.zone2.ui'
+        'prod.eu.zone2.ui:prod.eu.media'
       ]
     })
   })
@@ -76,10 +76,10 @@ describe('Exclude RelationExpr', () => {
         'prod.eu.db'
       ],
       edges: [
-        'prod.eu.zone1.api:prod.eu.db',
-        'prod.eu.zone2.api:prod.eu.db',
         'customer:prod.eu.zone1.ui',
-        'customer:prod.eu.zone2.ui'
+        'customer:prod.eu.zone2.ui',
+        'prod.eu.zone1.api:prod.eu.db',
+        'prod.eu.zone2.api:prod.eu.db'
       ]
     })
   })

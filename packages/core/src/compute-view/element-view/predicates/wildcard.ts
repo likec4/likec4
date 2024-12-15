@@ -1,7 +1,8 @@
-import filterIterable from 'obliterator/filter'
 import { filter } from 'remeda'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
 import type { WildcardExpr } from '../../../types/expression'
+import { ifilter, toArray } from '../../../utils/iterable'
+import { toSet } from '../../../utils/iterable/to'
 import type { PredicateExecutor } from '../_types'
 import { emptyMemory } from '../Memory'
 import { NoWhere } from '../utils'
@@ -20,25 +21,22 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
 
       return stage.patch()
     }
-
+    const neighbours = toSet(ifilter(scope.ascendingSiblings(), where))
     const root = where(scope) ? scope : null
-    stage.addExplicit(root)
-
-    const children = [...filterIterable(scope.children(), where)]
-    const hasChildren = children.length > 0
-    if (!hasChildren && root) {
-      children.push(root)
+    if (root) {
+      stage.addExplicit(root)
+      stage.connectWithExisting(root)
+      stage.addConnections(findConnectionsBetween(root, neighbours))
     }
 
-    stage.addConnections(findConnectionsWithin(children))
-
-    const neighbours = new Set([
-      ...memory.elements,
-      ...filterIterable(scope.ascendingSiblings(), where)
-    ])
-
-    for (const child of children) {
-      stage.addConnections(findConnectionsBetween(child, neighbours))
+    const children = toArray(ifilter(scope.children(), where))
+    const hasChildren = children.length > 0
+    if (hasChildren) {
+      stage.connectWithExisting(children)
+      stage.addConnections(findConnectionsWithin(children))
+      for (const child of children) {
+        stage.addConnections(findConnectionsBetween(child, neighbours))
+      }
     }
 
     // If root has no children

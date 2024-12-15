@@ -1,23 +1,12 @@
-import { isSameHierarchy } from '../../utils/fqn'
-import { intersection } from '../../utils/set'
-import type { ElementModel } from '../ElementModel'
-import type { AnyAux } from '../types'
-import { type Connection, ConnectionModel } from './ConnectionModel'
+import { isSameHierarchy } from '../../../utils/fqn'
+import { intersection } from '../../../utils/set'
+import type { ElementModel } from '../../ElementModel'
+import type { AnyAux } from '../../types'
+import { ConnectionModel } from './ConnectionModel'
 
-export function mergeConnections<C extends Connection>(
-  connections: ReadonlyArray<C>
-): C[] {
-  const map = new Map<C['id'], C>()
-  for (const conn of connections) {
-    const existing = map.get(conn.id)
-    if (existing) {
-      map.set(conn.id, conn.mergeWith(existing) as C)
-    } else {
-      map.set(conn.id, conn)
-    }
-  }
-  return [...map.values()]
-}
+export { mergeConnections } from '../Connection'
+export { Connection } from '../Connection'
+export { ConnectionModel } from './ConnectionModel'
 
 /**
  * Resolve connection from source to target

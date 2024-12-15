@@ -1,50 +1,18 @@
-import { filter, forEach, pipe } from 'remeda'
-import { ConnectionModel } from '../../model/connection/ConnectionModel'
-import { mergeConnections } from '../../model/connection/deployment'
+import { forEach, pipe } from 'remeda'
+import { isNestedConnection, sortDeepestFirst } from '../../model/connection'
+import { ConnectionModel, mergeConnections } from '../../model/connection/model'
 import type { RelationshipModel } from '../../model/RelationModel'
-import { isAncestor } from '../../utils'
-import type { Connection, Elem, Patch } from './_types'
+import type { Fqn } from '../../types'
+import type { Elem, Patch } from './_types'
 
-const filterEmptyConnection = filter((c: Connection) => c.nonEmpty())
-
-export const isNestedConnection = (nested: Connection, parent: Connection) => {
-  const isSameSource = nested.source === parent.source
-  const isSameTarget = nested.target === parent.target
-  if (isSameSource && isSameTarget) {
-    return false
-  }
-  const isSourceNested = isAncestor(parent.source.id, nested.source.id)
-  const isTargetNested = isAncestor(parent.target.id, nested.target.id)
-  return (
-    (isSourceNested && isTargetNested)
-    || (isSameSource && isTargetNested)
-    || (isSameTarget && isSourceNested)
-  )
-}
-
-const findDeepestNestedConnection = (connections: ReadonlyArray<Connection>, connection: Connection) => {
-  let deepest = connection
+export function allRelationshipsFrom(connections: Iterable<ConnectionModel>): Set<RelationshipModel> {
+  const relations = new Set<RelationshipModel>()
   for (const c of connections) {
-    if (isNestedConnection(c, deepest)) {
-      deepest = c
+    for (const rel of c.relations) {
+      relations.add(rel)
     }
   }
-  return deepest !== connection ? deepest : null
-}
-
-const sortDeepestFirst = (connections: ReadonlyArray<Connection>) => {
-  const sorted = [] as Connection[]
-  const unsorted = connections.slice()
-  let next
-  while (next = unsorted.shift()) {
-    let deepest
-    while (deepest = findDeepestNestedConnection(unsorted, next)) {
-      const index = unsorted.indexOf(deepest)
-      sorted.push(unsorted.splice(index, 1)[0]!)
-    }
-    sorted.push(next)
-  }
-  return sorted
+  return relations
 }
 
 /**
@@ -55,8 +23,8 @@ const sortDeepestFirst = (connections: ReadonlyArray<Connection>) => {
  *          Connection may be empty if all relationships are redundant, in this case it should be removed
  */
 function excludeRedundantRelationships(
-  connections: ReadonlyArray<Connection>
-): Array<Connection> {
+  connections: ReadonlyArray<ConnectionModel>
+): Array<ConnectionModel> {
   const processedRelations = new Set<RelationshipModel>()
 
   // Returns relations, that are not processed/included
@@ -71,8 +39,8 @@ function excludeRedundantRelationships(
       }, [] as RelationshipModel[])
     )
 
-  const reducedConnections = sortDeepestFirst(connections)
-    .reduce((acc, connection) => {
+  return sortDeepestFirst(connections)
+    .map(connection => {
       const relations = excludeProcessed(connection.relations)
 
       // If there is only one relation left, but there were more before
@@ -85,21 +53,30 @@ function excludeRedundantRelationships(
         }
       }
       if (relations.size !== connection.relations.size) {
-        acc.set(connection.id, new ConnectionModel(connection.source, connection.target, relations))
+        return connection.updateRelations(relations)
       } else {
-        acc.set(connection.id, connection)
+        return connection
       }
-      return acc
-    }, new Map<string, ConnectionModel>())
+    })
+    .filter(c => c.nonEmpty())
+    .filter((c, _, all) => {
+      // Remove connections if there is any descendant
+      if (all.some(other => isNestedConnection(other, c))) {
+        return false
+      }
+      const reversed = new ConnectionModel(c.target, c.source, c.relations)
+      return !all.some(other => isNestedConnection(other, reversed))
+    })
+  // .reverse()
 
-  // We keep order of connections
-  return connections.reduce((acc, connection) => {
-    const reduced = reducedConnections.get(connection.id)
-    if (reduced && reduced.nonEmpty()) {
-      acc.push(reduced)
-    }
-    return acc
-  }, [] as Connection[])
+  // // We keep order of connections
+  // return connections.reduce((acc, connection) => {
+  //   const reduced = reducedConnections.get(connection.id)
+  //   if (reduced && reduced.nonEmpty()) {
+  //     acc.push(reduced)
+  //   }
+  //   return acc
+  // }, [] as Connection[])
 }
 /**
  * This patch:
@@ -114,6 +91,7 @@ export const cleanConnections: Patch = (memory) => {
   }
 
   const connectedElements = new Set<Elem>()
+  const parentsOfConnected = new Set<Fqn>()
 
   const connections = pipe(
     memory.connections,
@@ -122,17 +100,16 @@ export const cleanConnections: Patch = (memory) => {
     forEach((c) => {
       connectedElements.add(c.source)
       connectedElements.add(c.target)
+      if (c.source.parent) {
+        parentsOfConnected.add(c.source.parent.id)
+      }
+      if (c.target.parent) {
+        parentsOfConnected.add(c.target.parent.id)
+      }
     })
   )
 
-  const isAncestorOfConnected = (el: Elem) => {
-    for (const connected of connectedElements) {
-      if (isAncestor(el.id, connected.id)) {
-        return true
-      }
-    }
-    return false
-  }
+  const isParentOfConnected = (el: Elem) => parentsOfConnected.has(el.id)
 
   // Update memory
   const newMemory = memory.clone()
@@ -147,7 +124,7 @@ export const cleanConnections: Patch = (memory) => {
     if (
       newMemory.isExplicit(el)
       || connectedElements.has(el)
-      || isAncestorOfConnected(el)
+      || isParentOfConnected(el)
     ) {
       finalElements.add(el)
     }

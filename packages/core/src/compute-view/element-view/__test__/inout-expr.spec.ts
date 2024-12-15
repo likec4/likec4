@@ -27,8 +27,18 @@ describe('inout-expr', () => {
   })
 
   it('-> cloud.backend.* ->', () => {
-    const { nodeIds } = computeView([$include('-> cloud.backend.* ->')])
-    expect(nodeIds).toEqual([])
+    const { nodeIds, edgeIds } = computeView([$include('-> cloud.backend.* ->')])
+    expect(nodeIds).toEqual([
+      'cloud.frontend',
+      'cloud.backend.graphql',
+      'cloud.backend.storage',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([
+      'cloud.backend.graphql:cloud.backend.storage',
+      'cloud.backend.storage:amazon',
+      'cloud.frontend:cloud.backend.graphql'
+    ])
   })
 
   it('exclude -> cloud ->', () => {
@@ -37,7 +47,6 @@ describe('inout-expr', () => {
       $exclude('-> cloud ->')
     ])
     expect(nodeIds).toEqual([
-      'cloud',
       'cloud.frontend',
       'cloud.backend'
     ])
@@ -51,7 +60,6 @@ describe('inout-expr', () => {
       $exclude('-> cloud.* ->')
     ])
     expect(nodeIds).toEqual([
-      'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage'
     ])
@@ -69,6 +77,7 @@ describe('inout-expr', () => {
       'customer',
       'cloud.frontend',
       'cloud.backend',
+      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon'
@@ -81,6 +90,7 @@ describe('inout-expr', () => {
     ])
     expect(withoutFrontend).toEqual([
       'cloud.backend',
+      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon'
@@ -96,6 +106,7 @@ describe('inout-expr', () => {
     ])
     expect(nodeIds).toEqual([
       'cloud.backend',
+      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon'

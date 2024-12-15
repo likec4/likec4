@@ -11,7 +11,6 @@ import {
   type DeploymentViewRule,
   type Fqn,
   FqnExpr,
-  type FqnRef,
   isViewRuleStyle,
   type NonEmptyArray,
   type Tag
@@ -20,7 +19,7 @@ import { nameFromFqn, parentFqn } from '../../utils'
 import { MutableMemory } from '../Memory'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
-import { deriveEdgePropsFromRelationships } from '../utils/derive-edge-props-from-relationships'
+import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import { uniqueTags } from '../utils/uniqueTags'
 import type { Elem, Memory } from './_types'
 
@@ -224,7 +223,7 @@ export function toComputedEdges<M extends AnyAux>(
     const {
       title,
       ...props
-    } = deriveEdgePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
+    } = mergePropsFromRelationships(relations.map(r => r.$relationship)) // || relations.find(r => r.source === source && r.target === target)
 
     const edge: ComputedEdge = {
       id: e.id,

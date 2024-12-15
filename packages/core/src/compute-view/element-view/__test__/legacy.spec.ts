@@ -16,7 +16,7 @@ describe('compute-element-view', () => {
   })
 
   it('should return landscape view on top `include *`', () => {
-    const { nodes, nodeIds, edgeIds } = computeView([{ include: [{ wildcard: true }] }])
+    const { nodes, nodeIds, edgeIds } = computeView([$include('*')])
     expect.soft(nodeIds).toEqual([
       'customer',
       'support',
@@ -39,14 +39,14 @@ describe('compute-element-view', () => {
     })
     expect.soft(cloud).toMatchObject({
       id: 'cloud',
-      outEdges: [
-        'cloud:amazon',
-        'cloud:email'
-      ],
       inEdges: [
-        'email:cloud',
+        'customer:cloud',
         'support:cloud',
-        'customer:cloud'
+        'email:cloud'
+      ],
+      outEdges: [
+        'cloud:email',
+        'cloud:amazon'
       ]
     })
     expect.soft(customer).toMatchObject({
@@ -104,24 +104,26 @@ describe('compute-element-view', () => {
       'customer',
       'cloud.frontend',
       'cloud.backend',
+      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon'
     ])
 
     expect(edgeIds).to.have.same.members([
-      'customer:cloud.frontend',
-      'cloud.frontend:cloud.backend.graphql',
       'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.backend.storage:amazon'
+      'cloud.frontend:cloud.backend.graphql',
+      'cloud.backend.storage:amazon',
+      'cloud.backend:email',
+      'customer:cloud.frontend'
     ])
   })
 
   it('view of cloud.frontend', () => {
     const { nodeIds, edgeIds, ...view } = computeView('cloud.frontend', [$include('*')])
     expect.soft(nodeIds).toEqual([
-      'support',
       'customer',
+      'support',
       'cloud.frontend',
       'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
@@ -148,7 +150,12 @@ describe('compute-element-view', () => {
   it('view of amazon including cloud.* ->', () => {
     const { edgeIds, nodeIds } = computeView('amazon', [$include('*'), $include('cloud.* ->')])
 
-    expect(nodeIds).toEqual(['cloud.backend', 'amazon', 'amazon.s3'])
+    expect(nodeIds).toEqual([
+      'cloud',
+      'cloud.backend',
+      'amazon',
+      'amazon.s3'
+    ])
 
     expect(edgeIds).to.have.same.members(['cloud.backend:amazon.s3'])
   })
@@ -157,8 +164,8 @@ describe('compute-element-view', () => {
     const { edgeIds, nodeIds } = computeView('cloud.frontend', [$include('*'), $include('cloud')])
 
     expect(nodeIds).toEqual([
-      'support',
       'customer',
+      'support',
       'cloud',
       'cloud.frontend',
       'cloud.frontend.adminPanel',
@@ -182,8 +189,8 @@ describe('compute-element-view', () => {
     ])
 
     expect(nodeIds).toEqual([
-      'support',
       'customer',
+      'support',
       'cloud',
       'cloud.frontend',
       'cloud.frontend.adminPanel',
@@ -194,11 +201,11 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).toEqual([
-      'support:cloud.frontend.adminPanel',
-      'customer:cloud.frontend.dashboard',
+      'cloud.backend.graphql:cloud.backend.storage',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.backend.graphql:cloud.backend.storage'
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel'
     ])
   })
 
@@ -210,18 +217,19 @@ describe('compute-element-view', () => {
     ])
 
     expect(nodeIds).toEqual([
-      'support',
       'customer',
+      'support',
       'cloud',
       'cloud.frontend',
       'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.backend',
       'cloud.backend.graphql'
     ])
 
     expect(edgeIds).to.have.same.members([
-      'support:cloud.frontend.adminPanel',
       'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql'
     ])
@@ -261,8 +269,8 @@ describe('compute-element-view', () => {
     ])
 
     expect(nodeIds).toEqual([
-      'support',
       'customer',
+      'support',
       'cloud',
       'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
@@ -273,12 +281,12 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).toEqual([
-      'support:cloud.frontend.adminPanel',
-      'customer:cloud.frontend.dashboard',
+      'cloud.backend.graphql:cloud.backend.storage',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.backend.storage:amazon.s3'
+      'cloud.backend.storage:amazon.s3',
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel'
     ])
   })
 
@@ -303,12 +311,12 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).toEqual([
-      'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
       'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
-      'cloud.backend:amazon',
-      'cloud.backend:email'
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel',
+      'cloud.backend:email',
+      'cloud.backend:amazon'
     ])
   })
 
@@ -392,8 +400,8 @@ describe('compute-element-view', () => {
       'amazon'
     ])
     expect(edgeIds).toEqual([
-      'cloud:amazon',
       'cloud:email',
+      'cloud:amazon',
       'email:cloud'
     ])
   })
@@ -413,18 +421,37 @@ describe('compute-element-view', () => {
     expect(edgeIds).toEqual([])
   })
 
-  it('should exclude by element tag and kind', () => {
-    const { nodeIds, edgeIds } = computeView('cloud', [
+  it('should exclude by element kind', () => {
+    const { nodeIds, edgeIds } = computeView('cloud.frontend', [
       $include('*'),
-      $include('cloud.backend.*'),
-      $include('cloud.frontend.*'),
-      $exclude('email'),
       {
         exclude: [
           {
             elementKind: 'actor' as ElementKind,
             isEqual: true
-          },
+          }
+        ]
+      }
+    ])
+
+    expect(nodeIds).toEqual([
+      'cloud.frontend',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
+      'cloud.backend'
+    ])
+
+    expect(edgeIds).toEqual([
+      'cloud.frontend.adminPanel:cloud.backend',
+      'cloud.frontend.dashboard:cloud.backend'
+    ])
+  })
+
+  it('should exclude by element tag', () => {
+    const { nodeIds, edgeIds } = computeView('cloud.backend', [
+      $include('*'),
+      {
+        exclude: [
           {
             elementTag: 'old' as Tag,
             isEqual: true
@@ -435,15 +462,14 @@ describe('compute-element-view', () => {
 
     expect(nodeIds).toEqual([
       'cloud.frontend',
-      'cloud.frontend.dashboard',
       'cloud.backend',
-      'amazon',
+      'email',
       'cloud.backend.graphql'
     ])
 
     expect(edgeIds).to.have.same.members([
-      'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.backend:amazon'
+      'cloud.frontend:cloud.backend.graphql',
+      'cloud.backend:email'
     ])
   })
 })

@@ -1,8 +1,6 @@
-import { allPass } from 'remeda'
 import { findConnectionsWithin } from '../../../model/connection/model'
-import * as Expr from '../../../types/expression'
 import type { ElementRefExpr } from '../../../types/expression'
-import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
+import * as Expr from '../../../types/expression'
 import type { Elem, PredicateExecutor } from '../_types'
 
 function applyElementSelector(elem: Elem, expr: Expr.ElementRefExpr) {

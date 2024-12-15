@@ -1,11 +1,11 @@
-import { isSameHierarchy } from '../../utils/fqn'
-import { type DeploymentElementModel } from '../DeploymentElementModel'
-import type { AnyAux } from '../types'
+import { isSameHierarchy } from '../../../utils'
+import type { DeploymentElementModel } from '../../DeploymentElementModel'
+import type { AnyAux } from '../../types'
 import { DeploymentConnectionModel } from './DeploymentConnectionModel'
+export { mergeConnections } from '../Connection'
 
-export { mergeConnections } from './model'
-
-export { DeploymentConnectionModel }
+export { Connection } from '../Connection'
+export { DeploymentConnectionModel } from './DeploymentConnectionModel'
 
 /**
  * Resolve connection from source to target

@@ -1,13 +1,14 @@
 import { anyPass, unique } from 'remeda'
 import { nonexhaustive } from '../../../errors'
 import type { LikeC4Model } from '../../../model'
-import { Connection, type ConnectionModel } from '../../../model/connection/ConnectionModel'
-import { findConnectionsBetween } from '../../../model/connection/model'
+import { Connection, type ConnectionModel, findConnectionsBetween } from '../../../model/connection/model'
+import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import * as Expr from '../../../types/expression'
+import { toSet } from '../../../utils/iterable/to'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
 import type { ConnectionWhere, PredicateExecutor } from '../_types'
-import { resolveAndIncludeFromMemory } from './relation-direct'
+import { resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const OutgoingExprPredicate: PredicateExecutor<Expr.OutgoingExpr> = {
   include: ({ expr, scope, model, memory, stage, filterWhere }) => {
@@ -54,22 +55,24 @@ export const OutgoingExprPredicate: PredicateExecutor<Expr.OutgoingExpr> = {
 
     return stage.patch()
   },
-  exclude: ({ expr, model, scope, memory, stage, filterWhere }) => {
-    let satisfies: ConnectionWhere
-    if (Expr.isWildcard(expr.outgoing)) {
+  exclude: ({ expr: { outgoing }, model, scope, stage, where }) => {
+    const excluded = [] as RelationshipModel[]
+    if (Expr.isWildcard(outgoing)) {
       if (!scope) {
         return
       }
-      satisfies = Connection.isOutgoing(scope.id)
+      excluded.push(...scope.allOutgoing)
     } else {
-      satisfies = outgoingConnectionPredicate(model, expr.outgoing)
+      const elements = resolveElements(model, outgoing)
+      excluded.push(
+        ...elements.flatMap(e => [...e.allOutgoing])
+      )
     }
-
-    const connectionsToExclude = filterWhere(
-      memory.connections.filter(satisfies)
-    )
-
-    return stage.excludeConnections(connectionsToExclude).patch()
+    return stage
+      .excludeRelations(
+        toSet(excluded.filter(where))
+      )
+      .patch()
   }
 }
 

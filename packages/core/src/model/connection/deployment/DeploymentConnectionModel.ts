@@ -1,15 +1,16 @@
-import { invariant } from '../../errors'
-import { stringHash } from '../../utils'
-import { equals } from '../../utils/set'
+import { invariant } from '../../../errors'
+import { stringHash } from '../../../utils'
+import { equals } from '../../../utils/set'
 import {
   type DeploymentElementModel,
   DeploymentNodeModel,
   type DeploymentRelationModel,
   RelationshipsAccum
-} from '../DeploymentElementModel'
-import type { RelationshipModel } from '../RelationModel'
-import type { AnyAux, IteratorLike } from '../types'
-import type { Connection } from './ConnectionModel'
+} from '../../DeploymentElementModel'
+import type { ElementModel } from '../../ElementModel'
+import type { RelationshipModel } from '../../RelationModel'
+import type { AnyAux, IteratorLike } from '../../types'
+import type { Connection } from '../Connection'
 
 /**
  * Connection is ephemeral entity, result of a resolving relationships between source and target.
@@ -69,7 +70,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
    * Merge with another connection, if it has the same source and target.
    * Returns new connection with union of relationships.
    */
-  public mergeWith(other: DeploymentConnectionModel<M>): DeploymentConnectionModel<M> {
+  public mergeWith(other: DeploymentConnectionModel<M>) {
     invariant(this.source.id === other.source.id, 'Cannot merge connections with different sources')
     invariant(this.target.id === other.target.id, 'Cannot merge connections with different targets')
     return new DeploymentConnectionModel(
@@ -79,9 +80,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     )
   }
 
-  public difference(other: DeploymentConnectionModel<M>): DeploymentConnectionModel<M> {
-    invariant(this.source.id === other.source.id, 'Cannot difference connection with different sources')
-    invariant(this.target.id === other.target.id, 'Cannot difference connection with different targets')
+  public difference(other: DeploymentConnectionModel<M>) {
     return new DeploymentConnectionModel(
       this.source,
       this.target,
@@ -89,7 +88,16 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     )
   }
 
-  public equals(other: DeploymentConnectionModel<M>): boolean {
+  public intersect(other: DeploymentConnectionModel<M>) {
+    return new DeploymentConnectionModel(
+      this.source,
+      this.target,
+      this.relations.intersect(other.relations)
+    )
+  }
+
+  public equals(other: Connection): boolean {
+    invariant(other instanceof DeploymentConnectionModel, 'Other should ne DeploymentConnectionModel')
     return this.id === other.id
       && this.source.id === other.source.id
       && this.target.id === other.target.id

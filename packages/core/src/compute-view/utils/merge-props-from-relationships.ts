@@ -1,27 +1,45 @@
-import { isTruthy, only, pick, pickBy, pipe, reduce, unique } from 'remeda'
+import { isTruthy, only, pickBy, pipe, reduce, unique } from 'remeda'
 import type { Color, DeploymentRelation, Link, Tag, ViewId } from '../../types'
 import type { ModelRelation, RelationshipArrowType, RelationshipKind, RelationshipLineType } from '../../types/relation'
 import { isNonEmptyArray } from '../../utils'
 
-export function pickRelationshipProps(relation: ModelRelation | DeploymentRelation) {
-  return pick(relation, [
-    'title',
-    'description',
-    'technology',
-    'tags',
-    'links',
-    'kind',
-    'color',
-    'line',
-    'head',
-    'tail',
-    'navigateTo'
-  ])
+function pickRelationshipProps(relation: ModelRelation | DeploymentRelation) {
+  const {
+    title,
+    description = null,
+    technology = null,
+    kind = null,
+    color = null,
+    line = null,
+    head = null,
+    tail = null,
+    navigateTo = null
+  } = relation
+  return {
+    // If relation has title, also pick description and technology
+    ...(title && {
+      title,
+      description,
+      technology
+    }),
+    kind,
+    color,
+    line,
+    head,
+    tail,
+    navigateTo
+  }
 }
-type RelationshipProps = ReturnType<typeof pickRelationshipProps>
 
-export function deriveEdgePropsFromRelationships(relations: Array<ModelRelation | DeploymentRelation>) {
-  // TODO:
+/**
+ * Merges properties from multiple relationships into a single object.
+ * @param relations - The relationships to merge.
+ * @param prefer - The relationship to prefer when merging.
+ */
+export function mergePropsFromRelationships(
+  relations: Array<ModelRelation | DeploymentRelation>,
+  prefer?: ModelRelation | DeploymentRelation
+) {
   const allprops = pipe(
     relations,
     reduce(
@@ -77,7 +95,7 @@ export function deriveEdgePropsFromRelationships(relations: Array<ModelRelation 
     )
   )
   const tags = unique(allprops.tags)
-  return pickBy(
+  let merged = pickBy(
     {
       title: only(allprops.title) ?? (allprops.title.length > 1 ? '[...]' : null),
       description: only(allprops.description),
@@ -93,5 +111,16 @@ export function deriveEdgePropsFromRelationships(relations: Array<ModelRelation 
     },
     isTruthy
   )
+
+  if (prefer) {
+    return pickBy(
+      {
+        ...merged,
+        ...pickRelationshipProps(prefer)
+      },
+      isTruthy
+    )
+  }
+  return merged
 }
-export type MergedRelationshipProps = ReturnType<typeof deriveEdgePropsFromRelationships>
+export type MergedRelationshipProps = ReturnType<typeof mergePropsFromRelationships>

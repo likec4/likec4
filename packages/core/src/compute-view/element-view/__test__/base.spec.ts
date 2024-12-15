@@ -63,14 +63,26 @@ describe('base', () => {
     })
   })
 
-  it.todo('should return nodes in the same order as was in view', () => {
+  it('should return nodes in the same order as was in view', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('support'),
       $include('customer'),
       $include('*')
     ])
-    expect(nodeIds).toEqual(['support', 'customer', 'cloud', 'amazon'])
-    expect(edgeIds).toEqual(['customer:cloud', 'support:cloud', 'cloud:amazon'])
+    expect(nodeIds).toEqual([
+      'support',
+      'customer',
+      'cloud',
+      'email',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([
+      'support:cloud',
+      'customer:cloud',
+      'cloud:email',
+      'cloud:amazon',
+      'email:cloud'
+    ])
   })
 
   it('should include elements without relations', () => {
