@@ -4,14 +4,14 @@ import type { ElementModel } from '../ElementModel'
 import type { AnyAux } from '../types'
 import { type Connection, ConnectionModel } from './ConnectionModel'
 
-export function mergeConnections<C extends Connection<any, any>>(
-  connections: readonly C[]
+export function mergeConnections<C extends Connection>(
+  connections: ReadonlyArray<C>
 ): C[] {
   const map = new Map<C['id'], C>()
   for (const conn of connections) {
     const existing = map.get(conn.id)
     if (existing) {
-      map.set(conn.id, existing.mergeWith(conn) as any)
+      map.set(conn.id, conn.mergeWith(existing) as C)
     } else {
       map.set(conn.id, conn)
     }

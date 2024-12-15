@@ -1,6 +1,6 @@
 import { partition } from 'remeda'
 import type { DynamicViewRule, DynamicViewStep, Fqn, ViewId, ViewRulePredicate } from '../../../types'
-import { type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
+import { type FakeElementIds, fakeModelGraph } from '../../element-view/__test__/fixture'
 import { DynamicViewComputeCtx } from '../compute'
 
 const emptyView = {
@@ -49,7 +49,7 @@ export function compute(stepsAndRules: (DynamicViewStep | ViewRulePredicate)[]) 
       steps,
       rules: rules as DynamicViewRule[]
     },
-    fakeModel
+    fakeModelGraph
   )
   return Object.assign(view, {
     nodeIds: view.nodes.map((node) => node.id) as string[],

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, computeView } from './fixture'
+import { $include, computeViewV2 as computeView } from './fixture'
 
 describe('base', () => {
   it('should be empty if no root and no rules', () => {
@@ -29,8 +29,8 @@ describe('base', () => {
     expect(edgeIds).toEqual([
       'customer:cloud',
       'support:cloud',
-      'cloud:amazon',
       'cloud:email',
+      'cloud:amazon',
       'email:cloud'
     ])
 
@@ -40,13 +40,13 @@ describe('base', () => {
     })
     expect(cloud).toMatchObject({
       outEdges: [
-        'cloud:amazon',
-        'cloud:email'
+        'cloud:email',
+        'cloud:amazon'
       ],
       inEdges: [
-        'email:cloud',
+        'customer:cloud',
         'support:cloud',
-        'customer:cloud'
+        'email:cloud'
       ]
     })
     expect(email).toMatchObject({

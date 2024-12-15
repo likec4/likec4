@@ -1,7 +1,6 @@
 import { findConnectionsWithin } from '../../../model/connection/deployment'
 import type { FqnExpr } from '../../../types'
-import type { Elem, PredicateExecutor } from '../_types'
-import { MutableMemory } from '../Memory'
+import { type Elem, emptyMemory, type PredicateExecutor } from '../_types'
 
 export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
   include: (_, { model, stage }) => {
@@ -24,6 +23,6 @@ export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
     return stage.patch()
   },
   exclude: () => {
-    return () => MutableMemory.empty()
+    return emptyMemory
   }
 }

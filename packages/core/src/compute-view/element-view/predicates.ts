@@ -16,7 +16,7 @@ export type RelationPredicateFn = Predicate<ModelRelation>
 
 const NoFilter: ElementPredicateFn = () => true
 const Identity = <T>(x: T) => x
-const filterBy = <T>(pred: Predicate<T>) => pred === NoFilter ? Identity : remedaFilter(pred)
+export const filterBy = <T>(pred: Predicate<T>) => pred === NoFilter ? Identity : remedaFilter(pred)
 const filterOne = <T>(pred: Predicate<T>) => pred === NoFilter ? Identity : (x: T) => pred(x) ? x : null
 
 export function expandWildcardRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
@@ -480,7 +480,7 @@ function resolveRelationExprElements(this: ComputeCtx, expr: Expr.ElementExpress
   return resolveElements.call(this, expr)
 }
 
-export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr_, where?: RelationPredicateFn) {
+export function includeRelationExpr(this: ComputeCtx, expr: Expr.DirectRelationExpr, where?: RelationPredicateFn) {
   let sources, targets
   if (Expr.isWildcard(expr.source) && !Expr.isWildcard(expr.target)) {
     sources = resolveNeighbours.call(this, expr.target)
@@ -501,7 +501,7 @@ export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr_, 
   })
 }
 
-export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr_, where?: RelationPredicateFn) {
+export function excludeRelationExpr(this: ComputeCtx, expr: Expr.DirectRelationExpr, where?: RelationPredicateFn) {
   const isSource = elementExprToPredicate(expr.source)
   const isTarget = elementExprToPredicate(expr.target)
   const satisfies = (edge: ComputeCtx.Edge) => {

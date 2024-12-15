@@ -1,12 +1,12 @@
 import type { Fqn } from '../types'
 import { commonAncestor, compareFqnHierarchically, isAncestor } from './fqn'
 
-type Relation = {
+export type Relation = {
   source: string
   target: string
 }
 
-type RelationPredicate = (rel: Relation) => boolean
+export type RelationPredicate = (rel: Relation) => boolean
 
 /**
  * Compares two relations hierarchically.

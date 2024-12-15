@@ -15,22 +15,21 @@ import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
+import { emptyMemory, type Patch, Stage } from './_types'
 import { cleanConnections } from './clean-connections'
-import { MutableMemory, type Patch } from './Memory'
 import { DeploymentRefPredicate } from './predicates/elements'
 import { DirectRelationPredicate } from './predicates/relation-direct'
 import { InOutRelationPredicate } from './predicates/relation-in-out'
 import { IncomingRelationPredicate } from './predicates/relation-incoming'
 import { OutgoingRelationPredicate } from './predicates/relation-outgoing'
 import { WildcardPredicate } from './predicates/wildcard'
-import { Stage } from './Stage'
 import { applyDeploymentViewRuleStyles, buildNodes, toComputedEdges } from './utils'
 
 function processPredicates<M extends AnyAux>(
   model: LikeC4DeploymentModel<M>,
   rules: DeploymentViewRule[]
 ) {
-  let memory = MutableMemory.empty()
+  let memory = emptyMemory()
   let stage: Stage | null = null
 
   for (const rule of rules) {

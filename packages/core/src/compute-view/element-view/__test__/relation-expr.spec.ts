@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $include, computeViewV2 as computeView } from './fixture'
 
 describe('relation-expr', () => {
   it('should be empty if no relations', () => {
@@ -19,9 +19,9 @@ describe('relation-expr', () => {
     ])
     expect(edgeIds).toEqual([
       'customer:cloud',
-      'support:cloud',
-      'cloud:amazon',
       'cloud:email',
+      'cloud:amazon',
+      'support:cloud',
       'email:cloud'
     ])
   })
@@ -66,8 +66,8 @@ describe('relation-expr', () => {
     const { nodeIds, edgeIds } = computeView([$include('* -> cloud.frontend.*')])
     expect(nodeIds).toEqual([
       'customer',
-      'cloud.frontend.dashboard',
       'support',
+      'cloud.frontend.dashboard',
       'cloud.frontend.adminPanel'
     ])
     expect(edgeIds).toEqual([
@@ -112,12 +112,12 @@ describe('relation-expr', () => {
       $include('cloud <-> email')
     ])
     expect(nodeIds).toEqual([
-      'email',
-      'cloud'
+      'cloud',
+      'email'
     ])
     expect(edgeIds).toEqual([
-      'email:cloud',
-      'cloud:email'
+      'cloud:email',
+      'email:cloud'
     ])
   })
 

@@ -2,7 +2,7 @@ import { indexBy, map, mapValues, pipe, prop } from 'remeda'
 import type { BuildTuple } from 'type-fest/source/internal'
 import { describe, expect, it } from 'vitest'
 import type { ComputedNode } from '../../../types/view'
-import { $exclude, $group, $include, $where, computeView } from './fixture'
+import { $exclude, $group, $include, $where, computeViewV2 as computeView } from './fixture'
 
 function expectParents(nodes: ComputedNode[]) {
   return expect(

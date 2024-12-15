@@ -2072,6 +2072,7 @@ __metadata:
     mnemonist: "npm:^0.39.8"
     natural-compare-lite: "npm:^1.4.0"
     object-hash: "npm:^3.0.0"
+    obliterator: "npm:^2.0.1"
     remeda: "npm:^2.17.4"
     turbo: "npm:^2.3.3"
     type-fest: "npm:4.28.1"

@@ -64,7 +64,7 @@ export type Filterable<
   FTag extends string = string,
   FKind extends string = string
 > = {
-  tags?: FTag[] | null
+  tags?: readonly FTag[] | null
   kind?: FKind
 }
 

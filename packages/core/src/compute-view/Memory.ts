@@ -1,11 +1,12 @@
-import type { DeploymentConnectionModel } from '../../model/connection/deployment'
-import { difference, intersection } from '../../utils/set'
-import type { Connections, Elem } from './_types'
+import type { Connection } from '../model/connection/ConnectionModel'
+import { difference, intersection } from '../utils/set'
 
-export interface Memory {
+type Connections<C> = ReadonlyArray<C>
+
+export interface Memory<Elem, C extends Connection<Elem, any>> {
   /**
    * All resolved elements, includes:
-   * - explicit elements (added directly, always appear in the view unless excluded)
+   * - explicit elements (included by element predicates, always appear in the view unless excluded)
    * - elements from resolved connections (may be excluded, if connection is redundant @see excludeRedundantRelationships
    * - implicit elements (not added directly, not included in the view, used for resolving connections)
    */
@@ -14,25 +15,24 @@ export interface Memory {
    * Resolved connections
    * May contains duplicates, need to be merged before further processing
    */
-  readonly connections: Connections
+  readonly connections: Connections<C>
+
+  isEmpty(): boolean
 
   has(el: Elem): boolean
 
   isExplicit(el: Elem): boolean
 
-  clone(): MutableMemory
+  clone(): MutableMemory<Elem, C>
 }
 
-export type Patch = (memory: Memory) => Memory
+export type Patch<M extends Memory<any, any>> = (memory: M) => M
 
-export class MutableMemory implements Memory {
-  static empty(): Memory {
-    return new MutableMemory(new Set(), new Set(), [], new Set())
-  }
+export class MutableMemory<Elem, C extends Connection<Elem, any>> implements Memory<Elem, C> {
   constructor(
     public elements: Set<Elem>,
     public explicits: Set<Elem>,
-    public connections: DeploymentConnectionModel[],
+    public connections: Connections<C>,
     /**
      * Final set of elements to be included in the view
      * (`elements` excluding implicits)
@@ -40,6 +40,10 @@ export class MutableMemory implements Memory {
      */
     public finalElements: Set<Elem>
   ) {
+  }
+
+  public isEmpty(): boolean {
+    return this.elements.size === 0
   }
 
   public has(el: Elem): boolean {
@@ -50,16 +54,20 @@ export class MutableMemory implements Memory {
     return this.explicits.has(el)
   }
 
-  public exclude(excluded: Set<Elem>): MutableMemory {
+  public exclude(excluded: Set<Elem>): MutableMemory<Elem, C> {
     const newMemory = this.clone()
     newMemory.elements = difference(this.elements, excluded)
     newMemory.explicits = difference(this.explicits, excluded)
     newMemory.finalElements = difference(this.finalElements, excluded)
-    newMemory.connections = this.connections.filter(c => !excluded.has(c.source) && !excluded.has(c.target))
+
+    const excludedConnections = this.connections.filter(c => excluded.has(c.source) || excluded.has(c.target))
+    if (excludedConnections.length > 0) {
+      return newMemory.excludeConnections(excludedConnections)
+    }
     return newMemory
   }
 
-  public excludeConnections(excluded: Connections): MutableMemory {
+  public excludeConnections(excluded: Connections<C>): MutableMemory<Elem, C> {
     if (excluded.length === 0) {
       return this
     }
@@ -75,7 +83,7 @@ export class MutableMemory implements Memory {
       if (excluded) {
         excludedElements.add(c.source)
         excludedElements.add(c.target)
-        const diff = c.difference(excluded)
+        const diff = c.difference(excluded) as C
         if (diff.nonEmpty()) {
           acc.push(diff)
         }
@@ -83,7 +91,7 @@ export class MutableMemory implements Memory {
         acc.push(c)
       }
       return acc
-    }, [] as DeploymentConnectionModel[])
+    }, [] as C[])
 
     for (const stillExists of newMemory.connections) {
       excludedElements.delete(stillExists.source)
@@ -94,6 +102,8 @@ export class MutableMemory implements Memory {
       return newMemory
     }
 
+    // Check if explicit elements are becoming implicit
+    // (it means that they are not connected anymore)
     const explicitsBecomingImplicit = intersection(newMemory.explicits, excludedElements)
     if (explicitsBecomingImplicit.size > 0) {
       newMemory.explicits = difference(newMemory.explicits, explicitsBecomingImplicit)
@@ -114,7 +124,7 @@ export class MutableMemory implements Memory {
     return newMemory
   }
 
-  public clone(): MutableMemory {
+  public clone(): MutableMemory<Elem, C> {
     return new MutableMemory(
       new Set(this.elements),
       new Set(this.explicits),

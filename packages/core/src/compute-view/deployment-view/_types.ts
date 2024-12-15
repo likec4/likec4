@@ -3,10 +3,24 @@ import type { DeploymentConnectionModel } from '../../model/connection/deploymen
 import type { DeploymentElementModel } from '../../model/DeploymentElementModel'
 import type { AnyAux } from '../../model/types'
 import type { ExpressionV2 } from '../../types'
-import type { Memory, Patch } from './Memory'
-import type { Stage } from './Stage'
+import { type Memory as GenericMemory, MutableMemory, type Patch as GenericPatch } from '../Memory'
+import { Stage as GenericStage } from '../Stage'
 
 export type Elem = DeploymentElementModel<AnyAux>
+export type Connection = DeploymentConnectionModel<AnyAux>
+
+export type Memory = GenericMemory<Elem, Connection>
+export type Stage = GenericStage<Elem, Connection>
+export const Stage = GenericStage<Elem, Connection>
+export type Patch = GenericPatch<Memory>
+
+export const emptyMemory = (): Memory =>
+  new MutableMemory<DeploymentElementModel, DeploymentConnectionModel>(
+    new Set(),
+    new Set(),
+    [],
+    new Set()
+  )
 
 export type Connections<M extends AnyAux = AnyAux> = ReadonlyArray<DeploymentConnectionModel<M>>
 

@@ -1,15 +1,34 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $include, computeViewV2 as computeView } from './fixture'
 
 describe('inout-expr', () => {
-  it('-> cloud.backend.* ->', () => {
-    const { nodeIds } = computeView([$include('-> cloud.backend.* ->')])
+  it('include -> * ->', () => {
+    const { nodeIds } = computeView([
+      $include('-> * ->')
+    ])
+    expect(nodeIds).toEqual([])
+  })
+
+  it('include -> * -> (scoped)', () => {
+    const { nodeIds, edgeIds } = computeView('cloud.backend', [
+      $include('-> * ->')
+    ])
     expect(nodeIds).toEqual([
       'cloud.frontend',
-      'cloud.backend.graphql',
-      'cloud.backend.storage',
+      'cloud.backend',
+      'email',
       'amazon'
     ])
+    expect(edgeIds).toEqual([
+      'cloud.backend:email',
+      'cloud.backend:amazon',
+      'cloud.frontend:cloud.backend'
+    ])
+  })
+
+  it('-> cloud.backend.* ->', () => {
+    const { nodeIds } = computeView([$include('-> cloud.backend.* ->')])
+    expect(nodeIds).toEqual([])
   })
 
   it('exclude -> cloud ->', () => {

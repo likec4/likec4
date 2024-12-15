@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $include, computeViewV2 as computeView } from './fixture'
 
 describe('element-expr', () => {
   it('include elements without relations', () => {
@@ -32,8 +32,8 @@ describe('element-expr', () => {
     expect(nodeIds).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend'])
     expect(edgeIds).toEqual([
       'customer:cloud.frontend',
-      'support:cloud.frontend',
-      'cloud.frontend:cloud.backend'
+      'cloud.frontend:cloud.backend',
+      'support:cloud.frontend'
     ])
   })
 
@@ -45,8 +45,16 @@ describe('element-expr', () => {
       $include('support'),
       $exclude('cloud.backend')
     ])
-    expect(nodeIds).toEqual(['customer', 'support', 'cloud', 'cloud.frontend'])
-    expect(edgeIds).to.have.same.members(['customer:cloud.frontend', 'support:cloud.frontend'])
+    expect(nodeIds).toEqual([
+      'customer',
+      'support',
+      'cloud',
+      'cloud.frontend'
+    ])
+    expect(edgeIds).toEqual([
+      'customer:cloud.frontend',
+      'support:cloud.frontend'
+    ])
   })
 
   describe('view of cloud', () => {
@@ -130,8 +138,8 @@ describe('element-expr', () => {
         $exclude('email')
       ])
       expect(nodeIds).toEqual([
-        'support',
         'customer',
+        'support',
         'cloud',
         'cloud.frontend',
         'cloud.frontend.adminPanel',
@@ -140,11 +148,11 @@ describe('element-expr', () => {
         'amazon'
       ])
       expect(edgeIds).to.have.same.members([
-        'support:cloud.frontend.adminPanel',
-        'customer:cloud.frontend.dashboard',
         'cloud.frontend.adminPanel:cloud.backend',
         'cloud.frontend.dashboard:cloud.backend',
-        'cloud.backend:amazon'
+        'cloud.backend:amazon',
+        'customer:cloud.frontend.dashboard',
+        'support:cloud.frontend.adminPanel'
       ])
 
       // check depth
@@ -167,10 +175,10 @@ describe('element-expr', () => {
         'cloud.backend'
       ])
       expect(edgeIds).toEqual([
-        'support:cloud.frontend.adminPanel',
-        'customer:cloud.frontend.dashboard',
         'cloud.frontend.adminPanel:cloud.backend',
-        'cloud.frontend.dashboard:cloud.backend'
+        'cloud.frontend.dashboard:cloud.backend',
+        'support:cloud.frontend.adminPanel',
+        'customer:cloud.frontend.dashboard'
       ])
     })
     it('include *, cloud', () => {
@@ -204,9 +212,9 @@ describe('element-expr', () => {
         'cloud.backend'
       ])
       expect(edgeIds).toEqual([
-        'customer:cloud.frontend.dashboard',
         'cloud.frontend.adminPanel:cloud.backend',
-        'cloud.frontend.dashboard:cloud.backend'
+        'cloud.frontend.dashboard:cloud.backend',
+        'customer:cloud.frontend.dashboard'
       ])
     })
     it('include *, cloud, exclude cloud.backend', () => {
@@ -241,9 +249,9 @@ describe('element-expr', () => {
         'amazon'
       ])
       expect(edgeIds).toEqual([
-        'cloud.frontend:cloud.backend.graphql',
         'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.backend.storage:amazon'
+        'cloud.backend.storage:amazon',
+        'cloud.frontend:cloud.backend.graphql'
       ])
     })
     it('include *, cloud.frontend.* -> cloud.backend', () => {
@@ -252,6 +260,7 @@ describe('element-expr', () => {
         $include('cloud.frontend.* -> cloud.backend')
       ])
       expect(nodeIds).toEqual([
+        'cloud.frontend',
         'cloud.frontend.adminPanel',
         'cloud.frontend.dashboard',
         'cloud.backend',
@@ -260,9 +269,9 @@ describe('element-expr', () => {
         'amazon'
       ])
       expect(edgeIds).toEqual([
+        'cloud.backend.graphql:cloud.backend.storage',
         'cloud.frontend.adminPanel:cloud.backend.graphql',
         'cloud.frontend.dashboard:cloud.backend.graphql',
-        'cloud.backend.graphql:cloud.backend.storage',
         'cloud.backend.storage:amazon'
       ])
     })
@@ -282,9 +291,9 @@ describe('element-expr', () => {
         'amazon'
       ])
       expect(edgeIds).toEqual([
+        'cloud.backend.graphql:cloud.backend.storage',
         'cloud.frontend.adminPanel:cloud.backend.graphql',
         'cloud.frontend.dashboard:cloud.backend.graphql',
-        'cloud.backend.graphql:cloud.backend.storage',
         'cloud.backend.storage:amazon'
       ])
     })
@@ -299,8 +308,8 @@ describe('element-expr', () => {
         'amazon'
       ])
       expect(edgeIds).toEqual([
-        'cloud.frontend:cloud.backend.graphql',
         'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.frontend:cloud.backend.graphql',
         'cloud.backend.storage:amazon'
       ])
     })
@@ -328,9 +337,9 @@ describe('element-expr', () => {
         'amazon'
       ])
       expect(edgeIds).toEqual([
-        'cloud.frontend:cloud.backend.graphql',
         'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.backend.storage:amazon'
+        'cloud.backend.storage:amazon',
+        'cloud.frontend:cloud.backend.graphql'
       ])
     })
   })

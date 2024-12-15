@@ -9,7 +9,7 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
 
-export class RelationshipModel<M extends AnyAux> {
+export class RelationshipModel<M extends AnyAux = AnyAux> {
   public readonly source: ElementModel<M>
   public readonly target: ElementModel<M>
 

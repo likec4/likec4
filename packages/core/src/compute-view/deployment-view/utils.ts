@@ -17,12 +17,12 @@ import {
   type Tag
 } from '../../types'
 import { nameFromFqn, parentFqn } from '../../utils'
+import { MutableMemory } from '../Memory'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
 import { deriveEdgePropsFromRelationships } from '../utils/derive-edge-props-from-relationships'
 import { uniqueTags } from '../utils/uniqueTags'
-import type { Elem } from './_types'
-import { type Memory, MutableMemory } from './Memory'
+import type { Elem, Memory } from './_types'
 
 type Predicate<T> = (x: T) => boolean
 

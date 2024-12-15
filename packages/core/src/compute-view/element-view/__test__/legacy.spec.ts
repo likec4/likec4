@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { type ElementKind, type Fqn, type IconUrl, type Tag } from '../../../types'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $include, computeViewV2 as computeView } from './fixture'
 
 describe('compute-element-view', () => {
   it('should be empty if no root and no rules', () => {
@@ -27,8 +27,8 @@ describe('compute-element-view', () => {
     expect(edgeIds).toEqual([
       'customer:cloud',
       'support:cloud',
-      'cloud:amazon',
       'cloud:email',
+      'cloud:amazon',
       'email:cloud'
     ])
     const [customer, support, cloud, email, amazon] = nodes
@@ -188,6 +188,7 @@ describe('compute-element-view', () => {
       'cloud.frontend',
       'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage'
     ])

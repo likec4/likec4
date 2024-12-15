@@ -1,4 +1,5 @@
 import { forEach, indexBy, isString, map, mapToObj, prop, values } from 'remeda'
+import { LikeC4Model } from '../../../model'
 import {
   type BorderStyle,
   type Color,
@@ -25,6 +26,7 @@ import {
   type ModelRelation,
   type NonEmptyArray,
   type OutgoingExpr as C4OutgoingExpr,
+  type ParsedLikeC4Model,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -38,10 +40,11 @@ import {
   type ViewRuleStyle,
   type WhereOperator
 } from '../../../types'
-import { type RelationExpr_ as C4RelationExpr } from '../../../types/expression'
+import { type DirectRelationExpr as C4RelationExpr } from '../../../types/expression'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { ComputeCtx } from '../compute'
+import { computeElementView as computeElementViewV2 } from '../computev2'
 
 function computeElementView(view: ElementView, graph: LikeC4ModelGraph) {
   return ComputeCtx.elementView(view, graph)
@@ -368,16 +371,22 @@ export const globalStyles = {
 } as const
 
 export type FakeRelationIds = (typeof fakeRelations)[number]['id']
-
-export const fakeModel = new LikeC4ModelGraph({
+const fakeParsedModel = {
   elements: fakeElements,
   relations: indexBy(fakeRelations, r => r.id),
+  deployments: {
+    elements: {},
+    relations: {}
+  },
+  views: {},
   globals: {
     predicates: {},
     dynamicPredicates: {},
     styles: globalStyles
   }
-})
+} as const
+export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
+export const fakeModelGraph = new LikeC4ModelGraph(fakeParsedModel)
 
 const emptyView = {
   __: 'element' as const,
@@ -622,7 +631,7 @@ export function computeView(
         ...emptyView,
         rules: [args[0]].flat()
       },
-      fakeModel
+      fakeModelGraph
     )
   } else {
     result = computeElementView(
@@ -632,7 +641,39 @@ export function computeView(
         viewOf: args[0] as Fqn,
         rules: [args[1]].flat()
       },
-      fakeModel
+      fakeModelGraph
+    )
+  }
+
+  result = withReadableEdges(result)
+
+  return Object.assign(result, {
+    nodeIds: map(result.nodes, prop('id')) as string[],
+    edgeIds: map(result.edges, prop('id')) as string[]
+  })
+}
+
+export function computeViewV2(
+  ...args: [FakeElementIds, ViewRule | ViewRule[]] | [ViewRule | ViewRule[]]
+) {
+  let result: ComputedView
+  if (args.length === 1) {
+    result = computeElementViewV2(
+      fakeModel,
+      {
+        ...emptyView,
+        rules: [args[0]].flat()
+      }
+    )
+  } else {
+    result = computeElementViewV2(
+      fakeModel,
+      {
+        ...emptyView,
+        id: 'index' as ViewId,
+        viewOf: args[0] as Fqn,
+        rules: [args[1]].flat()
+      }
     )
   }
 

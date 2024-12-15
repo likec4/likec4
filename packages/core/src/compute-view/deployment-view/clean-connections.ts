@@ -7,8 +7,7 @@ import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
 import { compareFqnHierarchically, isAncestor } from '../../utils'
 import { difference } from '../../utils/set'
-import type { Connections, Elem } from './_types'
-import { type Patch } from './Memory'
+import type { Connections, Elem, Patch } from './_types'
 
 const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.nonEmpty())
 

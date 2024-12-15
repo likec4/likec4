@@ -2,16 +2,15 @@ import { filter, identity, isNonNullish, map, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
 import type { ConnectionModel } from '../../../model/connection/ConnectionModel'
-import { findConnectionsBetween } from '../../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
+import { findConnectionsBetween } from '../../../model/connection/deployment'
 import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
 import { DeploymentElementModel } from '../../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import { FqnExpr, type FqnRef, type RelationExpr } from '../../../types'
+import { FqnExpr, type RelationExpr } from '../../../types'
 import { hasIntersection, intersection, union } from '../../../utils/set'
-import type { PredicateCtx, PredicateExecutor } from '../_types'
-import type { Patch } from '../Memory'
+import type { Patch, PredicateCtx, PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
 import { resolveAllImcomingRelations } from './relation-incoming'
 import { resolveAllOutgoingRelations } from './relation-outgoing'
@@ -30,7 +29,7 @@ export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   return siblings
 }
 
-const resolveIfWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.DeploymentRef) => {
+const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.DeploymentRef) => {
   const sources = resolveElements(model, nonWildcard)
   const [head, ...rest] = sources.map(s => resolveAscendingSiblings(s))
   if (head) {
@@ -57,7 +56,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         const [
           resolvedSources,
           resolvedTargets
-        ] = resolveIfWildcard(model, expr.source)
+        ] = resolveWildcard(model, expr.source)
         sources = resolvedSources
         targets = resolvedTargets
         break
@@ -66,15 +65,15 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         const [
           resolvedSources,
           resolvedTargets
-        ] = resolveIfWildcard(model, expr.target)
+        ] = resolveWildcard(model, expr.target)
         // Swap sources and targets
         sources = resolvedTargets
         targets = resolvedSources
         break
       }
       default: {
-        invariant(FqnExpr.isDeploymentRef(expr.source), 'Only deployment refs are supported in include')
-        invariant(FqnExpr.isDeploymentRef(expr.target), 'Only deployment refs are supported in include')
+        invariant(FqnExpr.isDeploymentRef(expr.source), 'Inferrence failed - source should be a deployment ref')
+        invariant(FqnExpr.isDeploymentRef(expr.target), 'Inferrence failed - target should be a deployment ref')
         sources = resolveElements(model, expr.source)
         targets = resolveElements(model, expr.target)
       }

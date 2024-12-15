@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, $style, computeView } from './fixture'
+import { $include, $style, computeViewV2 as computeView } from './fixture'
 
 describe('expand-element-expr', () => {
   it('dont expand if no in/out relations ', () => {
@@ -34,13 +34,13 @@ describe('expand-element-expr', () => {
     expect(nodeIds).toEqual([
       'customer',
       'cloud',
+      'cloud.frontend',
       'cloud.backend',
-      'amazon',
-      'cloud.frontend'
+      'amazon'
     ])
     expect(edgeIds).toEqual([
-      'customer:cloud.frontend',
-      'cloud.backend:amazon'
+      'cloud.backend:amazon',
+      'customer:cloud.frontend'
     ])
   })
 
@@ -58,9 +58,9 @@ describe('expand-element-expr', () => {
       'amazon.s3'
     ])
     expect(edgeIds).toEqual([
-      'customer:cloud.frontend',
       'cloud.frontend:cloud.backend',
-      'cloud.backend:amazon.s3'
+      'cloud.backend:amazon.s3',
+      'customer:cloud.frontend'
     ])
   })
 

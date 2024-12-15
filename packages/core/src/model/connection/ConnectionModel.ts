@@ -1,11 +1,15 @@
 import { invariant } from '../../errors'
+import type { Fqn } from '../../types'
+import { isAncestor } from '../../utils'
+import type { Relation, RelationPredicate } from '../../utils/relations'
 import { difference, equals, union } from '../../utils/set'
 import { stringHash } from '../../utils/string-hash'
+import { type DeploymentRelationModel, RelationshipsAccum } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
 import type { RelationshipModel } from '../RelationModel'
 import type { AnyAux } from '../types'
 
-export interface Connection<Elem = any, Id = any> {
+export interface Connection<Elem = unknown, Id = unknown> {
   readonly id: Id
   readonly source: Elem
   readonly target: Elem
@@ -22,11 +26,53 @@ export interface Connection<Elem = any, Id = any> {
    */
   readonly expression: string
 
-  mergeWith(this: Connection<any, any>, other: typeof this): typeof this
+  mergeWith(this: Connection<Elem, Id>, other: typeof this): typeof this
 
   nonEmpty(): boolean
 
-  difference(this: Connection<Elem, Id>, other: Connection<Elem, Id>): typeof this
+  difference(this: Connection<Elem, Id>, other: typeof this): typeof this
+
+  // equals(this: Connection, other: typeof this): boolean
+}
+
+export namespace Connection {
+  type ConnectionPredicate = <C extends Connection<{ id: string }, any>>(connection: C) => boolean
+
+  type ElementId = Fqn | string
+
+  export const isInside = (fqn: ElementId): ConnectionPredicate => {
+    return (connection) => isAncestor(fqn, connection.source.id) && isAncestor(fqn, connection.target.id)
+  }
+
+  export const isDirectedBetween = (source: ElementId, target: ElementId): ConnectionPredicate => {
+    return (connection) =>
+      (connection.source.id === source || isAncestor(source, connection.source.id))
+      && (connection.target.id === target || isAncestor(target, connection.target.id))
+  }
+
+  export const isAnyBetween = (source: ElementId, target: ElementId): ConnectionPredicate => {
+    const forward = isDirectedBetween(source, target),
+      backward = isDirectedBetween(target, source)
+    return (connection) => forward(connection) || backward(connection)
+  }
+
+  export const isIncoming = (target: ElementId): ConnectionPredicate => {
+    return (connection) =>
+      (connection.target.id === target || isAncestor(target, connection.target.id))
+      && !isAncestor(target, connection.source.id)
+  }
+
+  export const isOutgoing = (source: ElementId): ConnectionPredicate => {
+    return (connection) =>
+      (connection.source.id === source || isAncestor(source, connection.source.id))
+      && !isAncestor(source, connection.target.id)
+  }
+
+  export const isAnyInOut = (source: ElementId): ConnectionPredicate => {
+    const isIn = isIncoming(source),
+      isOut = isOutgoing(source)
+    return (connection) => isIn(connection) || isOut(connection)
+  }
 }
 
 /**
@@ -66,6 +112,7 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
   }
 
   mergeWith(other: ConnectionModel<M>): ConnectionModel<M> {
+    invariant(other instanceof ConnectionModel, 'Cannot merge connection with different type')
     invariant(this.source.id === other.source.id, 'Cannot merge connections with different sources')
     invariant(this.target.id === other.target.id, 'Cannot merge connections with different targets')
     return new ConnectionModel(
@@ -90,5 +137,19 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
       && this.source.id === other.source.id
       && this.target.id === other.target.id
       && equals(this.relations, other.relations)
+  }
+
+  /**
+   * Returns a new instance with the updated relations.
+   *
+   * @param relations - A readonly set of `RelationshipModel` instances representing the new relations.
+   * @returns A new `ConnectionModel` instance with the updated relations.
+   */
+  updateRelations(relations: ReadonlySet<RelationshipModel<M>>): ConnectionModel<M> {
+    return new ConnectionModel(
+      this.source,
+      this.target,
+      relations
+    )
   }
 }

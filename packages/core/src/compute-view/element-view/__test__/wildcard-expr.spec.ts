@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, $where, computeView } from './fixture'
+import { $exclude, $include, $where, computeViewV2 as computeView } from './fixture'
 
 describe('wildcard-expr', () => {
   it('include *', () => {
@@ -53,8 +53,8 @@ describe('wildcard-expr', () => {
       'amazon'
     ])
     expect(edgeIds).toEqual([
-      'cloud:amazon',
       'cloud:email',
+      'cloud:amazon',
       'email:cloud'
     ])
   })
@@ -64,17 +64,27 @@ describe('wildcard-expr', () => {
     // has no siblings
     it('should add amazon for s3', () => {
       const { nodeIds, edgeIds } = computeView('amazon.s3', [$include('*')])
-      expect(nodeIds).toEqual(['cloud', 'amazon', 'amazon.s3'])
-      expect(edgeIds).to.have.same.members(['cloud:amazon.s3'])
+      expect(nodeIds).toEqual([
+        'cloud',
+        'amazon',
+        'amazon.s3'
+      ])
+      expect(edgeIds).toEqual([
+        'cloud:amazon.s3'
+      ])
     })
 
     // has siblings
     it('should not add cloud.backend for cloud.backend.storage', () => {
       const { nodeIds, edgeIds } = computeView('cloud.backend.storage', [$include('*')])
-      expect(nodeIds).toEqual(['cloud.backend.graphql', 'cloud.backend.storage', 'amazon'])
-      expect(edgeIds).to.have.same.members([
-        'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.backend.storage:amazon'
+      expect(nodeIds).toEqual([
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'amazon'
+      ])
+      expect(edgeIds).toEqual([
+        'cloud.backend.storage:amazon',
+        'cloud.backend.graphql:cloud.backend.storage'
       ])
     })
   })

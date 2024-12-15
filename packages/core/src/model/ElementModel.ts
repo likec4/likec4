@@ -18,7 +18,7 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<M extends AnyAux> {
+export class ElementModel<M extends AnyAux = AnyAux> {
   constructor(
     public readonly model: LikeC4Model<M>,
     public readonly $element: C4Element

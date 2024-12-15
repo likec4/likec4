@@ -17,7 +17,7 @@ import { parentFqn } from '../../utils'
 
 type Predicate<T> = (x: T) => boolean
 
-export function elementExprToPredicate<T extends Pick<ComputedNode, 'id' | 'kind' | 'tags'>>(
+export function elementExprToPredicate<T extends { id: string; tags?: readonly string[] | null; kind: string }>(
   target: ElementPredicateExpression
 ): Predicate<T> {
   if (isElementWhere(target)) {

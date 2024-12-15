@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $include, computeViewV2 as computeView } from './fixture'
 
 describe('incoming-expr', () => {
   describe('top level', () => {
@@ -13,8 +13,8 @@ describe('incoming-expr', () => {
       const { nodeIds, edgeIds } = computeView([$include('-> cloud.frontend.*')])
       expect(nodeIds).toEqual([
         'customer',
-        'cloud.frontend.dashboard',
         'support',
+        'cloud.frontend.dashboard',
         'cloud.frontend.adminPanel'
       ])
       expect(edgeIds).toEqual([
@@ -35,18 +35,18 @@ describe('incoming-expr', () => {
         'support',
         'cloud',
         'cloud.frontend',
-        'cloud.frontend.dashboard',
         'cloud.backend',
+        'cloud.frontend.dashboard',
+        'cloud.frontend.adminPanel',
         'email',
-        'amazon',
-        'cloud.frontend.adminPanel'
+        'amazon'
       ])
       expect(edgeIds).toEqual([
-        'customer:cloud.frontend.dashboard',
-        'support:cloud.frontend.adminPanel',
-        'cloud.backend:amazon',
+        'cloud.frontend:cloud.backend',
         'cloud.backend:email',
-        'cloud.frontend:cloud.backend'
+        'cloud.backend:amazon',
+        'customer:cloud.frontend.dashboard',
+        'support:cloud.frontend.adminPanel'
       ])
     })
 
@@ -64,9 +64,9 @@ describe('incoming-expr', () => {
         'cloud.backend'
       ])
       expect(edgeIds).toEqual([
+        'cloud.frontend:cloud.backend',
         'customer:cloud.frontend',
-        'support:cloud.frontend',
-        'cloud.frontend:cloud.backend'
+        'support:cloud.frontend'
       ])
     })
 
@@ -84,9 +84,9 @@ describe('incoming-expr', () => {
         'cloud.backend'
       ])
       expect(edgeIds).toEqual([
+        'cloud.frontend:cloud.backend',
         'customer:cloud.frontend',
-        'support:cloud.frontend',
-        'cloud.frontend:cloud.backend'
+        'support:cloud.frontend'
       ])
     })
 
@@ -104,8 +104,8 @@ describe('incoming-expr', () => {
       ])
       expect(edgeIds).toEqual([
         'cloud.frontend:cloud.backend',
-        'cloud.backend:amazon',
-        'cloud.backend:email'
+        'cloud.backend:email',
+        'cloud.backend:amazon'
       ])
     })
 
