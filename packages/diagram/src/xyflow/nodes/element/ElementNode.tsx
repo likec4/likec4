@@ -66,16 +66,19 @@ const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   && eq(prev.data, next.data)
 )
 
-export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
-  id,
-  data: {
-    element
-  },
-  dragging,
-  selected = false,
-  width,
-  height
-}) {
+export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeProps: ElementNodeProps) {
+
+  const {
+    id,
+    data: {
+      element
+    },
+    dragging,
+    selected = false,
+    width,
+    height
+  } = nodeProps
+
   const modelRef = DiagramNode.modelRef(element)
   // const deploymentRef = DiagramNode.deploymentRef(element)
   const {
@@ -89,7 +92,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     enableRelationshipBrowser,
     triggerOnNavigateTo,
     openOverlay,
-    isInActiveOverlay,
     renderIcon
   } = useDiagramState(s => ({
     viewId: s.view.id,
@@ -103,7 +105,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     enableRelationshipBrowser: s.enableRelationshipBrowser,
     triggerOnNavigateTo: s.triggerOnNavigateTo,
     openOverlay: s.openOverlay,
-    isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     renderIcon: s.renderIcon
   }))
   // For development purposes, show the toolbar when the element is selected
@@ -114,30 +115,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
 
-  let animateVariant: keyof typeof VariantsRoot | string[]
-  switch (true) {
-    case isInActiveOverlay:
-      animateVariant = 'idle'
-      break
-    case dragging && selected:
-      animateVariant = 'selected'
-      break
-    case dragging:
-      animateVariant = 'idle'
-      break
-    case isInteractive && isHovered:
-      animateVariant = 'hovered'
-      break
-    case selected:
-      animateVariant = 'selected'
-      break
-    default:
-      animateVariant = 'idle'
-  }
-  const [animateVariants, animateHandlers] = useFramerAnimateVariants()
-  if (isHovered && !dragging && !isInActiveOverlay) {
-    animateVariant = animateVariants ?? animateVariant
-  }
+  const [animateVariant, animateHandlers] = useFramerAnimateVariants(nodeProps)
 
   const elementIcon = ElementIcon({
     element,

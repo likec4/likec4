@@ -55,8 +55,9 @@ const VariantsRoot = {
   tap: {}
 } satisfies Variants
 
-export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
-  {
+export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodeProps: CompoundNodeProps) => {
+
+  const {
     id,
     selected = false,
     dragging = false,
@@ -64,8 +65,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
       isViewGroup,
       element
     }
-  }
-) => {
+  } = nodeProps
+
   const modelRef = DiagramNode.modelRef(element)
   const { depth, style, color } = element
   const isNotViewGroup = !isViewGroup
@@ -89,7 +90,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isInteractive,
     isNavigable,
     renderIcon,
-    isInActiveOverlay,
     enableElementDetails
   } = useDiagramState(s => ({
     viewId: s.view.id,
@@ -103,34 +103,12 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     // If this is a view group, we don't want to show the navigate button
     isNavigable: isNotViewGroup && !!s.onNavigateTo && !!element.navigateTo,
     renderIcon: s.renderIcon,
-    isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     enableElementDetails: isNotViewGroup && s.enableElementDetails
   }))
   const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
-  const [animateVariants, animateHandlers] = useFramerAnimateVariants()
-
-  let animate: keyof typeof VariantsRoot
-  switch (true) {
-    case isInActiveOverlay:
-      animate = 'idle'
-      break
-    case dragging && selected:
-      animate = 'selected'
-      break
-    case dragging:
-      animate = 'idle'
-      break
-    case isInteractive && isHovered:
-      animate = 'hovered'
-      break
-    case selected:
-      animate = 'selected'
-      break
-    default:
-      animate = 'idle'
-  }
+  const [animateVariant, animateHandlers] = useFramerAnimateVariants(nodeProps)
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
 
@@ -170,7 +148,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           component={m.div}
           variants={VariantsRoot}
           initial={false}
-          animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
+          animate={animateVariant}
           className={clsx(
             css.container,
             'likec4-compound-node',
