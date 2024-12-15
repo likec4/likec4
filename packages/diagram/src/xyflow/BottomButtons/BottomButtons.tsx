@@ -3,13 +3,14 @@ import { type HTMLMotionProps } from "framer-motion"
 import type { PropsWithoutRef } from "react"
 import * as css from './BottomButtons.css'
 import { ActionButton } from "../ActionButton/ActionButton"
-import { IconTransform, IconZoomScan } from "@tabler/icons-react"
+import { IconFileSymlink, IconTransform, IconZoomScan } from "@tabler/icons-react"
 
 type BottomButtonsProps = PropsWithoutRef<
   ActionIconProps & HTMLMotionProps<'div'> & {
     keyPrefix: string
-    onNavigateTo: ((e: React.MouseEvent) => void) | false
-    onOpenRelationships: ((e: React.MouseEvent) => void) | false
+    onNavigateTo?: ((e: React.MouseEvent) => void) | false
+    onOpenRelationships?: ((e: React.MouseEvent) => void) | false
+    onOpenSource?: ((e: React.MouseEvent) => void) | false
   }
 >
 
@@ -17,6 +18,7 @@ export const BottomButtons = ({
   keyPrefix,
   onNavigateTo,
   onOpenRelationships,
+  onOpenSource,
   ...props
 }: BottomButtonsProps) => {
 
@@ -34,6 +36,13 @@ export const BottomButtons = ({
       onClick: onOpenRelationships,
       IconComponent: IconTransform,
       tooltipLabel: 'Browse relationships'
+    }),
+
+    (onOpenSource && {
+      key: `${keyPrefix}:source`,
+      onClick: onOpenSource,
+      IconComponent: IconFileSymlink,
+      tooltipLabel: 'Open source'
     })
   ].filter(b => !!b);
 
