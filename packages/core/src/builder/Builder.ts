@@ -29,9 +29,14 @@ import type { ParsedLikeC4Model } from '../types/model'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
-import type { AddDeploymentNodeHelpers, DeloymentModelHelpers, DeploymentModelBuilder } from './Builder.deploymentModel'
+import type {
+  AddDeploymentNodeHelpers,
+  DeloymentModelBuildFunction,
+  DeloymentModelHelpers,
+  DeploymentModelBuilder
+} from './Builder.deploymentModel'
 import type { AddElement } from './Builder.element'
-import type { AddElementHelpers, ModelBuilder, ModelHelpers } from './Builder.model'
+import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
 import {
   $autoLayout,
   $exclude,
@@ -41,11 +46,13 @@ import {
   type DeploymentViewRuleBuilderOp,
   mkViewBuilder,
   type ViewHelpers,
-  type ViewRuleBuilderOp
+  type ViewRuleBuilderOp,
+  type ViewsBuilderFunction
 } from './Builder.view'
 import { type ViewsBuilder } from './Builder.views'
+import type { BuilderMethods } from './BuilderInterace'
 
-export interface Builder<T extends AnyTypes> {
+export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   /**
    * Only available in compile time
    */
@@ -58,13 +65,21 @@ export interface Builder<T extends AnyTypes> {
    */
   helpers(): {
     model: ModelHelpers<T>
-    views: ViewHelpers<T['NewViewProps']>
+    views: ViewHelpers<T>
     deployment: DeloymentModelHelpers<T>
   }
 
-  __model(): ModelBuilder<T>
-  __views(): ViewsBuilder<T>
-  __deployment(): DeploymentModelBuilder<T>
+  model<Out extends AnyTypes>(
+    callback: ModelBuilderFunction<T, Out>
+  ): Builder<Out>
+
+  deployment<Out extends AnyTypes>(
+    callback: DeloymentModelBuildFunction<T, Out>
+  ): Builder<Out>
+
+  views<Out extends AnyTypes>(
+    callback: ViewsBuilderFunction<T, Out>
+  ): Builder<Out>
 
   /**
    * Returns model as result of parsing only
@@ -87,156 +102,15 @@ export interface Builder<T extends AnyTypes> {
     T['DeploymentFqn'],
     T['ViewId']
   >
+}
 
-  with<
-    A extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>
-  ): Builder<A>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>
-  ): Builder<B>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>
-  ): Builder<C>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>
-  ): Builder<D>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>
-  ): Builder<E>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>
-  ): Builder<F>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>
-  ): Builder<G>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes,
-    H extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>,
-    op8: (input: Builder<G>) => Builder<H>
-  ): Builder<H>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes,
-    H extends AnyTypes,
-    I extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>,
-    op8: (input: Builder<G>) => Builder<H>,
-    op9: (input: Builder<H>) => Builder<I>
-  ): Builder<I>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes,
-    H extends AnyTypes,
-    I extends AnyTypes,
-    J extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>,
-    op8: (input: Builder<G>) => Builder<H>,
-    op9: (input: Builder<H>) => Builder<I>,
-    op10: (input: Builder<I>) => Builder<J>
-  ): Builder<J>
+interface Internals<T extends AnyTypes> {
+  /**
+   * Internal usage
+   */
+  __model(): ModelBuilder<T>
+  __views(): ViewsBuilder<T>
+  __deployment(): DeploymentModelBuilder<T>
 }
 
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
@@ -272,7 +146,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     return map(links, l => (typeof l === 'string' ? { url: l } : l))
   }
 
-  const self: Builder<T> = {
+  const self: Builder<T> & Internals<T> = {
     get Types(): T {
       throw new Error('Types are not available in runtime')
     },
@@ -387,7 +261,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       model: {
         model: (...ops: ((b: ModelBuilder<T>) => ModelBuilder<T>)[]) => {
           return (b: Builder<T>) => {
-            const v = b.__model()
+            const v = (b as any as Internals<T>).__model()
             for (const op of ops) {
               op(v)
             }
@@ -503,7 +377,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       views: {
         views: (...ops: ((b: ViewsBuilder<T>) => ViewsBuilder<T>)[]) => {
           return (b: Builder<T>) => {
-            const v = b.__views()
+            const v = (b as any as Internals<T>).__views()
             for (const op of ops) {
               op(v)
             }
@@ -631,7 +505,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       deployment: {
         deployment: (...ops: ((b: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>)[]) => {
           return (b: Builder<T>) => {
-            const v = b.__deployment()
+            const v = (b as any as Internals<T>).__deployment()
             for (const op of ops) {
               op(v)
             }
@@ -742,7 +616,22 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       }
     }),
     with: (...ops: ((b: Builder<T>) => Builder<T>)[]) => {
-      return ops.reduce((b, op) => op(b), self).clone()
+      return ops.reduce((b, op) => op(b), self.clone())
+    },
+    model: <Out extends AnyTypes>(cb: ModelBuilderFunction<T, Out>) => {
+      const b = self.clone()
+      const helpers = b.helpers().model
+      return cb(helpers, helpers.model as any)(b)
+    },
+    deployment: <Out extends AnyTypes>(cb: DeloymentModelBuildFunction<T, Out>) => {
+      const b = self.clone()
+      const helpers = b.helpers().deployment
+      return cb(helpers, helpers.deployment as any)(b)
+    },
+    views: <Out extends AnyTypes>(cb: ViewsBuilderFunction<T, Out>) => {
+      const b = self.clone()
+      const helpers = b.helpers().views
+      return cb(helpers, helpers.views as any)(b)
     }
   }
 
@@ -750,18 +639,28 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 }
 
 export namespace Builder {
+  export type Any = Builder<AnyTypes>
+
   export function forSpecification<const Spec extends BuilderSpecification>(
     spec: Spec
   ): {
     builder: Builder<Types.FromSpecification<Spec>>
     model: ModelHelpers<Types.FromSpecification<Spec>>
     deployment: DeloymentModelHelpers<Types.FromSpecification<Spec>>
-    views: ViewHelpers<Types.FromSpecification<Spec>['NewViewProps']>
+    views: ViewHelpers<Types.FromSpecification<Spec>>
+    build: Builder<Types.FromSpecification<Spec>>['with']
   } {
     const b = builder<Spec, Types.FromSpecification<Spec>>(spec)
     return {
       ...b.helpers(),
-      builder: b
+      builder: b,
+      build: b.with
     }
+  }
+
+  export function specification<const Spec extends BuilderSpecification>(
+    spec: Spec
+  ): Builder<Types.FromSpecification<Spec>> {
+    return builder<Spec, Types.FromSpecification<Spec>>(spec)
   }
 }

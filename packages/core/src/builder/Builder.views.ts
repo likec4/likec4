@@ -6,6 +6,8 @@ export interface ViewsBuilder<T extends AnyTypes> {
   addView(view: LikeC4View): Builder<T>
 }
 
+export function views<A extends AnyTypes>(): (input: Builder<A>) => Builder<A>
+
 export function views<
   A extends AnyTypes,
   B extends AnyTypes

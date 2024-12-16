@@ -16,7 +16,8 @@ import {
   type WhereOperator
 } from '../types'
 import type { AnyTypes, Types } from './_types'
-import type { views, ViewsBuilder as Builder } from './Builder.views'
+import type { Builder } from './Builder'
+import type { views, ViewsBuilder } from './Builder.views'
 
 interface AViewBuilder<
   Types extends AnyTypes,
@@ -113,7 +114,7 @@ export interface AddViewHelper<Props = unknown> {
   >(
     id: Id,
     builder: (b: ViewBuilder<T>) => ViewBuilder<T>
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
@@ -121,7 +122,7 @@ export interface AddViewHelper<Props = unknown> {
   >(
     id: Id,
     propsOrTitle: Props | string
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
@@ -130,7 +131,7 @@ export interface AddViewHelper<Props = unknown> {
     id: Id,
     propsOrTitle: Props | string | undefined,
     builder: (b: ViewBuilder<T>) => ViewBuilder<T>
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 }
 
 export interface AddViewOfHelper<Props = unknown> {
@@ -141,7 +142,7 @@ export interface AddViewOfHelper<Props = unknown> {
   >(
     id: Id,
     of: Of
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
@@ -151,7 +152,7 @@ export interface AddViewOfHelper<Props = unknown> {
     id: Id,
     of: Of,
     builder: (b: ViewBuilder<T>) => ViewBuilder<T>
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
@@ -161,7 +162,7 @@ export interface AddViewOfHelper<Props = unknown> {
     id: Id,
     of: Of,
     propsOrTitle: Props | string
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
@@ -172,7 +173,7 @@ export interface AddViewOfHelper<Props = unknown> {
     of: Of,
     propsOrTitle: Props | string | undefined,
     builder: (b: ViewBuilder<T>) => ViewBuilder<T>
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 }
 
 export interface AddDeploymentViewHelper<Props = unknown> {
@@ -182,7 +183,7 @@ export interface AddDeploymentViewHelper<Props = unknown> {
   >(
     id: Id,
     builder: DeploymentViewRuleBuilderOp<T>
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
@@ -191,7 +192,7 @@ export interface AddDeploymentViewHelper<Props = unknown> {
     id: Id,
     propsOrTitle: Props | string | undefined,
     builder: DeploymentViewRuleBuilderOp<T>
-  ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 }
 
 // To hook types
@@ -478,17 +479,22 @@ function $rules<B extends AViewBuilder<AnyTypes, any, any>>(...rules: Op<B>[]): 
 
 export { $autoLayout, $exclude, $include, $rules, $style }
 
-export type ViewHelpers<T = unknown> = {
+export type ViewHelpers<T extends AnyTypes> = {
   views: typeof views
-  view: AddViewHelper<T>
-  viewOf: AddViewOfHelper<T>
-  deploymentView: AddDeploymentViewHelper<T>
+  view: AddViewHelper<T['NewViewProps']>
+  viewOf: AddViewOfHelper<T['NewViewProps']>
+  deploymentView: AddDeploymentViewHelper<T['NewViewProps']>
   $include: typeof $include
   $exclude: typeof $exclude
   $style: typeof $style
   $rules: typeof $rules
   $autoLayout: typeof $autoLayout
 }
+
+export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
+  helpers: ViewHelpers<A>,
+  add: typeof views
+) => (builder: Builder<A>) => Builder<B>
 
 export function mkViewBuilder(view: Writable<DeploymentView>): DeploymentViewBuilder<AnyTypes>
 export function mkViewBuilder(view: Writable<ElementView>): ViewBuilder<AnyTypes>

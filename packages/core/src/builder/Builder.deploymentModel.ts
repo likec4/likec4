@@ -2,6 +2,7 @@ import type { DeploymentElement, DeploymentRelation, Fqn } from '../types'
 import type { AnyTypes, Invalid, Types } from './_types'
 import type { Builder } from './Builder'
 import type { AddDeploymentNode } from './Builder.deployment'
+import type { AddElementHelpers, model } from './Builder.model'
 
 export interface DeploymentModelBuilder<T extends AnyTypes> {
   addDeployment(node: DeploymentElement): Builder<T>
@@ -11,6 +12,8 @@ export interface DeploymentModelBuilder<T extends AnyTypes> {
    */
   fqn(id: string): Fqn
 }
+
+export function deployment<A extends AnyTypes>(): (input: Builder<A>) => Builder<A>
 export function deployment<
   A extends AnyTypes,
   B extends AnyTypes
@@ -358,3 +361,8 @@ export type DeloymentModelHelpers<T extends AnyTypes> = AddDeploymentNodeHelpers
   rel: AddDeploymentRelation<T['NewRelationshipProps']>
   deployment: typeof deployment
 }
+
+export type DeloymentModelBuildFunction<A extends AnyTypes, B extends AnyTypes> = (
+  helpers: DeloymentModelHelpers<A>,
+  add: typeof deployment
+) => (builder: Builder<A>) => Builder<B>

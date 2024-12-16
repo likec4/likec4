@@ -1,6 +1,6 @@
 import type { Element, Fqn, ModelRelation } from '../types'
 import type { AnyTypes, AnyTypesNested, Invalid, Types } from './_types'
-import type { Builder } from './Builder'
+import { Builder } from './Builder'
 import type { AddElement } from './Builder.element'
 
 export interface ModelBuilder<T extends AnyTypes> {
@@ -14,11 +14,16 @@ export interface ModelBuilder<T extends AnyTypes> {
 }
 
 export function model<
+  A extends AnyTypes
+>(): (input: Builder<A>) => Builder<A>
+
+export function model<
   A extends AnyTypes,
   B extends AnyTypes
 >(
   op1: (input: ModelBuilder<A>) => ModelBuilder<B>
 ): (input: Builder<A>) => Builder<B>
+
 export function model<
   A extends AnyTypes,
   B extends AnyTypes,
@@ -355,3 +360,8 @@ export type ModelHelpers<T extends AnyTypes> = AddElementHelpers<T> & {
   rel: RelationshipHelper<T['NewRelationshipProps']>
   relTo: NestedRelationshipHelper<T['NewRelationshipProps']>
 }
+
+export type ModelBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
+  helpers: ModelHelpers<A>,
+  add: ModelHelpers<A>['model']
+) => (builder: Builder<A>) => Builder<B>

@@ -1,5 +1,6 @@
 import type { AnyTypes, Types, TypesNested } from './_types'
 import type { DeploymentModelBuilder } from './Builder.deploymentModel'
+import type { ModelBuilder } from './Builder.model'
 
 type ToNested<T, Id extends string> = T extends TypesNested<infer P, any, any, any, any, any, any, any, infer F>
   ? TypesNested<
@@ -56,6 +57,10 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, any, an
  */
 export interface AddDeploymentNode<Id extends string> {
   <T extends AnyTypes>(builder: DeploymentModelBuilder<T>): DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>>
+
+  with<T extends AnyTypes>(): (
+    builder: DeploymentModelBuilder<T>
+  ) => DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>>
 
   with<
     T extends AnyTypes,
