@@ -24,12 +24,10 @@ export const ElementRefPredicate: PredicateExecutor<ElementRefExpr> = {
     stage.addExplicit(elements)
     stage.connectWithExisting(elements)
     stage.addConnections(findConnectionsWithin(elements))
-
-    return stage.patch()
   },
   exclude: ({ expr, model, stage, filterWhere }) => {
     const element = model.element(expr.element)
     const elements = filterWhere(applyElementSelector(element, expr))
-    return stage.exclude(elements).patch()
+    stage.exclude(elements)
   }
 }

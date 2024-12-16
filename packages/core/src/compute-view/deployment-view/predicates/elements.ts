@@ -4,16 +4,17 @@ import { findConnectionsBetween, findConnectionsWithin } from '../../../model/co
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import type { DeployedInstanceModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
 import type { FqnExpr } from '../../../types'
-import type { PredicateCtx, PredicateExecutor } from '../_types'
+import type { IncludePredicateCtx, PredicateCtx, PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate } from '../utils'
 
 export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = {
-  include: (expr, ctx) => {
+  include: (ctx) => {
+    const { expr } = ctx
     const el = ctx.model.element(expr.ref.deployment)
 
     if (el.isInstance()) {
       includeDeployedInstance(el, ctx)
-      return ctx.stage.patch()
+      return ctx.stage
     }
     invariant(el.isDeploymentNode(), 'Type inference failed')
     switch (true) {
@@ -30,19 +31,19 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
         includeDeployedNode(el, ctx)
         break
     }
-    return ctx.stage.patch()
+    return ctx.stage
   },
 
-  exclude: (expr, { stage, memory }) => {
+  exclude: ({ expr, stage, memory }) => {
     const exprPredicate = deploymentExpressionToPredicate(expr)
     stage.exclude([...memory.elements].filter(exprPredicate))
-    return stage.patch()
+    return stage
   }
 }
 
 function includeDeployedInstance(
   instance: DeployedInstanceModel,
-  { memory, stage }: PredicateCtx
+  { memory, stage }: IncludePredicateCtx
 ) {
   stage.addExplicit(instance)
   stage.addConnections(findConnectionsBetween(instance, memory.elements))
@@ -53,7 +54,7 @@ function includeDeployedInstance(
  */
 function includeDeployedNode(
   node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
+  { memory, stage }: IncludePredicateCtx
 ) {
   stage.addExplicit(node)
   stage.addConnections(findConnectionsBetween(node, memory.elements))
@@ -85,7 +86,7 @@ function includeDeployedNodeChildren(
  */
 function includeDeployedNodeWithExpanded(
   node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
+  { memory, stage }: IncludePredicateCtx
 ) {
   const children = [...node.children()]
   stage.addImplicit(node)
@@ -122,7 +123,7 @@ function includeDeployedNodeWithExpanded(
  */
 function includeDeployedNodeDescendants(
   node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
+  { memory, stage }: IncludePredicateCtx
 ) {
   const descendants = [...node.descendants()]
   if (descendants.length === 0) {

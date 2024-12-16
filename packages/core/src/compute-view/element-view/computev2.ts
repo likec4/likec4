@@ -20,9 +20,16 @@ import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
-import { type Connection, type Elem, type PredicateCtx } from './_types'
+import {
+  type Connection,
+  type Elem,
+  type ExcludePredicateCtx,
+  type IncludePredicateCtx,
+  type PredicateCtx,
+  type PredicateExecutor
+} from './_types'
 import { cleanConnections } from './clean-connections'
-import { emptyMemory, type Memory, MutableMemory, type Patch } from './Memory'
+import { Memory, type Stage } from './memory'
 import { ExpandedElementPredicate } from './predicates/element-expand'
 import { ElementKindOrTagPredicate } from './predicates/element-kind-tag'
 import { ElementRefPredicate } from './predicates/element-ref'
@@ -31,37 +38,49 @@ import { IncomingExprPredicate } from './predicates/relation-in'
 import { InOutRelationPredicate } from './predicates/relation-in-out'
 import { OutgoingExprPredicate } from './predicates/relation-out'
 import { WildcardPredicate } from './predicates/wildcard'
-import { Stage } from './Stage'
 import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
 
+// type OpCtx<E extends Expr.Expression, Op extends 'include' | 'exclude'> = Op extends 'include' ? IncludePredicateCtx<E> : ExcludePredicateCtx<E>
+
+// function callPredicate<E extends Expr.Expression, Op extends 'include' | 'exclude'>(executor: PredicateExecutor<E>, op: Op, ctx: OpCtx<E, Op>): OpCtx<E,Op>['stage'] | undefined | void {
+//   return ctx => executor[op](ctx)
+// }
+
 function processElementPredicate(
+  // ...args:
+  //   | [expr: ElementPredicateExpression, op: 'include', IncludePredicateCtx<ElementPredicateExpression>]
+  //   | [expr: ElementPredicateExpression, op: 'exclude', ExcludePredicateCtx<ElementPredicateExpression>]
   expr: ElementPredicateExpression,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<ElementPredicateExpression>, 'expr'>
-): Patch | undefined {
+  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>
+): Stage {
   switch (true) {
     case Expr.isCustomElement(expr): {
       if (op === 'include') {
         return processElementPredicate(expr.custom.expr, op, ctx)
       }
-      return
+      return ctx.stage
     }
     case Expr.isElementWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
       const filterWhere = filter<Elem>(where)
-      return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere })
+      return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
     }
     case Expr.isExpandedElementExpr(expr): {
-      return ExpandedElementPredicate[op]({ ...ctx, expr })
+      // if (op === 'include') {
+      //   return ExpandedElementPredicate[op]({ ...ctx, expr }) ?? ctx.stage
+      // }
+      return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     case Expr.isElementRef(expr): {
-      return ElementRefPredicate[op]({ ...ctx, expr })
+      // return callPredicate(ElementRefPredicate, op, { ...ctx, expr }) ?? ctx.stage
+      return ElementRefPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     case Expr.isWildcard(expr):
-      return WildcardPredicate[op]({ ...ctx, expr })
+      return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     case Expr.isElementKindExpr(expr):
     case Expr.isElementTagExpr(expr):
-      return ElementKindOrTagPredicate[op]({ ...ctx, expr })
+      return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     default:
       nonexhaustive(expr)
   }
@@ -70,13 +89,13 @@ function processRelationtPredicate(
   expr: RelationPredicateExpression,
   op: 'include' | 'exclude',
   ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>
-): Patch | undefined {
+): Stage {
   switch (true) {
     case Expr.isCustomRelationExpr(expr): {
       if (op === 'include') {
         return processRelationtPredicate(expr.customRelation.relation, op, ctx)
       }
-      return
+      return ctx.stage
     }
     case Expr.isRelationWhere(expr): {
       const where = whereOperatorAsPredicate(expr.where.condition)
@@ -97,16 +116,16 @@ function processRelationtPredicate(
       })
     }
     case Expr.isInOut(expr): {
-      return InOutRelationPredicate[op]({ ...ctx, expr })
+      return InOutRelationPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     case Expr.isRelation(expr): {
-      return DirectRelationExprPredicate[op]({ ...ctx, expr })
+      return DirectRelationExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     case Expr.isOutgoing(expr): {
-      return OutgoingExprPredicate[op]({ ...ctx, expr })
+      return OutgoingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     case Expr.isIncoming(expr): {
-      return IncomingExprPredicate[op]({ ...ctx, expr })
+      return IncomingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     default:
       nonexhaustive(expr)
@@ -119,7 +138,6 @@ function processPredicates<M extends AnyAux>(
   scope: Elem | null,
   rules: ViewRule[]
 ) {
-  let stage: Stage | null = null
   const ctx = {
     model,
     memory,
@@ -132,27 +150,26 @@ function processPredicates<M extends AnyAux>(
       const op = 'include' in rule ? 'include' : 'exclude'
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
-        stage = new Stage(stage, memory)
-        let patch: Patch
+        let stage = op === 'include' ? memory.stageInclude() : memory.stageExclude()
         switch (true) {
           case Expr.isElementPredicateExpr(expr):
-            patch = processElementPredicate(expr, op, {
+            stage = processElementPredicate(expr, op, {
               ...ctx,
               stage,
               memory
-            }) ?? stage.patch()
+            } as any) ?? stage
             break
           case Expr.isRelationPredicateExpr(expr):
-            patch = processRelationtPredicate(expr, op, {
+            stage = processRelationtPredicate(expr, op, {
               ...ctx,
               stage,
               memory
-            }) ?? stage.patch()
+            }) ?? stage
             break
           default:
             nonexhaustive(expr)
         }
-        memory = patch(memory)
+        memory = stage.commit()
       }
     }
   }
@@ -171,14 +188,15 @@ export function computeElementView<M extends AnyAux>(
   let memory = cleanConnections(
     processPredicates<M>(
       likec4model,
-      emptyMemory(),
+      Memory.empty(),
       scope,
       rules
     )
   )
   if (memory.isEmpty() && scope) {
-    invariant(memory instanceof MutableMemory)
-    memory.finalElements.add(scope)
+    memory = memory.update({
+      final: new Set([scope])
+    })
   }
 
   const nodesMap = buildNodes(memory)

@@ -10,7 +10,7 @@ import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { FqnExpr, type RelationExpr } from '../../../types'
 import { hasIntersection, intersection, union } from '../../../utils/set'
-import type { Patch, PredicateCtx, PredicateExecutor } from '../_types'
+import type { ExcludePredicateCtx, PredicateCtx, PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
 import { resolveAllImcomingRelations } from './relation-incoming'
 import { resolveAllOutgoingRelations } from './relation-outgoing'
@@ -40,7 +40,7 @@ const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.Depl
 }
 
 export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
-  include: (expr, { model, stage }) => {
+  include: ({ expr, model, stage }) => {
     const sourceIsWildcard = FqnExpr.isWildcard(expr.source)
     const targetIsWildcard = FqnExpr.isWildcard(expr.target)
 
@@ -88,11 +88,11 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
       stage.addConnections(findConnectionsBetween(source, targets, dir))
     }
 
-    if (stage.connections.length === 0) {
+    if (stage.newConnections.length === 0) {
       return identity()
     }
 
-    for (const c of stage.connections) {
+    for (const c of stage.newConnections) {
       if (c.source.isInstance() && c.target.isInstance() && c.boundary) {
         stage.addImplicit(c.boundary)
       }
@@ -104,9 +104,9 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
       stage.addImplicit(model.element(expr.target.ref.deployment))
     }
 
-    return stage.patch()
+    return stage
   },
-  exclude: (expr, { model, memory, stage }) => {
+  exclude: ({ expr, model, memory, stage }) => {
     // * -> *
     // Exclude all connections
     if (
@@ -114,7 +114,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
       && FqnExpr.isWildcard(expr.target)
     ) {
       stage.excludeConnections(memory.connections)
-      return stage.patch()
+      return stage
     }
 
     if (FqnExpr.isModelRef(expr.source) && FqnExpr.isModelRef(expr.target)) {
@@ -165,18 +165,18 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     }
 
     stage.excludeConnections(toExclude)
-    return stage.patch()
+    return stage
   }
 }
 
 export function excludeModelRelations(
   relationsToExclude: ReadonlySet<RelationshipModel<AnyAux>>,
-  { stage, memory }: Pick<PredicateCtx, 'stage' | 'memory'>,
+  { stage, memory }: Pick<ExcludePredicateCtx, 'stage' | 'memory'>,
   // Optional filter to scope the connections to exclude
   filterConnections: (c: DeploymentConnectionModel) => boolean = () => true
-): Patch {
+) {
   if (relationsToExclude.size === 0) {
-    return identity()
+    return stage
   }
   const toExclude = pipe(
     memory.connections,
@@ -190,9 +190,9 @@ export function excludeModelRelations(
     )
   )
   if (toExclude.length === 0) {
-    return identity()
+    return stage
   }
-  return stage.excludeConnections(toExclude).patch()
+  return stage.excludeConnections(toExclude)
 }
 
 function resolveRelationsBetweenModelElements({

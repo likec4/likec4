@@ -16,7 +16,6 @@ import {
   type Tag
 } from '../../types'
 import { nameFromFqn, parentFqn } from '../../utils'
-import { MutableMemory } from '../Memory'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
@@ -258,9 +257,7 @@ export function toComputedEdges<M extends AnyAux>(
 }
 
 export function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
-  // typecast to MutableMemory
-  invariant(memory instanceof MutableMemory, 'Expected MutableMemory')
-  return buildComputedNodes([...memory.finalElements].map(toNodeSource))
+  return buildComputedNodes([...memory.final].map(toNodeSource))
 }
 
 export function applyDeploymentViewRuleStyles(

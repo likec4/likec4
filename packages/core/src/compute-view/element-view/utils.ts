@@ -3,8 +3,7 @@ import { invariant } from '../../errors'
 import { type ComputedEdge, type ComputedNode, type Fqn } from '../../types'
 import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
-import type { Connection, Elem } from './_types'
-import { type Memory, MutableMemory } from './Memory'
+import type { Connection, Elem, Memory } from './_types'
 
 export const NoWhere = () => true
 export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]
@@ -55,6 +54,6 @@ export function toComputedEdges(
 
 export function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
   // typecast to MutableMemory
-  invariant(memory instanceof MutableMemory, 'Expected MutableMemory')
-  return buildComputedNodes([...memory.finalElements].map(toNodeSource))
+  // invariant(memory instanceof MutableMemory, 'Expected MutableMemory')
+  return buildComputedNodes([...memory.final].map(toNodeSource))
 }

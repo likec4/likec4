@@ -15,8 +15,8 @@ import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
-import { emptyMemory, type Patch, Stage } from './_types'
 import { cleanConnections } from './clean-connections'
+import { Memory } from './memory'
 import { DeploymentRefPredicate } from './predicates/elements'
 import { DirectRelationPredicate } from './predicates/relation-direct'
 import { InOutRelationPredicate } from './predicates/relation-in-out'
@@ -29,44 +29,41 @@ function processPredicates<M extends AnyAux>(
   model: LikeC4DeploymentModel<M>,
   rules: DeploymentViewRule[]
 ) {
-  let memory = emptyMemory()
-  let stage: Stage | null = null
+  let memory = Memory.empty()
 
   for (const rule of rules) {
     if (isViewRulePredicate(rule)) {
       const op = 'include' in rule ? 'include' : 'exclude'
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
-        stage = new Stage(stage)
+        let stage = op === 'include' ? memory.stageInclude() : memory.stageExclude()
         const ctx = { model, stage, memory }
-        let patch: Patch | undefined
         switch (true) {
           case FqnExpr.isModelRef(expr):
             // Ignore model refs in deployment view
             break
           case FqnExpr.isDeploymentRef(expr):
-            patch = DeploymentRefPredicate[op](expr, ctx)
+            stage = DeploymentRefPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case FqnExpr.isWildcard(expr):
-            patch = WildcardPredicate[op](expr, ctx)
+            stage = WildcardPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isDirect(expr):
-            patch = DirectRelationPredicate[op](expr, ctx)
+            stage = DirectRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isInOut(expr):
-            patch = InOutRelationPredicate[op](expr, ctx)
+            stage = InOutRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isOutgoing(expr):
-            patch = OutgoingRelationPredicate[op](expr, ctx)
+            stage = OutgoingRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isIncoming(expr):
-            patch = IncomingRelationPredicate[op](expr, ctx)
+            stage = IncomingRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           default:
             nonexhaustive(expr)
         }
-        patch ??= stage.patch()
-        memory = patch(memory)
+        memory = stage.commit()
       }
     }
   }

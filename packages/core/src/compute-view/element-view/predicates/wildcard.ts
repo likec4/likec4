@@ -19,7 +19,7 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
 
       stage.connectWithExisting(rootElements)
 
-      return stage.patch()
+      return stage
     }
     const neighbours = toSet(ifilter(scope.ascendingSiblings(), where))
     const root = where(scope) ? scope : null
@@ -52,23 +52,22 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
         }
       }
     }
-    return stage.patch()
+    return stage
   },
   exclude: ({ scope, memory, stage, where }) => {
     if (where !== NoWhere) {
-      return stage
-        .exclude(
-          filter(
-            [...memory.elements],
-            where
-          )
+      stage.exclude(
+        filter(
+          [...memory.elements],
+          where
         )
-        .patch()
+      )
+      return stage
     }
     if (scope) {
       stage.exclude([scope, ...scope.descendants()])
-      return stage.patch()
+      return stage
     }
-    return emptyMemory
+    return emptyMemory().newstage()
   }
 }

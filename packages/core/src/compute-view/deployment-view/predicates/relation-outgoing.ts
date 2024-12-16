@@ -9,7 +9,7 @@ import { deploymentExpressionToPredicate, resolveElements, resolveModelElements 
 import { excludeModelRelations, resolveAscendingSiblings } from './relation-direct'
 
 export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing> = {
-  include: (expr, { model, memory, stage }) => {
+  include: ({ expr, model, memory, stage }) => {
     const targets = [...memory.elements]
 
     // * -> (to visible elements)
@@ -23,7 +23,7 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
           stage.addConnections(findConnection(source, target, 'directed'))
         }
       }
-      return stage.patch()
+      return stage
     }
     invariant(FqnExpr.isDeploymentRef(expr.outgoing), 'Only deployment refs are supported in include')
 
@@ -32,9 +32,9 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
       stage.addConnections(findConnectionsBetween(source, targets, 'directed'))
     }
 
-    return stage.patch()
+    return stage
   },
-  exclude: (expr, { model, memory, stage }) => {
+  exclude: ({ expr, model, memory, stage }) => {
     // Exclude all connections that have model relationshps with the elements
     if (FqnExpr.isModelRef(expr.outgoing)) {
       const excludedRelations = resolveAllOutgoingRelations(model, expr.outgoing)
@@ -49,11 +49,11 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
 
     const toExclude = memory.connections.filter(satisfies)
     if (toExclude.length === 0) {
-      return identity()
+      return
     }
 
     stage.excludeConnections(toExclude)
-    return stage.patch()
+    return stage
   }
 }
 

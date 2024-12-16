@@ -3,7 +3,8 @@ import { isNestedConnection, sortDeepestFirst } from '../../model/connection'
 import { ConnectionModel, mergeConnections } from '../../model/connection/model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { Fqn } from '../../types'
-import type { Elem, Patch } from './_types'
+import type { Elem } from './_types'
+import { Memory } from './memory'
 
 export function allRelationshipsFrom(connections: Iterable<ConnectionModel>): Set<RelationshipModel> {
   const relations = new Set<RelationshipModel>()
@@ -85,7 +86,7 @@ function excludeRedundantRelationships(
  *    (e.g. prefer relations inside same deployment node over relations between nodes)
  * 3. Removes implicit connections between elements, if their descendants have same connection
  */
-export const cleanConnections: Patch = (memory) => {
+export const cleanConnections = (memory: Memory) => {
   if (memory.connections.length < 2) {
     return memory
   }
@@ -112,23 +113,23 @@ export const cleanConnections: Patch = (memory) => {
   const isParentOfConnected = (el: Elem) => parentsOfConnected.has(el.id)
 
   // Update memory
-  const newMemory = memory.clone()
-  newMemory.connections = connections
+  const state = memory.mutableState()
+  state.connections = connections
 
   // Iterate over elements (preserving order) and pick:
   // - explicitly included
   // - connected elements
   // - ancestors of connected elements
   const finalElements = new Set<Elem>()
-  for (const el of newMemory.finalElements) {
+  for (const el of state.final) {
     if (
-      newMemory.isExplicit(el)
+      state.explicits.has(el)
       || connectedElements.has(el)
       || isParentOfConnected(el)
     ) {
       finalElements.add(el)
     }
   }
-  newMemory.finalElements = finalElements
-  return newMemory
+  state.final = finalElements
+  return new Memory(state)
 }

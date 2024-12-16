@@ -1,9 +1,9 @@
 import { findConnectionsWithin } from '../../../model/connection/deployment'
 import type { FqnExpr } from '../../../types'
-import { type Elem, emptyMemory, type PredicateExecutor } from '../_types'
+import { type Elem, Memory, type PredicateExecutor } from '../_types'
 
 export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
-  include: (_, { model, stage }) => {
+  include: ({ model, stage }) => {
     const children = [] as Elem[]
 
     const rootElements = [...model.roots()].map(root => {
@@ -20,9 +20,9 @@ export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
     if (children.length > 1) {
       stage.addConnections(findConnectionsWithin(children))
     }
-    return stage.patch()
+    return stage
   },
   exclude: () => {
-    return emptyMemory
+    return Memory.empty().stageExclude()
   }
 }

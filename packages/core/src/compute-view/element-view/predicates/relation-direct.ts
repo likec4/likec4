@@ -66,7 +66,8 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
     stage.addConnections(
       filterWhere(connections)
     )
-    return stage.patch()
+
+    return stage
   },
   exclude: ({ expr: { source, target, isBidirectional }, memory, scope, model, stage, filterWhere }) => {
     let satisfies: ConnectionWhere
@@ -127,7 +128,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
       memory.connections.filter(satisfies)
     )
 
-    return stage.excludeConnections(connectionsToExclude).patch()
+    stage.excludeConnections(connectionsToExclude)
   }
 }
 

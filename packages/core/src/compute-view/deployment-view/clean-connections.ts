@@ -4,10 +4,9 @@ import { mergeConnections } from '../../model/connection/deployment'
 import { DeploymentConnectionModel } from '../../model/connection/deployment/DeploymentConnectionModel'
 import { RelationshipsAccum } from '../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
-import type { AnyAux } from '../../model/types'
 import { compareFqnHierarchically, isAncestor } from '../../utils'
 import { difference } from '../../utils/set'
-import type { Connections, Elem, Patch } from './_types'
+import type { Connections, Elem, Memory } from './_types'
 
 const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.nonEmpty())
 
@@ -15,10 +14,10 @@ const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.no
 // This way we can sort them hierarchically
 const connectionBoundary = (conn: DeploymentConnectionModel<any>) => conn.boundary?.id ? `.${conn.boundary.id}` : ''
 
-function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Connections<M> {
+function cleanCrossBoundary(connections: Connections): Connections {
   // Keep only connections between leafs
   // Also find connections based on same relation
-  const groupedByRelation = new DefaultMap<RelationshipModel<M>, Array<DeploymentConnectionModel<M>>>(() => [])
+  const groupedByRelation = new DefaultMap<RelationshipModel, Array<DeploymentConnectionModel>>(() => [])
   for (const conn of connections) {
     for (const relation of conn.relations.model) {
       groupedByRelation.get(relation).push(conn)
@@ -28,8 +27,8 @@ function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Conn
   // DeploymentConnectionModel is immutables
   // So we create new instances without excluded relations
   const excludedRelations = new DefaultMap<
-    DeploymentConnectionModel<M>,
-    Set<RelationshipModel<M>>
+    DeploymentConnectionModel,
+    Set<RelationshipModel>
   >(() => new Set())
 
   // In each group, find connected to same leaf
@@ -94,9 +93,9 @@ function cleanCrossBoundary<M extends AnyAux>(connections: Connections<M>): Conn
  * @returns New connection without redundant relationships
  *          Connection may be empty if all relationships are redundant, in this case it should be removed
  */
-function excludeRedundantRelationships<M extends AnyAux>(
-  connections: Connections<M>
-): Array<DeploymentConnectionModel<M>> {
+function excludeRedundantRelationships(
+  connections: Connections
+): Connections {
   return pipe(
     connections,
     map(connection => {
@@ -145,7 +144,7 @@ function excludeRedundantRelationships<M extends AnyAux>(
  *    (e.g. prefer relations inside same deployment node over relations between nodes)
  * 3. Removes implicit connections between elements, if their descendants have same connection
  */
-export const cleanConnections: Patch = (memory) => {
+export const cleanConnections = (memory: Memory) => {
   if (memory.connections.length < 2) {
     return memory
   }
@@ -206,7 +205,7 @@ export const cleanConnections: Patch = (memory) => {
   }
 
   // Update memory
-  const newMemory = memory.clone()
+  const newMemory = memory.mutableState()
   newMemory.connections = connections
 
   // Iterate over elements (preserving order) and pick:
@@ -214,15 +213,15 @@ export const cleanConnections: Patch = (memory) => {
   // - connected elements
   // - ancestors of connected elements
   const finalElements = new Set<Elem>()
-  for (const el of newMemory.finalElements) {
+  for (const el of newMemory.final) {
     if (
-      newMemory.isExplicit(el)
+      newMemory.explicits.has(el)
       || connectedElements.has(el)
       || isAncestorOfConnected(el)
     ) {
       finalElements.add(el)
     }
   }
-  newMemory.finalElements = finalElements
-  return newMemory
+  newMemory.final = finalElements
+  return memory.update(newMemory)
 }

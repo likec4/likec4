@@ -1,4 +1,4 @@
-import { isArray, isString, reverse } from 'remeda'
+import { isArray, isString } from 'remeda'
 import { invariant } from '../errors'
 import { type Element, type Fqn, type ModelGlobals, type ModelRelation, type RelationId } from '../types'
 import { ancestorsFqn, commonAncestor, getOrCreate, isSameHierarchy, parentFqn } from '../utils'

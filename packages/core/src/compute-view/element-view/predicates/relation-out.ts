@@ -53,7 +53,7 @@ export const OutgoingExprPredicate: PredicateExecutor<Expr.OutgoingExpr> = {
       filterWhere(connections)
     )
 
-    return stage.patch()
+    return stage
   },
   exclude: ({ expr: { outgoing }, model, scope, stage, where }) => {
     const excluded = [] as RelationshipModel[]
@@ -68,11 +68,11 @@ export const OutgoingExprPredicate: PredicateExecutor<Expr.OutgoingExpr> = {
         ...elements.flatMap(e => [...e.allOutgoing])
       )
     }
+    stage.excludeRelations(
+      toSet(excluded.filter(where))
+    )
+
     return stage
-      .excludeRelations(
-        toSet(excluded.filter(where))
-      )
-      .patch()
   }
 }
 

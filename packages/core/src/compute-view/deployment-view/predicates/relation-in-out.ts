@@ -12,14 +12,14 @@ import { excludeModelRelations, resolveAscendingSiblings } from './relation-dire
 
 //
 export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
-  include: (expr, { model, memory, stage }) => {
+  include: ({ expr, model, memory, stage }) => {
     const sources = [...memory.elements]
     if (FqnExpr.isWildcard(expr.inout)) {
       for (const source of sources) {
         const targets = [...resolveAscendingSiblings(source)]
         stage.addConnections(findConnectionsBetween(source, targets, 'both'))
       }
-      return stage.patch()
+      return stage
     }
     invariant(FqnExpr.isDeploymentRef(expr.inout), 'Only deployment refs are supported in include')
 
@@ -28,14 +28,14 @@ export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
       stage.addConnections(findConnectionsBetween(source, targets, 'both'))
     }
 
-    return stage.patch()
+    return stage
   },
-  exclude: (expr, { model, memory, stage }) => {
+  exclude: ({ expr, model, memory, stage }) => {
     // Exclude all connections that have model relationshps with the elements
     if (FqnExpr.isModelRef(expr.inout)) {
       const elements = resolveModelElements(model, expr.inout)
       if (elements.length === 0) {
-        return identity()
+        return stage
       }
       const excludedRelations = union(
         new Set<RelationshipModel<AnyAux>>(),
@@ -52,10 +52,10 @@ export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
 
     const toExclude = memory.connections.filter(satisfies)
     if (toExclude.length === 0) {
-      return identity()
+      return stage
     }
 
     stage.excludeConnections(toExclude)
-    return stage.patch()
+    return stage
   }
 }

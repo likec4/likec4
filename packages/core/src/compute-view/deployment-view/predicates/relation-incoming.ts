@@ -13,7 +13,7 @@ import { excludeModelRelations, resolveAscendingSiblings } from './relation-dire
 
 // from visible element incoming to this
 export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming> = {
-  include: (expr, { model, memory, stage }) => {
+  include: ({ expr, model, memory, stage }) => {
     const sources = [...memory.elements]
     if (FqnExpr.isWildcard(expr.incoming)) {
       for (const source of sources) {
@@ -23,7 +23,7 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
         const targets = [...resolveAscendingSiblings(source)]
         stage.addConnections(findConnectionsBetween(source, targets, 'directed'))
       }
-      return stage.patch()
+      return stage
     }
     invariant(FqnExpr.isDeploymentRef(expr.incoming), 'Only deployment refs are supported in include')
 
@@ -32,9 +32,9 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
       stage.addConnections(findConnectionsBetween(source, targets, 'directed'))
     }
 
-    return stage.patch()
+    return stage
   },
-  exclude: (expr, { model, memory, stage }) => {
+  exclude: ({ expr, model, memory, stage }) => {
     // Exclude all connections that have model relationshps with the elements
     if (FqnExpr.isModelRef(expr.incoming)) {
       const excludedRelations = resolveAllImcomingRelations(model, expr.incoming)
@@ -53,7 +53,7 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
     }
 
     stage.excludeConnections(toExclude)
-    return stage.patch()
+    return stage
   }
 }
 
