@@ -16,7 +16,7 @@ import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 import { ActionButtonBar } from '../../ActionButtonBar/ActionButtonBar'
-import { OpenDetailsButton } from '../../ActionButton/ActionButtons'
+import { BrowseRelationshipsButton, NavigateToButton, OpenDetailsButton } from '../../ActionButton/ActionButtons'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -210,11 +210,12 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
         {/* {isHovercards && element.links && <ElementLink element={element} />} */}
         <ActionButtonBar
           keyPrefix={`${viewId}:element:${id}:`}
-          onNavigateTo={isNavigable && onNavigateTo}
-          onOpenRelationships={enableRelationshipBrowser && !!modelRef && onOpenRelationships}
           shiftY='bottom'
           {...isInteractive && animateHandlers}
-        />
+          >
+          {isNavigable && !!modelRef && (<NavigateToButton fqn={modelRef} />)}
+          {enableRelationshipBrowser && !!modelRef && (<BrowseRelationshipsButton fqn={modelRef} />)}
+        </ActionButtonBar>
         {enableElementDetails && !!modelRef && (
           <Box className={clsx(css.detailsBtnContainer)}>
             <OpenDetailsButton fqn={element.id} />

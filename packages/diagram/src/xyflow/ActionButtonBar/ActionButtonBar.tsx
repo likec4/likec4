@@ -1,9 +1,7 @@
 import { Box, type ActionIconProps } from "@mantine/core"
 import { m, type HTMLMotionProps, type Variants } from "framer-motion"
-import type { PropsWithoutRef } from "react"
+import type { PropsWithoutRef, ReactNode } from "react"
 import * as css from './ActionButtonBar.css'
-import { ActionButton } from "../ActionButton/ActionButton"
-import { IconFileSymlink, IconTransform, IconZoomScan } from "@tabler/icons-react"
 
 const TRANSLATE_DIFF = 4;
 
@@ -16,9 +14,7 @@ type ActionButtonBarProps = PropsWithoutRef<
     keyPrefix: string
     shiftX?: ShiftX
     shiftY?: ShiftY
-    onNavigateTo?: ((e: React.MouseEvent) => void) | false
-    onOpenRelationships?: ((e: React.MouseEvent) => void) | false
-    onOpenSource?: ((e: React.MouseEvent) => void) | false
+    children: ReactNode[]
   }
 >
 
@@ -52,9 +48,7 @@ export const ActionButtonBar = ({
   keyPrefix,
   shiftX = 'spread',
   shiftY = 'spread',
-  onNavigateTo,
-  onOpenRelationships,
-  onOpenSource,
+  children,
   ...props
 }: ActionButtonBarProps) => {
 
@@ -71,43 +65,16 @@ export const ActionButtonBar = ({
   else if (shiftY == 'bottom')
     shiftDiffY = 1
 
-  // define the buttons based on the given actions
-  const buttons = [
-
-    (onNavigateTo && {
-      key: `${keyPrefix}:navigate`,
-      onClick: onNavigateTo,
-      IconComponent: IconZoomScan
-    }),
-
-    (onOpenRelationships && {
-      key: `${keyPrefix}:relationships`,
-      onClick: onOpenRelationships,
-      IconComponent: IconTransform,
-      tooltipLabel: 'Browse relationships'
-    }),
-
-    (onOpenSource && {
-      key: `${keyPrefix}:source`,
-      onClick: onOpenSource,
-      IconComponent: IconFileSymlink,
-      tooltipLabel: 'Open source'
-    })
-  ].filter(b => !!b);
-
-  // create the button elements
-  const buttonElements = buttons.map(p => (<ActionButton {...props} {...p} />))
-
   return (
     <Box className={css.bottomButtonsContainer}
       component={m.div}>
-      {buttonElements.map((element, i) => (
+      {children.map((child, i) => (
         <m.div
           key={i}
-          variants={elementVariants(i, buttonElements.length, shiftDiffX, shiftDiffY)}
+          variants={elementVariants(i, children.length, shiftDiffX, shiftDiffY)}
           {...props}
           >
-          {element}
+          {child}
         </m.div>
       ))}
     </Box>

@@ -5,15 +5,15 @@ import { ActionButton } from "./ActionButton"
 import { IconFileSymlink, IconId, IconTransform, IconZoomScan } from "@tabler/icons-react"
 import { useOverlayDialog } from "../../overlays/OverlayContext"
 
-// Browse Relationships
-
-export type BrowseRelationshipsButtonProps = {
+export type NodeActionButtonProps = {
   fqn: Fqn
 }
 
+// Browse Relationships
+
 export const BrowseRelationshipsButton = ({
   fqn
-}: BrowseRelationshipsButtonProps) => {
+}: NodeActionButtonProps) => {
 
   const {
     openOverlay
@@ -37,13 +37,9 @@ export const BrowseRelationshipsButton = ({
 
 // Navigate to
 
-export type NavigateToButtonProps = {
-  fqn: Fqn
-}
-
 export const NavigateToButton = ({
   fqn
-}: NavigateToButtonProps) => {
+}: NodeActionButtonProps) => {
 
   const {
     triggerOnNavigateTo
@@ -67,13 +63,9 @@ export const NavigateToButton = ({
 
 // Open details
 
-export type OpenDetailsButtonProps = {
-  fqn: Fqn
-}
-
 export const OpenDetailsButton = ({
   fqn
-}: OpenDetailsButtonProps) => {
+}: NodeActionButtonProps) => {
 
   const {
     openOverlay
@@ -97,13 +89,9 @@ export const OpenDetailsButton = ({
 
 // Open element source
 
-export type OpenElementSourceButtonProps = {
-  fqn: Fqn
-}
-
 export const OpenSourceButton = ({
   fqn
-}: OpenElementSourceButtonProps) => {
+}: NodeActionButtonProps) => {
 
   const diagramApi = useDiagramStoreApi()
 
