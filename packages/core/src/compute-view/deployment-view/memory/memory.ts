@@ -23,19 +23,20 @@ export class Memory extends AbstractMemory<Ctx> {
     })
   }
 
-  override clone(): Memory {
-    return new Memory({
-      elements: new Set(this.state.elements),
-      explicits: new Set(this.state.explicits),
-      final: new Set(this.state.final),
-      connections: [...this.state.connections]
-    })
-  }
   override stageInclude(): StageInclude {
     return new StageInclude(this)
   }
   override stageExclude(): StageExclude {
     return new StageExclude(this)
+  }
+
+  override mutableState(): Ctx['MutableState'] {
+    return ({
+      elements: new Set(this.state.elements),
+      explicits: new Set(this.state.explicits),
+      final: new Set(this.state.final),
+      connections: [...this.state.connections]
+    })
   }
 
   override update(newstate: Partial<Ctx['MutableState']>): Memory {

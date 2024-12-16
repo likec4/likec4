@@ -131,5 +131,5 @@ export const cleanConnections = (memory: Memory) => {
     }
   }
   state.final = finalElements
-  return new Memory(state)
+  return memory.update(state)
 }

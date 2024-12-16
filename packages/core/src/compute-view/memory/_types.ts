@@ -65,8 +65,6 @@ export interface ComputeMemory<T extends AnyCtx> {
 
   isEmpty(): boolean
 
-  clone(): T['Memory']
-
   stageInclude(): T['StageInclude']
 
   stageExclude(): T['StageExclude']

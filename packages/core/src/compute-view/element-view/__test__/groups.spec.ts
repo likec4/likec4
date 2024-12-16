@@ -1,8 +1,8 @@
 import { indexBy, map, mapValues, pipe, prop } from 'remeda'
-import type { BuildTuple } from 'type-fest/source/internal'
 import { describe, expect, it } from 'vitest'
+import type { NTuple } from '../../../types'
 import type { ComputedNode } from '../../../types/view'
-import { $exclude, $group, $include, $where, computeViewV2 as computeView } from './fixture'
+import { $exclude, $group, $include, computeViewV2 as computeView } from './fixture'
 
 function expectParents(nodes: ComputedNode[]) {
   return expect(
@@ -32,7 +32,7 @@ describe('groups', () => {
       '@gr2',
       'cloud'
     ])
-    const [group1, support, group2, cloud] = nodes as BuildTuple<4, ComputedNode>
+    const [group1, support, group2, cloud] = nodes as NTuple<ComputedNode, 4>
     expect(group1).toMatchObject({
       id: '@gr1',
       kind: '@group',
@@ -135,14 +135,14 @@ describe('groups', () => {
         $include('customer ->')
       ])
     ])
-    expect(nodeIds).toEqual([
+    expect.soft(nodeIds).toEqual([
       '@gr5',
       'customer',
       '@gr1',
-      '@gr4',
-      'support',
       '@gr2',
+      '@gr4',
       'cloud.frontend.dashboard',
+      'support',
       '@gr3',
       'cloud.frontend.adminPanel',
       'cloud.backend'
@@ -179,8 +179,8 @@ describe('groups', () => {
     ).toMatchInlineSnapshot(`
       {
         "@gr1": [
-          "@gr4",
           "@gr2",
+          "@gr4",
           "@gr3",
         ],
         "@gr2": [
@@ -205,10 +205,10 @@ describe('groups', () => {
     `)
 
     expect(edgeIds).toEqual([
-      'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
       'cloud.frontend.dashboard:cloud.backend',
-      'cloud.frontend.adminPanel:cloud.backend'
+      'cloud.frontend.adminPanel:cloud.backend',
+      'support:cloud.frontend.adminPanel',
+      'customer:cloud.frontend.dashboard'
     ])
 
     // parents of edges

@@ -14,8 +14,13 @@ describe('global-style-expr', () => {
       $global('style mute_old'),
       $global('style red_next')
     ])
-    expect(nodeIds).toEqual(['cloud', 'cloud.frontend.adminPanel', 'cloud.frontend.dashboard', 'amazon'])
-    const [cloud, adminPanel, dashboard, amazon] = nodes
+    expect(nodeIds).toEqual([
+      'cloud',
+      'amazon',
+      'cloud.frontend.dashboard',
+      'cloud.frontend.adminPanel'
+    ])
+    const [cloud, amazon, dashboard, adminPanel] = nodes
     expect(cloud).toHaveProperty('color', 'red')
     expect(amazon).toHaveProperty('color', 'green')
     expect(dashboard).toHaveProperty('color', 'red')

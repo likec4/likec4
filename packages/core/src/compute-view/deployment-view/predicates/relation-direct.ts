@@ -80,16 +80,12 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     }
 
     if (sources.length === 0 || targets.length === 0) {
-      return identity()
+      return
     }
 
     const dir = expr.isBidirectional ? 'both' : 'directed'
     for (const source of sources) {
       stage.addConnections(findConnectionsBetween(source, targets, dir))
-    }
-
-    if (stage.newConnections.length === 0) {
-      return identity()
     }
 
     for (const c of stage.newConnections) {
@@ -160,9 +156,6 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     }
 
     const toExclude = memory.connections.filter(satisfies)
-    if (toExclude.length === 0) {
-      return identity()
-    }
 
     stage.excludeConnections(toExclude)
     return stage

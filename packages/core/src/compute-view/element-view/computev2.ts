@@ -1,4 +1,4 @@
-import { filter, findLast, map, pipe } from 'remeda'
+import { difference, filter, findLast, map, pipe } from 'remeda'
 import { invariant, nonexhaustive } from '../../errors'
 import { LikeC4Model } from '../../model'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
@@ -11,13 +11,14 @@ import type {
   RelationPredicateExpression,
   ViewRule
 } from '../../types'
-import { isViewRuleAutoLayout, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
+import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
 import * as Expr from '../../types/expression'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
+import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import {
@@ -30,6 +31,7 @@ import {
 } from './_types'
 import { cleanConnections } from './clean-connections'
 import { Memory, type Stage } from './memory'
+import { ActiveGroupMemory } from './memory/memory'
 import { ExpandedElementPredicate } from './predicates/element-expand'
 import { ElementKindOrTagPredicate } from './predicates/element-kind-tag'
 import { ElementRefPredicate } from './predicates/element-ref'
@@ -137,15 +139,21 @@ function processPredicates<M extends AnyAux>(
   memory: Memory,
   scope: Elem | null,
   rules: ViewRule[]
-) {
+): Memory {
   const ctx = {
     model,
-    memory,
     scope,
     where: NoWhere,
     filterWhere: NoFilter
   }
   for (const rule of rules) {
+    if (isViewRuleGroup(rule)) {
+      const groupMemory = ActiveGroupMemory.enter(memory, rule)
+      memory = processPredicates(model, groupMemory, scope, rule.groupRules)
+      invariant(memory instanceof ActiveGroupMemory, 'processPredicates must return ActiveGroupMemory')
+      memory = memory.leave()
+      continue
+    }
     if (isViewRulePredicate(rule)) {
       const op = 'include' in rule ? 'include' : 'exclude'
       const exprs = rule.include ?? rule.exclude
@@ -184,6 +192,7 @@ export function computeElementView<M extends AnyAux>(
     ...view
   }: ElementView
 ): ComputedElementView<M['ViewId']> {
+  rules = resolveGlobalRulesInElementView(rules, likec4model.globals())
   const scope = view.viewOf ? likec4model.element(view.viewOf) : null
   let memory = cleanConnections(
     processPredicates<M>(
@@ -198,6 +207,7 @@ export function computeElementView<M extends AnyAux>(
       final: new Set([scope])
     })
   }
+  memory = assignElementsToGroups(memory)
 
   const nodesMap = buildNodes(memory)
 
@@ -244,4 +254,39 @@ export function computeElementView<M extends AnyAux>(
       }
     })
   })
+}
+
+/**
+ * Clean up group.explicits and group.implicits
+ */
+function assignElementsToGroups(memory: Memory) {
+  if (memory.groups.length === 0) {
+    return memory
+  }
+  const state = memory.mutableState()
+  const unprocessed = new Set<Elem>(difference(
+    [...state.final],
+    [...state.rootGroup.explicits]
+  ))
+  // Step 1 - Process explicits
+  let groups = state.groups.map(g => {
+    const explicits = new Set<Elem>()
+    for (const el of g.explicits) {
+      if (unprocessed.delete(el)) {
+        explicits.add(el)
+      }
+    }
+    return g.update({ explicits })
+  })
+  // Step 2 - Process implicits (make them explicits)
+  groups = groups.map(group => {
+    const explicits = new Set(group.explicits)
+    for (const el of group.implicits) {
+      if (unprocessed.delete(el)) {
+        explicits.add(el)
+      }
+    }
+    return group.update({ explicits, implicits: new Set() })
+  })
+  return memory.update({ groups })
 }

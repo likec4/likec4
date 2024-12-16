@@ -13,7 +13,7 @@ import {
 } from '../types'
 import { computeDeploymentView } from './deployment-view/compute'
 import { DynamicViewComputeCtx } from './dynamic-view/compute'
-import { ComputeCtx } from './element-view/compute'
+import { computeElementView } from './element-view/computev2'
 import { LikeC4ModelGraph } from './LikeC4ModelGraph'
 
 type ComputeViewResult<V extends ComputedView = ComputedView> =
@@ -54,9 +54,13 @@ export function mkComputeView(model: Params): ComputeViewFn {
             view: DynamicViewComputeCtx.compute(viewsource, index)
           }
         case isElementView(viewsource):
+          likec4model ??= LikeC4Model.create({
+            ...model,
+            views: {}
+          })
           return {
             isSuccess: true,
-            view: ComputeCtx.elementView(viewsource, index)
+            view: computeElementView(likec4model, viewsource)
           }
 
         default:

@@ -10,7 +10,7 @@ import {
   type NodeId
 } from '../../types'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
-import { NodesGroup } from '../element-view/compute'
+import { NodesGroup } from '../element-view/memory'
 
 function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, ComputedNode>) {
   let parentNd
@@ -44,7 +44,7 @@ export function buildComputedNodesFromElements(elements: ReadonlyArray<Element>,
 
 export function buildComputedNodes(
   elements: ReadonlyArray<ComputedNodeSource>,
-  groups?: NodesGroup[]
+  groups?: ReadonlyArray<NodesGroup>
 ): ReadonlyMap<Fqn, ComputedNode> {
   const nodesMap = new Map<Fqn, ComputedNode>()
 

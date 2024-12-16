@@ -164,6 +164,7 @@ export const builder = b
       })
     )
   )
+  .clone()
 
 export type Types = typeof builder['Types']
 

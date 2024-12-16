@@ -101,13 +101,22 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
     return !this.isDirty()
   }
 
+  /**
+   * Precommit hook
+   */
+  protected precommit(state: T['MutableState']): T['MutableState'] {
+    return state
+  }
+
+  /**
+   * Postcommit hook
+   */
+  protected postcommit(state: T['MutableState']): T['MutableState'] {
+    return state
+  }
+
   public commit(): T['Memory'] {
-    let {
-      elements,
-      explicits,
-      final,
-      connections
-    } = this.memory.mutableState()
+    let state = this.precommit(this.memory.mutableState())
 
     let fromConnections = new Set<T['Element']>()
 
@@ -116,11 +125,11 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
       // First are outgoing from known elements (in memory.elements)
       const [fromKnown, rest] = partition(
         this.connections,
-        c => final.has(c.source)
+        c => state.final.has(c.source)
       )
 
-      connections = mergeConnections([
-        ...connections,
+      state.connections = mergeConnections([
+        ...state.connections,
         ...fromKnown,
         ...rest
       ])
@@ -132,31 +141,24 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
       ])
     }
 
-    if (this.explicits.size > 0 || fromConnections.size > 0 || this.implicits.size > 0) {
-      explicits = union(
-        explicits,
-        this.explicits
-      )
+    state.explicits = union(
+      state.explicits,
+      this.explicits
+    )
 
-      final = union(
-        final,
-        this.explicits,
-        fromConnections
-      )
+    state.final = union(
+      state.final,
+      this.explicits,
+      fromConnections
+    )
 
-      elements = union(
-        elements,
-        this.explicits,
-        fromConnections,
-        this.implicits
-      )
-    }
+    state.elements = union(
+      state.elements,
+      this.explicits,
+      fromConnections,
+      this.implicits
+    )
 
-    return this.memory.update({
-      elements,
-      explicits,
-      final,
-      connections
-    })
+    return this.memory.update(this.postcommit(state))
   }
 }

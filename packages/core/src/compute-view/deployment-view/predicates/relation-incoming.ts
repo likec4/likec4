@@ -48,9 +48,6 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
     }
 
     const toExclude = memory.connections.filter(satisfies)
-    if (toExclude.length === 0) {
-      return identity()
-    }
 
     stage.excludeConnections(toExclude)
     return stage

@@ -1,8 +1,8 @@
 import DefaultMap from 'mnemonist/default-map'
 import { pipe, sort, values } from 'remeda'
-import type { LiteralUnion } from 'type-fest'
+import type { LiteralUnion, ReadonlyDeep } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
-import type { ComputedView, DiagramView } from '../types'
+import type { ComputedView, DiagramView, ModelGlobals } from '../types'
 import type { Element } from '../types/element'
 import { type Tag as C4Tag } from '../types/element'
 import type { AnyLikeC4Model, ParsedLikeC4ModelDump } from '../types/model'
@@ -299,6 +299,20 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
       }
     }
     return
+  }
+
+  public globals(): ModelGlobals {
+    return {
+      predicates: {
+        ...this.$model.globals?.predicates
+      },
+      dynamicPredicates: {
+        ...this.$model.globals?.dynamicPredicates
+      },
+      styles: {
+        ...this.$model.globals?.styles
+      }
+    }
   }
 
   private addElement(element: Element) {

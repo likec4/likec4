@@ -616,7 +616,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       }
     }),
     with: (...ops: ((b: Builder<T>) => Builder<T>)[]) => {
-      return ops.reduce((b, op) => op(b), self.clone())
+      return ops.reduce((b, op) => op(b), self as Builder<T>).clone()
     },
     model: <Out extends AnyTypes>(cb: ModelBuilderFunction<T, Out>) => {
       const b = self.clone()

@@ -22,6 +22,15 @@ describe('wildcard-expr', () => {
     ])
   })
 
+  it('include and exclude * where kind', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include('*'),
+      $exclude('*')
+    ])
+    expect(nodeIds).toEqual([])
+    expect(edgeIds).toEqual([])
+  })
+
   it('include * where tag', () => {
     const { nodeIds, edgeIds } = computeView([
       $include(

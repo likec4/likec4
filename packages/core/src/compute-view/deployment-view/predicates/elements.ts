@@ -65,7 +65,7 @@ function includeDeployedNode(
  */
 function includeDeployedNodeChildren(
   node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
+  { memory, stage }: IncludePredicateCtx
 ) {
   const children = [...node.children()]
   if (children.length === 0) {

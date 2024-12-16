@@ -55,5 +55,5 @@ export function toComputedEdges(
 export function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
   // typecast to MutableMemory
   // invariant(memory instanceof MutableMemory, 'Expected MutableMemory')
-  return buildComputedNodes([...memory.final].map(toNodeSource))
+  return buildComputedNodes([...memory.final].map(toNodeSource), memory.groups)
 }

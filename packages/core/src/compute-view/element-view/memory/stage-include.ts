@@ -1,11 +1,11 @@
 import { findConnection, findConnectionsBetween } from '../../../model/connection/model'
-import { isIterable } from '../../../utils'
+import { difference, isIterable } from '../../../utils'
 import { AbstractStageInclude } from '../../memory'
-import { type Ctx } from './memory'
+import { type ActiveGroupCtx, type ActiveGroupMemory, type Ctx } from './memory'
 
 type Elem = Ctx['Element']
 
-export class StageInclude extends AbstractStageInclude<Ctx> {
+export class StageInclude<C extends Ctx = Ctx> extends AbstractStageInclude<C> {
   /**
    * Connects elements with existing ones in the memory
    */
@@ -46,5 +46,82 @@ export class StageInclude extends AbstractStageInclude<Ctx> {
       }
     }
     return hasChanged()
+  }
+
+  protected override postcommit(state: C['MutableState']) {
+    const newExplicits = difference(state.explicits, this.memory.explicits)
+    state.rootGroup.addElement(...newExplicits)
+
+    const newImplicits = difference(
+      difference(state.elements, this.memory.elements),
+      newExplicits
+    )
+    state.rootGroup.addImplicit(...newImplicits)
+    return state
+  }
+}
+
+export class ActiveGroupStageInclude extends StageInclude<ActiveGroupCtx> {
+  constructor(
+    public override readonly memory: ActiveGroupMemory
+  ) {
+    super(memory)
+  }
+
+  protected override postcommit(state: ActiveGroupCtx['MutableState']) {
+    const newExplicits = difference(state.explicits, this.memory.explicits)
+    state.activeGroup.addElement(...newExplicits)
+
+    const newImplicits = difference(
+      difference(state.elements, this.memory.elements),
+      newExplicits
+    )
+    for (const implicit of newImplicits) {
+      state.groups.forEach(g => {
+        g.excludeImplicit(implicit)
+      })
+      state.activeGroup.addImplicit(implicit)
+    }
+
+    return state
+
+    // const newExplicits = difference(state.explicits, this.memory.explicits)
+    //     for (const explicit of this.newExplicits) {
+    //   if (!this.memory.explicits.has(explicit)) {
+    //     state.activeGroup.addElement(explicit)
+    //   } else {
+    //     state.groups.forEach(g => {
+    //       g.excludeImplicit(explicit)
+    //     })
+    //     state.activeGroup.addImplicit(explicit)
+    //   }
+    // }
+    // state.rootGroup.addElement(...newExplicits)
+
+    // const newImplicits = difference(
+    //   difference(state.elements, this.memory.elements),
+    //   newExplicits
+    // )
+    // state.rootGroup.addImplicit(...newImplicits)
+    // return state
+
+    // for (const explicit of this.explicits) {
+    //   if (!this.memory.explicits.has(explicit)) {
+    //     state.activeGroup.addElement(explicit)
+    //   } else {
+    //     state.groups.forEach(g => {
+    //       g.excludeImplicit(explicit)
+    //     })
+    //     state.activeGroup.addImplicit(explicit)
+    //   }
+    // }
+    // const newImplicits = difference(this.implicits, this.memory.elements)
+    // for (const implicit of newImplicits) {
+    //   state.groups.forEach(g => {
+    //     g.excludeImplicit(implicit)
+    //   })
+    //   state.activeGroup.addImplicit(implicit)
+    // }
+    // return state
   }
 }

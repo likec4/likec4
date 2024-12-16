@@ -145,8 +145,22 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
     return state
   }
 
+  /**
+   * Precommit hook
+   */
+  protected precommit(state: T['MutableState']): T['MutableState'] {
+    return state
+  }
+
+  /**
+   * Postcommit hook
+   */
+  protected postcommit(state: T['MutableState']): T['MutableState'] {
+    return state
+  }
+
   public commit(): T['Memory'] {
-    let state = this.memory.mutableState()
+    let state = this.precommit(this.memory.mutableState())
 
     if (this.excluded.elements.size > 0) {
       state = this.processExcludedElements(this.excluded.elements, state)
@@ -155,6 +169,6 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
       state = this.processExcludeConnections(this.excluded.connections, state)
     }
 
-    return this.memory.update(state)
+    return this.memory.update(this.postcommit(state))
   }
 }

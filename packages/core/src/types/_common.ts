@@ -27,13 +27,11 @@ type AllNever<Expressions> = UnionToIntersection<
 
 /**
  * @example
- * ```
  *   type Variant1 = {
  *     a: string
- *     b: number
  *   }
  *   type Variant2 = {
- *     a: boolean
+ *     b: number
  *   }
  *
  *   type Variants = ExclusiveUnion<{
@@ -41,16 +39,28 @@ type AllNever<Expressions> = UnionToIntersection<
  *     Variant2: Variant2
  *   }>
  *
- *   // Type 'true' is not assignable to type 'string'.
+ *   Fail here
  *   const variant1: Variants = {
- *      a: true,
+ *      a: 'one',
  *      b: 1
  *   }
- *
- * ```
  */
 
 export type ExclusiveUnion<Expressions> = Expressions extends object ? {
     [Name in keyof Expressions]: Simplify<Omit<AllNever<Expressions>, keyof Expressions[Name]> & Expressions[Name]>
   }[keyof Expressions]
   : Expressions
+
+/**
+ * Copy from https://github.com/remeda/remeda/blob/main/src/internal/types/NTuple.ts
+ * An array with *exactly* N elements in it.
+ *
+ * Only literal N values are supported. For very large N the type might result
+ * in a recurse depth error. For negative N the type would result in an infinite
+ * recursion. None of these have protections because this is an internal type!
+ */
+export type NTuple<
+  T,
+  N extends number,
+  Result extends Array<unknown> = []
+> = Result['length'] extends N ? Result : NTuple<T, N, [...Result, T]>

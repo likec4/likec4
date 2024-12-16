@@ -3,12 +3,11 @@ import { findConnectionsBetween, findConnectionsWithin } from '../../../model/co
 import type { WildcardExpr } from '../../../types/expression'
 import { ifilter, toArray } from '../../../utils/iterable'
 import { toSet } from '../../../utils/iterable/to'
-import type { PredicateExecutor } from '../_types'
-import { emptyMemory } from '../Memory'
+import { Memory, type PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
 
 export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
-  include: ({ scope, model, memory, stage, where }) => {
+  include: ({ scope, model, stage, where }) => {
     if (!scope) {
       const rootElements = [...model.roots()].filter(where)
       if (rootElements.length === 0) {
@@ -68,6 +67,6 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
       stage.exclude([scope, ...scope.descendants()])
       return stage
     }
-    return emptyMemory().newstage()
+    return Memory.empty().stageExclude()
   }
 }
