@@ -5,7 +5,6 @@ import clsx from "clsx"
 import { m, type Variants } from "framer-motion"
 
 export type ActionButtonProps = {
-  key: string
   onClick: ((e: React.MouseEvent) => void)
   IconComponent: React.ComponentType<any>
   tooltipLabel?: string
@@ -25,7 +24,6 @@ const variants = {
 variants['selected'] = variants['hovered']
 
 export const ActionButton = ({
-  key,
   onClick: action,
   IconComponent,
   tooltipLabel,

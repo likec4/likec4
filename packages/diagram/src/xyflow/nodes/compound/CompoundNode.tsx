@@ -216,7 +216,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
               {enableElementDetails && !!modelRef && (
                 <Box className={clsx(css.detailsBtnContainer)}>
                   <ActionButton
-                    key="details"
                     onClick={onOpenDetails}
                     IconComponent={IconId}
                     tooltipLabel='Open details'
@@ -229,7 +228,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
           {isNavigable && (
             <Box className={clsx(css.navigateBtnContainer)}>
               <ActionButton
-                key={"${id}navigate"}
                 onClick={onNavigateTo}
                 IconComponent={IconZoomScan}
                 tooltipLabel='Open scoped view'
