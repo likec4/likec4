@@ -114,8 +114,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    triggerOnNavigateTo(id, e)
-  }, [triggerOnNavigateTo, id])
+    triggerOnNavigateTo(element.id, e)
+  }, [triggerOnNavigateTo, element.id])
 
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()

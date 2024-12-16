@@ -169,7 +169,7 @@ export type DiagramState = Simplify<
     scheduleSaveManualLayout: () => void
     triggerSaveManualLayout: () => void
 
-    triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
+    triggerOnNavigateTo: (fqn: Fqn, event: ReactMouseEvent) => void
     fitDiagram: (duration?: number) => void
 
     goBack: () => void
@@ -772,19 +772,19 @@ export function createDiagramStore(props: DiagramInitialState) {
             )
           },
 
-          triggerOnNavigateTo: (xynodeId, event) => {
+          triggerOnNavigateTo: (fqn, event) => {
             const { view, xynodes, onNavigateTo, cancelSaveManualLayout } = get()
             if (!onNavigateTo) {
               return
             }
-            const xynode = xynodes.find(({ id }) => id === xynodeId)
-            invariant(xynode, `xynode not found: ${xynodeId}`)
+            const xynode = xynodes.find((node) => node.data.fqn === fqn)
+            invariant(xynode, `xynode not found for fqn: ${fqn}`)
             const element = xynode.data.element
-            invariant(element?.navigateTo, `node is not navigable: ${xynodeId}`)
+            invariant(element?.navigateTo, `node is not navigable: ${fqn}`)
             cancelSaveManualLayout()
             set(
               {
-                lastClickedNodeId: xynodeId,
+                lastClickedNodeId: xynode.id,
                 lastOnNavigate: {
                   fromView: view.id,
                   toView: element.navigateTo,

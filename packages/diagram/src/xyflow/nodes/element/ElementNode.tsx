@@ -128,8 +128,8 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    triggerOnNavigateTo(id, e)
-  }, [triggerOnNavigateTo, id])
+    triggerOnNavigateTo(element.id, e)
+  }, [triggerOnNavigateTo, element.id])
 
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
