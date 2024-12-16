@@ -1,6 +1,6 @@
 import DefaultMap from 'mnemonist/default-map'
 import { pipe, sort, values } from 'remeda'
-import type { LiteralUnion, ReadonlyDeep } from 'type-fest'
+import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
 import type { ComputedView, DiagramView, ModelGlobals } from '../types'
 import type { Element } from '../types/element'
@@ -18,14 +18,14 @@ import type {
 import { LikeC4DeploymentModel } from './DeploymentModel'
 import { ElementModel, type ElementsIterator } from './ElementModel'
 import { RelationshipModel, type RelationshipsIterator } from './RelationModel'
-import { type AnyAux, type Aux, getId, type IncomingFilter, type OutgoingFilter } from './types'
+import { type AnyAux, type Aux, getId, type IncomingFilter, type IteratorLike, type OutgoingFilter } from './types'
 import { EdgeModel } from './view/EdgeModel'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   /**
-   * Only available in compile time
+   * Only available in compile tim
    */
   readonly Aux!: M
 
@@ -56,17 +56,15 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
   public readonly deployment: LikeC4DeploymentModel<M>
 
-  static create<const M extends AnyLikeC4Model>(model: M) {
-    type T = Aux.FromModel<M>
-    return new LikeC4Model<T>(model as any)
+  static create<const M extends AnyLikeC4Model>(model: M): LikeC4Model<Aux.FromModel<M>> {
+    return new LikeC4Model(model as any)
   }
 
   /**
    * This method is supposed to be used only in dumps
    */
-  static fromDump<const M extends ParsedLikeC4ModelDump>(dump: M) {
-    type T = Aux.FromDump<M>
-    return new LikeC4Model<T>(dump as any)
+  static fromDump<const M extends ParsedLikeC4ModelDump>(dump: M): LikeC4Model<Aux.FromDump<M>> {
+    return new LikeC4Model(dump as any)
   }
 
   private constructor(
@@ -110,7 +108,6 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return nonNullable(this.findElement(id), `Element ${getId(el)} not found`)
   }
   public findElement(el: LiteralUnion<M['Element'], string>): ElementModel<M> | null {
-    // const id = getId(el) as C4Fqn
     return this.#elements.get(el) ?? null
   }
 
@@ -187,7 +184,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   /**
    * Returns all views in the model.
    */
-  public views() {
+  public views(): IteratorLike<LikeC4ViewModel<M>> {
     return this.#views.values()
   }
 

@@ -69,7 +69,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
 
     return stage
   },
-  exclude: ({ expr: { source, target, isBidirectional }, memory, scope, model, stage, filterWhere }) => {
+  exclude: ({ expr: { source, target, isBidirectional }, model, memory, stage, filterWhere }) => {
     let satisfies: ConnectionWhere
     const sourceIsWildcard = Expr.isWildcard(source)
     const targetIsWildcard = Expr.isWildcard(target)

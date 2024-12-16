@@ -1,8 +1,6 @@
 import { isNullish } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import {
-  type ComputedNode,
-  type Element,
   type ElementPredicateExpression,
   isCustomElement,
   isElementKindExpr,

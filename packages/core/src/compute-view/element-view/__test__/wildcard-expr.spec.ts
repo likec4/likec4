@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, $where, computeViewV2 as computeView } from './fixture'
+import { $exclude, $include, $where, computeView } from './fixture'
 
 describe('wildcard-expr', () => {
   it('include *', () => {

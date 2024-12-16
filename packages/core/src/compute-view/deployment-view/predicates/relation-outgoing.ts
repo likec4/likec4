@@ -3,6 +3,7 @@ import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
+import type { RelationshipModel } from '../../../model/RelationModel'
 import { FqnExpr, type RelationExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
@@ -60,7 +61,7 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
 export function resolveAllOutgoingRelations(
   model: LikeC4DeploymentModel,
   moodelRef: FqnExpr.ModelRef
-) {
+): Set<RelationshipModel> {
   const targets = resolveModelElements(model, moodelRef)
   return new Set(targets.flatMap(e => [...e.allOutgoing]))
 }

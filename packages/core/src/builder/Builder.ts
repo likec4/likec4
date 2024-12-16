@@ -43,10 +43,11 @@ import {
   $include,
   $rules,
   $style,
+  type AddElementView,
   type DeploymentViewRuleBuilderOp,
+  type ElementViewBuilderOp,
   mkViewBuilder,
   type ViewHelpers,
-  type ViewRuleBuilderOp,
   type ViewsBuilderFunction
 } from './Builder.view'
 import { type ViewsBuilder } from './Builder.views'
@@ -384,45 +385,56 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return b
           }
         },
-        view: (id, _props, builder?: ViewRuleBuilderOp<any>) => {
+        view: (id, _props?, builder?: ElementViewBuilderOp<T>) => {
           if (isFunction(_props)) {
-            builder = _props
+            builder = _props as ElementViewBuilderOp<any>
             _props = {}
           }
-          return <T extends AnyTypes>(b: ViewsBuilder<T>): ViewsBuilder<T> => {
-            const {
-              links: _links = [],
-              title = null,
-              ...props
-            } = typeof _props === 'string' ? { title: _props } : { ..._props }
+          _props ??= {}
+          const {
+            links: _links = [],
+            title = null,
+            description = null,
+            tags = null,
+            ...props
+          } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            const links = mapLinks(_links)
+          const links = mapLinks(_links)
+          const view: Writable<ElementView> = {
+            id: id as any,
+            __: 'element',
+            title,
+            rules: [],
+            description,
+            tags,
+            links,
+            customColorDefinitions: {},
+            ...props
+          }
 
-            const view: Writable<ElementView> = {
-              id: id as any,
-              __: 'element',
-              title,
-              description: null,
-              tags: null,
-              rules: [],
-              links,
-              customColorDefinitions: {},
-              ...props
-            }
+          const add: AddElementView<any> = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
             b.addView(view)
-
             if (builder) {
               builder(mkViewBuilder(view))
             }
-
             return b
           }
+          add.with = (...ops: ElementViewBuilderOp<any>[]) => (b: ViewsBuilder<any>) => {
+            add(b)
+            const elementViewBuilder = mkViewBuilder<any>(view)
+            for (const op of ops) {
+              op(elementViewBuilder)
+            }
+            return b
+          }
+
+          return add
         },
         viewOf: (
           id,
           viewOf,
-          _props?: T['NewViewProps'] | string | ViewRuleBuilderOp<any>,
-          builder?: ViewRuleBuilderOp<any>
+          _props?: T['NewViewProps'] | string | ElementViewBuilderOp<any>,
+          builder?: ElementViewBuilderOp<any>
         ) => {
           if (isFunction(_props)) {
             builder = _props

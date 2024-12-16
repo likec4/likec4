@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, $style, computeViewV2 as computeView } from './fixture'
+import { $include, computeView } from './fixture'
 
 describe('expand-element-expr', () => {
   it('dont expand if no in/out relations ', () => {

@@ -6,6 +6,6 @@
     ],
     "target": "ES2022",
     "rootDir": "src",
-    "noEmit": true
+    "noEmit": true,
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeViewV2 as computeView } from './fixture'
+import { $exclude, $include, computeView } from './fixture'
 
 describe('incoming-expr', () => {
   describe('top level', () => {
@@ -111,7 +111,7 @@ describe('incoming-expr', () => {
     })
 
     it('exclude -> cloud.frontend.dashboard', () => {
-      const { nodeIds, edges, edgeIds } = computeView('cloud', [
+      const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
         $exclude('email'),
         $exclude('-> cloud.frontend.dashboard')

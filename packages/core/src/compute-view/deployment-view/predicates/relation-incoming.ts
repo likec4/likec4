@@ -57,7 +57,7 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
 export function resolveAllImcomingRelations(
   model: LikeC4DeploymentModel,
   moodelRef: FqnExpr.ModelRef
-) {
+): Set<RelationshipModel<AnyAux>> {
   const targets = resolveModelElements(model, moodelRef)
   return new Set(targets.flatMap(e => [...e.allIncoming]))
 }

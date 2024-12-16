@@ -2,6 +2,7 @@ import { hasAtLeast, isEmpty, isNumber, isString } from 'remeda'
 import { invariant, nonexhaustive } from '../../errors'
 import type { LikeC4DeploymentModel } from '../../model'
 import type { DeploymentConnectionModel } from '../../model/connection/deployment'
+import type { ElementModel } from '../../model/ElementModel'
 import type { AnyAux } from '../../model/types'
 import {
   type ComputedEdge,
@@ -27,7 +28,7 @@ type Predicate<T> = (x: T) => boolean
 export function resolveElements(
   model: LikeC4DeploymentModel,
   expr: FqnExpr.DeploymentRef
-) {
+): Elem[] {
   const ref = model.element(expr.ref.deployment)
   if (ref.isDeploymentNode()) {
     if (expr.selector === 'children') {
@@ -46,7 +47,7 @@ export function resolveElements(
 export function resolveModelElements(
   model: LikeC4DeploymentModel,
   expr: FqnExpr.ModelRef
-) {
+): ElementModel[] {
   const ref = model.$model.element(expr.ref.model)
   if (expr.selector === 'children') {
     return [...ref.children()]
@@ -263,7 +264,7 @@ export function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
 export function applyDeploymentViewRuleStyles(
   rules: DeploymentViewRule[],
   nodes: ComputedNode[]
-) {
+): ComputedNode[] {
   for (const rule of rules) {
     if (!isViewRuleStyle(rule) || rule.targets.length === 0) {
       continue

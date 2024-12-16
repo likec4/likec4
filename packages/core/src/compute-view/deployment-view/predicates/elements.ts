@@ -1,10 +1,10 @@
 import { hasAtLeast } from 'remeda'
 import { invariant } from '../../../errors'
-import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
+import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import type { DeployedInstanceModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
 import type { FqnExpr } from '../../../types'
-import type { IncludePredicateCtx, PredicateCtx, PredicateExecutor } from '../_types'
+import type { IncludePredicateCtx, PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate } from '../utils'
 
 export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = {
@@ -16,6 +16,7 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
       includeDeployedInstance(el, ctx)
       return ctx.stage
     }
+
     invariant(el.isDeploymentNode(), 'Type inference failed')
     switch (true) {
       case expr.selector === 'expanded':

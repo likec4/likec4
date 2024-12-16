@@ -13,7 +13,7 @@ export type GlobalStyleID = Tagged<string, 'GlobalStyleID'>
 export type GlobalStyles = NonEmptyTuple<ViewRuleStyle>
 
 export interface ModelGlobals {
-  predicates: Record<GlobalPredicateId, GlobalPredicates>
-  dynamicPredicates: Record<GlobalPredicateId, GlobalDynamicPredicates>
-  styles: Record<GlobalStyleID, GlobalStyles>
+  readonly predicates: Readonly<Record<GlobalPredicateId, GlobalPredicates>>
+  readonly dynamicPredicates: Readonly<Record<GlobalPredicateId, GlobalDynamicPredicates>>
+  readonly styles: Readonly<Record<GlobalStyleID, GlobalStyles>>
 }

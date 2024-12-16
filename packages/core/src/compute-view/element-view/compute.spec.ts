@@ -5,7 +5,7 @@ import { invariant } from '../../errors'
 import { LikeC4Model } from '../../model'
 import { isElementView } from '../../types'
 import { withReadableEdges } from '../utils/with-readable-edges'
-import { computeElementView } from './computev2'
+import { computeElementView } from './compute'
 
 const builder = Builder.specification({
   elements: {

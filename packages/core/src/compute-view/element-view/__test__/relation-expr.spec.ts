@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeViewV2 as computeView } from './fixture'
+import { $exclude, $include, computeView } from './fixture'
 
 describe('relation-expr', () => {
   it('should be empty if no relations', () => {

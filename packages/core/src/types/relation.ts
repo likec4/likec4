@@ -22,9 +22,9 @@ export type RelationshipArrowType =
   | 'open'
   | 'vee'
 
-export const DefaultLineStyle = 'dashed' satisfies RelationshipLineType
-export const DefaultArrowType = 'normal' satisfies RelationshipArrowType
-export const DefaultRelationshipColor = 'gray' satisfies ThemeColor
+export const DefaultLineStyle: RelationshipLineType = 'dashed'
+export const DefaultArrowType: RelationshipArrowType = 'normal'
+export const DefaultRelationshipColor: ThemeColor = 'gray'
 
 export interface AbstractRelation {
   readonly id: RelationId

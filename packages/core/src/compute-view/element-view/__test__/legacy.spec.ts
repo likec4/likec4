@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { type ElementKind, type Fqn, type IconUrl, type Tag } from '../../../types'
-import { $exclude, $include, computeViewV2 as computeView } from './fixture'
+import { $exclude, $include, computeView } from './fixture'
 
 describe('compute-element-view', () => {
   it('should be empty if no root and no rules', () => {
@@ -31,7 +31,7 @@ describe('compute-element-view', () => {
       'cloud:amazon',
       'email:cloud'
     ])
-    const [customer, support, cloud, email, amazon] = nodes
+    const [customer, support, cloud, , amazon] = nodes
     expect.soft(amazon).toMatchObject({
       id: 'amazon',
       outEdges: [],

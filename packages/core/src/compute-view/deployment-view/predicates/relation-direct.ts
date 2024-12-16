@@ -11,6 +11,7 @@ import type { AnyAux } from '../../../model/types'
 import { FqnExpr, type RelationExpr } from '../../../types'
 import { hasIntersection, intersection, union } from '../../../utils/set'
 import type { ExcludePredicateCtx, PredicateCtx, PredicateExecutor } from '../_types'
+import type { StageExclude } from '../memory'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
 import { resolveAllImcomingRelations } from './relation-incoming'
 import { resolveAllOutgoingRelations } from './relation-outgoing'
@@ -167,7 +168,7 @@ export function excludeModelRelations(
   { stage, memory }: Pick<ExcludePredicateCtx, 'stage' | 'memory'>,
   // Optional filter to scope the connections to exclude
   filterConnections: (c: DeploymentConnectionModel) => boolean = () => true
-) {
+): StageExclude {
   if (relationsToExclude.size === 0) {
     return stage
   }

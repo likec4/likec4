@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, computeViewV2 as computeView } from './fixture'
+import { $include, computeView } from './fixture'
 
 describe('base', () => {
   it('should be empty if no root and no rules', () => {

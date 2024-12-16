@@ -1,4 +1,4 @@
-import { forEach, indexBy, isString, map, mapToObj, prop, values } from 'remeda'
+import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4Model } from '../../../model'
 import {
   type BorderStyle,
@@ -6,12 +6,10 @@ import {
   type ComputedView,
   type CustomElementExpr as C4CustomElementExpr,
   type CustomRelationExpr as C4CustomRelationExpr,
-  type EdgeId,
   type Element,
   type ElementExpression as C4ElementExpression,
   type ElementKind,
   type ElementShape,
-  type ElementView,
   type ElementWhereExpr,
   type Expression as C4Expression,
   type Fqn,
@@ -26,7 +24,6 @@ import {
   type ModelRelation,
   type NonEmptyArray,
   type OutgoingExpr as C4OutgoingExpr,
-  type ParsedLikeC4Model,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -43,12 +40,7 @@ import {
 import { type DirectRelationExpr as C4RelationExpr } from '../../../types/expression'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { withReadableEdges } from '../../utils/with-readable-edges'
-import { ComputeCtx } from '../compute'
-import { computeElementView as computeElementViewV2 } from '../computev2'
-
-function computeElementView(view: ElementView, graph: LikeC4ModelGraph) {
-  return ComputeCtx.elementView(view, graph)
-}
+import { computeElementView } from '../compute'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -627,38 +619,6 @@ export function computeView(
   let result: ComputedView
   if (args.length === 1) {
     result = computeElementView(
-      {
-        ...emptyView,
-        rules: [args[0]].flat()
-      },
-      fakeModelGraph
-    )
-  } else {
-    result = computeElementView(
-      {
-        ...emptyView,
-        id: 'index' as ViewId,
-        viewOf: args[0] as Fqn,
-        rules: [args[1]].flat()
-      },
-      fakeModelGraph
-    )
-  }
-
-  result = withReadableEdges(result)
-
-  return Object.assign(result, {
-    nodeIds: map(result.nodes, prop('id')) as string[],
-    edgeIds: map(result.edges, prop('id')) as string[]
-  })
-}
-
-export function computeViewV2(
-  ...args: [FakeElementIds, ViewRule | ViewRule[]] | [ViewRule | ViewRule[]]
-) {
-  let result: ComputedView
-  if (args.length === 1) {
-    result = computeElementViewV2(
       fakeModel,
       {
         ...emptyView,
@@ -666,7 +626,7 @@ export function computeViewV2(
       }
     )
   } else {
-    result = computeElementViewV2(
+    result = computeElementView(
       fakeModel,
       {
         ...emptyView,

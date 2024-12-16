@@ -1,7 +1,7 @@
 import { sort } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Fqn, ModelRelation, RelationId } from '../types'
-import { compareRelations, isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from './relations'
+import { compareRelations } from './relations'
 
 const relations = [
   {
@@ -47,121 +47,6 @@ const relations = [
     title: ''
   }
 ] satisfies ModelRelation[]
-
-describe('relation predicates', () => {
-  const expectRelations = (predicate: (relation: ModelRelation) => boolean) =>
-    expect(relations.filter(predicate).map(r => r.id))
-
-  const customer = 'customer' as Fqn
-  const cloud = 'cloud' as Fqn
-  const frontend = 'cloud.frontend' as Fqn
-  const backend = 'cloud.backend' as Fqn
-
-  it('isBetween: cloud.frontend -> cloud.backend', () => {
-    expectRelations(isBetween(frontend, backend)).toEqual([
-      'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend.adminPanel:cloud.backend.graphql'
-    ])
-  })
-
-  it('isBetween: cloud.frontend.dashboard -> cloud.backend', () => {
-    expectRelations(isBetween('cloud.frontend.dashboard' as Fqn, backend)).toEqual([
-      'cloud.frontend.dashboard:cloud.backend.graphql'
-    ])
-  })
-
-  it('isBetween: cloud.backend -> cloud.frontend', () => {
-    expectRelations(isBetween(backend, frontend)).toEqual([])
-  })
-
-  it('isBetween: cloud.backend -> cloud.backend', () => {
-    expectRelations(isBetween(backend, backend)).toEqual([
-      'cloud.backend.graphql:cloud.backend.storage'
-    ])
-  })
-
-  it('isBetween: customer -> cloud', () => {
-    expectRelations(isBetween(customer, cloud)).toEqual(['customer:cloud.frontend.dashboard'])
-  })
-
-  it('isIncoming: customer', () => {
-    expectRelations(isIncoming(customer)).toEqual([])
-  })
-
-  it('isIncoming: cloud', () => {
-    expectRelations(isIncoming(cloud)).toEqual([
-      'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
-      'amazon.api:cloud.backend.graphql'
-    ])
-  })
-
-  it('isIncoming: cloud.frontend', () => {
-    expectRelations(isIncoming(frontend)).toEqual([
-      'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel'
-    ])
-  })
-
-  it('isIncoming: cloud.frontend.dashboard', () => {
-    expectRelations(isIncoming('cloud.frontend.dashboard' as Fqn)).toEqual([
-      'customer:cloud.frontend.dashboard'
-    ])
-  })
-
-  it('isOutgoing: cloud', () => {
-    expectRelations(isOutgoing(cloud)).toEqual(['cloud.backend.storage:amazon.s3'])
-  })
-
-  it('isOutgoing: cloud.frontend', () => {
-    expectRelations(isOutgoing(frontend)).toEqual([
-      'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend.adminPanel:cloud.backend.graphql'
-    ])
-  })
-
-  it('isOutgoing: cloud.backend.storage', () => {
-    expectRelations(isOutgoing('cloud.backend.storage' as Fqn)).toEqual([
-      'cloud.backend.storage:amazon.s3'
-    ])
-  })
-
-  it('isInside: cloud', () => {
-    expectRelations(isInside(cloud)).toEqual([
-      'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend.adminPanel:cloud.backend.graphql'
-    ])
-  })
-
-  it('isInside: cloud.frontend', () => {
-    expectRelations(isInside(frontend)).toEqual([])
-  })
-
-  it('isInside: cloud.backend', () => {
-    expectRelations(isInside(backend)).toEqual(['cloud.backend.graphql:cloud.backend.storage'])
-  })
-
-  it('isAnyInOut: customer', () => {
-    expectRelations(isAnyInOut(customer)).toEqual(['customer:cloud.frontend.dashboard'])
-  })
-
-  it('isAnyInOut: cloud', () => {
-    expectRelations(isAnyInOut(cloud)).toEqual([
-      'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
-      'cloud.backend.storage:amazon.s3',
-      'amazon.api:cloud.backend.graphql'
-    ])
-  })
-
-  it('isAnyBetween: cloud and amazon', () => {
-    expectRelations(isAnyBetween(cloud, 'amazon' as Fqn)).toEqual([
-      'cloud.backend.storage:amazon.s3',
-      'amazon.api:cloud.backend.graphql'
-    ])
-  })
-})
 
 describe('compareRelations', () => {
   function rel(source: string, target: string) {

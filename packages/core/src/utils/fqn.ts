@@ -18,7 +18,7 @@ export function parentFqnPredicate<T extends { parent: Fqn | null }>(parent: Fqn
   return (e: T) => !!e.parent && (e.parent === parent || e.parent.startsWith(prefix))
 }
 
-export function nameFromFqn<E extends string>(fqn: E) {
+export function nameFromFqn<E extends string>(fqn: E): string {
   const lastDot = fqn.lastIndexOf('.')
   if (lastDot > 0) {
     return fqn.slice(lastDot + 1)
@@ -58,7 +58,7 @@ export function isAncestor<E extends string | { id: string }>(
   }
 }
 
-export function isSameHierarchy<E extends string | { id: Fqn }>(one: E, another: E) {
+export function isSameHierarchy<E extends string | { id: Fqn }>(one: E, another: E): boolean {
   const first = asString(one)
   const second = asString(another)
   return first === second || second.startsWith(first + '.') || first.startsWith(second + '.')
@@ -94,7 +94,7 @@ export function hierarchyDepth<E extends string | { id: Fqn }>(elementOfFqn: E):
  *
  * Can be used for hierarchical clustering
  */
-export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, another: E) {
+export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, another: E): number {
   const first = isString(one) ? one as Fqn : one.id
   const second = isString(another) ? another as Fqn : another.id
 
@@ -115,7 +115,7 @@ export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, anothe
   return firstDepth + secondDepth - (2 * ancestorDepth + 1)
 }
 
-export function commonAncestor<E extends string>(first: E, second: E) {
+export function commonAncestor<E extends string>(first: E, second: E): E | null {
   const parentA = parentFqn(first)
   const parentB = parentFqn(second)
   if (parentA === parentB) {
@@ -183,7 +183,7 @@ export function compareFqnHierarchically<T extends string = string>(a: T, b: T):
   }
 }
 
-export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T) {
+export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T): -1 | 0 | 1 {
   return compareFqnHierarchically(a.id, b.id)
 }
 

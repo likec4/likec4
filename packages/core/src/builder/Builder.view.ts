@@ -37,7 +37,7 @@ interface AViewBuilder<
   autoLayout(layout: AutoLayoutDirection): this
 }
 
-export interface ViewBuilder<T extends AnyTypes> extends AViewBuilder<T, T['Fqn'], C4Expression> {
+export interface ElementViewBuilder<T extends AnyTypes> extends AViewBuilder<T, T['Fqn'], C4Expression> {
 }
 
 export interface DeploymentViewBuilder<T extends AnyTypes>
@@ -95,26 +95,30 @@ export namespace ViewPredicate {
 }
 
 type Op<T> = (b: T) => T
-export type ViewRuleBuilderOp<Types extends AnyTypes> = (b: ViewBuilder<Types>) => ViewBuilder<Types>
+export type ElementViewBuilderOp<Types extends AnyTypes> = (b: ElementViewBuilder<Types>) => ElementViewBuilder<Types>
 export type DeploymentViewRuleBuilderOp<Types extends AnyTypes> = (
   b: DeploymentViewBuilder<Types>
 ) => DeploymentViewBuilder<Types>
 
-export interface AddViewHelper<Props = unknown> {
-  // <
-  //   const Id extends string,
-  //   T extends AnyTypes
-  // >(
-  //   id: Id
-  // ): (builder: Builder<T>) => Builder<Types.AddView<T, Id>>
+/**
+ * Chainable builder to create element
+ */
+export interface AddElementView<Id extends string> {
+  <T extends AnyTypes>(builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
 
+  with<
+    T extends AnyTypes
+  >(...rules: Op<ElementViewBuilder<T>>[]): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
+}
+
+export interface AddViewHelper<Props = unknown> {
   <
     const Id extends string,
     T extends AnyTypes
   >(
     id: Id,
-    builder: (b: ViewBuilder<T>) => ViewBuilder<T>
-  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
+    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
+  ): AddElementView<Id>
 
   <
     const Id extends string,
@@ -122,7 +126,7 @@ export interface AddViewHelper<Props = unknown> {
   >(
     id: Id,
     propsOrTitle: Props | string
-  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
+  ): AddElementView<Id>
 
   <
     const Id extends string,
@@ -130,8 +134,8 @@ export interface AddViewHelper<Props = unknown> {
   >(
     id: Id,
     propsOrTitle: Props | string | undefined,
-    builder: (b: ViewBuilder<T>) => ViewBuilder<T>
-  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
+    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
+  ): AddElementView<Id>
 }
 
 export interface AddViewOfHelper<Props = unknown> {
@@ -151,7 +155,7 @@ export interface AddViewOfHelper<Props = unknown> {
   >(
     id: Id,
     of: Of,
-    builder: (b: ViewBuilder<T>) => ViewBuilder<T>
+    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
   ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
@@ -172,7 +176,7 @@ export interface AddViewOfHelper<Props = unknown> {
     id: Id,
     of: Of,
     propsOrTitle: Props | string | undefined,
-    builder: (b: ViewBuilder<T>) => ViewBuilder<T>
+    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
   ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 }
 
@@ -497,10 +501,10 @@ export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
 ) => (builder: Builder<A>) => Builder<B>
 
 export function mkViewBuilder(view: Writable<DeploymentView>): DeploymentViewBuilder<AnyTypes>
-export function mkViewBuilder(view: Writable<ElementView>): ViewBuilder<AnyTypes>
+export function mkViewBuilder<T extends AnyTypes>(view: Writable<ElementView>): ElementViewBuilder<T>
 export function mkViewBuilder(
   view: Writable<ElementView | DeploymentView>
-): DeploymentViewBuilder<AnyTypes> | ViewBuilder<AnyTypes> {
+): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
   const viewBuilder = {
     $expr: view.__ === 'deployment' ? $deploymentExpr : $expr,
     autoLayout(autoLayout: unknown) {

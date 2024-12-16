@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $global, $include, $style, computeViewV2 as computeView } from './fixture'
+import { $global, $include, $style, computeView } from './fixture'
 
 describe('global-style-expr', () => {
   it('applied', () => {

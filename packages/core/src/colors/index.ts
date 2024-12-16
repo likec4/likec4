@@ -3,12 +3,12 @@ import type { HexColorLiteral, LikeC4Theme, ThemeColorValues } from '../types/th
 import { ElementColors } from './element'
 import { RelationshipColors } from './relationships'
 
-export const defaultTheme = {
+export const defaultTheme: LikeC4Theme = {
   elements: ElementColors,
   relationships: RelationshipColors,
   font: 'Arial',
   shadow: '#0a0a0a'
-} satisfies LikeC4Theme
+}
 
 export function computeColorValues(color: HexColorLiteral): ThemeColorValues {
   if (color.match(/^#([0-9a-f]{3}){1,2}$/i)) {

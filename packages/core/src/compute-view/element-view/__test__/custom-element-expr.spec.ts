@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, $style, computeViewV2 as computeView } from './fixture'
+import { $include, $style, computeView } from './fixture'
 
 describe('custom-element-expr', () => {
   it('include element and apply props', () => {

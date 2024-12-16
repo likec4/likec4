@@ -192,6 +192,9 @@ describe('Builder', () => {
             $include('*'),
             $include('2.*')
           )
+        ),
+        view('3', '').with(
+          $include('3._')
         )
       )
     )

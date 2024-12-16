@@ -13,7 +13,7 @@ import {
 } from '../types'
 import { computeDeploymentView } from './deployment-view/compute'
 import { DynamicViewComputeCtx } from './dynamic-view/compute'
-import { computeElementView } from './element-view/computev2'
+import { computeElementView } from './element-view/compute'
 import { LikeC4ModelGraph } from './LikeC4ModelGraph'
 
 type ComputeViewResult<V extends ComputedView = ComputedView> =

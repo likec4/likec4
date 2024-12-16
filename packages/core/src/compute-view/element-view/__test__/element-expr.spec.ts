@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeViewV2 as computeView } from './fixture'
+import { $exclude, $include, computeView } from './fixture'
 
 describe('element-expr', () => {
   it('include elements without relations', () => {
@@ -163,7 +163,7 @@ describe('element-expr', () => {
     })
 
     it('include *, exclude backend', () => {
-      const { edges, nodeIds, edgeIds } = computeView('cloud', [
+      const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
         $include('cloud.backend.*'),
         $exclude('cloud.backend')

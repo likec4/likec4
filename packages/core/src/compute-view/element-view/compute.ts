@@ -1,734 +1,279 @@
-import {
-  anyPass,
-  concat,
-  difference,
-  filter,
-  findLast,
-  first,
-  hasAtLeast,
-  isNonNull,
-  isTruthy,
-  map,
-  only,
-  pipe,
-  reduce,
-  sort,
-  unique
-} from 'remeda'
-import { invariant, nonexhaustive, nonNullable } from '../../errors'
-import {
-  type Color,
-  type ComputedEdge,
-  type ComputedElementView,
-  type ComputedNode,
-  type EdgeId,
-  type Element,
-  ElementKind,
-  type ElementPredicateExpression,
-  type ElementView,
-  isScopedElementView,
-  isViewRuleAutoLayout,
-  isViewRuleGroup,
-  isViewRulePredicate,
-  type ModelRelation,
-  type NodeId,
-  type NonEmptyArray,
-  type RelationPredicateExpression,
-  type RelationshipArrowType,
-  type RelationshipKind,
-  type RelationshipLineType,
-  type Tag,
-  type ViewId,
-  type ViewRuleGroup,
-  type ViewRulePredicate,
-  whereOperatorAsPredicate
+import { difference, filter, findLast, map, pipe } from 'remeda'
+import { invariant, nonexhaustive } from '../../errors'
+import { LikeC4Model } from '../../model'
+import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
+import type { RelationshipModel } from '../../model/RelationModel'
+import type { AnyAux } from '../../model/types'
+import type {
+  ComputedElementView,
+  ElementPredicateExpression,
+  ElementView,
+  RelationPredicateExpression,
+  ViewRule
 } from '../../types'
+import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
 import * as Expr from '../../types/expression'
-import { stringHash } from '../../utils'
-import { commonAncestor, isAncestor } from '../../utils/fqn'
-import { compareRelations } from '../../utils/relations'
-import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
-import { buildComputedNodesFromElements } from '../utils/buildComputedNodes'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
-import { sortNodes } from '../utils/sortNodes'
-import { uniqueTags } from '../utils/uniqueTags'
+import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
-import {
-  type ElementPredicateFn,
-  excludeElementKindOrTag,
-  excludeElementRef,
-  excludeExpandedElementExpr,
-  excludeIncomingExpr,
-  excludeInOutExpr,
-  excludeOutgoingExpr,
-  excludeRelationExpr,
-  excludeWildcardRef,
-  includeElementKindOrTag,
-  includeElementRef,
-  includeExpandedElementExpr,
-  includeIncomingExpr,
-  includeInOutExpr,
-  includeOutgoingExpr,
-  includeRelationExpr,
-  includeWildcardRef,
-  type RelationPredicateFn
-} from './predicates'
+import { type Connection, type Elem, type PredicateCtx } from './_types'
+import { cleanConnections } from './clean-connections'
+import { Memory, type Stage } from './memory'
+import { ActiveGroupMemory } from './memory/memory'
+import { ExpandedElementPredicate } from './predicates/element-expand'
+import { ElementKindOrTagPredicate } from './predicates/element-kind-tag'
+import { ElementRefPredicate } from './predicates/element-ref'
+import { DirectRelationExprPredicate } from './predicates/relation-direct'
+import { IncomingExprPredicate } from './predicates/relation-in'
+import { InOutRelationPredicate } from './predicates/relation-in-out'
+import { OutgoingExprPredicate } from './predicates/relation-out'
+import { WildcardPredicate } from './predicates/wildcard'
+import { buildNodes, NoFilter, NoWhere, toComputedEdges } from './utils'
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace ComputeCtx {
-  // Intermediate ComputedEdge
-  export interface Edge {
-    source: Element
-    target: Element
-    relations: ModelRelation[]
+function processElementPredicate(
+  // ...args:
+  //   | [expr: ElementPredicateExpression, op: 'include', IncludePredicateCtx<ElementPredicateExpression>]
+  //   | [expr: ElementPredicateExpression, op: 'exclude', ExcludePredicateCtx<ElementPredicateExpression>]
+  expr: ElementPredicateExpression,
+  op: 'include' | 'exclude',
+  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>
+): Stage {
+  switch (true) {
+    case Expr.isCustomElement(expr): {
+      if (op === 'include') {
+        return processElementPredicate(expr.custom.expr, op, ctx)
+      }
+      return ctx.stage
+    }
+    case Expr.isElementWhere(expr): {
+      const where = whereOperatorAsPredicate(expr.where.condition)
+      const filterWhere = filter<Elem>(where)
+      return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
+    }
+    case Expr.isExpandedElementExpr(expr): {
+      // if (op === 'include') {
+      //   return ExpandedElementPredicate[op]({ ...ctx, expr }) ?? ctx.stage
+      // }
+      return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
+    case Expr.isElementRef(expr): {
+      // return callPredicate(ElementRefPredicate, op, { ...ctx, expr }) ?? ctx.stage
+      return ElementRefPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
+    case Expr.isWildcard(expr):
+      return WildcardPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    case Expr.isElementKindExpr(expr):
+    case Expr.isElementTagExpr(expr):
+      return ElementKindOrTagPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    default:
+      nonexhaustive(expr)
   }
 }
-
-function compareEdges(a: ComputeCtx.Edge, b: ComputeCtx.Edge) {
-  return compareRelations(
-    { source: a.source.id, target: a.target.id },
-    { source: b.source.id, target: b.target.id }
-  )
-}
-
-// If there is only one relation and it has same source and target as edge
-function isDirectEdge({ relations: [rel, ...tail], source, target }: ComputeCtx.Edge) {
-  if (rel && tail.length === 0) {
-    return rel.source === source.id && rel.target === target.id
-  }
-  return false
-}
-
-export class NodesGroup {
-  static readonly kind = ElementKind.Group
-
-  static root() {
-    return new NodesGroup('@root' as NodeId, { title: null, groupRules: [] })
-  }
-
-  static is(node: ComputedNode) {
-    return node.kind === NodesGroup.kind
-  }
-
-  readonly explicits = new Set<Element>()
-  readonly implicits = new Set<Element>()
-
-  constructor(
-    public id: NodeId,
-    public viewRule: ViewRuleGroup,
-    public parent: NodeId | null = null
-  ) {
-  }
-
-  /**
-   * Add element explicitly
-   * Included even without relationships
-   */
-  addElement(...el: Element[]) {
-    for (const r of el) {
-      this.explicits.add(r)
-      this.implicits.add(r)
-    }
-  }
-
-  /**
-   * Add element implicitly
-   * Included if only has relationships
-   */
-  addImplicit(...el: Element[]) {
-    for (const r of el) {
-      this.implicits.add(r)
-    }
-  }
-
-  excludeElement(...excludes: Element[]) {
-    for (const el of excludes) {
-      this.explicits.delete(el)
-      this.implicits.delete(el)
-    }
-  }
-
-  isEmpty() {
-    return this.explicits.size === 0 && this.implicits.size === 0
-  }
-}
-
-export class ComputeCtx {
-  // Intermediate state
-  private explicits = new Set<Element>()
-  private implicits = new Set<Element>()
-  private ctxEdges = [] as ComputeCtx.Edge[]
-
-  /**
-   * Root group - not included in the groups
-   * But used to accumulate elements that are not in any group
-   */
-  private __rootGroup = NodesGroup.root()
-  private groups = [] as NodesGroup[]
-  private activeGroupStack = [] as NodesGroup[]
-
-  protected get activeGroup() {
-    return this.activeGroupStack[0] ?? this.__rootGroup
-  }
-
-  protected get includedElements() {
-    return new Set([
-      ...this.explicits,
-      ...this.ctxEdges.flatMap(e => [e.source, e.target])
-    ]) as ReadonlySet<Element>
-  }
-
-  protected get resolvedElements() {
-    return new Set([
-      ...this.explicits,
-      ...this.implicits,
-      ...this.ctxEdges.flatMap(e => [e.source, e.target])
-    ]) as ReadonlySet<Element>
-  }
-
-  protected get edges() {
-    return this.ctxEdges
-  }
-
-  protected get root() {
-    return isScopedElementView(this.view) ? this.view.viewOf : null
-  }
-
-  public static elementView(view: ElementView, graph: LikeC4ModelGraph) {
-    return new ComputeCtx(view, graph).compute()
-  }
-
-  private constructor(
-    protected view: ElementView,
-    protected graph: LikeC4ModelGraph
-  ) {}
-
-  protected compute(): ComputedElementView {
-    this.reset()
-    const {
-      docUri: _docUri, // exclude docUri
-      rules: _rules, // exclude rules
-      ...view
-    } = this.view
-
-    const rules = resolveGlobalRulesInElementView(this.view, this.graph.globals)
-
-    const viewPredicates = rules.filter(anyPass([isViewRulePredicate, isViewRuleGroup])) as Array<
-      ViewRulePredicate | ViewRuleGroup
-    >
-    if (this.root && viewPredicates.length == 0) {
-      this.addElement(this.graph.element(this.root))
-    }
-    this.processPredicates(viewPredicates)
-    this.removeRedundantImplicitEdges()
-    if (this.groups.length > 0) {
-      this.assignElementsToGroups()
-    }
-
-    const elements = [...this.includedElements]
-    const nodesMap = buildComputedNodesFromElements(elements, this.groups)
-
-    const edges = this.computeEdges()
-    const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(edge => [edge.id, edge]))
-
-    linkNodesWithEdges(nodesMap, edges)
-
-    // nodesMap sorted hierarchically,
-    // but we need to keep the initial sort
-    let initialSort = elements.map(e => nonNullable(nodesMap.get(e.id), `Node ${e.id} not found in nodesMap`))
-
-    if (this.groups.length > 0) {
-      initialSort = concat(
-        this.groups.map(g => nonNullable(nodesMap.get(g.id), `Node ${g.id} not found in nodesMap`)),
-        initialSort
-      )
-    }
-
-    const nodes = applyCustomElementProperties(
-      rules,
-      applyViewRuleStyles(
-        rules,
-        // Build graph and apply postorder sort
-        sortNodes({
-          nodes: initialSort,
-          edges
-        })
-      )
-    )
-    const sortedEdges = new Set([
-      ...nodes.flatMap(n => n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []),
-      ...edges
-    ])
-
-    const autoLayoutRule = findLast(this.view.rules, isViewRuleAutoLayout)
-
-    const elementNotations = buildElementNotations(nodes)
-
-    return calcViewLayoutHash({
-      ...view,
-      autoLayout: {
-        direction: autoLayoutRule?.direction ?? 'TB',
-        ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
-        ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
-      },
-      nodes: map(nodes, n => {
-        // omit notation
-        delete n.notation
-        if (n.icon === 'none') {
-          delete n.icon
-        }
-        return n
-      }),
-      edges: applyCustomRelationProperties(rules, nodes, sortedEdges),
-      ...(elementNotations.length > 0 && {
-        notation: {
-          elements: elementNotations
-        }
-      })
-    })
-  }
-
-  protected computeEdges(): ComputedEdge[] {
-    return this.ctxEdges.map((e): ComputedEdge => {
-      invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
-      const relations = sort(e.relations, compareRelations)
-      const source = e.source.id
-      const target = e.target.id
-
-      const edge: ComputedEdge = {
-        id: stringHash(`${source}:${target}`) as EdgeId,
-        parent: commonAncestor(source, target),
-        source,
-        target,
-        label: null,
-        relations: relations.map(r => r.id)
+function processRelationtPredicate(
+  expr: RelationPredicateExpression,
+  op: 'include' | 'exclude',
+  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>
+): Stage {
+  switch (true) {
+    case Expr.isCustomRelationExpr(expr): {
+      if (op === 'include') {
+        return processRelationtPredicate(expr.customRelation.relation, op, ctx)
       }
-
-      let relation: {
-        // TODO refactor with type-fest
-        title: string
-        description?: string | undefined
-        technology?: string | undefined
-        kind?: RelationshipKind | undefined
-        color?: Color | undefined
-        line?: RelationshipLineType | undefined
-        head?: RelationshipArrowType | undefined
-        tail?: RelationshipArrowType | undefined
-        tags?: NonEmptyArray<Tag> | null
-        navigateTo?: ViewId | undefined
-      } | undefined
-      relation = only(relations) ?? pipe(
-        relations,
-        filter(r => r.source === source && r.target === target),
-        only()
-      )
-
-      // This edge represents mutliple relations
-      // We use label if only it is the same for all relations
-      if (!relation) {
-        const allprops = pipe(
-          relations,
-          reduce((acc, r) => {
-            if (isTruthy(r.title) && !acc.title.includes(r.title)) {
-              acc.title.push(r.title)
-            }
-            if (isTruthy(r.description) && !acc.description.includes(r.description)) {
-              acc.description.push(r.description)
-            }
-            if (isTruthy(r.technology) && !acc.technology.includes(r.technology)) {
-              acc.technology.push(r.technology)
-            }
-            if (isTruthy(r.kind) && !acc.kind.includes(r.kind)) {
-              acc.kind.push(r.kind)
-            }
-            if (isTruthy(r.color) && !acc.color.includes(r.color)) {
-              acc.color.push(r.color)
-            }
-            if (isTruthy(r.line) && !acc.line.includes(r.line)) {
-              acc.line.push(r.line)
-            }
-            if (isTruthy(r.head) && !acc.head.includes(r.head)) {
-              acc.head.push(r.head)
-            }
-            if (isTruthy(r.tail) && !acc.tail.includes(r.tail)) {
-              acc.tail.push(r.tail)
-            }
-            if (isTruthy(r.navigateTo) && !acc.navigateTo.includes(r.navigateTo)) {
-              acc.navigateTo.push(r.navigateTo)
-            }
-            return acc
-          }, {
-            title: [] as string[],
-            description: [] as string[],
-            technology: [] as string[],
-            kind: [] as RelationshipKind[],
-            head: [] as RelationshipArrowType[],
-            tail: [] as RelationshipArrowType[],
-            color: [] as Color[],
-            line: [] as RelationshipLineType[],
-            navigateTo: [] as ViewId[]
-          })
-        )
-        relation = {
-          title: only(allprops.title) ?? '[...]',
-          description: only(allprops.description),
-          technology: only(allprops.technology),
-          kind: only(allprops.kind),
-          head: only(allprops.head),
-          tail: only(allprops.tail),
-          color: only(allprops.color),
-          line: only(allprops.line),
-          navigateTo: only(allprops.navigateTo)
-        }
+      return ctx.stage
+    }
+    case Expr.isRelationWhere(expr): {
+      const where = whereOperatorAsPredicate(expr.where.condition)
+      const filterRelations = (relations: ReadonlySet<RelationshipModel>) => {
+        return new Set(filter([...relations], where))
       }
-
-      const tags = uniqueTags(relations)
-
-      return Object.assign(
-        edge,
-        this.getEdgeLabel(relation),
-        isTruthy(relation.description) && { description: relation.description },
-        isTruthy(relation.technology) && { technology: relation.technology },
-        isTruthy(relation.kind) && { kind: relation.kind },
-        relation.color && { color: relation.color },
-        relation.line && { line: relation.line },
-        relation.head && { head: relation.head },
-        relation.tail && { tail: relation.tail },
-        relation.navigateTo && { navigateTo: relation.navigateTo },
-        tags && { tags }
-      )
-    })
-  }
-
-  protected addEdges(edges: ComputeCtx.Edge[]) {
-    const added = [] as ComputeCtx.Edge[]
-    for (const e of edges) {
-      if (!hasAtLeast(e.relations, 1)) {
-        continue
-      }
-      const existing = this.ctxEdges.find(
-        _e => _e.source.id === e.source.id && _e.target.id === e.target.id
-      )
-      if (existing) {
-        existing.relations = unique([...existing.relations, ...e.relations])
-        added.push(existing)
-        continue
-      }
-      added.push(e)
-      this.ctxEdges.push(e)
-    }
-    return added
-  }
-
-  /**
-   * Add element explicitly
-   * Included even without relationships
-   */
-  protected addElement(...el: Element[]) {
-    for (const r of el) {
-      if (!this.explicits.has(r)) {
-        this.activeGroup.addElement(r)
-      } else if (this.activeGroup !== this.__rootGroup) {
-        this.groups.forEach(g => {
-          g.implicits.delete(r)
-        })
-        this.activeGroup.addImplicit(r)
-      }
-      this.explicits.add(r)
-      this.implicits.add(r)
-    }
-  }
-
-  /**
-   * Add element implicitly
-   * Included if only has relationships
-   */
-  protected addImplicit(...el: Element[]) {
-    for (const r of el) {
-      this.implicits.add(r)
-      // Remove implicits from other groups
-      if (this.activeGroup !== this.__rootGroup) {
-        this.groups.forEach(g => {
-          g.implicits.delete(r)
-        })
-      }
-    }
-    this.activeGroup.addImplicit(...el)
-  }
-
-  protected excludeElement(...excludes: Element[]) {
-    for (const el of excludes) {
-      this.ctxEdges = this.ctxEdges.filter(e => e.source.id !== el.id && e.target.id !== el.id)
-      this.explicits.delete(el)
-      this.implicits.delete(el)
-    }
-    this.__rootGroup.excludeElement(...excludes)
-    this.groups.forEach(g => {
-      g.excludeElement(...excludes)
-    })
-  }
-
-  protected excludeRelation(...relations: ModelRelation[]) {
-    if (relations.length === 0) {
-      return
-    }
-    const excludedImplicits = new Set<Element>()
-    const ctxEdges = pipe(
-      this.ctxEdges,
-      map(edge => {
-        const edgerelations = edge.relations.filter(r => !relations.includes(r))
-        if (edgerelations.length === 0) {
-          excludedImplicits.add(edge.source)
-          excludedImplicits.add(edge.target)
-          return null
-        }
-        if (edgerelations.length !== edge.relations.length) {
-          return {
-            ...edge,
-            relations: edgerelations
-          }
-        }
-        return edge
-      }),
-      filter(isNonNull)
-    )
-    this.ctxEdges = ctxEdges
-    const remaining = this.includedElements
-    if (remaining.size === 0) {
-      this.implicits.clear()
-      this.__rootGroup.implicits.clear()
-      this.groups.forEach(g => g.implicits.clear())
-      return
-    }
-    for (const el of excludedImplicits) {
-      if (!remaining.has(el)) {
-        this.implicits.delete(el)
-        this.__rootGroup.implicits.delete(el)
-        this.groups.forEach(g => g.implicits.delete(el))
-      }
-    }
-  }
-
-  protected reset() {
-    this.explicits.clear()
-    this.implicits.clear()
-    this.ctxEdges = []
-    // Reset groups
-    this.__rootGroup = NodesGroup.root()
-    this.groups = []
-    this.activeGroupStack = []
-  }
-
-  // Filter out edges if there are edges between descendants
-  // i.e. remove implicit edges, derived from childs
-  protected removeRedundantImplicitEdges() {
-    const processedRelations = new Set<ModelRelation>()
-
-    // Returns relations, that are not processed/included
-    const excludeProcessed = (relations: ModelRelation[]) =>
-      relations.reduce((acc, rel) => {
-        if (!processedRelations.has(rel)) {
-          acc.push(rel)
-          processedRelations.add(rel)
-        }
-        return acc
-      }, [] as ModelRelation[])
-
-    // Returns predicate
-    const isNestedEdgeOf = (parent: ComputeCtx.Edge) => {
-      const { source, target } = parent
-      // Checks if edge is between descendants of source and target of the parent edge
-      return (edge: ComputeCtx.Edge) => {
-        const isSameSource = source.id === edge.source.id
-        const isSameTarget = target.id === edge.target.id
-        if (isSameSource && isSameTarget) {
-          return true
-        }
-        const isSourceNested = isAncestor(source.id, edge.source.id)
-        const isTargetNested = isAncestor(target.id, edge.target.id)
-        return (
-          (isSourceNested && isTargetNested)
-          || (isSameSource && isTargetNested)
-          || (isSameTarget && isSourceNested)
+      const filterWhere = (connections: ReadonlyArray<Connection>) => {
+        return pipe(
+          connections,
+          map(c => new ConnectionModel(c.source, c.target, filterRelations(c.relations))),
+          filter(c => c.nonEmpty())
         )
       }
-    }
-
-    // Sort edges from bottom to top (i.e. from more specific edges to implicit or between ancestors)
-    const edges = [...this.ctxEdges].sort(compareEdges).reverse()
-    this.ctxEdges = edges.reduce((acc, e) => {
-      const relations = excludeProcessed(e.relations)
-      if (relations.length === 0) {
-        return acc
-      }
-      // If there is an edge between descendants of current edge,
-      // then we don't add this edge
-      if (acc.length > 0 && acc.some(isNestedEdgeOf(e))) {
-        return acc
-      }
-      acc.push({
-        source: e.source,
-        target: e.target,
-        relations
+      return processRelationtPredicate(expr.where.expr, op, {
+        ...ctx,
+        where,
+        filterWhere
       })
-      return acc
-    }, [] as ComputeCtx.Edge[])
-  }
-
-  /**
-   * Clean up group.explicits and group.implicits
-   */
-  protected assignElementsToGroups() {
-    const unprocessed = new Set<Element>(difference(
-      [...this.includedElements],
-      [...this.__rootGroup.explicits]
-    ))
-    // Step 1 - Process explicits
-    for (const group of this.groups) {
-      const explicits = [...group.explicits]
-      group.explicits.clear()
-      for (const el of explicits) {
-        if (unprocessed.delete(el)) {
-          group.explicits.add(el)
-        }
-      }
     }
-    // Step 2 - Process implicits (make them explicits)
-    for (const group of this.groups) {
-      for (const el of group.implicits) {
-        if (unprocessed.delete(el)) {
-          group.explicits.add(el)
-        }
-      }
-      group.implicits.clear()
+    case Expr.isInOut(expr): {
+      return InOutRelationPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
+    case Expr.isRelation(expr): {
+      return DirectRelationExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
+    case Expr.isOutgoing(expr): {
+      return OutgoingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
+    case Expr.isIncoming(expr): {
+      return IncomingExprPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
+    }
+    default:
+      nonexhaustive(expr)
   }
+}
 
-  protected processPredicates(viewRules: Array<ViewRulePredicate | ViewRuleGroup>): this {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    for (const rule of viewRules) {
-      if (isViewRuleGroup(rule)) {
-        const parent = first(this.activeGroupStack)
-        const groupId = `@gr${this.groups.length + 1}` as NodeId
-        const group = new NodesGroup(groupId, rule, parent?.id ?? null)
-        this.groups.push(group)
-        this.activeGroupStack.unshift(group)
-        this.processPredicates(rule.groupRules)
-        this.activeGroupStack.shift()
-        continue
-      }
-      const isInclude = 'include' in rule
+function processPredicates<M extends AnyAux>(
+  model: LikeC4Model<M>,
+  memory: Memory,
+  scope: Elem | null,
+  rules: ViewRule[]
+): Memory {
+  const ctx = {
+    model,
+    scope,
+    where: NoWhere,
+    filterWhere: NoFilter
+  }
+  for (const rule of rules) {
+    if (isViewRuleGroup(rule)) {
+      const groupMemory = ActiveGroupMemory.enter(memory, rule)
+      memory = processPredicates(model, groupMemory, scope, rule.groupRules)
+      invariant(memory instanceof ActiveGroupMemory, 'processPredicates must return ActiveGroupMemory')
+      memory = memory.leave()
+      continue
+    }
+    if (isViewRulePredicate(rule)) {
+      const op = 'include' in rule ? 'include' : 'exclude'
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
-        if (Expr.isElementPredicateExpr(expr)) {
-          this.processElementPredicate(expr, isInclude)
-          continue
+        let stage = op === 'include' ? memory.stageInclude() : memory.stageExclude()
+        switch (true) {
+          case Expr.isElementPredicateExpr(expr):
+            stage = processElementPredicate(expr, op, {
+              ...ctx,
+              stage,
+              memory
+            } as any) ?? stage
+            break
+          case Expr.isRelationPredicateExpr(expr):
+            stage = processRelationtPredicate(expr, op, {
+              ...ctx,
+              stage,
+              memory
+            }) ?? stage
+            break
+          default:
+            nonexhaustive(expr)
         }
-        if (Expr.isRelationPredicateExpr(expr)) {
-          this.processRelationPredicate(expr, isInclude)
-          continue
-        }
-        nonexhaustive(expr)
+        memory = stage.commit()
       }
     }
-    return this
   }
+  return memory
+}
 
-  protected processElementPredicate(
-    expr: ElementPredicateExpression,
-    isInclude: boolean,
-    where?: ElementPredicateFn
-  ): this {
-    if (Expr.isCustomElement(expr)) {
-      if (isInclude) {
-        this.processElementPredicate(expr.custom.expr, isInclude)
+export function computeElementView<M extends AnyAux>(
+  likec4model: LikeC4Model<M>,
+  {
+    docUri: _docUri, // exclude docUri
+    rules, // exclude rules
+    ...view
+  }: ElementView
+): ComputedElementView<M['ViewId']> {
+  rules = resolveGlobalRulesInElementView(rules, likec4model.globals())
+  const scope = view.viewOf ? likec4model.element(view.viewOf) : null
+  let memory = cleanConnections(
+    processPredicates<M>(
+      likec4model,
+      Memory.empty(),
+      scope,
+      rules
+    )
+  )
+  if (memory.isEmpty() && scope) {
+    memory = memory.update({
+      final: new Set([scope])
+    })
+  }
+  memory = assignElementsToGroups(memory)
+
+  const nodesMap = buildNodes(memory)
+
+  const computedEdges = toComputedEdges(memory.connections)
+
+  linkNodesWithEdges(nodesMap, computedEdges)
+
+  const sorted = topologicalSort({
+    nodes: [...nodesMap.values()],
+    edges: computedEdges
+  })
+
+  const nodes = applyCustomElementProperties(
+    rules,
+    applyViewRuleStyles(
+      rules,
+      sorted.nodes
+    )
+  )
+
+  const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
+
+  const elementNotations = buildElementNotations(nodes)
+
+  return calcViewLayoutHash({
+    ...view,
+    autoLayout: {
+      direction: autoLayoutRule?.direction ?? 'TB',
+      ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
+      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
+    },
+    edges: applyCustomRelationProperties(rules, nodes, sorted.edges),
+    nodes: map(nodes, n => {
+      // omit notation
+      delete n.notation
+      if (n.icon === 'none') {
+        delete n.icon
       }
-      return this
-    }
-    if (Expr.isElementWhere(expr)) {
-      const where = whereOperatorAsPredicate(expr.where.condition)
-      this.processElementPredicate(expr.where.expr, isInclude, where)
-      return this
-    }
-    if (Expr.isExpandedElementExpr(expr)) {
-      isInclude
-        ? includeExpandedElementExpr.call(this, expr, where)
-        : excludeExpandedElementExpr.call(this, expr, where)
-      return this
-    }
-    if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {
-      isInclude
-        ? includeElementKindOrTag.call(this, expr, where)
-        : excludeElementKindOrTag.call(this, expr, where)
-      return this
-    }
-    if (Expr.isElementRef(expr)) {
-      isInclude ? includeElementRef.call(this, expr, where) : excludeElementRef.call(this, expr, where)
-      return this
-    }
-    if (Expr.isWildcard(expr)) {
-      isInclude ? includeWildcardRef.call(this, expr, where) : excludeWildcardRef.call(this, expr, where)
-      return this
-    }
-    nonexhaustive(expr)
-  }
-
-  protected processRelationPredicate(
-    expr: RelationPredicateExpression,
-    isInclude: boolean,
-    where?: RelationPredicateFn
-  ): this {
-    if (Expr.isCustomRelationExpr(expr)) {
-      if (isInclude) {
-        this.processRelationPredicate(expr.customRelation.relation, isInclude)
+      return n
+    }),
+    ...(elementNotations.length > 0 && {
+      notation: {
+        elements: elementNotations
       }
-      return this
-    }
-    if (Expr.isRelationWhere(expr)) {
-      const where = whereOperatorAsPredicate(expr.where.condition)
-      this.processRelationPredicate(expr.where.expr, isInclude, where)
-      return this
-    }
-    if (Expr.isIncoming(expr)) {
-      isInclude ? includeIncomingExpr.call(this, expr, where) : excludeIncomingExpr.call(this, expr, where)
-      return this
-    }
-    if (Expr.isOutgoing(expr)) {
-      isInclude ? includeOutgoingExpr.call(this, expr, where) : excludeOutgoingExpr.call(this, expr, where)
-      return this
-    }
-    if (Expr.isInOut(expr)) {
-      isInclude ? includeInOutExpr.call(this, expr, where) : excludeInOutExpr.call(this, expr, where)
-      return this
-    }
-    if (Expr.isRelation(expr)) {
-      isInclude ? includeRelationExpr.call(this, expr, where) : excludeRelationExpr.call(this, expr, where)
-      return this
-    }
-    nonexhaustive(expr)
+    })
+  })
+}
+
+/**
+ * Clean up group.explicits and group.implicits
+ */
+function assignElementsToGroups(memory: Memory) {
+  if (memory.groups.length === 0) {
+    return memory
   }
-
-  protected getEdgeLabel(
-    relation: {
-      title: string
-      technology?: string | undefined
+  const state = memory.mutableState()
+  const unprocessed = new Set<Elem>(difference(
+    [...state.final],
+    [...state.rootGroup.explicits]
+  ))
+  // Step 1 - Process explicits
+  let groups = state.groups.map(g => {
+    const explicits = new Set<Elem>()
+    for (const el of g.explicits) {
+      if (unprocessed.delete(el)) {
+        explicits.add(el)
+      }
     }
-  ) {
-    const labelParts: string[] = []
-
-    if (isTruthy(relation.title)) {
-      labelParts.push(relation.title)
+    return g.update({ explicits })
+  })
+  // Step 2 - Process implicits (make them explicits)
+  groups = groups.map(group => {
+    const explicits = new Set(group.explicits)
+    for (const el of group.implicits) {
+      if (unprocessed.delete(el)) {
+        explicits.add(el)
+      }
     }
-
-    if (isTruthy(relation.technology)) {
-      labelParts.push(`[${relation.technology}]`)
-    }
-
-    return labelParts.length > 0 ? { label: labelParts.join('\n') } : {}
-  }
+    return group.update({ explicits, implicits: new Set() })
+  })
+  return memory.update({ groups })
 }

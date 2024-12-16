@@ -1,6 +1,5 @@
 import { type LikeC4Model } from '../../model'
 import type { ConnectionModel } from '../../model/connection/model'
-import type { ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
 import type { ElementExpression, Expression, RelationExpression } from '../../types/expression'
