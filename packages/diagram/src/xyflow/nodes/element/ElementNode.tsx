@@ -1,7 +1,6 @@
 import { DiagramNode, type ThemeColor } from '@likec4/core'
 import { Box, Text as MantineText } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconId } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
@@ -17,7 +16,7 @@ import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 import { ActionButtonBar } from '../../ActionButtonBar/ActionButtonBar'
-import { ActionButton } from '../../ActionButton/ActionButton'
+import { OpenDetailsButton } from '../../ActionButton/ActionButtons'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -131,11 +130,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
     triggerOnNavigateTo(element.id, e)
   }, [triggerOnNavigateTo, element.id])
 
-  const onOpenDetails = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    openOverlay({ elementDetails: element.id })
-  }, [openOverlay, element.id])
-
   const onOpenRelationships = useCallback((e: React.MouseEvent) => {
     if (modelRef) {
       e.stopPropagation()
@@ -223,13 +217,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
         />
         {enableElementDetails && !!modelRef && (
           <Box className={clsx(css.detailsBtnContainer)}>
-            <ActionButton
-              key='details'
-              onClick={onOpenDetails}
-              IconComponent={IconId}
-              tooltipLabel='Open details'
-              {...isInteractive && animateHandlers}
-              />
+            <OpenDetailsButton fqn={element.id} />
           </Box>
         )}
       </Box>

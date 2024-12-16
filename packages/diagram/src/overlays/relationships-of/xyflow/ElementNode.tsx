@@ -11,6 +11,7 @@ import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import type { XYFlowTypes } from '../_types'
 import * as css from '../../shared/xyflow/ElementNode.css'
+import { NavigateToButton } from '../../../xyflow/ActionButton/ActionButtons'
 
 const Action = ActionIcon.withProps({
   className: 'nodrag nopan ' + css.navigateBtn,
@@ -29,7 +30,6 @@ type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
 function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
-    onNavigateTo: s.onNavigateTo,
     onOpenSource: s.onOpenSource
   }
 }
@@ -52,7 +52,6 @@ export const ElementNode = memo<ElementNodeProps>(({
   const overlay = useOverlayDialog()
   const {
     currentViewId,
-    onNavigateTo,
     onOpenSource
   } = useDiagramState(selector)
 
@@ -135,14 +134,8 @@ export const ElementNode = memo<ElementNodeProps>(({
           )}
         </Box>
         <Group className={css.navigateBtnBox}>
-          {navigateTo && onNavigateTo && navigateTo !== currentViewId && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.close(() => onNavigateTo(navigateTo))
-              }}>
-              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-            </Action>
+          {navigateTo && navigateTo !== currentViewId && (
+            <NavigateToButton fqn={data.fqn}/>
           )}
           {data.column !== 'subjects' && (
             <Action

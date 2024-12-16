@@ -1,13 +1,12 @@
 import { DiagramNode, type ThemeColor } from '@likec4/core'
 import { Box, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconId, IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo, useCallback, useState } from 'react'
+import { memo, useState } from 'react'
 import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
@@ -15,7 +14,7 @@ import { ElementIcon } from '../shared/ElementIcon'
 import { CompoundToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './CompoundNode.css'
-import { ActionButton } from '../../ActionButton/ActionButton'
+import { NavigateToButton, OpenDetailsButton } from '../../ActionButton/ActionButtons'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
@@ -82,8 +81,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
 
   const {
     viewId,
-    triggerOnNavigateTo,
-    openOverlay,
     isEditable,
     isHovered,
     isDimmed,
@@ -93,8 +90,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
     enableElementDetails
   } = useDiagramState(s => ({
     viewId: s.view.id,
-    triggerOnNavigateTo: s.triggerOnNavigateTo,
-    openOverlay: s.openOverlay,
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
@@ -111,16 +106,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
   const [animateVariant, animateHandlers] = useFramerAnimateVariants(nodeProps)
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
-
-  const onNavigateTo = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    triggerOnNavigateTo(element.id, e)
-  }, [triggerOnNavigateTo, element.id])
-
-  const onOpenDetails = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    openOverlay({ elementDetails: element.id })
-  }, [openOverlay, element])
 
   const elementIcon = ElementIcon({
     element,
@@ -215,24 +200,14 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
               </Text>
               {enableElementDetails && !!modelRef && (
                 <Box className={clsx(css.detailsBtnContainer)}>
-                  <ActionButton
-                    onClick={onOpenDetails}
-                    IconComponent={IconId}
-                    tooltipLabel='Open details'
-                    {...isInteractive && animateHandlers}
-                    />
+                  <OpenDetailsButton fqn={element.id} />
                 </Box>
               )}
             </Box>
           </Box>
           {isNavigable && (
             <Box className={clsx(css.navigateBtnContainer)}>
-              <ActionButton
-                onClick={onNavigateTo}
-                IconComponent={IconZoomScan}
-                tooltipLabel='Open scoped view'
-                {...isInteractive && animateHandlers}
-                />
+              <NavigateToButton fqn={element.id} />
             </Box>
           )}
         </Box>
