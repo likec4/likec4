@@ -1,8 +1,8 @@
 import type { Fqn } from "@likec4/core"
 import { useCallback } from "react"
-import { useDiagramState } from "../../hooks"
+import { useDiagramState, useDiagramStoreApi } from "../../hooks"
 import { ActionButton } from "./ActionButton"
-import { IconId, IconTransform, IconZoomScan } from "@tabler/icons-react"
+import { IconFileSymlink, IconId, IconTransform, IconZoomScan } from "@tabler/icons-react"
 import { useOverlayDialog } from "../../overlays/OverlayContext"
 
 // Browse Relationships
@@ -91,6 +91,34 @@ export const OpenDetailsButton = ({
       onClick={onOpenDetails}
       IconComponent={IconId}
       tooltipLabel='Open details'
+      />
+  )
+}
+
+// Open element source
+
+export type OpenElementSourceButtonProps = {
+  fqn: Fqn
+}
+
+export const OpenSourceButton = ({
+  fqn
+}: OpenElementSourceButtonProps) => {
+
+  const diagramApi = useDiagramStoreApi()
+
+  const onOpenSource = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    diagramApi.getState().onOpenSource?.({
+      element: fqn
+    })
+  }, [diagramApi.getState(), fqn])
+
+  return (
+    <ActionButton
+      onClick={onOpenSource}
+      IconComponent={IconFileSymlink}
+      tooltipLabel='Open source'
       />
   )
 }

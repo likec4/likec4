@@ -11,7 +11,7 @@ import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import type { XYFlowTypes } from '../_types'
 import * as css from '../../shared/xyflow/ElementNode.css'
-import { BrowseRelationshipsButton, NavigateToButton } from '../../../xyflow/ActionButton/ActionButtons'
+import { BrowseRelationshipsButton, NavigateToButton, OpenSourceButton as OpenElementSourceButton } from '../../../xyflow/ActionButton/ActionButtons'
 
 const Action = ActionIcon.withProps({
   className: 'nodrag nopan ' + css.navigateBtn,
@@ -141,15 +141,7 @@ export const ElementNode = memo<ElementNodeProps>(({
             <BrowseRelationshipsButton fqn={data.fqn} />
           )}
           {onOpenSource && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                onOpenSource?.({
-                  element: data.fqn
-                })
-              }}>
-              <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
-            </Action>
+            <OpenElementSourceButton fqn={data.fqn} />
           )}
         </Group>
       </m.div>
