@@ -16,7 +16,7 @@ import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
-import { BottomButtons } from '../../BottomButtons/BottomButtons'
+import { ActionButtonBar } from '../../ActionButtonBar/ActionButtonBar'
 import { ActionButton } from '../../ActionButton/ActionButton'
 
 const Text = MantineText.withProps({
@@ -214,10 +214,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
           </Box>
         </Box>
         {/* {isHovercards && element.links && <ElementLink element={element} />} */}
-        <BottomButtons
+        <ActionButtonBar
           keyPrefix={`${viewId}:element:${id}:`}
           onNavigateTo={isNavigable && onNavigateTo}
           onOpenRelationships={enableRelationshipBrowser && !!modelRef && onOpenRelationships}
+          shiftY='bottom'
           {...isInteractive && animateHandlers}
         />
         {enableElementDetails && !!modelRef && (
@@ -226,7 +227,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
               key='details'
               onClick={onOpenDetails}
               IconComponent={IconId}
-              translate={{x: 0, y: 0}}
               tooltipLabel='Open details'
               {...isInteractive && animateHandlers}
               />

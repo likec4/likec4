@@ -219,7 +219,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
                     key="details"
                     onClick={onOpenDetails}
                     IconComponent={IconId}
-                    translate={{x: 0, y: 0}}
                     tooltipLabel='Open details'
                     {...isInteractive && animateHandlers}
                     />
@@ -233,7 +232,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
                 key={"${id}navigate"}
                 onClick={onNavigateTo}
                 IconComponent={IconZoomScan}
-                translate={{x: 0, y: 0}}
                 tooltipLabel='Open scoped view'
                 {...isInteractive && animateHandlers}
                 />
