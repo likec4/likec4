@@ -43,7 +43,7 @@ export namespace SharedTypes {
     /**
      * The id of the view that should be navigated to when clicking the navigate button
      */
-    navigateTo: ViewId | null
+    navigateTo?: ViewId | null
     /**
      * The node's visual depth on the screen, 1 being the highest
      */

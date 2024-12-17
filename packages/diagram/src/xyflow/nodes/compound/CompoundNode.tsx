@@ -1,21 +1,22 @@
 import { DiagramNode, type ThemeColor } from '@likec4/core'
-import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
+import { Box, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconId, IconZoomScan } from '@tabler/icons-react'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import { memo, useCallback, useState } from 'react'
+import { memo, useState } from 'react'
 import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { CompoundXYFlowNode } from '../../types'
-import { stopPropagation } from '../../utils'
 import { ElementIcon } from '../shared/ElementIcon'
 import { CompoundToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './CompoundNode.css'
+import * as nodeCss from '../Node.css'
+import { NavigateToButton, OpenDetailsButton } from '../../ActionButton/ActionButtons'
+import { ActionButtonBar } from '../../ActionButtonBar/ActionButtonBar'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
@@ -55,68 +56,17 @@ const VariantsRoot = {
   tap: {}
 } satisfies Variants
 
-const VariantsNavigate = {
-  idle: {
-    '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 1,
-    opacity: 0.8,
-    originX: 1,
-    originY: 0.25,
-    translateX: 0,
-    translateY: 0
-  },
-  selected: {},
-  hovered: {
-    '--ai-bg': 'var(--ai-bg-hover)',
-    scale: 1.25,
-    opacity: 1,
-    translateX: -1
-  },
-  'hovered:navigate': {
-    scale: 1.42
-  },
-  'hovered:details': {},
-  'tap:navigate': {
-    scale: 1.15
-  }
-} satisfies Variants
-VariantsNavigate['selected'] = VariantsNavigate.hovered
-VariantsNavigate['hovered:details'] = VariantsNavigate.idle
+export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodeProps: CompoundNodeProps) => {
 
-const VariantsDetailsBtn = {
-  idle: {
-    '--ai-bg': 'var(--ai-bg-idle)',
-    scale: 1,
-    opacity: 0.3,
-    originX: 0.45,
-    originY: 0.55
-  },
-  selected: {},
-  hovered: {
-    scale: 1.2,
-    opacity: 0.6
-  },
-  'hovered:details': {
-    scale: 1.42,
-    opacity: 1
-  },
-  'tap:details': {
-    scale: 1.15
-  }
-} satisfies Variants
-VariantsDetailsBtn['selected'] = VariantsDetailsBtn['hovered']
-
-export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
-  {
+  const {
     id,
     selected = false,
-    dragging = false,
     data: {
       isViewGroup,
       element
     }
-  }
-) => {
+  } = nodeProps
+
   const modelRef = DiagramNode.modelRef(element)
   const { depth, style, color } = element
   const isNotViewGroup = !isViewGroup
@@ -132,20 +82,15 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
 
   const {
     viewId,
-    triggerOnNavigateTo,
-    openOverlay,
     isEditable,
     isHovered,
     isDimmed,
     isInteractive,
     isNavigable,
     renderIcon,
-    isInActiveOverlay,
     enableElementDetails
   } = useDiagramState(s => ({
     viewId: s.view.id,
-    triggerOnNavigateTo: s.triggerOnNavigateTo,
-    openOverlay: s.openOverlay,
     isEditable: s.readonly !== true,
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
@@ -154,46 +99,14 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     // If this is a view group, we don't want to show the navigate button
     isNavigable: isNotViewGroup && !!s.onNavigateTo && !!element.navigateTo,
     renderIcon: s.renderIcon,
-    isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     enableElementDetails: isNotViewGroup && s.enableElementDetails
   }))
   const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
-  const [animateVariants, animateHandlers] = useFramerAnimateVariants()
-
-  let animate: keyof typeof VariantsRoot
-  switch (true) {
-    case isInActiveOverlay:
-      animate = 'idle'
-      break
-    case dragging && selected:
-      animate = 'selected'
-      break
-    case dragging:
-      animate = 'idle'
-      break
-    case isInteractive && isHovered:
-      animate = 'hovered'
-      break
-    case selected:
-      animate = 'selected'
-      break
-    default:
-      animate = 'idle'
-  }
+  const [animateVariant, animateHandlers] = useFramerAnimateVariants(nodeProps)
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
-
-  const onNavigateTo = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    triggerOnNavigateTo(id, e)
-  }, [triggerOnNavigateTo, id])
-
-  const onOpenDetails = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    openOverlay({ elementDetails: element.id })
-  }, [openOverlay, element])
 
   const elementIcon = ElementIcon({
     element,
@@ -221,7 +134,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           component={m.div}
           variants={VariantsRoot}
           initial={false}
-          animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
+          animate={animateVariant}
           className={clsx(
             css.container,
             'likec4-compound-node',
@@ -287,48 +200,25 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
                 {element.title}
               </Text>
               {enableElementDetails && !!modelRef && (
-                <Tooltip
-                  fz="xs"
-                  color="dark"
-                  label="Open details"
-                  withinPortal={false}
-                  offset={2}
-                  openDelay={600}>
-                  <ActionIcon
-                    key={`${id}details`}
-                    component={m.div}
-                    variants={VariantsDetailsBtn}
-                    data-animate-target="details"
-                    className={clsx('nodrag nopan', css.detailsBtn)}
-                    radius="md"
-                    style={{ zIndex: 100 }}
-                    role="button"
-                    onClick={onOpenDetails}
-                    onDoubleClick={stopPropagation}
-                    {...isInteractive && animateHandlers}
-                  >
-                    <IconId stroke={1.8} style={{ width: '75%' }} />
-                  </ActionIcon>
-                </Tooltip>
+                <Box className={clsx(nodeCss.topRightBtnContainer)}>
+                  <ActionButtonBar
+                    shiftX='right'
+                    >
+                    <OpenDetailsButton fqn={element.id} />
+                  </ActionButtonBar>
+                </Box>
               )}
             </Box>
           </Box>
           {isNavigable && (
-            <ActionIcon
-              key={`${id}navigate`}
-              component={m.div}
-              variants={VariantsNavigate}
-              data-animate-target="navigate"
-              className={clsx('nodrag nopan', css.navigateBtn)}
-              radius="md"
-              style={{ zIndex: 100 }}
-              onClick={onNavigateTo}
-              role="button"
-              onDoubleClick={stopPropagation}
-              {...isInteractive && animateHandlers}
-            >
-              <IconZoomScan style={{ width: '75%' }} />
-            </ActionIcon>
+            <Box className={clsx(nodeCss.topLeftBtnContainer)}>
+              <ActionButtonBar
+                keyPrefix={`${viewId}:element:navigation:`}
+                shiftX='left'
+                >
+                <NavigateToButton fqn={element.id} />
+              </ActionButtonBar>
+            </Box>
           )}
         </Box>
       </Box>

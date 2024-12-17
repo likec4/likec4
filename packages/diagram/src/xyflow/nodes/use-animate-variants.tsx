@@ -1,7 +1,15 @@
 import { useMemo, useState } from 'react'
 import { isEmpty, isString } from 'remeda'
+import { useDiagramState } from '../../hooks'
+import type { NodeProps } from '@xyflow/react'
+import type { ElementXYFlowNode } from '../types'
+import type { PickDeep } from 'type-fest'
 
-export function useFramerAnimateVariants() {
+type VariantKeys = 'hovered' | 'idle' | 'selected' | 'tap' | string[]
+
+type ElementNodeProps = PickDeep<NodeProps<ElementXYFlowNode>, 'id' | 'data.element' | 'dragging' | 'selected'>
+
+function getFramerAnimateVariants() {
   const [variants, setVariants] = useState<string[] | null>(null)
 
   const handlers = useMemo(() => {
@@ -61,4 +69,55 @@ export function useFramerAnimateVariants() {
   }, [setVariants])
 
   return [variants, handlers] as const
+}
+
+export function useFramerAnimateVariants({
+  id,
+  data: {
+    element
+  },
+  dragging,
+  selected = false,
+}: ElementNodeProps) {
+
+  const [variants, handlers] = getFramerAnimateVariants()
+
+  const {
+    isInteractive,
+    isInActiveOverlay,
+    isHovered
+  } = useDiagramState(s => ({
+    isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableElementDetails || s.enableRelationshipBrowser
+      || (!!s.onNavigateTo && !!element.navigateTo),
+    isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
+    isHovered: s.hoveredNodeId === id,
+  }))
+
+  let activeVariant: VariantKeys
+  switch (true) {
+    case isInActiveOverlay:
+      activeVariant = 'idle'
+      break;
+    case dragging && selected:
+      activeVariant = 'selected'
+      break;
+    case dragging:
+      activeVariant = 'idle'
+      break;
+    case isInteractive && isHovered:
+      activeVariant = 'hovered'
+      break;
+    case selected:
+      activeVariant = 'selected'
+      break;
+    default:
+      activeVariant = 'idle'
+      break;
+  }
+
+  if (isHovered && !dragging && !isInActiveOverlay) {
+    activeVariant = variants ?? activeVariant
+  }
+
+  return [activeVariant, handlers] as const
 }

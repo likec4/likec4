@@ -1,5 +1,4 @@
-import { ActionIcon, Box, Group, Text as MantineText } from '@mantine/core'
-import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { Box, Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
@@ -7,18 +6,11 @@ import { m } from 'framer-motion'
 import { memo } from 'react'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
-import { stopPropagation } from '../../../xyflow/utils'
-import { useOverlayDialog } from '../../OverlayContext'
 import type { XYFlowTypes } from '../_types'
-import * as css from './styles.css'
-
-const Action = ActionIcon.withProps({
-  className: 'nodrag nopan ' + css.navigateBtn,
-  radius: 'md',
-  role: 'button',
-  onDoubleClick: stopPropagation,
-  onPointerDownCapture: stopPropagation
-})
+import * as css from '../../shared/xyflow/ElementNode.css'
+import * as nodeCss from '../../../xyflow/nodes/Node.css'
+import { BrowseRelationshipsButton, NavigateToButton, OpenSourceButton } from '../../../xyflow/ActionButton/ActionButtons'
+import { ActionButtonBar } from '../../../xyflow/ActionButtonBar/ActionButtonBar'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -29,7 +21,6 @@ type ElementNodeProps = NodeProps<XYFlowTypes.ElementNode>
 function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
-    onNavigateTo: s.onNavigateTo,
     onOpenSource: s.onOpenSource
   }
 }
@@ -49,10 +40,8 @@ export const ElementNode = memo<ElementNodeProps>(({
   width: w = 100,
   height: h = 100
 }) => {
-  const overlay = useOverlayDialog()
   const {
     currentViewId,
-    onNavigateTo,
     onOpenSource
   } = useDiagramState(selector)
 
@@ -134,39 +123,16 @@ export const ElementNode = memo<ElementNodeProps>(({
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
         </Box>
-        <Group className={css.navigateBtnBox}>
-          {navigateTo && onNavigateTo && navigateTo !== currentViewId && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.close(() => onNavigateTo(navigateTo))
-              }}>
-              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-            </Action>
-          )}
-          {data.column !== 'subjects' && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.openOverlay({
-                  relationshipsOf: data.fqn
-                })
-              }}>
-              <IconTransform stroke={1.8} style={{ width: '72%' }} />
-            </Action>
-          )}
-          {onOpenSource && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                onOpenSource?.({
-                  element: data.fqn
-                })
-              }}>
-              <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
-            </Action>
-          )}
-        </Group>
+        <Box className={clsx(nodeCss.bottomBtnContainer)}>
+          <ActionButtonBar
+            keyPrefix={`${currentViewId}:element:${id}:`}
+            shiftY='bottom'
+            >
+            {navigateTo && navigateTo !== currentViewId && (<NavigateToButton fqn={data.fqn}/>)}
+            {data.column !== 'subjects' && (<BrowseRelationshipsButton fqn={data.fqn} />)}
+            {onOpenSource && (<OpenSourceButton fqn={data.fqn} />)}
+          </ActionButtonBar>
+        </Box>
       </m.div>
       {ports.in.map((id, i) => (
         <Handle

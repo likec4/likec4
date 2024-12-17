@@ -1,7 +1,7 @@
 import { Box, Text as MantineText } from '@mantine/core'
 import { type NodeProps } from '@xyflow/react'
 import type { XYFlowTypes } from '../_types'
-import * as css from './styles.css'
+import * as css from './EmptyNode.css'
 
 const Text = MantineText.withProps({
   component: 'div'
