@@ -1,5 +1,5 @@
 import type { Element, Fqn, ModelRelation } from '../types'
-import type { AnyTypes, AnyTypesNested, Invalid, Types } from './_types'
+import type { AnyTypes, AnyTypesNested, Invalid, Types, ValidId } from './_types'
 import { Builder } from './Builder'
 import type { AddElement } from './Builder.element'
 
@@ -345,7 +345,7 @@ export type NestedRelationshipHelper<Props = unknown> = <T extends AnyTypesNeste
 ) => (builder: ModelBuilder<T>) => ModelBuilder<T>
 
 type AddElementHelper<T = unknown> = <const Id extends string>(
-  id: Id,
+  id: ValidId<Id>,
   titleOrProps?: string | T
 ) => AddElement<Id>
 
@@ -362,6 +362,8 @@ export type ModelHelpers<T extends AnyTypes> = AddElementHelpers<T> & {
 }
 
 export type ModelBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
-  helpers: ModelHelpers<A>,
+  helpers: ModelHelpers<A> & {
+    _: ModelHelpers<A>['model']
+  },
   add: ModelHelpers<A>['model']
 ) => (builder: Builder<A>) => Builder<B>

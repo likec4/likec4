@@ -1,3 +1,4 @@
+import { pick } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { $exclude, $include, computeView } from './fixture'
 
@@ -24,6 +25,61 @@ describe('relation-expr', () => {
       'support:cloud',
       'email:cloud'
     ])
+  })
+
+  it('* -> * where', () => {
+    const test1 = computeView([
+      $include('* -> *', {
+        where: {
+          or: [
+            { tag: { eq: 'next' } },
+            { tag: { eq: 'aws' } },
+            { tag: { eq: 'storage' } }
+          ]
+        }
+      })
+    ])
+    expect(pick(test1, ['edgeIds', 'nodeIds'])).toEqual({
+      'edgeIds': [
+        'cloud.backend.storage:amazon.s3',
+        'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.frontend.dashboard:cloud.backend.graphql'
+      ],
+      'nodeIds': [
+        'cloud.frontend.dashboard',
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'amazon',
+        'amazon.s3'
+      ]
+    })
+
+    const test2 = computeView([
+      $include('* -> *', {
+        where: {
+          or: [
+            { tag: { eq: 'next' } },
+            { tag: { eq: 'aws' } },
+            { tag: { eq: 'storage' } }
+          ]
+        }
+      }),
+      $exclude('* -> *', {
+        tag: { eq: 'storage' }
+      })
+    ])
+    expect(pick(test2, ['edgeIds', 'nodeIds'])).toEqual({
+      'edgeIds': [
+        'cloud.frontend.dashboard:cloud.backend.graphql',
+        'cloud:amazon'
+      ],
+      'nodeIds': [
+        'cloud',
+        'amazon',
+        'cloud.frontend.dashboard',
+        'cloud.backend.graphql'
+      ]
+    })
   })
 
   it('* -> cloud.*', () => {
@@ -120,6 +176,4 @@ describe('relation-expr', () => {
       'email:cloud'
     ])
   })
-
-  it.todo('verify label [...]')
 })

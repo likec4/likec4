@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import type { DeploymentViewRuleBuilderOp } from '../../../builder/Builder.view'
+import type { DeploymentRulesBuilderOp } from '../../../builder'
 import { $include, computeNodesAndEdges, type Types } from './fixture'
 
-function expectComputed(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
+function expectComputed(...rules: DeploymentRulesBuilderOp<Types>[]) {
   return expect(computeNodesAndEdges(...rules))
 }
 

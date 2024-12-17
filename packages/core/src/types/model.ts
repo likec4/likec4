@@ -1,4 +1,3 @@
-import type { KeysOf } from './_common'
 import type {
   DeploymentElement,
   DeploymentNodeKind,
@@ -11,7 +10,18 @@ import type { ModelRelation, RelationId, RelationshipKindSpecification } from '.
 import type { ComputedView, DiagramView, LikeC4View } from './view'
 
 /**
- * Parsed elements, relations, and views.
+ * Represents a LikeC4 model with customizable type parameters,
+ * parsed from DSL or result from Builder
+ *
+ * !IMPORTANT: This is a low-level type, use `LikeC4Model` instead.
+ * !NOTE: Views are not computed yet.
+ *
+ * @typeParam ElementKinds - Types of elements in the model (defaults to string)
+ * @typeParam RelationKinds - Types of relationships (defaults to string)
+ * @typeParam Tags - Types of tags that can be applied (defaults to string)
+ * @typeParam Fqns - Fully Qualified Names for elements (defaults to string)
+ * @typeParam Views - Types of views in the model (defaults to string)
+ * @typeParam DeploymentFqns - Fully Qualified Names for deployment nodes (defaults to string)
  */
 export interface ParsedLikeC4Model<
   ElementKinds extends string = string,
@@ -21,6 +31,8 @@ export interface ParsedLikeC4Model<
   Views extends string = string,
   DeploymentFqns extends string = string
 > {
+  // To prevent accidental use of this type
+  __?: never
   specification: {
     tags: Tag<Tags>[]
     elements: Record<ElementKinds, ElementKindSpecification>
@@ -39,10 +51,12 @@ export interface ParsedLikeC4Model<
     relations: Record<RelationId, DeploymentRelation>
   }
 }
+
+export type AnyParsedLikeC4Model = ParsedLikeC4Model<any, any, any, any, any, any>
 /**
  * Hook to get types from dump
  */
-export type ParsedLikeC4ModelDump = {
+export type LikeC4ModelDump = {
   elements: {
     [kind: string]: object
   }
@@ -56,45 +70,35 @@ export type ParsedLikeC4ModelDump = {
   }
 }
 
-export interface AnyLikeC4Model<
+/**
+ * Same as {@link ParsedLikeC4Model}, but with computed views or layouted views.
+ */
+export interface GenericLikeC4Model<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
   Views extends string = string,
   Tags extends string = string,
   T = 'computed' | 'layouted'
-> extends Omit<ParsedLikeC4Model<string, string, Tags, Fqns, Views, DeploymentFqns>, 'views'> {
+> extends Omit<ParsedLikeC4Model<string, string, Tags, Fqns, Views, DeploymentFqns>, 'views' | '__'> {
   __?: T
-  views: Record<Views, ComputedView | DiagramView>
+  views: Record<Views, ComputedView<Views> | DiagramView<Views>>
 }
 
-/**
- * Same as `ParsedLikeC4Model` but with computed views.
- */
 export interface ComputedLikeC4Model<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
   Views extends string = string,
   Tags extends string = string
-> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'computed'>, 'views'> {
-  views: Record<Views, ComputedView>
+> extends Omit<GenericLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'computed'>, 'views'> {
+  views: Record<Views, ComputedView<Views>>
 }
 
-export type ComputedLikeC4ModelFromParsed<M> = M extends ParsedLikeC4Model ? ComputedLikeC4Model<
-    KeysOf<M['elements']>,
-    KeysOf<M['deployments']['elements']>,
-    KeysOf<M['views']>
-  >
-  : ComputedLikeC4Model
-
-/**
- * Same as `ParsedLikeC4Model` but with layouted views (DiagramView)
- */
 export interface LayoutedLikeC4Model<
   Fqns extends string = string,
   DeploymentFqns extends string = string,
   Views extends string = string,
   Tags extends string = string
-> extends Omit<AnyLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'layouted'>, 'views'> {
+> extends Omit<GenericLikeC4Model<Fqns, DeploymentFqns, Views, Tags, 'layouted'>, 'views'> {
   __: 'layouted'
   views: Record<Views, DiagramView<Views, Tags>>
 }

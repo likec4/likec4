@@ -1,65 +1,69 @@
-import { first, last, values } from 'remeda'
-import { isExtendsElementView, type LikeC4View } from '../../types/view'
-import { findCycles, Graph, isAcyclic, postorder } from '../../utils/graphlib'
+import { values } from 'remeda'
+import { type ExtendsElementView, isElementView, isExtendsElementView, type LikeC4View } from '../../types/view'
 
+import Graph from 'graphology'
+import { topologicalSort } from 'graphology-dag/topological-sort'
+import willCreateCycle from 'graphology-dag/will-create-cycle'
 /**
  * Resolve rules of extended views
  * (Removes invalid views)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function resolveRulesExtendedViews<V extends Record<any, LikeC4View>>(
   unresolvedViews: V
 ): V {
-  const g = new Graph({
-    directed: true,
-    multigraph: false,
-    compound: false
+  const g = new Graph<{ view: LikeC4View }>({
+    type: 'directed'
   })
+  const extendedViews = [] as ExtendsElementView<any, any>[]
   for (const view of values(unresolvedViews)) {
-    g.setNode(view.id, view.id)
+    g.addNode(view.id, { view })
     if (isExtendsElementView(view)) {
-      // view -> parent
-      g.setEdge(view.id, view.extends)
+      extendedViews.push(view)
     }
   }
-  if (g.edgeCount() === 0) {
+
+  if (extendedViews.length === 0) {
     return unresolvedViews
   }
 
-  // Remove circular dependencies
-  while (!isAcyclic(g)) {
-    const firstCycle = first(findCycles(g))
-    if (!firstCycle) {
-      break
+  for (const view of extendedViews) {
+    if (!g.hasNode(view.extends)) {
+      console.warn(`View "${view.id}" extends from "${view.extends}" which does not exist`)
+      continue
     }
-    const cycledNode = last(firstCycle)
-    if (!cycledNode) {
-      break
+    if (willCreateCycle(g, view.id, view.extends)) {
+      console.warn(`View "${view.id}" extends from "${view.extends}" which creates a cycle`)
+      continue
     }
-    g.removeNode(cycledNode)
+
+    // view -> parent
+    g.addDirectedEdge(view.id, view.extends)
   }
 
-  const ordered = postorder(g, g.sources() as unknown as string[])
-
-  return ordered.reduce((acc, id) => {
-    const view = unresolvedViews[id]
-    if (!view) {
+  const sorted = topologicalSort(g).reverse()
+  return sorted.reduce((acc, id) => {
+    const view = g.getNodeAttribute(id, 'view')
+    if (!isExtendsElementView(view)) {
+      acc[view.id] = view
       return acc
     }
-    if (isExtendsElementView(view)) {
-      const extendsFrom = acc[view.extends]
-      if (!extendsFrom) {
-        console.warn(`View "${view.id}" extends from "${view.extends}" which does not exist`)
-        return acc
-      }
-      return Object.assign(acc, {
-        [view.id]: {
-          ...extendsFrom,
-          ...view,
-          rules: [...extendsFrom.rules, ...view.rules]
-        }
-      })
+
+    const extendsFrom = acc[view.extends]
+    if (!extendsFrom || !isElementView(extendsFrom)) {
+      return acc
     }
-    return Object.assign(acc, { [view.id]: view })
-  }, {} as V)
+
+    acc[view.id] = {
+      ...extendsFrom,
+      ...view,
+      rules: [...extendsFrom.rules, ...view.rules]
+    }
+    return acc
+  }, {} as Record<string, LikeC4View>) as V
+
+  // forEachNodeInTopologicalOrder(g, (_id, { view }) => {
+
+  // })
+
+  // return ordered as V
 }

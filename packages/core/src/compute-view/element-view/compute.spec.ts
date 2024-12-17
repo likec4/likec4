@@ -27,9 +27,12 @@ describe('compute', () => {
       builder
         .model(({ el, rel }, _) =>
           _(
-            el('cloud'),
-            el('cloud.backend'),
-            el('cloud.backend.graphql'),
+            el('cloud').with(
+              el('backend').with(
+                el('graphql'),
+                el('db')
+              )
+            ),
             el('amazon'),
             rel('cloud.backend.graphql', 'amazon')
           )

@@ -267,16 +267,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "description": null,
       "edges": [
         {
-          "id": "client:system.frontend",
-          "label": "opens",
-          "parent": null,
-          "relations": [
-            "14imtre",
-          ],
-          "source": "client",
-          "target": "system.frontend",
-        },
-        {
           "id": "system.frontend:system.backend",
           "label": "requests",
           "parent": null,
@@ -285,6 +275,16 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           ],
           "source": "system.frontend",
           "target": "system.backend",
+        },
+        {
+          "id": "client:system.frontend",
+          "label": "opens",
+          "parent": null,
+          "relations": [
+            "14imtre",
+          ],
+          "source": "client",
+          "target": "system.frontend",
         },
       ],
       "hash": "6133897cf17d30559ee717c08c2226aa7fa629da",

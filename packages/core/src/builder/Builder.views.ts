@@ -1,6 +1,16 @@
-import type { LikeC4View } from '../types'
+import type { Simplify, Writable } from 'type-fest'
+import type { DeploymentView, ElementView, LikeC4View } from '../types'
 import type { AnyTypes } from './_types'
 import type { Builder } from './Builder'
+import type { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
+import { $deploymentExpr, type AddDeploymentViewHelper, type DeploymentViewBuilder } from './Builder.view-deployment'
+import {
+  $expr,
+  type AddViewHelper,
+  type AddViewOfHelper,
+  type ElementViewBuilder,
+  type TypedAddViewOfHelper
+} from './Builder.view-element'
 
 export interface ViewsBuilder<T extends AnyTypes> {
   addView(view: LikeC4View): Builder<T>
@@ -317,4 +327,66 @@ export function views(...ops: any[]) {
     }
     return builder
   }
+}
+export type ViewsHelpers = {
+  views: typeof views
+  view: AddViewHelper
+  viewOf: AddViewOfHelper
+  deploymentView: AddDeploymentViewHelper
+  $include: typeof $include
+  $exclude: typeof $exclude
+  $style: typeof $style
+  $rules: typeof $rules
+  $autoLayout: typeof $autoLayout
+}
+
+export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
+  helpers: Simplify<
+    Omit<ViewsHelpers, 'viewOf'> & {
+      viewOf: TypedAddViewOfHelper<A>
+      _: ViewsHelpers['views']
+    }
+  >,
+  add: ViewsHelpers['views']
+) => (builder: Builder<A>) => Builder<B>
+
+export function mkViewBuilder(view: Writable<DeploymentView>): DeploymentViewBuilder<AnyTypes>
+export function mkViewBuilder(view: Writable<ElementView>): ElementViewBuilder<AnyTypes>
+export function mkViewBuilder(
+  view: Writable<ElementView | DeploymentView>
+): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
+  const viewBuilder = {
+    $expr: view.__ === 'deployment' ? $deploymentExpr : $expr,
+    autoLayout(autoLayout: unknown) {
+      view.rules.push({
+        direction: autoLayout
+      } as any)
+      return viewBuilder
+    },
+    exclude(expr: unknown) {
+      view.rules.push({
+        exclude: [expr]
+      } as any)
+      return viewBuilder
+    },
+    include(expr: unknown) {
+      view.rules.push({
+        include: [expr]
+      } as any)
+      return viewBuilder
+    },
+    style(rule: any) {
+      view.rules.push(rule)
+      return viewBuilder
+    }
+    // title(title: string) {
+    //   view.title = title
+    //   return viewBuilder
+    // },
+    // description(description: string) {
+    //   view.description = description
+    //   return viewBuilder
+    // }
+  }
+  return viewBuilder as any
 }

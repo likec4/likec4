@@ -3,11 +3,11 @@ import { values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
 import {
-  type AnyLikeC4Model,
   type ComputedDeploymentView,
   DeploymentElement,
   type DeploymentRef,
   type DeploymentRelation,
+  type GenericLikeC4Model,
   type Tag as C4Tag
 } from '../types'
 import { ancestorsFqn, parentFqn } from '../utils/fqn'
@@ -63,7 +63,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
 
   constructor(
     public readonly $model: LikeC4Model<M>,
-    public readonly $deployments: AnyLikeC4Model['deployments']
+    public readonly $deployments: GenericLikeC4Model['deployments']
   ) {
     for (const element of values($deployments.elements)) {
       const el = this.addElement(element)
@@ -311,8 +311,8 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
       throw new Error(`Element ${element.id} already exists`)
     }
     const el = DeploymentElement.isDeploymentNode(element)
-      ? new DeploymentNodeModel(this, element)
-      : new DeployedInstanceModel(this, element, this.$model.element(element.element))
+      ? new DeploymentNodeModel(this, Object.freeze(element))
+      : new DeployedInstanceModel(this, Object.freeze(element), this.$model.element(element.element))
     this.#elements.set(el.id, el)
     const parentId = parentFqn(el.id)
     if (parentId) {
@@ -332,7 +332,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     }
     const rel = new DeploymentRelationModel(
       this,
-      relation
+      Object.freeze(relation)
     )
     this.#relations.set(rel.id, rel)
     this.#incoming.get(rel.target.id).add(rel)

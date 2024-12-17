@@ -1,11 +1,13 @@
 import DefaultMap from 'mnemonist/default-map'
-import { pipe, sort, values } from 'remeda'
+import { mapValues, pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
+import { computeView, unsafeComputeView } from '../compute-view'
+import type { ComputeViewResult } from '../compute-view/compute-view'
 import { invariant, nonNullable } from '../errors'
-import type { ComputedView, DiagramView, ModelGlobals } from '../types'
+import type { ComputedView, DiagramView, LikeC4View, ModelGlobals } from '../types'
 import type { Element } from '../types/element'
 import { type Tag as C4Tag } from '../types/element'
-import type { AnyLikeC4Model, ParsedLikeC4ModelDump } from '../types/model'
+import type { AnyParsedLikeC4Model, GenericLikeC4Model, LikeC4ModelDump } from '../types/model'
 import type { ModelRelation } from '../types/relation'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
@@ -56,14 +58,57 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
   public readonly deployment: LikeC4DeploymentModel<M>
 
-  static create<const M extends AnyLikeC4Model>(model: M): LikeC4Model<Aux.FromModel<M>> {
+  /**
+   * Computes views from the parsed model
+   * Creates a new LikeC4Model instance from a parsed model.
+   *
+   * May throw an error if the model is invalid.
+   *
+   * @typeParam M - The type of the parsed LikeC4 model, must extend ParsedLikeC4Model
+   * @param parsed - The parsed LikeC4 model to compute from
+   * @returns A new LikeC4Model instance with computed relationships and structure
+   */
+  static compute<const M extends AnyParsedLikeC4Model>(parsed: M): LikeC4Model<Aux.FromParsed<M>> {
+    let { views, ...rest } = parsed as Omit<M, '__'>
+    const model = new LikeC4Model({ ...rest, views: {} })
+    return new LikeC4Model({
+      ...rest,
+      views: mapValues(views, view => unsafeComputeView(view as LikeC4View, model))
+    } as any)
+  }
+
+  /**
+   * Creates a function that computes a view using the data from the model.
+   *
+   * @example
+   * const compute = LikeC4Model.makeCompute(parsedModel);
+   * const result = compute(viewSource);
+   */
+  static makeCompute<M extends AnyParsedLikeC4Model>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
+    let { views, ...rest } = parsed as Omit<M, '__'>
+    const model = new LikeC4Model(structuredClone({ ...rest, views: {} }))
+    return (viewsource) => computeView(viewsource, model)
+  }
+
+  /**
+   * Creates a new LikeC4Model instance from the provided model data.
+   *
+   * @typeParam M - Type parameter constrained to AnyLikeC4Model
+   * @param model - The model data to create a LikeC4Model from
+   * @returns A new LikeC4Model instance with the type derived from the input model
+   */
+  static create<const M extends GenericLikeC4Model>(model: M): LikeC4Model<Aux.FromModel<M>> {
     return new LikeC4Model(model as any)
   }
 
   /**
-   * This method is supposed to be used only in dumps
+   * Creates a new LikeC4Model instance from a model dump.
+   *
+   * @typeParam M - A constant type parameter extending LikeC4ModelDump
+   * @param dump - The model dump to create the instance from
+   * @returns A new LikeC4Model instance with types inferred from the dump
    */
-  static fromDump<const M extends ParsedLikeC4ModelDump>(dump: M): LikeC4Model<Aux.FromDump<M>> {
+  static fromDump<const M extends LikeC4ModelDump>(dump: M): LikeC4Model<Aux.FromDump<M>> {
     return new LikeC4Model(dump as any)
   }
 
@@ -88,7 +133,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
       sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled'))
     )
     for (const view of views) {
-      const vm = new LikeC4ViewModel(this, view as M['ViewType'])
+      const vm = new LikeC4ViewModel(this, Object.freeze(view as M['ViewType']))
       this.#views.set(view.id, vm)
       for (const tag of vm.tags) {
         this.#allTags.get(tag).add(vm)
@@ -316,7 +361,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     if (this.#elements.has(element.id)) {
       throw new Error(`Element ${element.id} already exists`)
     }
-    const el = new ElementModel(this, element)
+    const el = new ElementModel(this, Object.freeze(structuredClone(element)))
     this.#elements.set(el.id, el)
     const parentId = parentFqn(el.id)
     if (parentId) {
@@ -335,7 +380,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     }
     const rel = new RelationshipModel(
       this,
-      relation
+      Object.freeze(structuredClone(relation))
     )
     const { source, target } = rel
     this.#relations.set(rel.id, rel)

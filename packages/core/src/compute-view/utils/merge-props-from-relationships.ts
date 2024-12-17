@@ -16,12 +16,12 @@ function pickRelationshipProps(relation: ModelRelation | DeploymentRelation) {
     navigateTo = null
   } = relation
   return {
-    // If relation has title, also pick description and technology
+    // Pick description only if title is present
     ...(title && {
       title,
-      description,
-      technology
+      description
     }),
+    technology,
     kind,
     color,
     line,
@@ -94,12 +94,17 @@ export function mergePropsFromRelationships(
       }
     )
   )
+
+  let technology = only(allprops.technology)
+  let title = only(allprops.title) ?? (allprops.title.length > 1 ? '[...]' : null)
+
   const tags = unique(allprops.tags)
   let merged = pickBy(
     {
-      title: only(allprops.title) ?? (allprops.title.length > 1 ? '[...]' : null),
+      // If there is no title, but there is technology, use technology as title
+      title: title ?? (technology ? `[${technology}]` : null),
       description: only(allprops.description),
-      technology: only(allprops.technology),
+      technology,
       kind: only(allprops.kind),
       head: only(allprops.head),
       tail: only(allprops.tail),
@@ -113,13 +118,10 @@ export function mergePropsFromRelationships(
   )
 
   if (prefer) {
-    return pickBy(
-      {
-        ...merged,
-        ...pickRelationshipProps(prefer)
-      },
-      isTruthy
-    )
+    return {
+      ...merged,
+      ...pickBy(pickRelationshipProps(prefer), isTruthy)
+    }
   }
   return merged
 }

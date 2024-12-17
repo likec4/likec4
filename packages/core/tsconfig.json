@@ -3,7 +3,9 @@
   "compilerOptions": {
     "lib": [
       "ES2022",
+      "DOM"
     ],
+    "noErrorTruncation": true,
     "target": "ES2022",
     "rootDir": "src",
     "noEmit": true,

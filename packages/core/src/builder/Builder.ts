@@ -37,21 +37,11 @@ import type {
 } from './Builder.deploymentModel'
 import type { AddElement } from './Builder.element'
 import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
-import {
-  $autoLayout,
-  $exclude,
-  $include,
-  $rules,
-  $style,
-  type AddElementView,
-  type DeploymentViewRuleBuilderOp,
-  type ElementViewBuilderOp,
-  mkViewBuilder,
-  type ViewHelpers,
-  type ViewsBuilderFunction
-} from './Builder.view'
-import { type ViewsBuilder } from './Builder.views'
-import type { BuilderMethods } from './BuilderInterace'
+import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
+import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
+import type { ElementViewRulesBuilder } from './Builder.view-element'
+import { mkViewBuilder, type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers } from './Builder.views'
+import type { BuilderMethods } from './Builder.with'
 
 export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   /**
@@ -66,7 +56,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    */
   helpers(): {
     model: ModelHelpers<T>
-    views: ViewHelpers<T>
+    views: ViewsHelpers
     deployment: DeloymentModelHelpers<T>
   }
 
@@ -114,6 +104,8 @@ interface Internals<T extends AnyTypes> {
   __deployment(): DeploymentModelBuilder<T>
 }
 
+type Op<T> = (b: T) => T
+
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
   _elements = new Map<string, Element>(),
@@ -145,6 +137,36 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return null
     }
     return map(links, l => (typeof l === 'string' ? { url: l } : l))
+  }
+
+  const createGenericView = <B extends Op<any> | undefined>(
+    id: string,
+    _props: T['NewViewProps'] | string | B | null,
+    builder: B
+  ): [Omit<LikeC4View, 'rules'>, B] => {
+    if (isFunction(_props)) {
+      builder = _props as B
+      _props = {}
+    }
+    _props ??= {}
+    const {
+      links: _links = [],
+      title = null,
+      description = null,
+      tags = null,
+      ...props
+    } = typeof _props === 'string' ? { title: _props } : { ..._props }
+
+    const links = mapLinks(_links)
+    return [{
+      id: id as any,
+      title,
+      description,
+      tags,
+      links,
+      customColorDefinitions: {},
+      ...props
+    }, builder]
   }
 
   const self: Builder<T> & Internals<T> = {
@@ -196,6 +218,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
        * Fully qualified name for nested elements
        */
       fqn(id) {
+        invariant(id.trim() !== '', 'Id must be non-empty')
         return id as Fqn
       },
       addSourcelessRelation() {
@@ -205,7 +228,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     __views: () => ({
       addView: (view) => {
         if (isScopedElementView(view)) {
-          invariant(_elements.get(view.viewOf), `Invalid view ${view.id}, wlement with id "${view.viewOf}" not found`)
+          invariant(
+            _elements.get(view.viewOf),
+            `Invalid scoped view ${view.id}, wlement with id "${view.viewOf}" not found`
+          )
         }
         _views.set(view.id, view)
         return self
@@ -385,43 +411,28 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return b
           }
         },
-        view: (id, _props?, builder?: ElementViewBuilderOp<T>) => {
-          if (isFunction(_props)) {
-            builder = _props as ElementViewBuilderOp<any>
-            _props = {}
-          }
-          _props ??= {}
-          const {
-            links: _links = [],
-            title = null,
-            description = null,
-            tags = null,
-            ...props
-          } = typeof _props === 'string' ? { title: _props } : { ..._props }
-
-          const links = mapLinks(_links)
+        view: (
+          id: string,
+          _props?: T['NewViewProps'] | string | ElementViewRulesBuilder<any>,
+          _builder?: ElementViewRulesBuilder<any>
+        ) => {
+          const [generic, builder] = createGenericView(id, _props, _builder)
           const view: Writable<ElementView> = {
-            id: id as any,
+            ...generic,
             __: 'element',
-            title,
-            rules: [],
-            description,
-            tags,
-            links,
-            customColorDefinitions: {},
-            ...props
+            rules: []
           }
 
-          const add: AddElementView<any> = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
+          const add = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
             b.addView(view)
             if (builder) {
               builder(mkViewBuilder(view))
             }
             return b
           }
-          add.with = (...ops: ElementViewBuilderOp<any>[]) => (b: ViewsBuilder<any>) => {
+          add.with = (...ops: ElementViewRulesBuilder<any>[]) => (b: ViewsBuilder<any>) => {
             add(b)
-            const elementViewBuilder = mkViewBuilder<any>(view)
+            const elementViewBuilder = mkViewBuilder(view)
             for (const op of ops) {
               op(elementViewBuilder)
             }
@@ -432,81 +443,68 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         },
         viewOf: (
           id,
-          viewOf,
-          _props?: T['NewViewProps'] | string | ElementViewBuilderOp<any>,
-          builder?: ElementViewBuilderOp<any>
+          viewOf: string,
+          _props?: T['NewViewProps'] | string | ElementViewRulesBuilder<any>,
+          _builder?: ElementViewRulesBuilder<any>
         ) => {
-          if (isFunction(_props)) {
-            builder = _props
-            _props = {}
+          const [generic, builder] = createGenericView(id, _props, _builder)
+          const view: Writable<ElementView> = {
+            ...generic,
+            viewOf: viewOf as Fqn,
+            __: 'element',
+            rules: []
           }
-          return <T extends AnyTypes>(b: ViewsBuilder<T>): ViewsBuilder<T> => {
-            const {
-              links: _links = [],
-              title = null,
-              ...props
-            } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            const links = mapLinks(_links)
-
-            const view: Writable<ElementView> = {
-              id: id as any,
-              __: 'element',
-              viewOf,
-              title,
-              description: null,
-              tags: null,
-              rules: [],
-              links,
-              customColorDefinitions: {},
-              ...props
-            }
+          const add = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
             b.addView(view)
-
             if (builder) {
               builder(mkViewBuilder(view))
             }
-
             return b
           }
+
+          add.with = (...ops: ElementViewRulesBuilder<any>[]) => (b: ViewsBuilder<any>) => {
+            add(b)
+            const elementViewBuilder = mkViewBuilder(view)
+            for (const op of ops) {
+              op(elementViewBuilder)
+            }
+            return b
+          }
+
+          return add
         },
+
         deploymentView: (
-          id,
-          _props?: T['NewViewProps'] | string | DeploymentViewRuleBuilderOp<any>,
-          builder?: DeploymentViewRuleBuilderOp<any>
+          id: string,
+          _props?: T['NewViewProps'] | string | DeploymentRulesBuilderOp<any>,
+          _builder?: DeploymentRulesBuilderOp<any>
         ) => {
-          if (isFunction(_props)) {
-            builder = _props as any
-            _props = {}
+          const [generic, builder] = createGenericView(id, _props, _builder)
+          const view: Writable<DeploymentView> = {
+            ...generic,
+            __: 'deployment',
+            rules: []
           }
-          return <T extends AnyTypes>(b: ViewsBuilder<T>): ViewsBuilder<T> => {
-            const {
-              links: _links = [],
-              title = null,
-              ...props
-            } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            const links = mapLinks(_links)
-
-            const view: Writable<DeploymentView> = {
-              id: id as any,
-              __: 'deployment',
-              title,
-              description: null,
-              tags: null,
-              rules: [],
-              links,
-              customColorDefinitions: {},
-              ...props
-            }
+          const add = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
             b.addView(view)
-
             if (builder) {
               builder(mkViewBuilder(view))
             }
-
             return b
           }
+
+          add.with = (...ops: DeploymentRulesBuilderOp<any>[]) => (b: ViewsBuilder<any>) => {
+            add(b)
+            const elementViewBuilder = mkViewBuilder(view)
+            for (const op of ops) {
+              op(elementViewBuilder)
+            }
+            return b
+          }
+
+          return add
         },
         $autoLayout,
         $exclude,
@@ -633,17 +631,26 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     model: <Out extends AnyTypes>(cb: ModelBuilderFunction<T, Out>) => {
       const b = self.clone()
       const helpers = b.helpers().model
-      return cb(helpers, helpers.model as any)(b)
+      return cb({
+        ...helpers,
+        _: helpers.model as any
+      }, helpers.model as any)(b)
     },
     deployment: <Out extends AnyTypes>(cb: DeloymentModelBuildFunction<T, Out>) => {
       const b = self.clone()
       const helpers = b.helpers().deployment
-      return cb(helpers, helpers.deployment as any)(b)
+      return cb({
+        ...helpers,
+        _: helpers.deployment as any
+      }, helpers.deployment as any)(b)
     },
     views: <Out extends AnyTypes>(cb: ViewsBuilderFunction<T, Out>) => {
       const b = self.clone()
       const helpers = b.helpers().views
-      return cb(helpers, helpers.views as any)(b)
+      return cb({
+        ...helpers,
+        _: helpers.views as any
+      } as any, helpers.views as any)(b)
     }
   }
 
@@ -659,14 +666,12 @@ export namespace Builder {
     builder: Builder<Types.FromSpecification<Spec>>
     model: ModelHelpers<Types.FromSpecification<Spec>>
     deployment: DeloymentModelHelpers<Types.FromSpecification<Spec>>
-    views: ViewHelpers<Types.FromSpecification<Spec>>
-    build: Builder<Types.FromSpecification<Spec>>['with']
+    views: ViewsHelpers
   } {
     const b = builder<Spec, Types.FromSpecification<Spec>>(spec)
     return {
       ...b.helpers(),
-      builder: b,
-      build: b.with
+      builder: b
     }
   }
 

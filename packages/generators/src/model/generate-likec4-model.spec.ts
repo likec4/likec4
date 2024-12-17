@@ -1,7 +1,8 @@
-import { Builder, LikeC4Model } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core'
+import { Builder } from '@likec4/core/builder'
 import { computeViews, withReadableEdges } from '@likec4/core/compute-view'
 import { mapValues } from 'remeda'
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { generateLikeC4Model } from './generate-likec4-model'
 
 const {
@@ -139,6 +140,7 @@ const builder = b
         )
       ),
       deploymentView(
+        'prod',
         'prod',
         $rules(
           $include('customer.instance'),

@@ -1,6 +1,3 @@
-export * from './builder'
-export { Builder } from './builder'
-export type * from './builder'
 export * from './colors'
 export * from './errors'
 export * from './model'
@@ -16,5 +13,7 @@ export * from './utils/promises'
 export { compareRelations } from './utils/relations'
 export * from './utils/set'
 export * from './utils/string-hash'
+
+export * as iterable from './utils/iterable'
 
 export * as Expr from './types/expression'

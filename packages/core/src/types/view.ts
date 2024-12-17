@@ -1,5 +1,5 @@
 import { isArray, isNullish } from 'remeda'
-import type { Tagged } from 'type-fest'
+import type { LiteralUnion, Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import {
   type BorderStyle,

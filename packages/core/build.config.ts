@@ -6,29 +6,26 @@ export default defineBuildConfig({
   clean: isProduction,
   stub: !isProduction,
   declaration: true,
-  alias: {
-    'object-hash': 'object-hash/dist/object_hash'
-  },
   rollup: {
     inlineDependencies: true,
     commonjs: {
       exclude: [
-        /\.d\.ts$/,
-        /\.d\.cts$/,
-        /\.d\.mts$/
+        /\.ts$/,
+        /\.cts$/,
+        /\.mts$/
       ]
     },
     resolve: {
       browser: true
-    },
-    dts: {
-      compilerOptions: {
-        noEmitOnError: false,
-        strict: false,
-        alwaysStrict: false,
-        skipLibCheck: true,
-        skipDefaultLibCheck: true
-      }
     }
+    // dts: {
+    //   compilerOptions: {
+    //     noEmitOnError: false,
+    //     strict: false,
+    //     alwaysStrict: false,
+    //     skipLibCheck: true,
+    //     skipDefaultLibCheck: true
+    //   }
+    // }
   }
 })

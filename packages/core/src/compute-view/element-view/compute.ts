@@ -1,4 +1,5 @@
-import { difference, filter, findLast, map, pipe } from 'remeda'
+import DefaultMap from 'mnemonist/default-map'
+import { filter, findLast, map, pipe } from 'remeda'
 import { invariant, nonexhaustive } from '../../errors'
 import { LikeC4Model } from '../../model'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
@@ -8,6 +9,7 @@ import type {
   ComputedElementView,
   ElementPredicateExpression,
   ElementView,
+  NodeId,
   RelationPredicateExpression,
   ViewRule
 } from '../../types'
@@ -56,13 +58,9 @@ function processElementPredicate(
       return processElementPredicate(expr.where.expr, op, { ...ctx, where, filterWhere } as any)
     }
     case Expr.isExpandedElementExpr(expr): {
-      // if (op === 'include') {
-      //   return ExpandedElementPredicate[op]({ ...ctx, expr }) ?? ctx.stage
-      // }
       return ExpandedElementPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     case Expr.isElementRef(expr): {
-      // return callPredicate(ElementRefPredicate, op, { ...ctx, expr }) ?? ctx.stage
       return ElementRefPredicate[op]({ ...ctx, expr } as any) ?? ctx.stage
     }
     case Expr.isWildcard(expr):
@@ -250,30 +248,25 @@ function assignElementsToGroups(memory: Memory) {
   if (memory.groups.length === 0) {
     return memory
   }
-  const state = memory.mutableState()
-  const unprocessed = new Set<Elem>(difference(
-    [...state.final],
-    [...state.rootGroup.explicits]
-  ))
-  // Step 1 - Process explicits
-  let groups = state.groups.map(g => {
-    const explicits = new Set<Elem>()
-    for (const el of g.explicits) {
-      if (unprocessed.delete(el)) {
-        explicits.add(el)
-      }
+  const groupAssignments = new DefaultMap<NodeId, Set<Elem>>(() => new Set())
+
+  for (const el of memory.final) {
+    const groupId = memory.explicitFirstSeenIn.get(el.id) ?? memory.lastSeenIn.get(el.id)
+    if (groupId) {
+      groupAssignments.get(groupId).add(el)
     }
-    return g.update({ explicits })
-  })
-  // Step 2 - Process implicits (make them explicits)
-  groups = groups.map(group => {
-    const explicits = new Set(group.explicits)
-    for (const el of group.implicits) {
-      if (unprocessed.delete(el)) {
-        explicits.add(el)
-      }
+  }
+
+  if (groupAssignments.size === 0) {
+    return memory
+  }
+
+  let groups = memory.groups.map(group => {
+    const explicits = groupAssignments.get(group.id)
+    if (!explicits) {
+      return group
     }
-    return group.update({ explicits, implicits: new Set() })
+    return group.update(explicits)
   })
   return memory.update({ groups })
 }

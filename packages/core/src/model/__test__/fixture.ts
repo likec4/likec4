@@ -26,9 +26,7 @@ const {
     viewOf,
     deploymentView,
     $rules,
-    $include,
-    $exclude,
-    $style
+    $include
   }
 } = Builder.forSpecification({
   elements: {
@@ -139,12 +137,9 @@ const local = b
           $include('cloud.frontend.dashboard')
         )
       ),
-      deploymentView(
-        'prod',
-        $rules(
-          $include('customer.instance'),
-          $include('prod.eu.zone1.ui')
-        )
+      deploymentView('prod').with(
+        $include('customer.instance'),
+        $include('prod.eu.zone1.ui')
       )
     )
   )

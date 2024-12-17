@@ -31,6 +31,7 @@ describe('custom-relation-expr', () => {
         "head": "diamond",
         "id": "cloud.frontend:cloud.backend",
         "isCustomized": true,
+        "kind": "graphlql",
         "label": "requests",
         "parent": null,
         "relations": [
@@ -43,6 +44,7 @@ describe('custom-relation-expr', () => {
           "next",
           "old",
         ],
+        "tail": "odiamond",
         "target": "cloud.backend",
       }
     `)

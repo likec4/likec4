@@ -1,14 +1,15 @@
 import type { IsLiteral, LiteralUnion, Simplify } from 'type-fest'
 import type {
-  AnyLikeC4Model,
   ComputedView,
   DiagramView,
   EdgeId,
   Fqn,
+  GenericLikeC4Model,
   KeysOf,
   LayoutedLikeC4Model,
+  LikeC4ModelDump,
   NodeId,
-  ParsedLikeC4ModelDump,
+  ParsedLikeC4Model,
   RelationId,
   ViewId
 } from '../types'
@@ -63,7 +64,7 @@ export interface Aux<
   NodeOrId: LiteralUnion<this['NodeIdLiteral'], string> | WithId<this['NodeId']>
   EdgeOrId: LiteralUnion<this['EdgeIdLiteral'], string> | WithId<this['EdgeId']>
 
-  Model: Simplify<Omit<AnyLikeC4Model, 'views'> & WithViews<this['ViewId'], ViewType>>
+  Model: Simplify<Omit<GenericLikeC4Model, 'views'> & WithViews<this['ViewId'], ViewType>>
 }
 
 export type AnyAux = Aux<
@@ -74,7 +75,15 @@ export type AnyAux = Aux<
 >
 
 export namespace Aux {
-  export type FromModel<M> = M extends AnyLikeC4Model ? Aux<
+  export type FromParsed<M> = M extends ParsedLikeC4Model ? Aux<
+      KeysOf<M['elements']>,
+      KeysOf<M['deployments']['elements']>,
+      KeysOf<M['views']>,
+      ComputedView<ViewId<KeysOf<M['views']>>, string>
+    >
+    : never
+
+  export type FromModel<M> = M extends GenericLikeC4Model ? Aux<
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
@@ -83,7 +92,7 @@ export namespace Aux {
     >
     : never
 
-  export type FromDump<M> = M extends ParsedLikeC4ModelDump ? Aux<
+  export type FromDump<M> = M extends LikeC4ModelDump ? Aux<
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,

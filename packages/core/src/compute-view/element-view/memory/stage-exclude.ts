@@ -1,12 +1,8 @@
-import { filter, forEach, pipe } from 'remeda'
+import { filter, forEach, map, pipe } from 'remeda'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import { difference, hasIntersection, intersection } from '../../../utils/set'
 import { AbstractStageExclude } from '../../memory'
-import { type ActiveGroupMemory, type Ctx, Memory } from './memory'
-import { StageInclude } from './stage-include'
-
-type Elem = Ctx['Element']
-type Connection = Ctx['Connection']
+import { type ActiveGroupMemory, type Ctx } from './memory'
 
 export class StageExclude<C extends Ctx = Ctx> extends AbstractStageExclude<C> {
   public excludeRelations(excluded: ReadonlySet<RelationshipModel<any>>): this {
@@ -24,23 +20,19 @@ export class StageExclude<C extends Ctx = Ctx> extends AbstractStageExclude<C> {
 
   protected override postcommit(state: C['MutableState']) {
     const leftExplicits = difference(this.memory.explicits, state.explicits)
-    if (leftExplicits.size > 0) {
-      state.rootGroup.excludeElement(...leftExplicits)
-      state.groups.forEach(group => {
-        group.excludeElement(...leftExplicits)
-      })
+    for (const explicit of leftExplicits) {
+      state.explicitFirstSeenIn.delete(explicit.id)
     }
 
-    const leftImplicits = [...difference(this.memory.elements, state.elements)]
-    if (leftImplicits.length > 0) {
-      state.rootGroup.excludeImplicit(leftImplicits)
-      state.groups.forEach(group => {
-        group.excludeImplicit(leftImplicits)
-      })
+    // Left elements
+    const left = difference(this.memory.elements, state.elements)
+    for (const el of left) {
+      state.lastSeenIn.delete(el.id)
     }
     return state
   }
 }
+
 export class ActiveGroupStageExclude extends StageExclude {
   constructor(
     public override readonly memory: ActiveGroupMemory

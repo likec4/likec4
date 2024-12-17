@@ -13,6 +13,7 @@ import {
   type ElementWhereExpr,
   type Expression as C4Expression,
   type Fqn,
+  type GlobalPredicateId,
   type GlobalStyleID,
   type IconUrl,
   type IncomingExpr as C4IncomingExpr,
@@ -31,6 +32,7 @@ import {
   type Tag,
   type ViewId,
   type ViewRule,
+  type ViewRuleGlobalPredicateRef,
   type ViewRuleGlobalStyle,
   type ViewRuleGroup,
   type ViewRulePredicate,
@@ -38,7 +40,6 @@ import {
   type WhereOperator
 } from '../../../types'
 import { type DirectRelationExpr as C4RelationExpr } from '../../../types/expression'
-import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeElementView } from '../compute'
 
@@ -372,13 +373,39 @@ const fakeParsedModel = {
   },
   views: {},
   globals: {
-    predicates: {},
+    predicates: {
+      'remove_tag_old': [
+        $exclude('*', {
+          tag: { eq: 'old' }
+        })
+      ],
+      'remove_not_tag_old': [
+        $exclude('*', {
+          tag: { neq: 'old' }
+        })
+      ],
+      'include_next': [
+        $include('* -> *', {
+          where: {
+            and: [
+              {
+                or: [
+                  { tag: { eq: 'communication' } },
+                  { tag: { eq: 'next' } },
+                  { tag: { eq: 'old' } }
+                ]
+              },
+              { tag: { neq: 'storage' } }
+            ]
+          }
+        })
+      ]
+    } satisfies Record<string, NonEmptyArray<ViewRulePredicate>>,
     dynamicPredicates: {},
     styles: globalStyles
   }
 } as const
 export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
-export const fakeModelGraph = new LikeC4ModelGraph(fakeParsedModel)
 
 const emptyView = {
   __: 'element' as const,
@@ -399,7 +426,12 @@ export const includeWildcard = {
   ]
 } satisfies ViewRule
 
-export type ElementRefExpr = '*' | FakeElementIds | `${FakeElementIds}.*` | `${FakeElementIds}._`
+export type ElementRefExpr =
+  | '*'
+  | FakeElementIds
+  | `${FakeElementIds}.*`
+  | `${FakeElementIds}.**`
+  | `${FakeElementIds}._`
 
 type InOutExpr = `-> ${ElementRefExpr} ->`
 type IncomingExpr = `-> ${ElementRefExpr}`
@@ -532,7 +564,7 @@ export function $expr(expr: Expression | C4Expression): C4Expression {
   }
   if (expr.endsWith('.**')) {
     return {
-      element: expr.replace('.*', '') as Fqn,
+      element: expr.replace('.**', '') as Fqn,
       isDescendants: true
     }
   }
@@ -601,16 +633,23 @@ export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): 
   }
 }
 
-type GlobalStyles = keyof typeof globalStyles
-type GlobalExpr = `style ${GlobalStyles}`
-export function $global(expr: GlobalExpr): ViewRuleGlobalStyle {
+type GlobalStyles = `style ${keyof typeof globalStyles}`
+type GlobalPredicate = `predicate ${keyof typeof fakeParsedModel.globals.predicates}`
+type GlobalExpr = GlobalStyles | GlobalPredicate
+export function $global(expr: GlobalExpr): ViewRuleGlobalStyle | ViewRuleGlobalPredicateRef {
   const [_t, id] = expr.split(' ') as [string, string]
-  if (_t === 'style') {
-    return {
-      styleId: id as GlobalStyleID
-    }
+  switch (_t) {
+    case 'predicate':
+      return {
+        predicateId: id as GlobalPredicateId
+      }
+    case 'style':
+      return {
+        styleId: id as GlobalStyleID
+      }
+    default:
+      throw new Error(`Invalid global expression: ${expr}`)
   }
-  throw new Error('Invalid global expression')
 }
 
 export function computeView(

@@ -1,4 +1,4 @@
-import type { IfNever, IsLiteral, Tagged, TupleToUnion } from 'type-fest'
+import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
 import type {
   BorderStyle,
   Color,
@@ -88,6 +88,12 @@ export type NewRelationProps<Kind, Tag, Metadata> = {
 export type Invalid<Message extends string> = Tagged<Message, 'Error'>
 export type Warn<Id, Existing> = IsLiteral<Existing> extends true ? Id extends Existing ? Invalid<'Already exists'> : Id
   : Id
+
+export type ValidId<Id> =
+  // Id extends `${string}.${string}` ? Invalid<'Id must not contain dot'>
+  Id extends `${number}${string}` ? Invalid<'Id must not start with number'>
+    : IsStringLiteral<Id> extends true ? Id
+    : Invalid<'Id must be a literal'>
 
 /**
  * Auxilary type to keep track of the types in builder

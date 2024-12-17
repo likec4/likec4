@@ -11,6 +11,7 @@ exports[`compute-element-view > view of cloud 1`] = `
   "edges": [
     {
       "id": "cloud.frontend:cloud.backend",
+      "kind": "graphlql",
       "label": "requests",
       "parent": "cloud",
       "relations": [
@@ -23,6 +24,7 @@ exports[`compute-element-view > view of cloud 1`] = `
         "next",
         "old",
       ],
+      "tail": "odiamond",
       "target": "cloud.backend",
     },
     {
@@ -74,7 +76,7 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "amazon",
     },
   ],
-  "hash": "3e66b5ad85ed469ae32e87604c15a6e7e186dcba",
+  "hash": "6df052156ae59d91622677537c2d657e4946d803",
   "id": "index",
   "links": null,
   "nodes": [

@@ -3,9 +3,8 @@ import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaus
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
-import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
+import type { ConditionalPick, SetRequired, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
-import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
@@ -114,13 +113,8 @@ export type ParsedAstDeploymentRelation = c4.DeploymentRelation & {
   astPath: string
 }
 
-// export interface ParsedAstGlobals {
-//   predicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.ViewRulePredicate>>
-//   dynamicPredicates: Record<c4.GlobalElRelID, c4.NonEmptyArray<c4.DynamicViewIncludeRule>>
-//   styles: Record<c4.GlobalStyleID, c4.NonEmptyArray<c4.ViewRuleStyle>>
-// }
 // Alias for refactoring
-export type ParsedAstGlobals = c4.ModelGlobals
+export type ParsedAstGlobals = Writable<c4.ModelGlobals>
 
 export interface ParsedAstElementView {
   __: 'element'

@@ -22,10 +22,12 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
     return this.connections
   }
 
-  abstract connectWithExisting(
-    element: T['Element'] | Iterable<T['Element']>,
-    direction?: 'in' | 'out' | 'both'
-  ): boolean
+  public connectWithExisting(
+    _element: T['Element'] | Iterable<T['Element']>,
+    _direction?: 'in' | 'out' | 'both'
+  ): boolean {
+    throw new Error('Method not implements, depends on the model')
+  }
 
   /**
    * Possible to override

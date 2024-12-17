@@ -50,7 +50,7 @@ export function buildComputedNodes(
 
   const elementToGroup = new Map<Fqn, NodeId>()
 
-  groups?.forEach(({ id, parent, viewRule, explicits }) => {
+  groups?.forEach(({ id, parent, viewRule, elements }) => {
     if (parent) {
       nonNullable(nodesMap.get(parent), `Parent group node ${parent} not found`).children.push(id)
     }
@@ -75,7 +75,7 @@ export function buildComputedNodes(
         opacity: viewRule.opacity ?? 0
       }
     })
-    for (const e of explicits) {
+    for (const e of elements) {
       elementToGroup.set(e.id, id)
     }
   })

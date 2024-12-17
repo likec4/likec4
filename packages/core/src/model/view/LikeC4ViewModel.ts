@@ -38,7 +38,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
     public readonly $view: V
   ) {
     for (const node of sort($view.nodes, compareByFqnHierarchically)) {
-      const el = new NodeModel(this, node)
+      const el = new NodeModel(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
       if (!node.parent) {
         this.#rootnodes.add(el)
@@ -55,7 +55,12 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
     }
 
     for (const edge of $view.edges) {
-      const edgeModel = new EdgeModel(this, edge, this.node(edge.source), this.node(edge.target))
+      const edgeModel = new EdgeModel(
+        this,
+        Object.freeze(edge),
+        this.node(edge.source),
+        this.node(edge.target)
+      )
       for (const tag of edgeModel.tags) {
         getOrCreate(this.#allTags, tag, () => new Set()).add(edgeModel)
       }

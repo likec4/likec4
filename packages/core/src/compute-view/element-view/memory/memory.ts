@@ -1,6 +1,5 @@
 import Stack from 'mnemonist/stack'
-import { omit } from 'remeda'
-import { invariant, nonNullable } from '../../../errors'
+import { nonNullable } from '../../../errors'
 import type { ConnectionModel } from '../../../model/connection'
 import type { ElementModel } from '../../../model/ElementModel'
 import type { NodeId, ViewRuleGroup } from '../../../types'
@@ -24,7 +23,16 @@ export interface Ctx extends
     final: Set<ElementModel>
     connections: ConnectionModel[]
     groups: NodesGroup[]
-    rootGroup: NodesGroup
+    /*
+     * The group where explict element was added first time
+     * May be a root group
+     */
+    explicitFirstSeenIn: Map<ElementModel['id'], NodesGroup['id']>
+    /**
+     * The group where element (implicit or explicit) was last seen (added or updated)
+     * Exclude root group
+     */
+    lastSeenIn: Map<ElementModel['id'], NodesGroup['id']>
   }
 }
 
@@ -36,7 +44,8 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
       final: new Set(),
       connections: [],
       groups: [],
-      rootGroup: NodesGroup.root()
+      explicitFirstSeenIn: new Map(),
+      lastSeenIn: new Map()
     })
   }
 
@@ -50,8 +59,12 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
     return this.state.groups
   }
 
-  public get rootGroup(): NodesGroup {
-    return this.state.rootGroup
+  public get explicitFirstSeenIn(): ReadonlyMap<ElementModel['id'], NodesGroup['id']> {
+    return this.state.explicitFirstSeenIn
+  }
+
+  public get lastSeenIn(): ReadonlyMap<ElementModel['id'], NodesGroup['id']> {
+    return this.state.lastSeenIn
   }
 
   override stageInclude(): StageInclude<C> {
@@ -68,7 +81,8 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
       final: new Set(this.state.final),
       connections: [...this.state.connections],
       groups: this.state.groups.map((g) => g.clone()),
-      rootGroup: this.state.rootGroup.clone()
+      explicitFirstSeenIn: new Map(this.state.explicitFirstSeenIn),
+      lastSeenIn: new Map(this.state.lastSeenIn)
     })
   }
 
@@ -81,7 +95,7 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
 }
 
 type ActiveGroupState = Ctx['MutableState'] & {
-  activeGroup: NodesGroup
+  // activeGroup: NodesGroup
 }
 
 export interface ActiveGroupCtx extends Ctx {
@@ -97,14 +111,13 @@ export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
     if (memory instanceof ActiveGroupMemory) {
       const stack = Stack.from(memory.stack)
       const state = memory.mutableState()
-      state.activeGroup = new NodesGroup(groupId, rule, state.activeGroup.id)
-      state.groups.push(state.activeGroup)
+      // state.activeGroup =
+      state.groups.push(new NodesGroup(groupId, rule, memory.activeGroupId))
       stack.push(groupId)
       return new ActiveGroupMemory(state, stack)
     }
     const state = memory.mutableState() as ActiveGroupState
-    state.activeGroup = new NodesGroup(groupId, rule, null)
-    state.groups.push(state.activeGroup)
+    state.groups.push(new NodesGroup(groupId, rule, null))
     const stack = Stack.of(groupId)
     return new ActiveGroupMemory(state, stack)
   }
@@ -117,29 +130,29 @@ export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
     super(state)
   }
 
-  get activeGroup(): NodesGroup {
-    return this.state.activeGroup
+  get activeGroupId(): NodeId {
+    return nonNullable(this.stack.peek(), 'Stack must not be empty')
   }
 
   override mutableState(): ActiveGroupState {
     const state = super.mutableState()
     return ({
-      ...state,
-      activeGroup: this.findActiveGroup(state.groups)
+      ...state
+      // activeGroup: this.findActiveGroup(state.groups)
     })
   }
 
-  private findActiveGroup(groups: NodesGroup[]): NodesGroup {
-    return nonNullable(groups.find(g => g.id === this.activeGroup.id), 'Active group not found in groups')
-  }
+  // private findActiveGroup(groups: NodesGroup[]): NodesGroup {
+  //   return nonNullable(groups.find(g => g.id === this.activeGroup.id), 'Active group not found in groups')
+  // }
 
   override update(newstate: Partial<ActiveGroupState>): ActiveGroupMemory {
     const nextstate = {
       ...this.state,
       ...newstate
     }
-    const activeGroup = this.findActiveGroup(nextstate.groups)
-    invariant(Object.is(activeGroup, nextstate.activeGroup), 'Active group must strictly equal to the group in groups')
+    // const activeGroup = this.findActiveGroup(nextstate.groups)
+    // invariant(Object.is(activeGroup, nextstate.activeGroup), 'Active group must strictly equal to the group in groups')
     return new ActiveGroupMemory(nextstate, this.stack)
   }
 
@@ -155,9 +168,8 @@ export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
     this.stack.pop()
     const prevgroup = this.stack.peek()
     if (prevgroup) {
-      state.activeGroup = nonNullable(state.groups.find(g => g.id === prevgroup), 'Group not found in stack')
       return new ActiveGroupMemory(state, this.stack)
     }
-    return new Memory(omit(state, ['activeGroup']))
+    return new Memory(state)
   }
 }

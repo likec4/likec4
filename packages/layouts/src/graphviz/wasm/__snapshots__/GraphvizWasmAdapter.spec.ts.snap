@@ -213,171 +213,6 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
   "description": null,
   "edges": [
     {
-      "dotpos": "e,228,332.26 228,179.87 228,223.7 228,276.72 228,321.86",
-      "id": "support:cloud.frontend.adminPanel",
-      "label": "manages",
-      "labelBBox": {
-        "height": 18,
-        "width": 62,
-        "x": 229,
-        "y": 240,
-      },
-      "parent": null,
-      "points": [
-        [
-          228,
-          180,
-        ],
-        [
-          228,
-          224,
-        ],
-        [
-          228,
-          277,
-        ],
-        [
-          228,
-          322,
-        ],
-      ],
-      "relations": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend.adminPanel",
-    },
-    {
-      "dotpos": "e,661,332.26 661,179.87 661,223.7 661,276.72 661,321.86",
-      "id": "customer:cloud.frontend.dashboard",
-      "label": "opens in browser",
-      "labelBBox": {
-        "height": 18,
-        "width": 111,
-        "x": 662,
-        "y": 240,
-      },
-      "parent": null,
-      "points": [
-        [
-          661,
-          180,
-        ],
-        [
-          661,
-          224,
-        ],
-        [
-          661,
-          277,
-        ],
-        [
-          661,
-          322,
-        ],
-      ],
-      "relations": [
-        "customer:cloud.frontend.dashboard",
-      ],
-      "source": "customer",
-      "target": "cloud.frontend.dashboard",
-    },
-    {
-      "dotpos": "e,242.87,680.87 233.12,511.86 235.92,560.29 239.38,620.37 242.27,670.36",
-      "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
-      "label": "fetches data in zero trust network with
-sso authentification",
-      "labelBBox": {
-        "height": 34,
-        "width": 239,
-        "x": 240,
-        "y": 572,
-      },
-      "parent": "cloud",
-      "points": [
-        [
-          233,
-          512,
-        ],
-        [
-          236,
-          560,
-        ],
-        [
-          239,
-          620,
-        ],
-        [
-          242,
-          670,
-        ],
-      ],
-      "relations": [
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend.adminPanel",
-      "target": "cloud.backend.graphql",
-    },
-    {
-      "dotpos": "e,355.91,680.95 608.69,511.57 582.66,548.09 547.96,587.44 507,611.6 489.88,621.7 481.35,611.95 463,619.6 429,633.77 395.02,653.98 364.44,675",
-      "id": "cloud.frontend.dashboard:cloud.backend.graphql",
-      "label": "fetches data",
-      "labelBBox": {
-        "height": 18,
-        "width": 80,
-        "x": 555,
-        "y": 580,
-      },
-      "parent": "cloud",
-      "points": [
-        [
-          609,
-          512,
-        ],
-        [
-          583,
-          548,
-        ],
-        [
-          548,
-          587,
-        ],
-        [
-          507,
-          612,
-        ],
-        [
-          490,
-          622,
-        ],
-        [
-          481,
-          612,
-        ],
-        [
-          463,
-          620,
-        ],
-        [
-          429,
-          634,
-        ],
-        [
-          395,
-          654,
-        ],
-        [
-          364,
-          675,
-        ],
-      ],
-      "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend.dashboard",
-      "target": "cloud.backend.graphql",
-    },
-    {
       "dotpos": "e,517.26,770.8 407.94,770.8 440.97,770.8 473.99,770.8 507.02,770.8",
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
@@ -406,6 +241,77 @@ sso authentification",
       ],
       "source": "cloud.backend.graphql",
       "target": "cloud.backend.storage",
+    },
+    {
+      "dotpos": "e,354.16,680.87 555.92,511.86 496.53,561.61 422.47,623.65 361.86,674.42",
+      "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
+      "label": "fetches data in zero trust network with
+sso authentification",
+      "labelBBox": {
+        "height": 34,
+        "width": 239,
+        "x": 481,
+        "y": 572,
+      },
+      "parent": "cloud",
+      "points": [
+        [
+          556,
+          512,
+        ],
+        [
+          497,
+          562,
+        ],
+        [
+          422,
+          624,
+        ],
+        [
+          362,
+          674,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.adminPanel",
+      "target": "cloud.backend.graphql",
+    },
+    {
+      "dotpos": "e,243.13,680.87 233.87,511.86 236.52,560.29 239.81,620.37 242.55,670.36",
+      "id": "cloud.frontend.dashboard:cloud.backend.graphql",
+      "label": "fetches data",
+      "labelBBox": {
+        "height": 18,
+        "width": 80,
+        "x": 240,
+        "y": 580,
+      },
+      "parent": "cloud",
+      "points": [
+        [
+          234,
+          512,
+        ],
+        [
+          237,
+          560,
+        ],
+        [
+          240,
+          620,
+        ],
+        [
+          243,
+          670,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.dashboard",
+      "target": "cloud.backend.graphql",
     },
     {
       "dotpos": "s,840.85,770.8 e,1056.3,770.8 851.73,770.8 913.96,770.8 984.08,770.8 1046.1,770.8",
@@ -443,43 +349,81 @@ sso authentification",
       "tail": "odiamond",
       "target": "amazon",
     },
+    {
+      "dotpos": "e,229,332.26 229,179.87 229,223.7 229,276.72 229,321.86",
+      "id": "customer:cloud.frontend.dashboard",
+      "label": "opens in browser",
+      "labelBBox": {
+        "height": 18,
+        "width": 111,
+        "x": 230,
+        "y": 240,
+      },
+      "parent": null,
+      "points": [
+        [
+          229,
+          180,
+        ],
+        [
+          229,
+          224,
+        ],
+        [
+          229,
+          277,
+        ],
+        [
+          229,
+          322,
+        ],
+      ],
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend.dashboard",
+    },
+    {
+      "dotpos": "e,662,332.26 662,179.87 662,223.7 662,276.72 662,321.86",
+      "id": "support:cloud.frontend.adminPanel",
+      "label": "manages",
+      "labelBBox": {
+        "height": 18,
+        "width": 62,
+        "x": 663,
+        "y": 240,
+      },
+      "parent": null,
+      "points": [
+        [
+          662,
+          180,
+        ],
+        [
+          662,
+          224,
+        ],
+        [
+          662,
+          277,
+        ],
+        [
+          662,
+          322,
+        ],
+      ],
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend.adminPanel",
+    },
   ],
   "hash": "45bb6881c62a9d9859b24ef23ba7d88255ad4be0",
   "id": "cloud3levels",
   "links": null,
   "nodes": [
-    {
-      "children": [],
-      "color": "primary",
-      "description": "Support engineers are responsible for supporting customers",
-      "height": 180,
-      "id": "support",
-      "inEdges": [],
-      "kind": "actor",
-      "labelBBox": {
-        "height": 64,
-        "width": 238,
-        "x": 41,
-        "y": 55,
-      },
-      "level": 0,
-      "links": null,
-      "modelRef": 1,
-      "outEdges": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "parent": null,
-      "position": [
-        68,
-        0,
-      ],
-      "shape": "person",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "Support Engineer",
-      "width": 320,
-    },
     {
       "children": [],
       "color": "primary",
@@ -502,7 +446,7 @@ sso authentification",
       ],
       "parent": null,
       "position": [
-        501,
+        69,
         0,
       ],
       "shape": "person",
@@ -510,6 +454,38 @@ sso authentification",
       "tags": null,
       "technology": null,
       "title": "customer",
+      "width": 320,
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": "Support engineers are responsible for supporting customers",
+      "height": 180,
+      "id": "support",
+      "inEdges": [],
+      "kind": "actor",
+      "labelBBox": {
+        "height": 64,
+        "width": 238,
+        "x": 41,
+        "y": 55,
+      },
+      "level": 0,
+      "links": null,
+      "modelRef": 1,
+      "outEdges": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "parent": null,
+      "position": [
+        502,
+        0,
+      ],
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "Support Engineer",
       "width": 320,
     },
     {
@@ -524,8 +500,8 @@ sso authentification",
       "height": 670,
       "id": "cloud",
       "inEdges": [
-        "customer:cloud.frontend.dashboard",
         "support:cloud.frontend.adminPanel",
+        "customer:cloud.frontend.dashboard",
       ],
       "kind": "system",
       "labelBBox": {
@@ -576,7 +552,7 @@ sso authentification",
       ],
       "parent": "cloud",
       "position": [
-        68,
+        502,
         332,
       ],
       "shape": "rectangle",
@@ -610,7 +586,7 @@ sso authentification",
       ],
       "parent": "cloud",
       "position": [
-        498,
+        66,
         332,
       ],
       "shape": "rectangle",
@@ -631,8 +607,8 @@ sso authentification",
       "height": 281,
       "id": "cloud.backend",
       "inEdges": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
+        "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
       "kind": "component",
       "labelBBox": {
@@ -666,8 +642,8 @@ sso authentification",
       "height": 180,
       "id": "cloud.backend.graphql",
       "inEdges": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
+        "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
       "kind": "component",
       "labelBBox": {
@@ -783,6 +759,42 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
   "description": null,
   "edges": [
     {
+      "dotpos": "e,672.27,422 534.86,422 575.91,422 620.22,422 661.77,422",
+      "id": "cloud.frontend:cloud.backend",
+      "label": "[...]",
+      "labelBBox": {
+        "height": 18,
+        "width": 25,
+        "x": 591,
+        "y": 395,
+      },
+      "parent": "cloud",
+      "points": [
+        [
+          535,
+          422,
+        ],
+        [
+          576,
+          422,
+        ],
+        [
+          620,
+          422,
+        ],
+        [
+          662,
+          422,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend",
+      "target": "cloud.backend",
+    },
+    {
       "dotpos": "e,317.2,332.26 217.92,179.87 246.84,224.26 281.89,278.06 311.54,323.57",
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
@@ -851,42 +863,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       ],
       "source": "support",
       "target": "cloud.frontend",
-    },
-    {
-      "dotpos": "e,672.27,422 534.86,422 575.91,422 620.22,422 661.77,422",
-      "id": "cloud.frontend:cloud.backend",
-      "label": "[...]",
-      "labelBBox": {
-        "height": 18,
-        "width": 25,
-        "x": 591,
-        "y": 395,
-      },
-      "parent": "cloud",
-      "points": [
-        [
-          535,
-          422,
-        ],
-        [
-          576,
-          422,
-        ],
-        [
-          620,
-          422,
-        ],
-        [
-          662,
-          422,
-        ],
-      ],
-      "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend",
-      "target": "cloud.backend",
     },
     {
       "dotpos": "s,991.68,422 e,1209,422 1002.6,422 1065.2,422 1136.1,422 1198.7,422",
@@ -1004,8 +980,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "height": 281,
       "id": "cloud",
       "inEdges": [
-        "support:cloud.frontend",
         "customer:cloud.frontend",
+        "support:cloud.frontend",
       ],
       "kind": "system",
       "labelBBox": {
@@ -1039,8 +1015,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "height": 180,
       "id": "cloud.frontend",
       "inEdges": [
-        "support:cloud.frontend",
         "customer:cloud.frontend",
+        "support:cloud.frontend",
       ],
       "kind": "component",
       "labelBBox": {
@@ -1156,6 +1132,42 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
   "description": null,
   "edges": [
     {
+      "dotpos": "s,534.68,412.8 e,752.04,412.8 545.63,412.8 608.24,412.8 679.08,412.8 741.67,412.8",
+      "id": "cloud:amazon",
+      "label": "persists artifacts",
+      "labelBBox": {
+        "height": 18,
+        "width": 105,
+        "x": 591,
+        "y": 387,
+      },
+      "parent": null,
+      "points": [
+        [
+          546,
+          413,
+        ],
+        [
+          608,
+          413,
+        ],
+        [
+          679,
+          413,
+        ],
+        [
+          742,
+          413,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.storage:amazon.s3",
+      ],
+      "source": "cloud",
+      "tail": "odiamond",
+      "target": "amazon",
+    },
+    {
       "dotpos": "e,315.49,322.97 219.62,179.93 247.59,221.66 280.98,271.49 309.64,314.24",
       "id": "customer:cloud",
       "label": "opens in browser",
@@ -1224,42 +1236,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       ],
       "source": "support",
       "target": "cloud",
-    },
-    {
-      "dotpos": "s,534.68,412.8 e,752.04,412.8 545.63,412.8 608.24,412.8 679.08,412.8 741.67,412.8",
-      "id": "cloud:amazon",
-      "label": "persists artifacts",
-      "labelBBox": {
-        "height": 18,
-        "width": 105,
-        "x": 591,
-        "y": 387,
-      },
-      "parent": null,
-      "points": [
-        [
-          546,
-          413,
-        ],
-        [
-          608,
-          413,
-        ],
-        [
-          679,
-          413,
-        ],
-        [
-          742,
-          413,
-        ],
-      ],
-      "relations": [
-        "cloud.backend.storage:amazon.s3",
-      ],
-      "source": "cloud",
-      "tail": "odiamond",
-      "target": "amazon",
     },
   ],
   "hash": "4923fc4c18d9538671bf4a81642d46b9698a2e3d",
@@ -1337,8 +1313,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "height": 180,
       "id": "cloud",
       "inEdges": [
-        "support:cloud",
         "customer:cloud",
+        "support:cloud",
       ],
       "kind": "system",
       "labelBBox": {

@@ -1,6 +1,6 @@
 import { map, prop } from 'remeda'
 import { Builder } from '../../../builder'
-import type { DeploymentViewRuleBuilderOp } from '../../../builder/Builder.view'
+import type { DeploymentRulesBuilderOp } from '../../../builder'
 import { LikeC4Model } from '../../../model'
 import type { DeploymentView } from '../../../types'
 import { withReadableEdges } from '../../utils/with-readable-edges'
@@ -26,14 +26,11 @@ const {
     ...$d
   },
   views: {
-    view,
     views,
-    viewOf,
     deploymentView,
     $rules,
     $include,
-    $exclude,
-    $style
+    $exclude
   }
 } = Builder.forSpecification({
   elements: {
@@ -170,7 +167,7 @@ export type Types = typeof builder['Types']
 
 export { $exclude, $include }
 
-export function computeView(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
+export function computeView(...rules: DeploymentRulesBuilderOp<Types>[]) {
   const modelsource = builder.with(
     views(
       deploymentView('index', $rules(...rules))
@@ -190,7 +187,7 @@ export function computeView(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
   })
 }
 
-export function computeNodesAndEdges(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
+export function computeNodesAndEdges(...rules: DeploymentRulesBuilderOp<Types>[]) {
   const { nodeIds, edgeIds } = computeView(...rules)
   return {
     // Starts with capital letter to be first in snapshot
