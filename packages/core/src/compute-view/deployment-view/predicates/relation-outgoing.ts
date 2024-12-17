@@ -1,4 +1,3 @@
-import { identity } from 'remeda'
 import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'

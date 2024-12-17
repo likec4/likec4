@@ -19,6 +19,7 @@ export const ExpandedElementPredicate: PredicateExecutor<Expr.ExpandedElementExp
       }
     }
     stage.addConnections(findConnectionsWithin(expanded))
+    return stage
   },
   exclude: ({ expr, model, stage, where }) => {
     const parent = model.element(expr.expanded)
@@ -27,5 +28,6 @@ export const ExpandedElementPredicate: PredicateExecutor<Expr.ExpandedElementExp
       ...parent.children()
     ].filter(where)
     stage.exclude(elements)
+    return stage
   }
 }

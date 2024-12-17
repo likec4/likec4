@@ -38,9 +38,7 @@ export interface AddDeploymentViewHelper {
   >(
     id: Id,
     bulder: (b: DeploymentViewBuilder<T>) => DeploymentViewBuilder<T>
-  ): {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
-  }
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
@@ -59,9 +57,7 @@ export interface AddDeploymentViewHelper {
     id: Id,
     propsOrTitle: T['NewViewProps'] | string,
     bulder: (b: DeploymentViewBuilder<T>) => DeploymentViewBuilder<T>
-  ): {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
-  }
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 }
 
 export function $deploymentExpr<T extends AnyTypes>(

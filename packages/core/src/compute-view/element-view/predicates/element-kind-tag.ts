@@ -13,9 +13,14 @@ export const ElementKindOrTagPredicate: PredicateExecutor<Expr.ElementKindExpr |
     stage.addExplicit(elements)
     stage.connectWithExisting(elements)
     stage.addConnections(findConnectionsWithin(elements))
+
+    return stage
   },
+
   exclude: ({ expr, model, stage, filterWhere }) => {
     const elements = filterWhere(resolveElements(model, expr))
     stage.exclude(elements)
+
+    return stage
   }
 }

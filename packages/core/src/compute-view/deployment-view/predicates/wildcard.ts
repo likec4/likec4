@@ -22,8 +22,8 @@ export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
     }
     return stage
   },
-  exclude: ({ stage }) => {
-    stage.exclude(stage.memory.elements)
-    return
+  exclude: ({ stage, memory }) => {
+    stage.exclude(memory.elements)
+    return stage
   }
 }

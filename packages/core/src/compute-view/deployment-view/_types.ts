@@ -34,6 +34,6 @@ export interface ExcludePredicateCtx<Expr extends ExpressionV2 = ExpressionV2> e
 }
 
 export interface PredicateExecutor<Expr extends ExpressionV2> {
-  include(ctx: IncludePredicateCtx<Expr>): StageInclude | undefined | void
-  exclude(ctx: ExcludePredicateCtx<Expr>): StageExclude | undefined | void
+  include(ctx: IncludePredicateCtx<Expr>): StageInclude | undefined
+  exclude(ctx: ExcludePredicateCtx<Expr>): StageExclude | undefined
 }

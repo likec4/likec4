@@ -21,7 +21,7 @@ import type { AnyAux } from '../../../model/types'
 import * as Expr from '../../../types/expression'
 import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
-import type { ConnectionWhere, Elem, PredicateCtx, PredicateExecutor } from '../_types'
+import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
 import { includeDescendantsFromMemory, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
@@ -209,7 +209,6 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
     return stage
   },
   exclude: ({ expr: { source, target, isBidirectional }, model, memory, stage, where }) => {
-    let satisfies: ConnectionWhere
     const sourceIsWildcard = Expr.isWildcard(source)
     const targetIsWildcard = Expr.isWildcard(target)
 
@@ -294,6 +293,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
     }
 
     stage.excludeRelations(relations)
+    return stage
   }
 }
 
