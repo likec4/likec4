@@ -243,14 +243,6 @@ globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transpa
   }
 })
 
-export const navigateBtnContainer = style({
-  position: 'absolute',
-  left: 3,
-  top: 6
-})
-
-export const detailsBtnContainer = style({})
-
 export const elementIcon = style({
   flex: `0 0 ${iconSize}`,
   height: iconSize,

@@ -5,7 +5,7 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
-import React, { memo, useCallback, useState } from 'react'
+import { memo, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import type { ElementXYFlowNode } from '../../types'
@@ -14,6 +14,7 @@ import { ElementIcon } from '../shared/ElementIcon'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
+import * as nodeCss from '../Node.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 import { ActionButtonBar } from '../../ActionButtonBar/ActionButtonBar'
 import { BrowseRelationshipsButton, NavigateToButton, OpenDetailsButton } from '../../ActionButton/ActionButtons'
@@ -89,8 +90,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
     isInteractive,
     enableElementDetails,
     enableRelationshipBrowser,
-    triggerOnNavigateTo,
-    openOverlay,
     renderIcon
   } = useDiagramState(s => ({
     viewId: s.view.id,
@@ -124,18 +123,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
   })
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
-
-  const onNavigateTo = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    triggerOnNavigateTo(element.id, e)
-  }, [triggerOnNavigateTo, element.id])
-
-  const onOpenRelationships = useCallback((e: React.MouseEvent) => {
-    if (modelRef) {
-      e.stopPropagation()
-      openOverlay({ relationshipsOf: modelRef })
-    }
-  }, [openOverlay, modelRef])
 
   return (
     <>
@@ -208,17 +195,24 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode(nodeP
           </Box>
         </Box>
         {/* {isHovercards && element.links && <ElementLink element={element} />} */}
-        <ActionButtonBar
-          keyPrefix={`${viewId}:element:${id}:`}
-          shiftY='bottom'
-          {...isInteractive && animateHandlers}
-          >
-          {isNavigable && !!modelRef && (<NavigateToButton fqn={modelRef} />)}
-          {enableRelationshipBrowser && !!modelRef && (<BrowseRelationshipsButton fqn={modelRef} />)}
-        </ActionButtonBar>
+        <Box className={clsx(nodeCss.bottomBtnContainer)}>
+          <ActionButtonBar
+            keyPrefix={`${viewId}:element:${id}:`}
+            shiftY='bottom'
+            {...isInteractive && animateHandlers}
+            >
+            {isNavigable && !!modelRef && (<NavigateToButton fqn={modelRef} />)}
+            {enableRelationshipBrowser && !!modelRef && (<BrowseRelationshipsButton fqn={modelRef} />)}
+          </ActionButtonBar>
+        </Box>
         {enableElementDetails && !!modelRef && (
-          <Box className={clsx(css.detailsBtnContainer)}>
-            <OpenDetailsButton fqn={element.id} />
+          <Box className={clsx(nodeCss.topRightBtnContainer)}>
+            <ActionButtonBar
+              shiftX='right'
+              {...isInteractive && animateHandlers}
+              >
+                <OpenDetailsButton fqn={element.id} />
+            </ActionButtonBar>
           </Box>
         )}
       </Box>

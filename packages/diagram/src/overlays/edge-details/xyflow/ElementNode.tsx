@@ -1,23 +1,14 @@
-import { ActionIcon, Box, Group, Text as MantineText } from '@mantine/core'
-import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { Box, Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
-import { stopPropagation } from '../../../xyflow/utils'
-import { useOverlayDialog } from '../../OverlayContext'
 import type { SharedTypes } from '../../shared/xyflow/_types'
 import * as css from '../../shared/xyflow/ElementNode.css'
+import * as nodeCss from '../../../xyflow/nodes/Node.css'
 import { BrowseRelationshipsButton, NavigateToButton, OpenSourceButton } from '../../../xyflow/ActionButton/ActionButtons'
-
-const Action = ActionIcon.withProps({
-  className: 'nodrag nopan ' + css.navigateBtn,
-  radius: 'md',
-  role: 'button',
-  onDoubleClick: stopPropagation,
-  onPointerDownCapture: stopPropagation
-})
+import { ActionButtonBar } from '../../../xyflow/ActionButtonBar/ActionButtonBar'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -29,12 +20,12 @@ function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
     enableRelationshipBrowser: s.enableRelationshipBrowser,
-    onNavigateTo: s.onNavigateTo,
     onOpenSource: s.onOpenSource
   }
 }
 
 export function ElementNode({
+  id,
   data: {
     element,
     ports,
@@ -45,7 +36,6 @@ export function ElementNode({
   width: w = 100,
   height: h = 100
 }: ElementNodeProps) {
-  const overlay = useOverlayDialog()
   const {
     currentViewId,
     onOpenSource,
@@ -94,17 +84,16 @@ export function ElementNode({
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
         </Box>
-        <Group className={css.navigateBtnBox}>
-          {navigateTo && navigateTo !== currentViewId && (
-            <NavigateToButton fqn={data.fqn}/>
-          )}
-          {enableRelationshipBrowser && (
-            <BrowseRelationshipsButton fqn={data.fqn} />
-          )}
-          {onOpenSource && (
-            <OpenSourceButton fqn={data.fqn} />
-          )}
-        </Group>
+        <Box className={clsx(nodeCss.bottomBtnContainer)}>
+          <ActionButtonBar
+            keyPrefix={`${currentViewId}:element:${id}:`}
+            shiftY='bottom'
+            >
+            {navigateTo && navigateTo !== currentViewId && (<NavigateToButton fqn={data.fqn}/>)}
+            {enableRelationshipBrowser && (<BrowseRelationshipsButton fqn={data.fqn} />)}
+            {onOpenSource && (<OpenSourceButton fqn={data.fqn} />)}
+          </ActionButtonBar>
+        </Box>
       </m.div>
       {ports.out.map((id, i) => (
         <Handle

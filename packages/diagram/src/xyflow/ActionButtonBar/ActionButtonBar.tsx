@@ -2,6 +2,7 @@ import { Box, type ActionIconProps } from "@mantine/core"
 import { m, type HTMLMotionProps, type Variants } from "framer-motion"
 import type { PropsWithoutRef, ReactNode } from "react"
 import * as css from './ActionButtonBar.css'
+import clsx from "clsx";
 
 const TRANSLATE_DIFF = 4;
 
@@ -11,10 +12,10 @@ type ShiftMode = number | 'spread'
 
 type ActionButtonBarProps = PropsWithoutRef<
   ActionIconProps & HTMLMotionProps<'div'> & {
-    keyPrefix: string
+    keyPrefix?: string
     shiftX?: ShiftX
     shiftY?: ShiftY
-    children: ReactNode[]
+    children: ReactNode | ReactNode[]
   }
 >
 
@@ -45,12 +46,14 @@ const elementVariants = (index: number, count: number, shiftX: ShiftMode, shiftY
 }
 
 export const ActionButtonBar = ({
-  keyPrefix,
+  keyPrefix = '',
   shiftX = 'spread',
   shiftY = 'spread',
   children,
   ...props
 }: ActionButtonBarProps) => {
+
+  const childrenArray = Array.isArray(children) ? children : [children]
 
   // determine offsets for shifting
   let shiftDiffX: ShiftMode = 'spread'
@@ -66,12 +69,11 @@ export const ActionButtonBar = ({
     shiftDiffY = 1
 
   return (
-    <Box className={css.bottomButtonsContainer}
-      component={m.div}>
-      {children.map((child, i) => (
+    <Box className={clsx(css.container)}>
+      {childrenArray.map((child, i) => (
         <m.div
           key={i}
-          variants={elementVariants(i, children.length, shiftDiffX, shiftDiffY)}
+          variants={elementVariants(i, childrenArray.length, shiftDiffX, shiftDiffY)}
           {...props}
           >
           {child}

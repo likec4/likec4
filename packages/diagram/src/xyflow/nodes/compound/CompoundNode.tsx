@@ -14,7 +14,9 @@ import { ElementIcon } from '../shared/ElementIcon'
 import { CompoundToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './CompoundNode.css'
+import * as nodeCss from '../Node.css'
 import { NavigateToButton, OpenDetailsButton } from '../../ActionButton/ActionButtons'
+import { ActionButtonBar } from '../../ActionButtonBar/ActionButtonBar'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
@@ -59,7 +61,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
   const {
     id,
     selected = false,
-    dragging = false,
     data: {
       isViewGroup,
       element
@@ -199,15 +200,24 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((nodePro
                 {element.title}
               </Text>
               {enableElementDetails && !!modelRef && (
-                <Box className={clsx(css.detailsBtnContainer)}>
-                  <OpenDetailsButton fqn={element.id} />
+                <Box className={clsx(nodeCss.topRightBtnContainer)}>
+                  <ActionButtonBar
+                    shiftX='right'
+                    >
+                    <OpenDetailsButton fqn={element.id} />
+                  </ActionButtonBar>
                 </Box>
               )}
             </Box>
           </Box>
           {isNavigable && (
-            <Box className={clsx(css.navigateBtnContainer)}>
-              <NavigateToButton fqn={element.id} />
+            <Box className={clsx(nodeCss.topLeftBtnContainer)}>
+              <ActionButtonBar
+                keyPrefix={`${viewId}:element:navigation:`}
+                shiftX='left'
+                >
+                <NavigateToButton fqn={element.id} />
+              </ActionButtonBar>
             </Box>
           )}
         </Box>

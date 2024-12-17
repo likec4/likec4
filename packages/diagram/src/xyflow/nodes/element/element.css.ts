@@ -368,21 +368,3 @@ export const shapeSvg = style({
 //   transitionDelay: '20ms',
 //   gap: 16
 // })
-
-export const detailsBtnContainer = style({
-  position: 'absolute',
-  top: 2,
-  right: 2,
-  selectors: {
-    [`:where([data-likec4-shape='browser']) &`]: {
-      right: 5
-    },
-    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      top: 14
-    },
-    ':where([data-likec4-shape="queue"]) &': {
-      top: 1,
-      right: 12
-    }
-  }
-})
