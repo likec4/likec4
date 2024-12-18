@@ -695,21 +695,24 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       return ops.reduce((b, op) => op(b), self as Builder<T>).clone()
     },
     model: <Out extends AnyTypes>(cb: ModelBuilderFunction<T, Out>) => {
-      const helpers = self.helpers().model
+      const b = self.clone()
+      const helpers = b.helpers().model
       const _ = helpers.model as any
-      return cb({ ...helpers, _ }, _)(self as Internals<T>) as any
+      return cb({ ...helpers, _ }, _)(b as Internals<T>) as any
     },
     deployment: <Out extends AnyTypes>(cb: DeloymentModelBuildFunction<T, Out>) => {
-      const helpers = self.helpers().deployment
+      const b = self.clone()
+      const helpers = b.helpers().deployment
       const _ = helpers.deployment as any
-      return cb({ ...helpers, _ }, _)(self as Internals<T>) as any
+      return cb({ ...helpers, _ }, _)(b as Internals<T>) as any
     },
     views: <Out extends AnyTypes>(cb: ViewsBuilderFunction<T, Out>) => {
-      const helpers = self.helpers().views
+      const b = self.clone()
+      const helpers = b.helpers().views
       return cb({
         ...helpers,
         _: helpers.views as any,
-      } as any, helpers.views as any)(self as Internals<T>) as any
+      } as any, helpers.views as any)(b as Internals<T>) as any
     },
   }
 
