@@ -45,7 +45,7 @@ export function isAncestor<E extends string | { id: string }>(another: E): (ance
 
 export function isAncestor<E extends string | { id: string }>(
   arg1: E,
-  arg2?: E
+  arg2?: E,
 ) {
   const arg1Id = asString(arg1)
   if (arg2) {
@@ -192,8 +192,33 @@ export type ReorderedArray<T extends IterableContainer> = {
   -readonly [P in keyof T]: T[number]
 }
 
+/**
+ * Sorts an array of objects hierarchically based on their fully qualified names (FQN).
+ * Objects are sorted by the number of segments in their FQN (defined by dot-separated ID).
+ *
+ * @typeParam T - Object type that contains an 'id' string property
+ * @typeParam A - Type extending IterableContainer of T
+ *
+ * @param array - Array of objects to be sorted
+ * @returns A new array with items sorted by their FQN hierarchy depth (number of segments)
+ *
+ * @example
+ * ```ts
+ * const items = [
+ *   { id: "a.b.c" },
+ *   { id: "a" },
+ *   { id: "a.b" }
+ * ];
+ * sortByFqnHierarchically(items);
+ * // Result: [
+ * //   { id: "a" },
+ * //   { id: "a.b" },
+ * //   { id: "a.b.c" }
+ * // ]
+ * ```
+ */
 export function sortByFqnHierarchically<T extends { id: string }, A extends IterableContainer<T>>(
-  array: A
+  array: A,
 ): ReorderedArray<A> {
   return array
     .map(item => ({ item, fqn: item.id.split('.') }))
@@ -217,7 +242,7 @@ function findTopAncestor<T extends { id: string }>(items: T[], item: T): T | nul
  * Keeps initial order of the elements, but ensures that parents are before children
  */
 export function sortParentsFirst<T extends { id: string }, A extends IterableContainer<T>>(
-  array: A
+  array: A,
 ): ReorderedArray<A> {
   const result = [] as T[]
   const items = [...array]
@@ -233,7 +258,7 @@ export function sortParentsFirst<T extends { id: string }, A extends IterableCon
 }
 
 export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
-  array: A
+  array: A,
 ): ReorderedArray<A> {
   return array
     .map(item => ({ item, fqn: item.id.split('.') }))

@@ -91,7 +91,7 @@ type WithElemId = Connection<{ readonly id: string }, any>
 
 export function findDeepestNestedConnection<C extends Connection<{ id: string }, any>>(
   connections: ReadonlyArray<C>,
-  connection: C
+  connection: C,
 ): C | null {
   let deepest = connection
   for (const c of connections) {
@@ -103,7 +103,7 @@ export function findDeepestNestedConnection<C extends Connection<{ id: string },
 }
 
 export function sortDeepestFirst<C extends Connection<{ id: string }, any>>(
-  connections: ReadonlyArray<C>
+  connections: ReadonlyArray<C>,
 ): ReadonlyArray<C> {
   const sorted = [] as C[]
   const unsorted = connections.slice()
@@ -124,13 +124,13 @@ export function sortDeepestFirst<C extends Connection<{ id: string }, any>>(
  */
 export function findAscendingConnections<C extends WithElemId>(
   connections: ReadonlyArray<C>,
-  connection: NoInfer<C>
+  connection: NoInfer<C>,
 ): Array<C> {
   return connections.filter(c => isNestedConnection(connection, c))
 }
 
 export function mergeConnections<C extends Connection>(
-  connections: ReadonlyArray<C>
+  connections: ReadonlyArray<C>,
 ): C[] {
   const map = new Map<C['id'], C>()
   for (const conn of connections) {
@@ -142,4 +142,27 @@ export function mergeConnections<C extends Connection>(
     }
   }
   return [...map.values()]
+}
+
+/**
+ * Excludes the values existing in `other` array.
+ * The output maintains the same order as the input.
+ */
+export function differenceConnections<C extends Connection>(
+  source: ReadonlyArray<C>,
+  exclude: ReadonlyArray<C>,
+): C[] {
+  const minus = new Map(exclude.map(c => [c.id, c]))
+  return source.reduce((acc, c) => {
+    const other = minus.get(c.id)
+    if (!other) {
+      acc.push(c)
+      return acc
+    }
+    const updated = c.difference(other) as C
+    if (updated.nonEmpty()) {
+      acc.push(updated)
+    }
+    return acc
+  }, [] as C[])
 }

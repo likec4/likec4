@@ -2,12 +2,12 @@ import { invariant } from '../../../errors'
 import { stringHash } from '../../../utils'
 import { equals } from '../../../utils/set'
 import {
+  type DeployedInstanceModel,
   type DeploymentElementModel,
   DeploymentNodeModel,
   type DeploymentRelationModel,
-  RelationshipsAccum
+  RelationshipsAccum,
 } from '../../DeploymentElementModel'
-import type { ElementModel } from '../../ElementModel'
 import type { RelationshipModel } from '../../RelationModel'
 import type { AnyAux, IteratorLike } from '../../types'
 import type { Connection } from '../Connection'
@@ -26,9 +26,9 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
   readonly boundary: DeploymentNodeModel<M> | null
 
   constructor(
-    public readonly source: DeploymentElementModel<M>,
-    public readonly target: DeploymentElementModel<M>,
-    public readonly relations: RelationshipsAccum<M>
+    public readonly source: DeploymentNodeModel<M> | DeployedInstanceModel<M>,
+    public readonly target: DeploymentNodeModel<M> | DeployedInstanceModel<M>,
+    public readonly relations: RelationshipsAccum<M>,
   ) {
     this.id = stringHash(`deployment:${source.id}:${target.id}`) as M['EdgeId']
     this.boundary = source.commonAncestor(target)
@@ -76,7 +76,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return new DeploymentConnectionModel(
       this.source,
       this.target,
-      this.relations.union(other.relations)
+      this.relations.union(other.relations),
     )
   }
 
@@ -84,7 +84,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return new DeploymentConnectionModel(
       this.source,
       this.target,
-      this.relations.difference(other.relations)
+      this.relations.difference(other.relations),
     )
   }
 
@@ -92,7 +92,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return new DeploymentConnectionModel(
       this.source,
       this.target,
-      this.relations.intersect(other.relations)
+      this.relations.intersect(other.relations),
     )
   }
 
@@ -109,7 +109,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
    * Creates a clone of the current `DeploymentConnectionModel` instance with optional overrides.
    * if `null` is provided in overrides, the corresponding relation set will be empty.
    */
-  public clone(overrides?: {
+  public update(overrides?: {
     model?: ReadonlySet<RelationshipModel<M>> | null
     deployment?: ReadonlySet<DeploymentRelationModel<M>> | null
   }): DeploymentConnectionModel<M> {
@@ -117,7 +117,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
       overrides = {
         model: this.relations.model,
         deployment: this.relations.deployment,
-        ...overrides
+        ...overrides,
       }
     }
     return new DeploymentConnectionModel(
@@ -126,9 +126,9 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
       overrides
         ? new RelationshipsAccum(
           overrides.model ?? new Set(),
-          overrides.deployment ?? new Set()
+          overrides.deployment ?? new Set(),
         )
-        : this.relations
+        : this.relations,
     )
   }
 }

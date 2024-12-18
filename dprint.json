@@ -3,7 +3,7 @@
   "useTabs": false,
   "typescript": {
     "semiColons": "asi",
-    "trailingCommas": "never",
+    "trailingCommas": "onlyMultiLine",
     "importDeclaration.preferSingleLine": true,
     "quoteStyle": "alwaysSingle",
     "nextControlFlowPosition": "maintain",

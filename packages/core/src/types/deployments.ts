@@ -1,15 +1,8 @@
 import type { MergeExclusive, Simplify, Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
-import type {
-  AbstractRelation,
-  RelationId,
-  RelationshipArrowType,
-  RelationshipKind,
-  RelationshipLineType
-} from './relation'
+import type { AbstractRelation, RelationId } from './relation'
 import type { Color } from './theme'
-import type { ViewId } from './view'
 
 export type DeploymentNodeKind<Kinds extends string = string> = Tagged<Kinds, 'DeploymentNodeKind'>
 

@@ -8,7 +8,7 @@ import {
   type DeploymentRef,
   type DeploymentRelation,
   type GenericLikeC4Model,
-  type Tag as C4Tag
+  type Tag as C4Tag,
 } from '../types'
 import { ancestorsFqn, parentFqn } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
@@ -16,12 +16,12 @@ import { isString } from '../utils/guards'
 import {
   DeployedInstanceModel,
   type DeployedInstancesIterator,
-  DeploymentElementModel,
+  type DeploymentElementModel,
   type DeploymentElementsIterator,
   DeploymentNodeModel,
   type DeploymentNodesIterator,
   DeploymentRelationModel,
-  NestedElementOfDeployedInstanceModel
+  NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import { type AnyAux, getId, type IncomingFilter, type IteratorLike, type OutgoingFilter } from './types'
@@ -63,7 +63,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
 
   constructor(
     public readonly $model: LikeC4Model<M>,
-    public readonly $deployments: GenericLikeC4Model['deployments']
+    public readonly $deployments: GenericLikeC4Model['deployments'],
   ) {
     for (const element of values($deployments.elements)) {
       const el = this.addElement(element)
@@ -83,7 +83,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   }
 
   public element(el: M['DeploymentOrFqn']): DeploymentElementModel<M> {
-    if (el instanceof DeploymentElementModel) {
+    if (el instanceof DeploymentNodeModel || el instanceof DeployedInstanceModel) {
       return el
     }
     const id = getId(el)
@@ -256,10 +256,15 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
+  public *descendants(element: M['DeploymentOrFqn'], sort: 'asc' | 'desc' = 'asc'): DeploymentElementsIterator<M> {
     for (const child of this.children(element)) {
-      yield child
-      yield* this.descendants(child.id)
+      if (sort === 'asc') {
+        yield child
+        yield* this.descendants(child.id)
+      } else {
+        yield* this.descendants(child.id)
+        yield child
+      }
     }
     return
   }
@@ -270,7 +275,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    */
   public *incoming(
     element: M['DeploymentOrFqn'],
-    filter: IncomingFilter = 'all'
+    filter: IncomingFilter = 'all',
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
     for (const rel of this.#incoming.get(id)) {
@@ -291,7 +296,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    */
   public *outgoing(
     element: M['DeploymentOrFqn'],
-    filter: OutgoingFilter = 'all'
+    filter: OutgoingFilter = 'all',
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
     for (const rel of this.#outgoing.get(id)) {
@@ -332,7 +337,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     }
     const rel = new DeploymentRelationModel(
       this,
-      Object.freeze(relation)
+      Object.freeze(relation),
     )
     this.#relations.set(rel.id, rel)
     this.#incoming.get(rel.target.id).add(rel)
