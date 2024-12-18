@@ -375,29 +375,6 @@ export type DeloymentModelHelpers<T extends AnyTypes> = AddDeploymentNodeHelpers
   deployment: typeof deployment
 }
 
-/**
- * A function that builds a deployment model
- *
- * @example
- *  builder.deployment(({ node }, _) =>
- *    _(
- *      node('node1')
- *      node('node1.child1').with(
- *        node('grandchild1')
- *      )
- *    )
- *  )
- *
- *  builder.deployment(d =>
- *    d.node('node1')
- *  )
- *
- *  builder.deployment(d =>
- *    d(
- *      d.node('node1')
- *    )
- *  )
- */
 export type DeloymentModelBuildFunction<A extends AnyTypes, B extends AnyTypes> = (
   helpers: DeloymentModelHelpers<A> & {
     _: DeloymentModelHelpers<A>['deployment']

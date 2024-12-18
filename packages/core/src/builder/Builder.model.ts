@@ -361,28 +361,6 @@ export type ModelHelpers<T extends AnyTypes> = AddElementHelpers<T> & {
   relTo: NestedRelationshipHelper<T['NewRelationshipProps']>
 }
 
-/**
- * A function that builds a deployment model
- *
- * @example
- *  builder.model(({ el }, _) =>
- *    _(
- *      el('a'),
- *      el('a.b').with(
- *        el('c')
- *      )
- *    )
- *  )
- *
- *  builder.model(m =>
- *    m(
- *      m.el('a'),
- *      m.el('a.b').with(
- *        m.el('c')
- *      )
- *    )
- *  )
- */
 export type ModelBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
   helpers: ModelHelpers<A> & {
     _: ModelHelpers<A>['model']

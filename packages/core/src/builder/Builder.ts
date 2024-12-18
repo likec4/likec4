@@ -1,7 +1,6 @@
 import defu from 'defu'
 import { fromEntries, hasAtLeast, isFunction, isNonNullish, isNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
 import type { Writable } from 'type-fest'
-import { computeViews } from '../compute-view'
 import { invariant } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
 import {
@@ -25,7 +24,6 @@ import {
   type RelationId,
   type Tag,
 } from '../types'
-import type { ParsedLikeC4Model } from '../types/model'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
@@ -60,14 +58,67 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
     deployment: DeloymentModelHelpers<T>
   }
 
+  /**
+   * Adds model elements
+   *
+   * @example
+   *  builder.model(({ el }, _) =>
+   *    _(
+   *      el('a'),
+   *      el('a.b').with(
+   *        el('c')
+   *      )
+   *    )
+   *  )
+   *
+   *  builder.model((_, m) =>
+   *    m(
+   *      _.el('a'),
+   *      _.el('a.b').with(
+   *        _.el('c')
+   *      )
+   *    )
+   *  )
+   */
   model<Out extends AnyTypes>(
     callback: ModelBuilderFunction<T, Out>,
   ): Builder<Out>
 
+  /**
+   * Adds deployment model
+   *
+   * @example
+   *  builder.deployment(({ node }, _) =>
+   *    _(
+   *      node('node1')
+   *      node('node1.child1').with(
+   *        node('grandchild1')
+   *      )
+   *    )
+   *  )
+   *
+   *  builder.deployment((_,d) =>
+   *    d(
+   *      _.node('node1')
+   *    )
+   *  )
+   */
   deployment<Out extends AnyTypes>(
     callback: DeloymentModelBuildFunction<T, Out>,
   ): Builder<Out>
 
+  /**
+   * Adds views
+   *
+   * @example
+   *  builder.views(({ view, $include }, _) =>
+   *    _(
+   *      view('index').with(
+   *        $include('a -> b')
+   *      )
+   *    )
+   *  )
+   */
   views<Out extends AnyTypes>(
     callback: ViewsBuilderFunction<T, Out>,
   ): Builder<Out>
@@ -80,7 +131,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   build(): Types.ToParsedLikeC4Model<T>
 
   /**
-   * Returns model with computed views
+   * Returns LikeC4Model with computed views
    */
   toLikeC4Model(): Types.ToLikeC4Model<T>
 }
