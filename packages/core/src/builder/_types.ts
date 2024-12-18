@@ -1,4 +1,5 @@
 import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
+import type { LikeC4Model } from '../model'
 import type {
   BorderStyle,
   Color,
@@ -10,9 +11,11 @@ import type {
   ParsedLikeC4Model,
   RelationshipArrowType,
   RelationshipKindSpecification,
-  RelationshipLineType
+  RelationshipLineType,
 } from '../types'
 import type { ExpressionV2 } from '../types/expression-v2'
+import type { Builder } from './Builder'
+import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
 export type BuilderSpecification = {
   elements: {
@@ -106,7 +109,7 @@ export interface Types<
   Tag extends string,
   MetadataKey extends string,
   DeploymentKind extends string,
-  DeploymentFqn extends string
+  DeploymentFqn extends string,
 > {
   ElementKind: ElementKind
   Fqn: Fqn
@@ -139,7 +142,7 @@ export interface TypesNested<
   Tag extends string,
   MetadataKey extends string,
   DeploymentKind extends string,
-  DeploymentFqn extends string
+  DeploymentFqn extends string,
 > extends
   Types<
     ElementKind,
@@ -268,9 +271,22 @@ export namespace Types {
       T['RelationshipKind'],
       T['Tag'],
       T['Fqn'],
-      T['ViewId']
+      T['ViewId'],
+      T['DeploymentFqn']
     >
     : never
 
+  export type ToLikeC4Model<T extends AnyTypes> = LikeC4Model.Computed<
+    T['Fqn'],
+    T['DeploymentFqn'],
+    T['ViewId']
+  >
+
   export type ToExpression<T> = T extends AnyTypes ? ExpressionV2<T['DeploymentFqn'], T['Fqn']> : never
+
+  export type From<B> = B extends Builder<infer T> ? B['Types'] extends AnyTypes ? T : AnyTypes : never
+
+  export type DeploymentRules<B> = DeploymentRulesBuilderOp<From<B>>
+
+  export type LikeC4Model<B> = ToLikeC4Model<From<B>>
 }

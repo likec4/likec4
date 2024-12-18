@@ -4,6 +4,28 @@ exports[`Builder (style 2) > should build  1`] = `
 {
   "deployments": {
     "elements": {
+      "dev": {
+        "color": "primary",
+        "description": null,
+        "id": "dev",
+        "kind": "env",
+        "shape": "rectangle",
+        "style": {},
+        "tags": null,
+        "technology": null,
+        "title": "dev",
+      },
+      "dev.local": {
+        "color": "primary",
+        "description": null,
+        "id": "dev.local",
+        "kind": "node",
+        "shape": "rectangle",
+        "style": {},
+        "tags": null,
+        "technology": null,
+        "title": "local",
+      },
       "prod": {
         "color": "primary",
         "description": null,

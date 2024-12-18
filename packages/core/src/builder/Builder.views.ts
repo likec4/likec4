@@ -9,50 +9,50 @@ import {
   type AddViewHelper,
   type AddViewOfHelper,
   type ElementViewBuilder,
-  type TypedAddViewOfHelper
+  type TypedAddViewOfHelper,
 } from './Builder.view-element'
 
-export interface ViewsBuilder<T extends AnyTypes> {
-  addView(view: LikeC4View): Builder<T>
+export interface ViewsBuilder<T extends AnyTypes> extends Builder<T> {
+  __addView(view: LikeC4View): Builder<T>
 }
 
 export function views<A extends AnyTypes>(): (input: Builder<A>) => Builder<A>
 
 export function views<
   A extends AnyTypes,
-  B extends AnyTypes
+  B extends AnyTypes,
 >(
-  op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>
+  op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
 ): (input: Builder<A>) => Builder<B>
 export function views<
   A extends AnyTypes,
   B extends AnyTypes,
-  C extends AnyTypes
+  C extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
-  op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>
+  op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
 ): (input: Builder<A>) => Builder<C>
 export function views<
   A extends AnyTypes,
   B extends AnyTypes,
   C extends AnyTypes,
-  D extends AnyTypes
+  D extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
-  op3: (input: ViewsBuilder<C>) => ViewsBuilder<D>
+  op3: (input: ViewsBuilder<C>) => ViewsBuilder<D>,
 ): (input: Builder<A>) => Builder<D>
 export function views<
   A extends AnyTypes,
   B extends AnyTypes,
   C extends AnyTypes,
   D extends AnyTypes,
-  E extends AnyTypes
+  E extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
   op3: (input: ViewsBuilder<C>) => ViewsBuilder<D>,
-  op4: (input: ViewsBuilder<D>) => ViewsBuilder<E>
+  op4: (input: ViewsBuilder<D>) => ViewsBuilder<E>,
 ): (input: Builder<A>) => Builder<E>
 export function views<
   A extends AnyTypes,
@@ -60,13 +60,13 @@ export function views<
   C extends AnyTypes,
   D extends AnyTypes,
   E extends AnyTypes,
-  F extends AnyTypes
+  F extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
   op3: (input: ViewsBuilder<C>) => ViewsBuilder<D>,
   op4: (input: ViewsBuilder<D>) => ViewsBuilder<E>,
-  op5: (input: ViewsBuilder<E>) => ViewsBuilder<F>
+  op5: (input: ViewsBuilder<E>) => ViewsBuilder<F>,
 ): (input: Builder<A>) => Builder<F>
 export function views<
   A extends AnyTypes,
@@ -75,14 +75,14 @@ export function views<
   D extends AnyTypes,
   E extends AnyTypes,
   F extends AnyTypes,
-  G extends AnyTypes
+  G extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
   op3: (input: ViewsBuilder<C>) => ViewsBuilder<D>,
   op4: (input: ViewsBuilder<D>) => ViewsBuilder<E>,
   op5: (input: ViewsBuilder<E>) => ViewsBuilder<F>,
-  op6: (input: ViewsBuilder<F>) => ViewsBuilder<G>
+  op6: (input: ViewsBuilder<F>) => ViewsBuilder<G>,
 ): (input: Builder<A>) => Builder<G>
 export function views<
   A extends AnyTypes,
@@ -92,7 +92,7 @@ export function views<
   E extends AnyTypes,
   F extends AnyTypes,
   G extends AnyTypes,
-  H extends AnyTypes
+  H extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -100,7 +100,7 @@ export function views<
   op4: (input: ViewsBuilder<D>) => ViewsBuilder<E>,
   op5: (input: ViewsBuilder<E>) => ViewsBuilder<F>,
   op6: (input: ViewsBuilder<F>) => ViewsBuilder<G>,
-  op7: (input: ViewsBuilder<G>) => ViewsBuilder<H>
+  op7: (input: ViewsBuilder<G>) => ViewsBuilder<H>,
 ): (input: Builder<A>) => Builder<H>
 export function views<
   A extends AnyTypes,
@@ -111,7 +111,7 @@ export function views<
   F extends AnyTypes,
   G extends AnyTypes,
   H extends AnyTypes,
-  I extends AnyTypes
+  I extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -120,7 +120,7 @@ export function views<
   op5: (input: ViewsBuilder<E>) => ViewsBuilder<F>,
   op6: (input: ViewsBuilder<F>) => ViewsBuilder<G>,
   op7: (input: ViewsBuilder<G>) => ViewsBuilder<H>,
-  op8: (input: ViewsBuilder<H>) => ViewsBuilder<I>
+  op8: (input: ViewsBuilder<H>) => ViewsBuilder<I>,
 ): (input: Builder<A>) => Builder<I>
 export function views<
   A extends AnyTypes,
@@ -132,7 +132,7 @@ export function views<
   G extends AnyTypes,
   H extends AnyTypes,
   I extends AnyTypes,
-  J extends AnyTypes
+  J extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -142,7 +142,7 @@ export function views<
   op6: (input: ViewsBuilder<F>) => ViewsBuilder<G>,
   op7: (input: ViewsBuilder<G>) => ViewsBuilder<H>,
   op8: (input: ViewsBuilder<H>) => ViewsBuilder<I>,
-  op9: (input: ViewsBuilder<I>) => ViewsBuilder<J>
+  op9: (input: ViewsBuilder<I>) => ViewsBuilder<J>,
 ): (input: Builder<A>) => Builder<J>
 export function views<
   A extends AnyTypes,
@@ -155,7 +155,7 @@ export function views<
   H extends AnyTypes,
   I extends AnyTypes,
   J extends AnyTypes,
-  K extends AnyTypes
+  K extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -166,7 +166,7 @@ export function views<
   op7: (input: ViewsBuilder<G>) => ViewsBuilder<H>,
   op8: (input: ViewsBuilder<H>) => ViewsBuilder<I>,
   op9: (input: ViewsBuilder<I>) => ViewsBuilder<J>,
-  op10: (input: ViewsBuilder<J>) => ViewsBuilder<K>
+  op10: (input: ViewsBuilder<J>) => ViewsBuilder<K>,
 ): (input: Builder<A>) => Builder<K>
 export function views<
   A extends AnyTypes,
@@ -180,7 +180,7 @@ export function views<
   I extends AnyTypes,
   J extends AnyTypes,
   K extends AnyTypes,
-  L extends AnyTypes
+  L extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -192,7 +192,7 @@ export function views<
   op8: (input: ViewsBuilder<H>) => ViewsBuilder<I>,
   op9: (input: ViewsBuilder<I>) => ViewsBuilder<J>,
   op10: (input: ViewsBuilder<J>) => ViewsBuilder<K>,
-  op11: (input: ViewsBuilder<K>) => ViewsBuilder<L>
+  op11: (input: ViewsBuilder<K>) => ViewsBuilder<L>,
 ): (input: Builder<A>) => Builder<L>
 export function views<
   A extends AnyTypes,
@@ -207,7 +207,7 @@ export function views<
   J extends AnyTypes,
   K extends AnyTypes,
   L extends AnyTypes,
-  M extends AnyTypes
+  M extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -220,7 +220,7 @@ export function views<
   op9: (input: ViewsBuilder<I>) => ViewsBuilder<J>,
   op10: (input: ViewsBuilder<J>) => ViewsBuilder<K>,
   op11: (input: ViewsBuilder<K>) => ViewsBuilder<L>,
-  op12: (input: ViewsBuilder<L>) => ViewsBuilder<M>
+  op12: (input: ViewsBuilder<L>) => ViewsBuilder<M>,
 ): (input: Builder<A>) => Builder<M>
 export function views<
   A extends AnyTypes,
@@ -236,7 +236,7 @@ export function views<
   K extends AnyTypes,
   L extends AnyTypes,
   M extends AnyTypes,
-  N extends AnyTypes
+  N extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -250,7 +250,7 @@ export function views<
   op10: (input: ViewsBuilder<J>) => ViewsBuilder<K>,
   op11: (input: ViewsBuilder<K>) => ViewsBuilder<L>,
   op12: (input: ViewsBuilder<L>) => ViewsBuilder<M>,
-  op13: (input: ViewsBuilder<M>) => ViewsBuilder<N>
+  op13: (input: ViewsBuilder<M>) => ViewsBuilder<N>,
 ): (input: Builder<A>) => Builder<N>
 export function views<
   A extends AnyTypes,
@@ -267,7 +267,7 @@ export function views<
   L extends AnyTypes,
   M extends AnyTypes,
   N extends AnyTypes,
-  O extends AnyTypes
+  O extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -282,7 +282,7 @@ export function views<
   op11: (input: ViewsBuilder<K>) => ViewsBuilder<L>,
   op12: (input: ViewsBuilder<L>) => ViewsBuilder<M>,
   op13: (input: ViewsBuilder<M>) => ViewsBuilder<N>,
-  op14: (input: ViewsBuilder<N>) => ViewsBuilder<O>
+  op14: (input: ViewsBuilder<N>) => ViewsBuilder<O>,
 ): (input: Builder<A>) => Builder<O>
 export function views<
   A extends AnyTypes,
@@ -300,7 +300,7 @@ export function views<
   M extends AnyTypes,
   N extends AnyTypes,
   O extends AnyTypes,
-  P extends AnyTypes
+  P extends AnyTypes,
 >(
   op1: (input: ViewsBuilder<A>) => ViewsBuilder<B>,
   op2: (input: ViewsBuilder<B>) => ViewsBuilder<C>,
@@ -316,7 +316,7 @@ export function views<
   op12: (input: ViewsBuilder<L>) => ViewsBuilder<M>,
   op13: (input: ViewsBuilder<M>) => ViewsBuilder<N>,
   op14: (input: ViewsBuilder<N>) => ViewsBuilder<O>,
-  op15: (input: ViewsBuilder<O>) => ViewsBuilder<P>
+  op15: (input: ViewsBuilder<O>) => ViewsBuilder<P>,
 ): (input: Builder<A>) => Builder<P>
 
 export function views(...ops: any[]) {
@@ -342,43 +342,45 @@ export type ViewsHelpers = {
 
 export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
   helpers: Simplify<
-    Omit<ViewsHelpers, 'viewOf'> & {
+    ViewsHelpers['views'] & Omit<ViewsHelpers, 'viewOf'> & {
       viewOf: TypedAddViewOfHelper<A>
       _: ViewsHelpers['views']
     }
   >,
-  add: ViewsHelpers['views']
-) => (builder: Builder<A>) => Builder<B>
+  add: ViewsHelpers['views'],
+) =>
+  | ((builder: ViewsBuilder<A>) => ViewsBuilder<B>)
+  | ((builder: Builder<A>) => Builder<B>)
 
 export function mkViewBuilder(view: Writable<DeploymentView>): DeploymentViewBuilder<AnyTypes>
 export function mkViewBuilder(view: Writable<ElementView>): ElementViewBuilder<AnyTypes>
 export function mkViewBuilder(
-  view: Writable<ElementView | DeploymentView>
+  view: Writable<ElementView | DeploymentView>,
 ): DeploymentViewBuilder<AnyTypes> | ElementViewBuilder<AnyTypes> {
   const viewBuilder = {
     $expr: view.__ === 'deployment' ? $deploymentExpr : $expr,
     autoLayout(autoLayout: unknown) {
       view.rules.push({
-        direction: autoLayout
+        direction: autoLayout,
       } as any)
       return viewBuilder
     },
     exclude(expr: unknown) {
       view.rules.push({
-        exclude: [expr]
+        exclude: [expr],
       } as any)
       return viewBuilder
     },
     include(expr: unknown) {
       view.rules.push({
-        include: [expr]
+        include: [expr],
       } as any)
       return viewBuilder
     },
     style(rule: any) {
       view.rules.push(rule)
       return viewBuilder
-    }
+    },
     // title(title: string) {
     //   view.title = title
     //   return viewBuilder

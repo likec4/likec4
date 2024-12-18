@@ -9,7 +9,7 @@ import {
   isElementPredicateExpr,
   type NonEmptyArray,
   type ViewRuleStyle,
-  type WhereOperator
+  type WhereOperator,
 } from '../types'
 import type { AnyTypes, Types } from './_types'
 
@@ -18,7 +18,7 @@ export interface LikeC4ViewBuilder<
   Fqn extends string,
   TypedExpr,
   ElementExpr extends string = ViewPredicate.ElementExpr<Fqn>,
-  Expr extends string = ViewPredicate.AllExpression<ElementExpr>
+  Expr extends string = ViewPredicate.AllExpression<ElementExpr>,
 > {
   Types: Types
   ElementExpr: ElementExpr
@@ -45,8 +45,16 @@ export namespace ViewPredicate {
     Types<any, infer F extends string, any, any, any, any, any, any> ? AllExpression<ViewPredicate.ElementExpr<F>>
     : never
 
+  export type ConnectionExpression<T extends AnyTypes> = T extends
+    Types<any, infer F extends string, any, any, any, any, any, any> ? `${F} -> ${F}`
+    : never
+
   export type DeploymentExpression<T extends AnyTypes> = T extends
     Types<any, any, any, any, any, any, any, infer F extends string> ? AllExpression<ViewPredicate.ElementExpr<F>>
+    : never
+
+  export type DeploymentConnectionExpression<T extends AnyTypes> = T extends
+    Types<any, any, any, any, any, any, any, infer F extends string> ? `${F} -> ${F}`
     : never
 
   export type WhereTag<Tag extends string> = `tag ${'is' | 'is not'} #${Tag}`
@@ -87,26 +95,26 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
       case op.startsWith('tag is not #'):
         return {
           tag: {
-            neq: op.replace('tag is not #', '')
-          }
+            neq: op.replace('tag is not #', ''),
+          },
         }
       case op.startsWith('tag is #'):
         return {
           tag: {
-            eq: op.replace('tag is #', '')
-          }
+            eq: op.replace('tag is #', ''),
+          },
         }
       case op.startsWith('kind is not '):
         return {
           kind: {
-            neq: op.replace('kind is not ', '')
-          }
+            neq: op.replace('kind is not ', ''),
+          },
         }
       case op.startsWith('kind is '):
         return {
           kind: {
-            eq: op.replace('kind is ', '')
-          }
+            eq: op.replace('kind is ', ''),
+          },
         }
       default:
         throw new Error(`Unknown where operator: ${where}`)
@@ -115,17 +123,17 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
 
   if (where.and) {
     return {
-      and: map(where.and, parseWhere)
+      and: map(where.and, parseWhere),
     }
   }
   if (where.or) {
     return {
-      or: map(where.or, parseWhere)
+      or: map(where.or, parseWhere),
     }
   }
   if (where.not) {
     return {
-      not: parseWhere(where.not)
+      not: parseWhere(where.not),
     }
   }
 
@@ -146,8 +154,8 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
         expr = {
           where: {
             expr: expr as any,
-            condition
-          }
+            condition,
+          },
         }
       }
 
@@ -158,15 +166,15 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
           expr = {
             custom: {
               ...custom,
-              expr: expr as any
-            }
+              expr: expr as any,
+            },
           }
         } else {
           expr = {
             customRelation: {
               ...custom,
-              relation: expr as any
-            }
+              relation: expr as any,
+            },
           }
         }
       }
@@ -189,8 +197,8 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
       expr = {
         where: {
           expr: expr as any,
-          condition
-        }
+          condition,
+        },
       }
     }
     b.exclude(expr)
@@ -200,20 +208,20 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 
 function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   element: B['ElementExpr'] | B['TypedExpr'] | NonEmptyArray<B['ElementExpr']>,
-  { notation, ...style }: ViewRuleStyle['style'] & { notation?: string }
+  { notation, ...style }: ViewRuleStyle['style'] & { notation?: string },
 ): (b: B) => B {
   return (b) =>
     b.style({
       targets: (isArray(element) ? element : [element]).map(e => b.$expr(e as any) as C4ElementExpression),
       ...(notation ? { notation } : {}),
       style: {
-        ...style
-      }
+        ...style,
+      },
     })
 }
 
 function $autoLayout<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
-  layout: AutoLayoutDirection
+  layout: AutoLayoutDirection,
 ): (b: B) => B {
   return (b) => b.autoLayout(layout)
 }

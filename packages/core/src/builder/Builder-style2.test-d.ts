@@ -9,21 +9,21 @@ test('Builder types - style 2', () => {
       elements: {
         actor: {
           style: {
-            shape: 'person'
-          }
+            shape: 'person',
+          },
         },
         system: {},
-        component: {}
+        component: {},
       },
       deployments: {
         env: {},
-        vm: {}
+        vm: {},
       },
       relationships: {
         like: {},
-        dislike: {}
+        dislike: {},
       },
-      tags: ['tag1', 'tag2', 'tag1']
+      tags: ['tag1', 'tag2', 'tag1'],
     })
     .model(({ actor, system, component, relTo }, _) =>
       _(
@@ -32,30 +32,31 @@ test('Builder types - style 2', () => {
         system('cloud').with(
           component('backend').with(
             component('api'),
-            component('db')
+            component('db'),
           ),
           component('frontend').with(
             // @ts-expect-error
-            relTo('non-existing')
-          )
-        )
+            relTo('non-existing'),
+          ),
+        ),
       )
     )
     .deployment(({ env, vm, instanceOf }, _) =>
       _(
         env('prod').with(
           vm('vm1'),
-          vm('vm2')
+          vm('vm2'),
         ),
         env('dev').with(
           vm('vm1'),
+          instanceOf('cloud.backend.api'),
           instanceOf(
-            'api',
+            'wrong',
             // @ts-expect-error
-            'non-existing'
+            'non-existing',
           ),
-          vm('vm2')
-        )
+          vm('vm2'),
+        ),
       )
     )
     // Test Element View
@@ -68,16 +69,16 @@ test('Builder types - style 2', () => {
           $include('wrong'),
           // @ts-expect-error #tag22 is not defined
           $include('cloud.backend', {
-            where: 'tag is #tag22'
-          })
+            where: 'tag is #tag22',
+          }),
         ),
         // using with
         view('view').with(
           // @ts-expect-error
           $include('wrong'),
           // @ts-expect-error
-          $style('wrong', { color: 'red' })
-        )
+          $style('wrong', { color: 'red' }),
+        ),
       )
     )
     // Test Element View Of
@@ -91,31 +92,31 @@ test('Builder types - style 2', () => {
           'cloud.backend.api',
           $rules(
             // @ts-expect-error
-            $include('wrong')
-          )
+            $include('wrong'),
+          ),
         ),
         viewOf(
           'view-of',
           'cloud.backend.api',
           $rules(
             // @ts-expect-error
-            $include('wrong')
-          )
+            $include('wrong'),
+          ),
         ).with(
           $include('* -> alice.*'),
           // @ts-expect-error
-          $include('wrong')
+          $include('wrong'),
         ),
         viewOf(
           'view-of',
           // @ts-expect-error
           'cloud.backensd.api',
-          'Title'
+          'Title',
         ).with(
           $include('* -> alice.*'),
           // @ts-expect-error
-          $include('wrong')
-        )
+          $include('wrong'),
+        ),
       )
     )
     // Test Deployment View
@@ -125,32 +126,32 @@ test('Builder types - style 2', () => {
           'deployment',
           $rules(
             // @ts-expect-error
-            $include('pr')
-          )
+            $include('pr'),
+          ),
         ),
         deploymentView(
           'deployment',
           'Title',
           $rules(
             // @ts-expect-error
-            $include('pr')
-          )
+            $include('pr'),
+          ),
         ),
         deploymentView('deployment').with(
           // @ts-expect-error
-          $include('pr')
-        )
+          $include('pr'),
+        ),
       )
     )
 
   expectTypeOf(m.Types.Fqn).toEqualTypeOf(
-    '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
+    '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
   )
   expectTypeOf(m.Types.ViewId).toEqualTypeOf(
-    '' as 'view' | 'view-of' | 'deployment'
+    '' as 'view' | 'view-of' | 'deployment',
   )
   expectTypeOf(m.Types.DeploymentFqn).toEqualTypeOf(
-    '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
+    '' as 'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
   )
 
   expectTypeOf(m.build()).toEqualTypeOf(
@@ -160,15 +161,15 @@ test('Builder types - style 2', () => {
       'tag1' | 'tag2',
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
       'view' | 'view-of' | 'deployment',
-      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api'
-    >
+      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong'
+    >,
   )
 
-  expectTypeOf(m.buildComputedModel()).toEqualTypeOf(
+  expectTypeOf(m.toLikeC4Model()).toEqualTypeOf(
     {} as LikeC4Model.Computed<
       'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
-      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api',
+      'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
       'view' | 'view-of' | 'deployment'
-    >
+    >,
   )
 })

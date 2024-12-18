@@ -1,53 +1,54 @@
+import type { LastArrayElement, Split } from 'type-fest'
 import type { DeploymentElement, DeploymentRelation, Fqn } from '../types'
 import type { AnyTypes, Invalid, Types, ValidId } from './_types'
 import type { Builder } from './Builder'
 import type { AddDeploymentNode } from './Builder.deployment'
 
-export interface DeploymentModelBuilder<T extends AnyTypes> {
-  addDeployment(node: DeploymentElement): Builder<T>
-  addDeploymentRelation(rel: Omit<DeploymentRelation, 'id'>): Builder<T>
+export interface DeploymentModelBuilder<T extends AnyTypes> extends Builder<T> {
+  __addDeployment(node: DeploymentElement): Builder<T>
+  __addDeploymentRelation(rel: Omit<DeploymentRelation, 'id'>): Builder<T>
   /**
    * Create a fully qualified name from an id (for nested models)
    */
-  fqn(id: string): Fqn
+  __fqn(id: string): Fqn
 }
 
 export function deployment<A extends AnyTypes>(): (input: Builder<A>) => Builder<A>
 export function deployment<
   A extends AnyTypes,
-  B extends AnyTypes
+  B extends AnyTypes,
 >(
-  op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>
+  op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
 ): (input: Builder<A>) => Builder<B>
 export function deployment<
   A extends AnyTypes,
   B extends AnyTypes,
-  C extends AnyTypes
+  C extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
-  op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>
+  op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
 ): (input: Builder<A>) => Builder<C>
 export function deployment<
   A extends AnyTypes,
   B extends AnyTypes,
   C extends AnyTypes,
-  D extends AnyTypes
+  D extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
-  op3: (input: DeploymentModelBuilder<C>) => DeploymentModelBuilder<D>
+  op3: (input: DeploymentModelBuilder<C>) => DeploymentModelBuilder<D>,
 ): (input: Builder<A>) => Builder<D>
 export function deployment<
   A extends AnyTypes,
   B extends AnyTypes,
   C extends AnyTypes,
   D extends AnyTypes,
-  E extends AnyTypes
+  E extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
   op3: (input: DeploymentModelBuilder<C>) => DeploymentModelBuilder<D>,
-  op4: (input: DeploymentModelBuilder<D>) => DeploymentModelBuilder<E>
+  op4: (input: DeploymentModelBuilder<D>) => DeploymentModelBuilder<E>,
 ): (input: Builder<A>) => Builder<E>
 export function deployment<
   A extends AnyTypes,
@@ -55,13 +56,13 @@ export function deployment<
   C extends AnyTypes,
   D extends AnyTypes,
   E extends AnyTypes,
-  F extends AnyTypes
+  F extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
   op3: (input: DeploymentModelBuilder<C>) => DeploymentModelBuilder<D>,
   op4: (input: DeploymentModelBuilder<D>) => DeploymentModelBuilder<E>,
-  op5: (input: DeploymentModelBuilder<E>) => DeploymentModelBuilder<F>
+  op5: (input: DeploymentModelBuilder<E>) => DeploymentModelBuilder<F>,
 ): (input: Builder<A>) => Builder<F>
 export function deployment<
   A extends AnyTypes,
@@ -70,14 +71,14 @@ export function deployment<
   D extends AnyTypes,
   E extends AnyTypes,
   F extends AnyTypes,
-  G extends AnyTypes
+  G extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
   op3: (input: DeploymentModelBuilder<C>) => DeploymentModelBuilder<D>,
   op4: (input: DeploymentModelBuilder<D>) => DeploymentModelBuilder<E>,
   op5: (input: DeploymentModelBuilder<E>) => DeploymentModelBuilder<F>,
-  op6: (input: DeploymentModelBuilder<F>) => DeploymentModelBuilder<G>
+  op6: (input: DeploymentModelBuilder<F>) => DeploymentModelBuilder<G>,
 ): (input: Builder<A>) => Builder<G>
 export function deployment<
   A extends AnyTypes,
@@ -87,7 +88,7 @@ export function deployment<
   E extends AnyTypes,
   F extends AnyTypes,
   G extends AnyTypes,
-  H extends AnyTypes
+  H extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -95,7 +96,7 @@ export function deployment<
   op4: (input: DeploymentModelBuilder<D>) => DeploymentModelBuilder<E>,
   op5: (input: DeploymentModelBuilder<E>) => DeploymentModelBuilder<F>,
   op6: (input: DeploymentModelBuilder<F>) => DeploymentModelBuilder<G>,
-  op7: (input: DeploymentModelBuilder<G>) => DeploymentModelBuilder<H>
+  op7: (input: DeploymentModelBuilder<G>) => DeploymentModelBuilder<H>,
 ): (input: Builder<A>) => Builder<H>
 export function deployment<
   A extends AnyTypes,
@@ -106,7 +107,7 @@ export function deployment<
   F extends AnyTypes,
   G extends AnyTypes,
   H extends AnyTypes,
-  I extends AnyTypes
+  I extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -115,7 +116,7 @@ export function deployment<
   op5: (input: DeploymentModelBuilder<E>) => DeploymentModelBuilder<F>,
   op6: (input: DeploymentModelBuilder<F>) => DeploymentModelBuilder<G>,
   op7: (input: DeploymentModelBuilder<G>) => DeploymentModelBuilder<H>,
-  op8: (input: DeploymentModelBuilder<H>) => DeploymentModelBuilder<I>
+  op8: (input: DeploymentModelBuilder<H>) => DeploymentModelBuilder<I>,
 ): (input: Builder<A>) => Builder<I>
 export function deployment<
   A extends AnyTypes,
@@ -127,7 +128,7 @@ export function deployment<
   G extends AnyTypes,
   H extends AnyTypes,
   I extends AnyTypes,
-  J extends AnyTypes
+  J extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -137,7 +138,7 @@ export function deployment<
   op6: (input: DeploymentModelBuilder<F>) => DeploymentModelBuilder<G>,
   op7: (input: DeploymentModelBuilder<G>) => DeploymentModelBuilder<H>,
   op8: (input: DeploymentModelBuilder<H>) => DeploymentModelBuilder<I>,
-  op9: (input: DeploymentModelBuilder<I>) => DeploymentModelBuilder<J>
+  op9: (input: DeploymentModelBuilder<I>) => DeploymentModelBuilder<J>,
 ): (input: Builder<A>) => Builder<J>
 export function deployment<
   A extends AnyTypes,
@@ -150,7 +151,7 @@ export function deployment<
   H extends AnyTypes,
   I extends AnyTypes,
   J extends AnyTypes,
-  K extends AnyTypes
+  K extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -161,7 +162,7 @@ export function deployment<
   op7: (input: DeploymentModelBuilder<G>) => DeploymentModelBuilder<H>,
   op8: (input: DeploymentModelBuilder<H>) => DeploymentModelBuilder<I>,
   op9: (input: DeploymentModelBuilder<I>) => DeploymentModelBuilder<J>,
-  op10: (input: DeploymentModelBuilder<J>) => DeploymentModelBuilder<K>
+  op10: (input: DeploymentModelBuilder<J>) => DeploymentModelBuilder<K>,
 ): (input: Builder<A>) => Builder<K>
 export function deployment<
   A extends AnyTypes,
@@ -175,7 +176,7 @@ export function deployment<
   I extends AnyTypes,
   J extends AnyTypes,
   K extends AnyTypes,
-  L extends AnyTypes
+  L extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -187,7 +188,7 @@ export function deployment<
   op8: (input: DeploymentModelBuilder<H>) => DeploymentModelBuilder<I>,
   op9: (input: DeploymentModelBuilder<I>) => DeploymentModelBuilder<J>,
   op10: (input: DeploymentModelBuilder<J>) => DeploymentModelBuilder<K>,
-  op11: (input: DeploymentModelBuilder<K>) => DeploymentModelBuilder<L>
+  op11: (input: DeploymentModelBuilder<K>) => DeploymentModelBuilder<L>,
 ): (input: Builder<A>) => Builder<L>
 export function deployment<
   A extends AnyTypes,
@@ -202,7 +203,7 @@ export function deployment<
   J extends AnyTypes,
   K extends AnyTypes,
   L extends AnyTypes,
-  M extends AnyTypes
+  M extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -215,7 +216,7 @@ export function deployment<
   op9: (input: DeploymentModelBuilder<I>) => DeploymentModelBuilder<J>,
   op10: (input: DeploymentModelBuilder<J>) => DeploymentModelBuilder<K>,
   op11: (input: DeploymentModelBuilder<K>) => DeploymentModelBuilder<L>,
-  op12: (input: DeploymentModelBuilder<L>) => DeploymentModelBuilder<M>
+  op12: (input: DeploymentModelBuilder<L>) => DeploymentModelBuilder<M>,
 ): (input: Builder<A>) => Builder<M>
 export function deployment<
   A extends AnyTypes,
@@ -231,7 +232,7 @@ export function deployment<
   K extends AnyTypes,
   L extends AnyTypes,
   M extends AnyTypes,
-  N extends AnyTypes
+  N extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -245,7 +246,7 @@ export function deployment<
   op10: (input: DeploymentModelBuilder<J>) => DeploymentModelBuilder<K>,
   op11: (input: DeploymentModelBuilder<K>) => DeploymentModelBuilder<L>,
   op12: (input: DeploymentModelBuilder<L>) => DeploymentModelBuilder<M>,
-  op13: (input: DeploymentModelBuilder<M>) => DeploymentModelBuilder<N>
+  op13: (input: DeploymentModelBuilder<M>) => DeploymentModelBuilder<N>,
 ): (input: Builder<A>) => Builder<N>
 export function deployment<
   A extends AnyTypes,
@@ -262,7 +263,7 @@ export function deployment<
   L extends AnyTypes,
   M extends AnyTypes,
   N extends AnyTypes,
-  O extends AnyTypes
+  O extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -277,7 +278,7 @@ export function deployment<
   op11: (input: DeploymentModelBuilder<K>) => DeploymentModelBuilder<L>,
   op12: (input: DeploymentModelBuilder<L>) => DeploymentModelBuilder<M>,
   op13: (input: DeploymentModelBuilder<M>) => DeploymentModelBuilder<N>,
-  op14: (input: DeploymentModelBuilder<N>) => DeploymentModelBuilder<O>
+  op14: (input: DeploymentModelBuilder<N>) => DeploymentModelBuilder<O>,
 ): (input: Builder<A>) => Builder<O>
 export function deployment<
   A extends AnyTypes,
@@ -295,7 +296,7 @@ export function deployment<
   M extends AnyTypes,
   N extends AnyTypes,
   O extends AnyTypes,
-  P extends AnyTypes
+  P extends AnyTypes,
 >(
   op1: (input: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>,
   op2: (input: DeploymentModelBuilder<B>) => DeploymentModelBuilder<C>,
@@ -311,7 +312,7 @@ export function deployment<
   op12: (input: DeploymentModelBuilder<L>) => DeploymentModelBuilder<M>,
   op13: (input: DeploymentModelBuilder<M>) => DeploymentModelBuilder<N>,
   op14: (input: DeploymentModelBuilder<N>) => DeploymentModelBuilder<O>,
-  op15: (input: DeploymentModelBuilder<O>) => DeploymentModelBuilder<P>
+  op15: (input: DeploymentModelBuilder<O>) => DeploymentModelBuilder<P>,
 ): (input: Builder<A>) => Builder<P>
 
 export function deployment(...ops: any[]) {
@@ -324,29 +325,32 @@ export function deployment(...ops: any[]) {
   }
 }
 
-export type AddDeploymentRelation<Props = unknown> = <
-  T extends AnyTypes,
-  Source extends string & T['DeploymentFqn'],
-  Target extends string & T['DeploymentFqn']
->(
-  source: Source,
-  target: Target,
-  titleOrProps?: string | Props
-) => (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>
+type NameFromFqn<FQN extends string> = LastArrayElement<Split<FQN, '.'>>
 
-export type AddDeployedInstance<Props = unknown> = <
-  const Id extends string,
-  T extends AnyTypes,
-  To extends string & T['Fqn']
->(
-  id: ValidId<Id>,
-  to: To,
-  titleOrProps?: string | Props | undefined
-) => (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>>
+export type AddDeployedInstance<Props = unknown> = {
+  //  instanceOf(target, titleOrProps?)
+  <
+    const T extends AnyTypes,
+    Id extends string & T['Fqn'],
+  >(
+    target: Id,
+  ): (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<Types.AddDeploymentFqn<T, NameFromFqn<Id>>>
+
+  //  instanceOf(id, target, titleOrProps?)
+  <
+    const Id extends string,
+    T extends AnyTypes,
+    Target extends string & T['Fqn'],
+  >(
+    id: ValidId<Id>,
+    target: Target,
+    titleOrProps?: string | Props | undefined,
+  ): (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<Types.AddDeploymentFqn<T, Id>>
+}
 
 type AddDeploymentNodeHelper<T = unknown> = <const Id extends string>(
   id: ValidId<Id>,
-  titleOrProps?: string | T
+  titleOrProps?: string | T,
 ) => AddDeploymentNode<Id>
 
 export type AddDeploymentNodeHelpers<T extends AnyTypes> = T extends
@@ -355,15 +359,50 @@ export type AddDeploymentNodeHelpers<T extends AnyTypes> = T extends
   }
   : Invalid<'No Deployment Kinds'>
 
+export type AddDeploymentRelation<Props = unknown> = <
+  T extends AnyTypes,
+  Source extends string & T['DeploymentFqn'],
+  Target extends string & T['DeploymentFqn'],
+>(
+  source: Source,
+  target: Target,
+  titleOrProps?: string | Props,
+) => (builder: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>
+
 export type DeloymentModelHelpers<T extends AnyTypes> = AddDeploymentNodeHelpers<T> & {
   instanceOf: AddDeployedInstance<T['NewDeploymentNodeProps']>
   rel: AddDeploymentRelation<T['NewRelationshipProps']>
   deployment: typeof deployment
 }
 
+/**
+ * A function that builds a deployment model
+ *
+ * @example
+ *  builder.deployment(({ node }, _) =>
+ *    _(
+ *      node('node1')
+ *      node('node1.child1').with(
+ *        node('grandchild1')
+ *      )
+ *    )
+ *  )
+ *
+ *  builder.deployment(d =>
+ *    d.node('node1')
+ *  )
+ *
+ *  builder.deployment(d =>
+ *    d(
+ *      d.node('node1')
+ *    )
+ *  )
+ */
 export type DeloymentModelBuildFunction<A extends AnyTypes, B extends AnyTypes> = (
   helpers: DeloymentModelHelpers<A> & {
     _: DeloymentModelHelpers<A>['deployment']
   },
-  add: DeloymentModelHelpers<A>['deployment']
-) => (builder: Builder<A>) => Builder<B>
+  add: DeloymentModelHelpers<A>['deployment'],
+) =>
+  | ((builder: DeploymentModelBuilder<A>) => DeploymentModelBuilder<B>)
+  | ((builder: Builder<A>) => Builder<B>)
