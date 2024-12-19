@@ -22,14 +22,17 @@ import {
   isElementWhere,
   isRelationExpression,
   isRelationWhere,
+  type KindEqual,
   type ModelRelation,
   type NonEmptyArray,
   type OutgoingExpr as C4OutgoingExpr,
+  type Participant,
   type RelationId,
   type RelationshipArrowType,
   type RelationshipLineType,
   type RelationWhereExpr,
   type Tag,
+  type TagEqual,
   type ViewId,
   type ViewRule,
   type ViewRuleGlobalStyle,
@@ -456,6 +459,16 @@ export function $where(
       expr: $expr(expr) as any,
       condition: operator
     }
+  }
+}
+
+export function $participant(
+  participant: Participant,
+  operator: TagEqual<TestTag> | KindEqual<TestTag>
+): WhereOperator<TestTag, string> {
+  return {
+    participant,
+    operator
   }
 }
 

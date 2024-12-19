@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $customRelation, $include, computeView } from './fixture'
+import { $include, computeView } from './fixture'
 
 describe('custom-relation-expr', () => {
   it('include edge and apply props', () => {

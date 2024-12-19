@@ -20,21 +20,29 @@ const parseEquals = (
   return not ? { neq: value } : { eq: value }
 }
 
+function parseParticipant(astNode: ast.WhereExpression): ast.Participant | null {
+  if (!ast.isWhereRelationParticipantKind(astNode) && !ast.isWhereRelationParticipantTag(astNode)) {
+    return null
+  }
+
+  return astNode.participant
+}
+
 export function parseWhereClause(astNode: ast.WhereExpression): c4.WhereOperator<string, string> {
   switch (true) {
     case ast.isWhereTagEqual(astNode): {
       const tag = astNode.value?.ref?.name
+      const participant = parseParticipant(astNode)
       invariant(tag, 'Expected tag name')
-      return {
-        tag: parseEquals(astNode, tag)
-      }
+      const tagOperator = { tag: parseEquals(astNode, tag) }
+      return participant ? { participant, operator: tagOperator } : tagOperator
     }
     case ast.isWhereKindEqual(astNode): {
       const kind = astNode.value?.ref?.name
-      invariant(kind, 'Expected kind name')
-      return {
-        kind: parseEquals(astNode, kind)
-      }
+      const participant = parseParticipant(astNode)
+      invariant(kind, 'Expected kind name')      
+      const kindOperator = { kind: parseEquals(astNode, kind) }
+      return participant ? { participant, operator: kindOperator } : kindOperator
     }
     case ast.isWhereElementNegation(astNode) || ast.isWhereRelationNegation(astNode): {
       return {

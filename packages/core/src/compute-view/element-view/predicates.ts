@@ -1,7 +1,7 @@
 import { allPass, filter as remedaFilter, flatMap, isNullish as isNil, map, pipe, unique } from 'remeda'
 import type { Writable } from 'type-fest'
 import { nonexhaustive } from '../../errors'
-import type { Element, ModelRelation } from '../../types'
+import type { Element, Filterable, ModelRelation } from '../../types'
 import * as Expr from '../../types/expression'
 import { isAncestor, parentFqn } from '../../utils/fqn'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
@@ -9,7 +9,8 @@ import type { ComputeCtx } from './compute'
 
 type Predicate<T> = (x: T) => boolean
 export type ElementPredicateFn = Predicate<Element>
-export type RelationPredicateFn = Predicate<ModelRelation>
+export type RelationPredicateFn = Predicate<Filterable>
+// export type RelationPredicateFn = Predicate<ModelRelation>
 // // type ElementPredicate = Predicate<Element>
 // type ElementPredicates<T> = T extends Element[] ? (x: T) => T : (T extends Element ? (x: T) => (Element | null) : never)
 // type ElementPredicate = ElementPredicates<Element | Element[]>
@@ -314,28 +315,30 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   return this.graph.edgesBetween(sources, targets)
 }
 
-const filterEdges = (edges: ReadonlyArray<ComputeCtx.Edge>, where?: RelationPredicateFn) => {
+function filterEdges(this: ComputeCtx, edges: ReadonlyArray<ComputeCtx.Edge>, where?: RelationPredicateFn) {
   if (!where) {
     return edges as ComputeCtx.Edge[]
   }
   return pipe(
     edges,
-    map(e => ({ ...e, relations: e.relations.filter(where) })),
+    map(e => ({ ...e, relations: filterRelations.call(this, [e], where) })),
     remedaFilter(e => e.relations.length > 0)
   ) as ComputeCtx.Edge[]
 }
 
-const filterRelations = (edges: ComputeCtx.Edge[], where?: RelationPredicateFn) => {
+function filterRelations(this: ComputeCtx, edges: ComputeCtx.Edge[], where?: RelationPredicateFn) {
   return pipe(
     edges,
     flatMap(e => e.relations),
-    where ? remedaFilter(where) : Identity,
+    map(x => ({ src: x, ...x, source: this.graph.element(x.source), target: this.graph.element(x.target) })),
+    where ? remedaFilter<Filterable & { src: ModelRelation }>(where) : Identity,
+    map(f => f.src),
     unique()
   )
 }
 
 export function includeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr, where?: RelationPredicateFn) {
-  const edges = filterEdges(edgesIncomingExpr.call(this, expr.incoming), where)
+  const edges = filterEdges.call(this, edgesIncomingExpr.call(this, expr.incoming), where)
   if (edges.length === 0) {
     return
   }
@@ -344,7 +347,7 @@ export function includeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr, w
   })
 }
 export function excludeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr, where?: RelationPredicateFn) {
-  let relations = filterRelations(edgesIncomingExpr.call(this, expr.incoming), where)
+  let relations = filterRelations.call(this, edgesIncomingExpr.call(this, expr.incoming), where)
   this.excludeRelation(...relations)
 }
 
@@ -380,7 +383,7 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
 }
 
 export function includeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr, where?: RelationPredicateFn) {
-  const edges = filterEdges(edgesOutgoingExpr.call(this, expr.outgoing), where)
+  const edges = filterEdges.call(this, edgesOutgoingExpr.call(this, expr.outgoing), where)
   if (edges.length === 0) {
     return
   }
@@ -389,7 +392,7 @@ export function includeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr, w
   })
 }
 export function excludeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr, where?: RelationPredicateFn) {
-  const relations = filterRelations(edgesOutgoingExpr.call(this, expr.outgoing), where)
+  const relations = filterRelations.call(this, edgesOutgoingExpr.call(this, expr.outgoing), where)
   this.excludeRelation(...relations)
 }
 
@@ -413,7 +416,7 @@ function edgesInOutExpr(this: ComputeCtx, { inout }: Expr.InOutExpr, where?: Rel
     }
     const neighbours = this.graph.ascendingSiblings(this.root)
     return {
-      edges: filterEdges(this.graph.anyEdgesBetween(this.graph.element(this.root), neighbours), where),
+      edges: filterEdges.call(this, this.graph.anyEdgesBetween(this.graph.element(this.root), neighbours), where),
       implicits: []
     }
   }
@@ -435,7 +438,7 @@ function edgesInOutExpr(this: ComputeCtx, { inout }: Expr.InOutExpr, where?: Rel
     currentElements = resolveNeighbours.call(this, inout)
   }
   return elements.reduce((acc, el) => {
-    const edges = filterEdges(this.graph.anyEdgesBetween(el, currentElements), where)
+    const edges = filterEdges.call(this, this.graph.anyEdgesBetween(el, currentElements), where)
     if (edges.length > 0) {
       acc.implicits.push(el)
       acc.edges.push(...edges)
@@ -496,7 +499,7 @@ export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr_, 
   if (expr.isBidirectional === true) {
     edges.push(...this.graph.edgesBetween(targets, sources))
   }
-  this.addEdges(filterEdges(edges, where)).forEach(edge => {
+  this.addEdges(filterEdges.call(this, edges, where)).forEach(edge => {
     this.activeGroup.addImplicit(edge.source, edge.target)
   })
 }
@@ -512,6 +515,6 @@ export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr_, 
     return result
   }
   const edges = this.edges.filter(satisfies)
-  const relations = filterRelations(edges, where)
+  const relations = filterRelations.call(this, edges, where)
   this.excludeRelation(...relations)
 }
