@@ -125,7 +125,6 @@ export type DiagramState = Simplify<
     lastClickedNodeId: string | null
     lastClickedEdgeId: string | null
     focusedNodeId: string | null
-    hoveredNodeId: string | null
     hoveredEdgeId: string | null
 
     // id's of nodes / edges that
@@ -151,7 +150,6 @@ export type DiagramState = Simplify<
      */
     focusOnNode: (nodeId: string | false) => void
 
-    setHoveredNode: (nodeId: string | null) => void
     setHoveredEdge: (edgeId: string | null) => void
 
     setLastClickedNode: (nodeId: string | null) => void
@@ -209,7 +207,6 @@ const DEFAULT_PROPS: Except<
   activeOverlay: null,
   activeWalkthrough: null,
   focusedNodeId: null,
-  hoveredNodeId: null,
   hoveredEdgeId: null,
   lastClickedNodeId: null,
   lastClickedEdgeId: null,
@@ -285,7 +282,6 @@ export function createDiagramStore(props: DiagramInitialState) {
               nodesDraggable,
               nodesSelectable,
               hoveredEdgeId,
-              hoveredNodeId,
               xyedges,
               xynodes
             } = get()
@@ -303,9 +299,6 @@ export function createDiagramStore(props: DiagramInitialState) {
               // Reset clicked/hovered node/edge if the node/edge is not in the new view
               if (lastClickedNodeId && !nodeIds.has(lastClickedNodeId)) {
                 lastClickedNodeId = null
-              }
-              if (hoveredNodeId && !nodeIds.has(hoveredNodeId)) {
-                hoveredNodeId = null
               }
               if (focusedNodeId && !nodeIds.has(focusedNodeId)) {
                 focusedNodeId = null
@@ -385,7 +378,6 @@ export function createDiagramStore(props: DiagramInitialState) {
               lastClickedEdgeId = null
               lastClickedNodeId = null
               hoveredEdgeId = null
-              hoveredNodeId = null
               focusedNodeId = null
               activeWalkthrough = null
               activeOverlay = null
@@ -460,7 +452,6 @@ export function createDiagramStore(props: DiagramInitialState) {
                 lastClickedEdgeId,
                 focusedNodeId,
                 hoveredEdgeId,
-                hoveredNodeId,
                 navigationHistory,
                 navigationHistoryIndex,
                 dimmed,
@@ -515,12 +506,6 @@ export function createDiagramStore(props: DiagramInitialState) {
                 noReplace,
                 `focus on node: ${nodeId}`
               )
-            }
-          },
-
-          setHoveredNode: (nodeId) => {
-            if (nodeId !== get().hoveredNodeId) {
-              set({ hoveredNodeId: nodeId })
             }
           },
 
