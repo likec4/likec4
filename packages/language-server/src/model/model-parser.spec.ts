@@ -66,7 +66,7 @@ describe.concurrent('LikeC4ModelParser', () => {
           }
           views {
             view index {
-              include * -> * where kind = r
+              include * -> * where kind = r and source.kind = e
             }
           }
           `)
@@ -82,7 +82,14 @@ describe.concurrent('LikeC4ModelParser', () => {
       expect(wherePredicate).toStrictEqual({
         where: {
           condition: {
-            kind: { eq: 'r' }
+            and: [{
+              kind: { eq: 'r' }
+            }, {
+              participant: 'source',
+              operator: {
+                kind: { eq: 'e' }
+              }
+            }]
           },
           expr: {
             isBidirectional: false,
@@ -403,7 +410,7 @@ describe.concurrent('LikeC4ModelParser', () => {
         }
         views {
           deployment view test {
-            include ins.child1 <-> child2
+            include ins.child1 <-> child2 where source.kind = element
           }
         }
       `)

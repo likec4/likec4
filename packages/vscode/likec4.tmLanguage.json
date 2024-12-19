@@ -101,7 +101,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|global|group|element|exclude|extend|extends|head|icon|icons|include|instance(Of)?|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|of|parallel|par|person|predicateGroup|predicate|queue|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|with)\\b"
+      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|global|group|element|exclude|extend|extends|head|icon|icons|include|instance(Of)?|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|or|of|parallel|par|person|predicateGroup|predicate|queue|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with)\\b"
     },
     {
       "name": "keyword.symbol.likec4",

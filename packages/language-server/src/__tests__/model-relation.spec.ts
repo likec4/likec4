@@ -377,11 +377,11 @@ describe.concurrent('model relation', () => {
       component server
 
       client1 -> server {
-        navigateTo target
+        navigateTo targetView
       }
     }
     views {
-      dynamic view target {
+      dynamic view targetView {
       }
     }`
   )
@@ -399,11 +399,11 @@ describe.concurrent('model relation', () => {
       component server
 
       client1 -> server {
-        navigateTo target
+        navigateTo targetView
       }
     }
     views {
-      view target {
+      view targetView {
       }
     }`
   )

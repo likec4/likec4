@@ -124,6 +124,13 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
+    if ((ast.isWhereRelationParticipantKind(node) || ast.isWhereRelationParticipantTag(node))) {
+      acceptor({
+        node,
+        property: 'participant',
+        type: SemanticTokenTypes.keyword
+      })
+    }
     if (ast.isElementKindExpression(node) && isTruthy(node.kind)) {
       acceptor({
         node,

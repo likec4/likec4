@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { $exclude, $include, computeView } from './fixture'
+import { $exclude, $include, $participant, $where, computeView } from './fixture'
+import { fail } from 'assert'
 
 describe('relation-expr', () => {
   it('should be empty if no relations', () => {
@@ -119,6 +120,27 @@ describe('relation-expr', () => {
       'email:cloud',
       'cloud:email'
     ])
+  })
+
+  it('includes by matching participant predicate', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include($where('cloud -> email', $participant('source', { tag: { eq: 'next' } })))
+    ])
+    expect(nodeIds).toEqual([
+      'cloud',
+      'email'
+    ])
+    expect(edgeIds).toEqual([
+      'cloud:email'
+    ])
+  })
+  
+  it('does not include if participant predicate does not match', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include($where('cloud -> email', $participant('source', { tag: { eq: 'aws' } })))
+    ])
+    expect(nodeIds.length).toEqual(0)
+    expect(edgeIds.length).toEqual(0)
   })
 
   it.todo('verify label [...]')

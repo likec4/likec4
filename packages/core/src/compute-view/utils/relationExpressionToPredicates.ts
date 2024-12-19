@@ -1,3 +1,4 @@
+import { pick } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import type { Element } from '../../types/element'
 import {
@@ -27,7 +28,13 @@ export function relationExpressionToPredicates<T extends FilterableEdge>(
     case isRelationWhere(expr): {
       const predicate = relationExpressionToPredicates(expr.where.expr)
       const where = whereOperatorAsPredicate(expr.where.condition)
-      return e => predicate(e) && where(e)
+      return e =>
+        predicate(e) && where({
+          source: { tags: e.source.tags, kind: e.source.kind },
+          target: { tags: e.target.tags, kind: e.target.kind },
+          ...(e.tags && { tags: e.tags }),
+          ...(e.kind && { kind: e.kind })
+        })
     }
     case isRelation(expr): {
       const isSource = elementExprToPredicate(expr.source)
