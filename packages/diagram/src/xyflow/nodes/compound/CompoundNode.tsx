@@ -10,10 +10,10 @@ import { m, type Variants } from 'framer-motion'
 import { memo, useCallback, useState } from 'react'
 import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
-import { stopPropagation } from '../../utils'
+import { stopPropagation, toDomPrecision } from '../../utils'
 import { ElementIcon } from '../shared/ElementIcon'
 import { CompoundToolbar } from '../shared/Toolbar'
-import { useFramerAnimateVariants } from '../use-animate-variants'
+import { NodeVariants, useFramerAnimateVariants, type VariantKeys } from '../AnimateVariants'
 import * as css from './CompoundNode.css'
 import type { DiagramFlowTypes } from '../../types'
 
@@ -25,32 +25,6 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   && eq(prev.dragging ?? false, next.dragging ?? false)
   && eq(prev.data, next.data)
 )
-
-const VariantsRoot = {
-  idle: (_, { translateZ }) => ({
-    // Why? translateZ is used to determine state
-    ...translateZ !== 0 && {
-      transition: {
-        delayChildren: .08
-      }
-    },
-    transitionEnd: {
-      translateZ: 0
-    }
-  }),
-  selected: {},
-  hovered: (_, { translateZ }) => ({
-    ...translateZ !== 1 && {
-      transition: {
-        delayChildren: .08
-      }
-    },
-    transitionEnd: {
-      translateZ: 1
-    }
-  }),
-  tap: {}
-} satisfies Variants
 
 const VariantsNavigate = {
   idle: {
@@ -111,7 +85,9 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     data: {
       isViewGroup,
       element
-    }
+    },
+    width,
+    height
   }
 ) => {
   const modelRef = DiagramNode.modelRef(element)
@@ -132,7 +108,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     triggerOnNavigateTo,
     openOverlay,
     isEditable,
-    isHovered,
     isDimmed,
     isInteractive,
     isNavigable,
@@ -144,7 +119,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     triggerOnNavigateTo: s.triggerOnNavigateTo,
     openOverlay: s.openOverlay,
     isEditable: s.readonly !== true,
-    isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
     isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableElementDetails
       || (!!s.onNavigateTo && !!element.navigateTo),
@@ -154,31 +128,36 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     enableElementDetails: isNotViewGroup && s.enableElementDetails
   }))
-  const _isToolbarVisible = isNotViewGroup && isEditable && (isHovered || (import.meta.env.DEV && selected))
+  const _isToolbarVisible = isNotViewGroup && isEditable && import.meta.env.DEV && selected
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
-  const [animateVariants, animateHandlers] = useFramerAnimateVariants()
+  const w = toDomPrecision(width ?? element.width)
+  const h = toDomPrecision(height ?? element.height)
 
-  let animate: keyof typeof VariantsRoot
+  let animateVariant: VariantKeys | string[]
   switch (true) {
     case isInActiveOverlay:
-      animate = 'idle'
+      animateVariant = 'idle'
       break
     case dragging && selected:
-      animate = 'selected'
+      animateVariant = 'selected'
       break
     case dragging:
-      animate = 'idle'
-      break
-    case isInteractive && isHovered:
-      animate = 'hovered'
+      animateVariant = 'idle'
       break
     case selected:
-      animate = 'selected'
+      animateVariant = 'selected'
       break
     default:
-      animate = 'idle'
+      animateVariant = 'idle'
   }
+
+  const [animateVariants, animateHandlers] = useFramerAnimateVariants()
+  if (!dragging && !isInActiveOverlay) {
+    animateVariant = animateVariants ?? animateVariant
+  }
+
+  const nodeVariants = NodeVariants(w, h)
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
 
@@ -210,33 +189,31 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
       )}
       <Box
         component={m.div}
-        variants={VariantsRoot}
+        variants={nodeVariants}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
         className={css.containerForFramer}>
         <Box
           component={m.div}
-          variants={VariantsRoot}
-          initial={false}
-          animate={(isHovered && !dragging && !isInActiveOverlay) ? (animateVariants ?? animate) : animate}
           className={clsx(
             css.container,
             'likec4-compound-node',
             opacity < 1 && 'likec4-compound-transparent',
             isDimmed && css.dimmed
           )}
+
+          initial={false}
+          variants={nodeVariants}
+          animate={animateVariant}
+          whileHover={selected ? "selected" : "hovered"}
+          {...isInteractive && animateHandlers}
+
           mod={{
             'animate-target': '',
             'compound-depth': depth,
-            'likec4-color': previewColor ?? color,
-            hovered: isHovered
+            'likec4-color': previewColor ?? color
           }}
           tabIndex={-1}
-          {...(isInteractive && {
-            onTapStart: animateHandlers.onTapStart,
-            onTap: animateHandlers.onTap,
-            onTapCancel: animateHandlers.onTapCancel
-          })}
         >
           <svg className={css.indicator}>
             <rect

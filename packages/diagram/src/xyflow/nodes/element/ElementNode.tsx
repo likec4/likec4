@@ -7,12 +7,12 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { type HTMLMotionProps, m, type Variants } from 'framer-motion'
 import React, { memo, type PropsWithoutRef, useCallback, useState } from 'react'
-import { isNumber, isTruthy } from 'remeda'
+import { isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation, toDomPrecision } from '../../utils'
 import { ElementIcon } from '../shared/ElementIcon'
 import { ElementToolbar } from '../shared/Toolbar'
-import { useFramerAnimateVariants } from '../use-animate-variants'
+import { NodeVariants, useFramerAnimateVariants, type VariantKeys } from '../AnimateVariants'
 import * as css from './element.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 import type { DiagramFlowTypes } from '../../types'
@@ -21,38 +21,7 @@ const Text = MantineText.withProps({
   component: 'div'
 })
 
-const selectedScale = 1.015
-
 // Frame-motion variants
-
-const VariantsRoot = {
-  idle: (_, { scale }) => ({
-    scale: 1,
-    transition: isNumber(scale) && scale > selectedScale
-      ? {
-        delay: 0.1,
-        delayChildren: 0.06
-        // staggerChildren: 0.07,
-        // staggerDirection: -1
-      }
-      : {}
-  }),
-  selected: {
-    scale: selectedScale
-  },
-  hovered: (_, { scale }) => ({
-    scale: 1.06,
-    transition: !isNumber(scale) || (scale >= 1 && scale < 1.06)
-      ? {
-        // delay: 0.09,
-        delayChildren: 0.08
-      }
-      : {}
-  }),
-  tap: {
-    scale: 0.975
-  }
-} satisfies Variants
 
 const variantsBottomButton = (target: 'navigate' | 'relationships', align: 'left' | 'right' | false) => {
   const variants = {
@@ -149,7 +118,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const {
     viewId,
     isEditable,
-    isHovered,
     isDimmed,
     isNavigable,
     isInteractive,
@@ -162,7 +130,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   } = useDiagramState(s => ({
     viewId: s.view.id,
     isEditable: s.readonly !== true,
-    isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
     isInteractive: s.nodesDraggable || s.nodesSelectable || s.enableElementDetails || s.enableRelationshipBrowser
       || (!!s.onNavigateTo && !!element.navigateTo),
@@ -175,14 +142,13 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     renderIcon: s.renderIcon
   }))
   // For development purposes, show the toolbar when the element is selected
-  const isHoveredOrSelected = isHovered || (import.meta.env.DEV && selected)
-  const _isToolbarVisible = isEditable && isHoveredOrSelected
+  const _isToolbarVisible = isEditable && import.meta.env.DEV && selected
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
 
-  let animateVariant: keyof typeof VariantsRoot | string[]
+  let animateVariant: VariantKeys | string[]
   switch (true) {
     case isInActiveOverlay:
       animateVariant = 'idle'
@@ -193,17 +159,15 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     case dragging:
       animateVariant = 'idle'
       break
-    case isInteractive && isHovered:
-      animateVariant = 'hovered'
-      break
     case selected:
       animateVariant = 'selected'
       break
     default:
       animateVariant = 'idle'
   }
+
   const [animateVariants, animateHandlers] = useFramerAnimateVariants()
-  if (isHovered && !dragging && !isInActiveOverlay) {
+  if (!dragging && !isInActiveOverlay) {
     animateVariant = animateVariants ?? animateVariant
   }
 
@@ -252,19 +216,17 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         ])}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
-        data-hovered={!dragging && isHovered}
         data-likec4-color={previewColor ?? element.color}
         data-likec4-shape={element.shape}
         data-animate-target=""
+
         initial={false}
-        variants={VariantsRoot}
+        variants={NodeVariants(w, h)}
         animate={animateVariant}
+        whileHover={selected ? "selected" : "hovered"}
+        {...isInteractive && animateHandlers}
+
         tabIndex={-1}
-        {...(isInteractive && {
-          onTapStart: animateHandlers.onTapStart,
-          onTap: animateHandlers.onTap,
-          onTapCancel: animateHandlers.onTapCancel
-        })}
       >
         <svg
           className={clsx(css.shapeSvg)}

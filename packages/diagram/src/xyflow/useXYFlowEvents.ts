@@ -20,8 +20,6 @@ export type XYFlowEventHandlers = Simplify<
       | 'onNodeContextMenu'
       | 'onEdgeContextMenu'
       | 'onPaneContextMenu'
-      | 'onNodeMouseEnter'
-      | 'onNodeMouseLeave'
       | 'onEdgeMouseEnter'
       | 'onEdgeMouseLeave'
     >
@@ -34,10 +32,6 @@ export function useXYFlowEvents() {
   const lastClickTimestamp = useRef<number>()
 
   const dblclickTimeout = useRef<number>()
-
-  // If we are in focused mode, on edge enter we want to "highlight" the other node
-  // This ref contains the id of this node
-  const hoveredNodeFromOnEdgeEnterRef = useRef('')
 
   return useMemo(() => {
     const dbclickLock = () => {
@@ -306,33 +300,15 @@ export function useXYFlowEvents() {
           diagramApi.setState({ viewportChanged }, false, `viewport-changed: ${viewportChanged}`)
         }
       },
-      onNodeMouseEnter: (_event, xynode) => {
-        hoveredNodeFromOnEdgeEnterRef.current = ''
-        diagramApi.getState().setHoveredNode(xynode.id)
-      },
-      onNodeMouseLeave: (_event, xynode) => {
-        const { hoveredNodeId, setHoveredNode } = diagramApi.getState()
-        if (hoveredNodeId === xynode.id) {
-          setHoveredNode(null)
-        }
-      },
-      onEdgeMouseEnter: (_event, { id, source, target }) => {
-        const { hoveredNodeId, focusedNodeId, setHoveredEdge, setHoveredNode } = diagramApi.getState()
+      onEdgeMouseEnter: (_event, { id }) => {
+        const { setHoveredEdge } = diagramApi.getState()
         setHoveredEdge(id)
-        if ((focusedNodeId === source || focusedNodeId === target) && focusedNodeId !== hoveredNodeId) {
-          const next = hoveredNodeFromOnEdgeEnterRef.current = source === focusedNodeId ? target : source
-          setHoveredNode(next)
-        }
       },
       onEdgeMouseLeave: (_event, xyedge) => {
-        const { hoveredEdgeId, setHoveredEdge, hoveredNodeId, setHoveredNode } = diagramApi.getState()
+        const { hoveredEdgeId, setHoveredEdge } = diagramApi.getState()
         if (hoveredEdgeId === xyedge.id) {
           setHoveredEdge(null)
         }
-        if (hoveredNodeId === hoveredNodeFromOnEdgeEnterRef.current) {
-          setHoveredNode(null)
-        }
-        hoveredNodeFromOnEdgeEnterRef.current = ''
       }
     }) satisfies XYFlowEventHandlers
   }, [diagramApi])

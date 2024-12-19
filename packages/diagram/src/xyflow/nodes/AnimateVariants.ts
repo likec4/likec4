@@ -1,5 +1,47 @@
+import type { Variants } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { isEmpty, isString } from 'remeda'
+
+const DEFAULT_SCALE_BY  = 0
+const SELECTED_SCALE_BY = 16
+const HOVERED_SCALE_BY  = 12
+const TAP_SCALE_BY      = -16
+
+const DELAY_NODE = 0.1
+const DELAY_NODE_CHILDREN = 0.06
+
+export type VariantKeys = 'hoverd' | 'idle' | 'selected' | 'tap'
+
+export const NodeVariants = (width: number, height: number) => {
+
+  const scaleBy = (diffPx: number) => ({
+    scaleX: (width + diffPx) / width,
+    scaleY: (height + diffPx) / height
+  })
+
+  return {
+    idle: {
+      ...scaleBy(DEFAULT_SCALE_BY),
+      transition: {
+          delay: DELAY_NODE,
+          delayChildren: DELAY_NODE_CHILDREN
+      }
+    },
+    selected: {
+      ...scaleBy(SELECTED_SCALE_BY)
+    },
+    hovered: {
+      ...scaleBy(HOVERED_SCALE_BY),
+      transition: {
+        delay: DELAY_NODE,
+        delayChildren: DELAY_NODE_CHILDREN
+      }
+    },
+    tap: {
+      ...scaleBy(TAP_SCALE_BY)
+    }
+  } satisfies Variants
+}
 
 export function useFramerAnimateVariants() {
   const [variants, setVariants] = useState<string[] | null>(null)

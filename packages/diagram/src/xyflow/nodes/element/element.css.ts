@@ -21,9 +21,6 @@ export const container = style({
   selectors: {
     ':where(.react-flow__node.selected) &': {
       willChange: 'transform'
-    },
-    '&[data-hovered="true"]': {
-      willChange: 'transform'
     }
   },
   // Catch pointer below the element
@@ -302,10 +299,6 @@ export const shapeSvgMultiple = style({
     },
     ':where([data-likec4-shape="queue"]) &': {
       transform: 'translate(-10px,8px)'
-    },
-    ':where([data-hovered="true"]) &': {
-      transition: 'opacity 300ms ease-in',
-      opacity: 0.2
     }
   }
 })
