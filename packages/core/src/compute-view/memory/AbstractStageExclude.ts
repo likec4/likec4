@@ -1,24 +1,38 @@
+import { isBoolean, pipe } from 'remeda'
+import { invariant } from '../../errors'
 import { findAscendingConnections } from '../../model/connection'
-import { difference, intersection, isIterable } from '../../utils'
-import type { AnyCtx, GenericCtx, StageExclude } from './_types'
+import { difference, intersection, isAncestor, isIterable } from '../../utils'
+import { ifilter, isome, toSet } from '../../utils/iterable'
+import type {
+  AnyCtx,
+  CtxConnection as Connection,
+  CtxElement as Elem,
+  GenericCtx,
+  MutableState,
+  StageExclude,
+  StageExpression,
+} from './_types'
 
 export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implements StageExclude<T> {
   // Removed elements
   protected excluded = {
-    elements: new Set<T['Element']>(),
-    connections: [] as T['Connection'][]
+    elements: new Set<Elem<T>>(),
+    connections: [] as Connection<T>[],
   }
 
   constructor(
-    public readonly memory: T['Memory']
+    public readonly memory: T['Memory'],
+    public readonly expression: StageExpression<T>,
   ) {
   }
 
-  protected _removeElement(element: T['Element']): void {
+  protected markedToMoveExplicitToImplicit = false
+
+  protected _removeElement(element: Elem<T>): void {
     this.excluded.elements.add(element)
   }
 
-  public exclude(element: T['Element'] | Iterable<T['Element']> | false | undefined | null): this {
+  public exclude(element: Elem<T> | Iterable<Elem<T>> | false | undefined | null): this {
     if (!element) {
       return this
     }
@@ -32,11 +46,19 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
     return this
   }
 
-  protected _removeConnection(connection: T['Connection']): void {
+  protected _removeConnection(connection: Connection<T>): void {
     this.excluded.connections.push(connection)
   }
-
-  public excludeConnections(connection: T['Connection'] | Iterable<T['Connection']>): this {
+  /**
+   * Excludes from the memory relationships from given connections (still connection may be included, but without given relationships)
+   * @param moveExplicitToImplicit - if true, disconnected explicit elements will be moved to implicit
+   * @default false
+   */
+  public excludeConnections(connection: Connection<T> | Iterable<Connection<T>>, moveExplicitToImplicit?: boolean) {
+    if (isBoolean(moveExplicitToImplicit)) {
+      invariant(!this.markedToMoveExplicitToImplicit, 'Already marked to move explicits')
+      this.markedToMoveExplicitToImplicit = moveExplicitToImplicit
+    }
     if (isIterable(connection)) {
       for (const c of connection) {
         this._removeConnection(c)
@@ -55,56 +77,76 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
     return !this.isDirty()
   }
 
-  protected processExcludedElements(
-    excluded: Set<T['Element']>,
-    state: T['MutableState']
-  ): T['MutableState'] {
-    state.elements = difference(state.elements, excluded)
-    state.explicits = difference(state.explicits, excluded)
-    state.final = difference(state.final, excluded)
+  /**
+   * Determines whether disconnected explicits should become implicits.
+   * By default moves all disconnected explicits to implicits, if there were operation to exclude elements.
+   *
+   * Override this method to change the behavior.
+   */
+  protected filterForMoveToImplicits(disconnectedExplicits: Set<Elem<T>>): Set<Elem<T>> {
+    if (this.markedToMoveExplicitToImplicit || this.excluded.elements.size > 0) {
+      return disconnectedExplicits
+    }
+    return new Set()
+  }
 
-    const excludedConnections = state.connections
-      .filter(c => excluded.has(c.source) || excluded.has(c.target))
-
-    const ascConnections = excludedConnections.flatMap(c =>
-      findAscendingConnections(state.connections, c).map(asc => asc.intersect(c) as T['Connection'])
+  // Check if Leaf EXPLICIT elements are becoming IMPLICIT
+  // (it means that they are not connected anymore)
+  protected moveDisconnectedExplicitsToImplicits(state: MutableState<T>): MutableState<T> {
+    // Check if EXPLICIT elements are becoming IMPLICIT
+    let disconnected = difference(
+      new Set(this.memory.connections.flatMap(c => [c.source, c.target])),
+      new Set(state.connections.flatMap(c => [c.source, c.target])),
     )
-    if (excludedConnections.length > 0) {
-      return this.processExcludeConnections([
-        ...excludedConnections,
-        ...ascConnections
-      ], state)
+    // Ensure existing in implicits
+    disconnected = intersection(
+      disconnected,
+      state.elements,
+    )
+    // Ensure this is a leaf explici element
+    disconnected = pipe(
+      disconnected,
+      ifilter(el => {
+        return state.explicits.has(el) && !isome(state.final, f => isAncestor(el, f))
+      }),
+      toSet(),
+    )
+    if (disconnected.size > 0) {
+      disconnected = this.filterForMoveToImplicits(disconnected)
+      state.explicits = difference(state.explicits, disconnected)
+      // Exclude from final elements
+      state.final = difference(state.final, disconnected)
     }
     return state
   }
 
-  protected processExcludeConnections(
-    excluded: T['Connection'][],
-    state: T['MutableState']
-  ): T['MutableState'] {
-    if (excluded.length === 0) {
-      return state
-    }
+  protected removeElements(state: MutableState<T>): MutableState<T> {
+    state.elements = difference(state.elements, this.excluded.elements)
+    state.explicits = difference(state.explicits, this.excluded.elements)
+    state.final = difference(state.final, this.excluded.elements)
+    return state
+  }
 
-    const excludedMap = excluded.reduce((acc, c) => {
+  protected removeConnections(state: MutableState<T>): MutableState<T> {
+    const excludedMap = this.excluded.connections.reduce((acc, c) => {
       const existing = acc.get(c.id)
       if (existing) {
-        acc.set(c.id, existing.mergeWith(c) as T['Connection'])
+        acc.set(c.id, existing.mergeWith(c) as Connection<T>)
       } else {
         acc.set(c.id, c)
       }
       return acc
-    }, new Map<string, T['Connection']>())
+    }, new Map<string, Connection<T>>())
 
     // were connected before and not anymore
-    let excludedElements = new Set<T['Element']>()
+    let disconnected = new Set<Elem<T>>()
 
     state.connections = state.connections.reduce((acc, c) => {
       const excluded = excludedMap.get(c.id)
       if (excluded) {
-        excludedElements.add(c.source)
-        excludedElements.add(c.target)
-        const diff = c.difference(excluded) as T['Connection']
+        disconnected.add(c.source)
+        disconnected.add(c.target)
+        const diff = c.difference(excluded) as Connection<T>
         if (diff.nonEmpty()) {
           acc.push(diff)
         }
@@ -112,35 +154,24 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
         acc.push(c)
       }
       return acc
-    }, [] as T['Connection'][])
+    }, [] as Connection<T>[])
 
     for (const stillExists of state.connections) {
-      excludedElements.delete(stillExists.source)
-      excludedElements.delete(stillExists.target)
+      disconnected.delete(stillExists.source)
+      disconnected.delete(stillExists.target)
+      if (stillExists.boundary && state.elements.has(stillExists.boundary)) {
+        disconnected.delete(stillExists.boundary)
+      }
     }
 
-    if (excludedElements.size === 0) {
+    if (disconnected.size === 0) {
       return state
     }
-
-    // Check if EXPLICIT elements are becoming IMPLICIT
-    // (it means that they are not connected anymore)
-    const explicitsBecomingImplicit = intersection(state.explicits, excludedElements)
-    if (explicitsBecomingImplicit.size > 0) {
-      state.explicits = difference(state.explicits, explicitsBecomingImplicit)
-      // Exclude from final elements
-      state.final = difference(state.final, excludedElements)
-
-      // Exclude from elements (but keep implicits)
-      state.elements = difference(
-        state.elements,
-        difference(excludedElements, explicitsBecomingImplicit)
-      )
-      return state
-    }
-
-    state.elements = difference(state.elements, excludedElements)
-    state.final = difference(state.final, excludedElements)
+    // Keep explicits
+    disconnected = difference(disconnected, state.explicits)
+    // Even if not connected, implicit elements should be kept
+    // state.elements = difference(state.elements, excludedElements)
+    state.final = difference(state.final, disconnected)
 
     return state
   }
@@ -148,26 +179,45 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
   /**
    * Precommit hook
    */
-  protected precommit(state: T['MutableState']): T['MutableState'] {
+  protected precommit(state: MutableState<T>): MutableState<T> {
     return state
   }
 
   /**
    * Postcommit hook
    */
-  protected postcommit(state: T['MutableState']): T['MutableState'] {
+  protected postcommit(state: MutableState<T>): MutableState<T> {
+    invariant(difference(state.explicits, state.elements).size === 0, 'Explicits must be subset of elements')
+    invariant(difference(state.final, state.elements).size === 0, 'Final elements must be subset of elements')
     return state
   }
 
   public commit(): T['Memory'] {
     let state = this.precommit(this.memory.mutableState())
 
+    // Exclude connections from excluded elements
     if (this.excluded.elements.size > 0) {
-      state = this.processExcludedElements(this.excluded.elements, state)
+      const excludedConnections = state.connections
+        .filter(c => this.excluded.elements.has(c.source) || this.excluded.elements.has(c.target))
+
+      const ascConnections = excludedConnections.flatMap(c =>
+        findAscendingConnections(state.connections, c).map(asc => asc.intersect(c) as Connection<T>)
+      )
+      if (excludedConnections.length > 0) {
+        this.excludeConnections([
+          ...excludedConnections,
+          ...ascConnections,
+        ])
+      }
     }
     if (this.excluded.connections.length > 0) {
-      state = this.processExcludeConnections(this.excluded.connections, state)
+      state = this.removeConnections(state)
     }
+    if (this.excluded.elements.size > 0) {
+      state = this.removeElements(state)
+    }
+
+    state = this.moveDisconnectedExplicitsToImplicits(state)
 
     return this.memory.update(this.postcommit(state))
   }

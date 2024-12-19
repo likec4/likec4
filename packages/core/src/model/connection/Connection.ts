@@ -1,5 +1,6 @@
+import { map, pipe, prop } from 'remeda'
 import type { Fqn } from '../../types'
-import { isAncestor } from '../../utils'
+import { isAncestor, type IterableContainer, type ReorderedArray, sortNaturalByFqn } from '../../utils'
 
 export interface Connection<Elem = unknown, Id = unknown> {
   readonly id: Id
@@ -117,6 +118,28 @@ export function sortDeepestFirst<C extends Connection<{ id: string }, any>>(
     sorted.push(next)
   }
   return sorted
+}
+
+/**
+ * To make {@link compareFqnHierarchically} work correctly we add '.' to boundary
+ * Othwerwise connection without boundary considered same level as connection with top-levelboundary
+ */
+const boundaryHierarchy = <C extends Connection<{ id: string }>>(conn: C) =>
+  conn.boundary?.id ? `.${conn.boundary.id}` : ''
+
+export function sortConnectionsByBoundaryHierarchy<C extends Connection<{ id: string }>>(
+  connections: ReadonlyArray<C>,
+  order: 'asc' | 'desc' = 'asc',
+): C[] {
+  return pipe(
+    connections,
+    map(conn => ({
+      id: boundaryHierarchy(conn),
+      conn,
+    })),
+    sortNaturalByFqn(order),
+    map(prop('conn')),
+  )
 }
 
 /**

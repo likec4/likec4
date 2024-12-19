@@ -10,7 +10,7 @@ import {
   type GenericLikeC4Model,
   type Tag as C4Tag,
 } from '../types'
-import { ancestorsFqn, parentFqn } from '../utils/fqn'
+import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { isString } from '../utils/guards'
 import {
@@ -65,7 +65,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     public readonly $model: LikeC4Model<M>,
     public readonly $deployments: GenericLikeC4Model['deployments'],
   ) {
-    for (const element of values($deployments.elements)) {
+    for (const element of sortParentsFirst(values($deployments.elements))) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
         this.#allTags.get(tag).add(el)
@@ -256,7 +256,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: M['DeploymentOrFqn'], sort: 'asc' | 'desc' = 'asc'): DeploymentElementsIterator<M> {
+  public *descendants(element: M['DeploymentOrFqn'], sort: 'asc' | 'desc' = 'desc'): DeploymentElementsIterator<M> {
     for (const child of this.children(element)) {
       if (sort === 'asc') {
         yield child

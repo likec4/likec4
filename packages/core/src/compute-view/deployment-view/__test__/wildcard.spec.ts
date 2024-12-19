@@ -3,29 +3,30 @@ import { $exclude, $include, computeView } from './fixture'
 
 describe('deployment view: wildcard', () => {
   it('should include root nodes', () => {
-    const { nodeIds, edgeIds } = computeView(
-      $include('*')
+    const { nodeIds, edgeIds, edges } = computeView(
+      $include('*'),
     )
     expect(nodeIds).toEqual([
-      'customer.instance',
+      'customer',
       'prod',
       'prod.eu',
       'prod.us',
-      'global.email',
+      'global',
       'acc',
       'acc.testCustomer',
-      'acc.eu'
+      'acc.eu',
     ])
+    console.dir(edges)
     expect(edgeIds).toEqual([
       'prod.eu:prod.us',
       'acc.testCustomer:acc.eu',
-      'customer.instance:prod.eu',
-      'customer.instance:prod.us',
-      'global.email:acc.testCustomer',
-      'prod.eu:global.email',
-      'prod.us:global.email',
-      'acc.eu:global.email',
-      'global.email:customer.instance'
+      'customer:prod.eu',
+      'customer:prod.us',
+      'global:acc.testCustomer',
+      'prod.eu:global',
+      'prod.us:global',
+      'acc.eu:global',
+      'global:customer',
     ])
   })
 
@@ -33,7 +34,7 @@ describe('deployment view: wildcard', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('*'),
       $include('prod'),
-      $exclude('*')
+      $exclude('*'),
     )
     expect(nodeIds).toEqual([])
     expect(edgeIds).toEqual([])

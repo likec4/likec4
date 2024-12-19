@@ -1,30 +1,49 @@
 import { partition } from 'remeda'
 import { mergeConnections } from '../../model/connection'
-import { isIterable, union } from '../../utils'
-import type { AnyCtx, GenericCtx, StageInclude } from './_types'
+import { intersection, isIterable, union } from '../../utils'
+import type {
+  AnyCtx,
+  CtxConnection as Connection,
+  CtxElement as Elem,
+  GenericCtx,
+  MutableState,
+  StageExpression,
+  StageInclude,
+} from './_types'
 
 export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implements StageInclude<T> {
   // New elements
-  protected explicits = new Set<T['Element']>()
-  protected implicits = new Set<T['Element']>()
-  protected connections = [] as T['Connection'][]
+  protected explicits = new Set<Elem<T>>()
+  protected implicits = new Set<Elem<T>>()
+  protected _connections = [] as Connection<T>[]
 
   constructor(
-    public readonly memory: T['Memory']
+    public readonly memory: T['Memory'],
+    public readonly expression: StageExpression<T>,
   ) {
   }
 
-  get newElements(): ReadonlySet<T['Element']> {
+  get elements(): ReadonlySet<Elem<T>> {
     return this.explicits
   }
 
-  get newConnections(): readonly T['Connection'][] {
-    return this.connections
+  /**
+   * Connections from this stage
+   */
+  get connections(): readonly Connection<T>[] {
+    return this._connections
+  }
+
+  mergedConnections(): readonly Connection<T>[] {
+    return mergeConnections([
+      ...this.memory.connections,
+      ...this._connections,
+    ])
   }
 
   public connectWithExisting(
-    _element: T['Element'] | Iterable<T['Element']>,
-    _direction?: 'in' | 'out' | 'both'
+    _element: Elem<T> | Iterable<Elem<T>>,
+    _direction?: 'in' | 'out' | 'both',
   ): boolean {
     throw new Error('Method not implements, depends on the model')
   }
@@ -32,12 +51,12 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
   /**
    * Possible to override
    */
-  protected _addExplicit(elements: T['Element']): void {
+  protected _addExplicit(elements: Elem<T>): void {
     this.explicits.add(elements)
     this.implicits.delete(elements)
   }
 
-  public addExplicit(element: T['Element'] | Iterable<T['Element']> | false | undefined | null): this {
+  public addExplicit(element: Elem<T> | Iterable<Elem<T>> | false | undefined | null): this {
     if (!element) {
       return this
     }
@@ -54,14 +73,14 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
   /**
    * Possible to override
    */
-  protected _addImplicit(elements: T['Element']): void {
+  protected _addImplicit(elements: Elem<T>): void {
     if (this.explicits.has(elements)) {
       return
     }
     this.implicits.add(elements)
   }
 
-  public addImplicit(elements: T['Element'] | Iterable<T['Element']> | false | undefined | null): this {
+  public addImplicit(elements: Elem<T> | Iterable<Elem<T>> | false | undefined | null): this {
     if (!elements) {
       return this
     }
@@ -78,13 +97,13 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
   /**
    * Possible to override
    */
-  protected _addConnection(connection: T['Connection']): void {
-    this.connections.push(connection)
+  protected _addConnection(connection: Connection<T>): void {
+    this._connections.push(connection)
     this._addImplicit(connection.source)
     this._addImplicit(connection.target)
   }
 
-  public addConnections(connection: T['Connection'] | Iterable<T['Connection']>): this {
+  public addConnections(connection: Connection<T> | Iterable<Connection<T>>): this {
     if (isIterable(connection)) {
       for (const c of connection) {
         this._addConnection(c)
@@ -96,7 +115,7 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
   }
 
   public isDirty(): boolean {
-    return this.explicits.size > 0 || this.implicits.size > 0 || this.connections.length > 0
+    return this.explicits.size > 0 || this.implicits.size > 0 || this._connections.length > 0
   }
 
   public isEmpty(): boolean {
@@ -106,59 +125,67 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
   /**
    * Precommit hook
    */
-  protected precommit(state: T['MutableState']): T['MutableState'] {
+  protected precommit(state: MutableState<T>): MutableState<T> {
     return state
   }
 
   /**
    * Postcommit hook
    */
-  protected postcommit(state: T['MutableState']): T['MutableState'] {
+  protected postcommit(state: MutableState<T>): MutableState<T> {
     return state
+  }
+
+  protected processConnections(connections: Connection<T>[]): Connection<T>[] { // To preserve order, we split new connections into two sets
+    return connections
   }
 
   public commit(): T['Memory'] {
     let state = this.precommit(this.memory.mutableState())
 
-    let fromConnections = new Set<T['Element']>()
+    let fromConnections = new Set<Elem<T>>()
 
-    if (this.connections.length > 0) {
+    if (this._connections.length > 0) {
       // To preserve order, we split new connections into two sets
       // First are outgoing from known elements (in memory.elements)
       const [fromKnown, rest] = partition(
-        this.connections,
-        c => state.final.has(c.source)
+        this._connections,
+        c => state.final.has(c.source),
       )
 
-      state.connections = mergeConnections([
-        ...state.connections,
-        ...fromKnown,
-        ...rest
-      ])
+      state.connections = this.processConnections(
+        mergeConnections([
+          ...state.connections,
+          ...fromKnown,
+          ...rest,
+        ]),
+      )
 
-      fromConnections = new Set([
-        // we have source in memory.elements
-        ...fromKnown.map(c => c.target),
-        ...rest.flatMap(c => [c.source, c.target])
-      ])
+      fromConnections = new Set(state.connections.flatMap(c => [c.source, c.target]))
     }
-
-    state.explicits = union(
-      state.explicits,
-      this.explicits
-    )
-
-    state.final = union(
-      state.final,
-      this.explicits,
-      fromConnections
-    )
 
     state.elements = union(
       state.elements,
       this.explicits,
       fromConnections,
-      this.implicits
+      this.implicits,
+    )
+
+    state.explicits = intersection(
+      state.elements,
+      union(
+        state.explicits,
+        this.explicits,
+      ),
+    )
+
+    state.final = intersection(
+      state.elements,
+      union(
+        state.final,
+        this.explicits,
+        fromConnections,
+      ),
     )
 
     return this.memory.update(this.postcommit(state))

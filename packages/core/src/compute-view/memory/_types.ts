@@ -9,33 +9,44 @@ export interface ComputeCtx<
   C extends Connection<E, any>,
   M extends ComputeMemory<any>,
   Inc extends StageInclude<any>,
-  Exc extends StageExclude<any>
+  Exc extends StageExclude<any>,
+  Expr = unknown,
 > {
   Element: E
   Connection: C
   Memory: M
   StageInclude: Inc
   StageExclude: Exc
-
-  MutableState: MutableState<this>
+  Expr: Expr
+  MutableState: State<this>
 }
 
-export type AnyCtx = ComputeCtx<any, any, ComputeMemory<any>, StageInclude<any>, StageExclude<any>>
+// export type AnyCtx = ComputeCtx<any, any, ComputeMemory<any>, StageInclude<any>, StageExclude<any>, any>
+export type AnyCtx = GenericCtx
 
 export type GenericCtx = ComputeCtx<
   Element,
   Connection<Element, any>,
   ComputeMemory<GenericCtx>,
   StageInclude<GenericCtx>,
-  StageExclude<GenericCtx>
+  StageExclude<GenericCtx>,
+  unknown
 >
 
-interface MutableState<T extends AnyCtx> {
-  elements: Set<T['Element']>
-  explicits: Set<T['Element']>
-  final: Set<T['Element']>
-  connections: Array<T['Connection']>
+export interface State<T extends AnyCtx> {
+  elements: Set<CtxElement<T>>
+  explicits: Set<CtxElement<T>>
+  final: Set<CtxElement<T>>
+  connections: Array<CtxConnection<T>>
 }
+
+export type MutableState<T extends AnyCtx> = T['MutableState']
+
+export type StageExpression<T extends AnyCtx> = T['Expr']
+
+export type CtxElement<T extends AnyCtx> = T['Element']
+export type CtxConnection<T extends AnyCtx> = T['Connection']
+export type CtxMemory<T extends AnyCtx> = T['Memory']
 
 export interface ComputeMemory<T extends AnyCtx> {
   /**
@@ -44,30 +55,30 @@ export interface ComputeMemory<T extends AnyCtx> {
    * - elements from resolved connections (may be excluded, if connection is redundant @see excludeRedundantRelationships
    * - implicit elements (not added directly, not included in the view, used for resolving connections)
    */
-  readonly elements: ReadonlySet<T['Element']>
+  readonly elements: ReadonlySet<CtxElement<T>>
 
   /**
    * Explicit elements
    */
-  readonly explicits: ReadonlySet<T['Element']>
+  readonly explicits: ReadonlySet<CtxElement<T>>
 
   /**
    * Final set of elements to be included in the view
    * (`elements` excluding implicits)
    * Keeps order in which elements were added
    */
-  readonly final: ReadonlySet<T['Element']>
+  readonly final: ReadonlySet<CtxElement<T>>
 
   /**
    * Resolved connections
    */
-  readonly connections: ReadonlyArray<T['Connection']>
+  readonly connections: ReadonlyArray<CtxConnection<T>>
 
   isEmpty(): boolean
 
-  stageInclude(): T['StageInclude']
+  stageInclude(expression: T['Expr']): T['StageInclude']
 
-  stageExclude(): T['StageExclude']
+  stageExclude(expression: T['Expr']): T['StageExclude']
 
   /**
    * Returns shallow copy of state
@@ -81,7 +92,9 @@ export interface ComputeMemory<T extends AnyCtx> {
 }
 
 interface Stage<T extends AnyCtx> {
-  readonly memory: T['Memory']
+  readonly memory: CtxMemory<T>
+
+  readonly expression: StageExpression<T>
 
   /**
    * Has changes
@@ -97,13 +110,13 @@ interface Stage<T extends AnyCtx> {
 }
 
 export interface StageInclude<T extends AnyCtx> extends Stage<T> {
-  readonly newElements: ReadonlySet<T['Element']>
+  readonly elements: ReadonlySet<CtxElement<T>>
 
-  readonly newConnections: ReadonlyArray<T['Connection']>
+  readonly connections: ReadonlyArray<CtxConnection<T>>
 
-  addExplicit(element: T['Element'] | Iterable<T['Element']> | false | undefined | null): this
+  addExplicit(element: CtxElement<T> | Iterable<CtxElement<T>> | false | undefined | null): this
 
-  addImplicit(element: T['Element'] | Iterable<T['Element']> | false | undefined | null): this
+  addImplicit(element: CtxElement<T> | Iterable<CtxElement<T>> | false | undefined | null): this
 
   /**
    * Connects element with existing ones in the memory
@@ -112,15 +125,23 @@ export interface StageInclude<T extends AnyCtx> extends Stage<T> {
    * @default 'both'
    */
   connectWithExisting(
-    element: T['Element'] | Iterable<T['Element']>,
-    direction?: 'in' | 'out' | 'both'
+    element: CtxElement<T> | Iterable<CtxElement<T>>,
+    direction?: 'in' | 'out' | 'both',
   ): boolean
 
-  addConnections(connection: T['Connection'] | Iterable<T['Connection']>): this
+  addConnections(connection: CtxConnection<T> | Iterable<CtxConnection<T>>): this
 }
 
 export interface StageExclude<T extends AnyCtx> extends Stage<T> {
-  excludeConnections(connection: T['Connection'] | Iterable<T['Connection']>): this
+  /**
+   * Excludes from the memory relationships from given connections (still connection may be included, but without given relationships)
+   * @param moveExplicitToImplicit - if true, disconnected explicit elements will be moved to implicit
+   * @default false
+   */
+  excludeConnections(
+    connection: CtxConnection<T> | Iterable<CtxConnection<T>>,
+    moveExplicitToImplicit?: boolean,
+  ): this
 
-  exclude(element: T['Element'] | Iterable<T['Element']> | false | undefined | null): this
+  exclude(element: CtxElement<T> | Iterable<CtxElement<T>> | false | undefined | null): this
 }

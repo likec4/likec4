@@ -12,6 +12,8 @@ import type { RelationshipModel } from '../../RelationModel'
 import type { AnyAux, IteratorLike } from '../../types'
 import type { Connection } from '../Connection'
 
+export const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom')
+
 /**
  * Connection is ephemeral entity, result of a resolving relationships between source and target.
  * Includes direct relationships and/or between their nested elements.
@@ -46,6 +48,39 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
 
   nonEmpty(): boolean {
     return this.relations.nonEmpty
+  }
+
+  // @ts-ignore
+  [customInspectSymbol](depth, inspectOptions, inspect) {
+    const asString = this.toString()
+
+    // Trick so that node displays the name of the constructor
+    Object.defineProperty(asString, 'constructor', {
+      value: DeploymentConnectionModel,
+      enumerable: false,
+    })
+
+    return asString
+  }
+
+  toString() {
+    const model = [...this.relations.model].map(c => '    ' + c.expression)
+    if (model.length) {
+      model.unshift('  model:')
+    } else {
+      model.unshift('  model: []')
+    }
+    const deployment = [...this.relations.deployment].map(c => '    ' + c.expression)
+    if (deployment.length) {
+      deployment.unshift('  deployment:')
+    } else {
+      deployment.unshift('  deployment: []')
+    }
+    return [
+      this.expression,
+      ...model,
+      ...deployment,
+    ].join('\n')
   }
 
   /**

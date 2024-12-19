@@ -1,11 +1,12 @@
+import { anyPass } from 'remeda'
 import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
-import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import { FqnExpr, type RelationExpr } from '../../../types'
-import type { PredicateExecutor } from '../_types'
-import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
+import { isAncestor } from '../../../utils'
+import type { Connection, Elem, PredicateExecutor } from '../_types'
+import { resolveElements, resolveModelElements } from '../utils'
 import { excludeModelRelations, resolveAscendingSiblings } from './relation-direct'
 
 export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing> = {
@@ -40,26 +41,47 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
       const excludedRelations = resolveAllOutgoingRelations(model, expr.outgoing)
       return excludeModelRelations(excludedRelations, { stage, memory })
     }
-
-    const isSource = deploymentExpressionToPredicate(expr.outgoing)
-
-    const satisfies = (connection: DeploymentConnectionModel) => {
-      return isSource(connection.source)
+    if (FqnExpr.isWildcard(expr.outgoing)) {
+      // non-sense
+      return stage
     }
 
-    const toExclude = memory.connections.filter(satisfies)
-    if (toExclude.length === 0) {
-      return
-    }
-
+    const isOutgoing = filterOutgoingConnections(resolveElements(model, expr.outgoing))
+    const toExclude = memory.connections.filter(isOutgoing)
     stage.excludeConnections(toExclude)
     return stage
-  }
+  },
+}
+
+export function filterOutgoingConnections(
+  sources: Elem[],
+): (connection: Connection) => boolean {
+  return anyPass(
+    sources.map(source => {
+      const satisfies = (el: Elem) => el === source || isAncestor(source, el)
+      return (connection: Connection) => {
+        return satisfies(connection.source) && !satisfies(connection.target)
+      }
+    }),
+  )
+  // if (FqnExpr.isDeploymentRef(expr) && isNullish(expr.selector)) {
+  //   // element ->
+  //   const source = model.element(expr.ref.deployment)
+  //   const isInside = (el: Elem) => el === source || isAncestor(source, el)
+  //   return (connection: Connection) => {
+  //     return isInside(connection.source) && !isInside(connection.target)
+  //   }
+  // } else {
+  //   const isSource = deploymentExpressionToPredicate(expr)
+  //   return (connection: Connection) => {
+  //     return isSource(connection.source)
+  //   }
+  // }
 }
 
 export function resolveAllOutgoingRelations(
   model: LikeC4DeploymentModel,
-  moodelRef: FqnExpr.ModelRef
+  moodelRef: FqnExpr.ModelRef,
 ): Set<RelationshipModel> {
   const targets = resolveModelElements(model, moodelRef)
   return new Set(targets.flatMap(e => [...e.allOutgoing]))

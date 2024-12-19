@@ -6,14 +6,15 @@ describe('DeploymentRefPredicate', () => {
   it('should include instance and node', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('customer.instance'),
-      $include('prod.eu')
+      $include('prod.eu'),
     )
     expect(nodeIds).toEqual([
       'customer.instance',
-      'prod.eu'
+      'prod',
+      'prod.eu',
     ])
     expect(edgeIds).toEqual([
-      'customer.instance:prod.eu'
+      'customer.instance:prod.eu',
     ])
   })
 
@@ -21,19 +22,20 @@ describe('DeploymentRefPredicate', () => {
     const { nodeIds, edgeIds, nodes } = computeView(
       $include('customer'),
       $include('prod.eu.zone1'),
-      $include('prod.eu.zone2')
+      $include('prod.eu.zone2'),
     )
     expect(nodeIds).toEqual([
       'customer',
+      'prod',
       'prod.eu.zone1',
-      'prod.eu.zone2'
+      'prod.eu.zone2',
     ])
     expect(edgeIds).toEqual([
       'customer:prod.eu.zone1',
-      'customer:prod.eu.zone2'
+      'customer:prod.eu.zone2',
     ])
     expect(find(nodes, n => n.id === 'customer')).toMatchObject({
-      title: 'Happy Customer'
+      title: 'Happy Customer',
     })
   })
 
@@ -42,56 +44,56 @@ describe('DeploymentRefPredicate', () => {
       $include('customer'),
       $include('prod.eu.zone2'),
       $include('prod.eu.zone1'),
-      $include('prod')
+      $include('prod'),
     )
     expect(nodeIds).toEqual([
       'customer',
       'prod',
       'prod.eu.zone2',
-      'prod.eu.zone1'
+      'prod.eu.zone1',
     ])
     expect(edgeIds).toEqual([
       'customer:prod.eu.zone2',
-      'customer:prod.eu.zone1'
+      'customer:prod.eu.zone1',
     ])
   })
 
   it('should include children', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.*'),
-      $exclude('prod.eu.auth')
+      $exclude('prod.eu.auth'),
     )
     expect.soft(nodeIds).toEqual([
       'prod.eu.zone1',
       'prod.eu.zone2',
       'prod.eu.media',
-      'prod.eu.db'
+      'prod.eu.db',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1:prod.eu.media',
       'prod.eu.zone1:prod.eu.db',
       'prod.eu.zone2:prod.eu.media',
-      'prod.eu.zone2:prod.eu.db'
+      'prod.eu.zone2:prod.eu.db',
     ])
   })
 
   it('should include children and ensure sort', () => {
     const { nodeIds, edgeIds } = computeView(
-      $include('prod.eu.zone1.*')
+      $include('prod.eu.zone1.*'),
     )
     expect.soft(nodeIds).toEqual([
       'prod.eu.zone1.ui',
-      'prod.eu.zone1.api'
+      'prod.eu.zone1.api',
     ])
     expect(edgeIds).toEqual([
-      'prod.eu.zone1.ui:prod.eu.zone1.api'
+      'prod.eu.zone1.ui:prod.eu.zone1.api',
     ])
   })
 
   it('should include descendants and ensure sort', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.**'),
-      $exclude('prod.eu.auth')
+      $exclude('prod.eu.auth'),
     )
     expect.soft(nodeIds).toEqual([
       'prod.eu.zone1',
@@ -101,7 +103,7 @@ describe('DeploymentRefPredicate', () => {
       'prod.eu.zone1.api',
       'prod.eu.zone2.api',
       'prod.eu.media',
-      'prod.eu.db'
+      'prod.eu.db',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api',
@@ -111,55 +113,57 @@ describe('DeploymentRefPredicate', () => {
       'prod.eu.zone1.ui:prod.eu.media',
       'prod.eu.zone2.api:prod.eu.media',
       'prod.eu.zone2.api:prod.eu.db',
-      'prod.eu.zone2.ui:prod.eu.media'
+      'prod.eu.zone2.ui:prod.eu.media',
     ])
   })
 
   it('should expand node 1', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('customer'),
-      $include('prod.eu.zone1._')
+      $include('prod.eu.zone1._'),
     )
     expect.soft(nodeIds).toEqual([
       'customer',
+      'prod',
       'prod.eu.zone1',
       'prod.eu.zone1.ui',
-      'prod.eu.zone1.api'
+      'prod.eu.zone1.api',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api',
-      'customer:prod.eu.zone1.ui'
+      'customer:prod.eu.zone1.ui',
     ])
   })
 
   it('should expand node 2', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('*'),
-      $include('prod.eu.zone1._')
+      $include('prod.eu.zone1._'),
     )
     expect.soft(nodeIds).toEqual([
-      'customer.instance',
+      'customer',
       'prod',
       'prod.eu',
       'prod.us',
       'prod.eu.zone1',
       'prod.eu.zone1.ui',
       'prod.eu.zone1.api',
-      'global.email',
+      'global',
       'acc',
       'acc.testCustomer',
-      'acc.eu'
+      'acc.eu',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api',
+      'prod.eu:prod.us',
       'acc.testCustomer:acc.eu',
-      'customer.instance:prod.eu.zone1.ui',
-      'prod.eu.zone1.api:global.email',
-      'customer.instance:prod.us',
-      'global.email:acc.testCustomer',
-      'prod.us:global.email',
-      'acc.eu:global.email',
-      'global.email:customer.instance'
+      'customer:prod.eu.zone1.ui',
+      'prod.eu.zone1.api:global',
+      'customer:prod.us',
+      'global:acc.testCustomer',
+      'prod.us:global',
+      'acc.eu:global',
+      'global:customer',
     ])
   })
 
@@ -168,27 +172,28 @@ describe('DeploymentRefPredicate', () => {
       $include('customer'),
       $include('prod.eu._'),
       $include('prod.eu.zone2._'),
-      $exclude('prod.eu.auth')
+      $exclude('prod.eu.auth'),
     )
     expect.soft(nodeIds).toEqual([
       'customer',
+      'prod',
       'prod.eu',
       'prod.eu.zone1',
       'prod.eu.zone2',
       'prod.eu.zone2.ui',
       'prod.eu.zone2.api',
       'prod.eu.media',
-      'prod.eu.db'
+      'prod.eu.db',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone2.ui:prod.eu.zone2.api',
+      'prod.eu.zone2.ui:prod.eu.media',
       'prod.eu.zone2.api:prod.eu.media',
       'prod.eu.zone2.api:prod.eu.db',
-      'prod.eu.zone2.ui:prod.eu.media',
       'prod.eu.zone1:prod.eu.media',
       'prod.eu.zone1:prod.eu.db',
       'customer:prod.eu.zone2.ui',
-      'customer:prod.eu.zone1'
+      'customer:prod.eu.zone1',
     ])
   })
 })

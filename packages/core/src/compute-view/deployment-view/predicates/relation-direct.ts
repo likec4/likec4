@@ -1,30 +1,31 @@
-import { filter, isNonNullish, map, pipe } from 'remeda'
+import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
-import { findConnectionsBetween } from '../../../model/connection/deployment'
+import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
 import type { ConnectionModel } from '../../../model/connection/model/ConnectionModel'
-import { DeploymentElementModel } from '../../../model/DeploymentElementModel'
+import type { DeploymentElementModel } from '../../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { FqnExpr, type RelationExpr } from '../../../types'
-import { hasIntersection, intersection, union } from '../../../utils/set'
-import type { ExcludePredicateCtx, PredicateExecutor } from '../_types'
+import { hasIntersection, intersection } from '../../../utils/set'
+import type { Connection, ExcludePredicateCtx, PredicateExecutor } from '../_types'
 import type { StageExclude } from '../memory'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
-import { resolveAllImcomingRelations } from './relation-incoming'
-import { resolveAllOutgoingRelations } from './relation-outgoing'
+import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
+import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
 
 // const isRef = DeploymentElementExpression.isRef
 
 export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   const siblings = new Set<DeploymentElementModel>()
   for (let sibling of element.ascendingSiblings()) {
-    if (element.isInstance() && sibling.isDeploymentNode()) {
-      // we flatten nodes that contain only one instance
-      sibling = sibling.onlyOneInstance() ?? sibling
-    }
+    // TODO: investigate if this is necessary
+    // if (element.isInstance() && sibling.isDeploymentNode()) {
+    //   // we flatten nodes that contain only one instance
+    //   sibling = sibling.onlyOneInstance() ?? sibling
+    // }
     siblings.add(sibling)
   }
   return siblings
@@ -32,73 +33,95 @@ export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
 
 const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.DeploymentRef) => {
   const sources = resolveElements(model, nonWildcard)
-  const [head, ...rest] = sources.map(s => resolveAscendingSiblings(s))
-  if (head) {
-    let targets = rest.length > 0 ? union(head, ...rest) : head
-    return [sources, [...targets]] as const
-  }
-  return [sources, []] as const
+  return sources.map(source => {
+    const targets = resolveAscendingSiblings(source)
+    return [source, targets] as const
+  })
 }
 
 export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
-  include: ({ expr, model, stage }) => {
-    const sourceIsWildcard = FqnExpr.isWildcard(expr.source)
-    const targetIsWildcard = FqnExpr.isWildcard(expr.target)
+  include: ({ expr: { source, target, isBidirectional = false }, model, stage }) => {
+    invariant(!FqnExpr.isModelRef(source), 'Invalid source model ref in direct relation')
+    invariant(!FqnExpr.isModelRef(target), 'Invalid target model ref in direct relation')
+    const sourceIsWildcard = FqnExpr.isWildcard(source)
+    const targetIsWildcard = FqnExpr.isWildcard(target)
 
-    let sources, targets
+    const dir = isBidirectional ? 'both' : 'directed'
+
+    let connections
 
     switch (true) {
+      // * -> *
       case sourceIsWildcard && targetIsWildcard: {
-        sources = [...model.instances()]
-        targets = sources.slice()
+        connections = findConnectionsWithin(model.instances()).map(c => {
+          stage.addImplicit(c.boundary)
+          return c
+        })
         break
       }
-      case targetIsWildcard && FqnExpr.isDeploymentRef(expr.source): {
-        const [
-          resolvedSources,
-          resolvedTargets
-        ] = resolveWildcard(model, expr.source)
-        sources = resolvedSources
-        targets = resolvedTargets
+
+      // source -> *; source <-> *
+      case !sourceIsWildcard && targetIsWildcard: {
+        const sources = resolveElements(model, source)
+        const isSource = filterOutgoingConnections(sources)
+
+        let postFilter = isSource
+        if (isBidirectional) {
+          const isTarget = filterIncomingConnections(sources)
+          postFilter = c => isSource(c) !== isTarget(c)
+        }
+
+        connections = sources
+          .flatMap(source => {
+            const targets = resolveAscendingSiblings(source)
+            return findConnectionsBetween(source, targets, dir)
+          })
+          .filter(postFilter)
         break
       }
-      case sourceIsWildcard && FqnExpr.isDeploymentRef(expr.target): {
-        const [
-          resolvedSources,
-          resolvedTargets
-        ] = resolveWildcard(model, expr.target)
-        // Swap sources and targets
-        sources = resolvedTargets
-        targets = resolvedSources
+      // * -> target; * <-> target
+      case sourceIsWildcard && !targetIsWildcard: {
+        const targets = resolveElements(model, target)
+        const isTarget = filterIncomingConnections(targets)
+
+        let postFilter = isTarget
+        if (isBidirectional) {
+          const isSource = filterOutgoingConnections(targets)
+          postFilter = c => isSource(c) !== isTarget(c)
+        }
+
+        connections = targets
+          .flatMap(target => {
+            const sources = resolveAscendingSiblings(target)
+            return [...sources].flatMap(source => findConnection(source, target, dir))
+          })
+          .filter(postFilter)
         break
       }
       default: {
-        invariant(FqnExpr.isDeploymentRef(expr.source), 'Inferrence failed - source should be a deployment ref')
-        invariant(FqnExpr.isDeploymentRef(expr.target), 'Inferrence failed - target should be a deployment ref')
-        sources = resolveElements(model, expr.source)
-        targets = resolveElements(model, expr.target)
+        invariant(!sourceIsWildcard, 'Inferrence failed - source should be a deployment ref')
+        invariant(!targetIsWildcard, 'Inferrence failed - target should be a deployment ref')
+        const sources = resolveElements(model, source)
+        const targets = resolveElements(model, target)
+
+        const isSource = filterOutgoingConnections(sources)
+        const isTarget = filterIncomingConnections(targets)
+
+        connections = pipe(
+          sources,
+          flatMap(s => findConnectionsBetween(s, targets, dir)),
+          filter(c => isSource(c) && isTarget(c)),
+        )
       }
     }
 
-    if (sources.length === 0 || targets.length === 0) {
-      return
-    }
+    stage.addConnections(connections)
 
-    const dir = expr.isBidirectional ? 'both' : 'directed'
-    for (const source of sources) {
-      stage.addConnections(findConnectionsBetween(source, targets, dir))
+    if (FqnExpr.isDeploymentRef(source) && isNonNullish(source.selector)) {
+      stage.addImplicit(model.element(source.ref.deployment))
     }
-
-    for (const c of stage.newConnections) {
-      if (c.source.isInstance() && c.target.isInstance() && c.boundary) {
-        stage.addImplicit(c.boundary)
-      }
-    }
-    if (FqnExpr.isDeploymentRef(expr.source) && isNonNullish(expr.source.selector)) {
-      stage.addImplicit(model.element(expr.source.ref.deployment))
-    }
-    if (FqnExpr.isDeploymentRef(expr.target) && isNonNullish(expr.target.selector)) {
-      stage.addImplicit(model.element(expr.target.ref.deployment))
+    if (FqnExpr.isDeploymentRef(target) && isNonNullish(target.selector)) {
+      stage.addImplicit(model.element(target.ref.deployment))
     }
 
     return stage
@@ -119,7 +142,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         source: expr.source,
         target: expr.target,
         expr,
-        model
+        model,
       })
       return excludeModelRelations(toExclude, { stage, memory })
     }
@@ -134,7 +157,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
       return excludeModelRelations(
         allOutgoing,
         { stage, memory },
-        c => isTarget(c.target)
+        c => isTarget(c.target),
       )
     }
 
@@ -144,7 +167,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
       return excludeModelRelations(
         toExclude,
         { stage, memory },
-        c => isSource(c.source)
+        c => isSource(c.source),
       )
     }
 
@@ -160,14 +183,14 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
 
     stage.excludeConnections(toExclude)
     return stage
-  }
+  },
 }
 
 export function excludeModelRelations(
   relationsToExclude: ReadonlySet<RelationshipModel<AnyAux>>,
   { stage, memory }: Pick<ExcludePredicateCtx, 'stage' | 'memory'>,
   // Optional filter to scope the connections to exclude
-  filterConnections: (c: DeploymentConnectionModel) => boolean = () => true
+  filterConnections: (c: DeploymentConnectionModel) => boolean = () => true,
 ): StageExclude {
   if (relationsToExclude.size === 0) {
     return stage
@@ -177,11 +200,11 @@ export function excludeModelRelations(
     // Find connections that have at least one relation in common with the excluded relations
     filter(c => filterConnections(c) && hasIntersection(c.relations.model, relationsToExclude)),
     map(c =>
-      c.clone({
+      c.update({
         deployment: null,
-        model: intersection(c.relations.model, relationsToExclude)
+        model: intersection(c.relations.model, relationsToExclude),
       })
-    )
+    ),
   )
   if (toExclude.length === 0) {
     return stage
@@ -193,7 +216,7 @@ function resolveRelationsBetweenModelElements({
   source,
   target,
   expr,
-  model
+  model,
 }: {
   source: FqnExpr.ModelRef
   target: FqnExpr.ModelRef

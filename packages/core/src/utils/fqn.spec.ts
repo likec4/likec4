@@ -12,7 +12,7 @@ import {
   parentFqn,
   sortByFqnHierarchically,
   sortNaturalByFqn,
-  sortParentsFirst
+  sortParentsFirst,
 } from './fqn'
 
 const el = (id: string): Element => ({ id }) as unknown as Element
@@ -103,19 +103,19 @@ describe('fqn utils', () => {
         'b',
         'a.b',
         'a.b.c',
-        'a.c.c'
+        'a.c.c',
       ].sort(compareFqnHierarchically)).toEqual([
         'a',
         'b',
         'a.b',
         'a.b.c',
-        'a.c.c'
+        'a.c.c',
       ])
     })
 
     it('should preserve initial order', () => {
       expect(
-        ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'].sort(compareFqnHierarchically)
+        ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'].sort(compareFqnHierarchically),
       ).toEqual(['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'])
     })
   })
@@ -129,15 +129,15 @@ describe('fqn utils', () => {
           el('a.c.a.b'),
           el('a.c.c'),
           el('b'),
-          el('a.b.c')
-        ]).map(prop('id'))
+          el('a.b.c'),
+        ]).map(prop('id')),
       ).toEqual([
         'a',
         'b',
         'a.b',
         'a.b.c',
         'a.c.c',
-        'a.c.a.b'
+        'a.c.a.b',
       ])
     })
 
@@ -150,8 +150,8 @@ describe('fqn utils', () => {
           el('a.b1'),
           el('a.b2'),
           el('a.b10'),
-          el('a.b2.c')
-        ]).map(prop('id'))
+          el('a.b2.c'),
+        ]).map(prop('id')),
       ).toEqual([
         'a',
         'b',
@@ -159,7 +159,29 @@ describe('fqn utils', () => {
         'a.b2',
         'a.b10',
         'a.b2.c',
-        'a.c.c'
+        'a.c.c',
+      ])
+    })
+
+    it('should sort natural (desc)', () => {
+      expect(
+        sortNaturalByFqn('desc')([
+          el('b'),
+          el('a.c.c'),
+          el('a'),
+          el('a.b1'),
+          el('a.b2'),
+          el('a.b10'),
+          el('a.b2.c'),
+        ]).map(prop('id')),
+      ).toEqual([
+        'a.b2.c',
+        'a.c.c',
+        'a.b1',
+        'a.b2',
+        'a.b10',
+        'a',
+        'b',
       ])
     })
   })
@@ -173,15 +195,15 @@ describe('fqn utils', () => {
           el('a.b.c'),
           el('a.c.a.b'),
           el('a.c.c'),
-          el('b')
-        ]).map(prop('id'))
+          el('b'),
+        ]).map(prop('id')),
       ).toEqual([
         'a',
         'b',
         'a.b',
         'a.b.c',
         'a.c.c',
-        'a.c.a.b'
+        'a.c.a.b',
       ])
     })
 
@@ -194,8 +216,8 @@ describe('fqn utils', () => {
           el('a.b10'),
           el('a.b2.c'),
           el('a.b1'),
-          el('a.b2')
-        ]).map(prop('id'))
+          el('a.b2'),
+        ]).map(prop('id')),
       ).toEqual([
         'b',
         'a',
@@ -203,7 +225,7 @@ describe('fqn utils', () => {
         'a.b1',
         'a.b2',
         'a.c.c',
-        'a.b2.c'
+        'a.b2.c',
       ])
     })
   })
@@ -216,15 +238,15 @@ describe('fqn utils', () => {
           el('b'),
           el('a'),
           el('a.b.c'),
-          el('a.b')
+          el('a.b'),
         ]),
-        prop('id')
+        prop('id'),
       )).toEqual([
         'a',
         'a.c',
         'b',
         'a.b',
-        'a.b.c'
+        'a.b.c',
       ])
     })
 
@@ -238,9 +260,9 @@ describe('fqn utils', () => {
           el('a.b.c'),
           el('a.c.a.b'),
           el('a.c'),
-          el('b')
+          el('b'),
         ]),
-        prop('id')
+        prop('id'),
       )).toEqual([
         'a',
         'a.b',
@@ -249,7 +271,7 @@ describe('fqn utils', () => {
         'a.c',
         'a.c.c',
         'a.b.c',
-        'a.c.a.b'
+        'a.c.a.b',
       ])
     })
   })

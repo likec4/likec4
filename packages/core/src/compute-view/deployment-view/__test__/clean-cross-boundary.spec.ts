@@ -5,17 +5,19 @@ describe('cleanCrossBoundaryConnections', () => {
   it('should keep relations inside boundary', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.zone1.*'),
-      $include('prod.eu.zone2.*')
+      $include('prod.eu.zone2.*'),
     )
     expect.soft(nodeIds).toEqual([
+      'prod.eu.zone1',
+      'prod.eu.zone2',
       'prod.eu.zone1.ui',
       'prod.eu.zone2.ui',
       'prod.eu.zone1.api',
-      'prod.eu.zone2.api'
+      'prod.eu.zone2.api',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api',
-      'prod.eu.zone2.ui:prod.eu.zone2.api'
+      'prod.eu.zone2.ui:prod.eu.zone2.api',
     ])
   })
 
@@ -24,22 +26,22 @@ describe('cleanCrossBoundaryConnections', () => {
       $include('customer'),
       $include('acc.testCustomer'),
       $include('prod._'),
-      $include('acc._')
+      $include('acc._'),
     )
-    expect.soft(nodeIds).toEqual([
+    expect(nodeIds).toEqual([
       'customer',
       'acc',
       'prod',
       'acc.testCustomer',
       'prod.eu',
       'acc.eu',
-      'prod.us'
+      'prod.us',
     ])
     expect(edgeIds).toEqual([
       'acc.testCustomer:acc.eu',
       'prod.eu:prod.us',
       'customer:prod.eu',
-      'customer:prod.us'
+      'customer:prod.us',
     ])
   })
 
@@ -48,7 +50,7 @@ describe('cleanCrossBoundaryConnections', () => {
       $include('prod.eu.zone1'),
       $include('prod.eu.zone2'),
       $include('prod.eu.zone1.*'),
-      $include('prod.eu.zone2.*')
+      $include('prod.eu.zone2.*'),
     )
     expect.soft(nodeIds).toEqual([
       'prod.eu.zone1',
@@ -56,26 +58,27 @@ describe('cleanCrossBoundaryConnections', () => {
       'prod.eu.zone1.ui',
       'prod.eu.zone2.ui',
       'prod.eu.zone1.api',
-      'prod.eu.zone2.api'
+      'prod.eu.zone2.api',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api',
-      'prod.eu.zone2.ui:prod.eu.zone2.api'
+      'prod.eu.zone2.ui:prod.eu.zone2.api',
     ])
   })
 
   it('should exclude same-targeted relations from outer scope', () => {
     const { nodeIds, edgeIds } = computeView(
       $include('prod.eu.zone1.*'),
-      $include('prod.eu.zone2')
+      $include('prod.eu.zone2'),
     )
     expect.soft(nodeIds).toEqual([
-      'prod.eu.zone1.ui',
+      'prod.eu.zone1',
       'prod.eu.zone2',
-      'prod.eu.zone1.api'
+      'prod.eu.zone1.ui',
+      'prod.eu.zone1.api',
     ])
     expect(edgeIds).toEqual([
-      'prod.eu.zone1.ui:prod.eu.zone1.api'
+      'prod.eu.zone1.ui:prod.eu.zone1.api',
     ])
   })
 
@@ -83,21 +86,21 @@ describe('cleanCrossBoundaryConnections', () => {
     const { nodeIds, edgeIds, edges } = computeView(
       $include('prod.*'),
       $include('prod.eu.db'),
-      $include('prod.us.db')
+      $include('prod.us.db'),
     )
     expect.soft(nodeIds).toEqual([
       'prod.eu',
       'prod.eu.db',
       'prod.us',
-      'prod.us.db'
+      'prod.us.db',
     ])
     expect(edgeIds).toEqual([
-      'prod.eu.db:prod.us.db'
+      'prod.eu.db:prod.us.db',
     ])
     const [edge] = edges
     expect(edge).toMatchObject({
       label: 'replicates',
-      color: 'green'
+      color: 'green',
     })
   })
 })

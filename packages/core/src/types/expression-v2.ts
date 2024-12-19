@@ -54,10 +54,10 @@ export namespace FqnRef {
     return isInsideInstanceRef(ref)
       ? {
         id: ref.deployment,
-        element: ref.element
+        element: ref.element,
       }
       : {
-        id: ref.deployment
+        id: ref.deployment,
       }
   }
 }
@@ -92,7 +92,7 @@ export namespace FqnExpr {
     return 'ref' in ref && FqnRef.isDeploymentRef(ref.ref)
   }
 
-  export type Ref<D = Fqn, M = Fqn> = ExclusiveUnion<{
+  export type NonWildcard<D = Fqn, M = Fqn> = ExclusiveUnion<{
     ModelRef: ModelRef<M>
     DeploymentRef: DeploymentRef<D, M>
   }>

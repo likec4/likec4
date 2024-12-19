@@ -1,5 +1,5 @@
 import { anyPass } from 'remeda'
-import type { Element, Fqn } from '../types'
+import type { Fqn } from '../types'
 import { compareNatural } from './compare-natural'
 import { isString } from './guards'
 
@@ -34,18 +34,18 @@ const asString: <E extends string | { id: string }>(e: E) => string = e => (isSt
  * @signature
  *   isAncestor(ancestor, another)
  */
-export function isAncestor<E extends string | { id: string }>(ancestor: E, another: E): boolean
+export function isAncestor<A extends string | { id: string }>(ancestor: A, another: A): boolean
 /**
  * Check if one element is an ancestor of another
  * Composable version
  * @signature
  *  isAncestor(another)(ancestor)
  */
-export function isAncestor<E extends string | { id: string }>(another: E): (ancestor: E) => boolean
+export function isAncestor<A extends string | { id: string }>(another: NoInfer<A>): (ancestor: A) => boolean
 
 export function isAncestor<E extends string | { id: string }>(
   arg1: E,
-  arg2?: E,
+  arg2?: NoInfer<E>,
 ) {
   const arg1Id = asString(arg1)
   if (arg2) {
@@ -82,7 +82,7 @@ export function notDescendantOf<E extends string | { id: Fqn }>(ancestors: E[]):
  * How deep in the hierarchy the element is.
  * Root element has depth 1
  */
-export function hierarchyDepth<E extends string | { id: Fqn }>(elementOfFqn: E): number {
+export function hierarchyLevel<E extends string | { id: Fqn }>(elementOfFqn: E): number {
   const first = isString(elementOfFqn) ? elementOfFqn : elementOfFqn.id
   return first.split('.').length
 }
@@ -102,15 +102,15 @@ export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, anothe
     return 0
   }
 
-  const firstDepth = hierarchyDepth(first)
-  const secondDepth = hierarchyDepth(second)
+  const firstDepth = hierarchyLevel(first)
+  const secondDepth = hierarchyLevel(second)
 
   if (isSameHierarchy(first, second)) {
     return Math.abs(firstDepth - secondDepth)
   }
 
   const ancestor = commonAncestor(first as Fqn, second as Fqn)
-  const ancestorDepth = ancestor ? hierarchyDepth(ancestor) : 0
+  const ancestorDepth = ancestor ? hierarchyLevel(ancestor) : 0
 
   return firstDepth + secondDepth - (2 * ancestorDepth + 1)
 }
@@ -257,14 +257,16 @@ export function sortParentsFirst<T extends { id: string }, A extends IterableCon
   return result as ReorderedArray<A>
 }
 
-export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
+function _sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
   array: A,
+  sort: 'asc' | 'desc' = 'asc',
 ): ReorderedArray<A> {
+  const dir = sort === 'asc' ? 1 : -1
   return array
     .map(item => ({ item, fqn: item.id.split('.') }))
     .sort((a, b) => {
       if (a.fqn.length !== b.fqn.length) {
-        return a.fqn.length - b.fqn.length
+        return (a.fqn.length - b.fqn.length) * dir
       }
       for (let i = 0; i < a.fqn.length; i++) {
         const compare = compareNatural(a.fqn[i], b.fqn[i])
@@ -275,4 +277,38 @@ export function sortNaturalByFqn<T extends { id: string }, A extends IterableCon
       return 0
     })
     .map(({ item }) => item) as ReorderedArray<A>
+}
+
+/**
+ * Sorts an array of objects naturally by their fully qualified name (FQN) identifier.
+ *
+ * @template T - Type of objects containing an 'id' string property
+ * @template A - Type extending IterableContainer of T
+ *
+ * @param first - Optional. Either the array to sort or the sort direction ('asc'|'desc')
+ * @param sort - Optional. The sort direction ('asc'|'desc'). Defaults to 'asc' if not specified
+ *
+ * @example
+ * // As a function that returns a sorting function
+ * const sorted = sortNaturalByFqn('desc')(myArray);
+ *
+ * // Direct array sorting
+ * const sorted = sortNaturalByFqn(myArray, 'desc');
+ */
+export function sortNaturalByFqn(
+  sort?: 'asc' | 'desc',
+): <T extends { id: string }, A extends IterableContainer<T>>(array: A) => ReorderedArray<A>
+export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
+  array: A,
+  sort?: 'asc' | 'desc',
+): ReorderedArray<A>
+export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
+  first?: A | 'asc' | 'desc',
+  sort?: 'asc' | 'desc',
+) {
+  if (!first || isString(first)) {
+    sort = first ?? 'asc'
+    return (arr: A) => _sortNaturalByFqn(arr, sort)
+  }
+  return _sortNaturalByFqn(first, sort)
 }

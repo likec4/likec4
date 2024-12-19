@@ -1,9 +1,9 @@
-import type { StageExclude } from './stage-exclude'
-import type { StageInclude } from './stage-include'
+import type { StageExclude } from '../stages/stage-exclude'
+import type { StageInclude } from '../stages/stage-include'
 
-export type { Ctx } from './memory'
+export { StageExclude } from '../stages/stage-exclude'
+export { StageInclude } from '../stages/stage-include'
 export { Memory } from './memory'
-export { StageExclude } from './stage-exclude'
-export { StageInclude } from './stage-include'
+export type { Ctx } from './memory'
 
 export type Stage = StageInclude | StageExclude

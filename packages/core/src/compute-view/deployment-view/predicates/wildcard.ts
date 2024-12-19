@@ -7,23 +7,23 @@ export const WildcardPredicate: PredicateExecutor<FqnExpr.Wildcard> = {
     const children = [] as Elem[]
 
     const rootElements = [...model.roots()].map(root => {
-      const onlyOneInstance = root.onlyOneInstance()
-      if (onlyOneInstance) {
-        children.push(onlyOneInstance)
-        return onlyOneInstance
+      if (!root.onlyOneInstance()) {
+        children.push(...root.children())
       }
-      children.push(...root.children())
       return root
     })
 
     stage.addExplicit(rootElements)
     if (children.length > 1) {
-      stage.addConnections(findConnectionsWithin(children))
+      stage.addConnections(findConnectionsWithin([
+        ...rootElements,
+        ...children,
+      ]))
     }
     return stage
   },
   exclude: ({ stage, memory }) => {
     stage.exclude(memory.elements)
     return stage
-  }
+  },
 }

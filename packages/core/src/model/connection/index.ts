@@ -5,6 +5,7 @@ export {
   findDeepestNestedConnection,
   isNestedConnection,
   mergeConnections,
+  sortConnectionsByBoundaryHierarchy,
   sortDeepestFirst,
 } from './Connection'
 export { DeploymentConnectionModel } from './deployment/DeploymentConnectionModel'

@@ -1,7 +1,21 @@
-import type { AnyCtx, ComputeMemory, GenericCtx } from './_types'
+import { customInspectSymbol } from '../../model/connection/deployment/DeploymentConnectionModel'
+import type { AnyCtx, ComputeMemory, GenericCtx, MutableState, StageExpression } from './_types'
 
 export abstract class AbstractMemory<T extends AnyCtx = GenericCtx> implements ComputeMemory<T> {
-  protected constructor(protected state: T['MutableState']) {
+  /**
+   * Provides access to context types
+   * !IMPORTANT: Should not be called in runtime
+   *
+   * @example
+   * ```ts
+   *   type State = SomeMemory['Ctx']['MutableState']
+   * ```
+   */
+  public get Ctx(): T {
+    throw new Error('Should not be called in runtime')
+  }
+
+  protected constructor(protected state: MutableState<T>) {
   }
 
   public get elements(): ReadonlySet<T['Element']> {
@@ -22,11 +36,33 @@ export abstract class AbstractMemory<T extends AnyCtx = GenericCtx> implements C
       && this.explicits.size === 0 && this.final.size === 0
   }
 
-  abstract mutableState(): T['MutableState']
+  abstract mutableState(): MutableState<T>
 
-  abstract stageInclude(): T['StageInclude']
+  abstract stageInclude(expr: StageExpression<T>): T['StageInclude']
 
-  abstract stageExclude(): T['StageExclude']
+  abstract stageExclude(expr: StageExpression<T>): T['StageExclude']
 
-  abstract update(newstate: Partial<T['MutableState']>): T['Memory']
+  abstract update(newstate: Partial<MutableState<T>>): T['Memory']
+
+  // toString(): string {
+  //   return [
+  //     'final:',
+  //     ...[...this.final].map(e => '  ' + e.id),
+  //     'connections:',
+  //     ...this.connections.map(c => '  ' + c.expression),
+  //   ].join('\n')
+  // }
+
+  // // @ts-ignore
+  // [customInspectSymbol](depth, inspectOptions, inspect) {
+  //   const asString = this.toString()
+
+  //   // // Trick so that node displays the name of the constructor
+  //   // Object.defineProperty(asString, 'constructor', {
+  //   //   value: this.constructor,
+  //   //   enumerable: false,
+  //   // })
+
+  //   return asString
+  // }
 }

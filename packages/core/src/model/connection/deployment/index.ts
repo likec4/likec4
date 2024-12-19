@@ -2,7 +2,7 @@ import { isSameHierarchy } from '../../../utils'
 import type { DeploymentElementModel } from '../../DeploymentElementModel'
 import type { AnyAux } from '../../types'
 import { DeploymentConnectionModel } from './DeploymentConnectionModel'
-export { mergeConnections } from '../Connection'
+export { mergeConnections, sortConnectionsByBoundaryHierarchy } from '../Connection'
 
 export { Connection } from '../Connection'
 export { DeploymentConnectionModel } from './DeploymentConnectionModel'
@@ -16,22 +16,14 @@ export { DeploymentConnectionModel } from './DeploymentConnectionModel'
 export function findConnection<M extends AnyAux>(
   source: DeploymentElementModel<M>,
   target: DeploymentElementModel<NoInfer<M>>,
-  direction: 'directed'
+  direction: 'directed',
 ):
   | readonly [DeploymentConnectionModel<M>]
   | readonly []
 export function findConnection<M extends AnyAux>(
   source: DeploymentElementModel<M>,
   target: DeploymentElementModel<NoInfer<M>>,
-  direction: 'both'
-):
-  | readonly [DeploymentConnectionModel<M>, DeploymentConnectionModel<M>]
-  | readonly [DeploymentConnectionModel<M>]
-  | readonly []
-export function findConnection<M extends AnyAux>(
-  source: DeploymentElementModel<M>,
-  target: DeploymentElementModel<NoInfer<M>>,
-  direction?: 'directed' | 'both'
+  direction: 'both',
 ):
   | readonly [DeploymentConnectionModel<M>, DeploymentConnectionModel<M>]
   | readonly [DeploymentConnectionModel<M>]
@@ -39,7 +31,15 @@ export function findConnection<M extends AnyAux>(
 export function findConnection<M extends AnyAux>(
   source: DeploymentElementModel<M>,
   target: DeploymentElementModel<NoInfer<M>>,
-  direction: 'directed' | 'both' = 'directed'
+  direction?: 'directed' | 'both',
+):
+  | readonly [DeploymentConnectionModel<M>, DeploymentConnectionModel<M>]
+  | readonly [DeploymentConnectionModel<M>]
+  | readonly []
+export function findConnection<M extends AnyAux>(
+  source: DeploymentElementModel<M>,
+  target: DeploymentElementModel<NoInfer<M>>,
+  direction: 'directed' | 'both' = 'directed',
 ) {
   if (source === target) {
     return []
@@ -54,8 +54,8 @@ export function findConnection<M extends AnyAux>(
       new DeploymentConnectionModel<M>(
         source,
         target,
-        directedIntersection
-      )
+        directedIntersection,
+      ),
     ] as const
     : [] as const
 
@@ -64,7 +64,7 @@ export function findConnection<M extends AnyAux>(
   }
   return [
     ...directed,
-    ...findConnection(target, source, 'directed')
+    ...findConnection(target, source, 'directed'),
   ] as const
 }
 
@@ -77,7 +77,7 @@ export function findConnection<M extends AnyAux>(
 export function findConnectionsBetween<M extends AnyAux>(
   element: DeploymentElementModel<M>,
   others: Iterable<DeploymentElementModel<NoInfer<M>>>,
-  direction: 'directed' | 'both' = 'both'
+  direction: 'directed' | 'both' = 'both',
 ): readonly DeploymentConnectionModel<M>[] {
   if (element.allIncoming.isEmpty && element.allOutgoing.isEmpty) {
     return []
@@ -101,7 +101,7 @@ export function findConnectionsBetween<M extends AnyAux>(
   }
   return [
     ...outgoing,
-    ...incoming
+    ...incoming,
   ]
 }
 
@@ -109,7 +109,7 @@ export function findConnectionsBetween<M extends AnyAux>(
  * Resolve all connections within a given set of elements
  */
 export function findConnectionsWithin<M extends AnyAux>(
-  elements: Iterable<DeploymentElementModel<M>>
+  elements: Iterable<DeploymentElementModel<M>>,
 ): readonly DeploymentConnectionModel<M>[] {
   return [...elements].reduce((acc, el, index, array) => {
     // skip for last element
@@ -117,7 +117,7 @@ export function findConnectionsWithin<M extends AnyAux>(
       return acc
     }
     acc.push(
-      ...findConnectionsBetween(el, array.slice(index + 1), 'both')
+      ...findConnectionsBetween(el, array.slice(index + 1), 'both'),
     )
     return acc
   }, [] as DeploymentConnectionModel<M>[])

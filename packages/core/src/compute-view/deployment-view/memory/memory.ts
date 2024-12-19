@@ -1,16 +1,21 @@
-import type { DeploymentConnectionModel } from '../../../model/connection'
+import { isDeepEqual } from 'remeda'
+import { type DeploymentConnectionModel, differenceConnections } from '../../../model/connection'
 import type { DeploymentElementModel } from '../../../model/DeploymentElementModel'
 import type { AnyAux } from '../../../model/types'
-import { AbstractMemory, type ComputeCtx } from '../../memory'
-import { StageExclude } from './stage-exclude'
-import { StageInclude } from './stage-include'
+import type { ExpressionV2 } from '../../../types'
+import { difference as differenceSet } from '../../../utils'
+import { toArray } from '../../../utils/iterable'
+import { AbstractMemory, type ComputeCtx, type StageExpression } from '../../memory'
+import { StageExclude } from '../stages/stage-exclude'
+import { StageInclude } from '../stages/stage-include'
 
 export type Ctx = ComputeCtx<
   DeploymentElementModel<AnyAux>,
   DeploymentConnectionModel<AnyAux>,
   Memory,
   StageInclude,
-  StageExclude
+  StageExclude,
+  ExpressionV2
 >
 
 export class Memory extends AbstractMemory<Ctx> {
@@ -19,15 +24,15 @@ export class Memory extends AbstractMemory<Ctx> {
       elements: new Set(),
       explicits: new Set(),
       final: new Set(),
-      connections: []
+      connections: [],
     })
   }
 
-  override stageInclude(): StageInclude {
-    return new StageInclude(this)
+  override stageInclude(expr: StageExpression<Ctx>): StageInclude {
+    return new StageInclude(this, expr)
   }
-  override stageExclude(): StageExclude {
-    return new StageExclude(this)
+  override stageExclude(expr: StageExpression<Ctx>): StageExclude {
+    return new StageExclude(this, expr)
   }
 
   override mutableState(): Ctx['MutableState'] {
@@ -35,14 +40,36 @@ export class Memory extends AbstractMemory<Ctx> {
       elements: new Set(this.state.elements),
       explicits: new Set(this.state.explicits),
       final: new Set(this.state.final),
-      connections: [...this.state.connections]
+      connections: [...this.state.connections],
     })
   }
 
   override update(newstate: Partial<Ctx['MutableState']>): Memory {
     return new Memory({
       ...this.state,
-      ...newstate
+      ...newstate,
     })
+  }
+
+  equals(other: unknown): boolean {
+    return other instanceof Memory && isDeepEqual(this.state, other.state)
+  }
+
+  diff(state: Memory) {
+    const current = this
+    return {
+      added: {
+        elements: toArray(differenceSet(state.elements, current.elements)),
+        explicits: toArray(differenceSet(state.explicits, current.explicits)),
+        final: toArray(differenceSet(state.final, current.final)),
+        connections: toArray(differenceConnections(state.connections, current.connections)),
+      },
+      removed: {
+        elements: toArray(differenceSet(current.elements, state.elements)),
+        explicits: toArray(differenceSet(current.explicits, state.explicits)),
+        final: toArray(differenceSet(current.final, state.final)),
+        connections: differenceConnections(current.connections, state.connections),
+      },
+    }
   }
 }

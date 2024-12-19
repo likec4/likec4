@@ -7,9 +7,9 @@ import {
   type ElementShape as C4ElementShape,
   type Link,
   type Tag as C4Tag,
-  type ThemeColor
+  type ThemeColor,
 } from '../types'
-import { commonAncestor } from '../utils'
+import { commonAncestor, hierarchyLevel } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
@@ -19,14 +19,17 @@ import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
 export class ElementModel<M extends AnyAux = AnyAux> {
+  readonly id: M['Fqn']
+  readonly parent: ElementModel<M> | null
+  readonly hierarchyLevel: number
+
   constructor(
     public readonly model: LikeC4Model<M>,
-    public readonly $element: C4Element
+    public readonly $element: C4Element,
   ) {
-  }
-
-  get id(): M['Fqn'] {
-    return this.$element.id
+    this.id = this.$element.id
+    this.parent = this.model.parent(this)
+    this.hierarchyLevel = hierarchyLevel(this.id)
   }
 
   get kind(): C4ElementKind {
@@ -59,10 +62,6 @@ export class ElementModel<M extends AnyAux = AnyAux> {
 
   get links(): ReadonlyArray<Link> {
     return this.$element.links ?? []
-  }
-
-  get parent(): ElementModel<M> | null {
-    return this.model.parent(this)
   }
 
   get defaultView(): LikeC4ViewModel<M> | null {

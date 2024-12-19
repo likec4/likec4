@@ -1,8 +1,6 @@
-import { LikeC4DeploymentModel, type LikeC4Model } from '../../model'
-import type { DeploymentConnectionModel } from '../../model/connection/deployment'
-import type { DeploymentElementModel } from '../../model/DeploymentElementModel'
+import { LikeC4DeploymentModel } from '../../model'
 import type { RelationshipModel } from '../../model/RelationModel'
-import type { ElementExpression, Expression, ExpressionV2, RelationExpr, RelationExpression } from '../../types'
+import type { ExpressionV2 } from '../../types'
 import type { Ctx, Memory, Stage, StageExclude, StageInclude } from './memory'
 
 export { Memory, type Stage } from './memory'
