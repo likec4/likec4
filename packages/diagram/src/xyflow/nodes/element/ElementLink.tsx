@@ -16,12 +16,11 @@ import clsx from 'clsx'
 import { useId } from 'react'
 import { clamp } from 'remeda'
 import { useMantinePortalProps } from '../../../hooks/useMantinePortalProps'
-import { type DiagramState } from '../../../state/diagramStore'
-import type { XYFlowNode } from '../../types'
 import { elementLink, trigger } from './ElementLink.css'
+import type { DiagramFlowTypes } from '../../types'
 
 type ElementLinkProps = {
-  element: XYFlowNode['data']['element']
+  element: DiagramFlowTypes.Node['data']['element']
 }
 
 const stopEventPropagation = (e: React.MouseEvent) => e.stopPropagation()

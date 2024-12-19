@@ -4,12 +4,12 @@ import { useMemo, useRef } from 'react'
 import { first, isNonNullish, isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../hooks/useDiagramState'
-import type { XYFlowEdge, XYFlowNode } from './types'
+import type { DiagramFlowTypes } from './types'
 
 export type XYFlowEventHandlers = Simplify<
   Required<
     Pick<
-      ReactFlowProps<XYFlowNode, XYFlowEdge>,
+      ReactFlowProps<DiagramFlowTypes.Node, DiagramFlowTypes.Edge>,
       | 'onDoubleClick'
       | 'onPaneClick'
       | 'onNodeClick'

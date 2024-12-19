@@ -9,13 +9,13 @@ import { type HTMLMotionProps, m, type Variants } from 'framer-motion'
 import React, { memo, type PropsWithoutRef, useCallback, useState } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
-import type { ElementXYFlowNode } from '../../types'
 import { stopPropagation, toDomPrecision } from '../../utils'
 import { ElementIcon } from '../shared/ElementIcon'
 import { ElementToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './element.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
+import type { DiagramFlowTypes } from '../../types'
 
 const Text = MantineText.withProps({
   component: 'div'
@@ -124,7 +124,7 @@ const VariantsDetailsBtn = {
 } satisfies Variants
 VariantsDetailsBtn['selected'] = VariantsDetailsBtn['hovered']
 
-type ElementNodeProps = NodeProps<ElementXYFlowNode>
+type ElementNodeProps = NodeProps<DiagramFlowTypes.ElementNode>
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)

@@ -5,7 +5,7 @@ import { getBoundsOfRects, getViewportForBounds } from '@xyflow/system'
 import { useUpdateEffect } from '../hooks'
 import { useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
 import { MinZoom } from './const'
-import type { XYFlowEdge, XYFlowNode } from './types'
+import type { DiagramFlowTypes } from './types'
 import { nodeToRect } from './utils'
 
 export function SelectEdgesOnNodeFocus() {
@@ -22,8 +22,8 @@ export function SelectEdgesOnNodeFocus() {
       return
     }
 
-    const edgeChanges = [] as EdgeChange<XYFlowEdge>[]
-    const nodeChanges = [] as NodeChange<XYFlowNode>[]
+    const edgeChanges = [] as EdgeChange<DiagramFlowTypes.Edge>[]
+    const nodeChanges = [] as NodeChange<DiagramFlowTypes.Node>[]
     const {
       edgeLookup,
       nodeLookup,

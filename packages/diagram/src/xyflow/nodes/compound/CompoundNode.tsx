@@ -10,17 +10,14 @@ import { m, type Variants } from 'framer-motion'
 import { memo, useCallback, useState } from 'react'
 import { clamp } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
-import type { CompoundXYFlowNode } from '../../types'
 import { stopPropagation } from '../../utils'
 import { ElementIcon } from '../shared/ElementIcon'
 import { CompoundToolbar } from '../shared/Toolbar'
 import { useFramerAnimateVariants } from '../use-animate-variants'
 import * as css from './CompoundNode.css'
+import type { DiagramFlowTypes } from '../../types'
 
-type CompoundNodeProps = Pick<
-  NodeProps<CompoundXYFlowNode>,
-  'id' | 'data' | 'selected' | 'dragging'
->
+type CompoundNodeProps = NodeProps<DiagramFlowTypes.CompoundNode>
 
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id

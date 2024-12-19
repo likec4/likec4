@@ -1,8 +1,8 @@
 import { Position, type XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
-import type { InternalXYFlowNode } from '../types'
+import type { DiagramFlowTypes } from '../types'
 
-export function getNodeCenter(node: InternalXYFlowNode): XYPosition {
+export function getNodeCenter(node: DiagramFlowTypes.InternalNode): XYPosition {
   const { width, height } = getNodeDimensions(node)
   const { x, y } = node.internals.positionAbsolute
 
@@ -15,7 +15,7 @@ export function getNodeCenter(node: InternalXYFlowNode): XYPosition {
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
 export function getNodeIntersectionFromCenterToPoint(
-  intersectionNode: InternalXYFlowNode,
+  intersectionNode: DiagramFlowTypes.InternalNode,
   { x: x1, y: y1 }: XYPosition
 ) {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
@@ -47,7 +47,7 @@ export function getNodeIntersectionFromCenterToPoint(
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
-function getNodeIntersection(intersectionNode: InternalXYFlowNode, targetNode: InternalXYFlowNode): XYPosition {
+function getNodeIntersection(intersectionNode: DiagramFlowTypes.InternalNode, targetNode: DiagramFlowTypes.InternalNode): XYPosition {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const {
     width: intersectionNodeWidth,
@@ -81,7 +81,7 @@ function getNodeIntersection(intersectionNode: InternalXYFlowNode, targetNode: I
 }
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
-export function getPointPosition(node: InternalXYFlowNode, intersectionPoint: XYPosition) {
+export function getPointPosition(node: DiagramFlowTypes.InternalNode, intersectionPoint: XYPosition) {
   const n = {
     // x: node.data.element.position[0],
     // y: node.data.element.position[1],
@@ -135,7 +135,7 @@ export function getPointPosition(node: InternalXYFlowNode, intersectionPoint: XY
 }
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
-export function getEdgeParams(source: InternalXYFlowNode, target: InternalXYFlowNode) {
+export function getEdgeParams(source: DiagramFlowTypes.InternalNode, target: DiagramFlowTypes.InternalNode) {
   const sourceIntersectionPoint = getNodeIntersection(source, target)
   const targetIntersectionPoint = getNodeIntersection(target, source)
 

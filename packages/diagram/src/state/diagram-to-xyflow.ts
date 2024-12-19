@@ -1,10 +1,9 @@
 import { type DiagramEdge, DiagramNode, type DiagramView, ElementKind, type Fqn } from '@likec4/core'
 import { nonNullable, whereOperatorAsPredicate } from '@likec4/core'
 import { hasAtLeast } from 'remeda'
-import type { UnionToIntersection } from 'type-fest'
 import type { WhereOperator } from '../LikeC4Diagram.props'
 import { ZIndexes } from '../xyflow/const'
-import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
+import type { DiagramFlowTypes } from '../xyflow/types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 
@@ -16,12 +15,12 @@ export function diagramViewToXYFlowData(
     selectable: boolean
   }
 ): {
-  xynodes: XYFlowNode[]
-  xyedges: XYFlowEdge[]
+  xynodes: DiagramFlowTypes.Node[]
+  xyedges: DiagramFlowTypes.Edge[]
 } {
   const isDynamicView = view.__ === 'dynamic',
-    xynodes = [] as XYFlowNode[],
-    xyedges = [] as XYFlowEdge[],
+    xynodes = [] as DiagramFlowTypes.Node[],
+    xyedges = [] as DiagramFlowTypes.Edge[],
     nodeLookup = new Map<Fqn, DiagramNode>()
 
   const traverse = view.nodes.reduce(
@@ -72,7 +71,7 @@ export function diagramViewToXYFlowData(
 
     const id = ns + node.id
 
-    const base: Omit<UnionToIntersection<XYFlowNode>, 'data'> = {
+    const base: Omit<DiagramFlowTypes.Node, 'data' | 'type'> = {
       id,
       draggable: opts.draggable,
       selectable: opts.selectable && node.kind !== ElementKind.Group,

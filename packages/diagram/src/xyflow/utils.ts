@@ -4,7 +4,7 @@ import type { InternalNode, Rect, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import { isArray } from 'remeda'
-import type { InternalXYFlowNode } from './types'
+import type { DiagramFlowTypes } from './types'
 
 export function toDomPrecision(v: number | null) {
   if (v === null) {
@@ -17,7 +17,7 @@ export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
-export const nodeToRect = (nd: InternalXYFlowNode): Rect => ({
+export const nodeToRect = (nd: DiagramFlowTypes.InternalNode): Rect => ({
   x: nd.internals.positionAbsolute.x,
   y: nd.internals.positionAbsolute.y,
   width: nd.measured.width ?? nd.width ?? nd.data.element.width,

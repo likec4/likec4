@@ -44,7 +44,7 @@ import type {
 } from '../LikeC4Diagram.props'
 import { type Vector, vector } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
-import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
+import type { DiagramFlowTypes } from '../xyflow/types'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 import { align, type AlignmentMode } from './diagramStore.layout'
@@ -78,7 +78,7 @@ export type DiagramInitialState = {
   // If Dynamic View
   enableDynamicViewWalkthrough: boolean
 
-  xyflow: XYFlowInstance
+  xyflow: DiagramFlowTypes.XYFlowInstance
   xystore: XYStoreApi
 
   // Diagram Container, for Mantine Portal
@@ -94,8 +94,8 @@ export type DiagramState = Simplify<
     readonly storeDevId: string
 
     // Internal state
-    xynodes: XYFlowNode[]
-    xyedges: XYFlowEdge[]
+    xynodes: DiagramFlowTypes.Node[]
+    xyedges: DiagramFlowTypes.Edge[]
     viewSyncDebounceTimeout: number | null
     viewportChanged: boolean
 
@@ -176,15 +176,15 @@ export type DiagramState = Simplify<
     goForward: () => void
 
     nextDynamicStep: (increment?: number) => void
-    activateWalkthrough: (step: EdgeId | XYFlowEdge) => void
+    activateWalkthrough: (step: EdgeId | DiagramFlowTypes.Edge) => void
     stopWalkthrough: () => void
 
     openOverlay: (overlay: NonNullable<DiagramState['activeOverlay']>) => void
     closeOverlay: () => void
 
-    onInit: (xyflow: XYFlowInstance) => void
-    onNodesChange: OnNodesChange<XYFlowNode>
-    onEdgesChange: OnEdgesChange<XYFlowEdge>
+    onInit: (xyflow: DiagramFlowTypes.XYFlowInstance) => void
+    onNodesChange: OnNodesChange<DiagramFlowTypes.Node>
+    onEdgesChange: OnEdgesChange<DiagramFlowTypes.Edge>
 
     highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: NodeKind) => void
 
@@ -417,14 +417,14 @@ export function createDiagramStore(props: DiagramInitialState) {
                 return {
                   ...existing,
                   ...update
-                } as XYFlowNode
+                } as DiagramFlowTypes.Node
               }
               return update
             })
             // Merge with existing edges, but only if the view is the same
             // and the edges have no layout drift
             if (isSameView && !nextView.hasLayoutDrift) {
-              update.xyedges = update.xyedges.map((update): XYFlowEdge => {
+              update.xyedges = update.xyedges.map((update): DiagramFlowTypes.Edge => {
                 const existing = xyedges.find(n => n.id === update.id)
                 if (existing) {
                   if (
@@ -919,7 +919,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             }
           },
 
-          activateWalkthrough: (step: EdgeId | XYFlowEdge) => {
+          activateWalkthrough: (step: EdgeId | DiagramFlowTypes.Edge) => {
             const stepId = typeof step === 'string' ? step : step.data.edge.id
             invariant(isStepEdgeId(stepId), `stepId ${stepId} is not a step edge id`)
             let {
@@ -949,7 +949,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 )
                 .map(({ id }) => id)
             )
-            const selected = [] as XYFlowNode[]
+            const selected = [] as DiagramFlowTypes.Node[]
             for (const n of xyflow.getNodes()) {
               if (n.id === edge.source || n.id === edge.target) {
                 selected.push(n)
@@ -1035,7 +1035,7 @@ export function createDiagramStore(props: DiagramInitialState) {
 
             scheduleSaveManualLayout()
 
-            function getNodeCenter(node: XYFlowNode, nodes: XYFlowNode[]) {
+            function getNodeCenter(node: DiagramFlowTypes.Node, nodes: DiagramFlowTypes.Node[]) {
               const dimensions = vector({ x: node.width || 0, y: node.height || 0 })
               let position = vector(node.position)
                 .add(dimensions.mul(0.5))
@@ -1055,7 +1055,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               return position
             }
 
-            function getControlPointForEdge(edge: XYFlowEdge): XYPoint[] {
+            function getControlPointForEdge(edge: DiagramFlowTypes.Edge): XYPoint[] {
               const source = xynodes.find(x => x.id == edge.source)
               const target = xynodes.find(x => x.id == edge.target)
               if (!source || !target) {
@@ -1076,7 +1076,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               return []
             }
 
-            function getBorderPointOnVector(node: XYFlowNode, nodeCenter: Vector, v: Vector) {
+            function getBorderPointOnVector(node: DiagramFlowTypes.Node, nodeCenter: Vector, v: Vector) {
               const xScale = (node.width || 0) / 2 / v.x
               const yScale = (node.height || 0) / 2 / v.y
 
