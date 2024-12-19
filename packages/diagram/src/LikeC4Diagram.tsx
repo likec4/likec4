@@ -17,7 +17,7 @@ import { EnsureMantine } from './ui/EnsureMantine'
 import { FramerMotionConfig } from './ui/FramerMotionConfig'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
-import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
+import type { DiagramFlowTypes } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
 import { XYFlowInner } from './xyflow/XYFlowInner'
 
@@ -63,8 +63,8 @@ export function LikeC4Diagram({
 }: LikeC4DiagramProps) {
   const hasLikec4model = !!useLikeC4Model()
   const initialRef = useRef({
-    defaultNodes: [] as XYFlowNode[],
-    defaultEdges: [] as XYFlowEdge[],
+    defaultNodes: [] as DiagramFlowTypes.Node[],
+    defaultEdges: [] as DiagramFlowTypes.Edge[],
     initialWidth: initialWidth ?? view.bounds.width,
     initialHeight: initialHeight ?? view.bounds.height
   })

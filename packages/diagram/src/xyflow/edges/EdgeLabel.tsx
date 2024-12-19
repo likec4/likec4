@@ -21,14 +21,14 @@ import { type PropsWithChildren, type ReactNode, useState } from 'react'
 import { isTruthy } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps } from '../../hooks'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
-import type { RelationshipData } from '../types'
 import { stopPropagation } from '../utils'
 import * as edgesCss from './edges.css'
 import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
+import type { DiagramFlowTypes } from '../types'
 
 export interface EdgeLabelProps extends Omit<BoxProps, 'label'> {
   isDimmed: boolean
-  edgeData: RelationshipData
+  edgeData: DiagramFlowTypes.DiagramEdgeData
 }
 
 export const EdgeLabel = ({

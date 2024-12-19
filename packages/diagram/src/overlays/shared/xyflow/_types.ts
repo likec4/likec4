@@ -2,7 +2,7 @@ import type { AbstractRelation, ComputedNode, Fqn, ViewId } from '@likec4/core'
 import type { Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react'
 import type { SetRequired } from 'type-fest'
 
-export namespace SharedTypes {
+export namespace SharedFlowTypes {
   export type EmptyNodeData = {
     /**
      * Whether the cursor is hovering over the node
@@ -24,11 +24,14 @@ export namespace SharedTypes {
     dimmed?: 'immediate' | boolean
   }
 
-  export type NodeData = EmptyNodeData & {
+  export type NonEmptyNodeData = EmptyNodeData & {
     /**
      * The node's fully qualified name
      */
     fqn: Fqn
+  }
+
+  export type OverlayNodeData = NonEmptyNodeData & {
     /**
      * The ComputedNode backing this node
      */
@@ -50,9 +53,9 @@ export namespace SharedTypes {
     depth?: number
   }
 
-  export type ElementNode = SetRequired<ReactFlowNode<NodeData, 'element'>, 'type'>
+  export type ElementNode = SetRequired<ReactFlowNode<OverlayNodeData, 'element'>, 'type'>
 
-  export type CompoundNode = SetRequired<ReactFlowNode<NodeData, 'compound'>, 'type'>
+  export type CompoundNode = SetRequired<ReactFlowNode<OverlayNodeData, 'compound'>, 'type'>
 
   export type NonEmptyNode = ElementNode | CompoundNode
 

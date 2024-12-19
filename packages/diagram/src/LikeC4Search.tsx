@@ -51,7 +51,6 @@ export const LikeC4Search = memo(() => {
       ],
       onClick: () => {
         store.setState({
-          hoveredNodeId: null,
           lastOnNavigate: {
             fromView: view.id,
             toView: v.id,

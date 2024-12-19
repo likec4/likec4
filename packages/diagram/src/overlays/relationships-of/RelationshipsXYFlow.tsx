@@ -19,7 +19,7 @@ import { isNullish, map, omit, only, prop, setPath, unique } from 'remeda'
 import { useUpdateEffect } from '../../hooks'
 import { centerXYInternalNode } from '../../xyflow/utils'
 import { cssReactflowMarker } from '../Overlays.css'
-import type { XYFlowTypes } from './_types'
+import type { RelationshipsOfFlowTypes } from './_types'
 import { ZIndexes } from './use-layouted-relationships'
 import { CompoundNode } from './xyflow/CompoundNode'
 import { ElementNode } from './xyflow/ElementNode'
@@ -38,10 +38,10 @@ const edgeTypes = {
 /**
  * Root node in 'subjects' column
  */
-const findRootSubject = (nodes: XYFlowTypes.Node[]) =>
-  nodes.find((n): n is XYFlowTypes.ElementNode => n.data.column === 'subjects' && isNullish(n.parentId))
+const findRootSubject = (nodes: RelationshipsOfFlowTypes.Node[]) =>
+  nodes.find((n): n is RelationshipsOfFlowTypes.ElementNode => n.data.column === 'subjects' && isNullish(n.parentId))
 
-const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlowTypes.Edge>) => {
+const resetDimmedAndHovered = (xyflow: ReactFlowInstance<RelationshipsOfFlowTypes.Node, RelationshipsOfFlowTypes.Edge>) => {
   xyflow.setEdges(edges =>
     edges.map(edge => ({
       ...edge,
@@ -62,12 +62,12 @@ const resetDimmedAndHovered = (xyflow: ReactFlowInstance<XYFlowTypes.Node, XYFlo
           dimmed: false,
           hovered: false
         }
-      }) as XYFlowTypes.Node
+      }) as RelationshipsOfFlowTypes.Node
     )
   )
 }
 
-const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) => {
+const animateEdge = (node: RelationshipsOfFlowTypes.Node, animated = true) => (edges: RelationshipsOfFlowTypes.Edge[]) => {
   return edges.map(edge => {
     const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
       || isAncestor(node.id, edge.target)
@@ -79,7 +79,7 @@ const animateEdge = (node: XYFlowTypes.Node, animated = true) => (edges: XYFlowT
 }
 
 const onlyOneUnique = <T extends keyof AbstractRelation>(
-  data: XYFlowTypes.Edge['data'],
+  data: RelationshipsOfFlowTypes.Edge['data'],
   property: T
 ): AbstractRelation[T] | undefined => {
   return only(unique(map(data.relations, prop(property))))
@@ -89,8 +89,8 @@ type RelationshipsXYFlowProps =
   & PropsWithChildren<{
     subjectId: Fqn
     view: DiagramView
-    nodes: XYFlowTypes.Node[]
-    edges: XYFlowTypes.Edge[]
+    nodes: RelationshipsOfFlowTypes.Node[]
+    edges: RelationshipsOfFlowTypes.Edge[]
     bounds: {
       x: number
       y: number
@@ -100,7 +100,7 @@ type RelationshipsXYFlowProps =
     viewportPadding?: number | undefined
   }>
   & Pick<
-    ReactFlowProps<XYFlowTypes.Node, XYFlowTypes.Edge>,
+    ReactFlowProps<RelationshipsOfFlowTypes.Node, RelationshipsOfFlowTypes.Edge>,
     | 'onNodeClick'
     | 'elementsSelectable'
     | 'maxZoom'
@@ -122,10 +122,10 @@ function RelationshipsXYFlowWrapped({
 }: RelationshipsXYFlowProps) {
   const id = useId()
 
-  const lastClickedNodeRef = useRef<XYFlowTypes.NonEmptyNode | null>(null)
+  const lastClickedNodeRef = useRef<RelationshipsOfFlowTypes.NonEmptyNode | null>(null)
 
-  const xyflow = useReactFlow<XYFlowTypes.Node, XYFlowTypes.Edge>()
-  const xystore = useStoreApi<XYFlowTypes.Node, XYFlowTypes.Edge>()
+  const xyflow = useReactFlow<RelationshipsOfFlowTypes.Node, RelationshipsOfFlowTypes.Edge>()
+  const xystore = useStoreApi<RelationshipsOfFlowTypes.Node, RelationshipsOfFlowTypes.Edge>()
 
   const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(true)
 
@@ -227,7 +227,7 @@ function RelationshipsXYFlowWrapped({
               dimmed: n.data.column === 'subjects' ? 'immediate' : false
             }
             // hidden: n.data.column === 'subjects'
-          } as XYFlowTypes.Node
+          } as RelationshipsOfFlowTypes.Node
         }
         // Move existing node
         return {
@@ -242,7 +242,7 @@ function RelationshipsXYFlowWrapped({
             leaving: false,
             dimmed: false
           }
-        } as XYFlowTypes.Node
+        } as RelationshipsOfFlowTypes.Node
       }))
       setEdges(_edges.map(e => ({
         ...e,
@@ -291,8 +291,8 @@ function RelationshipsXYFlowWrapped({
   return (
     <ReactFlow
       id={id}
-      defaultEdges={[] as XYFlowTypes.Edge[]}
-      defaultNodes={[] as XYFlowTypes.Node[]}
+      defaultEdges={[] as RelationshipsOfFlowTypes.Edge[]}
+      defaultNodes={[] as RelationshipsOfFlowTypes.Node[]}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       defaultMarkerColor="var(--likec4-relation-lineColor)"
@@ -344,7 +344,7 @@ function RelationshipsXYFlowWrapped({
               ...n.data,
               dimmed: n.id !== edge.source && n.id !== edge.target
             }
-          } as XYFlowTypes.Node))
+          } as RelationshipsOfFlowTypes.Node))
         )
       }}
       onEdgeMouseLeave={() => {
