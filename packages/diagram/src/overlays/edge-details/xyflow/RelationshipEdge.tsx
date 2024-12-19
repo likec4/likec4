@@ -6,14 +6,14 @@ import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import * as css from '../../shared/xyflow/RelationshipEdge.css'
-import type { XYFlowTypes } from '../_types'
+import type { EdgeDetailsFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-edge-details'
 
 export function RelationshipEdge({
   data,
   label,
   ...props
-}: EdgeProps<XYFlowTypes.Edge>) {
+}: EdgeProps<EdgeDetailsFlowTypes.Edge>) {
   const overlay = useOverlayDialog()
   const onNavigateTo = useDiagramState(s => s.onNavigateTo)
   const [edgePath, labelX, labelY] = getBezierPath(props)

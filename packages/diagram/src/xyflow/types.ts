@@ -1,15 +1,15 @@
 import type { BBox, DiagramEdge, DiagramNode, Fqn, XYPoint } from '@likec4/core'
-import type { Edge, InternalNode, Node, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
-import { isNode } from '@xyflow/react'
+import type { Edge, InternalNode, Node as ReactFlowNode, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
+import { isNode as isXYFlowNode } from '@xyflow/react'
 import { isTruthy } from 'remeda'
 import type { Simplify } from 'type-fest'
 
-export type ElementXYFlowNode = Node<{
+export type ElementXYFlowNode = ReactFlowNode<{
   fqn: Fqn
   element: DiagramNode
 }, 'element'>
 
-export type CompoundXYFlowNode = Node<{
+export type CompoundXYFlowNode = ReactFlowNode<{
   fqn: Fqn
   isViewGroup: boolean
   element: DiagramNode
@@ -21,13 +21,13 @@ export type InternalXYFlowNode = InternalNode<XYFlowNode>
 
 export namespace XYFlowNode {
   export function isCompound(node: unknown): node is CompoundXYFlowNode {
-    return isNode(node) && node.type === 'compound'
+    return isXYFlowNode(node) && node.type === 'compound'
   }
-  export function isElement(node: Node): node is ElementXYFlowNode {
-    return isNode(node) && node.type === 'element'
+  export function isElement(node: ReactFlowNode): node is ElementXYFlowNode {
+    return isXYFlowNode(node) && node.type === 'element'
   }
 
-  export const is = (node: Node): node is XYFlowNode => isCompound(node) || isElement(node)
+  export const is = (node: ReactFlowNode): node is XYFlowNode => isCompound(node) || isElement(node)
 }
 
 export type RelationshipData = {

@@ -7,7 +7,7 @@ import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
-import type { SharedTypes } from '../../shared/xyflow/_types'
+import type { SharedFlowTypes } from '../../shared/xyflow/_types'
 import * as css from './styles.css'
 
 const Action = ActionIcon.withProps({
@@ -22,7 +22,7 @@ const Text = MantineText.withProps({
   component: 'div'
 })
 
-type ElementNodeProps = NodeProps<SharedTypes.ElementNode>
+type ElementNodeProps = NodeProps<SharedFlowTypes.ElementNode>
 
 function selector(s: DiagramState) {
   return {

@@ -38,7 +38,7 @@ import {
   tap
 } from 'remeda'
 import { useLikeC4Model } from '../../likec4model'
-import type { XYFlowTypes } from './_types'
+import type { RelationshipsOfFlowTypes } from './_types'
 
 const columns = ['incomers', 'subjects', 'outgoers'] as const
 type ColumnKey = typeof columns[number]
@@ -134,11 +134,11 @@ type Context = {
     outgoers: Set<Fqn>
   }
   columns: {
-    incomers: Map<Fqn, XYFlowTypes.Node>
-    subjects: Map<Fqn, XYFlowTypes.Node>
-    outgoers: Map<Fqn, XYFlowTypes.Node>
+    incomers: Map<Fqn, RelationshipsOfFlowTypes.Node>
+    subjects: Map<Fqn, RelationshipsOfFlowTypes.Node>
+    outgoers: Map<Fqn, RelationshipsOfFlowTypes.Node>
   }
-  edges: XYFlowTypes.Edge[]
+  edges: RelationshipsOfFlowTypes.Edge[]
 }
 
 const sized = (height: number = Sizes.hodeHeight) => ({
@@ -146,7 +146,7 @@ const sized = (height: number = Sizes.hodeHeight) => ({
   height
 })
 
-const graphId = (node: XYFlowTypes.Node) => ({
+const graphId = (node: RelationshipsOfFlowTypes.Node) => ({
   id: node.id,
   port: node.type === 'compound' ? `${node.id}::port` : node.id,
   body: `${node.id}`,
@@ -156,7 +156,7 @@ const graphId = (node: XYFlowTypes.Node) => ({
 function nodeData(
   element: LikeC4Model.Element,
   ctx: Context
-): Omit<XYFlowTypes.NonEmptyNode['data'], 'column'> {
+): Omit<RelationshipsOfFlowTypes.NonEmptyNode['data'], 'column'> {
   // We try to inherit style from existing diagram node
   let diagramNode = ctx.diagramNodes.get(element.id)
 
@@ -192,7 +192,7 @@ function nodeData(
 function createEmptyNode(
   column: ColumnKey,
   ctx: Context
-): XYFlowTypes.EmptyNode {
+): RelationshipsOfFlowTypes.EmptyNode {
   const id = `${column}__empty` as Fqn
   const xynodes = ctx.columns[column]
   let node = xynodes.get(id)
@@ -200,7 +200,7 @@ function createEmptyNode(
     invariant(node.type === 'empty', 'Node is not empty')
     return node
   }
-  const xynode: XYFlowTypes.EmptyNode = {
+  const xynode: RelationshipsOfFlowTypes.EmptyNode = {
     type: 'empty',
     id,
     position: { x: 0, y: 0 },
@@ -225,11 +225,11 @@ function createEmptyNode(
 
 function createNode(
   column: ColumnKey,
-  nodeType: Exclude<XYFlowTypes.Node['type'], 'empty'>,
+  nodeType: Exclude<RelationshipsOfFlowTypes.Node['type'], 'empty'>,
   element: LikeC4Model.Element,
   ctx: Context,
   depth: number = 0
-): XYFlowTypes.ElementNode | XYFlowTypes.CompoundNode {
+): RelationshipsOfFlowTypes.ElementNode | RelationshipsOfFlowTypes.CompoundNode {
   const xynodes = ctx.columns[column]
   let node = xynodes.get(element.id)
   if (node) {
@@ -252,7 +252,7 @@ function createNode(
     found => found ? createNode(column, 'compound', found, ctx, depth + 2) : null
   )
 
-  const xynode: XYFlowTypes.NonEmptyNode = {
+  const xynode: RelationshipsOfFlowTypes.NonEmptyNode = {
     type: nodeType,
     id: `${column}::${element.id}`,
     position: { x: 0, y: 0 },
@@ -290,7 +290,7 @@ function createNode(
  * And return a function to get node bounds for xyflow
  */
 function applyDagreLayout(g: dagre.graphlib.Graph) {
-  type NodeBounds = Required<Pick<XYFlowTypes.Node, 'position' | 'width' | 'height'>>
+  type NodeBounds = Required<Pick<RelationshipsOfFlowTypes.Node, 'position' | 'width' | 'height'>>
   dagre.layout(g)
   return function nodeBounds(nodeId: string): NodeBounds {
     const { x, y, width, height } = g.node(nodeId)
@@ -311,7 +311,7 @@ function addEdge(
     existsInCurrentView: boolean
     source: string
     target: string
-    relations: XYFlowTypes.Edge['data']['relations']
+    relations: RelationshipsOfFlowTypes.Edge['data']['relations']
   }
 ) {
   const { source, target, relations, existsInCurrentView } = props
@@ -319,7 +319,7 @@ function addEdge(
   const label = only(relations)?.title ?? 'untitled'
 
   const isMultiple = relations.length > 1
-  const edge: XYFlowTypes.Edge = {
+  const edge: RelationshipsOfFlowTypes.Edge = {
     id: `rel${ctx.edges.length + 1}_${ids}`,
     type: 'relation',
     source,
@@ -362,8 +362,8 @@ function layout(
   viewIncludesSubject: boolean
   notIncludedRelations: number
   subject: LikeC4Model.Element
-  nodes: XYFlowTypes.Node[]
-  edges: XYFlowTypes.Edge[]
+  nodes: RelationshipsOfFlowTypes.Node[]
+  edges: RelationshipsOfFlowTypes.Edge[]
   bounds: {
     x: number
     y: number
