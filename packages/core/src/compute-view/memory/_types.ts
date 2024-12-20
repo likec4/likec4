@@ -25,8 +25,8 @@ export interface ComputeCtx<
 export type AnyCtx = GenericCtx
 
 export type GenericCtx = ComputeCtx<
-  Element,
-  Connection<Element, any>,
+  any,
+  Connection<any, any>,
   ComputeMemory<GenericCtx>,
   StageInclude<GenericCtx>,
   StageExclude<GenericCtx>,

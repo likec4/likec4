@@ -79,12 +79,12 @@ describe('RelationPredicate', () => {
     ))
 
     it('node -> *', () => {
-      // t.expectComputedView(
-      //   $include('a.b2.c -> *'),
-      // ).toHave({
-      //   nodes: [],
-      //   edges: [],
-      // })
+      t.expectComputedView(
+        $include('a.b2.c -> *'),
+      ).toHave({
+        nodes: [],
+        edges: [],
+      })
 
       t.expect(t.computeView(
         $include('a.b2.c._ -> *'),
@@ -98,12 +98,12 @@ describe('RelationPredicate', () => {
         ],
       })
 
-      // t.expectComputedView(
-      //   $include('a.b2.c <-> *'),
-      // ).toHave({
-      //   nodes: [],
-      //   edges: [],
-      // })
+      t.expectComputedView(
+        $include('a.b2.c <-> *'),
+      ).toHave({
+        nodes: [],
+        edges: [],
+      })
     })
 
     it('instance -> *', () => {

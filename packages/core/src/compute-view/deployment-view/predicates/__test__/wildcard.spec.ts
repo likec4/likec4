@@ -1,4 +1,4 @@
-import { describe, it, test } from 'vitest'
+import { describe, test } from 'vitest'
 import { Builder } from '../../../../builder'
 import { TestHelper } from '../../__test__/TestHelper'
 
@@ -43,7 +43,7 @@ describe('Wildcard', () => {
       )
     )
 
-  const { $include, $exclude } = TestHelper
+  const { $include } = TestHelper
 
   test('include *', () => {
     const t = TestHelper.from(builder.deployment(({ nd, instanceOf }, d) =>
@@ -86,7 +86,7 @@ describe('Wildcard', () => {
   })
 
   test('include * (two zones)', () => {
-    const t = TestHelper.from(builder.deployment(({ nd, instanceOf, vm }, d) =>
+    const t = TestHelper.from(builder.deployment(({ nd, instanceOf }, d) =>
       d(
         nd('customer').with(
           instanceOf('customer'),

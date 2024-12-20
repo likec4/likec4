@@ -49,7 +49,14 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return this.relations.nonEmpty
   }
 
-  [customInspectSymbol](depth?: any, inspectOptions?: any, inspect?: any) {
+  [customInspectSymbol](
+    // @ts-ignore
+    depth,
+    // @ts-ignore
+    inspectOptions,
+    // @ts-ignore
+    inspect,
+  ) {
     const asString = this.toString()
 
     // Trick so that node displays the name of the constructor

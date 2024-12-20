@@ -3,21 +3,13 @@ import { invariant } from '../../errors'
 import { findAscendingConnections } from '../../model/connection'
 import { difference, intersection, isAncestor, isDescendantOf, isIterable } from '../../utils'
 import { ifilter, isome, toSet } from '../../utils/iterable'
-import type {
-  AnyCtx,
-  CtxConnection as Connection,
-  CtxElement as Elem,
-  GenericCtx,
-  MutableState,
-  StageExclude,
-  StageExpression,
-} from './_types'
+import type { AnyCtx, CtxConnection, CtxElement, MutableState, StageExclude, StageExpression } from './_types'
 
-export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implements StageExclude<T> {
+export abstract class AbstractStageExclude<T extends AnyCtx> implements StageExclude<T> {
   // Removed elements
   protected excluded = {
-    elements: new Set<Elem<T>>(),
-    connections: [] as Connection<T>[],
+    elements: new Set<CtxElement<T>>(),
+    connections: [] as CtxConnection<T>[],
   }
 
   constructor(
@@ -28,11 +20,11 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
 
   protected markedToMoveExplicitToImplicit = false
 
-  protected _removeElement(element: Elem<T>): void {
+  protected _removeElement(element: CtxElement<T>): void {
     this.excluded.elements.add(element)
   }
 
-  public exclude(element: Elem<T> | Iterable<Elem<T>> | false | undefined | null): this {
+  public exclude(element: CtxElement<T> | Iterable<CtxElement<T>> | false | undefined | null): this {
     if (!element) {
       return this
     }
@@ -46,7 +38,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
     return this
   }
 
-  protected _removeConnection(connection: Connection<T>): void {
+  protected _removeConnection(connection: CtxConnection<T>): void {
     this.excluded.connections.push(connection)
   }
   /**
@@ -54,7 +46,10 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
    * @param moveExplicitToImplicit - if true, disconnected explicit elements will be moved to implicit
    * @default false
    */
-  public excludeConnections(connection: Connection<T> | Iterable<Connection<T>>, moveExplicitToImplicit?: boolean) {
+  public excludeConnections(
+    connection: CtxConnection<T> | Iterable<CtxConnection<T>>,
+    moveExplicitToImplicit?: boolean,
+  ) {
     if (isBoolean(moveExplicitToImplicit)) {
       invariant(!this.markedToMoveExplicitToImplicit, 'Already marked to move explicits')
       this.markedToMoveExplicitToImplicit = moveExplicitToImplicit
@@ -83,7 +78,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
    *
    * Override this method to change the behavior.
    */
-  protected filterForMoveToImplicits(disconnectedExplicits: Set<Elem<T>>): Set<Elem<T>> {
+  protected filterForMoveToImplicits(disconnectedExplicits: Set<CtxElement<T>>): Set<CtxElement<T>> {
     if (this.markedToMoveExplicitToImplicit || this.excluded.elements.size > 0) {
       return disconnectedExplicits
     }
@@ -131,22 +126,22 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
     const excludedMap = this.excluded.connections.reduce((acc, c) => {
       const existing = acc.get(c.id)
       if (existing) {
-        acc.set(c.id, existing.mergeWith(c) as Connection<T>)
+        acc.set(c.id, existing.mergeWith(c) as CtxConnection<T>)
       } else {
         acc.set(c.id, c)
       }
       return acc
-    }, new Map<string, Connection<T>>())
+    }, new Map<string, CtxConnection<T>>())
 
     // were connected before and not anymore
-    let disconnected = new Set<Elem<T>>()
+    let disconnected = new Set<CtxElement<T>>()
 
     state.connections = state.connections.reduce((acc, c) => {
       const excluded = excludedMap.get(c.id)
       if (excluded) {
         disconnected.add(c.source)
         disconnected.add(c.target)
-        const diff = c.difference(excluded) as Connection<T>
+        const diff = c.difference(excluded) as CtxConnection<T>
         if (diff.nonEmpty()) {
           acc.push(diff)
         }
@@ -154,7 +149,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
         acc.push(c)
       }
       return acc
-    }, [] as Connection<T>[])
+    }, [] as CtxConnection<T>[])
 
     for (const stillExists of state.connections) {
       disconnected.delete(stillExists.source)
@@ -202,7 +197,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
         .flatMap(c => [
           c,
           ...findAscendingConnections(state.connections, c)
-            .map(asc => asc.intersect(c) as Connection<T>),
+            .map(asc => asc.intersect(c) as CtxConnection<T>),
         ])
         .filter(asc => asc.nonEmpty())
       this.excludeConnections(excludedConnections)

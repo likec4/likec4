@@ -38,26 +38,26 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
         astNode.value.ref,
-        `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`
+        `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
       if (ast.isElement(refValue)) {
         const deployedInstanceAst = instanceRef(astNode)
         if (!deployedInstanceAst) {
           return {
-            model: this.resolveFqn(refValue)
+            model: this.resolveFqn(refValue),
           }
         }
         const deployment = this.resolveFqn(deployedInstanceAst)
         const element = this.resolveFqn(refValue)
         return {
           deployment,
-          element
+          element,
         }
       }
 
       if (ast.isDeploymentElement(refValue)) {
         return {
-          deployment: this.resolveFqn(refValue)
+          deployment: this.resolveFqn(refValue),
         }
       }
       nonexhaustive(refValue)
@@ -66,7 +66,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
     parseFqnExpr(astNode: ast.FqnExpr): c4.FqnExpr {
       if (ast.isWildcardExpression(astNode)) {
         return {
-          wildcard: true
+          wildcard: true,
         }
       }
       if (ast.isFqnRefExpr(astNode)) {
@@ -75,26 +75,26 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       nonexhaustive(astNode)
     }
 
-    parseFqnRefExpr(astNode: ast.FqnRefExpr): c4.FqnExpr.Ref {
+    parseFqnRefExpr(astNode: ast.FqnRefExpr): c4.FqnExpr.NonWildcard {
       const ref = this.parseFqnRef(astNode.ref)
       switch (true) {
         case astNode.selector === '._':
           return {
             ref,
-            selector: 'expanded'
-          } as c4.FqnExpr.Ref
+            selector: 'expanded',
+          } as c4.FqnExpr.NonWildcard
         case astNode.selector === '.**':
           return {
             ref,
-            selector: 'descendants'
-          } as c4.FqnExpr.Ref
+            selector: 'descendants',
+          } as c4.FqnExpr.NonWildcard
         case astNode.selector === '.*':
           return {
             ref,
-            selector: 'children'
-          } as c4.FqnExpr.Ref
+            selector: 'children',
+          } as c4.FqnExpr.NonWildcard
         default:
-          return { ref } as c4.FqnExpr.Ref
+          return { ref } as c4.FqnExpr.NonWildcard
       }
     }
 
@@ -119,22 +119,22 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         return {
           source: this.parseFqnExpr(astNode.source.from),
           target: this.parseFqnExpr(astNode.target),
-          isBidirectional: astNode.source.isBidirectional
+          isBidirectional: astNode.source.isBidirectional,
         }
       }
       if (ast.isInOutRelationExpr(astNode)) {
         return {
-          inout: this.parseFqnExpr(astNode.inout.to)
+          inout: this.parseFqnExpr(astNode.inout.to),
         }
       }
       if (ast.isOutgoingRelationExpr(astNode)) {
         return {
-          outgoing: this.parseFqnExpr(astNode.from)
+          outgoing: this.parseFqnExpr(astNode.from),
         }
       }
       if (ast.isIncomingRelationExpr(astNode)) {
         return {
-          incoming: this.parseFqnExpr(astNode.to)
+          incoming: this.parseFqnExpr(astNode.to),
         }
       }
       nonexhaustive(astNode)
