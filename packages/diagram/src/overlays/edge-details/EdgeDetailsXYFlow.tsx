@@ -13,8 +13,8 @@ import {
 import { memo, useEffect } from 'react'
 import { only } from 'remeda'
 import { useDiagramStoreApi } from '../../hooks/useDiagramState'
-import type { SharedTypes } from '../shared/xyflow/_types'
-import type { XYFlowTypes } from './_types'
+import type { SharedFlowTypes } from '../shared/xyflow/_types'
+import type { EdgeDetailsFlowTypes } from './_types'
 import { SelectEdge } from './SelectEdge'
 import * as css from './SelectEdge.css'
 import { useLayoutedEdgeDetails, ZIndexes } from './use-layouted-edge-details'
@@ -30,7 +30,7 @@ const edgeTypes = {
   relation: RelationshipEdge
 }
 
-const resetDimmedAndHovered = (xyflow: ReactFlowInstance<SharedTypes.Node, XYFlowTypes.Edge>) => {
+const resetDimmedAndHovered = (xyflow: ReactFlowInstance<SharedFlowTypes.Node, EdgeDetailsFlowTypes.Edge>) => {
   xyflow.setEdges(edges =>
     edges.map(edge => ({
       ...edge,
@@ -51,12 +51,12 @@ const resetDimmedAndHovered = (xyflow: ReactFlowInstance<SharedTypes.Node, XYFlo
           dimmed: false,
           hovered: false
         }
-      }) as SharedTypes.Node
+      }) as SharedFlowTypes.Node
     )
   )
 }
 
-const animateEdge = (node: SharedTypes.Node, animated = true) => (edges: XYFlowTypes.Edge[]) => {
+const animateEdge = (node: SharedFlowTypes.Node, animated = true) => (edges: EdgeDetailsFlowTypes.Edge[]) => {
   return edges.map(edge => {
     const isConnected = edge.source === node.id || edge.target === node.id || isAncestor(node.id, edge.source)
       || isAncestor(node.id, edge.target)
@@ -80,8 +80,8 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
 
   const boundsRef = useSyncedRef(bounds)
 
-  const xyflow = useReactFlow<SharedTypes.Node, XYFlowTypes.Edge>()
-  const xystore = useStoreApi<SharedTypes.Node, XYFlowTypes.Edge>()
+  const xyflow = useReactFlow<SharedFlowTypes.Node, EdgeDetailsFlowTypes.Edge>()
+  const xystore = useStoreApi<SharedFlowTypes.Node, EdgeDetailsFlowTypes.Edge>()
 
   const fitview = useDebouncedCallback(
     () => {
@@ -117,8 +117,8 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
 
   return (
     <ReactFlow
-      defaultEdges={[] as XYFlowTypes.Edge[]}
-      defaultNodes={[] as SharedTypes.Node[]}
+      defaultEdges={[] as EdgeDetailsFlowTypes.Edge[]}
+      defaultNodes={[] as SharedFlowTypes.Node[]}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       defaultMarkerColor="var(--xy-edge-stroke)"
@@ -170,7 +170,7 @@ export const EdgeDetailsXYFlow = memo<{ edgeId: EdgeId }>(function EdgeDetailsXY
               ...n.data,
               dimmed: n.id !== edge.source && n.id !== edge.target
             }
-          } as SharedTypes.Node))
+          } as SharedFlowTypes.Node))
         )
       }}
       onEdgeMouseLeave={() => {

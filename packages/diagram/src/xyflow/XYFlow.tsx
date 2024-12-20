@@ -8,9 +8,9 @@ import { MaxZoom, MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
-import { XYFlowEdge, XYFlowNode } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
 import { useXYFlowEvents } from './useXYFlowEvents'
+import type { DiagramFlowTypes } from './types'
 
 const nodeTypes = {
   element: ElementNode,
@@ -117,7 +117,7 @@ export function XYFlow({
   // }, [])
 
   return (
-    <ReactFlow<XYFlowNode, XYFlowEdge>
+    <ReactFlow<DiagramFlowTypes.Node, DiagramFlowTypes.Edge>
       className={className}
       style={style}
       {...colorMode && { colorMode }}

@@ -1,11 +1,10 @@
 import { nonexhaustive } from '@likec4/core'
-import type { InternalNode } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast } from 'remeda'
 import type { DiagramState } from '../hooks'
-import type { XYFlowNode } from '../xyflow/types'
 import { createLayoutConstraints } from '../xyflow/useLayoutConstraints'
 import { type Aligner, getLinearAligner, GridAligner, type GridAlignmentMode, type LinearAlignmentMode, type NodeRect } from './aligners'
+import type { DiagramFlowTypes } from '../xyflow/types'
 
 export type AlignmentMode = LinearAlignmentMode | GridAlignmentMode
 
@@ -40,7 +39,7 @@ export function align(get: () => DiagramState) {
   }
 }
 
-function toNodeRect(node: InternalNode<XYFlowNode>): NodeRect {
+function toNodeRect(node: DiagramFlowTypes.InternalNode): NodeRect {
   return {
     ...node.internals.positionAbsolute,
     id: node.id,

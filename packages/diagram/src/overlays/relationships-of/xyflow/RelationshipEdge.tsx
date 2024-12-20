@@ -7,7 +7,7 @@ import { useDiagramState } from '../../../hooks/useDiagramState'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import * as css from '../../shared/xyflow/RelationshipEdge.css'
-import type { XYFlowTypes } from '../_types'
+import type { RelationshipsOfFlowTypes } from '../_types'
 import { ZIndexes } from '../use-layouted-relationships'
 
 const Tooltip = MantineTooltip.withProps({
@@ -25,7 +25,7 @@ export function RelationshipEdge({
   data,
   label,
   ...props
-}: EdgeProps<XYFlowTypes.Edge>) {
+}: EdgeProps<RelationshipsOfFlowTypes.Edge>) {
   const {
     viewId,
     onNavigateTo

@@ -21,9 +21,6 @@ export const container = style({
   selectors: {
     ':where(.react-flow__node.selected) &': {
       willChange: 'transform'
-    },
-    '&[data-hovered="true"]': {
-      willChange: 'transform'
     }
   },
   // Catch pointer below the element
@@ -302,10 +299,6 @@ export const shapeSvgMultiple = style({
     },
     ':where([data-likec4-shape="queue"]) &': {
       transform: 'translate(-10px,8px)'
-    },
-    ':where([data-hovered="true"]) &': {
-      transition: 'opacity 300ms ease-in',
-      opacity: 0.2
     }
   }
 })
@@ -388,39 +381,3 @@ export const bottomButtonsContainer = style({
 //   transitionDelay: '20ms',
 //   gap: 16
 // })
-
-const btn = style({
-  pointerEvents: 'all',
-  color: vars.element.loContrast,
-  cursor: 'pointer',
-  backgroundColor: 'var(--ai-bg)',
-  'vars': {
-    '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
-    '--ai-bg': `var(--ai-bg-idle)`,
-    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
-    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
-  },
-  ':hover': {
-    boxShadow: mantine.shadows.md
-  }
-})
-
-export const navigateBtn = style([btn, {}])
-
-export const detailsBtn = style([btn, {
-  position: 'absolute',
-  top: 2,
-  right: 2,
-  selectors: {
-    [`:where([data-likec4-shape='browser']) &`]: {
-      right: 5
-    },
-    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      top: 14
-    },
-    ':where([data-likec4-shape="queue"]) &': {
-      top: 1,
-      right: 12
-    }
-  }
-}])
