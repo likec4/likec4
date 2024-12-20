@@ -49,8 +49,8 @@ test('Reproduce #1362', () => {
 
   t.expect(view).toHaveNodes(
     'prod',
-    'prod.c1',
-    'prod.c2',
+    // 'prod.c1', no boundary, no explicit
+    // 'prod.c2',
     'prod.c1.k8s',
     'prod.c2.k8s',
     'prod.c1.k8s.i1',

@@ -1,4 +1,4 @@
-import { filter, forEach, map, pipe, take, zip } from 'remeda'
+import { dropWhile, forEach, pipe, take, zip } from 'remeda'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
 import { isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
@@ -53,50 +53,39 @@ export class StageInclude extends AbstractStageInclude<Ctx> {
   }
 
   protected override processConnections(connections: Connection[]) {
-    const boundaries = new Set<Elem>()
     const clean = pipe(
       connections,
       cleanCrossBoundary,
       cleanRedundantRelationships,
-      map(c => {
-        c.boundary && boundaries.add(c.boundary)
-        return c
-      }),
     )
 
     pipe(
       clean,
       // Process only connection from this stage
-      filter(c => this._connections.some(c2 => c2.id === c.id)),
-      forEach(c => {
+      // filter(c => this._connections.some(c2 => c2.id === c.id)),
+      forEach(({ source, target, boundary }) => {
         pipe(
           zip(
-            [...toArray(c.source.ancestors()).reverse(), c.source],
-            [...toArray(c.target.ancestors()).reverse(), c.target],
+            [...toArray(source.ancestors()).reverse(), source],
+            [...toArray(target.ancestors()).reverse(), target],
           ),
-          filter(([source, target]) => source !== target),
-          forEach(([source, target]) => {
-            if (source === c.source && target === c.target) {
-              // if (!c.boundary) {
-              //   return
-              // }
-              // const maxlevel = Math.max(hierarchyLevel(source.id), hierarchyLevel(target.id))
-              // // Add boundary only nodes are deeper in hierarchy
-              // if (maxlevel > min || boundaries.size > 1) {
-              this.addImplicit(c.boundary)
-              // }
+          // Filter out common ancestors
+          dropWhile(([sourceAncestor, targetAncestor]) => sourceAncestor === targetAncestor),
+          take(1),
+          forEach(([sourceAncestor, targetAncestor]) => {
+            if (source === sourceAncestor && target === targetAncestor) {
+              this.addImplicit(boundary)
               return
             }
-            if (source !== c.source && source.isDeploymentNode() && !source.onlyOneInstance()) {
+            if (sourceAncestor !== source && sourceAncestor.isDeploymentNode() && !sourceAncestor.onlyOneInstance()) {
               // state.final.add(source)
-              this.addImplicit(source)
+              this.addImplicit(sourceAncestor)
             }
-            if (target !== c.target && target.isDeploymentNode() && !target.onlyOneInstance()) {
+            if (targetAncestor !== target && targetAncestor.isDeploymentNode() && !targetAncestor.onlyOneInstance()) {
               // state.final.add(source)
-              this.addImplicit(target)
+              this.addImplicit(targetAncestor)
             }
           }),
-          take(1),
         )
       }),
     )

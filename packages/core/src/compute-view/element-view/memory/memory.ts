@@ -2,8 +2,8 @@ import Stack from 'mnemonist/stack'
 import { nonNullable } from '../../../errors'
 import type { ConnectionModel } from '../../../model/connection'
 import type { ElementModel } from '../../../model/ElementModel'
-import type { NodeId, ViewRuleGroup } from '../../../types'
-import { AbstractMemory, type ComputeCtx } from '../../memory'
+import type { Expression, NodeId, ViewRuleGroup } from '../../../types'
+import { AbstractMemory, type ComputeCtx, type CtxElement, type MutableState, type StageExpression } from '../../memory'
 import { NodesGroup } from './NodeGroup'
 import { ActiveGroupStageExclude, StageExclude } from './stage-exclude'
 import { ActiveGroupStageInclude, StageInclude } from './stage-include'
@@ -14,7 +14,8 @@ export interface Ctx extends
     ConnectionModel,
     Memory<Ctx>,
     StageInclude<Ctx>,
-    StageExclude
+    StageExclude,
+    Expression
   >
 {
   MutableState: {
@@ -27,17 +28,17 @@ export interface Ctx extends
      * The group where explict element was added first time
      * May be a root group
      */
-    explicitFirstSeenIn: Map<ElementModel['id'], NodesGroup['id']>
+    explicitFirstSeenIn: Map<ElementModel, NodesGroup['id']>
     /**
      * The group where element (implicit or explicit) was last seen (added or updated)
      * Exclude root group
      */
-    lastSeenIn: Map<ElementModel['id'], NodesGroup['id']>
+    lastSeenIn: Map<ElementModel, NodesGroup['id']>
   }
 }
 
 export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
-  static empty(): Memory {
+  static empty(scope: CtxElement<Ctx> | null): Memory {
     return new Memory({
       elements: new Set(),
       explicits: new Set(),
@@ -45,12 +46,13 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
       connections: [],
       groups: [],
       explicitFirstSeenIn: new Map(),
-      lastSeenIn: new Map()
-    })
+      lastSeenIn: new Map(),
+    }, scope)
   }
 
   protected constructor(
-    protected override state: C['MutableState']
+    protected override state: MutableState<C>,
+    public readonly scope: CtxElement<C> | null,
   ) {
     super(state)
   }
@@ -59,22 +61,22 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
     return this.state.groups
   }
 
-  public get explicitFirstSeenIn(): ReadonlyMap<ElementModel['id'], NodesGroup['id']> {
+  public get explicitFirstSeenIn(): ReadonlyMap<ElementModel, NodesGroup['id']> {
     return this.state.explicitFirstSeenIn
   }
 
-  public get lastSeenIn(): ReadonlyMap<ElementModel['id'], NodesGroup['id']> {
+  public get lastSeenIn(): ReadonlyMap<ElementModel, NodesGroup['id']> {
     return this.state.lastSeenIn
   }
 
-  override stageInclude(): StageInclude<C> {
-    return new StageInclude(this)
+  override stageInclude(expr: StageExpression<Ctx>): StageInclude {
+    return new StageInclude(this, expr)
   }
-  override stageExclude(): StageExclude {
-    return new StageExclude(this)
+  override stageExclude(expr: StageExpression<Ctx>): StageExclude {
+    return new StageExclude(this, expr)
   }
 
-  override mutableState(): C['MutableState'] {
+  override mutableState(): MutableState<C> {
     return ({
       elements: new Set(this.state.elements),
       explicits: new Set(this.state.explicits),
@@ -82,15 +84,15 @@ export class Memory<C extends Ctx = Ctx> extends AbstractMemory<C> {
       connections: [...this.state.connections],
       groups: this.state.groups.map((g) => g.clone()),
       explicitFirstSeenIn: new Map(this.state.explicitFirstSeenIn),
-      lastSeenIn: new Map(this.state.lastSeenIn)
+      lastSeenIn: new Map(this.state.lastSeenIn),
     })
   }
 
   override update(newstate: Partial<C['MutableState']>): Memory {
     return new Memory({
       ...this.state,
-      ...newstate
-    })
+      ...newstate,
+    }, this.scope)
   }
 }
 
@@ -105,29 +107,29 @@ export interface ActiveGroupCtx extends Ctx {
 export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
   static enter(
     memory: Memory,
-    rule: ViewRuleGroup
+    rule: ViewRuleGroup,
   ): ActiveGroupMemory {
     const groupId = `@gr${memory.groups.length + 1}` as NodeId
     if (memory instanceof ActiveGroupMemory) {
       const stack = Stack.from(memory.stack)
       const state = memory.mutableState()
-      // state.activeGroup =
       state.groups.push(new NodesGroup(groupId, rule, memory.activeGroupId))
       stack.push(groupId)
-      return new ActiveGroupMemory(state, stack)
+      return new ActiveGroupMemory(state, memory.scope, stack)
     }
     const state = memory.mutableState() as ActiveGroupState
     state.groups.push(new NodesGroup(groupId, rule, null))
     const stack = Stack.of(groupId)
-    return new ActiveGroupMemory(state, stack)
+    return new ActiveGroupMemory(state, memory.scope, stack)
   }
 
   protected constructor(
     protected override state: ActiveGroupState,
+    public override readonly scope: CtxElement<ActiveGroupCtx> | null,
     // Stack of group ids
-    protected stack: Stack<NodeId>
+    protected stack: Stack<NodeId>,
   ) {
-    super(state)
+    super(state, scope)
   }
 
   get activeGroupId(): NodeId {
@@ -137,7 +139,7 @@ export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
   override mutableState(): ActiveGroupState {
     const state = super.mutableState()
     return ({
-      ...state
+      ...state,
       // activeGroup: this.findActiveGroup(state.groups)
     })
   }
@@ -149,18 +151,18 @@ export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
   override update(newstate: Partial<ActiveGroupState>): ActiveGroupMemory {
     const nextstate = {
       ...this.state,
-      ...newstate
+      ...newstate,
     }
     // const activeGroup = this.findActiveGroup(nextstate.groups)
     // invariant(Object.is(activeGroup, nextstate.activeGroup), 'Active group must strictly equal to the group in groups')
-    return new ActiveGroupMemory(nextstate, this.stack)
+    return new ActiveGroupMemory(nextstate, this.scope, this.stack)
   }
 
-  override stageInclude(): ActiveGroupStageInclude {
-    return new ActiveGroupStageInclude(this)
+  override stageInclude(expr: StageExpression<Ctx>): ActiveGroupStageInclude {
+    return new ActiveGroupStageInclude(this, expr)
   }
-  override stageExclude(): ActiveGroupStageExclude {
-    return new ActiveGroupStageExclude(this)
+  override stageExclude(expr: StageExpression<Ctx>): ActiveGroupStageExclude {
+    return new ActiveGroupStageExclude(this, expr)
   }
 
   public leave(): Memory {
@@ -168,8 +170,8 @@ export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
     this.stack.pop()
     const prevgroup = this.stack.peek()
     if (prevgroup) {
-      return new ActiveGroupMemory(state, this.stack)
+      return new ActiveGroupMemory(state, this.scope, this.stack)
     }
-    return new Memory(state)
+    return new Memory(state, this.scope)
   }
 }

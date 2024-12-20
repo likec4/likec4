@@ -140,7 +140,6 @@ describe('Exclude RelationExpr', () => {
       }),
     ).toEqual({
       Nodes: [
-        'prod.eu',
         'prod.eu.zone1',
         'prod.eu.zone1.api',
         'prod.eu.zone1.ui',
@@ -207,7 +206,6 @@ describe('Exclude RelationExpr', () => {
       }),
     ).toEqual({
       Nodes: [
-        'prod.eu',
         'prod.eu.zone1',
         'prod.eu.db', // explicit
         'prod.eu.zone1.ui',

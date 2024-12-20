@@ -1,16 +1,18 @@
-import {
-  intersection as _intersection,
-  symmetricDifference as _symmetricDifference,
-  union as _union
-} from 'mnemonist/set'
+import { intersection as _intersection, symmetricDifference as _symmetricDifference } from 'mnemonist/set'
 import type { NonEmptyArray } from '../types/_common'
 
 /**
  * Returns new set as a union of given sets
  * Keeps order of elements
  */
-export function union<T>(...sets: NonEmptyArray<ReadonlySet<T>>): Set<T> {
-  return _union(...sets as any)
+export function union<T>(...sets: ReadonlySet<T>[]): Set<T> {
+  let result = new Set<T>()
+  for (const set of sets) {
+    for (const value of set) {
+      result.add(value)
+    }
+  }
+  return result
 }
 
 /**

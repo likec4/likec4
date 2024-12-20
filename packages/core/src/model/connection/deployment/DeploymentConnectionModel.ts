@@ -1,5 +1,6 @@
 import { invariant } from '../../../errors'
 import { stringHash } from '../../../utils'
+import { customInspectSymbol } from '../../../utils/const'
 import { equals } from '../../../utils/set'
 import {
   type DeployedInstanceModel,
@@ -11,8 +12,6 @@ import {
 import type { RelationshipModel } from '../../RelationModel'
 import type { AnyAux, IteratorLike } from '../../types'
 import type { Connection } from '../Connection'
-
-export const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom')
 
 /**
  * Connection is ephemeral entity, result of a resolving relationships between source and target.
@@ -50,8 +49,7 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
     return this.relations.nonEmpty
   }
 
-  // @ts-ignore
-  [customInspectSymbol](depth, inspectOptions, inspect) {
+  [customInspectSymbol](depth?: any, inspectOptions?: any, inspect?: any) {
     const asString = this.toString()
 
     // Trick so that node displays the name of the constructor

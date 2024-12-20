@@ -16,14 +16,14 @@ describe('relation-expr', () => {
       'support',
       'cloud',
       'email',
-      'amazon'
+      'amazon',
     ])
     expect(edgeIds).toEqual([
       'customer:cloud',
       'cloud:email',
       'cloud:amazon',
       'support:cloud',
-      'email:cloud'
+      'email:cloud',
     ])
   })
 
@@ -34,24 +34,25 @@ describe('relation-expr', () => {
           or: [
             { tag: { eq: 'next' } },
             { tag: { eq: 'aws' } },
-            { tag: { eq: 'storage' } }
-          ]
-        }
-      })
+            { tag: { eq: 'storage' } },
+          ],
+        },
+      }),
     ])
     expect(pick(test1, ['edgeIds', 'nodeIds'])).toEqual({
       'edgeIds': [
-        'cloud.backend.storage:amazon.s3',
         'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.frontend.dashboard:cloud.backend.graphql'
+        'cloud.frontend.dashboard:cloud.backend.graphql',
+        'cloud.backend.storage:amazon.s3',
       ],
       'nodeIds': [
+        'cloud',
         'cloud.frontend.dashboard',
         'cloud.backend.graphql',
         'cloud.backend.storage',
         'amazon',
-        'amazon.s3'
-      ]
+        'amazon.s3',
+      ],
     })
 
     const test2 = computeView([
@@ -60,25 +61,25 @@ describe('relation-expr', () => {
           or: [
             { tag: { eq: 'next' } },
             { tag: { eq: 'aws' } },
-            { tag: { eq: 'storage' } }
-          ]
-        }
+            { tag: { eq: 'storage' } },
+          ],
+        },
       }),
       $exclude('* -> *', {
-        tag: { eq: 'storage' }
-      })
+        tag: { eq: 'storage' },
+      }),
     ])
     expect(pick(test2, ['edgeIds', 'nodeIds'])).toEqual({
       'edgeIds': [
         'cloud.frontend.dashboard:cloud.backend.graphql',
-        'cloud:amazon'
+        'cloud:amazon',
       ],
       'nodeIds': [
         'cloud',
         'amazon',
         'cloud.frontend.dashboard',
-        'cloud.backend.graphql'
-      ]
+        'cloud.backend.graphql',
+      ],
     })
   })
 
@@ -124,18 +125,18 @@ describe('relation-expr', () => {
       'customer',
       'support',
       'cloud.frontend.dashboard',
-      'cloud.frontend.adminPanel'
+      'cloud.frontend.adminPanel',
     ])
     expect(edgeIds).toEqual([
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel'
+      'support:cloud.frontend.adminPanel',
     ])
   })
 
   it('* -> cloud.frontend.*, exclude support', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('* -> cloud.frontend.*'),
-      $exclude('support')
+      $exclude('support'),
     ])
     expect(nodeIds).toEqual(['customer', 'cloud.frontend.dashboard'])
     expect(edgeIds).to.have.same.members(['customer:cloud.frontend.dashboard'])
@@ -144,7 +145,7 @@ describe('relation-expr', () => {
   it('* -> cloud.frontend.*, exclude support -> *', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('* -> cloud.frontend.*'),
-      $exclude('support -> *')
+      $exclude('support -> *'),
     ])
     expect(nodeIds).toEqual(['customer', 'cloud.frontend.dashboard'])
     expect(edgeIds).toEqual(['customer:cloud.frontend.dashboard'])
@@ -152,28 +153,28 @@ describe('relation-expr', () => {
 
   it('cloud -> email', () => {
     const { nodeIds, edgeIds } = computeView([
-      $include('cloud -> email')
+      $include('cloud -> email'),
     ])
     expect(nodeIds).toEqual([
       'cloud',
-      'email'
+      'email',
     ])
     expect(edgeIds).toEqual([
-      'cloud:email'
+      'cloud:email',
     ])
   })
 
   it('cloud <-> email', () => {
     const { nodeIds, edgeIds } = computeView([
-      $include('cloud <-> email')
+      $include('cloud <-> email'),
     ])
     expect(nodeIds).toEqual([
       'cloud',
-      'email'
+      'email',
     ])
     expect(edgeIds).toEqual([
       'cloud:email',
-      'email:cloud'
+      'email:cloud',
     ])
   })
 })

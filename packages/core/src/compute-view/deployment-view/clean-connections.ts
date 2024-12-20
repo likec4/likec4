@@ -14,34 +14,21 @@ import {
   values,
 } from 'remeda'
 import { invariant } from '../../errors'
-import { differenceConnections, sortConnectionsByBoundaryHierarchy } from '../../model/connection'
-import { findConnection, mergeConnections } from '../../model/connection/deployment'
-import { DeploymentConnectionModel } from '../../model/connection/deployment/DeploymentConnectionModel'
+import {
+  DeploymentConnectionModel,
+  differenceConnections,
+  isNestedConnection,
+  mergeConnections,
+  sortConnectionsByBoundaryHierarchy,
+} from '../../model/connection'
+import { findConnection } from '../../model/connection/deployment'
 import { RelationshipsAccum } from '../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
-import { compareFqnHierarchically, intersection, isAncestor, sortNaturalByFqn, union } from '../../utils'
 import { imap, toArray } from '../../utils/iterable'
+import { intersection, union } from '../../utils/set'
 import type { Connection, Connections } from './_types'
 
 const filterEmptyConnection = filter((c: DeploymentConnectionModel<any>) => c.nonEmpty())
-
-// /**
-//  * To make {@link compareFqnHierarchically} work correctly we add '.' to boundary
-//  * Othwerwise connection without boundary considered same level as connection with top-levelboundary
-//  */
-// const boundaryHierarchy = (conn: DeploymentConnectionModel<any>) => conn.boundary?.id ? `.${conn.boundary.id}` : ''
-
-// function sortConnectionsByBoundaryHierarchy(connections: Connections, order: 'asc' | 'desc' = 'asc'): Array<Connection> {
-//   return pipe(
-//     connections,
-//     map(conn => ({
-//       id: boundaryHierarchy(conn),
-//       conn,
-//     })),
-//     sortNaturalByFqn(order),
-//     map(prop('conn')),
-//   )
-// }
 
 type MapOfExcludesFromConnection = DefaultMap<DeploymentConnectionModel, Set<RelationshipModel>>
 function findCrossBoundarySameSourceOrTarget(connections: Connections): MapOfExcludesFromConnection {
@@ -79,7 +66,7 @@ function findCrossBoundarySameSourceOrTarget(connections: Connections): MapOfExc
         // In each group, sort by hierarchy, first are deepest
         piped(
           map(prop('conn')),
-          connections => sortConnectionsByBoundaryHierarchy(connections, 'desc'),
+          sortConnectionsByBoundaryHierarchy('desc'),
           // Drop first, as it is the deepest
           // Drop if boundary is same as previous
           dropWhile((conn, i, all) => i === 0 || conn.boundary === all[i - 1]!.boundary),
@@ -212,11 +199,7 @@ export function findRedundantConnections(connections: Connections): Array<Connec
       }
 
       for (const c of connections) {
-        if (
-          isAncestor(source.id, c.source.id) && isAncestor(target.id, c.target.id)
-          || isAncestor(source.id, c.source.id) && c.target.id === target.id
-          || isAncestor(target.id, c.target.id) && c.source.id === source.id
-        ) {
+        if (isNestedConnection(c, connection)) {
           redundantAccum = redundantAccum.union(
             relations.intersect(c.relations),
           )

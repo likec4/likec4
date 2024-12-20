@@ -58,8 +58,8 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
       stage.exclude(
         filter(
           [...memory.elements],
-          where
-        )
+          where,
+        ),
       )
       return stage
     }
@@ -67,6 +67,6 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
       stage.exclude([scope, ...scope.descendants()])
       return stage
     }
-    return Memory.empty().stageExclude()
-  }
+    return Memory.empty(memory.scope).stageExclude(stage.expression)
+  },
 }

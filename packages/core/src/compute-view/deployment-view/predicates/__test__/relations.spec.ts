@@ -48,11 +48,10 @@ describe('RelationPredicate', () => {
       const state = t.processPredicates(
         $include('* -> *'),
       )
-      t.expect(state).toHaveElements(
+      t.expect(state).toHaveFinalElements(
         'a.b.c.ui',
         'a.b.d.api',
         'a.b.d.e.db',
-        'a.b',
         'a.b.d',
       )
       t.expect(state).toHaveConnections(
@@ -91,7 +90,6 @@ describe('RelationPredicate', () => {
         $include('a.b2.c._ -> *'),
       )).toHave({
         nodes: [
-          'a.b2.c',
           'a.b2.c.ui',
           'a.b2.c.api',
         ],
@@ -114,7 +112,6 @@ describe('RelationPredicate', () => {
       )
       t.expect(view1).toHave({
         nodes: [
-          'a.b2.c',
           'a.b2.c.ui',
           'a.b2.c.api',
         ],

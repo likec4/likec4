@@ -49,7 +49,6 @@ describe('Clean Connections', () => {
     t.expect(state).toHaveFinalElements(
       'z1.s1.ui',
       'z1.s1.api',
-      'z1.s1',
     )
 
     state.next($include('z1.s2.*'))
@@ -136,7 +135,6 @@ describe('Clean Connections', () => {
     t.expect(state).toHaveFinalElements(
       'z1.s2.ui',
       'z1.s2.api',
-      'z1.s2',
     )
     t.expect(state.memory.connections).toBeEmpty()
 

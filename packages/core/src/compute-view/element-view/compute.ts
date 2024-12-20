@@ -1,7 +1,7 @@
 import DefaultMap from 'mnemonist/default-map'
-import { filter, findLast, map, pipe } from 'remeda'
-import { invariant, nonexhaustive } from '../../errors'
-import { LikeC4Model } from '../../model'
+import { filter, findLast, forEach, map, pipe } from 'remeda'
+import { invariant, nonexhaustive, nonNullable } from '../../errors'
+import { type ElementModel, LikeC4Model } from '../../model'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import type { AnyAux } from '../../model/types'
@@ -11,10 +11,11 @@ import type {
   ElementView,
   NodeId,
   RelationPredicateExpression,
-  ViewRule
+  ViewRule,
 } from '../../types'
 import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
 import * as Expr from '../../types/expression'
+import { sortNaturalByFqn, sortParentsFirst } from '../../utils'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
@@ -24,9 +25,9 @@ import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { type Connection, type Elem, type PredicateCtx } from './_types'
-import { cleanConnections } from './clean-connections'
-import { Memory, type Stage } from './memory'
+import { Memory, type NodesGroup, type Stage } from './memory'
 import { ActiveGroupMemory } from './memory/memory'
+import { StageFinal } from './memory/stage-final'
 import { ExpandedElementPredicate } from './predicates/element-expand'
 import { ElementKindOrTagPredicate } from './predicates/element-kind-tag'
 import { ElementRefPredicate } from './predicates/element-ref'
@@ -43,7 +44,7 @@ function processElementPredicate(
   //   | [expr: ElementPredicateExpression, op: 'exclude', ExcludePredicateCtx<ElementPredicateExpression>]
   expr: ElementPredicateExpression,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>
+  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>,
 ): Stage {
   switch (true) {
     case Expr.isCustomElement(expr): {
@@ -75,7 +76,7 @@ function processElementPredicate(
 function processRelationtPredicate(
   expr: RelationPredicateExpression,
   op: 'include' | 'exclude',
-  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>
+  ctx: Omit<PredicateCtx<RelationPredicateExpression>, 'expr'>,
 ): Stage {
   switch (true) {
     case Expr.isCustomRelationExpr(expr): {
@@ -93,13 +94,13 @@ function processRelationtPredicate(
         return pipe(
           connections,
           map(c => new ConnectionModel(c.source, c.target, filterRelations(c.relations))),
-          filter(c => c.nonEmpty())
+          filter(c => c.nonEmpty()),
         )
       }
       return processRelationtPredicate(expr.where.expr, op, {
         ...ctx,
         where,
-        filterWhere
+        filterWhere,
       })
     }
     case Expr.isInOut(expr): {
@@ -119,17 +120,17 @@ function processRelationtPredicate(
   }
 }
 
-function processPredicates<M extends AnyAux>(
+export function processPredicates<M extends AnyAux>(
   model: LikeC4Model<M>,
   memory: Memory,
   scope: Elem | null,
-  rules: ViewRule[]
+  rules: ViewRule[],
 ): Memory {
   const ctx = {
     model,
     scope,
     where: NoWhere,
-    filterWhere: NoFilter
+    filterWhere: NoFilter,
   }
   for (const rule of rules) {
     if (isViewRuleGroup(rule)) {
@@ -143,20 +144,20 @@ function processPredicates<M extends AnyAux>(
       const op = 'include' in rule ? 'include' : 'exclude'
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
-        let stage = op === 'include' ? memory.stageInclude() : memory.stageExclude()
+        let stage = op === 'include' ? memory.stageInclude(expr) : memory.stageExclude(expr)
         switch (true) {
           case Expr.isElementPredicateExpr(expr):
             stage = processElementPredicate(expr, op, {
               ...ctx,
               stage,
-              memory
+              memory,
             } as any) ?? stage
             break
           case Expr.isRelationPredicateExpr(expr):
             stage = processRelationtPredicate(expr, op, {
               ...ctx,
               stage,
-              memory
+              memory,
             }) ?? stage
             break
           default:
@@ -166,7 +167,7 @@ function processPredicates<M extends AnyAux>(
       }
     }
   }
-  return memory
+  return StageFinal.for(memory).commit()
 }
 
 export function computeElementView<M extends AnyAux>(
@@ -175,21 +176,19 @@ export function computeElementView<M extends AnyAux>(
     docUri: _docUri, // exclude docUri
     rules, // exclude rules
     ...view
-  }: ElementView
+  }: ElementView,
 ): ComputedElementView<M['ViewId']> {
   rules = resolveGlobalRulesInElementView(rules, likec4model.globals())
   const scope = view.viewOf ? likec4model.element(view.viewOf) : null
-  let memory = cleanConnections(
-    processPredicates<M>(
-      likec4model,
-      Memory.empty(),
-      scope,
-      rules
-    )
+  let memory = processPredicates<M>(
+    likec4model,
+    Memory.empty(scope),
+    scope,
+    rules,
   )
   if (memory.isEmpty() && scope) {
     memory = memory.update({
-      final: new Set([scope])
+      final: new Set([scope]),
     })
   }
   memory = assignElementsToGroups(memory)
@@ -202,15 +201,15 @@ export function computeElementView<M extends AnyAux>(
 
   const sorted = topologicalSort({
     nodes: [...nodesMap.values()],
-    edges: computedEdges
+    edges: computedEdges,
   })
 
   const nodes = applyCustomElementProperties(
     rules,
     applyViewRuleStyles(
       rules,
-      sorted.nodes
-    )
+      sorted.nodes,
+    ),
   )
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
@@ -222,7 +221,7 @@ export function computeElementView<M extends AnyAux>(
     autoLayout: {
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
-      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
+      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
     },
     edges: applyCustomRelationProperties(rules, nodes, sorted.edges),
     nodes: map(nodes, n => {
@@ -235,9 +234,9 @@ export function computeElementView<M extends AnyAux>(
     }),
     ...(elementNotations.length > 0 && {
       notation: {
-        elements: elementNotations
-      }
-    })
+        elements: elementNotations,
+      },
+    }),
   })
 }
 
@@ -250,12 +249,58 @@ function assignElementsToGroups(memory: Memory) {
   }
   const groupAssignments = new DefaultMap<NodeId, Set<Elem>>(() => new Set())
 
-  for (const el of memory.final) {
-    const groupId = memory.explicitFirstSeenIn.get(el.id) ?? memory.lastSeenIn.get(el.id)
-    if (groupId) {
-      groupAssignments.get(groupId).add(el)
+  const assignedTo = new Map<ElementModel, NodesGroup['id']>()
+
+  const isAncestorAssigned = (el: Elem) => {
+    for (const parent of el.ancestors()) {
+      const groupId = assignedTo.get(parent)
+      if (groupId) {
+        assignedTo.set(el, groupId)
+        groupAssignments.get(groupId).add(el)
+        return true
+      }
     }
+    return false
   }
+
+  const isDescendantAssigned = (el: Elem) => {
+    for (const descendant of el.descendants('asc')) {
+      const groupId = assignedTo.get(descendant)
+      if (groupId) {
+        assignedTo.set(el, groupId)
+        groupAssignments.get(groupId).add(el)
+        return true
+      }
+    }
+    return false
+  }
+
+  pipe(
+    sortParentsFirst([...memory.explicitFirstSeenIn.keys()]),
+    forEach((el) => {
+      if (!isAncestorAssigned(el)) {
+        const groupId = nonNullable(memory.explicitFirstSeenIn.get(el))
+        assignedTo.set(el, groupId)
+        groupAssignments.get(groupId).add(el)
+      }
+    }),
+  )
+
+  pipe(
+    sortParentsFirst([...memory.lastSeenIn.keys()]),
+    filter(el => !assignedTo.has(el)),
+    forEach((el) => {
+      if (isAncestorAssigned(el)) {
+        return
+      }
+      if (isDescendantAssigned(el)) {
+        return
+      }
+      const groupId = nonNullable(memory.lastSeenIn.get(el))
+      assignedTo.set(el, groupId)
+      groupAssignments.get(groupId).add(el)
+    }),
+  )
 
   if (groupAssignments.size === 0) {
     return memory

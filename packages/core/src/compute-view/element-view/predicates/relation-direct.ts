@@ -12,7 +12,7 @@ import {
   piped,
   prop,
   values,
-  when
+  when,
 } from 'remeda'
 import { invariant } from '../../../errors'
 import { ConnectionModel, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
@@ -20,7 +20,7 @@ import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import * as Expr from '../../../types/expression'
 import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
-import { intersection, union } from '../../../utils/set'
+import { difference, intersection, symmetricDifference, union } from '../../../utils/set'
 import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
 import { includeDescendantsFromMemory, resolveAndIncludeFromMemory, resolveElements } from './_utils'
@@ -39,16 +39,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
           model.relationships(),
           ifilter(where),
           toArray(),
-          groupBy(r => r.expression),
-          mapValues((sameSourceTarget) => {
-            const head = first(sameSourceTarget)
-            return new ConnectionModel(
-              head.source,
-              head.target,
-              new Set(sameSourceTarget)
-            )
-          }),
-          values()
+          map(r => new ConnectionModel(r.source, r.target, new Set([r]))),
         )
         stage.addConnections(connections)
         return stage
@@ -58,7 +49,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
       // * -> *; Not empty memory; Where clause
       case sourceIsWildcard && targetIsWildcard && !memory.isEmpty() && where !== NoWhere: {
         connections.push(
-          ...findConnectionsWithin(memory.elements)
+          ...findConnectionsWithin(memory.elements),
         )
         break
       }
@@ -66,7 +57,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
       // * -> *
       case sourceIsWildcard && targetIsWildcard: {
         connections.push(
-          ...findConnectionsWithin(model.roots())
+          ...findConnectionsWithin(model.roots()),
         )
         break
       }
@@ -82,7 +73,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
               source,
               when(constant(isBidirectional === true), {
                 onTrue: s => union(s.allIncoming, s.allOutgoing),
-                onFalse: s => s.allOutgoing
+                onFalse: s => s.allOutgoing,
               }),
               ifilter(where),
               iunique(),
@@ -96,9 +87,9 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
                       new ConnectionModel(
                         source,
                         outgoing.target,
-                        new Set([outgoing])
+                        new Set([outgoing]),
                       )
-                    )
+                    ),
                   ),
                   pipe(
                     incoming,
@@ -106,13 +97,13 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
                       new ConnectionModel(
                         incoming.source,
                         source,
-                        new Set([incoming])
+                        new Set([incoming]),
                       )
-                    )
-                  )
-                )
+                    ),
+                  ),
+                ),
             )
-          )
+          ),
         )
         stage.addConnections(connections)
         return stage
@@ -124,7 +115,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
         const dir = isBidirectional ? 'both' : 'directed'
         for (const source of sources) {
           connections.push(
-            ...findConnectionsBetween(source, targets, dir)
+            ...findConnectionsBetween(source, targets, dir),
           )
         }
         break
@@ -141,7 +132,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
               target,
               when(constant(isBidirectional === true), {
                 onTrue: s => union(s.allIncoming, s.allOutgoing),
-                onFalse: s => s.allIncoming
+                onFalse: s => s.allIncoming,
               }),
               ifilter(where),
               toArray(),
@@ -154,9 +145,9 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
                       new ConnectionModel(
                         target,
                         outgoing.target,
-                        new Set([outgoing])
+                        new Set([outgoing]),
                       )
-                    )
+                    ),
                   ),
                   pipe(
                     incoming,
@@ -164,13 +155,13 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
                       new ConnectionModel(
                         incoming.source,
                         target,
-                        new Set([incoming])
+                        new Set([incoming]),
                       )
-                    )
-                  )
-                )
+                    ),
+                  ),
+                ),
             )
-          )
+          ),
         )
         stage.addConnections(connections)
         return stage
@@ -182,7 +173,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
         const dir = isBidirectional ? 'both' : 'directed'
         for (const source of sources) {
           connections.push(
-            ...findConnectionsBetween(source, targets, dir)
+            ...findConnectionsBetween(source, targets, dir),
           )
         }
         break
@@ -196,14 +187,14 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
         const dir = isBidirectional ? 'both' : 'directed'
         for (const source of sources) {
           connections.push(
-            ...findConnectionsBetween(source, targets, dir)
+            ...findConnectionsBetween(source, targets, dir),
           )
         }
       }
     }
 
     stage.addConnections(
-      filterWhere(connections)
+      filterWhere(connections),
     )
 
     return stage
@@ -222,9 +213,9 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
           flatMap(piped(
             prop('relations'),
             ifilter(where),
-            toArray()
+            toArray(),
           )),
-          toSet()
+          toSet(),
         )
         break
       }
@@ -239,13 +230,13 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
               source,
               when(constant(isBidirectional === true), {
                 onTrue: s => union(s.allIncoming, s.allOutgoing),
-                onFalse: s => s.allOutgoing
+                onFalse: s => s.allOutgoing,
               }),
               ifilter(where),
-              toArray()
+              toArray(),
             )
           ),
-          toSet()
+          toSet(),
         )
         break
       }
@@ -260,13 +251,13 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
               target,
               when(constant(isBidirectional === true), {
                 onTrue: s => union(s.allIncoming, s.allOutgoing),
-                onFalse: s => s.allIncoming
+                onFalse: s => s.allIncoming,
               }),
               ifilter(where),
-              toArray()
+              toArray(),
             )
           ),
-          toSet()
+          toSet(),
         )
         break
       }
@@ -279,22 +270,22 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
 
         const left = toSet(
           sources
-            .flatMap(s => [...(isBidirectional ? union(s.allIncoming, s.allOutgoing) : s.allOutgoing)])
+            .flatMap(s => [...(isBidirectional ? union(s.allIncoming, s.allOutgoing) : s.allOutgoing)]),
         )
         const right = toSet(
           targets
-            .flatMap(t => [...(isBidirectional ? union(t.allIncoming, t.allOutgoing) : t.allIncoming)])
+            .flatMap(t => [...(isBidirectional ? union(t.allIncoming, t.allOutgoing) : t.allIncoming)]),
         )
 
         relations = toSet(
-          ifilter(intersection(left, right), where)
+          ifilter(intersection(left, right), where),
         )
       }
     }
 
     stage.excludeRelations(relations)
     return stage
-  }
+  },
 }
 
 /**
@@ -302,7 +293,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
  */
 function resolveWildcard(
   nonWildcard: Expr.NonWilcard,
-  { memory, model }: Pick<PredicateCtx, 'model' | 'memory'>
+  { memory, model }: Pick<PredicateCtx, 'model' | 'memory'>,
 ): [elements: Elem[], wildcard: Elem[]] {
   let sources = resolveElements(model, nonWildcard)
   if (!hasAtLeast(sources, 1)) {
@@ -314,7 +305,7 @@ function resolveWildcard(
     const targets = toArray(parent.ascendingSiblings())
     return [
       includeDescendantsFromMemory(sources, memory),
-      includeDescendantsFromMemory(targets, memory)
+      includeDescendantsFromMemory(targets, memory),
     ]
   }
   const targets = pipe(
@@ -323,7 +314,7 @@ function resolveWildcard(
     iflat(),
     iunique(),
     toArray(),
-    all => includeDescendantsFromMemory(all, memory)
+    all => includeDescendantsFromMemory(all, memory),
   )
   return [sources, targets]
 }

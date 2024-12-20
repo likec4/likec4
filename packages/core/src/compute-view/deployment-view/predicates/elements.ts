@@ -74,11 +74,8 @@ function includeDeployedNodeWithExpanded(
   { memory, stage }: IncludePredicateCtx,
 ) {
   const children = [...node.children()]
-  if (stage.connectWithExisting(node)) {
-    stage.addExplicit(node)
-  } else {
-    stage.addImplicit(node)
-  }
+  stage.addImplicit(node)
+  stage.connectWithExisting(node)
 
   const connections = [] as DeploymentConnectionModel[]
 
@@ -95,6 +92,10 @@ function includeDeployedNodeWithExpanded(
       ...findConnectionsWithin(children),
       ...connections,
     ])
+  }
+
+  if (stage.connections.length > 0) {
+    stage.addExplicit(node)
   }
 }
 

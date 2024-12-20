@@ -9,21 +9,25 @@ describe('custom-relation-expr', () => {
       $include('* -> cloud.backend', {
         with: {
           color: 'red',
-          head: 'diamond'
-        }
-      })
+          head: 'diamond',
+        },
+      }),
     ])
     expect(nodeIds).toEqual([
       'customer',
+      'cloud',
       'cloud.frontend',
-      'cloud.backend'
+      'cloud.backend',
     ])
-    expect(edgeIds).toEqual(['customer:cloud.frontend', 'cloud.frontend:cloud.backend'])
-    const edge = edges[1]!
+    expect(edgeIds).toEqual([
+      'cloud.frontend:cloud.backend',
+      'customer:cloud.frontend',
+    ])
+    const edge = edges[0]!
     // Should merge tags
     expect(edge).toHaveProperty('tags', [
       'next',
-      'old'
+      'old',
     ])
     expect(edge).toMatchInlineSnapshot(`
       {
@@ -33,7 +37,7 @@ describe('custom-relation-expr', () => {
         "isCustomized": true,
         "kind": "graphlql",
         "label": "requests",
-        "parent": null,
+        "parent": "cloud",
         "relations": [
           "cloud.frontend:cloud.backend",
           "cloud.frontend.dashboard:cloud.backend.graphql",
@@ -56,13 +60,13 @@ describe('custom-relation-expr', () => {
         with: {
           color: 'red',
           title: 'custom label',
-          head: 'crow'
-        }
-      })
+          head: 'crow',
+        },
+      }),
     ])
     expect(edgeIds).toEqual([
       'cloud.frontend.adminPanel:cloud.backend.graphql',
-      'cloud.frontend.dashboard:cloud.backend.graphql'
+      'cloud.frontend.dashboard:cloud.backend.graphql',
     ])
     const [edge1, edge2] = edges
     expect(edge1).toMatchInlineSnapshot(`
@@ -112,12 +116,12 @@ describe('custom-relation-expr', () => {
     const { edges, edgeIds } = computeView([
       $include('cloud.frontend.adminPanel -> cloud.backend', {
         with: {
-          title: ''
-        }
-      })
+          title: '',
+        },
+      }),
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend.adminPanel:cloud.backend'
+      'cloud.frontend.adminPanel:cloud.backend',
     ])
     const [edge1] = edges
     expect(edge1).toHaveProperty('label', '')
@@ -129,12 +133,12 @@ describe('custom-relation-expr', () => {
       $include('amazon.* <-> cloud.*', {
         with: {
           color: 'red',
-          title: 'custom label'
-        }
-      })
+          title: 'custom label',
+        },
+      }),
     ])
     expect(edgeIds).toEqual([
-      'cloud.backend:amazon.s3'
+      'cloud.backend:amazon.s3',
     ])
     const [edge1] = edges
     expect(edge1).toMatchInlineSnapshot(`

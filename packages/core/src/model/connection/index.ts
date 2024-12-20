@@ -1,12 +1,16 @@
+export { Connection } from './Connection'
+export { DeploymentConnectionModel } from './deployment/DeploymentConnectionModel'
+export { ConnectionModel } from './model/ConnectionModel'
 export {
-  Connection,
   differenceConnections,
   findAscendingConnections,
   findDeepestNestedConnection,
+  findDescendantConnections,
+  hasSameSource,
+  hasSameSourceTarget,
+  hasSameTarget,
   isNestedConnection,
   mergeConnections,
   sortConnectionsByBoundaryHierarchy,
   sortDeepestFirst,
-} from './Connection'
-export { DeploymentConnectionModel } from './deployment/DeploymentConnectionModel'
-export { ConnectionModel } from './model/ConnectionModel'
+} from './ops'

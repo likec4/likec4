@@ -1,10 +1,14 @@
 import { invariant } from '../../../errors'
+import { customInspectSymbol } from '../../../utils/const'
+import { ifilter, isome } from '../../../utils/iterable'
 import { difference, equals, intersection, union } from '../../../utils/set'
 import { stringHash } from '../../../utils/string-hash'
 import type { ElementModel } from '../../ElementModel'
 import type { RelationshipModel } from '../../RelationModel'
 import type { AnyAux } from '../../types'
 import type { Connection } from '../Connection'
+import { hasSameSourceTarget } from '../ops'
+import { findConnection } from './find'
 
 /**
  * Connection refers to any relationships between two elements,
@@ -21,13 +25,16 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
    */
   public readonly boundary: ElementModel<M> | null
 
+  public readonly directRelations: ReadonlySet<RelationshipModel<M>>
+
   constructor(
     public readonly source: ElementModel<M>,
     public readonly target: ElementModel<M>,
-    public readonly relations: ReadonlySet<RelationshipModel<M>>
+    public readonly relations: ReadonlySet<RelationshipModel<M>> = new Set(),
   ) {
     this.id = stringHash(`model:${source.id}:${target.id}`) as M['EdgeId']
     this.boundary = source.commonAncestor(target)
+    this.directRelations = new Set(ifilter(relations, hasSameSourceTarget(this)))
   }
 
   /**
@@ -48,7 +55,7 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return new ConnectionModel(
       this.source,
       this.target,
-      union(this.relations, other.relations)
+      union(this.relations, other.relations),
     )
   }
 
@@ -56,7 +63,7 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return new ConnectionModel(
       this.source,
       this.target,
-      difference(this.relations, other.relations)
+      difference(this.relations, other.relations),
     )
   }
 
@@ -65,7 +72,7 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return new ConnectionModel(
       this.source,
       this.target,
-      intersection(this.relations, other.relations)
+      intersection(this.relations, other.relations),
     )
   }
 
@@ -83,11 +90,50 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
    * @param relations - A readonly set of `RelationshipModel` instances representing the new relations.
    * @returns A new `ConnectionModel` instance with the updated relations.
    */
-  updateRelations(relations: ReadonlySet<RelationshipModel<M>>): ConnectionModel<M> {
+  update(relations: ReadonlySet<RelationshipModel<M>>): ConnectionModel<M> {
     return new ConnectionModel(
       this.source,
       this.target,
-      relations
+      relations,
     )
+  }
+
+  [customInspectSymbol](
+    // @ts-ignore
+    depth,
+    // @ts-ignore
+    inspectOptions,
+    // @ts-ignore
+    inspect,
+  ) {
+    const asString = this.toString()
+
+    // Trick so that node displays the name of the constructor
+    Object.defineProperty(asString, 'constructor', {
+      value: ConnectionModel,
+      enumerable: false,
+    })
+
+    return asString
+  }
+
+  toString() {
+    return [
+      this.expression,
+      this.relations.size ? '  relations:' : '  relations: [ ]',
+      ...[...this.relations].map(c => '    ' + c.expression),
+    ].join('\n')
+  }
+
+  /**
+   * Creates a new connection with reversed direction (target becomes source and vice versa)
+   * @param search - When true, attempts to find an existing connection between the reversed nodes
+   */
+  reversed(search = false): ConnectionModel<M> {
+    if (!search) {
+      return new ConnectionModel(this.target, this.source)
+    }
+    const [found] = findConnection(this.target, this.source, 'directed')
+    return found ?? new ConnectionModel(this.target, this.source, new Set())
   }
 }

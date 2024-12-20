@@ -257,28 +257,6 @@ export function sortParentsFirst<T extends { id: string }, A extends IterableCon
   return result as ReorderedArray<A>
 }
 
-function _sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
-  array: A,
-  sort: 'asc' | 'desc' = 'asc',
-): ReorderedArray<A> {
-  const dir = sort === 'asc' ? 1 : -1
-  return array
-    .map(item => ({ item, fqn: item.id.split('.') }))
-    .sort((a, b) => {
-      if (a.fqn.length !== b.fqn.length) {
-        return (a.fqn.length - b.fqn.length) * dir
-      }
-      for (let i = 0; i < a.fqn.length; i++) {
-        const compare = compareNatural(a.fqn[i], b.fqn[i])
-        if (compare !== 0) {
-          return compare
-        }
-      }
-      return 0
-    })
-    .map(({ item }) => item) as ReorderedArray<A>
-}
-
 /**
  * Sorts an array of objects naturally by their fully qualified name (FQN) identifier.
  *
@@ -303,12 +281,27 @@ export function sortNaturalByFqn<T extends { id: string }, A extends IterableCon
   sort?: 'asc' | 'desc',
 ): ReorderedArray<A>
 export function sortNaturalByFqn<T extends { id: string }, A extends IterableContainer<T>>(
-  first?: A | 'asc' | 'desc',
+  array?: A | 'asc' | 'desc',
   sort?: 'asc' | 'desc',
 ) {
-  if (!first || isString(first)) {
-    sort = first ?? 'asc'
-    return (arr: A) => _sortNaturalByFqn(arr, sort)
+  if (!array || isString(array)) {
+    const dir = array ?? 'asc'
+    return (arr: A) => sortNaturalByFqn(arr, dir)
   }
-  return _sortNaturalByFqn(first, sort)
+  const dir = sort === 'desc' ? -1 : 1
+  return array
+    .map(item => ({ item, fqn: item.id.split('.') }))
+    .sort((a, b) => {
+      if (a.fqn.length !== b.fqn.length) {
+        return (a.fqn.length - b.fqn.length) * dir
+      }
+      for (let i = 0; i < a.fqn.length; i++) {
+        const compare = compareNatural(a.fqn[i], b.fqn[i])
+        if (compare !== 0) {
+          return compare
+        }
+      }
+      return 0
+    })
+    .map(({ item }) => item) as ReorderedArray<A>
 }

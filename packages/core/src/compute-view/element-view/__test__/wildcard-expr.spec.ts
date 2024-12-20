@@ -11,21 +11,21 @@ describe('wildcard-expr', () => {
       'cloud.frontend',
       'cloud.backend',
       'email',
-      'amazon'
+      'amazon',
     ])
     expect(edgeIds).to.have.same.members([
       'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'support:cloud.frontend',
       'cloud.backend:email',
-      'cloud.backend:amazon'
+      'cloud.backend:amazon',
     ])
   })
 
   it('include and exclude * where kind', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('*'),
-      $exclude('*')
+      $exclude('*'),
     ])
     expect(nodeIds).toEqual([])
     expect(edgeIds).toEqual([])
@@ -37,16 +37,16 @@ describe('wildcard-expr', () => {
         $where('*', {
           or: [
             { tag: { eq: 'aws' } },
-            { tag: { neq: 'next' } }
-          ]
-        })
-      )
+            { tag: { neq: 'next' } },
+          ],
+        }),
+      ),
     ])
     expect(nodeIds).toEqual([
       'customer',
       'support',
       'email',
-      'amazon'
+      'amazon',
     ])
     expect(edgeIds).toEqual([])
   })
@@ -54,32 +54,31 @@ describe('wildcard-expr', () => {
   it('exclude * where kind', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('*'),
-      $exclude($where('*', { kind: { eq: 'actor' } }))
+      $exclude($where('*', { kind: { eq: 'actor' } })),
     ])
     expect(nodeIds).toEqual([
       'cloud',
       'email',
-      'amazon'
+      'amazon',
     ])
     expect(edgeIds).toEqual([
       'cloud:email',
       'cloud:amazon',
-      'email:cloud'
+      'email:cloud',
     ])
   })
 
   // See compute-view/compute-predicates.ts#L67
   describe('include parent if view root is a leaf and have no siblings', () => {
     // has no siblings
-    it('should add amazon for s3', () => {
+    it('should not add amazon for s3', () => {
       const { nodeIds, edgeIds } = computeView('amazon.s3', [$include('*')])
       expect(nodeIds).toEqual([
         'cloud',
-        'amazon',
-        'amazon.s3'
+        'amazon.s3',
       ])
       expect(edgeIds).toEqual([
-        'cloud:amazon.s3'
+        'cloud:amazon.s3',
       ])
     })
 
@@ -89,11 +88,11 @@ describe('wildcard-expr', () => {
       expect(nodeIds).toEqual([
         'cloud.backend.graphql',
         'cloud.backend.storage',
-        'amazon'
+        'amazon',
       ])
       expect(edgeIds).toEqual([
         'cloud.backend.storage:amazon',
-        'cloud.backend.graphql:cloud.backend.storage'
+        'cloud.backend.graphql:cloud.backend.storage',
       ])
     })
   })

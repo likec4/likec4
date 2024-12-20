@@ -362,8 +362,8 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "description": null,
       "id": "cloud.frontend",
       "inEdges": [
-        "customer:cloud.frontend.dashboard",
         "support:cloud.frontend.adminPanel",
+        "customer:cloud.frontend.dashboard",
       ],
       "kind": "container",
       "level": 0,

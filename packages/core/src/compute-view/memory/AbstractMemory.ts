@@ -1,4 +1,3 @@
-import { customInspectSymbol } from '../../model/connection/deployment/DeploymentConnectionModel'
 import type { AnyCtx, ComputeMemory, GenericCtx, MutableState, StageExpression } from './_types'
 
 export abstract class AbstractMemory<T extends AnyCtx = GenericCtx> implements ComputeMemory<T> {
@@ -43,26 +42,4 @@ export abstract class AbstractMemory<T extends AnyCtx = GenericCtx> implements C
   abstract stageExclude(expr: StageExpression<T>): T['StageExclude']
 
   abstract update(newstate: Partial<MutableState<T>>): T['Memory']
-
-  // toString(): string {
-  //   return [
-  //     'final:',
-  //     ...[...this.final].map(e => '  ' + e.id),
-  //     'connections:',
-  //     ...this.connections.map(c => '  ' + c.expression),
-  //   ].join('\n')
-  // }
-
-  // // @ts-ignore
-  // [customInspectSymbol](depth, inspectOptions, inspect) {
-  //   const asString = this.toString()
-
-  //   // // Trick so that node displays the name of the constructor
-  //   // Object.defineProperty(asString, 'constructor', {
-  //   //   value: this.constructor,
-  //   //   enumerable: false,
-  //   // })
-
-  //   return asString
-  // }
 }

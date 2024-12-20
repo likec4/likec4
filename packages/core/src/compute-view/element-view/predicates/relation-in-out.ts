@@ -18,29 +18,29 @@ export const InOutRelationPredicate: PredicateExecutor<Expr.InOutExpr> = {
       connections.push(
         ...findConnectionsBetween(
           scope,
-          scope.ascendingSiblings()
-        )
+          scope.ascendingSiblings(),
+        ),
       )
     } else {
       const elements = resolveAndIncludeFromMemory(inout, { memory, model })
       let visibleElements = [...memory.elements]
       if (visibleElements.length === 0) {
         visibleElements = unique(
-          elements.flatMap(el => toArray(el.ascendingSiblings()))
+          elements.flatMap(el => toArray(el.ascendingSiblings())),
         )
       }
       for (const el of elements) {
         connections.push(
           ...findConnectionsBetween(
             el,
-            visibleElements
-          )
+            visibleElements,
+          ),
         )
       }
     }
 
     stage.addConnections(
-      filterWhere(connections)
+      filterWhere(connections),
     )
 
     return stage
@@ -56,11 +56,11 @@ export const InOutRelationPredicate: PredicateExecutor<Expr.InOutExpr> = {
     } else {
       const elements = resolveElements(model, inout)
       excluded.push(
-        ...elements.flatMap(e => [...e.allOutgoing, ...e.allIncoming])
+        ...elements.flatMap(e => [...e.allOutgoing, ...e.allIncoming]),
       )
     }
     stage.excludeRelations(toSet(excluded.filter(where)))
 
     return stage
-  }
+  },
 }

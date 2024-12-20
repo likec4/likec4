@@ -4,6 +4,7 @@ import type { DeploymentElementModel } from '../../../model/DeploymentElementMod
 import type { AnyAux } from '../../../model/types'
 import type { ExpressionV2 } from '../../../types'
 import { difference as differenceSet } from '../../../utils'
+import { customInspectSymbol } from '../../../utils/const'
 import { toArray } from '../../../utils/iterable'
 import { AbstractMemory, type ComputeCtx, type StageExpression } from '../../memory'
 import { StageExclude } from '../stages/stage-exclude'
@@ -71,5 +72,26 @@ export class Memory extends AbstractMemory<Ctx> {
         connections: differenceConnections(current.connections, state.connections),
       },
     }
+  }
+
+  public override toString(): string {
+    return [
+      'final:',
+      ...[...this.final].map(e => '  ' + e.id),
+      'connections:',
+      ...this.connections.map(c => '  ' + c.expression),
+    ].join('\n')
+  }
+
+  [customInspectSymbol](_depth: unknown, _inspectOptions: unknown, _inspect: unknown) {
+    const asString = this.toString()
+
+    // // Trick so that node displays the name of the constructor
+    // Object.defineProperty(asString, 'constructor', {
+    //   value: this.constructor,
+    //   enumerable: false,
+    // })
+
+    return asString
   }
 }

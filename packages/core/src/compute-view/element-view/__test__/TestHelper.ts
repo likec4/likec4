@@ -5,35 +5,41 @@ import { expect as vitestExpect } from 'vitest'
 import {
   type AnyTypes,
   type Builder,
-  type DeploymentRulesBuilderOp,
+  type ElementViewRulesBuilder,
   type Types,
   type ViewPredicate,
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
 import { differenceConnections } from '../../../model'
-import type { ComputedDeploymentView, DeploymentView, DeploymentViewRule, ViewId } from '../../../types'
+import type { ComputedElementView, ElementView, ViewId, ViewRule } from '../../../types'
+import { compareNatural } from '../../../utils'
 import { imap, toArray } from '../../../utils/iterable'
 import { difference as differenceSet } from '../../../utils/set'
+import type { CtxConnection, CtxElement } from '../../memory'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { processPredicates as processPredicatesImpl } from '../compute'
-import { Memory } from '../memory'
+import { type Ctx, Memory } from '../memory'
 
-type ConnectionExpression<T extends AnyTypes> = `${T['DeploymentFqn']} -> ${T['DeploymentFqn']}`
+type ConnectionExpression<T extends AnyTypes> = `${T['Fqn']} -> ${T['Fqn']}`
 
-type ConnectionsDeepMatcher<M extends string, D extends string> = {
-  [K in `${D} -> ${D}`]?: {
-    model?: Array<`${M} -> ${M}`>
-    deployment?: Array<`${D} -> ${D}`>
-  }
+// type ConnectionsDeepMatcher<T extends AnyTypes> = {
+//   [K in `${T['Fqn']} -> ${T['Fqn']}`]?: {
+//     relations?: Array<`${T['Fqn']} -> ${T['Fqn']}`>
+//   }
+// }
+
+type ConnectionsDeepMatcher<Expr extends string> = {
+  [K in Expr]?: Array<Expr>
 }
 
-type ToDeepMatcher<T extends AnyTypes> = ConnectionsDeepMatcher<T['Fqn'], T['DeploymentFqn']>
+type ConnectionEqual<T extends AnyTypes> = [ConnectionsDeepMatcher<ConnectionExpression<T>>] | [
+  ConnectionExpression<T>,
+  ...ConnectionExpression<T>[],
+]
 
-type ConnectionEqual<T extends AnyTypes> = [ToDeepMatcher<T>] | [ConnectionExpression<T>, ...ConnectionExpression<T>[]]
-
-type Elem = Memory['Ctx']['Element']
-type Connection = Memory['Ctx']['Connection']
+type Elem = CtxElement<Ctx>
+type Connection = CtxConnection<Ctx>
 
 export class TestHelper<T extends AnyTypes> {
   model: Types.ToLikeC4Model<T>
@@ -57,32 +63,32 @@ export class TestHelper<T extends AnyTypes> {
     this.model = builder.toLikeC4Model() as Types.ToLikeC4Model<T>
   }
 
-  computeView = (...rules: DeploymentRulesBuilderOp<T>[]) => {
+  computeView = (...rules: ElementViewRulesBuilder<T>[]) => {
     return withReadableEdges(
       this.builder
         .clone()
-        .views(_ => _.deploymentView('dev').with(...rules))
+        .views(_ => _.view('dev').with(...rules))
         .toLikeC4Model()
         .view('dev')
-        .$view as ComputedDeploymentView<'dev'>,
+        .$view as ComputedElementView<'dev'>,
       ' -> ',
     )
   }
 
-  processPredicates(...rules: DeploymentRulesBuilderOp<T>[]) {
+  processPredicates(...rules: ElementViewRulesBuilder<T>[]) {
     return ProcessPredicates.execute(this, ...rules)
   }
 
-  expectView(view: ComputedDeploymentView) {
+  expectView(view: ComputedElementView) {
     return {
-      toHave: (nodesAndEdges: { nodes: Array<T['DeploymentFqn']>; edges: Array<ConnectionExpression<T>> }) => {
+      toHave: (nodesAndEdges: { nodes: Array<T['Fqn']>; edges: Array<ConnectionExpression<T>> }) => {
         const actual = {
           nodes: view.nodes.map(prop('id')),
           edges: view.edges.map(prop('id')),
         }
         this._expect(actual).toEqual(nodesAndEdges)
       },
-      toHaveNodes: <Id extends T['DeploymentFqn']>(...nodes: Id[]) => {
+      toHaveNodes: <Id extends T['Fqn']>(...nodes: Id[]) => {
         this._expect(view.nodes.map(prop('id'))).toEqual(nodes)
       },
       toHaveEdges: <Id extends ConnectionExpression<T>>(...edges: Id[]) => {
@@ -91,7 +97,7 @@ export class TestHelper<T extends AnyTypes> {
     }
   }
 
-  expectComputedView(...rules: DeploymentRulesBuilderOp<T>[]) {
+  expectComputedView(...rules: ElementViewRulesBuilder<T>[]) {
     return this.expectView(this.computeView(...rules))
   }
 
@@ -102,9 +108,9 @@ export class TestHelper<T extends AnyTypes> {
     toHaveFinalElements: <Id extends T['DeploymentFqn']>(...ids: Id[]) => {
       this._expect(map([...memory.final], prop('id'))).toEqual(ids)
     },
-    toHaveConnections: (...matchers: ConnectionEqual<T>) => {
-      this.expectConnections(memory.connections).toEqual(...matchers)
-    },
+    // toHaveConnections: (...matchers: ConnectionEqual<T>) => {
+    //   this.expectConnections(memory.connections).toEqual(...matchers)
+    // },
   })
 
   expectElements = (elements: ReadonlySet<Elem>) => ({
@@ -126,16 +132,9 @@ export class TestHelper<T extends AnyTypes> {
       const obj = pipe(
         connections,
         indexBy(prop('expression')),
-        mapValues(c => ({
-          model: toArray(imap(c.relations.model, prop('expression'))).sort(),
-          deployment: toArray(imap(c.relations.deployment, prop('expression'))).sort(),
-        })),
+        mapValues(c => [...c.relations].map(prop('expression')).sort(compareNatural)),
       )
-      const expected = mapValues(matcher, (v: any) => ({
-        ...v,
-        model: v.model ? [...v.model].sort() : [],
-        deployment: v.deployment ? [...v.deployment].sort() : [],
-      }))
+      const expected = mapValues(matcher, (v: any) => [...v].sort(compareNatural))
       this._expect(obj).toEqual(expected)
     },
   })
@@ -144,11 +143,11 @@ export class TestHelper<T extends AnyTypes> {
     ...this.expectMemory(step.memory),
   })
 
-  expect(value: ComputedDeploymentView): ReturnType<typeof this['expectView']>
+  expect(value: ComputedElementView): ReturnType<typeof this['expectView']>
   expect(value: Set<Elem>): ReturnType<typeof this['expectElements']>
   expect(value: ReadonlyArray<Connection>): ReturnType<typeof this['expectConnections']>
   expect(value: Memory | ProcessPredicates<T>): ReturnType<typeof this['expectMemory']>
-  expect(value: Memory | ProcessPredicates<T> | Set<Elem> | ComputedDeploymentView | ReadonlyArray<Connection>) {
+  expect(value: Memory | ProcessPredicates<T> | Set<Elem> | ComputedElementView | ReadonlyArray<Connection>) {
     if (value instanceof Memory) {
       return this.expectMemory(value)
     }
@@ -168,21 +167,32 @@ export class TestHelper<T extends AnyTypes> {
 class ProcessPredicates<T extends AnyTypes> {
   static execute<A extends AnyTypes>(
     test: TestHelper<A>,
-    ...rules: DeploymentRulesBuilderOp<A>[]
+    ...rules: ElementViewRulesBuilder<A>[]
   ): ProcessPredicates<A> {
     const processor = new ProcessPredicates(test)
     processor.next(...rules)
     return processor
   }
 
-  public viewrules: ReadonlyArray<DeploymentViewRule> = []
+  static executeWithScope<A extends AnyTypes>(
+    test: TestHelper<A>,
+    scope: A['Fqn'],
+    ...rules: ElementViewRulesBuilder<A>[]
+  ): ProcessPredicates<A> {
+    const processor = new ProcessPredicates(test, scope)
+    processor.next(...rules)
+    return processor
+  }
 
-  public previousMemory: Memory = Memory.empty()
-  public memory: Memory = Memory.empty()
-  public predicates: DeploymentRulesBuilderOp<T>[] = []
+  public viewrules: ReadonlyArray<ViewRule> = []
+
+  public previousMemory: Memory = Memory.empty(null)
+  public memory: Memory = Memory.empty(null)
+  public predicates: ElementViewRulesBuilder<T>[] = []
 
   constructor(
     public readonly t: TestHelper<T>,
+    public scope: T['Fqn'] | null = null,
     protected age = 0,
   ) {}
 
@@ -213,12 +223,12 @@ class ProcessPredicates<T extends AnyTypes> {
     }
   }
 
-  next(...predicates: DeploymentRulesBuilderOp<T>[]): this {
+  next(...predicates: ElementViewRulesBuilder<T>[]): this {
     const view = {
       id: 'test' as ViewId,
-      __: 'deployment',
+      __: 'element',
       rules: [],
-    } as any as Writable<DeploymentView>
+    } as any as Writable<ElementView>
     let vb = mkViewBuilder(view) as any
     this.predicates = [
       ...this.predicates,
@@ -229,7 +239,12 @@ class ProcessPredicates<T extends AnyTypes> {
     }
     this.previousMemory = this.memory
     this.viewrules = view.rules
-    this.memory = processPredicatesImpl(this.t.model.deployment, view.rules)
+    this.memory = processPredicatesImpl(
+      this.t.model,
+      Memory.empty(this.scope),
+      this.scope ? this.t.model.element(this.scope) : null,
+      view.rules,
+    )
     this.age++
     return this
   }

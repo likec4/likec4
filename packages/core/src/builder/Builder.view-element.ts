@@ -19,40 +19,40 @@ export interface AddViewRules<Id extends string> {
 export interface AddViewHelper {
   <
     const Id extends string,
-    T extends AnyTypes
-  >(
-    id: Id
-  ): AddViewRules<Id> & {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
-  }
-
-  <
-    const Id extends string,
-    T extends AnyTypes
+    T extends AnyTypes,
   >(
     id: Id,
-    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
   ): AddViewRules<Id> & {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
 
   <
     const Id extends string,
-    T extends AnyTypes
+    T extends AnyTypes,
   >(
     id: Id,
-    propsOrTitle: NoInfer<T['NewViewProps']> | string
+    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>,
   ): AddViewRules<Id> & {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
 
   <
     const Id extends string,
-    T extends AnyTypes
+    T extends AnyTypes,
+  >(
+    id: Id,
+    propsOrTitle: NoInfer<T['NewViewProps']> | string,
+  ): AddViewRules<Id> & {
+    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
+  }
+
+  <
+    const Id extends string,
+    T extends AnyTypes,
   >(
     id: Id,
     propsOrTitle: NoInfer<T['NewViewProps']> | string | undefined,
-    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
+    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>,
   ): AddViewRules<Id> & {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
@@ -64,68 +64,62 @@ type ValidFqn<T extends AnyTypes> = IsStringLiteral<T['Fqn']> extends true ? T['
 export interface AddViewOfHelper {
   <
     const Id extends string,
-    T extends AnyTypes
-  >(
-    id: Id,
-    of: ValidFqn<T>
-  ): {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
-  }
-
-  <
-    const Id extends string,
-    T extends AnyTypes
+    T extends AnyTypes,
   >(
     id: Id,
     of: ValidFqn<T>,
-    propsOrTitle: T['NewViewProps'] | string | ElementViewRulesBuilder<T>
-  ): {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
-  }
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
     const Id extends string,
-    T extends AnyTypes
+    T extends AnyTypes,
+  >(
+    id: Id,
+    of: ValidFqn<T>,
+    propsOrTitle: T['NewViewProps'] | string | ElementViewRulesBuilder<T>,
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
+
+  <
+    const Id extends string,
+    T extends AnyTypes,
   >(
     id: Id,
     of: ValidFqn<T>,
     propsOrTitle: NoInfer<T>['NewViewProps'] | string,
-    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
-  ): {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
-  }
+    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>,
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 }
 
 export interface TypedAddViewOfHelper<A extends AnyTypes> {
   <
     const Id extends string,
-    T extends AnyTypes
-  >(
-    id: Id,
-    of: ValidFqn<A>
-  ): AddViewRules<Id> & {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
-  }
-
-  <
-    const Id extends string,
-    T extends AnyTypes
+    T extends AnyTypes,
   >(
     id: Id,
     of: ValidFqn<A>,
-    builder: ((b: ElementViewBuilder<A>) => ElementViewBuilder<A>) | A['NewViewProps'] | string
   ): AddViewRules<Id> & {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
 
   <
     const Id extends string,
-    T extends AnyTypes
+    T extends AnyTypes,
+  >(
+    id: Id,
+    of: ValidFqn<A>,
+    builder: ((b: ElementViewBuilder<A>) => ElementViewBuilder<A>) | A['NewViewProps'] | string,
+  ): AddViewRules<Id> & {
+    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
+  }
+
+  <
+    const Id extends string,
+    T extends AnyTypes,
   >(
     id: Id,
     of: ValidFqn<A>,
     propsOrTitle: A['NewViewProps'] | string,
-    builder: (b: ElementViewBuilder<A>) => ElementViewBuilder<A>
+    builder: (b: ElementViewBuilder<A>) => ElementViewBuilder<A>,
   ): AddViewRules<Id> & {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
@@ -145,16 +139,16 @@ export function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Typ
   if (expr.startsWith('->')) {
     if (expr.endsWith('->')) {
       return asTypedExpr({
-        inout: $expr(expr.replace(/->/g, '').trim()) as any
+        inout: $expr(expr.replace(/->/g, '').trim()) as any,
       })
     }
     return asTypedExpr({
-      incoming: $expr(expr.replace('-> ', '')) as any
+      incoming: $expr(expr.replace('-> ', '')) as any,
     })
   }
   if (expr.endsWith(' ->')) {
     return asTypedExpr({
-      outgoing: $expr(expr.replace(' ->', '')) as any
+      outgoing: $expr(expr.replace(' ->', '')) as any,
     })
   }
   if (expr.includes(' <-> ')) {
@@ -162,34 +156,34 @@ export function $expr<Types extends AnyTypes>(expr: ViewPredicate.Expression<Typ
     return asTypedExpr({
       source: $expr(source) as any,
       target: $expr(target) as any,
-      isBidirectional: true
+      isBidirectional: true,
     })
   }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
     return asTypedExpr({
       source: $expr(source) as any,
-      target: $expr(target) as any
+      target: $expr(target) as any,
     })
   }
   if (expr.endsWith('._')) {
     return asTypedExpr({
-      expanded: expr.replace('._', '') as Fqn
+      expanded: expr.replace('._', '') as Fqn,
     })
   }
   if (expr.endsWith('.*')) {
     return asTypedExpr({
       element: expr.replace('.*', '') as Fqn,
-      isChildren: true
+      isChildren: true,
     })
   }
   if (expr.endsWith('.**')) {
     return asTypedExpr({
       element: expr.replace('.**', '') as Fqn,
-      isDescendants: true
+      isDescendants: true,
     })
   }
   return asTypedExpr({
-    element: expr as any as Fqn
+    element: expr as any as Fqn,
   })
 }

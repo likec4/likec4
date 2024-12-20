@@ -1,7 +1,7 @@
 import { isBoolean, pipe } from 'remeda'
 import { invariant } from '../../errors'
 import { findAscendingConnections } from '../../model/connection'
-import { difference, intersection, isAncestor, isIterable } from '../../utils'
+import { difference, intersection, isAncestor, isDescendantOf, isIterable } from '../../utils'
 import { ifilter, isome, toSet } from '../../utils/iterable'
 import type {
   AnyCtx,
@@ -107,7 +107,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
     disconnected = pipe(
       disconnected,
       ifilter(el => {
-        return state.explicits.has(el) && !isome(state.final, f => isAncestor(el, f))
+        return state.explicits.has(el) && !isome(state.final, isDescendantOf([el]))
       }),
       toSet(),
     )
@@ -199,16 +199,13 @@ export abstract class AbstractStageExclude<T extends AnyCtx = GenericCtx> implem
     if (this.excluded.elements.size > 0) {
       const excludedConnections = state.connections
         .filter(c => this.excluded.elements.has(c.source) || this.excluded.elements.has(c.target))
-
-      const ascConnections = excludedConnections.flatMap(c =>
-        findAscendingConnections(state.connections, c).map(asc => asc.intersect(c) as Connection<T>)
-      )
-      if (excludedConnections.length > 0) {
-        this.excludeConnections([
-          ...excludedConnections,
-          ...ascConnections,
+        .flatMap(c => [
+          c,
+          ...findAscendingConnections(state.connections, c)
+            .map(asc => asc.intersect(c) as Connection<T>),
         ])
-      }
+        .filter(asc => asc.nonEmpty())
+      this.excludeConnections(excludedConnections)
     }
     if (this.excluded.connections.length > 0) {
       state = this.removeConnections(state)

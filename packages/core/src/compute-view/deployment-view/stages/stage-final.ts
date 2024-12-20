@@ -1,10 +1,11 @@
 import DefaultMap from 'mnemonist/default-map'
-import { forEach, pipe } from 'remeda'
+import { forEach, only, pipe } from 'remeda'
 import { differenceConnections } from '../../../model'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import { isAncestor, sortByFqnHierarchically } from '../../../utils/fqn'
 import { ifilter, isome, toArray } from '../../../utils/iterable'
 import { difference, union } from '../../../utils/set'
+import { treeFromMemoryState } from '../../memory'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
 import type { Ctx, Memory } from '../memory'
 
@@ -30,7 +31,6 @@ export class StageFinal {
     if (memory.connections.length < 2) {
       return memory
     }
-    const stage = memory.stageExclude({} as any)
 
     // const leafs = new Set<Elem>()
 
@@ -72,9 +72,8 @@ export class StageFinal {
     if (connectionsToExclude.length === 0) {
       return memory
     }
-
+    const stage = memory.stageExclude({} as any)
     stage.excludeConnections(connectionsToExclude, true)
-
     return stage.commit()
   }
 
@@ -135,6 +134,42 @@ export class StageFinal {
     )
 
     return memory.update({ final })
+  }
+
+  public step3ProcessBoundaries(memory: Memory): Memory {
+    const boundaries = new Set<Elem>()
+    for (const conn of memory.connections) {
+      if (conn.boundary) {
+        boundaries.add(conn.boundary)
+      }
+    }
+    const tree = treeFromMemoryState<Ctx>(memory, 'final')
+    const stage = memory.stageExclude({} as any)
+
+    const isRemovable = (el: Elem) =>
+      !(
+        boundaries.has(el)
+        || memory.explicits.has(el)
+        || tree.hasInOut(el)
+        || tree.root.has(el)
+      )
+
+    const singleRoot = only([...tree.root])
+    if (singleRoot && !memory.explicits.has(singleRoot)) {
+      stage.exclude(singleRoot)
+    }
+
+    for (const el of memory.final) {
+      const singleChild = only(tree.children(el))
+      if (singleChild && !tree.hasInOut(singleChild) && isRemovable(el)) {
+        stage.exclude(el)
+      }
+    }
+
+    if (stage.isDirty()) {
+      return stage.commit()
+    }
+    return memory
   }
 
   // TODO: Lot of corner cases to cover, skip for now
@@ -201,7 +236,8 @@ export class StageFinal {
   public commit(): Memory {
     // return []
     const step1 = this.step1CleanConnections(this.memory)
-    return this.step2ProcessImplicits(step1)
+    const step2 = this.step2ProcessImplicits(step1)
+    return this.step3ProcessBoundaries(step2)
     // return step2memory
     // const step3m?emory = this.step3FlatNodes(step2memory)
     // return step3memory

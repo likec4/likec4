@@ -9,7 +9,7 @@ import {
   type Tag as C4Tag,
   type ThemeColor,
 } from '../types'
-import { commonAncestor, hierarchyLevel } from '../utils'
+import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
@@ -68,6 +68,14 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     return this.scopedViews().next().value ?? null
   }
 
+  public isAncestorOf(another: ElementModel<M>): boolean {
+    return isAncestor(this, another)
+  }
+
+  public isDescendantOf(another: ElementModel<M>): boolean {
+    return isAncestor(another, this)
+  }
+
   /**
    * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
    * (from closest to root)
@@ -91,7 +99,11 @@ export class ElementModel<M extends AnyAux = AnyAux> {
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public descendants(): ElementsIterator<M> {
+  public descendants(sort?: 'asc' | 'desc'): ElementsIterator<M> {
+    if (sort) {
+      const sorted = sortNaturalByFqn([...this.model.descendants(this)], sort)
+      return sorted[Symbol.iterator]()
+    }
     return this.model.descendants(this)
   }
 

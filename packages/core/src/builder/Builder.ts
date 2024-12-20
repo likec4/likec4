@@ -88,18 +88,21 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Adds deployment model
    *
    * @example
-   *  builder.deployment(({ node }, _) =>
+   *  builder.deployment(({ node, instanceOf }, _) =>
    *    _(
-   *      node('node1')
+   *      node('node1'),
    *      node('node1.child1').with(
-   *        node('grandchild1')
+   *        instanceOf('model.element')
    *      )
    *    )
    *  )
    *
    *  builder.deployment((_,d) =>
    *    d(
-   *      _.node('node1')
+   *      _.node('node1'),
+   *       _.node('node1.child1').with(
+   *        _.instanceOf('model.element')
+   *      )
    *    )
    *  )
    */
@@ -438,13 +441,13 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               add(b)
               const { __fqn, __addSourcelessRelation } = b
               try {
-                b.__fqn = (child) => `${__fqn(id)}.${child}` as Fqn,
-                  b.__addSourcelessRelation = (relation) => {
-                    return b.__addRelation({
-                      ...relation,
-                      source: __fqn(id),
-                    })
-                  }
+                b.__fqn = (child) => `${__fqn(id)}.${child}` as Fqn
+                b.__addSourcelessRelation = (relation) => {
+                  return b.__addRelation({
+                    ...relation,
+                    source: __fqn(id),
+                  })
+                }
                 ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
               } finally {
                 b.__fqn = __fqn
