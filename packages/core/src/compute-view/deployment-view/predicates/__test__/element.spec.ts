@@ -69,7 +69,7 @@ describe('Wildcard', () => {
     const state = t.processPredicates(
       $include('*'),
     )
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'customer',
       'prod',
       'global',
@@ -117,7 +117,7 @@ describe('Wildcard', () => {
     const state = t.processPredicates(
       $include('*'),
     )
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'customer',
       'prod',
       'global',

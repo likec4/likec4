@@ -96,10 +96,10 @@ export class TestHelper<T extends AnyTypes> {
   }
 
   expectMemory = (memory: Memory) => ({
-    toHaveElements: <Id extends T['DeploymentFqn']>(...ids: Id[]) => {
+    toHaveAllElements: <Id extends T['DeploymentFqn']>(...ids: Id[]) => {
       this._expect(map([...memory.elements], prop('id'))).toEqual(ids)
     },
-    toHaveFinalElements: <Id extends T['DeploymentFqn']>(...ids: Id[]) => {
+    toHaveElements: <Id extends T['DeploymentFqn']>(...ids: Id[]) => {
       this._expect(map([...memory.final], prop('id'))).toEqual(ids)
     },
     toHaveConnections: (...matchers: ConnectionEqual<T>) => {

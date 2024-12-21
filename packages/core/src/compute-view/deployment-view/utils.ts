@@ -14,7 +14,7 @@ import {
   FqnExpr,
   isViewRuleStyle,
   type NonEmptyArray,
-  type Tag
+  type Tag,
 } from '../../types'
 import { nameFromFqn, parentFqn } from '../../utils'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
@@ -27,7 +27,7 @@ type Predicate<T> = (x: T) => boolean
 
 export function resolveElements(
   model: LikeC4DeploymentModel,
-  expr: FqnExpr.DeploymentRef
+  expr: FqnExpr.DeploymentRef,
 ): Elem[] {
   const ref = model.element(expr.ref.deployment)
   if (ref.isDeploymentNode()) {
@@ -46,7 +46,7 @@ export function resolveElements(
 
 export function resolveModelElements(
   model: LikeC4DeploymentModel,
-  expr: FqnExpr.ModelRef
+  expr: FqnExpr.ModelRef,
 ): ElementModel[] {
   const ref = model.$model.element(expr.ref.model)
   if (expr.selector === 'children') {
@@ -62,7 +62,7 @@ export function resolveModelElements(
 }
 
 export function deploymentExpressionToPredicate<T extends { id: string; modelRef?: number | string }>(
-  target: FqnExpr
+  target: FqnExpr,
 ): Predicate<T> {
   if (FqnExpr.isWildcard(target)) {
     return () => true
@@ -148,7 +148,7 @@ export function toNodeSource(el: Elem): ComputedNodeSource {
     return {
       ...(onlyOneInstance && {
         ...toNodeSource(onlyOneInstance),
-        modelRef: onlyOneInstance.$element.id
+        modelRef: onlyOneInstance.element.id,
       }),
       title,
       ...$node,
@@ -156,16 +156,16 @@ export function toNodeSource(el: Elem): ComputedNodeSource {
       ...(color && { color }),
       ...(shape && { shape }),
       style: {
-        ...style
+        ...style,
       },
       deploymentRef: 1,
       kind,
-      id
+      id,
     }
   }
   invariant(el.isInstance(), 'Expected Instance')
   const instance = el.$instance
-  const element = el.$element.$element
+  const element = el.element.$element
 
   const icon = instance.style?.icon ?? element.icon
   const color = instance.style?.color ?? element.color
@@ -173,12 +173,12 @@ export function toNodeSource(el: Elem): ComputedNodeSource {
 
   const links = [
     ...(element.links ?? []),
-    ...(instance.links ?? [])
+    ...(instance.links ?? []),
   ]
 
   const metadata = {
     ...element.metadata,
-    ...instance.metadata
+    ...instance.metadata,
   }
 
   const notation = instance.notation ?? element.notation
@@ -196,24 +196,24 @@ export function toNodeSource(el: Elem): ComputedNodeSource {
     ...shape && { shape },
     style: {
       ...element.style,
-      ...instance.style
+      ...instance.style,
     },
     deploymentRef: el.id === instance.id ? 1 : instance.id,
     modelRef: el.id === element.id ? 1 : element.id,
     ...notation && { notation },
-    ...!isEmpty(metadata) && ({ metadata })
+    ...!isEmpty(metadata) && ({ metadata }),
   }
 }
 
 export function toComputedEdges<M extends AnyAux>(
-  connections: ReadonlyArray<DeploymentConnectionModel<M>>
+  connections: ReadonlyArray<DeploymentConnectionModel<M>>,
 ): ComputedEdge[] {
   return connections.reduce((acc, e) => {
     // const modelRelations = []
     // const deploymentRelations = []
     const relations = [
       ...e.relations.model,
-      ...e.relations.deployment
+      ...e.relations.deployment,
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
@@ -232,7 +232,7 @@ export function toComputedEdges<M extends AnyAux>(
       target,
       label: title ?? null,
       relations: relations.map((r) => r.id as M['RelationId']),
-      ...props
+      ...props,
     }
 
     // If exists same edge but in opposite direction
@@ -263,7 +263,7 @@ export function buildNodes(memory: Memory): ReadonlyMap<Fqn, ComputedNode> {
 
 export function applyDeploymentViewRuleStyles(
   rules: DeploymentViewRule[],
-  nodes: ComputedNode[]
+  nodes: ComputedNode[],
 ): ComputedNode[] {
   for (const rule of rules) {
     if (!isViewRuleStyle(rule) || rule.targets.length === 0) {

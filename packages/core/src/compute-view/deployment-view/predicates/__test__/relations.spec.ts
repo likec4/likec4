@@ -48,7 +48,7 @@ describe('RelationPredicate', () => {
       const state = t.processPredicates(
         $include('* -> *'),
       )
-      t.expect(state).toHaveFinalElements(
+      t.expect(state).toHaveElements(
         'a.b.c.ui',
         'a.b.d.api',
         'a.b.d.e.db',

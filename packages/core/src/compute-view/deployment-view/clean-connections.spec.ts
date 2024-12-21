@@ -46,13 +46,13 @@ describe('Clean Connections', () => {
     const state = t.processPredicates(
       $include('z1.s1.*'),
     )
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'z1.s1.ui',
       'z1.s1.api',
     )
 
     state.next($include('z1.s2.*'))
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'z1.s1.ui',
       'z1.s1.api',
       'z1.s2.ui',
@@ -88,7 +88,7 @@ describe('Clean Connections', () => {
     state.next(
       $include('z1.s2.ui'),
     )
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'z1.s1',
       'z1.s1.ui',
       'z1.s2.api',
@@ -105,7 +105,7 @@ describe('Clean Connections', () => {
     const state = t.processPredicates(
       $include('z1.**'),
     )
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'z1.s1.ui',
       'z1.s1.api',
       'z1.s2.ui',
@@ -119,7 +119,7 @@ describe('Clean Connections', () => {
     )
 
     state.next($exclude('-> z1.s2.api'))
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'z1.s1.ui',
       'z1.s1.api',
       'z1.s2.ui',
@@ -132,14 +132,14 @@ describe('Clean Connections', () => {
     )
 
     state.next($exclude('z1.s1.api'))
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'z1.s2.ui',
       'z1.s2.api',
     )
     t.expect(state.memory.connections).toBeEmpty()
 
     state.next($include('z1.s1.api'))
-    t.expect(state).toHaveFinalElements(
+    t.expect(state).toHaveElements(
       'z1.s1.ui',
       'z1.s2.ui',
       'z1.s2.api',
