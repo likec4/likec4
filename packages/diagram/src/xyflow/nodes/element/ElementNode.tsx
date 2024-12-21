@@ -1,5 +1,5 @@
 import { DiagramNode, type ThemeColor } from '@likec4/core'
-import { Box, Text as MantineText } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
@@ -18,10 +18,7 @@ import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 import type { DiagramFlowTypes } from '../../types'
 import { ActionButtonBar } from '../../../controls/action-button-bar/ActionButtonBar'
 import { BrowseRelationshipsButton, NavigateToButton, OpenDetailsButton } from '../../../controls/action-buttons/ActionButtons'
-
-const Text = MantineText.withProps({
-  component: 'div'
-})
+import { Text } from '../../../controls/Text'
 
 type ElementNodeProps = NodeProps<DiagramFlowTypes.ElementNode>
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (

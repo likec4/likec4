@@ -1,4 +1,3 @@
-import { Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position, useStore } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual, shallowEqual } from 'fast-equals'
@@ -6,10 +5,7 @@ import { m } from 'framer-motion'
 import { memo, useCallback } from 'react'
 import type { RelationshipsOfFlowTypes } from '../_types'
 import * as css from './styles.css'
-
-const Text = MantineText.withProps({
-  component: 'div'
-})
+import { Text } from '../../../controls/Text'
 
 type CompoundNodeProps = NodeProps<RelationshipsOfFlowTypes.CompoundNode>
 
