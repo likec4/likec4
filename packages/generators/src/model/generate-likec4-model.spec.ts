@@ -1,7 +1,6 @@
 import { LikeC4Model } from '@likec4/core'
 import { Builder } from '@likec4/core/builder'
-import { computeViews, withReadableEdges } from '@likec4/core/compute-view'
-import { mapValues } from 'remeda'
+import { computeViews, viewsWithReadableEdges } from '@likec4/core/compute-view'
 import { describe, it } from 'vitest'
 import { generateLikeC4Model } from './generate-likec4-model'
 
@@ -149,8 +148,7 @@ const builder = b
       ),
     ),
   )
-const computed = computeViews(builder.build())
-computed.views = mapValues(computed.views, v => withReadableEdges(v))
+const computed = viewsWithReadableEdges(computeViews(builder.build()))
 const m = LikeC4Model.create(computed)
 
 describe('generateLikeC4Model', () => {

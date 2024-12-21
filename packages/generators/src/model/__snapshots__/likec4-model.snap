@@ -716,8 +716,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           ],
           outEdges: [
             'cloud.backend:aws',
-            'cloud.media:aws',
             'cloud.backend:email',
+            'cloud.media:aws',
           ],
           modelRef: 1,
           style: {},
@@ -791,10 +791,10 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.frontend.dashboard:cloud.backend',
           ],
           outEdges: [
-            'cloud.backend:aws',
-            'cloud.backend:email',
             'cloud.backend:cloud.auth',
             'cloud.backend:cloud.media',
+            'cloud.backend:aws',
+            'cloud.backend:email',
           ],
           modelRef: 1,
           style: {},
@@ -813,8 +813,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           links: null,
           children: [],
           inEdges: [
-            'cloud.frontend.dashboard:cloud.auth',
             'cloud.backend:cloud.auth',
+            'cloud.frontend.dashboard:cloud.auth',
           ],
           outEdges: [],
           modelRef: 1,
@@ -834,8 +834,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           links: null,
           children: [],
           inEdges: [
-            'cloud.frontend.dashboard:cloud.media',
             'cloud.backend:cloud.media',
+            'cloud.frontend.dashboard:cloud.media',
           ],
           outEdges: [
             'cloud.media:aws',
@@ -897,7 +897,7 @@ export const likeC4Model = LikeC4Model.fromDump({
       autoLayout: {
         direction: 'TB',
       },
-      hash: 'cbab6fcfc7eac0ad103fe2b8cc09cee9da6b0ed6',
+      hash: '162fafc65660c3ffa0b88d2d4c5996b159aca805',
       edges: [
         {
           id: 'customer.instance:prod.eu.zone1.ui',
@@ -933,11 +933,34 @@ export const likeC4Model = LikeC4Model.fromDump({
           style: {},
         },
         {
-          id: 'prod.eu.zone1.ui',
+          id: 'prod',
           parent: null,
+          kind: 'env',
+          title: 'prod',
+          level: 0,
+          color: 'primary',
+          shape: 'rectangle',
+          description: null,
+          technology: null,
+          tags: null,
+          links: null,
+          children: [
+            'prod.eu.zone1.ui',
+          ],
+          inEdges: [
+            'customer.instance:prod.eu.zone1.ui',
+          ],
+          outEdges: [],
+          deploymentRef: 1,
+          style: {},
+          depth: 1,
+        },
+        {
+          id: 'prod.eu.zone1.ui',
+          parent: 'prod',
           kind: 'instance',
           title: 'dashboard',
-          level: 0,
+          level: 1,
           color: 'primary',
           shape: 'browser',
           description: null,
