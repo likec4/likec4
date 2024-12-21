@@ -4,6 +4,7 @@ import { m } from 'framer-motion'
 import type { SharedFlowTypes } from '../../shared/xyflow/_types'
 import * as css from './styles.css'
 import { Text } from '../../../controls/Text'
+import { NodeVariants, useFramerAnimateVariants } from '../../../xyflow/nodes/AnimateVariants'
 
 type CompoundNodeProps = NodeProps<SharedFlowTypes.CompoundNode>
 
@@ -11,11 +12,15 @@ export function CompoundNode({
   data: {
     element,
     ports,
-    ...data
+    dimmed
   },
   width = 200,
-  selectable = true
+  height = 100
 }: CompoundNodeProps) {
+
+  const nodeVariants = NodeVariants(width, height)
+  const [, animateHandlers] = useFramerAnimateVariants()
+
   return (
     <>
       <m.div
@@ -25,23 +30,13 @@ export function CompoundNode({
         ])}
         data-compound-depth={3}
         data-likec4-color={element.color}
-        animate={{
-          opacity: data.dimmed ? 0.15 : 1,
-          transition: {
-            delay: data.dimmed === true ? .4 : 0
-          }
-        }}
-        {...(selectable && {
-          whileHover: {
-            scale: 1.04,
-            transition: {
-              delay: 0.15
-            }
-          },
-          whileTap: {
-            scale: 1
-          }
-        })}
+
+        initial={false}
+        variants={nodeVariants}
+        animate={dimmed ? "dimmed" : "idle"}
+        whileHover = "hover"
+        whileTap = "tap"
+        {...animateHandlers}
       >
         <Text className={css.compoundNodeTitle} maw={width - 20}>{element.title}</Text>
       </m.div>

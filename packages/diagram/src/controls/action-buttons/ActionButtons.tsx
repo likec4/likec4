@@ -1,8 +1,9 @@
-import type { Fqn } from "@likec4/core"
+import type { Fqn, ViewId } from "@likec4/core"
 import { useCallback } from "react"
 import { useDiagramState, useDiagramStoreApi } from "../../hooks"
 import { ActionButton } from "./ActionButton"
 import { IconFileSymlink, IconId, IconTransform, IconZoomScan } from "@tabler/icons-react"
+import { useOverlayDialog } from "../../overlays/OverlayContext"
 
 export type NodeActionButtonProps = {
   fqn: Fqn
@@ -36,24 +37,49 @@ export const BrowseRelationshipsButton = ({
 
 // Navigate to
 
-export const NavigateToButton = ({
-  fqn
-}: NodeActionButtonProps) => {
+export type NavigateToButtonProps = {
+  fqn?: Fqn
+  viewId?: ViewId
+}
 
+export const NavigateToButton = ({
+  fqn,
+  viewId
+}: NavigateToButtonProps) => {
+
+  // call hooks in case we are in an overlay
+  const overlay = useOverlayDialog()
   const {
+    onNavigateTo,
     triggerOnNavigateTo
   } = useDiagramState(s => ({
+    onNavigateTo: s.onNavigateTo,
     triggerOnNavigateTo: s.triggerOnNavigateTo
   }))
 
-  const onNavigateTo = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    triggerOnNavigateTo(fqn, e)
-  }, [triggerOnNavigateTo, fqn])
+  let onClick: (e: React.MouseEvent) => void
+
+  // in diagram
+  if (fqn) {
+    onClick = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      triggerOnNavigateTo(fqn, e)
+    }
+  }
+
+  // in overlay
+  else if (viewId && onNavigateTo) {
+    onClick = (event) => {
+      event.stopPropagation()
+      overlay.close(() => onNavigateTo(viewId))
+    }
+  } else {
+    return null
+  }
 
   return (
     <ActionButton
-      onClick={onNavigateTo}
+      onClick={onClick}
       IconComponent={IconZoomScan}
       tooltipLabel='Open scoped view'
       />
