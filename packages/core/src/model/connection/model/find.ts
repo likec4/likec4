@@ -6,11 +6,13 @@ import { ConnectionModel } from './ConnectionModel'
 
 /**
  * Resolve connection from source to target
- * If direction is `both`, also look for reverse connection
+ *
+ * @param direction - if 'both', also returns connection from target to source
+ * @default `directed`
  */
 export function findConnection<M extends AnyAux>(
   source: ElementModel<M>,
-  target: ElementModel<NoInfer<M>>,
+  target: ElementModel<M>,
   direction: 'directed' | 'both' = 'directed',
 ):
   | readonly [ConnectionModel<M>, ConnectionModel<M>]
@@ -56,7 +58,8 @@ export function findConnection<M extends AnyAux>(
 
 /**
  * Resolve all connections between element and others
- * By default, look for both directions.
+ * @param direction - if 'directed', only look for outgoing connections from the element to others
+ * @default `both`
  */
 export function findConnectionsBetween<M extends AnyAux>(
   element: ElementModel<M>,

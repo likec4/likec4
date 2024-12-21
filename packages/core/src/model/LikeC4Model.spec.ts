@@ -10,12 +10,13 @@ describe('LikeC4Model', () => {
       'customer',
       'cloud',
       'aws',
-      'email'
+      'email',
     ])
   })
 
   it('parent and children', () => {
-    const parent = model.parent('cloud.backend.api')!
+    const el = model.element('cloud.backend.api')
+    const parent = el.parent!
     expect(parent.id).toEqual('cloud.backend')
     expect(parent.$element).toStrictEqual(els['cloud.backend'])
 
@@ -23,7 +24,7 @@ describe('LikeC4Model', () => {
 
     expect(map(children, prop('id'))).toEqual([
       'cloud.backend.api',
-      'cloud.backend.graphql'
+      'cloud.backend.graphql',
     ])
   })
 
@@ -32,11 +33,11 @@ describe('LikeC4Model', () => {
     expect(ancestors).toHaveLength(2)
     expect(ancestors[0]).toMatchObject({
       id: 'cloud.frontend',
-      $element: els['cloud.frontend']
+      $element: els['cloud.frontend'],
     })
     expect(ancestors[1]).toMatchObject({
       id: 'cloud',
-      $element: els['cloud']
+      $element: els['cloud'],
     })
   })
 
@@ -45,7 +46,7 @@ describe('LikeC4Model', () => {
     expect(siblings.map(prop('id'))).toEqual([
       'customer',
       'aws',
-      'email'
+      'email',
     ])
   })
 
@@ -54,7 +55,7 @@ describe('LikeC4Model', () => {
     expect(siblings.map(prop('id'))).toEqual([
       'cloud.frontend',
       'cloud.auth',
-      'cloud.media'
+      'cloud.media',
     ])
   })
 
@@ -67,7 +68,7 @@ describe('LikeC4Model', () => {
       'cloud.media',
       'customer',
       'aws',
-      'email'
+      'email',
     ])
   })
 
@@ -81,18 +82,18 @@ describe('LikeC4Model', () => {
       'cloud.backend',
       'cloud.backend.api',
       'cloud.backend.graphql',
-      'cloud.media'
+      'cloud.media',
     ])
   })
 
   it('filter incoming: direct', () => {
     const incoming = [...model.element('cloud').incoming('direct')].map(r => r.expression)
     expect(incoming).toEqual([
-      'customer -> cloud'
+      'customer -> cloud',
     ])
     const incomers = [...model.element('cloud').incomers('direct')].map(prop('id'))
     expect(incomers).toEqual([
-      'customer'
+      'customer',
     ])
   })
 
@@ -100,7 +101,7 @@ describe('LikeC4Model', () => {
     const incoming = [...model.element('cloud').incoming('to-descendants')].map(r => r.expression)
     expect(incoming).toEqual([
       'customer -> cloud.frontend.mobile',
-      'customer -> cloud.frontend.dashboard'
+      'customer -> cloud.frontend.dashboard',
     ])
   })
 
@@ -114,12 +115,12 @@ describe('LikeC4Model', () => {
       'cloud.frontend.mobile -> cloud.auth',
       'cloud.frontend.mobile -> cloud.backend.api',
       'cloud.frontend.mobile -> cloud.media',
-      'cloud.frontend -> cloud.backend'
+      'cloud.frontend -> cloud.backend',
     ])
 
     outgoing = [...frontend.outgoing('direct')].map(r => r.expression)
     expect(outgoing).toEqual([
-      'cloud.frontend -> cloud.backend'
+      'cloud.frontend -> cloud.backend',
     ])
 
     outgoing = [...frontend.outgoing('from-descendants')].map(r => r.expression)
@@ -129,20 +130,20 @@ describe('LikeC4Model', () => {
       'cloud.frontend.dashboard -> cloud.media',
       'cloud.frontend.mobile -> cloud.auth',
       'cloud.frontend.mobile -> cloud.backend.api',
-      'cloud.frontend.mobile -> cloud.media'
+      'cloud.frontend.mobile -> cloud.media',
     ])
   })
 
   it('unique incomers', () => {
-    const incoming = [...model.element('cloud').incoming()].map(r => `${r.source.id}:${r.target.id}`)
+    const incoming = [...model.element('cloud').incoming()].map(prop('expression'))
     expect(incoming).toEqual([
-      'customer:cloud',
-      'customer:cloud.frontend.mobile',
-      'customer:cloud.frontend.dashboard'
+      'customer -> cloud',
+      'customer -> cloud.frontend.mobile',
+      'customer -> cloud.frontend.dashboard',
     ])
     const incomers = [...model.element('cloud').incomers()].map(prop('id'))
     expect(incomers).toEqual([
-      'customer'
+      'customer',
     ])
   })
 
@@ -155,14 +156,14 @@ describe('LikeC4Model', () => {
       'cloud.frontend.mobile:cloud.auth',
       'cloud.frontend.mobile:cloud.backend.api',
       'cloud.frontend.mobile:cloud.media',
-      'cloud.frontend:cloud.backend'
+      'cloud.frontend:cloud.backend',
     ])
     const outgoers = [...model.element('cloud.frontend').outgoers()].map(prop('id'))
     expect(outgoers).toEqual([
       'cloud.auth',
       'cloud.backend.api',
       'cloud.media',
-      'cloud.backend'
+      'cloud.backend',
     ])
   })
 
@@ -171,18 +172,18 @@ describe('LikeC4Model', () => {
 
     expect.soft(views('cloud')).toEqual([
       'index',
-      'cloud'
+      'cloud',
     ])
 
     expect.soft(views('cloud.frontend.dashboard')).toEqual([
       'cloud',
-      'prod'
+      'prod',
     ])
 
     expect.soft(views('customer')).toEqual([
       'index',
       'cloud',
-      'prod'
+      'prod',
     ])
   })
 })

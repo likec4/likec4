@@ -190,7 +190,6 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
 
 export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends AbstractDeploymentElementModel<M> {
   override id: M['DeploymentFqn']
-  override parent: DeploymentNodeModel<M> | null
   override title: string
   override hierarchyLevel: number
 
@@ -201,8 +200,11 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends AbstractDepl
     super()
     this.id = $node.id
     this.title = $node.title
-    this.parent = $model.parent(this)
-    this.hierarchyLevel = hierarchyLevel(this)
+    this.hierarchyLevel = hierarchyLevel($node.id)
+  }
+
+  get parent(): DeploymentNodeModel<M> | null {
+    return this.$model.parent(this)
   }
 
   get kind(): DeploymentNodeKind {
@@ -266,10 +268,10 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends AbstractDepl
       incoming: new Set<RelationshipModel<M>>(),
     })
     for (const instance of this.instances()) {
-      for (const r of instance.$element.outgoing()) {
+      for (const r of instance.element.outgoing()) {
         outgoing.add(r)
       }
-      for (const r of instance.$element.incoming()) {
+      for (const r of instance.element.incoming()) {
         incoming.add(r)
       }
     }
@@ -310,12 +312,12 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
   constructor(
     public readonly $model: LikeC4DeploymentModel<M>,
     public readonly $instance: DeployedInstance,
-    public readonly $element: ElementModel<M>,
+    public readonly element: ElementModel<M>,
   ) {
     super()
     this.id = $instance.id
-    this.title = $instance.title ?? $element.title
-    this.hierarchyLevel = hierarchyLevel(this)
+    this.title = $instance.title ?? element.title
+    this.hierarchyLevel = hierarchyLevel($instance.id)
   }
 
   get $node(): DeployedInstance {
@@ -327,10 +329,10 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
   }
 
   override get style(): SetRequired<PhysicalElementStyle, 'shape' | 'color'> {
-    const { icon, style } = this.$element.$element
+    const { icon, style } = this.element.$element
     return {
-      shape: this.$element.shape,
-      color: this.$element.color,
+      shape: this.element.shape,
+      color: this.element.color,
       ...icon && { icon },
       ...style,
       ...this.$instance.style,
@@ -338,11 +340,11 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
   }
 
   override get shape(): C4ElementShape {
-    return this.$instance.style?.shape ?? this.$element.shape
+    return this.$instance.style?.shape ?? this.element.shape
   }
 
   override get color(): ThemeColor {
-    return this.$instance.style?.color as ThemeColor ?? this.$element.color
+    return this.$instance.style?.color as ThemeColor ?? this.element.color
   }
 
   override get tags(): ReadonlyArray<C4Tag> {
@@ -350,15 +352,15 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
   }
 
   override get description(): string | null {
-    return this.$instance.description ?? this.$element.description
+    return this.$instance.description ?? this.element.description
   }
 
   override get technology(): string | null {
-    return this.$instance.technology ?? this.$element.technology
+    return this.$instance.technology ?? this.element.technology
   }
 
   override get links(): ReadonlyArray<Link> {
-    return this.$instance.links ?? this.$element.links
+    return this.$instance.links ?? this.element.links
   }
 
   public override isInstance(): this is DeployedInstanceModel<M> {
@@ -366,10 +368,10 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
   }
 
   public override outgoingModelRelationships(): RelationshipsIterator<M> {
-    return this.$element.outgoing()
+    return this.element.outgoing()
   }
   public override incomingModelRelationships(): RelationshipsIterator<M> {
-    return this.$element.incoming()
+    return this.element.incoming()
   }
 }
 

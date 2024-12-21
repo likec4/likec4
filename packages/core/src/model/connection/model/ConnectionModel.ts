@@ -45,6 +45,20 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
     return `${this.source.id} -> ${this.target.id}`
   }
 
+  /**
+   * Returns true if only includes relations between the source and target elements.
+   */
+  get isDirect(): boolean {
+    return this.directRelations.size === this.relations.size
+  }
+
+  /**
+   * Returns true if includes relations between nested elements of the source and target elements.
+   */
+  get isImplicit(): boolean {
+    return this.directRelations.size <= this.relations.size
+  }
+
   nonEmpty(): boolean {
     return this.relations.size > 0
   }

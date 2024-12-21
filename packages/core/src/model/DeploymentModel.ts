@@ -71,7 +71,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
         this.#allTags.get(tag).add(el)
       }
       if (el.isInstance()) {
-        this.#instancesOf.get(el.$element.id).add(el)
+        this.#instancesOf.get(el.element.id).add(el)
       }
     }
     for (const relation of values($deployments.relations)) {
