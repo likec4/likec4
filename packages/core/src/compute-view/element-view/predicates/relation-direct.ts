@@ -1,26 +1,12 @@
-import {
-  concat,
-  constant,
-  first,
-  flatMap,
-  groupBy,
-  hasAtLeast,
-  map,
-  mapValues,
-  partition,
-  pipe,
-  piped,
-  prop,
-  values,
-  when,
-} from 'remeda'
+import { concat, constant, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
 import { invariant } from '../../../errors'
 import { ConnectionModel, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/model'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import * as Expr from '../../../types/expression'
+import { isSameHierarchy } from '../../../utils'
 import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
-import { difference, intersection, symmetricDifference, union } from '../../../utils/set'
+import { intersection, union } from '../../../utils/set'
 import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
 import { includeDescendantsFromMemory, resolveAndIncludeFromMemory, resolveElements } from './_utils'
@@ -268,18 +254,21 @@ export const DirectRelationExprPredicate: PredicateExecutor<Expr.DirectRelationE
         const sources = resolveElements(model, source)
         const targets = resolveElements(model, target)
 
-        const left = toSet(
-          sources
-            .flatMap(s => [...(isBidirectional ? union(s.allIncoming, s.allOutgoing) : s.allOutgoing)]),
-        )
-        const right = toSet(
-          targets
-            .flatMap(t => [...(isBidirectional ? union(t.allIncoming, t.allOutgoing) : t.allIncoming)]),
-        )
+        let accum = new Set<RelationshipModel<AnyAux>>()
+        for (const source of sources) {
+          for (const target of targets) {
+            if (isSameHierarchy(source, target)) {
+              continue
+            }
+            accum = union(
+              accum,
+              intersection(source.allOutgoing, target.allIncoming),
+              isBidirectional ? intersection(target.allOutgoing, source.allIncoming) : new Set(),
+            )
+          }
+        }
 
-        relations = toSet(
-          ifilter(intersection(left, right), where),
-        )
+        relations = toSet(ifilter(accum, where))
       }
     }
 

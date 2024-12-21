@@ -1,9 +1,9 @@
-import { only, values } from 'remeda'
-import { describe, it } from 'vitest'
+import { first, only, values } from 'remeda'
+import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder'
 import { invariant } from '../../errors'
 import { LikeC4Model } from '../../model'
-import { findConnectionsWithin } from '../../model/connection/model'
+import { findConnection, findConnectionsWithin } from '../../model/connection/model'
 import { isElementView } from '../../types'
 import { withReadableEdges } from '../utils/with-readable-edges'
 import { TestHelper } from './__test__/TestHelper'
@@ -97,6 +97,7 @@ describe('Redundant relationships', () => {
           el('amazon'),
           el('amazon.rds1'),
           el('amazon.rds2'),
+          rel('cloud', 'amazon'),
           rel('cloud.backend1', 'amazon'),
           rel('cloud.backend1', 'amazon.rds1'),
           rel('cloud.backend2', 'amazon.rds2'),
@@ -114,6 +115,7 @@ describe('Redundant relationships', () => {
     )
     t.expect(findRedundantConnections(connections)).toEqual({
       'cloud -> amazon': [
+        'cloud -> amazon',
         'cloud.backend1 -> amazon',
         'cloud.backend1 -> amazon.rds1',
         'cloud.backend2 -> amazon.rds2',
@@ -136,29 +138,6 @@ describe('Redundant relationships', () => {
       'cloud.backend1 -> amazon.rds1',
       'cloud.backend2 -> amazon.rds2',
     )
-
-    // Exlude where source is cloud.backend1
-    connections = connections.filter(c => c.source.id != 'cloud.backend1')
-
-    t.expect(cleanRedundantRelationships(connections)).toEqual({
-      'cloud -> amazon.rds1': [
-        'cloud.backend1 -> amazon.rds1',
-      ],
-      'cloud.backend2 -> amazon.rds2': [
-        'cloud.backend2 -> amazon.rds2',
-      ],
-    })
-
-    // Exlude where target is camazon.rds1
-    connections = connections.filter(c => c.target.id != 'amazon.rds1')
-    t.expect(cleanRedundantRelationships(connections)).toEqual({
-      'cloud -> amazon': [
-        'cloud.backend1 -> amazon.rds1',
-      ],
-      'cloud.backend2 -> amazon.rds2': [
-        'cloud.backend2 -> amazon.rds2',
-      ],
-    })
   })
 
   it('correctly find and exclude redundant (and reversed)', () => {
@@ -229,6 +208,62 @@ describe('Redundant relationships', () => {
     t.expect(cleanRedundantRelationships(connections)).toEqual(
       'cloud.backend.service1 -> amazon.rds1',
       'cloud.backend.service2 -> amazon.rds2',
+    )
+  })
+
+  it('correctly find and exclude redundant (nested)', () => {
+    const t = TestHelper.from(builder
+      .model(({ el, rel }, m) =>
+        m(
+          el('frontend'),
+          el('frontend.ui'),
+          el('backend'),
+          el('backend.api'),
+          el('db'),
+          rel('frontend', 'backend'),
+          rel('frontend.ui', 'backend.api'),
+          rel('backend', 'db'),
+        )
+      ))
+
+    const direct = first(findConnection(t.model.element('frontend'), t.model.element('backend')))!
+    expect(direct.isImplicit).toBe(true)
+    expect(direct.isDirect).toBe(false)
+
+    let connections = findConnectionsWithin(t.model.elements())
+    t.expect(connections).toEqual(
+      'frontend -> backend',
+      'frontend -> backend.api',
+      'frontend.ui -> backend',
+      'frontend.ui -> backend.api',
+      'backend -> db',
+    )
+    t.expect(cleanRedundantRelationships(connections)).toEqual(
+      'frontend.ui -> backend.api',
+      'backend -> db',
+    )
+
+    connections = findConnectionsWithin([
+      t.model.element('frontend'),
+      t.model.element('frontend.ui'),
+      t.model.element('backend'),
+      t.model.element('db'),
+    ])
+    t.expect(connections).toEqual({
+      'backend -> db': [
+        'backend -> db',
+      ],
+      'frontend -> backend': [
+        'frontend -> backend',
+        'frontend.ui -> backend.api',
+      ],
+      'frontend.ui -> backend': [
+        'frontend.ui -> backend.api',
+      ],
+    })
+    t.expect(cleanRedundantRelationships(connections)).toEqual(
+      'frontend.ui -> backend',
+      'backend -> db',
     )
   })
 })

@@ -41,7 +41,7 @@ describe('custom-relation-expr', () => {
         "relations": [
           "cloud.frontend:cloud.backend",
           "cloud.frontend.dashboard:cloud.backend.graphql",
-          "cloud.frontend.adminPanel:cloud.backend.graphql",
+          "cloud.frontend.supportPanel:cloud.backend.graphql",
         ],
         "source": "cloud.frontend",
         "tags": [
@@ -65,24 +65,24 @@ describe('custom-relation-expr', () => {
       }),
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
     ])
-    const [edge1, edge2] = edges
-    expect(edge1).toMatchInlineSnapshot(`
+    const [fromDashboard, fromAdmin] = edges
+    expect(fromAdmin).toMatchInlineSnapshot(`
       {
         "color": "red",
         "head": "crow",
-        "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
+        "id": "cloud.frontend.supportPanel:cloud.backend.graphql",
         "isCustomized": true,
         "kind": "graphlql",
         "label": "custom label",
         "line": "dashed",
         "parent": null,
         "relations": [
-          "cloud.frontend.adminPanel:cloud.backend.graphql",
+          "cloud.frontend.supportPanel:cloud.backend.graphql",
         ],
-        "source": "cloud.frontend.adminPanel",
+        "source": "cloud.frontend.supportPanel",
         "tags": [
           "old",
         ],
@@ -90,7 +90,7 @@ describe('custom-relation-expr', () => {
         "target": "cloud.backend.graphql",
       }
     `)
-    expect(edge2).toMatchInlineSnapshot(`
+    expect(fromDashboard).toMatchInlineSnapshot(`
       {
         "color": "red",
         "head": "crow",
@@ -114,14 +114,14 @@ describe('custom-relation-expr', () => {
 
   it('set edge title to empty string', () => {
     const { edges, edgeIds } = computeView([
-      $include('cloud.frontend.adminPanel -> cloud.backend', {
+      $include('cloud.frontend.supportPanel -> cloud.backend', {
         with: {
           title: '',
         },
       }),
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend.adminPanel:cloud.backend',
+      'cloud.frontend.supportPanel:cloud.backend',
     ])
     const [edge1] = edges
     expect(edge1).toHaveProperty('label', '')

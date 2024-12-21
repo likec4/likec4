@@ -7,7 +7,7 @@ import { Memory, type PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
 
 export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
-  include: ({ scope, model, stage, where }) => {
+  include: ({ scope, model, stage, memory, where }) => {
     if (!scope) {
       const rootElements = [...model.roots()].filter(where)
       if (rootElements.length === 0) {
@@ -20,22 +20,31 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
 
       return stage
     }
-    const neighbours = toSet(ifilter(scope.ascendingSiblings(), where))
     const root = where(scope) ? scope : null
     if (root) {
       stage.addExplicit(root)
-      stage.connectWithExisting(root)
-      stage.addConnections(findConnectionsBetween(root, neighbours))
+      // stage.connectWithExisting(root)
+      // stage.addConnections(findConnectionsBetween(root, neighbours))
     }
 
     const children = toArray(ifilter(scope.children(), where))
     const hasChildren = children.length > 0
     if (hasChildren) {
-      stage.connectWithExisting(children)
+      stage.addExplicit(children)
       stage.addConnections(findConnectionsWithin(children))
-      for (const child of children) {
-        stage.addConnections(findConnectionsBetween(child, neighbours))
-      }
+    } else if (root) {
+      children.push(root)
+    } else {
+      return stage
+    }
+
+    const neighbours = toSet([
+      ...memory.elements,
+      ...scope.ascendingSiblings(),
+    ])
+
+    for (const el of children) {
+      stage.addConnections(findConnectionsBetween(el, neighbours))
     }
 
     // If root has no children

@@ -1,3 +1,4 @@
+import { isNot } from 'remeda'
 import { invariant } from '../../../errors'
 import { customInspectSymbol } from '../../../utils/const'
 import { ifilter, isome } from '../../../utils/iterable'
@@ -25,8 +26,6 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
    */
   public readonly boundary: ElementModel<M> | null
 
-  public readonly directRelations: ReadonlySet<RelationshipModel<M>>
-
   constructor(
     public readonly source: ElementModel<M>,
     public readonly target: ElementModel<M>,
@@ -34,7 +33,6 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
   ) {
     this.id = stringHash(`model:${source.id}:${target.id}`) as M['EdgeId']
     this.boundary = source.commonAncestor(target)
-    this.directRelations = new Set(ifilter(relations, hasSameSourceTarget(this)))
   }
 
   /**
@@ -49,14 +47,18 @@ export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<El
    * Returns true if only includes relations between the source and target elements.
    */
   get isDirect(): boolean {
-    return this.directRelations.size === this.relations.size
+    return this.nonEmpty() && !this.isImplicit
   }
 
   /**
    * Returns true if includes relations between nested elements of the source and target elements.
    */
   get isImplicit(): boolean {
-    return this.directRelations.size <= this.relations.size
+    return this.nonEmpty() && isome(this.relations, isNot(hasSameSourceTarget(this)))
+  }
+
+  get directRelations(): ReadonlySet<RelationshipModel<M>> {
+    return new Set(ifilter(this.relations, hasSameSourceTarget(this)))
   }
 
   nonEmpty(): boolean {

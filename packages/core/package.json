@@ -78,7 +78,7 @@
     "mnemonist": "^0.39.8",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
-    "obliterator": "^2.0.1",
+    "obliterator": "^2.0.4",
     "remeda": "^2.17.4",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2",

@@ -46,6 +46,7 @@ export class TestHelper<T extends AnyTypes> {
 
   static $include = viewhelpers.$include
   static $exclude = viewhelpers.$exclude
+  static $rules = viewhelpers.$rules
   static $style = viewhelpers.$style
 
   $include = viewhelpers.$include
@@ -78,6 +79,9 @@ export class TestHelper<T extends AnyTypes> {
   processPredicates(...rules: ElementViewRulesBuilder<T>[]) {
     return ProcessPredicates.execute(this, ...rules)
   }
+  processPredicatesWithScope(scope: T['Fqn'], ...rules: ElementViewRulesBuilder<T>[]) {
+    return ProcessPredicates.executeWithScope(this, scope, ...rules)
+  }
 
   expectView(view: ComputedElementView) {
     return {
@@ -102,15 +106,15 @@ export class TestHelper<T extends AnyTypes> {
   }
 
   expectMemory = (memory: Memory) => ({
-    toHaveElements: <Id extends T['DeploymentFqn']>(...ids: Id[]) => {
+    toHaveAllElements: <Id extends T['Fqn']>(...ids: Id[]) => {
       this._expect(map([...memory.elements], prop('id'))).toEqual(ids)
     },
-    toHaveFinalElements: <Id extends T['DeploymentFqn']>(...ids: Id[]) => {
+    toHaveElements: <Id extends T['Fqn']>(...ids: Id[]) => {
       this._expect(map([...memory.final], prop('id'))).toEqual(ids)
     },
-    // toHaveConnections: (...matchers: ConnectionEqual<T>) => {
-    //   this.expectConnections(memory.connections).toEqual(...matchers)
-    // },
+    toHaveConnections: (...matchers: ConnectionEqual<T>) => {
+      this.expectConnections(memory.connections).toEqual(...matchers)
+    },
   })
 
   expectElements = (elements: ReadonlySet<Elem>) => ({
@@ -239,10 +243,10 @@ class ProcessPredicates<T extends AnyTypes> {
     }
     this.previousMemory = this.memory
     this.viewrules = view.rules
+    const scope = this.scope ? this.t.model.element(this.scope) : null
     this.memory = processPredicatesImpl(
       this.t.model,
-      Memory.empty(this.scope),
-      this.scope ? this.t.model.element(this.scope) : null,
+      Memory.empty(scope),
       view.rules,
     )
     this.age++

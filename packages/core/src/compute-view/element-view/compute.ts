@@ -123,19 +123,18 @@ function processRelationtPredicate(
 export function processPredicates<M extends AnyAux>(
   model: LikeC4Model<M>,
   memory: Memory,
-  scope: Elem | null,
   rules: ViewRule[],
 ): Memory {
   const ctx = {
     model,
-    scope,
+    scope: memory.scope,
     where: NoWhere,
     filterWhere: NoFilter,
   }
   for (const rule of rules) {
     if (isViewRuleGroup(rule)) {
       const groupMemory = ActiveGroupMemory.enter(memory, rule)
-      memory = processPredicates(model, groupMemory, scope, rule.groupRules)
+      memory = processPredicates(model, groupMemory, rule.groupRules)
       invariant(memory instanceof ActiveGroupMemory, 'processPredicates must return ActiveGroupMemory')
       memory = memory.leave()
       continue
@@ -183,7 +182,6 @@ export function computeElementView<M extends AnyAux>(
   let memory = processPredicates<M>(
     likec4model,
     Memory.empty(scope),
-    scope,
     rules,
   )
   if (memory.isEmpty() && scope) {

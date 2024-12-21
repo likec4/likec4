@@ -71,10 +71,11 @@ describe('wildcard-expr', () => {
   // See compute-view/compute-predicates.ts#L67
   describe('include parent if view root is a leaf and have no siblings', () => {
     // has no siblings
-    it('should not add amazon for s3', () => {
+    it('should add amazon for s3', () => {
       const { nodeIds, edgeIds } = computeView('amazon.s3', [$include('*')])
       expect(nodeIds).toEqual([
         'cloud',
+        'amazon',
         'amazon.s3',
       ])
       expect(edgeIds).toEqual([

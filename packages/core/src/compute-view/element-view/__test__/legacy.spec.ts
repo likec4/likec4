@@ -107,7 +107,6 @@ describe('compute-element-view', () => {
       'customer',
       'cloud.frontend',
       'cloud.backend',
-      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon',
@@ -115,9 +114,8 @@ describe('compute-element-view', () => {
 
     expect(edgeIds).to.have.same.members([
       'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.frontend:cloud.backend.graphql',
       'cloud.backend.storage:amazon',
-      'cloud.backend:email',
+      'cloud.frontend:cloud.backend.graphql',
       'customer:cloud.frontend',
     ])
   })
@@ -128,16 +126,16 @@ describe('compute-element-view', () => {
       'customer',
       'support',
       'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
     ])
 
     expect(edgeIds).to.have.same.members([
-      'cloud.frontend.adminPanel:cloud.backend',
+      'cloud.frontend.supportPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend',
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
+      'support:cloud.frontend.supportPanel',
     ])
 
     expect(view).toMatchSnapshot()
@@ -171,15 +169,15 @@ describe('compute-element-view', () => {
       'support',
       'cloud',
       'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
     ])
 
     expect(edgeIds).to.have.same.members([
-      'support:cloud.frontend.adminPanel',
+      'support:cloud.frontend.supportPanel',
       'customer:cloud.frontend.dashboard',
-      'cloud.frontend.adminPanel:cloud.backend',
+      'cloud.frontend.supportPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend',
     ])
   })
@@ -196,8 +194,8 @@ describe('compute-element-view', () => {
       'support',
       'cloud',
       'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage',
@@ -205,10 +203,10 @@ describe('compute-element-view', () => {
 
     expect(edgeIds).toEqual([
       'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
+      'support:cloud.frontend.supportPanel',
     ])
   })
 
@@ -224,16 +222,16 @@ describe('compute-element-view', () => {
       'support',
       'cloud',
       'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
       'cloud.backend.graphql',
     ])
 
     expect(edgeIds).to.have.same.members([
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
-      'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'support:cloud.frontend.supportPanel',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql',
     ])
   })
@@ -254,9 +252,9 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).toEqual([
+      'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'support:cloud.frontend',
-      'cloud.frontend:cloud.backend',
     ])
   })
 
@@ -275,8 +273,8 @@ describe('compute-element-view', () => {
       'customer',
       'support',
       'cloud',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage',
@@ -285,11 +283,11 @@ describe('compute-element-view', () => {
 
     expect(edgeIds).toEqual([
       'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
       'cloud.backend.storage:amazon.s3',
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
+      'support:cloud.frontend.supportPanel',
     ])
   })
 
@@ -306,20 +304,18 @@ describe('compute-element-view', () => {
       'cloud',
       'cloud.frontend',
       'cloud.frontend.dashboard',
-      'cloud.frontend.adminPanel',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
       'email',
-      'amazon',
       'cloud.backend.graphql',
     ])
 
     expect(edgeIds).toEqual([
       'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
+      'support:cloud.frontend.supportPanel',
       'cloud.backend:email',
-      'cloud.backend:amazon',
     ])
   })
 
@@ -419,7 +415,7 @@ describe('compute-element-view', () => {
       ],
     })
 
-    expect(nodeIds).toEqual(['cloud', 'cloud.backend.storage', 'cloud.frontend.adminPanel'])
+    expect(nodeIds).toEqual(['cloud', 'cloud.backend.storage', 'cloud.frontend.supportPanel'])
 
     expect(edgeIds).toEqual([])
   })
@@ -439,14 +435,14 @@ describe('compute-element-view', () => {
 
     expect(nodeIds).toEqual([
       'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
     ])
 
     expect(edgeIds).toEqual([
-      'cloud.frontend.adminPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend',
+      'cloud.frontend.supportPanel:cloud.backend',
     ])
   })
 
@@ -466,13 +462,11 @@ describe('compute-element-view', () => {
     expect(nodeIds).toEqual([
       'cloud.frontend',
       'cloud.backend',
-      'email',
       'cloud.backend.graphql',
     ])
 
     expect(edgeIds).to.have.same.members([
       'cloud.frontend:cloud.backend.graphql',
-      'cloud.backend:email',
     ])
   })
 })

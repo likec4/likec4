@@ -795,6 +795,42 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "target": "cloud.backend",
     },
     {
+      "dotpos": "s,991.68,422 e,1209,422 1002.6,422 1065.2,422 1136.1,422 1198.7,422",
+      "id": "cloud.backend:amazon",
+      "label": "persists artifacts",
+      "labelBBox": {
+        "height": 18,
+        "width": 105,
+        "x": 1048,
+        "y": 396,
+      },
+      "parent": null,
+      "points": [
+        [
+          1003,
+          422,
+        ],
+        [
+          1065,
+          422,
+        ],
+        [
+          1136,
+          422,
+        ],
+        [
+          1199,
+          422,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.storage:amazon.s3",
+      ],
+      "source": "cloud.backend",
+      "tail": "odiamond",
+      "target": "amazon",
+    },
+    {
       "dotpos": "e,317.2,332.26 217.92,179.87 246.84,224.26 281.89,278.06 311.54,323.57",
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
@@ -863,42 +899,6 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       ],
       "source": "support",
       "target": "cloud.frontend",
-    },
-    {
-      "dotpos": "s,991.68,422 e,1209,422 1002.6,422 1065.2,422 1136.1,422 1198.7,422",
-      "id": "cloud.backend:amazon",
-      "label": "persists artifacts",
-      "labelBBox": {
-        "height": 18,
-        "width": 105,
-        "x": 1048,
-        "y": 396,
-      },
-      "parent": null,
-      "points": [
-        [
-          1003,
-          422,
-        ],
-        [
-          1065,
-          422,
-        ],
-        [
-          1136,
-          422,
-        ],
-        [
-          1199,
-          422,
-        ],
-      ],
-      "relations": [
-        "cloud.backend.storage:amazon.s3",
-      ],
-      "source": "cloud.backend",
-      "tail": "odiamond",
-      "target": "amazon",
     },
   ],
   "hash": "ce579a71c5b48307612e44e36ab91b7b06a3a6f3",

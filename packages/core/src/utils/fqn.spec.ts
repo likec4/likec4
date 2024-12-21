@@ -1,4 +1,4 @@
-import { map, prop } from 'remeda'
+import { anyPass, isNot, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Element } from '../types'
 import {
@@ -8,7 +8,6 @@ import {
   hierarchyDistance,
   isAncestor,
   isDescendantOf,
-  notDescendantOf,
   parentFqn,
   sortByFqnHierarchically,
   sortNaturalByFqn,
@@ -60,6 +59,7 @@ describe('fqn utils', () => {
       expect(isAncestor('a.b', 'a.b.c')).toBe(true)
     })
     it('should return false if not ancestor', () => {
+      expect(isAncestor('a', 'a')).toBe(false)
       expect(isAncestor('a', 'b')).toBe(false)
       expect(isAncestor('a.b', 'a')).toBe(false)
       expect(isAncestor('a.b', 'b.a')).toBe(false)
@@ -67,7 +67,7 @@ describe('fqn utils', () => {
   })
 
   describe('isDescendantOf', () => {
-    const predicate = isDescendantOf(['a', 'b', 'a.b', 'a.b.c'].map(el))
+    const predicate = anyPass(['a', 'b', 'a.b', 'a.b.c'].map(e => isDescendantOf({ id: e })))
 
     it('should return true if isDescendantOf', () => {
       expect(predicate(el('b.c'))).toBe(true)
@@ -82,15 +82,15 @@ describe('fqn utils', () => {
   })
 
   describe('notDescendantOf', () => {
-    const predicate = notDescendantOf(['a', 'b', 'a.b', 'a.b.c'].map(el))
+    const predicate = isNot(anyPass(['a', 'b', 'a.b', 'a.b.c'].map(e => isDescendantOf({ id: e }))))
 
     it('should return true if notDescendantOf', () => {
       expect(predicate(el('c'))).toBe(true)
       expect(predicate(el('ac'))).toBe(true)
       expect(predicate(el('d.a.c'))).toBe(true)
+      expect(predicate(el('a'))).toBe(true)
     })
     it('should return false if descendantOf', () => {
-      expect(predicate(el('a'))).toBe(false)
       expect(predicate(el('b.c'))).toBe(false)
       expect(predicate(el('a.b.c.d.e'))).toBe(false)
     })

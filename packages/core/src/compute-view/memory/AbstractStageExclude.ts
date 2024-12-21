@@ -1,7 +1,7 @@
 import { isBoolean, pipe } from 'remeda'
 import { invariant } from '../../errors'
 import { findAscendingConnections } from '../../model/connection'
-import { difference, intersection, isAncestor, isDescendantOf, isIterable } from '../../utils'
+import { difference, intersection, isDescendantOf, isIterable } from '../../utils'
 import { ifilter, isome, toSet } from '../../utils/iterable'
 import type { AnyCtx, CtxConnection, CtxElement, MutableState, StageExclude, StageExpression } from './_types'
 
@@ -102,7 +102,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx> implements StageExc
     disconnected = pipe(
       disconnected,
       ifilter(el => {
-        return state.explicits.has(el) && !isome(state.final, isDescendantOf([el]))
+        return state.explicits.has(el) && !isome(state.final, isDescendantOf(el))
       }),
       toSet(),
     )

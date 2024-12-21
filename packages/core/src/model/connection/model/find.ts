@@ -15,9 +15,9 @@ export function findConnection<M extends AnyAux>(
   target: ElementModel<M>,
   direction: 'directed' | 'both' = 'directed',
 ):
-  | readonly [ConnectionModel<M>, ConnectionModel<M>]
-  | readonly [ConnectionModel<M>]
-  | readonly []
+  | [ConnectionModel<M>, ConnectionModel<M>]
+  | [ConnectionModel<M>]
+  | []
 {
   if (source === target) {
     return []
@@ -29,31 +29,37 @@ export function findConnection<M extends AnyAux>(
   const directedIntersection = intersection(source.allOutgoing, target.allIncoming)
 
   const directed = directedIntersection.size > 0
-    ? [
-      new ConnectionModel(
-        source,
-        target,
-        directedIntersection,
-      ),
-    ] as const
-    : [] as const
+    ? new ConnectionModel(
+      source,
+      target,
+      directedIntersection,
+    )
+    : null
 
   if (direction === 'directed') {
-    return directed
+    return directed ? [directed] : []
   }
 
   const reverseIntersection = intersection(source.allIncoming, target.allOutgoing)
   const reverse = reverseIntersection.size > 0
-    ? [
-      new ConnectionModel(
-        target,
-        source,
-        reverseIntersection,
-      ),
-    ] as const
-    : [] as const
+    ? new ConnectionModel(
+      target,
+      source,
+      reverseIntersection,
+    )
+    : null
 
-  return [...directed, ...reverse] as const
+  if (directed && reverse) {
+    return [directed, reverse]
+  }
+  if (directed) {
+    return [directed]
+  }
+  if (reverse) {
+    return [reverse]
+  }
+
+  return []
 }
 
 /**

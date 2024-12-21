@@ -18,11 +18,11 @@ describe('incoming-expr', () => {
         'customer',
         'support',
         'cloud.frontend.dashboard',
-        'cloud.frontend.adminPanel',
+        'cloud.frontend.supportPanel',
       ])
       expect(edgeIds).toEqual([
         'customer:cloud.frontend.dashboard',
-        'support:cloud.frontend.adminPanel',
+        'support:cloud.frontend.supportPanel',
       ])
     })
   })
@@ -40,14 +40,14 @@ describe('incoming-expr', () => {
         'cloud.frontend',
         'cloud.backend',
         'cloud.frontend.dashboard',
-        'cloud.frontend.adminPanel',
+        'cloud.frontend.supportPanel',
         'email',
         'amazon',
       ])
       expect(edgeIds).toEqual([
         'cloud.frontend:cloud.backend',
         'customer:cloud.frontend.dashboard',
-        'support:cloud.frontend.adminPanel',
+        'support:cloud.frontend.supportPanel',
         'cloud.backend:email',
         'cloud.backend:amazon',
       ])
@@ -120,7 +120,6 @@ describe('incoming-expr', () => {
         $exclude('-> cloud.frontend.dashboard'),
       ])
       expect(nodeIds).toEqual([
-        'customer',
         'support',
         'cloud',
         'cloud.frontend',
@@ -131,7 +130,6 @@ describe('incoming-expr', () => {
         'cloud.frontend:cloud.backend',
         'support:cloud.frontend',
         'cloud.backend:amazon',
-        'customer:cloud',
       ])
     })
   })
@@ -146,15 +144,15 @@ describe('incoming-expr', () => {
         'customer',
         'support',
         'cloud.frontend',
-        'cloud.frontend.adminPanel',
         'cloud.frontend.dashboard',
+        'cloud.frontend.supportPanel',
         'cloud.backend',
         'cloud.backend.graphql',
       ])
       expect(edgeIds).to.have.same.members([
         'customer:cloud.frontend.dashboard',
-        'support:cloud.frontend.adminPanel',
-        'cloud.frontend.adminPanel:cloud.backend.graphql',
+        'support:cloud.frontend.supportPanel',
+        'cloud.frontend.supportPanel:cloud.backend.graphql',
         'cloud.frontend.dashboard:cloud.backend.graphql',
       ])
     })

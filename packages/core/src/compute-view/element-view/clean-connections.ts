@@ -1,13 +1,14 @@
-import { allPass, anyPass, pipe, reduce } from 'remeda'
+import { allPass, anyPass, pipe, prop, reduce } from 'remeda'
+import { Connection, ConnectionModel } from '../../model/connection'
 import {
-  ConnectionModel,
   differenceConnections,
-  hasSameSource,
-  hasSameTarget,
-  isNestedConnection,
+  findDeepestNestedConnection,
+  findDescendantConnections,
+  isAnyInOut,
+  isIncoming,
+  isOutgoing,
   mergeConnections,
-  sortDeepestFirst,
-} from '../../model/connection'
+} from '../../model/connection/ops'
 import type { RelationshipModel } from '../../model/RelationModel'
 import { intersection, union } from '../../utils'
 import { ifilter, toSet } from '../../utils/iterable'
@@ -22,35 +23,64 @@ export function allRelationshipsFrom(connections: Iterable<ConnectionModel>): Se
   return relations
 }
 
+function isInOutToDescendant(id: string): (c: ConnectionModel) => boolean {
+  return anyPass([
+    allPass([
+      Connection.isOutgoing(id),
+      c => c.source.id !== id,
+    ]),
+    allPass([
+      Connection.isIncoming(id),
+      c => c.target.id !== id,
+    ]),
+  ])
+}
+
 export function findRedundantConnections(connections: Iterable<ConnectionModel>): Array<ConnectionModel> {
-  let seenRelations = new Set<RelationshipModel>()
   return pipe(
     [...connections],
     mergeConnections,
-    sortDeepestFirst,
     reduce((reducedConnections, connection, _, all) => {
-      let accum = intersection(connection.relations, seenRelations)
-      seenRelations = union(seenRelations, connection.relations)
+      const descendants = findDescendantConnections(all, connection)
+      const nestedRelations = union(
+        ...descendants.map(prop('relations')),
+      )
+
+      let accum = intersection(connection.relations, nestedRelations)
+
+      if (descendants.length > 0) {
+        accum = union(accum, connection.directRelations)
+      }
+      // Check if there is any reversed connection to descendant
+      if (findDeepestNestedConnection(all, connection.reversed(false))) {
+        accum = union(accum, connection.directRelations)
+      }
 
       if (accum.size < connection.relations.size) {
-        const isNestedOrReverse = anyPass([
-          isNestedConnection(connection),
-          isNestedConnection(connection.reversed(false)),
-        ])
-        if (all.some(isNestedOrReverse)) {
+        const isSourceExpanded = all.some(isAnyInOut(connection.source))
+        const isTargetExpanded = all.some(isAnyInOut(connection.target))
+
+        // Check if source expandaded
+        if (isSourceExpanded) {
           accum = union(
             accum,
-            connection.directRelations,
             toSet(
               ifilter(
                 connection.relations,
-                allPass([
-                  isNestedOrReverse,
-                  anyPass([
-                    hasSameSource(connection),
-                    hasSameTarget(connection),
-                  ]),
-                ]),
+                isOutgoing(connection.source),
+              ),
+            ),
+          )
+        }
+
+        // Check if target expandaded
+        if (isTargetExpanded) {
+          accum = union(
+            accum,
+            toSet(
+              ifilter(
+                connection.relations,
+                isIncoming(connection.target),
               ),
             ),
           )

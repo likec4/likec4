@@ -1,6 +1,12 @@
 import { map, pipe, prop } from 'remeda'
 import { isString } from '../../utils'
-import { isAncestor, type IterableContainer, type ReorderedArray, sortNaturalByFqn } from '../../utils/fqn'
+import {
+  isAncestor,
+  isDescendantOf,
+  type IterableContainer,
+  type ReorderedArray,
+  sortNaturalByFqn,
+} from '../../utils/fqn'
 import type { Connection } from './Connection'
 
 /**
@@ -121,13 +127,13 @@ export function findAscendingConnections<C extends ConnectionElemId>(
 }
 
 /**
- * Find connections that includes given connection (i.e between it's ancestors)
+ * Find connections that includes given connection (i.e between it's descendants)
  */
 export function findDescendantConnections<C extends ConnectionElemId>(
   connections: ReadonlyArray<C>,
   connection: C,
 ): Array<C> {
-  return connections.filter(c => isNestedConnection(c, connection))
+  return connections.filter(isNestedConnection(connection))
 }
 
 export function mergeConnections<C extends Connection>(
@@ -199,3 +205,59 @@ export function hasSameTarget(a: WithSourceTarget, b?: WithSourceTarget) {
   }
   return (b: WithSourceTarget) => a.target === b.target
 }
+
+type WithId<T> = {
+  id: T
+}
+export function isOutgoing<T extends string>(source: WithId<NoInfer<T>>): (a: WithSourceTarget<WithId<T>>) => boolean
+export function isOutgoing<T extends string>(a: WithSourceTarget<WithId<T>>, source: WithId<T>): boolean
+export function isOutgoing<T extends string>(a: WithSourceTarget<WithId<T>> | WithId<T>, source?: WithId<T>) {
+  if (!source) {
+    const _source = a as WithId<T>
+    return (b: WithSourceTarget<WithId<T>>) => isOutgoing(b, _source)
+  }
+  const at = a as WithSourceTarget<WithId<T>>
+  return isDescendantOf(at.source, source) && !isDescendantOf(at.target, source)
+}
+
+export function isIncoming<T extends string>(target: WithId<NoInfer<T>>): (a: WithSourceTarget<WithId<T>>) => boolean
+export function isIncoming<T extends string>(a: WithSourceTarget<WithId<T>>, target: WithId<T>): boolean
+export function isIncoming<T extends string>(a: WithSourceTarget<WithId<T>> | WithId<T>, target?: WithId<T>) {
+  if (!target) {
+    const _target = a as WithId<T>
+    return (b: WithSourceTarget<WithId<T>>) => isIncoming(b, _target)
+  }
+  const at = a as WithSourceTarget<WithId<T>>
+  return isDescendantOf(at.target, target) && !isDescendantOf(at.source, target)
+}
+
+export function isAnyInOut<T extends string>(source: WithId<NoInfer<T>>): (a: WithSourceTarget<WithId<T>>) => boolean
+export function isAnyInOut<T extends string>(a: WithSourceTarget<WithId<T>>, source: WithId<T>): boolean
+export function isAnyInOut<T extends string>(a: WithSourceTarget<WithId<T>> | WithId<T>, source?: WithId<T>) {
+  if (!source) {
+    const _source = a as WithId<T>
+    return (b: WithSourceTarget<WithId<T>>) => isAnyInOut(b, _source)
+  }
+  const at = a as WithSourceTarget<WithId<T>>
+  return isDescendantOf(at.source, source) !== isDescendantOf(at.target, source)
+}
+
+// export function isIncoming<T>(target: NoInfer<T>): (a: WithSourceTarget<T>) => boolean
+// export function isIncoming<T>(a: WithSourceTarget<T>, target: T): boolean
+// export function isIncoming<T = unknown>(a: WithSourceTarget<T> | T, target?: T) {
+//   if (target) {
+//     return (a as WithSourceTarget<T>).target === target
+//   }
+//   const _target = a as T
+//   return (b: WithSourceTarget) => b.target === _target
+// }
+
+// export function isAnyInOut<T>(source: NoInfer<T>): (a: WithSourceTarget<T>) => boolean
+// export function isAnyInOut<T>(a: WithSourceTarget<T>, source: T): boolean
+// export function isAnyInOut<T = unknown>(a: WithSourceTarget<T> | T, source?: T) {
+//   if (source) {
+//     return hasSameSource(a as WithSourceTarget<T>, source) || hasSameTarget(a as WithSourceTarget<T>, source)
+//   }
+//   const _source = a as T
+//   return (b: WithSourceTarget) => hasSameSource(b, _source) || hasSameTarget(b, _source)
+// }

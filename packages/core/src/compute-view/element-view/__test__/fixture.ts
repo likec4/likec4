@@ -37,7 +37,7 @@ import {
   type ViewRuleGroup,
   type ViewRulePredicate,
   type ViewRuleStyle,
-  type WhereOperator
+  type WhereOperator,
 } from '../../../types'
 import { type DirectRelationExpr as C4RelationExpr } from '../../../types/expression'
 import { withReadableEdges } from '../../utils/with-readable-edges'
@@ -145,9 +145,9 @@ const el = ({
   tags: tags as NonEmptyArray<Tag> ?? null,
   links: null,
   style: {
-    ...style
+    ...style,
   },
-  ...props
+  ...props,
 })
 
 export const fakeElements = {
@@ -155,68 +155,68 @@ export const fakeElements = {
     id: 'customer',
     kind: 'actor',
     title: 'customer',
-    shape: 'person'
+    shape: 'person',
   }),
   'support': el({
     id: 'support',
     kind: 'actor',
     title: 'support',
-    shape: 'person'
+    shape: 'person',
   }),
   'cloud': el({
     id: 'cloud',
     kind: 'system',
     title: 'cloud',
     icon: 'none',
-    tags: ['next', 'old']
+    tags: ['next', 'old'],
   }),
   'cloud.backend': el({
     id: 'cloud.backend',
     kind: 'container',
-    title: 'backend'
+    title: 'backend',
   }),
   'cloud.frontend': el({
     id: 'cloud.frontend',
     kind: 'container',
     title: 'frontend',
-    shape: 'browser'
+    shape: 'browser',
   }),
   'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
     kind: 'component',
     icon: 'tech:graphql' as IconUrl,
-    title: 'graphql'
+    title: 'graphql',
   }),
   'email': el({
     id: 'email',
     kind: 'system',
-    title: 'email'
+    title: 'email',
   }),
   'cloud.backend.storage': el({
     id: 'cloud.backend.storage',
     kind: 'component',
     title: 'storage',
-    tags: ['storage', 'old']
-  }),
-  'cloud.frontend.adminPanel': el({
-    id: 'cloud.frontend.adminPanel',
-    kind: 'component',
-    title: 'adminPanel',
-    tags: ['old']
+    tags: ['storage', 'old'],
   }),
   'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'dashboard',
     icon: 'tech:react' as IconUrl,
-    tags: ['next']
+    tags: ['next'],
+  }),
+  'cloud.frontend.supportPanel': el({
+    id: 'cloud.frontend.supportPanel',
+    kind: 'component',
+    title: 'adminPanel',
+    tags: ['old'],
   }),
   'amazon': el({
     id: 'amazon',
     kind: 'system',
     title: 'amazon',
     icon: 'tech:aws' as IconUrl,
-    tags: ['aws']
+    tags: ['aws'],
   }),
   'amazon.s3': el({
     id: 'amazon.s3',
@@ -224,8 +224,8 @@ export const fakeElements = {
     title: 's3',
     shape: 'storage',
     icon: 'aws:s3' as IconUrl,
-    tags: ['aws', 'storage']
-  })
+    tags: ['aws', 'storage'],
+  }),
 } satisfies Record<string, Element>
 
 export type FakeElementIds = keyof typeof fakeElements
@@ -251,51 +251,41 @@ const rel = <Source extends FakeElementIds, Target extends FakeElementIds>({
     title: title ?? '',
     source: source as Fqn,
     target: target as Fqn,
-    ...(props as any)
+    ...(props as any),
   }) as Omit<ModelRelation, 'id'> & { id: `${Source}:${Target}` }
 
 export const fakeRelations = [
   rel({
     source: 'customer',
     target: 'cloud.frontend.dashboard',
-    title: 'opens in browser'
+    title: 'opens in browser',
   }),
   rel({
     source: 'support',
-    target: 'cloud.frontend.adminPanel',
-    title: 'manages'
+    target: 'cloud.frontend.supportPanel',
+    title: 'manages',
   }),
   rel({
     source: 'cloud.backend.storage',
     target: 'amazon.s3',
     title: 'uploads',
-    tags: ['aws', 'storage', 'legacy']
+    tags: ['aws', 'storage', 'legacy'],
   }),
   rel({
     source: 'customer',
     target: 'cloud',
-    title: 'uses'
+    title: 'uses',
   }),
   rel({
     source: 'cloud.backend.graphql',
     target: 'cloud.backend.storage',
     title: 'stores',
-    tags: ['old', 'storage']
+    tags: ['old', 'storage'],
   }),
-  // rel({
-  //   source: 'cloud.backend',
-  //   target: 'cloud.email',
-  //   title: 'schedule emails'
-  // }),
-  // rel({
-  //   source: 'cloud.email',
-  //   target: 'customer',
-  //   title: 'send emails'
-  // }),
   rel({
     source: 'cloud.frontend',
     target: 'cloud.backend',
-    title: 'requests'
+    title: 'requests',
   }),
   rel({
     source: 'cloud.frontend.dashboard',
@@ -303,16 +293,16 @@ export const fakeRelations = [
     kind: 'graphlql',
     title: 'requests',
     line: 'solid',
-    tags: ['next']
+    tags: ['next'],
   }),
   rel({
-    source: 'cloud.frontend.adminPanel',
+    source: 'cloud.frontend.supportPanel',
     target: 'cloud.backend.graphql',
     kind: 'graphlql',
     title: 'fetches',
     line: 'dashed',
     tail: 'odiamond',
-    tags: ['old']
+    tags: ['old'],
   }),
   rel({
     source: 'cloud',
@@ -320,47 +310,47 @@ export const fakeRelations = [
     title: 'uses',
     head: 'diamond',
     tail: 'odiamond',
-    tags: ['aws']
+    tags: ['aws'],
   }),
   rel({
     source: 'cloud.backend',
     target: 'email',
     title: 'schedule',
-    tags: ['communication']
+    tags: ['communication'],
   }),
   rel({
     source: 'cloud',
     target: 'email',
     title: 'uses',
-    tags: ['communication']
+    tags: ['communication'],
   }),
   rel({
     source: 'email',
     target: 'cloud',
     title: 'notifies',
-    tags: ['communication']
-  })
+    tags: ['communication'],
+  }),
 ]
 
 export const globalStyles = {
   'mute_old': [{
     targets: [$expr({
       elementTag: 'old' as Tag,
-      isEqual: true
+      isEqual: true,
     })],
     style: {
-      color: 'muted'
-    }
+      color: 'muted',
+    },
   }],
   'red_next': [{
     targets: [$expr({
       elementTag: 'next' as Tag,
-      isEqual: true
+      isEqual: true,
     })],
     style: {
-      color: 'red'
-    }
-  }]
+      color: 'red',
+    },
+  }],
 } as const
 
 export type FakeRelationIds = (typeof fakeRelations)[number]['id']
@@ -369,20 +359,20 @@ const fakeParsedModel = {
   relations: indexBy(fakeRelations, r => r.id),
   deployments: {
     elements: {},
-    relations: {}
+    relations: {},
   },
   views: {},
   globals: {
     predicates: {
       'remove_tag_old': [
         $exclude('*', {
-          tag: { eq: 'old' }
-        })
+          tag: { eq: 'old' },
+        }),
       ],
       'remove_not_tag_old': [
         $exclude('*', {
-          tag: { neq: 'old' }
-        })
+          tag: { neq: 'old' },
+        }),
       ],
       'include_next': [
         $include('* -> *', {
@@ -392,18 +382,18 @@ const fakeParsedModel = {
                 or: [
                   { tag: { eq: 'communication' } },
                   { tag: { eq: 'next' } },
-                  { tag: { eq: 'old' } }
-                ]
+                  { tag: { eq: 'old' } },
+                ],
               },
-              { tag: { neq: 'storage' } }
-            ]
-          }
-        })
-      ]
+              { tag: { neq: 'storage' } },
+            ],
+          },
+        }),
+      ],
     } satisfies Record<string, NonEmptyArray<ViewRulePredicate>>,
     dynamicPredicates: {},
-    styles: globalStyles
-  }
+    styles: globalStyles,
+  },
 } as const
 export const fakeModel = LikeC4Model.fromDump(fakeParsedModel)
 
@@ -415,15 +405,15 @@ const emptyView = {
   tags: null,
   links: null,
   customColorDefinitions: {},
-  rules: []
+  rules: [],
 }
 
 export const includeWildcard = {
   include: [
     {
-      wildcard: true
-    }
-  ]
+      wildcard: true,
+    },
+  ],
 } satisfies ViewRule
 
 export type ElementRefExpr =
@@ -458,42 +448,42 @@ export function $custom(
     icon?: string
     opacity?: number
     navigateTo?: string
-  }
+  },
 ): C4CustomElementExpr {
   return {
     custom: {
       expr: $expr(expr) as any,
-      ...props as any
-    }
+      ...props as any,
+    },
   }
 }
 
 export function $customRelation(
   relation: RelationExpr,
-  props: Omit<C4CustomRelationExpr['customRelation'], 'relation'>
+  props: Omit<C4CustomRelationExpr['customRelation'], 'relation'>,
 ): C4CustomRelationExpr {
   return {
     customRelation: {
       relation: $expr(relation) as any,
-      ...props
-    }
+      ...props,
+    },
   }
 }
 
 export function $where(
   expr: Expression | C4Expression,
-  operator: WhereOperator<TestTag, string>
+  operator: WhereOperator<TestTag, string>,
 ): ElementWhereExpr | RelationWhereExpr {
   return {
     where: {
       expr: $expr(expr) as any,
-      condition: operator
-    }
+      condition: operator,
+    },
   }
 }
 
 export function $inout(
-  expr: InOutExpr | C4ElementExpression
+  expr: InOutExpr | C4ElementExpression,
 ): C4InOutExpr {
   const innerExpression = !isString(expr)
     ? expr as C4Expression
@@ -503,7 +493,7 @@ export function $inout(
 }
 
 export function $incoming(
-  expr: IncomingExpr | C4ElementExpression
+  expr: IncomingExpr | C4ElementExpression,
 ): C4IncomingExpr {
   const innerExpression = !isString(expr)
     ? expr as C4Expression
@@ -513,7 +503,7 @@ export function $incoming(
 }
 
 export function $outgoing(
-  expr: OutgoingExpr | C4ElementExpression
+  expr: OutgoingExpr | C4ElementExpression,
 ): C4OutgoingExpr {
   const innerExpression = !isString(expr)
     ? expr as C4Expression
@@ -523,7 +513,7 @@ export function $outgoing(
 }
 
 export function $relation(
-  expr: RelationExpr
+  expr: RelationExpr,
 ): C4RelationExpr {
   const [source, target] = expr.split(/ -> | <-> /)
   const isBidirectional = expr.includes(' <-> ')
@@ -531,7 +521,7 @@ export function $relation(
   return {
     source: $expr(source as ElementRefExpr) as any,
     target: $expr(target as ElementRefExpr) as any,
-    ...(isBidirectional && { isBidirectional })
+    ...(isBidirectional && { isBidirectional }),
   }
 }
 
@@ -553,23 +543,23 @@ export function $expr(expr: Expression | C4Expression): C4Expression {
   }
   if (expr.endsWith('._')) {
     return {
-      expanded: expr.replace('._', '') as Fqn
+      expanded: expr.replace('._', '') as Fqn,
     }
   }
   if (expr.endsWith('.*')) {
     return {
       element: expr.replace('.*', '') as Fqn,
-      isChildren: true
+      isChildren: true,
     }
   }
   if (expr.endsWith('.**')) {
     return {
       element: expr.replace('.**', '') as Fqn,
-      isDescendants: true
+      isDescendants: true,
     }
   }
   return {
-    element: expr as Fqn
+    element: expr as Fqn,
   }
 }
 
@@ -591,7 +581,7 @@ export function $include(expr: Expression | C4Expression, props?: CustomProps): 
   let _expr = props?.where ? $where(expr, props.where) : $expr(expr)
   _expr = props?.with ? $with(_expr, props.with) : _expr
   return {
-    include: [_expr]
+    include: [_expr],
   }
 }
 export function $with(expr: C4Expression, props?: CustomProps['with']): C4CustomRelationExpr | C4CustomElementExpr {
@@ -599,15 +589,15 @@ export function $with(expr: C4Expression, props?: CustomProps['with']): C4Custom
     return {
       customRelation: {
         relation: expr,
-        ...props as any
-      }
+        ...props as any,
+      },
     }
   } else if (isElementRef(expr) || isElementWhere(expr)) {
     return {
       custom: {
         expr: expr,
-        ...props as any
-      }
+        ...props as any,
+      },
     }
   }
 
@@ -616,20 +606,20 @@ export function $with(expr: C4Expression, props?: CustomProps['with']): C4Custom
 export function $exclude(expr: Expression | C4Expression, where?: WhereOperator<TestTag, string>): ViewRulePredicate {
   let _expr = where ? $where(expr, where) : $expr(expr)
   return {
-    exclude: [_expr]
+    exclude: [_expr],
   }
 }
 export function $group(groupRules: ViewRuleGroup['groupRules']): ViewRuleGroup {
   return {
     title: null,
-    groupRules
+    groupRules,
   }
 }
 
 export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
   return {
     targets: [$expr(element) as C4ElementExpression],
-    style: Object.assign({}, style)
+    style: Object.assign({}, style),
   }
 }
 
@@ -641,11 +631,11 @@ export function $global(expr: GlobalExpr): ViewRuleGlobalStyle | ViewRuleGlobalP
   switch (_t) {
     case 'predicate':
       return {
-        predicateId: id as GlobalPredicateId
+        predicateId: id as GlobalPredicateId,
       }
     case 'style':
       return {
-        styleId: id as GlobalStyleID
+        styleId: id as GlobalStyleID,
       }
     default:
       throw new Error(`Invalid global expression: ${expr}`)
@@ -661,8 +651,8 @@ export function computeView(
       fakeModel,
       {
         ...emptyView,
-        rules: [args[0]].flat()
-      }
+        rules: [args[0]].flat(),
+      },
     )
   } else {
     result = computeElementView(
@@ -671,8 +661,8 @@ export function computeView(
         ...emptyView,
         id: 'index' as ViewId,
         viewOf: args[0] as Fqn,
-        rules: [args[1]].flat()
-      }
+        rules: [args[1]].flat(),
+      },
     )
   }
 
@@ -680,6 +670,6 @@ export function computeView(
 
   return Object.assign(result, {
     nodeIds: map(result.nodes, prop('id')) as string[],
-    edgeIds: map(result.edges, prop('id')) as string[]
+    edgeIds: map(result.edges, prop('id')) as string[],
   })
 }

@@ -8,51 +8,51 @@ const relations = [
     id: 'customer:cloud.frontend.dashboard' as RelationId,
     source: 'customer' as Fqn,
     target: 'cloud.frontend.dashboard' as Fqn,
-    title: ''
+    title: '',
   },
   {
-    id: 'support:cloud.frontend.adminPanel' as RelationId,
+    id: 'support:cloud.frontend.supportPanel' as RelationId,
     source: 'support' as Fqn,
-    target: 'cloud.frontend.adminPanel' as Fqn,
-    title: ''
+    target: 'cloud.frontend.supportPanel' as Fqn,
+    title: '',
   },
   {
     id: 'cloud.backend.storage:amazon.s3' as RelationId,
     source: 'cloud.backend.storage' as Fqn,
     target: 'amazon.s3' as Fqn,
-    title: ''
+    title: '',
   },
   {
     id: 'amazon.api:cloud.backend.graphql' as RelationId,
     source: 'amazon.api' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
-    title: ''
+    title: '',
   },
   {
     id: 'cloud.backend.graphql:cloud.backend.storage' as RelationId,
     source: 'cloud.backend.graphql' as Fqn,
     target: 'cloud.backend.storage' as Fqn,
-    title: ''
+    title: '',
   },
   {
     id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationId,
     source: 'cloud.frontend.dashboard' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
-    title: ''
+    title: '',
   },
   {
-    id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationId,
-    source: 'cloud.frontend.adminPanel' as Fqn,
+    id: 'cloud.frontend.supportPanel:cloud.backend.graphql' as RelationId,
+    source: 'cloud.frontend.supportPanel' as Fqn,
     target: 'cloud.backend.graphql' as Fqn,
-    title: ''
-  }
+    title: '',
+  },
 ] satisfies ModelRelation[]
 
 describe('compareRelations', () => {
   function rel(source: string, target: string) {
     return {
       source,
-      target
+      target,
     }
   }
   function sorted(...relations: Array<{ source: string; target: string }>) {
@@ -62,7 +62,7 @@ describe('compareRelations', () => {
   it('should sort by source and target', () => {
     expect(sorted(rel('customer', 'cloud.ui'), rel('customer', 'cloud'))).toEqual([
       'customer -> cloud',
-      'customer -> cloud.ui'
+      'customer -> cloud.ui',
     ])
 
     expect(
@@ -71,8 +71,8 @@ describe('compareRelations', () => {
         rel('1', '2'),
         rel('1.1.1', '2'),
         rel('1.1.1', '2.1'),
-        rel('1.1', '2')
-      )
+        rel('1.1', '2'),
+      ),
     ).toEqual(['1 -> 2', '1 -> 2.1', '1.1 -> 2', '1.1.1 -> 2', '1.1.1 -> 2.1'])
   })
 
@@ -87,8 +87,8 @@ describe('compareRelations', () => {
         // no same parent
         rel('cloud.1.1', 'aws.1'),
         rel('cloud.1', 'aws.1'),
-        rel('cloud', 'aws')
-      )
+        rel('cloud', 'aws'),
+      ),
     ).toEqual([
       'cloud -> aws',
       'cloud.1 -> aws.1',
@@ -96,7 +96,7 @@ describe('compareRelations', () => {
       'cloud.1 -> cloud.2',
       'cloud.1 -> cloud.2.1',
       'cloud.1.1 -> cloud.2',
-      'cloud.1.1 -> cloud.2.1'
+      'cloud.1.1 -> cloud.2.1',
     ])
   })
 
@@ -119,8 +119,8 @@ describe('compareRelations', () => {
         rel('cloud.api', 'aws'),
         rel('cloud.ui.1', 'aws.1'),
         rel('cloud.ui', 'aws'),
-        rel('cloud', 'aws')
-      )
+        rel('cloud', 'aws'),
+      ),
     ).toEqual([
       'cloud -> aws',
       'cloud.api -> aws',
@@ -134,19 +134,19 @@ describe('compareRelations', () => {
       'cloud.ui.2 -> cloud.api.2',
       'cloud.api.1 -> cloud.api.2',
       'cloud.ui.1 -> cloud.ui.2',
-      'cloud.ui.2 -> cloud.ui.1'
+      'cloud.ui.2 -> cloud.ui.1',
     ])
   })
 
   it('should sort relations from example', () => {
     expect(sorted(...relations)).toEqual([
       'customer -> cloud.frontend.dashboard',
-      'support -> cloud.frontend.adminPanel',
+      'support -> cloud.frontend.supportPanel',
       'amazon.api -> cloud.backend.graphql',
       'cloud.backend.storage -> amazon.s3',
       'cloud.frontend.dashboard -> cloud.backend.graphql',
-      'cloud.frontend.adminPanel -> cloud.backend.graphql',
-      'cloud.backend.graphql -> cloud.backend.storage'
+      'cloud.frontend.supportPanel -> cloud.backend.graphql',
+      'cloud.backend.graphql -> cloud.backend.storage',
     ])
   })
 })

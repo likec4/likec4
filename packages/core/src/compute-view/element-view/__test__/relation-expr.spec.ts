@@ -125,11 +125,11 @@ describe('relation-expr', () => {
       'customer',
       'support',
       'cloud.frontend.dashboard',
-      'cloud.frontend.adminPanel',
+      'cloud.frontend.supportPanel',
     ])
     expect(edgeIds).toEqual([
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
+      'support:cloud.frontend.supportPanel',
     ])
   })
 

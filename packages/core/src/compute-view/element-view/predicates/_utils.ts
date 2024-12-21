@@ -1,3 +1,4 @@
+import { anyPass } from 'remeda'
 import { nonexhaustive } from '../../../errors'
 import type { LikeC4Model } from '../../../model'
 import * as Expr from '../../../types/expression'
@@ -15,7 +16,7 @@ export function resolveElements(model: LikeC4Model, expr: Exclude<Expr.ElementEx
       const element = model.element(expr.expanded)
       return [
         element,
-        ...element.children()
+        ...element.children(),
       ]
     }
     case Expr.isElementRef(expr): {
@@ -51,16 +52,16 @@ export function includeDescendantsFromMemory(elements: Elem[], memory: Memory): 
   if (memory.isEmpty() || elements.length === 0) {
     return elements
   }
-  const descedantsOf = isDescendantOf(elements)
+  const descedantsOf = anyPass(elements.map(e => isDescendantOf(e)))
   const fromMemory = toArray(
     ifilter(
       memory.elements,
-      el => !elements.includes(el) && descedantsOf(el)
-    )
+      el => !elements.includes(el) && descedantsOf(el),
+    ),
   )
   return [
     ...elements,
-    ...fromMemory
+    ...fromMemory,
   ]
 }
 
@@ -69,7 +70,7 @@ export function includeDescendantsFromMemory(elements: Elem[], memory: Memory): 
  */
 export function resolveAndIncludeFromMemory(
   nonWildcard: Expr.NonWilcard,
-  { memory, model }: Pick<PredicateCtx, 'model' | 'memory'>
+  { memory, model }: Pick<PredicateCtx, 'model' | 'memory'>,
 ): Elem[] {
   const resolved = resolveElements(model, nonWildcard)
   // We include from memory only if the expression is:

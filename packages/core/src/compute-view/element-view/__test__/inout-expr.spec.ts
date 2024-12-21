@@ -79,7 +79,6 @@ describe('inout-expr', () => {
       'customer',
       'cloud.frontend',
       'cloud.backend',
-      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon',
@@ -92,7 +91,6 @@ describe('inout-expr', () => {
     ])
     expect(withoutFrontend).toEqual([
       'cloud.backend',
-      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon',
@@ -108,7 +106,6 @@ describe('inout-expr', () => {
     ])
     expect(nodeIds).toEqual([
       'cloud.backend',
-      'email',
       'cloud.backend.graphql',
       'cloud.backend.storage',
       'amazon',

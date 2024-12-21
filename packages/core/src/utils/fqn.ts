@@ -3,7 +3,7 @@ import type { Fqn } from '../types'
 import { compareNatural } from './compare-natural'
 import { isString } from './guards'
 
-type Predicate<T> = (x: T) => boolean
+export type Predicate<T> = (x: T) => boolean
 
 export function parentFqn<E extends string>(fqn: E): E | null {
   const lastDot = fqn.lastIndexOf('.')
@@ -64,19 +64,23 @@ export function isSameHierarchy<E extends string | { id: Fqn }>(one: E, another:
   return first === second || second.startsWith(first + '.') || first.startsWith(second + '.')
 }
 
-export function isDescendantOf<E extends string | { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
-  const predicates = ancestors.map(a => {
-    const ancestorPrefix = asString(a) + '.'
-    return (e: E) => asString(e).startsWith(ancestorPrefix)
-  })
-  return anyPass(predicates)
+type WithId<T> = { id: T }
+
+export function isDescendantOf<T extends string>(ancestor: WithId<T>): (descedant: WithId<T>) => boolean
+export function isDescendantOf<T extends string>(descedant: WithId<T>, ancestor: WithId<T>): boolean
+export function isDescendantOf<T extends string>(descedant: WithId<T>, ancestor?: WithId<T>) {
+  if (!ancestor) {
+    const a = descedant
+    return (d: WithId<T>) => isAncestor(a, d)
+  }
+  return isAncestor(ancestor, descedant)
 }
 
-export function notDescendantOf<E extends string | { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
-  const ancestorIds = ancestors.map(asString)
-  const isDescendant = isDescendantOf(ancestors)
-  return (e) => !isDescendant(e) && !ancestorIds.includes(asString(e))
-}
+// export function notDescendantOf<E extends string | { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
+//   const ancestorIds = ancestors.map(asString)
+//   const isDescendant = isDescendantOf(ancestors)
+//   return (e) => !isDescendant(e) && !ancestorIds.includes(asString(e))
+// }
 
 /**
  * How deep in the hierarchy the element is.

@@ -1,7 +1,7 @@
 import { dropWhile, forEach, pipe, take, zip } from 'remeda'
 import { Expr } from '../../..'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/model'
-import { difference, isIterable } from '../../../utils'
+import { difference, isAncestor, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { AbstractStageInclude, type CtxConnection, type StageExpression } from '../../memory'
 import { type ActiveGroupCtx, type ActiveGroupMemory, type Ctx } from './memory'
@@ -55,11 +55,9 @@ export class StageInclude<C extends Ctx = Ctx> extends AbstractStageInclude<C> {
     if (!element) {
       return
     }
-    const allow = this.memory.scope
-    if (allow && !allow.isAncestorOf(element)) {
-      return
+    if (!this.memory.scope || isAncestor(this.memory.scope, element)) {
+      this.addImplicit(element)
     }
-    this.addImplicit(element)
   }
 
   protected override processConnections(connections: CtxConnection<Ctx>[]) {

@@ -124,7 +124,7 @@ describe('groups', () => {
           }),
         ]),
         $group([
-          $include('cloud.frontend.adminPanel'),
+          $include('cloud.frontend.supportPanel'),
           $include('cloud.backend'),
         ]),
         $group([
@@ -146,7 +146,7 @@ describe('groups', () => {
       'cloud.frontend.dashboard',
       'support',
       '@gr3',
-      'cloud.frontend.adminPanel',
+      'cloud.frontend.supportPanel',
       'cloud.backend',
     ])
     // parent of each node
@@ -164,8 +164,8 @@ describe('groups', () => {
         "@gr4": "@gr1",
         "@gr5": null,
         "cloud.backend": "@gr3",
-        "cloud.frontend.adminPanel": "@gr3",
         "cloud.frontend.dashboard": "@gr2",
+        "cloud.frontend.supportPanel": "@gr3",
         "customer": "@gr5",
         "support": "@gr4",
       }
@@ -189,7 +189,7 @@ describe('groups', () => {
           "cloud.frontend.dashboard",
         ],
         "@gr3": [
-          "cloud.frontend.adminPanel",
+          "cloud.frontend.supportPanel",
           "cloud.backend",
         ],
         "@gr4": [
@@ -199,8 +199,8 @@ describe('groups', () => {
           "customer",
         ],
         "cloud.backend": [],
-        "cloud.frontend.adminPanel": [],
         "cloud.frontend.dashboard": [],
+        "cloud.frontend.supportPanel": [],
         "customer": [],
         "support": [],
       }
@@ -208,8 +208,8 @@ describe('groups', () => {
 
     expect(edgeIds).toEqual([
       'cloud.frontend.dashboard:cloud.backend',
-      'cloud.frontend.adminPanel:cloud.backend',
-      'support:cloud.frontend.adminPanel',
+      'cloud.frontend.supportPanel:cloud.backend',
+      'support:cloud.frontend.supportPanel',
       'customer:cloud.frontend.dashboard',
     ])
 
@@ -226,10 +226,10 @@ describe('groups', () => {
       ),
     ).toMatchInlineSnapshot(`
       {
-        "cloud.frontend.adminPanel:cloud.backend": "@gr3",
         "cloud.frontend.dashboard:cloud.backend": "@gr1",
+        "cloud.frontend.supportPanel:cloud.backend": "@gr3",
         "customer:cloud.frontend.dashboard": null,
-        "support:cloud.frontend.adminPanel": "@gr1",
+        "support:cloud.frontend.supportPanel": "@gr1",
       }
     `)
   })
