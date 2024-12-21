@@ -21,12 +21,18 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      }
+    }
   },
   "packageManager": "yarn@4.5.3",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "",
+    "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f -g 'dist/*' .tsbuildinfo",
     "test": "vitest run --no-isolate"
@@ -74,6 +80,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "typescript": "^5.7.2",
+    "unbuild": "^3.0.1",
     "vitest": "^2.1.8"
   }
 }

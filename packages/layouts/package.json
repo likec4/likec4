@@ -21,22 +21,24 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
-    "./graphviz/binary": "./src/graphviz/binary/index.ts"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.mjs"
-      },
-      "./graphviz/binary": {
+      }
+    },
+    "./graphviz/binary": {
+      "development": "./src/graphviz/binary/index.ts",
+      "default": {
         "types": "./dist/graphviz/binary/index.d.ts",
         "default": "./dist/graphviz/binary/index.mjs"
       }
     }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

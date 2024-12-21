@@ -19,10 +19,19 @@
   "type": "module",
   "bin": "./bin/likec4.mjs",
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      }
+    },
     "./react": {
-      "types": "./app/react/components/index.ts",
-      "default": "./react/index.mjs"
+      "development": "./app/react/components/index.ts",
+      "default": {
+        "types": "./react/index.d.ts",
+        "default": "./react/index.mjs"
+      }
     },
     "./react/style.css": "./react/style.css",
     "./icons/all": {
@@ -36,26 +45,7 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
-      },
-      "./react": {
-        "types": "./react/index.d.ts",
-        "default": "./react/index.mjs"
-      },
-      "./react/style.css": "./react/style.css",
-      "./icons/all": {
-        "types": "./icons/all.d.ts",
-        "default": "./icons/all.js"
-      },
-      "./icons/*": {
-        "types": "./icons/icon.d.ts",
-        "default": "./icons/*"
-      }
-    }
+    "access": "public"
   },
   "scripts": {
     "turbo-build": "turbo run build --log-prefix=none --log-order=grouped",
@@ -172,6 +162,7 @@
     "ufo": "^1.5.4",
     "unbuild": "^3.0.1",
     "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vite-plugin-dts": "^4.4.0",
     "vite-plugin-shadow-style": "^1.1.1",
     "vitest": "^2.1.8",
     "yargs": "17.7.2"

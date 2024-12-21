@@ -21,6 +21,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "development": "./src/index.ts",
       "node": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.mjs",
@@ -44,8 +45,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "prepack": "unbuild",
-    "generate": "unbuild"
+    "build": "unbuild"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

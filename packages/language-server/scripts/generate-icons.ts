@@ -1,7 +1,7 @@
-import { compareNatural } from '@likec4/core'
 import { Icons } from '@likec4/icons/all'
 import { consola } from 'consola'
 import { CompositeGeneratorNode, joinToNode, toString } from 'langium/generate'
+import compareNatural from 'natural-compare-lite'
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 const out = new CompositeGeneratorNode()
@@ -19,10 +19,10 @@ out
   .indent({
     indentedChildren: [
       joinToNode(icons, String, {
-        appendNewLineIfNotEmpty: true
-      })
+        appendNewLineIfNotEmpty: true,
+      }),
     ],
-    indentation: 2
+    indentation: 2,
   })
   .appendNewLineIfNotEmpty()
   .append('}}`;')

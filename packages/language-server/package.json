@@ -22,47 +22,46 @@
   },
   "type": "module",
   "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "browser": "./dist/browser.js",
   "exports": {
     ".": {
-      "browser": "./src/browser.ts",
-      "default": "./src/index.ts"
-    },
-    "./likec4lib": "./src/likec4lib.ts",
-    "./browser": "./src/browser.ts",
-    "./protocol": "./src/protocol.ts"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "browser": {
-          "types": "./dist/browser.d.ts",
-          "import": "./dist/browser.mjs",
-          "require": "./dist/browser.cjs"
-        },
-        "default": {
-          "types": "./dist/index.d.ts",
-          "import": "./dist/index.mjs",
-          "require": "./dist/index.cjs"
-        }
-      },
-      "./likec4lib": {
-        "types": "./dist/likec4lib.d.ts",
-        "import": "./dist/likec4lib.mjs",
-        "require": "./dist/likec4lib.cjs"
-      },
-      "./browser": {
+      "development": "./src/index.ts",
+      "browser": {
         "types": "./dist/browser.d.ts",
-        "import": "./dist/browser.mjs",
-        "require": "./dist/browser.cjs"
+        "default": "./dist/browser.js"
       },
-      "./protocol": {
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./likec4lib": {
+      "development": "./src/likec4lib.ts",
+      "default": {
+        "types": "./dist/likec4lib.d.ts",
+        "default": "./dist/likec4lib.js"
+      }
+    },
+    "./browser": {
+      "development": "./src/browser.ts",
+      "default": {
+        "types": "./dist/browser.d.ts",
+        "default": "./dist/browser.js"
+      }
+    },
+    "./protocol": {
+      "development": "./src/protocol.ts",
+      "default": {
         "types": "./dist/protocol.d.ts",
-        "import": "./dist/protocol.mjs",
-        "require": "./dist/protocol.cjs"
+        "default": "./dist/protocol.js"
       }
     }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npjs.org",
+    "access": "public"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -108,6 +107,7 @@
     "execa": "^9.3.1",
     "langium-cli": "3.3.0",
     "mnemonist": "^0.39.8",
+    "natural-compare-lite": "^1.4.0",
     "npm-run-all2": "^7.0.1",
     "tsx": "~4.9.3",
     "turbo": "^2.3.3",

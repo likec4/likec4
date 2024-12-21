@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "noEmitOnError": false,
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ],
     "esModuleInterop": true,
     "target": "ESNext",
     "module": "ESNext",
@@ -18,11 +22,7 @@
       "react",
       "node",
       "vite/client"
-    ],
-    "paths": {
-      "@likec4/core": ["../../../core/src"],
-      "@likec4/diagram": ["../../../diagram/src"],
-    }
+    ]
   },
   "include": [
     "components",

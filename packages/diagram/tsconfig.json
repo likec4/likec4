@@ -5,6 +5,11 @@
     "rootDir": "src",
     "types": [
       "vite/client",
+    ],
+    "moduleResolution": "bundler",
+    "resolvePackageJsonExports": true,
+    "customConditions": [
+      "development",
     ]
   },
   "include": [

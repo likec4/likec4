@@ -48,8 +48,10 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: [
-    'vscode'
+  external: isProduction ? ['vscode'] : [
+    'vscode',
+    // '@vscode/extension-telemetry',
+    // '@hpcc-js/wasm-graphviz'
   ],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')

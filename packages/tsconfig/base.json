@@ -18,7 +18,8 @@
     "outDir": "${configDir}/dist",
     "module": "ES2022",
     "target": "ES2022",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
+    "resolvePackageJsonExports": true,
     "declaration": true,
     "declarationMap": true,
     "experimentalDecorators": true,
@@ -48,6 +49,9 @@
     "pretty": true,
     "incremental": true,
     "tsBuildInfoFile": "${configDir}/.tsbuildinfo",
+    "customConditions": [
+      "development"
+    ],
     "types": []
   }
 }

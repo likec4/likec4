@@ -28,39 +28,47 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
-    "./builder": "./src/builder/index.ts",
-    "./compute-view": "./src/compute-view/index.ts",
-    "./model": "./src/model/index.ts",
-    "./types": "./src/types/index.ts"
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./builder": {
+      "development": "./src/builder/index.ts",
+      "default": {
+        "types": "./dist/builder/index.d.mts",
+        "default": "./dist/builder/index.mjs"
+      }
+    },
+    "./compute-view": {
+      "development": "./src/compute-view/index.ts",
+      "default": {
+        "types": "./dist/compute-view/index.d.mts",
+        "default": "./dist/compute-view/index.mjs"
+      }
+    },
+    "./model": {
+      "development": "./src/model/index.ts",
+      "default": {
+        "types": "./dist/model/index.d.mts",
+        "default": "./dist/model/index.mjs"
+      }
+    },
+    "./types": {
+      "development": "./src/types/index.ts",
+      "default": {
+        "types": "./dist/types/index.d.mts",
+        "default": "./dist/types/index.mjs"
+      }
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
     "types": "./dist/index.d.mts",
-    "module": "./dist/index.mjs",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "./builder": {
-        "types": "./dist/builder/index.d.mts",
-        "default": "./dist/builder/index.mjs"
-      },
-      "./compute-view": {
-        "types": "./dist/compute-view/index.d.mts",
-        "default": "./dist/compute-view/index.mjs"
-      },
-      "./model": {
-        "types": "./dist/model/index.d.mts",
-        "default": "./dist/model/index.mjs"
-      },
-      "./types": {
-        "types": "./dist/types/index.d.mts",
-        "default": "./dist/types/index.mjs"
-      }
-    }
+    "module": "./dist/index.mjs"
   },
   "dependencies": {
     "defu": "^6.1.4",

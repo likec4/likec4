@@ -16,10 +16,10 @@ const config = {
       outFile: '../../react/index.d.ts',
       failOnClass: false,
       noCheck: true,
+      
       libraries: {
         inlinedLibraries: [
           '@mantine/core',
-          '@mantine/hooks',
           '@xyflow/react',
           '@xyflow/system',
           '@likec4/core',
