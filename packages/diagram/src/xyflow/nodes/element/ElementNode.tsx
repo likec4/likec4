@@ -159,6 +159,9 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     case dragging:
       animateVariant = 'idle'
       break
+    case isDimmed:
+      animateVariant = 'dimmed'
+      break
     case selected:
       animateVariant = 'selected'
       break
@@ -210,7 +213,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         component={m.div}
         className={clsx([
           css.container,
-          isDimmed && css.dimmed,
           animateVariant !== 'idle' && css.containerAnimated,
           'likec4-element-node'
         ])}

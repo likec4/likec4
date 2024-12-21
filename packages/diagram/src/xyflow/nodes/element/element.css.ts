@@ -46,16 +46,6 @@ export const containerAnimated = style({
   willChange: 'transform'
 })
 
-export const dimmed = style({})
-
-globalStyle(`.react-flow__node-element:has(${dimmed})`, {
-  opacity: 0.25,
-  transition: 'opacity 400ms ease-in-out, filter 500ms ease-in-out',
-  transitionDelay: '50ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-  willChange: 'opacity, filter'
-})
-
 const indicatorKeyframes = keyframes({
   'from': {
     strokeOpacity: 0.8
@@ -103,10 +93,6 @@ export const indicator = style({
       vars: {
         [indicatorStroke]: `color-mix(in srgb, ${vars.element.fill} 50%, #3c3c3c)`
       }
-    },
-    [`${dimmed} &`]: {
-      visibility: 'hidden',
-      display: 'none'
     }
   }
 })

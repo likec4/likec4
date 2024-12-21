@@ -145,6 +145,9 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     case dragging:
       animateVariant = 'idle'
       break
+    case isDimmed:
+      animateVariant = 'dimmed'
+      break
     case selected:
       animateVariant = 'selected'
       break
@@ -198,8 +201,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           className={clsx(
             css.container,
             'likec4-compound-node',
-            opacity < 1 && 'likec4-compound-transparent',
-            isDimmed && css.dimmed
+            opacity < 1 && 'likec4-compound-transparent'
           )}
 
           initial={false}

@@ -39,16 +39,6 @@ export const nodeHandlerInCenter = style({
   visibility: 'hidden'
 })
 
-export const dimmed = style({})
-
-globalStyle(`.react-flow__node-compound:has(${dimmed})`, {
-  opacity: 0.25,
-  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-  transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  willChange: 'opacity, filter'
-})
-
 globalStyle(`:where([data-mantine-color-scheme='dark'] .likec4-compound-transparent)`, {
   vars: {
     ['--_compound-border-color']: `color-mix(in srgb, ${vars.compound.titleColor} 25%, ${vars.element.stroke})`
