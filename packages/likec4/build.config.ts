@@ -10,7 +10,7 @@ if (!isProduction) {
 export default defineBuildConfig({
   entries: [
     'src/index.ts',
-    'src/cli/index.ts'
+    'src/cli/index.ts',
   ],
   clean: isProduction,
   outDir: 'dist',
@@ -22,9 +22,9 @@ export default defineBuildConfig({
         'json5',
         '@hpcc-js/wasm-graphviz',
         'vite',
-        '@vitejs/plugin-react-swc'
-      ]
-    }
+        '@vitejs/plugin-react-swc',
+      ],
+    },
   },
   alias: {
     '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
@@ -32,23 +32,15 @@ export default defineBuildConfig({
     '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
     ...(isProduction
       ? {
-        '@likec4/layouts/graphviz/binary': resolve('../layouts/dist/graphviz/binary/index.mjs'),
-        '@likec4/layouts': resolve('../layouts/dist/index.mjs'),
-        '@likec4/core/model': resolve('../core/dist/model/index.mjs'),
-        '@likec4/core/types': resolve('../core/dist/types/index.mjs'),
         '@likec4/core/compute-view': resolve('../core/dist/compute-view/index.mjs'),
         '@likec4/core': resolve('../core/dist/index.mjs'),
-        '@likec4/language-server': resolve('../language-server/dist/index.mjs')
+        '@likec4/language-server': resolve('../language-server/dist/index.js'),
       }
       : {
-        '@likec4/layouts/graphviz/binary': resolve('../layouts/src/graphviz/binary/index.ts'),
-        '@likec4/layouts': resolve('../layouts/src/index.ts'),
-        '@likec4/core/types': resolve('../core/src/types/index.ts'),
-        '@likec4/core/model': resolve('../core/src/model/index.ts'),
         '@likec4/core/compute-view': resolve('../core/src/compute-view/index.ts'),
         '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/language-server': resolve('../language-server/src/index.ts')
-      })
+        '@likec4/language-server': resolve('../language-server/src/index.ts'),
+      }),
   },
   failOnWarn: false,
   declaration: isProduction,
@@ -58,13 +50,13 @@ export default defineBuildConfig({
       platform: 'node',
       target: 'node20',
       legalComments: 'none',
-      minify: isProduction
+      minify: isProduction,
     },
     output: {
-      compact: isProduction
+      compact: isProduction,
     },
     resolve: {
-      exportConditions: ['node', isProduction ? 'production' : 'development']
+      exportConditions: ['node', isProduction ? 'production' : 'development'],
     },
     commonjs: {
       ignoreTryCatch: 'remove',
@@ -72,10 +64,10 @@ export default defineBuildConfig({
       transformMixedEsModules: true,
       defaultIsModuleExports: true,
       exclude: [
-        /\.d\.ts$/,
-        /\.d\.cts$/,
-        /\.d\.mts$/
-      ]
+        /\.ts$/,
+        /\.cts$/,
+        /\.mts$/,
+      ],
     },
     dts: {
       tsconfig: 'tsconfig.cli.json',
@@ -85,8 +77,8 @@ export default defineBuildConfig({
         strict: false,
         alwaysStrict: false,
         skipLibCheck: true,
-        skipDefaultLibCheck: true
-      }
-    }
-  }
+        skipDefaultLibCheck: true,
+      },
+    },
+  },
 })

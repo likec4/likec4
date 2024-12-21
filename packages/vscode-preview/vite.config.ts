@@ -8,18 +8,14 @@ export default defineConfig(({ mode }) => {
   const isDev = isWatchDev || mode === 'development'
   return {
     resolve: {
-      alias: {
-        '@likec4/core/types': resolve(__dirname, '../core/src/types'),
-        '@likec4/core': resolve(__dirname, '../core/src'),
-        '@likec4/diagram': resolve(__dirname, '../diagram/src')
-      },
-      dedupe: ['react', 'react-dom']
+      conditions: ['development'],
+      dedupe: ['react', 'react-dom'],
     },
     define: isDev ? {} : {
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.NODE_ENV': JSON.stringify('production'),
     },
     esbuild: {
-      jsxDev: false
+      jsxDev: false,
     },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
@@ -35,33 +31,33 @@ export default defineConfig(({ mode }) => {
         requireReturnsDefault: 'auto',
         extensions: ['.mjs', '.js'],
         transformMixedEsModules: true,
-        ignoreTryCatch: 'remove'
+        ignoreTryCatch: 'remove',
       },
       rollupOptions: {
         treeshake: {
-          preset: 'safest'
+          preset: 'safest',
         },
         output: {
           hoistTransitiveImports: false,
           compact: true,
           entryFileNames: `[name].js`,
-          assetFileNames: `[name].[ext]`
+          assetFileNames: `[name].[ext]`,
         },
         external: [
           'vscode',
-          '@emotion/is-prop-valid' // dev-only import from framer-motion
-        ]
-      }
+          '@emotion/is-prop-valid', // dev-only import from framer-motion
+        ],
+      },
     },
     plugins: [
       react(),
       vanillaExtractPlugin(
         isDev
           ? {
-            unstable_mode: 'transform'
+            unstable_mode: 'transform',
           }
-          : {}
-      )
-    ]
+          : {},
+      ),
+    ],
   }
 })

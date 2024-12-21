@@ -10,7 +10,6 @@ export default defineBuildConfig({
       outDir: './dist/',
       builder: 'mkdist',
       ext: 'js',
-      addRelativeDeclarationExtensions: true,
       globOptions: {
         ignore: [
           '**/__test*/**',

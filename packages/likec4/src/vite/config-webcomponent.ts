@@ -21,7 +21,7 @@ export async function viteWebcomponentConfig({
   outDir,
   base,
   webcomponentPrefix = 'likec4',
-  filename = 'likec4-views.js'
+  filename = 'likec4-views.js',
 }: LikeC4ViteWebcomponentConfig): Promise<InlineConfig> {
   const customLogger = createLikeC4Logger('c4:lib')
 
@@ -38,11 +38,12 @@ export async function viteWebcomponentConfig({
     root,
     configFile: false,
     resolve: {
+      conditions: ['development'],
       alias: {
         'likec4/icons': resolve(pkgRoot, '../icons'),
         '@likec4/core': resolve(pkgRoot, '../core/src'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src')
-      }
+        '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
+      },
     },
     clearScreen: false,
     base,
@@ -52,7 +53,7 @@ export async function viteWebcomponentConfig({
       __USE_STYLE_BUNDLE__: 'true',
       __USE_HASH_HISTORY__: 'false',
       __USE_OVERVIEW_GRAPH__: 'false',
-      'process.env.NODE_ENV': '"development"'
+      'process.env.NODE_ENV': '"development"',
     },
     build: {
       outDir,
@@ -68,39 +69,39 @@ export async function viteWebcomponentConfig({
           return filename
         },
         formats: ['iife'],
-        name: 'LikeC4Views'
+        name: 'LikeC4Views',
       },
       rollupOptions: {
         treeshake: {
-          preset: 'recommended'
+          preset: 'recommended',
         },
         output: {
           format: 'iife',
           compact: true,
           hoistTransitiveImports: false,
-          entryFileNames: filename
+          entryFileNames: filename,
         },
         plugins: [
-          shadowStyle()
-        ]
-      }
+          shadowStyle(),
+        ],
+      },
     },
     plugins: [
       react({}),
       vanillaExtractPlugin({
-        unstable_mode: 'transform'
+        unstable_mode: 'transform',
       }),
       likec4Plugin({
         languageServices,
-        useOverviewGraph: false
-      })
+        useOverviewGraph: false,
+      }),
     ],
     css: {
       postcss: {
         plugins: [
-          postcssPresetMantine()
-        ]
-      }
-    }
+          postcssPresetMantine(),
+        ],
+      },
+    },
   }
 }

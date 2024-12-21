@@ -22,7 +22,7 @@ const pkgRoot = resolve(_dirname, '../..')
 export async function viteReactConfig({
   languageServices,
   outDir,
-  filename = 'likec4-react.mjs'
+  filename = 'likec4-react.mjs',
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
   consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:react')
@@ -43,11 +43,12 @@ export async function viteReactConfig({
     clearScreen: false,
     mode: 'production',
     resolve: {
+      conditions: ['development'],
       alias: {
         'likec4/icons': resolve(pkgRoot, '../icons'),
         '@likec4/core': resolve(pkgRoot, '../core/src'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src')
-      }
+        '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
+      },
     },
     esbuild: {
       banner: JsBanners.banner,
@@ -60,9 +61,9 @@ export async function viteReactConfig({
         compilerOptions: {
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
-          jsx: 'react-jsx'
-        }
-      }
+          jsx: 'react-jsx',
+        },
+      },
     },
     build: {
       outDir,
@@ -76,7 +77,7 @@ export async function viteReactConfig({
         fileName(_format, _entryName) {
           return filename
         },
-        formats: ['es']
+        formats: ['es'],
       },
       rollupOptions: {
         external: [
@@ -86,7 +87,7 @@ export async function viteReactConfig({
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
-          /likec4\/icons\/.*/
+          /likec4\/icons\/.*/,
         ],
         // https://github.com/vitejs/vite/issues/15012
         onwarn(warning, defaultHandler) {
@@ -94,15 +95,15 @@ export async function viteReactConfig({
             return
           }
           defaultHandler(warning)
-        }
-      }
+        },
+      },
     },
     plugins: [
       react(),
       likec4Plugin({
         languageServices,
-        useOverviewGraph: false
-      })
-    ]
+        useOverviewGraph: false,
+      }),
+    ],
   }
 }
