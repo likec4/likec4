@@ -7,6 +7,13 @@ export default defineBuildConfig({
       input: './src/',
       outDir: './dist/',
       builder: 'mkdist',
+      ext: 'js',
+      globOptions: {
+        ignore: [
+          '**/__test*/**',
+          '**/*.spec.ts',
+        ],
+      },
     },
   ],
   clean: true,

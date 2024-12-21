@@ -25,7 +25,7 @@
       "development": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
+        "default": "./dist/index.js"
       }
     }
   },
