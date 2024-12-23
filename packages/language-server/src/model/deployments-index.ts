@@ -3,11 +3,11 @@ import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
 import { AstUtils, DocumentState, MultiMap } from 'langium'
 import { forEachObj, groupBy, isTruthy, pipe, prop } from 'remeda'
 import {
-  ast,
   type DeploymentAstNodeDescription,
+  type LikeC4LangiumDocument,
+  ast,
   ElementOps,
   isLikeC4LangiumDocument,
-  type LikeC4LangiumDocument
 } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -33,7 +33,7 @@ export class DeploymentsIndex {
         for (const doc of docs) {
           delete (doc as IndexedDocument)[DeploymentsIndexKey]
         }
-      }
+      },
     )
   }
 
@@ -55,7 +55,7 @@ export class DeploymentsIndex {
    * @returns Stream of artifacts
    */
   public nested(node: ast.DeploymentNode): Stream<DeploymentAstNodeDescription> {
-    const fqnName = this.getFqnName(node)
+    const fqnName = this.getFqn(node)
     return this.documents().flatMap(doc => this.get(doc).nested(fqnName))
   }
 
@@ -63,13 +63,13 @@ export class DeploymentsIndex {
     return this.documents().flatMap(doc => this.get(doc).byFqn(fqnName))
   }
 
-  public getFqnName(node: ast.DeploymentElement): Fqn {
+  public getFqn(node: ast.DeploymentElement): Fqn {
     let id = ElementOps.readId(node)
     if (isTruthy(id)) {
       return id
     }
     const fqn = [
-      this.Names.getNameStrict(node)
+      this.Names.getNameStrict(node),
     ]
     let _node = node
     let parentNode: ast.DeploymentNode | undefined
@@ -94,11 +94,11 @@ export class DeploymentsIndex {
     const Descriptions = this.services.workspace.AstNodeDescriptionProvider
 
     const createAndSaveDescription = (
-      props: { node: ast.DeploymentNode | ast.DeployedInstance; name: string; fqn: string }
+      props: { node: ast.DeploymentNode | ast.DeployedInstance; name: string; fqn: string },
     ) => {
       const desc = {
         ...Descriptions.createDescription(props.node, props.name, document),
-        fqn: props.fqn
+        fqn: props.fqn,
       }
       ElementOps.writeId(props.node, props.fqn as Fqn)
       _byfqn.add(props.fqn, desc)
@@ -107,7 +107,7 @@ export class DeploymentsIndex {
 
     const traverseNode = (
       container: ast.DeploymentNode,
-      parentFqn: string
+      parentFqn: string,
     ): readonly DeploymentAstNodeDescription[] => {
       const _descedants = [] as DeploymentAstNodeDescription[]
       const children = container.body?.elements
@@ -143,7 +143,7 @@ export class DeploymentsIndex {
               return
             }
             _nested.add(parentFqn, descs[0])
-          })
+          }),
         )
       }
       return _nested.get(parentFqn)
@@ -167,6 +167,9 @@ export class DeploymentsIndex {
   }
 }
 
+/**
+ * Index of deployment elements in the document
+ */
 export class DocumentDeploymentsIndex {
   static readonly EMPTY = new DocumentDeploymentsIndex([], new MultiMap(), new MultiMap())
 
@@ -179,7 +182,7 @@ export class DocumentDeploymentsIndex {
     /**
      * All elements by FQN
      */
-    private _byfqn: MultiMap<string, DeploymentAstNodeDescription>
+    private _byfqn: MultiMap<string, DeploymentAstNodeDescription>,
   ) {}
 
   public rootNodes(): readonly DeploymentAstNodeDescription[] {
@@ -212,7 +215,7 @@ export class DocumentDeploymentsIndex {
         if (descs.length === 1) {
           result.push(descs[0])
         }
-      })
+      }),
     )
     return result
   }

@@ -2,13 +2,13 @@ import type * as c4 from '@likec4/core'
 import { isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
 import { filter, first, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
-  ast,
   type ParsedAstElement,
   type ParsedAstRelation,
+  ast,
   resolveRelationPoints,
   streamModel,
   toElementStyle,
-  toRelationshipStyleExcludeDefaults
+  toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils/stringHash'
@@ -20,24 +20,22 @@ export function ModelParser<TBase extends Base>(B: TBase) {
   return class ModelParser extends B {
     parseModel() {
       const doc = this.doc
-      for (const el of streamModel(doc, this.isValid)) {
-        if (ast.isElement(el)) {
-          try {
+      for (const el of streamModel(doc)) {
+        try {
+          if (ast.isElement(el)) {
             doc.c4Elements.push(this.parseElement(el))
-          } catch (e) {
-            logWarnError(e)
+            continue
           }
-          continue
-        }
-        if (ast.isRelation(el)) {
-          try {
-            doc.c4Relations.push(this.parseRelation(el))
-          } catch (e) {
-            logWarnError(e)
+          if (ast.isRelation(el)) {
+            if (this.isValid(el)) {
+              doc.c4Relations.push(this.parseRelation(el))
+            }
+            continue
           }
-          continue
+          nonexhaustive(el)
+        } catch (e) {
+          logWarnError(e)
         }
-        nonexhaustive(el)
       }
     }
 
@@ -57,7 +55,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
         astNode.body?.props ?? [],
         filter(isValid),
         filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value || undefined])
+        mapToObj(p => [p.key, p.value || undefined]),
       )
 
       title = removeIndent(title ?? bodyProps.title)
@@ -85,7 +83,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
         ...(links && isNonEmptyArray(links) && { links }),
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
-        style
+        style,
       }
     }
 
@@ -102,7 +100,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
 
       const bodyProps = mapToObj(
         astNode.body?.props.filter(ast.isRelationStringProperty).filter(p => isNonNullish(p.value)) ?? [],
-        p => [p.key, p.value]
+        p => [p.key, p.value],
       )
 
       const navigateTo = pipe(
@@ -110,7 +108,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
         filter(ast.isRelationNavigateToProperty),
         map(p => p.value.view.ref?.name),
         filter(isTruthy),
-        first()
+        first(),
       )
 
       const title = removeIndent(astNode.title ?? bodyProps.title) ?? ''
@@ -121,7 +119,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
       const id = stringHash(
         astPath,
         source,
-        target
+        target,
       ) as c4.RelationId
       return {
         id,
@@ -136,7 +134,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
         ...(tags && { tags }),
         ...(isNonEmptyArray(links) && { links }),
         ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
-        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId })
+        ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
       }
     }
   }

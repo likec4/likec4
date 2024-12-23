@@ -4,12 +4,12 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 export default defineBuildConfig({
   entries: [
-    // 'src/index.ts',
     {
       input: './src/',
       outDir: './dist/',
       builder: 'mkdist',
       ext: 'js',
+      addRelativeDeclarationExtensions: false,
       globOptions: {
         ignore: [
           '**/__test*/**',
@@ -18,7 +18,7 @@ export default defineBuildConfig({
       },
     },
   ],
-  clean: isProduction,
+  clean: true,
   stub: !isProduction,
   stubOptions: {
     jiti: {
@@ -27,5 +27,5 @@ export default defineBuildConfig({
       ],
     },
   },
-  declaration: 'compatible',
+  declaration: true,
 })

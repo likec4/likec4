@@ -22,25 +22,25 @@
   },
   "type": "module",
   "sideEffects": false,
-  "types": "./dist/index.d.ts",
-  "module": "./dist/index.js",
-  "browser": "./dist/browser.js",
   "exports": {
     ".": {
       "development": "./src/index.ts",
-      "browser": {
-        "types": "./dist/browser.d.ts",
-        "default": "./dist/browser.js"
+      "node": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
       },
       "default": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/browser.d.ts",
+        "import": "./dist/browser.js",
+        "default": "./dist/browser.js"
       }
     },
     "./likec4lib": {
       "development": "./src/likec4lib.ts",
       "default": {
         "types": "./dist/likec4lib.d.ts",
+        "import": "./dist/likec4lib.js",
         "default": "./dist/likec4lib.js"
       }
     },
@@ -48,6 +48,7 @@
       "development": "./src/browser.ts",
       "default": {
         "types": "./dist/browser.d.ts",
+        "import": "./dist/browser.js",
         "default": "./dist/browser.js"
       }
     },
@@ -55,6 +56,7 @@
       "development": "./src/protocol.ts",
       "default": {
         "types": "./dist/protocol.d.ts",
+        "import": "./dist/protocol.js",
         "default": "./dist/protocol.js"
       }
     }
@@ -106,7 +108,6 @@
     "@vitest/coverage-v8": "^2.1.8",
     "execa": "^9.3.1",
     "langium-cli": "3.3.0",
-    "mnemonist": "^0.39.8",
     "natural-compare-lite": "^1.4.0",
     "npm-run-all2": "^7.0.1",
     "tsx": "~4.9.3",

@@ -8,31 +8,6 @@ import type { Base } from './Base'
 
 export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
 
-// export function isReferenceToLogicalModel(node: ast.FqnRef) {
-//   // iterate up the root parent
-//   while (node.parent) {
-//     node = node.parent
-//   }
-//   return ast.isElement(node.value.ref)
-// }
-
-// /**
-//  * Returns true if node references deployment model
-//  */
-// function isReferenceToDeploymentModel(node: ast.FqnRef) {
-//   let referenceable
-//   while ((referenceable = node.value?.ref)) {
-//     if (ast.isDeploymentElement(referenceable)) {
-//       return true
-//     }
-//     if (isNullish(node.parent)) {
-//       return false
-//     }
-//     node = node.parent
-//   }
-//   return false
-// }
-
 export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
@@ -104,14 +79,14 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       while (iter) {
         try {
           if (isNonNullish(iter.value) && this.isValid(iter.value)) {
-            exprs.unshift(this.parseFqnExpr(iter.value))
+            exprs.push(this.parseFqnExpr(iter.value))
           }
         } catch (e) {
           logWarnError(e)
         }
         iter = iter.prev
       }
-      return exprs
+      return exprs.reverse()
     }
 
     parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {

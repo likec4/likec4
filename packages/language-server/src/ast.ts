@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, LinkedList, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
@@ -162,7 +162,7 @@ export const ViewOps = {
   },
   readId(node: ast.LikeC4View): c4.ViewId | undefined {
     return node[idattr]
-  }
+  },
 }
 
 export interface ParsedLink {
@@ -181,7 +181,7 @@ export const ElementOps = {
   },
   readId(node: ast.Element | ast.DeploymentElement) {
     return node[idattr]
-  }
+  },
 }
 
 export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
@@ -226,7 +226,7 @@ export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDoc
 }
 
 export function isParsedLikeC4LangiumDocument(
-  doc: LangiumDocument
+  doc: LangiumDocument,
 ): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc)
@@ -241,32 +241,54 @@ export function isParsedLikeC4LangiumDocument(
   )
 }
 
-export function* streamModel(doc: LikeC4LangiumDocument, isValid: IsValidFn) {
-  const traverseStack = doc.parseResult.value.models.flatMap(m => m.elements)
+export function* streamModel(doc: LikeC4LangiumDocument) {
+  const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
   const relations = [] as ast.Relation[]
   let el
   while ((el = traverseStack.shift())) {
     if (ast.isRelation(el)) {
-      isValid(el) && relations.push(el)
+      relations.push(el)
       continue
     }
     if (ast.isExtendElement(el)) {
       if (el.body && el.body.elements.length > 0) {
-        traverseStack.push(...el.body.elements)
+        for (const child of el.body.elements) {
+          traverseStack.push(child)
+        }
       }
       continue
     }
     if (el.body && el.body.elements.length > 0) {
-      traverseStack.push(...el.body.elements)
-    }
-    if (!isValid(el)) {
-      continue
+      for (const child of el.body.elements) {
+        traverseStack.push(child)
+      }
     }
     yield el
   }
-  for (const relation of relations) {
-    yield relation
+  yield* relations
+  return
+}
+
+export function* streamDeploymentModel(doc: LikeC4LangiumDocument) {
+  const traverseStack = LinkedList.from<ast.DeploymentRelation | ast.DeploymentElement>(
+    doc.parseResult.value.deployments.flatMap(m => m.elements),
+  )
+  const relations = [] as ast.DeploymentRelation[]
+  let el
+  while ((el = traverseStack.shift())) {
+    if (ast.isDeploymentRelation(el)) {
+      relations.push(el)
+      continue
+    }
+    if (ast.isDeploymentNode(el) && el.body && el.body.elements.length > 0) {
+      for (const child of el.body.elements) {
+        traverseStack.push(child)
+      }
+    }
+    yield el
   }
+  yield* relations
+  return
 }
 
 export function resolveRelationPoints(node: ast.Relation): {
@@ -284,7 +306,7 @@ export function resolveRelationPoints(node: ast.Relation): {
     }
     return {
       source,
-      target
+      target,
     }
   }
   if (!ast.isElementBody(node.$container)) {
@@ -292,7 +314,7 @@ export function resolveRelationPoints(node: ast.Relation): {
   }
   return {
     source: node.$container.$container,
-    target
+    target,
   }
 }
 
@@ -400,14 +422,14 @@ export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | und
 
 export function toRelationshipStyleExcludeDefaults(
   props: ast.SpecificationRelationshipKind['props'] | undefined,
-  isValid: IsValidFn
+  isValid: IsValidFn,
 ) {
   const { color, line, head, tail } = toRelationshipStyle(props?.filter(ast.isRelationshipStyleProperty), isValid)
   return {
     ...(color && color !== DefaultRelationshipColor ? { color } : {}),
     ...(line && line !== DefaultLineStyle ? { line } : {}),
     ...(head && head !== DefaultArrowType ? { head } : {}),
-    ...(tail ? { tail } : {})
+    ...(tail ? { tail } : {}),
   }
 }
 
@@ -416,7 +438,7 @@ export function toColor(astNode: ast.ColorProperty): c4.Color | undefined {
 }
 
 export function toAutoLayout(
-  rule: ast.ViewRuleAutoLayout
+  rule: ast.ViewRuleAutoLayout,
 ): c4.ViewRuleAutoLayout {
   const rankSep = rule.rankSep
   const nodeSep = rule.nodeSep
@@ -446,7 +468,7 @@ export function toAutoLayout(
   return {
     direction,
     ...(nodeSep && { nodeSep }),
-    ...(rankSep && { rankSep })
+    ...(rankSep && { rankSep }),
   }
 }
 
