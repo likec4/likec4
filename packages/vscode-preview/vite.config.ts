@@ -9,7 +9,12 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       conditions: ['development'],
-      dedupe: ['react', 'react-dom'],
+      alias: {
+        '@likec4/core/model': resolve(__dirname, '../core/src/model'),
+        '@likec4/core/types': resolve(__dirname, '../core/src/types'),
+        '@likec4/core': resolve(__dirname, '../core/src'),
+        '@likec4/diagram': resolve(__dirname, '../diagram/src'),
+      },
     },
     define: isDev ? {} : {
       'process.env.NODE_ENV': JSON.stringify('production'),

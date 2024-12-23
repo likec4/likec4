@@ -7,6 +7,11 @@
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
+    "moduleResolution": "bundler",
+    "resolvePackageJsonExports": true,
+    "customConditions": [
+      "development"
+    ],
     "types": [
       "vite/client",
       "vscode-webview"
