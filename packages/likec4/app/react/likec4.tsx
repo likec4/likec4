@@ -1,15 +1,15 @@
+import type { LikeC4Model } from 'likec4/model'
 import {
+  type LikeC4ViewProps as BaseLikeC4ViewProps,
+  type ReactLikeC4Props as GenericReactLikeC4Props,
   LikeC4Browser,
-  type LikeC4Model,
   LikeC4ModelProvider as GenericLikeC4ModelProvider,
   LikeC4ViewEmbedded,
-  type LikeC4ViewProps as BaseLikeC4ViewProps,
   ReactLikeC4 as GenericReactLikeC4,
-  type ReactLikeC4Props as GenericReactLikeC4Props,
   useColorScheme,
-  ViewNotFound
+  ViewNotFound,
 } from 'likec4/react'
-import { memo, type PropsWithChildren, useCallback, useState } from 'react'
+import { type PropsWithChildren, memo, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
 import type { DiagramView, LikeC4ElementKind, LikeC4Tag, LikeC4ViewId } from 'virtual:likec4/model'
 import { likeC4Model, LikeC4Views, useLikeC4Model } from 'virtual:likec4/model'

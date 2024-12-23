@@ -4,6 +4,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { packageUpSync } from 'package-up'
 import { find } from 'remeda'
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
@@ -26,14 +27,26 @@ const footer = `
 
 export const JsBanners = {
   banner,
-  footer
+  footer,
+}
+
+export function findPkgRoot() {
+  const pkgRoot = packageUpSync({
+    cwd: _dirname,
+  })
+  if (!pkgRoot) {
+    throw new Error(`likec4 package folder not found`)
+  }
+  return dirname(pkgRoot)
 }
 
 export function viteAppRoot() {
+  const pkg = findPkgRoot()
   const roots = [
+    resolve(pkg, '__app__'),
     resolve(_dirname, '../__app__'),
     resolve(_dirname, '../../__app__'),
-    resolve(_dirname, '../../dist/__app__')
+    resolve(_dirname, '../../dist/__app__'),
   ]
   const root = find(roots, existsSync)
   if (!root) {

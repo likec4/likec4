@@ -1,3 +1,4 @@
+import { viteAliases } from '@/vite/aliases'
 import react from '@vitejs/plugin-react-swc'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
@@ -15,10 +16,9 @@ type LikeC4ViteReactConfig = {
 export async function viteReactConfig({
   languageServices,
   outDir,
-  filename = 'likec4-react.mjs'
+  filename = 'likec4-react.mjs',
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
   const customLogger = createLikeC4Logger('c4:react')
-
   const root = viteAppRoot()
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
@@ -30,6 +30,10 @@ export async function viteReactConfig({
     clearScreen: false,
     publicDir: false,
     mode: 'production',
+    resolve: {
+      conditions: ['production'],
+      alias: viteAliases(),
+    },
     esbuild: {
       banner: `'use client'\n` + JsBanners.banner,
       footer: JsBanners.footer,
@@ -44,9 +48,9 @@ export async function viteReactConfig({
           target: 'ES2022',
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
-          jsx: 'react-jsx'
-        }
-      }
+          jsx: 'react-jsx',
+        },
+      },
     },
     build: {
       outDir,
@@ -61,21 +65,22 @@ export async function viteReactConfig({
         fileName(_format, _entryName) {
           return filename
         },
-        formats: ['es']
+        formats: ['es'],
       },
       rollupOptions: {
         output: {
           compact: false,
-          exports: 'named'
+          exports: 'named',
         },
         external: [
           'likec4/react',
+          'likec4/model',
           'react',
           'react-dom',
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
-          /likec4\/icons\/.*/
+          /likec4\/icons\/.*/,
         ],
         // https://github.com/vitejs/vite/issues/15012
         onwarn(warning, defaultHandler) {
@@ -83,15 +88,15 @@ export async function viteReactConfig({
             return
           }
           defaultHandler(warning)
-        }
-      }
+        },
+      },
     },
     plugins: [
       react({}),
       likec4Plugin({
         languageServices,
-        useOverviewGraph: false
-      })
-    ]
+        useOverviewGraph: false,
+      }),
+    ],
   }
 }

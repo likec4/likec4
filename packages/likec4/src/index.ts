@@ -1,30 +1,11 @@
 export {
-  ancestorsFqn,
-  BorderStyles,
-  commonAncestor,
-  compareByFqnHierarchically,
-  compareFqnHierarchically,
-  compareRelations,
-  defaultTheme,
-  ElementColors,
-  ElementShapes,
-  extractStep,
-  hasAtLeast,
-  invariant,
-  isAncestor,
-  isDeploymentView,
-  isDescendantOf,
-  isDynamicView,
-  isElementView,
-  isSameHierarchy,
-  isStepEdgeId,
+  type AnyAux,
+  type Aux,
+  LikeC4DeploymentModel,
   LikeC4Model,
-  nameFromFqn,
-  nonexhaustive,
-  nonNullable,
-  parentFqn,
-  RelationshipColors
-} from '@likec4/core'
+  LikeC4ViewModel,
+} from './model'
+
 export type {
   AbstractRelation,
   AutoLayoutDirection,
@@ -64,6 +45,7 @@ export type {
   Tag,
   ThemeColor,
   ViewId,
-  XYPoint
-} from '@likec4/core'
+  XYPoint,
+} from './model'
+
 export { LikeC4 } from './LikeC4'

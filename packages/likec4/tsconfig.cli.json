@@ -4,6 +4,10 @@
   "compilerOptions": {
     "noUnusedParameters": false,
     "module": "esnext",
+    "resolvePackageJsonExports": true,
+    "customConditions": [
+      "development"
+    ],
     "composite": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
@@ -15,13 +19,13 @@
       "node"
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
+      "@/vite/*": [
+        "./src/vite/*"
       ]
     }
   },
   "include": [
-    "./src/",
+    "./src",
     "package.json"
   ]
 }

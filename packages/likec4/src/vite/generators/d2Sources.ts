@@ -1,6 +1,6 @@
-import type { ComputedView } from '@likec4/core'
 import { generateD2 } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
+import type { ComputedView } from '../../model'
 
 export function generateD2Sources(views: ComputedView[]) {
   const out = new CompositeGeneratorNode()
@@ -28,15 +28,15 @@ export function generateD2Sources(views: ComputedView[]) {
               }
             `,
             {
-              appendNewLineIfNotEmpty: true
-            }
-          )
+              appendNewLineIfNotEmpty: true,
+            },
+          ),
         ).appendTemplate`
         default: {
           throw new Error('Unknown viewId: ' + viewId)
         }
       `
-      }
+      },
     })
     .append(NL, '  }', NL).appendTemplate`
     }

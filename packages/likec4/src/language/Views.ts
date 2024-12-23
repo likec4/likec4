@@ -1,8 +1,8 @@
-import type { ComputedLikeC4Model, ComputedView, DiagramView, OverviewGraph, ViewId } from '@likec4/core'
 import type { GraphvizLayouter } from '@likec4/layouts'
 import type { WorkspaceCache } from 'langium'
 import pLimit from 'p-limit'
 import { isTruthy } from 'remeda'
+import type { ComputedLikeC4Model, ComputedView, DiagramView, OverviewGraph, ViewId } from '../model'
 import type { CliServices } from './module'
 
 type GraphvizOut = {
@@ -95,7 +95,7 @@ export class Views {
         return {
           id: view.id,
           dot,
-          svg
+          svg,
         }
       })
     )

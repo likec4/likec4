@@ -1,5 +1,5 @@
-import { LikeC4Model } from '@likec4/core'
 import JSON5 from 'json5'
+import { LikeC4Model } from '../../model'
 
 export function likec4ModelSources(model: LikeC4Model.Layouted) {
   const {
@@ -7,7 +7,8 @@ export function likec4ModelSources(model: LikeC4Model.Layouted) {
     ...rest
   } = model.$model
   return `
-import { nano, createLikeC4Model } from 'likec4/react'
+import { createLikeC4Model } from 'likec4/model'
+import { nano } from 'likec4/react'
 
 // This is needed for better tree shaking
 export let LikeC4Views = ${JSON5.stringify(views)}

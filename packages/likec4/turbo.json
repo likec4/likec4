@@ -39,7 +39,6 @@
       "dependsOn": [
         "@likec4/core#build",
         "@likec4/diagram#build",
-        "@likec4/log#build",
         "generate"
       ],
       "outputs": [
@@ -50,6 +49,7 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "!src/**",
+        "!test/**",
         "!build.config.ts"
       ],
       "outputLogs": "new-only"

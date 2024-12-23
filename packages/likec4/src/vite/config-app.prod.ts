@@ -1,9 +1,10 @@
+import { viteAliases } from '@/vite/aliases'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
-import { createLikeC4Logger, type ViteLogger } from '../logger'
+import { type ViteLogger, createLikeC4Logger } from '../logger'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit, viteAppRoot } from './utils'
 
@@ -50,28 +51,30 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     base,
     resolve: {
       alias: {
-        'likec4/previews': likec4AssetsDir
-      }
+        ...viteAliases(),
+        'likec4/previews': likec4AssetsDir,
+      },
     },
     configFile: false,
     mode: 'production',
     optimizeDeps: {
       include: [
+        'likec4/model',
         'likec4/react',
         'react',
         'react-dom',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
-        'react-dom/client'
+        'react-dom/client',
       ],
-      force: true
+      force: true,
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_STYLE_BUNDLE__: 'false',
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': '"production"',
     },
     build: {
       outDir,
@@ -89,24 +92,24 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
             return true
           }
           return 'auto'
-        }
+        },
       },
       rollupOptions: {
         treeshake: {
-          preset: 'recommended'
+          preset: 'recommended',
         },
         output: {
           hoistTransitiveImports: false,
-          compact: true
-        }
-      }
+          compact: true,
+        },
+      },
     },
     customLogger,
     plugins: [
       likec4Plugin({
         languageServices,
-        useOverviewGraph
-      })
-    ]
+        useOverviewGraph,
+      }),
+    ],
   } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }
 }

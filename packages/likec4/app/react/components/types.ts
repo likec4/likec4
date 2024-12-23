@@ -1,4 +1,4 @@
-import type { DiagramView, ViewId, WhereOperator } from '@likec4/core'
+import type { DiagramView, WhereOperator } from '@likec4/core/types'
 import type { MantineThemeOverride } from '@mantine/core'
 import type { CSSProperties, ReactNode } from 'react'
 

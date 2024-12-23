@@ -15,6 +15,7 @@
   "engines": {
     "node": ">=20"
   },
+  "engineStrict": true,
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
   "bin": "./bin/likec4.mjs",
@@ -23,23 +24,35 @@
       "development": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "./model": {
+      "development": "./src/model/index.ts",
+      "default": {
+        "types": "./dist/model/index.d.ts",
+        "import": "./dist/model/index.js",
+        "default": "./dist/model/index.js"
       }
     },
     "./react": {
       "development": "./app/react/components/index.ts",
       "default": {
         "types": "./react/index.d.ts",
-        "default": "./react/index.mjs"
+        "import": "./react/index.js",
+        "default": "./react/index.js"
       }
     },
     "./react/style.css": "./react/style.css",
     "./icons/all": {
       "types": "./icons/all.d.ts",
+      "import": "./icons/all.js",
       "default": "./icons/all.js"
     },
     "./icons/*": {
       "types": "./icons/icon.d.ts",
+      "import": "./icons/*",
       "default": "./icons/*"
     }
   },

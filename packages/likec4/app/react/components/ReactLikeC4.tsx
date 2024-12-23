@@ -1,5 +1,5 @@
-import type { WhereOperator } from '@likec4/core'
-import { LikeC4Diagram, type LikeC4DiagramProps, type OnNavigateTo } from '@likec4/diagram'
+import type { WhereOperator } from '@likec4/core/types'
+import { type LikeC4DiagramProps, type OnNavigateTo, LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
 import { type CSSProperties } from 'react'
 import { ShadowRoot } from './ShadowRoot'
@@ -14,7 +14,7 @@ import type { ViewData } from './types'
 export type ReactLikeC4Props<
   ViewId extends string,
   Tag extends string,
-  Kind extends string
+  Kind extends string,
 > = Omit<LikeC4DiagramProps, 'view' | 'where' | 'onNavigateTo'> & {
   view: ViewData<ViewId>
 
@@ -55,7 +55,7 @@ export type ReactLikeC4Props<
 export function ReactLikeC4<
   ViewId extends string = string,
   Tag extends string = string,
-  Kind extends string = string
+  Kind extends string = string,
 >({
   className,
   view,

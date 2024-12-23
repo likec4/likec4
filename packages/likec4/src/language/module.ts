@@ -1,9 +1,9 @@
 import {
+  type LikeC4Services,
   createCustomLanguageServices,
   LikeC4FileSystem,
-  type LikeC4Services,
   lspLogger,
-  setLogLevel
+  setLogLevel,
 } from '@likec4/language-server'
 import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
@@ -13,8 +13,8 @@ import type { DeepPartial, Module } from 'langium'
 import { isError } from 'remeda'
 import k from 'tinyrainbow'
 import type { Constructor } from 'type-fest'
-import pkg from '../../package.json' with { type: 'json' }
-import { createLikeC4Logger, type Logger, NoopLogger } from '../logger'
+import { version } from '../../package.json' with { type: 'json' }
+import { type Logger, createLikeC4Logger, NoopLogger } from '../logger'
 import { Views } from './Views'
 import { CliWorkspace } from './Workspace'
 
@@ -43,11 +43,11 @@ export const CliModule: Module<CliServices, DeepPartial<LikeC4Services> & CliAdd
     Layouter: () => {
       throw new Error('Layouter must be provided')
     },
-    Views: bind(Views)
+    Views: bind(Views),
   },
   cli: {
-    Workspace: bind(CliWorkspace)
-  }
+    Workspace: bind(CliWorkspace),
+  },
 }
 
 export type CreateLanguageServiceOptions = {
@@ -72,7 +72,7 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
   const options = defu(opts, {
     useFileSystem: true,
     logger: 'default' as const,
-    graphviz: 'wasm'
+    graphviz: 'wasm',
   })
   let logger: Logger
 
@@ -90,14 +90,15 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
       logger = options.logger
   }
   const useDotBin = options.graphviz === 'binary'
-  logger.info(`${k.dim('version')} ${pkg.version}`)
+  logger.info(`${k.dim('version')} ${version}`)
   logger.info(`${k.dim('layout')} ${useDotBin ? 'binary' : 'wasm'}`)
 
   const module = {
     logger: () => logger,
     likec4: {
-      Layouter: () => new GraphvizLayouter(useDotBin === true ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter())
-    }
+      Layouter: () =>
+        new GraphvizLayouter(useDotBin === true ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
+    },
   } satisfies Module<CliServices, DeepPartial<CliAddedServices>>
 
   setLogLevel(options.logger === false ? 'silent' : 'info')
@@ -140,7 +141,7 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
             break
           }
         }
-      }
+      },
     }])
   }
 

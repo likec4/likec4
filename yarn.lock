@@ -874,7 +874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/dagre@npm:^1.1.4":
+"@dagrejs/dagre@npm:1.1.4":
   version: 1.1.4
   resolution: "@dagrejs/dagre@npm:1.1.4"
   dependencies:
@@ -2106,7 +2106,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/diagram@workspace:packages/diagram"
   dependencies:
-    "@dagrejs/dagre": "npm:^1.1.4"
+    "@dagrejs/dagre": "npm:1.1.4"
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@mantine/core": "npm:7.15.1"
@@ -2128,7 +2128,6 @@ __metadata:
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
     esm-env: "npm:^1.2.1"
-    execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
     framer-motion: "npm:^11.14.1"
     khroma: "npm:^2.1.0"
@@ -2138,7 +2137,8 @@ __metadata:
     remeda: "npm:^2.17.4"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
-    unbuild: "npm:^3.0.1"
+    vite: "npm:5.4.11"
+    vite-plugin-dts: "npm:^4.4.0"
     vitest: "npm:^2.1.8"
     zustand: "npm:^4.5.5"
   peerDependencies:
@@ -2230,7 +2230,6 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:3.3.0"
     langium-cli: "npm:3.3.0"
-    mnemonist: "npm:^0.39.8"
     natural-compare-lite: "npm:^1.4.0"
     npm-run-all2: "npm:^7.0.1"
     p-debounce: "npm:^4.0.0"
@@ -2376,7 +2375,7 @@ __metadata:
     "@types/object-hash": "npm:^3.0.6"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
-    "@types/vscode": "npm:~1.92.0"
+    "@types/vscode": "npm:^1.89.0"
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.16.1"
     "@vanilla-extract/vite-plugin": "npm:^4.0.18"
@@ -4157,13 +4156,6 @@ __metadata:
   version: 1.93.0
   resolution: "@types/vscode@npm:1.93.0"
   checksum: 10c0/5b62f6a333e21ba1687b93270489dcaf84a7474085b1bc440431508ff3bd0aebadd238812ddaa7e66a95417bb8d01c7b7ce5b6d8968bda5ac8f2fc7919366f9f
-  languageName: node
-  linkType: hard
-
-"@types/vscode@npm:~1.92.0":
-  version: 1.92.0
-  resolution: "@types/vscode@npm:1.92.0"
-  checksum: 10c0/4c3fc2fbc663568a300eb9ddb8de0179e8e8bf27fcabc240915ac1194ab9e9fd7f0034816c036824cf171b4d4e7e40fa40a3d838e3dd239a9d79fc1f06b85896
   languageName: node
   linkType: hard
 

@@ -1,14 +1,14 @@
+import { viteAliases } from '@/vite/aliases'
 import { consola } from '@likec4/log'
 import react from '@vitejs/plugin-react-swc'
 import { existsSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit, JsBanners } from './utils'
+import { chunkSizeWarningLimit, findPkgRoot, JsBanners } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LikeC4
@@ -16,8 +16,7 @@ type LikeC4ViteReactConfig = {
   filename?: string
 }
 
-const _dirname = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = resolve(_dirname, '../..')
+export const pkgRoot = findPkgRoot()
 
 export async function viteReactConfig({
   languageServices,
@@ -44,11 +43,7 @@ export async function viteReactConfig({
     mode: 'production',
     resolve: {
       conditions: ['development'],
-      alias: {
-        'likec4/icons': resolve(pkgRoot, '../icons'),
-        '@likec4/core': resolve(pkgRoot, '../core/src'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
-      },
+      alias: viteAliases(),
     },
     esbuild: {
       banner: JsBanners.banner,

@@ -1,4 +1,3 @@
-import { type DiagramView, LikeC4Model } from '@likec4/core'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -10,6 +9,7 @@ import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
 import type { Views } from './language/Views'
 import type { Logger } from './logger'
+import { type DiagramView, LikeC4Model } from './model'
 
 type LikeC4Langium = ReturnType<typeof createLanguageServices>
 
@@ -44,7 +44,7 @@ const validationErrorsToError = (likec4: LikeC4) =>
   new Error(
     `Invalid model:\n${
       likec4.getErrors().map(e => `  ${e.sourceFsPath}:${e.line} ${e.message.slice(0, 200)}`).join('\n')
-    }`
+    }`,
   )
 
 export class LikeC4 {
@@ -53,17 +53,17 @@ export class LikeC4 {
       defu(opts, {
         useFileSystem: false,
         logger: false as const,
-        graphviz: 'wasm' as const
-      })
+        graphviz: 'wasm' as const,
+      }),
     )
 
     const workspaceUri = URI.from({
       scheme: 'virtual',
-      path: '/workspace'
+      path: '/workspace',
     })
     await langium.cli.Workspace.initWorkspace({
       uri: workspaceUri.toString(),
-      name: 'virtual'
+      name: 'virtual',
     })
 
     const uri = UriUtils.joinPath(workspaceUri, 'source.likec4')
@@ -101,13 +101,13 @@ export class LikeC4 {
         defu(opts, {
           useFileSystem: true,
           logger: 'default' as const,
-          graphviz: 'wasm' as const
-        })
+          graphviz: 'wasm' as const,
+        }),
       )
 
       await langium.cli.Workspace.initWorkspace({
         uri: pathToFileURL(workspace).toString(),
-        name: basename(workspace)
+        name: basename(workspace),
       })
 
       await langium.cli.Workspace.init()
@@ -131,7 +131,7 @@ export class LikeC4 {
   private constructor(
     public readonly workspace: string,
     private langium: LikeC4Langium,
-    private isPrintErrorEnabled: boolean
+    private isPrintErrorEnabled: boolean,
   ) {
     this.logger = langium.logger
     if (this.isPrintErrorEnabled) {
@@ -189,7 +189,7 @@ export class LikeC4 {
       ref = LikeC4Model.create({
         ...computedModel,
         __: 'layouted' as const,
-        views: indexBy(diagrams, prop('id'))
+        views: indexBy(diagrams, prop('id')),
       })
       this.modelLayoutedRef = new WeakRef(ref)
     }
@@ -205,7 +205,7 @@ export class LikeC4 {
           message,
           line: range.start.line,
           range,
-          sourceFsPath: doc.uri.fsPath
+          sourceFsPath: doc.uri.fsPath,
         }))
     })
   }
@@ -261,7 +261,7 @@ export class LikeC4 {
         await this.langium.shared.workspace.DocumentBuilder.update(
           changed ? [URI.file(changed)] : [],
           removed ? [URI.file(removed)] : [],
-          token
+          token,
         )
         // we come here if only the update was successful, did not throw and not cancelled
         completed = !token.isCancellationRequested

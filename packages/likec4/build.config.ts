@@ -11,6 +11,7 @@ export default defineBuildConfig({
   entries: [
     'src/index.ts',
     'src/cli/index.ts',
+    'src/model/index.ts',
   ],
   clean: isProduction,
   outDir: 'dist',
@@ -27,20 +28,14 @@ export default defineBuildConfig({
     },
   },
   alias: {
-    '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
-    '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
-    '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
     ...(isProduction
       ? {
-        '@likec4/core/compute-view': resolve('../core/dist/compute-view/index.mjs'),
-        '@likec4/core': resolve('../core/dist/index.mjs'),
-        '@likec4/language-server': resolve('../language-server/dist/index.js'),
+        '@/vite/aliases': resolve('src/vite/aliases.prod.ts'),
+        '@/vite/config-app': resolve('src/vite/config-app.prod.ts'),
+        '@/vite/config-react': resolve('src/vite/config-react.prod.ts'),
+        '@/vite/config-webcomponent': resolve('src/vite/config-webcomponent.prod.ts'),
       }
-      : {
-        '@likec4/core/compute-view': resolve('../core/src/compute-view/index.ts'),
-        '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/language-server': resolve('../language-server/src/index.ts'),
-      }),
+      : {}),
   },
   failOnWarn: false,
   declaration: isProduction,
@@ -54,15 +49,13 @@ export default defineBuildConfig({
     },
     output: {
       compact: isProduction,
+      chunkFileNames: 'shared/[name].[hash].js',
+      entryFileNames: '[name].js',
     },
     resolve: {
-      exportConditions: ['node', isProduction ? 'production' : 'development'],
+      exportConditions: isProduction ? ['node', 'production'] : ['development'],
     },
     commonjs: {
-      ignoreTryCatch: 'remove',
-      esmExternals: true,
-      transformMixedEsModules: true,
-      defaultIsModuleExports: true,
       exclude: [
         /\.ts$/,
         /\.cts$/,
@@ -70,9 +63,10 @@ export default defineBuildConfig({
       ],
     },
     dts: {
-      tsconfig: 'tsconfig.cli.json',
-      respectExternal: true,
+      // tsconfig: 'tsconfig.cli.json',
+      // respectExternal: true,
       compilerOptions: {
+        customConditions: [],
         noEmitOnError: false,
         strict: false,
         alwaysStrict: false,

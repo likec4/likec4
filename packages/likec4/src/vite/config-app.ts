@@ -1,3 +1,4 @@
+import { viteAliases } from '@/vite/aliases'
 import { consola } from '@likec4/log'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
@@ -18,7 +19,7 @@ import { chunkSizeWarningLimit } from './utils'
 export type { LikeC4ViteConfig }
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = resolve(_dirname, '../..')
+export const pkgRoot = resolve(_dirname, '../..')
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
@@ -68,11 +69,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     resolve: {
       conditions: ['development'],
       alias: {
-        'likec4/previews': likec4AssetsDir,
-        'likec4/icons': resolve(pkgRoot, '../icons'),
-        'likec4/react': resolve(pkgRoot, 'app/react/components'),
-        '@likec4/core': resolve(pkgRoot, '../core/src'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
+        ...viteAliases(),
         'react-dom/server': resolve(pkgRoot, 'app/react/react-dom-server-mock.ts'),
       },
     },
@@ -81,7 +78,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       include: [
         'react',
         'react-dom',
-        'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
         '@mantine/core',

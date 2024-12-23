@@ -41,7 +41,7 @@ const cli = yargs(hideBin(argv))
     'Options:': k.bold('Options:'),
     'Positionals:': k.bold('Arguments:'),
     'Commands:': k.bold('Commands:'),
-    'Examples:': k.bold('Examples:')
+    'Examples:': k.bold('Examples:'),
   })
   .wrap(clamp(stdout.columns - 20, { min: 80, max: 120 }))
   .parseAsync()

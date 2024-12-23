@@ -3,9 +3,13 @@
 
 # Include the following
 !bin/**
-!dist/**
-!react/**
-!icons/**
+!dist/**/*.js
+!dist/**/*.d.ts
+!react/*.js
+!react/*.d.ts
+!react/*.css
+!icons/**/*.js
+!icons/**/*.d.ts
 !__app__/**
 !package.json
 !LICENSE
@@ -13,6 +17,7 @@
 
 # Exclude the following
 **/*.map
+**/*.d.mts
 **/*.tsbuildinfo
 __app__/react/components.mjs
 dist/**/metafile.json
