@@ -1,10 +1,10 @@
 import { map, pipe, prop } from 'remeda'
 import { isString } from '../../utils'
 import {
-  isAncestor,
-  isDescendantOf,
   type IterableContainer,
   type ReorderedArray,
+  isAncestor,
+  isDescendantOf,
   sortNaturalByFqn,
 } from '../../utils/fqn'
 import type { Connection } from './Connection'
@@ -240,6 +240,17 @@ export function isAnyInOut<T extends string>(a: WithSourceTarget<WithId<T>> | Wi
   }
   const at = a as WithSourceTarget<WithId<T>>
   return isDescendantOf(at.source, source) !== isDescendantOf(at.target, source)
+}
+
+export function isInside<T extends string>(source: WithId<NoInfer<T>>): (a: WithSourceTarget<WithId<T>>) => boolean
+export function isInside<T extends string>(a: WithSourceTarget<WithId<T>>, source: WithId<T>): boolean
+export function isInside<T extends string>(a: WithSourceTarget<WithId<T>> | WithId<T>, source?: WithId<T>) {
+  if (!source) {
+    const _source = a as WithId<T>
+    return (b: WithSourceTarget<WithId<T>>) => isInside(b, _source)
+  }
+  const at = a as WithSourceTarget<WithId<T>>
+  return isDescendantOf(at.source, source) && isDescendantOf(at.target, source)
 }
 
 // export function isIncoming<T>(target: NoInfer<T>): (a: WithSourceTarget<T>) => boolean

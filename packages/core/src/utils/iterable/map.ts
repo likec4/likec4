@@ -1,6 +1,6 @@
 import { isFunction } from 'remeda'
 import { invariant } from '../../errors'
-import type { IteratorLike } from './_types'
+import type { IteratorLike } from '../../types'
 
 type MapFunction<S, T> = (item: S) => T
 
@@ -21,7 +21,7 @@ export function imap<T, S>(iterable: Iterable<T>, mapper: MapFunction<T, S>): It
 
 export function imap(
   arg1: unknown,
-  arg2?: unknown
+  arg2?: unknown,
 ): IteratorLike<unknown> | ((it: Iterable<unknown>) => IteratorLike<unknown>) {
   const mapper = (arg2 ?? arg1) as MapFunction<any, any>
   invariant(isFunction(mapper))

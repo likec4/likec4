@@ -1,4 +1,3 @@
-import { anyPass } from 'remeda'
 import type { Fqn } from '../types'
 import { compareNatural } from './compare-natural'
 import { isString } from './guards'
@@ -31,34 +30,41 @@ const asString: <E extends string | { id: string }>(e: E) => string = e => (isSt
 
 /**
  * Check if one element is an ancestor of another
- * @signature
- *   isAncestor(ancestor, another)
- */
-export function isAncestor<A extends string | { id: string }>(ancestor: A, another: A): boolean
-/**
- * Check if one element is an ancestor of another
  * Composable version
  * @signature
  *  isAncestor(another)(ancestor)
  */
 export function isAncestor<A extends string | { id: string }>(another: NoInfer<A>): (ancestor: A) => boolean
+/**
+ * Check if one element is an ancestor of another
+ * @signature
+ *   isAncestor(ancestor, another)
+ */
+export function isAncestor<A extends string | { id: string }>(ancestor: A, another: A): boolean
 
-export function isAncestor<E extends string | { id: string }>(
-  arg1: E,
-  arg2?: NoInfer<E>,
+export function isAncestor<T extends string>(
+  arg1: T | WithId<T>,
+  arg2?: NoInfer<T> | WithId<NoInfer<T>>,
 ) {
   const arg1Id = asString(arg1)
   if (arg2) {
     const arg2Id = asString(arg2)
     return arg2Id.startsWith(arg1Id + '.')
   }
-  return (ancestor: E) => {
+  return (ancestor: T | WithId<T>) => {
     const ancestorId = asString(ancestor)
     return arg1Id.startsWith(ancestorId + '.')
   }
 }
 
-export function isSameHierarchy<E extends string | { id: Fqn }>(one: E, another: E): boolean {
+export function isSameHierarchy<T extends string>(
+  one: NoInfer<T> | WithId<NoInfer<T>>,
+): (another: T | WithId<T>) => boolean
+export function isSameHierarchy<T extends string>(one: T | WithId<T>, another: T | WithId<T>): boolean
+export function isSameHierarchy<T extends string>(one: T | WithId<T>, another?: T | WithId<T>) {
+  if (!another) {
+    return (b: T | WithId<T>) => isSameHierarchy(one, b)
+  }
   const first = asString(one)
   const second = asString(another)
   return first === second || second.startsWith(first + '.') || first.startsWith(second + '.')
@@ -70,17 +76,10 @@ export function isDescendantOf<T extends string>(ancestor: WithId<T>): (descedan
 export function isDescendantOf<T extends string>(descedant: WithId<T>, ancestor: WithId<T>): boolean
 export function isDescendantOf<T extends string>(descedant: WithId<T>, ancestor?: WithId<T>) {
   if (!ancestor) {
-    const a = descedant
-    return (d: WithId<T>) => isAncestor(a, d)
+    return (d: WithId<T>) => isAncestor(descedant, d)
   }
   return isAncestor(ancestor, descedant)
 }
-
-// export function notDescendantOf<E extends string | { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
-//   const ancestorIds = ancestors.map(asString)
-//   const isDescendant = isDescendantOf(ancestors)
-//   return (e) => !isDescendant(e) && !ancestorIds.includes(asString(e))
-// }
 
 /**
  * How deep in the hierarchy the element is.

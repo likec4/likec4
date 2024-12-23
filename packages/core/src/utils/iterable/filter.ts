@@ -1,6 +1,6 @@
 import { isFunction } from 'remeda'
 import { invariant } from '../../errors'
-import type { IteratorLike } from './_types'
+import type { IteratorLike } from '../../types'
 
 /**
  * Filters an iterable based on a predicate.
@@ -9,10 +9,10 @@ import type { IteratorLike } from './_types'
  *    ifilter(predicate)(data)
  */
 export function ifilter<T, S extends T>(
-  predicate: (v: T) => v is S
+  predicate: (v: T) => v is S,
 ): (iterable: Iterable<T>) => IteratorLike<S>
 export function ifilter<T>(
-  predicate: (v: T) => boolean
+  predicate: (v: T) => boolean,
 ): (iterable: Iterable<T>) => IteratorLike<T>
 
 /**
@@ -25,16 +25,16 @@ export function ifilter<T>(
  */
 export function ifilter<T, S extends T>(
   iterable: Iterable<T>,
-  predicate: (v: T) => v is T
+  predicate: (v: T) => v is T,
 ): IteratorLike<S>
 export function ifilter<T>(
   iterable: Iterable<T>,
-  predicate: (v: T) => boolean
+  predicate: (v: T) => boolean,
 ): IteratorLike<T>
 
 export function ifilter(
   arg1: unknown,
-  arg2?: unknown
+  arg2?: unknown,
 ): IteratorLike<unknown> | ((it: Iterable<unknown>) => IteratorLike<unknown>) {
   const pred = (arg2 ?? arg1) as (v: any) => boolean
   invariant(isFunction(pred))

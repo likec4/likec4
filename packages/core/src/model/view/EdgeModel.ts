@@ -4,16 +4,17 @@ import {
   type ComputedDynamicView,
   type ComputedView,
   type DiagramView,
-  extractStep,
-  isStepEdgeId,
+  type IteratorLike,
   type RelationId as C4RelationID,
   type StepEdgeId,
-  type Tag as C4Tag
+  type Tag as C4Tag,
+  extractStep,
+  isStepEdgeId,
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import type { RelationshipModel } from '../RelationModel'
-import type { AnyAux, IteratorLike } from '../types'
+import type { AnyAux } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
@@ -24,7 +25,7 @@ export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
     public readonly view: LikeC4ViewModel<M, V>,
     public readonly $edge: V['edges'][number],
     public readonly source: NodeModel<M, V>,
-    public readonly target: NodeModel<M, V>
+    public readonly target: NodeModel<M, V>,
   ) {
   }
 

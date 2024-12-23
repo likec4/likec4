@@ -1,19 +1,20 @@
 import { isTruthy } from 'remeda'
 import {
-  DefaultElementShape,
-  DefaultThemeColor,
   type Element as C4Element,
   type ElementKind as C4ElementKind,
   type ElementShape as C4ElementShape,
+  type IteratorLike,
   type Link,
   type Tag as C4Tag,
   type ThemeColor,
+  DefaultElementShape,
+  DefaultThemeColor,
 } from '../types'
 import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
+import type { AnyAux, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>

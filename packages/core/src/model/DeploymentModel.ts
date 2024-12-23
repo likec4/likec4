@@ -4,27 +4,28 @@ import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
 import {
   type ComputedDeploymentView,
-  DeploymentElement,
   type DeploymentRef,
   type DeploymentRelation,
   type GenericLikeC4Model,
+  type IteratorLike,
   type Tag as C4Tag,
+  DeploymentElement,
 } from '../types'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { isString } from '../utils/guards'
 import {
-  DeployedInstanceModel,
   type DeployedInstancesIterator,
   type DeploymentElementModel,
   type DeploymentElementsIterator,
-  DeploymentNodeModel,
   type DeploymentNodesIterator,
+  DeployedInstanceModel,
+  DeploymentNodeModel,
   DeploymentRelationModel,
   NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import { type AnyAux, getId, type IncomingFilter, type IteratorLike, type OutgoingFilter } from './types'
+import { type AnyAux, type IncomingFilter, type OutgoingFilter, getId } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {

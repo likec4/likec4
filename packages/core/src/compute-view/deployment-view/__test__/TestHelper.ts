@@ -11,7 +11,7 @@ import {
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
-import { differenceConnections } from '../../../model'
+import { differenceConnections } from '../../../model/connection'
 import type { ComputedDeploymentView, DeploymentView, DeploymentViewRule, ViewId } from '../../../types'
 import { imap, toArray } from '../../../utils/iterable'
 import { difference as differenceSet } from '../../../utils/set'

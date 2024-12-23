@@ -287,6 +287,4 @@ export namespace Types {
   export type From<B> = B extends Builder<infer T> ? B['Types'] extends AnyTypes ? T : AnyTypes : never
 
   export type DeploymentRules<B> = DeploymentRulesBuilderOp<From<B>>
-
-  export type LikeC4Model<B> = ToLikeC4Model<From<B>>
 }

@@ -1,10 +1,10 @@
-import type { IteratorLike } from './_types'
+import type { IteratorLike } from '../../types'
 
 export function iflat(): <T>(iterable: Iterable<IteratorLike<T>>) => IteratorLike<T>
 export function iflat<T>(iterable: Iterable<IteratorLike<T>>): IteratorLike<T>
 
 export function iflat<T>(
-  iterable?: Iterable<IteratorLike<T>>
+  iterable?: Iterable<IteratorLike<T>>,
 ): IteratorLike<T> | ((iterable: Iterable<IteratorLike<T>>) => IteratorLike<T>) {
   return iterable ? _iflat(iterable) : _iflat
 }

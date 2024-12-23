@@ -3,9 +3,6 @@ import type { DeploymentElementModel } from '../../DeploymentElementModel'
 import type { AnyAux } from '../../types'
 import { DeploymentConnectionModel } from './DeploymentConnectionModel'
 
-export { Connection } from '../Connection'
-export { DeploymentConnectionModel } from './DeploymentConnectionModel'
-
 /**
  * Resolve connection from source to target
  * If direction is `both`, also look for reverse connection

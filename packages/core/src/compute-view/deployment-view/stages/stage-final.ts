@@ -1,6 +1,6 @@
 import DefaultMap from 'mnemonist/default-map'
 import { forEach, only, pipe } from 'remeda'
-import { differenceConnections } from '../../../model'
+import { differenceConnections } from '../../../model/connection'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import { isAncestor, sortByFqnHierarchically } from '../../../utils/fqn'
 import { ifilter, isome, toArray } from '../../../utils/iterable'

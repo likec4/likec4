@@ -1,4 +1,4 @@
-import type { IteratorLike } from './_types'
+import type { IteratorLike } from '../../types'
 
 /**
  * Returns an iterable that yields only unique values.

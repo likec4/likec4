@@ -3,29 +3,24 @@ import { defineBuildConfig } from 'unbuild'
 const isProduction = process.env['NODE_ENV'] === 'production'
 
 export default defineBuildConfig({
-  clean: isProduction,
+  clean: true,
   stub: !isProduction,
   declaration: true,
   rollup: {
     inlineDependencies: true,
+    output: {
+      chunkFileNames: 'shared/[name].[hash].js',
+      entryFileNames: '[name].js',
+    },
     commonjs: {
       exclude: [
         /\.ts$/,
         /\.cts$/,
-        /\.mts$/
-      ]
+        /\.mts$/,
+      ],
     },
     resolve: {
-      browser: true
-    }
-    // dts: {
-    //   compilerOptions: {
-    //     noEmitOnError: false,
-    //     strict: false,
-    //     alwaysStrict: false,
-    //     skipLibCheck: true,
-    //     skipDefaultLibCheck: true
-    //   }
-    // }
-  }
+      browser: true,
+    },
+  },
 })

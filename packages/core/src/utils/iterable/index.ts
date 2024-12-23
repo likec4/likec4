@@ -1,4 +1,3 @@
-export type { IteratorLike } from './_types'
 export { isIterable } from './_types'
 
 /**

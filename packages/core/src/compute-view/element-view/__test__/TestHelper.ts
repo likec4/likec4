@@ -11,7 +11,7 @@ import {
 } from '../../../builder'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
-import { differenceConnections } from '../../../model'
+import { differenceConnections } from '../../../model/connection'
 import type { ComputedElementView, ElementView, ViewId, ViewRule } from '../../../types'
 import { compareNatural } from '../../../utils'
 import { imap, toArray } from '../../../utils/iterable'

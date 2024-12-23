@@ -1,16 +1,17 @@
 import { invariant } from '../../../errors'
+import type { IteratorLike } from '../../../types'
 import { stringHash } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { equals } from '../../../utils/set'
 import {
   type DeployedInstanceModel,
   type DeploymentElementModel,
-  DeploymentNodeModel,
   type DeploymentRelationModel,
+  DeploymentNodeModel,
   RelationshipsAccum,
 } from '../../DeploymentElementModel'
 import type { RelationshipModel } from '../../RelationModel'
-import type { AnyAux, IteratorLike } from '../../types'
+import type { AnyAux } from '../../types'
 import type { Connection } from '../Connection'
 
 /**

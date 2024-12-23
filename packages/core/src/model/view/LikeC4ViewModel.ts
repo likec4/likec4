@@ -1,5 +1,6 @@
 import { sort } from 'remeda'
 import { nonNullable } from '../../errors'
+import type { IteratorLike } from '../../types'
 import type { Link, Tag } from '../../types/element'
 import {
   type ComputedDeploymentView,
@@ -8,19 +9,19 @@ import {
   type ComputedView,
   type DiagramView,
   type EdgeId as C4EdgeId,
+  type LikeC4View,
+  type NodeId as C4NodeId,
   isDeploymentView,
   isDynamicView,
   isElementView,
   isScopedElementView,
-  type LikeC4View,
-  type NodeId as C4NodeId
 } from '../../types/view'
 import { compareByFqnHierarchically, getOrCreate } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
-import { type AnyAux, getId, type IteratorLike } from '../types'
-import { EdgeModel, type EdgesIterator } from './EdgeModel'
-import { NodeModel, type NodesIterator } from './NodeModel'
+import { type AnyAux, getId } from '../types'
+import { type EdgesIterator, EdgeModel } from './EdgeModel'
+import { type NodesIterator, NodeModel } from './NodeModel'
 
 export type ViewsIterator<M extends AnyAux> = IteratorLike<LikeC4ViewModel<M>>
 
@@ -35,7 +36,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
 
   constructor(
     public readonly $model: LikeC4Model<M>,
-    public readonly $view: V
+    public readonly $view: V,
   ) {
     for (const node of sort($view.nodes, compareByFqnHierarchically)) {
       const el = new NodeModel(this, Object.freeze(node))
@@ -59,7 +60,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
         this,
         Object.freeze(edge),
         this.node(edge.source),
-        this.node(edge.target)
+        this.node(edge.target),
       )
       for (const tag of edgeModel.tags) {
         getOrCreate(this.#allTags, tag, () => new Set()).add(edgeModel)

@@ -3,25 +3,26 @@ import type { SetRequired } from 'type-fest'
 import { nonNullable } from '../errors'
 import {
   type ComputedDeploymentView,
-  DefaultElementShape,
-  DefaultThemeColor,
   type DeployedInstance,
+  type DeploymentElementStyle,
   type DeploymentNode,
   type DeploymentNodeKind,
   type DeploymentRelation,
   type ElementShape as C4ElementShape,
+  type IteratorLike,
   type Link,
-  type PhysicalElementStyle,
   type Tag,
   type Tag as C4Tag,
   type ThemeColor,
+  DefaultElementShape,
+  DefaultThemeColor,
 } from '../types'
 import { commonAncestor, hierarchyLevel } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
+import type { AnyAux, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<M extends AnyAux> = IteratorLike<
@@ -41,7 +42,7 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
   abstract readonly $model: LikeC4DeploymentModel<M>
   abstract readonly $node: DeploymentNode | DeployedInstance
 
-  get style(): SetRequired<PhysicalElementStyle, 'shape' | 'color'> {
+  get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
     return {
       shape: DefaultElementShape,
       color: DefaultThemeColor,
@@ -328,7 +329,7 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
     return nonNullable(this.$model.parent(this), `Parent of ${this.id} not found`)
   }
 
-  override get style(): SetRequired<PhysicalElementStyle, 'shape' | 'color'> {
+  override get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
     const { icon, style } = this.element.$element
     return {
       shape: this.element.shape,
@@ -386,7 +387,7 @@ export class NestedElementOfDeployedInstanceModel<M extends AnyAux> {
     return this.instance.id
   }
 
-  get style(): SetRequired<PhysicalElementStyle, 'shape' | 'color'> {
+  get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
     const { icon, style } = this.element.$element
     return {
       shape: this.element.shape,

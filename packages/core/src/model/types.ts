@@ -5,6 +5,7 @@ import type {
   EdgeId,
   Fqn,
   GenericLikeC4Model,
+  IteratorLike,
   KeysOf,
   LayoutedLikeC4Model,
   LikeC4ModelDump,
@@ -24,8 +25,6 @@ export type OutgoingFilter = 'all' | 'direct' | 'from-descendants'
 export function getId<Id extends string>(element: string | { id: Id }): Id {
   return isString(element) ? element as Id : element.id
 }
-
-export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn>
 
 type WithId<Id> = { id: Id }
 

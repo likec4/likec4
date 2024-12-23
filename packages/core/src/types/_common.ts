@@ -62,5 +62,9 @@ export type ExclusiveUnion<Expressions> = Expressions extends object ? {
 export type NTuple<
   T,
   N extends number,
-  Result extends Array<unknown> = []
+  Result extends Array<unknown> = [],
 > = Result['length'] extends N ? Result : NTuple<T, N, [...Result, T]>
+
+export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn>
+
+export type Predicate<T> = (x: T) => boolean
