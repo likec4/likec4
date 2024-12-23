@@ -3,8 +3,12 @@
   "useTabs": false,
   "typescript": {
     "semiColons": "asi",
+    "conditionalType.operatorPosition": "maintain",
+    "binaryExpression.operatorPosition": "maintain",
     "trailingCommas": "onlyMultiLine",
-    "importDeclaration.preferSingleLine": true,
+    "importDeclaration.sortTypeOnlyImports": "first",
+    "importDeclaration.preferSingleLine": false,
+    "exportDeclaration.preferSingleLine": false,
     "quoteStyle": "alwaysSingle",
     "nextControlFlowPosition": "maintain",
     "jsxOpeningElement.bracketPosition": "maintain",
@@ -13,18 +17,6 @@
     "jsx.bracketPosition": "maintain"
   },
   "json": {
-  },
-  "biome": {
-    "associations": [
-      "!**/*.(c|m)?(ts|js)x?"
-    ],
-    "proseWrap": "preserve",
-    "singleQuote": true,
-    "semi": false,
-    "embeddedLanguageFormatting": "auto",
-    "trailingComma": "none",
-    "bracketSpacing": true,
-    "quoteProps": "consistent"
   },
   "excludes": [
     "**/node_modules",
@@ -41,10 +33,18 @@
     "**/routeTree.gen.ts",
     "packages/*/src/generated"
   ],
+  "markdown": {},
+  "toml": {},
+  "yaml": {},
+  "malva": {},
+  "markup": {},
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.91.8.wasm",
-    "https://plugins.dprint.dev/json-0.19.3.wasm",
+    "https://plugins.dprint.dev/typescript-0.93.3.wasm",
+    "https://plugins.dprint.dev/json-0.19.4.wasm",
     "https://plugins.dprint.dev/markdown-0.17.8.wasm",
-    "https://plugins.dprint.dev/biome-0.6.0.wasm"
+    "https://plugins.dprint.dev/toml-0.6.3.wasm",
+    "https://plugins.dprint.dev/g-plane/malva-v0.11.1.wasm",
+    "https://plugins.dprint.dev/g-plane/markup_fmt-v0.18.0.wasm",
+    "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.0.wasm"
   ]
 }
