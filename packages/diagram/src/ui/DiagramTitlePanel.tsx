@@ -11,14 +11,14 @@ const selector = (s: DiagramState) => ({
   id: s.view.id,
   title: s.view.title ?? 'untitled',
   description: s.view.description,
-  links: s.view.links
+  links: s.view.links,
 })
 
 export default function DiagramTitlePanel() {
   const { id, title, description, links } = useDiagramState(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'diagram-title-webview-collapsed',
-    defaultValue: false
+    defaultValue: false,
   })
   const toggle = () => setCollapsed(v => !v)
 
@@ -46,11 +46,11 @@ export default function DiagramTitlePanel() {
         animate={{ opacity: 1, scale: 1 }}
         exit={{
           opacity: 0.05,
-          scale: 0.6
+          scale: 0.6,
         }}
         className={clsx('react-flow__panel', css.container)}
         style={{
-          transformOrigin: 'left center'
+          transformOrigin: 'left center',
         }}
       >
         <Card
@@ -116,7 +116,7 @@ export default function DiagramTitlePanel() {
                   fw={500}
                   c={'dimmed'}
                   style={{
-                    userSelect: 'all'
+                    userSelect: 'all',
                   }}>
                   <span style={{ userSelect: 'none' }}>id:{' '}</span>
                   {id}
@@ -152,7 +152,7 @@ export default function DiagramTitlePanel() {
                   gap={3}
                   justify="stretch"
                   align="stretch">
-                  {links.map((link) => <Link link={link} />)}
+                  {links.map((link) => <Link link={link} key={link.url} />)}
                 </Stack>
               )}
             </>

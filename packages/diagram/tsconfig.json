@@ -14,5 +14,10 @@
   },
   "include": [
     "./src/"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.vite.json"
+    }
   ]
 }
