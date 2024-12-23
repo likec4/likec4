@@ -16,7 +16,7 @@ export function generateReactTypes(model: LikeC4Model.Layouted) {
   const {
     fqns,
     tags,
-    kinds
+    kinds,
   } = sortNaturalByFqn([...model.elements()]).reduce((acc, d) => {
     acc.fqns.push(d.id)
     acc.kinds.add(d.kind)
@@ -25,12 +25,12 @@ export function generateReactTypes(model: LikeC4Model.Layouted) {
   }, {
     fqns: [] as string[],
     kinds: new Set<string>(),
-    tags: [] as string[]
+    tags: [] as string[],
   })
   const deploymentFqns = sortNaturalByFqn([...model.deployment.elements()]).map((e) => e.id)
 
   const {
-    viewIds
+    viewIds,
   } = [...model.views()].reduce((acc, d) => {
     acc.viewIds.add(d.id)
     acc.tags.push(...d.tags)
@@ -38,7 +38,7 @@ export function generateReactTypes(model: LikeC4Model.Layouted) {
     return acc
   }, {
     viewIds: new Set<string>(),
-    tags
+    tags,
   })
 
   return `
@@ -53,9 +53,11 @@ export function generateReactTypes(model: LikeC4Model.Layouted) {
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import type {
+  LikeC4Model as GenericLikeC4Model,
+} from 'likec4/model'
+import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
   ViewData,
-  LikeC4Model as GenericLikeC4Model,
   ReactLikeC4Props as GenericReactLikeC4Props
 } from 'likec4/react'
 

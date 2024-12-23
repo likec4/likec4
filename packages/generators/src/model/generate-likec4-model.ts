@@ -13,12 +13,12 @@ export function generateLikeC4Model(model: LikeC4Model) {
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
 
-    import { LikeC4Model } from 'likec4'
+    import { LikeC4Model } from 'likec4/model'
 
     export const likeC4Model = LikeC4Model.fromDump(${
     JSON5.stringify(model.$model, {
       space: 2,
-      quote: '\''
+      quote: '\'',
     })
   })
 

@@ -6,7 +6,7 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import { LikeC4Model } from 'likec4'
+import { LikeC4Model } from 'likec4/model'
 
 export const likeC4Model = LikeC4Model.fromDump({
   specification: {
