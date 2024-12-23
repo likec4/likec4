@@ -1,7 +1,6 @@
 {
   "extends": "@likec4/tsconfig/base.json",
-  "compilerOptions": {
-  },
+  "compilerOptions": {},
   "include": [
     "./src"
   ]

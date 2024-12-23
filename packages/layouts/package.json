@@ -19,20 +19,19 @@
     "directory": "packages/layouts"
   },
   "type": "module",
-  "sideEffects": false,
   "exports": {
     ".": {
       "development": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
+        "default": "./dist/index.js"
       }
     },
     "./graphviz/binary": {
       "development": "./src/graphviz/binary/index.ts",
       "default": {
         "types": "./dist/graphviz/binary/index.d.ts",
-        "default": "./dist/graphviz/binary/index.mjs"
+        "default": "./dist/graphviz/binary/index.js"
       }
     }
   },
