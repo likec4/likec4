@@ -76,6 +76,10 @@ export class PreviewPanel extends AbstractDisposable {
     )
   }
 
+  get viewId(): ViewID {
+    return this._viewId
+  }
+
   public open(viewId: ViewID) {
     this._viewId = viewId
     this.panel.reveal()

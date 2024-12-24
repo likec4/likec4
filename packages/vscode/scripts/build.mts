@@ -49,7 +49,7 @@ const base = {
   treeShaking: true,
   external: isProduction ? ['vscode'] : [
     'vscode',
-    // '@vscode/extension-telemetry',
+    '@vscode/extension-telemetry',
     // '@hpcc-js/wasm-graphviz'
   ],
   define: {
@@ -93,7 +93,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser','production'] : ['development'],
+  conditions: isProduction ? ['browser', 'production'] : ['development'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -103,7 +103,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser','production'] : ['development'],
+  conditions: isProduction ? ['browser', 'production'] : ['development'],
 })
 
 let hasErrors = false

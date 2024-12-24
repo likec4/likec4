@@ -47,9 +47,12 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.7",
     "consola": "^3.2.3",
+    "merge-error-cause": "^5.0.0",
+    "safe-stringify": "^1.1.1",
     "std-env": "^3.8.0",
     "typescript": "^5.7.2",
-    "unbuild": "^3.0.1"
+    "unbuild": "^3.0.1",
+    "wrap-error-message": "^3.0.0"
   },
   "packageManager": "yarn@4.5.3"
 }

@@ -1,6 +1,6 @@
-import { type ConsolaReporter, LogLevels, rootLogger as root } from '@likec4/log'
+import { nonexhaustive } from '@likec4/core'
+import { type ConsolaReporter, formatLogObj, LogLevels, rootLogger as root } from '@likec4/log'
 import { BROWSER } from 'esm-env'
-import { isError } from 'remeda'
 import type { Connection } from 'vscode-languageserver'
 
 export const logger = root.withTag('lsp')
@@ -22,76 +22,55 @@ export function setLogLevel(level: keyof typeof LogLevels): void {
   logger.level = LogLevels[level]
 }
 
-export function logErrorToTelemetry(connection: Connection): void {
-  const reporter: ConsolaReporter = {
-    log: ({ level, ...logObj }, ctx) => {
-      if (level !== LogLevels.error && level !== LogLevels.fatal) {
-        return
-      }
-      const tag = logObj.tag || ''
-      const parts = logObj.args.map((arg) => {
-        if (isError(arg)) {
-          return arg.stack ?? arg.message
-        }
-        if (typeof arg === 'string') {
-          return arg
-        }
-        return '' + arg
-      })
-      if (tag) {
-        parts.unshift(`[${tag}]`)
-      }
-      const message = parts.join(' ')
-      connection.telemetry.logEvent({ eventName: 'error', error: message })
-    }
-  }
-  root.addReporter(reporter)
-  logger.setReporters(root.options.reporters)
-}
-
 export function logToLspConnection(connection: Connection): void {
   const reporter: ConsolaReporter = {
-    log: ({ level, ...logObj }, ctx) => {
-      const tag = logObj.tag || ''
-      const parts = logObj.args.map((arg) => {
-        if (isError(arg)) {
-          return arg.stack ?? arg.message
+    log: (logObj, _ctx) => {
+      const { message, error } = formatLogObj(logObj)
+      switch (logObj.type) {
+        case 'silent': {
+          // ignore
+          break
         }
-        if (typeof arg === 'string') {
-          return arg
+        case 'verbose':
+        case 'trace': {
+          connection.tracer.log(message)
+          break
         }
-        return '' + arg
-      })
-      if (tag) {
-        parts.unshift(`[${tag}]`)
-      }
-      const message = parts.join(' ')
-      switch (true) {
-        case level >= LogLevels.debug: {
+        case 'debug': {
           connection.console.debug(message)
           break
         }
-        // case level >= LogLevels.info: {
-        //   connection.console.info(message)
-        //   break
-        // }
-        case level >= LogLevels.log: {
+        case 'log': {
+          connection.console.log(message)
+          break
+        }
+        case 'info':
+        case 'box':
+        case 'ready':
+        case 'start':
+        case 'success': {
           connection.console.info(message)
           break
         }
-        case level >= LogLevels.warn: {
+        case 'warn': {
           connection.console.warn(message)
           break
         }
-        case level >= LogLevels.fatal: {
+        case 'fail':
+        case 'error':
+        case 'fatal': {
           connection.console.error(message)
+          if (error) {
+            connection.telemetry.logEvent({ eventName: 'error', ...error })
+          } else {
+            connection.telemetry.logEvent({ eventName: 'error', message })
+          }
           break
         }
-        default: {
-          connection.console.log(message)
-        }
+        default:
+          nonexhaustive(logObj.type)
       }
-    }
+    },
   }
   if (BROWSER) {
     root.addReporter(reporter)

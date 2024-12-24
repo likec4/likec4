@@ -152,6 +152,7 @@
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
     "langium": "3.3.0",
+    "merge-error-cause": "^5.0.0",
     "mkdirp": "^3.0.1",
     "nanostores": "0.11.3",
     "npm-run-all2": "^7.0.1",

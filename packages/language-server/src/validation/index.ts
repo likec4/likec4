@@ -119,7 +119,7 @@ export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
 export type IsValidFn = ChecksFromDiagnostics['isValid']
 
 export function registerValidationChecks(services: LikeC4Services) {
-  logger.info('registerValidationChecks')
+  logger.debug('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
     DeployedInstance: deployedInstanceChecks(services),

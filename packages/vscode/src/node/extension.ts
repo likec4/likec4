@@ -3,12 +3,12 @@ import os from 'node:os'
 import path from 'node:path'
 import vscode from 'vscode'
 import {
-  LanguageClient as NodeLanguageClient,
   type LanguageClientOptions,
-  RevealOutputChannelOn,
   type ServerOptions,
   type TextDocumentFilter,
-  TransportKind
+  LanguageClient as NodeLanguageClient,
+  RevealOutputChannelOn,
+  TransportKind,
 } from 'vscode-languageclient/node'
 import { isLikeC4Source } from '../common/initWorkspace'
 import { extensionTitle, globPattern, isDev, isVirtual, languageId } from '../const'
@@ -22,8 +22,16 @@ function isWindows() {
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
+  const extensionOutputChannel = vscode.window.createOutputChannel('LikeC4 Extension', {
+    log: true,
+  })
+  context.subscriptions.push(
+    extensionOutputChannel,
+    logToChannel(extensionOutputChannel),
+  )
+  logger.info('createLanguageClient - node')
   const client = createLanguageClient(context)
-  const ctrl = ExtensionController.activate(context, client)
+  const ctrl = ExtensionController.activate(context, client, extensionOutputChannel)
   configureGraphviz(ctrl)
 }
 
@@ -34,23 +42,17 @@ export function deactivate() {
 
 function createLanguageClient(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel('LikeC4 Language Server', {
-    log: true
-  })
-  const extensionOutputChannel = vscode.window.createOutputChannel('LikeC4 Extension', {
-    log: true
+    log: true,
   })
   context.subscriptions.push(
     outputChannel,
-    extensionOutputChannel,
-    logToChannel(extensionOutputChannel)
   )
-  logger.info('createLanguageClient - node')
 
   const serverModule = path.join(
     context.extensionPath,
     'dist',
     'node',
-    'language-server.js'
+    'language-server.js',
   )
 
   // If the extension is launched in debug mode then the debug server options are used
@@ -60,8 +62,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       module: serverModule,
       transport: TransportKind.ipc,
       options: {
-        execArgv: ['--enable-source-maps']
-      }
+        execArgv: ['--enable-source-maps'],
+      },
     },
     debug: {
       module: serverModule,
@@ -72,10 +74,10 @@ function createLanguageClient(context: vscode.ExtensionContext) {
         execArgv: [
           '--enable-source-maps',
           '--nolazy',
-          `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '9229'}`
-        ]
-      }
-    }
+          `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '9229'}`,
+        ],
+      },
+    },
   }
 
   if (isDev) {
@@ -95,7 +97,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   const scheme = isVirtual() ? 'vscode-vfs' : 'file'
   const documentSelector = (isWindows() || workspaceFolders.length === 0)
     ? [
-      { language: languageId, scheme } // TODO: Can't figure out why
+      { language: languageId, scheme }, // TODO: Can't figure out why
     ]
     : workspaceFolders.map((f): TextDocumentFilter => {
       const w = vscode.Uri.joinPath(f.uri, globPattern)
@@ -117,9 +119,9 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       onTabs: true,
       match(_, resource) {
         return isLikeC4Source(resource.path)
-      }
+      },
     },
-    progressOnInitialization: true
+    progressOnInitialization: true,
   }
   logger.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)
 

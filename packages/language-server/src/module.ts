@@ -1,12 +1,12 @@
-import { DocumentCache, EmptyFileSystem, inject, type Module, WorkspaceCache } from 'langium'
+import { type Module, DocumentCache, EmptyFileSystem, inject, WorkspaceCache } from 'langium'
 import {
-  createDefaultModule,
-  createDefaultSharedModule,
   type DefaultSharedModuleContext,
   type LangiumServices,
   type LangiumSharedServices,
   type PartialLangiumServices,
-  type PartialLangiumSharedServices
+  type PartialLangiumSharedServices,
+  createDefaultModule,
+  createDefaultSharedModule,
 } from 'langium/lsp'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
@@ -18,7 +18,7 @@ import {
   LikeC4DocumentLinkProvider,
   LikeC4DocumentSymbolProvider,
   LikeC4HoverProvider,
-  LikeC4SemanticTokenProvider
+  LikeC4SemanticTokenProvider,
 } from './lsp'
 import { DeploymentsIndex, FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ModelChanges } from './model-change/ModelChanges'
@@ -48,11 +48,11 @@ const LikeC4SharedModule: Module<
 > = {
   lsp: {
     NodeKindProvider: services => new NodeKindProvider(services),
-    WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services)
+    WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services),
   },
   workspace: {
-    WorkspaceManager: services => new LikeC4WorkspaceManager(services)
-  }
+    WorkspaceManager: services => new LikeC4WorkspaceManager(services),
+  },
 }
 
 /**
@@ -105,7 +105,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
     ModelBuilder: bind(LikeC4ModelBuilder),
-    ModelLocator: bind(LikeC4ModelLocator)
+    ModelLocator: bind(LikeC4ModelLocator),
   },
   lsp: {
     // RenameProvider: bind(LikeC4RenameProvider),
@@ -116,13 +116,13 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     HoverProvider: bind(LikeC4HoverProvider),
     CodeLensProvider: bind(LikeC4CodeLensProvider),
     DocumentLinkProvider: bind(LikeC4DocumentLinkProvider),
-    Formatter: bind(LikeC4Formatter)
+    Formatter: bind(LikeC4Formatter),
   },
   references: {
     NameProvider: bind(LikeC4NameProvider),
     ScopeComputation: bind(LikeC4ScopeComputation),
-    ScopeProvider: bind(LikeC4ScopeProvider)
-  }
+    ScopeProvider: bind(LikeC4ScopeProvider),
+  },
 }
 
 export type LanguageServicesContext = Partial<DefaultSharedModuleContext>
@@ -131,7 +131,7 @@ export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 
   context: LanguageServicesContext,
   module: Module<I, I1>,
   module2?: Module<I, I2>,
-  module3?: Module<I, I3>
+  module3?: Module<I, I3>,
 ): { shared: LikeC4SharedServices; likec4: I } {
   const shared = createSharedServices(context)
   const modules = [
@@ -140,7 +140,7 @@ export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 
     LikeC4Module,
     module,
     module2,
-    module3
+    module3,
   ].reduce(_merge, {}) as Module<I>
 
   const likec4 = inject(modules)
@@ -161,17 +161,16 @@ export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 
 export function createSharedServices(context: LanguageServicesContext = {}): LikeC4SharedServices {
   const moduleContext: DefaultSharedModuleContext = {
     ...EmptyFileSystem,
-    ...context
+    ...context,
   }
   if (context.connection) {
     logToLspConnection(context.connection)
-    logErrorToTelemetry(context.connection)
   }
 
   return inject(
     createDefaultSharedModule(moduleContext),
     LikeC4GeneratedSharedModule,
-    LikeC4SharedModule
+    LikeC4SharedModule,
   )
 }
 
