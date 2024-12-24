@@ -34,7 +34,7 @@ describe('DirectRelationPredicate', () => {
     `)
   })  
 
-  it.only('should exclude direct relation if it matches condition', () => {
+  it('should exclude direct relation if it matches condition', () => {
     expectComputed(
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
@@ -71,7 +71,7 @@ describe('DirectRelationPredicate', () => {
     })
   })  
 
-  it.only('should not exclude direct relation if it does not match condition', () => {
+  it('should not exclude direct relation if it does not match condition', () => {
     expectComputed(
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),

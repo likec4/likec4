@@ -1,22 +1,17 @@
-import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
+import { filter, flatMap, isNonNullish, pick, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import type { LikeC4DeploymentModel } from '../../../model'
+import type { ConnectionModel, DeploymentElementModel, DeploymentRelationModel, LikeC4DeploymentModel } from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
-import type { ConnectionModel } from '../../../model/connection/model/ConnectionModel'
-import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import { type Filterable, type FqnRef, type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
-import { hasIntersection, intersection } from '../../../utils/set'
-import type { ExcludePredicateCtx, PredicateExecutor } from '../_types'
-import type { StageExclude } from '../memory'
+import { FqnExpr, type Filterable, type OperatorPredicate, type RelationExpr } from '../../../types'
+import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
 import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
 import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
-
-// const isRef = DeploymentElementExpression.isRef
+import { excludeModelRelations } from './utils'
 
 export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   const siblings = new Set<DeploymentElementModel>()
@@ -130,85 +125,68 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     const isTarget = deploymentExpressionToPredicate(expr.target)
     const isSource = deploymentExpressionToPredicate(expr.source)
 
-    // * -> *
-    // Exclude all connections
-    if (
-      FqnExpr.isWildcard(expr.source)
-      && FqnExpr.isWildcard(expr.target)
-    ) {
-      stage.excludeConnections(matchConnections(memory.connections, where))
-      return stage
+    let modelRelationsToExclude: ReadonlySet<RelationshipModel<AnyAux>>
+    switch (true) {
+      // * -> *
+      case FqnExpr.isWildcard(expr.source) && FqnExpr.isWildcard(expr.target):
+        stage.excludeConnections(matchConnections(memory.connections, where))
+        return stage
+
+      // model -> model
+      case FqnExpr.isModelRef(expr.source) && FqnExpr.isModelRef(expr.target):
+        modelRelationsToExclude = resolveRelationsBetweenModelElements({
+          source: expr.source,
+          target: expr.target,
+          expr,
+          model
+        })
+        return excludeModelRelations(modelRelationsToExclude, { stage, memory }, where)
+
+      // model -> *
+      case FqnExpr.isModelRef(expr.source) && FqnExpr.isWildcard(expr.target):
+        modelRelationsToExclude = resolveAllOutgoingRelations(model, expr.source)
+        return excludeModelRelations(modelRelationsToExclude, { stage, memory }, where)
+
+      // model -> deployment
+      case FqnExpr.isModelRef(expr.source):
+        modelRelationsToExclude = resolveAllOutgoingRelations(model, expr.source)
+        return excludeModelRelations(
+          modelRelationsToExclude,
+          { stage, memory },
+          where,
+          c => isTarget(c.target)
+        )
+
+      // deployment -> model
+      case FqnExpr.isModelRef(expr.target):
+        modelRelationsToExclude = resolveAllImcomingRelations(model, expr.target)
+        return excludeModelRelations(
+          modelRelationsToExclude,
+          { stage, memory },
+          where,
+          c => isSource(c.source)
+        )
+
+      // deployment -> deployment
+      default:
+        const satisfies = (connection: DeploymentConnectionModel) => {
+          return (isSource(connection.source) && isTarget(connection.target))
+            || (expr.isBidirectional === true && isSource(connection.target) && isTarget(connection.source))
+        }
+
+        const deploymentRelationsToExclude = pipe(
+          memory.connections,
+          filter(satisfies),
+          filter(c => matchConnection(c, where))
+        )
+        if (deploymentRelationsToExclude.length === 0) {
+          return stage
+        }
+
+        stage.excludeConnections(deploymentRelationsToExclude)
+        return stage
     }
-
-    if (FqnExpr.isModelRef(expr.source) && FqnExpr.isModelRef(expr.target)) {
-      const toExclude = resolveRelationsBetweenModelElements({
-        source: expr.source,
-        target: expr.target,
-        expr,
-        model,
-      })
-      return excludeModelRelations(toExclude, { stage, memory }, c => matchConnection(c, where))
-    }
-
-    if (FqnExpr.isModelRef(expr.source)) {
-      if (FqnExpr.isWildcard(expr.target)) {
-        const toExclude = resolveAllOutgoingRelations(model, expr.source)
-        return excludeModelRelations(toExclude, { stage, memory })
-      }
-      const allOutgoing = resolveAllOutgoingRelations(model, expr.source)
-      return excludeModelRelations(
-        allOutgoing,
-        { stage, memory },
-        c => isTarget(c.target) && matchConnection(c, where),
-      )
-    }
-
-    if (FqnExpr.isModelRef(expr.target)) {
-      const toExclude = resolveAllImcomingRelations(model, expr.target)
-      return excludeModelRelations(
-        toExclude,
-        { stage, memory },
-        c => isSource(c.source) && matchConnection(c, where),
-      )
-    }
-
-    const satisfies = (connection: DeploymentConnectionModel) => {
-      return ((isSource(connection.source) && isTarget(connection.target))
-        || (expr.isBidirectional && isSource(connection.target) && isTarget(connection.source)))
-        && matchConnection(connection, where)
-    }
-
-    const toExclude = memory.connections.filter(satisfies)
-
-    stage.excludeConnections(toExclude)
-    return stage
-  },
-}
-
-export function excludeModelRelations(
-  relationsToExclude: ReadonlySet<RelationshipModel<AnyAux>>,
-  { stage, memory }: Pick<ExcludePredicateCtx, 'stage' | 'memory'>,
-  // Optional filter to scope the connections to exclude
-  filterConnections: (c: DeploymentConnectionModel) => boolean = () => true,
-): StageExclude {
-  if (relationsToExclude.size === 0) {
-    return stage
   }
-  const toExclude = pipe(
-    memory.connections,
-    // Find connections that have at least one relation in common with the excluded relations
-    filter(c => filterConnections(c) && hasIntersection(c.relations.model, relationsToExclude)),
-    map(c =>
-      c.update({
-        deployment: null,
-        model: intersection(c.relations.model, relationsToExclude),
-      })
-    ),
-  )
-  if (toExclude.length === 0) {
-    return stage
-  }
-  return stage.excludeConnections(toExclude)
 }
 
 function resolveRelationsBetweenModelElements({
