@@ -29,10 +29,13 @@ export function RenderIcon({ node }: IconRendererProps) {
 
 export { likeC4Model, LikeC4Views, useLikeC4Model }
 
-export const useLikeC4ViewModel = (viewId: LikeC4ViewId): LikeC4Model.View => useLikeC4Model().view(viewId as any)
+export function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4Model.View {
+  return useLikeC4Model().view(viewId as any)
+}
 
-export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView =>
-  useLikeC4Model().view(viewId as any).$view as DiagramView
+export function useLikeC4View(viewId: LikeC4ViewId): DiagramView {
+  return useLikeC4Model().view(viewId as any).$view as DiagramView
+}
 
 export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 

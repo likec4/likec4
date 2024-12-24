@@ -76,7 +76,7 @@ ${toUnion(kinds)}
 type LikeC4Tag =
 ${toUnion(new Set(tags))}
 
-type LikeC4ViewData = ViewData<LikeC4ViewId>
+type LikeC4ViewData = ViewData<LikeC4ViewId, LikeC4Tag>
 
 declare const LikeC4Views: {
   readonly [K in LikeC4ViewId]: LikeC4ViewData

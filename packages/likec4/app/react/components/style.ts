@@ -3,13 +3,15 @@ import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMut
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useId, useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
-import FontCss from './font.css?inline'
+import fontCss from './font.css?inline'
 import { shadowRoot } from './styles.css'
 import type { ViewData } from './types'
 
 declare const __likec4styles: Map<string, string>
 declare const __USE_STYLE_BUNDLE__: boolean
 declare const SHADOW_STYLE: string
+
+const FontCss = fontCss as string
 
 export const DefaultTheme = createTheme({
   autoContrast: true,

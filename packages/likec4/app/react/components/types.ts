@@ -3,7 +3,7 @@ import type { MantineThemeOverride } from '@mantine/core'
 import type { CSSProperties, ReactNode } from 'react'
 
 export type { DiagramView }
-export type ViewData<Views extends string> = DiagramView<Views, string>
+export type ViewData<Views extends string, Tag extends string = string> = DiagramView<Views, Tag>
 
 type ElementIconRendererProps = {
   node: {
