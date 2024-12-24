@@ -8,7 +8,6 @@ import {
   nameFromFqn,
   nonNullable,
   parentFqn,
-  parentFqnPredicate
 } from '@likec4/core'
 import type {
   Color,
@@ -20,7 +19,7 @@ import type {
   Fqn,
   RelationshipLineType,
   RelationshipThemeColorValues,
-  XYPoint
+  XYPoint,
 } from '@likec4/core/types'
 import { logger } from '@likec4/log'
 import {
@@ -37,12 +36,10 @@ import {
   reverse,
   sort,
   take,
-  unique
+  unique,
 } from 'remeda'
 import {
-  attribute as _,
   type AttributeListModel,
-  digraph,
   type EdgeAttributeKey,
   type EdgeModel,
   type GraphBaseModel,
@@ -50,7 +47,9 @@ import {
   type NodeModel,
   type RootGraphModel,
   type SubgraphModel,
-  toDot as modelToDot
+  attribute as _,
+  digraph,
+  toDot as modelToDot,
 } from 'ts-graphviz'
 import { compoundLabel, nodeLabel } from './dot-labels'
 import type { DotSource } from './types'
@@ -97,7 +96,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         ? view.edges
           .filter(e => this.compoundIds.has(e.source) || this.compoundIds.has(e.target))
           .map(n => n.id)
-        : []
+        : [],
     )
     const G = this.graphvizModel = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
@@ -157,8 +156,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     return modelToDot(this.graphvizModel, {
       print: {
         indentStyle: 'space',
-        indentSize: 2
-      }
+        indentSize: 2,
+      },
     }) as DotSource
   }
 
@@ -181,13 +180,13 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.pack]: pxToPoints(autoLayout.rankSep ?? 120),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15),
-      [_.fontname]: FontName
+      [_.fontname]: FontName,
     })
     G.attributes.graph.apply({
       [_.fontsize]: pxToPoints(15),
       [_.labeljust]: autoLayout.direction === 'RL' ? 'r' : 'l',
       [_.labelloc]: autoLayout.direction === 'BT' ? 'b' : 't',
-      [_.margin]: 50.1 // space around clusters, but SVG output requires hack
+      [_.margin]: 50.1, // space around clusters, but SVG output requires hack
     })
 
     return G
@@ -200,7 +199,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.width]: pxToInch(320),
       [_.height]: pxToInch(180),
       [_.style]: 'filled',
-      [_.penwidth]: 0
+      [_.penwidth]: 0,
     })
   }
   protected applyEdgeAttributes(edge: AttributeListModel<'Edge', EdgeAttributeKey>) {
@@ -210,7 +209,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
       [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
-      [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
+      [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor,
     })
   }
 
@@ -266,7 +265,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fillcolor]: compoundColor(colorValues.fill, compound.depth),
       [_.color]: compoundColor(colorValues.stroke, compound.depth),
       [_.style]: 'filled',
-      [_.margin]: pxToPoints(compound.children.length > 1 ? 40 : 32)
+      [_.margin]: pxToPoints(compound.children.length > 1 ? 40 : 32),
     })
     if (!isEmpty(compound.title.trim())) {
       subgraph.set(_.label, compoundLabel(compound, textColor))
@@ -284,7 +283,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fillcolor]: colorValues.fill,
       [_.fontcolor]: colorValues.hiContrast,
       [_.color]: colorValues.stroke,
-      [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(26)}`
+      [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(26)}`,
     })
     switch (element.shape) {
       case 'cylinder':
@@ -292,19 +291,19 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         node.attributes.apply({
           [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(0)}`,
           [_.penwidth]: pxToPoints(2),
-          [_.shape]: 'cylinder'
+          [_.shape]: 'cylinder',
         })
         break
       }
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(32)}`
+          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(32)}`,
         })
         break
       }
       case 'mobile': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`
+          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`,
         })
         break
       }
@@ -312,7 +311,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         node.attributes.apply({
           [_.width]: pxToInch(320),
           [_.height]: pxToInch(165),
-          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`
+          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`,
         })
         break
       }
@@ -352,7 +351,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected viewElement(id: Fqn) {
     return nonNullable(
       this.view.nodes.find(n => n.id === id),
-      `Node ${id} not found`
+      `Node ${id} not found`,
     )
   }
 
@@ -370,7 +369,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
    */
   protected edgeEndpoint(
     endpointId: Fqn,
-    pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined
+    pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined,
   ) {
     let element = this.viewElement(endpointId)
     let endpoint = this.getGraphNode(endpointId)
@@ -384,11 +383,11 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       invariant(logicalEndpoint, `subgraph ${endpointId} not found`)
       element = nonNullable(
         pickFromCluster(this.leafElements(endpointId)),
-        `leaf element in ${endpointId} not found`
+        `leaf element in ${endpointId} not found`,
       )
       endpoint = nonNullable(
         this.getGraphNode(element.id),
-        `source graphviz node ${element.id} not found`
+        `source graphviz node ${element.id} not found`,
       )
     }
     return [element, endpoint, logicalEndpoint] as const
@@ -407,7 +406,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       unique(),
       difference(concat(parent.inEdges, parent.outEdges)),
       map(edgeId => this.view.edges.find(e => e.id === edgeId)),
-      filter(isTruthy)
+      filter(isTruthy),
     )
   }
 
@@ -418,7 +417,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     return {
       ...element,
       inEdges: element.inEdges.filter(e => !this.edgesWithCompounds.has(e)),
-      outEdges: element.outEdges.filter(e => !this.edgesWithCompounds.has(e))
+      outEdges: element.outEdges.filter(e => !this.edgesWithCompounds.has(e)),
     }
   }
 
@@ -438,7 +437,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       }),
       filter(({ edges }) => edges.length > 1 && edges.length < 8),
       // take only first 4 groups, otherwise grahviz eats the memory
-      take(4)
+      take(4),
     )
 
     const processed = new Set<Fqn>()
@@ -483,7 +482,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
           [_.pin]: true,
           [_.width]: pxToInch(manual.fixedsize.width),
           [_.height]: pxToInch(manual.fixedsize.height),
-          [_.fixedsize]: true
+          [_.fixedsize]: true,
         })
       } else {
         // Not pinned, but suggested position
@@ -527,7 +526,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.sep]: '+50,50',
       [_.esep]: '+10,10',
       [_.start]: 'random2',
-      [_.splines]: 'compound'
+      [_.splines]: 'compound',
     })
     this.graphvizModel.delete(_.compound)
     this.graphvizModel.delete(_.rankdir)

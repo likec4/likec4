@@ -10,7 +10,7 @@ import {
 } from 'langium/lsp'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { logErrorToTelemetry, logToLspConnection } from './logger'
+import { logToLspConnection } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,

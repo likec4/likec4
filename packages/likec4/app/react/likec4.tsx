@@ -1,4 +1,4 @@
-import type { LikeC4Model } from 'likec4/model'
+import type { LikeC4Model } from '@likec4/core/model'
 import {
   type LikeC4ViewProps as BaseLikeC4ViewProps,
   type ReactLikeC4Props as GenericReactLikeC4Props,

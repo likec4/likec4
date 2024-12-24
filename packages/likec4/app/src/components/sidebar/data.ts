@@ -1,6 +1,6 @@
 import { compareNatural, nonexhaustive } from '@likec4/core'
+import { type DiagramView, ComputedView } from '@likec4/core/types'
 import type { TreeNodeData } from '@mantine/core'
-import { type DiagramView, ComputedView } from 'likec4/model'
 import { useMemo } from 'react'
 import { find, values } from 'remeda'
 import { useLikeC4Model } from 'virtual:likec4/model'

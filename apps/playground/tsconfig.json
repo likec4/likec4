@@ -4,6 +4,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "types": [
+      "node",
       "vite/client"
     ],
     "noEmit": true,
@@ -17,9 +18,6 @@
     ],
     "noUnusedParameters": false
   },
-  "files": [
-    "./vite.config.mts"
-  ],
   "include": [
     "./src",
   ]
