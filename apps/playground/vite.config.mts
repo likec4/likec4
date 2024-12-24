@@ -4,7 +4,7 @@ import { vanillaExtractPlugin as vanillaExtractEsbuildPlugin } from '@vanilla-ex
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
 import { dirname, resolve } from 'node:path'
-import { type AliasOptions, defineConfig, mergeConfig, type UserConfig, type UserConfigFnObject } from 'vite'
+import { type AliasOptions, type UserConfig, type UserConfigFnObject, defineConfig, mergeConfig } from 'vite'
 import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const root = dirname(__filename)
@@ -12,6 +12,7 @@ const root = dirname(__filename)
 const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
+  '@likec4/diagram': resolve('../../packages/diagram/src'),
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
@@ -19,28 +20,28 @@ const baseConfig: UserConfigFnObject = () => {
     root,
     resolve: {
       conditions: ['development'],
-      alias
+      alias,
     },
     css: {
       modules: {
-        localsConvention: 'camelCase'
+        localsConvention: 'camelCase',
       },
-      postcss: {}
+      postcss: {},
     },
     build: {
-      cssCodeSplit: false
+      cssCodeSplit: false,
     },
     optimizeDeps: {
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin as any,
           vanillaExtractEsbuildPlugin({
-            runtime: true
-          })
-        ]
-      }
+            runtime: true,
+          }),
+        ],
+      },
     },
-    plugins: []
+    plugins: [],
   }
 }
 
@@ -51,7 +52,7 @@ export default defineConfig((env) => {
     case env.command === 'build' && env.mode === 'pre':
       return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
         define: {
-          'process.env.NODE_ENV': JSON.stringify('production')
+          'process.env.NODE_ENV': JSON.stringify('production'),
         },
         mode: 'production',
         logLevel: 'warn',
@@ -64,17 +65,17 @@ export default defineConfig((env) => {
           emptyOutDir: true,
           commonjsOptions: {
             transformMixedEsModules: true,
-            esmExternals: true
+            esmExternals: true,
           },
           rollupOptions: {
             output: {
               hoistTransitiveImports: false,
               preserveModules: true,
               preserveModulesRoot: resolve('src'),
-              entryFileNames: '[name].mjs'
+              entryFileNames: '[name].mjs',
             },
             treeshake: {
-              preset: 'recommended'
+              preset: 'recommended',
             },
             makeAbsoluteExternalsRelative: 'ifRelativeSource',
             external: [
@@ -96,43 +97,37 @@ export default defineConfig((env) => {
               /d3-/,
               /hpcc-js/,
               /node_modules.*vscode/,
-              /node_modules.*monaco/
-            ]
+              /node_modules.*monaco/,
+            ],
           },
           lib: {
             entry: {
-              main: 'src/main.tsx'
+              main: 'src/main.tsx',
             },
-            formats: ['es']
-          }
+            formats: ['es'],
+          },
         },
         plugins: [
           vanillaExtractPlugin({
-            identifiers: 'short'
+            identifiers: 'short',
           }),
           react({
             // jsxRuntime: 'classic'
-          })
-        ]
+          }),
+        ],
       })
     case env.command === 'build':
       return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
         define: {
-          'process.env.NODE_ENV': JSON.stringify('production')
+          'process.env.NODE_ENV': JSON.stringify('production'),
         },
         mode: 'production',
         resolve: {
-          dedupe: [
-            'react/jsx-runtime',
-            'react-dom/client',
-            'react',
-            'react-dom'
-          ],
-          conditions: ['production'],
+          conditions: ['browser', 'production'],
           alias: {
             '/src/style.css': resolve('prebuild/style.css'),
-            '/src/main': resolve('prebuild/main.mjs')
-          }
+            '/src/main': resolve('prebuild/main.mjs'),
+          },
         },
         build: {
           copyPublicDir: true,
@@ -163,16 +158,16 @@ export default defineConfig((env) => {
         plugins: [
           react({
             // jsxRuntime: 'classic'
-          })
-        ]
+          }),
+        ],
       })
     default:
       return mergeConfig(baseConfig(env), {
         plugins: [
           vanillaExtractPlugin({}),
           TanStackRouterVite(tanStackRouterViteCfg),
-          react({})
-        ]
+          react({}),
+        ],
       })
   }
 })
