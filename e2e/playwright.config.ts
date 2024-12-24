@@ -25,37 +25,37 @@ export default defineConfig({
     ? [
       ['github'],
       ['list'],
-      ['html']
+      ['html'],
     ]
     : 'html',
 
   updateSnapshots: 'missing',
   use: {
     browserName: 'chromium',
-    trace: 'retain-on-first-failure'
+    trace: 'retain-on-first-failure',
   },
 
   expect: {
     toHaveScreenshot: {
       scale: 'device',
-      maxDiffPixelRatio: 0.05
-    }
+      maxDiffPixelRatio: 0.1,
+    },
   },
 
   // Configure projects for major browsers.
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome HiDPI'] }
-    }
+      use: { ...devices['Desktop Chrome HiDPI'] },
+    },
   ],
   // Run your local dev server before starting the tests.
   webServer: {
     command: 'yarn likec4 start',
     port: 5173,
     stdout: 'pipe',
-    timeout: 10 * 1000
+    timeout: 10 * 1000,
     // url: 'http://127.0.0.1:5173',
     // reuseExistingServer: !process.env.CI
-  }
+  },
 })

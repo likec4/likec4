@@ -68,6 +68,32 @@ jobs:
           compression-level: 9
           retention-days: 5
 
+  e2e-typecheck:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'run tests' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: pack
+        run: |
+          yarn turbo run package --filter='likec4'
+
+      - name: install e2e dependencies
+        working-directory: e2e
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: |
+          yarn install
+          yarn bootstrap
+
+      - name: typecheck test
+        working-directory: e2e
+        run: yarn typecheck
+
   update-screenshots:
     timeout-minutes: 5
     runs-on: ubuntu-latest

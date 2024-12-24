@@ -10,6 +10,7 @@
     "generate:png": "likec4 export png -o ./generated/images --flat",
     "bootstrap": "node bootstrap.mjs",
     "test": "playwright test",
+    "typecheck": "vitest run",
     "test:update-screenshots": "playwright test --update-snapshots"
   },
   "devDependencies": {
@@ -20,6 +21,7 @@
     "react-dom": "^18.3.1",
     "std-env": "^3.7.0",
     "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
     "zx": "^8.1.8"
   }
 }

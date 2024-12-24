@@ -11,7 +11,7 @@ echo(chalk.greenBright('\n-------- Generate Tests --------'))
 
 const likec4 = await LikeC4.fromWorkspace('src/likec4', {
   logger: 'default',
-  throwIfInvalid: true
+  throwIfInvalid: true,
 })
 const computedModel = likec4.computedModel()
 const computedViews = [...computedModel.views()].map(v => v.id)
@@ -42,6 +42,8 @@ test('${view.id} - compare snapshots', async ({ page }) => {
   await fs.writeFile(`tests/${view.id}.spec.ts`, content, { encoding: 'utf-8' })
   echo(`Generated tests/${view.id}.spec.ts`)
 }
+
+$`npx likec4 codegen model src`
 
 // const tests = views.map((view) => {
 //   return `
