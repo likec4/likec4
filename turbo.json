@@ -29,7 +29,7 @@
     },
     "build": {
       "dependsOn": [
-        "^generate",
+        "^build",
         "topo",
         "generate"
       ],

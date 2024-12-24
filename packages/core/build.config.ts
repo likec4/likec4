@@ -1,10 +1,8 @@
 import { defineBuildConfig } from 'unbuild'
 
-const isProduction = process.env['NODE_ENV'] === 'production'
-
 export default defineBuildConfig({
   clean: true,
-  stub: !isProduction,
+  stub: false,
   declaration: true,
   rollup: {
     inlineDependencies: true,

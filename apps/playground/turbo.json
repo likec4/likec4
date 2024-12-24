@@ -17,8 +17,8 @@
     },
     "build": {
       "dependsOn": [
-        "^generate",
         "generate",
+        "^build",
         "topo"
       ],
       "inputs": [

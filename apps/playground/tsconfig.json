@@ -12,8 +12,14 @@
         "./src/monaco/*"
       ],
     },
+    "customConditions": [
+      "development"
+    ],
     "noUnusedParameters": false
   },
+  "files": [
+    "./vite.config.mts"
+  ],
   "include": [
     "./src",
   ]
