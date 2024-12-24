@@ -1,14 +1,14 @@
-import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
+import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
 import type { ConnectionModel } from '../../../model/connection/model/ConnectionModel'
-import type { DeploymentElementModel } from '../../../model/DeploymentElementModel'
+import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import { type RelationExpr, FqnExpr } from '../../../types'
+import { type Filterable, type FqnRef, type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
 import { hasIntersection, intersection } from '../../../utils/set'
 import type { ExcludePredicateCtx, PredicateExecutor } from '../_types'
 import type { StageExclude } from '../memory'
@@ -40,7 +40,7 @@ const resolveWildcard = (model: LikeC4DeploymentModel, nonWildcard: FqnExpr.Depl
 }
 
 export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
-  include: ({ expr: { source, target, isBidirectional = false }, model, stage }) => {
+  include: ({ expr: { source, target, isBidirectional = false }, model, stage, where }) => {
     invariant(!FqnExpr.isModelRef(source), 'Invalid source model ref in direct relation')
     invariant(!FqnExpr.isModelRef(target), 'Invalid target model ref in direct relation')
     const sourceIsWildcard = FqnExpr.isWildcard(source)
@@ -109,7 +109,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
 
         connections = pipe(
           sources,
-          flatMap(s => findConnectionsBetween(s, targets, dir)),
+          flatMap(s => matchConnections(findConnectionsBetween(s, targets, dir), where)),
           filter(c => isSource(c) && isTarget(c)),
         )
       }
@@ -126,14 +126,17 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
 
     return stage
   },
-  exclude: ({ expr, model, memory, stage }) => {
+  exclude: ({ expr, model, memory, stage, where }) => {
+    const isTarget = deploymentExpressionToPredicate(expr.target)
+    const isSource = deploymentExpressionToPredicate(expr.source)
+
     // * -> *
     // Exclude all connections
     if (
       FqnExpr.isWildcard(expr.source)
       && FqnExpr.isWildcard(expr.target)
     ) {
-      stage.excludeConnections(memory.connections)
+      stage.excludeConnections(matchConnections(memory.connections, where))
       return stage
     }
 
@@ -144,7 +147,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         expr,
         model,
       })
-      return excludeModelRelations(toExclude, { stage, memory })
+      return excludeModelRelations(toExclude, { stage, memory }, c => matchConnection(c, where))
     }
 
     if (FqnExpr.isModelRef(expr.source)) {
@@ -153,30 +156,26 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         return excludeModelRelations(toExclude, { stage, memory })
       }
       const allOutgoing = resolveAllOutgoingRelations(model, expr.source)
-      const isTarget = deploymentExpressionToPredicate(expr.target)
       return excludeModelRelations(
         allOutgoing,
         { stage, memory },
-        c => isTarget(c.target),
+        c => isTarget(c.target) && matchConnection(c, where),
       )
     }
 
     if (FqnExpr.isModelRef(expr.target)) {
       const toExclude = resolveAllImcomingRelations(model, expr.target)
-      const isSource = deploymentExpressionToPredicate(expr.source)
       return excludeModelRelations(
         toExclude,
         { stage, memory },
-        c => isSource(c.source),
+        c => isSource(c.source) && matchConnection(c, where),
       )
     }
 
-    const isSource = deploymentExpressionToPredicate(expr.source)
-    const isTarget = deploymentExpressionToPredicate(expr.target)
-
     const satisfies = (connection: DeploymentConnectionModel) => {
-      return (isSource(connection.source) && isTarget(connection.target))
-        || (expr.isBidirectional && isSource(connection.target) && isTarget(connection.source))
+      return ((isSource(connection.source) && isTarget(connection.target))
+        || (expr.isBidirectional && isSource(connection.target) && isTarget(connection.source)))
+        && matchConnection(connection, where)
     }
 
     const toExclude = memory.connections.filter(satisfies)
@@ -234,4 +233,51 @@ function resolveRelationsBetweenModelElements({
   }
 
   return new Set(modelConnections.flatMap(c => [...c.relations]))
+}
+
+function elementToFilterable<M extends AnyAux>(element: DeploymentElementModel<M>) {
+  return pick(element, ['tags', 'kind'])
+}
+
+function toFilterableRelation<M extends AnyAux>(
+  source: DeploymentElementModel<M>,
+  target: DeploymentElementModel<M>,
+) {
+  return (
+    relation: RelationshipModel<M> | DeploymentRelationModel<M>,
+  ) => ({
+    tags: relation.tags,
+    kind: relation.kind,
+    source: elementToFilterable(source),
+    target: elementToFilterable(target),
+  })
+}
+
+function matchConnection<M extends AnyAux>(
+  c: DeploymentConnectionModel<M>,
+  where: OperatorPredicate<Filterable> | null,
+): boolean {
+  if (!where) {
+    return true
+  }
+
+  return [
+    ...Array.from(c.relations.deployment.values()).map(toFilterableRelation(c.source, c.target)),
+    ...Array.from(c.relations.model.values()).map(toFilterableRelation(c.source, c.target)),
+  ]
+    .filter(where).length > 0
+}
+
+function matchConnections<M extends AnyAux>(
+  connections: readonly DeploymentConnectionModel<M>[],
+  where: OperatorPredicate<Filterable> | null,
+): readonly DeploymentConnectionModel[] {
+  if (!where) {
+    return connections
+  }
+
+  return pipe(
+    connections,
+    filter(c => matchConnection(c, where)),
+  )
 }

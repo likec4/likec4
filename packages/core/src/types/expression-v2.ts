@@ -2,6 +2,7 @@ import { invariant } from '../errors'
 import type { ExclusiveUnion } from './_common'
 import type { DeploymentRef as DeploymentModelRef, PredicateSelector } from './deployments'
 import type { Fqn } from './element'
+import type { WhereOperator } from './operators'
 
 export namespace FqnRef {
   /**
@@ -131,6 +132,15 @@ export namespace RelationExpr {
   export const isInOut = (expr: ExpressionV2): expr is InOut => {
     return 'inout' in expr
   }
+  export type Where<D = Fqn, M = Fqn> = {
+    where: {
+      expr: ExpressionV2<D, M>,
+      condition: WhereOperator<string, string>
+    }
+  }
+  export const isWhere = (expr: ExpressionV2): expr is Where => {
+    return 'where' in expr
+  }
 }
 
 export type RelationExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
@@ -138,6 +148,7 @@ export type RelationExpr<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Incoming: RelationExpr.Incoming<D, M>
   Outgoing: RelationExpr.Outgoing<D, M>
   InOut: RelationExpr.InOut<D, M>
+  Where: RelationExpr.Where<D, M>
 }>
 
 /**
@@ -153,7 +164,8 @@ export type ExpressionV2<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Direct: RelationExpr.Direct<D, M>
   Incoming: RelationExpr.Incoming<D, M>
   Outgoing: RelationExpr.Outgoing<D, M>
-  InOut: RelationExpr.InOut<D, M>
+  InOut: RelationExpr.InOut<D, M>,
+  RelationPredicateOrWhere: RelationExpr.Where<D, M>
 }>
 
 export namespace ExpressionV2 {

@@ -55,8 +55,9 @@ const {
   deployments: {
     env: {},
     zone: {},
-    node: {},
+    node: {}
   },
+  tags: ['old', 'next']
 })
 
 export const builder = b
@@ -91,12 +92,18 @@ export const builder = b
     model(
       $m.rel('customer', 'cloud', 'uses services'),
       $m.rel('customer', 'cloud.frontend.mobile', 'opens mobile app'),
-      $m.rel('customer', 'cloud.frontend.dashboard', 'opens in browser'),
+      $m.rel('customer', 'cloud.frontend.dashboard', {
+        title: 'opens in browser',
+        tags: ['old']
+      }),
       $m.rel('cloud.frontend.dashboard', 'cloud.auth', {
         title: 'authenticates',
         color: 'green',
       }),
-      $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', 'fetches data'),
+      $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', {
+        title: 'fetches data',
+        tags: ['old']
+      }),
       $m.rel('cloud.frontend.dashboard', 'cloud.media', 'fetches media'),
       $m.rel('cloud.frontend.mobile', 'cloud.auth', {
         title: 'authenticates',
