@@ -1,17 +1,22 @@
 import { filter, flatMap, isNonNullish, pick, pipe } from 'remeda'
 import { invariant } from '../../../errors'
-import type { ConnectionModel, DeploymentElementModel, DeploymentRelationModel, LikeC4DeploymentModel } from '../../../model'
+import type {
+  ConnectionModel,
+  DeploymentElementModel,
+  DeploymentRelationModel,
+  LikeC4DeploymentModel,
+} from '../../../model'
 import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnection, findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import { findConnectionsBetween as findModelConnectionsBetween } from '../../../model/connection/model'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import { FqnExpr, type Filterable, type OperatorPredicate, type RelationExpr } from '../../../types'
+import { type Filterable, type OperatorPredicate, type RelationExpr, FqnExpr } from '../../../types'
 import type { PredicateExecutor } from '../_types'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
 import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
 import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relation-outgoing'
-import { excludeModelRelations } from './utils'
+import { applyPredicate, excludeModelRelations } from './utils'
 
 export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   const siblings = new Set<DeploymentElementModel>()
@@ -138,7 +143,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
           source: expr.source,
           target: expr.target,
           expr,
-          model
+          model,
         })
         return excludeModelRelations(modelRelationsToExclude, { stage, memory }, where)
 
@@ -154,7 +159,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
           modelRelationsToExclude,
           { stage, memory },
           where,
-          c => isTarget(c.target)
+          c => isTarget(c.target),
         )
 
       // deployment -> model
@@ -164,7 +169,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
           modelRelationsToExclude,
           { stage, memory },
           where,
-          c => isSource(c.source)
+          c => isSource(c.source),
         )
 
       // deployment -> deployment
@@ -177,7 +182,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         const deploymentRelationsToExclude = pipe(
           memory.connections,
           filter(satisfies),
-          filter(c => matchConnection(c, where))
+          applyPredicate(where),
         )
         if (deploymentRelationsToExclude.length === 0) {
           return stage
@@ -186,7 +191,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
         stage.excludeConnections(deploymentRelationsToExclude)
         return stage
     }
-  }
+  },
 }
 
 function resolveRelationsBetweenModelElements({

@@ -1,14 +1,14 @@
-import { anyPass } from 'remeda'
+import { anyPass, filter, identity, map, pipe } from 'remeda'
 import { invariant } from '../../../errors'
+import type { AnyAux, RelationshipModel } from '../../../model'
 import { findConnectionsBetween } from '../../../model/connection/deployment'
 import type { LikeC4DeploymentModel } from '../../../model/DeploymentModel'
-import { FqnExpr, type RelationExpr } from '../../../types'
+import { type RelationExpr, FqnExpr } from '../../../types'
+import { isAncestor } from '../../../utils'
 import type { Connection, Elem, PredicateExecutor } from '../_types'
 import { resolveElements, resolveModelElements } from '../utils'
 import { resolveAscendingSiblings } from './relation-direct'
-import { excludeModelRelations, matchConnection, matchConnections } from './utils'
-import { isAncestor } from '../../../utils'
-import type { AnyAux, RelationshipModel } from '../../../model'
+import { applyPredicate, excludeModelRelations, matchConnection, matchConnections } from './utils'
 
 // from visible element incoming to this
 export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming> = {
@@ -21,7 +21,7 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
           continue
         }
         const targets = [...resolveAscendingSiblings(source)]
-        const toInclude = matchConnections(findConnectionsBetween(source, targets, 'directed'), where)
+        const toInclude = applyPredicate(findConnectionsBetween(source, targets, 'directed'), where)
         stage.addConnections(toInclude)
       }
       return stage
@@ -30,7 +30,7 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
 
     const targets = resolveElements(model, expr.incoming)
     for (const source of sources) {
-      const toInclude = matchConnections(findConnectionsBetween(source, targets, 'directed'), where)
+      const toInclude = applyPredicate(findConnectionsBetween(source, targets, 'directed'), where)
       stage.addConnections(toInclude)
     }
 
@@ -48,9 +48,11 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
     }
 
     const isIncoming = filterIncomingConnections(resolveElements(model, expr.incoming))
-    const toExclude = memory.connections
-      .filter(isIncoming)
-      .filter(c => matchConnection(c, where))
+    const toExclude = pipe(
+      memory.connections,
+      filter(isIncoming),
+      applyPredicate(where),
+    )
     stage.excludeConnections(toExclude)
     return stage
   },

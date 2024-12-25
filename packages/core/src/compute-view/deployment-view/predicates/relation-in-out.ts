@@ -1,19 +1,20 @@
+import { filter, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import { findConnectionsBetween } from '../../../model/connection/deployment'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import { FqnExpr, type RelationExpr } from '../../../types/expression-v2'
+import { type RelationExpr, FqnExpr } from '../../../types/expression-v2'
 import { union } from '../../../utils/set'
 import type { PredicateExecutor } from '../_types'
 import { resolveElements, resolveModelElements } from '../utils'
 import { resolveAscendingSiblings } from './relation-direct'
-import { excludeModelRelations, matchConnection, matchConnections } from './utils'
 import { filterIncomingConnections } from './relation-incoming'
 import { filterOutgoingConnections } from './relation-outgoing'
+import { applyPredicate, excludeModelRelations, matchConnections } from './utils'
 
 //
 export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
-  include: ({expr,  model, memory, stage, where }) => {
+  include: ({ expr, model, memory, stage, where }) => {
     const sources = [...memory.elements]
 
     if (FqnExpr.isWildcard(expr.inout)) {
@@ -34,7 +35,7 @@ export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
 
     return stage
   },
-  exclude: ({ expr, model, memory, stage , where}) => {
+  exclude: ({ expr, model, memory, stage, where }) => {
     // Exclude all connections that have model relationshps with the elements
     if (FqnExpr.isModelRef(expr.inout)) {
       const elements = resolveModelElements(model, expr.inout)
@@ -57,9 +58,11 @@ export const InOutRelationPredicate: PredicateExecutor<RelationExpr.InOut> = {
     const isIncoming = filterIncomingConnections(elements)
     const isOutgoing = filterOutgoingConnections(elements)
 
-    const toExclude = memory.connections
-      .filter(c => isIncoming(c) !== isOutgoing(c))
-      .filter(c => matchConnection(c, where))
+    const toExclude = pipe(
+      memory.connections,
+      filter(c => isIncoming(c) !== isOutgoing(c)),
+      applyPredicate(where),
+    )
     stage.excludeConnections(toExclude)
     return stage
   },

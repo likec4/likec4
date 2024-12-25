@@ -1,14 +1,14 @@
-import { anyPass } from 'remeda'
+import { anyPass, filter, identity, map, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'
 import type { RelationshipModel } from '../../../model/RelationModel'
-import { FqnExpr, type RelationExpr } from '../../../types'
+import { type RelationExpr, FqnExpr } from '../../../types'
 import { isAncestor } from '../../../utils'
 import type { Connection, Elem, PredicateExecutor } from '../_types'
 import { resolveElements, resolveModelElements } from '../utils'
 import { resolveAscendingSiblings } from './relation-direct'
-import { excludeModelRelations, matchConnection, matchConnections } from './utils'
+import { applyPredicate, excludeModelRelations } from './utils'
 
 export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing> = {
   include: ({ expr, model, memory, stage, where }) => {
@@ -22,7 +22,7 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
           continue
         }
         for (const source of resolveAscendingSiblings(target)) {
-          const toInclude = matchConnections(findConnection(source, target, 'directed'), where)
+          const toInclude = applyPredicate(findConnection(source, target, 'directed'), where)
           stage.addConnections(toInclude)
         }
       }
@@ -32,7 +32,7 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
 
     const sources = resolveElements(model, expr.outgoing)
     for (const source of sources) {
-      const toInclude = matchConnections(findConnectionsBetween(source, targets, 'directed'), where)
+      const toInclude = applyPredicate(findConnectionsBetween(source, targets, 'directed'), where)
       stage.addConnections(toInclude)
     }
 
@@ -50,9 +50,11 @@ export const OutgoingRelationPredicate: PredicateExecutor<RelationExpr.Outgoing>
     }
 
     const isOutgoing = filterOutgoingConnections(resolveElements(model, expr.outgoing))
-    const toExclude = memory.connections
-      .filter(isOutgoing)
-      .filter(c => matchConnection(c, where))
+    const toExclude = pipe(
+      memory.connections,
+      filter(isOutgoing),
+      applyPredicate(where),
+    )
     stage.excludeConnections(toExclude)
     return stage
   },

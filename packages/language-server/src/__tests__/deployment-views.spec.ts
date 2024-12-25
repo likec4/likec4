@@ -9,6 +9,7 @@ const model = `
     deploymentNode zone
     tag epic-123
     tag next
+    relationship https
   }
   model {
     component user
@@ -90,7 +91,7 @@ async function mkTestServices({ expect }: TestContext) {
 
   const validateRules = (rules: string) =>
     validateView(`
-      deployment view view {
+      deployment view tmp {
         ${rules}
       }
     `)
@@ -165,6 +166,16 @@ describe.concurrent('Deployment views:', () => {
     await view.invalid(`
       deployment view of system {
       }
+    `)
+  })
+
+  it.only('valid rules', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+
+    await valid(`
+      include * -> *
+      include * -> * where tag is #next
+      include * -> * where kind is https or tag is #next
     `)
   })
 })
