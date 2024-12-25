@@ -1,5 +1,5 @@
 import type { ComputedEdge, ComputedElementView, ComputedNode, ComputedView, Fqn } from '@likec4/core'
-import { DefaultArrowType, nonNullable } from '@likec4/core'
+import { DefaultArrowType, isome, nonNullable } from '@likec4/core'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
@@ -8,7 +8,7 @@ import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { isCompound, toArrowType } from './utils'
 
 export class ElementViewPrinter<V extends ComputedView = ComputedElementView> extends DotPrinter<V> {
-  protected override postBuild(_g: RootGraphModel): void {
+  protected override postBuild(G: RootGraphModel): void {
     this.assignGroups()
 
     // Below is custom made "tile" layout for compound nodes
@@ -26,7 +26,7 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
         compound.children,
         filter(id => !this.compoundIds.has(id)),
         map(id => this.viewElement(id)),
-        filter(nd => nd.inEdges.length === 0 && nd.outEdges.length === 0)
+        filter(nd => nd.inEdges.length === 0 && nd.outEdges.length === 0),
       )
       if (children.length <= 2) {
         continue
@@ -57,7 +57,7 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
           if (i === 0) {
             if (prevChunkHead) {
               subgraph.edge([prevChunkHead, nd], {
-                [_.style]: 'invis'
+                [_.style]: 'invis',
                 // [_.weight]: 0 /
               })
             }
@@ -65,6 +65,11 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
           }
         })
       })
+    }
+    // Remove pack layout if there are labeled edges with compounds
+    if (isome(this.edgesWithCompounds, edgeId => this.view.edges.some(e => e.id === edgeId && e.label))) {
+      G.delete(_.pack)
+      G.delete(_.packmode)
     }
   }
 
@@ -81,7 +86,7 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
 
     const e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle
+      [_.style]: edge.line ?? DefaultEdgeStyle,
     })
 
     lhead && e.attributes.set(_.lhead, lhead)
@@ -94,24 +99,20 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
         ...sourceNode.inEdges,
         ...sourceNode.outEdges,
         ...targetNode.inEdges,
-        ...targetNode.outEdges
+        ...targetNode.outEdges,
       ].filter(e => !this.edgesWithCompounds.has(e)))
       e.attributes.set(_.weight, connected.size)
     }
 
     const label = edgelabel(edge)
     if (label) {
-      if (hasCompoundEndpoint) {
-        e.attributes.set(_.xlabel, label)
-      } else {
-        e.attributes.set(_.label, label)
-      }
+      e.attributes.set(_.label, label)
     }
     if (edge.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
         [_.color]: colorValues.lineColor,
-        [_.fontcolor]: colorValues.labelColor
+        [_.fontcolor]: colorValues.labelColor,
       })
     }
 
@@ -120,13 +121,13 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
     if (edge.dir === 'back') {
       e.attributes.apply({
         [_.arrowtail]: toArrowType(head),
-        [_.dir]: 'back'
+        [_.dir]: 'back',
       })
       if (tail !== 'none') {
         e.attributes.apply({
           [_.arrowhead]: toArrowType(tail),
           [_.dir]: 'both',
-          [_.minlen]: 0
+          [_.minlen]: 0,
         })
       }
       return e
@@ -138,7 +139,7 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
         [_.minlen]: 0,
-        [_.constraint]: false
+        [_.constraint]: false,
       })
       return e
     }
@@ -148,7 +149,7 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
         [_.dir]: 'both',
-        [_.minlen]: 0
+        [_.minlen]: 0,
       })
       return e
     }
