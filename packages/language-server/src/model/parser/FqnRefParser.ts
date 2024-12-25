@@ -90,16 +90,19 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       return exprs.reverse()
     }
 
-    parseRelationExpr(astNode: ast.RelationPredicateOrWhereV2): c4.RelationExpr {
-      if (ast.isRelationPredicateWhere(astNode)) {
-        return {
-          where: {
-            expr: this.parseRelationExpr(astNode.subject as ast.RelationExpr),
-            condition: astNode.where ? parseWhereClause(astNode.where) : {
-              kind: { neq: '--always-true--' }
-            }
+    parseRelationWhereExpr(astNode: ast.RelationPredicateWhereV2): c4.RelationExpr {
+      return {
+        where: {
+          expr: this.parseRelationExpr(astNode.subject as ast.RelationExpr),
+          condition: astNode.where ? parseWhereClause(astNode.where) : {
+            kind: { neq: '--always-true--' }
           }
         }
+      }
+    }
+
+    parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
+      if (ast.isRelationPredicateWhere(astNode)) {
       }
       if (ast.isDirectedRelationExpr(astNode)) {
         return {

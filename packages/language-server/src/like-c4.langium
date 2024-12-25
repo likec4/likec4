@@ -625,7 +625,7 @@ ExpressionV2:
 ;
 
 RelationPredicateOrWhereV2:
-  RelationExpr ({infer RelationPredicateWhere.subject=current} 'where' where=WhereRelationExpression?)?
+  RelationExpr ({infer RelationPredicateWhereV2.subject=current} 'where' where=WhereRelationExpression?)?
 ;
 
 FqnExpr:
