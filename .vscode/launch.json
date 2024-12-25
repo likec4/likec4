@@ -12,7 +12,8 @@
       "url": "http://localhost:5173",
       "skipFiles": [
         "<node_internals>/**"
-      ]
+      ],
+      "preLaunchTask": "npm: dev - apps/playground"
     },
     {
       "name": "Run Extension",

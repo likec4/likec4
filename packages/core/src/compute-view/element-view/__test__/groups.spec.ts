@@ -138,13 +138,13 @@ describe('groups', () => {
       $exclude('cloud.frontend'),
     ])
     expect.soft(nodeIds).toEqual([
-      '@gr5',
-      'customer',
       '@gr1',
-      '@gr2',
       '@gr4',
-      'cloud.frontend.dashboard',
+      '@gr5',
       'support',
+      'customer',
+      '@gr2',
+      'cloud.frontend.dashboard',
       '@gr3',
       'cloud.frontend.supportPanel',
       'cloud.backend',
@@ -181,8 +181,8 @@ describe('groups', () => {
     ).toMatchInlineSnapshot(`
       {
         "@gr1": [
-          "@gr2",
           "@gr4",
+          "@gr2",
           "@gr3",
         ],
         "@gr2": [

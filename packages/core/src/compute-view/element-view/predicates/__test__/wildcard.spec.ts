@@ -112,17 +112,17 @@ describe('Wildcard predicate', () => {
       )
       t.expect(state).toHaveElements(
         'cloud',
+        'customer',
         'cloud.frontend',
         'cloud.auth',
         'cloud.backend',
-        'customer',
         'aws',
       )
       t.expect(state).toHaveConnections(
+        'customer -> cloud.frontend',
         'cloud.frontend -> cloud.auth',
         'cloud.frontend -> cloud.backend',
         'cloud.backend -> cloud.auth',
-        'customer -> cloud.frontend',
         'cloud.backend -> aws',
       )
     })
@@ -135,19 +135,19 @@ describe('Wildcard predicate', () => {
       )
       t.expect(state).toHaveElements(
         'cloud.frontend',
+        'customer',
         'cloud.frontend.dashboard',
         'cloud.frontend.mobile',
         'cloud.auth',
         'cloud.backend',
-        'customer',
       )
       t.expect(state).toHaveConnections(
+        'customer -> cloud.frontend.dashboard',
+        'customer -> cloud.frontend.mobile',
         'cloud.frontend.dashboard -> cloud.auth',
         'cloud.frontend.dashboard -> cloud.backend',
-        'customer -> cloud.frontend.dashboard',
         'cloud.frontend.mobile -> cloud.auth',
         'cloud.frontend.mobile -> cloud.backend',
-        'customer -> cloud.frontend.mobile',
       )
     })
 
@@ -158,16 +158,16 @@ describe('Wildcard predicate', () => {
         $include('*'),
       )
       t.expect(state).toHaveElements(
-        'cloud.frontend.dashboard',
         'cloud.frontend',
+        'cloud.frontend.dashboard',
+        'customer',
         'cloud.auth',
         'cloud.backend',
-        'customer',
       )
       t.expect(state).toHaveConnections(
+        'customer -> cloud.frontend.dashboard',
         'cloud.frontend.dashboard -> cloud.auth',
         'cloud.frontend.dashboard -> cloud.backend',
-        'customer -> cloud.frontend.dashboard',
       )
     })
 
@@ -182,10 +182,10 @@ describe('Wildcard predicate', () => {
       )
       t.expect(state).toHaveElements(
         'cloud',
+        'customer',
         'cloud.frontend',
         'cloud.auth',
         'cloud.backend',
-        'customer',
         'aws',
         'cloud.frontend.dashboard',
       )

@@ -116,6 +116,18 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
     return
   }
 
+  /**
+   * Resolve siblings of the element and its ancestors
+   *  (from root to closest)
+   */
+  public *descendingSiblings(): DeploymentElementsIterator<M> {
+    for (const ancestor of [...this.ancestors()].reverse()) {
+      yield* ancestor.siblings()
+    }
+    yield* this.siblings()
+    return
+  }
+
   public incoming(filter: IncomingFilter = 'all'): IteratorLike<DeploymentRelationModel<M>> {
     return this.$model.incoming(this, filter)
   }

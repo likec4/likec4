@@ -1,6 +1,5 @@
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
-import { vanillaExtractPlugin as vanillaExtractEsbuildPlugin } from '@vanilla-extract/esbuild-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
 import { dirname, resolve } from 'node:path'
@@ -13,6 +12,7 @@ const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
   '@likec4/diagram': resolve('../../packages/diagram/src'),
+  '@likec4/log': resolve('../../packages/log/src/browser.ts'),
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
@@ -22,12 +22,6 @@ const baseConfig: UserConfigFnObject = () => {
       conditions: ['development'],
       alias,
     },
-    css: {
-      modules: {
-        localsConvention: 'camelCase',
-      },
-      postcss: {},
-    },
     build: {
       cssCodeSplit: false,
     },
@@ -35,9 +29,6 @@ const baseConfig: UserConfigFnObject = () => {
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin as any,
-          vanillaExtractEsbuildPlugin({
-            runtime: true,
-          }),
         ],
       },
     },
@@ -47,6 +38,14 @@ const baseConfig: UserConfigFnObject = () => {
 
 export default defineConfig((env) => {
   switch (true) {
+    case env.mode === 'development':
+      return mergeConfig(baseConfig(env), {
+        plugins: [
+          vanillaExtractPlugin({}),
+          TanStackRouterVite(tanStackRouterViteCfg),
+          react({}),
+        ],
+      })
     // Pre-build for production
     // Workaround for incompatibility between vanilla-extract and monaco-editor
     case env.command === 'build' && env.mode === 'pre':
@@ -134,7 +133,7 @@ export default defineConfig((env) => {
           modulePreload: false,
           rollupOptions: {
             treeshake: {
-              preset: 'recommended'
+              preset: 'recommended',
             },
             output: {
               compact: true,
@@ -151,9 +150,9 @@ export default defineConfig((env) => {
                 ) {
                   return 'monaco'
                 }
-              }
-            }
-          }
+              },
+            },
+          },
         },
         plugins: [
           react({
@@ -162,12 +161,6 @@ export default defineConfig((env) => {
         ],
       })
     default:
-      return mergeConfig(baseConfig(env), {
-        plugins: [
-          vanillaExtractPlugin({}),
-          TanStackRouterVite(tanStackRouterViteCfg),
-          react({}),
-        ],
-      })
+      throw new Error(`Unsupported mode: ${env.mode}`)
   }
 })

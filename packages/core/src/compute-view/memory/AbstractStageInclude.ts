@@ -15,6 +15,10 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
   // New elements
   protected explicits = new Set<Elem<T>>()
   protected implicits = new Set<Elem<T>>()
+
+  // Ordered Set of explicit and implicit elements
+  protected _ordered = new Set<Elem<T>>()
+
   protected _connections = [] as Connection<T>[]
 
   constructor(
@@ -52,6 +56,7 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
    * Possible to override
    */
   protected _addExplicit(elements: Elem<T>): void {
+    this._ordered.add(elements)
     this.explicits.add(elements)
     this.implicits.delete(elements)
   }
@@ -77,6 +82,7 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
     if (this.explicits.has(elements)) {
       return
     }
+    this._ordered.add(elements)
     this.implicits.add(elements)
   }
 
@@ -166,6 +172,7 @@ export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implem
 
     state.elements = union(
       state.elements,
+      this._ordered,
       this.explicits,
       fromConnections,
       this.implicits,

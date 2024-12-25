@@ -36,8 +36,8 @@ describe('inout-expr', () => {
     ])
     expect(edgeIds).toEqual([
       'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.backend.storage:amazon',
       'cloud.frontend:cloud.backend.graphql',
+      'cloud.backend.storage:amazon',
     ])
   })
 

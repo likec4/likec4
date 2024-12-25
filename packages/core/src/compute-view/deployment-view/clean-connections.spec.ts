@@ -124,8 +124,8 @@ describe('Clean Connections', () => {
       'z1.s1.api',
       'z1.s2.ui',
       'z1.s2.api',
-      'z1.s1',
       'z1.s2',
+      'z1.s1',
     )
     t.expect(state).toHaveConnections(
       'z1.s1.ui -> z1.s1.api',
@@ -144,8 +144,8 @@ describe('Clean Connections', () => {
       'z1.s2.ui',
       'z1.s2.api',
       'z1.s1.api',
-      'z1.s1',
       'z1.s2',
+      'z1.s1',
     )
     t.expect(state).toHaveConnections(
       'z1.s1.ui -> z1.s1.api',

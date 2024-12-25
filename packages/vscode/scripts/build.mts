@@ -70,13 +70,10 @@ const configs = [] as BuildOptions[]
 
 configs.push({
   ...base,
-  entryPoints: ['src/node/language-server.ts'],
-  target: 'node20',
-  platform: 'node',
-  conditions: isProduction ? ['node', 'production'] : ['development'],
-}, {
-  ...base,
-  entryPoints: ['src/node/extension.ts'],
+  entryPoints: [
+    'src/node/extension.ts',
+    'src/node/language-server.ts'
+  ],
   target: 'node20',
   platform: 'node',
   conditions: isProduction ? ['node', 'production'] : ['development'],

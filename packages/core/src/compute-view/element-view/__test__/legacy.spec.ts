@@ -202,11 +202,11 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).toEqual([
-      'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend.supportPanel:cloud.backend.graphql',
       'customer:cloud.frontend.dashboard',
       'support:cloud.frontend.supportPanel',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
+      'cloud.backend.graphql:cloud.backend.storage',
     ])
   })
 
@@ -252,9 +252,9 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).toEqual([
-      'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'support:cloud.frontend',
+      'cloud.frontend:cloud.backend',
     ])
   })
 
@@ -282,12 +282,12 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).toEqual([
-      'cloud.backend.graphql:cloud.backend.storage',
-      'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend.supportPanel:cloud.backend.graphql',
-      'cloud.backend.storage:amazon.s3',
       'customer:cloud.frontend.dashboard',
       'support:cloud.frontend.supportPanel',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
+      'cloud.backend.graphql:cloud.backend.storage',
+      'cloud.backend.storage:amazon.s3',
     ])
   })
 
@@ -306,15 +306,15 @@ describe('compute-element-view', () => {
       'cloud.frontend.dashboard',
       'cloud.frontend.supportPanel',
       'cloud.backend',
-      'email',
       'cloud.backend.graphql',
+      'email',
     ])
 
     expect(edgeIds).toEqual([
-      'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend.supportPanel:cloud.backend.graphql',
       'customer:cloud.frontend.dashboard',
       'support:cloud.frontend.supportPanel',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
       'cloud.backend:email',
     ])
   })

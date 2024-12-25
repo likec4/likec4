@@ -17,11 +17,11 @@ describe('global expr', () => {
     ])
     expect(nodeIds).toEqual([
       'cloud',
-      'amazon',
       'cloud.frontend.dashboard',
       'cloud.frontend.supportPanel',
+      'amazon',
     ])
-    const [cloud, amazon, dashboard, adminPanel] = nodes
+    const [cloud, dashboard, adminPanel, amazon] = nodes
     expect(cloud).toHaveProperty('color', 'red')
     expect(amazon).toHaveProperty('color', 'green')
     expect(dashboard).toHaveProperty('color', 'red')
@@ -86,8 +86,8 @@ describe('global expr', () => {
         'cloud.frontend.dashboard',
         'cloud.frontend.supportPanel',
         'cloud.backend',
-        'email',
         'cloud.backend.graphql',
+        'email',
       ],
     })
   })

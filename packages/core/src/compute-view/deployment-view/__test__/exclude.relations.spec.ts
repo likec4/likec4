@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { DeploymentRulesBuilderOp } from '../../../builder'
-import { $exclude, $include, computeNodesAndEdges, type Types } from './fixture'
+import { type Types, $exclude, $include, computeNodesAndEdges } from './fixture'
 
 function expectComputed(...rules: DeploymentRulesBuilderOp<Types>[]) {
   return expect(computeNodesAndEdges(...rules))
@@ -23,22 +23,22 @@ describe('Exclude RelationExpr', () => {
         'customer',
         'prod',
         'prod.eu.zone1',
-        'prod.eu.zone2',
-        'prod.eu.db',
         'prod.eu.zone1.api',
+        'prod.eu.zone2',
         'prod.eu.zone1.ui',
-        'prod.eu.zone2.api',
         'prod.eu.zone2.ui',
+        'prod.eu.zone2.api',
         'prod.eu.auth',
         'prod.eu.media',
+        'prod.eu.db',
       ],
       edges: [
+        'customer:prod.eu.zone1.ui',
+        'customer:prod.eu.zone2.ui',
         'prod.eu.zone1.ui:prod.eu.auth',
         'prod.eu.zone1.ui:prod.eu.media',
         'prod.eu.zone2.ui:prod.eu.auth',
         'prod.eu.zone2.ui:prod.eu.media',
-        'customer:prod.eu.zone1.ui',
-        'customer:prod.eu.zone2.ui',
       ],
     })
   })
@@ -77,17 +77,17 @@ describe('Exclude RelationExpr', () => {
         'prod.eu',
         'prod.eu.zone1',
         'prod.eu.zone2',
-        'prod.eu.zone1.ui',
         'prod.eu.zone1.api',
-        'prod.eu.zone2.ui',
         'prod.eu.zone2.api',
         'prod.eu.db',
+        'prod.eu.zone1.ui',
+        'prod.eu.zone2.ui',
       ],
       edges: [
-        'prod.eu.zone1.api:prod.eu.db',
-        'prod.eu.zone2.api:prod.eu.db',
         'customer:prod.eu.zone1.ui',
+        'prod.eu.zone1.api:prod.eu.db',
         'customer:prod.eu.zone2.ui',
+        'prod.eu.zone2.api:prod.eu.db',
       ],
     })
   })
@@ -241,9 +241,9 @@ describe('Exclude RelationExpr', () => {
     ).toEqual({
       'Nodes': [
         'prod.eu.zone1',
-        'prod.eu.zone2',
-        'prod.eu.zone1.api',
         'prod.eu.zone1.ui',
+        'prod.eu.zone1.api',
+        'prod.eu.zone2',
         'prod.eu.zone2.ui',
         'prod.eu.zone2.api',
       ],

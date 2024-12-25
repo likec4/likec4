@@ -45,11 +45,11 @@ describe('incoming-expr', () => {
         'amazon',
       ])
       expect(edgeIds).toEqual([
-        'cloud.frontend:cloud.backend',
-        'customer:cloud.frontend.dashboard',
-        'support:cloud.frontend.supportPanel',
         'cloud.backend:email',
         'cloud.backend:amazon',
+        'customer:cloud.frontend.dashboard',
+        'support:cloud.frontend.supportPanel',
+        'cloud.frontend:cloud.backend',
       ])
     })
 
@@ -67,9 +67,9 @@ describe('incoming-expr', () => {
         'cloud.backend',
       ])
       expect(edgeIds).toEqual([
-        'cloud.frontend:cloud.backend',
         'customer:cloud.frontend',
         'support:cloud.frontend',
+        'cloud.frontend:cloud.backend',
       ])
     })
 
@@ -88,9 +88,9 @@ describe('incoming-expr', () => {
         'cloud.backend',
       ])
       expect(edgeIds).toEqual([
-        'cloud.frontend:cloud.backend',
         'customer:cloud.frontend',
         'support:cloud.frontend',
+        'cloud.frontend:cloud.backend',
       ])
     })
 

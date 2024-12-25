@@ -6,6 +6,7 @@
     "moduleResolution": "Bundler",
     "checkJs": false,
     "skipLibCheck": true,
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "@components/*": [

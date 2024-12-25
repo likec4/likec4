@@ -3,30 +3,29 @@ import { $exclude, $include, computeView } from './fixture'
 
 describe('deployment view: wildcard', () => {
   it('should include root nodes', () => {
-    const { nodeIds, edgeIds, edges } = computeView(
+    const { nodeIds, edgeIds } = computeView(
       $include('*'),
     )
     expect(nodeIds).toEqual([
+      'acc',
+      'acc.eu',
+      'global',
       'customer',
       'prod',
+      'acc.testCustomer',
       'prod.eu',
       'prod.us',
-      'global',
-      'acc',
-      'acc.testCustomer',
-      'acc.eu',
     ])
-    console.dir(edges)
     expect(edgeIds).toEqual([
-      'prod.eu:prod.us',
-      'acc.testCustomer:acc.eu',
       'customer:prod.eu',
       'customer:prod.us',
+      'global:customer',
       'global:acc.testCustomer',
       'prod.eu:global',
       'prod.us:global',
       'acc.eu:global',
-      'global:customer',
+      'prod.eu:prod.us',
+      'acc.testCustomer:acc.eu',
     ])
   })
 

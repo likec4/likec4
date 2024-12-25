@@ -38,10 +38,10 @@ describe('cleanCrossBoundaryConnections', () => {
       'prod.us',
     ])
     expect(edgeIds).toEqual([
-      'acc.testCustomer:acc.eu',
-      'prod.eu:prod.us',
       'customer:prod.eu',
       'customer:prod.us',
+      'prod.eu:prod.us',
+      'acc.testCustomer:acc.eu',
     ])
   })
 
@@ -73,9 +73,9 @@ describe('cleanCrossBoundaryConnections', () => {
     )
     expect.soft(nodeIds).toEqual([
       'prod.eu.zone1',
-      'prod.eu.zone2',
       'prod.eu.zone1.ui',
       'prod.eu.zone1.api',
+      'prod.eu.zone2',
     ])
     expect(edgeIds).toEqual([
       'prod.eu.zone1.ui:prod.eu.zone1.api',

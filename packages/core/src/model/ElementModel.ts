@@ -129,6 +129,18 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     return
   }
 
+  /**
+   * Resolve siblings of the element and its ancestors
+   *  (from root to closest)
+   */
+  public *descendingSiblings(): ElementsIterator<M> {
+    for (const ancestor of [...this.ancestors()].reverse()) {
+      yield* ancestor.siblings()
+    }
+    yield* this.siblings()
+    return
+  }
+
   public incoming(filter: IncomingFilter = 'all'): RelationshipsIterator<M> {
     return this.$model.incoming(this, filter)
   }

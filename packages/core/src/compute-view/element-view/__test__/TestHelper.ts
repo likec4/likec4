@@ -109,6 +109,9 @@ export class TestHelper<T extends AnyTypes> {
     toHaveAllElements: <Id extends T['Fqn']>(...ids: Id[]) => {
       this._expect(map([...memory.elements], prop('id'))).toEqual(ids)
     },
+    /**
+     * Final elements (visible in the view)
+     */
     toHaveElements: <Id extends T['Fqn']>(...ids: Id[]) => {
       this._expect(map([...memory.final], prop('id'))).toEqual(ids)
     },

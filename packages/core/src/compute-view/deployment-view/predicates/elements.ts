@@ -1,8 +1,7 @@
-import { hasAtLeast, pipe, reduce } from 'remeda'
+import { pipe, reduce } from 'remeda'
 import { isDeployedInstance } from '../../../model'
-import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
-import type { DeploymentNodeModel } from '../../../model/DeploymentElementModel'
+import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
 import type { FqnExpr } from '../../../types'
 import type { Elem, IncludePredicateCtx, PredicateExecutor } from '../_types'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
@@ -50,20 +49,18 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
  */
 function includeDeployedNodeChildren(
   node: DeploymentNodeModel,
-  { memory, stage }: IncludePredicateCtx,
+  { stage }: IncludePredicateCtx,
 ) {
   const children = [...node.children()]
   if (children.length === 0) {
     return
   }
-  stage.addExplicit(children)
+  stage.addImplicit(node)
 
-  if (hasAtLeast(children, 2)) {
-    stage.addConnections(findConnectionsWithin(children))
-  }
-  for (const child of children) {
-    stage.addConnections(findConnectionsBetween(child, memory.elements))
-  }
+  stage.addConnections(findConnectionsWithin(children))
+  stage.connectWithExisting(children)
+
+  stage.addExplicit(children)
 }
 
 /**
@@ -77,22 +74,20 @@ function includeDeployedNodeWithExpanded(
   stage.addImplicit(node)
   stage.connectWithExisting(node)
 
-  const connections = [] as DeploymentConnectionModel[]
-
+  let hasConnectionsWithVisible = false
   for (const child of children) {
-    stage.addImplicit(child)
-    connections.push(
-      ...findConnectionsBetween(child, memory.elements),
-    )
+    if (findConnectionsBetween(child, memory.elements).length > 0) {
+      hasConnectionsWithVisible = true
+      break
+    }
   }
 
-  if (connections.length > 0) {
-    // First connections inside
-    stage.addConnections([
-      ...findConnectionsWithin(children),
-      ...connections,
-    ])
+  if (hasConnectionsWithVisible) {
+    stage.connectWithExisting(children, 'in')
+    stage.addConnections(findConnectionsWithin(children))
+    stage.connectWithExisting(children, 'out')
   }
+  stage.addImplicit(children)
 
   if (stage.connections.length > 0) {
     stage.addExplicit(node)
@@ -106,19 +101,26 @@ function includeDeployedNodeDescendants(
   node: DeploymentNodeModel,
   { stage }: IncludePredicateCtx,
 ) {
-  const descendants = [...node.descendants('desc')]
+  const dfs = (node: DeploymentNodeModel): DeploymentElementModel[] => {
+    const children = [] as DeploymentElementModel[]
+    for (const child of node.children()) {
+      if (child.isDeploymentNode()) {
+        children.push(...dfs(child))
+      }
+      children.push(child)
+    }
+    stage.connectWithExisting(children, 'in')
+    stage.addConnections(findConnectionsWithin(children))
+    stage.addImplicit(children)
+    return children
+  }
+
+  const descendants = dfs(node)
   if (descendants.length === 0) {
     return
   }
-  for (const child of descendants) {
-    stage.addImplicit(child)
-  }
-
-  if (hasAtLeast(descendants, 2)) {
-    stage.addConnections(findConnectionsWithin(descendants))
-  }
-
-  stage.connectWithExisting(descendants)
+  stage.connectWithExisting(descendants, 'out')
+  // stage.addImplicit(descendants)
 
   const allconnected = findConnectedElements(stage)
   descendants.forEach((desc) => {

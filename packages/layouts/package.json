@@ -19,6 +19,7 @@
     "directory": "packages/layouts"
   },
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "development": "./src/index.ts",

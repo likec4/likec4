@@ -42,8 +42,8 @@ describe('element-expr', () => {
       'cloud.backend',
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
+      'cloud.frontend:cloud.backend',
       'support:cloud.frontend',
     ])
   })
@@ -211,10 +211,10 @@ describe('element-expr', () => {
         'cloud.backend',
       ])
       expect(edgeIds).toEqual([
-        'cloud.frontend.dashboard:cloud.backend',
-        'cloud.frontend.supportPanel:cloud.backend',
         'customer:cloud.frontend.dashboard',
         'support:cloud.frontend.supportPanel',
+        'cloud.frontend.dashboard:cloud.backend',
+        'cloud.frontend.supportPanel:cloud.backend',
       ])
     })
     it('include *, cloud', () => {
@@ -248,9 +248,9 @@ describe('element-expr', () => {
         'cloud.backend',
       ])
       expect(edgeIds).toEqual([
+        'customer:cloud.frontend.dashboard',
         'cloud.frontend.dashboard:cloud.backend',
         'cloud.frontend.supportPanel:cloud.backend',
-        'customer:cloud.frontend.dashboard',
       ])
     })
     it('include *, cloud, exclude cloud.backend', () => {
@@ -286,9 +286,9 @@ describe('element-expr', () => {
           'amazon',
         ],
         edgeIds: [
+          'cloud.frontend:cloud.backend.graphql',
           'cloud.backend.graphql:cloud.backend.storage',
           'cloud.backend.storage:amazon',
-          'cloud.frontend:cloud.backend.graphql',
         ],
       })
     })
@@ -350,8 +350,8 @@ describe('element-expr', () => {
           'amazon',
         ],
         edgeIds: [
-          'cloud.backend.graphql:cloud.backend.storage',
           'cloud.frontend:cloud.backend.graphql',
+          'cloud.backend.graphql:cloud.backend.storage',
           'cloud.backend.storage:amazon',
         ],
       })
@@ -380,9 +380,9 @@ describe('element-expr', () => {
         'amazon',
       ])
       expect(edgeIds).toEqual([
+        'cloud.frontend:cloud.backend.graphql',
         'cloud.backend.graphql:cloud.backend.storage',
         'cloud.backend.storage:amazon',
-        'cloud.frontend:cloud.backend.graphql',
       ])
     })
   })

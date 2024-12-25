@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => {
           'react/jsx-runtime',
           'react-dom/client',
           'react-dom/server',
+          /zustand/,
         ],
         treeshake: {
           preset: 'recommended',
@@ -44,6 +45,7 @@ export default defineConfig(({ mode }) => {
       react(),
       vanillaExtractPlugin({}),
       dts({
+        staticImport: true,
         compilerOptions: {
           declarationMap: false,
         },

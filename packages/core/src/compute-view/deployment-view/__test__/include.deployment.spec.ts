@@ -130,70 +130,74 @@ describe('DeploymentRefPredicate', () => {
       'prod.eu.zone1.api',
     ])
     expect(edgeIds).toEqual([
-      'prod.eu.zone1.ui:prod.eu.zone1.api',
       'customer:prod.eu.zone1.ui',
+      'prod.eu.zone1.ui:prod.eu.zone1.api',
     ])
   })
 
   it('should expand node 2', () => {
-    const { nodeIds, edgeIds } = computeView(
+    const view = computeView(
       $include('*'),
       $include('prod.eu.zone1._'),
     )
-    expect.soft(nodeIds).toEqual([
-      'customer',
-      'prod',
-      'prod.eu',
-      'prod.us',
-      'prod.eu.zone1',
-      'prod.eu.zone1.ui',
-      'prod.eu.zone1.api',
-      'global',
-      'acc',
-      'acc.testCustomer',
-      'acc.eu',
-    ])
-    expect(edgeIds).toEqual([
-      'prod.eu.zone1.ui:prod.eu.zone1.api',
-      'prod.eu:prod.us',
-      'acc.testCustomer:acc.eu',
-      'customer:prod.eu.zone1.ui',
-      'prod.eu.zone1.api:global',
-      'customer:prod.us',
-      'global:acc.testCustomer',
-      'prod.us:global',
-      'acc.eu:global',
-      'global:customer',
-    ])
+    expect(view).toMatchObject({
+      edgeIds: [
+        'customer:prod.us',
+        'global:customer',
+        'global:acc.testCustomer',
+        'prod.us:global',
+        'acc.eu:global',
+        'acc.testCustomer:acc.eu',
+        'customer:prod.eu.zone1.ui',
+        'prod.eu.zone1.ui:prod.eu.zone1.api',
+        'prod.eu.zone1.api:global',
+        'prod.eu:prod.us',
+      ],
+      nodeIds: [
+        'acc',
+        'acc.eu',
+        'global',
+        'customer',
+        'prod',
+        'prod.eu',
+        'prod.eu.zone1',
+        'acc.testCustomer',
+        'prod.eu.zone1.ui',
+        'prod.us',
+        'prod.eu.zone1.api',
+      ],
+    })
   })
 
   it('should expand node 3', () => {
-    const { nodeIds, edgeIds } = computeView(
+    const view = computeView(
       $include('customer'),
       $include('prod.eu._'),
       $include('prod.eu.zone2._'),
       $exclude('prod.eu.auth'),
     )
-    expect.soft(nodeIds).toEqual([
-      'customer',
-      'prod',
-      'prod.eu',
-      'prod.eu.zone1',
-      'prod.eu.zone2',
-      'prod.eu.zone2.ui',
-      'prod.eu.zone2.api',
-      'prod.eu.media',
-      'prod.eu.db',
-    ])
-    expect(edgeIds).toEqual([
-      'prod.eu.zone2.ui:prod.eu.zone2.api',
-      'prod.eu.zone2.ui:prod.eu.media',
-      'prod.eu.zone2.api:prod.eu.media',
-      'prod.eu.zone2.api:prod.eu.db',
-      'prod.eu.zone1:prod.eu.media',
-      'prod.eu.zone1:prod.eu.db',
-      'customer:prod.eu.zone2.ui',
-      'customer:prod.eu.zone1',
-    ])
+    expect(view).toMatchObject({
+      edgeIds: [
+        'customer:prod.eu.zone1',
+        'prod.eu.zone1:prod.eu.media',
+        'prod.eu.zone1:prod.eu.db',
+        'customer:prod.eu.zone2.ui',
+        'prod.eu.zone2.ui:prod.eu.zone2.api',
+        'prod.eu.zone2.api:prod.eu.media',
+        'prod.eu.zone2.api:prod.eu.db',
+        'prod.eu.zone2.ui:prod.eu.media',
+      ],
+      nodeIds: [
+        'customer',
+        'prod',
+        'prod.eu',
+        'prod.eu.zone2',
+        'prod.eu.zone1',
+        'prod.eu.zone2.ui',
+        'prod.eu.zone2.api',
+        'prod.eu.media',
+        'prod.eu.db',
+      ],
+    })
   })
 })

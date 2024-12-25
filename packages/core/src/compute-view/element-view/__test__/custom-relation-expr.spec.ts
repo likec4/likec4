@@ -20,10 +20,10 @@ describe('custom-relation-expr', () => {
       'cloud.backend',
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
+      'cloud.frontend:cloud.backend',
     ])
-    const edge = edges[0]!
+    const edge = edges[1]!
     // Should merge tags
     expect(edge).toHaveProperty('tags', [
       'next',

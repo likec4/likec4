@@ -87,7 +87,7 @@ export function computeDeploymentView<M extends AnyAux>(
   linkNodesWithEdges(nodesMap, computedEdges)
 
   const sorted = topologicalSort({
-    nodes: [...nodesMap.values()],
+    nodes: nodesMap,
     edges: computedEdges,
   })
 

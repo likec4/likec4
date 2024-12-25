@@ -92,8 +92,8 @@ describe('wildcard-expr', () => {
         'amazon',
       ])
       expect(edgeIds).toEqual([
-        'cloud.backend.storage:amazon',
         'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.backend.storage:amazon',
       ])
     })
   })

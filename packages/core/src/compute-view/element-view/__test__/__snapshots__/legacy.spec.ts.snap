@@ -10,6 +10,26 @@ exports[`compute-element-view > view of cloud 1`] = `
   "description": null,
   "edges": [
     {
+      "id": "customer:cloud.frontend",
+      "label": "opens in browser",
+      "parent": null,
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend",
+    },
+    {
+      "id": "support:cloud.frontend",
+      "label": "manages",
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.supportPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend",
+    },
+    {
       "id": "cloud.frontend:cloud.backend",
       "kind": "graphlql",
       "label": "requests",
@@ -54,26 +74,6 @@ exports[`compute-element-view > view of cloud 1`] = `
         "legacy",
       ],
       "target": "amazon",
-    },
-    {
-      "id": "customer:cloud.frontend",
-      "label": "opens in browser",
-      "parent": null,
-      "relations": [
-        "customer:cloud.frontend.dashboard",
-      ],
-      "source": "customer",
-      "target": "cloud.frontend",
-    },
-    {
-      "id": "support:cloud.frontend",
-      "label": "manages",
-      "parent": null,
-      "relations": [
-        "support:cloud.frontend.supportPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend",
     },
   ],
   "hash": "6df052156ae59d91622677537c2d657e4946d803",
@@ -257,6 +257,26 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
   "description": null,
   "edges": [
     {
+      "id": "customer:cloud.frontend.dashboard",
+      "label": "opens in browser",
+      "parent": null,
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend.dashboard",
+    },
+    {
+      "id": "support:cloud.frontend.supportPanel",
+      "label": "manages",
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.supportPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend.supportPanel",
+    },
+    {
       "id": "cloud.frontend.dashboard:cloud.backend",
       "kind": "graphlql",
       "label": "requests",
@@ -286,26 +306,6 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       ],
       "tail": "odiamond",
       "target": "cloud.backend",
-    },
-    {
-      "id": "customer:cloud.frontend.dashboard",
-      "label": "opens in browser",
-      "parent": null,
-      "relations": [
-        "customer:cloud.frontend.dashboard",
-      ],
-      "source": "customer",
-      "target": "cloud.frontend.dashboard",
-    },
-    {
-      "id": "support:cloud.frontend.supportPanel",
-      "label": "manages",
-      "parent": null,
-      "relations": [
-        "support:cloud.frontend.supportPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend.supportPanel",
     },
   ],
   "hash": "388ed63a4179b91d2953e5c4908c651e3e826eb0",

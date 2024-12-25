@@ -20,9 +20,9 @@ describe('relation-expr', () => {
     ])
     expect(edgeIds).toEqual([
       'customer:cloud',
+      'support:cloud',
       'cloud:email',
       'cloud:amazon',
-      'support:cloud',
       'email:cloud',
     ])
   })
@@ -41,9 +41,9 @@ describe('relation-expr', () => {
     ])
     expect(pick(test1, ['edgeIds', 'nodeIds'])).toEqual({
       'edgeIds': [
+        'cloud.backend.storage:amazon.s3',
         'cloud.backend.graphql:cloud.backend.storage',
         'cloud.frontend.dashboard:cloud.backend.graphql',
-        'cloud.backend.storage:amazon.s3',
       ],
       'nodeIds': [
         'cloud',
@@ -76,8 +76,8 @@ describe('relation-expr', () => {
       ],
       'nodeIds': [
         'cloud',
-        'amazon',
         'cloud.frontend.dashboard',
+        'amazon',
         'cloud.backend.graphql',
       ],
     })

@@ -8,9 +8,9 @@ import type { ConnectionModel } from '../../../model/connection/model/Connection
 import type { DeploymentElementModel } from '../../../model/DeploymentElementModel'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
-import { FqnExpr, type RelationExpr } from '../../../types'
+import { type RelationExpr, FqnExpr } from '../../../types'
 import { hasIntersection, intersection } from '../../../utils/set'
-import type { Connection, ExcludePredicateCtx, PredicateExecutor } from '../_types'
+import type { ExcludePredicateCtx, PredicateExecutor } from '../_types'
 import type { StageExclude } from '../memory'
 import { deploymentExpressionToPredicate, resolveElements, resolveModelElements } from '../utils'
 import { filterIncomingConnections, resolveAllImcomingRelations } from './relation-incoming'
@@ -20,7 +20,7 @@ import { filterOutgoingConnections, resolveAllOutgoingRelations } from './relati
 
 export const resolveAscendingSiblings = (element: DeploymentElementModel) => {
   const siblings = new Set<DeploymentElementModel>()
-  for (let sibling of element.ascendingSiblings()) {
+  for (let sibling of element.descendingSiblings()) {
     // TODO: investigate if this is necessary
     // if (element.isInstance() && sibling.isDeploymentNode()) {
     //   // we flatten nodes that contain only one instance

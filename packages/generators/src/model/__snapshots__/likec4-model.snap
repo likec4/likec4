@@ -446,6 +446,16 @@ export const likeC4Model = LikeC4Model.fromDump({
           ],
         },
         {
+          id: 'email:customer',
+          parent: null,
+          source: 'email',
+          target: 'customer',
+          label: 'sends emails',
+          relations: [
+            'rel15',
+          ],
+        },
+        {
           id: 'cloud:aws',
           parent: null,
           source: 'cloud',
@@ -466,18 +476,30 @@ export const likeC4Model = LikeC4Model.fromDump({
             'rel13',
           ],
         },
-        {
-          id: 'email:customer',
-          parent: null,
-          source: 'email',
-          target: 'customer',
-          label: 'sends emails',
-          relations: [
-            'rel15',
-          ],
-        },
       ],
       nodes: [
+        {
+          id: 'email',
+          parent: null,
+          kind: 'system',
+          title: 'email',
+          level: 0,
+          color: 'primary',
+          shape: 'rectangle',
+          description: null,
+          technology: null,
+          tags: null,
+          links: null,
+          children: [],
+          inEdges: [
+            'cloud:email',
+          ],
+          outEdges: [
+            'email:customer',
+          ],
+          modelRef: 1,
+          style: {},
+        },
         {
           id: 'customer',
           parent: null,
@@ -543,28 +565,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           modelRef: 1,
           style: {},
         },
-        {
-          id: 'email',
-          parent: null,
-          kind: 'system',
-          title: 'email',
-          level: 0,
-          color: 'primary',
-          shape: 'rectangle',
-          description: null,
-          technology: null,
-          tags: null,
-          links: null,
-          children: [],
-          inEdges: [
-            'cloud:email',
-          ],
-          outEdges: [
-            'email:customer',
-          ],
-          modelRef: 1,
-          style: {},
-        },
       ],
     },
     cloud: {
@@ -581,36 +581,6 @@ export const likeC4Model = LikeC4Model.fromDump({
       },
       hash: '1a523d612d8c2ad78909f943d5abe155f185391a',
       edges: [
-        {
-          id: 'cloud.frontend.dashboard:cloud.auth',
-          parent: 'cloud',
-          source: 'cloud.frontend.dashboard',
-          target: 'cloud.auth',
-          label: 'authenticates',
-          relations: [
-            'rel4',
-          ],
-        },
-        {
-          id: 'cloud.frontend.dashboard:cloud.backend',
-          parent: 'cloud',
-          source: 'cloud.frontend.dashboard',
-          target: 'cloud.backend',
-          label: 'fetches data',
-          relations: [
-            'rel5',
-          ],
-        },
-        {
-          id: 'cloud.frontend.dashboard:cloud.media',
-          parent: 'cloud',
-          source: 'cloud.frontend.dashboard',
-          target: 'cloud.media',
-          label: 'fetches media',
-          relations: [
-            'rel6',
-          ],
-        },
         {
           id: 'cloud.backend:cloud.auth',
           parent: 'cloud',
@@ -629,16 +599,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           label: 'uploads media',
           relations: [
             'rel11',
-          ],
-        },
-        {
-          id: 'customer:cloud.frontend.dashboard',
-          parent: null,
-          source: 'customer',
-          target: 'cloud.frontend.dashboard',
-          label: 'opens in browser',
-          relations: [
-            'rel3',
           ],
         },
         {
@@ -669,6 +629,46 @@ export const likeC4Model = LikeC4Model.fromDump({
           label: 'uploads',
           relations: [
             'rel14',
+          ],
+        },
+        {
+          id: 'customer:cloud.frontend.dashboard',
+          parent: null,
+          source: 'customer',
+          target: 'cloud.frontend.dashboard',
+          label: 'opens in browser',
+          relations: [
+            'rel3',
+          ],
+        },
+        {
+          id: 'cloud.frontend.dashboard:cloud.auth',
+          parent: 'cloud',
+          source: 'cloud.frontend.dashboard',
+          target: 'cloud.auth',
+          label: 'authenticates',
+          relations: [
+            'rel4',
+          ],
+        },
+        {
+          id: 'cloud.frontend.dashboard:cloud.backend',
+          parent: 'cloud',
+          source: 'cloud.frontend.dashboard',
+          target: 'cloud.backend',
+          label: 'fetches data',
+          relations: [
+            'rel5',
+          ],
+        },
+        {
+          id: 'cloud.frontend.dashboard:cloud.media',
+          parent: 'cloud',
+          source: 'cloud.frontend.dashboard',
+          target: 'cloud.media',
+          label: 'fetches media',
+          relations: [
+            'rel6',
           ],
         },
       ],

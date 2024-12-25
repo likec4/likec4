@@ -59,9 +59,9 @@ describe('expand-element-expr', () => {
       'amazon.s3',
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'cloud.backend:amazon.s3',
+      'cloud.frontend:cloud.backend',
     ])
   })
 

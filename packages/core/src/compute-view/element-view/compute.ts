@@ -25,7 +25,7 @@ import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { type Connection, type Elem, type PredicateCtx } from './_types'
-import { Memory, type NodesGroup, type Stage } from './memory'
+import { type NodesGroup, type Stage, Memory } from './memory'
 import { ActiveGroupMemory } from './memory/memory'
 import { StageFinal } from './memory/stage-final'
 import { ExpandedElementPredicate } from './predicates/element-expand'
@@ -198,7 +198,7 @@ export function computeElementView<M extends AnyAux>(
   linkNodesWithEdges(nodesMap, computedEdges)
 
   const sorted = topologicalSort({
-    nodes: [...nodesMap.values()],
+    nodes: nodesMap,
     edges: computedEdges,
   })
 

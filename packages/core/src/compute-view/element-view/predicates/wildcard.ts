@@ -3,7 +3,7 @@ import { findConnectionsBetween, findConnectionsWithin } from '../../../model/co
 import type { WildcardExpr } from '../../../types/expression'
 import { ifilter, toArray } from '../../../utils/iterable'
 import { toSet } from '../../../utils/iterable/to'
-import { Memory, type PredicateExecutor } from '../_types'
+import { type PredicateExecutor, Memory } from '../_types'
 import { NoWhere } from '../utils'
 
 export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
@@ -21,45 +21,52 @@ export const WildcardPredicate: PredicateExecutor<WildcardExpr> = {
       return stage
     }
     const root = where(scope) ? scope : null
-    if (root) {
-      stage.addExplicit(root)
-      // stage.connectWithExisting(root)
-      // stage.addConnections(findConnectionsBetween(root, neighbours))
-    }
 
     const children = toArray(ifilter(scope.children(), where))
     const hasChildren = children.length > 0
-    if (hasChildren) {
-      stage.addExplicit(children)
-      stage.addConnections(findConnectionsWithin(children))
-    } else if (root) {
-      children.push(root)
-    } else {
-      return stage
+    if (!hasChildren) {
+      if (!root) {
+        return stage
+      } else {
+        // Any edges with siblings?
+        const edgesWithSiblings = findConnectionsBetween(root, root.siblings())
+        if (edgesWithSiblings.length === 0) {
+          // If no edges with siblings, i.e. root is orphan
+          // Lets add parent for better view
+          const parent = root.parent
+          if (parent && where(parent)) {
+            stage.addExplicit(parent)
+          }
+        }
+        children.push(root)
+      }
+    }
+
+    if (root) {
+      stage.addExplicit(root)
     }
 
     const neighbours = toSet([
       ...memory.elements,
-      ...scope.ascendingSiblings(),
+      ...scope.descendingSiblings(),
     ])
 
-    for (const el of children) {
-      stage.addConnections(findConnectionsBetween(el, neighbours))
+    // Add incoming connections
+    for (const neighbour of neighbours) {
+      stage.addConnections(findConnectionsBetween(neighbour, children, 'directed'))
     }
 
-    // If root has no children
-    if (!hasChildren && root) {
-      // Any edges with siblings?
-      const edgesWithSiblings = findConnectionsBetween(root, root.siblings())
-      if (edgesWithSiblings.length === 0) {
-        // If no edges with siblings, i.e. root is orphan
-        // Lets add parent for better view
-        const parent = root.parent
-        if (parent && where(parent)) {
-          stage.addExplicit(parent)
-        }
-      }
+    // connection between children
+    if (hasChildren) {
+      stage.addConnections(findConnectionsWithin(children))
+      stage.addExplicit(children)
     }
+
+    // Add outgoing connections
+    for (const child of children) {
+      stage.addConnections(findConnectionsBetween(child, neighbours, 'directed'))
+    }
+
     return stage
   },
   exclude: ({ scope, memory, stage, where }) => {

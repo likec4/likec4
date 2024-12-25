@@ -2,16 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "noEmit": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
-    "moduleResolution": "bundler",
-    "resolvePackageJsonExports": true,
-    "customConditions": [
-      "development"
-    ],
     "types": [
       "vite/client",
       "vscode-webview"

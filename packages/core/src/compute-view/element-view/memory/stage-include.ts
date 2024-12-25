@@ -3,10 +3,10 @@ import { Expr } from '../../..'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/model'
 import { difference, isAncestor, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
-import { AbstractStageInclude, type CtxConnection, type StageExpression } from '../../memory'
+import { type CtxConnection, type StageExpression, AbstractStageInclude } from '../../memory'
 import { type ActiveGroupCtx, type ActiveGroupMemory, type Ctx } from './memory'
 
-type Elem = Ctx['Element']
+export type Elem = Ctx['Element']
 
 export class StageInclude<C extends Ctx = Ctx> extends AbstractStageInclude<C> {
   /**
@@ -19,32 +19,33 @@ export class StageInclude<C extends Ctx = Ctx> extends AbstractStageInclude<C> {
     const before = this._connections.length
     const hasChanged = () => this._connections.length > before
     if (!isIterable(elements)) {
-      if (direction === 'in') {
+      if (direction === 'in' || direction === 'both') {
         for (const el of this.memory.elements) {
           this.addConnections(
             findConnection(el, elements, 'directed'),
           )
         }
-        return hasChanged()
       }
-      const dir = direction === 'out' ? 'directed' : 'both'
-      this.addConnections(
-        findConnectionsBetween(elements, this.memory.elements, dir),
-      )
+      if (direction === 'out' || direction === 'both') {
+        this.addConnections(
+          findConnectionsBetween(elements, this.memory.elements, 'directed'),
+        )
+      }
       return hasChanged()
     }
-    if (direction === 'in') {
-      const targets = [...elements]
+
+    const targets = [...elements]
+    if (direction === 'in' || direction === 'both') {
       for (const el of this.memory.elements) {
         this.addConnections(
           findConnectionsBetween(el, targets, 'directed'),
         )
       }
-    } else {
-      const dir = direction === 'out' ? 'directed' : 'both'
-      for (const el of elements) {
+    }
+    if (direction === 'out' || direction === 'both') {
+      for (const el of targets) {
         this.addConnections(
-          findConnectionsBetween(el, this.memory.elements, dir),
+          findConnectionsBetween(el, this.memory.elements, 'directed'),
         )
       }
     }

@@ -1,56 +1,16 @@
 import Graph from 'graphology'
 import { topologicalSort as topsort } from 'graphology-dag/topological-sort'
 import willCreateCycle from 'graphology-dag/will-create-cycle'
-import { forEach, map, pipe, prop, sortBy } from 'remeda'
+import { forEach, map, partition, pipe, takeWhile } from 'remeda'
 import { invariant, nonNullable } from '../../errors'
-import type { ComputedEdge, ComputedNode, NodeId } from '../../types'
-import { isAncestor } from '../../utils'
-
-const isNested = (nested: ComputedEdge, parent: ComputedEdge) => {
-  const isSameSource = nested.source === parent.source
-  const isSameTarget = nested.target === parent.target
-  if (isSameSource && isSameTarget) {
-    return false
-  }
-  const isSourceNested = isAncestor(parent.source, nested.source)
-  const isTargetNested = isAncestor(parent.target, nested.target)
-  return (
-    (isSourceNested && isTargetNested)
-    || (isSameSource && isTargetNested)
-    || (isSameTarget && isSourceNested)
-  )
-}
-
-const findDeepestNestedEdge = (connections: ReadonlyArray<ComputedEdge>, edge: ComputedEdge) => {
-  let deepest = edge
-  for (const c of connections) {
-    if (isNested(c, deepest)) {
-      deepest = c
-    }
-  }
-  return deepest !== edge ? deepest : null
-}
-
-const sortDeepestFirst = (edges: ReadonlyArray<ComputedEdge>) => {
-  const sorted = [] as ComputedEdge[]
-  const unsorted = edges.slice()
-  let next
-  while (next = unsorted.shift()) {
-    let deepest
-    while (deepest = findDeepestNestedEdge(unsorted, next)) {
-      const index = unsorted.indexOf(deepest)
-      sorted.push(unsorted.splice(index, 1)[0]!)
-    }
-    sorted.push(next)
-  }
-  return sorted
-}
+import type { ComputedEdge, ComputedNode, Fqn, NodeId } from '../../types'
+import { ancestorsOfNode } from './ancestorsOfNode'
 
 /**
- * Keeps initial order of the elements, but ensures that parents are before children
+ * Keeps initial order of the elements, but ensures parents are placed before children
  */
 function ensureParentsFirst<T extends { id: string; parent: string | null }>(
-  array: ReadonlyArray<T>
+  array: ReadonlyArray<T>,
 ): Array<T> {
   const result = [] as T[]
   const items = [...array]
@@ -96,106 +56,201 @@ function updateChildren(nodes: ComputedNode[]) {
 }
 
 type TopologicalSortParam = {
-  nodes: Iterable<ComputedNode>
+  nodes: ReadonlyMap<Fqn, ComputedNode>
   edges: Iterable<ComputedEdge>
 }
 export function topologicalSort(
-  param: TopologicalSortParam
+  param: TopologicalSortParam,
 ): {
   nodes: ComputedNode[]
   edges: ComputedEdge[]
 } {
-  let nodes = [...param.nodes]
+  let nodes = ensureParentsFirst([...param.nodes.values()])
   let edges = [...param.edges]
-  if (nodes.length < 2) {
+  if (nodes.length < 2 || edges.length === 0) {
     return {
       nodes,
-      edges
-    }
-  }
-  nodes = ensureParentsFirst(nodes)
-
-  if (edges.length === 0) {
-    return {
-      nodes,
-      edges
+      edges,
     }
   }
 
-  const getNode = (id: string) => nonNullable(nodes.find(n => n.id === id))
-  const nodeLevel = (id: string) => getNode(id).level + 1
-  const getEdge = (id: string) => nonNullable(edges.find(edge => edge.id === id))
+  const getNode = (id: Fqn) => nonNullable(param.nodes.get(id))
+  // const nodeLevel = (id: string) => getNode(id).level + 1
+  //
 
   const g = new Graph({
     multi: true,
     allowSelfLoops: true,
-    type: 'directed'
+    type: 'directed',
   })
 
-  for (const n of nodes) {
-    g.addNode(n.id)
-  }
-  const sortedEdges = [] as ComputedEdge[]
-
-  pipe(
+  const enrichedEdges = pipe(
     edges,
-    map(e => ({
-      e,
-      parentLevel: e.parent ? nodeLevel(e.parent) : 0,
-      nodeLevel: Math.max(nodeLevel(e.source), nodeLevel(e.target)),
-      sourceIndex: nodes.findIndex(n => n.id === e.source),
-      targetIndex: nodes.findIndex(n => n.id === e.target)
-    })),
-    sortBy(
-      [prop('parentLevel'), 'desc'],
-      [prop('nodeLevel'), 'desc'],
-      [prop('sourceIndex'), 'asc'],
-      [prop('targetIndex'), 'asc']
-    ),
-    map(prop('e')),
-    sortDeepestFirst,
-    forEach((e, idx, _all) => {
-      sortedEdges.push(e)
-      if (idx === 0 || !willCreateCycle(g, e.source, e.target)) {
-        g.mergeDirectedEdge(e.source, e.target)
-      }
-    })
+    map((edge, __dirname) => {
+      const source = getNode(edge.source),
+        target = getNode(edge.target),
+        parent = edge.parent ? getNode(edge.parent) : null
+      return ({
+        id: edge.id,
+        edge,
+        parent,
+        source,
+        target,
+      })
+    }),
+    // sortBy(
+    //   [prop('sourceIndex'), 'asc'],
+    //   // [prop('sourceInCount'), 'asc'],
+    //   // [prop('sourceLevel'), 'asc'],
+    // ),
   )
 
-  // Strengthen the graph by adding edges to compound nodes
-  for (const n of nodes) {
-    if (n.children.length > 0) {
-      n.inEdges.forEach(e => {
-        const edge = getEdge(e)
-        // if this edge from leaf to the child of this node
-        if (edge.target !== n.id && getNode(edge.source).children.length === 0) {
-          if (!willCreateCycle(g, edge.source, n.id)) {
-            g.mergeDirectedEdge(edge.source, n.id)
-          }
-        }
-      })
-    }
-    if (n.parent && !willCreateCycle(g, n.parent, n.id)) {
-      g.mergeDirectedEdge(n.parent, n.id)
+  const [edgesBetweenLeafs, edgesWithCompounds] = partition(
+    enrichedEdges,
+    ({ source, target }) => source.children.length === 0 && target.children.length === 0,
+  )
+
+  // edgesBetweenLeafs.sort((a, b) => {
+  //   if (a.source === b.source) {
+  //     return 0
+  //   }
+  //   if (a.source.level === 0 && b.source.level === 0) {
+  //     return 0
+  //   }
+  //   if (isSameHierarchy(a.source, b.target) || isSameHierarchy(a.target, b.source)) {
+  //     return edges.indexOf(a.edge) - edges.indexOf(b.edge)
+  //   }
+  //   const aLevel = a.parent ? a.parent.level + 1 - a.source.level : a.source.level
+  //   const bLevel = b.parent ? b.parent.level + 1 - b.source.level : b.source.level
+  //   return aLevel - bLevel
+  //   // if (a.source.level === 0 && b.source.level === 0) {
+
+  //   //   // if (a.source.depth)
+  //   //   return nodes.indexOf(a.target) - nodes.indexOf(b.target)
+  //   // }
+  //   // if (a.source.level === 0 && b.source.level > 0) {
+  //   //   return -1
+  //   // }
+  //   // if (a.parent && b.parent && a.parent !== b.parent) {
+  //   //   if (a.parent.level !== b.parent.level) {
+  //   //     return b.parent.level - a.parent.level
+  //   //   } else {
+  //   //     return nodes.indexOf(a.parent) - nodes.indexOf(b.parent)
+  //   //   }
+  //   // }
+  //   // return Math.min(nodes.indexOf(a.source), nodes.indexOf(a.target)) - Math.min(nodes.indexOf(b.source), nodes.indexOf(b.target))
+  // })
+  const sortedEdges = [] as ComputedEdge[]
+
+  const addEdgeToGraph = (edge: ComputedEdge) => {
+    g.mergeNode(edge.source)
+    g.mergeNode(edge.target)
+    sortedEdges.push(edge)
+    if (!willCreateCycle(g, edge.source, edge.target)) {
+      g.mergeDirectedEdge(edge.source, edge.target)
     }
   }
 
+  for (const { edge, source, target } of edgesBetweenLeafs) {
+    addEdgeToGraph(edge)
+    // Strengthen the graph by adding edges to parents
+    if (target.parent && target.parent !== edge.parent) {
+      pipe(
+        ancestorsOfNode(target, param.nodes),
+        takeWhile(ancestor => ancestor.inEdges.includes(edge.id)),
+        forEach(ancestor => {
+          g.mergeNode(ancestor.id)
+          if (!willCreateCycle(g, edge.source, ancestor.id)) {
+            g.mergeDirectedEdge(edge.source, ancestor.id)
+          }
+          if (!willCreateCycle(g, ancestor.id, edge.target)) {
+            g.mergeDirectedEdge(ancestor.id, edge.target)
+          }
+        }),
+      )
+    }
+    if (source.parent) {
+      const sourceParent = getNode(source.parent)
+      g.mergeNode(sourceParent.id)
+      if (!willCreateCycle(g, sourceParent.id, source.id)) {
+        g.mergeDirectedEdge(sourceParent.id, source.id)
+      }
+      if (target.parent && target.parent !== source.parent) {
+        if (!willCreateCycle(g, sourceParent.id, target.parent)) {
+          g.mergeDirectedEdge(sourceParent.id, target.parent)
+        }
+      }
+    }
+
+    // addEdgeToGraph(edge)
+  }
+  for (const { edge } of edgesWithCompounds) {
+    addEdgeToGraph(edge)
+  }
+
+  invariant(sortedEdges.length === edges.length, 'Not all edges were added to the graph')
+
+  // for (const compound of nodes) {
+  //   if (compound.children.length === 0 || compound.inEdges.length === 0) {
+  //     continue
+  //   }
+  //   // g.mergeNode(compound.id)
+  //   for (const inEdge of compound.inEdges) {
+  //     const { edge, source } = getEdge(inEdge)
+  //     // ignore if this edge is coming from compound node
+  //     if (source.children.length > 0) {
+  //       continue
+  //     }
+  //     // if this edge is coming to the compound node directly
+  //     if (edge.target === compound.id) {
+  //       // for (const child of compound.children) {
+  //       //   // g.mergeNode(child)
+  //       //   if (!willCreateCycle(g, edge.source, child)) {
+  //       //     g.mergeDirectedEdge(edge.source, child)
+  //       //   }
+  //       // }
+  //     } else {
+  //       if (!willCreateCycle(g, edge.source, compound.id)) {
+  //         g.mergeDirectedEdge(edge.source, compound.id)
+  //       }
+  //       if (!willCreateCycle(g, compound.id, edge.target)) {
+  //         g.mergeDirectedEdge(compound.id, edge.target)
+  //       }
+  //     }
+  //   }
+  // }
+
   const sortedIds = topsort(g)
-  const sorted = [] as ComputedNode[]
+  let sorted = [] as ComputedNode[]
+  let unsorted = nodes.slice()
   for (const sortedId of sortedIds) {
-    const indx = nodes.findIndex(n => n.id === sortedId)
+    const indx = unsorted.findIndex(n => n.id === sortedId)
     invariant(indx >= 0, `Node "${sortedId}" not found`)
-    sorted.push(...nodes.splice(indx, 1))
+    sorted.push(...unsorted.splice(indx, 1))
   }
-  if (nodes.length > 0) {
-    sorted.push(...nodes)
+  // Merge unsorted nodes, keeping their initial order
+  if (unsorted.length > 0 && sorted.length > 0) {
+    sorted = sorted.flatMap(node => {
+      if (unsorted.length === 0) {
+        return node
+      }
+      const wereBefore = nodes
+        .slice(0, nodes.indexOf(node))
+        .filter(n => unsorted.includes(n))
+      if (wereBefore.length > 0) {
+        unsorted = unsorted.filter(n => !wereBefore.includes(n))
+        return [...wereBefore, node]
+      }
+
+      return node
+    })
   }
+  // Add remaining unsorted nodes
+  sorted.push(...unsorted)
   return {
-    nodes: pipe(
-      sorted,
-      ensureParentsFirst,
-      updateChildren
+    nodes: updateChildren(
+      ensureParentsFirst(sorted),
     ),
-    edges: sortedEdges
+    edges: sortedEdges,
   }
 }
