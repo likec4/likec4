@@ -1,5 +1,5 @@
 import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
-import type { LikeC4Model } from '../model'
+import type { LikeC4Model } from '../model/LikeC4Model'
 import type {
   BorderStyle,
   Color,
