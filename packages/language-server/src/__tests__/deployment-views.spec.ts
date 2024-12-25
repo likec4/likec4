@@ -169,7 +169,7 @@ describe.concurrent('Deployment views:', () => {
     `)
   })
 
-  it.only('valid rules', async ctx => {
+  it('valid rules', async ctx => {
     const { valid } = await mkTestServices(ctx)
 
     await valid(`
