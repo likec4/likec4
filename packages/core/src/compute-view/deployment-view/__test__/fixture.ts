@@ -197,3 +197,12 @@ export function computeNodesAndEdges(...rules: DeploymentViewRuleBuilderOp<Types
     edges: edgeIds
   }
 }
+
+export function createModel() {
+  const modelsource = builder.build()
+
+  return LikeC4Model.create({
+    ...modelsource,
+    views: {}
+  })
+}
