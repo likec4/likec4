@@ -57,7 +57,8 @@ const {
     zone: {},
     node: {}
   },
-  tags: ['old', 'next']
+  tags: ['old', 'next'],
+  relationships: {'https': {}}
 })
 
 export const builder = b
@@ -143,6 +144,14 @@ export const builder = b
           ),
           instanceOf('db', 'aws.rds'),
         ),
+      ),
+      env('dev').with(
+        node('devCustomer').with(
+          instanceOf('instance', 'customer')
+        ),
+        node('devCloud').with(
+          instanceOf('instance', 'cloud')
+        )
       ),
       env('acc').with(
         node('testCustomer').with(

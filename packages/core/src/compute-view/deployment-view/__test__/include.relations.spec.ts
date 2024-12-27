@@ -16,6 +16,7 @@ describe('DirectRelationPredicate', () => {
         "Nodes": [
           "global.email",
           "customer.instance",
+          "dev.devCloud.instance",
           "acc",
           "prod",
           "prod.eu",
@@ -39,12 +40,15 @@ describe('DirectRelationPredicate', () => {
           "prod.us.zone1.ui",
           "prod.us.zone1.api",
           "prod.us.db",
+          "dev.devCustomer.instance",
+          "acc.testCustomer.instance",
         ],
         "edges": [
           "customer.instance:prod.eu.zone1.ui",
           "customer.instance:prod.eu.zone2.ui",
           "customer.instance:prod.us.zone1.ui",
           "global.email:customer.instance",
+          "dev.devCloud.instance:global.email",
           "prod.eu.zone1.api:prod.eu.auth",
           "prod.eu.zone1.api:prod.eu.media",
           "prod.eu.zone1.api:prod.eu.db",
@@ -52,6 +56,7 @@ describe('DirectRelationPredicate', () => {
           "prod.eu.zone1.ui:prod.eu.zone1.api",
           "prod.eu.zone1.ui:prod.eu.auth",
           "prod.eu.zone1.ui:prod.eu.media",
+          "global.email:dev.devCustomer.instance",
           "prod.eu.zone2.api:prod.eu.auth",
           "prod.eu.zone2.api:prod.eu.media",
           "prod.eu.zone2.api:prod.eu.db",
@@ -70,6 +75,7 @@ describe('DirectRelationPredicate', () => {
           "acc.eu.api:global.email",
           "acc.eu.ui:acc.eu.api",
           "acc.eu.ui:acc.eu.auth",
+          "dev.devCustomer.instance:dev.devCloud.instance",
         ],
       }
     `)
