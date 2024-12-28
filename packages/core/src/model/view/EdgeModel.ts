@@ -75,7 +75,6 @@ export class EdgeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
     for (const id of this.$edge.relations) {
       // if type is provided, then we need to filter relationships
       if (type) {
-        yield this.view.$model.relationship(id, type)
         const rel = this.view.$model.findRelationship(id, type)
         if (rel) {
           yield rel
