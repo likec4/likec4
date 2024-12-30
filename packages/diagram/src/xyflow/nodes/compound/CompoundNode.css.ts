@@ -1,7 +1,7 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { mantine, vars, whereLight } from '../../../theme-vars'
+import { mantine, vars } from '../../../theme-vars'
 
 // For framer motion
 export const containerForFramer = style({
@@ -232,59 +232,6 @@ globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transpa
     [navigateBtnColor]: vars.element.stroke
   }
 })
-
-const btn = style({
-  pointerEvents: 'all',
-  cursor: 'pointer',
-  color: `var(--_compound-title-color,${navigateBtnColor})`,
-  opacity: 'var(--ai-opacity)',
-  backgroundColor: 'var(--ai-bg)',
-  vars: {
-    '--ai-opacity': '1',
-    '--ai-bg-idle': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
-    '--ai-bg': `var(--ai-bg-idle)`,
-    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
-    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
-  },
-  ':hover': {
-    boxShadow: mantine.shadows.md
-  },
-  selectors: {
-    [`${whereLight} .likec4-compound-transparent &`]: {
-      opacity: 0.85,
-      vars: {
-        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`,
-        '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
-        '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
-      }
-    }
-  }
-})
-
-export const navigateBtn = style([btn, {
-  position: 'absolute',
-  left: 3,
-  top: 6
-}])
-
-export const detailsBtn = style([btn, {
-  // position: 'absolute',
-  // top: 2,
-  // right: 2,
-  // selectors: {
-  //   [`:where([data-likec4-shape='browser']) &`]: {
-  //     top: 3,
-  //     right: 5
-  //   },
-  //   ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-  //     top: 14
-  //   },
-  //   ':where([data-likec4-shape="queue"]) &': {
-  //     top: 1,
-  //     right: 12
-  //   }
-  // }
-}])
 
 export const elementIcon = style({
   flex: `0 0 ${iconSize}`,

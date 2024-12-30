@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Group, Text as MantineText } from '@mantine/core'
+import { ActionIcon, Box, Group } from '@mantine/core'
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
@@ -11,6 +11,7 @@ import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import type { RelationshipsOfFlowTypes } from '../_types'
 import * as css from './styles.css'
+import { Text } from '../../../controls/Text'
 
 const Action = ActionIcon.withProps({
   className: 'nodrag nopan ' + css.navigateBtn,
@@ -18,10 +19,6 @@ const Action = ActionIcon.withProps({
   role: 'button',
   onDoubleClick: stopPropagation,
   onPointerDownCapture: stopPropagation
-})
-
-const Text = MantineText.withProps({
-  component: 'div'
 })
 
 type ElementNodeProps = NodeProps<RelationshipsOfFlowTypes.ElementNode>
