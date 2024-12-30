@@ -17,8 +17,8 @@ import { useMemo } from 'react'
 import { filter, first, forEach, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
 import { useDiagramState } from '../../hooks/useDiagramState'
 import { useLikeC4Model } from '../../likec4model'
-import type { SharedTypes } from '../shared/xyflow/_types'
-import type { XYFlowTypes } from './_types'
+import type { SharedFlowTypes } from '../shared/xyflow/_types'
+import type { EdgeDetailsFlowTypes } from './_types'
 
 /**
  * All constants related to the layout
@@ -69,16 +69,16 @@ function createGraph() {
 type Context = {
   g: dagre.graphlib.Graph
   diagramNodes: Map<Fqn, DiagramNode>
-  xynodes: Map<Fqn, SharedTypes.NonEmptyNode>
+  xynodes: Map<Fqn, SharedFlowTypes.NonEmptyNode>
   edge: DiagramEdge
-  edges: XYFlowTypes.Edge[]
+  edges: EdgeDetailsFlowTypes.Edge[]
 }
 const sized = (height: number = Sizes.hodeHeight) => ({
   width: Sizes.nodeWidth,
   height
 })
 
-const graphId = (node: SharedTypes.Node) => ({
+const graphId = (node: SharedFlowTypes.Node) => ({
   id: node.id,
   port: node.type === 'compound' ? `${node.id}::port` : node.id,
   body: `${node.id}`,
@@ -88,7 +88,7 @@ const graphId = (node: SharedTypes.Node) => ({
 function nodeData(
   element: LikeC4Model.Element,
   ctx: Context
-): SharedTypes.NodeData {
+): SharedFlowTypes.OverlayNodeData {
   // We try to inherit style from existing diagram node
   let diagramNode = ctx.diagramNodes.get(element.id)
 
@@ -119,10 +119,10 @@ function nodeData(
 }
 
 function createNode(
-  nodeType: SharedTypes.NonEmptyNode['type'],
+  nodeType: SharedFlowTypes.NonEmptyNode['type'],
   element: LikeC4Model.Element,
   ctx: Context
-): SharedTypes.Node {
+): SharedFlowTypes.Node {
   let node = ctx.xynodes.get(element.id)
   if (node) {
     return node
@@ -137,7 +137,7 @@ function createNode(
     found => found ? createNode('compound', found, ctx) : null
   )
 
-  const xynode: SharedTypes.NonEmptyNode = {
+  const xynode: SharedFlowTypes.NonEmptyNode = {
     type: nodeType,
     id: element.id,
     position: { x: 0, y: 0 },
@@ -183,7 +183,7 @@ function createNode(
  * And return a function to get node bounds for xyflow
  */
 function applyDagreLayout(g: dagre.graphlib.Graph) {
-  type NodeBounds = Required<Pick<SharedTypes.Node, 'position' | 'width' | 'height'>>
+  type NodeBounds = Required<Pick<SharedFlowTypes.Node, 'position' | 'width' | 'height'>>
   dagre.layout(g)
   return function nodeBounds(nodeId: string, relativeTo?: string): NodeBounds {
     const { x, y, width, height } = g.node(nodeId)
@@ -217,8 +217,8 @@ function layout(
 ): {
   view: DiagramView
   edge: DiagramEdge
-  nodes: SharedTypes.Node[]
-  edges: XYFlowTypes.Edge[]
+  nodes: SharedFlowTypes.Node[]
+  edges: EdgeDetailsFlowTypes.Edge[]
   bounds: { x: number; y: number; width: number; height: number }
 } {
   const edge = view.edges.find(e => e.id === edgeId)
@@ -274,7 +274,7 @@ function layout(
     target.data.ports.in.push(source.id)
 
     g.setEdge(graphId(source).port, graphId(target).port)
-    const edge: XYFlowTypes.Edge = {
+    const edge: EdgeDetailsFlowTypes.Edge = {
       id: relation.id,
       type: 'relation',
       source: source.id,

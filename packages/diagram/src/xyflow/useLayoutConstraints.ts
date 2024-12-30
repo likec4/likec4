@@ -1,11 +1,11 @@
 import { type NodeId, type NonEmptyArray, nonNullable } from '@likec4/core'
-import type { InternalNode, NodeChange, ReactFlowProps, XYPosition } from '@xyflow/react'
+import type { NodeChange, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { filter, hasAtLeast, isNullish, map, pipe } from 'remeda'
 import { useDiagramStoreApi } from '../hooks'
 import { type XYStoreApi } from '../hooks/useXYFlow'
-import type { XYFlowNode } from './types'
+import type { DiagramFlowTypes } from './types'
 
 abstract class Rect {
   static readonly LeftPadding = 40
@@ -60,7 +60,7 @@ class Compound extends Rect {
   public readonly children = [] as Rect[]
 
   constructor(
-    xynode: InternalNode<XYFlowNode>,
+    xynode: DiagramFlowTypes.InternalNode,
     protected readonly parent: Compound | null = null
   ) {
     super()
@@ -74,7 +74,7 @@ class Compound extends Rect {
 
 class Leaf extends Rect {
   constructor(
-    xynode: InternalNode<XYFlowNode>,
+    xynode: DiagramFlowTypes.InternalNode,
     public readonly parent: Compound | null = null
   ) {
     super()
@@ -94,7 +94,7 @@ class Leaf extends Rect {
 }
 
 type NodePositionUpdater = (
-  nodes: Array<{ rect: Rect | Compound; node: InternalNode<XYFlowNode> }>
+  nodes: Array<{ rect: Rect | Compound; node: DiagramFlowTypes.InternalNode }>
 ) => void
 
 export function createLayoutConstraints(
@@ -108,7 +108,7 @@ export function createLayoutConstraints(
     const ancestors = [] as string[]
     const xynode = nodeLookup.get(nodeId)
     let parent = xynode?.parentId
-    let parentNode: InternalNode<XYFlowNode> | undefined
+    let parentNode: DiagramFlowTypes.InternalNode | undefined
     while (parent && (parentNode = nodeLookup.get(parent))) {
       ancestors.push(parentNode.id as NodeId)
       parent = parentNode.parentId
@@ -120,7 +120,7 @@ export function createLayoutConstraints(
     editingNodeIds.flatMap(ancestorsOf)
   )
 
-  const traverse = new Array<{ xynode: InternalNode<XYFlowNode>; parent: Compound | null }>()
+  const traverse = new Array<{ xynode: DiagramFlowTypes.InternalNode; parent: Compound | null }>()
 
   for (const [, xynode] of nodeLookup) {
     if (isNullish(xynode.parentId)) {
@@ -200,7 +200,7 @@ export function createLayoutConstraints(
           })
         }
         return acc
-      }, [] as NodeChange<XYFlowNode>[])
+      }, [] as NodeChange<DiagramFlowTypes.Node>[])
     )
   }
 
@@ -234,7 +234,7 @@ export function createLayoutConstraints(
   }
 }
 
-type LayoutConstraints = Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragStart' | 'onNodeDrag' | 'onNodeDragStop'>>
+type LayoutConstraints = Required<Pick<ReactFlowProps<DiagramFlowTypes.Node>, 'onNodeDragStart' | 'onNodeDrag' | 'onNodeDragStop'>>
 /**
  * Keeps the layout constraints (parent nodes and children) when dragging a node
  */

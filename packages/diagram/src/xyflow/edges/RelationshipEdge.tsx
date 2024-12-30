@@ -20,11 +20,11 @@ import { useXYStoreApi } from '../../hooks/useXYFlow'
 import { vector, VectorImpl } from '../../utils/vector'
 import { ZIndexes } from '../const'
 import { EdgeMarkers, type EdgeMarkerType } from '../EdgeMarkers'
-import { type XYFlowEdge } from '../types'
 import { bezierControlPoints } from '../utils'
 import { EdgeLabel } from './EdgeLabel'
 import * as edgesCss from './edges.css'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
+import type { DiagramFlowTypes } from '../types'
 // import { getEdgeParams } from './utils'
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {
@@ -115,7 +115,9 @@ const sameControlPoints = (a: XYPosition[] | null, b: XYPosition[] | null) => {
   return a.every((ap, i) => isSamePoint(ap, b[i]!))
 }
 
-const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) => (
+type DiagramEdgeProps = EdgeProps<DiagramFlowTypes.Edge>
+
+const isEqualProps = (prev: DiagramEdgeProps, next: DiagramEdgeProps) => (
   prev.id === next.id
   && eq(prev.source, next.source)
   && eq(prev.target, next.target)
@@ -134,7 +136,7 @@ const curve = d3line<XYPosition>()
   .x(d => d.x)
   .y(d => d.y)
 
-export const RelationshipEdge = memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
+export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdgeR({
   id,
   data,
   sourceX,

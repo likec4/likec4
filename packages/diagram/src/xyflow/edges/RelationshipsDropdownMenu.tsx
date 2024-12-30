@@ -22,8 +22,8 @@ import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, u
 import { filter, isTruthy, map, partition, pick, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useXYNodesData } from '../../hooks'
 import { Link } from '../../ui/Link'
-import type { RelationshipData } from '../types'
 import * as css from './RelationshipsDropdownMenu.css'
+import type { DiagramFlowTypes } from '../types'
 
 const stopPropagation: MouseEventHandler = (e) => e.stopPropagation()
 
@@ -44,7 +44,7 @@ export function RelationshipsDropdownMenu({
   likec4model,
   children
 }: PropsWithChildren<{
-  edge: RelationshipData['edge']
+  edge: DiagramFlowTypes.DiagramEdgeData['edge']
   disabled?: boolean | undefined
   likec4model: LikeC4Model
 }>) {
@@ -157,7 +157,7 @@ const Relationship = forwardRef<
   HTMLDivElement,
   StackProps & {
     relationship: LikeC4Model.AnyRelation
-    edge: RelationshipData['edge']
+    edge: DiagramFlowTypes.DiagramEdgeData['edge']
     sourceNode: DiagramNode
     targetNode: DiagramNode
   }

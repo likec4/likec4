@@ -21,9 +21,6 @@ export const container = style({
   selectors: {
     ':where(.react-flow__node.selected) &': {
       willChange: 'transform'
-    },
-    '&[data-hovered="true"]': {
-      willChange: 'transform'
     }
   },
   // Catch pointer below the element
@@ -47,16 +44,6 @@ export const handleCenter = style({
 
 export const containerAnimated = style({
   willChange: 'transform'
-})
-
-export const dimmed = style({})
-
-globalStyle(`.react-flow__node-element:has(${dimmed})`, {
-  opacity: 0.25,
-  transition: 'opacity 400ms ease-in-out, filter 500ms ease-in-out',
-  transitionDelay: '50ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-  willChange: 'opacity, filter'
 })
 
 const indicatorKeyframes = keyframes({
@@ -106,10 +93,6 @@ export const indicator = style({
       vars: {
         [indicatorStroke]: `color-mix(in srgb, ${vars.element.fill} 50%, #3c3c3c)`
       }
-    },
-    [`${dimmed} &`]: {
-      visibility: 'hidden',
-      display: 'none'
     }
   }
 })
@@ -302,10 +285,6 @@ export const shapeSvgMultiple = style({
     },
     ':where([data-likec4-shape="queue"]) &': {
       transform: 'translate(-10px,8px)'
-    },
-    ':where([data-hovered="true"]) &': {
-      transition: 'opacity 300ms ease-in',
-      opacity: 0.2
     }
   }
 })

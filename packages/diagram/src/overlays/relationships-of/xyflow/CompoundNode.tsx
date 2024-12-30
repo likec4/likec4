@@ -4,14 +4,14 @@ import clsx from 'clsx'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo, useCallback } from 'react'
-import type { XYFlowTypes } from '../_types'
+import type { RelationshipsOfFlowTypes } from '../_types'
 import * as css from './styles.css'
 
 const Text = MantineText.withProps({
   component: 'div'
 })
 
-type CompoundNodeProps = NodeProps<XYFlowTypes.CompoundNode>
+type CompoundNodeProps = NodeProps<RelationshipsOfFlowTypes.CompoundNode>
 
 export const CompoundNode = memo<CompoundNodeProps>(({
   id,
