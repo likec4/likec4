@@ -1,11 +1,11 @@
 import {
   type ComputedEdge,
   type ComputedNode,
+  type ElementThemeColorValues,
   DefaultRelationshipColor,
   defaultTheme as Theme,
-  type ElementThemeColorValues
 } from '@likec4/core'
-import { isDefined, isTruthy } from 'remeda'
+import { isDefined, isTruthy, only } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
 
@@ -17,7 +17,7 @@ export function wrap(text: string, maxChars: number, maxLines?: number) {
   let lines = wordWrap(text, {
     width: maxChars,
     indent: '',
-    escape: sanitize
+    escape: sanitize,
   }).split('\n')
   if (isDefined(maxLines) && maxLines > 0 && lines.length > maxLines) {
     lines = lines.slice(0, maxLines - 1)
@@ -31,7 +31,7 @@ function wrapWithFont({
   fontsize,
   maxLines,
   bold,
-  color
+  color,
 }: {
   text: string
   maxchars: number
@@ -64,8 +64,8 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       text: node.title,
       fontsize: 19,
       maxchars: 35,
-      maxLines: 3
-    })
+      maxLines: 3,
+    }),
   ]
   if (isTruthy(node.technology)) {
     lines.push(
@@ -74,8 +74,8 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
         fontsize: 12,
         maxchars: hasIcon ? 35 : 45,
         maxLines: 1,
-        color: colorValues.loContrast
-      })
+        color: colorValues.loContrast,
+      }),
     )
   }
   if (isTruthy(node.description)) {
@@ -85,8 +85,8 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
         fontsize: 14,
         maxchars: hasIcon ? 35 : 45,
         maxLines: 5,
-        color: colorValues.loContrast
-      })
+        color: colorValues.loContrast,
+      }),
     )
   }
   if (lines.length === 1 && !hasIcon) {
@@ -125,7 +125,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
     fontsize: 11,
     maxLines: 1,
     bold: true,
-    color
+    color,
   })
   if (html.includes('<BR/>')) {
     return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" BALIGN="LEFT">${html}</TD></TR></TABLE>>`
@@ -134,8 +134,9 @@ export function compoundLabel(node: ComputedNode, color?: string) {
 }
 
 export const EDGE_LABEL_MAX_CHARS = 40
+const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
 
-export function edgelabel({ label }: ComputedEdge) {
+export function edgelabel({ label, technology }: ComputedEdge) {
   const lines = [] as string[]
   if (isTruthy(label)) {
     lines.push(
@@ -144,8 +145,8 @@ export function edgelabel({ label }: ComputedEdge) {
         maxchars: EDGE_LABEL_MAX_CHARS,
         fontsize: 14,
         maxLines: 5,
-        bold: label === '[...]'
-      })
+        bold: label === '[...]',
+      }),
     )
   }
   // if (isTruthy(description)) {
@@ -158,35 +159,26 @@ export function edgelabel({ label }: ComputedEdge) {
   //     })
   //   )
   // }
-  // if (isTruthy(technology)) {
-  //   lines.push(
-  //     wrapWithFont({
-  //       text: technology,
-  //       fontsize: 12,
-  //       maxLines: 1,
-  //       maxchars: EDGE_LABEL_MAX_CHARS
-  //     })
-  //   )
-  // }
+  if (isTruthy(technology)) {
+    lines.push(
+      wrapWithFont({
+        text: `[ ${technology} ]`,
+        fontsize: 12,
+        maxLines: 1,
+        maxchars: EDGE_LABEL_MAX_CHARS,
+      }),
+    )
+  }
   if (lines.length === 0) {
     return null
+  }
+  const oneline = only(lines)
+  if (oneline && !oneline.includes('<BR/>')) {
+    return `<${oneline}>`
   }
   const rows = lines.map(line => `<TR><TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD></TR>`).join('')
   return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}>${rows}</TABLE>>`
 }
-
-export function edgeLabel(text: string) {
-  const html = wrapWithFont({
-    text,
-    maxchars: EDGE_LABEL_MAX_CHARS,
-    fontsize: 14,
-    maxLines: 5,
-    bold: text === '[...]'
-  })
-  return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}><TR><TD ALIGN="TEXT" BALIGN="LEFT">${html}</TD></TR></TABLE>>`
-}
-
-const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
 
 export function stepEdgeLabel(step: number, text?: string | null) {
   const num = `<TABLE BORDER="0" CELLPADDING="6" ${BGCOLOR}><TR><TD WIDTH="20" HEIGHT="20"><FONT POINT-SIZE="${
@@ -205,11 +197,11 @@ export function stepEdgeLabel(step: number, text?: string | null) {
     wrapWithFont({
       text,
       maxchars: EDGE_LABEL_MAX_CHARS,
-      fontsize: 14
+      fontsize: 14,
     }),
     `</TD>`,
     `</TR>`,
-    `</TABLE>`
+    `</TABLE>`,
   ]
   return `<${html.join('')}>`
 }

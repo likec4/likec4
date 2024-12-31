@@ -1,0 +1,119 @@
+digraph {
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  TBbalance = "min";
+  splines = "spline";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.667;
+  pack = 120;
+  packmode = "array_3";
+  pad = 0.209;
+  fontname = "Arial";
+  graph [
+    fontsize = 15;
+    labeljust = "l";
+    labelloc = "t";
+    margin = 50.1;
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#6E6E6E";
+    fontcolor = "#C6C6C6";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    width = 4.445;
+    height = 2.5;
+    style = "filled";
+    penwidth = 0;
+  ];
+  "customer" [
+    likec4_id = "customer";
+    likec4_level = 0;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">customer</FONT>>;
+  ];
+  "support" [
+    likec4_id = "support";
+    likec4_level = 0;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Support Engineer</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Support engineers are responsible for<BR/>supporting customers</FONT></TD></TR></TABLE>>;
+  ];
+  "frontend" [
+    likec4_id = "cloud.frontend";
+    likec4_level = 1;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.417,0.445";
+    label = <<FONT POINT-SIZE="19">Frontend</FONT>>;
+  ];
+  "backend" [
+    likec4_id = "cloud.backend";
+    likec4_level = 1;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">Backend</FONT>>;
+  ];
+  "amazon" [
+    likec4_id = "amazon";
+    likec4_level = 0;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
+  ];
+  subgraph "cluster_cloud" {
+    likec4_id = "cloud";
+    likec4_level = 0;
+    likec4_depth = 1;
+    fillcolor = "#194b9e";
+    color = "#1b3d88";
+    style = "filled";
+    margin = 40;
+    label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
+    "frontend";
+    "backend";
+  }
+  "customer" -> "frontend" [
+    likec4_id = "customer:cloud.frontend";
+    style = "dashed";
+    label = <<FONT POINT-SIZE="14">opens in browser</FONT>>;
+  ];
+  "support" -> "frontend" [
+    likec4_id = "support:cloud.frontend";
+    style = "dashed";
+    label = <<FONT POINT-SIZE="14">manages</FONT>>;
+  ];
+  "frontend" -> "backend" [
+    likec4_id = "cloud.frontend:cloud.backend";
+    style = "dashed";
+    label = <<FONT POINT-SIZE="14"><B>[...]</B></FONT>>;
+    minlen = 0;
+  ];
+  "backend" -> "amazon" [
+    likec4_id = "cloud.backend:amazon";
+    style = "dashed";
+    label = <<FONT POINT-SIZE="14">persists artifacts</FONT>>;
+    arrowhead = "normal";
+    arrowtail = "odiamond";
+    dir = "both";
+    minlen = 0;
+  ];
+}

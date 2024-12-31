@@ -78,7 +78,7 @@ model {
       navigateTo cloud-to-amazon
     }
 
-    backend -> events "emits"
+    backend -> events "triggers"
   }
 
 }

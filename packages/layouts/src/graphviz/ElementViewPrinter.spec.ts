@@ -1,5 +1,5 @@
 import type { ComputedElementView } from '@likec4/core'
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { computedAmazonView, computedCloud3levels, computedCloudView, computedIndexView } from './__fixtures__'
 import { ElementViewPrinter } from './ElementViewPrinter'
 
@@ -8,22 +8,22 @@ function print(view: ComputedElementView) {
 }
 
 describe('ElementViewPrinter', () => {
-  it('computedIndexView', () => {
+  it('computedIndexView', async ({ expect }) => {
     const diagram = print(computedIndexView)
-    expect(diagram).toMatchSnapshot()
+    await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-index.dot')
   })
-  it('computedAmazonView', () => {
+  it('computedAmazonView', async ({ expect }) => {
     const diagram = print(computedAmazonView)
-    expect(diagram).toMatchSnapshot()
+    await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-amazon.dot')
   })
 
-  it('computedCloud3levels', () => {
+  it('computedCloud3levels', async ({ expect }) => {
     const diagram = print(computedCloud3levels)
-    expect(diagram).toMatchSnapshot()
+    await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-cloud3levels.dot')
   })
 
-  it('computedCloudView', () => {
+  it('computedCloudView', async ({ expect }) => {
     const diagram = print(computedCloudView)
-    expect(diagram).toMatchSnapshot()
+    await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-cloud.dot')
   })
 })

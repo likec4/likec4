@@ -73,7 +73,7 @@ views {
       }
     }
 
-    
+
     exclude -> customer
   }
 
@@ -122,12 +122,17 @@ views {
   dynamic view cloud-to-amazon {
     title 'Cloud to amazon'
 
-    next.backend -> next.events
+    next.backend -> next.events {
+      notes "
+      - Backend triggers EventManager
+      - These calls enriched with data before publishing
+      "
+    }
 
     parallel {
+      next.events -> amazon.sqs
       next.backend -> amazon.aurora
       ui.supportPanel -> amazon.aurora
-      next.events -> amazon.sqs
     }
 
     include next, ui, amazon

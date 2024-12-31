@@ -1,0 +1,86 @@
+digraph {
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  TBbalance = "min";
+  splines = "spline";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.667;
+  pack = 120;
+  packmode = "array_3";
+  pad = 0.209;
+  fontname = "Arial";
+  graph [
+    fontsize = 15;
+    labeljust = "l";
+    labelloc = "t";
+    margin = 50.1;
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#6E6E6E";
+    fontcolor = "#C6C6C6";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    width = 4.445;
+    height = 2.5;
+    style = "filled";
+    penwidth = 0;
+  ];
+  "backend" [
+    likec4_id = "cloud.backend";
+    likec4_level = 1;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">Backend</FONT>>;
+  ];
+  "s3" [
+    likec4_id = "amazon.s3";
+    likec4_level = 1;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">S3</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">S3 is a storage service</FONT></TD></TR></TABLE>>;
+  ];
+  subgraph "cluster_cloud" {
+    likec4_id = "cloud";
+    likec4_level = 0;
+    likec4_depth = 1;
+    fillcolor = "#194b9e";
+    color = "#1b3d88";
+    style = "filled";
+    margin = 32;
+    label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
+    "backend";
+  }
+  subgraph "cluster_amazon" {
+    likec4_id = "amazon";
+    likec4_level = 0;
+    likec4_depth = 1;
+    fillcolor = "#194b9e";
+    color = "#1b3d88";
+    style = "filled";
+    margin = 32;
+    label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>AMAZON</B></FONT>>;
+    "s3";
+  }
+  "backend" -> "s3" [
+    likec4_id = "cloud.backend:amazon.s3";
+    style = "dashed";
+    label = <<FONT POINT-SIZE="14">persists artifacts</FONT>>;
+    arrowhead = "normal";
+    arrowtail = "odiamond";
+    dir = "both";
+    minlen = 0;
+  ];
+}

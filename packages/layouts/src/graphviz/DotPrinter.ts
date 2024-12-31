@@ -3,6 +3,7 @@ import {
   DefaultRelationshipColor,
   defaultTheme as Theme,
   DefaultThemeColor,
+  hierarchyDistance,
   invariant,
   isThemeColor,
   nameFromFqn,
@@ -86,6 +87,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected edges = new Map<EdgeId, EdgeModel>()
   protected compoundIds: Set<Fqn>
   protected edgesWithCompounds: Set<EdgeId>
+  protected edgeDistances: ReadonlyMap<string, number>
 
   public readonly graphvizModel: RootGraphModel
 
@@ -98,11 +100,14 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
           .map(n => n.id)
         : [],
     )
+    const edgeDistances = new Map<string, number>()
+    for (const edge of view.edges) {
+      edgeDistances.set(edge.id, hierarchyDistance(edge.source, edge.target))
+    }
+    this.edgeDistances = edgeDistances
     const G = this.graphvizModel = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
-    this.build(G)
-    this.postBuild(G)
   }
 
   public get hasEdgesWithCompounds(): boolean {
@@ -120,28 +125,32 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       const id = this.nodeId(element)
       const subgraph = this.elementToSubgraph(element, parent.subgraph(id))
       this.subgraphs.set(element.id, subgraph)
-      // Traverse nested clusters
-      for (const child of this.view.nodes.filter(n => isCompound(n) && n.parent === element.id)) {
-        traverseClusters(child, subgraph)
+      for (const childId of element.children) {
+        const child = this.viewElement(childId)
+        if (isCompound(child)) {
+          traverseClusters(child, subgraph)
+        } else {
+          const gvnode = nonNullable(this.getGraphNode(child.id), `Graphviz Node not found for ${child.id}`)
+          subgraph.node(gvnode.id)
+        }
       }
     }
 
-    const leafElements = [] as ComputedNode[]
+    const topCompound = [] as ComputedNode[]
     for (const element of this.view.nodes) {
       if (isCompound(element)) {
         if (isNullish(element.parent)) {
-          traverseClusters(element, G)
+          topCompound.push(element)
         }
       } else {
-        leafElements.push(element)
+        const id = this.nodeId(element)
+        const node = this.elementToNode(element, G.node(id))
+        this.nodes.set(element.id, node)
       }
     }
-    for (const element of leafElements) {
-      const graph = element.parent ? this.getSubgraph(element.parent) : G
-      invariant(graph, 'parent graph should be defined')
-      const id = this.nodeId(element)
-      const node = this.elementToNode(element, graph.node(id))
-      this.nodes.set(element.id, node)
+
+    for (const compound of topCompound) {
+      traverseClusters(compound, G)
     }
 
     for (const edge of this.view.edges) {
@@ -153,6 +162,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   }
 
   public print(): DotSource {
+    const G = this.graphvizModel
+    this.build(G)
+    this.postBuild(G)
     return modelToDot(this.graphvizModel, {
       print: {
         indentStyle: 'space',

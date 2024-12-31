@@ -1,0 +1,167 @@
+digraph {
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  splines = "spline";
+  outputorder = "nodesfirst";
+  nodesep = 1.806;
+  ranksep = 1.806;
+  pad = 0.209;
+  fontname = "Arial";
+  newrank = true;
+  clusterrank = "global";
+  graph [
+    fontsize = 15;
+    labeljust = "l";
+    labelloc = "t";
+    margin = 50.1;
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#6E6E6E";
+    fontcolor = "#C6C6C6";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    width = 4.445;
+    height = 2.5;
+    style = "filled";
+    penwidth = 0;
+  ];
+  "client" [
+    likec4_id = "client";
+    likec4_level = 0;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">client</FONT>>;
+  ];
+  "ui" [
+    likec4_id = "z1.s1.ui";
+    likec4_level = 2;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">ui</FONT>>;
+  ];
+  "s2_ui" [
+    likec4_id = "z1.s2.ui";
+    likec4_level = 2;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">ui</FONT>>;
+  ];
+  "api" [
+    likec4_id = "z1.s1.api";
+    likec4_level = 2;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">api</FONT>>;
+  ];
+  "s2_api" [
+    likec4_id = "z1.s2.api";
+    likec4_level = 2;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">api</FONT>>;
+  ];
+  "db" [
+    likec4_id = "z1.db";
+    likec4_level = 1;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    margin = "0.362,0.362";
+    label = <<FONT POINT-SIZE="19">db</FONT>>;
+  ];
+  subgraph "cluster_z1" {
+    likec4_id = "z1";
+    likec4_level = 0;
+    likec4_depth = 2;
+    fillcolor = "#1a468d";
+    color = "#1c3979";
+    style = "filled";
+    margin = 50;
+    label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>Z1</B></FONT>>;
+    "db";
+    subgraph "cluster_s1" {
+      likec4_id = "z1.s1";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#194b9e";
+      color = "#1b3d88";
+      style = "filled";
+      margin = 50;
+      label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>S1</B></FONT>>;
+      "ui";
+      "api";
+    }
+    subgraph "cluster_s2" {
+      likec4_id = "z1.s2";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#194b9e";
+      color = "#1b3d88";
+      style = "filled";
+      margin = 50;
+      label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>S2</B></FONT>>;
+      "s2_ui";
+      "s2_api";
+    }
+  }
+  subgraph {
+    rank = "same";
+    "ui";
+    "s2_ui";
+  }
+  subgraph {
+    rank = "same";
+    "api";
+    "s2_api";
+  }
+  "client" -> "ui" [
+    likec4_id = "7dqxgw";
+    style = "dashed";
+    label = <<FONT POINT-SIZE="14">uses</FONT>>;
+  ];
+  "client" -> "s2_ui" [
+    likec4_id = "7drqs3";
+    style = "dashed";
+    label = <<FONT POINT-SIZE="14">uses</FONT>>;
+  ];
+  "ui" -> "api" [
+    likec4_id = "1tp0394";
+    style = "dashed";
+    weight = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
+  ];
+  "s2_ui" -> "s2_api" [
+    likec4_id = "ugfmg";
+    style = "dashed";
+    weight = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
+  ];
+  "api" -> "db" [
+    likec4_id = "1ll2ewe";
+    style = "dashed";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">very very very long title that should be<BR/>wrapped to multiple lines</FONT></TD></TR></TABLE>>;
+  ];
+  "s2_api" -> "db" [
+    likec4_id = "yziy5";
+    style = "dashed";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">very very very long title that should be<BR/>wrapped to multiple lines</FONT></TD></TR></TABLE>>;
+  ];
+}

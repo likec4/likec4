@@ -1,4 +1,4 @@
-import { ComputedView, type DiagramView, nonexhaustive, type OverviewGraph } from '@likec4/core'
+import { type DiagramView, type OverviewGraph, ComputedView, nonexhaustive } from '@likec4/core'
 import { logger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
@@ -94,14 +94,14 @@ export class GraphvizLayouter {
     const svg = await this.graphviz.svg(dot)
     return {
       svg,
-      dot
+      dot,
     }
   }
 
   async dot(computedView: ComputedView): Promise<DotSource> {
     const printer = getPrinter(computedView)
     let dot = printer.print()
-    if (ComputedView.isDynamic(computedView)) {
+    if (!ComputedView.isElement(computedView)) {
       return dot
     }
     try {
@@ -117,7 +117,7 @@ export class GraphvizLayouter {
       return Promise.resolve({
         nodes: [],
         edges: [],
-        bounds: { x: 0, y: 0, width: 10, height: 10 }
+        bounds: { x: 0, y: 0, width: 10, height: 10 },
       })
     }
     const dot = OverviewDiagramsPrinter.toDot(views)

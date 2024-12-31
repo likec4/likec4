@@ -80,11 +80,8 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
     const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
 
     const edgeParentId = edge.parent
-    const parent = edgeParentId === null
-      ? G
-      : nonNullable(this.getSubgraph(edgeParentId), `Parent not found for edge ${edge.id}`)
 
-    const e = parent.edge([source, target], {
+    const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
       [_.style]: edge.line ?? DefaultEdgeStyle,
     })
@@ -94,19 +91,23 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
 
     const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
 
-    if (!hasCompoundEndpoint) {
-      const connected = new Set([
-        ...sourceNode.inEdges,
-        ...sourceNode.outEdges,
-        ...targetNode.inEdges,
-        ...targetNode.outEdges,
-      ].filter(e => !this.edgesWithCompounds.has(e)))
-      e.attributes.set(_.weight, connected.size)
+    const thisEdgeDistance = this.edgeDistances.get(edge.id) ?? 0
+    const maxDistance = [
+      ...sourceNode.inEdges,
+      ...sourceNode.outEdges,
+      ...targetNode.inEdges,
+      ...targetNode.outEdges,
+    ].reduce((max, edgeId) => Math.max(max, this.edgeDistances.get(edgeId) ?? 0), 0)
+    if (maxDistance - thisEdgeDistance > 1) {
+      e.attributes.set(_.weight, maxDistance - thisEdgeDistance)
     }
 
     const label = edgelabel(edge)
     if (label) {
-      e.attributes.set(_.label, label)
+      e.attributes.set(
+        hasCompoundEndpoint ? _.xlabel : _.label,
+        label,
+      )
     }
     if (edge.color) {
       const colorValues = this.getRelationshipColorValues(edge.color)
