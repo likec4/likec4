@@ -140,7 +140,7 @@
     "clsx": "^2.1.1",
     "defu": "^6.1.4",
     "dts-bundle-generator": "^9.5.1",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.24.2",
     "esbuild-node-externals": "^1.16.0",
     "esm-env": "^1.2.1",
     "execa": "^9.3.1",
