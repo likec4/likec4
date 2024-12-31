@@ -4,10 +4,10 @@ import { useMemo, useState } from 'react'
 import { isEmpty, isString } from 'remeda'
 import { vars } from '../../theme-vars'
 
-const DEFAULT_SCALE_BY  = 0
+const DEFAULT_SCALE_BY = 0
 const SELECTED_SCALE_BY = 16
-const HOVERED_SCALE_BY  = 12
-const TAP_SCALE_BY      = -16
+const HOVERED_SCALE_BY = 12
+const TAP_SCALE_BY = -16
 
 const DELAY_NODE = 0.1
 const DELAY_NODE_CHILDREN = 0.06
@@ -17,11 +17,22 @@ const DIMMED_DELAY = 0.2
 
 export type VariantKeys = 'dimmed' | 'hoverd' | 'idle' | 'selected' | 'tap'
 
-export const NodeVariants = (width: number, height: number) => {
+export const NodeVariants = (width: number, height: number, opts?: {
+  selectedScaleBy?: number
+  hoveredScaleBy?: number
+  tapScaleBy?: number
+}) => {
+  const {
+    selectedScaleBy = SELECTED_SCALE_BY,
+    hoveredScaleBy = HOVERED_SCALE_BY,
+    tapScaleBy = TAP_SCALE_BY,
+  } = opts ?? {}
 
+  // Same scale for X and Y
+  const maxwh = Math.max(width, height)
   const scaleBy = (diffPx: number) => ({
-    scaleX: (width + diffPx) / width,
-    scaleY: (height + diffPx) / height
+    scaleX: (maxwh + diffPx) / maxwh,
+    scaleY: (maxwh + diffPx) / maxwh,
   })
 
   return {
@@ -30,31 +41,31 @@ export const NodeVariants = (width: number, height: number) => {
       opacity: DIMMED_OPACITY,
       transition: {
         delay: DIMMED_DELAY,
-        ease: 'easeInOut'
+        ease: 'easeInOut',
       },
-      willChange: 'opacity, filter'
+      willChange: 'opacity, filter',
     },
     idle: {
       ...scaleBy(DEFAULT_SCALE_BY),
       transition: {
-          delay: DELAY_NODE,
-          delayChildren: DELAY_NODE_CHILDREN
+        delay: DELAY_NODE,
+        delayChildren: DELAY_NODE_CHILDREN,
       },
-      filter: `grayscale(0) ${fallbackVar(vars.safariAnimationHook, 'blur(0px)')}`
+      filter: `grayscale(0) ${fallbackVar(vars.safariAnimationHook, 'blur(0px)')}`,
     },
     selected: {
-      ...scaleBy(SELECTED_SCALE_BY)
+      ...scaleBy(selectedScaleBy),
     },
     hovered: {
-      ...scaleBy(HOVERED_SCALE_BY),
+      ...scaleBy(hoveredScaleBy),
       transition: {
         delay: DELAY_NODE,
-        delayChildren: DELAY_NODE_CHILDREN
-      }
+        delayChildren: DELAY_NODE_CHILDREN,
+      },
     },
     tap: {
-      ...scaleBy(TAP_SCALE_BY)
-    }
+      ...scaleBy(tapScaleBy),
+    },
   } satisfies Variants
 }
 
@@ -100,20 +111,20 @@ export function useFramerAnimateVariants() {
         if (isEmpty(tapTarget)) {
           setVariants([
             'hovered',
-            'tap'
+            'tap',
           ])
         } else {
           setVariants([
             'hovered',
             `hovered:${tapTarget}`,
-            `tap:${tapTarget}`
+            `tap:${tapTarget}`,
           ])
         }
       },
       onHoverStart,
       onHoverEnd: resetVariants,
       onTapCancel: resetVariants,
-      onTap: onHoverStart
+      onTap: onHoverStart,
     })
   }, [setVariants])
 

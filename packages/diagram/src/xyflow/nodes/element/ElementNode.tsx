@@ -1,24 +1,28 @@
-import { DiagramNode, type ThemeColor } from '@likec4/core'
+import { type ThemeColor, DiagramNode } from '@likec4/core'
 import { Box } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { type NodeProps, Handle, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo, useState } from 'react'
 import { isTruthy } from 'remeda'
+import { ActionButtonBar } from '../../../controls/action-button-bar/ActionButtonBar'
+import {
+  BrowseRelationshipsButton,
+  NavigateToButton,
+  OpenDetailsButton,
+} from '../../../controls/action-buttons/ActionButtons'
+import { Text } from '../../../controls/Text'
 import { useDiagramState } from '../../../hooks/useDiagramState'
+import type { DiagramFlowTypes } from '../../types'
 import { toDomPrecision } from '../../utils'
+import { type VariantKeys, NodeVariants, useFramerAnimateVariants } from '../AnimateVariants'
+import * as nodeCss from '../Node.css'
 import { ElementIcon } from '../shared/ElementIcon'
 import { ElementToolbar } from '../shared/Toolbar'
-import { NodeVariants, useFramerAnimateVariants, type VariantKeys } from '../AnimateVariants'
 import * as css from './element.css'
-import * as nodeCss from '../Node.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
-import type { DiagramFlowTypes } from '../../types'
-import { ActionButtonBar } from '../../../controls/action-button-bar/ActionButtonBar'
-import { BrowseRelationshipsButton, NavigateToButton, OpenDetailsButton } from '../../../controls/action-buttons/ActionButtons'
-import { Text } from '../../../controls/Text'
 
 type ElementNodeProps = NodeProps<DiagramFlowTypes.ElementNode>
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
@@ -33,12 +37,12 @@ const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
 export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   id,
   data: {
-    element
+    element,
   },
   dragging,
   selected = false,
   width,
-  height
+  height,
 }) {
   const modelRef = DiagramNode.modelRef(element)
   // const deploymentRef = DiagramNode.deploymentRef(element)
@@ -51,7 +55,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     enableElementDetails,
     enableRelationshipBrowser,
     isInActiveOverlay,
-    renderIcon
+    renderIcon,
   } = useDiagramState(s => ({
     viewId: s.view.id,
     isEditable: s.readonly !== true,
@@ -61,13 +65,12 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isNavigable: (!!s.onNavigateTo && !!element.navigateTo),
     enableElementDetails: s.enableElementDetails,
     enableRelationshipBrowser: s.enableRelationshipBrowser,
-    triggerOnNavigateTo: s.triggerOnNavigateTo,
     openOverlay: s.openOverlay,
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
-    renderIcon: s.renderIcon
+    renderIcon: s.renderIcon,
   }))
   // For development purposes, show the toolbar when the element is selected
-  const _isToolbarVisible = isEditable && import.meta.env.DEV && selected
+  const _isToolbarVisible = selected && !dragging
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const w = toDomPrecision(width ?? element.width)
@@ -103,14 +106,14 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     element,
     viewId,
     className: css.elementIcon,
-    renderIcon
+    renderIcon,
   })
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
 
   return (
     <>
-      {isToolbarVisible && (
+      {isEditable && (
         <ElementToolbar
           element={element}
           isVisible={isToolbarVisible}
@@ -122,20 +125,18 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         className={clsx([
           css.container,
           animateVariant !== 'idle' && css.containerAnimated,
-          'likec4-element-node'
+          'likec4-element-node',
         ])}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
         data-likec4-color={previewColor ?? element.color}
         data-likec4-shape={element.shape}
         data-animate-target=""
-
         initial={false}
         variants={NodeVariants(w, h)}
         animate={animateVariant}
-        whileHover={selected ? "selected" : "hovered"}
+        whileHover={selected ? 'selected' : 'hovered'}
         {...isInteractive && animateHandlers}
-
         tabIndex={-1}
       >
         <svg
@@ -150,7 +151,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           className={clsx(
             css.elementDataContainer,
             isTruthy(elementIcon) && css.hasIcon,
-            'likec4-element'
+            'likec4-element',
           )}
         >
           {elementIcon}
@@ -177,14 +178,14 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         </Box>
         {/* {isHovercards && element.links && <ElementLink element={element} />} */}
         <Box className={clsx(nodeCss.bottomBtnContainer)}>
-          <ActionButtonBar shiftY='bottom' {...isInteractive && animateHandlers} >
-            {isNavigable && !!modelRef && (<NavigateToButton fqn={modelRef} />)}
-            {enableRelationshipBrowser && !!modelRef && (<BrowseRelationshipsButton fqn={modelRef} />)}
+          <ActionButtonBar shiftY="bottom" {...isInteractive && animateHandlers}>
+            {isNavigable && <NavigateToButton xynodeId={id} />}
+            {enableRelationshipBrowser && !!modelRef && <BrowseRelationshipsButton fqn={modelRef} />}
           </ActionButtonBar>
         </Box>
         {enableElementDetails && !!modelRef && (
           <Box className={clsx(nodeCss.topRightBtnContainer)}>
-            <ActionButtonBar shiftX='right' {...isInteractive && animateHandlers} >
+            <ActionButtonBar shiftX="right" {...isInteractive && animateHandlers}>
               <OpenDetailsButton fqn={element.id} />
             </ActionButtonBar>
           </Box>

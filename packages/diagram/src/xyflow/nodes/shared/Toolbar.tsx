@@ -1,15 +1,16 @@
 import {
   type BorderStyle,
-  defaultTheme,
-  DiagramNode,
   type Element,
-  ElementShapes,
   type Fqn,
   type NonEmptyArray,
   type ThemeColor,
-  type ViewChange
+  type ViewChange,
+  defaultTheme,
+  DiagramNode,
+  ElementShapes,
 } from '@likec4/core'
 import {
+  type PopoverProps,
   ActionIcon,
   Box,
   Button,
@@ -26,7 +27,6 @@ import {
   Paper,
   Popover,
   PopoverDropdown,
-  type PopoverProps,
   PopoverTarget,
   rem,
   SegmentedControl,
@@ -35,10 +35,10 @@ import {
   Stack,
   Text,
   Tooltip as MantineTooltip,
-  TooltipGroup
+  TooltipGroup,
 } from '@mantine/core'
 import { IconCheck, IconFileSymlink, IconSelector, IconTransform } from '@tabler/icons-react'
-import { NodeToolbar, type NodeToolbarProps } from '@xyflow/react'
+import { type NodeToolbarProps, NodeToolbar } from '@xyflow/react'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import type { MergeExclusive } from 'type-fest'
@@ -55,12 +55,12 @@ const {
 const themedColors = [
   { key: 'primary', value: primary.fill },
   { key: 'secondary', value: secondary.fill },
-  { key: 'muted', value: muted.fill }
+  { key: 'muted', value: muted.fill },
 ] satisfies Array<{ key: ThemeColor; value: string }>
 
 const colors = keys(otherColors).map(key => ({
   key,
-  value: defaultTheme.elements[key].fill
+  value: defaultTheme.elements[key].fill,
 }))
 
 type ThemeColorKey = typeof themedColors[0]['key']
@@ -73,7 +73,7 @@ const Tooltip = MantineTooltip.withProps({
   closeDelay: 150,
   label: '',
   children: null,
-  offset: 4
+  offset: 4,
 })
 
 type ToolbarProps = NodeToolbarProps & {
@@ -94,17 +94,17 @@ export function CompoundToolbar({
   const diagramApi = useDiagramStoreApi()
   const {
     hasGoToSource,
-    enableRelationshipBrowser
+    enableRelationshipBrowser,
   } = useDiagramState(s => ({
     hasGoToSource: !!s.onOpenSource,
-    enableRelationshipBrowser: s.enableRelationshipBrowser
+    enableRelationshipBrowser: s.enableRelationshipBrowser,
   }))
 
   const onChange: OnStyleChange = (style) => {
     diagramApi.getState().triggerChangeElementStyle({
       op: 'change-element-style',
       style,
-      targets
+      targets,
     })
   }
 
@@ -123,7 +123,7 @@ export function CompoundToolbar({
       />
       {hasGoToSource && modelRef && <GoToSourceButton elementId={modelRef} />}
       {hasGoToSource && !modelRef && deploymentRef && <GoToSourceButton deploymentId={deploymentRef} />}
-      {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
+      {enableRelationshipBrowser && !!modelRef && <BrowseRelationshipsButton elementId={modelRef} />}
     </Toolbar>
   )
 }
@@ -167,10 +167,10 @@ export function ElementToolbar({
   const diagramApi = useDiagramStoreApi()
   const {
     hasGoToSource,
-    enableRelationshipBrowser
+    enableRelationshipBrowser,
   } = useDiagramState(s => ({
     hasGoToSource: !!s.onOpenSource,
-    enableRelationshipBrowser: s.enableRelationshipBrowser
+    enableRelationshipBrowser: s.enableRelationshipBrowser,
   }))
   const portalProps = useMantinePortalProps()
 
@@ -178,7 +178,7 @@ export function ElementToolbar({
     diagramApi.getState().triggerChangeElementStyle({
       op: 'change-element-style',
       style,
-      targets
+      targets,
     })
   }
 
@@ -196,8 +196,8 @@ export function ElementToolbar({
         offset={2}
         styles={{
           item: {
-            padding: 'calc(var(--mantine-spacing-xs) / 1.5) var(--mantine-spacing-xs)'
-          }
+            padding: 'calc(var(--mantine-spacing-xs) / 1.5) var(--mantine-spacing-xs)',
+          },
         }}
         {...portalProps}
       >
@@ -243,7 +243,7 @@ export function ElementToolbar({
       />
       {hasGoToSource && modelRef && <GoToSourceButton elementId={modelRef} />}
       {hasGoToSource && !modelRef && deploymentRef && <GoToSourceButton deploymentId={deploymentRef} />}
-      {enableRelationshipBrowser && <BrowseRelationshipsButton elementId={element.id} />}
+      {enableRelationshipBrowser && !!modelRef && <BrowseRelationshipsButton elementId={modelRef} />}
     </Toolbar>
   )
 }
@@ -268,11 +268,11 @@ function GoToSourceButton(props: MergeExclusive<{ elementId: Fqn }, { deployment
           e.stopPropagation()
           if (props.elementId) {
             diagramApi.getState().onOpenSource?.({
-              element: props.elementId
+              element: props.elementId,
             })
           } else if (props.deploymentId) {
             diagramApi.getState().onOpenSource?.({
-              deployment: props.deploymentId
+              deployment: props.deploymentId,
             })
           }
         }}>
@@ -333,7 +333,7 @@ function ColorButton({
 function ColorSwatches({
   elementColor,
   onColorPreview,
-  onChange
+  onChange,
 }: {
   elementColor: ThemeColor
   onColorPreview: (color: ThemeColor | null) => void
@@ -408,7 +408,7 @@ function ColorSwatches({
 
 function BorderStyleOption({
   elementBorderStyle = 'dashed',
-  onChange
+  onChange,
 }: {
   elementBorderStyle: BorderStyle | undefined
   onChange: OnStyleChange
@@ -433,14 +433,14 @@ function BorderStyleOption({
         styles={{
           label: {
             paddingTop: 2,
-            paddingBottom: 2
-          }
+            paddingBottom: 2,
+          },
         }}
         data={[
           { label: 'Solid', value: 'solid' },
           { label: 'Dashed', value: 'dashed' },
           { label: 'Dotted', value: 'dotted' },
-          { label: 'None', value: 'none' }
+          { label: 'None', value: 'none' },
         ]}
       />
     </Box>
@@ -449,7 +449,7 @@ function BorderStyleOption({
 
 function OpacityOption({
   elementOpacity = 100,
-  onOpacityChange
+  onOpacityChange,
 }: {
   elementOpacity: number | undefined
   onOpacityChange: (opacity: number) => void
@@ -481,14 +481,14 @@ function BrowseRelationshipsButton({ elementId }: { elementId: Fqn }) {
         onClick={e => {
           e.stopPropagation()
           diagramApi.getState().openOverlay({
-            relationshipsOf: elementId
+            relationshipsOf: elementId,
           })
         }}>
         <IconTransform
           stroke={2}
           style={{
             width: '72%',
-            height: '72%'
+            height: '72%',
           }} />
       </ActionIcon>
     </Tooltip>

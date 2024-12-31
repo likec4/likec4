@@ -1,23 +1,23 @@
-import { DiagramNode, type ThemeColor } from '@likec4/core'
+import { type ThemeColor, DiagramNode } from '@likec4/core'
 import { Box, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { type NodeProps, Handle, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo, useState } from 'react'
 import { clamp } from 'remeda'
-import { useDiagramState } from '../../../hooks/useDiagramState'
-import { toDomPrecision } from '../../utils'
-import { ElementIcon } from '../shared/ElementIcon'
-import { CompoundToolbar } from '../shared/Toolbar'
-import { NodeVariants, useFramerAnimateVariants, type VariantKeys } from '../AnimateVariants'
-import * as css from './CompoundNode.css'
-import * as nodeCss from '../Node.css'
-import type { DiagramFlowTypes } from '../../types'
 import { ActionButtonBar } from '../../../controls/action-button-bar/ActionButtonBar'
 import { NavigateToButton, OpenDetailsButton } from '../../../controls/action-buttons/ActionButtons'
+import { useDiagramState } from '../../../hooks/useDiagramState'
+import type { DiagramFlowTypes } from '../../types'
+import { toDomPrecision } from '../../utils'
+import { type VariantKeys, NodeVariants, useFramerAnimateVariants } from '../AnimateVariants'
+import * as nodeCss from '../Node.css'
+import { ElementIcon } from '../shared/ElementIcon'
+import { CompoundToolbar } from '../shared/Toolbar'
+import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = NodeProps<DiagramFlowTypes.CompoundNode>
 
@@ -35,23 +35,23 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     dragging = false,
     data: {
       isViewGroup,
-      element
+      element,
     },
     width,
-    height
-  }
+    height,
+  },
 ) => {
   const modelRef = DiagramNode.modelRef(element)
   const { depth, style, color } = element
   const isNotViewGroup = !isViewGroup
   const opacity = clamp((style.opacity ?? 100) / 100, {
     min: 0,
-    max: 1
+    max: 1,
   })
   const MAX_TRANSPARENCY = 40
   const borderTransparency = clamp(MAX_TRANSPARENCY - opacity * MAX_TRANSPARENCY, {
     min: 0,
-    max: MAX_TRANSPARENCY
+    max: MAX_TRANSPARENCY,
   })
 
   const {
@@ -62,7 +62,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isNavigable,
     renderIcon,
     isInActiveOverlay,
-    enableElementDetails
+    enableElementDetails,
   } = useDiagramState(s => ({
     viewId: s.view.id,
     isEditable: s.readonly !== true,
@@ -73,9 +73,9 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isNavigable: isNotViewGroup && !!s.onNavigateTo && !!element.navigateTo,
     renderIcon: s.renderIcon,
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
-    enableElementDetails: isNotViewGroup && s.enableElementDetails
+    enableElementDetails: isNotViewGroup && s.enableElementDetails,
   }))
-  const _isToolbarVisible = isNotViewGroup && isEditable && import.meta.env.DEV && selected
+  const _isToolbarVisible = isNotViewGroup && selected && !dragging
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const w = toDomPrecision(width ?? element.width)
@@ -107,7 +107,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     animateVariant = animateVariants ?? animateVariant
   }
 
-  const nodeVariants = NodeVariants(w, h)
+  const nodeVariants = NodeVariants(w, h, {
+    selectedScaleBy: 0,
+    hoveredScaleBy: 0,
+    tapScaleBy: -10,
+  })
 
   const [previewColor, setPreviewColor] = useState<ThemeColor | null>(null)
 
@@ -115,14 +119,14 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     element,
     viewId,
     className: css.elementIcon,
-    renderIcon
+    renderIcon,
   })
 
   return (
     <>
-      {isToolbarVisible && (
+      {isEditable && (
         <CompoundToolbar
-          isVisible
+          isVisible={isToolbarVisible}
           element={element}
           align="start"
           onColorPreview={setPreviewColor} />
@@ -138,19 +142,17 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           className={clsx(
             css.container,
             'likec4-compound-node',
-            opacity < 1 && 'likec4-compound-transparent'
+            opacity < 1 && 'likec4-compound-transparent',
           )}
-
           initial={false}
           variants={nodeVariants}
           animate={animateVariant}
-          whileHover={selected ? "selected" : "hovered"}
+          whileHover={selected ? 'selected' : 'hovered'}
           {...isInteractive && animateHandlers}
-
           mod={{
             'animate-target': '',
             'compound-depth': depth,
-            'likec4-color': previewColor ?? color
+            'likec4-color': previewColor ?? color,
           }}
           tabIndex={-1}
         >
@@ -167,29 +169,29 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
             className={clsx(
               css.compoundBody,
               opacity < 1 && css.transparent,
-              'likec4-compound'
+              'likec4-compound',
             )}
             style={{
               ...(opacity < 1 && {
                 ...assignInlineVars({
                   [css.varBorderTransparency]: `${borderTransparency}%`,
-                  [css.varOpacity]: opacity.toFixed(2)
+                  [css.varOpacity]: opacity.toFixed(2),
                 }),
                 ...style.border === 'none'
                   ? {
-                    borderColor: 'transparent'
+                    borderColor: 'transparent',
                   }
                   : {
-                    borderStyle: style.border ?? 'dashed'
-                  }
-              })
+                    borderStyle: style.border ?? 'dashed',
+                  },
+              }),
             }}
           >
             <Box
               className={clsx(
                 css.compoundTitle,
                 isNavigable && css.withNavigation,
-                'likec4-compound-title'
+                'likec4-compound-title',
               )}>
               {elementIcon}
               <Text
@@ -201,7 +203,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
               </Text>
               {enableElementDetails && !!modelRef && (
                 <Box className={clsx(nodeCss.topRightBtnContainer)}>
-                  <ActionButtonBar shiftX='right'>
+                  <ActionButtonBar shiftX="right">
                     <OpenDetailsButton fqn={element.id} />
                   </ActionButtonBar>
                 </Box>
@@ -210,8 +212,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           </Box>
           {isNavigable && (
             <Box className={clsx(nodeCss.topLeftBtnContainer)}>
-              <ActionButtonBar shiftX='left'>
-                <NavigateToButton fqn={element.id} />
+              <ActionButtonBar shiftX="left">
+                <NavigateToButton xynodeId={id} />
               </ActionButtonBar>
             </Box>
           )}

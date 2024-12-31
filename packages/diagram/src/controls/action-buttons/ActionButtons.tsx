@@ -1,8 +1,8 @@
-import type { Fqn } from "@likec4/core"
-import { useCallback } from "react"
-import { useDiagramState, useDiagramStoreApi } from "../../hooks"
-import { ActionButton } from "./ActionButton"
-import { IconFileSymlink, IconId, IconTransform, IconZoomScan } from "@tabler/icons-react"
+import type { Fqn } from '@likec4/core'
+import { IconFileSymlink, IconId, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { useCallback } from 'react'
+import { useDiagramState, useDiagramStoreApi } from '../../hooks'
+import { ActionButton } from './ActionButton'
 
 export type NodeActionButtonProps = {
   fqn: Fqn
@@ -11,13 +11,12 @@ export type NodeActionButtonProps = {
 // Browse Relationships
 
 export const BrowseRelationshipsButton = ({
-  fqn
+  fqn,
 }: NodeActionButtonProps) => {
-
   const {
-    openOverlay
+    openOverlay,
   } = useDiagramState(s => ({
-    openOverlay: s.openOverlay
+    openOverlay: s.openOverlay,
   }))
 
   const onBrowseRelationships = useCallback((e: React.MouseEvent) => {
@@ -29,47 +28,44 @@ export const BrowseRelationshipsButton = ({
     <ActionButton
       onClick={onBrowseRelationships}
       IconComponent={IconTransform}
-      tooltipLabel='Browse relationships'
-      />
+      tooltipLabel="Browse relationships"
+    />
   )
 }
 
 // Navigate to
-
+// It triggers the onNavigateTo event from the xynode (node should have a navigateTo property)
+export type NavigateToButtonProps = {
+  xynodeId: string
+}
 export const NavigateToButton = ({
-  fqn
-}: NodeActionButtonProps) => {
-
-  const {
-    triggerOnNavigateTo
-  } = useDiagramState(s => ({
-    triggerOnNavigateTo: s.triggerOnNavigateTo
-  }))
+  xynodeId,
+}: NavigateToButtonProps) => {
+  const store = useDiagramStoreApi()
 
   const onNavigateTo = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    triggerOnNavigateTo(fqn, e)
-  }, [triggerOnNavigateTo, fqn])
+    store.getState().triggerOnNavigateTo(xynodeId, e)
+  }, [store, xynodeId])
 
   return (
     <ActionButton
       onClick={onNavigateTo}
       IconComponent={IconZoomScan}
-      tooltipLabel='Open scoped view'
-      />
+      tooltipLabel="Open scoped view"
+    />
   )
 }
 
 // Open details
 
 export const OpenDetailsButton = ({
-  fqn
+  fqn,
 }: NodeActionButtonProps) => {
-
   const {
-    openOverlay
+    openOverlay,
   } = useDiagramState(s => ({
-    openOverlay: s.openOverlay
+    openOverlay: s.openOverlay,
   }))
 
   const onOpenDetails = useCallback((e: React.MouseEvent) => {
@@ -81,31 +77,30 @@ export const OpenDetailsButton = ({
     <ActionButton
       onClick={onOpenDetails}
       IconComponent={IconId}
-      tooltipLabel='Open details'
-      />
+      tooltipLabel="Open details"
+    />
   )
 }
 
 // Open element source
 
 export const OpenSourceButton = ({
-  fqn
+  fqn,
 }: NodeActionButtonProps) => {
-
   const diagramApi = useDiagramStoreApi()
 
   const onOpenSource = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     diagramApi.getState().onOpenSource?.({
-      element: fqn
+      element: fqn,
     })
-  }, [diagramApi.getState(), fqn])
+  }, [diagramApi, fqn])
 
   return (
     <ActionButton
       onClick={onOpenSource}
       IconComponent={IconFileSymlink}
-      tooltipLabel='Open source'
-      />
+      tooltipLabel="Open source"
+    />
   )
 }
