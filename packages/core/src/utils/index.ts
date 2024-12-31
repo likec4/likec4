@@ -29,7 +29,10 @@ export {
   sortParentsFirst,
 } from './fqn'
 
-export * from './getOrCreate'
+export {
+  getOrCreate,
+} from './getOrCreate'
+
 export {
   hasAtLeast,
   isNonEmptyArray,
@@ -39,6 +42,7 @@ export {
   ifilter,
   iflat,
   imap,
+  ireduce,
   isIterable,
   isome,
   iunique,

@@ -25,7 +25,7 @@ export function ifilter<T>(
  */
 export function ifilter<T, S extends T>(
   iterable: Iterable<T>,
-  predicate: (v: T) => v is T,
+  predicate: (v: T) => v is S,
 ): IteratorLike<S>
 export function ifilter<T>(
   iterable: Iterable<T>,

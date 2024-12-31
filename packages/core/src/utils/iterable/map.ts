@@ -2,7 +2,7 @@ import { isFunction } from 'remeda'
 import { invariant } from '../../errors'
 import type { IteratorLike } from '../../types'
 
-type MapFunction<S, T> = (item: S) => T
+type MapFunction<T, S> = (item: T) => S
 
 /**
  * Maps an iterable using a mapper function.
