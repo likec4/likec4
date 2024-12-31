@@ -60,7 +60,7 @@
     "@types/react-dom": "18.3.1",
     "consola": "^3.3.3",
     "esbuild": "^0.24.2",
-    "execa": "^9.3.1",
+    "execa": "^9.5.2",
     "glob": "^11.0.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",

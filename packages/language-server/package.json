@@ -106,7 +106,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.7",
     "@vitest/coverage-v8": "^2.1.8",
-    "execa": "^9.3.1",
+    "execa": "^9.5.2",
     "langium-cli": "3.3.0",
     "natural-compare-lite": "^1.4.0",
     "npm-run-all2": "^7.0.1",
