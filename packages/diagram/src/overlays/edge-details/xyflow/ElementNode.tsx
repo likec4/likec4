@@ -1,23 +1,16 @@
-import { ActionIcon, Box, Group } from '@mantine/core'
-import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { Box } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
-import { stopPropagation } from '../../../xyflow/utils'
-import { useOverlayDialog } from '../../OverlayContext'
 import type { SharedFlowTypes } from '../../shared/xyflow/_types'
 import * as css from './styles.css'
+import * as nodeCss from '../../../xyflow/nodes/Node.css'
 import { Text } from '../../../controls/Text'
-
-const Action = ActionIcon.withProps({
-  className: 'nodrag nopan ' + css.navigateBtn,
-  radius: 'md',
-  role: 'button',
-  onDoubleClick: stopPropagation,
-  onPointerDownCapture: stopPropagation
-})
+import { NodeVariants, useFramerAnimateVariants } from '../../../xyflow/nodes/AnimateVariants'
+import { ActionButtonBar } from '../../../controls/action-button-bar/ActionButtonBar'
+import { BrowseRelationshipsButton, NavigateToButton, OpenSourceButton } from '../../../controls/action-buttons/ActionButtons'
 
 type ElementNodeProps = NodeProps<SharedFlowTypes.ElementNode>
 
@@ -25,29 +18,30 @@ function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
     enableRelationshipBrowser: s.enableRelationshipBrowser,
-    onNavigateTo: s.onNavigateTo,
     onOpenSource: s.onOpenSource
   }
 }
 
 export function ElementNode({
   data: {
+    fqn,
     element,
     ports,
     navigateTo,
-    ...data
+    dimmed
   },
-  selectable = true,
-  width: w = 100,
-  height: h = 100
+  width = 100,
+  height = 100
 }: ElementNodeProps) {
-  const overlay = useOverlayDialog()
   const {
     currentViewId,
-    onNavigateTo,
     onOpenSource,
     enableRelationshipBrowser
   } = useDiagramState(selector)
+
+  const nodeVariants = NodeVariants(width, height)
+  const [, animateHandlers] = useFramerAnimateVariants()
+
   return (
     <>
       <m.div
@@ -57,33 +51,23 @@ export function ElementNode({
         ])}
         data-likec4-color={element.color}
         data-likec4-shape={element.shape}
-        animate={{
-          opacity: data.dimmed ? 0.15 : 1,
-          transition: {
-            delay: data.dimmed === true ? .4 : 0
-          }
-        }}
-        {...(selectable && {
-          whileHover: {
-            scale: 1.045,
-            transition: {
-              delay: 0.15
-            }
-          },
-          whileTap: {
-            scale: 0.97
-          }
-        })}
+
+        initial={false}
+        variants={nodeVariants}
+        animate={dimmed ? "dimmed" : "idle"}
+        whileHover="hovered"
+        whileTap="tap"
+        {...animateHandlers}
       >
         <svg
           className={clsx(
             css.cssShapeSvg
           )}
-          viewBox={`0 0 ${w} ${h}`}
-          width={w}
-          height={h}
+          viewBox={`0 0 ${width} ${height}`}
+          width={width}
+          height={height}
         >
-          <ElementShapeSvg shape={element.shape} w={w} h={h} />
+          <ElementShapeSvg shape={element.shape} w={width} h={height} />
         </svg>
         <Box className={css.elementNodeContent}>
           <Text className={css.elementNodeTitle} lineClamp={2}>{element.title}</Text>
@@ -91,39 +75,19 @@ export function ElementNode({
             <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
           )}
         </Box>
-        <Group className={css.navigateBtnBox}>
-          {navigateTo && onNavigateTo && navigateTo !== currentViewId && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.close(() => onNavigateTo(navigateTo))
-              }}>
-              <IconZoomScan stroke={1.8} style={{ width: '75%' }} />
-            </Action>
-          )}
-          {enableRelationshipBrowser && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                overlay.openOverlay({
-                  relationshipsOf: data.fqn
-                })
-              }}>
-              <IconTransform stroke={1.8} style={{ width: '72%' }} />
-            </Action>
-          )}
-          {onOpenSource && (
-            <Action
-              onClick={(event) => {
-                event.stopPropagation()
-                onOpenSource({
-                  element: data.fqn
-                })
-              }}>
-              <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
-            </Action>
-          )}
-        </Group>
+        <Box className={clsx(nodeCss.bottomBtnContainer)}>
+          <ActionButtonBar shiftY='bottom' {...animateHandlers}>
+            {navigateTo && navigateTo !== currentViewId && (
+              <NavigateToButton viewId={navigateTo} />
+            )}
+            {enableRelationshipBrowser && (
+              <BrowseRelationshipsButton fqn={fqn} />
+            )}
+            {onOpenSource && (
+              <OpenSourceButton fqn={fqn} />
+            )}
+          </ActionButtonBar>
+        </Box>
       </m.div>
       {ports.out.map((id, i) => (
         <Handle
@@ -133,7 +97,7 @@ export function ElementNode({
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
+            top: `${15 + (i + 1) * ((height - 30) / (ports.out.length + 1))}px`
           }} />
       ))}
       {ports.in.map((id, i) => (
@@ -144,7 +108,7 @@ export function ElementNode({
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
+            top: `${15 + (i + 1) * ((height - 30) / (ports.in.length + 1))}px`
           }} />
       ))}
     </>
