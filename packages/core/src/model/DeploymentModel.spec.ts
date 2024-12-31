@@ -51,6 +51,7 @@ describe('LikeC4DeploymentModel', () => {
           $include('*'),
         ),
         deploymentView('prod').with(
+          $include('*'),
           $include('prod.**'),
         ),
       )
@@ -84,5 +85,14 @@ describe('LikeC4DeploymentModel', () => {
       d.instance('prod.z1.ui'),
       d.instance('prod.z2.ui'),
     ])
+  })
+
+  it('views with instance', () => {
+    const [view] = [...model.deployment.instance('customer.customer').views()]
+    expect(view).toBeDefined()
+    // View includes parent of the instance, not the instance itself
+    // But still returned as a view of the instance
+    expect(view!.includesDeployment('customer')).toBe(true)
+    expect(view!.includesDeployment('customer.customer')).toBe(false)
   })
 })

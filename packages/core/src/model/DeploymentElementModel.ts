@@ -163,6 +163,9 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
    */
   public *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {
     for (const view of this.$model.views()) {
+      if (!view.isDeploymentView()) {
+        continue
+      }
       if (view.includesDeployment(this.id)) {
         yield view
       }
@@ -385,6 +388,29 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
   }
   public override incomingModelRelationships(): RelationshipsIterator<M> {
     return this.element.incoming()
+  }
+
+  /**
+   * Iterate over all views that include this instance.
+   * (Some views may include the parent deployment node instead of the instance.)
+   */
+  public override *views(): IteratorLike<LikeC4ViewModel<M, ComputedDeploymentView>> {
+    for (const view of this.$model.views()) {
+      if (!view.isDeploymentView()) {
+        continue
+      }
+      if (view.includesDeployment(this.id)) {
+        yield view
+        continue
+      }
+      // check if the view includes parent referecing this element
+      if (
+        view.includesDeployment(this.parent.id)
+        && this.parent.onlyOneInstance()
+      ) {
+        yield view
+      }
+    }
   }
 }
 
