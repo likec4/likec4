@@ -32,6 +32,7 @@ export default defineConfig({
   updateSnapshots: 'missing',
   use: {
     browserName: 'chromium',
+    colorScheme: 'light',
     trace: 'retain-on-first-failure',
   },
 
