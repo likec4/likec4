@@ -678,8 +678,8 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 add(b)
                 const { __fqn } = b
                 try {
-                  b.__fqn = (child) => `${__fqn(id)}.${child}` as Fqn,
-                    ops.reduce((b, op) => op(b), b as any as DeploymentModelBuilder<T>) as any
+                  b.__fqn = (child) => `${__fqn(id)}.${child}` as Fqn
+                  ops.reduce((b, op) => op(b), b as any as DeploymentModelBuilder<T>) as any
                 } finally {
                   b.__fqn = __fqn
                 }
