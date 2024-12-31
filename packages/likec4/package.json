@@ -155,7 +155,7 @@
     "merge-error-cause": "^5.0.0",
     "mkdirp": "^3.0.1",
     "nanostores": "0.11.3",
-    "npm-run-all2": "^7.0.1",
+    "npm-run-all2": "^7.0.2",
     "p-limit": "^6.1.0",
     "package-up": "^5.0.0",
     "postcss": "^8.4.49",

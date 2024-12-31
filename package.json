@@ -41,7 +41,7 @@
     "global": "^4.4.0",
     "husky": "^8.0.3",
     "lint-staged": "15.2.11",
-    "npm-run-all2": "^7.0.1",
+    "npm-run-all2": "^7.0.2",
     "shipjs": "^0.27.0",
     "tsx": "~4.19.2",
     "turbo": "^2.3.3",
