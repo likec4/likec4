@@ -1981,7 +1981,7 @@ __metadata:
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
-    astro: "npm:~4.16.14"
+    astro: "npm:~4.16.18"
     astro-og-canvas: "npm:^0.5.5"
     likec4: "workspace:*"
     npm-run-all2: "npm:^7.0.1"
@@ -4666,7 +4666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro@npm:~4.16.14":
+"astro@npm:~4.16.18":
   version: 4.16.18
   resolution: "astro@npm:4.16.18"
   dependencies:
