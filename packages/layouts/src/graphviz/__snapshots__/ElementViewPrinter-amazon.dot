@@ -77,7 +77,7 @@ digraph {
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
-    label = <<FONT POINT-SIZE="14">persists artifacts</FONT>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
     dir = "both";

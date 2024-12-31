@@ -135,12 +135,12 @@ digraph {
   "client" -> "ui" [
     likec4_id = "7dqxgw";
     style = "dashed";
-    label = <<FONT POINT-SIZE="14">uses</FONT>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">uses</FONT></TD></TR></TABLE>>;
   ];
   "client" -> "s2_ui" [
     likec4_id = "7drqs3";
     style = "dashed";
-    label = <<FONT POINT-SIZE="14">uses</FONT>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">uses</FONT></TD></TR></TABLE>>;
   ];
   "ui" -> "api" [
     likec4_id = "1tp0394";

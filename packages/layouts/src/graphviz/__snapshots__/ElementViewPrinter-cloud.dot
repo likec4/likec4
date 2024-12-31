@@ -94,23 +94,23 @@ digraph {
   "customer" -> "frontend" [
     likec4_id = "customer:cloud.frontend";
     style = "dashed";
-    label = <<FONT POINT-SIZE="14">opens in browser</FONT>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "support" -> "frontend" [
     likec4_id = "support:cloud.frontend";
     style = "dashed";
-    label = <<FONT POINT-SIZE="14">manages</FONT>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
   ];
   "frontend" -> "backend" [
     likec4_id = "cloud.frontend:cloud.backend";
     style = "dashed";
-    label = <<FONT POINT-SIZE="14"><B>[...]</B></FONT>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
     minlen = 0;
   ];
   "backend" -> "amazon" [
     likec4_id = "cloud.backend:amazon";
     style = "dashed";
-    label = <<FONT POINT-SIZE="14">persists artifacts</FONT>>;
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
     dir = "both";

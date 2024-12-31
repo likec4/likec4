@@ -172,10 +172,6 @@ export function edgelabel({ label, technology }: ComputedEdge) {
   if (lines.length === 0) {
     return null
   }
-  const oneline = only(lines)
-  if (oneline && !oneline.includes('<BR/>')) {
-    return `<${oneline}>`
-  }
   const rows = lines.map(line => `<TR><TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD></TR>`).join('')
   return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}>${rows}</TABLE>>`
 }
