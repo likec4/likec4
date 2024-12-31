@@ -21,19 +21,12 @@ import type { Connection } from '../Connection'
 export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
   implements Connection<DeploymentElementModel<M>, M['EdgeId']>
 {
-  /**
-   * Common ancestor of the source and target elements.
-   * Represents the boundary of the connection.
-   */
-  readonly boundary: DeploymentNodeModel<M> | null
-
   constructor(
     public readonly source: DeploymentNodeModel<M> | DeployedInstanceModel<M>,
     public readonly target: DeploymentNodeModel<M> | DeployedInstanceModel<M>,
     public readonly relations: RelationshipsAccum<M>,
   ) {
     this.id = stringHash(`deployment:${source.id}:${target.id}`) as M['EdgeId']
-    this.boundary = source.commonAncestor(target)
   }
 
   readonly id: M['EdgeId']
@@ -44,6 +37,16 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
    */
   get expression(): string {
     return `${this.source.id} -> ${this.target.id}`
+  }
+
+  private _boundary: DeploymentNodeModel<M> | null | undefined
+  /**
+   * Common ancestor of the source and target elements.
+   * Represents the boundary of the connection.
+   */
+  get boundary(): DeploymentNodeModel<M> | null {
+    this._boundary ??= this.source.commonAncestor(this.target)
+    return this._boundary
   }
 
   nonEmpty(): boolean {

@@ -20,19 +20,21 @@ import { findConnection } from './find'
 export class ConnectionModel<M extends AnyAux = AnyAux> implements Connection<ElementModel<M>, M['EdgeId']> {
   public readonly id: M['EdgeId']
 
-  /**
-   * Common ancestor of the source and target elements.
-   * Represents the boundary of the connection.
-   */
-  public readonly boundary: ElementModel<M> | null
-
   constructor(
     public readonly source: ElementModel<M>,
     public readonly target: ElementModel<M>,
     public readonly relations: ReadonlySet<RelationshipModel<M>> = new Set(),
   ) {
     this.id = stringHash(`model:${source.id}:${target.id}`) as M['EdgeId']
-    this.boundary = source.commonAncestor(target)
+  }
+
+  private _boundary: ElementModel<M> | null | undefined
+  /**
+   * Common ancestor of the source and target elements.
+   * Represents the boundary of the connection.
+   */
+  get boundary(): ElementModel<M> | null {
+    return this._boundary ??= this.source.commonAncestor(this.target)
   }
 
   /**

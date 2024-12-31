@@ -119,25 +119,22 @@ export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, anothe
 }
 
 export function commonAncestor<E extends string>(first: E, second: E): E | null {
-  const parentA = parentFqn(first)
-  const parentB = parentFqn(second)
-  if (parentA === parentB) {
-    return parentA
-  }
-  if (!parentA || !parentB) {
+  const a = first.split('.')
+  if (a.length < 2) {
     return null
   }
-
-  const a = first.split('.')
   const b = second.split('.')
-  let ancestor: E | null = null
-
-  while (a.length > 1 && b.length > 1 && !!a[0] && a[0] === b[0]) {
-    ancestor = (ancestor ? `${ancestor}.${a[0]}` : a[0]) as E
-    a.shift()
-    b.shift()
+  if (b.length < 2) {
+    return null
   }
-  return ancestor
+  let ancestor = [] as string[]
+  for (let i = 0; i < Math.min(a.length, b.length) - 1 && a[i] === b[i]; i++) {
+    ancestor.push(a[i]!)
+  }
+  if (ancestor.length === 0) {
+    return null
+  }
+  return ancestor.join('.') as E
 }
 
 /**
