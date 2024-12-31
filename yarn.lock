@@ -2101,8 +2101,8 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.16.1"
     "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@xyflow/react": "npm:12.3.5"
-    "@xyflow/system": "npm:0.0.46"
+    "@xyflow/react": "npm:12.3.6"
+    "@xyflow/system": "npm:0.0.47"
     bezier-js: "npm:^6.1.4"
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
@@ -4494,23 +4494,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xyflow/react@npm:12.3.5":
-  version: 12.3.5
-  resolution: "@xyflow/react@npm:12.3.5"
+"@xyflow/react@npm:12.3.6":
+  version: 12.3.6
+  resolution: "@xyflow/react@npm:12.3.6"
   dependencies:
-    "@xyflow/system": "npm:0.0.46"
+    "@xyflow/system": "npm:0.0.47"
     classcat: "npm:^5.0.3"
     zustand: "npm:^4.4.0"
   peerDependencies:
     react: ">=17"
     react-dom: ">=17"
-  checksum: 10c0/f4eb2f8ed31454aa2bbc7fef3b3e9592093cbf238ca7ba572d002a0bd5fac267d488b6d560d173ee610c83e02ca0e9505c35083bdedc9890c1a65f52297f8c1c
+  checksum: 10c0/eebf6ad2bc2dc2a6216c37c5cea9d31cb6c7871925de86197036f9d6e51e62f14639bb0b2a89e95f5311380d189b1d1176b5f3d479a66ff081f8a35d653fde07
   languageName: node
   linkType: hard
 
-"@xyflow/system@npm:0.0.46":
-  version: 0.0.46
-  resolution: "@xyflow/system@npm:0.0.46"
+"@xyflow/system@npm:0.0.47":
+  version: 0.0.47
+  resolution: "@xyflow/system@npm:0.0.47"
   dependencies:
     "@types/d3-drag": "npm:^3.0.7"
     "@types/d3-selection": "npm:^3.0.10"
@@ -4519,7 +4519,7 @@ __metadata:
     d3-drag: "npm:^3.0.0"
     d3-selection: "npm:^3.0.0"
     d3-zoom: "npm:^3.0.0"
-  checksum: 10c0/973886c03a389e96d504ef6e8ff350949688d7a82f159549ac2a38f7f11ebed2ce5b65b52c70bd7d9f344247c913dc751c79b737953d8759d7d13e98a5ee512d
+  checksum: 10c0/5ed03a557f0d7dac880cec1a79c6f7c77b941028dcd63da65a6f5e76ab06ec6d4b19d6cab2944fbc9fc7d4557134a35fef2b05e5a6f9696534436e4d7747c6d3
   languageName: node
   linkType: hard
 
@@ -8993,8 +8993,8 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vanilla-extract/vite-plugin": "npm:^4.0.18"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
-    "@xyflow/react": "npm:12.3.5"
-    "@xyflow/system": "npm:0.0.46"
+    "@xyflow/react": "npm:12.3.6"
+    "@xyflow/system": "npm:0.0.47"
     autoprefixer: "npm:^10.4.20"
     classnames: "npm:^2.5.1"
     clsx: "npm:^2.1.1"
