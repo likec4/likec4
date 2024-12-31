@@ -7,6 +7,7 @@ export default defineBuildConfig({
   rollup: {
     inlineDependencies: true,
     output: {
+      hoistTransitiveImports: false,
       chunkFileNames: 'shared/[name].[hash].js',
       entryFileNames: '[name].js',
     },

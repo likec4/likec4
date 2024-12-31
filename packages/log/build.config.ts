@@ -40,9 +40,13 @@ export default defineBuildConfig([
           /\.ts$/,
         ],
       },
+      output: {
+        exports: 'named',
+        hoistTransitiveImports: false,
+      },
       resolve: {
         browser: false,
-        exportConditions: ['node'],
+        exportConditions: ['node', 'production'],
       },
       inlineDependencies: true,
     },

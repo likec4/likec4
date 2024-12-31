@@ -7,7 +7,6 @@ import { resolve } from 'node:path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
-import { modules } from '../src/vite/plugin'
 import { amIExecuted } from './_utils'
 
 export async function buildWebcomponentBundle(_isDev = false) {
@@ -28,15 +27,15 @@ export async function buildWebcomponentBundle(_isDev = false) {
       alias: {
         '@likec4/core': resolve('../core/src'),
         '@likec4/diagram': resolve('../diagram/src'),
-        'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
-      }
+        'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
+      },
     },
     clearScreen: false,
     mode: 'production',
     define: {
       __USE_STYLE_BUNDLE__: 'true',
       __USE_HASH_HISTORY__: 'false',
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': '"production"',
     },
     esbuild: {
       jsxDev: false,
@@ -47,9 +46,9 @@ export async function buildWebcomponentBundle(_isDev = false) {
         compilerOptions: {
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
-          jsx: 'react-jsx'
-        }
-      }
+          jsx: 'react-jsx',
+        },
+      },
     },
     build: {
       outDir,
@@ -66,23 +65,23 @@ export async function buildWebcomponentBundle(_isDev = false) {
         fileName(_format, _entryName) {
           return outputFilename
         },
-        formats: ['es']
+        formats: ['es'],
       },
       commonjsOptions: {
         defaultIsModuleExports: 'auto',
         requireReturnsDefault: 'auto',
         extensions: ['.js', '.mjs'],
         transformMixedEsModules: true,
-        ignoreTryCatch: 'remove'
+        ignoreTryCatch: 'remove',
       },
       rollupOptions: {
         treeshake: {
-          preset: 'safest'
+          preset: 'safest',
         },
         output: {
           // hoistTransitiveImports: false,
           compact: true,
-          interop: 'auto'
+          interop: 'auto',
         },
         external: [
           'react',
@@ -92,27 +91,27 @@ export async function buildWebcomponentBundle(_isDev = false) {
           'react-dom/client',
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
-          ...modules.map(m => m.id)
+          /virtual\:likec4/,
         ],
         plugins: [
-          shadowStyle()
-        ]
-      }
+          shadowStyle(),
+        ],
+      },
     },
     css: {
       postcss: {
         plugins: [
           autoprefixer(),
-          postcssPresetMantine()
-        ]
-      }
+          postcssPresetMantine(),
+        ],
+      },
     },
     plugins: [
       react({}),
       vanillaExtractPlugin({
-        identifiers: 'short'
-      })
-    ]
+        identifiers: 'short',
+      }),
+    ],
   })
 
   const outputFilepath = resolve(outDir, outputFilename)
@@ -120,7 +119,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
   let bundledJs = await readFile(outputFilepath, 'utf-8')
   if (bundledJs.includes('@emotion/is-prop-valid')) {
     throw new Error(
-      `${outputFilepath} should not import "@emotion/is-prop-valid"`
+      `${outputFilepath} should not import "@emotion/is-prop-valid"`,
     )
   }
 

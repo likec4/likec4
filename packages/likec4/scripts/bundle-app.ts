@@ -8,7 +8,7 @@ import process from 'node:process'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
-import { modules } from '../src/vite/plugin'
+
 import { amIExecuted } from './_utils'
 
 export async function bundleApp() {
@@ -84,7 +84,7 @@ export async function bundleApp() {
           preset: 'safest',
         },
         output: {
-          // hoistTransitiveImports: false,
+          hoistTransitiveImports: false,
           interop: 'auto',
           format: 'esm',
           entryFileNames: '[name].js',
@@ -116,7 +116,7 @@ export async function bundleApp() {
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           resolve(cwd, 'app/src/const.js'),
-          ...modules.map(m => m.id),
+          /virtual\:likec4/,
         ],
       },
     },
