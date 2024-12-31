@@ -1,11 +1,13 @@
 import DefaultMap from 'mnemonist/default-map'
-import { pipe, sort, values } from 'remeda'
+import { mapValues, pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
+import { computeView, unsafeComputeView } from '../compute-view'
+import type { ComputeViewResult } from '../compute-view/compute-view'
 import { invariant, nonNullable } from '../errors'
-import type { ComputedView, DiagramView } from '../types'
+import type { ComputedView, DiagramView, IteratorLike, LikeC4View, ModelGlobals } from '../types'
 import type { Element } from '../types/element'
 import { type Tag as C4Tag } from '../types/element'
-import type { AnyLikeC4Model, ParsedLikeC4ModelDump } from '../types/model'
+import type { AnyParsedLikeC4Model, GenericLikeC4Model, LikeC4ModelDump } from '../types/model'
 import type { ModelRelation } from '../types/relation'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
@@ -13,19 +15,19 @@ import type {
   DeployedInstanceModel,
   DeploymentElementModel,
   DeploymentNodeModel,
-  DeploymentRelationModel
+  DeploymentRelationModel,
 } from './DeploymentElementModel'
 import { LikeC4DeploymentModel } from './DeploymentModel'
-import { ElementModel, type ElementsIterator } from './ElementModel'
-import { RelationshipModel, type RelationshipsIterator } from './RelationModel'
-import { type AnyAux, type Aux, getId, type IncomingFilter, type OutgoingFilter } from './types'
+import { type ElementsIterator, ElementModel } from './ElementModel'
+import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
+import { type AnyAux, type Aux, type IncomingFilter, type OutgoingFilter, getId } from './types'
 import { EdgeModel } from './view/EdgeModel'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   /**
-   * Only available in compile time
+   * Only available in compile tim
    */
   readonly Aux!: M
 
@@ -48,7 +50,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   // Relationships inside the element, among descendants
   readonly #internal = new DefaultMap<M['Element'], Set<RelationshipModel<M>>>(() => new Set())
 
-  readonly #views = new Map<M['ViewIdLiteral'], LikeC4ViewModel<M>>()
+  readonly #views = new Map<M['ViewId'], LikeC4ViewModel<M>>()
 
   readonly #allTags = new DefaultMap<C4Tag, Set<ElementModel<M> | RelationshipModel<M> | LikeC4ViewModel<M>>>(() =>
     new Set()
@@ -56,21 +58,62 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 
   public readonly deployment: LikeC4DeploymentModel<M>
 
-  static create<const M extends AnyLikeC4Model>(model: M) {
-    type T = Aux.FromModel<M>
-    return new LikeC4Model<T>(model as any)
+  /**
+   * Computes views from the parsed model
+   * Creates a new LikeC4Model instance from a parsed model.
+   *
+   * May throw an error if the model is invalid.
+   *
+   * @typeParam M - The type of the parsed LikeC4 model, must extend ParsedLikeC4Model
+   * @param parsed - The parsed LikeC4 model to compute from
+   * @returns A new LikeC4Model instance with computed relationships and structure
+   */
+  static compute<const M extends AnyParsedLikeC4Model>(parsed: M): LikeC4Model<Aux.FromParsed<M>> {
+    let { views, ...rest } = parsed as Omit<M, '__'>
+    const model = new LikeC4Model({ ...rest, views: {} })
+    return new LikeC4Model({
+      ...rest,
+      views: mapValues(views, view => unsafeComputeView(view as LikeC4View, model)),
+    } as any)
   }
 
   /**
-   * This method is supposed to be used only in dumps
+   * Creates a function that computes a view using the data from the model.
+   *
+   * @example
+   * const compute = LikeC4Model.makeCompute(parsedModel);
+   * const result = compute(viewSource);
    */
-  static fromDump<const M extends ParsedLikeC4ModelDump>(dump: M) {
-    type T = Aux.FromDump<M>
-    return new LikeC4Model<T>(dump as any)
+  static makeCompute<M extends AnyParsedLikeC4Model>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
+    let { views, ...rest } = parsed as Omit<M, '__'>
+    const model = new LikeC4Model(structuredClone({ ...rest, views: {} }))
+    return (viewsource) => computeView(viewsource, model)
+  }
+
+  /**
+   * Creates a new LikeC4Model instance from the provided model data.
+   *
+   * @typeParam M - Type parameter constrained to AnyLikeC4Model
+   * @param model - The model data to create a LikeC4Model from
+   * @returns A new LikeC4Model instance with the type derived from the input model
+   */
+  static create<const M extends GenericLikeC4Model>(model: M): LikeC4Model<Aux.FromModel<M>> {
+    return new LikeC4Model(model as any)
+  }
+
+  /**
+   * Creates a new LikeC4Model instance from a model dump.
+   *
+   * @typeParam M - A constant type parameter extending LikeC4ModelDump
+   * @param dump - The model dump to create the instance from
+   * @returns A new LikeC4Model instance with types inferred from the dump
+   */
+  static fromDump<const M extends LikeC4ModelDump>(dump: M): LikeC4Model<Aux.FromDump<M>> {
+    return new LikeC4Model(dump as any)
   }
 
   private constructor(
-    public readonly $model: M['Model']
+    public readonly $model: M['Model'],
   ) {
     for (const element of values($model.elements)) {
       const el = this.addElement(element)
@@ -87,10 +130,10 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     this.deployment = new LikeC4DeploymentModel(this, $model.deployments)
     const views = pipe(
       values($model.views),
-      sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled'))
+      sort((a, b) => compareNatural(a.title ?? 'untitled', b.title ?? 'untitled')),
     )
     for (const view of views) {
-      const vm = new LikeC4ViewModel(this, view as M['ViewType'])
+      const vm = new LikeC4ViewModel(this, Object.freeze(view as M['ViewType']))
       this.#views.set(view.id, vm)
       for (const tag of vm.tags) {
         this.#allTags.get(tag).add(vm)
@@ -110,7 +153,6 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return nonNullable(this.findElement(id), `Element ${getId(el)} not found`)
   }
   public findElement(el: LiteralUnion<M['Element'], string>): ElementModel<M> | null {
-    // const id = getId(el) as C4Fqn
     return this.#elements.get(el) ?? null
   }
 
@@ -144,11 +186,11 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   public relationship(id: M['RelationId'], type: 'deployment'): DeploymentRelationModel<M>
   public relationship(
     id: M['RelationId'],
-    type?: 'model' | 'deployment'
+    type?: 'model' | 'deployment',
   ): RelationshipModel<M> | DeploymentRelationModel<M>
   public relationship(
     id: M['RelationId'],
-    type: 'model' | 'deployment' | undefined
+    type: 'model' | 'deployment' | undefined,
   ): RelationshipModel<M> | DeploymentRelationModel<M> {
     if (type === 'deployment') {
       return this.deployment.relationship(id)
@@ -164,15 +206,15 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   public findRelationship(id: LiteralUnion<M['RelationId'], string>, type: 'model'): RelationshipModel<M> | null
   public findRelationship(
     id: LiteralUnion<M['RelationId'], string>,
-    type: 'deployment'
+    type: 'deployment',
   ): DeploymentRelationModel<M> | null
   public findRelationship(
     id: LiteralUnion<M['RelationId'], string>,
-    type?: 'model' | 'deployment'
+    type?: 'model' | 'deployment',
   ): RelationshipModel<M> | DeploymentRelationModel<M> | null
   public findRelationship(
     id: LiteralUnion<M['RelationId'], string>,
-    type: 'model' | 'deployment' | undefined
+    type: 'model' | 'deployment' | undefined,
   ): RelationshipModel<M> | DeploymentRelationModel<M> | null {
     if (type === 'deployment') {
       return this.deployment.findRelationship(id)
@@ -187,18 +229,18 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   /**
    * Returns all views in the model.
    */
-  public views() {
+  public views(): IteratorLike<LikeC4ViewModel<M>> {
     return this.#views.values()
   }
 
   /**
    * Returns a specific view by its ID.
    */
-  public view(viewId: M['ViewIdLiteral']): LikeC4ViewModel<M> {
-    return nonNullable(this.#views.get(viewId), `View ${viewId} not found`)
+  public view(viewId: M['View']): LikeC4ViewModel<M> {
+    return nonNullable(this.#views.get(viewId as any), `View ${viewId} not found`)
   }
-  public findView(viewId: LiteralUnion<M['ViewId'], string>): LikeC4ViewModel<M> {
-    return nonNullable(this.#views.get(viewId), `View ${viewId} not found`)
+  public findView(viewId: M['View']): LikeC4ViewModel<M> {
+    return nonNullable(this.#views.get(viewId as M['ViewId']), `View ${viewId} not found`)
   }
 
   /**
@@ -265,7 +307,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    */
   public *incoming(
     element: M['ElementOrFqn'],
-    filter: IncomingFilter = 'all'
+    filter: IncomingFilter = 'all',
   ): RelationshipsIterator<M> {
     const id = getId(element)
     for (const rel of this.#incoming.get(id)) {
@@ -286,7 +328,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    */
   public *outgoing(
     element: M['ElementOrFqn'],
-    filter: OutgoingFilter = 'all'
+    filter: OutgoingFilter = 'all',
   ): RelationshipsIterator<M> {
     const id = getId(element)
     for (const rel of this.#outgoing.get(id)) {
@@ -301,11 +343,25 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     return
   }
 
+  public globals(): ModelGlobals {
+    return {
+      predicates: {
+        ...this.$model.globals?.predicates,
+      },
+      dynamicPredicates: {
+        ...this.$model.globals?.dynamicPredicates,
+      },
+      styles: {
+        ...this.$model.globals?.styles,
+      },
+    }
+  }
+
   private addElement(element: Element) {
     if (this.#elements.has(element.id)) {
       throw new Error(`Element ${element.id} already exists`)
     }
-    const el = new ElementModel(this, element)
+    const el = new ElementModel(this, Object.freeze(structuredClone(element)))
     this.#elements.set(el.id, el)
     const parentId = parentFqn(el.id)
     if (parentId) {
@@ -324,7 +380,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     }
     const rel = new RelationshipModel(
       this,
-      relation
+      Object.freeze(structuredClone(relation)),
     )
     const { source, target } = rel
     this.#relations.set(rel.id, rel)
@@ -374,17 +430,17 @@ export namespace LikeC4Model {
 
   export type View<
     M extends AnyAux = Any,
-    V extends ComputedView | DiagramView = M['ViewType']
+    V extends ComputedView | DiagramView = M['ViewType'],
   > = LikeC4ViewModel<M, V>
 
   export type Node<
     M extends AnyAux = Any,
-    V extends ComputedView | DiagramView = M['ViewType']
+    V extends ComputedView | DiagramView = M['ViewType'],
   > = NodeModel<M, V>
 
   export type Edge<
     M extends AnyAux = Any,
-    V extends ComputedView | DiagramView = M['ViewType']
+    V extends ComputedView | DiagramView = M['ViewType'],
   > = EdgeModel<M, V>
 
   export type DeploymentModel<M extends AnyAux = AnyAux> = LikeC4DeploymentModel<M>
@@ -397,18 +453,18 @@ export namespace LikeC4Model {
     Elements extends string = string,
     Deployments extends string = string,
     Views extends string = string,
-    ViewType = DiagramView<Views> | ComputedView<Views>
+    ViewType = DiagramView<Views> | ComputedView<Views>,
   > = Aux<Elements, Deployments, Views, ViewType>
 
   export type Computed<
     Elements extends string = string,
     Deployments extends string = string,
-    Views extends string = string
+    Views extends string = string,
   > = LikeC4Model<Typed<Elements, Deployments, Views, ComputedView<Views>>>
 
   export type Layouted<
     Elements extends string = string,
     Deployments extends string = string,
-    Views extends string = string
+    Views extends string = string,
   > = LikeC4Model<Typed<Elements, Deployments, Views, DiagramView<Views>>>
 }

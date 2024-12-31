@@ -22,55 +22,67 @@ describe('base', () => {
       'support',
       'cloud',
       'email',
-      'amazon'
+      'amazon',
     ])
     const [customer, support, cloud, email, amazon] = nodes
 
     expect(edgeIds).toEqual([
       'customer:cloud',
       'support:cloud',
-      'cloud:amazon',
       'cloud:email',
-      'email:cloud'
+      'cloud:amazon',
+      'email:cloud',
     ])
 
     expect(amazon).toMatchObject({
       outEdges: [],
-      inEdges: ['cloud:amazon']
+      inEdges: ['cloud:amazon'],
     })
     expect(cloud).toMatchObject({
       outEdges: [
+        'cloud:email',
         'cloud:amazon',
-        'cloud:email'
       ],
       inEdges: [
-        'email:cloud',
+        'customer:cloud',
         'support:cloud',
-        'customer:cloud'
-      ]
+        'email:cloud',
+      ],
     })
     expect(email).toMatchObject({
       outEdges: ['email:cloud'],
-      inEdges: ['cloud:email']
+      inEdges: ['cloud:email'],
     })
     expect(customer).toMatchObject({
       outEdges: ['customer:cloud'],
-      inEdges: []
+      inEdges: [],
     })
     expect(support).toMatchObject({
       outEdges: ['support:cloud'],
-      inEdges: []
+      inEdges: [],
     })
   })
 
-  it.todo('should return nodes in the same order as was in view', () => {
+  it('should return nodes in the same order as was in view', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('support'),
       $include('customer'),
-      $include('*')
+      $include('*'),
     ])
-    expect(nodeIds).toEqual(['support', 'customer', 'cloud', 'amazon'])
-    expect(edgeIds).toEqual(['customer:cloud', 'support:cloud', 'cloud:amazon'])
+    expect(nodeIds).toEqual([
+      'customer',
+      'support',
+      'cloud',
+      'email',
+      'amazon',
+    ])
+    expect(edgeIds).toEqual([
+      'customer:cloud',
+      'support:cloud',
+      'cloud:email',
+      'cloud:amazon',
+      'email:cloud',
+    ])
   })
 
   it('should include elements without relations', () => {

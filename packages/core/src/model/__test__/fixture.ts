@@ -26,9 +26,7 @@ const {
     viewOf,
     deploymentView,
     $rules,
-    $include,
-    $exclude,
-    $style
+    $include
   }
 } = Builder.forSpecification({
   elements: {
@@ -102,6 +100,7 @@ const local = b
       $m.rel('cloud.backend.api', 'cloud.media', 'uploads media'),
       $m.rel('cloud.backend.api', 'aws.rds', 'reads/writes'),
       $m.rel('cloud.backend.api', 'email', 'sends emails'),
+      $m.rel('cloud', 'email', 'uses'),
       $m.rel('cloud.media', 'aws.s3', 'uploads'),
       $m.rel('email', 'customer', 'sends emails')
     ),
@@ -138,12 +137,9 @@ const local = b
           $include('cloud.frontend.dashboard')
         )
       ),
-      deploymentView(
-        'prod',
-        $rules(
-          $include('customer.instance'),
-          $include('prod.eu.zone1.ui')
-        )
+      deploymentView('prod').with(
+        $include('customer.instance'),
+        $include('prod.eu.zone1.ui')
       )
     )
   )

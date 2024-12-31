@@ -1,10 +1,9 @@
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
-import { vanillaExtractPlugin as vanillaExtractEsbuildPlugin } from '@vanilla-extract/esbuild-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
 import { dirname, resolve } from 'node:path'
-import { type AliasOptions, defineConfig, mergeConfig, type UserConfig, type UserConfigFnObject } from 'vite'
+import { type AliasOptions, type UserConfig, type UserConfigFnObject, defineConfig, mergeConfig } from 'vite'
 import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const root = dirname(__filename)
@@ -12,53 +11,47 @@ const root = dirname(__filename)
 const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
-  '@likec4/core/types': resolve('../../packages/core/src/types'),
-  '@likec4/core/compute-view': resolve('../../packages/core/src/compute-view'),
-  '@likec4/core/model': resolve('../../packages/core/src/model'),
-  '@likec4/core': resolve('../../packages/core/src'),
   '@likec4/diagram': resolve('../../packages/diagram/src'),
-  '@likec4/layouts': resolve('../../packages/layouts/src/index.ts'),
-  '@likec4/language-server/protocol': resolve('../../packages/language-server/src/protocol.ts'),
-  '@likec4/language-server/browser': resolve('../../packages/language-server/src/browser.ts')
+  '@likec4/log': resolve('../../packages/log/src/browser.ts'),
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
   return {
     root,
     resolve: {
-      alias
-    },
-    css: {
-      modules: {
-        localsConvention: 'camelCase'
-      },
-      postcss: {}
+      conditions: ['development'],
+      alias,
     },
     build: {
-      cssCodeSplit: false
+      cssCodeSplit: false,
     },
     optimizeDeps: {
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin as any,
-          vanillaExtractEsbuildPlugin({
-            runtime: true
-          })
-        ]
-      }
+        ],
+      },
     },
-    plugins: []
+    plugins: [],
   }
 }
 
 export default defineConfig((env) => {
   switch (true) {
+    case env.mode === 'development':
+      return mergeConfig(baseConfig(env), {
+        plugins: [
+          vanillaExtractPlugin({}),
+          TanStackRouterVite(tanStackRouterViteCfg),
+          react({}),
+        ],
+      })
     // Pre-build for production
     // Workaround for incompatibility between vanilla-extract and monaco-editor
     case env.command === 'build' && env.mode === 'pre':
       return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
         define: {
-          'process.env.NODE_ENV': JSON.stringify('production')
+          'process.env.NODE_ENV': JSON.stringify('production'),
         },
         mode: 'production',
         logLevel: 'warn',
@@ -71,17 +64,17 @@ export default defineConfig((env) => {
           emptyOutDir: true,
           commonjsOptions: {
             transformMixedEsModules: true,
-            esmExternals: true
+            esmExternals: true,
           },
           rollupOptions: {
             output: {
               hoistTransitiveImports: false,
               preserveModules: true,
               preserveModulesRoot: resolve('src'),
-              entryFileNames: '[name].mjs'
+              entryFileNames: '[name].mjs',
             },
             treeshake: {
-              preset: 'recommended'
+              preset: 'recommended',
             },
             makeAbsoluteExternalsRelative: 'ifRelativeSource',
             external: [
@@ -103,50 +96,44 @@ export default defineConfig((env) => {
               /d3-/,
               /hpcc-js/,
               /node_modules.*vscode/,
-              /node_modules.*monaco/
-            ]
+              /node_modules.*monaco/,
+            ],
           },
           lib: {
             entry: {
-              main: 'src/main.tsx'
+              main: 'src/main.tsx',
             },
-            formats: ['es']
-          }
+            formats: ['es'],
+          },
         },
         plugins: [
           vanillaExtractPlugin({
-            identifiers: 'short'
+            identifiers: 'short',
           }),
           react({
             // jsxRuntime: 'classic'
-          })
-        ]
+          }),
+        ],
       })
     case env.command === 'build':
       return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
         define: {
-          'process.env.NODE_ENV': JSON.stringify('production')
+          'process.env.NODE_ENV': JSON.stringify('production'),
         },
         mode: 'production',
         resolve: {
-          dedupe: [
-            'react/jsx-runtime',
-            'react-dom/client',
-            'react',
-            'react-dom'
-          ],
-          conditions: ['production'],
+          conditions: ['browser', 'production'],
           alias: {
             '/src/style.css': resolve('prebuild/style.css'),
-            '/src/main': resolve('prebuild/main.mjs')
-          }
+            '/src/main': resolve('prebuild/main.mjs'),
+          },
         },
         build: {
           copyPublicDir: true,
           modulePreload: false,
           rollupOptions: {
             treeshake: {
-              preset: 'recommended'
+              preset: 'recommended',
             },
             output: {
               compact: true,
@@ -163,23 +150,17 @@ export default defineConfig((env) => {
                 ) {
                   return 'monaco'
                 }
-              }
-            }
-          }
+              },
+            },
+          },
         },
         plugins: [
           react({
             // jsxRuntime: 'classic'
-          })
-        ]
+          }),
+        ],
       })
     default:
-      return mergeConfig(baseConfig(env), {
-        plugins: [
-          vanillaExtractPlugin({}),
-          TanStackRouterVite(tanStackRouterViteCfg),
-          react({})
-        ]
-      })
+      throw new Error(`Unsupported mode: ${env.mode}`)
   }
 })

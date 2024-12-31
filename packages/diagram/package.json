@@ -11,9 +11,7 @@
     "directory": "packages/diagram"
   },
   "files": [
-    "package.json",
-    "LICENSE",
-    "README.md",
+    "dist",
     "src",
     "!**/*.spec.*",
     "!**/*.d.ts.map"
@@ -21,28 +19,32 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "./style.css": "./dist/style.css"
   },
   "packageManager": "yarn@4.5.3",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "",
+    "build": "vite build",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f -g 'dist/*' .tsbuildinfo",
     "test": "vitest run --no-isolate"
   },
   "dependencies": {
-    "@dagrejs/dagre": "^1.1.4",
+    "@dagrejs/dagre": "1.1.4",
     "@likec4/core": "workspace:*",
     "@mantine/vanilla-extract": "7.15.1",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "3.17.0",
-    "@vanilla-extract/css": "^1.16.1",
-    "@vanilla-extract/css-utils": "^0.1.4",
-    "@vanilla-extract/dynamic": "^2.1.2",
     "@xyflow/react": "12.3.5",
     "@xyflow/system": "0.0.46",
-    "bezier-js": "^6.1.4",
     "clsx": "^2.1.1",
     "d3-shape": "^3.2.0",
     "esm-env": "^1.2.1",
@@ -70,10 +72,15 @@
     "@types/d3-shape": "^3.1.6",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.1",
-    "execa": "^9.3.1",
+    "@vanilla-extract/css": "^1.16.1",
+    "@vanilla-extract/css-utils": "^0.1.4",
+    "@vanilla-extract/dynamic": "^2.1.2",
+    "bezier-js": "^6.1.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "typescript": "^5.7.2",
+    "vite": "5.4.11",
+    "vite-plugin-dts": "^4.4.0",
     "vitest": "^2.1.8"
   }
 }

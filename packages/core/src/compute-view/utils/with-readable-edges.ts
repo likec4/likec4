@@ -1,4 +1,4 @@
-import { map, mapToObj, mapValues } from 'remeda'
+import { map, mapToObj, mapValues, omit } from 'remeda'
 import type { ComputedLikeC4Model } from '../../types'
 import type { ComputedView, EdgeId } from '../../types/view'
 
@@ -6,26 +6,31 @@ import type { ComputedView, EdgeId } from '../../types/view'
  * Convert hashed edge ids to human-readable
  * Mostly for testing purposes
  */
-export function withReadableEdges<T extends ComputedView>({ edges, nodes, ...view }: T): T {
-  const edgeids = mapToObj(edges, e => [e.id, `${e.source}:${e.target}` as EdgeId])
+export function withReadableEdges<T extends ComputedView>({ edges, nodes, ...view }: T, separator = ':'): T & {
+  nodeIds: string[]
+  edgeIds: string[]
+} {
+  const edgeids = mapToObj(edges, e => [e.id, `${e.source}${separator}${e.target}` as EdgeId])
 
   return {
     ...view,
     edges: edges.map(e => ({
       ...e,
-      id: edgeids[e.id]!
+      id: edgeids[e.id]!,
     })),
     nodes: nodes.map(n => ({
       ...n,
       inEdges: map(n.inEdges, e => edgeids[e]!),
-      outEdges: map(n.outEdges, e => edgeids[e]!)
-    }))
-  } as T
+      outEdges: map(n.outEdges, e => edgeids[e]!),
+    })),
+    nodeIds: nodes.map(n => n.id),
+    edgeIds: edges.map(e => edgeids[e.id]!),
+  } as any
 }
 
 export function viewsWithReadableEdges<M extends ComputedLikeC4Model>({ views, ...model }: M): M {
   return {
     ...model,
-    views: mapValues(views, withReadableEdges)
-  } as M
+    views: mapValues(views, v => omit(withReadableEdges(v), ['nodeIds', 'edgeIds'])),
+  } as any
 }

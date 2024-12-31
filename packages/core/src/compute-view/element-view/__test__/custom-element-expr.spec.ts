@@ -24,8 +24,15 @@ describe('custom-element-expr', () => {
         }
       })
     ])
-    expect(nodeIds).toEqual(['customer', 'cloud', 'amazon'])
-    expect(edgeIds).toEqual(['customer:cloud', 'cloud:amazon'])
+    expect(nodeIds).toEqual([
+      'customer',
+      'cloud',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([
+      'cloud:amazon',
+      'customer:cloud'
+    ])
     const amazon = nodes.find(n => n.id === 'amazon')!
     expect(amazon).toMatchObject({
       title: 'amazon'

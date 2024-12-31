@@ -3,10 +3,10 @@ import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { AstNode } from 'langium'
 import { filter, flatMap, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
-import { ast, type ParsedLikeC4LangiumDocument, type ParsedLink } from '../../ast'
+import { type ParsedLikeC4LangiumDocument, type ParsedLink, ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
 import { getFqnElementRef } from '../../utils/elementRef'
-import { checksFromDiagnostics, type IsValidFn } from '../../validation'
+import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 
 // the class which this mixin is applied to
 export type GConstructor<T = {}> = new(...args: any[]) => T
@@ -26,7 +26,7 @@ export class BaseParser {
 
   constructor(
     public readonly services: LikeC4Services,
-    public readonly doc: ParsedLikeC4LangiumDocument
+    public readonly doc: ParsedLikeC4LangiumDocument,
   ) {
     // do nothing
     this.isValid = checksFromDiagnostics(doc).isValid
@@ -34,7 +34,7 @@ export class BaseParser {
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
     if (ast.isDeploymentElement(node)) {
-      return this.services.likec4.DeploymentsIndex.getFqnName(node)
+      return this.services.likec4.DeploymentsIndex.getFqn(node)
     }
     if (ast.isExtendElement(node)) {
       return getFqnElementRef(node.element)
@@ -49,15 +49,16 @@ export class BaseParser {
   }
 
   getMetadata(metadataAstNode: ast.MetadataProperty | undefined): { [key: string]: string } | undefined {
-    return metadataAstNode?.props != null
-      ? mapToObj(metadataAstNode.props, (p) => [p.key, removeIndent(p.value)] as [string, string])
-      : undefined
+    if (!metadataAstNode || !this.isValid(metadataAstNode)) {
+      return undefined
+    }
+    return mapToObj(metadataAstNode.props, p => [p.key, removeIndent(p.value)] as [string, string])
   }
 
   convertTags<E extends { tags?: ast.Tags }>(withTags?: E) {
     return this.parseTags(withTags)
   }
-  parseTags<E extends { tags?: ast.Tags }>(withTags?: E) {
+  parseTags<E extends { tags?: ast.Tags }>(withTags?: E): c4.NonEmptyArray<c4.Tag> | null {
     let iter = withTags?.tags
     if (!iter) {
       return null
@@ -65,15 +66,18 @@ export class BaseParser {
     const tags = [] as c4.Tag[]
     while (iter) {
       try {
-        const values = iter.values.map(t => t.ref?.name).filter(isTruthy) as c4.Tag[]
-        if (values.length > 0) {
-          tags.unshift(...values)
+        if (this.isValid(iter)) {
+          const values = iter.values.map(t => t.ref?.name).filter(isTruthy) as c4.Tag[]
+          if (values.length > 0) {
+            tags.push(...values)
+          }
         }
       } catch (e) {
         // ignore
       }
       iter = iter.prev
     }
+    tags.reverse()
     return isNonEmptyArray(tags) ? tags : null
   }
 
@@ -88,13 +92,16 @@ export class BaseParser {
       source.props,
       filter(ast.isLinkProperty),
       flatMap(p => {
+        if (!this.isValid(p)) {
+          return []
+        }
         const url = p.value
         if (isTruthy(url)) {
           const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
           return title ? { url, title } : { url }
         }
         return []
-      })
+      }),
     )
   }
 }

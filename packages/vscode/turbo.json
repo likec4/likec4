@@ -10,14 +10,14 @@
         "!data/**"
       ],
       "dependsOn": [
-        "^generate",
+        "^build",
         "topo",
         "@likec4/vscode-preview#build"
       ],
       "outputs": [
         "dist/**",
         "!dist/src/**",
-        "!**/*.metafile.json"
+        "!dist/**/*.metafile.json"
       ]
     }
   }

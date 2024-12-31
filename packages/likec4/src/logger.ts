@@ -1,4 +1,5 @@
 import { consola } from '@likec4/log'
+import mergeErrorCause from 'merge-error-cause'
 import { hrtime } from 'node:process'
 import { inspect } from 'node:util'
 import prettyMilliseconds from 'pretty-ms'
@@ -14,7 +15,7 @@ const INFO = k.bold(k.green('INFO'))
 export function createLikeC4Logger(prefix: string) {
   const logger = createLogger('info', {
     prefix,
-    allowClearScreen: !isCI
+    allowClearScreen: !isCI,
   })
 
   const timestamp = !isCI
@@ -24,37 +25,38 @@ export function createLikeC4Logger(prefix: string) {
     info(msg: string, options?: LogOptions) {
       logger.info(`${INFO} ${msg}`, {
         timestamp,
-        ...options
+        ...options,
       })
     },
     warn(msg: unknown, options?: LogOptions) {
       if (msg instanceof Error) {
         logger.warn(`${WARN} ${k.red(msg.name + ' ' + msg.message)}\n${inspect(msg, { colors: true })}`, {
           timestamp,
-          ...options
+          ...options,
         })
         return
       }
       logger.warn(`${WARN} ${msg}`, {
         timestamp,
-        ...options
+        ...options,
       })
     },
     error(err: unknown, options?: LogErrorOptions) {
       if (err instanceof Error) {
-        logger.error(`${ERROR} ${k.red(err.name + ' ' + err.message)}\n${inspect(err, { colors: true })}`, {
+        const mergedErr = mergeErrorCause(err)
+        logger.error(`${ERROR} ${k.red(mergedErr.message)}\n${inspect(mergedErr, { colors: true })}`, {
           timestamp,
           error: err,
-          ...options
+          ...options,
         })
         return
       }
       logger.error(`${ERROR} ${err}`, {
         timestamp,
-        ...options
+        ...options,
       })
       return
-    }
+    },
   }
 }
 export type ViteLogger = ReturnType<typeof createLikeC4Logger>
@@ -68,7 +70,7 @@ const noop = () => void 0
 export const NoopLogger: Logger = {
   info: noop,
   warn: noop,
-  error: noop
+  error: noop,
 }
 
 const NS_PER_MS = 1e6
@@ -78,7 +80,7 @@ export function inMillis(start: [number, number]) {
   const ms = seconds * 1000 + nanoseconds / NS_PER_MS
   return {
     ms,
-    pretty: prettyMilliseconds(ms)
+    pretty: prettyMilliseconds(ms),
   }
 }
 
@@ -92,6 +94,6 @@ export function startTimer(logger?: Logger) {
       } else {
         consola.success(msg)
       }
-    }
+    },
   }
 }

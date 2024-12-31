@@ -22,15 +22,15 @@ export default defineConfig({
       title: 'LikeC4',
       description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
       social: {
-        github: 'https://github.com/likec4/likec4'
+        github: 'https://github.com/likec4/likec4',
       },
       logo: {
         dark: './src/assets/logo-dark.svg',
         light: './src/assets/logo-light.svg',
-        replacesTitle: true
+        replacesTitle: true,
       },
       editLink: {
-        baseUrl: 'https://github.com/likec4/likec4/edit/main/apps/docs/'
+        baseUrl: 'https://github.com/likec4/likec4/edit/main/apps/docs/',
       },
       customCss: [
         // Fontsource files for to regular and semi-bold font weights.
@@ -46,7 +46,7 @@ export default defineConfig({
         '@fontsource/ibm-plex-sans/latin-ext-400.css',
         '@fontsource/ibm-plex-sans/latin-ext-500.css',
         '@fontsource/ibm-plex-sans/latin-ext-600.css',
-        './src/styles/global.css'
+        './src/styles/global.css',
       ],
       sidebar: [
         {
@@ -54,30 +54,30 @@ export default defineConfig({
           items: [
             {
               label: 'Tutorial',
-              link: '/tutorial'
-            }
-          ]
+              link: '/tutorial',
+            },
+          ],
         },
         {
           label: 'LikeC4',
-          autogenerate: { directory: 'dsl' }
+          autogenerate: { directory: 'dsl' },
         },
         {
           label: 'Examples',
           autogenerate: {
-            directory: 'examples'
-          }
+            directory: 'examples',
+          },
         },
         {
           label: 'Tooling',
-          autogenerate: { directory: 'tooling' }
+          autogenerate: { directory: 'tooling' },
         },
         {
           label: 'Guides',
           autogenerate: {
             directory: 'guides',
-            collapsed: true
-          }
+            collapsed: true,
+          },
         },
         {
           label: 'Changelog',
@@ -89,8 +89,8 @@ export default defineConfig({
               attrs: {
                 target: '_blank',
                 style: 'font-weight: 500; font-size: var(--sl-text-sm)',
-                rel: 'noopener'
-              }
+                rel: 'noopener',
+              },
             },
             {
               label: 'Releases',
@@ -98,36 +98,36 @@ export default defineConfig({
               attrs: {
                 target: '_blank',
                 style: 'font-weight: 500; font-size: var(--sl-text-sm)',
-                rel: 'noopener'
-              }
-            }
-          ]
-        }
+                rel: 'noopener',
+              },
+            },
+          ],
+        },
       ],
       expressiveCode: {
         plugins: [
           pluginLineNumbers(),
-          pluginCollapsibleSections()
+          pluginCollapsibleSections(),
         ],
         styleOverrides: {
-          borderRadius: '4px'
+          borderRadius: '4px',
         },
         defaultProps: {
           // Disable line numbers by default
-          showLineNumbers: false
+          showLineNumbers: false,
         },
         shiki: {
           langs: [
             likec4grammar,
-            structurizr
-          ]
-        }
+            structurizr,
+          ],
+        },
       },
       pagination: true,
       credits: false,
       components: {
         SiteTitle: './src/components/starlight/SiteTitle.astro',
-        Head: './src/components/starlight/Head.astro'
+        Head: './src/components/starlight/Head.astro',
       },
       plugins: [
         starlightHeadingBadges(),
@@ -135,25 +135,27 @@ export default defineConfig({
           exclude: [
             '/playground/blank/',
             '/playground/getting-started/',
-            '/playground/'
-          ]
-        })
-      ]
-    })
+            '/playground/',
+          ],
+        }),
+      ],
+    }),
   ],
 
   vite: {
     resolve: {
       alias: {
         'likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
-        '@': new URL('./src', import.meta.url).pathname
-      }
+        // Alias to bundled React components, can't use 'development' condition html#server
+        'likec4/react': new URL('../../packages/likec4/react', import.meta.url).pathname,
+        '@': new URL('./src', import.meta.url).pathname,
+      },
     },
     server: {
       fs: {
         // https://vitejs.dev/config/server-options.html#server-fs-allow
-        allow: [searchForWorkspaceRoot(process.cwd())]
-      }
-    }
-  }
+        allow: [searchForWorkspaceRoot(process.cwd())],
+      },
+    },
+  },
 })

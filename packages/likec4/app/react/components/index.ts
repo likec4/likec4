@@ -9,19 +9,10 @@ export { ReactLikeC4, type ReactLikeC4Props } from './ReactLikeC4'
 
 export * as nano from './nanostores'
 
-export { BundledStyles, DefaultTheme, useBundledStyleSheet, useColorScheme } from './style'
-
-export {
-  LikeC4ModelProvider,
-  useLikeC4DiagramView,
-  useLikeC4Model,
-  useLikeC4View,
-  useLikeC4ViewModel,
-  useLikeC4Views
-} from '@likec4/diagram'
+export { BundledStyles, DefaultTheme, FontCss, useBundledStyleSheet, useColorScheme } from './style'
 
 export { ViewNotFound } from './ViewNotFound'
 
-export { createLikeC4Model, LikeC4Model } from './createLikeC4Model'
+export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 
 export type * from './types'

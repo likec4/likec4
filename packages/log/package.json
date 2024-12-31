@@ -7,7 +7,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "lib"
+    "src"
   ],
   "repository": {
     "type": "git",
@@ -15,12 +15,9 @@
     "directory": "packages/log"
   },
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "browser": "./dist/browser.mjs",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "development": "./src/index.ts",
       "node": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.mjs",
@@ -44,16 +41,18 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "prepack": "unbuild",
-    "generate": "unbuild"
+    "build": "unbuild"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.7",
     "consola": "^3.2.3",
+    "merge-error-cause": "^5.0.0",
+    "safe-stringify": "^1.1.1",
     "std-env": "^3.8.0",
     "typescript": "^5.7.2",
-    "unbuild": "^3.0.0-rc.11"
+    "unbuild": "^3.0.1",
+    "wrap-error-message": "^3.0.0"
   },
   "packageManager": "yarn@4.5.3"
 }

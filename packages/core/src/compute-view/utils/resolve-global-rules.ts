@@ -21,12 +21,12 @@ export function resolveGlobalRules<V extends DynamicView | ElementView>(
   if (isElementView(view)) {
     return {
       ...view,
-      rules: resolveGlobalRulesInElementView(view, globals)
+      rules: resolveGlobalRulesInElementView(view.rules, globals)
     }
   } else if (isDynamicView(view)) {
     return {
       ...view,
-      rules: resolveGlobalRulesInDynamicView(view, globals)
+      rules: resolveGlobalRulesInDynamicView(view.rules, globals)
     }
   }
   nonexhaustive(view)
@@ -35,10 +35,10 @@ export function resolveGlobalRules<V extends DynamicView | ElementView>(
 type ViewRuleGlobal = ViewRuleGlobalPredicateRef | ViewRuleGlobalStyle
 
 export function resolveGlobalRulesInElementView(
-  view: ElementView,
+  rules: ViewRule[],
   globals: ModelGlobals
 ): Array<Exclude<ViewRule, ViewRuleGlobal>> {
-  return view.rules.reduce((acc, rule) => {
+  return rules.reduce((acc, rule) => {
     if (isViewRuleGlobalPredicateRef(rule)) {
       const globalPredicates = globals.predicates[rule.predicateId]
       if (isNullish(globalPredicates)) {
@@ -59,10 +59,10 @@ export function resolveGlobalRulesInElementView(
 }
 
 export function resolveGlobalRulesInDynamicView(
-  view: DynamicView,
+  rules: DynamicViewRule[],
   globals: ModelGlobals
 ): Array<Exclude<DynamicViewRule, ViewRuleGlobal>> {
-  return view.rules.reduce((acc, rule) => {
+  return rules.reduce((acc, rule) => {
     if (isViewRuleGlobalPredicateRef(rule)) {
       const globalPredicates = globals.dynamicPredicates[rule.predicateId]
       if (isNullish(globalPredicates)) {

@@ -1,21 +1,22 @@
 import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 
-import { nonNullable, type ViewId as ViewID } from '@likec4/core'
+import { type ViewId as ViewID, nonNullable } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
-import { LogLevels } from '@likec4/log'
-import TelemetryReporter from '@vscode/extension-telemetry'
+import { formatLogObj } from '@likec4/log'
+import type TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
+import { values } from 'remeda'
 import { BuiltInFileSystemProvider } from './common/BuiltInFileSystemProvider'
 import { initWorkspace, rebuildWorkspace } from './common/initWorkspace'
 import {
   cmdLocate,
   cmdOpenPreview,
   cmdPreviewContextOpenSource,
+  cmdPrintDot,
   cmdRebuild,
   isProd,
-  TelemetryConnectionString
 } from './const'
 import { LikeC4Model } from './LikeC4Model'
 import { addLogReporter, logger } from './logger'
@@ -26,7 +27,7 @@ import { PreviewPanel } from './webview/PreviewPanel'
 
 const StateKeys = {
   informedAboutManualLayout: 'informedAboutManualLayout',
-  previewPanelState: 'previewPanelState'
+  previewPanelState: 'previewPanelState',
 }
 
 export class ExtensionController extends AbstractDisposable {
@@ -42,7 +43,11 @@ export class ExtensionController extends AbstractDisposable {
 
   private static _instance: ExtensionController | null = null
 
-  public static activate(context: vscode.ExtensionContext, client: LanguageClient) {
+  public static activate(
+    context: vscode.ExtensionContext,
+    client: LanguageClient,
+    outputChannel: vscode.LogOutputChannel = client.outputChannel as vscode.LogOutputChannel,
+  ) {
     if (ExtensionController._instance) {
       throw new Error(`ExtensionController already activated`)
     }
@@ -51,7 +56,7 @@ export class ExtensionController extends AbstractDisposable {
 
     BuiltInFileSystemProvider.register(context)
 
-    const ctrl = ExtensionController._instance = new ExtensionController(client)
+    const ctrl = ExtensionController._instance = new ExtensionController(client, outputChannel)
 
     ctrl.onDispose(() => {
       client.dispose()
@@ -60,8 +65,8 @@ export class ExtensionController extends AbstractDisposable {
     ctrl.onDispose(
       vscode.window.registerWebviewPanelSerializer(
         PreviewPanel.ViewType,
-        new PreviewPanel.Serializer(ctrl)
-      )
+        new PreviewPanel.Serializer(ctrl),
+      ),
     )
 
     const rpc = ctrl._rpc = new Rpc(client)
@@ -85,17 +90,66 @@ export class ExtensionController extends AbstractDisposable {
       await vscode.commands.executeCommand(
         cmdLocate,
         {
-          element: elementId
-        } satisfies LocateParams
+          element: elementId,
+        } satisfies LocateParams,
       )
     })
 
-    ctrl.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
+    ctrl.registerCommand(cmdOpenPreview, async (viewId?: ViewID) => {
+      if (!viewId) {
+        try {
+          const { model } = await ctrl.likec4model.fetchComputedModel()
+          const views = values(model?.views ?? {}).map(v => ({
+            label: v.id,
+            description: v.title ?? '',
+            viewId: v.id,
+          })).sort((a, b) => {
+            if (a.label === 'index') {
+              return -1
+            }
+            if (b.label === 'index') {
+              return 1
+            }
+            return a.label.localeCompare(b.label)
+          })
+          if (views.length === 0) {
+            await vscode.window.showWarningMessage('No views found', { modal: true })
+            return
+          }
+          const selected = await vscode.window.showQuickPick(views, {
+            canPickMany: false,
+            title: 'Select a view',
+          })
+          if (!selected) {
+            return
+          }
+
+          viewId = selected.viewId
+        } catch (e) {
+          logger.warn(e)
+          return
+        }
+      }
       PreviewPanel.createOrReveal({
         viewId: viewId ?? ('index' as ViewID),
-        ctrl
+        ctrl,
       })
       ctrl.telemetry?.sendTelemetryEvent('open-preview')
+    })
+
+    ctrl.registerCommand(cmdPrintDot, async () => {
+      const viewId = PreviewPanel.current?.viewId
+      if (!viewId) {
+        logger.warn(`No preview panel found`)
+        return
+      }
+      const result = await ctrl.likec4model.layoutView(viewId)
+      if (!result) {
+        logger.warn(`Failed to layout view ${viewId}`)
+        return
+      }
+      logger.info(`DOT of view "${viewId}":\n${result.dot}`)
+      ctrl.outputChannel.show(true)
     })
 
     ctrl.registerCommand(cmdLocate, async (params: LocateParams) => {
@@ -109,40 +163,51 @@ export class ExtensionController extends AbstractDisposable {
       const editor = await vscode.window.showTextDocument(location.uri, {
         viewColumn,
         selection: location.range,
-        preserveFocus: viewColumn === vscode.ViewColumn.Beside
+        preserveFocus: viewColumn === vscode.ViewColumn.Beside,
       })
       editor.revealRange(location.range)
     })
 
-    try {
-      const telemetry = ctrl.telemetry = new TelemetryReporter(TelemetryConnectionString)
+    import('./telemetry').then(({ telemetry }) => {
+      logger.debug(`telemetryLevel=${telemetry.telemetryLevel}`)
+      ctrl.telemetry = telemetry
       ctrl.onDispose(telemetry)
-      ctrl.onDispose(addLogReporter(({ level, ...logObj }, ctx) => {
+      ctrl.onDispose(client.onTelemetry(event => {
+        try {
+          const { eventName, ...properties } = event
+          if (eventName === 'error') {
+            if ('stack' in properties) {
+              properties.stack = new vscode.TelemetryTrustedValue(properties.stack)
+            }
+            telemetry.sendTelemetryErrorEvent('error', properties)
+            return
+          }
+          telemetry.sendTelemetryEvent(eventName, properties)
+        } catch (e) {
+          logger.warn(e)
+        }
+      }))
+      ctrl.onDispose(addLogReporter((logObj, _ctx) => {
         if (telemetry.telemetryLevel === 'off') {
           return
         }
-        if (level !== LogLevels.error && level !== LogLevels.fatal) {
+        if (logObj.type !== 'error' && logObj.type !== 'fatal' && logObj.type !== 'fail') {
           return
         }
-        const tag = logObj.tag || ''
-        const parts = logObj.args.map((arg) => {
-          if (arg && typeof arg.stack === 'string') {
-            return arg.message + '\n' + arg.stack
+        const { message, error } = formatLogObj(logObj)
+        if (error) {
+          if ('stack' in error) {
+            error.stack = new vscode.TelemetryTrustedValue(error.stack) as any as string
           }
-          if (typeof arg === 'string') {
-            return arg
-          }
-          return String(arg)
-        })
-        if (tag) {
-          parts.unshift(`[${tag}]`)
+          telemetry.sendTelemetryErrorEvent('error', error)
+        } else {
+          telemetry.sendTelemetryErrorEvent('error', { message })
         }
-        const message = parts.join(' ')
-        telemetry.sendTelemetryErrorEvent('error', { message })
       }))
-    } catch (e) {
-      logger.error(e)
-    }
+    })
+      .catch(e => {
+        logger.error('Failed to load telemetry', e)
+      })
 
     ctrl.activate().then(
       () => {
@@ -150,7 +215,7 @@ export class ExtensionController extends AbstractDisposable {
       },
       (e) => {
         logger.error(`Failed to activate: ${e}`)
-      }
+      },
     )
 
     return ctrl
@@ -174,7 +239,8 @@ export class ExtensionController extends AbstractDisposable {
   }
 
   protected constructor(
-    public client: LanguageClient
+    public readonly client: LanguageClient,
+    public readonly outputChannel: vscode.LogOutputChannel,
   ) {
     super()
   }
@@ -190,11 +256,10 @@ export class ExtensionController extends AbstractDisposable {
           workspaceFolders
             .map(w => `\n  ${w.name}: ${w.uri}`)
             .join('')
-        }`
+        }`,
       )
-      logger.info(`LanguageClient.needsStart: ${this.client.needsStart()}`)
-      logger.info(`LanguageClient.state = ${this.client.state}`)
-      logger.info(`telemetryLevel=${this.telemetry?.telemetryLevel}`)
+      logger.debug(`LanguageClient.needsStart: ${this.client.needsStart()}`)
+      logger.debug(`LanguageClient.state = ${this.client.state}`)
 
       let startingPromise = Promise.resolve<boolean | undefined>(true)
       if (this.client.needsStart()) {
@@ -206,7 +271,7 @@ export class ExtensionController extends AbstractDisposable {
         }
         startingPromise = pTimeout(startClient(), {
           milliseconds: 10_000,
-          message: false
+          message: false,
         })
       }
 
@@ -218,7 +283,7 @@ export class ExtensionController extends AbstractDisposable {
         vscode.workspace.onDidDeleteFiles(_ => {
           logger.debug(`onDidDeleteFiles`)
           void rebuildWorkspace(this.rpc)
-        })
+        }),
       )
       if ((await startingPromise) !== true) {
         this.telemetry?.sendTelemetryErrorEvent('lsp-timedout')
@@ -234,8 +299,8 @@ Restart VSCode. Please report this issue, if it persists.`)
           'activation',
           {},
           {
-            workspaceFolders: workspaceFolders.length
-          }
+            workspaceFolders: workspaceFolders.length,
+          },
         )
         this.likec4model.turnOnTelemetry()
       }

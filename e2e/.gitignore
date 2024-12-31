@@ -6,6 +6,7 @@
 !.yarn/versions
 
 src/likec4-views.*
+src/likec4-model.*
 test-results/*
 playwright-report/*
 tests/*.spec.ts

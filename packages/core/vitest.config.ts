@@ -4,10 +4,10 @@ export default defineProject({
   test: {
     name: 'core',
     chaiConfig: {
-      truncateThreshold: 300
+      truncateThreshold: 300,
     },
     typecheck: {
-      enabled: true
-    }
-  }
+      enabled: true,
+    },
+  },
 })

@@ -1,5 +1,5 @@
 import { consola } from 'consola'
-import { analyzeMetafileSync, build, type BuildOptions, formatMessagesSync } from 'esbuild'
+import { type BuildOptions, analyzeMetafileSync, build, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 import { existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { cp, mkdir } from 'node:fs/promises'
@@ -22,7 +22,6 @@ function emptyDir(dir: string) {
   }
 }
 
-
 const vscodePreview = resolve('../vscode-preview/dist/')
 if (!existsSync(vscodePreview)) {
   consola.error(`"${vscodePreview}" not found`)
@@ -35,7 +34,7 @@ await mkdir('dist/preview', { recursive: true })
 await cp(
   vscodePreview,
   'dist/preview',
-  { recursive: true }
+  { recursive: true },
 )
 
 consola.start('Build vscode extension')
@@ -48,20 +47,21 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: [
-    'vscode'
+  external: isProduction ? ['vscode'] : [
+    'vscode',
+    '@vscode/extension-telemetry',
+    // '@hpcc-js/wasm-graphviz'
   ],
   define: {
-    'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
+    'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
   },
-  conditions: [isProduction ? 'production' : 'development'],
   sourcemap: true,
   sourcesContent: false,
   minify: isProduction,
   minifyIdentifiers: false,
   minifySyntax: isProduction,
   minifyWhitespace: isProduction,
-  legalComments: 'none'
+  legalComments: 'none',
 } satisfies BuildOptions
 
 const configs = [] as BuildOptions[]
@@ -70,14 +70,13 @@ const configs = [] as BuildOptions[]
 
 configs.push({
   ...base,
-  entryPoints: ['src/node/language-server.ts'],
+  entryPoints: [
+    'src/node/extension.ts',
+    'src/node/language-server.ts'
+  ],
   target: 'node20',
-  platform: 'node'
-}, {
-  ...base,
-  entryPoints: ['src/node/extension.ts'],
-  target: 'node20',
-  platform: 'node'
+  platform: 'node',
+  conditions: isProduction ? ['node', 'production'] : ['development'],
 })
 
 // ----------- Browser
@@ -90,7 +89,8 @@ configs.push({
   format: 'cjs',
   target: 'es2022',
   platform: 'browser',
-  plugins: [nodeModulesPolyfillPlugin()]
+  plugins: [nodeModulesPolyfillPlugin()],
+  conditions: isProduction ? ['browser', 'production'] : ['development'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -99,7 +99,8 @@ configs.push({
   format: 'iife',
   target: 'es2022',
   platform: 'browser',
-  plugins: [nodeModulesPolyfillPlugin()]
+  plugins: [nodeModulesPolyfillPlugin()],
+  conditions: isProduction ? ['browser', 'production'] : ['development'],
 })
 
 let hasErrors = false
@@ -120,14 +121,14 @@ bundles.forEach(({ errors, warnings, metafile }) => {
     consola.error(formatMessagesSync(errors, {
       kind: 'error',
       color: true,
-      terminalWidth: process.stdout.columns
+      terminalWidth: process.stdout.columns,
     }))
   }
   if (warnings.length) {
     consola.warn(formatMessagesSync(warnings, {
       kind: 'warning',
       color: true,
-      terminalWidth: process.stdout.columns
+      terminalWidth: process.stdout.columns,
     }))
   }
 })

@@ -1,17 +1,17 @@
-import type { ComputedView } from '@likec4/core'
 import { filter, isString, isTruthy, pipe, unique } from 'remeda'
+import type { ComputedView } from '../../model'
 
 export function generateIconRendererSource(views: ComputedView[]) {
   const icons = pipe(
     views.flatMap(v => v.nodes.map(n => n.icon)),
     filter(isString),
     filter(s => isTruthy(s) && !s.toLowerCase().startsWith('http')),
-    unique()
+    unique(),
   ).sort()
 
   const {
     imports,
-    cases
+    cases,
   } = icons.reduce((acc, s, i) => {
     const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
 
@@ -22,7 +22,7 @@ export function generateIconRendererSource(views: ComputedView[]) {
     return acc
   }, {
     imports: [] as string[],
-    cases: [] as string[]
+    cases: [] as string[],
   })
   return `
 ${imports.join('\n')}

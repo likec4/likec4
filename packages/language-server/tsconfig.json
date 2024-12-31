@@ -4,6 +4,10 @@
   "compilerOptions": {
     "noEmit": true,
     "module": "esnext",
+    "resolvePackageJsonExports": true,
+    "customConditions": [
+      "development"
+    ],
     "lib": [
       "ES2022",
       "WebWorker"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $customRelation, $include, computeView } from './fixture'
+import { $include, computeView } from './fixture'
 
 describe('custom-relation-expr', () => {
   it('include edge and apply props', () => {
@@ -9,21 +9,25 @@ describe('custom-relation-expr', () => {
       $include('* -> cloud.backend', {
         with: {
           color: 'red',
-          head: 'diamond'
-        }
-      })
+          head: 'diamond',
+        },
+      }),
     ])
     expect(nodeIds).toEqual([
       'customer',
+      'cloud',
       'cloud.frontend',
-      'cloud.backend'
+      'cloud.backend',
     ])
-    expect(edgeIds).toEqual(['customer:cloud.frontend', 'cloud.frontend:cloud.backend'])
+    expect(edgeIds).toEqual([
+      'customer:cloud.frontend',
+      'cloud.frontend:cloud.backend',
+    ])
     const edge = edges[1]!
     // Should merge tags
     expect(edge).toHaveProperty('tags', [
       'next',
-      'old'
+      'old',
     ])
     expect(edge).toMatchInlineSnapshot(`
       {
@@ -31,18 +35,20 @@ describe('custom-relation-expr', () => {
         "head": "diamond",
         "id": "cloud.frontend:cloud.backend",
         "isCustomized": true,
+        "kind": "graphlql",
         "label": "requests",
-        "parent": null,
+        "parent": "cloud",
         "relations": [
           "cloud.frontend:cloud.backend",
           "cloud.frontend.dashboard:cloud.backend.graphql",
-          "cloud.frontend.adminPanel:cloud.backend.graphql",
+          "cloud.frontend.supportPanel:cloud.backend.graphql",
         ],
         "source": "cloud.frontend",
         "tags": [
           "next",
           "old",
         ],
+        "tail": "odiamond",
         "target": "cloud.backend",
       }
     `)
@@ -54,29 +60,29 @@ describe('custom-relation-expr', () => {
         with: {
           color: 'red',
           title: 'custom label',
-          head: 'crow'
-        }
-      })
+          head: 'crow',
+        },
+      }),
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend.adminPanel:cloud.backend.graphql',
-      'cloud.frontend.dashboard:cloud.backend.graphql'
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.supportPanel:cloud.backend.graphql',
     ])
-    const [edge1, edge2] = edges
-    expect(edge1).toMatchInlineSnapshot(`
+    const [fromDashboard, fromAdmin] = edges
+    expect(fromAdmin).toMatchInlineSnapshot(`
       {
         "color": "red",
         "head": "crow",
-        "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
+        "id": "cloud.frontend.supportPanel:cloud.backend.graphql",
         "isCustomized": true,
         "kind": "graphlql",
         "label": "custom label",
         "line": "dashed",
         "parent": null,
         "relations": [
-          "cloud.frontend.adminPanel:cloud.backend.graphql",
+          "cloud.frontend.supportPanel:cloud.backend.graphql",
         ],
-        "source": "cloud.frontend.adminPanel",
+        "source": "cloud.frontend.supportPanel",
         "tags": [
           "old",
         ],
@@ -84,7 +90,7 @@ describe('custom-relation-expr', () => {
         "target": "cloud.backend.graphql",
       }
     `)
-    expect(edge2).toMatchInlineSnapshot(`
+    expect(fromDashboard).toMatchInlineSnapshot(`
       {
         "color": "red",
         "head": "crow",
@@ -108,14 +114,14 @@ describe('custom-relation-expr', () => {
 
   it('set edge title to empty string', () => {
     const { edges, edgeIds } = computeView([
-      $include('cloud.frontend.adminPanel -> cloud.backend', {
+      $include('cloud.frontend.supportPanel -> cloud.backend', {
         with: {
-          title: ''
-        }
-      })
+          title: '',
+        },
+      }),
     ])
     expect(edgeIds).toEqual([
-      'cloud.frontend.adminPanel:cloud.backend'
+      'cloud.frontend.supportPanel:cloud.backend',
     ])
     const [edge1] = edges
     expect(edge1).toHaveProperty('label', '')
@@ -127,12 +133,12 @@ describe('custom-relation-expr', () => {
       $include('amazon.* <-> cloud.*', {
         with: {
           color: 'red',
-          title: 'custom label'
-        }
-      })
+          title: 'custom label',
+        },
+      }),
     ])
     expect(edgeIds).toEqual([
-      'cloud.backend:amazon.s3'
+      'cloud.backend:amazon.s3',
     ])
     const [edge1] = edges
     expect(edge1).toMatchInlineSnapshot(`
@@ -148,8 +154,8 @@ describe('custom-relation-expr', () => {
         "source": "cloud.backend",
         "tags": [
           "aws",
-          "legacy",
           "storage",
+          "legacy",
         ],
         "target": "amazon.s3",
       }

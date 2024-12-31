@@ -1,3 +1,4 @@
+import { viteAliases } from '@/vite/aliases'
 import { consola } from '@likec4/log'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
@@ -18,7 +19,7 @@ import { chunkSizeWarningLimit } from './utils'
 export type { LikeC4ViteConfig }
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = resolve(_dirname, '../..')
+export const pkgRoot = resolve(_dirname, '../..')
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
@@ -63,30 +64,26 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       __USE_STYLE_BUNDLE__: 'false',
       __USE_OVERVIEW_GRAPH__: useOverviewGraph ? 'true' : 'false',
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
-      'process.env.NODE_ENV': '"development"'
+      'process.env.NODE_ENV': '"development"',
     },
     resolve: {
+      conditions: ['development'],
       alias: {
-        'likec4/previews': likec4AssetsDir,
-        'likec4/icons': resolve(pkgRoot, '../icons'),
-        'likec4/react': resolve(pkgRoot, 'app/react/components'),
-        '@likec4/core': resolve(pkgRoot, '../core/src'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
-        'react-dom/server': resolve(pkgRoot, 'app/react/react-dom-server-mock.ts')
-      }
+        ...viteAliases(),
+        'react-dom/server': resolve(pkgRoot, 'app/react/react-dom-server-mock.ts'),
+      },
     },
     clearScreen: false,
     optimizeDeps: {
       include: [
         'react',
         'react-dom',
-        'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom/client',
         '@mantine/core',
         '@mantine/hooks',
-        '@tabler/icons-react'
-      ]
+        '@tabler/icons-react',
+      ],
     },
     base,
     build: {
@@ -97,7 +94,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       minify: false,
       copyPublicDir: true,
       assetsInlineLimit: (path, content) => !path.endsWith('.png') && content.length < 1_000_000,
-      chunkSizeWarningLimit
+      chunkSizeWarningLimit,
       // commonjsOptions: {
       //       defaultIsModuleExports: (id: string) => {
       //     if (id.includes('react')) {
@@ -131,24 +128,24 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     css: {
       postcss: {
         plugins: [
-          postcssPresetMantine()
-        ]
-      }
+          postcssPresetMantine(),
+        ],
+      },
     },
     customLogger,
     plugins: [
       vanillaExtractPlugin({
-        unstable_mode: 'transform'
+        unstable_mode: 'transform',
       }),
       likec4Plugin({
         languageServices,
-        useOverviewGraph: useOverviewGraph
+        useOverviewGraph: useOverviewGraph,
       }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',
         generatedRouteTree: resolve(root, 'src/routeTree.gen.ts'),
         routesDirectory: resolve(root, 'src/routes'),
-        quoteStyle: 'single'
+        quoteStyle: 'single',
       }),
       react(),
       cssInjectedByJsPlugin({
@@ -192,9 +189,9 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
               // @ts-ignore
               window.__likec4styles.set(id, '')
             }
-          }
-        }
-      })
-    ]
+          },
+        },
+      }),
+    ],
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
 }

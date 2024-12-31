@@ -28,8 +28,8 @@ export const ElementShapes = [
 ] as const
 
 export type ElementShape = TupleToUnion<typeof ElementShapes>
-export const DefaultThemeColor = 'primary' satisfies ThemeColor
-export const DefaultElementShape = 'rectangle' satisfies ElementShape
+export const DefaultThemeColor: ThemeColor = 'primary'
+export const DefaultElementShape: ElementShape = 'rectangle'
 
 export interface ElementStyle {
   readonly border?: BorderStyle

@@ -1,0 +1,90 @@
+import { LikeC4Model } from '@likec4/core/model'
+
+/**
+ * Used by vite plugin to generate `virtual:likec4/model`
+ */
+export function createLikeC4Model(model: any): LikeC4Model {
+  return LikeC4Model.create(model) as LikeC4Model
+}
+
+export {
+  type AnyAux,
+  type Aux,
+  Connection,
+  ConnectionModel,
+  DeployedInstanceModel,
+  deploymentConnection,
+  DeploymentConnectionModel,
+  type DeploymentElementModel,
+  DeploymentNodeModel,
+  DeploymentRelationModel,
+  differenceConnections,
+  EdgeModel,
+  ElementModel,
+  findAscendingConnections,
+  findDeepestNestedConnection,
+  findDescendantConnections,
+  hasSameSource,
+  hasSameSourceTarget,
+  hasSameTarget,
+  isAnyInOut,
+  isIncoming,
+  isNestedConnection,
+  isOutgoing,
+  LikeC4DeploymentModel,
+  LikeC4Model,
+  LikeC4ViewModel,
+  mergeConnections,
+  modelConnection,
+  NodeModel,
+  RelationshipModel,
+  sortConnectionsByBoundaryHierarchy,
+  sortDeepestFirst,
+} from '@likec4/core/model'
+
+export {
+  ComputedNode,
+  ComputedView,
+  DiagramNode,
+} from '@likec4/core'
+
+export type {
+  AbstractRelation,
+  AutoLayoutDirection,
+  BBox,
+  Color,
+  ComputedDeploymentView,
+  ComputedDynamicView,
+  ComputedEdge,
+  ComputedElementView,
+  ComputedLikeC4Model,
+  DeployedInstance,
+  DeploymentElement,
+  DeploymentNode,
+  DeploymentNodeKind,
+  DeploymentRelation,
+  DeploymentView,
+  DiagramEdge,
+  DiagramView,
+  DynamicView,
+  EdgeId,
+  Element,
+  ElementKind,
+  ElementView,
+  Fqn,
+  HexColorLiteral,
+  LayoutedLikeC4Model,
+  LikeC4View,
+  NodeId,
+  OverviewGraph,
+  ParsedLikeC4Model,
+  Point,
+  RelationExpr,
+  RelationId,
+  StepEdgeId,
+  Tag,
+  ThemeColor,
+  ViewId,
+  WhereOperator,
+  XYPoint,
+} from '@likec4/core'

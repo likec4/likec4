@@ -1,32 +1,38 @@
 import { isTruthy } from 'remeda'
 import {
-  DefaultElementShape,
-  DefaultThemeColor,
   type Element as C4Element,
   type ElementKind as C4ElementKind,
   type ElementShape as C4ElementShape,
+  type IteratorLike,
   type Link,
   type Tag as C4Tag,
-  type ThemeColor
+  type ThemeColor,
+  DefaultElementShape,
+  DefaultThemeColor,
 } from '../types'
-import { commonAncestor } from '../utils'
+import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from './types'
+import type { AnyAux, IncomingFilter, OutgoingFilter } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 
-export class ElementModel<M extends AnyAux> {
+export class ElementModel<M extends AnyAux = AnyAux> {
+  readonly id: M['Fqn']
+  readonly hierarchyLevel: number
+
   constructor(
-    public readonly model: LikeC4Model<M>,
-    public readonly $element: C4Element
+    public readonly $model: LikeC4Model<M>,
+    public readonly $element: C4Element,
   ) {
+    this.id = this.$element.id
+    this.hierarchyLevel = hierarchyLevel(this.id)
   }
 
-  get id(): M['Fqn'] {
-    return this.$element.id
+  get parent(): ElementModel<M> | null {
+    return this.$model.parent(this)
   }
 
   get kind(): C4ElementKind {
@@ -61,12 +67,16 @@ export class ElementModel<M extends AnyAux> {
     return this.$element.links ?? []
   }
 
-  get parent(): ElementModel<M> | null {
-    return this.model.parent(this)
-  }
-
   get defaultView(): LikeC4ViewModel<M> | null {
     return this.scopedViews().next().value ?? null
+  }
+
+  public isAncestorOf(another: ElementModel<M>): boolean {
+    return isAncestor(this, another)
+  }
+
+  public isDescendantOf(another: ElementModel<M>): boolean {
+    return isAncestor(another, this)
   }
 
   /**
@@ -74,7 +84,7 @@ export class ElementModel<M extends AnyAux> {
    * (from closest to root)
    */
   public ancestors(): ElementsIterator<M> {
-    return this.model.ancestors(this)
+    return this.$model.ancestors(this)
   }
 
   /**
@@ -82,25 +92,29 @@ export class ElementModel<M extends AnyAux> {
    */
   public commonAncestor(another: ElementModel<M>): ElementModel<M> | null {
     const common = commonAncestor(this.id, another.id)
-    return common ? this.model.element(common) : null
+    return common ? this.$model.element(common) : null
   }
 
   public children(): ReadonlySet<ElementModel<M>> {
-    return this.model.children(this)
+    return this.$model.children(this)
   }
 
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public descendants(): ElementsIterator<M> {
-    return this.model.descendants(this)
+  public descendants(sort?: 'asc' | 'desc'): ElementsIterator<M> {
+    if (sort) {
+      const sorted = sortNaturalByFqn([...this.$model.descendants(this)], sort)
+      return sorted[Symbol.iterator]()
+    }
+    return this.$model.descendants(this)
   }
 
   /**
    * Get all sibling (i.e. same parent)
    */
   public siblings(): ElementsIterator<M> {
-    return this.model.siblings(this)
+    return this.$model.siblings(this)
   }
 
   /**
@@ -115,8 +129,20 @@ export class ElementModel<M extends AnyAux> {
     return
   }
 
+  /**
+   * Resolve siblings of the element and its ancestors
+   *  (from root to closest)
+   */
+  public *descendingSiblings(): ElementsIterator<M> {
+    for (const ancestor of [...this.ancestors()].reverse()) {
+      yield* ancestor.siblings()
+    }
+    yield* this.siblings()
+    return
+  }
+
   public incoming(filter: IncomingFilter = 'all'): RelationshipsIterator<M> {
-    return this.model.incoming(this, filter)
+    return this.$model.incoming(this, filter)
   }
   public *incomers(filter: IncomingFilter = 'all'): ElementsIterator<M> {
     const unique = new Set<M['Fqn']>()
@@ -130,7 +156,7 @@ export class ElementModel<M extends AnyAux> {
     return
   }
   public outgoing(filter: OutgoingFilter = 'all'): RelationshipsIterator<M> {
-    return this.model.outgoing(this, filter)
+    return this.$model.outgoing(this, filter)
   }
   public *outgoers(filter: OutgoingFilter = 'all'): ElementsIterator<M> {
     const unique = new Set<M['Fqn']>()
@@ -161,7 +187,7 @@ export class ElementModel<M extends AnyAux> {
    * Iterate over all views that include this element.
    */
   public *views(): ViewsIterator<M> {
-    for (const view of this.model.views()) {
+    for (const view of this.$model.views()) {
       if (view.includesElement(this.id)) {
         yield view
       }
@@ -174,7 +200,7 @@ export class ElementModel<M extends AnyAux> {
    * It is possible that element is not included in the view.
    */
   public *scopedViews(): ViewsIterator<M> {
-    for (const vm of this.model.views()) {
+    for (const vm of this.$model.views()) {
       if (vm.isElementView() && vm.$view.viewOf === this.id) {
         yield vm
       }
@@ -190,6 +216,6 @@ export class ElementModel<M extends AnyAux> {
   }
 
   public deployments(): DeployedInstancesIterator<M> {
-    return this.model.deployment.instancesOf(this)
+    return this.$model.deployment.instancesOf(this)
   }
 }

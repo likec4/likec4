@@ -1,4 +1,4 @@
-import { createTheme, type MantineThemeOverride } from '@mantine/core'
+import { type MantineThemeOverride, createTheme } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMutationObserver } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useId, useState } from 'react'
@@ -11,6 +11,8 @@ declare const __likec4styles: Map<string, string>
 declare const __USE_STYLE_BUNDLE__: boolean
 declare const SHADOW_STYLE: string
 
+const FontCss = fontCss as string
+
 export const DefaultTheme = createTheme({
   autoContrast: true,
   primaryColor: 'indigo',
@@ -22,18 +24,20 @@ export const DefaultTheme = createTheme({
     sizes: {
       h1: {
         // fontSize: '2rem',
-        fontWeight: '600'
+        fontWeight: '600',
       },
       h2: {
-        fontWeight: '500'
+        fontWeight: '500',
         // fontSize: '1.85rem',
-      }
-    }
-  }
+      },
+    },
+  },
 }) as MantineThemeOverride
 
 // Also used by MantineProvider as cssVariablesSelector
 export const ShadowRootCssSelector = `.${shadowRoot}`
+
+export { FontCss }
 
 export const BundledStyles = () => {
   let styles
@@ -45,7 +49,7 @@ export const BundledStyles = () => {
       // vanilla-extract in transform mode
       ...Array.from(document.querySelectorAll(`style[data-package="likec4"][data-file$=".css.ts"]`)).map((style) => {
         return style.textContent
-      })
+      }),
     ].filter(isString).join('\n')
   }
   // return BundledStyles
@@ -58,7 +62,7 @@ const createStyleSheet = () => {
     BundledStyles()
       .replaceAll('body {', `${ShadowRootCssSelector}{`)
       .replaceAll('body{', `${ShadowRootCssSelector}{`)
-      .replaceAll(':root', `${ShadowRootCssSelector}`)
+      .replaceAll(':root', `${ShadowRootCssSelector}`),
   )
   return bundledCSS
 }
@@ -75,7 +79,7 @@ export function useCreateStyleSheet(injectFontCss: boolean, styleNonce?: string 
       if (isFunction(styleNonce)) {
         style.setAttribute('nonce', styleNonce())
       }
-      style.appendChild(document.createTextNode(fontCss))
+      style.appendChild(document.createTextNode(FontCss))
       document.head.appendChild(style)
     }
   }, [injectFontCss])
@@ -120,9 +124,9 @@ export function useColorScheme(explicit?: ColorScheme): ColorScheme {
     {
       attributes: true,
       childList: false,
-      subtree: false
+      subtree: false,
     },
-    () => document.documentElement
+    () => document.documentElement,
   )
 
   return explicit ?? computed ?? preferred
@@ -130,7 +134,7 @@ export function useColorScheme(explicit?: ColorScheme): ColorScheme {
 
 export function useShadowRootStyle(
   keepAspectRatio: boolean,
-  view: ViewData<string>
+  view: ViewData<string>,
 ): [{ 'data-likec4-instance': string }, style: string] {
   const id = useId()
 
@@ -149,7 +153,7 @@ export function useShadowRootStyle(
   min-width: 80px;
   min-height: 80px;
 }
-  `.trim()
+  `.trim(),
     ]
   }
 
@@ -176,6 +180,6 @@ export function useShadowRootStyle(
   aspect-ratio: ${Math.ceil(view.bounds.width)} / ${Math.ceil(view.bounds.height)};
   max-height: var(--likec4-view-max-height, ${Math.ceil(view.bounds.height)}px);
 }
-`.trim()
+`.trim(),
   ]
 }

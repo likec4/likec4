@@ -1,14 +1,14 @@
+import { viteAliases } from '@/vite/aliases'
 import { consola } from '@likec4/log'
 import react from '@vitejs/plugin-react-swc'
 import { existsSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit, JsBanners } from './utils'
+import { chunkSizeWarningLimit, findPkgRoot, JsBanners } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LikeC4
@@ -16,13 +16,12 @@ type LikeC4ViteReactConfig = {
   filename?: string
 }
 
-const _dirname = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = resolve(_dirname, '../..')
+export const pkgRoot = findPkgRoot()
 
 export async function viteReactConfig({
   languageServices,
   outDir,
-  filename = 'likec4-react.mjs'
+  filename = 'likec4-react.mjs',
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
   consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:react')
@@ -43,11 +42,8 @@ export async function viteReactConfig({
     clearScreen: false,
     mode: 'production',
     resolve: {
-      alias: {
-        'likec4/icons': resolve(pkgRoot, '../icons'),
-        '@likec4/core': resolve(pkgRoot, '../core/src'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src')
-      }
+      conditions: ['development'],
+      alias: viteAliases(),
     },
     esbuild: {
       banner: JsBanners.banner,
@@ -60,9 +56,9 @@ export async function viteReactConfig({
         compilerOptions: {
           useDefineForClassFields: true,
           verbatimModuleSyntax: true,
-          jsx: 'react-jsx'
-        }
-      }
+          jsx: 'react-jsx',
+        },
+      },
     },
     build: {
       outDir,
@@ -76,7 +72,7 @@ export async function viteReactConfig({
         fileName(_format, _entryName) {
           return filename
         },
-        formats: ['es']
+        formats: ['es'],
       },
       rollupOptions: {
         external: [
@@ -86,7 +82,7 @@ export async function viteReactConfig({
           'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'react-dom/client',
-          /likec4\/icons\/.*/
+          /likec4\/icons\/.*/,
         ],
         // https://github.com/vitejs/vite/issues/15012
         onwarn(warning, defaultHandler) {
@@ -94,15 +90,15 @@ export async function viteReactConfig({
             return
           }
           defaultHandler(warning)
-        }
-      }
+        },
+      },
     },
     plugins: [
       react(),
       likec4Plugin({
         languageServices,
-        useOverviewGraph: false
-      })
-    ]
+        useOverviewGraph: false,
+      }),
+    ],
   }
 }

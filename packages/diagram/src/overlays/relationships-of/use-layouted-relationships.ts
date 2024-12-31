@@ -373,6 +373,7 @@ function layout(
 } {
   const diagramNodes = new Map(view.nodes.map(n => [n.id, n]))
   const subjectElement = likec4model.element(subjectId)
+
   const viewIncludesSubject = diagramNodes.has(subjectId)
 
   const viewRelationships = new Set(

@@ -8,56 +8,31 @@ import type { Base } from './Base'
 
 export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
 
-// export function isReferenceToLogicalModel(node: ast.FqnRef) {
-//   // iterate up the root parent
-//   while (node.parent) {
-//     node = node.parent
-//   }
-//   return ast.isElement(node.value.ref)
-// }
-
-// /**
-//  * Returns true if node references deployment model
-//  */
-// function isReferenceToDeploymentModel(node: ast.FqnRef) {
-//   let referenceable
-//   while ((referenceable = node.value?.ref)) {
-//     if (ast.isDeploymentElement(referenceable)) {
-//       return true
-//     }
-//     if (isNullish(node.parent)) {
-//       return false
-//     }
-//     node = node.parent
-//   }
-//   return false
-// }
-
 export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
   return class ExpressionV2Parser extends B {
     parseFqnRef(astNode: ast.FqnRef): c4.FqnRef {
       const refValue = nonNullable(
         astNode.value.ref,
-        `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`
+        `FqnRef is empty ${astNode.$cstNode?.range.start.line}:${astNode.$cstNode?.range.start.character}`,
       )
       if (ast.isElement(refValue)) {
         const deployedInstanceAst = instanceRef(astNode)
         if (!deployedInstanceAst) {
           return {
-            model: this.resolveFqn(refValue)
+            model: this.resolveFqn(refValue),
           }
         }
         const deployment = this.resolveFqn(deployedInstanceAst)
         const element = this.resolveFqn(refValue)
         return {
           deployment,
-          element
+          element,
         }
       }
 
       if (ast.isDeploymentElement(refValue)) {
         return {
-          deployment: this.resolveFqn(refValue)
+          deployment: this.resolveFqn(refValue),
         }
       }
       nonexhaustive(refValue)
@@ -66,7 +41,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
     parseFqnExpr(astNode: ast.FqnExpr): c4.FqnExpr {
       if (ast.isWildcardExpression(astNode)) {
         return {
-          wildcard: true
+          wildcard: true,
         }
       }
       if (ast.isFqnRefExpr(astNode)) {
@@ -75,26 +50,26 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       nonexhaustive(astNode)
     }
 
-    parseFqnRefExpr(astNode: ast.FqnRefExpr): c4.FqnExpr.Ref {
+    parseFqnRefExpr(astNode: ast.FqnRefExpr): c4.FqnExpr.NonWildcard {
       const ref = this.parseFqnRef(astNode.ref)
       switch (true) {
         case astNode.selector === '._':
           return {
             ref,
-            selector: 'expanded'
-          } as c4.FqnExpr.Ref
+            selector: 'expanded',
+          } as c4.FqnExpr.NonWildcard
         case astNode.selector === '.**':
           return {
             ref,
-            selector: 'descendants'
-          } as c4.FqnExpr.Ref
+            selector: 'descendants',
+          } as c4.FqnExpr.NonWildcard
         case astNode.selector === '.*':
           return {
             ref,
-            selector: 'children'
-          } as c4.FqnExpr.Ref
+            selector: 'children',
+          } as c4.FqnExpr.NonWildcard
         default:
-          return { ref } as c4.FqnExpr.Ref
+          return { ref } as c4.FqnExpr.NonWildcard
       }
     }
 
@@ -104,14 +79,14 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       while (iter) {
         try {
           if (isNonNullish(iter.value) && this.isValid(iter.value)) {
-            exprs.unshift(this.parseFqnExpr(iter.value))
+            exprs.push(this.parseFqnExpr(iter.value))
           }
         } catch (e) {
           logWarnError(e)
         }
         iter = iter.prev
       }
-      return exprs
+      return exprs.reverse()
     }
 
     parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
@@ -119,22 +94,22 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
         return {
           source: this.parseFqnExpr(astNode.source.from),
           target: this.parseFqnExpr(astNode.target),
-          isBidirectional: astNode.source.isBidirectional
+          isBidirectional: astNode.source.isBidirectional,
         }
       }
       if (ast.isInOutRelationExpr(astNode)) {
         return {
-          inout: this.parseFqnExpr(astNode.inout.to)
+          inout: this.parseFqnExpr(astNode.inout.to),
         }
       }
       if (ast.isOutgoingRelationExpr(astNode)) {
         return {
-          outgoing: this.parseFqnExpr(astNode.from)
+          outgoing: this.parseFqnExpr(astNode.from),
         }
       }
       if (ast.isIncomingRelationExpr(astNode)) {
         return {
-          incoming: this.parseFqnExpr(astNode.to)
+          incoming: this.parseFqnExpr(astNode.to),
         }
       }
       nonexhaustive(astNode)

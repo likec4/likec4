@@ -175,6 +175,11 @@
         "command": "likec4.locate",
         "title": "%ext.cmd.locate%",
         "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.print-dot-of-currentview",
+        "title": "%ext.cmd.print-dot-of-currentview%",
+        "category": "%ext.title%"
       }
     ]
   },

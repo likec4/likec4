@@ -1,3 +1,4 @@
+import { pick } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { $exclude, $include, computeView } from './fixture'
 
@@ -15,15 +16,71 @@ describe('relation-expr', () => {
       'support',
       'cloud',
       'email',
-      'amazon'
+      'amazon',
     ])
     expect(edgeIds).toEqual([
       'customer:cloud',
       'support:cloud',
-      'cloud:amazon',
       'cloud:email',
-      'email:cloud'
+      'cloud:amazon',
+      'email:cloud',
     ])
+  })
+
+  it('* -> * where', () => {
+    const test1 = computeView([
+      $include('* -> *', {
+        where: {
+          or: [
+            { tag: { eq: 'next' } },
+            { tag: { eq: 'aws' } },
+            { tag: { eq: 'storage' } },
+          ],
+        },
+      }),
+    ])
+    expect(pick(test1, ['edgeIds', 'nodeIds'])).toEqual({
+      'edgeIds': [
+        'cloud.backend.storage:amazon.s3',
+        'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.frontend.dashboard:cloud.backend.graphql',
+      ],
+      'nodeIds': [
+        'cloud',
+        'cloud.frontend.dashboard',
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'amazon',
+        'amazon.s3',
+      ],
+    })
+
+    const test2 = computeView([
+      $include('* -> *', {
+        where: {
+          or: [
+            { tag: { eq: 'next' } },
+            { tag: { eq: 'aws' } },
+            { tag: { eq: 'storage' } },
+          ],
+        },
+      }),
+      $exclude('* -> *', {
+        tag: { eq: 'storage' },
+      }),
+    ])
+    expect(pick(test2, ['edgeIds', 'nodeIds'])).toEqual({
+      'edgeIds': [
+        'cloud.frontend.dashboard:cloud.backend.graphql',
+        'cloud:amazon',
+      ],
+      'nodeIds': [
+        'cloud',
+        'cloud.frontend.dashboard',
+        'amazon',
+        'cloud.backend.graphql',
+      ],
+    })
   })
 
   it('* -> cloud.*', () => {
@@ -66,20 +123,20 @@ describe('relation-expr', () => {
     const { nodeIds, edgeIds } = computeView([$include('* -> cloud.frontend.*')])
     expect(nodeIds).toEqual([
       'customer',
-      'cloud.frontend.dashboard',
       'support',
-      'cloud.frontend.adminPanel'
+      'cloud.frontend.dashboard',
+      'cloud.frontend.supportPanel',
     ])
     expect(edgeIds).toEqual([
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel'
+      'support:cloud.frontend.supportPanel',
     ])
   })
 
   it('* -> cloud.frontend.*, exclude support', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('* -> cloud.frontend.*'),
-      $exclude('support')
+      $exclude('support'),
     ])
     expect(nodeIds).toEqual(['customer', 'cloud.frontend.dashboard'])
     expect(edgeIds).to.have.same.members(['customer:cloud.frontend.dashboard'])
@@ -88,7 +145,7 @@ describe('relation-expr', () => {
   it('* -> cloud.frontend.*, exclude support -> *', () => {
     const { nodeIds, edgeIds } = computeView([
       $include('* -> cloud.frontend.*'),
-      $exclude('support -> *')
+      $exclude('support -> *'),
     ])
     expect(nodeIds).toEqual(['customer', 'cloud.frontend.dashboard'])
     expect(edgeIds).toEqual(['customer:cloud.frontend.dashboard'])
@@ -96,30 +153,28 @@ describe('relation-expr', () => {
 
   it('cloud -> email', () => {
     const { nodeIds, edgeIds } = computeView([
-      $include('cloud -> email')
+      $include('cloud -> email'),
     ])
     expect(nodeIds).toEqual([
       'cloud',
-      'email'
+      'email',
     ])
     expect(edgeIds).toEqual([
-      'cloud:email'
+      'cloud:email',
     ])
   })
 
   it('cloud <-> email', () => {
     const { nodeIds, edgeIds } = computeView([
-      $include('cloud <-> email')
+      $include('cloud <-> email'),
     ])
     expect(nodeIds).toEqual([
+      'cloud',
       'email',
-      'cloud'
     ])
     expect(edgeIds).toEqual([
+      'cloud:email',
       'email:cloud',
-      'cloud:email'
     ])
   })
-
-  it.todo('verify label [...]')
 })

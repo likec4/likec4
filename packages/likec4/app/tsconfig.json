@@ -3,8 +3,15 @@
   "compilerOptions": {
     "composite": true,
     "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "module": "ESNext",
+    "customConditions": [
+      "development"
+    ],
     "outDir": "../__app__",
     "noEmit": true,
     "esModuleInterop": true,
@@ -17,7 +24,9 @@
     "verbatimModuleSyntax": true,
     "jsx": "react-jsx",
     "rootDir": ".",
-    "types": ["vite/client"]
+    "types": [
+      "vite/client"
+    ]
   },
   "include": [
     "src",

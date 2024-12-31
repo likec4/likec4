@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://dprint.dev/schemas/v0.json",
+  "title": "dprint configuration file",
+  "description": "Schema for a dprint configuration file.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "description": "The JSON schema reference. Normally you shouldn't bother to provide this as the dprint vscode editor extension will handle constructing the schema for you based on the plugins provided.",
+      "type": "string"
+    },
+    "incremental": {
+      "description": "Whether to format files only when they change.",
+      "type": "boolean",
+      "default": true
+    },
+    "extends": {
+      "description": "Configurations to extend.",
+      "anyOf": [{
+        "description": "A file path or url to a configuration file to extend.",
+        "type": "string"
+      }, {
+        "description": "A collection of file paths and/or urls to configuration files to extend.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }]
+    },
+    "lineWidth": {
+      "description": "The width of a line the printer will try to stay under. Note that the printer may exceed this width in certain cases.",
+      "type": "number"
+    },
+    "indentWidth": {
+      "description": "The number of characters for an indent.",
+      "type": "number"
+    },
+    "useTabs": {
+      "description": "Whether to use tabs (true) or spaces (false) for indentation.",
+      "type": "boolean"
+    },
+    "newLineKind": {
+      "description": "The kind of newline to use.",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "auto",
+          "description": "For each file, uses the newline kind found at the end of the last line."
+        },
+        {
+          "const": "crlf",
+          "description": "Uses carriage return, line feed."
+        },
+        {
+          "const": "lf",
+          "description": "Uses line feed."
+        },
+        {
+          "const": "system",
+          "description": "Uses the system standard (ex. crlf on Windows)."
+        }
+      ]
+    },
+    "includes": {
+      "description": "Array of patterns (globs) to use to find files to format.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "excludes": {
+      "description": "Array of patterns (globs) to exclude files or directories to format.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "plugins": {
+      "description": "Array of plugin URLs to format files.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "typescript": {
+      "description": "typescript configuration.",
+      "type": "object",
+      "$ref": "https://plugins.dprint.dev/dprint/dprint-plugin-typescript/latest/schema.json"
+    },
+    "json": {
+      "description": "json configuration.",
+      "type": "object",
+      "$ref": "https://plugins.dprint.dev/dprint/dprint-plugin-json/latest/schema.json"
+    },
+    "markdown": {
+      "description": "markdown configuration.",
+      "type": "object",
+      "$ref": "https://plugins.dprint.dev/dprint/dprint-plugin-markdown/latest/schema.json"
+    },
+    "toml": {
+      "description": "toml configuration.",
+      "type": "object",
+      "$ref": "https://plugins.dprint.dev/dprint/dprint-plugin-toml/latest/schema.json"
+    },
+    "malva": {
+      "description": "malva configuration.",
+      "type": "object",
+      "$ref": "https://plugins.dprint.dev/g-plane/malva/latest/schema.json"
+    },
+    "markup": {
+      "description": "markup configuration.",
+      "type": "object",
+      "$ref": "https://plugins.dprint.dev/g-plane/markup_fmt/latest/schema.json"
+    },
+    "yaml": {
+      "description": "yaml configuration.",
+      "type": "object",
+      "$ref": "https://plugins.dprint.dev/g-plane/pretty_yaml/latest/schema.json"
+    }
+  },
+  "additionalProperties": {
+    "description": "Plugin configuration.",
+    "type": "object"
+  },
+  "allowTrailingCommas": true
+}

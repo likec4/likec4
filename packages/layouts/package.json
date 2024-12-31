@@ -21,22 +21,24 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
-    "./graphviz/binary": "./src/graphviz/binary/index.ts"
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./graphviz/binary": {
+      "development": "./src/graphviz/binary/index.ts",
+      "default": {
+        "types": "./dist/graphviz/binary/index.d.ts",
+        "default": "./dist/graphviz/binary/index.js"
+      }
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
-      },
-      "./graphviz/binary": {
-        "types": "./dist/graphviz/binary/index.d.ts",
-        "default": "./dist/graphviz/binary/index.mjs"
-      }
-    }
+    "access": "public"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -66,7 +68,7 @@
     "@types/node": "^20.17.7",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2",
-    "unbuild": "^3.0.0-rc.11",
+    "unbuild": "^3.0.1",
     "vitest": "^2.1.8"
   },
   "packageManager": "yarn@4.5.3"

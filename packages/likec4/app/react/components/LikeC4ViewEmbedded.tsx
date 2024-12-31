@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { type HTMLAttributes } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
-import type { WhereOperator } from '@likec4/core'
+import type { WhereOperator } from '@likec4/core/types'
 import type { MantineThemeOverride } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
@@ -98,7 +98,7 @@ export type LikeC4ViewEmbeddedProps<ViewId extends string, Tag extends string, K
 export function LikeC4ViewEmbedded<
   ViewId extends string = string,
   Tag extends string = string,
-  Kind extends string = string
+  Kind extends string = string,
 >({
   onNavigateTo: _onNavigateTo,
   className,
@@ -117,7 +117,7 @@ export function LikeC4ViewEmbedded<
   mantineTheme,
   where,
   style,
-  styleNonce
+  styleNonce,
 }: LikeC4ViewEmbeddedProps<ViewId, Tag, Kind>) {
   const [shadowRootProps, cssstyle] = useShadowRootStyle(true, view)
 
@@ -145,7 +145,7 @@ export function LikeC4ViewEmbedded<
         type="text/css"
         nonce={nonce}
         dangerouslySetInnerHTML={{
-          __html: cssstyle
+          __html: cssstyle,
         }} />
       <ShadowRoot
         {...shadowRootProps}
@@ -187,7 +187,7 @@ export function LikeC4ViewEmbedded<
             {...(_onNavigateTo && {
               onNavigateTo,
               onCanvasClick: onNavigateToMe,
-              onNodeClick: onNavigateToMe
+              onNodeClick: onNavigateToMe,
             })}
           />
         </ShadowRootMantineProvider>

@@ -1,18 +1,19 @@
 import {
   type Color as C4Color,
-  ComputedNode,
   type ComputedView,
   type DeploymentNodeKind,
   type DiagramView,
-  ElementKind,
   type ElementShape as C4ElementShape,
+  type IteratorLike,
   type Link,
   type NodeId,
-  type Tag as C4Tag
+  type Tag as C4Tag,
+  ComputedNode,
+  ElementKind,
 } from '../../types'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
-import type { AnyAux, IncomingFilter, IteratorLike, OutgoingFilter } from '../types'
+import type { AnyAux, IncomingFilter, OutgoingFilter } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
@@ -50,7 +51,7 @@ export namespace NodeModel {
 export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = M['ViewType']> {
   constructor(
     public readonly $view: LikeC4ViewModel<M, V>,
-    public readonly $node: V['nodes'][number]
+    public readonly $node: V['nodes'][number],
   ) {
   }
 

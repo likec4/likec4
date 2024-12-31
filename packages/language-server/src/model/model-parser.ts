@@ -1,6 +1,7 @@
 import { invariant } from '@likec4/core'
 import type { LangiumDocument } from 'langium'
 import DefaultWeakMap from 'mnemonist/default-weak-map'
+import { pipe } from 'remeda'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
 import { isFqnIndexedDocument } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -16,20 +17,16 @@ import { ViewsParser } from './parser/ViewsParser'
 
 export type ModelParsedListener = () => void
 
-const DocumentParserFromMixins = GlobalsParser(
-  ViewsParser(
-    SpecificationParser(
-      PredicatesParser(
-        DeploymentViewParser(
-          DeploymentModelParser(
-            ModelParser(
-              ExpressionV2Parser(BaseParser)
-            )
-          )
-        )
-      )
-    )
-  )
+const DocumentParserFromMixins = pipe(
+  BaseParser,
+  ExpressionV2Parser,
+  ModelParser,
+  DeploymentModelParser,
+  DeploymentViewParser,
+  PredicatesParser,
+  SpecificationParser,
+  ViewsParser,
+  GlobalsParser
 )
 
 export class DocumentParser extends DocumentParserFromMixins {

@@ -20,11 +20,11 @@ function nd(
       kind: string
       tags: string[]
     }
-  >
+  >,
 ): ComputedNode {
   return {
     kind: 'element',
-    ...props
+    ...props,
   } as ComputedNode
 }
 
@@ -36,7 +36,7 @@ function test$expr(expr: Expression | C4Expression) {
     },
     no(node: Node) {
       expect(predicate(nd(node))).toBe(false)
-    }
+    },
   }
 }
 
@@ -52,7 +52,7 @@ describe('elementExprToPredicate', () => {
     yes({ id: 'cloud.backend' })
     no({ id: 'cloud.backend.graphql' })
     yes({ id: 'cloud.frontend' })
-    no({ id: 'cloud.frontend.adminPanel' })
+    no({ id: 'cloud.frontend.supportPanel' })
     no({ id: 'customer' })
   })
 
@@ -74,7 +74,7 @@ describe('elementExprToPredicate', () => {
 
   it('returns a function that checks if the node tag matches WHERE tag == clause', () => {
     const { yes, no } = test$expr($where('*', {
-      tag: { eq: 'aws' }
+      tag: { eq: 'aws' },
     }))
     no({ id: 'amazon' })
     yes({ id: 'customer', tags: ['aws'] })
@@ -82,7 +82,7 @@ describe('elementExprToPredicate', () => {
 
   it('returns a function that checks if the node tag matches WHERE tag != clause', () => {
     const { yes, no } = test$expr($where('*', {
-      tag: { neq: 'next' }
+      tag: { neq: 'next' },
     }))
     yes({ id: 'amazon' })
     yes({ id: 'amazon.s3', tags: ['aws'] })
@@ -91,7 +91,7 @@ describe('elementExprToPredicate', () => {
 
   it('returns a function that checks if the node id matches internal condition of WHERE', () => {
     const { yes, no } = test$expr($where('amazon', {
-      tag: { eq: 'aws' }
+      tag: { eq: 'aws' },
     }))
     yes({ id: 'amazon', tags: ['aws'] })
     no({ id: 'customer', tags: ['aws'] })
@@ -99,7 +99,7 @@ describe('elementExprToPredicate', () => {
 
   it('returns a function that checks if the node id matches internal condition of custom properties expression', () => {
     const { yes, no } = test$expr($with(
-      $where('*', { tag: { eq: 'aws' } })
+      $where('*', { tag: { eq: 'aws' } }),
     ))
     yes({ id: 'amazon', tags: ['aws'] })
     no({ id: 'customer' })

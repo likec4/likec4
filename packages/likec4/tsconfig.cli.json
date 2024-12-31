@@ -4,24 +4,24 @@
   "compilerOptions": {
     "noUnusedParameters": false,
     "module": "esnext",
+    "customConditions": [
+      "development"
+    ],
+    "noEmit": false,
     "composite": true,
-    "esModuleInterop": true,
-    "verbatimModuleSyntax": true,
-    "allowJs": true,
-    "checkJs": false,
     "tsBuildInfoFile": "cli.tsbuildinfo",
     "baseUrl": ".",
     "types": [
       "node"
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
+      "@/vite/*": [
+        "./src/vite/*"
       ]
     }
   },
   "include": [
-    "./src/",
+    "./src",
     "package.json"
   ]
 }

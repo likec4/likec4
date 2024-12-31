@@ -1,5 +1,5 @@
-import { type ConsolaReporter, logger, LogLevels } from '@likec4/log'
-import { isError } from 'remeda'
+import { nonexhaustive } from '@likec4/core'
+import { type ConsolaReporter, formatLogObj, logger } from '@likec4/log'
 import type { Disposable, LogOutputChannel } from 'vscode'
 import { disposable } from './util'
 
@@ -13,40 +13,43 @@ export function addLogReporter(log: ConsolaReporter['log']): Disposable {
   })
 }
 export function logToChannel(channel: LogOutputChannel): Disposable {
-  return addLogReporter(({ level, message, ...logObj }, ctx) => {
-    const tag = logObj.tag || ''
-    const parts = logObj.args.map((arg) => {
-      if (isError(arg)) {
-        return arg.stack ?? arg.message
-      }
-      return arg
-    })
-    const msg = tag ? `${tag} ${parts[0]}` : parts[0]
-    switch (true) {
-      case level >= LogLevels.trace: {
-        channel.trace(msg, ...parts.slice(1))
+  return addLogReporter((logObj, _ctx) => {
+    const { message } = formatLogObj(logObj)
+    switch (logObj.type) {
+      case 'silent': {
+        // ignore
         break
       }
-      case level >= LogLevels.debug: {
-        channel.debug(msg, ...parts.slice(1))
+      case 'verbose':
+      case 'trace': {
+        channel.trace(message)
         break
       }
-      case level >= LogLevels.info: {
-        channel.info(msg, ...parts.slice(1))
+      case 'debug':
+      case 'log': {
+        channel.debug(message)
         break
       }
-      case level >= LogLevels.log: {
-        channel.debug(msg, ...parts.slice(1))
+      case 'info':
+      case 'box':
+      case 'ready':
+      case 'start':
+      case 'success': {
+        channel.info(message)
         break
       }
-      case level >= LogLevels.warn: {
-        channel.warn(msg, ...parts.slice(1))
+      case 'warn': {
+        channel.warn(message)
         break
       }
-      case level >= LogLevels.fatal: {
-        channel.error(msg, ...parts.slice(1))
+      case 'fail':
+      case 'error':
+      case 'fatal': {
+        channel.error(message)
         break
       }
+      default:
+        nonexhaustive(logObj.type)
     }
   })
 }

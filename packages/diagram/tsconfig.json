@@ -5,9 +5,14 @@
     "rootDir": "src",
     "types": [
       "vite/client",
-    ]
+    ],
   },
   "include": [
     "./src/"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.vite.json"
+    }
   ]
 }

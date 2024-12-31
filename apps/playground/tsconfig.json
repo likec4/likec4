@@ -4,6 +4,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "types": [
+      "node",
       "vite/client"
     ],
     "noEmit": true,
@@ -12,6 +13,9 @@
         "./src/monaco/*"
       ],
     },
+    "customConditions": [
+      "development"
+    ],
     "noUnusedParameters": false
   },
   "include": [

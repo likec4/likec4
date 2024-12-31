@@ -1,20 +1,26 @@
-export * from './builder'
-export { Builder } from './builder'
-export type * from './builder'
-export * from './colors'
-export * from './errors'
-export * from './model'
+export {
+  computeColorValues,
+  defaultTheme,
+  ElementColors,
+  RelationshipColors,
+} from './colors'
+
+export {
+  invariant,
+  nonexhaustive,
+  nonNullable,
+} from './errors'
+
+export {
+  type AnyAux,
+  type Aux,
+  LikeC4DeploymentModel,
+  LikeC4Model,
+  LikeC4ViewModel,
+} from './model'
 
 export * from './types'
-export * from './utils/common-head'
-export * from './utils/compare-natural'
-export * from './utils/fqn'
-export * from './utils/getOrCreate'
-export * from './utils/guards'
-export * from './utils/object-hash'
-export * from './utils/promises'
-export { compareRelations } from './utils/relations'
-export * from './utils/set'
-export * from './utils/string-hash'
+
+export * from './utils'
 
 export * as Expr from './types/expression'

@@ -1,147 +1,159 @@
-import { indexBy } from 'remeda'
+import { only, values } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Element, ElementView, ModelRelation, Tag, ViewId, ViewRule } from '../../types'
-import { LikeC4ModelGraph } from '../LikeC4ModelGraph'
+import { Builder } from '../../builder'
+import { invariant } from '../../errors'
+import { LikeC4Model } from '../../model'
+import { isElementView } from '../../types'
 import { withReadableEdges } from '../utils/with-readable-edges'
-import { $include, fakeElements } from './__test__/fixture'
-import { ComputeCtx } from './compute'
+import { computeElementView } from './compute'
 
-function el(id: string): Element {
-  return { id } as Element
-}
+const builder = Builder.specification({
+  elements: {
+    el: {}
+  }
+})
 
-function r(source: string, target: string): ModelRelation {
-  return {
-    id: `${source}:${target}`,
-    source,
-    target
-  } as ModelRelation
-}
-
-function v(rules: ViewRule[]): ElementView {
-  return {
-    id: 'index' as ViewId,
-    title: 'index',
-    description: null,
-    tags: ['tag' as Tag],
-    links: [{ url: 'https://example.com' }],
-    rules,
-    customColorDefinitions: {}
-  } as ElementView
-}
-
-function toRecord<T extends { id: string }>(items: T[]): Record<string, T> {
-  return indexBy(items, e => e.id)
+function compute(buider: Builder<any>) {
+  const { views, ...model } = buider.build()
+  const likec4model = LikeC4Model.create({ ...model, views: {} })
+  const view = only(values(views))
+  invariant(view && isElementView(view), 'Must have one element view')
+  return withReadableEdges(computeElementView(likec4model, view))
 }
 
 describe('compute', () => {
   it('pushes edge to outbound collection of the source and its ancestors', () => {
-    const elements = [
-      fakeElements['cloud'],
-      fakeElements['cloud.backend'],
-      fakeElements['cloud.backend.graphql'],
-      fakeElements['amazon']
-    ]
-    const view = v([
-      $include('cloud'),
-      $include('cloud.*'),
-      $include('cloud.backend.*'),
-      $include('amazon')
-    ])
-    const relations = [
-      r('cloud.backend.graphql', 'amazon')
-    ]
-    const graph = new LikeC4ModelGraph({
-      elements: toRecord(elements),
-      relations: toRecord(relations)
-    })
-
-    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
-
-    expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).includes(relations[0]!.id)
-    expect(context.nodes.find(n => n.id === 'cloud.backend')?.outEdges).includes(relations[0]!.id)
-    expect(context.nodes.find(n => n.id === 'cloud.backend.graphql')?.outEdges).includes(relations[0]!.id)
+    const context = compute(
+      builder
+        .model(({ el, rel }, _) =>
+          _(
+            el('cloud').with(
+              el('backend').with(
+                el('graphql'),
+                el('db')
+              )
+            ),
+            el('amazon'),
+            rel('cloud.backend.graphql', 'amazon')
+          )
+        )
+        .views(({ view, $include, $rules }, _) =>
+          _(
+            view(
+              'index',
+              'index',
+              $rules(
+                $include('cloud'),
+                $include('cloud.*'),
+                $include('cloud.backend.*'),
+                $include('amazon')
+              )
+            )
+          )
+        )
+    )
+    const expected = ['cloud.backend.graphql:amazon']
+    expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).toEqual(expected)
+    expect(context.nodes.find(n => n.id === 'cloud.backend')?.outEdges).toEqual(expected)
+    expect(context.nodes.find(n => n.id === 'cloud.backend.graphql')?.outEdges).toEqual(expected)
   })
 
   it('does not push edge to in- outbounds of the closest common ancestor', () => {
-    const elements = [
-      fakeElements['cloud'],
-      fakeElements['cloud.backend'],
-      fakeElements['cloud.backend.graphql'],
-      fakeElements['cloud.frontend'],
-      fakeElements['cloud.frontend.dashboard']
-    ]
-    const view = v([
-      $include('cloud'),
-      $include('cloud.*'),
-      $include('cloud.backend.*'),
-      $include('cloud.frontend.*')
-    ])
-    const relations = [
-      r('cloud.backend.graphql', 'cloud.frontend.dashboard')
-    ]
-    const graph = new LikeC4ModelGraph({
-      elements: toRecord(elements),
-      relations: toRecord(relations)
-    })
+    const context = compute(
+      builder
+        .model(({ el, rel }, _) =>
+          _(
+            el('cloud'),
+            el('cloud.backend'),
+            el('cloud.backend.graphql'),
+            el('cloud.frontend'),
+            el('cloud.frontend.dashboard'),
+            rel('cloud.backend.graphql', 'cloud.frontend.dashboard')
+          )
+        )
+        .views(({ view, $include, $rules }, _) =>
+          _(
+            view(
+              'index',
+              'index',
+              $rules(
+                $include('cloud'),
+                $include('cloud.*'),
+                $include('cloud.backend.*'),
+                $include('cloud.frontend.*')
+              )
+            )
+          )
+        )
+    )
 
-    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
-
-    expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).not.includes(relations[0]!.id)
-    expect(context.nodes.find(n => n.id === 'cloud')?.inEdges).not.includes(relations[0]!.id)
+    const expected = 'cloud.backend.graphq:cloud.frontend.dashboard'
+    expect(context.nodes.find(n => n.id === 'cloud')?.outEdges).not.includes(expected)
+    expect(context.nodes.find(n => n.id === 'cloud')?.inEdges).not.includes(expected)
   })
 
   it('pushes edge to inbound collection of the target and its ancestors', () => {
-    const elements = [
-      fakeElements['cloud'],
-      fakeElements['cloud.backend'],
-      fakeElements['cloud.backend.graphql'],
-      fakeElements['amazon']
-    ]
-    const view = v([
-      $include('cloud'),
-      $include('cloud.*'),
-      $include('cloud.backend.*'),
-      $include('amazon')
-    ])
-    const relations = [
-      r('amazon', 'cloud.backend.graphql')
-    ]
-    const graph = new LikeC4ModelGraph({
-      elements: toRecord(elements),
-      relations: toRecord(relations)
-    })
+    const context = compute(
+      builder
+        .model(({ el, rel }, _) =>
+          _(
+            el('cloud'),
+            el('cloud.backend'),
+            el('cloud.backend.graphql'),
+            el('amazon'),
+            rel('amazon', 'cloud.backend.graphql')
+          )
+        )
+        .views(({ view, $include, $rules }, _) =>
+          _(
+            view(
+              'index',
+              'index',
+              $rules(
+                $include('cloud'),
+                $include('cloud.*'),
+                $include('cloud.backend.*'),
+                $include('amazon')
+              )
+            )
+          )
+        )
+    )
 
-    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
-
-    expect(context.nodes.find(n => n.id === 'cloud')?.inEdges).includes(relations[0]!.id)
-    expect(context.nodes.find(n => n.id === 'cloud.backend')?.inEdges).includes(relations[0]!.id)
-    expect(context.nodes.find(n => n.id === 'cloud.backend.graphql')?.inEdges).includes(relations[0]!.id)
+    const expected = ['amazon:cloud.backend.graphql']
+    expect(context.nodes.find(n => n.id === 'cloud')?.inEdges).toEqual(expected)
+    expect(context.nodes.find(n => n.id === 'cloud.backend')?.inEdges).toEqual(expected)
+    expect(context.nodes.find(n => n.id === 'cloud.backend.graphql')?.inEdges).toEqual(expected)
   })
 
   it('sets edge parent to closest common ancestor', () => {
-    const elements = [
-      fakeElements['cloud'],
-      fakeElements['cloud.backend'],
-      fakeElements['cloud.backend.graphql'],
-      fakeElements['cloud.frontend'],
-      fakeElements['cloud.frontend.dashboard']
-    ]
-    const view = v([
-      $include('cloud'),
-      $include('cloud.*'),
-      $include('cloud.backend.*'),
-      $include('cloud.frontend.*')
-    ])
-    const relations = [
-      r('cloud.backend.graphql', 'cloud.frontend.dashboard')
-    ]
-    const graph = new LikeC4ModelGraph({
-      elements: toRecord(elements),
-      relations: toRecord(relations)
-    })
-
-    const context = withReadableEdges(ComputeCtx.elementView(view, graph))
+    const context = compute(
+      builder
+        .model(({ el, rel }, _) =>
+          _(
+            el('cloud'),
+            el('cloud.backend'),
+            el('cloud.backend.graphql'),
+            el('cloud.frontend'),
+            el('cloud.frontend.dashboard'),
+            rel('cloud.backend.graphql', 'cloud.frontend.dashboard')
+          )
+        )
+        .views(({ view, $include, $rules }, _) =>
+          _(
+            view(
+              'index',
+              'index',
+              $rules(
+                $include('cloud'),
+                $include('cloud.*'),
+                $include('cloud.backend.*'),
+                $include('cloud.frontend.*')
+              )
+            )
+          )
+        )
+    )
 
     expect(context.edges[0]!.parent).toBe('cloud')
   })

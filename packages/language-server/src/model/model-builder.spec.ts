@@ -1,6 +1,6 @@
 import type { Element, ViewId } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
-import { keys, values } from 'remeda'
+import { keys, prop, values } from 'remeda'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
@@ -1819,13 +1819,13 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       }
       views {
         view index {
-          include *
+          include sys1
           global predicate global_predicate_group_name
         }
       }
       global {
         predicateGroup global_predicate_group_name {
-          exclude * where tag is #deprecated
+          include * where tag is #deprecated
         }
       }
     `)
@@ -1833,8 +1833,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
-    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
-    expect(indexView.nodes.find(n => n.id === 'sys2')).toBeUndefined()
+    expect(indexView.nodes.map(prop('id'))).toEqual(['sys1', 'sys2'])
   })
 
   it('global dynamic predicate groups are applied', async ({ expect }) => {

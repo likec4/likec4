@@ -1,21 +1,24 @@
-import { hasAtLeast } from 'remeda'
-import { invariant } from '../../../errors'
+import { pipe, reduce } from 'remeda'
+import { isDeployedInstance } from '../../../model'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
-import type { DeploymentConnectionModel } from '../../../model/connection/deployment'
-import type { DeployedInstanceModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
+import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
 import type { FqnExpr } from '../../../types'
-import type { PredicateCtx, PredicateExecutor } from '../_types'
+import type { Elem, IncludePredicateCtx, PredicateExecutor } from '../_types'
+import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
+import type { StageInclude } from '../memory'
 import { deploymentExpressionToPredicate } from '../utils'
 
 export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = {
-  include: (expr, ctx) => {
+  include: (ctx) => {
+    const { expr } = ctx
     const el = ctx.model.element(expr.ref.deployment)
 
-    if (el.isInstance()) {
-      includeDeployedInstance(el, ctx)
-      return ctx.stage.patch()
+    if (isDeployedInstance(el)) {
+      ctx.stage.addExplicit(el)
+      ctx.stage.connectWithExisting(el)
+      return ctx.stage
     }
-    invariant(el.isDeploymentNode(), 'Type inference failed')
+
     switch (true) {
       case expr.selector === 'expanded':
         includeDeployedNodeWithExpanded(el, ctx)
@@ -26,37 +29,19 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
       case expr.selector === 'descendants':
         includeDeployedNodeDescendants(el, ctx)
         break
-      default:
-        includeDeployedNode(el, ctx)
-        break
+      default: {
+        ctx.stage.addExplicit(el)
+        ctx.stage.connectWithExisting(el)
+      }
     }
-    return ctx.stage.patch()
+    return ctx.stage
   },
 
-  exclude: (expr, { stage, memory }) => {
+  exclude: ({ expr, stage, memory }) => {
     const exprPredicate = deploymentExpressionToPredicate(expr)
     stage.exclude([...memory.elements].filter(exprPredicate))
-    return stage.patch()
-  }
-}
-
-function includeDeployedInstance(
-  instance: DeployedInstanceModel,
-  { memory, stage }: PredicateCtx
-) {
-  stage.addExplicit(instance)
-  stage.addConnections(findConnectionsBetween(instance, memory.elements))
-}
-
-/**
- * include node
- */
-function includeDeployedNode(
-  node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
-) {
-  stage.addExplicit(node)
-  stage.addConnections(findConnectionsBetween(node, memory.elements))
+    return stage
+  },
 }
 
 /**
@@ -64,20 +49,18 @@ function includeDeployedNode(
  */
 function includeDeployedNodeChildren(
   node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
+  { stage }: IncludePredicateCtx,
 ) {
   const children = [...node.children()]
   if (children.length === 0) {
     return
   }
-  stage.addExplicit(children)
+  stage.addImplicit(node)
 
-  if (hasAtLeast(children, 2)) {
-    stage.addConnections(findConnectionsWithin(children))
-  }
-  for (const child of children) {
-    stage.addConnections(findConnectionsBetween(child, memory.elements))
-  }
+  stage.addConnections(findConnectionsWithin(children))
+  stage.connectWithExisting(children)
+
+  stage.addExplicit(children)
 }
 
 /**
@@ -85,36 +68,30 @@ function includeDeployedNodeChildren(
  */
 function includeDeployedNodeWithExpanded(
   node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
+  { memory, stage }: IncludePredicateCtx,
 ) {
   const children = [...node.children()]
   stage.addImplicit(node)
+  stage.connectWithExisting(node)
 
-  const connections = [] as DeploymentConnectionModel[]
-
+  let hasConnectionsWithVisible = false
   for (const child of children) {
-    const found = findConnectionsBetween(child, memory.elements)
-    if (found.length > 0) {
-      // on first connection, add node as explicit
-      if (connections.length === 0) {
-        stage.addExplicit(node)
-      }
-      stage.addExplicit(child)
-      connections.push(...found)
+    if (findConnectionsBetween(child, memory.elements).length > 0) {
+      hasConnectionsWithVisible = true
+      break
     }
   }
 
-  if (connections.length > 0) {
-    // First connections inside
-    stage.addConnections([
-      ...findConnectionsWithin(children),
-      ...connections
-    ])
+  if (hasConnectionsWithVisible) {
+    stage.connectWithExisting(children, 'in')
+    stage.addConnections(findConnectionsWithin(children))
+    stage.connectWithExisting(children, 'out')
   }
+  stage.addImplicit(children)
 
-  stage.addConnections(
-    findConnectionsBetween(node, memory.elements)
-  )
+  if (stage.connections.length > 0) {
+    stage.addExplicit(node)
+  }
 }
 
 /**
@@ -122,25 +99,46 @@ function includeDeployedNodeWithExpanded(
  */
 function includeDeployedNodeDescendants(
   node: DeploymentNodeModel,
-  { memory, stage }: PredicateCtx
+  { stage }: IncludePredicateCtx,
 ) {
-  const descendants = [...node.descendants()]
+  const dfs = (node: DeploymentNodeModel): DeploymentElementModel[] => {
+    const children = [] as DeploymentElementModel[]
+    for (const child of node.children()) {
+      if (child.isDeploymentNode()) {
+        children.push(...dfs(child))
+      }
+      children.push(child)
+    }
+    stage.connectWithExisting(children, 'in')
+    stage.addConnections(findConnectionsWithin(children))
+    stage.addImplicit(children)
+    return children
+  }
+
+  const descendants = dfs(node)
   if (descendants.length === 0) {
     return
   }
-  for (const child of descendants) {
-    if (child.isInstance()) {
-      stage.addExplicit(child)
-    } else {
-      stage.addImplicit(child)
+  stage.connectWithExisting(descendants, 'out')
+  // stage.addImplicit(descendants)
+
+  const allconnected = findConnectedElements(stage)
+  descendants.forEach((desc) => {
+    if (allconnected.has(desc)) {
+      stage.addExplicit(desc)
     }
-  }
+  })
+}
 
-  if (hasAtLeast(descendants, 2)) {
-    stage.addConnections(findConnectionsWithin(descendants))
-  }
-
-  for (const child of descendants) {
-    stage.addConnections(findConnectionsBetween(child, memory.elements))
-  }
+function findConnectedElements(stage: StageInclude) {
+  return pipe(
+    stage.mergedConnections(),
+    cleanCrossBoundary,
+    cleanRedundantRelationships,
+    reduce((acc, c) => {
+      acc.add(c.source)
+      acc.add(c.target)
+      return acc
+    }, new Set<Elem>()),
+  )
 }

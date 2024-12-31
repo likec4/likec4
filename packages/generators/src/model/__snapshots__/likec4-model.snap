@@ -6,10 +6,9 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import { LikeC4Model } from 'likec4'
+import { LikeC4Model } from 'likec4/model'
 
 export const likeC4Model = LikeC4Model.fromDump({
-  __: 'computed',
   specification: {
     elements: {
       person: {
@@ -419,15 +418,16 @@ export const likeC4Model = LikeC4Model.fromDump({
       },
     },
   },
+  __: 'computed',
   views: {
     index: {
       id: 'index',
-      __: 'element',
       title: null,
       description: null,
       tags: null,
       links: null,
       customColorDefinitions: {},
+      __: 'element',
       autoLayout: {
         direction: 'TB',
       },
@@ -446,27 +446,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           ],
         },
         {
-          id: 'cloud:email',
-          parent: null,
-          source: 'cloud',
-          target: 'email',
-          label: 'sends emails',
-          relations: [
-            'rel13',
-          ],
-        },
-        {
-          id: 'cloud:aws',
-          parent: null,
-          source: 'cloud',
-          target: 'aws',
-          label: '[...]',
-          relations: [
-            'rel14',
-            'rel12',
-          ],
-        },
-        {
           id: 'email:customer',
           parent: null,
           source: 'email',
@@ -476,8 +455,51 @@ export const likeC4Model = LikeC4Model.fromDump({
             'rel15',
           ],
         },
+        {
+          id: 'cloud:aws',
+          parent: null,
+          source: 'cloud',
+          target: 'aws',
+          label: '[...]',
+          relations: [
+            'rel12',
+            'rel14',
+          ],
+        },
+        {
+          id: 'cloud:email',
+          parent: null,
+          source: 'cloud',
+          target: 'email',
+          label: 'sends emails',
+          relations: [
+            'rel13',
+          ],
+        },
       ],
       nodes: [
+        {
+          id: 'email',
+          parent: null,
+          kind: 'system',
+          title: 'email',
+          level: 0,
+          color: 'primary',
+          shape: 'rectangle',
+          description: null,
+          technology: null,
+          tags: null,
+          links: null,
+          children: [],
+          inEdges: [
+            'cloud:email',
+          ],
+          outEdges: [
+            'email:customer',
+          ],
+          modelRef: 1,
+          style: {},
+        },
         {
           id: 'customer',
           parent: null,
@@ -517,8 +539,8 @@ export const likeC4Model = LikeC4Model.fromDump({
             'customer:cloud',
           ],
           outEdges: [
-            'cloud:email',
             'cloud:aws',
+            'cloud:email',
           ],
           modelRef: 1,
           style: {},
@@ -543,82 +565,30 @@ export const likeC4Model = LikeC4Model.fromDump({
           modelRef: 1,
           style: {},
         },
-        {
-          id: 'email',
-          parent: null,
-          kind: 'system',
-          title: 'email',
-          level: 0,
-          color: 'primary',
-          shape: 'rectangle',
-          description: null,
-          technology: null,
-          tags: null,
-          links: null,
-          children: [],
-          inEdges: [
-            'cloud:email',
-          ],
-          outEdges: [
-            'email:customer',
-          ],
-          modelRef: 1,
-          style: {},
-        },
       ],
     },
     cloud: {
       id: 'cloud',
-      __: 'element',
-      viewOf: 'cloud',
       title: null,
       description: null,
       tags: null,
       links: null,
       customColorDefinitions: {},
+      viewOf: 'cloud',
+      __: 'element',
       autoLayout: {
         direction: 'TB',
       },
       hash: '1a523d612d8c2ad78909f943d5abe155f185391a',
       edges: [
         {
-          id: 'customer:cloud.frontend.dashboard',
-          parent: null,
-          source: 'customer',
-          target: 'cloud.frontend.dashboard',
-          label: 'opens in browser',
-          relations: [
-            'rel3',
-          ],
-        },
-        {
-          id: 'cloud.frontend.dashboard:cloud.media',
+          id: 'cloud.backend:cloud.auth',
           parent: 'cloud',
-          source: 'cloud.frontend.dashboard',
-          target: 'cloud.media',
-          label: 'fetches media',
-          relations: [
-            'rel6',
-          ],
-        },
-        {
-          id: 'cloud.frontend.dashboard:cloud.backend',
-          parent: 'cloud',
-          source: 'cloud.frontend.dashboard',
-          target: 'cloud.backend',
-          label: 'fetches data',
-          relations: [
-            'rel5',
-          ],
-        },
-        {
-          id: 'cloud.frontend.dashboard:cloud.auth',
-          parent: 'cloud',
-          source: 'cloud.frontend.dashboard',
+          source: 'cloud.backend',
           target: 'cloud.auth',
-          label: 'authenticates',
+          label: 'authorizes',
           relations: [
-            'rel4',
+            'rel10',
           ],
         },
         {
@@ -632,13 +602,13 @@ export const likeC4Model = LikeC4Model.fromDump({
           ],
         },
         {
-          id: 'cloud.backend:cloud.auth',
-          parent: 'cloud',
+          id: 'cloud.backend:aws',
+          parent: null,
           source: 'cloud.backend',
-          target: 'cloud.auth',
-          label: 'authorizes',
+          target: 'aws',
+          label: 'reads/writes',
           relations: [
-            'rel10',
+            'rel12',
           ],
         },
         {
@@ -652,16 +622,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           ],
         },
         {
-          id: 'cloud.backend:aws',
-          parent: null,
-          source: 'cloud.backend',
-          target: 'aws',
-          label: 'reads/writes',
-          relations: [
-            'rel12',
-          ],
-        },
-        {
           id: 'cloud.media:aws',
           parent: null,
           source: 'cloud.media',
@@ -669,6 +629,46 @@ export const likeC4Model = LikeC4Model.fromDump({
           label: 'uploads',
           relations: [
             'rel14',
+          ],
+        },
+        {
+          id: 'customer:cloud.frontend.dashboard',
+          parent: null,
+          source: 'customer',
+          target: 'cloud.frontend.dashboard',
+          label: 'opens in browser',
+          relations: [
+            'rel3',
+          ],
+        },
+        {
+          id: 'cloud.frontend.dashboard:cloud.auth',
+          parent: 'cloud',
+          source: 'cloud.frontend.dashboard',
+          target: 'cloud.auth',
+          label: 'authenticates',
+          relations: [
+            'rel4',
+          ],
+        },
+        {
+          id: 'cloud.frontend.dashboard:cloud.backend',
+          parent: 'cloud',
+          source: 'cloud.frontend.dashboard',
+          target: 'cloud.backend',
+          label: 'fetches data',
+          relations: [
+            'rel5',
+          ],
+        },
+        {
+          id: 'cloud.frontend.dashboard:cloud.media',
+          parent: 'cloud',
+          source: 'cloud.frontend.dashboard',
+          target: 'cloud.media',
+          label: 'fetches media',
+          relations: [
+            'rel6',
           ],
         },
       ],
@@ -715,9 +715,9 @@ export const likeC4Model = LikeC4Model.fromDump({
             'customer:cloud.frontend.dashboard',
           ],
           outEdges: [
-            'cloud.media:aws',
-            'cloud.backend:email',
             'cloud.backend:aws',
+            'cloud.backend:email',
+            'cloud.media:aws',
           ],
           modelRef: 1,
           style: {},
@@ -742,9 +742,9 @@ export const likeC4Model = LikeC4Model.fromDump({
             'customer:cloud.frontend.dashboard',
           ],
           outEdges: [
-            'cloud.frontend.dashboard:cloud.media',
-            'cloud.frontend.dashboard:cloud.backend',
             'cloud.frontend.dashboard:cloud.auth',
+            'cloud.frontend.dashboard:cloud.backend',
+            'cloud.frontend.dashboard:cloud.media',
           ],
           modelRef: 1,
           style: {},
@@ -767,9 +767,9 @@ export const likeC4Model = LikeC4Model.fromDump({
             'customer:cloud.frontend.dashboard',
           ],
           outEdges: [
-            'cloud.frontend.dashboard:cloud.media',
-            'cloud.frontend.dashboard:cloud.backend',
             'cloud.frontend.dashboard:cloud.auth',
+            'cloud.frontend.dashboard:cloud.backend',
+            'cloud.frontend.dashboard:cloud.media',
           ],
           modelRef: 1,
           style: {},
@@ -791,10 +791,10 @@ export const likeC4Model = LikeC4Model.fromDump({
             'cloud.frontend.dashboard:cloud.backend',
           ],
           outEdges: [
-            'cloud.backend:cloud.media',
             'cloud.backend:cloud.auth',
-            'cloud.backend:email',
+            'cloud.backend:cloud.media',
             'cloud.backend:aws',
+            'cloud.backend:email',
           ],
           modelRef: 1,
           style: {},
@@ -813,10 +813,33 @@ export const likeC4Model = LikeC4Model.fromDump({
           links: null,
           children: [],
           inEdges: [
-            'cloud.frontend.dashboard:cloud.auth',
             'cloud.backend:cloud.auth',
+            'cloud.frontend.dashboard:cloud.auth',
           ],
           outEdges: [],
+          modelRef: 1,
+          style: {},
+        },
+        {
+          id: 'cloud.media',
+          parent: 'cloud',
+          kind: 'component',
+          title: 'media',
+          level: 1,
+          color: 'primary',
+          shape: 'storage',
+          description: null,
+          technology: null,
+          tags: null,
+          links: null,
+          children: [],
+          inEdges: [
+            'cloud.backend:cloud.media',
+            'cloud.frontend.dashboard:cloud.media',
+          ],
+          outEdges: [
+            'cloud.media:aws',
+          ],
           modelRef: 1,
           style: {},
         },
@@ -841,29 +864,6 @@ export const likeC4Model = LikeC4Model.fromDump({
           style: {},
         },
         {
-          id: 'cloud.media',
-          parent: 'cloud',
-          kind: 'component',
-          title: 'media',
-          level: 1,
-          color: 'primary',
-          shape: 'storage',
-          description: null,
-          technology: null,
-          tags: null,
-          links: null,
-          children: [],
-          inEdges: [
-            'cloud.frontend.dashboard:cloud.media',
-            'cloud.backend:cloud.media',
-          ],
-          outEdges: [
-            'cloud.media:aws',
-          ],
-          modelRef: 1,
-          style: {},
-        },
-        {
           id: 'aws',
           parent: null,
           kind: 'system',
@@ -877,8 +877,8 @@ export const likeC4Model = LikeC4Model.fromDump({
           links: null,
           children: [],
           inEdges: [
-            'cloud.media:aws',
             'cloud.backend:aws',
+            'cloud.media:aws',
           ],
           outEdges: [],
           modelRef: 1,
@@ -888,16 +888,16 @@ export const likeC4Model = LikeC4Model.fromDump({
     },
     prod: {
       id: 'prod',
-      __: 'deployment',
-      title: null,
+      title: 'prod',
       description: null,
       tags: null,
       links: null,
       customColorDefinitions: {},
+      __: 'deployment',
       autoLayout: {
         direction: 'TB',
       },
-      hash: 'cbab6fcfc7eac0ad103fe2b8cc09cee9da6b0ed6',
+      hash: '162fafc65660c3ffa0b88d2d4c5996b159aca805',
       edges: [
         {
           id: 'customer.instance:prod.eu.zone1.ui',
@@ -933,11 +933,34 @@ export const likeC4Model = LikeC4Model.fromDump({
           style: {},
         },
         {
-          id: 'prod.eu.zone1.ui',
+          id: 'prod',
           parent: null,
+          kind: 'env',
+          title: 'prod',
+          level: 0,
+          color: 'primary',
+          shape: 'rectangle',
+          description: null,
+          technology: null,
+          tags: null,
+          links: null,
+          children: [
+            'prod.eu.zone1.ui',
+          ],
+          inEdges: [
+            'customer.instance:prod.eu.zone1.ui',
+          ],
+          outEdges: [],
+          deploymentRef: 1,
+          style: {},
+          depth: 1,
+        },
+        {
+          id: 'prod.eu.zone1.ui',
+          parent: 'prod',
           kind: 'instance',
           title: 'dashboard',
-          level: 0,
+          level: 1,
           color: 'primary',
           shape: 'browser',
           description: null,

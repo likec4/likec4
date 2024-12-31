@@ -9,26 +9,21 @@ export default defineBuildConfig([
     rollup: {
       emitCJS: true,
       esbuild: {
-        platform: 'browser'
-      },
-      commonjs: {
-        exclude: [
-          /\.ts$/
-        ]
+        platform: 'browser',
       },
       resolve: {
-        browser: true
+        browser: true,
       },
-      inlineDependencies: true
+      inlineDependencies: true,
     },
-    hooks: {
-      'rollup:options'(_, options) {
-        for (const output of options.output as any[]) {
-          // @ts-ignore
-          output.exports = 'named'
-        }
-      }
-    }
+    // hooks: {
+    //   'rollup:options'(_, options) {
+    //     for (const output of options.output as any[]) {
+    //       // @ts-ignore
+    //       output.exports = 'named'
+    //     }
+    //   }
+    // }
   },
   {
     entries: ['src/index.ts'],
@@ -38,26 +33,26 @@ export default defineBuildConfig([
     rollup: {
       emitCJS: true,
       esbuild: {
-        platform: 'node'
+        platform: 'node',
       },
       commonjs: {
         exclude: [
-          /\.ts$/
-        ]
+          /\.ts$/,
+        ],
       },
       resolve: {
         browser: false,
-        exportConditions: ['node']
+        exportConditions: ['node'],
       },
-      inlineDependencies: true
+      inlineDependencies: true,
     },
-    hooks: {
-      'rollup:options'(_, options) {
-        for (const output of options.output as any[]) {
-          // @ts-ignore
-          output.exports = 'named'
-        }
-      }
-    }
-  }
+    // hooks: {
+    //   'rollup:options'(_, options) {
+    //     for (const output of options.output as any[]) {
+    //       // @ts-ignore
+    //       output.exports = 'named'
+    //     }
+    //   }
+    // }
+  },
 ])

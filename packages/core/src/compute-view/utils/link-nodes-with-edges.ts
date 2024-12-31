@@ -19,12 +19,8 @@ export function linkNodesWithEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edg
     source.outEdges.push(edge.id)
     target.inEdges.push(edge.id)
 
-    if (edge.dir === 'both') {
-      source.inEdges.push(edge.id)
-      target.outEdges.push(edge.id)
-    }
-
     // These ancestors are reversed: from bottom to top
+    // Ensure that ancestors are in computed nodes
     const sourceAncestors = ancestorsOfNode(source, nodesMap)
     const targetAncestors = ancestorsOfNode(target, nodesMap)
 
@@ -34,8 +30,8 @@ export function linkNodesWithEdges(nodesMap: ReadonlyMap<Fqn, ComputedNode>, edg
       ? last(
         commonHead(
           reverse(sourceAncestors),
-          reverse(targetAncestors)
-        )
+          reverse(targetAncestors),
+        ),
       )
       : null
     edge.parent = edgeParent ? edgeParent.id : null

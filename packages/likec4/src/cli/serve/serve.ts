@@ -1,4 +1,5 @@
 import { delay } from '@likec4/core'
+import { DEV } from 'esm-env'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -38,25 +39,25 @@ export async function handler({
   webcomponentPrefix,
   useHashHistory,
   useOverview = false,
-  base
+  base,
 }: HandlerParams) {
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
   // await mkdir(likec4AssetsDir, { recursive: true })
 
   const server = await viteDev({
-    buildWebcomponent: false,
+    buildWebcomponent: !DEV,
     hmr: true,
     base,
     webcomponentPrefix,
     languageServices,
     useHashHistory,
     useOverviewGraph: useOverview,
-    likec4AssetsDir
+    likec4AssetsDir,
   })
 
   server.config.logger.clearScreen('info')
@@ -84,7 +85,7 @@ export async function handler({
         views,
         theme: 'light',
         output: likec4AssetsDir,
-        outputType: 'flat'
+        outputType: 'flat',
       })
 
       await delay(1000)

@@ -1,16 +1,18 @@
-import type { IsLiteral, LiteralUnion, Simplify } from 'type-fest'
+import type { IsStringLiteral, LiteralUnion, Simplify } from 'type-fest'
 import type {
-  AnyLikeC4Model,
   ComputedView,
   DiagramView,
   EdgeId,
   Fqn,
+  GenericLikeC4Model,
+  IteratorLike,
   KeysOf,
   LayoutedLikeC4Model,
+  LikeC4ModelDump,
   NodeId,
-  ParsedLikeC4ModelDump,
+  ParsedLikeC4Model,
   RelationId,
-  ViewId
+  ViewId,
 } from '../types'
 import { isString } from '../utils/guards'
 
@@ -24,8 +26,6 @@ export function getId<Id extends string>(element: string | { id: Id }): Id {
   return isString(element) ? element as Id : element.id
 }
 
-export type IteratorLike<T> = IteratorObject<T, BuiltinIteratorReturn>
-
 type WithId<Id> = { id: Id }
 
 type WithViews<Id extends string, ViewType> = { views: Record<Id, ViewType> }
@@ -36,22 +36,25 @@ type WithViews<Id extends string, ViewType> = { views: Record<Id, ViewType> }
 export interface Aux<
   Element extends string,
   Deployment extends string,
-  Views extends string,
-  ViewType
+  View extends string,
+  ViewType,
 > {
-  // Model: Model
-
-  // If Fqn is just a string, then we use generic Fqn to have better hints in the editor
-  Fqn: IsLiteral<Element> extends true ? Fqn<Element> : Fqn
   Element: Element
+  Deployment: Deployment
+  View: View
+
+  // Wrapped Element
+  // If Fqn is just a string, then we use generic Fqn to have better hints in the editor
+  Fqn: IsStringLiteral<Element> extends true ? Fqn<Element> : Fqn
   ElementOrFqn: Element | WithId<this['Fqn']>
 
-  DeploymentFqn: IsLiteral<Deployment> extends true ? Fqn<Deployment> : Fqn
-  Deployment: Deployment
+  // Wrapped Deployment
+  DeploymentFqn: IsStringLiteral<Deployment> extends true ? Fqn<Deployment> : Fqn
   DeploymentOrFqn: Deployment | WithId<this['DeploymentFqn']>
 
-  ViewId: IsLiteral<Views> extends true ? ViewId<Views> : ViewId
-  ViewIdLiteral: Views
+  // Wrapped View
+  ViewId: IsStringLiteral<View> extends true ? ViewId<View> : ViewId
+
   ViewType: ViewType
 
   RelationId: RelationId
@@ -63,7 +66,7 @@ export interface Aux<
   NodeOrId: LiteralUnion<this['NodeIdLiteral'], string> | WithId<this['NodeId']>
   EdgeOrId: LiteralUnion<this['EdgeIdLiteral'], string> | WithId<this['EdgeId']>
 
-  Model: Simplify<Omit<AnyLikeC4Model, 'views'> & WithViews<this['ViewId'], ViewType>>
+  Model: Simplify<Omit<GenericLikeC4Model, 'views'> & WithViews<this['ViewId'], ViewType>>
 }
 
 export type AnyAux = Aux<
@@ -73,8 +76,22 @@ export type AnyAux = Aux<
   any
 >
 
+export namespace Strict {
+  export type Fqn<A extends AnyAux> = A['Element']
+  export type Deployment<A extends AnyAux> = A['Deployment']
+  export type ViewId<A extends AnyAux> = A['View']
+}
+
 export namespace Aux {
-  export type FromModel<M> = M extends AnyLikeC4Model ? Aux<
+  export type FromParsed<M> = M extends ParsedLikeC4Model ? Aux<
+      KeysOf<M['elements']>,
+      KeysOf<M['deployments']['elements']>,
+      KeysOf<M['views']>,
+      ComputedView<ViewId<KeysOf<M['views']>>, string>
+    >
+    : never
+
+  export type FromModel<M> = M extends GenericLikeC4Model ? Aux<
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,
@@ -83,7 +100,7 @@ export namespace Aux {
     >
     : never
 
-  export type FromDump<M> = M extends ParsedLikeC4ModelDump ? Aux<
+  export type FromDump<M> = M extends LikeC4ModelDump ? Aux<
       KeysOf<M['elements']>,
       KeysOf<M['deployments']['elements']>,
       KeysOf<M['views']>,

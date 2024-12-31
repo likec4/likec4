@@ -1,0 +1,183 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Builder (style 2) > should build  1`] = `
+{
+  "deployments": {
+    "elements": {
+      "dev": {
+        "color": "primary",
+        "description": null,
+        "id": "dev",
+        "kind": "env",
+        "shape": "rectangle",
+        "style": {},
+        "tags": null,
+        "technology": null,
+        "title": "dev",
+      },
+      "dev.local": {
+        "color": "primary",
+        "description": null,
+        "id": "dev.local",
+        "kind": "node",
+        "shape": "rectangle",
+        "style": {},
+        "tags": null,
+        "technology": null,
+        "title": "local",
+      },
+      "prod": {
+        "color": "primary",
+        "description": null,
+        "id": "prod",
+        "kind": "env",
+        "shape": "rectangle",
+        "style": {},
+        "tags": null,
+        "technology": null,
+        "title": "prod",
+      },
+      "prod.eu": {
+        "color": "primary",
+        "description": null,
+        "id": "prod.eu",
+        "kind": "node",
+        "shape": "rectangle",
+        "style": {},
+        "tags": null,
+        "technology": null,
+        "title": "eu",
+      },
+      "prod.eu.ui": {
+        "element": "cloud.ui",
+        "id": "prod.eu.ui",
+      },
+    },
+    "relations": {},
+  },
+  "elements": {
+    "cloud": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud",
+      "kind": "system",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "cloud",
+    },
+    "cloud.ui": {
+      "color": "primary",
+      "description": null,
+      "id": "cloud.ui",
+      "kind": "component",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "ui",
+    },
+    "customer": {
+      "color": "primary",
+      "description": null,
+      "id": "customer",
+      "kind": "actor",
+      "links": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "customer",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "relations": {},
+  "specification": {
+    "deployments": {
+      "env": {},
+      "node": {},
+    },
+    "elements": {
+      "actor": {},
+      "component": {},
+      "system": {},
+    },
+    "relationships": {},
+    "tags": [],
+  },
+  "views": {
+    "cloud": {
+      "__": "element",
+      "customColorDefinitions": {},
+      "description": null,
+      "id": "cloud",
+      "links": null,
+      "rules": [
+        {
+          "include": [
+            {
+              "source": {
+                "wildcard": true,
+              },
+              "target": {
+                "element": "cloud",
+                "isDescendants": true,
+              },
+            },
+          ],
+        },
+      ],
+      "tags": null,
+      "title": null,
+      "viewOf": "cloud.ui",
+    },
+    "deployment": {
+      "__": "deployment",
+      "customColorDefinitions": {},
+      "description": null,
+      "id": "deployment",
+      "links": null,
+      "rules": [
+        {
+          "include": [
+            {
+              "ref": {
+                "deployment": "prod",
+              },
+              "selector": "descendants",
+            },
+          ],
+        },
+      ],
+      "tags": null,
+      "title": "Deployment",
+    },
+    "index": {
+      "__": "element",
+      "customColorDefinitions": {},
+      "description": null,
+      "id": "index",
+      "links": null,
+      "rules": [
+        {
+          "include": [
+            {
+              "element": "cloud",
+              "isChildren": true,
+            },
+          ],
+        },
+      ],
+      "tags": null,
+      "title": "Index",
+    },
+  },
+}
+`;

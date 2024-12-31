@@ -28,54 +28,80 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
-    "./compute-view": "./src/compute-view/index.ts",
-    "./model": "./src/model/index.ts",
-    "./types": "./src/types/index.ts"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "./compute-view": {
-        "types": "./dist/compute-view/index.d.mts",
-        "default": "./dist/compute-view/index.mjs"
-      },
-      "./model": {
-        "types": "./dist/model/index.d.mts",
-        "default": "./dist/model/index.mjs"
-      },
-      "./types": {
-        "types": "./dist/types/index.d.mts",
-        "default": "./dist/types/index.mjs"
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "./builder": {
+      "development": "./src/builder/index.ts",
+      "default": {
+        "types": "./dist/builder/index.d.ts",
+        "import": "./dist/builder/index.js",
+        "default": "./dist/builder/index.js"
+      }
+    },
+    "./compute-view": {
+      "development": "./src/compute-view/index.ts",
+      "default": {
+        "types": "./dist/compute-view/index.d.ts",
+        "import": "./dist/compute-view/index.js",
+        "default": "./dist/compute-view/index.js"
+      }
+    },
+    "./model": {
+      "development": "./src/model/index.ts",
+      "default": {
+        "types": "./dist/model/index.d.ts",
+        "import": "./dist/model/index.js",
+        "default": "./dist/model/index.js"
+      }
+    },
+    "./utils": {
+      "development": "./src/utils/index.ts",
+      "default": {
+        "types": "./dist/utils/index.d.ts",
+        "import": "./dist/utils/index.js",
+        "default": "./dist/utils/index.js"
+      }
+    },
+    "./types": {
+      "development": "./src/types/index.ts",
+      "default": {
+        "types": "./dist/types/index.d.ts",
+        "import": "./dist/types/index.js",
+        "default": "./dist/types/index.js"
       }
     }
   },
+  "publishConfig": {
+    "registry": "https://registry.npjs.org",
+    "access": "public"
+  },
   "dependencies": {
-    "defu": "^6.1.4",
     "type-fest": "4.28.1"
   },
   "devDependencies": {
-    "@dagrejs/dagre": "^1.1.4",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "7.15.1",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
+    "defu": "^6.1.4",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
     "mnemonist": "^0.39.8",
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
+    "obliterator": "^2.0.4",
     "remeda": "^2.17.4",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2",
-    "unbuild": "^3.0.0-rc.11",
+    "unbuild": "^3.0.1",
     "vitest": "^2.1.8"
   },
   "packageManager": "yarn@4.5.3"

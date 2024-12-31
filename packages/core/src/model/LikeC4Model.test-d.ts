@@ -1,6 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
-import { computeViews } from '../compute-view/compute-view'
 import type { ComputedView, Fqn, ViewId } from '../types'
 import { LikeC4Model } from './LikeC4Model'
 
@@ -80,8 +79,10 @@ test('LikeC4Model.create: should have types', () => {
     )
     .build()
 
-  const computed = computeViews(source)
-  const m = LikeC4Model.create(computed)
+  const m = LikeC4Model.compute(source)
+
+  // @ts-expect-error
+  m.element('wrong')
 
   expectTypeOf(m.Aux.Element).toEqualTypeOf(
     '' as 'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'

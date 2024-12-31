@@ -1,11 +1,11 @@
-import type { ComputedView } from '@likec4/core'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import type { ComputedView } from '../../model'
 
 export function diagramPreviewsSources(views: ComputedView[], assetsDir: string) {
   const {
     imports,
-    cases
+    cases,
   } = views.reduce((acc, { id }, i) => {
     const filePath = resolve(assetsDir, `${id}.png`)
     if (!existsSync(filePath)) {
@@ -18,7 +18,7 @@ export function diagramPreviewsSources(views: ComputedView[], assetsDir: string)
     return acc
   }, {
     imports: [] as string[],
-    cases: [] as string[]
+    cases: [] as string[],
   })
   return `
 import { nano } from 'likec4/react'

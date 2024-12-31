@@ -1,23 +1,25 @@
-import {
-  intersection as _intersection,
-  symmetricDifference as _symmetricDifference,
-  union as _union
-} from 'mnemonist/set'
+import { intersection as _intersection, symmetricDifference as _symmetricDifference } from 'mnemonist/set'
 import type { NonEmptyArray } from '../types/_common'
 
 /**
  * Returns new set as a union of given sets
  * Keeps order of elements
  */
-export function union<T>(...sets: NonEmptyArray<ReadonlySet<T>>): Set<T> {
-  return _union(...sets as any)
+export function union<T>(...sets: ReadonlySet<T>[]): Set<T> {
+  let result = new Set<T>()
+  for (const set of sets) {
+    for (const value of set) {
+      result.add(value)
+    }
+  }
+  return result
 }
 
 /**
  * Returns new set as an intersection of all sets
  * Keeps order from the first set
  */
-export function intersection<T>(first: ReadonlySet<T>, ...sets: NonEmptyArray<ReadonlySet<T>>): Set<T> {
+export function intersection<T>(first: ReadonlySet<T>, ...sets: NonEmptyArray<ReadonlySet<NoInfer<T>>>): Set<T> {
   let result = new Set<T>()
   // If first set is empty, return empty set
   if (first.size === 0) {
@@ -35,7 +37,7 @@ export function intersection<T>(first: ReadonlySet<T>, ...sets: NonEmptyArray<Re
   return result
 }
 
-export function difference<T>(a: ReadonlySet<T>, b: ReadonlySet<T>): Set<T> {
+export function difference<T>(a: ReadonlySet<T>, b: ReadonlySet<NoInfer<T>>): Set<T> {
   if (a.size === 0) {
     return new Set<T>()
   }

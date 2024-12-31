@@ -1,13 +1,13 @@
 /** @type import('dts-bundle-generator/config-schema').OutputOptions */
 const commonOutputParams = {
   inlineDeclareGlobals: false,
-  sortNodes: true
+  sortNodes: true,
 }
 
 /** @type import('dts-bundle-generator/config-schema').BundlerConfig */
 const config = {
   compilationOptions: {
-    preferredConfigPath: './tsconfig.dts-bundle.json'
+    preferredConfigPath: './tsconfig.dts-bundle.json',
   },
 
   entries: [
@@ -19,22 +19,21 @@ const config = {
       libraries: {
         inlinedLibraries: [
           '@mantine/core',
-          '@mantine/hooks',
           '@xyflow/react',
           '@xyflow/system',
-          '@likec4/core',
+          '@likec4/core/types',
           '@likec4/diagram',
           'nanostores',
-          '@nanostores/react'
-        ]
+          '@nanostores/react',
+        ],
       },
       output: {
         exportReferencedTypes: false,
         inlineDeclareGlobals: false,
-        sortNodes:  false
-      }
-    }
-  ]
+        sortNodes: false,
+      },
+    },
+  ],
 }
 
 module.exports = config

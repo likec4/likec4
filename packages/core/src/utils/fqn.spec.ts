@@ -1,4 +1,4 @@
-import { map, prop } from 'remeda'
+import { anyPass, isNot, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import type { Element } from '../types'
 import {
@@ -8,11 +8,10 @@ import {
   hierarchyDistance,
   isAncestor,
   isDescendantOf,
-  notDescendantOf,
   parentFqn,
   sortByFqnHierarchically,
   sortNaturalByFqn,
-  sortParentsFirst
+  sortParentsFirst,
 } from './fqn'
 
 const el = (id: string): Element => ({ id }) as unknown as Element
@@ -60,6 +59,7 @@ describe('fqn utils', () => {
       expect(isAncestor('a.b', 'a.b.c')).toBe(true)
     })
     it('should return false if not ancestor', () => {
+      expect(isAncestor('a', 'a')).toBe(false)
       expect(isAncestor('a', 'b')).toBe(false)
       expect(isAncestor('a.b', 'a')).toBe(false)
       expect(isAncestor('a.b', 'b.a')).toBe(false)
@@ -67,14 +67,14 @@ describe('fqn utils', () => {
   })
 
   describe('isDescendantOf', () => {
-    const predicate = isDescendantOf(['a', 'b', 'a.b', 'a.b.c'].map(el))
+    const predicate = anyPass(['a', 'b', 'a.b', 'a.b.c'].map(e => isDescendantOf({ id: e })))
 
     it('should return true if isDescendantOf', () => {
-      expect(predicate(el('a'))).toBe(true)
       expect(predicate(el('b.c'))).toBe(true)
       expect(predicate(el('a.b.c.d.e'))).toBe(true)
     })
     it('should return false if not descendantOf', () => {
+      expect(predicate(el('a'))).toBe(false)
       expect(predicate(el('c'))).toBe(false)
       expect(predicate(el('ac'))).toBe(false)
       expect(predicate(el('d.a.c'))).toBe(false)
@@ -82,15 +82,15 @@ describe('fqn utils', () => {
   })
 
   describe('notDescendantOf', () => {
-    const predicate = notDescendantOf(['a', 'b', 'a.b', 'a.b.c'].map(el))
+    const predicate = isNot(anyPass(['a', 'b', 'a.b', 'a.b.c'].map(e => isDescendantOf({ id: e }))))
 
     it('should return true if notDescendantOf', () => {
       expect(predicate(el('c'))).toBe(true)
       expect(predicate(el('ac'))).toBe(true)
       expect(predicate(el('d.a.c'))).toBe(true)
+      expect(predicate(el('a'))).toBe(true)
     })
     it('should return false if descendantOf', () => {
-      expect(predicate(el('a'))).toBe(false)
       expect(predicate(el('b.c'))).toBe(false)
       expect(predicate(el('a.b.c.d.e'))).toBe(false)
     })
@@ -103,19 +103,19 @@ describe('fqn utils', () => {
         'b',
         'a.b',
         'a.b.c',
-        'a.c.c'
+        'a.c.c',
       ].sort(compareFqnHierarchically)).toEqual([
         'a',
         'b',
         'a.b',
         'a.b.c',
-        'a.c.c'
+        'a.c.c',
       ])
     })
 
     it('should preserve initial order', () => {
       expect(
-        ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'].sort(compareFqnHierarchically)
+        ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'].sort(compareFqnHierarchically),
       ).toEqual(['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'])
     })
   })
@@ -129,15 +129,15 @@ describe('fqn utils', () => {
           el('a.c.a.b'),
           el('a.c.c'),
           el('b'),
-          el('a.b.c')
-        ]).map(prop('id'))
+          el('a.b.c'),
+        ]).map(prop('id')),
       ).toEqual([
         'a',
         'b',
         'a.b',
         'a.b.c',
         'a.c.c',
-        'a.c.a.b'
+        'a.c.a.b',
       ])
     })
 
@@ -150,8 +150,8 @@ describe('fqn utils', () => {
           el('a.b1'),
           el('a.b2'),
           el('a.b10'),
-          el('a.b2.c')
-        ]).map(prop('id'))
+          el('a.b2.c'),
+        ]).map(prop('id')),
       ).toEqual([
         'a',
         'b',
@@ -159,7 +159,29 @@ describe('fqn utils', () => {
         'a.b2',
         'a.b10',
         'a.b2.c',
-        'a.c.c'
+        'a.c.c',
+      ])
+    })
+
+    it('should sort natural (desc)', () => {
+      expect(
+        sortNaturalByFqn('desc')([
+          el('b'),
+          el('a.c.c'),
+          el('a'),
+          el('a.b1'),
+          el('a.b2'),
+          el('a.b10'),
+          el('a.b2.c'),
+        ]).map(prop('id')),
+      ).toEqual([
+        'a.b2.c',
+        'a.c.c',
+        'a.b1',
+        'a.b2',
+        'a.b10',
+        'a',
+        'b',
       ])
     })
   })
@@ -173,15 +195,15 @@ describe('fqn utils', () => {
           el('a.b.c'),
           el('a.c.a.b'),
           el('a.c.c'),
-          el('b')
-        ]).map(prop('id'))
+          el('b'),
+        ]).map(prop('id')),
       ).toEqual([
         'a',
         'b',
         'a.b',
         'a.b.c',
         'a.c.c',
-        'a.c.a.b'
+        'a.c.a.b',
       ])
     })
 
@@ -194,8 +216,8 @@ describe('fqn utils', () => {
           el('a.b10'),
           el('a.b2.c'),
           el('a.b1'),
-          el('a.b2')
-        ]).map(prop('id'))
+          el('a.b2'),
+        ]).map(prop('id')),
       ).toEqual([
         'b',
         'a',
@@ -203,7 +225,7 @@ describe('fqn utils', () => {
         'a.b1',
         'a.b2',
         'a.c.c',
-        'a.b2.c'
+        'a.b2.c',
       ])
     })
   })
@@ -216,15 +238,15 @@ describe('fqn utils', () => {
           el('b'),
           el('a'),
           el('a.b.c'),
-          el('a.b')
+          el('a.b'),
         ]),
-        prop('id')
+        prop('id'),
       )).toEqual([
         'a',
         'a.c',
         'b',
         'a.b',
-        'a.b.c'
+        'a.b.c',
       ])
     })
 
@@ -238,9 +260,9 @@ describe('fqn utils', () => {
           el('a.b.c'),
           el('a.c.a.b'),
           el('a.c'),
-          el('b')
+          el('b'),
         ]),
-        prop('id')
+        prop('id'),
       )).toEqual([
         'a',
         'a.b',
@@ -249,7 +271,7 @@ describe('fqn utils', () => {
         'a.c',
         'a.c.c',
         'a.b.c',
-        'a.c.a.b'
+        'a.c.a.b',
       ])
     })
   })

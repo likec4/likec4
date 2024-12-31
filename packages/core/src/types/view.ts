@@ -8,7 +8,7 @@ import {
   type ElementStyle,
   type Fqn,
   type Link,
-  type Tag
+  type Tag,
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { ExpressionV2, FqnExpr } from './expression-v2'
@@ -82,7 +82,7 @@ export interface ViewRuleAutoLayout {
 }
 
 export function isViewRuleAutoLayout(
-  rule: DeploymentViewRule | DynamicViewRule | ViewRule
+  rule: DeploymentViewRule | DynamicViewRule | ViewRule,
 ): rule is ViewRuleAutoLayout {
   return 'direction' in rule
 }
@@ -111,7 +111,7 @@ export type ViewRule =
 export interface BasicView<
   ViewType extends 'element' | 'dynamic' | 'deployment',
   ViewIDs extends string,
-  Tags extends string
+  Tags extends string,
 > {
   readonly __?: ViewType
   readonly id: ViewId<ViewIDs>
@@ -162,7 +162,7 @@ export interface ExtendsElementView<ViewIDs extends string, Tags extends string>
 }
 export type ElementView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > =
   | ScopedElementView<ViewIDs, Tags>
   | ExtendsElementView<ViewIDs, Tags>
@@ -205,7 +205,7 @@ export type DynamicViewRule =
   | ViewRuleAutoLayout
 export interface DynamicView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > extends BasicView<'dynamic', ViewIDs, Tags> {
   readonly __: 'dynamic'
 
@@ -242,7 +242,7 @@ export type DeploymentViewRule = DeploymentViewRulePredicate | ViewRuleAutoLayou
 
 export interface DeploymentView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > extends BasicView<'deployment', ViewIDs, Tags> {
   readonly __: 'deployment'
   readonly rules: DeploymentViewRule[]
@@ -250,7 +250,7 @@ export interface DeploymentView<
 
 export type LikeC4View<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > = ElementView<ViewIDs, Tags> | DynamicView<ViewIDs, Tags> | DeploymentView<ViewIDs, Tags>
 
 export function isDeploymentView(view: LikeC4View): view is DeploymentView
@@ -410,7 +410,7 @@ export interface ViewAutoLayout {
 }
 export interface ComputedElementView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > extends Omit<ElementView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly extends?: ViewId<ViewIDs>
   readonly autoLayout: ViewAutoLayout
@@ -421,7 +421,7 @@ export interface ComputedElementView<
 }
 export interface ComputedDynamicView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > extends Omit<DynamicView<ViewIDs, Tags>, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
@@ -433,7 +433,7 @@ export interface ComputedDynamicView<
 
 export interface ComputedDeploymentView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > extends Omit<DeploymentView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
@@ -444,7 +444,7 @@ export interface ComputedDeploymentView<
 
 export type ComputedView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > = ComputedElementView<ViewIDs, Tags> | ComputedDynamicView<ViewIDs, Tags> | ComputedDeploymentView<ViewIDs, Tags>
 
 export namespace ComputedView {
@@ -471,11 +471,11 @@ export function getBBoxCenter({
   x,
   y,
   width,
-  height
+  height,
 }: BBox): XYPoint {
   return {
     x: x + width / 2,
-    y: y + height / 2
+    y: y + height / 2,
   }
 }
 
@@ -515,7 +515,7 @@ export interface DiagramEdge extends ComputedEdge {
 
 export interface DiagramView<
   ViewIDs extends string = string,
-  Tags extends string = string
+  Tags extends string = string,
 > extends Omit<ComputedView<ViewIDs, Tags>, 'nodes' | 'edges' | 'manualLayout'> {
   readonly nodes: DiagramNode[]
   readonly edges: DiagramEdge[]

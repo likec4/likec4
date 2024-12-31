@@ -1,4 +1,5 @@
-import type { IfNever, IsLiteral, Tagged, TupleToUnion } from 'type-fest'
+import type { IfNever, IsLiteral, IsStringLiteral, Tagged, TupleToUnion } from 'type-fest'
+import type { LikeC4Model } from '../model/LikeC4Model'
 import type {
   BorderStyle,
   Color,
@@ -10,9 +11,11 @@ import type {
   ParsedLikeC4Model,
   RelationshipArrowType,
   RelationshipKindSpecification,
-  RelationshipLineType
+  RelationshipLineType,
 } from '../types'
 import type { ExpressionV2 } from '../types/expression-v2'
+import type { Builder } from './Builder'
+import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
 export type BuilderSpecification = {
   elements: {
@@ -89,6 +92,12 @@ export type Invalid<Message extends string> = Tagged<Message, 'Error'>
 export type Warn<Id, Existing> = IsLiteral<Existing> extends true ? Id extends Existing ? Invalid<'Already exists'> : Id
   : Id
 
+export type ValidId<Id> =
+  // Id extends `${string}.${string}` ? Invalid<'Id must not contain dot'>
+  Id extends `${number}${string}` ? Invalid<'Id must not start with number'>
+    : IsStringLiteral<Id> extends true ? Id
+    : Invalid<'Id must be a literal'>
+
 /**
  * Auxilary type to keep track of the types in builder
  */
@@ -100,7 +109,7 @@ export interface Types<
   Tag extends string,
   MetadataKey extends string,
   DeploymentKind extends string,
-  DeploymentFqn extends string
+  DeploymentFqn extends string,
 > {
   ElementKind: ElementKind
   Fqn: Fqn
@@ -133,7 +142,7 @@ export interface TypesNested<
   Tag extends string,
   MetadataKey extends string,
   DeploymentKind extends string,
-  DeploymentFqn extends string
+  DeploymentFqn extends string,
 > extends
   Types<
     ElementKind,
@@ -262,9 +271,20 @@ export namespace Types {
       T['RelationshipKind'],
       T['Tag'],
       T['Fqn'],
-      T['ViewId']
+      T['ViewId'],
+      T['DeploymentFqn']
     >
     : never
 
+  export type ToLikeC4Model<T extends AnyTypes> = LikeC4Model.Computed<
+    T['Fqn'],
+    T['DeploymentFqn'],
+    T['ViewId']
+  >
+
   export type ToExpression<T> = T extends AnyTypes ? ExpressionV2<T['DeploymentFqn'], T['Fqn']> : never
+
+  export type From<B> = B extends Builder<infer T> ? B['Types'] extends AnyTypes ? T : AnyTypes : never
+
+  export type DeploymentRules<B> = DeploymentRulesBuilderOp<From<B>>
 }

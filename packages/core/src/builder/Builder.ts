@@ -1,7 +1,6 @@
 import defu from 'defu'
-import { fromEntries, hasAtLeast, isFunction, isNonNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
+import { fromEntries, hasAtLeast, isFunction, isNonNullish, isNullish, map, mapToObj, mapValues, pickBy } from 'remeda'
 import type { Writable } from 'type-fest'
-import { computeViews } from '../compute-view'
 import { invariant } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
 import {
@@ -23,29 +22,26 @@ import {
   type ModelRelation,
   type NonEmptyArray,
   type RelationId,
-  type Tag
+  type Tag,
 } from '../types'
-import type { ParsedLikeC4Model } from '../types/model'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
 import type { AddDeploymentNode } from './Builder.deployment'
-import type { AddDeploymentNodeHelpers, DeloymentModelHelpers, DeploymentModelBuilder } from './Builder.deploymentModel'
+import type {
+  AddDeploymentNodeHelpers,
+  DeloymentModelBuildFunction,
+  DeloymentModelHelpers,
+  DeploymentModelBuilder,
+} from './Builder.deploymentModel'
 import type { AddElement } from './Builder.element'
-import type { AddElementHelpers, ModelBuilder, ModelHelpers } from './Builder.model'
-import {
-  $autoLayout,
-  $exclude,
-  $include,
-  $rules,
-  $style,
-  type DeploymentViewRuleBuilderOp,
-  mkViewBuilder,
-  type ViewHelpers,
-  type ViewRuleBuilderOp
-} from './Builder.view'
-import { type ViewsBuilder } from './Builder.views'
+import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
+import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
+import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
+import type { ElementViewRulesBuilder } from './Builder.view-element'
+import { mkViewBuilder, type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers } from './Builder.views'
+import type { BuilderMethods } from './Builder.with'
 
-export interface Builder<T extends AnyTypes> {
+export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   /**
    * Only available in compile time
    */
@@ -58,186 +54,95 @@ export interface Builder<T extends AnyTypes> {
    */
   helpers(): {
     model: ModelHelpers<T>
-    views: ViewHelpers<T['NewViewProps']>
+    views: ViewsHelpers
     deployment: DeloymentModelHelpers<T>
   }
 
-  __model(): ModelBuilder<T>
-  __views(): ViewsBuilder<T>
-  __deployment(): DeploymentModelBuilder<T>
+  /**
+   * Adds model elements
+   *
+   * @example
+   *  builder.model(({ el }, _) =>
+   *    _(
+   *      el('a'),
+   *      el('a.b').with(
+   *        el('c')
+   *      )
+   *    )
+   *  )
+   *
+   *  builder.model((_, m) =>
+   *    m(
+   *      _.el('a'),
+   *      _.el('a.b').with(
+   *        _.el('c')
+   *      )
+   *    )
+   *  )
+   */
+  model<Out extends AnyTypes>(
+    callback: ModelBuilderFunction<T, Out>,
+  ): Builder<Out>
+
+  /**
+   * Adds deployment model
+   *
+   * @example
+   *  builder.deployment(({ node, instanceOf }, _) =>
+   *    _(
+   *      node('node1'),
+   *      node('node1.child1').with(
+   *        instanceOf('model.element')
+   *      )
+   *    )
+   *  )
+   *
+   *  builder.deployment((_,d) =>
+   *    d(
+   *      _.node('node1'),
+   *       _.node('node1.child1').with(
+   *        _.instanceOf('model.element')
+   *      )
+   *    )
+   *  )
+   */
+  deployment<Out extends AnyTypes>(
+    callback: DeloymentModelBuildFunction<T, Out>,
+  ): Builder<Out>
+
+  /**
+   * Adds views
+   *
+   * @example
+   *  builder.views(({ view, $include }, _) =>
+   *    _(
+   *      view('index').with(
+   *        $include('a -> b')
+   *      )
+   *    )
+   *  )
+   */
+  views<Out extends AnyTypes>(
+    callback: ViewsBuilderFunction<T, Out>,
+  ): Builder<Out>
 
   /**
    * Returns model as result of parsing only
-   * Model is not computed or layouted
+   * Views are not computed or layouted
+   * {@link toLikeC4Model} should be used to get model with computed views
    */
-  build(): ParsedLikeC4Model<
-    T['ElementKind'],
-    T['RelationshipKind'],
-    T['Tag'],
-    T['Fqn'],
-    T['ViewId'],
-    T['DeploymentFqn']
-  >
+  build(): Types.ToParsedLikeC4Model<T>
 
   /**
-   * Returns model with computed views
+   * Returns LikeC4Model with computed views
    */
-  buildComputedModel(): LikeC4Model.Computed<
-    T['Fqn'],
-    T['DeploymentFqn'],
-    T['ViewId']
-  >
-
-  with<
-    A extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>
-  ): Builder<A>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>
-  ): Builder<B>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>
-  ): Builder<C>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>
-  ): Builder<D>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>
-  ): Builder<E>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>
-  ): Builder<F>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>
-  ): Builder<G>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes,
-    H extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>,
-    op8: (input: Builder<G>) => Builder<H>
-  ): Builder<H>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes,
-    H extends AnyTypes,
-    I extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>,
-    op8: (input: Builder<G>) => Builder<H>,
-    op9: (input: Builder<H>) => Builder<I>
-  ): Builder<I>
-
-  with<
-    A extends AnyTypes,
-    B extends AnyTypes,
-    C extends AnyTypes,
-    D extends AnyTypes,
-    E extends AnyTypes,
-    F extends AnyTypes,
-    G extends AnyTypes,
-    H extends AnyTypes,
-    I extends AnyTypes,
-    J extends AnyTypes
-  >(
-    op1: (input: Builder<T>) => Builder<A>,
-    op2: (input: Builder<A>) => Builder<B>,
-    op3: (input: Builder<B>) => Builder<C>,
-    op4: (input: Builder<C>) => Builder<D>,
-    op5: (input: Builder<D>) => Builder<E>,
-    op6: (input: Builder<E>) => Builder<F>,
-    op7: (input: Builder<F>) => Builder<G>,
-    op8: (input: Builder<G>) => Builder<H>,
-    op9: (input: Builder<H>) => Builder<I>,
-    op10: (input: Builder<I>) => Builder<J>
-  ): Builder<J>
+  toLikeC4Model(): Types.ToLikeC4Model<T>
 }
+
+interface Internals<T extends AnyTypes> extends ViewsBuilder<T>, ModelBuilder<T>, DeploymentModelBuilder<T> {
+}
+
+type Op<T> = (b: T) => T
 
 function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   spec: Spec,
@@ -247,22 +152,22 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _globals = {
     predicates: {},
     dynamicPredicates: {},
-    styles: {}
+    styles: {},
   } as ModelGlobals,
   _deployments = new Map<string, DeploymentElement>(),
-  _deploymentRelations = [] as DeploymentRelation[]
+  _deploymentRelations = [] as DeploymentRelation[],
 ): Builder<T> {
   const toLikeC4Specification = (): Types.ToParsedLikeC4Model<T>['specification'] => ({
     elements: {
-      ...spec.elements as any
+      ...structuredClone(spec.elements) as any,
     },
     deployments: {
-      ...spec.deployments as any
+      ...structuredClone(spec.deployments) as any,
     },
     relationships: {
-      ...spec.relationships
+      ...structuredClone(spec.relationships) as any,
     },
-    tags: (spec.tags ?? []) as Tag<T['Tag']>[]
+    tags: (spec.tags ?? []) as Tag<T['Tag']>[],
   })
 
   const mapLinks = (links?: Array<string | { title?: string; url: string }>): NonEmptyArray<Link> | null => {
@@ -272,7 +177,37 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
     return map(links, l => (typeof l === 'string' ? { url: l } : l))
   }
 
-  const self: Builder<T> = {
+  const createGenericView = <B extends Op<any> | undefined>(
+    id: string,
+    _props: T['NewViewProps'] | string | B | null,
+    builder: B,
+  ): [Omit<LikeC4View, 'rules'>, B] => {
+    if (isFunction(_props)) {
+      builder = _props as B
+      _props = {}
+    }
+    _props ??= {}
+    const {
+      links: _links = [],
+      title = null,
+      description = null,
+      tags = null,
+      ...props
+    } = typeof _props === 'string' ? { title: _props } : { ..._props }
+
+    const links = mapLinks(_links)
+    return [{
+      id: id as any,
+      title,
+      description,
+      tags,
+      links,
+      customColorDefinitions: {},
+      ...props,
+    }, builder]
+  }
+
+  const self: Builder<T> & Internals<T> = {
     get Types(): T {
       throw new Error('Types are not available in runtime')
     },
@@ -284,114 +219,137 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
         structuredClone(_views),
         structuredClone(_globals),
         structuredClone(_deployments),
-        structuredClone(_deploymentRelations)
+        structuredClone(_deploymentRelations),
       )
     },
-    __model: () => ({
-      addElement: (element) => {
-        const parent = parentFqn(element.id)
-        if (parent) {
-          invariant(
-            _elements.get(parent),
-            `Parent element with id "${parent}" not found for element with id "${element.id}"`
-          )
-        }
-        if (_elements.has(element.id)) {
-          throw new Error(`Element with id "${element.id}" already exists`)
-        }
-        _elements.set(element.id, element)
-        return self
-      },
-      addRelation(relation) {
-        const sourceEl = _elements.get(relation.source)
-        invariant(sourceEl, `Element with id "${relation.source}" not found`)
-        const targetEl = _elements.get(relation.target)
-        invariant(targetEl, `Element with id "${relation.target}" not found`)
+
+    __addElement: (element) => {
+      const parent = parentFqn(element.id)
+      if (parent) {
         invariant(
-          !isSameHierarchy(sourceEl, targetEl),
-          'Cannot create relationship between elements in the same hierarchy'
+          _elements.get(parent),
+          `Parent element with id "${parent}" not found for element with id "${element.id}"`,
         )
-        _relations.push({
-          id: `rel${_relations.length + 1}` as RelationId,
-          ...relation
-        })
-        return self
-      },
-      /**
-       * Fully qualified name for nested elements
-       */
-      fqn(id) {
-        return id as Fqn
-      },
-      addSourcelessRelation() {
-        throw new Error('Can be called only in nested model')
       }
-    }),
-    __views: () => ({
-      addView: (view) => {
-        if (isScopedElementView(view)) {
-          invariant(_elements.get(view.viewOf), `Invalid view ${view.id}, wlement with id "${view.viewOf}" not found`)
-        }
-        _views.set(view.id, view)
-        return self
+      if (_elements.has(element.id)) {
+        throw new Error(`Element with id "${element.id}" already exists`)
       }
-    }),
-    __deployment: () => ({
-      addDeployment: (node: DeploymentElement) => {
-        if (_deployments.has(node.id)) {
-          throw new Error(`Deployment with id "${node.id}" already exists`)
-        }
-        const parent = parentFqn(node.id)
-        if (parent) {
-          invariant(
-            _deployments.get(parent),
-            `Parent element with id "${parent}" not found for node with id "${node.id}"`
-          )
-        }
-        if (DeploymentElement.isInstance(node)) {
-          invariant(parent, 'Instance must have parent')
-        }
-        _deployments.set(node.id, node)
-        return self
-      },
-      addDeploymentRelation: (relation) => {
+      _elements.set(element.id, element)
+      return self
+    },
+    __addRelation(relation) {
+      const sourceEl = _elements.get(relation.source)
+      invariant(sourceEl, `Element with id "${relation.source}" not found`)
+      const targetEl = _elements.get(relation.target)
+      invariant(targetEl, `Element with id "${relation.target}" not found`)
+      invariant(
+        !isSameHierarchy(sourceEl, targetEl),
+        'Cannot create relationship between elements in the same hierarchy',
+      )
+      _relations.push({
+        id: `rel${_relations.length + 1}` as RelationId,
+        ...relation,
+      })
+      return self
+    },
+    /**
+     * Fully qualified name for nested elements
+     */
+    __fqn(id) {
+      invariant(id.trim() !== '', 'Id must be non-empty')
+      return id as Fqn
+    },
+    __addSourcelessRelation() {
+      throw new Error('Can be called only in nested model')
+    },
+    __addView: (view) => {
+      if (_views.has(view.id)) {
+        throw new Error(`View with id "${view.id}" already exists`)
+      }
+      if (isScopedElementView(view)) {
         invariant(
-          !isSameHierarchy(relation.source.id, relation.target.id),
-          'Cannot create relationship between elements in the same hierarchy'
+          _elements.get(view.viewOf),
+          `Invalid scoped view ${view.id}, wlement with id "${view.viewOf}" not found`,
         )
-        _deploymentRelations.push({
-          id: `deploy_rel${_deploymentRelations.length + 1}` as RelationId,
-          ...relation
-        })
-        return self
-      },
-      fqn: (id) => id as Fqn
-    }),
+      }
+      _views.set(view.id, view)
+      return self
+    },
+
+    __addDeployment: (node: DeploymentElement) => {
+      if (_deployments.has(node.id)) {
+        throw new Error(`Deployment with id "${node.id}" already exists`)
+      }
+      const parent = parentFqn(node.id)
+      if (parent) {
+        invariant(
+          _deployments.get(parent),
+          `Parent element with id "${parent}" not found for node with id "${node.id}"`,
+        )
+      }
+      if (DeploymentElement.isInstance(node)) {
+        invariant(parent, `Instance ${node.id} of ${node.element} must be deployed under a parent node`)
+        invariant(
+          _elements.get(node.element),
+          `Instance "${node.id}" references non-existing element "${node.element}"`,
+        )
+      }
+      _deployments.set(node.id, node)
+      return self
+    },
+    __addDeploymentRelation: (relation) => {
+      invariant(
+        !isSameHierarchy(relation.source.id, relation.target.id),
+        'Cannot create relationship between elements in the same hierarchy',
+      )
+
+      invariant(
+        _deployments.has(relation.source.id),
+        `Relation "${relation.source.id} -> ${relation.target.id}" references non-existing source`,
+      )
+      invariant(
+        _deployments.has(relation.target.id),
+        `Relation "${relation.source.id} -> ${relation.target.id}" references non-existing target`,
+      )
+
+      _deploymentRelations.push({
+        id: `deploy_rel${_deploymentRelations.length + 1}` as RelationId,
+        ...relation,
+      })
+      return self
+    },
     build: () => ({
       specification: toLikeC4Specification(),
-      elements: fromEntries(Array.from(_elements.entries())) as any,
-      relations: mapToObj(_relations, r => [r.id, r]),
+      elements: fromEntries(
+        structuredClone(
+          Array.from(_elements.entries()),
+        ),
+      ),
+      relations: mapToObj(_relations, r => [r.id, structuredClone(r)]),
       globals: structuredClone(_globals),
       deployments: {
-        elements: fromEntries(Array.from(_deployments.entries())) as any,
-        relations: mapToObj(_deploymentRelations, r => [r.id, r])
+        elements: fromEntries(
+          structuredClone(
+            Array.from(_deployments.entries()),
+          ),
+        ),
+        relations: mapToObj(_deploymentRelations, r => [r.id, structuredClone(r)]),
       },
-      views: fromEntries(Array.from(_views.entries())) as any
-    }),
-    buildComputedModel: () => {
+      views: fromEntries(
+        structuredClone(
+          Array.from(_views.entries()),
+        ),
+      ),
+    } as any),
+    toLikeC4Model: () => {
       const parsed = self.build()
-      const computed = computeViews(parsed)
-      return LikeC4Model.create(computed)
+      return LikeC4Model.compute(parsed)
     },
     helpers: () => ({
       model: {
         model: (...ops: ((b: ModelBuilder<T>) => ModelBuilder<T>)[]) => {
           return (b: Builder<T>) => {
-            const v = b.__model()
-            for (const op of ops) {
-              op(v)
-            }
-            return b
+            return ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
           }
         },
         rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
@@ -402,15 +360,15 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               ...props
             } = defu(
               typeof _props === 'string' ? { title: _props } : { ..._props },
-              { title: null, links: null }
+              { title: null, links: null },
             )
             const links = mapLinks(_links)
-            b.addRelation({
+            b.__addRelation({
               source: source as any,
               target: target as any,
               title,
               ...(links && { links }),
-              ...props
+              ...props,
             })
             return b
           }
@@ -423,14 +381,14 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               ...props
             } = defu(
               typeof _props === 'string' ? { title: _props } : { ..._props },
-              { title: null, links: null }
+              { title: null, links: null },
             )
             const links = mapLinks(_links)
-            b.addSourcelessRelation({
+            b.__addSourcelessRelation({
               target,
               title,
               ...(links && { links }),
-              ...props
+              ...props,
             })
             return b
           }
@@ -440,7 +398,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           ({ style: specStyle, ...spec }, kind) =>
           <Id extends string>(
             id: Id,
-            _props?: T['NewElementProps'] | string
+            _props?: T['NewElementProps'] | string,
           ): AddElement<Id> => {
             const add = (<T extends AnyTypes>(b: ModelBuilder<T>) => {
               const {
@@ -455,9 +413,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
               const icon = _icon ?? specStyle?.icon
 
-              const _id = b.fqn(id)
+              const _id = b.__fqn(id)
 
-              b.addElement({
+              b.__addElement({
                 id: _id,
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
@@ -469,192 +427,183 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 style: pickBy({
                   border: specStyle?.border,
                   opacity: specStyle?.opacity,
-                  ...style
+                  ...style,
                 }, isNonNullish),
                 links,
                 ...icon && { icon: icon as IconUrl },
                 ...spec,
-                ...props
+                ...props,
               })
               return b
             }) as AddElement<Id>
 
             add.with = (...ops: Array<(input: ModelBuilder<any>) => ModelBuilder<any>>) => (b: ModelBuilder<any>) => {
               add(b)
-              const nestedBuilder: ModelBuilder<any> = {
-                ...b,
-                fqn: (child) => `${b.fqn(id)}.${child}` as Fqn,
-                addSourcelessRelation: (relation) => {
-                  return b.addRelation({
+              const { __fqn, __addSourcelessRelation } = b
+              try {
+                b.__fqn = (child) => `${__fqn(id)}.${child}` as Fqn
+                b.__addSourcelessRelation = (relation) => {
+                  return b.__addRelation({
                     ...relation,
-                    source: b.fqn(id)
+                    source: __fqn(id),
                   })
                 }
-              }
-              for (const op of ops) {
-                op(nestedBuilder)
+                ops.reduce((b, op) => op(b), b as any as ModelBuilder<T>) as any
+              } finally {
+                b.__fqn = __fqn
+                b.__addSourcelessRelation = __addSourcelessRelation
               }
               return b
             }
+
             return add
-          }
-        ) as AddElementHelpers<T>
+          },
+        ) as AddElementHelpers<T>,
       },
       views: {
         views: (...ops: ((b: ViewsBuilder<T>) => ViewsBuilder<T>)[]) => {
           return (b: Builder<T>) => {
-            const v = b.__views()
-            for (const op of ops) {
-              op(v)
-            }
-            return b
+            return ops.reduce((b, op) => op(b), b as any as ViewsBuilder<T>) as any
           }
         },
-        view: (id, _props, builder?: ViewRuleBuilderOp<any>) => {
-          if (isFunction(_props)) {
-            builder = _props
-            _props = {}
+        view: (
+          id: string,
+          _props?: T['NewViewProps'] | string | ElementViewRulesBuilder<any>,
+          _builder?: ElementViewRulesBuilder<any>,
+        ) => {
+          const [generic, builder] = createGenericView(id, _props, _builder)
+          const view: Writable<ElementView> = {
+            ...generic,
+            __: 'element',
+            rules: [],
           }
-          return <T extends AnyTypes>(b: ViewsBuilder<T>): ViewsBuilder<T> => {
-            const {
-              links: _links = [],
-              title = null,
-              ...props
-            } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            const links = mapLinks(_links)
-
-            const view: Writable<ElementView> = {
-              id: id as any,
-              __: 'element',
-              title,
-              description: null,
-              tags: null,
-              rules: [],
-              links,
-              customColorDefinitions: {},
-              ...props
-            }
-            b.addView(view)
-
+          const add = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
+            b.__addView(view)
             if (builder) {
               builder(mkViewBuilder(view))
             }
-
             return b
           }
+          add.with = (...ops: ElementViewRulesBuilder<any>[]) => (b: ViewsBuilder<any>) => {
+            add(b)
+            const elementViewBuilder = mkViewBuilder(view)
+            for (const op of ops) {
+              op(elementViewBuilder)
+            }
+            return b
+          }
+
+          return add
         },
         viewOf: (
           id,
-          viewOf,
-          _props?: T['NewViewProps'] | string | ViewRuleBuilderOp<any>,
-          builder?: ViewRuleBuilderOp<any>
+          viewOf: string,
+          _props?: T['NewViewProps'] | string | ElementViewRulesBuilder<any>,
+          _builder?: ElementViewRulesBuilder<any>,
         ) => {
-          if (isFunction(_props)) {
-            builder = _props
-            _props = {}
+          const [generic, builder] = createGenericView(id, _props, _builder)
+          const view: Writable<ElementView> = {
+            ...generic,
+            viewOf: viewOf as Fqn,
+            __: 'element',
+            rules: [],
           }
-          return <T extends AnyTypes>(b: ViewsBuilder<T>): ViewsBuilder<T> => {
-            const {
-              links: _links = [],
-              title = null,
-              ...props
-            } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            const links = mapLinks(_links)
-
-            const view: Writable<ElementView> = {
-              id: id as any,
-              __: 'element',
-              viewOf,
-              title,
-              description: null,
-              tags: null,
-              rules: [],
-              links,
-              customColorDefinitions: {},
-              ...props
-            }
-            b.addView(view)
-
+          const add = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
+            b.__addView(view)
             if (builder) {
               builder(mkViewBuilder(view))
             }
-
             return b
           }
+
+          add.with = (...ops: ElementViewRulesBuilder<any>[]) => (b: ViewsBuilder<any>) => {
+            add(b)
+            const elementViewBuilder = mkViewBuilder(view)
+            for (const op of ops) {
+              op(elementViewBuilder)
+            }
+            return b
+          }
+
+          return add
         },
+
         deploymentView: (
-          id,
-          _props?: T['NewViewProps'] | string | DeploymentViewRuleBuilderOp<any>,
-          builder?: DeploymentViewRuleBuilderOp<any>
+          id: string,
+          _props?: T['NewViewProps'] | string | DeploymentRulesBuilderOp<any>,
+          _builder?: DeploymentRulesBuilderOp<any>,
         ) => {
-          if (isFunction(_props)) {
-            builder = _props as any
-            _props = {}
+          const [generic, builder] = createGenericView(id, _props, _builder)
+          const view: Writable<DeploymentView> = {
+            ...generic,
+            __: 'deployment',
+            rules: [],
           }
-          return <T extends AnyTypes>(b: ViewsBuilder<T>): ViewsBuilder<T> => {
-            const {
-              links: _links = [],
-              title = null,
-              ...props
-            } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            const links = mapLinks(_links)
-
-            const view: Writable<DeploymentView> = {
-              id: id as any,
-              __: 'deployment',
-              title,
-              description: null,
-              tags: null,
-              rules: [],
-              links,
-              customColorDefinitions: {},
-              ...props
-            }
-            b.addView(view)
-
+          const add = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
+            b.__addView(view)
             if (builder) {
               builder(mkViewBuilder(view))
             }
-
             return b
           }
+
+          add.with = (...ops: DeploymentRulesBuilderOp<any>[]) => (b: ViewsBuilder<any>) => {
+            add(b)
+            const elementViewBuilder = mkViewBuilder(view)
+            for (const op of ops) {
+              op(elementViewBuilder)
+            }
+            return b
+          }
+
+          return add
         },
         $autoLayout,
         $exclude,
         $include,
         $rules,
-        $style
+        $style,
       },
       deployment: {
         deployment: (...ops: ((b: DeploymentModelBuilder<T>) => DeploymentModelBuilder<T>)[]) => {
           return (b: Builder<T>) => {
-            const v = b.__deployment()
-            for (const op of ops) {
-              op(v)
-            }
-            return b
+            return ops.reduce((b, op) => op(b), b as any as DeploymentModelBuilder<T>) as any
           }
         },
-        instanceOf: (id, to, _props?: string | T['NewDeploymentNodeProps']) => {
+        instanceOf: (
+          id: string,
+          target?: string | T['NewDeploymentNodeProps'],
+          _props?: string | T['NewDeploymentNodeProps'],
+        ) => {
           return <T extends AnyTypes>(
-            b: DeploymentModelBuilder<T>
+            b: DeploymentModelBuilder<T>,
           ): DeploymentModelBuilder<Types.AddDeploymentFqn<T, any>> => {
+            if (isNullish(target)) {
+              target = id
+              id = nameFromFqn(id)
+            } else if (typeof target === 'string') {
+              _props ??= {}
+            } else {
+              _props = target
+              target = id
+              id = nameFromFqn(id)
+            }
             const {
               links,
               title,
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
-            const _id = b.fqn(id)
-            invariant(_elements.has(to), `Target element with id "${to}" not found`)
-            b.addDeployment({
+            const _id = b.__fqn(id)
+            invariant(_elements.has(target), `Target element with id "${target}" not found`)
+            b.__addDeployment({
               id: _id,
-              element: to as any,
+              element: target as any,
               ...title && { title },
               ...links && { links: mapLinks(links) },
-              ...props
+              ...props,
             })
             return b as any
           }
@@ -667,16 +616,16 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               ...props
             } = typeof _props === 'string' ? { title: _props } : { ..._props }
 
-            b.addDeploymentRelation({
+            b.__addDeploymentRelation({
               source: {
-                id: source as any
+                id: source as any,
               },
               target: {
-                id: target as any
+                id: target as any,
               },
               ...title && { title },
               ...links && { links: mapLinks(links) },
-              ...props
+              ...props,
             })
             return b
           }
@@ -686,7 +635,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           ({ style: specStyle, ...spec }, kind) =>
           <Id extends string>(
             id: Id,
-            _props?: T['NewDeploymentNodeProps'] | string
+            _props?: T['NewDeploymentNodeProps'] | string,
           ): AddDeploymentNode<Id> => {
             const add = (<T extends AnyTypes>(b: DeploymentModelBuilder<T>) => {
               const {
@@ -699,9 +648,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
               const icon = _icon ?? specStyle?.icon
 
-              const _id = b.fqn(id)
+              const _id = b.__fqn(id)
 
-              b.addDeployment({
+              b.__addDeployment({
                 id: _id,
                 kind: kind as any,
                 title: title ?? nameFromFqn(_id),
@@ -713,12 +662,12 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 style: pickBy({
                   border: specStyle?.border,
                   opacity: specStyle?.opacity,
-                  ...style
+                  ...style,
                 }, isNonNullish),
                 ...links && { links: mapLinks(links) },
                 ...icon && { icon: icon as IconUrl },
                 ...spec,
-                ...props
+                ...props,
               })
               return b
             }) as AddDeploymentNode<Id>
@@ -727,41 +676,73 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
               (...ops: Array<(input: DeploymentModelBuilder<any>) => DeploymentModelBuilder<any>>) =>
               (b: DeploymentModelBuilder<any>) => {
                 add(b)
-                const nestedBuilder: DeploymentModelBuilder<any> = {
-                  ...b,
-                  fqn: (child) => `${b.fqn(id)}.${child}` as Fqn
-                }
-                for (const op of ops) {
-                  op(nestedBuilder)
+                const { __fqn } = b
+                try {
+                  b.__fqn = (child) => `${__fqn(id)}.${child}` as Fqn
+                  ops.reduce((b, op) => op(b), b as any as DeploymentModelBuilder<T>) as any
+                } finally {
+                  b.__fqn = __fqn
                 }
                 return b
               }
             return add
-          }
-        ) as AddDeploymentNodeHelpers<T>
-      }
+          },
+        ) as AddDeploymentNodeHelpers<T>,
+      },
+    } as {
+      model: ModelHelpers<T>
+      views: ViewsHelpers
+      deployment: DeloymentModelHelpers<T>
     }),
     with: (...ops: ((b: Builder<T>) => Builder<T>)[]) => {
-      return ops.reduce((b, op) => op(b), self).clone()
-    }
+      return ops.reduce((b, op) => op(b), self as Builder<T>).clone()
+    },
+    model: <Out extends AnyTypes>(cb: ModelBuilderFunction<T, Out>) => {
+      const b = self.clone()
+      const helpers = b.helpers().model
+      const _ = helpers.model as any
+      return cb({ ...helpers, _ }, _)(b as Internals<T>) as any
+    },
+    deployment: <Out extends AnyTypes>(cb: DeloymentModelBuildFunction<T, Out>) => {
+      const b = self.clone()
+      const helpers = b.helpers().deployment
+      const _ = helpers.deployment as any
+      return cb({ ...helpers, _ }, _)(b as Internals<T>) as any
+    },
+    views: <Out extends AnyTypes>(cb: ViewsBuilderFunction<T, Out>) => {
+      const b = self.clone()
+      const helpers = b.helpers().views
+      return cb({
+        ...helpers,
+        _: helpers.views as any,
+      } as any, helpers.views as any)(b as Internals<T>) as any
+    },
   }
 
   return self
 }
 
 export namespace Builder {
+  export type Any = Builder<AnyTypes>
+
   export function forSpecification<const Spec extends BuilderSpecification>(
-    spec: Spec
+    spec: Spec,
   ): {
     builder: Builder<Types.FromSpecification<Spec>>
     model: ModelHelpers<Types.FromSpecification<Spec>>
     deployment: DeloymentModelHelpers<Types.FromSpecification<Spec>>
-    views: ViewHelpers<Types.FromSpecification<Spec>['NewViewProps']>
+    views: ViewsHelpers
   } {
     const b = builder<Spec, Types.FromSpecification<Spec>>(spec)
     return {
       ...b.helpers(),
-      builder: b
+      builder: b,
     }
+  }
+
+  export function specification<const Spec extends BuilderSpecification>(
+    spec: Spec,
+  ): Builder<Types.FromSpecification<Spec>> {
+    return builder<Spec, Types.FromSpecification<Spec>>(spec)
   }
 }

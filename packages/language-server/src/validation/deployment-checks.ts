@@ -1,5 +1,5 @@
 import { FqnRef, isSameHierarchy, nonNullable } from '@likec4/core'
-import { AstUtils, type ValidationCheck } from 'langium'
+import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
@@ -14,7 +14,7 @@ export const deploymentNodeChecks = (services: LikeC4Services): ValidationCheck<
     const nodeName = Names.getName(el)
     if (!nodeName) {
       accept('error', 'DeploymentNode must be named', {
-        node: el
+        node: el,
       })
       return
     }
@@ -23,10 +23,10 @@ export const deploymentNodeChecks = (services: LikeC4Services): ValidationCheck<
     if (RESERVED_WORDS.includes(nodeName)) {
       accept('error', `Reserved word: ${nodeName}`, {
         node: el,
-        range
+        range,
       })
     }
-    const fqnName = DeploymentsIndex.getFqnName(el)
+    const fqnName = DeploymentsIndex.getFqn(el)
 
     const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
     if (withSameName.length > 1) {
@@ -35,8 +35,8 @@ export const deploymentNodeChecks = (services: LikeC4Services): ValidationCheck<
         `Duplicate node name "${fqnName}"`,
         {
           node: el,
-          range
-        }
+          range,
+        },
       )
     }
   })
@@ -50,7 +50,7 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
     const artifactName = Names.getName(el)
     if (!artifactName) {
       accept('error', 'Deployed instance must be named, unique inside node', {
-        node: el
+        node: el,
       })
       return
     }
@@ -59,11 +59,11 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
     if (RESERVED_WORDS.includes(artifactName)) {
       accept('error', `Reserved word: ${artifactName}`, {
         node: el,
-        range
+        range,
       })
     }
 
-    const fqnName = DeploymentsIndex.getFqnName(el)
+    const fqnName = DeploymentsIndex.getFqn(el)
 
     const withSameName = DeploymentsIndex.byFqn(fqnName).limit(2).toArray()
     if (withSameName.length > 1) {
@@ -72,8 +72,8 @@ export const deployedInstanceChecks = (services: LikeC4Services): ValidationChec
         `Duplicate instance name "${fqnName}"`,
         {
           node: el,
-          range
-        }
+          range,
+        },
       )
     }
   })
@@ -87,7 +87,7 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
       let sourceCstText = el.source?.$cstNode?.text ?? ''
       accept('error', `DeploymentRelation source '${sourceCstText}' not resolved`, {
         node: el,
-        property: 'source'
+        property: 'source',
       })
       return
     }
@@ -96,7 +96,7 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
       let targetCstText = el.target?.$cstNode?.text ?? ''
       accept('error', `DeploymentRelation target '${targetCstText}' not resolved`, {
         node: el,
-        property: 'target'
+        property: 'target',
       })
       return
     }
@@ -108,7 +108,7 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
     if (FqnRef.isModelRef(sourceFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
-        property: 'source'
+        property: 'source',
       })
       return
     }
@@ -117,14 +117,14 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
     if (FqnRef.isModelRef(targetFqnRef)) {
       accept('error', 'DeploymentRelation must refer deployment element', {
         node: el,
-        property: 'target'
+        property: 'target',
       })
       return
     }
 
     if (isSameHierarchy(sourceFqnRef.deployment, targetFqnRef.deployment)) {
       accept('error', 'Invalid parent-child relationship', {
-        node: el
+        node: el,
       })
     }
   })

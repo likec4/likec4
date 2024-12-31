@@ -1,4 +1,5 @@
-import { compareNatural, ComputedView, type DiagramView, nonexhaustive } from '@likec4/core'
+import { compareNatural, nonexhaustive } from '@likec4/core'
+import { type DiagramView, ComputedView } from '@likec4/core/types'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find, values } from 'remeda'
@@ -38,7 +39,7 @@ function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTr
     value: '',
     label: 'Diagrams',
     type: 'folder',
-    children: []
+    children: [],
   }
 
   const findParent = (path: string): DiagramTreeNodeData => {
@@ -82,7 +83,7 @@ function buildDiagramTreeData(views: DiagramView[], groupBy: GroupBy): DiagramTr
       value: view.id,
       label: view.title ?? view.id,
       type: ComputedView.isDeployment(view) ? 'deployment-view' : 'view',
-      children: []
+      children: [],
     })
     if (parent !== root) {
       parent.children.sort(compareTreeNodes)

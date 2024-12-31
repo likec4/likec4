@@ -1,14 +1,16 @@
-import * as c4 from '@likec4/core'
+import type * as c4 from '@likec4/core'
 import {
   compareRelations,
   computeColorValues,
   type CustomColorDefinitions,
+  DeploymentElement,
   isScopedElementView,
+  LikeC4Model,
   parentFqn,
   sortByFqnHierarchically,
   type ViewId
 } from '@likec4/core'
-import { mkComputeView, resolveRulesExtendedViews } from '@likec4/core/compute-view'
+import { resolveRulesExtendedViews } from '@likec4/core/compute-view'
 import { deepEqual as eq } from 'fast-equals'
 import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
@@ -232,7 +234,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
 
   function toDeploymentElement(doc: LangiumDocument) {
     return (parsed: c4.DeploymentElement): c4.DeploymentElement | null => {
-      if (!c4.DeploymentElement.isDeploymentNode(parsed)) {
+      if (!DeploymentElement.isDeploymentNode(parsed)) {
         if (!parsed.links || parsed.links.length === 0) {
           return parsed
         }
@@ -525,7 +527,7 @@ export class LikeC4ModelBuilder {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model>
     const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(CACHE_KEY_COMPUTED_MODEL, () => {
-      const computeView = mkComputeView(model)
+      const computeView = LikeC4Model.makeCompute(model)
       const allViews = [] as c4.ComputedView[]
       for (const view of values(model.views)) {
         const result = computeView(view)
@@ -597,7 +599,7 @@ export class LikeC4ModelBuilder {
           logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
           return null
         }
-        const result = mkComputeView(model)(view)
+        const result = LikeC4Model.makeCompute(model)(view)
         if (!result.isSuccess) {
           logError(result.error)
           return null

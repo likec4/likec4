@@ -1,6 +1,6 @@
-import type { WhereOperator } from '@likec4/core'
+import type { WhereOperator } from '@likec4/core/types'
 import { LikeC4Diagram } from '@likec4/diagram'
-import { ActionIcon, type MantineThemeOverride } from '@mantine/core'
+import { type MantineThemeOverride, ActionIcon } from '@mantine/core'
 import { useTimeout } from '@mantine/hooks'
 import { useDebouncedEffect, useSyncedRef } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
@@ -75,7 +75,7 @@ export type LikeC4BrowserProps<ViewId extends string, Tag extends string, Kind e
 export function LikeC4Browser<
   ViewId extends string = string,
   Tag extends string = string,
-  Kind extends string = string
+  Kind extends string = string,
 >({
   className,
   colorScheme,
@@ -91,7 +91,7 @@ export function LikeC4Browser<
   styleNonce,
   enableElementDetails = true,
   enableRelationshipBrowser = enableElementDetails,
-  enableRelationshipDetails = enableRelationshipBrowser
+  enableRelationshipDetails = enableRelationshipBrowser,
 }: LikeC4BrowserProps<ViewId, Tag, Kind>) {
   const onCloseRef = useSyncedRef(onClose)
   const [opened, setOpened] = useState(false)
@@ -101,13 +101,13 @@ export function LikeC4Browser<
   useDebouncedEffect(
     () => dialogRef.current?.showModal(),
     [],
-    30
+    30,
   )
 
   useDebouncedEffect(
     () => setOpened(true),
     [],
-    80
+    80,
   )
 
   const { start: triggerOnClose } = useTimeout(() => {
@@ -202,7 +202,7 @@ export function LikeC4Browser<
         [data-likec4-instance="${id}"][open]::backdrop {
           animation: likec4-dialog-backdrop-fade-in 450ms ease-out forwards;
         }
-      `
+      `,
         }} />
       <dialog
         aria-modal="true"
@@ -212,7 +212,7 @@ export function LikeC4Browser<
           margin: 0,
           padding: 0,
           border: '0 solid transparent',
-          ...style
+          ...style,
         }}
         className={className}
         onClick={e => {

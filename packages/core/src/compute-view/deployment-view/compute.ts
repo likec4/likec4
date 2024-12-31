@@ -8,70 +8,66 @@ import {
   type DeploymentView,
   FqnExpr,
   isViewRuleAutoLayout,
-  isViewRulePredicate
+  isViewRulePredicate,
 } from '../../types'
 import { RelationExpr } from '../../types/expression-v2'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
-import { cleanConnections } from './clean-connections'
-import { MutableMemory, type Patch } from './Memory'
+import { Memory } from './memory'
 import { DeploymentRefPredicate } from './predicates/elements'
 import { DirectRelationPredicate } from './predicates/relation-direct'
 import { InOutRelationPredicate } from './predicates/relation-in-out'
 import { IncomingRelationPredicate } from './predicates/relation-incoming'
 import { OutgoingRelationPredicate } from './predicates/relation-outgoing'
 import { WildcardPredicate } from './predicates/wildcard'
-import { Stage } from './Stage'
+import { StageFinal } from './stages/stage-final'
 import { applyDeploymentViewRuleStyles, buildNodes, toComputedEdges } from './utils'
 
-function processPredicates<M extends AnyAux>(
+export function processPredicates<M extends AnyAux>(
   model: LikeC4DeploymentModel<M>,
-  rules: DeploymentViewRule[]
+  rules: DeploymentViewRule[],
 ) {
-  let memory = MutableMemory.empty()
-  let stage: Stage | null = null
+  let memory = Memory.empty()
 
   for (const rule of rules) {
     if (isViewRulePredicate(rule)) {
       const op = 'include' in rule ? 'include' : 'exclude'
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
-        stage = new Stage(stage)
+        let stage = op === 'include' ? memory.stageInclude(expr) : memory.stageExclude(expr)
         const ctx = { model, stage, memory }
-        let patch: Patch | undefined
         switch (true) {
           case FqnExpr.isModelRef(expr):
             // Ignore model refs in deployment view
             break
           case FqnExpr.isDeploymentRef(expr):
-            patch = DeploymentRefPredicate[op](expr, ctx)
+            stage = DeploymentRefPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case FqnExpr.isWildcard(expr):
-            patch = WildcardPredicate[op](expr, ctx)
+            stage = WildcardPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isDirect(expr):
-            patch = DirectRelationPredicate[op](expr, ctx)
+            stage = DirectRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isInOut(expr):
-            patch = InOutRelationPredicate[op](expr, ctx)
+            stage = InOutRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isOutgoing(expr):
-            patch = OutgoingRelationPredicate[op](expr, ctx)
+            stage = OutgoingRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           case RelationExpr.isIncoming(expr):
-            patch = IncomingRelationPredicate[op](expr, ctx)
+            stage = IncomingRelationPredicate[op]({ ...ctx, expr } as any) ?? stage
             break
           default:
             nonexhaustive(expr)
         }
-        patch ??= stage.patch()
-        memory = patch(memory)
+        memory = stage.commit()
       }
     }
   }
-  return cleanConnections(memory)
+  return StageFinal.for(memory).commit()
 }
 
 export function computeDeploymentView<M extends AnyAux>(
@@ -80,9 +76,9 @@ export function computeDeploymentView<M extends AnyAux>(
     docUri: _docUri, // exclude docUri
     rules, // exclude rules
     ...view
-  }: DeploymentView
+  }: DeploymentView,
 ): ComputedDeploymentView<M['ViewId']> {
-  const memory = processPredicates<M>(likec4model.deployment, rules)
+  let memory = processPredicates<M>(likec4model.deployment, rules)
 
   const nodesMap = buildNodes(memory)
 
@@ -91,13 +87,13 @@ export function computeDeploymentView<M extends AnyAux>(
   linkNodesWithEdges(nodesMap, computedEdges)
 
   const sorted = topologicalSort({
-    nodes: [...nodesMap.values()],
-    edges: computedEdges
+    nodes: nodesMap,
+    edges: computedEdges,
   })
 
   const nodes = applyDeploymentViewRuleStyles(
     rules,
-    sorted.nodes
+    sorted.nodes,
   )
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
@@ -109,7 +105,7 @@ export function computeDeploymentView<M extends AnyAux>(
     autoLayout: {
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
-      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
+      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
     },
     edges: sorted.edges,
     nodes: map(nodes, n => {
@@ -122,8 +118,8 @@ export function computeDeploymentView<M extends AnyAux>(
     }),
     ...(elementNotations.length > 0 && {
       notation: {
-        elements: elementNotations
-      }
-    })
+        elements: elementNotations,
+      },
+    }),
   })
 }

@@ -1,16 +1,16 @@
 import { indexBy, map, mapValues, pipe, prop } from 'remeda'
-import type { BuildTuple } from 'type-fest/source/internal'
 import { describe, expect, it } from 'vitest'
+import type { NTuple } from '../../../types'
 import type { ComputedNode } from '../../../types/view'
-import { $exclude, $group, $include, $where, computeView } from './fixture'
+import { $exclude, $group, $include, computeView } from './fixture'
 
 function expectParents(nodes: ComputedNode[]) {
   return expect(
     pipe(
       nodes,
       indexBy(prop('id')),
-      mapValues(prop('parent'))
-    )
+      mapValues(prop('parent')),
+    ),
   )
 }
 
@@ -18,42 +18,42 @@ describe('groups', () => {
   it('should include elements', () => {
     const { nodeIds, edgeIds, nodes } = computeView([
       $group([
-        $include('support')
+        $include('support'),
       ]),
       $group([
         $include('customer'),
-        $include('-> cloud')
+        $include('-> cloud'),
       ]),
-      $exclude('customer')
+      $exclude('customer'),
     ])
     expect(nodeIds).toEqual([
       '@gr1',
       'support',
       '@gr2',
-      'cloud'
+      'cloud',
     ])
-    const [group1, support, group2, cloud] = nodes as BuildTuple<4, ComputedNode>
+    const [group1, support, group2, cloud] = nodes as NTuple<ComputedNode, 4>
     expect(group1).toMatchObject({
       id: '@gr1',
       kind: '@group',
       children: ['support'],
       level: 0,
-      depth: 1
+      depth: 1,
     })
     expect(support).toMatchObject({
       id: 'support',
-      parent: '@gr1'
+      parent: '@gr1',
     })
     expect(group2).toMatchObject({
       id: '@gr2',
       kind: '@group',
       children: ['cloud'],
       level: 0,
-      depth: 1
+      depth: 1,
     })
     expect(cloud).toMatchObject({
       id: 'cloud',
-      parent: '@gr2'
+      parent: '@gr2',
     })
 
     expect(edgeIds).toEqual(['support:cloud'])
@@ -64,9 +64,9 @@ describe('groups', () => {
       $group([
         $include('customer'),
         $group([
-          $include('customer')
-        ])
-      ])
+          $include('customer'),
+        ]),
+      ]),
     ])
     expectParents(variant1.nodes).toMatchInlineSnapshot(`
       {
@@ -79,10 +79,10 @@ describe('groups', () => {
     const variant2 = computeView([
       $group([
         $group([
-          $include('customer')
+          $include('customer'),
         ]),
-        $include('customer')
-      ])
+        $include('customer'),
+      ]),
     ])
     expectParents(variant2.nodes).toMatchInlineSnapshot(`
       {
@@ -95,13 +95,13 @@ describe('groups', () => {
     const variant3 = computeView([
       $group([
         $group([
-          $include('customer')
+          $include('customer'),
         ]),
         $exclude('customer'),
         $group([
-          $include('customer')
-        ])
-      ])
+          $include('customer'),
+        ]),
+      ]),
     ])
     expectParents(variant3.nodes).toMatchInlineSnapshot(`
       {
@@ -119,41 +119,43 @@ describe('groups', () => {
         $group([
           $include('cloud.frontend.*', {
             where: {
-              tag: { eq: 'next' }
-            }
-          })
+              tag: { eq: 'next' },
+            },
+          }),
         ]),
         $group([
-          $include('cloud.frontend.adminPanel'),
-          $include('cloud.backend')
+          $include('cloud.frontend.supportPanel'),
+          $include('cloud.backend'),
         ]),
         $group([
-          $include('support ->')
-        ])
+          $include('support ->'),
+        ]),
       ]),
       $group([
-        $include('customer ->')
-      ])
+        $include('customer ->'),
+      ]),
+      $exclude('cloud'),
+      $exclude('cloud.frontend'),
     ])
-    expect(nodeIds).toEqual([
-      '@gr5',
-      'customer',
+    expect.soft(nodeIds).toEqual([
       '@gr1',
       '@gr4',
+      '@gr5',
       'support',
+      'customer',
       '@gr2',
       'cloud.frontend.dashboard',
       '@gr3',
-      'cloud.frontend.adminPanel',
-      'cloud.backend'
+      'cloud.frontend.supportPanel',
+      'cloud.backend',
     ])
     // parent of each node
     expect(
       pipe(
         nodes,
         indexBy(prop('id')),
-        mapValues(prop('parent'))
-      )
+        mapValues(prop('parent')),
+      ),
     ).toMatchInlineSnapshot(`
       {
         "@gr1": null,
@@ -162,8 +164,8 @@ describe('groups', () => {
         "@gr4": "@gr1",
         "@gr5": null,
         "cloud.backend": "@gr3",
-        "cloud.frontend.adminPanel": "@gr3",
         "cloud.frontend.dashboard": "@gr2",
+        "cloud.frontend.supportPanel": "@gr3",
         "customer": "@gr5",
         "support": "@gr4",
       }
@@ -174,8 +176,8 @@ describe('groups', () => {
       pipe(
         nodes,
         indexBy(prop('id')),
-        mapValues(prop('children'))
-      )
+        mapValues(prop('children')),
+      ),
     ).toMatchInlineSnapshot(`
       {
         "@gr1": [
@@ -187,7 +189,7 @@ describe('groups', () => {
           "cloud.frontend.dashboard",
         ],
         "@gr3": [
-          "cloud.frontend.adminPanel",
+          "cloud.frontend.supportPanel",
           "cloud.backend",
         ],
         "@gr4": [
@@ -197,18 +199,18 @@ describe('groups', () => {
           "customer",
         ],
         "cloud.backend": [],
-        "cloud.frontend.adminPanel": [],
         "cloud.frontend.dashboard": [],
+        "cloud.frontend.supportPanel": [],
         "customer": [],
         "support": [],
       }
     `)
 
     expect(edgeIds).toEqual([
-      'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel',
       'cloud.frontend.dashboard:cloud.backend',
-      'cloud.frontend.adminPanel:cloud.backend'
+      'cloud.frontend.supportPanel:cloud.backend',
+      'support:cloud.frontend.supportPanel',
+      'customer:cloud.frontend.dashboard',
     ])
 
     // parents of edges
@@ -217,17 +219,17 @@ describe('groups', () => {
         edges,
         map(e => ({
           ...e,
-          id: `${e.source}:${e.target}`
+          id: `${e.source}:${e.target}`,
         })),
         indexBy(prop('id')),
-        mapValues(prop('parent'))
-      )
+        mapValues(prop('parent')),
+      ),
     ).toMatchInlineSnapshot(`
       {
-        "cloud.frontend.adminPanel:cloud.backend": "@gr3",
         "cloud.frontend.dashboard:cloud.backend": "@gr1",
+        "cloud.frontend.supportPanel:cloud.backend": "@gr3",
         "customer:cloud.frontend.dashboard": null,
-        "support:cloud.frontend.adminPanel": "@gr1",
+        "support:cloud.frontend.supportPanel": "@gr1",
       }
     `)
   })

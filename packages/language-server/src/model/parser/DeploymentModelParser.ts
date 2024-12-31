@@ -2,11 +2,12 @@ import type * as c4 from '@likec4/core'
 import { FqnRef, isNonEmptyArray, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
 import { filter, first, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
-  ast,
   type ParsedAstDeployment,
   type ParsedAstDeploymentRelation,
+  ast,
+  streamDeploymentModel,
   toElementStyle,
-  toRelationshipStyleExcludeDefaults
+  toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
 import { elementRef } from '../../utils/elementRef'
@@ -19,34 +20,25 @@ export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
 export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) {
   return class DeploymentModelParser extends B {
     parseDeployment() {
-      type TraversePair = ast.DeployedInstance | ast.DeploymentNode | ast.DeploymentRelation
       const doc = this.doc
-      const isValid = this.isValid
-      const traverseStack: TraversePair[] = doc.parseResult.value.deployments.flatMap(d => d.elements)
-
-      let next: TraversePair | undefined
-      while ((next = traverseStack.shift())) {
-        if (ast.isDeploymentRelation(next)) {
-          doc.c4DeploymentRelations.push(this.parseDeploymentRelation(next))
-          continue
-        }
-        if (!isValid(next)) {
-          continue
-        }
+      for (const el of streamDeploymentModel(doc)) {
         try {
           switch (true) {
-            case ast.isDeployedInstance(next):
-              doc.c4Deployments.push(this.parseDeployedInstance(next))
-              break
-            case ast.isDeploymentNode(next): {
-              doc.c4Deployments.push(this.parseDeploymentNode(next))
-              if (next.body && next.body.elements.length > 0) {
-                traverseStack.push(...next.body.elements)
+            case ast.isDeploymentRelation(el): {
+              if (this.isValid(el)) {
+                doc.c4DeploymentRelations.push(this.parseDeploymentRelation(el))
               }
               break
             }
+            case ast.isDeployedInstance(el):
+              doc.c4Deployments.push(this.parseDeployedInstance(el))
+              break
+            case ast.isDeploymentNode(el): {
+              doc.c4Deployments.push(this.parseDeploymentNode(el))
+              break
+            }
             default:
-              nonexhaustive(next)
+              nonexhaustive(el)
           }
         } catch (e) {
           logWarnError(e)
@@ -67,7 +59,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         astNode.body?.props ?? [],
         filter(isValid),
         filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value || undefined])
+        mapToObj(p => [p.key, p.value || undefined]),
       )
 
       const title = removeIndent(astNode.title ?? bodyProps.title)
@@ -94,7 +86,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...(links && isNonEmptyArray(links) && { links }),
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
-        style
+        style,
       }
     }
 
@@ -112,7 +104,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         astNode.body?.props ?? [],
         filter(isValid),
         filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value || undefined])
+        mapToObj(p => [p.key, p.value || undefined]),
       )
 
       const title = removeIndent(astNode.title ?? bodyProps.title)
@@ -139,7 +131,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...(links && isNonEmptyArray(links) && { links }),
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
-        style
+        style,
       }
     }
 
@@ -156,7 +148,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
 
       const bodyProps = mapToObj(
         astNode.body?.props.filter(ast.isRelationStringProperty) ?? [],
-        p => [p.key, p.value as string | undefined]
+        p => [p.key, p.value as string | undefined],
       )
 
       const navigateTo = pipe(
@@ -164,7 +156,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         filter(ast.isRelationNavigateToProperty),
         map(p => p.value.view.ref?.name),
         filter(isTruthy),
-        first()
+        first(),
       )
 
       const title = removeIndent(astNode.title ?? bodyProps.title)
@@ -177,7 +169,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         'deployment',
         astPath,
         source.id,
-        target.id
+        target.id,
       ) as c4.RelationId
 
       return {
@@ -193,7 +185,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...(isNonEmptyArray(links) && { links }),
         ...toRelationshipStyleExcludeDefaults(styleProp?.props, isValid),
         ...(navigateTo && { navigateTo: navigateTo as c4.ViewId }),
-        astPath
+        astPath,
       }
     }
   }

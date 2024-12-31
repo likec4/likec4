@@ -5,8 +5,7 @@
     "lib": [
       "ES2022",
       "WebWorker"
-    ],
-    "noEmit": true
+    ]
   },
   "include": [
     "src"

@@ -18,21 +18,21 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       }
     }
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "prepack": "tsc",
+    "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist",
     "test": "vitest run --no-isolate",
@@ -48,6 +48,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.7",
     "typescript": "^5.7.2",
+    "unbuild": "^3.0.1",
     "vitest": "^2.1.8"
   },
   "packageManager": "yarn@4.5.3"

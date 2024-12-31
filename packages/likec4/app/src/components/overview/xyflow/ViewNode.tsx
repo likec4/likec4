@@ -1,8 +1,8 @@
 import { Box, Card, CardSection, Center, Group, Image, Text, ThemeIcon } from '@mantine/core'
 import { IconLoader } from '@tabler/icons-react'
-import { Handle, type NodeProps, Position, useHandleConnections, useReactFlow } from '@xyflow/react'
+import { type NodeProps, Handle, Position } from '@xyflow/react'
 import clsx from 'clsx'
-import { memo, useCallback } from 'react'
+import { memo } from 'react'
 import { usePreviewUrl } from 'virtual:likec4/previews'
 import * as css from './Nodes.css'
 import type { ViewXYNode } from './types'
@@ -10,7 +10,7 @@ import type { ViewXYNode } from './types'
 type ViewXYNodeProps = NodeProps<ViewXYNode>
 export const ViewNode = /* @__PURE__ */ memo(function ViewNode({
   data,
-  height = 320
+  height = 320,
 }: ViewXYNodeProps) {
   // const out = useHandleConnections({
   //   type: 'source'
@@ -48,7 +48,7 @@ export const ViewNode = /* @__PURE__ */ memo(function ViewNode({
       <Card
         className={clsx(
           css.viewNode,
-          data.dimmed && css.dimmed
+          data.dimmed && css.dimmed,
         )}
         withBorder
         shadow="xs"

@@ -19,6 +19,17 @@
         "langium-config.json",
         "package.json"
       ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build",
+        "topo",
+        "generate"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

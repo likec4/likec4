@@ -3,14 +3,13 @@ import {
   type ComputedEdge,
   ComputedNode,
   DefaultArrowType,
-  nonNullable
+  nonNullable,
 } from '@likec4/core'
-import { first, forEachObj, groupBy, isNonNullish, isString, last, map, pipe } from 'remeda'
+import { filter, first, forEach, groupBy, hasAtLeast, isNonNullish, last, map, pipe, tap, values } from 'remeda'
 import type { EdgeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
-import { ElementViewPrinter } from './ElementViewPrinter'
 import { pxToInch, pxToPoints, toArrowType } from './utils'
 
 // TODO: For now we use ElementViewPrinter for DeploymentView
@@ -21,7 +20,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
     G.delete(_.TBbalance)
     G.apply({
       [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 130),
-      [_.ranksep]: pxToInch(autoLayout.rankSep ?? 130)
+      [_.ranksep]: pxToInch(autoLayout.rankSep ?? 130),
     })
     return G
   }
@@ -31,7 +30,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
       this.view.nodes,
       map(nd => ({
         node: nd,
-        graphvizNode: this.getGraphNode(nd.id)
+        graphvizNode: this.getGraphNode(nd.id),
       })),
       groupBy(({ node, graphvizNode }) => {
         if (graphvizNode == null) {
@@ -39,16 +38,20 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
         }
         return ComputedNode.modelRef(node) ?? undefined
       }),
-      forEachObj((nodes) => {
-        if (nodes.length > 1) {
-          G.set(_.newrank, true)
-          G.set(_.clusterrank, 'global')
-          const subgraph = G.createSubgraph({ [_.rank]: 'same' })
-          nodes.forEach(({ graphvizNode }) => {
-            subgraph.node(nonNullable(graphvizNode).id)
-          })
-        }
-      })
+      values(),
+      filter(hasAtLeast(2)),
+      forEach(nodes => {
+        const subgraph = G.createSubgraph({ [_.rank]: 'same' })
+        nodes.forEach(({ graphvizNode }) => {
+          subgraph.node(nonNullable(graphvizNode).id)
+        })
+      }),
+      tap(() => {
+        G.set(_.newrank, true)
+        G.set(_.clusterrank, 'global')
+        G.delete(_.pack)
+        G.delete(_.packmode)
+      }),
     )
   }
 
@@ -75,7 +78,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
 
     const e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle
+      [_.style]: edge.line ?? DefaultEdgeStyle,
     })
 
     lhead && e.attributes.set(_.lhead, lhead)
@@ -86,7 +89,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
         ...sourceNode.inEdges,
         ...sourceNode.outEdges,
         ...targetNode.inEdges,
-        ...targetNode.outEdges
+        ...targetNode.outEdges,
       ].filter(e => !this.edgesWithCompounds.has(e)))
       e.attributes.set(_.weight, connected.size)
     }
@@ -99,7 +102,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
       const colorValues = this.getRelationshipColorValues(edge.color)
       e.attributes.apply({
         [_.color]: colorValues.lineColor,
-        [_.fontcolor]: colorValues.labelColor
+        [_.fontcolor]: colorValues.labelColor,
       })
     }
 
@@ -110,7 +113,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        [_.weight]: 0
+        [_.weight]: 0,
         // [_.minlen]: 0
         // [_.constraint]: false
       })
@@ -122,7 +125,7 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(edge.tail ?? head),
         [_.dir]: 'both',
-        [_.weight]: 0
+        [_.weight]: 0,
         // [_.constraint]: false,
         // [_.minlen]: 0
       })

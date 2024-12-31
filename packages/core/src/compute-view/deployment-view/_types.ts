@@ -1,29 +1,37 @@
 import { LikeC4DeploymentModel } from '../../model'
-import type { DeploymentConnectionModel } from '../../model/connection/deployment'
-import type { DeploymentElementModel } from '../../model/DeploymentElementModel'
-import type { AnyAux } from '../../model/types'
+import type { RelationshipModel } from '../../model/RelationModel'
 import type { ExpressionV2 } from '../../types'
-import type { Memory, Patch } from './Memory'
-import type { Stage } from './Stage'
+import type { Ctx, Memory, Stage, StageExclude, StageInclude } from './memory'
 
-export type Elem = DeploymentElementModel<AnyAux>
+export { Memory, type Stage } from './memory'
 
-export type Connections<M extends AnyAux = AnyAux> = ReadonlyArray<DeploymentConnectionModel<M>>
+export type Where<T extends {}> = (x: T) => boolean
 
-export type PredicateParams<Expr extends ExpressionV2 = any> = {
+export type Elem = Ctx['Element']
+export type Connection = Ctx['Connection']
+
+export type ElementWhere = Where<Elem>
+export type ElementWhereFilter = (elements: readonly Elem[]) => Elem[]
+export type ConnectionWhere = Where<Connection>
+export type RelationshipWhere = Where<RelationshipModel>
+export type ConnectionWhereFilter = (connections: readonly Connection[]) => Connection[]
+
+export type Connections = ReadonlyArray<Connection>
+
+export interface PredicateCtx<Expr extends ExpressionV2 = ExpressionV2> {
   expr: Expr
-  model: LikeC4DeploymentModel
   stage: Stage
+  model: LikeC4DeploymentModel
   memory: Memory
 }
-
-export interface PredicateCtx {
-  model: LikeC4DeploymentModel
-  stage: Stage
-  memory: Memory
+export interface IncludePredicateCtx<Expr extends ExpressionV2 = ExpressionV2> extends PredicateCtx<Expr> {
+  stage: StageInclude
+}
+export interface ExcludePredicateCtx<Expr extends ExpressionV2 = ExpressionV2> extends PredicateCtx<Expr> {
+  stage: StageExclude
 }
 
 export interface PredicateExecutor<Expr extends ExpressionV2> {
-  include(expr: Expr, ctx: PredicateCtx): Patch
-  exclude(expr: Expr, ctx: PredicateCtx): Patch
+  include(ctx: IncludePredicateCtx<Expr>): StageInclude | undefined
+  exclude(ctx: ExcludePredicateCtx<Expr>): StageExclude | undefined
 }

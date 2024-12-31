@@ -1,7 +1,7 @@
 import type { AstNode } from 'langium'
 import { isNullish } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
-import { ast, type LikeC4AstNode, type LikeC4LangiumDocument } from '../ast'
+import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { deployedInstanceChecks, deploymentNodeChecks, deploymentRelationChecks } from './deployment-checks'
@@ -18,7 +18,7 @@ import {
   modelRuleChecks,
   relationshipChecks,
   specificationRuleChecks,
-  tagChecks
+  tagChecks,
 } from './specification'
 import { viewChecks } from './view'
 import {
@@ -28,14 +28,14 @@ import {
   incomingExpressionChecks,
   outgoingExpressionChecks,
   relationExprChecks,
-  relationPredicateWithChecks
+  relationPredicateWithChecks,
 } from './view-predicates'
 
 type Guard<N extends AstNode> = (n: AstNode) => n is N
 type Guarded<G> = G extends Guard<infer N> ? N : never
 
 function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
-  predicates: Predicates
+  predicates: Predicates,
 ) {
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
@@ -67,7 +67,9 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isViewRuleStyleOrGlobalRef,
   ast.isDeployedInstance,
   ast.isDeploymentNode,
+  ast.isDeploymentRelation,
   ast.isRelationshipStyleProperty,
+  ast.isMetadataProperty,
   ast.isRelation,
   ast.isElementProperty,
   ast.isStringProperty,
@@ -79,13 +81,13 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isSpecificationDeploymentNodeKind,
   ast.isSpecificationTag,
   ast.isSpecificationColor,
-  ast.isSpecificationRule
+  ast.isSpecificationRule,
 ])
 type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
 
 const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefined => {
   let nd = node as LikeC4AstNode['$container']
-  while (nd) {
+  while (nd && !ast.isLikeC4Grammar(nd)) {
     if (isValidatableAstNode(nd)) {
       return nd
     }
@@ -110,14 +112,14 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)
   return {
     isValid,
-    invalidNodes
+    invalidNodes,
   }
 }
 export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
 export type IsValidFn = ChecksFromDiagnostics['isValid']
 
 export function registerValidationChecks(services: LikeC4Services) {
-  logger.info('registerValidationChecks')
+  logger.debug('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
     DeployedInstance: deployedInstanceChecks(services),
@@ -147,7 +149,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ExpandElementExpression: expandElementExprChecks(services),
     RelationshipKind: relationshipChecks(services),
     IncomingRelationExpression: incomingExpressionChecks(services),
-    OutgoingRelationExpression: outgoingExpressionChecks(services)
+    OutgoingRelationExpression: outgoingExpressionChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {
@@ -157,7 +159,7 @@ export function registerValidationChecks(services: LikeC4Services) {
         logger.debug(`clear diagnostics for deleted ${uri.path}`)
         void connection.sendDiagnostics({
           uri: uri.toString(),
-          diagnostics: []
+          diagnostics: [],
         })
       }
     })

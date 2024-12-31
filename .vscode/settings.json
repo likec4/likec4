@@ -3,7 +3,6 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.enable": false,
   "npm.packageManager": "yarn",
-  "editor.defaultFormatter": "dprint.dprint",
   "[typescript]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
@@ -28,6 +27,9 @@
   "[mdx]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
+  "[css]": {
+    "editor.defaultFormatter": "dprint.dprint",
+  },
   "search.exclude": {
     ".yarn/**": true,
     "yarn.lock": true,
@@ -42,12 +44,17 @@
     "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true
   },
-  "exportall.config.semis": false,
   "json.schemas": [
     {
       "url": "./node_modules/langium-cli/langium-config-schema.json",
       "fileMatch": [
         "langium-config.json"
+      ]
+    },
+    {
+      "url": "./.vscode/dprint-schema.json",
+      "fileMatch": [
+        "dprint.json"
       ]
     }
   ],

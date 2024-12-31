@@ -38,7 +38,7 @@
     "build-app": {
       "dependsOn": [
         "@likec4/core#build",
-        "@likec4/log#generate",
+        "@likec4/diagram#build",
         "generate"
       ],
       "outputs": [
@@ -49,6 +49,7 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "!src/**",
+        "!test/**",
         "!build.config.ts"
       ],
       "outputLogs": "new-only"

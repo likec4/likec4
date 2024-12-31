@@ -3,28 +3,29 @@ import { values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
 import {
-  type AnyLikeC4Model,
   type ComputedDeploymentView,
-  DeploymentElement,
   type DeploymentRef,
   type DeploymentRelation,
-  type Tag as C4Tag
+  type GenericLikeC4Model,
+  type IteratorLike,
+  type Tag as C4Tag,
+  DeploymentElement,
 } from '../types'
-import { ancestorsFqn, parentFqn } from '../utils/fqn'
+import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { isString } from '../utils/guards'
 import {
-  DeployedInstanceModel,
   type DeployedInstancesIterator,
-  DeploymentElementModel,
+  type DeploymentElementModel,
   type DeploymentElementsIterator,
-  DeploymentNodeModel,
   type DeploymentNodesIterator,
+  DeployedInstanceModel,
+  DeploymentNodeModel,
   DeploymentRelationModel,
-  NestedElementOfDeployedInstanceModel
+  NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
-import { type AnyAux, getId, type IncomingFilter, type IteratorLike, type OutgoingFilter } from './types'
+import { type AnyAux, type IncomingFilter, type OutgoingFilter, getId } from './types'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
@@ -63,15 +64,15 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
 
   constructor(
     public readonly $model: LikeC4Model<M>,
-    public readonly $deployments: AnyLikeC4Model['deployments']
+    public readonly $deployments: GenericLikeC4Model['deployments'],
   ) {
-    for (const element of values($deployments.elements)) {
+    for (const element of sortParentsFirst(values($deployments.elements))) {
       const el = this.addElement(element)
       for (const tag of el.tags) {
         this.#allTags.get(tag).add(el)
       }
       if (el.isInstance()) {
-        this.#instancesOf.get(el.$element.id).add(el)
+        this.#instancesOf.get(el.element.id).add(el)
       }
     }
     for (const relation of values($deployments.relations)) {
@@ -83,7 +84,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   }
 
   public element(el: M['DeploymentOrFqn']): DeploymentElementModel<M> {
-    if (el instanceof DeploymentElementModel) {
+    if (el instanceof DeploymentNodeModel || el instanceof DeployedInstanceModel) {
       return el
     }
     const id = getId(el)
@@ -256,10 +257,15 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
   /**
    * Get all descendant elements (i.e. children, children’s children, etc.)
    */
-  public *descendants(element: M['DeploymentOrFqn']): DeploymentElementsIterator<M> {
+  public *descendants(element: M['DeploymentOrFqn'], sort: 'asc' | 'desc' = 'desc'): DeploymentElementsIterator<M> {
     for (const child of this.children(element)) {
-      yield child
-      yield* this.descendants(child.id)
+      if (sort === 'asc') {
+        yield child
+        yield* this.descendants(child.id)
+      } else {
+        yield* this.descendants(child.id)
+        yield child
+      }
     }
     return
   }
@@ -270,7 +276,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    */
   public *incoming(
     element: M['DeploymentOrFqn'],
-    filter: IncomingFilter = 'all'
+    filter: IncomingFilter = 'all',
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
     for (const rel of this.#incoming.get(id)) {
@@ -291,7 +297,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
    */
   public *outgoing(
     element: M['DeploymentOrFqn'],
-    filter: OutgoingFilter = 'all'
+    filter: OutgoingFilter = 'all',
   ): IteratorLike<DeploymentRelationModel<M>> {
     const id = getId(element)
     for (const rel of this.#outgoing.get(id)) {
@@ -311,8 +317,8 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
       throw new Error(`Element ${element.id} already exists`)
     }
     const el = DeploymentElement.isDeploymentNode(element)
-      ? new DeploymentNodeModel(this, element)
-      : new DeployedInstanceModel(this, element, this.$model.element(element.element))
+      ? new DeploymentNodeModel(this, Object.freeze(element))
+      : new DeployedInstanceModel(this, Object.freeze(element), this.$model.element(element.element))
     this.#elements.set(el.id, el)
     const parentId = parentFqn(el.id)
     if (parentId) {
@@ -332,7 +338,7 @@ export class LikeC4DeploymentModel<M extends AnyAux = AnyAux> {
     }
     const rel = new DeploymentRelationModel(
       this,
-      relation
+      Object.freeze(relation),
     )
     this.#relations.set(rel.id, rel)
     this.#incoming.get(rel.target.id).add(rel)

@@ -15,47 +15,50 @@
   "engines": {
     "node": ">=20"
   },
+  "engineStrict": true,
   "bugs": "https://github.com/likec4/likec4/issues",
   "type": "module",
   "bin": "./bin/likec4.mjs",
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "development": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "./model": {
+      "development": "./src/model/index.ts",
+      "default": {
+        "types": "./dist/model/index.d.ts",
+        "import": "./dist/model/index.js",
+        "default": "./dist/model/index.js"
+      }
+    },
     "./react": {
-      "types": "./app/react/components/index.ts",
-      "default": "./react/index.mjs"
+      "development": "./app/react/components/index.ts",
+      "default": {
+        "types": "./react/index.d.ts",
+        "import": "./react/index.js",
+        "default": "./react/index.js"
+      }
     },
     "./react/style.css": "./react/style.css",
     "./icons/all": {
       "types": "./icons/all.d.ts",
+      "import": "./icons/all.js",
       "default": "./icons/all.js"
     },
     "./icons/*": {
       "types": "./icons/icon.d.ts",
+      "import": "./icons/*",
       "default": "./icons/*"
     }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
-      },
-      "./react": {
-        "types": "./react/index.d.ts",
-        "default": "./react/index.mjs"
-      },
-      "./react/style.css": "./react/style.css",
-      "./icons/all": {
-        "types": "./icons/all.d.ts",
-        "default": "./icons/all.js"
-      },
-      "./icons/*": {
-        "types": "./icons/icon.d.ts",
-        "default": "./icons/*"
-      }
-    }
+    "access": "public"
   },
   "scripts": {
     "turbo-build": "turbo run build --log-prefix=none --log-order=grouped",
@@ -149,6 +152,7 @@
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
     "langium": "3.3.0",
+    "merge-error-cause": "^5.0.0",
     "mkdirp": "^3.0.1",
     "nanostores": "0.11.3",
     "npm-run-all2": "^7.0.1",
@@ -170,8 +174,9 @@
     "turbo": "^2.3.3",
     "typescript": "^5.7.2",
     "ufo": "^1.5.4",
-    "unbuild": "^3.0.0-rc.11",
+    "unbuild": "^3.0.1",
     "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vite-plugin-dts": "^4.4.0",
     "vite-plugin-shadow-style": "^1.1.1",
     "vitest": "^2.1.8",
     "yargs": "17.7.2"

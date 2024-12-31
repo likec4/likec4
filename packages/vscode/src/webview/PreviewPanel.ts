@@ -1,6 +1,6 @@
-import { delay, invariant, type ViewId as ViewID } from '@likec4/core'
+import { type ViewId as ViewID, delay, invariant } from '@likec4/core'
 import * as vscode from 'vscode'
-import { ViewColumn, type Webview, type WebviewPanel } from 'vscode'
+import { type Webview, type WebviewPanel, ViewColumn } from 'vscode'
 import { isProd } from '../const'
 import { ExtensionController } from '../ExtensionController'
 import { logger } from '../logger'
@@ -38,10 +38,10 @@ export class PreviewPanel extends AbstractDisposable {
 
     // Otherwise, create a new webview.
     const panel = vscode.window.createWebviewPanel(PreviewPanel.ViewType, 'Diagram preview', {
-      viewColumn: ViewColumn.Beside
+      viewColumn: ViewColumn.Beside,
     }, {
       enableScripts: true,
-      retainContextWhenHidden: false
+      retainContextWhenHidden: false,
     })
     PreviewPanel.current = new PreviewPanel(viewId, panel, ctrl)
   }
@@ -51,7 +51,7 @@ export class PreviewPanel extends AbstractDisposable {
   constructor(
     private _viewId: ViewID,
     public readonly panel: vscode.WebviewPanel,
-    ctrl: ExtensionController
+    ctrl: ExtensionController,
   ) {
     super()
     this.rpc = ctrl.messenger.registerWebViewPanel(panel)
@@ -72,8 +72,12 @@ export class PreviewPanel extends AbstractDisposable {
         this.dispose()
       },
       this,
-      this._disposables
+      this._disposables,
     )
+  }
+
+  get viewId(): ViewID {
+    return this._viewId
   }
 
   public open(viewId: ViewID) {
@@ -90,13 +94,13 @@ export class PreviewPanel extends AbstractDisposable {
       // Enable javascript in the webview
       enableScripts: true,
       localResourceRoots: [
-        ExtensionController.context.extensionUri
-      ]
+        ExtensionController.context.extensionUri,
+      ],
     }
     // const internalState = this.ctrl.getPreviewPanelState()
     const internalState = {
       edgesEditable: true,
-      nodesDraggable: true
+      nodesDraggable: true,
     }
     const nonce = getNonce()
 
@@ -109,7 +113,7 @@ export class PreviewPanel extends AbstractDisposable {
       `font-src ${cspSource} data: https: 'nonce-${nonce}';`,
       isProd ? `style-src ${cspSource} 'nonce-${nonce}';` : `style-src ${cspSource} 'unsafe-inline';`,
       `img-src ${cspSource} data: https:;`,
-      `script-src 'nonce-${nonce}';`
+      `script-src 'nonce-${nonce}';`,
     ]
     webview.html = /*html*/ `
 <!DOCTYPE html>
@@ -126,7 +130,7 @@ export class PreviewPanel extends AbstractDisposable {
       var __INTERNAL_STATE = ${JSON.stringify({ internalState })};
     </script>
     <div id="root" nonce="${nonce}"></div>
-    <script nonce="${nonce}" src="${scriptUri}"></script>
+    <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
   </body>
 </html>`
   }
@@ -135,7 +139,7 @@ export class PreviewPanel extends AbstractDisposable {
 export namespace PreviewPanel {
   export class Serializer implements vscode.WebviewPanelSerializer {
     constructor(
-      private readonly ctrl: ExtensionController
+      private readonly ctrl: ExtensionController,
     ) {}
 
     async deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Promise<void> {

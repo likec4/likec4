@@ -57,6 +57,8 @@ type FromNested<T extends AnyTypes, N> = N extends TypesNested<any, any, infer F
 export interface AddElement<Id extends string> {
   <T extends AnyTypes>(builder: ModelBuilder<T>): ModelBuilder<Types.AddFqn<T, Id>>
 
+  with<T extends AnyTypes>(): (builder: ModelBuilder<T>) => ModelBuilder<Types.AddFqn<T, Id>>
+
   with<
     T extends AnyTypes,
     A extends AnyTypes

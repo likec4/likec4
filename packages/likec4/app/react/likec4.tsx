@@ -1,15 +1,15 @@
+import type { LikeC4Model } from '@likec4/core/model'
 import {
+  type LikeC4ViewProps as BaseLikeC4ViewProps,
+  type ReactLikeC4Props as GenericReactLikeC4Props,
   LikeC4Browser,
-  type LikeC4Model,
   LikeC4ModelProvider as GenericLikeC4ModelProvider,
   LikeC4ViewEmbedded,
-  type LikeC4ViewProps as BaseLikeC4ViewProps,
   ReactLikeC4 as GenericReactLikeC4,
-  type ReactLikeC4Props as GenericReactLikeC4Props,
   useColorScheme,
-  ViewNotFound
+  ViewNotFound,
 } from 'likec4/react'
-import { memo, type PropsWithChildren, useCallback, useState } from 'react'
+import { type PropsWithChildren, memo, useCallback, useState } from 'react'
 import { Icons } from 'virtual:likec4/icons'
 import type { DiagramView, LikeC4ElementKind, LikeC4Tag, LikeC4ViewId } from 'virtual:likec4/model'
 import { likeC4Model, LikeC4Views, useLikeC4Model } from 'virtual:likec4/model'
@@ -29,10 +29,13 @@ export function RenderIcon({ node }: IconRendererProps) {
 
 export { likeC4Model, LikeC4Views, useLikeC4Model }
 
-export const useLikeC4ViewModel = (viewId: LikeC4ViewId): LikeC4Model.View => useLikeC4Model().view(viewId as any)
+export function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4Model.View {
+  return useLikeC4Model().view(viewId as any)
+}
 
-export const useLikeC4View = (viewId: LikeC4ViewId): DiagramView =>
-  useLikeC4Model().view(viewId as any).$view as DiagramView
+export function useLikeC4View(viewId: LikeC4ViewId): DiagramView {
+  return useLikeC4Model().view(viewId as any).$view as DiagramView
+}
 
 export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 

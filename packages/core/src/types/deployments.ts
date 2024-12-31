@@ -1,19 +1,12 @@
 import type { MergeExclusive, Simplify, Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
-import type {
-  AbstractRelation,
-  RelationId,
-  RelationshipArrowType,
-  RelationshipKind,
-  RelationshipLineType
-} from './relation'
+import type { AbstractRelation, RelationId } from './relation'
 import type { Color } from './theme'
-import type { ViewId } from './view'
 
 export type DeploymentNodeKind<Kinds extends string = string> = Tagged<Kinds, 'DeploymentNodeKind'>
 
-export type PhysicalElementStyle = ElementStyle & {
+export type DeploymentElementStyle = ElementStyle & {
   readonly icon?: IconUrl
   readonly shape?: ElementShape
   readonly color?: Color
@@ -22,7 +15,7 @@ export type PhysicalElementStyle = ElementStyle & {
 export interface DeploymentNodeKindSpecification {
   readonly technology?: string
   readonly notation?: string
-  readonly style: PhysicalElementStyle
+  readonly style: DeploymentElementStyle
 }
 
 export interface DeploymentNode {
@@ -34,7 +27,7 @@ export interface DeploymentNode {
   readonly technology?: string | null
   readonly tags?: NonEmptyArray<Tag> | null
   readonly links?: NonEmptyArray<Link> | null
-  readonly style?: PhysicalElementStyle
+  readonly style?: DeploymentElementStyle
   readonly notation?: string
   readonly metadata?: Record<string, string>
 }
@@ -51,7 +44,7 @@ export interface DeployedInstance {
   readonly technology?: string | null
   readonly tags?: NonEmptyArray<Tag> | null
   readonly links?: NonEmptyArray<Link> | null
-  readonly style?: PhysicalElementStyle
+  readonly style?: DeploymentElementStyle
   readonly notation?: string
   readonly metadata?: Record<string, string>
 }
