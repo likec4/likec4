@@ -58,7 +58,7 @@
     "react-resizable-panels": "^2.1.7",
     "remeda": "^2.17.4",
     "strip-indent": "^4.0.0",
-    "tsx": "~4.9.3",
+    "tsx": "~4.19.2",
     "turbo": "^2.3.3",
     "type-fest": "4.28.1",
     "typescript": "^5.7.2",
