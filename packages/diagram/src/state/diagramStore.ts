@@ -42,7 +42,7 @@ import type {
   LikeC4DiagramEventHandlers,
   WhereOperator
 } from '../LikeC4Diagram.props'
-import { type Vector, vector } from '../utils/vector'
+import { type Vector, vector, VectorImpl } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { DiagramFlowTypes } from '../xyflow/types'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
@@ -1050,15 +1050,28 @@ export function createDiagramStore(props: DiagramInitialState) {
               const sourceCenter = getNodeCenter(source, xynodes)
               const targetCenter = getNodeCenter(target, xynodes)
 
-              if (sourceCenter && targetCenter) {
-                const sourceToTargetVector = targetCenter.sub(sourceCenter)
-                const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
-                const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
-
-                return [sourceBorderPoint.add(targetBorderPoint.sub(sourceBorderPoint).mul(0.3))]
+              if (!sourceCenter || !targetCenter) {
+                return []
               }
 
-              return []
+              // Edge is a loop
+              if(source == target) {
+                const loopSize = 80                
+                const centerOfTopBoundary = new VectorImpl(0, source.height || 0)
+                  .mul(-0.5)
+                  .add(sourceCenter)
+
+                return [
+                  centerOfTopBoundary.add(new VectorImpl(-loopSize / 2.5, -loopSize)),
+                  centerOfTopBoundary.add(new VectorImpl(loopSize / 2.5, -loopSize))
+                ]
+              }
+
+              const sourceToTargetVector = targetCenter.sub(sourceCenter)
+              const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
+              const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
+
+              return [sourceBorderPoint.add(targetBorderPoint.sub(sourceBorderPoint).mul(0.3))]
             }
 
             function getBorderPointOnVector(node: DiagramFlowTypes.Node, nodeCenter: Vector, v: Vector) {
