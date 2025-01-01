@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Group, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
 import { IconBoxMultipleFilled, IconZoomScan } from '@tabler/icons-react'
-import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from '@xyflow/react'
+import { type EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
 import { only } from 'remeda'
 import { useDiagramState } from '../../../hooks/useDiagramState'
@@ -18,20 +18,22 @@ const Tooltip = MantineTooltip.withProps({
   withinPortal: false,
   label: '',
   children: null,
-  offset: 4
+  offset: 4,
 })
 
 export function RelationshipEdge({
   data,
   label,
+  // Exclude the following props from the rest
+  animated: _animated,
   ...props
 }: EdgeProps<RelationshipsOfFlowTypes.Edge>) {
   const {
     viewId,
-    onNavigateTo
+    onNavigateTo,
   } = useDiagramState(s => ({
     viewId: s.view.id,
-    onNavigateTo: s.onNavigateTo
+    onNavigateTo: s.onNavigateTo,
   }))
   const overlay = useOverlayDialog()
   const [edgePath, labelX, labelY] = getBezierPath(props)
@@ -59,11 +61,11 @@ export function RelationshipEdge({
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             maxWidth: Math.abs(props.targetX - props.sourceX - 70),
-            zIndex: ZIndexes.max
+            zIndex: ZIndexes.max,
           }}
           className={clsx([
             css.edgeLabel,
-            'nodrag nopan'
+            'nodrag nopan',
           ])}
           data-edge-dimmed={data.dimmed}
           data-edge-hovered={data.hovered}
@@ -81,7 +83,7 @@ export function RelationshipEdge({
                 <Text
                   fw={isMultiRelation ? '500' : '400'}
                   style={{
-                    whiteSpace: isMultiRelation ? 'nowrap' : undefined
+                    whiteSpace: isMultiRelation ? 'nowrap' : undefined,
                   }}
                   component={'div'}
                   className={css.edgeLabelText}

@@ -1,7 +1,7 @@
 import { fallbackVar } from '@vanilla-extract/css'
 import type { Variants } from 'framer-motion'
 import { useMemo, useState } from 'react'
-import { isEmpty, isString } from 'remeda'
+import { isEmpty, isNumber, isString } from 'remeda'
 import { vars } from '../../theme-vars'
 
 const DEFAULT_SCALE_BY = 0
@@ -31,8 +31,8 @@ export const NodeVariants = (width: number, height: number, opts?: {
   // Same scale for X and Y
   const maxwh = Math.max(width, height)
   const scaleBy = (diffPx: number) => ({
-    scaleX: (maxwh + diffPx) / maxwh,
-    scaleY: (maxwh + diffPx) / maxwh,
+    scale: (maxwh + diffPx) / maxwh,
+    // scaleY: (maxwh + diffPx) / maxwh,
   })
 
   return {
@@ -56,13 +56,15 @@ export const NodeVariants = (width: number, height: number, opts?: {
     selected: {
       ...scaleBy(selectedScaleBy),
     },
-    hovered: {
+    hovered: (_, { scale }) => ({
       ...scaleBy(hoveredScaleBy),
-      transition: {
-        delay: DELAY_NODE,
-        delayChildren: DELAY_NODE_CHILDREN,
-      },
-    },
+      transition: !isNumber(scale) || (scale === 1)
+        ? ({
+          delay: DELAY_NODE,
+          delayChildren: DELAY_NODE_CHILDREN,
+        })
+        : {},
+    }),
     tap: {
       ...scaleBy(tapScaleBy),
     },
@@ -88,8 +90,12 @@ export function useFramerAnimateVariants() {
     const onHoverStart = (e: MouseEvent) => {
       e?.stopPropagation()
       const hoverTarget = getTarget(e)
-      if (!isString(hoverTarget) || isEmpty(hoverTarget)) {
+      if (!isString(hoverTarget)) {
         setVariants(null)
+        return
+      }
+      if (isEmpty(hoverTarget)) {
+        setVariants(['hovered'])
         return
       }
       setVariants(['hovered', `hovered:${hoverTarget}`])
@@ -97,7 +103,12 @@ export function useFramerAnimateVariants() {
 
     const resetVariants = (e: MouseEvent) => {
       e?.stopPropagation()
-      setVariants(null)
+      const hoverTarget = getTarget(e)
+      if (!isString(hoverTarget) || isEmpty(hoverTarget)) {
+        setVariants(null)
+        return
+      }
+      setVariants(v => v?.filter(v => !v.includes(hoverTarget)) ?? null)
     }
 
     return ({

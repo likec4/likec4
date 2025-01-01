@@ -75,8 +75,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     enableElementDetails: isNotViewGroup && s.enableElementDetails,
   }))
-  const _isToolbarVisible = isNotViewGroup && selected && !dragging
-  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -106,6 +104,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
   if (!dragging && !isInActiveOverlay) {
     animateVariant = animateVariants ?? animateVariant
   }
+
+  const isHovered = Array.isArray(animateVariant) && animateVariant.includes('hovered')
+
+  const _isToolbarVisible = isNotViewGroup && ((selected && !dragging) || isHovered)
+  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const nodeVariants = NodeVariants(w, h, {
     selectedScaleBy: 0,
@@ -147,7 +150,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           initial={false}
           variants={nodeVariants}
           animate={animateVariant}
-          whileHover={selected ? 'selected' : 'hovered'}
           {...isInteractive && animateHandlers}
           mod={{
             'animate-target': '',
@@ -203,9 +205,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
               </Text>
               {enableElementDetails && !!modelRef && (
                 <Box className={clsx(nodeCss.topRightBtnContainer)}>
-                  <ActionButtonBar shiftX="right">
-                    <OpenDetailsButton fqn={element.id} />
-                  </ActionButtonBar>
+                  <OpenDetailsButton fqn={modelRef} {...isInteractive && animateHandlers} />
                 </Box>
               )}
             </Box>
@@ -213,7 +213,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
           {isNavigable && (
             <Box className={clsx(nodeCss.topLeftBtnContainer)}>
               <ActionButtonBar shiftX="left">
-                <NavigateToButton xynodeId={id} />
+                <NavigateToButton xynodeId={id} {...isInteractive && animateHandlers} />
               </ActionButtonBar>
             </Box>
           )}

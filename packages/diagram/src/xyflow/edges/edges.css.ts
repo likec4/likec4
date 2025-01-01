@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { mantine, vars, xyvars } from '../../theme-vars'
+import { mantine, transitions, vars, xyvars } from '../../theme-vars'
 
 const mixColor = createVar('mix-color')
 
@@ -11,16 +11,16 @@ export const container = style({
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 40%)`,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 40%)`,
-    [xyvars.edge.strokeWidth]: '3'
-  }
+    [xyvars.edge.strokeWidth]: '3',
+  },
 })
 
 globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
   vars: {
     [mixColor]: `white`,
     [xyvars.edge.labelColor]: vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
-  }
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`,
+  },
 })
 
 const isSelected = '.react-flow__edge.selected'
@@ -28,29 +28,29 @@ const isSelected = '.react-flow__edge.selected'
 globalStyle(`:where(${isSelected}) ${container}`, {
   vars: {
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3'
-  }
+    [xyvars.edge.strokeWidth]: '3',
+  },
 })
 
 globalStyle(`${container}:is([data-edge-hovered='true'],[data-edge-active='true'])`, {
   vars: {
     // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3'
-  }
+    [xyvars.edge.strokeWidth]: '3',
+  },
 })
 
 globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
   vars: {
-    [xyvars.edge.strokeWidth]: '4'
-  }
+    [xyvars.edge.strokeWidth]: '4',
+  },
 })
 
 globalStyle(`.likec4-diagram .react-flow__edges > svg`, {
-  mixBlendMode: 'plus-lighter'
+  mixBlendMode: 'plus-lighter',
 })
 globalStyle(`:where([data-mantine-color-scheme="light"]) .likec4-diagram .react-flow__edges > svg`, {
-  mixBlendMode: 'screen'
+  mixBlendMode: 'screen',
 })
 
 export const dimmed = style({})
@@ -60,7 +60,7 @@ globalStyle(`.likec4-diagram .react-flow__edges > svg:has(${dimmed})`, {
   transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
   transitionDelay: '200ms',
   filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  willChange: 'opacity, filter'
+  willChange: 'opacity, filter',
 })
 
 export const edgePathBg = style({
@@ -74,15 +74,15 @@ export const edgePathBg = style({
   selectors: {
     [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
       strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8)`,
-      strokeOpacity: 0.15
-    }
-  }
+      strokeOpacity: 0.15,
+    },
+  },
 })
 
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = style({
   fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke
+  stroke: xyvars.edge.stroke,
 })
 
 export const controlPoint = style({
@@ -96,7 +96,7 @@ export const controlPoint = style({
   ':hover': {
     stroke: mantine.colors.primaryColors.filledHover,
     strokeWidth: 9,
-    transition: 'stroke 100ms ease-out, stroke-width 100ms ease-out'
+    transition: 'stroke 100ms ease-out, stroke-width 100ms ease-out',
   },
   selectors: {
     [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
@@ -104,26 +104,26 @@ export const controlPoint = style({
       transition: 'fill-opacity 150ms ease-out, stroke 150ms ease-out, stroke-width 150ms ease-out',
       transitionDelay: '50ms',
       fillOpacity: 1,
-      strokeWidth: 5
-    }
-  }
+      strokeWidth: 5,
+    },
+  },
 })
 
 export const controlDragging = style({
-  cursor: 'grabbing'
+  cursor: 'grabbing',
 })
 
 globalStyle(`${controlDragging} *`, {
-  cursor: 'grabbing !important'
+  cursor: 'grabbing !important',
 })
 
 const strokeKeyframes = keyframes({
   'from': {
-    strokeDashoffset: 18 * 2 + 10
+    strokeDashoffset: 18 * 2 + 10,
   },
   'to': {
-    strokeDashoffset: 10
-  }
+    strokeDashoffset: 10,
+  },
 })
 
 export const cssEdgePath = style({
@@ -136,20 +136,20 @@ export const cssEdgePath = style({
     [`:where([data-edge-hovered='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '450ms',
-      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
+      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
     },
     [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '0ms',
-      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
+      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
     },
     [`:where([data-edge-dir='back']) &`]: {
-      animationDirection: 'reverse'
+      animationDirection: 'reverse',
     },
     [`${dimmed} &`]: {
-      animationPlayState: 'paused'
-    }
-  }
+      animationPlayState: 'paused',
+    },
+  },
 })
 
 const labelBorderRadius = 2
@@ -167,12 +167,12 @@ export const stepEdgeNumber = style({
   fontVariantNumeric: 'tabular-nums',
   selectors: {
     [`:where([data-mantine-color-scheme="dark"]) :where([data-likec4-color="gray"]) &`]: {
-      backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`
+      backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`,
     },
     [`:where([data-edge-active='true']) &`]: {
-      backgroundColor: 'transparent'
-    }
-  }
+      backgroundColor: 'transparent',
+    },
+  },
 })
 
 export const varLabelX = createVar('label-x')
@@ -197,43 +197,50 @@ export const edgeLabel = style({
   borderRadius: labelBorderRadius,
   transform: varTranslate,
   vars: {
-    [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`
+    [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`,
   },
   selectors: {
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-in-out',
-      transform: `${varTranslate} scale(1.12)`
+      transform: `${varTranslate} scale(1.12)`,
     },
     [`&:has(${stepEdgeNumber})`]: {
       padding: 0,
-      gap: 2
+      gap: 2,
     },
     [`&:is(${dimmed})`]: {
       opacity: 0.3,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-      willChange: 'opacity, filter'
-    }
-  }
+      willChange: 'opacity, filter',
+    },
+  },
 })
 
 export const edgeLabelText = style({
-  textAlign: 'center',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
-  lineHeight: 1.185
+  lineHeight: 1.185,
+})
+
+export const edgeLabelTechnology = style({
+  textAlign: 'center',
+  whiteSpaceCollapse: 'preserve-breaks',
+  fontSize: rem(11),
+  lineHeight: 1,
+  opacity: 0.75,
 })
 
 globalStyle(`${edgeLabel}:has(${stepEdgeNumber}) ${edgeLabelText}`, {
-  padding: '2px 5px 4px 2px'
+  padding: '2px 5px 4px 2px',
 })
 
 export const edgeNoteCloseButton = style({
   position: 'absolute',
   top: 4,
   right: 4,
-  zIndex: 9
+  zIndex: 9,
 })
 
 export const edgeNoteText = style({
@@ -243,52 +250,39 @@ export const edgeNoteText = style({
   textWrap: 'pretty',
   lineHeight: 1.25,
   vars: {
-    '--text-fz': mantine.fontSizes.sm
+    '--text-fz': mantine.fontSizes.sm,
   },
   '@media': {
     [mantine.largerThan('md')]: {
       vars: {
-        '--text-fz': mantine.fontSizes.md
-      }
-    }
-  }
+        '--text-fz': mantine.fontSizes.md,
+      },
+    },
+  },
 })
 
 export const cssNavigateBtn = style({
   zIndex: 'calc(var(--layer-overlays, 1) + 1)',
-  position: 'absolute',
   pointerEvents: 'all',
-  left: '50%',
-  top: 'calc(100% + 1px)',
   color: xyvars.edge.labelColor,
   cursor: 'pointer',
-  transformOrigin: 'top center',
-  opacity: 0.8,
-  transition: 'all 150ms ease-in-out',
-  transform: 'translate(-50%, 0)',
-  transitionDelay: '0ms',
+  opacity: 1,
+  transition: transitions.fast,
   backgroundColor: 'var(--ai-bg)',
   vars: {
     '--ai-bg': vars.relation.labelBgColor,
-    '--ai-hover': `color-mix(in srgb , ${vars.relation.labelBgColor}, ${mixColor} 10%)`
-  },
-  selectors: {
-    [`:is(${dimmed}) &`]: {
-      display: 'none'
-    }
+    '--ai-hover': `color-mix(in srgb , ${vars.relation.labelBgColor}, ${mixColor} 10%)`,
   },
   ':hover': {
-    boxShadow: mantine.shadows.lg,
-    transform: 'translate(-50%, 0) scale(1.3)',
-    opacity: 1
+    transform: 'translateY(1px) scale(1.15)',
   },
   ':active': {
-    transform: 'translate(-50%, 0) scale(1.02)'
-  }
+    transform: 'translateY(-1px) scale(0.9)',
+  },
 })
 globalStyle(`${cssNavigateBtn} .tabler-icon`, {
-  width: '75%',
-  height: '75%',
-  strokeWidth: 2
+  width: '80%',
+  height: '80%',
+  strokeWidth: 2,
 })
 export const cssNavigateBtnIcon = style({})

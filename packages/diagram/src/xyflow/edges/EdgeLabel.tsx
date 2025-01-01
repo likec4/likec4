@@ -1,8 +1,8 @@
-import { extractStep, isStepEdgeId, type ViewId } from '@likec4/core'
+import { type ViewId, extractStep, isStepEdgeId } from '@likec4/core'
 import {
+  type BoxProps,
   ActionIcon,
   Box,
-  type BoxProps,
   Button,
   CloseButton,
   Group,
@@ -11,7 +11,7 @@ import {
   PopoverTarget,
   ScrollAreaAutosize,
   Stack,
-  Text
+  Text,
 } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { IconZoomScan } from '@tabler/icons-react'
@@ -21,10 +21,10 @@ import { type PropsWithChildren, type ReactNode, useState } from 'react'
 import { isTruthy } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps } from '../../hooks'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
+import type { DiagramFlowTypes } from '../types'
 import { stopPropagation } from '../utils'
 import * as edgesCss from './edges.css'
 import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
-import type { DiagramFlowTypes } from '../types'
 
 export interface EdgeLabelProps extends Omit<BoxProps, 'label'> {
   isDimmed: boolean
@@ -35,7 +35,7 @@ export const EdgeLabel = ({
   isDimmed,
   edgeData: {
     label,
-    edge
+    edge,
   },
   ...props
 }: EdgeLabelProps) => {
@@ -43,11 +43,11 @@ export const EdgeLabel = ({
   const {
     enableRelationshipDetails,
     isActiveWalkthroughStep,
-    hasOnNavigateTo
+    hasOnNavigateTo,
   } = useDiagramState(s => ({
     enableRelationshipDetails: s.enableRelationshipDetails,
     isActiveWalkthroughStep: s.activeWalkthrough?.stepId === edge.id,
-    hasOnNavigateTo: !!s.onNavigateTo
+    hasOnNavigateTo: !!s.onNavigateTo,
   }))
   const notes = isActiveWalkthroughStep ? (edge.notes ?? null) : null
   const stepNum = isStepEdgeId(edge.id) ? extractStep(edge.id) : null
@@ -79,13 +79,20 @@ export const EdgeLabel = ({
               {stepNum}
             </Box>
           )}
-          {isTruthy(label?.text) && (
-            <Text component="div" className={edgesCss.edgeLabelText} lineClamp={5}>
-              {label.text}
-            </Text>
-          )}
-          {navigateTo && <NavigateToBtn viewId={navigateTo} />}
-        </Box>
+          <Stack gap={4} align="center">
+            {isTruthy(label?.text) && (
+              <Text component="div" className={edgesCss.edgeLabelText} lineClamp={5}>
+                {label.text}
+              </Text>
+            )}
+            {isTruthy(edge.technology) && (
+              <Text component="div" className={edgesCss.edgeLabelTechnology}>
+                {'[ ' + edge.technology + ' ]'}
+              </Text>
+            )}
+            {navigateTo && <NavigateToBtn viewId={navigateTo} />}
+          </Stack>
+        </Box>,
       )}
     </EdgeLabelRenderer>
   )
@@ -95,11 +102,11 @@ const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) 
   const {
     nextDynamicStep,
     hasNext,
-    hasPrevious
+    hasPrevious,
   } = useDiagramState(s => ({
     nextDynamicStep: s.nextDynamicStep,
     hasNext: s.activeWalkthrough?.hasNext ?? false,
-    hasPrevious: s.activeWalkthrough?.hasPrevious ?? false
+    hasPrevious: s.activeWalkthrough?.hasPrevious ?? false,
   }))
 
   const [isOpened, setIsOpened] = useState(false)
@@ -110,7 +117,7 @@ const NotePopover = ({ notes, children }: PropsWithChildren<{ notes: string }>) 
       setIsOpened(true)
     },
     [],
-    300
+    300,
   )
 
   return (

@@ -69,9 +69,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     renderIcon: s.renderIcon,
   }))
-  // For development purposes, show the toolbar when the element is selected
-  const _isToolbarVisible = selected && !dragging
-  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -102,6 +99,11 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     animateVariant = animateVariants ?? animateVariant
   }
 
+  const isHovered = !!animateVariants && animateVariants.includes('hovered')
+
+  const _isToolbarVisible = (selected && !dragging) || isHovered
+  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
+
   const elementIcon = ElementIcon({
     element,
     viewId,
@@ -113,13 +115,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   return (
     <>
-      {isEditable && (
-        <ElementToolbar
-          element={element}
-          isVisible={isToolbarVisible}
-          onColorPreview={setPreviewColor}
-        />
-      )}
       <Box
         component={m.div}
         className={clsx([
@@ -129,16 +124,24 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         ])}
         key={`${viewId}:element:${id}`}
         layoutId={`${viewId}:element:${id}`}
+        data-hovered={!dragging && isHovered}
         data-likec4-color={previewColor ?? element.color}
         data-likec4-shape={element.shape}
         data-animate-target=""
         initial={false}
         variants={NodeVariants(w, h)}
         animate={animateVariant}
-        whileHover={selected ? 'selected' : 'hovered'}
         {...isInteractive && animateHandlers}
         tabIndex={-1}
       >
+        {isEditable && (
+          <ElementToolbar
+            element={element}
+            isVisible={isToolbarVisible}
+            align="start"
+            onColorPreview={setPreviewColor}
+          />
+        )}
         <svg
           className={clsx(css.shapeSvg)}
           viewBox={`0 0 ${w} ${h}`}>
@@ -176,18 +179,25 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             )}
           </Box>
         </Box>
-        {/* {isHovercards && element.links && <ElementLink element={element} />} */}
         <Box className={clsx(nodeCss.bottomBtnContainer)}>
-          <ActionButtonBar shiftY="bottom" {...isInteractive && animateHandlers}>
-            {isNavigable && <NavigateToButton xynodeId={id} />}
-            {enableRelationshipBrowser && !!modelRef && <BrowseRelationshipsButton fqn={modelRef} />}
+          <ActionButtonBar shiftY="bottom">
+            {isNavigable && (
+              <NavigateToButton
+                xynodeId={id}
+                {...isInteractive && animateHandlers}
+              />
+            )}
+            {enableRelationshipBrowser && !!modelRef && (
+              <BrowseRelationshipsButton
+                fqn={modelRef}
+                {...isInteractive && animateHandlers}
+              />
+            )}
           </ActionButtonBar>
         </Box>
         {enableElementDetails && !!modelRef && (
           <Box className={clsx(nodeCss.topRightBtnContainer)}>
-            <ActionButtonBar shiftX="right" {...isInteractive && animateHandlers}>
-              <OpenDetailsButton fqn={element.id} />
-            </ActionButtonBar>
+            <OpenDetailsButton fqn={modelRef} {...isInteractive && animateHandlers} />
           </Box>
         )}
       </Box>
