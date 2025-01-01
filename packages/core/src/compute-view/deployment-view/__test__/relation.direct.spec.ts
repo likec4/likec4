@@ -1,19 +1,20 @@
 import { describe, expect, it } from 'vitest'
-import type { DeploymentViewRuleBuilderOp } from '../../../builder/Builder.view'
-import { $exclude, $include, computeNodesAndEdges, type Types } from './fixture'
+import type { DeploymentRulesBuilderOp } from '../../../builder'
+import { type Types, $exclude, $include, computeNodesAndEdges } from './fixture'
 
-function expectComputed(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
+function expectComputed(...rules: DeploymentRulesBuilderOp<Types>[]) {
   return expect(computeNodesAndEdges(...rules))
 }
 
 describe('DirectRelationPredicate', () => {
   it('should include direct relation if it matches condition', () => {
     expectComputed(
-      $include('customer -> prod.eu', {where: 'tag is #old'})
+      $include('customer -> prod.eu', { where: 'tag is #old' }),
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
           "customer",
+          "prod",
           "prod.eu",
         ],
         "edges": [
@@ -25,14 +26,14 @@ describe('DirectRelationPredicate', () => {
 
   it('should not include direct relation if it does not match condition', () => {
     expectComputed(
-      $include('customer -> prod.eu', {where: 'tag is #next'})
+      $include('customer -> prod.eu', { where: 'tag is #next' }),
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [],
         "edges": [],
       }
     `)
-  })  
+  })
 
   it('should exclude direct relation if it matches condition', () => {
     expectComputed(
@@ -42,16 +43,16 @@ describe('DirectRelationPredicate', () => {
       $exclude({
         source: {
           ref: {
-            model: 'cloud.frontend'
+            model: 'cloud.frontend',
           },
-          selector: 'children'
+          selector: 'children',
         },
         target: {
           ref: {
-            model: 'cloud.backend'
-          }
-        }
-      }, {where: 'tag is #old'})
+            model: 'cloud.backend',
+          },
+        },
+      }, { where: 'tag is #old' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -59,17 +60,17 @@ describe('DirectRelationPredicate', () => {
         'prod.eu.zone1.ui',
         'prod.eu.db',
         'prod.eu.auth',
-        'prod.eu.media'
+        'prod.eu.media',
       ],
       edges: [
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
-  })  
+  })
 
   it('should not exclude direct relation if it does not match condition', () => {
     expectComputed(
@@ -79,16 +80,16 @@ describe('DirectRelationPredicate', () => {
       $exclude({
         source: {
           ref: {
-            model: 'cloud.frontend'
+            model: 'cloud.frontend',
           },
-          selector: 'children'
+          selector: 'children',
         },
         target: {
           ref: {
-            model: 'cloud.backend'
-          }
-        }
-      }, {where: 'tag is #next'})
+            model: 'cloud.backend',
+          },
+        },
+      }, { where: 'tag is #next' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -96,7 +97,7 @@ describe('DirectRelationPredicate', () => {
         'prod.eu.zone1.api',
         'prod.eu.auth',
         'prod.eu.media',
-        'prod.eu.db'
+        'prod.eu.db',
       ],
       edges: [
         'prod.eu.zone1.ui:prod.eu.zone1.api',
@@ -104,8 +105,8 @@ describe('DirectRelationPredicate', () => {
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 })

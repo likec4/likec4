@@ -17,7 +17,7 @@ import { predicateToPatch } from './predicates'
 import { Memory, StageExclude, StageInclude } from './memory'
 import { StageFinal } from './stages/stage-final'
 
-function processPredicates<M extends AnyAux>(
+export function processPredicates<M extends AnyAux>(
   model: LikeC4DeploymentModel<M>,
   rules: DeploymentViewRule[]
 ) {

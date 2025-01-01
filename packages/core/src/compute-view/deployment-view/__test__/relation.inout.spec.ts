@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import type { DeploymentViewRuleBuilderOp } from '../../../builder/Builder.view'
-import { $exclude, $include, computeNodesAndEdges, type Types } from './fixture'
+import type { DeploymentRulesBuilderOp } from '../../../builder'
+import { type Types, $exclude, $include, computeNodesAndEdges } from './fixture'
 
-function expectComputed(...rules: DeploymentViewRuleBuilderOp<Types>[]) {
+function expectComputed(...rules: DeploymentRulesBuilderOp<Types>[]) {
   return expect(computeNodesAndEdges(...rules))
 }
 
@@ -10,11 +10,12 @@ describe('InoutRelationPredicate', () => {
   it('should include relation incoming to deployment node if it matches condition', () => {
     expectComputed(
       $include('customer'),
-      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #old' })
+      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #old' }),
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
           "customer",
+          "prod",
           "prod.eu.zone1.ui",
         ],
         "edges": [
@@ -27,7 +28,7 @@ describe('InoutRelationPredicate', () => {
   it('should include relation outgoing from deployment node if it matches condition', () => {
     expectComputed(
       $include('prod.eu.zone1.api'),
-      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #old' })
+      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #old' }),
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
@@ -44,7 +45,7 @@ describe('InoutRelationPredicate', () => {
   it('should not include relation incoming to deployment node if it does not match condition', () => {
     expectComputed(
       $include('customer'),
-      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #next' })
+      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #next' }),
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
@@ -58,7 +59,7 @@ describe('InoutRelationPredicate', () => {
   it('should not include relation outgoing from deployment node if it does not match condition', () => {
     expectComputed(
       $include('prod.eu.zone1.api'),
-      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #next' })
+      $include('-> prod.eu.zone1.ui ->', { where: 'tag is #next' }),
     ).toMatchInlineSnapshot(`
       {
         "Nodes": [
@@ -77,10 +78,10 @@ describe('InoutRelationPredicate', () => {
       $exclude({
         inout: {
           ref: {
-            model: 'cloud.backend'
-          }
-        }
-      }, { where: 'tag is #old' })
+            model: 'cloud.backend',
+          },
+        },
+      }, { where: 'tag is #old' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -88,15 +89,15 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.ui',
         'prod.eu.db',
         'prod.eu.auth',
-        'prod.eu.media'
+        'prod.eu.media',
       ],
       edges: [
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 
@@ -108,10 +109,10 @@ describe('InoutRelationPredicate', () => {
       $exclude({
         outgoing: {
           ref: {
-            model: 'cloud.frontend'
-          }
-        }
-      }, { where: 'tag is #old' })
+            model: 'cloud.frontend',
+          },
+        },
+      }, { where: 'tag is #old' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -119,15 +120,15 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.ui',
         'prod.eu.db',
         'prod.eu.auth',
-        'prod.eu.media'
+        'prod.eu.media',
       ],
       edges: [
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 
@@ -139,10 +140,10 @@ describe('InoutRelationPredicate', () => {
       $exclude({
         inout: {
           ref: {
-            model: 'cloud.backend'
-          }
-        }
-      }, { where: 'tag is #next' })
+            model: 'cloud.backend',
+          },
+        },
+      }, { where: 'tag is #next' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -150,7 +151,7 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api',
         'prod.eu.auth',
         'prod.eu.media',
-        'prod.eu.db'
+        'prod.eu.db',
       ],
       edges: [
         'prod.eu.zone1.ui:prod.eu.zone1.api',
@@ -158,8 +159,8 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 
@@ -171,10 +172,10 @@ describe('InoutRelationPredicate', () => {
       $exclude({
         outgoing: {
           ref: {
-            model: 'cloud.frontend'
-          }
-        }
-      }, { where: 'tag is #next' })
+            model: 'cloud.frontend',
+          },
+        },
+      }, { where: 'tag is #next' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -182,7 +183,7 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api',
         'prod.eu.auth',
         'prod.eu.media',
-        'prod.eu.db'
+        'prod.eu.db',
       ],
       edges: [
         'prod.eu.zone1.ui:prod.eu.zone1.api',
@@ -190,8 +191,8 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 
@@ -200,23 +201,23 @@ describe('InoutRelationPredicate', () => {
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
-      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #old' })
+      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #old' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
-        'prod.eu.zone1.api',
         'prod.eu.zone1.ui',
-        'prod.eu.db',
+        'prod.eu.zone1.api',
         'prod.eu.auth',
-        'prod.eu.media'
+        'prod.eu.media',
+        'prod.eu.db',
       ],
       edges: [
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 
@@ -225,23 +226,23 @@ describe('InoutRelationPredicate', () => {
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
-      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #old' })
+      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #old' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
-        'prod.eu.zone1.api',
         'prod.eu.zone1.ui',
-        'prod.eu.db',
+        'prod.eu.zone1.api',
         'prod.eu.auth',
-        'prod.eu.media'
+        'prod.eu.media',
+        'prod.eu.db',
       ],
       edges: [
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 
@@ -250,7 +251,7 @@ describe('InoutRelationPredicate', () => {
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
-      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #next' })
+      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #next' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -258,7 +259,7 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api',
         'prod.eu.auth',
         'prod.eu.media',
-        'prod.eu.db'
+        'prod.eu.db',
       ],
       edges: [
         'prod.eu.zone1.ui:prod.eu.zone1.api',
@@ -266,8 +267,8 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 
@@ -276,7 +277,7 @@ describe('InoutRelationPredicate', () => {
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
-      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #next' })
+      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #next' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -284,7 +285,7 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api',
         'prod.eu.auth',
         'prod.eu.media',
-        'prod.eu.db'
+        'prod.eu.db',
       ],
       edges: [
         'prod.eu.zone1.ui:prod.eu.zone1.api',
@@ -292,8 +293,8 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media'
-      ]
+        'prod.eu.zone1.ui:prod.eu.media',
+      ],
     })
   })
 })

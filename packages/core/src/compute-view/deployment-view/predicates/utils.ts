@@ -67,7 +67,7 @@ export function excludeModelRelations(
         model: intersection(c.relations.model, relationsToExclude),
       })
     ),
-    map(c => applyPredicate(c, where)),
+    applyPredicate(where),
     filter(c => c.nonEmpty())
   )
   if (toExclude.length === 0) {
