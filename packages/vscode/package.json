@@ -38,7 +38,7 @@
     "vsce:publish": "yarn dlx vsce publish --skip-duplicate"
   },
   "engines": {
-    "vscode": "^1.89.0"
+    "vscode": "^1.84.0"
   },
   "keywords": [
     "architecture",
@@ -198,7 +198,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^20.17.7",
-    "@types/vscode": "^1.89.0",
+    "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.8",
     "esbuild": "^0.24.2",
