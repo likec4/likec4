@@ -1,5 +1,11 @@
 import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
-import { type Module, DocumentCache, EmptyFileSystem, inject, WorkspaceCache } from 'langium'
+import {
+  type Module,
+  DocumentCache,
+  EmptyFileSystem,
+  inject,
+  WorkspaceCache,
+} from 'langium'
 import {
   type DefaultSharedModuleContext,
   type LangiumServices,
@@ -9,10 +15,13 @@ import {
   createDefaultModule,
   createDefaultSharedModule,
 } from 'langium/lsp'
+import { LikeC4DocumentationProvider } from './documentation'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
-import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { logToLspConnection } from './logger'
-import { logger } from './logger'
+import {
+  LikeC4GeneratedModule,
+  LikeC4GeneratedSharedModule,
+} from './generated/module'
+import { logger, logToLspConnection } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
@@ -22,11 +31,25 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider,
 } from './lsp'
-import { DeploymentsIndex, FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
+import {
+  DeploymentsIndex,
+  FqnIndex,
+  LikeC4ModelBuilder,
+  LikeC4ModelLocator,
+  LikeC4ModelParser,
+} from './model'
 import { LikeC4ModelChanges } from './model-change/ModelChanges'
-import { LikeC4NameProvider, LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
+import {
+  LikeC4NameProvider,
+  LikeC4ScopeComputation,
+  LikeC4ScopeProvider,
+} from './references'
 import { Rpc } from './Rpc'
-import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
+import {
+  LikeC4WorkspaceManager,
+  NodeKindProvider,
+  WorkspaceSymbolProvider,
+} from './shared'
 import { registerValidationChecks } from './validation'
 import { LikeC4Views } from './views'
 
@@ -62,6 +85,9 @@ const LikeC4SharedModule: Module<
  * Declaration of custom services - add your own service classes here.
  */
 export interface LikeC4AddedServices {
+  documentation: {
+    DocumentationProvider: LikeC4DocumentationProvider
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   WorkspaceCache: WorkspaceCache<string, any>
   DocumentCache: DocumentCache<string, any>
@@ -101,6 +127,9 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 }
 
 export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
+  documentation: {
+    DocumentationProvider: bind(LikeC4DocumentationProvider),
+  },
   WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
   DocumentCache: (services: LikeC4Services) => new DocumentCache(services.shared),
   Rpc: bind(Rpc),
@@ -189,7 +218,11 @@ export function createLanguageServices(context: LanguageServicesContext = {}): {
   likec4: LikeC4Services
 } {
   const shared = createSharedServices(context)
-  const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
+  const likec4 = inject(
+    createDefaultModule({ shared }),
+    LikeC4GeneratedModule,
+    LikeC4Module,
+  )
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
 

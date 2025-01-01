@@ -1,30 +1,39 @@
 import { nonexhaustive } from '@likec4/core'
-import { type AstNode, GrammarUtils, type MaybePromise } from 'langium'
+import { type AstNode, type MaybePromise, AstUtils, GrammarUtils } from 'langium'
 import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
-import { ast, type LikeC4LangiumDocument } from '../ast'
-import { logError } from '../logger'
+import { type LikeC4LangiumDocument, ast } from '../ast'
+import { logError, logWarnError } from '../logger'
+import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
+import type { LikeC4NameProvider } from '../references'
 import { getFqnElementRef } from '../utils/elementRef'
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected readonly nodeKindProvider: NodeKindProvider
+  protected readonly nameProvider: LikeC4NameProvider
+  protected readonly parser: LikeC4ModelParser
+  protected readonly locator: LikeC4ModelLocator
 
   constructor(private services: LikeC4Services) {
     this.nodeKindProvider = services.shared.lsp.NodeKindProvider
+    this.parser = services.likec4.ModelParser
+    this.locator = services.likec4.ModelLocator
+    this.nameProvider = services.references.NameProvider
   }
 
   getSymbols({
     parseResult: {
-      value: { specifications, models, views, likec4lib }
-    }
+      value: { specifications, models, deployments, views, likec4lib },
+    },
   }: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
     return [
       ...likec4lib.map(l => () => this.getLikec4LibSymbol(l)),
       ...specifications.map(s => () => this.getSpecSymbol(s)),
       ...models.map(s => () => this.getModelSymbol(s)),
-      ...views.map(s => () => this.getModelViewsSymbol(s))
+      ...deployments.map(s => () => this.getDeploymentModelSymbol(s)),
+      ...views.map(s => () => this.getModelViewsSymbol(s)),
     ].flatMap(fn => {
       try {
         return fn() ?? []
@@ -46,8 +55,8 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: 'icons',
         range: cstModel.range,
         selectionRange: GrammarUtils.findNodeForKeyword(cstModel, 'icons')?.range ?? cstModel.range,
-        children
-      }
+        children,
+      },
     ]
   }
 
@@ -76,7 +85,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         }
         nonexhaustive(nd)
       }),
-      filter(isTruthy)
+      filter(isTruthy),
     )
 
     if (specSymbols.length === 0) return []
@@ -87,8 +96,8 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: astSpec.name,
         range: cstModel.range,
         selectionRange: specKeywordNode.range,
-        children: specSymbols
-      }
+        children: specSymbols,
+      },
     ]
   }
 
@@ -103,13 +112,29 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: astModel.name,
         range: cstModel.range,
         selectionRange: nameNode.range,
-        children: astModel.elements.flatMap(e => this.getElementsSymbol(e))
-      }
+        children: astModel.elements.flatMap(e => this.getElementsSymbol(e)),
+      },
+    ]
+  }
+
+  protected getDeploymentModelSymbol(astModel: ast.ModelDeployments): DocumentSymbol[] {
+    const cstModel = astModel.$cstNode
+    if (!cstModel) return []
+    const nameNode = GrammarUtils.findNodeForProperty(cstModel, 'name')
+    if (!nameNode) return []
+    return [
+      {
+        kind: this.symbolKind(astModel),
+        name: astModel.name,
+        range: cstModel.range,
+        selectionRange: nameNode.range,
+        children: astModel.elements.flatMap(e => this.getDeploymentElementSymbol(e)),
+      },
     ]
   }
 
   protected getElementsSymbol(
-    el: ast.Element | ast.Relation | ast.ExtendElement
+    el: ast.Element | ast.Relation | ast.ExtendElement,
   ): DocumentSymbol[] {
     try {
       if (ast.isExtendElement(el)) {
@@ -136,8 +161,8 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: getFqnElementRef(astElement.element),
         range: cst.range,
         selectionRange: nameNode.range,
-        children: body.elements.flatMap(e => this.getElementsSymbol(e))
-      }
+        children: body.elements.flatMap(e => this.getElementsSymbol(e)),
+      },
     ]
   }
 
@@ -157,8 +182,8 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         range: cst.range,
         selectionRange: nameNode.range,
         detail,
-        children: astElement.body?.elements.flatMap(e => this.getElementsSymbol(e)) ?? []
-      }
+        children: astElement.body?.elements.flatMap(e => this.getElementsSymbol(e)) ?? [],
+      },
     ]
   }
   protected getModelViewsSymbol(astViews: ast.ModelViews): DocumentSymbol[] {
@@ -171,13 +196,13 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: astViews.name,
         range: cst.range,
         selectionRange: nameNode.range,
-        children: astViews.views.flatMap(e => this.getViewSymbol(e))
-      }
+        children: astViews.views.flatMap(e => this.getViewSymbol(e)),
+      },
     ]
   }
 
   protected getKindSymbol(
-    astKind: ast.SpecificationElementKind | ast.SpecificationRelationshipKind
+    astKind: ast.SpecificationElementKind | ast.SpecificationRelationshipKind,
   ): DocumentSymbol | null {
     if (!astKind.$cstNode || !astKind.kind.$cstNode || isEmpty(astKind.kind.name)) return null
 
@@ -185,7 +210,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       kind: this.symbolKind(astKind),
       name: astKind.kind.name,
       range: astKind.$cstNode.range,
-      selectionRange: astKind.kind.$cstNode.range
+      selectionRange: astKind.kind.$cstNode.range,
     }
   }
 
@@ -195,7 +220,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       kind: this.symbolKind(astTag),
       name: '#' + astTag.tag.name,
       range: astTag.$cstNode.range,
-      selectionRange: astTag.tag.$cstNode.range
+      selectionRange: astTag.tag.$cstNode.range,
     }
   }
 
@@ -205,7 +230,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       kind: this.symbolKind(astTag),
       name: astTag.name,
       range: astTag.$cstNode.range,
-      selectionRange: astTag.$cstNode.range
+      selectionRange: astTag.$cstNode.range,
     }
   }
 
@@ -220,8 +245,65 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: nameNode.text,
         range: cst.range,
         selectionRange: nameNode.range,
-        children: []
+        children: [],
+      },
+    ]
+  }
+
+  protected getDeploymentElementSymbol(el: ast.DeploymentElement | ast.DeploymentRelation): DocumentSymbol[] {
+    try {
+      if (ast.isDeploymentNode(el)) {
+        return this.getDeploymentNodeSymbol(el)
       }
+      if (ast.isDeployedInstance(el)) {
+        return this.getDeployedInstanceSymbol(el)
+      }
+    } catch (e) {
+      logWarnError(e)
+    }
+    return []
+  }
+
+  protected getDeploymentNodeSymbol(astElement: ast.DeploymentNode): DocumentSymbol[] {
+    const cst = astElement.$cstNode
+    const nameNode = this.nameProvider.getNameNode(astElement)
+    if (!nameNode || !cst) return []
+
+    const name = this.nameProvider.getNameStrict(astElement)
+    const kind = astElement.kind.$refText
+    // TODO: return the title as well
+    const detail = kind // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
+    return [
+      {
+        kind: this.symbolKind(astElement),
+        name: name,
+        range: cst.range,
+        selectionRange: nameNode.range,
+        detail,
+        children: astElement.body?.elements.flatMap(e => this.getDeploymentElementSymbol(e)) ?? [],
+      },
+    ]
+  }
+
+  protected getDeployedInstanceSymbol(astElement: ast.DeployedInstance): DocumentSymbol[] {
+    const cst = astElement.$cstNode
+    const nameNode = this.nameProvider.getNameNode(astElement)
+    if (!nameNode || !cst) return []
+
+    const doc = AstUtils.getDocument(astElement)
+    const instance = this.parser.forDocument(doc).parseDeployedInstance(astElement)
+
+    const name = this.nameProvider.getNameStrict(astElement)
+    const detail = 'instance of ' + instance.element
+    return [
+      {
+        kind: this.symbolKind(astElement),
+        name: name,
+        range: cst.range,
+        selectionRange: nameNode.range,
+        detail,
+        children: [],
+      },
     ]
   }
 
