@@ -1,5 +1,5 @@
-import { type DiagramView, invariant, LikeC4Model, type ViewId } from '@likec4/core'
-import { changeView, fetchComputedModel, locate, type LocateParams } from '@likec4/language-server/protocol'
+import { type DiagramView, type ViewId, invariant, LikeC4Model } from '@likec4/core'
+import { type LocateParams, changeView, fetchComputedModel, layoutView, locate } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import type { LiteralUnion, Simplify } from 'type-fest'
@@ -9,14 +9,11 @@ import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 
 import type { LikeC4DiagramProps } from '@likec4/diagram'
-import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { deepEqual } from 'fast-equals'
 import { nanoid } from 'nanoid'
 import pLimit from 'p-limit'
 import { forEachObj, isError, mapValues, mergeDeep } from 'remeda'
-import { LikeC4WorkspacesKey, type LocalStorageWorkspace } from './use-workspaces'
-
-const graphvizLayouter = new GraphvizLayouter(new GraphvizWasmAdapter())
+import { type LocalStorageWorkspace, LikeC4WorkspacesKey } from './use-workspaces'
 
 export type WorkspaceStore = {
   readonly uniqueId: string
@@ -127,7 +124,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
   title,
   currentFilename,
   files,
-  skipHydration
+  skipHydration,
   // userConfig
 }: T) {
   let seq = 1
@@ -141,7 +138,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
     [
       ['zustand/persist', PersistedState],
       ['zustand/subscribeWithSelector', never],
-      ['zustand/devtools', never]
+      ['zustand/devtools', never],
     ]
   >(
     persist(
@@ -177,10 +174,10 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               }
               set(
                 {
-                  files: { ...files, [currentFilename]: content }
+                  files: { ...files, [currentFilename]: content },
                 },
                 noReplace,
-                'updateCurrentFile'
+                'updateCurrentFile',
               )
             },
 
@@ -208,12 +205,12 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                   if (model) {
                     const {
                       likeC4Model: currentmodel,
-                      diagrams: currentDiagrams
+                      diagrams: currentDiagrams,
                     } = get()
                     // Shallow-Copy diagram states
                     const diagrams = mapValues(
                       currentDiagrams,
-                      (diagramState) => ({ ...diagramState })
+                      (diagramState) => ({ ...diagramState }),
                     ) as typeof currentDiagrams
 
                     // Merge new views with current views
@@ -227,7 +224,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                           state: 'pending',
                           dot: null,
                           view: null,
-                          error: null
+                          error: null,
                         }
                       } else if (next !== current) {
                         diagramState.state = 'stale'
@@ -248,12 +245,12 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                       {
                         likeC4Model: LikeC4Model.create({
                           ...model,
-                          views
+                          views,
                         }),
-                        diagrams
+                        diagrams,
                       },
                       noReplace,
-                      'likeC4Model'
+                      'likeC4Model',
                     )
                   }
                 } catch (e) {
@@ -284,19 +281,28 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 }
 
                 const diagrams = {
-                  ...currentDiagrams
+                  ...currentDiagrams,
                 }
 
                 const label = `layoutView: ${computedView.id}`
                 console.time(label)
                 console.log(`start ${label}`)
                 try {
-                  const layoutRes = await graphvizLayouter.layout(computedView)
-                  diagrams[viewId] = {
-                    view: layoutRes.diagram,
-                    dot: layoutRes.dot,
-                    state: 'success',
-                    error: null
+                  const { result } = await client.sendRequest(layoutView, { viewId })
+                  if (!result) {
+                    diagrams[viewId] = {
+                      view: currentDiagrams[viewId]?.view ?? null,
+                      dot: currentDiagrams[viewId]?.dot ?? null,
+                      state: 'error',
+                      error: 'Unknown error',
+                    }
+                  } else {
+                    diagrams[viewId] = {
+                      view: result.diagram,
+                      dot: result.dot,
+                      state: 'success',
+                      error: null,
+                    }
                   }
                 } catch (e) {
                   console.error(e)
@@ -304,7 +310,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                     view: currentDiagrams[viewId]?.view ?? null,
                     dot: currentDiagrams[viewId]?.dot ?? null,
                     state: 'error',
-                    error: isError(e) ? e.message : 'Unknown error'
+                    error: isError(e) ? e.message : 'Unknown error',
                   }
                 } finally {
                   console.timeEnd(label)
@@ -320,7 +326,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               void client
                 .sendRequest(changeView, {
                   viewId,
-                  change
+                  change,
                 })
                 .then((location) => {
                   if (location) {
@@ -339,13 +345,13 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               if (location) {
                 set({ requestedLocation: location })
               }
-            }
+            },
           }),
           {
             name: `WorkspaceStore ${storeDevId++} - ${name}`,
-            enabled: DEV
-          }
-        )
+            enabled: DEV,
+          },
+        ),
       ),
       {
         name: `likec4:workspace:${name}`,
@@ -354,7 +360,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
           title: s.title,
           currentFilename: s.currentFilename,
           files: s.files,
-          originalFiles: s.originalFiles
+          originalFiles: s.originalFiles,
         }),
         merge: (persistedState, currentState) => mergeDeep(currentState, persistedState as any),
         skipHydration: skipHydration ?? false,
@@ -366,16 +372,16 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               workspaces.push({
                 key: `likec4:workspace:${name}`,
                 name,
-                title
+                title,
               })
               localStorage.setItem(LikeC4WorkspacesKey, JSON.stringify(workspaces))
             }
           } catch (e) {
             console.error(e)
           }
-        }
-      }
+        },
+      },
     ),
-    shallow
+    shallow,
   )
 }

@@ -15,14 +15,12 @@ import k from 'tinyrainbow'
 import type { Constructor } from 'type-fest'
 import { version } from '../../package.json' with { type: 'json' }
 import { type Logger, createLikeC4Logger, NoopLogger } from '../logger'
-import { Views } from './Views'
 import { CliWorkspace } from './Workspace'
 
 export type CliAddedServices = {
   logger: Logger
   likec4: {
     Layouter: GraphvizLayouter
-    Views: Views
   }
   cli: {
     Workspace: CliWorkspace
@@ -43,7 +41,6 @@ export const CliModule: Module<CliServices, DeepPartial<LikeC4Services> & CliAdd
     Layouter: () => {
       throw new Error('Layouter must be provided')
     },
-    Views: bind(Views),
   },
   cli: {
     Workspace: bind(CliWorkspace),

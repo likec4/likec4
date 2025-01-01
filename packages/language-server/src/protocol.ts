@@ -1,11 +1,12 @@
 import type {
   ComputedLikeC4Model,
   ComputedView,
+  DiagramView,
   Fqn,
   ParsedLikeC4Model,
   RelationId,
   ViewChange,
-  ViewId
+  ViewId,
 } from '@likec4/core'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
@@ -16,8 +17,9 @@ export type OnDidChangeModelNotification = typeof onDidChangeModel
 // #endregion
 
 // #region To server
+
 export const fetchModel = new RequestType0<{ model: ParsedLikeC4Model | null }, void>(
-  'likec4/fetchModel'
+  'likec4/fetchModel',
 )
 export type FetchModelRequest = typeof fetchModel
 
@@ -26,21 +28,44 @@ export const fetchComputedModel = new RequestType<
   { model: ComputedLikeC4Model | null },
   void
 >(
-  'likec4/fetchComputedModel'
+  'likec4/fetchComputedModel',
 )
 export type FetchComputedModelRequest = typeof fetchComputedModel
 
 export const computeView = new RequestType<{ viewId: ViewId }, { view: ComputedView | null }, void>(
-  'likec4/computeView'
+  'likec4/computeView',
 )
 export type ComputeViewRequest = typeof computeView
 
+/**
+ * Request to layout a view.
+ */
+export const layoutView = new RequestType<
+  { viewId: ViewId },
+  {
+    result:
+      | {
+        dot: string
+        diagram: DiagramView
+      }
+      | null
+  },
+  void
+>('likec4/layout-view')
+export type LayoutViewRequest = typeof layoutView
+
+/**
+ * Request to build documents.
+ */
 export interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
 export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
 export type BuildDocumentsRequest = typeof buildDocuments
 
+/**
+ * Request to locate an element, relation, deployment or view.
+ */
 export type LocateParams =
   | {
     element: Fqn

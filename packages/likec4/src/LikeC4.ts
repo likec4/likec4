@@ -1,3 +1,4 @@
+import type { LikeC4Views } from '@likec4/language-server'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -7,7 +8,6 @@ import { indexBy, prop } from 'remeda'
 import k from 'tinyrainbow'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createLanguageServices } from './language/module'
-import type { Views } from './language/Views'
 import type { Logger } from './logger'
 import { type DiagramView, LikeC4Model } from './model'
 
@@ -139,7 +139,7 @@ export class LikeC4 {
     }
   }
 
-  get viewsService(): Views {
+  get viewsService(): LikeC4Views {
     return this.langium.likec4.Views
   }
 

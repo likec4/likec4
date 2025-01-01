@@ -2042,11 +2042,13 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/icons": "workspace:*"
+    "@likec4/layouts": "workspace:*"
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@msgpack/msgpack": "npm:^3.0.0-beta2"
     "@smithy/util-base64": "npm:^3.0.0"
     "@types/node": "npm:^20.17.7"
+    "@types/which": "npm:^3.0.4"
     "@vitest/coverage-v8": "npm:^2.1.8"
     esm-env: "npm:^1.2.1"
     execa: "npm:^9.3.1"
@@ -2072,6 +2074,7 @@ __metadata:
     vscode-languageserver: "npm:9.0.1"
     vscode-languageserver-types: "npm:3.17.5"
     vscode-uri: "npm:3.0.8"
+    which: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -8733,7 +8736,6 @@ __metadata:
     vscode-languageserver-types: "npm:3.17.5"
     vscode-messenger: "npm:^0.4.5"
     vscode-uri: "npm:3.0.8"
-    which: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 

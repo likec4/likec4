@@ -1,3 +1,4 @@
+import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { type Module, DocumentCache, EmptyFileSystem, inject, WorkspaceCache } from 'langium'
 import {
   type DefaultSharedModuleContext,
@@ -11,6 +12,7 @@ import {
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { logToLspConnection } from './logger'
+import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
@@ -26,6 +28,7 @@ import { LikeC4NameProvider, LikeC4ScopeComputation, LikeC4ScopeProvider } from 
 import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
 import { registerValidationChecks } from './validation'
+import { LikeC4Views } from './views'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
@@ -64,6 +67,8 @@ export interface LikeC4AddedServices {
   DocumentCache: DocumentCache<string, any>
   Rpc: Rpc
   likec4: {
+    Views: LikeC4Views
+    Layouter: GraphvizLayouter
     DeploymentsIndex: DeploymentsIndex
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
@@ -100,6 +105,11 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   DocumentCache: (services: LikeC4Services) => new DocumentCache(services.shared),
   Rpc: bind(Rpc),
   likec4: {
+    Layouter: (_services: LikeC4Services) => {
+      logger.debug('Creating GraphvizLayouter with GraphvizWasmAdapter')
+      return new GraphvizLayouter(new GraphvizWasmAdapter())
+    },
+    Views: bind(LikeC4Views),
     DeploymentsIndex: bind(DeploymentsIndex),
     ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),
@@ -129,7 +139,7 @@ export type LanguageServicesContext = Partial<DefaultSharedModuleContext>
 
 export function createCustomLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & LikeC4Services>(
   context: LanguageServicesContext,
-  module: Module<I, I1>,
+  module?: Module<I, I1>,
   module2?: Module<I, I2>,
   module3?: Module<I, I3>,
 ): { shared: LikeC4SharedServices; likec4: I } {
@@ -183,7 +193,11 @@ export function createLanguageServices(context: LanguageServicesContext = {}): {
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
 
-  if (context.connection) {
+  if (!context.connection) {
+    // We don't run inside a language server
+    // Therefore, initialize the configuration provider instantly
+    shared.workspace.ConfigurationProvider.initialized({})
+  } else {
     likec4.Rpc.init()
   }
 
