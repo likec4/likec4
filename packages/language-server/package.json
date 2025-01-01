@@ -62,7 +62,7 @@
     }
   },
   "publishConfig": {
-    "registry": "https://registry.npjs.org",
+    "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
