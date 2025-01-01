@@ -1,11 +1,11 @@
-import { type FileSystemNode, URI, UriUtils } from 'langium'
+import { fdir } from 'fdir'
+import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
-import { lstatSync, readlinkSync } from 'node:fs'
-import { readdir } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
+import { stat } from 'node:fs/promises'
+import { logger } from './logger'
 
 export const LikeC4FileSystem = {
-  fileSystemProvider: () => new SymLinkTraversingFileSystemProvider()
+  fileSystemProvider: () => new SymLinkTraversingFileSystemProvider(),
 }
 
 /**
@@ -14,23 +14,24 @@ export const LikeC4FileSystem = {
  */
 class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider {
   override async readDirectory(folderPath: URI): Promise<FileSystemNode[]> {
-    const dirents = await readdir(folderPath.fsPath, { withFileTypes: true })
-    return dirents.map(dirent => (this.followUri(UriUtils.joinPath(folderPath, dirent.name))))
-  }
-
-  followUri(uri: URI): FileSystemNode {
-    const directoryPath = dirname(uri.fsPath)
-    const stat = lstatSync(uri.fsPath)
-    if (stat.isSymbolicLink()) {
-      const resolved_link = readlinkSync(uri.fsPath)
-      const linked_path = resolve(directoryPath, resolved_link)
-      return this.followUri(URI.file(linked_path))
-    } else {
-      return {
-        isFile: stat.isFile(),
-        isDirectory: stat.isDirectory(),
-        uri
+    const crawled = await new fdir()
+      .withSymlinks()
+      .withFullPaths()
+      .crawl(folderPath.fsPath)
+      .withPromise()
+    const entries = [] as FileSystemNode[]
+    for (const path of crawled) {
+      try {
+        const stats = await stat(path)
+        entries.push({
+          isFile: stats.isFile(),
+          isDirectory: stats.isDirectory(),
+          uri: URI.file(path),
+        })
+      } catch (error) {
+        logger.error(error)
       }
     }
+    return entries
   }
 }

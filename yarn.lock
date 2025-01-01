@@ -2051,6 +2051,7 @@ __metadata:
     esm-env: "npm:^1.2.1"
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.0.1"
+    fdir: "npm:^6.4.2"
     indent-string: "npm:^5.0.0"
     json5: "npm:^2.2.3"
     langium: "npm:3.3.0"
@@ -3849,6 +3850,13 @@ __metadata:
   version: 1.57.5
   resolution: "@types/vscode-webview@npm:1.57.5"
   checksum: 10c0/2d84c0e406e46bd2176339417e932264f9b81425aecb0f196f80c139a645a9b80c3dd8d068d4e628c79b2992a7bea39ee2ea9b79bf94265f62cc026ad6d9f327
+  languageName: node
+  linkType: hard
+
+"@types/vscode@npm:^1.84.0":
+  version: 1.96.0
+  resolution: "@types/vscode@npm:1.96.0"
+  checksum: 10c0/3fb7ba394f6a8d6a4725b7ad0f0a4dd506371af934f7dc709989fd4b8f587cce96efb042e0d3af2b416b4bb74ecb2a5375c61f21b6b0cd86d85c6bdd2dcb2828
   languageName: node
   linkType: hard
 
@@ -8702,7 +8710,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": "npm:^20.17.7"
-    "@types/vscode": "npm:^1.89.0"
+    "@types/vscode": "npm:^1.84.0"
     "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.8"
     esbuild: "npm:^0.24.2"
