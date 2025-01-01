@@ -1,3 +1,22 @@
+# [1.19.0](https://github.com/likec4/likec4/compare/v1.18.0...v1.19.0) (2025-01-01)
+
+### 🎄 New Years improvements 🎄 
+
+This release introduces significant improvements in the computation of view predicates.  
+These improvements may lead to changes in the final layout, as the order of included elements is now strictly adhered to.
+
+* **fix:** error generating png behind proxy [#1374](https://github.com/likec4/likec4/issues/1374)
+* **fix:** graphviz memory seg fault for deployment views ([c067973](https://github.com/likec4/likec4/commit/c067973b54b399e56174a40c57d8130d822e545c))
+* **fix:** node toolbar is not displayed in the editor ([dc9ebac](https://github.com/likec4/likec4/commit/dc9ebace92643b582b47de66deee4eead51d21ac))
+* **fix:** parent-relations can't contain comments (thanks @davydkov, closes [#911](https://github.com/likec4/likec4/issues/911))
+* **fix:** relation being yielded twice (thanks @pavelpykhtin, [#1364](https://github.com/likec4/likec4/issues/1364)) ([#1384](https://github.com/likec4/likec4/issues/1384)) ([bd0bc03](https://github.com/likec4/likec4/commit/bd0bc0303209ea069821d4a9debb193fd958b8aa))
+* **fix:** reset connection points on self-referencing relations (thanks @pavelpykhtin, [#1383](https://github.com/likec4/likec4/issues/1383)) ([c3c57ab](https://github.com/likec4/likec4/commit/c3c57abf1960395841433bb64943e2ef46114145))
+* **vscode:** extension breaks on bad symbolic links ([ce22e3e](https://github.com/likec4/likec4/commit/ce22e3ed62034c035dbf19f19a3fe0fe38cb5347)), closes [#1321](https://github.com/likec4/likec4/issues/1321)
+* **vscode:** invalid usage of performance marks [#1350](https://github.com/likec4/likec4/issues/1350) ([#1359](https://github.com/likec4/likec4/issues/1359)) ([826fb6f](https://github.com/likec4/likec4/commit/826fb6f1d64c342c46d51816a0c48be8caeaa093))
+* **vscode:** downgrade vscode and @types/vscode dependencies to version 1.84.0 for stackblitz compatibility ([e955761](https://github.com/likec4/likec4/commit/e955761a597651fc3533f629059f1450a9a51ac8))
+* **fix:** unresolved parent in model ([25a3774](https://github.com/likec4/likec4/commit/25a37749ffd59eed2610107e08682f1986797d51))
+  
+
 # [1.18.0](https://github.com/likec4/likec4/compare/v1.17.1...v1.18.0) (2024-12-12)
 
 ### 🚀 Features
