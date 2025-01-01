@@ -5,8 +5,9 @@ import type {
   ChangeViewRequestParams,
   ComputeViewRequest,
   FetchComputedModelRequest,
+  LayoutViewRequest,
   LocateParams,
-  LocateRequest
+  LocateRequest,
 } from '@likec4/language-server/protocol'
 import vscode from 'vscode'
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
@@ -25,6 +26,7 @@ const fetchComputedModel: FetchComputedModelRequest = new RequestType('likec4/fe
 const buildDocuments: BuildDocumentsRequest = new RequestType('likec4/build')
 const locate: LocateRequest = new RequestType('likec4/locate')
 const changeView: ChangeViewRequest = new RequestType('likec4/change-view')
+const layoutView: LayoutViewRequest = new RequestType('likec4/layout-view')
 
 // #endregion
 
@@ -52,6 +54,10 @@ export class Rpc extends AbstractDisposable {
   async computeView(viewId: ViewID) {
     const { view } = await this.client.sendRequest(computeView, { viewId })
     return view
+  }
+
+  async layoutView(viewId: ViewID) {
+    return await this.client.sendRequest(layoutView, { viewId })
   }
 
   async buildDocuments(docs: DocumentUri[]) {

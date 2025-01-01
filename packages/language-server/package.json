@@ -83,6 +83,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@msgpack/msgpack": "^3.0.0-beta2",
     "@smithy/util-base64": "^3.0.0",
@@ -100,12 +101,14 @@
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-types": "3.17.5",
-    "vscode-uri": "3.0.8"
+    "vscode-uri": "3.0.8",
+    "which": "^4.0.0"
   },
   "devDependencies": {
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.7",
+    "@types/which": "^3.0.4",
     "@vitest/coverage-v8": "^2.1.8",
     "execa": "^9.3.1",
     "langium-cli": "3.3.0",

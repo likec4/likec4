@@ -14,7 +14,6 @@ import { isLikeC4Source } from '../common/initWorkspace'
 import { extensionTitle, globPattern, isDev, isVirtual, languageId } from '../const'
 import { ExtensionController } from '../ExtensionController'
 import { logger, logToChannel } from '../logger'
-import { configureGraphviz } from './configure-graphviz'
 
 function isWindows() {
   return os.platform() === 'win32'
@@ -31,8 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
   )
   logger.info('createLanguageClient - node')
   const client = createLanguageClient(context)
-  const ctrl = ExtensionController.activate(context, client, extensionOutputChannel)
-  configureGraphviz(ctrl)
+  ExtensionController.activate(context, client, extensionOutputChannel)
 }
 
 // This function is called when the extension is deactivated.

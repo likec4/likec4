@@ -29,7 +29,7 @@ type HandlerParams =
 async function singleFileCodegenAction(
   languageServices: LikeC4,
   outfile: string | undefined,
-  logger: Logger
+  logger: Logger,
 ) {
   const expectedExt = '.ts'
   outfile = outfile ?? resolve(languageServices.workspace, 'likec4.generated' + expectedExt)
@@ -50,7 +50,7 @@ async function singleFileCodegenAction(
 async function dotCodegenAction(
   languageServices: LikeC4,
   outdir: string,
-  logger: Logger
+  logger: Logger,
 ) {
   await mkdir(outdir, { recursive: true })
 
@@ -58,7 +58,7 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.viewsService.layoutViews()
+  const views = await languageServices.viewsService.layoutAllViews()
   let succeeded = 0
   for (const { diagram, dot } of views) {
     try {
@@ -86,7 +86,7 @@ async function multipleFilesCodegenAction(
   languageServices: LikeC4,
   format: 'd2' | 'mermaid',
   outdir: string,
-  logger: Logger
+  logger: Logger,
 ) {
   await mkdir(outdir, { recursive: true })
 
@@ -143,7 +143,7 @@ export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerPa
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
 
   const views = await languageServices.viewsService.computedViews()
@@ -168,7 +168,7 @@ export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerPa
         languageServices,
         outparams.format,
         outparams.outdir ?? path,
-        logger
+        logger,
       )
       break
     }

@@ -3,7 +3,6 @@ import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient
 
 import { type ViewId as ViewID, nonNullable } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
-import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { formatLogObj } from '@likec4/log'
 import type TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
@@ -38,8 +37,6 @@ export class ExtensionController extends AbstractDisposable {
   protected _rpc: Rpc | null = null
   protected _messenger: Messenger | null = null
   protected _likec4model: LikeC4Model | null = null
-
-  public graphviz: GraphvizLayouter = new GraphvizLayouter(new GraphvizWasmAdapter())
 
   private static _instance: ExtensionController | null = null
 

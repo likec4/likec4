@@ -1,25 +1,17 @@
 import type { ComputedLikeC4Model, ViewId as ViewID } from '@likec4/core'
-import { objectHash } from '@likec4/core'
-import type { LayoutResult } from '@likec4/layouts'
 import { deepEqual } from 'fast-equals'
-import LRUCache from 'mnemonist/lru-cache'
 import prettyMilliseconds from 'pretty-ms'
 import { keys } from 'remeda'
-import vscode from 'vscode'
 import { isDev } from './const'
 import type { ExtensionController } from './ExtensionController'
 import { logger } from './logger'
 import { AbstractDisposable } from './util'
 
 export class LikeC4Model extends AbstractDisposable {
-  private cache = new LRUCache<string, LayoutResult>(500)
-
   private computedModelPromise: Promise<{ model: ComputedLikeC4Model | null }> | undefined
 
-  private viewsWithReportedErrors = new Set<ViewID>()
-
   constructor(
-    private ctrl: ExtensionController
+    private ctrl: ExtensionController,
   ) {
     super()
 
@@ -27,7 +19,7 @@ export class LikeC4Model extends AbstractDisposable {
       ctrl.rpc.onDidChangeModel(() => {
         this.computedModelPromise = undefined
         this.ctrl.messenger.notifyModelUpdate()
-      })
+      }),
     )
   }
 
@@ -47,44 +39,8 @@ export class LikeC4Model extends AbstractDisposable {
   }
 
   public async layoutView(viewId: ViewID) {
-    const { model } = await this.fetchComputedModel()
-    const latest = model?.views[viewId]
-    if (!latest) {
-      return null
-    }
-    const hash = objectHash(latest, {
-      ignoreUnknown: true,
-      unorderedArrays: true
-    })
-    let layoutedView = this.cache.get(hash)
-    if (!layoutedView) {
-      const mark = performance.mark(`layoutView:${viewId}`)
-      try {
-        layoutedView = await this.ctrl.graphviz.layout(latest)
-        if (!layoutedView) {
-          return null
-        }
-        this.viewsWithReportedErrors.delete(viewId)
-        this.cache.set(hash, layoutedView)
-        // this.cachedDiagrams.set(computedView, layoutedView)
-      } catch (err) {
-        if (!this.viewsWithReportedErrors.has(viewId)) {
-          const errMessage = err instanceof Error
-            ? (err.stack ?? err.message)
-            : '' + err
-          vscode.window.showErrorMessage(`LikeC4: ${errMessage}`)
-          this.viewsWithReportedErrors.add(viewId)
-        }
-        logger.warn(`[LikeC4Model.layoutView] failed ${viewId}`, err)
-        return Promise.reject(err)
-      } finally {
-        if (isDev) {
-          const measure = performance.measure('LayoutView', mark)
-          logger.debug(`[LikeC4Model.layoutView] "${viewId}" in ${prettyMilliseconds(measure.duration)}`)
-        }
-      }
-    }
-    return layoutedView
+    const { result } = await this.ctrl.rpc.layoutView(viewId)
+    return result
   }
 
   override dispose() {
@@ -146,10 +102,10 @@ export class LikeC4Model extends AbstractDisposable {
           tags: keys(model.specification.tags).length,
           elements: keys(model.elements).length,
           relationships: keys(model.relations).length,
-          views: keys(model.views).length
+          views: keys(model.views).length,
         }
         : null,
-      ms: Math.round(t1 - t0)
+      ms: Math.round(t1 - t0),
     }
   }
 }

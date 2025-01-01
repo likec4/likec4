@@ -7,6 +7,7 @@ export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4Mode
 
 export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
+export type { LikeC4Views } from './views'
 
 // This is an example copied as is from here:
 // https://github.com/microsoft/vscode-extension-samples/blob/main/lsp-web-extension-sample/server/src/browserServerMain.ts

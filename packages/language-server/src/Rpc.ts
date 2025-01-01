@@ -12,8 +12,9 @@ import {
   computeView,
   fetchComputedModel,
   fetchModel,
+  layoutView,
   locate,
-  onDidChangeModel
+  onDidChangeModel,
 } from './protocol'
 
 export class Rpc implements Disposable {
@@ -25,6 +26,7 @@ export class Rpc implements Disposable {
     const modelBuilder = this.services.likec4.ModelBuilder
     const modelLocator = this.services.likec4.ModelLocator
     const modelEditor = this.services.likec4.ModelChanges
+    const views = this.services.likec4.Views
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
       logger.info(`[ServerRpc] no connection, not initializing`)
@@ -44,8 +46,8 @@ export class Rpc implements Disposable {
       {
         timing: 'trailing',
         waitMs: 300,
-        maxWaitMs: 1000
-      }
+        maxWaitMs: 1000,
+      },
     )
 
     let isFirstBuild = true
@@ -70,6 +72,10 @@ export class Rpc implements Disposable {
         const view = await modelBuilder.computeView(viewId, cancelToken)
         return { view }
       }),
+      connection.onRequest(layoutView, async ({ viewId }, cancelToken) => {
+        const result = await views.layoutView(viewId, cancelToken)
+        return { result }
+      }),
       connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {
         const changed = docs.map(d => URI.parse(d))
         const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
@@ -80,7 +86,7 @@ export class Rpc implements Disposable {
         logger.debug(
           `[ServerRpc] received request to build:
   changed (total ${changed.length}):${docs.map(d => '\n    - ' + d).join('')}
-  deleted (total ${deleted.length}):${deleted.map(d => '\n    - ' + d.toString()).join('\n')}`
+  deleted (total ${deleted.length}):${deleted.map(d => '\n    - ' + d.toString()).join('\n')}`,
         )
 
         if (!isFirstBuild && (changed.length + deleted.length) > 0) {
@@ -91,13 +97,13 @@ export class Rpc implements Disposable {
               try {
                 await connection.sendDiagnostics({
                   uri,
-                  diagnostics: []
+                  diagnostics: [],
                 })
               } catch (e) {
                 // Ignore
                 logger.warn(`error clearing diagnostics for ${uri}: ${e}`)
               }
-            })
+            }),
           )
           await interruptAndCheck(cancelToken)
         }
@@ -121,7 +127,7 @@ export class Rpc implements Disposable {
       }),
       connection.onRequest(changeView, async (request, _cancelToken) => {
         return await modelEditor.applyChange(request)
-      })
+      }),
     )
   }
 
