@@ -4,7 +4,9 @@
 # Include the following
 !bin/**
 !dist/**/*.js
+!dist/**/*.mjs
 !dist/**/*.d.ts
+!dist/**/*.d.mts
 !react/*.js
 !react/*.d.ts
 !react/*.css
@@ -17,7 +19,6 @@
 
 # Exclude the following
 **/*.map
-**/*.d.mts
 **/*.tsbuildinfo
 __app__/react/components.mjs
 dist/**/metafile.json
