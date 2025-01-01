@@ -11,7 +11,9 @@ model {
       -> cloud.billing.subscriptions '
         manage tarrifs, payments
         and subscriptions
-      '
+      ' {
+        technology 'API'
+      }
 
     }
 

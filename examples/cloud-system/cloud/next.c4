@@ -78,7 +78,9 @@ model {
       navigateTo cloud-to-amazon
     }
 
-    backend -> events "triggers"
+    backend -> events "triggers" {
+      technology "REST"
+    }
   }
 
 }
