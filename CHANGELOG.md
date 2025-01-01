@@ -1,36 +1,21 @@
 # [1.19.0](https://github.com/likec4/likec4/compare/v1.18.0...v1.19.0) (2025-01-01)
 
+### 🎄 New Years improvements 🎄 
 
-### Bug Fixes
+This release introduces significant improvements in the computation of view predicates.  
+These improvements may lead to changes in the final layout, as the order of included elements is now strictly adhered to.
 
-* **deps:** update dependency astro to ~4.16.18 ([#1393](https://github.com/likec4/likec4/issues/1393)) ([b5fe7e7](https://github.com/likec4/likec4/commit/b5fe7e778cfc3e01c303d740520c3057168f701d))
-* **deps:** update dependency astro to v4.16.18 [security] ([#1368](https://github.com/likec4/likec4/issues/1368)) ([3720ca3](https://github.com/likec4/likec4/commit/3720ca3df798462a5545531268dac772c538df5a))
-* **deps:** update dependency astro-og-canvas to ^0.5.5 ([#1338](https://github.com/likec4/likec4/issues/1338)) ([2591b85](https://github.com/likec4/likec4/commit/2591b85600144cddf6022bc27c8f23aad0bd3088))
-* **deps:** update dependency playwright to v1.49.1 ([#1357](https://github.com/likec4/likec4/issues/1357)) ([0927de9](https://github.com/likec4/likec4/commit/0927de9dbd793a7efa401dfdda21fad4c9e2663f))
-* **deps:** update dependency starlight-links-validator to ^0.13.4 ([#1331](https://github.com/likec4/likec4/issues/1331)) ([0c7c6ea](https://github.com/likec4/likec4/commit/0c7c6ea76d8ebdfb9c5807c5b7635fc7632c625f))
-* **deps:** update mantine monorepo to v7.15.2 ([#1394](https://github.com/likec4/likec4/issues/1394)) ([966bf7d](https://github.com/likec4/likec4/commit/966bf7dc9cb105276b82c9411340a5e62890765a))
-* **deps:** update tsx and scripts in `likec4` ([#1392](https://github.com/likec4/likec4/issues/1392)) ([af2772e](https://github.com/likec4/likec4/commit/af2772ec0567cd0dffa8963f7987a248c721cb8d))
-* downgrade vscode and @types/vscode dependencies to version 1.84.0 for stackblitz compatibility ([e955761](https://github.com/likec4/likec4/commit/e955761a597651fc3533f629059f1450a9a51ac8))
-* error generating png behind proxy [#1374](https://github.com/likec4/likec4/issues/1374) ([fc7c6db](https://github.com/likec4/likec4/commit/fc7c6dbe8d5b6c4f31819ff3e9e707f6b7e8bb0e))
-* graphviz memory seg fault for deployment views ([c067973](https://github.com/likec4/likec4/commit/c067973b54b399e56174a40c57d8130d822e545c))
-* node toolbar is not displayed in the editor ([dc9ebac](https://github.com/likec4/likec4/commit/dc9ebace92643b582b47de66deee4eead51d21ac))
-* parent-relations can't contain comments ([ebb5729](https://github.com/likec4/likec4/commit/ebb57298d49b1e63b0f519ce57cc8206c9566a17)), closes [#911](https://github.com/likec4/likec4/issues/911)
-* relation being yielded twice ([#1364](https://github.com/likec4/likec4/issues/1364)) ([#1384](https://github.com/likec4/likec4/issues/1384)) ([bd0bc03](https://github.com/likec4/likec4/commit/bd0bc0303209ea069821d4a9debb193fd958b8aa))
-* reset connection points on self-referencing relations ([#1383](https://github.com/likec4/likec4/issues/1383)) ([c3c57ab](https://github.com/likec4/likec4/commit/c3c57abf1960395841433bb64943e2ef46114145))
-* unresolved parent in model ([25a3774](https://github.com/likec4/likec4/commit/25a37749ffd59eed2610107e08682f1986797d51))
-* update imports and type annotations in LikeC4Model integration ([21b12ca](https://github.com/likec4/likec4/commit/21b12cabd3f9f08e1c5f741f7b1084218dcc40b1))
-* update type annotations and improve imports in various modules ([24c5eef](https://github.com/likec4/likec4/commit/24c5eef965547fadbdbb374f008696b6d93baee7))
+* **fix:** error generating png behind proxy [#1374](https://github.com/likec4/likec4/issues/1374)
+* **fix:** graphviz memory seg fault for deployment views ([c067973](https://github.com/likec4/likec4/commit/c067973b54b399e56174a40c57d8130d822e545c))
+* **fix:** node toolbar is not displayed in the editor ([dc9ebac](https://github.com/likec4/likec4/commit/dc9ebace92643b582b47de66deee4eead51d21ac))
+* **fix:** parent-relations can't contain comments (thanks @davydkov, closes [#911](https://github.com/likec4/likec4/issues/911))
+* **fix:** relation being yielded twice (thanks @pavelpykhtin, [#1364](https://github.com/likec4/likec4/issues/1364)) ([#1384](https://github.com/likec4/likec4/issues/1384)) ([bd0bc03](https://github.com/likec4/likec4/commit/bd0bc0303209ea069821d4a9debb193fd958b8aa))
+* **fix:** reset connection points on self-referencing relations (thanks @pavelpykhtin, [#1383](https://github.com/likec4/likec4/issues/1383)) ([c3c57ab](https://github.com/likec4/likec4/commit/c3c57abf1960395841433bb64943e2ef46114145))
 * **vscode:** extension breaks on bad symbolic links ([ce22e3e](https://github.com/likec4/likec4/commit/ce22e3ed62034c035dbf19f19a3fe0fe38cb5347)), closes [#1321](https://github.com/likec4/likec4/issues/1321)
 * **vscode:** invalid usage of performance marks [#1350](https://github.com/likec4/likec4/issues/1350) ([#1359](https://github.com/likec4/likec4/issues/1359)) ([826fb6f](https://github.com/likec4/likec4/commit/826fb6f1d64c342c46d51816a0c48be8caeaa093))
-
-
-### Features
-
-* add builder functions for views, model, and deployment ([f13e630](https://github.com/likec4/likec4/commit/f13e63046a775629e38d24667a126f54e9227b32))
-* implement StageInclude and  StageExclude ([dee68a2](https://github.com/likec4/likec4/commit/dee68a2f7b95fbda7cd8ec58c9ae9c7fbc5e487f))
-* logical model references in deployment view predicates ([#1351](https://github.com/likec4/likec4/issues/1351)) ([f3c0938](https://github.com/likec4/likec4/commit/f3c09381c425bdcefef8fad9cce50fdcd4deb041))
-
-
+* **vscode:** downgrade vscode and @types/vscode dependencies to version 1.84.0 for stackblitz compatibility ([e955761](https://github.com/likec4/likec4/commit/e955761a597651fc3533f629059f1450a9a51ac8))
+* **fix:** unresolved parent in model ([25a3774](https://github.com/likec4/likec4/commit/25a37749ffd59eed2610107e08682f1986797d51))
+  
 
 # [1.18.0](https://github.com/likec4/likec4/compare/v1.17.1...v1.18.0) (2024-12-12)
 
