@@ -1,7 +1,5 @@
 import { defineBuildConfig } from 'unbuild'
 
-const isProduction = process.env.NODE_ENV === 'production'
-
 export default defineBuildConfig({
   entries: [
     {
@@ -19,13 +17,5 @@ export default defineBuildConfig({
     },
   ],
   clean: true,
-  stub: !isProduction,
-  stubOptions: {
-    jiti: {
-      nativeModules: [
-        '@dagrejs/graphlib',
-      ],
-    },
-  },
   declaration: true,
 })

@@ -18,7 +18,13 @@ export default defineBuildConfig({
   stub: !isProduction,
   stubOptions: {
     jiti: {
-      interopDefault: true,
+      moduleCache: false,
+      alias: {
+        '@/vite/': resolve('src/vite/'),
+        '@likec4/core': resolve('../core/src/'),
+        '@likec4/layouts': resolve('../layouts/src/'),
+        '@likec4/language-server': resolve('../language-server/src/'),
+      },
       nativeModules: [
         'json5',
         '@hpcc-js/wasm-graphviz',
@@ -49,8 +55,6 @@ export default defineBuildConfig({
     },
     output: {
       compact: isProduction,
-      chunkFileNames: 'shared/[name].[hash].js',
-      entryFileNames: '[name].js',
     },
     resolve: {
       exportConditions: isProduction ? ['node', 'production'] : ['development'],

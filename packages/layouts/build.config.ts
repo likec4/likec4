@@ -7,7 +7,7 @@ export default defineBuildConfig({
   stub: !isProduction,
   stubOptions: {
     jiti: {
-      interopDefault: true,
+      moduleCache: false,
       nativeModules: [
         '@hpcc-js/wasm-graphviz',
       ],
@@ -24,8 +24,6 @@ export default defineBuildConfig({
     },
     output: {
       compact: isProduction,
-      chunkFileNames: 'shared/[name].[hash].js',
-      entryFileNames: '[name].js',
     },
     inlineDependencies: true,
     // dts: {

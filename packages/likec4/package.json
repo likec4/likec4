@@ -23,17 +23,17 @@
     ".": {
       "development": "./src/index.ts",
       "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       }
     },
     "./model": {
       "development": "./src/model/index.ts",
       "default": {
-        "types": "./dist/model/index.d.ts",
-        "import": "./dist/model/index.js",
-        "default": "./dist/model/index.js"
+        "types": "./dist/model/index.d.mts",
+        "import": "./dist/model/index.mjs",
+        "default": "./dist/model/index.mjs"
       }
     },
     "./react": {
