@@ -1,8 +1,8 @@
-import { type ActionIconProps, Box } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { useId } from '@mantine/hooks'
 import clsx from 'clsx'
-import { type HTMLMotionProps, type Variants } from 'framer-motion'
-import type { PropsWithoutRef, ReactNode } from 'react'
+import { type Variants } from 'framer-motion'
+import type { PropsWithChildren } from 'react'
 import * as css from './ActionButtonBar.css'
 import { ActionButtonBarContext } from './useActionButtonBarCtx'
 
@@ -12,13 +12,10 @@ type ShiftX = 'left' | 'spread' | 'right'
 type ShiftY = 'top' | 'spread' | 'bottom'
 type ShiftMode = number | 'spread'
 
-type ActionButtonBarProps = PropsWithoutRef<
-  Omit<ActionIconProps & HTMLMotionProps<'div'>, 'children'> & {
-    shiftX?: ShiftX
-    shiftY?: ShiftY
-    children: ReactNode | ReactNode[]
-  }
->
+type ActionButtonBarProps = PropsWithChildren<{
+  shiftX?: ShiftX
+  shiftY?: ShiftY
+}>
 
 const elementVariants = (prefix: string, index: number, count: number, shiftX: ShiftMode, shiftY: ShiftMode) => {
   const name = `${prefix}${index + 1}`
@@ -90,7 +87,6 @@ export const ActionButtonBar = ({
   shiftX = 'spread',
   shiftY = 'spread',
   children,
-  ...props
 }: ActionButtonBarProps) => {
   const id = useId()
   const childrenArray = Array.isArray(children) ? children : [children]
