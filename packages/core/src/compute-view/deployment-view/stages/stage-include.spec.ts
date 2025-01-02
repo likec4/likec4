@@ -159,6 +159,7 @@ describe('Stage', () => {
           "elements": [
             "prod.eu.zone1.ui",
             "prod.eu.zone1.api",
+            "prod.eu.zone1",
           ],
           "explicits": [],
           "final": [
@@ -210,6 +211,7 @@ describe('Stage', () => {
       const auth = model.deployment.element('prod.eu.auth')
 
       const memory = Memory.empty().update({
+        elements: new Set([ui]),
         final: new Set([ui]),
       })
       const stage = new StageInclude(memory, { wildcard: true })
@@ -229,7 +231,7 @@ describe('Stage', () => {
       `)
     })
 
-    it.only('should extend explicits with added explicits', () => {
+    it('should extend explicits with added explicits', () => {
       const model = createModel()
       const ui = model.deployment.element('prod.eu.zone1.ui')
       const api = model.deployment.element('prod.eu.zone1.api')
@@ -238,6 +240,7 @@ describe('Stage', () => {
       const auth = model.deployment.element('prod.eu.auth')
 
       const memory = Memory.empty().update({
+        elements: new Set([ui]),
         explicits: new Set([ui]),
       })
       const stage = new StageInclude(memory, { wildcard: true })

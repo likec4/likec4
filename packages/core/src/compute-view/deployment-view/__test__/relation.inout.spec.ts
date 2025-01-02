@@ -198,12 +198,16 @@ describe('InoutRelationPredicate', () => {
 
   it('should exclude relation incoming to deployment node if it matches condition', () => {
     expectComputed(
+      $include('customer'),
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
       $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #old' }),
     ).toEqual({
       Nodes: [
+        'customer',
+        'prod',
+        'prod.eu',
         'prod.eu.zone1',
         'prod.eu.zone1.ui',
         'prod.eu.zone1.api',
@@ -212,6 +216,7 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.db',
       ],
       edges: [
+        'prod.eu.zone1.ui:prod.eu.zone1.api',
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
@@ -226,7 +231,7 @@ describe('InoutRelationPredicate', () => {
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
-      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #old' }),
+      $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #temp' }),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -237,23 +242,27 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.db',
       ],
       edges: [
+        'prod.eu.zone1.ui:prod.eu.zone1.api',
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
         'prod.eu.zone1.api:prod.eu.db',
         'prod.eu.zone1.ui:prod.eu.auth',
-        'prod.eu.zone1.ui:prod.eu.media',
       ],
     })
   })
 
   it('should not exclude relation incoming to deployment node if it does not match condition', () => {
     expectComputed(
+      $include('customer'),
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
       $exclude('-> prod.eu.zone1.* ->', { where: 'tag is #next' }),
     ).toEqual({
       Nodes: [
+        'customer',
+        'prod',
+        'prod.eu',
         'prod.eu.zone1',
         'prod.eu.zone1.ui',
         'prod.eu.zone1.api',
@@ -262,6 +271,7 @@ describe('InoutRelationPredicate', () => {
         'prod.eu.db',
       ],
       edges: [
+        'customer:prod.eu.zone1.ui',
         'prod.eu.zone1.ui:prod.eu.zone1.api',
         'prod.eu.zone1.api:prod.eu.auth',
         'prod.eu.zone1.api:prod.eu.media',
