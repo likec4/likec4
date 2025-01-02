@@ -37,7 +37,7 @@ export function treeFromMemoryState<T extends AnyCtx, M extends ComputeMemory<T>
     root: root as ReadonlySet<CtxElement<T>>,
     connected: connected as ReadonlySet<CtxElement<T>>,
     hasInOut: (el: CtxElement<T>) => memory.connections.some(Connection.isAnyInOut(el.id)),
-    parents: (el: CtxElement<T>) => children.get(el),
+    parent: (el: CtxElement<T>) => parents.get(el),
     children: (el: CtxElement<T>) => children.get(el),
   }
 }
