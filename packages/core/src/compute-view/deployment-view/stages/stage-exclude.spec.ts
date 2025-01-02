@@ -105,7 +105,7 @@ describe('Stage', () => {
     })
   })
 
-  describe('patch', () => {
+  describe('commit', () => {
     it('should remove excluded elements', () => {
       const model = createModel()
       const ui = model.deployment.element('prod.eu.zone1.ui')

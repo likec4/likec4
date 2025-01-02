@@ -8,7 +8,7 @@ import { createModel } from '../__test__/fixture'
 import { type Elem, Memory } from '../_types'
 import { StageInclude } from './stage-include'
 
-describe('Stage', () => {
+describe('stage-include', () => {
   describe('addExplicit', () => {
     it('should add element to explicit, elements and final collections', () => {
       const memory = Memory.empty()
@@ -201,7 +201,7 @@ describe('Stage', () => {
     })
   })
 
-  describe('patch', () => {
+  describe('commit', () => {
     it('should extend final with added explicits and endpoints of added connections', () => {
       const model = createModel()
       const ui = model.deployment.element('prod.eu.zone1.ui')
