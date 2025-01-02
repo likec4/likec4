@@ -40,6 +40,7 @@ export {
 } from './guards'
 export {
   ifilter,
+  ifind,
   iflat,
   imap,
   ireduce,
