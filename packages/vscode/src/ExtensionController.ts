@@ -165,46 +165,13 @@ export class ExtensionController extends AbstractDisposable {
       editor.revealRange(location.range)
     })
 
-    import('./telemetry').then(({ telemetry }) => {
-      logger.debug(`telemetryLevel=${telemetry.telemetryLevel}`)
-      ctrl.telemetry = telemetry
-      ctrl.onDispose(telemetry)
-      ctrl.onDispose(client.onTelemetry(event => {
-        try {
-          const { eventName, ...properties } = event
-          if (eventName === 'error') {
-            if ('stack' in properties) {
-              properties.stack = new vscode.TelemetryTrustedValue(properties.stack)
-            }
-            telemetry.sendTelemetryErrorEvent('error', properties)
-            return
-          }
-          telemetry.sendTelemetryEvent(eventName, properties)
-        } catch (e) {
-          logger.warn(e)
-        }
-      }))
-      ctrl.onDispose(addLogReporter((logObj, _ctx) => {
-        if (telemetry.telemetryLevel === 'off') {
-          return
-        }
-        if (logObj.type !== 'error' && logObj.type !== 'fatal' && logObj.type !== 'fail') {
-          return
-        }
-        const { message, error } = formatLogObj(logObj)
-        if (error) {
-          if ('stack' in error) {
-            error.stack = new vscode.TelemetryTrustedValue(error.stack) as any as string
-          }
-          telemetry.sendTelemetryErrorEvent('error', error)
-        } else {
-          telemetry.sendTelemetryErrorEvent('error', { message })
-        }
-      }))
-    })
-      .catch(e => {
-        logger.error('Failed to load telemetry', e)
+    if (isProd) {
+      ctrl.enableTelemetry().catch(e => {
+        logger.error(`Failed to enable telemetry`, e)
       })
+    } else {
+      logger.debug(`Telemetry disabled in development mode`)
+    }
 
     ctrl.activate().then(
       () => {
@@ -326,4 +293,46 @@ Restart VSCode. Please report this issue, if it persists.`)
   // public setPreviewPanelState(state: PreviewPanelInternalState) {
   //   this._context.workspaceState.update(StateKeys.previewPanelState, state)
   // }
+
+  private async enableTelemetry() {
+    logger.debug(`Enable telemetry`)
+    const ctrl = this
+    const { telemetry } = await import('./telemetry')
+
+    logger.debug(`telemetryLevel=${telemetry.telemetryLevel}`)
+    ctrl.telemetry = telemetry
+    ctrl.onDispose(telemetry)
+    ctrl.onDispose(this.client.onTelemetry(event => {
+      try {
+        const { eventName, ...properties } = event
+        if (eventName === 'error') {
+          if ('stack' in properties) {
+            properties.stack = new vscode.TelemetryTrustedValue(properties.stack)
+          }
+          telemetry.sendTelemetryErrorEvent('error', properties)
+          return
+        }
+        telemetry.sendTelemetryEvent(eventName, properties)
+      } catch (e) {
+        logger.warn(e)
+      }
+    }))
+    ctrl.onDispose(addLogReporter((logObj, _ctx) => {
+      if (telemetry.telemetryLevel === 'off') {
+        return
+      }
+      if (logObj.type !== 'error' && logObj.type !== 'fatal' && logObj.type !== 'fail') {
+        return
+      }
+      const { message, error } = formatLogObj(logObj)
+      if (error) {
+        if ('stack' in error) {
+          error.stack = new vscode.TelemetryTrustedValue(error.stack) as any as string
+        }
+        telemetry.sendTelemetryErrorEvent('error', error)
+      } else {
+        telemetry.sendTelemetryErrorEvent('error', { message })
+      }
+    }))
+  }
 }

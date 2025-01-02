@@ -1,14 +1,14 @@
 import type * as c4 from '@likec4/core'
 import {
+  type CustomColorDefinitions,
+  type ViewId,
   compareRelations,
   computeColorValues,
-  type CustomColorDefinitions,
   DeploymentElement,
   isScopedElementView,
   LikeC4Model,
   parentFqn,
   sortByFqnHierarchically,
-  type ViewId
 } from '@likec4/core'
 import { resolveRulesExtendedViews } from '@likec4/core/compute-view'
 import { deepEqual as eq } from 'fast-equals'
@@ -34,7 +34,7 @@ import {
   reduce,
   reverse,
   sort,
-  values
+  values,
 } from 'remeda'
 import type {
   ParsedAstDeploymentRelation,
@@ -43,10 +43,10 @@ import type {
   ParsedAstSpecification,
   ParsedAstView,
   ParsedLikeC4LangiumDocument,
-  ParsedLink
+  ParsedLink,
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
-import { logError, logger, logWarnError } from '../logger'
+import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { assignNavigateTo, resolveRelativePaths } from '../view-utils'
 
@@ -57,17 +57,17 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     deployments: {},
     elements: {},
     relationships: {},
-    colors: {}
+    colors: {},
   }
   const globals: c4.ModelGlobals = {
     predicates: {},
     dynamicPredicates: {},
-    styles: {}
+    styles: {},
   }
   for (const doc of docs) {
     const {
       c4Specification: spec,
-      c4Globals
+      c4Globals,
     } = doc
 
     spec.tags.forEach(t => c4Specification.tags.add(t))
@@ -89,20 +89,20 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           if (relative && relative !== link.url) {
             return {
               ...link,
-              relative
+              relative,
             }
           }
         } catch (e) {
           logWarnError(e)
         }
         return link
-      }
+      },
     )
   }
 
   const customColorDefinitions: CustomColorDefinitions = mapValues(
     c4Specification.colors,
-    c => computeColorValues(c.color)
+    c => computeColorValues(c.color),
   )
 
   function toModelElement(doc: LangiumDocument) {
@@ -114,14 +114,14 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         shape,
         icon,
         opacity,
-        border
+        border,
       },
       id,
       kind,
       title,
       description,
       technology,
-      metadata
+      metadata,
     }: ParsedAstElement): c4.Element | null => {
       try {
         const __kind = c4Specification.elements[kind]
@@ -144,7 +144,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...(__kind.notation && { notation: __kind.notation }),
           style: {
             ...(border && { border }),
-            ...(isNumber(opacity) && { opacity })
+            ...(isNumber(opacity) && { opacity }),
           },
           links,
           tags: tags ?? null,
@@ -152,7 +152,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           description: description ?? null,
           title,
           kind,
-          id
+          id,
         }
       } catch (e) {
         logWarnError(e)
@@ -178,8 +178,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         acc[el.id] = el
         return acc
       },
-      {} as c4.ParsedLikeC4Model['elements']
-    )
+      {} as c4.ParsedLikeC4Model['elements'],
+    ),
   )
 
   function toModelRelation(doc: LangiumDocument) {
@@ -196,7 +196,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         logger.warn(
           `Invalid relation ${id} at ${doc.uri.path} ${astPath}, source: ${source}(${!!elements[
             source
-          ]}), target: ${target}(${!!elements[target]})`
+          ]}), target: ${target}(${!!elements[target]})`,
         )
         return null
       }
@@ -210,7 +210,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           source,
           target,
           kind,
-          id
+          id,
         } satisfies c4.ModelRelation
       }
       return {
@@ -218,7 +218,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         ...model,
         source,
         target,
-        id
+        id,
       } satisfies c4.ModelRelation
     }
   }
@@ -229,7 +229,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     filter(isTruthy),
     sort(compareRelations),
     reverse(),
-    indexBy(prop('id'))
+    indexBy(prop('id')),
   )
 
   function toDeploymentElement(doc: LangiumDocument) {
@@ -241,7 +241,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         const links = resolveLinks(doc, parsed.links)
         return {
           ...parsed,
-          links
+          links,
         }
       }
       try {
@@ -254,7 +254,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           technology = __kind.technology,
           notation = __kind.notation,
           links,
-          style
+          style,
         } = parsed
         return {
           ...parsed,
@@ -264,9 +264,9 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
             border: 'dashed',
             opacity: 10,
             ...__kind.style,
-            ...style
+            ...style,
           },
-          links: links ? resolveLinks(doc, links) : null
+          links: links ? resolveLinks(doc, links) : null,
         }
       } catch (e) {
         logWarnError(e)
@@ -292,8 +292,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         acc[el.id] = el
         return acc
       },
-      {} as c4.ParsedLikeC4Model['deployments']['elements']
-    )
+      {} as c4.ParsedLikeC4Model['deployments']['elements'],
+    ),
   )
 
   function toDeploymentRelation(doc: LangiumDocument) {
@@ -310,7 +310,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         logger.warn(
           `Invalid deployment relation ${id} at ${doc.uri.path} ${astPath}, source: ${source.id}(${!!deploymentElements[
             source.id
-          ]}), target: ${target.id}(${!!deploymentElements[target.id]})`
+          ]}), target: ${target.id}(${!!deploymentElements[target.id]})`,
         )
         return null
       }
@@ -324,7 +324,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           source,
           target,
           kind,
-          id
+          id,
         } satisfies c4.DeploymentRelation
       }
       return {
@@ -332,7 +332,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         ...model,
         source,
         target,
-        id
+        id,
       } satisfies c4.DeploymentRelation
     }
   }
@@ -350,8 +350,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         acc[el.id] = el
         return acc
       },
-      {} as c4.ParsedLikeC4Model['deployments']['relations']
-    )
+      {} as c4.ParsedLikeC4Model['deployments']['relations'],
+    ),
   )
 
   function toC4View(doc: LangiumDocument) {
@@ -387,7 +387,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         docUri,
         description,
         title,
-        id
+        id,
       }
     }
   }
@@ -396,7 +396,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     docs,
     flatMap(d => map(d.c4Views, toC4View(d))),
     // Resolve relative paths and sort by
-    resolveRelativePaths
+    resolveRelativePaths,
   )
   // Add index view if not present
   if (!parsedViews.some(v => v.id === 'index')) {
@@ -412,18 +412,18 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         {
           include: [
             {
-              wildcard: true
-            }
-          ]
-        }
-      ]
+              wildcard: true,
+            },
+          ],
+        },
+      ],
     })
   }
 
   const views = pipe(
     parsedViews,
     indexBy(prop('id')),
-    resolveRulesExtendedViews
+    resolveRulesExtendedViews,
   )
 
   return {
@@ -431,7 +431,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       tags: Array.from(c4Specification.tags),
       elements: c4Specification.elements,
       relationships: c4Specification.relationships,
-      deployments: c4Specification.deployments
+      deployments: c4Specification.deployments,
     },
     elements,
     relations,
@@ -439,8 +439,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     views,
     deployments: {
       elements: deploymentElements,
-      relations: deploymentRelations
-    }
+      relations: deploymentRelations,
+    },
   }
 }
 
@@ -479,7 +479,7 @@ export class LikeC4ModelBuilder {
           this.notifyListeners(parsed)
         }
         return await Promise.resolve()
-      }
+      },
     )
     logger.debug(`[ModelBuilder] Created`)
   }
@@ -552,16 +552,16 @@ export class LikeC4ModelBuilder {
             'elements',
             'relations',
             'globals',
-            'deployments'
-          ])
+            'deployments',
+          ]),
         ),
-        views
+        views,
       }
     })
   }
 
   public async buildComputedModel(
-    cancelToken?: Cancellation.CancellationToken
+    cancelToken?: Cancellation.CancellationToken,
   ): Promise<c4.ComputedLikeC4Model | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model | null>
     if (cache.has(CACHE_KEY_COMPUTED_MODEL)) {
@@ -581,7 +581,7 @@ export class LikeC4ModelBuilder {
 
   public async computeView(
     viewId: ViewId,
-    cancelToken?: Cancellation.CancellationToken
+    cancelToken?: Cancellation.CancellationToken,
   ): Promise<c4.ComputedView | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     const cacheKey = computedViewKey(viewId)
@@ -601,7 +601,7 @@ export class LikeC4ModelBuilder {
         }
         const result = LikeC4Model.makeCompute(model)(view)
         if (!result.isSuccess) {
-          logError(result.error)
+          logWarnError(result.error)
           return null
         }
         let computedView = result.view
@@ -611,7 +611,7 @@ export class LikeC4ModelBuilder {
           values(),
           filter(isScopedElementView),
           filter(v => v.id !== viewId),
-          groupBy(v => v.viewOf)
+          groupBy(v => v.viewOf),
         )
 
         for (const node of computedView.nodes) {
@@ -654,7 +654,7 @@ export class LikeC4ModelBuilder {
       try {
         listener(docs)
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
   }

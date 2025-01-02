@@ -38,7 +38,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       try {
         return fn() ?? []
       } catch (e) {
-        logError(e)
+        logWarnError(e)
         return []
       }
     })
@@ -80,7 +80,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
             return this.getTagSymbol(nd)
           }
         } catch (e) {
-          logError(e)
+          logWarnError(e)
           return null
         }
         nonexhaustive(nd)
@@ -144,7 +144,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         return this.getElementSymbol(el)
       }
     } catch (e) {
-      logError(e)
+      logWarnError(e)
     }
     return []
   }

@@ -2,27 +2,27 @@ import { nonexhaustive } from '@likec4/core'
 import {
   type AstNode,
   type AstNodeDescription,
+  type PrecomputedScopes,
   DefaultScopeComputation,
   MultiMap,
-  type PrecomputedScopes
 } from 'langium'
-import { entries, filter, flatMap, forEach, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
+import { entries, filter, flatMap, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
-import { ast, type LikeC4LangiumDocument } from '../ast'
-import { logError, logWarnError } from '../logger'
+import { type LikeC4LangiumDocument, ast } from '../ast'
+import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 type DeploymentsContainer = ast.ModelDeployments | ast.DeploymentNodeBody
 
 function uniqueDescriptions(
-  descs: AstNodeDescription[]
+  descs: AstNodeDescription[],
 ): AstNodeDescription[] {
   return pipe(
     descs,
     groupBy(desc => `${desc.type}.${desc.name}`),
     entries(),
-    flatMap(([_, descs]) => descs.length === 1 ? descs : [])
+    flatMap(([_, descs]) => descs.length === 1 ? descs : []),
   )
 }
 
@@ -33,7 +33,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
   override async computeExports(
     document: LikeC4LangiumDocument,
-    _cancelToken?: CancellationToken
+    _cancelToken?: CancellationToken,
   ): Promise<AstNodeDescription[]> {
     const docExports: AstNodeDescription[] = []
     try {
@@ -56,7 +56,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
       this.exportDeployments(deployments, docExports, document)
     } catch (e) {
-      logError(e)
+      logWarnError(e)
     }
     return docExports
   }
@@ -64,7 +64,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   private exportViews(
     modelViews: ast.ModelViews[] | undefined,
     docExports: AstNodeDescription[],
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ) {
     const views = modelViews?.flatMap(m => m.views)
     if (isNullish(views) || views.length === 0) {
@@ -76,7 +76,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
         }
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
   }
@@ -84,7 +84,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   private exportGlobals(
     globals: ast.Globals[] | undefined,
     docExports: AstNodeDescription[],
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ) {
     if (isNullish(globals) || globals.length === 0) {
       return
@@ -96,7 +96,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           docExports.push(this.descriptions.createDescription(id, id.name, document))
         }
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
     for (const globalStyleAst of globals.flatMap(g => g.styles)) {
@@ -106,7 +106,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           docExports.push(this.descriptions.createDescription(id, id.name, document))
         }
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
   }
@@ -114,7 +114,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   private exportModel(
     models: ast.Model[] | undefined,
     docExports: AstNodeDescription[],
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ) {
     if (isNullish(models) || models.length === 0) {
       return
@@ -125,7 +125,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
         }
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
   }
@@ -133,7 +133,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   private exportLibrary(
     likec4lib: ast.LikeC4Lib[] | undefined,
     docExports: AstNodeDescription[],
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ) {
     if (isNullish(likec4lib)) {
       return
@@ -143,14 +143,14 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         docExports.push(this.descriptions.createDescription(iconAst, iconAst.name, document))
       }
     } catch (e) {
-      logError(e)
+      logWarnError(e)
     }
   }
 
   private exportSpecification(
     specifications: ast.SpecificationRule[] | undefined,
     docExports: AstNodeDescription[],
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ) {
     if (isNullish(specifications) || specifications.length === 0) {
       return
@@ -161,7 +161,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         ...s.relationships,
         ...s.deploymentNodes,
         ...s.tags,
-        ...s.colors
+        ...s.colors,
       ])
     ) {
       try {
@@ -170,7 +170,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           case ast.isSpecificationElementKind(spec): {
             if (isTruthy(spec.kind.name)) {
               docExports.push(
-                this.descriptions.createDescription(spec.kind, spec.kind.name, document)
+                this.descriptions.createDescription(spec.kind, spec.kind.name, document),
               )
             }
             continue
@@ -178,7 +178,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           case ast.isSpecificationTag(spec): {
             if (isTruthy(spec.tag.name)) {
               docExports.push(
-                this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
+                this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document),
               )
             }
             continue
@@ -187,7 +187,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
             if (isTruthy(spec.kind.name)) {
               docExports.push(
                 this.descriptions.createDescription(spec.kind, spec.kind.name, document),
-                this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document)
+                this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document),
               )
             }
             continue
@@ -195,7 +195,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           case ast.isSpecificationColor(spec): {
             if (isTruthy(spec.name.name)) {
               docExports.push(
-                this.descriptions.createDescription(spec.name, spec.name.name, document)
+                this.descriptions.createDescription(spec.name, spec.name.name, document),
               )
             }
             continue
@@ -205,7 +205,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
             nonexhaustive(spec)
         }
       } catch (e) {
-        logError(e)
+        logWarnError(e)
       }
     }
   }
@@ -213,7 +213,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   private exportDeployments(
     modelDeployments: ast.ModelDeployments[] | undefined,
     docExports: AstNodeDescription[],
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ) {
     const nodes = modelDeployments?.flatMap(m => m.elements)
     if (isNullish(nodes) || nodes.length === 0) {
@@ -232,7 +232,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
   override computeLocalScopes(
     document: LikeC4LangiumDocument,
-    _cancelToken?: CancellationToken
+    _cancelToken?: CancellationToken,
   ): Promise<PrecomputedScopes> {
     return new Promise(resolve => {
       const root = document.parseResult.value
@@ -242,16 +242,16 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       for (const model of root.models) {
         try {
           descendants.push(
-            ...this.processContainer(model, scopes, document)
+            ...this.processContainer(model, scopes, document),
           )
         } catch (e) {
-          logError(e)
+          logWarnError(e)
         }
       }
       for (const deployment of root.deployments) {
         try {
           descendants.push(
-            ...this.processDeployments(deployment, scopes, document)
+            ...this.processDeployments(deployment, scopes, document),
           )
         } catch (e) {
           logWarnError(e)
@@ -269,7 +269,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   protected processContainer(
     container: ElementsContainer,
     scopes: PrecomputedScopes,
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ): AstNodeDescription[] {
     const localScope = new MultiMap<string, AstNodeDescription>()
     const descedants = [] as AstNodeDescription[]
@@ -292,7 +292,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       if (subcontainer && subcontainer.elements.length > 0) {
         try {
           descedants.push(
-            ...this.processContainer(subcontainer, scopes, document)
+            ...this.processContainer(subcontainer, scopes, document),
           )
         } catch (e) {
           logWarnError(e)
@@ -309,7 +309,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           if (descs.length === 1) {
             localScope.add(name, descs[0])
           }
-        })
+        }),
       )
     }
     const local = [...localScope.values()]
@@ -320,7 +320,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   protected processDeployments(
     container: DeploymentsContainer,
     scopes: PrecomputedScopes,
-    document: LikeC4LangiumDocument
+    document: LikeC4LangiumDocument,
   ): AstNodeDescription[] {
     const localnames = new Set<string>()
     const descedants = [] as AstNodeDescription[]
@@ -340,7 +340,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       if (ast.isDeploymentNode(el) && el.body) {
         try {
           descedants.push(
-            ...this.processDeployments(el.body, scopes, document)
+            ...this.processDeployments(el.body, scopes, document),
           )
         } catch (e) {
           logWarnError(e)
@@ -356,7 +356,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           if (descs.length === 1) {
             scopes.add(container, descs[0])
           }
-        })
+        }),
       )
     }
     return [...scopes.get(container).values()]

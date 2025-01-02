@@ -1,8 +1,8 @@
-import { AsFqn, nonexhaustive } from '@likec4/core'
 import type * as c4 from '@likec4/core'
+import { AsFqn, LinkedList, nonexhaustive } from '@likec4/core'
 import { type AstNodeDescription, type AstNodeLocator, AstUtils, CstUtils, GrammarUtils, MultiMap } from 'langium'
 import { isDefined, isEmpty } from 'remeda'
-import { ast, ElementOps, type LikeC4LangiumDocument } from '../ast'
+import { type LikeC4LangiumDocument, ast, ElementOps } from '../ast'
 import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { getFqnElementRef } from '../utils/elementRef'
@@ -16,20 +16,20 @@ type TraversePair = [el: ast.Element | ast.ExtendElement | ast.Relation, parent:
 function toAstNodeDescription(
   locator: AstNodeLocator,
   entry: ast.Element,
-  doc: LikeC4LangiumDocument
+  doc: LikeC4LangiumDocument,
 ): AstNodeDescription {
   const $cstNode = findNodeForProperty(entry.$cstNode, 'name')
   return {
     documentUri: doc.uri,
     name: entry.name,
     ...(entry.$cstNode && {
-      selectionSegment: toDocumentSegment(entry.$cstNode)
+      selectionSegment: toDocumentSegment(entry.$cstNode),
     }),
     ...($cstNode && {
-      nameSegment: toDocumentSegment($cstNode)
+      nameSegment: toDocumentSegment($cstNode),
     }),
     path: locator.getAstNodePath(entry),
-    type: ast.Element
+    type: ast.Element,
   }
 }
 
@@ -40,7 +40,7 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
     return
   }
   const locator = services.workspace.AstNodeLocator
-  const traverseStack: TraversePair[] = elements.map(el => [el, null])
+  const traverseStack = LinkedList.from(elements.map(el => [el, null] as TraversePair))
   let pair
   while ((pair = traverseStack.shift())) {
     try {
@@ -63,7 +63,7 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
         const fqn = AsFqn(el.name, parent)
         c4fqnIndex.add(fqn, {
           ...toAstNodeDescription(locator, el, document),
-          fqn
+          fqn,
         })
         ElementOps.writeId(el, fqn)
         if (isDefined(el.body) && !isEmpty(el.body.elements)) {

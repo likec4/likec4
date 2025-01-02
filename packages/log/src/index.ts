@@ -24,6 +24,8 @@ const consola = createConsola({
   defaults: {
     level,
   },
+  throttle: 2,
+  throttleMin: 500,
   formatOptions: {
     colors: true,
     compact: false,
