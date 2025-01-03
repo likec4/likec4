@@ -2,7 +2,7 @@
   "name": "@likec4/docs-astro",
   "type": "module",
   "version": "1.19.1",
-  "packageManager": "yarn@4.5.3",
+  "packageManager": "yarn@4.6.0",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",

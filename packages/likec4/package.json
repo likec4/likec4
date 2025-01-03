@@ -188,5 +188,5 @@
     "vitest": "^2.1.8",
     "yargs": "17.7.2"
   },
-  "packageManager": "yarn@4.5.3"
+  "packageManager": "yarn@4.6.0"
 }
