@@ -1,4 +1,4 @@
-import { anyPass, filter, identity, map, pipe } from 'remeda'
+import { anyPass, filter, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type { LikeC4DeploymentModel } from '../../../model'
 import { findConnection, findConnectionsBetween } from '../../../model/connection/deployment'

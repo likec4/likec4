@@ -62,7 +62,7 @@ export type WhereOperator<Tag, Kind> =
 
 export type Filterable<
   FTag extends string | null = string | null,
-  FKind extends string | null = string | null
+  FKind extends string | null = string | null,
 > = {
   tags?: readonly FTag[] | null
   kind?: FKind
@@ -72,7 +72,7 @@ export type OperatorPredicate<V extends Filterable> = (value: V) => boolean
 
 export function whereOperatorAsPredicate<
   FTag extends string = string,
-  FKind extends string = string
+  FKind extends string = string,
 >(operator: WhereOperator<FTag, FKind>): OperatorPredicate<Filterable> {
   switch (true) {
     case isTagEqual(operator): {

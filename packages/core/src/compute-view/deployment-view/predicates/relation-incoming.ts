@@ -1,4 +1,4 @@
-import { anyPass, filter, identity, map, pipe } from 'remeda'
+import { anyPass, filter, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type { AnyAux, RelationshipModel } from '../../../model'
 import { findConnectionsBetween } from '../../../model/connection/deployment'

@@ -57,7 +57,7 @@ describe('Stage', () => {
       `)
     })
 
-    it.skip('should remove element and all its connections', () => { // potential issue. Empty deployment node is in the final collection. 
+    it.skip('should remove element and all its connections', () => { // potential issue. Empty deployment node is in the final collection.
       const model = createModel()
       const baseMemory = Memory.empty()
       const ui = model.deployment.element('prod.eu.zone1.ui')

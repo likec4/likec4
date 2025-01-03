@@ -5,7 +5,7 @@ import { DeploymentRelationModel, RelationshipsAccum } from '../../../model/Depl
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { createModel } from '../__test__/fixture'
-import { type Elem, Memory } from '../_types'
+import { Memory } from '../_types'
 import { StageInclude } from './stage-include'
 
 describe('stage-include', () => {

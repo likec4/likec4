@@ -6,20 +6,20 @@ import {
   type ComputedDeploymentView,
   type DeploymentView,
   isViewRuleAutoLayout,
-  isViewRulePredicate
+  isViewRulePredicate,
 } from '../../types'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
-import { applyDeploymentViewRuleStyles, buildNodes, toComputedEdges } from './utils'
+import { Memory } from './memory'
 import { predicateToPatch } from './predicates'
-import { Memory, StageExclude, StageInclude } from './memory'
 import { StageFinal } from './stages/stage-final'
+import { applyDeploymentViewRuleStyles, buildNodes, toComputedEdges } from './utils'
 
 export function processPredicates<M extends AnyAux>(
   model: LikeC4DeploymentModel<M>,
-  rules: DeploymentViewRule[]
+  rules: DeploymentViewRule[],
 ) {
   let memory = Memory.empty()
 
@@ -44,7 +44,7 @@ export function computeDeploymentView<M extends AnyAux>(
     docUri: _docUri, // exclude docUri
     rules, // exclude rules
     ...view
-  }: DeploymentView
+  }: DeploymentView,
 ): ComputedDeploymentView<M['ViewId']> {
   const memory = processPredicates<M>(likec4model.deployment, rules)
 
@@ -56,12 +56,12 @@ export function computeDeploymentView<M extends AnyAux>(
 
   const sorted = topologicalSort({
     nodes: nodesMap,
-    edges: computedEdges
+    edges: computedEdges,
   })
 
   const nodes = applyDeploymentViewRuleStyles(
     rules,
-    sorted.nodes
+    sorted.nodes,
   )
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
@@ -73,7 +73,7 @@ export function computeDeploymentView<M extends AnyAux>(
     autoLayout: {
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
-      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep })
+      ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
     },
     edges: sorted.edges,
     nodes: map(nodes, n => {
@@ -86,8 +86,8 @@ export function computeDeploymentView<M extends AnyAux>(
     }),
     ...(elementNotations.length > 0 && {
       notation: {
-        elements: elementNotations
-      }
-    })
+        elements: elementNotations,
+      },
+    }),
   })
 }

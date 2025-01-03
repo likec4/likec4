@@ -121,10 +121,10 @@ export type {
   Filterable,
   KindEqual,
   NotOperator,
+  OperatorPredicate,
   OrOperator,
   TagEqual,
   WhereOperator,
-  OperatorPredicate,
 } from './operators'
 export type { OverviewGraph } from './overview-graph'
 export { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor } from './relation'

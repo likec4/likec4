@@ -134,7 +134,7 @@ export namespace RelationExpr {
   }
   export type Where<D = Fqn, M = Fqn> = {
     where: {
-      expr: ExpressionV2<D, M>,
+      expr: ExpressionV2<D, M>
       condition: WhereOperator<string, string>
     }
   }
@@ -164,7 +164,7 @@ export type ExpressionV2<D = Fqn, M = Fqn> = ExclusiveUnion<{
   Direct: RelationExpr.Direct<D, M>
   Incoming: RelationExpr.Incoming<D, M>
   Outgoing: RelationExpr.Outgoing<D, M>
-  InOut: RelationExpr.InOut<D, M>,
+  InOut: RelationExpr.InOut<D, M>
   RelationPredicateOrWhere: RelationExpr.Where<D, M>
 }>
 

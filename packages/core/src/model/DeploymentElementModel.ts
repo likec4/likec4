@@ -11,12 +11,12 @@ import {
   type ElementShape as C4ElementShape,
   type IteratorLike,
   type Link,
+  type RelationshipKind,
   type Tag,
   type Tag as C4Tag,
   type ThemeColor,
   DefaultElementShape,
   DefaultThemeColor,
-  type RelationshipKind
 } from '../types'
 import { commonAncestor, hierarchyLevel } from '../utils'
 import { difference, intersection, union } from '../utils/set'
@@ -500,7 +500,7 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
   get kind(): RelationshipKind | null {
     return this.$relationship.kind ?? null
   }
-  
+
   get navigateTo(): LikeC4ViewModel<M> | null {
     return this.$relationship.navigateTo ? this.$model.$model.view(this.$relationship.navigateTo) : null
   }

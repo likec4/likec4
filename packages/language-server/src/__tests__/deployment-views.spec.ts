@@ -1,4 +1,4 @@
-import { describe, it, type TestContext } from 'vitest'
+import { type TestContext, describe, it } from 'vitest'
 import { createTestServices } from '../test/testServices'
 
 const model = `
@@ -105,7 +105,7 @@ async function mkTestServices({ expect }: TestContext) {
       invalid: async (view: string) => {
         const { errors } = await validateView(view)
         expect(errors).not.toEqual([])
-      }
+      },
     },
     valid: async (rules: string) => {
       const { errors, warnings } = await validateRules(rules)
@@ -121,7 +121,7 @@ async function mkTestServices({ expect }: TestContext) {
       const { errors, warnings } = await validateRules(rules)
       expect(errors.join('\n'), 'errors').not.to.be.empty
       expect(warnings.join('\n'), 'warnings').to.be.empty
-    }
+    },
   }
 }
 

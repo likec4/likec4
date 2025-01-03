@@ -144,10 +144,10 @@ describe('DeploymentRefPredicate', () => {
       edgeIds: [
         'customer:prod.us',
         'global:customer',
-        "global:dev.devCustomer",
+        'global:dev.devCustomer',
         'global:acc.testCustomer',
         'prod.us:global',
-        "dev.devCloud:global",
+        'dev.devCloud:global',
         'acc.eu:global',
         'dev.devCustomer:dev.devCloud',
         'acc.testCustomer:acc.eu',
