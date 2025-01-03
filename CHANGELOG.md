@@ -1,3 +1,12 @@
+## [1.19.1](https://github.com/likec4/likec4/compare/v1.19.0...v1.19.1) (2025-01-03)
+
+### Fixes
+
+* **likec4**: change `package.json` custom condition to `sources` (closes [#1405](https://github.com/likec4/likec4/issues/1405))
+* **vscode**: add error handling and logging in documentation provider
+* **vscode:** do not report handled errors to telemetry ([1b16c42](https://github.com/likec4/likec4/commit/1b16c42740f2b8aea7a1b1fa6f197d65008f3886))
+
+
 # [1.19.0](https://github.com/likec4/likec4/compare/v1.18.0...v1.19.0) (2025-01-01)
 
 ### 🎄 New Years improvements 🎄 
