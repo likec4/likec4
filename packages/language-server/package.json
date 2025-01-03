@@ -94,7 +94,7 @@
     "json5": "^2.2.3",
     "langium": "3.3.0",
     "p-debounce": "^4.0.0",
-    "remeda": "^2.17.4",
+    "remeda": "^2.19.0",
     "strip-indent": "^4.0.0",
     "type-fest": "4.28.1",
     "ufo": "^1.5.4",
