@@ -67,6 +67,10 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
     return this.$relationship.tags ?? []
   }
 
+  get kind(): string | null {
+    return this.$relationship.kind ?? null
+  }
+
   get links(): ReadonlyArray<Link> {
     return this.$relationship.links ?? []
   }

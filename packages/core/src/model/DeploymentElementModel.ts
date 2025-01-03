@@ -11,6 +11,7 @@ import {
   type ElementShape as C4ElementShape,
   type IteratorLike,
   type Link,
+  type RelationshipKind,
   type Tag,
   type Tag as C4Tag,
   type ThemeColor,
@@ -60,6 +61,10 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
 
   get tags(): ReadonlyArray<C4Tag> {
     return this.$node.tags ?? []
+  }
+
+  get kind(): DeploymentNodeKind | string | null {
+    return this.$node.kind ?? null
   }
 
   get description(): string | null {
@@ -223,7 +228,7 @@ export class DeploymentNodeModel<M extends AnyAux = AnyAux> extends AbstractDepl
     return this.$model.parent(this)
   }
 
-  get kind(): DeploymentNodeKind {
+  override get kind(): DeploymentNodeKind {
     return this.$node.kind
   }
 
@@ -365,6 +370,10 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
 
   override get tags(): ReadonlyArray<C4Tag> {
     return this.$instance.tags ?? []
+  }
+
+  override get kind(): string | null {
+    return this.$instance.kind ?? null
   }
 
   override get description(): string | null {
@@ -512,6 +521,10 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
 
   get tags(): ReadonlyArray<Tag> {
     return this.$relationship.tags ?? []
+  }
+
+  get kind(): RelationshipKind | null {
+    return this.$relationship.kind ?? null
   }
 
   get navigateTo(): LikeC4ViewModel<M> | null {

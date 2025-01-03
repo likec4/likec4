@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
-import { FqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { isNonNullish } from 'remeda'
-import { ast, type ParsedAstDeploymentView, toAutoLayout, toElementStyle, ViewOps } from '../../ast'
+import { type ParsedAstDeploymentView, ast, toAutoLayout, toElementStyle, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
 import { parseViewManualLayout } from '../../view-utils/manual-layout'
@@ -14,7 +14,7 @@ export type WithDeploymentView = ReturnType<typeof DeploymentViewParser>
 export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploymentModel>(B: TBase) {
   return class DeploymentViewParser extends B {
     parseDeploymentView(
-      astNode: ast.DeploymentView
+      astNode: ast.DeploymentView,
     ): ParsedAstDeploymentView {
       const body = astNode.body
       invariant(body, 'DynamicElementView body is not defined')
@@ -26,7 +26,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       if (!id) {
         id = 'deployment_' + stringHash(
           this.doc.uri.toString(),
-          astPath
+          astPath,
         ) as c4.ViewId
       }
 
@@ -56,7 +56,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
             return []
           }
         }),
-        ...(manualLayout && { manualLayout })
+        ...(manualLayout && { manualLayout }),
       }
     }
 
@@ -87,6 +87,9 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
               case ast.isRelationExpr(expr):
                 exprs.unshift(this.parseRelationExpr(expr))
                 break
+              case ast.isRelationPredicateWhereV2(expr):
+                exprs.unshift(this.parseRelationWhereExpr(expr))
+                break
               default:
                 nonexhaustive(expr)
             }
@@ -108,8 +111,8 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         targets,
         ...(notation && { notation }),
         style: {
-          ...toElementStyle(styleProps, this.isValid)
-        }
+          ...toElementStyle(styleProps, this.isValid),
+        },
       }
     }
   }

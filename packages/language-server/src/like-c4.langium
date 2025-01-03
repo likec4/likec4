@@ -620,10 +620,13 @@ DeploymentViewRulePredicateExpression:
 ;
 
 ExpressionV2:
-  RelationExpr |
+  RelationPredicateOrWhereV2 |
   FqnExpr
 ;
 
+RelationPredicateOrWhereV2:
+  RelationExpr ({infer RelationPredicateWhereV2.subject=current} 'where' where=WhereRelationExpression?)?
+;
 
 FqnExpr:
   {infer WildcardExpression} isWildcard?='*' |

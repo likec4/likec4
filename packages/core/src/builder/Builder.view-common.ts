@@ -189,6 +189,7 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     | [B['Expr']]
     | [B['TypedExpr']]
     | [B['Expr'], ViewPredicate.Custom<B['Types']>]
+    | [B['TypedExpr'], ViewPredicate.Custom<B['Types']>]
 ): (b: B) => B {
   return (b) => {
     let expr = b.$expr(args[0]) as C4Expression
