@@ -1,4 +1,5 @@
 import { viteAliases } from '@/vite/aliases'
+import react from '@vitejs/plugin-react-swc'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
@@ -106,6 +107,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     customLogger,
     plugins: [
+      react(),
       likec4Plugin({
         languageServices,
         useOverviewGraph,

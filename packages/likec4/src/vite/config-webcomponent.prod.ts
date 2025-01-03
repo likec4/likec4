@@ -19,7 +19,7 @@ export async function viteWebcomponentConfig({
   outDir,
   base,
   webcomponentPrefix = 'likec4',
-  filename = 'likec4-views.js'
+  filename = 'likec4-views.js',
 }: LikeC4ViteWebcomponentConfig) {
   const customLogger = createLikeC4Logger('c4:lib')
   const root = viteAppRoot()
@@ -34,10 +34,10 @@ export async function viteWebcomponentConfig({
     mode: 'production',
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': '"production"',
     },
     esbuild: {
-      ...JsBanners
+      ...JsBanners,
     },
     build: {
       outDir,
@@ -53,7 +53,7 @@ export async function viteWebcomponentConfig({
           return filename
         },
         formats: ['iife'],
-        name: 'LikeC4Views'
+        name: 'LikeC4Views',
       },
       commonjsOptions: {
         defaultIsModuleExports: (id: string) => {
@@ -62,25 +62,25 @@ export async function viteWebcomponentConfig({
           }
           return 'auto'
         },
-        requireReturnsDefault: 'auto'
+        requireReturnsDefault: 'auto',
       },
       rollupOptions: {
         treeshake: {
-          preset: 'recommended'
+          preset: 'recommended',
         },
         output: {
           format: 'iife',
           hoistTransitiveImports: false,
-          compact: true
-        }
-      }
+          compact: true,
+        },
+      },
     },
     customLogger,
     plugins: [
       likec4Plugin({
         languageServices,
-        useOverviewGraph: false
-      })
-    ]
+        useOverviewGraph: false,
+      }),
+    ],
   } satisfies InlineConfig
 }

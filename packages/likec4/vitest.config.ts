@@ -2,7 +2,7 @@ import { defineProject } from 'vitest/config'
 
 export default defineProject({
   resolve: {
-    conditions: ['development'],
+    conditions: ['sources'],
   },
   test: {
     name: 'likec4',

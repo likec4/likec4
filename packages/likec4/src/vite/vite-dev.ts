@@ -31,17 +31,17 @@ export async function viteDev({
     ...cfg,
     languageServices,
     likec4AssetsDir,
-    webcomponentPrefix
+    webcomponentPrefix,
   })
   const port = await getPort({
     port: [
       5173,
       ...portNumbers(61000, 61010),
-      ...portNumbers(62002, 62010)
-    ]
+      ...portNumbers(62002, 62010),
+    ],
   })
   const hmrPort = await getPort({
-    port: portNumbers(24678, 24690)
+    port: portNumbers(24678, 24690),
   })
 
   const publicDir = await mkTempPublicDir()
@@ -52,12 +52,12 @@ export async function viteDev({
       webcomponentPrefix,
       languageServices: languageServices,
       outDir: publicDir,
-      base: config.base
+      base: config.base,
     })
     // don't wait, we want to start the server asap
     webcomponentPromise = build({
       ...webcomponentConfig,
-      logLevel: 'warn'
+      logLevel: 'warn',
     }).catch((err) => {
       consola.warn('webcomponent build failed', err)
       consola.warn('Ignoring error and continuing')
@@ -71,8 +71,8 @@ export async function viteDev({
       {},
       config.define,
       hmr && {
-        'process.env.NODE_ENV': '"development"'
-      }
+        'process.env.NODE_ENV': '"development"',
+      },
     ),
     mode: hmr ? 'development' : config.mode,
     publicDir,
@@ -83,13 +83,13 @@ export async function viteDev({
         overlay: true,
         // needed for hmr to work over network aka WSL2
         // host: 'localhost',
-        port: hmrPort
+        port: hmrPort,
       },
       fs: {
-        strict: false
+        strict: false,
       },
-      open: openBrowser ?? !isDev
-    }
+      open: openBrowser ?? !isDev,
+    },
   })
 
   await server.listen()

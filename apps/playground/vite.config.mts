@@ -19,7 +19,7 @@ const baseConfig: UserConfigFnObject = () => {
   return {
     root,
     resolve: {
-      conditions: ['development'],
+      conditions: ['sources'],
       alias,
     },
     build: {

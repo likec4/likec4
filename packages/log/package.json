@@ -17,7 +17,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "sources": "./src/index.ts",
       "node": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.mjs",

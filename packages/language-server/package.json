@@ -24,7 +24,7 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "sources": "./src/index.ts",
       "node": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",
@@ -37,7 +37,7 @@
       }
     },
     "./likec4lib": {
-      "development": "./src/likec4lib.ts",
+      "sources": "./src/likec4lib.ts",
       "default": {
         "types": "./dist/likec4lib.d.ts",
         "import": "./dist/likec4lib.js",
@@ -45,7 +45,7 @@
       }
     },
     "./browser": {
-      "development": "./src/browser.ts",
+      "sources": "./src/browser.ts",
       "default": {
         "types": "./dist/browser.d.ts",
         "import": "./dist/browser.js",
@@ -53,7 +53,7 @@
       }
     },
     "./protocol": {
-      "development": "./src/protocol.ts",
+      "sources": "./src/protocol.ts",
       "default": {
         "types": "./dist/protocol.d.ts",
         "import": "./dist/protocol.js",

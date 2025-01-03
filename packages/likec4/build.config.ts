@@ -46,6 +46,7 @@ export default defineBuildConfig({
   failOnWarn: false,
   declaration: isProduction,
   rollup: {
+    emitCJS: true,
     inlineDependencies: true,
     esbuild: {
       platform: 'node',
@@ -57,7 +58,7 @@ export default defineBuildConfig({
       compact: isProduction,
     },
     resolve: {
-      exportConditions: isProduction ? ['node', 'production'] : ['development'],
+      exportConditions: isProduction ? ['node', 'production'] : ['sources'],
     },
     commonjs: {
       exclude: [

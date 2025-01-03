@@ -24,7 +24,7 @@
     "checkJs": false,
     "allowUnreachableCode": false,
     "customConditions": [
-      "development"
+      "sources"
     ],
     "declaration": true,
     "declarationMap": false,
@@ -52,5 +52,5 @@
     "types": [],
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
-  },
+  }
 }
