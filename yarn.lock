@@ -1922,7 +1922,7 @@ __metadata:
     turbo: "npm:^2.3.3"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
-    unbuild: "npm:^3.1.0"
+    unbuild: "npm:^3.2.0"
     vitest: "npm:^2.1.8"
   languageName: unknown
   linkType: soft
@@ -2012,7 +2012,7 @@ __metadata:
     langium: "npm:3.3.0"
     remeda: "npm:^2.17.4"
     typescript: "npm:^5.7.2"
-    unbuild: "npm:^3.1.0"
+    unbuild: "npm:^3.2.0"
     vitest: "npm:^2.1.8"
   languageName: unknown
   linkType: soft
@@ -2068,7 +2068,7 @@ __metadata:
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     ufo: "npm:^1.5.4"
-    unbuild: "npm:^3.1.0"
+    unbuild: "npm:^3.2.0"
     vitest: "npm:^2.1.8"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageserver: "npm:9.0.1"
@@ -2097,7 +2097,7 @@ __metadata:
     turbo: "npm:^2.3.3"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
-    unbuild: "npm:^3.1.0"
+    unbuild: "npm:^3.2.0"
     vitest: "npm:^2.1.8"
     word-wrap: "npm:^1.2.5"
   languageName: unknown
@@ -2114,7 +2114,7 @@ __metadata:
     safe-stringify: "npm:^1.1.1"
     std-env: "npm:^3.8.0"
     typescript: "npm:^5.7.2"
-    unbuild: "npm:^3.1.0"
+    unbuild: "npm:^3.2.0"
     wrap-error-message: "npm:^3.0.0"
   languageName: unknown
   linkType: soft
@@ -5625,7 +5625,7 @@ __metadata:
     prompts: "npm:^2.4.2"
     tsx: "npm:~4.19.2"
     typescript: "npm:^5.7.2"
-    unbuild: "npm:^3.1.0"
+    unbuild: "npm:^3.2.0"
   bin:
     create-likec4: index.js
   languageName: unknown
@@ -8817,7 +8817,7 @@ __metadata:
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.2"
     ufo: "npm:^1.5.4"
-    unbuild: "npm:^3.1.0"
+    unbuild: "npm:^3.2.0"
     vite: "npm:5.4.11"
     vite-plugin-css-injected-by-js: "npm:^3.5.2"
     vite-plugin-dts: "npm:^4.4.0"
@@ -13861,7 +13861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unbuild@npm:^3.1.0":
+"unbuild@npm:^3.2.0":
   version: 3.2.0
   resolution: "unbuild@npm:3.2.0"
   dependencies:
