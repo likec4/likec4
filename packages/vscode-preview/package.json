@@ -21,7 +21,7 @@
     "clean": "rm -r -f dist"
   },
   "devDependencies": {
-    "@fontsource/ibm-plex-sans": "^5.1.0",
+    "@fontsource/ibm-plex-sans": "^5.1.1",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",

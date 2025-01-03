@@ -1625,10 +1625,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/ibm-plex-sans@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@fontsource/ibm-plex-sans@npm:5.1.0"
-  checksum: 10c0/aa50e8f145d9604301539a24dd573438aaf3ad16dd22eb5c56fa5445abdd99a2f2a0c0ad35b286d54c41cfc8373e85222d552ef984fe00daf8541e4098548d57
+"@fontsource/ibm-plex-sans@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@fontsource/ibm-plex-sans@npm:5.1.1"
+  checksum: 10c0/a8e904a27d745db26daf4665c11d111e4161914e25c18ccb03d8e0acb2e80319db1117f1831842db9a1b01231f7ff2da01341bae4ccbe2588d5836cab1a00532
   languageName: node
   linkType: hard
 
@@ -1984,7 +1984,7 @@ __metadata:
     "@astrojs/starlight": "npm:^0.29.2"
     "@expressive-code/plugin-collapsible-sections": "npm:^0.38.3"
     "@expressive-code/plugin-line-numbers": "npm:^0.38.3"
-    "@fontsource/ibm-plex-sans": "npm:^5.1.0"
+    "@fontsource/ibm-plex-sans": "npm:^5.1.1"
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
@@ -2191,7 +2191,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/vscode-preview@workspace:packages/vscode-preview"
   dependencies:
-    "@fontsource/ibm-plex-sans": "npm:^5.1.0"
+    "@fontsource/ibm-plex-sans": "npm:^5.1.1"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/icons": "workspace:*"
@@ -8743,7 +8743,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4@workspace:packages/likec4"
   dependencies:
-    "@fontsource/ibm-plex-sans": "npm:^5.1.0"
+    "@fontsource/ibm-plex-sans": "npm:^5.1.1"
     "@hpcc-js/wasm-graphviz": "npm:1.7.0"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
