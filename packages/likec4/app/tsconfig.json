@@ -10,7 +10,7 @@
     ],
     "module": "ESNext",
     "customConditions": [
-      "development"
+      "sources"
     ],
     "outDir": "../__app__",
     "noEmit": true,

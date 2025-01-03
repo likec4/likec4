@@ -26,18 +26,25 @@
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       }
     },
     "./model": {
-      "development": "./src/model/index.ts",
-      "default": {
+      "sources": "./src/model/index.ts",
+      "import": {
         "types": "./dist/model/index.d.mts",
-        "import": "./dist/model/index.mjs",
         "default": "./dist/model/index.mjs"
+      },
+      "require": {
+        "types": "./dist/model/index.d.cts",
+        "default": "./dist/model/index.cjs"
       }
     },
     "./react": {
-      "development": "./app/react/components/index.ts",
+      "sources": "./app/react/components/index.ts",
       "default": {
         "types": "./react/index.d.ts",
         "import": "./react/index.js",
@@ -86,8 +93,8 @@
     "dev:example-cloud": "run cli:serve ../../examples/cloud-system",
     "dev:failed": "run cli:serve ../../examples/failed",
     "dev:example-dev": "run cli:serve ../../examples/diagrams-dev/likec4",
-    "cli": "tsx --conditions=development src/cli/index.ts",
-    "cli:serve": "tsx watch --conditions=development src/cli/index.ts serve",
+    "cli": "tsx --conditions=sources src/cli/index.ts",
+    "cli:serve": "tsx watch --conditions=sources src/cli/index.ts serve",
     "cli:build": "run cli build -o dev/dist dev",
     "cli:preview": "run cli preview -o dev/dist dev",
     "cli:export": "run cli export png -o dev/export dev",

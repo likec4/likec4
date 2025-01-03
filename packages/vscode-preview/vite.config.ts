@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
   const isDev = isWatchDev || mode === 'development'
   return {
     resolve: {
-      conditions: ['development'],
+      conditions: ['sources'],
       alias: {
         '@likec4/core/model': resolve(__dirname, '../core/src/model'),
         '@likec4/core/types': resolve(__dirname, '../core/src/types'),

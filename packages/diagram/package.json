@@ -20,7 +20,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "sources": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",

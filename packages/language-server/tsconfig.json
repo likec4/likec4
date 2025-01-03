@@ -6,7 +6,7 @@
     "module": "esnext",
     "resolvePackageJsonExports": true,
     "customConditions": [
-      "development"
+      "sources"
     ],
     "lib": [
       "ES2022",

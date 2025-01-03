@@ -29,7 +29,7 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "sources": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",
@@ -37,7 +37,7 @@
       }
     },
     "./builder": {
-      "development": "./src/builder/index.ts",
+      "sources": "./src/builder/index.ts",
       "default": {
         "types": "./dist/builder/index.d.ts",
         "import": "./dist/builder/index.js",
@@ -45,7 +45,7 @@
       }
     },
     "./compute-view": {
-      "development": "./src/compute-view/index.ts",
+      "sources": "./src/compute-view/index.ts",
       "default": {
         "types": "./dist/compute-view/index.d.ts",
         "import": "./dist/compute-view/index.js",
@@ -53,7 +53,7 @@
       }
     },
     "./model": {
-      "development": "./src/model/index.ts",
+      "sources": "./src/model/index.ts",
       "default": {
         "types": "./dist/model/index.d.ts",
         "import": "./dist/model/index.js",
@@ -61,7 +61,7 @@
       }
     },
     "./utils": {
-      "development": "./src/utils/index.ts",
+      "sources": "./src/utils/index.ts",
       "default": {
         "types": "./dist/utils/index.d.ts",
         "import": "./dist/utils/index.js",
@@ -69,7 +69,7 @@
       }
     },
     "./types": {
-      "development": "./src/types/index.ts",
+      "sources": "./src/types/index.ts",
       "default": {
         "types": "./dist/types/index.d.ts",
         "import": "./dist/types/index.js",

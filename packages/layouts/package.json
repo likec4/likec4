@@ -22,14 +22,14 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "sources": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
       }
     },
     "./graphviz/binary": {
-      "development": "./src/graphviz/binary/index.ts",
+      "sources": "./src/graphviz/binary/index.ts",
       "default": {
         "types": "./dist/graphviz/binary/index.d.mts",
         "default": "./dist/graphviz/binary/index.mjs"

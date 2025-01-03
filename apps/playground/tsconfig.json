@@ -14,7 +14,7 @@
       ],
     },
     "customConditions": [
-      "development"
+      "sources"
     ],
     "noUnusedParameters": false
   },
