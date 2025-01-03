@@ -1,3 +1,15 @@
+## [1.19.1](https://github.com/likec4/likec4/compare/v1.19.0...v1.19.1) (2025-01-03)
+
+
+### Bug Fixes
+
+* add error handling and logging in documentation provider ([eae888f](https://github.com/likec4/likec4/commit/eae888fe0bcd8bf011013395fa53510da3b0475f))
+* change custom condition to `sources` [#1405](https://github.com/likec4/likec4/issues/1405) ([#1406](https://github.com/likec4/likec4/issues/1406)) ([9deb2ef](https://github.com/likec4/likec4/commit/9deb2ef709cac4a1eb54c6da5f6a6be2a53f194f))
+* correct parent function reference in treeFromMemoryState ([98345ac](https://github.com/likec4/likec4/commit/98345ac0c1d181914ddd065f3ead0bafc00ba428))
+* **log:** do not report handled errors to telemetry ([1b16c42](https://github.com/likec4/likec4/commit/1b16c42740f2b8aea7a1b1fa6f197d65008f3886))
+
+
+
 # [1.19.0](https://github.com/likec4/likec4/compare/v1.18.0...v1.19.0) (2025-01-01)
 
 ### 🎄 New Years improvements 🎄 
