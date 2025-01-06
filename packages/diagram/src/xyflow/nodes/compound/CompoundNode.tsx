@@ -108,7 +108,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
   const isHovered = Array.isArray(animateVariant) && animateVariant.includes('hovered')
 
   const _isToolbarVisible = isNotViewGroup && ((selected && !dragging) || isHovered)
-  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 300)
+  // TODO: This is a workaround to prevent the toolbar from flickering when the node unhovered
+  const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 1000)
 
   const nodeVariants = NodeVariants(w, h, {
     selectedScaleBy: 0,
