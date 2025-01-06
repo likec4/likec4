@@ -1,3 +1,13 @@
+## [1.19.2](https://github.com/likec4/likec4/compare/v1.19.1...v1.19.2) (2025-01-06)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @fontsource/ibm-plex-sans to ^5.1.1 ([#1410](https://github.com/likec4/likec4/issues/1410)) ([e2ff6d3](https://github.com/likec4/likec4/commit/e2ff6d386814e22b8bda4ce988d11807836eb328))
+* disable dynamic import in vscode extension ([7f77607](https://github.com/likec4/likec4/commit/7f7760768cd1983c0016d5290abd49a4fd7bf45a)), closes [#1415](https://github.com/likec4/likec4/issues/1415)
+
+
+
 ## [1.19.1](https://github.com/likec4/likec4/compare/v1.19.0...v1.19.1) (2025-01-03)
 
 ### Fixes
