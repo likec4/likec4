@@ -57,6 +57,8 @@ const {
     zone: {},
     node: {},
   },
+  tags: ['old', 'next', 'temp'],
+  relationships: { 'https': {} },
 })
 
 export const builder = b
@@ -91,13 +93,22 @@ export const builder = b
     model(
       $m.rel('customer', 'cloud', 'uses services'),
       $m.rel('customer', 'cloud.frontend.mobile', 'opens mobile app'),
-      $m.rel('customer', 'cloud.frontend.dashboard', 'opens in browser'),
+      $m.rel('customer', 'cloud.frontend.dashboard', {
+        title: 'opens in browser',
+        tags: ['old'],
+      }),
       $m.rel('cloud.frontend.dashboard', 'cloud.auth', {
         title: 'authenticates',
         color: 'green',
       }),
-      $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', 'fetches data'),
-      $m.rel('cloud.frontend.dashboard', 'cloud.media', 'fetches media'),
+      $m.rel('cloud.frontend.dashboard', 'cloud.backend.api', {
+        title: 'fetches data',
+        tags: ['old'],
+      }),
+      $m.rel('cloud.frontend.dashboard', 'cloud.media', {
+        title: 'fetches media',
+        tags: ['temp'],
+      }),
       $m.rel('cloud.frontend.mobile', 'cloud.auth', {
         title: 'authenticates',
         color: 'amber',
@@ -135,6 +146,14 @@ export const builder = b
             instanceOf('ui', 'cloud.frontend.dashboard'),
           ),
           instanceOf('db', 'aws.rds'),
+        ),
+      ),
+      env('dev').with(
+        node('devCustomer').with(
+          instanceOf('instance', 'customer'),
+        ),
+        node('devCloud').with(
+          instanceOf('instance', 'cloud'),
         ),
       ),
       env('acc').with(
@@ -195,4 +214,13 @@ export function computeNodesAndEdges(...rules: DeploymentRulesBuilderOp<Types>[]
     Nodes: nodeIds,
     edges: edgeIds,
   }
+}
+
+export function createModel() {
+  const modelsource = builder.build()
+
+  return LikeC4Model.create({
+    ...modelsource,
+    views: {},
+  })
 }

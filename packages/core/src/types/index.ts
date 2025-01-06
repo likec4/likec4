@@ -121,6 +121,7 @@ export type {
   Filterable,
   KindEqual,
   NotOperator,
+  OperatorPredicate,
   OrOperator,
   TagEqual,
   WhereOperator,

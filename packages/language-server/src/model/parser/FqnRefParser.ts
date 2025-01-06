@@ -4,6 +4,7 @@ import { isNonNullish } from 'remeda'
 import { ast } from '../../ast'
 import { logWarnError } from '../../logger'
 import { instanceRef } from '../../utils/fqnRef'
+import { parseWhereClause } from '../model-parser-where'
 import type { Base } from './Base'
 
 export type WithExpressionV2 = ReturnType<typeof ExpressionV2Parser>
@@ -89,7 +90,20 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       return exprs.reverse()
     }
 
+    parseRelationWhereExpr(astNode: ast.RelationPredicateWhereV2): c4.RelationExpr {
+      return {
+        where: {
+          expr: this.parseRelationExpr(astNode.subject as ast.RelationExpr),
+          condition: astNode.where ? parseWhereClause(astNode.where) : {
+            kind: { neq: '--always-true--' },
+          },
+        },
+      }
+    }
+
     parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
+      if (ast.isRelationPredicateWhere(astNode)) {
+      }
       if (ast.isDirectedRelationExpr(astNode)) {
         return {
           source: this.parseFqnExpr(astNode.source.from),

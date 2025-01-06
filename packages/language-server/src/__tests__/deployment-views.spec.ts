@@ -1,4 +1,4 @@
-import { describe, it, type TestContext } from 'vitest'
+import { type TestContext, describe, it } from 'vitest'
 import { createTestServices } from '../test/testServices'
 
 const model = `
@@ -9,6 +9,7 @@ const model = `
     deploymentNode zone
     tag epic-123
     tag next
+    relationship https
   }
   model {
     component user
@@ -90,7 +91,7 @@ async function mkTestServices({ expect }: TestContext) {
 
   const validateRules = (rules: string) =>
     validateView(`
-      deployment view view {
+      deployment view tmp {
         ${rules}
       }
     `)
@@ -104,7 +105,7 @@ async function mkTestServices({ expect }: TestContext) {
       invalid: async (view: string) => {
         const { errors } = await validateView(view)
         expect(errors).not.toEqual([])
-      }
+      },
     },
     valid: async (rules: string) => {
       const { errors, warnings } = await validateRules(rules)
@@ -120,7 +121,7 @@ async function mkTestServices({ expect }: TestContext) {
       const { errors, warnings } = await validateRules(rules)
       expect(errors.join('\n'), 'errors').not.to.be.empty
       expect(warnings.join('\n'), 'warnings').to.be.empty
-    }
+    },
   }
 }
 
@@ -165,6 +166,16 @@ describe.concurrent('Deployment views:', () => {
     await view.invalid(`
       deployment view of system {
       }
+    `)
+  })
+
+  it('valid rules', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+
+    await valid(`
+      include * -> *
+      include * -> * where tag is #next
+      include * -> * where kind is https or tag is #next
     `)
   })
 })

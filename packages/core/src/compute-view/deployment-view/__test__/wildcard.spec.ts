@@ -7,11 +7,14 @@ describe('deployment view: wildcard', () => {
       $include('*'),
     )
     expect(nodeIds).toEqual([
+      'dev',
+      'dev.devCloud',
       'acc',
       'acc.eu',
       'global',
       'customer',
       'prod',
+      'dev.devCustomer',
       'acc.testCustomer',
       'prod.eu',
       'prod.us',
@@ -20,11 +23,14 @@ describe('deployment view: wildcard', () => {
       'customer:prod.eu',
       'customer:prod.us',
       'global:customer',
+      'global:dev.devCustomer',
       'global:acc.testCustomer',
       'prod.eu:global',
       'prod.us:global',
+      'dev.devCloud:global',
       'acc.eu:global',
       'prod.eu:prod.us',
+      'dev.devCustomer:dev.devCloud',
       'acc.testCustomer:acc.eu',
     ])
   })

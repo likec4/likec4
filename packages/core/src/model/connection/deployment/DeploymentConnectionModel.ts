@@ -111,10 +111,20 @@ export class DeploymentConnectionModel<M extends AnyAux = AnyAux>
   }
 
   /**
+   * Merge with another connections, if it has the same source and target.
+   * Returns new connection with union of relationships.
+   */
+  public mergeWith(others: DeploymentConnectionModel<M>[]): DeploymentConnectionModel<M>
+  /**
    * Merge with another connection, if it has the same source and target.
    * Returns new connection with union of relationships.
    */
-  public mergeWith(other: DeploymentConnectionModel<M>) {
+  public mergeWith(other: DeploymentConnectionModel<M>): DeploymentConnectionModel<M>
+  public mergeWith(other: DeploymentConnectionModel<M> | DeploymentConnectionModel<M>[]): DeploymentConnectionModel<M> {
+    if (Array.isArray(other)) {
+      return other.reduce((acc, o) => acc.mergeWith(o), this)
+    }
+
     invariant(this.source.id === other.source.id, 'Cannot merge connections with different sources')
     invariant(this.target.id === other.target.id, 'Cannot merge connections with different targets')
     return new DeploymentConnectionModel(
