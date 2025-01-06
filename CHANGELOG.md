@@ -1,3 +1,10 @@
+## [1.19.2](https://github.com/likec4/likec4/compare/v1.19.1...v1.19.2) (2025-01-06)
+
+### Bug Fixes
+
+* **vscode:** disable dynamic import in vscode extension (closes [#1415](https://github.com/likec4/likec4/issues/1415))
+
+
 ## [1.19.1](https://github.com/likec4/likec4/compare/v1.19.0...v1.19.1) (2025-01-03)
 
 ### Fixes
