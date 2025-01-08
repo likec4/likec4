@@ -479,6 +479,18 @@ include
     where kind is http-request
 ```
 
+It is also possible to filter relations by tag or kind of its endpoints.
+```likec4
+include
+  // only relationships outgoing from elements with with tag #next
+  cloud.* -> amazon.*
+    where source.tag is #next,
+
+  // only incoming relations of elements with kind microservice
+  -> *
+    where target.kind is microservice
+```
+
 <br/>
 
 **Together with `with`**
