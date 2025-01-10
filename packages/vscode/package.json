@@ -207,7 +207,7 @@
     "execa": "^9.3.1",
     "langium": "3.3.0",
     "mnemonist": "^0.39.8",
-    "p-timeout": "^6.1.3",
+    "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
     "remeda": "^2.19.0",
     "std-env": "^3.8.0",
