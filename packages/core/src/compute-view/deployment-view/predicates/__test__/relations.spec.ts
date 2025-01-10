@@ -79,6 +79,49 @@ describe('RelationPredicate', () => {
           },
         )
       })
+
+      it('* -> instance where', () => {
+        t.expectComputedView(
+          $include('* -> a.b.d.api', { where: 'tag is #next' }),
+        ).toHave(
+          {
+            nodes: [
+              'a.b.c',
+              'a.b.d',
+              'a.b.d.api',
+            ],
+            edges: [
+              'a.b.c -> a.b.d.api',
+            ],
+          },
+        )
+
+        t.expectComputedView(
+          $include('* -> a.b.d.api', { where: 'tag is not #next' }),
+        ).toHave(
+          {
+            nodes: [],
+            edges: [],
+          },
+        )
+      })
+
+      it('* -> instance where participant is', () => {
+        t.expectComputedView(
+          $include('* -> a.b.d.api', { where: 'source.tag is #next' }),
+        ).toHave(
+          {
+            nodes: [
+              'a.b.c',
+              'a.b.d',
+              'a.b.d.api',
+            ],
+            edges: [
+              'a.b.c -> a.b.d.api',
+            ],
+          },
+        )
+      })
     })
 
     describe('element -> *', () => {
@@ -131,6 +174,145 @@ describe('RelationPredicate', () => {
           $include('a.b2.c.ui -> *'),
         )
         t.expect(view1).toHave({
+          nodes: [
+            'a.b2.c.ui',
+            'a.b2.c.api',
+          ],
+          edges: [
+            'a.b2.c.ui -> a.b2.c.api',
+          ],
+        })
+      })
+
+      it('node -> * where', () => {
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> *', { where: 'tag is not #next' }),
+        )).toHave({
+          nodes: [],
+          edges: [],
+        })
+
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> *', { where: 'tag is #next' }),
+        )).toHave({
+          nodes: [
+            'a.b2.c.ui',
+            'a.b2.c.api',
+          ],
+          edges: [
+            'a.b2.c.ui -> a.b2.c.api',
+          ],
+        })
+      })
+
+      it('node -> * where participant is', () => {
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> *', {
+            where: 'source.tag is #next',
+          }),
+        )).toHave({
+          nodes: [
+            'a.b2.c.ui',
+            'a.b2.c.api',
+          ],
+          edges: [
+            'a.b2.c.ui -> a.b2.c.api',
+          ],
+        })
+
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> *', {
+            where: 'source.tag is not #next',
+          }),
+        )).toHave({
+          nodes: [],
+          edges: [],
+        })
+      })
+
+      it('node -> node where', () => {
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> a.b2.c._', { where: 'tag is not #next' }),
+        )).toHave({
+          nodes: [],
+          edges: [],
+        })
+
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> a.b2.c._', { where: 'tag is #next' }),
+        )).toHave({
+          nodes: [
+            'a.b2.c.ui',
+            'a.b2.c.api',
+          ],
+          edges: [
+            'a.b2.c.ui -> a.b2.c.api',
+          ],
+        })
+      })
+
+      it('node -> instance where participant is', () => {
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> a.b2.c.api', {
+            where: 'source.tag is #next',
+          }),
+        )).toHave({
+          nodes: [
+            'a.b2.c.ui',
+            'a.b2.c.api',
+          ],
+          edges: [
+            'a.b2.c.ui -> a.b2.c.api',
+          ],
+        })
+
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> a.b2.c.api', {
+            where: 'source.tag is not #next',
+          }),
+        )).toHave({
+          nodes: [],
+          edges: [],
+        })
+      })
+    })
+  })
+
+  describe('exclude', () => {
+    describe('element -> *', () => {
+      const t = TestHelper.from(builder.deployment((_, deploymentModel) =>
+        deploymentModel(
+          _.node('a'),
+          _.node('a.b1'),
+          _.node('a.b1.c').with(
+            _.instanceOf('cloud.ui'),
+            _.instanceOf('cloud.backend.api'),
+          ),
+          _.node('a.b2'),
+          _.node('a.b2.c').with(
+            _.instanceOf('cloud.ui'),
+            _.instanceOf('cloud.backend.api'),
+          ),
+        )
+      ))
+
+      it('node -> * where', () => {
+        t.expect(t.computeView(
+          $include('a.b2.c.ui -> *'),
+          $exclude('a.b2.c._ -> *', {
+            where: 'source.tag is #next',
+          }),
+        )).toHave({
+          nodes: [],
+          edges: [],
+        })
+
+        t.expect(t.computeView(
+          $include('a.b2.c.ui -> *'),
+          $exclude('a.b2.c._ -> *', {
+            where: 'source.tag is not #next',
+          }),
+        )).toHave({
           nodes: [
             'a.b2.c.ui',
             'a.b2.c.api',
