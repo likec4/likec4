@@ -1,7 +1,7 @@
-import { hasAtLeast } from 'remeda'
+import { filter, hasAtLeast, only } from 'remeda'
 import { invariant } from '../../errors'
 import { type ComputedEdge, type ComputedNode, type Fqn } from '../../types'
-import { buildComputedNodes, type ComputedNodeSource } from '../utils/buildComputedNodes'
+import { type ComputedNodeSource, buildComputedNodes } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { Connection, Elem, Memory } from './_types'
 
@@ -11,18 +11,18 @@ export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]
 export function toNodeSource(el: Elem): ComputedNodeSource {
   return {
     ...el.$element,
-    modelRef: 1
+    modelRef: 1,
   }
 }
 
 export function toComputedEdges(
-  connections: ReadonlyArray<Connection>
+  connections: ReadonlyArray<Connection>,
 ): ComputedEdge[] {
   return connections.reduce((acc, e) => {
     // const modelRelations = []
     // const deploymentRelations = []
     const relations = [
-      ...e.relations
+      ...e.relations,
     ]
     invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
 
@@ -34,7 +34,11 @@ export function toComputedEdges(
       ...props
     } = mergePropsFromRelationships(
       relations.map(r => r.$relationship),
-      relations.find(r => r.source.id === source && r.target.id === target)?.$relationship
+      // Prefer only single relationship
+      // https://github.com/likec4/likec4/issues/1423
+      only(
+        filter(relations, r => r.source.id === source && r.target.id === target),
+      )?.$relationship,
     )
 
     const edge: ComputedEdge = {
@@ -44,7 +48,7 @@ export function toComputedEdges(
       target,
       label: title ?? null,
       relations: relations.map((r) => r.id),
-      ...props
+      ...props,
     }
 
     acc.push(edge)
