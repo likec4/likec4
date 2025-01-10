@@ -47,9 +47,24 @@ But they refer to deployment nodes and instances.
 <Aside type='caution' title='In development'>
   The following features are not supported yet or do not work as expected:
  
-  - `with` and `where` expressions
+  - `with` expressions
+  - `where` expressions on elements
   - Shared styles and predicates
   - Relationships browser, Element and Relationship Details popups (work with logical model)
+
+  ```likec4
+  deployment view prod {
+    include *                            // works
+    include * where tag is #next         // does not work
+    include * with { color: red }        // does not work
+      
+    include * -> *                       // works
+    include * -> * where tag is #next    // works
+    include * -> * with { color: red }   // does not work
+
+    global style applications            // does not work    
+  }
+  ```
 </Aside>
 
 <br/>
