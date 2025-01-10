@@ -8715,7 +8715,7 @@ __metadata:
     execa: "npm:^9.3.1"
     langium: "npm:3.3.0"
     mnemonist: "npm:^0.39.8"
-    p-timeout: "npm:^6.1.3"
+    p-timeout: "npm:^6.1.4"
     pretty-ms: "npm:^9.2.0"
     remeda: "npm:^2.19.0"
     std-env: "npm:^3.8.0"
@@ -10779,10 +10779,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-timeout@npm:^6.1.2, p-timeout@npm:^6.1.3":
+"p-timeout@npm:^6.1.2":
   version: 6.1.3
   resolution: "p-timeout@npm:6.1.3"
   checksum: 10c0/6dcd1efc1a18afac08dd4f8e09797bbe635110e597d27026b478f884b867616871499427643a6b2e11f0404b2936d17db69da2b5e58d5fe99e1fac80a53f0250
+  languageName: node
+  linkType: hard
+
+"p-timeout@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "p-timeout@npm:6.1.4"
+  checksum: 10c0/019edad1c649ab07552aa456e40ce7575c4b8ae863191477f02ac8d283ac8c66cedef0ca93422735130477a051dfe952ba717641673fd3599befdd13f63bcc33
   languageName: node
   linkType: hard
 
