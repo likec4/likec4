@@ -3856,17 +3856,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode@npm:^1.84.0":
+"@types/vscode@npm:^1.84.0, @types/vscode@npm:^1.89.0":
   version: 1.96.0
   resolution: "@types/vscode@npm:1.96.0"
   checksum: 10c0/3fb7ba394f6a8d6a4725b7ad0f0a4dd506371af934f7dc709989fd4b8f587cce96efb042e0d3af2b416b4bb74ecb2a5375c61f21b6b0cd86d85c6bdd2dcb2828
-  languageName: node
-  linkType: hard
-
-"@types/vscode@npm:^1.89.0":
-  version: 1.93.0
-  resolution: "@types/vscode@npm:1.93.0"
-  checksum: 10c0/5b62f6a333e21ba1687b93270489dcaf84a7474085b1bc440431508ff3bd0aebadd238812ddaa7e66a95417bb8d01c7b7ce5b6d8968bda5ac8f2fc7919366f9f
   languageName: node
   linkType: hard
 
@@ -13749,7 +13742,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:4.28.1, type-fest@npm:^4.21.0, type-fest@npm:^4.27.0":
+"type-fest@npm:4.28.1":
   version: 4.28.1
   resolution: "type-fest@npm:4.28.1"
   checksum: 10c0/8b0dabe2f063dff6dff1964d70f1d844ea13a7534e9aa454b48569d5837f76252bb4518bbd3ca98b4fb65e49a732c555649cf60fc02b0254a0d69eb00c518725
@@ -13784,7 +13777,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.30.0":
+"type-fest@npm:^4.21.0, type-fest@npm:^4.27.0, type-fest@npm:^4.30.0":
   version: 4.31.0
   resolution: "type-fest@npm:4.31.0"
   checksum: 10c0/a5bb69e3b0f82e068af8c645ac3d50b1fa5c588ebc83735a6add4ef6dacf277bb3605801f66c72c069af20120ee7387a3ae6dd84e12c152f5982784c710b4051
