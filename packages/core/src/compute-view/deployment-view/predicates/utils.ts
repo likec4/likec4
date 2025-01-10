@@ -1,7 +1,13 @@
 import { filter, isArray, map, pick, pipe } from 'remeda'
 import { nonexhaustive } from '../../../errors'
-import type { DeploymentConnectionModel } from '../../../model'
-import type { DeploymentElementModel, DeploymentRelationModel } from '../../../model/DeploymentElementModel'
+import { type DeploymentConnectionModel, ElementModel, isDeployedInstance, isDeploymentNode } from '../../../model'
+import type {
+  DeploymentElementModel,
+  DeploymentRelationEndpoint,
+  DeploymentRelationModel,
+} from '../../../model/DeploymentElementModel'
+import { isElementModel } from '../../../model/ElementModel'
+import { isNestedElementOfDeployedInstanceModel } from '../../../model/guards'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '../../../types'
@@ -143,10 +149,9 @@ export function applyPredicate<M extends AnyAux>(
       .filter(x => x.nonEmpty())
   }
 
-  const map = toFilterableRelation(c.source, c.target)
   return c.update({
-    model: new Set([...c.relations.model.values()].filter(r => where(map(r)))),
-    deployment: new Set([...c.relations.deployment.values()].filter(r => where(map(r)))),
+    model: new Set([...c.relations.model.values()].filter(r => where(toFilterableRelation(r)))),
+    deployment: new Set([...c.relations.deployment.values()].filter(r => where(toFilterableRelation(r)))),
   })
 }
 
@@ -164,20 +169,30 @@ export function matchConnections<M extends AnyAux>(
   )
 }
 
-function elementToFilterable<M extends AnyAux>(element: DeploymentElementModel<M>) {
-  return pick(element, ['tags', 'kind'])
+function elementToFilterable<M extends AnyAux>(
+  element: DeploymentElementModel<M> | ElementModel<M> | DeploymentRelationEndpoint<M>,
+) {
+  if (isElementModel(element)) {
+    return pick(element.$element, ['tags', 'kind'])
+  }
+  if (isNestedElementOfDeployedInstanceModel(element)) {
+    return pick(element.element, ['tags', 'kind'])
+  }
+  if (isDeployedInstance(element)) {
+    return pick(element.element, ['tags', 'kind'])
+  }
+  if (isDeploymentNode(element)) {
+    return pick(element, ['tags', 'kind'])
+  }
+
+  nonexhaustive(element)
 }
 
-function toFilterableRelation<M extends AnyAux>(
-  source: DeploymentElementModel<M>,
-  target: DeploymentElementModel<M>,
-) {
-  return (
-    relation: RelationshipModel<M> | DeploymentRelationModel<M>,
-  ) => ({
+function toFilterableRelation<M extends AnyAux>(relation: RelationshipModel<M> | DeploymentRelationModel<M>) {
+  return {
     tags: relation.tags,
     kind: relation.kind,
-    source: elementToFilterable(source),
-    target: elementToFilterable(target),
-  })
+    source: elementToFilterable(relation.source),
+    target: elementToFilterable(relation.target),
+  }
 }
