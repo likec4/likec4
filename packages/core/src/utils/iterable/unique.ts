@@ -8,13 +8,7 @@ export function iunique(): <T>(iterable: Iterable<T>) => IteratorLike<T>
 export function iunique<T>(iterable: Iterable<T>): IteratorLike<T>
 
 export function iunique<T>(iterable?: Iterable<T>): IteratorLike<T> | ((iterable: Iterable<T>) => IteratorLike<T>) {
-  if (iterable) {
-    return (function*(): IteratorLike<T> {
-      yield* _iunique(iterable)
-      return
-    })()
-  }
-  return _iunique
+  return iterable ? _iunique(iterable) : _iunique
 }
 
 function* _iunique<T>(iterable: Iterable<T>): IteratorLike<T> {
