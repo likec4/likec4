@@ -1,4 +1,4 @@
-import { filter, flatMap, isNonNullish, pick, pipe } from 'remeda'
+import { filter, flatMap, isNonNullish, map, pick, pipe } from 'remeda'
 import { invariant } from '../../../errors'
 import type {
   ConnectionModel,
@@ -53,10 +53,14 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     switch (true) {
       // * -> *
       case sourceIsWildcard && targetIsWildcard: {
-        connections = findConnectionsWithin(model.instances()).map(c => {
-          stage.addImplicit(c.boundary)
-          return c
-        })
+        connections = pipe(
+          findConnectionsWithin(model.instances()),
+          applyPredicate(where),
+          map(c => {
+            stage.addImplicit(c.boundary)
+            return c
+          }),
+        )
         break
       }
 
@@ -71,12 +75,15 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
           postFilter = c => isSource(c) !== isTarget(c)
         }
 
-        connections = sources
-          .flatMap(source => {
+        connections = pipe(
+          sources,
+          flatMap(source => {
             const targets = resolveAscendingSiblings(source)
             return findConnectionsBetween(source, targets, dir)
-          })
-          .filter(postFilter)
+          }),
+          filter(postFilter),
+          applyPredicate(where),
+        )
         break
       }
       // * -> target; * <-> target
@@ -90,12 +97,15 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
           postFilter = c => isSource(c) !== isTarget(c)
         }
 
-        connections = targets
-          .flatMap(target => {
+        connections = pipe(
+          targets,
+          flatMap(target => {
             const sources = resolveAscendingSiblings(target)
             return [...sources].flatMap(source => findConnection(source, target, dir))
-          })
-          .filter(postFilter)
+          }),
+          filter(postFilter),
+          applyPredicate(where),
+        )
         break
       }
       default: {

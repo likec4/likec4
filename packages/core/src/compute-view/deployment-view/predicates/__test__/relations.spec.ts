@@ -11,6 +11,7 @@ describe('RelationPredicate', () => {
       deployments: {
         node: {},
       },
+      tags: ['next'],
     })
     .model(({ el, rel }, _) =>
       _(
@@ -21,7 +22,7 @@ describe('RelationPredicate', () => {
         el('cloud.backend.api'),
         el('cloud.db'),
         rel('client', 'cloud.ui'),
-        rel('cloud.ui', 'cloud.backend.api'),
+        rel('cloud.ui', 'cloud.backend.api', { tags: ['next'] }),
         rel('cloud.backend.api', 'cloud.db'),
       )
     )
@@ -111,6 +112,27 @@ describe('RelationPredicate', () => {
         $include('a.b2.c.ui -> *'),
       )
       t.expect(view1).toHave({
+        nodes: [
+          'a.b2.c.ui',
+          'a.b2.c.api',
+        ],
+        edges: [
+          'a.b2.c.ui -> a.b2.c.api',
+        ],
+      })
+    })
+
+    it('node -> * where', () => {
+      t.expect(t.computeView(
+        $include('a.b2.c._ -> *', { where: 'tag is not #next' }),
+      )).toHave({
+        nodes: [],
+        edges: [],
+      })
+
+      t.expect(t.computeView(
+        $include('a.b2.c._ -> *', { where: 'tag is #next' }),
+      )).toHave({
         nodes: [
           'a.b2.c.ui',
           'a.b2.c.api',

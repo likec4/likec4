@@ -8,7 +8,7 @@ import { isAncestor } from '../../../utils'
 import type { Connection, Elem, PredicateExecutor } from '../_types'
 import { resolveElements, resolveModelElements } from '../utils'
 import { resolveAscendingSiblings } from './relation-direct'
-import { applyPredicate, excludeModelRelations, matchConnection, matchConnections } from './utils'
+import { applyPredicate, excludeModelRelations } from './utils'
 
 // from visible element incoming to this
 export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming> = {
