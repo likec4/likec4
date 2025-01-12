@@ -3,8 +3,8 @@ import { useHotkeys } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { AnimatePresence, m } from 'framer-motion'
-import { memo, type PropsWithChildren, useEffect, useMemo, useRef } from 'react'
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
+import { type PropsWithChildren, memo, useEffect, useMemo, useRef } from 'react'
+import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { isNullish } from 'remeda'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
 import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
@@ -22,8 +22,8 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
         icon={<IconX style={{ width: 16, height: 16 }} />}
         styles={{
           icon: {
-            alignSelf: 'flex-start'
-          }
+            alignSelf: 'flex-start',
+          },
         }}
         color={'red'}
         title={'Oops, something went wrong'}
@@ -31,7 +31,7 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
         withCloseButton={false}>
         <Text
           style={{
-            whiteSpace: 'preserve-breaks'
+            whiteSpace: 'preserve-breaks',
           }}>
           {errorString}
         </Text>
@@ -47,13 +47,13 @@ export const Overlays = memo(() => {
   const diagramStore = useDiagramStoreApi()
   const {
     activeOverlay,
-    viewId
+    viewId,
   } = useDiagramState(s => ({
     activeOverlay: s.activeOverlay,
-    viewId: s.view.id
+    viewId: s.view.id,
   }))
 
-  const onCloseCbRef = useRef<(() => void)>()
+  const onCloseCbRef = useRef<(() => void)>(undefined)
 
   const ctxValue = useMemo(() => ({
     openOverlay: ((overlay) => {
@@ -62,7 +62,7 @@ export const Overlays = memo(() => {
     close: (cb?: () => void) => {
       onCloseCbRef.current = cb
       diagramStore.getState().closeOverlay()
-    }
+    },
   }), [diagramStore])
 
   const onExitComplete = () => {
@@ -77,9 +77,9 @@ export const Overlays = memo(() => {
         ['Escape', (e) => {
           e.stopPropagation()
           ctxValue.close()
-        }, { preventDefault: true }]
+        }, { preventDefault: true }],
       ]
-      : []
+      : [],
   )
 
   return (
@@ -101,13 +101,13 @@ export const Overlays = memo(() => {
                   '--backdrop-blur': '0px',
                   '--backdrop-opacity': '0%',
                   opacity: 0,
-                  translateY: -15
+                  translateY: -15,
                 }}
                 animate={{
                   '--backdrop-blur': '10px',
                   '--backdrop-opacity': '70%',
                   opacity: 1,
-                  translateY: 0
+                  translateY: 0,
                 }}
                 exit={{
                   '--backdrop-blur': '1px',
@@ -115,8 +115,8 @@ export const Overlays = memo(() => {
                   translateY: -5,
                   opacity: 0,
                   transition: {
-                    duration: .2
-                  }
+                    duration: .2,
+                  },
                 }}
               >
                 <FocusTrap>
@@ -275,8 +275,8 @@ const OverlayDialog = ({ children }: PropsWithChildren) => {
       exit={{
         opacity: 0,
         transition: {
-          duration: .15
-        }
+          duration: .15,
+        },
       }}
       onClick={e => {
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {

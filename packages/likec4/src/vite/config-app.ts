@@ -75,15 +75,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     clearScreen: false,
     optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        'react/jsx-dev-runtime',
-        'react-dom/client',
-        '@mantine/core',
-        '@mantine/hooks',
-        '@tabler/icons-react',
-      ],
+      force: true,
     },
     base,
     build: {

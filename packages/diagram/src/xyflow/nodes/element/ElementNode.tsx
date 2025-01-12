@@ -102,7 +102,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   const isHovered = !!animateVariants && animateVariants.includes('hovered')
 
   const _isToolbarVisible = (selected && !dragging) || isHovered
-  // TODO: This is a workaround to prevent the toolbar from flickering when the node unhovered
+  // TODO: This is a workaround to prevent the toolbar from flickering when the node unhove
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 1000)
 
   const elementIcon = ElementIcon({

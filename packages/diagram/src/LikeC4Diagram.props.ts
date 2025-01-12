@@ -6,7 +6,7 @@ import type {
   RelationId,
   ViewChange,
   ViewId,
-  WhereOperator
+  WhereOperator,
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import type { XYBackground } from './xyflow/XYFlowBackground'
@@ -17,31 +17,31 @@ export type DiagramNodeWithNavigate<ID extends string = ViewId> = Omit<DiagramNo
   navigateTo: ID
 }
 
-type ElementIconNodeProps = {
-  id: string
-  title: string
-  icon?: string | undefined
+type ElementIconRendererProps = {
+  node: {
+    id: string
+    title: string
+    icon?: string | null | undefined
+  }
 }
 
-export type ElementIconRenderer = (props: {
-  node: ElementIconNodeProps
-}) => ReactNode
+export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
 export type OnNavigateTo<ID extends string = ViewId> = (
   to: ID,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,
-  element?: DiagramNodeWithNavigate<ID>
+  element?: DiagramNodeWithNavigate<ID>,
 ) => void
 
 export type OnNodeClick = (
   node: DiagramNode,
-  event: ReactMouseEvent
+  event: ReactMouseEvent,
 ) => void
 
 export type OnEdgeClick = (
   edge: DiagramEdge,
-  event: ReactMouseEvent
+  event: ReactMouseEvent,
 ) => void
 
 /**

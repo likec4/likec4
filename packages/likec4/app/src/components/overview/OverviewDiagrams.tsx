@@ -1,8 +1,8 @@
-import { nonexhaustive, type OverviewGraph } from '@likec4/core'
+import { type OverviewGraph, nonexhaustive } from '@likec4/core'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useMantineColorScheme } from '@mantine/core'
 import { useRouter } from '@tanstack/react-router'
-import { Background, BackgroundVariant, ReactFlow, type Rect, useEdgesState, useNodesState } from '@xyflow/react'
+import { type Rect, Background, BackgroundVariant, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
 import { pick } from 'remeda'
 import { root } from './OverviewDiagrams.css'
@@ -14,7 +14,7 @@ import type {
   OverviewXYEdge,
   OverviewXYFlowData,
   OverviewXYFlowInstance,
-  OverviewXYNode
+  OverviewXYNode,
 } from './xyflow/types'
 import { ViewNode } from './xyflow/ViewNode'
 
@@ -28,10 +28,10 @@ type OverviewDiagramsProps = {
 const nodeTypes = {
   folder: FolderNode,
   file: FileNode,
-  view: ViewNode
+  view: ViewNode,
 }
 const edgeTypes = {
-  link: LinkEdge
+  link: LinkEdge,
 }
 
 const overviewGraphToXYFlowData = (graph: OverviewGraph): OverviewXYFlowData => {
@@ -42,12 +42,12 @@ const overviewGraphToXYFlowData = (graph: OverviewGraph): OverviewXYFlowData => 
       const rect = {
         ...position,
         width,
-        height
+        height,
       } satisfies Rect
       if (parent) {
         position = {
           x: position.x - parent.position.x,
-          y: position.y - parent.position.y
+          y: position.y - parent.position.y,
         }
       }
       const xyparent = parent ? { parentId: parent.id } : {}
@@ -62,14 +62,14 @@ const overviewGraphToXYFlowData = (graph: OverviewGraph): OverviewXYFlowData => 
               dimmed: false,
               label: node.label,
               path: node.path,
-              rect
+              rect,
             },
             deletable: false,
             position,
             width,
             height,
             zIndex: 1,
-            ...xyparent
+            ...xyparent,
           } satisfies FolderXYNode | FileXYNode
         case 'view':
           return {
@@ -79,7 +79,7 @@ const overviewGraphToXYFlowData = (graph: OverviewGraph): OverviewXYFlowData => 
               dimmed: false,
               label: node.label,
               viewId: node.viewId as any,
-              rect
+              rect,
             },
             selectable: false,
             deletable: false,
@@ -87,7 +87,7 @@ const overviewGraphToXYFlowData = (graph: OverviewGraph): OverviewXYFlowData => 
             width,
             height,
             zIndex: 3,
-            ...xyparent
+            ...xyparent,
           }
         default:
           nonexhaustive(node)
@@ -102,10 +102,10 @@ const overviewGraphToXYFlowData = (graph: OverviewGraph): OverviewXYFlowData => 
         zIndex: 2,
         hidden: true,
         data: {
-          points: edge.points
-        }
+          points: edge.points,
+        },
       }
-    })
+    }),
   }
 }
 
@@ -113,10 +113,10 @@ export function OverviewDiagrams({
   graph,
   fitViewPadding = 0.1,
   zoomable = true,
-  pannable = true
+  pannable = true,
 }: OverviewDiagramsProps) {
   const router = useRouter()
-  const xyflowRef = useRef<OverviewXYFlowInstance>()
+  const xyflowRef = useRef<OverviewXYFlowInstance>(undefined)
   const { colorScheme } = useMantineColorScheme()
 
   const xyflowdata = useMemo(() => overviewGraphToXYFlowData(graph), [graph])
@@ -147,7 +147,7 @@ export function OverviewDiagrams({
       xyflow.fitView({
         maxZoom: 1,
         padding: fitViewPadding,
-        duration: 800
+        duration: 800,
       })
     } else {
       // const viewport = getViewportForBounds(node.data.rect, )
@@ -155,7 +155,7 @@ export function OverviewDiagrams({
         maxZoom: 1,
         padding: fitViewPadding,
         nodes: [focusedNode],
-        duration: 450
+        duration: 450,
       })
       // xyflow.fitBounds(node.data.rect, {
       //   duration: 400
@@ -186,7 +186,7 @@ export function OverviewDiagrams({
         minZoom: 0.05,
         maxZoom: 1,
         padding: fitViewPadding,
-        includeHiddenNodes: true
+        includeHiddenNodes: true,
       }), [fitViewPadding])}
       nodesDraggable={false}
       nodesConnectable={false}
@@ -198,7 +198,7 @@ export function OverviewDiagrams({
       zoomOnScroll={!pannable && zoomable}
       zoomOnDoubleClick={false}
       {...(!zoomable && {
-        zoomActivationKeyCode: null
+        zoomActivationKeyCode: null,
       })}
       maxZoom={zoomable ? 2 : 1}
       minZoom={zoomable ? 0.01 : 1}
@@ -208,7 +208,7 @@ export function OverviewDiagrams({
       panOnScroll={pannable}
       panOnDrag={pannable}
       {...(!pannable && {
-        selectionKeyCode: null
+        selectionKeyCode: null,
       })}
       onInit={instance => xyflowRef.current = instance}
       onNodeClick={(event, node) => {
@@ -220,7 +220,7 @@ export function OverviewDiagrams({
             maxZoom: 10,
             padding: 0,
             nodes: [node],
-            duration: 1200
+            duration: 1200,
           })
           setTimeout(() => {
             xyflowRef.current?.updateNodeData(node.id, { dimmed: true })
@@ -229,9 +229,9 @@ export function OverviewDiagrams({
             router.navigate({
               to: '/view/$viewId/',
               params: {
-                viewId: node.data.viewId
+                viewId: node.data.viewId,
               },
-              search: true
+              search: true,
             })
           }, 800)
           return

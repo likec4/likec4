@@ -10,11 +10,11 @@ import {
   MenuTarget,
   Paper,
   Space,
-  useMantineTheme
+  useMantineTheme,
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconChevronDown, IconShare } from '@tabler/icons-react'
-import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
+import { type RegisteredRouter, type RouteIds, Link, useParams, useRouterState } from '@tanstack/react-router'
 import { usePreviewUrl } from 'virtual:likec4/previews'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import * as css from './Header.css'
@@ -79,96 +79,9 @@ export function Header({ diagram }: HeaderProps) {
   )
 }
 
-// const viewPages = [
-//   {
-//     route: '/view/$viewId',
-//     icon: <IconBrandReact opacity={0.7} size={16} />,
-//     title: <>React</>
-//   },
-//   {
-//     route: '/view/$viewId/editor',
-//     icon: <IconBrandReact opacity={0.7} size={16} />,
-//     title: (
-//       <Text size="sm" fw={'500'} variant="gradient" gradient={{ from: 'pink', to: 'violet', deg: 90 }}>
-//         Editor
-//       </Text>
-//     )
-//   },
-//   {
-//     route: '/view/$viewId/dot',
-//     icon: <IconFile opacity={0.7} size={16} />,
-//     title: (
-//       <>
-//         Graphviz <Text component="span" size="xs" c={'dimmed'} ml={4}>.dot</Text>
-//       </>
-//     )
-//   },
-//   {
-//     route: '/view/$viewId/d2',
-//     icon: <IconFile opacity={0.7} size={16} />,
-//     title: <>D2</>
-//   },
-//   {
-//     route: '/view/$viewId/mmd',
-//     icon: <IconFile opacity={0.7} size={16} />,
-//     title: <>Mermaid</>
-//   }
-// ] as const satisfies Array<{ route: RegisteredRoute; icon: ReactNode; title: ReactNode }>
-
-// const routeIds = viewPages.map(({ route }) => route as string)
-
-// function ViewPageButton({
-//   isTablet
-// }: {
-//   isTablet: boolean
-// }) {
-//   const { viewId } = useParams({
-//     from: '/view/$viewId'
-//   })
-//   const routerState = useRouterState()
-//   const matchedRoute = findLast(routerState.matches, ({ routeId }) => routeIds.includes(routeId))
-//   const matched = (matchedRoute && viewPages.find(({ route }) => route === matchedRoute.routeId)) ?? viewPages[0]
-//   return (
-//     <>
-//       <Menu shadow="md" width={200} trigger="click-hover" openDelay={100}>
-//         <MenuTarget>
-//           <Button
-//             leftSection={matched.icon}
-//             variant="subtle"
-//             size={isTablet ? 'sm' : 'xs'}
-//             color="gray"
-//             px={'xs'}
-//             rightSection={<IconChevronDown opacity={0.5} size={14} />}>
-//             {matched.title}
-//           </Button>
-//         </MenuTarget>
-
-//         <MenuDropdown>
-//           {viewPages.map(({ route, icon, title }) => (
-//             <MenuItem
-//               key={route}
-//               component={Link}
-//               to={route}
-//               search
-//               params={{ viewId }}
-//               leftSection={icon}
-//               {...(route === matched.route ? { bg: 'gray' } : {})}
-//               style={{
-//                 whiteSpace: 'nowrap'
-//               }}
-//             >
-//               {title}
-//             </MenuItem>
-//           ))}
-//         </MenuDropdown>
-//       </Menu>
-//     </>
-//   )
-// }
-
 function ExportButton() {
   const params = useParams({
-    from: '/view/$viewId'
+    from: '/view/$viewId',
   })
   const previewUrl = usePreviewUrl(params.viewId)
 
@@ -200,20 +113,50 @@ function ExportButton() {
           )
           : (
             <MenuItem
-              component={Link}
-              to={'/export/$viewId'}
-              target="_blank"
-              search={{
-                download: true
-              }}
-              params={params}>
+              renderRoot={(props) => (
+                <Link
+                  target="_blank"
+                  to={'/export/$viewId'}
+                  search={{ download: true }}
+                  params={params}
+                  {...props} />
+              )}
+            >
               Export as .png
             </MenuItem>
           )}
-
-        <MenuItem component={Link} to={'/view/$viewId/dot'} search params={params}>Export as .dot</MenuItem>
-        <MenuItem component={Link} to={'/view/$viewId/d2'} search params={params}>Export as .d2</MenuItem>
-        <MenuItem component={Link} to={'/view/$viewId/mmd'} search params={params}>Export as .mmd</MenuItem>
+        <MenuItem
+          renderRoot={(props) => (
+            <Link
+              to={'/view/$viewId/dot'}
+              search
+              params={params}
+              {...props} />
+          )}
+        >
+          Export as .dot
+        </MenuItem>
+        <MenuItem
+          renderRoot={(props) => (
+            <Link
+              to={'/view/$viewId/d2'}
+              search
+              params={params}
+              {...props} />
+          )}
+        >
+          Export as .d2
+        </MenuItem>
+        <MenuItem
+          renderRoot={(props) => (
+            <Link
+              to={'/view/$viewId/mmd'}
+              search
+              params={params}
+              {...props} />
+          )}>
+          Export as .mmd
+        </MenuItem>
         <MenuItem disabled>Export to Draw.io</MenuItem>
         <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>

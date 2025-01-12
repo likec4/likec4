@@ -1,7 +1,5 @@
-import { MantineProvider } from '@mantine/core'
 import { createRootRouteWithContext, Outlet, ScrollRestoration } from '@tanstack/react-router'
 import { LikeC4Model } from '../components/LikeC4Model'
-import { theme as mantineTheme } from '../theme'
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
   if (typeof v !== 'string') {
@@ -35,9 +33,9 @@ export const Route = createRootRouteWithContext<{}>()({
     // validate and parse the search params into a typed state
     return {
       padding: asPadding(search.padding),
-      theme: asTheme(search.theme)
+      theme: asTheme(search.theme),
     }
-  }
+  },
 })
 
 function RootComponent() {
@@ -45,14 +43,9 @@ function RootComponent() {
   return (
     <>
       <ScrollRestoration />
-      <MantineProvider
-        {...(theme && { forceColorScheme: theme })}
-        defaultColorScheme={theme ?? 'auto'}
-        theme={mantineTheme}>
-        <LikeC4Model>
-          <Outlet />
-        </LikeC4Model>
-      </MantineProvider>
+      <LikeC4Model>
+        <Outlet />
+      </LikeC4Model>
     </>
   )
 }

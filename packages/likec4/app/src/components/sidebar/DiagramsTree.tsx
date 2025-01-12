@@ -1,16 +1,16 @@
 import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4View, useUpdateEffect } from '@likec4/diagram'
 import {
-  Box,
   type BoxProps,
+  type TreeNodeData,
+  Box,
   Button,
   HoverCard,
   HoverCardDropdown,
   HoverCardTarget,
   ThemeIcon,
   Tree,
-  type TreeNodeData,
   useComputedColorScheme,
-  useTree
+  useTree,
 } from '@mantine/core'
 import {
   IconFileCode,
@@ -18,10 +18,10 @@ import {
   IconFolderOpen,
   IconLayoutDashboard,
   IconStack2,
-  IconStarFilled
+  IconStarFilled,
 } from '@tabler/icons-react'
 import { useParams, useRouter } from '@tanstack/react-router'
-import { memo, type MouseEvent, type PropsWithChildren, useEffect } from 'react'
+import { type MouseEvent, type PropsWithChildren, memo, useEffect } from 'react'
 import { RenderIcon } from '../RenderIcon'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
@@ -45,13 +45,13 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
 export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupBy | undefined }) => {
   const data = useDiagramsTreeData(groupBy)
   const { viewId } = useParams({
-    from: '/view/$viewId'
+    from: '/view/$viewId',
   })
   const router = useRouter()
   const diagram = useLikeC4View(viewId)
 
   const tree = useTree({
-    multiple: false
+    multiple: false,
   })
 
   const relativePath = diagram?.relativePath ?? null
@@ -86,8 +86,8 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
         styles={{
           node: {
             marginTop: 2,
-            marginBottom: 2
-          }
+            marginBottom: 2,
+          },
         }}
         levelOffset={'md'}
         renderNode={({ node, selected, expanded, elementProps, hasChildren }) => (
@@ -102,8 +102,8 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               justify="flex-start"
               styles={{
                 section: {
-                  opacity: 0.5
-                }
+                  opacity: 0.5,
+                },
               }}
               leftSection={
                 <>
@@ -120,11 +120,12 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               {...(!hasChildren && {
                 onClick: () => {
                   router.navigate({
+                    to: '.',
                     params: {
-                      viewId: node.value
-                    }
+                      viewId: node.value,
+                    },
                   })
-                }
+                },
               })}
             >
               {node.label}
@@ -156,7 +157,7 @@ function DiagramPreviewHoverCard({
 function DiagramPreview({
   viewId,
   children,
-  onClick
+  onClick,
 }: PropsWithChildren<{ viewId: string; onClick: (event: MouseEvent) => void }>) {
   const diagram = useLikeC4DiagramView(viewId)
 

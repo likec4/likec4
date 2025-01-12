@@ -1,5 +1,5 @@
 import type { ViewId } from '@likec4/core'
-import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4DiagramV2, useLikeC4DiagramView } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { RenderIcon } from '../components/RenderIcon'
@@ -7,7 +7,7 @@ import { SidebarDrawerOps } from '../components/sidebar/state'
 import { isDevelopment, withOverviewGraph } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/')({
-  component: ViewReact
+  component: ViewReact,
 })
 
 function ViewReact() {
@@ -19,7 +19,7 @@ function ViewReact() {
     router.navigate({
       to: '/view/$viewId',
       params: { viewId },
-      search: true
+      search: true,
     })
   })
 
@@ -31,7 +31,7 @@ function ViewReact() {
   const hasNotations = notations.length > 0
 
   return (
-    <LikeC4Diagram
+    <LikeC4DiagramV2
       view={view}
       readonly
       zoomable
@@ -47,15 +47,15 @@ function ViewReact() {
       enableRelationshipBrowser
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}
-      nodesDraggable={false}
-      nodesSelectable={false}
+      nodesDraggable
+      nodesSelectable
       renderIcon={RenderIcon}
       onNavigateTo={onNavigateTo}
       onBurgerMenuClick={withOverviewGraph
         ? () => {
           router.navigate({
             to: '/',
-            search: true
+            search: true,
           })
         }
         : SidebarDrawerOps.open}

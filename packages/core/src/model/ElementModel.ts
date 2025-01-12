@@ -47,6 +47,10 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     return this.$element.color as ThemeColor ?? DefaultThemeColor
   }
 
+  get icon(): string | null {
+    return this.$element.icon ?? null
+  }
+
   get tags(): ReadonlyArray<C4Tag> {
     return this.$element.tags ?? []
   }
@@ -69,6 +73,10 @@ export class ElementModel<M extends AnyAux = AnyAux> {
 
   get defaultView(): LikeC4ViewModel<M> | null {
     return this.scopedViews().next().value ?? null
+  }
+
+  get isRoot(): boolean {
+    return this.parent === null
   }
 
   public isAncestorOf(another: ElementModel<M>): boolean {

@@ -1,16 +1,15 @@
-import { type DetailedHTMLFactory, type HTMLAttributes } from 'react'
+import { type ComponentType, type HTMLAttributes } from 'react'
 
 import root from 'react-shadow'
 import { useBundledStyleSheet } from './style'
 
-const Root: DetailedHTMLFactory<
+const Root: ComponentType<
   HTMLAttributes<HTMLDivElement> & {
     styleSheets?: CSSStyleSheet[]
     mode?: 'open' | 'closed'
     delegatesFocus?: boolean
     ssr?: boolean
-  },
-  HTMLDivElement
+  }
 > = root.div as any
 
 type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {

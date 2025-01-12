@@ -18,7 +18,7 @@ type IconRendererProps = {
   node: {
     id: string
     title: string
-    icon?: string | undefined
+    icon?: string | null | undefined
   }
 }
 

@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
 import { isEmpty } from 'remeda'
+import { IconRendererProvider } from './base/context/IconRenderer'
 import { rootClassName } from './globals.css'
 import { useDiagramState } from './hooks/useDiagramState'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
@@ -59,14 +60,14 @@ export function LikeC4Diagram({
   onBurgerMenuClick,
   renderIcon,
   where,
-  showNavigationButtons = !!onNavigateTo
+  showNavigationButtons = !!onNavigateTo,
 }: LikeC4DiagramProps) {
   const hasLikec4model = !!useLikeC4Model()
   const initialRef = useRef({
     defaultNodes: [] as DiagramFlowTypes.Node[],
     defaultEdges: [] as DiagramFlowTypes.Edge[],
     initialWidth: initialWidth ?? view.bounds.width,
-    initialHeight: initialHeight ?? view.bounds.height
+    initialHeight: initialHeight ?? view.bounds.height,
   })
   useEffect(() => {
     if (readonly !== true && where != null) {
@@ -89,56 +90,58 @@ export function LikeC4Diagram({
   return (
     <EnsureMantine>
       <FramerMotionConfig>
-        <XYFlowProvider
-          fitView={fitView}
-          {...initialRef.current}
-        >
-          {!isEmpty(view.customColorDefinitions) && <LikeC4CustomColors customColors={view.customColorDefinitions} />}
-          <DiagramContextProvider
-            view={view}
-            keepAspectRatio={keepAspectRatio}
-            className={clsx(rootClassName, className)}
-            readonly={readonly}
-            experimentalEdgeEditing={!readonly && experimentalEdgeEditing}
-            pannable={pannable}
-            zoomable={zoomable}
-            nodesDraggable={nodesDraggable}
-            nodesSelectable={nodesSelectable || enableFocusMode}
-            hasLikeC4Model={hasLikec4model}
-            fitViewEnabled={fitView}
-            fitViewPadding={fitViewPadding}
-            controls={controls}
-            showNavigationButtons={showNavigationButtons && !!onNavigateTo}
-            showNotations={showNotations}
-            enableFocusMode={enableFocusMode}
-            enableSearch={hasLikec4model && enableSearch}
-            enableElementDetails={enableElementDetails && hasLikec4model}
-            enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-            enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model}
-            // TODO: temporary disable relationship details for deployment views
-            enableRelationshipDetails={enableRelationshipDetails && hasLikec4model && !isDeploymentView(view)}
-            // Apply where filter only in readonly mode
-            whereFilter={readonly ? (where ?? null) : null}
-            renderIcon={renderIcon ?? null}
-            onCanvasClick={onCanvasClick ?? null}
-            onCanvasContextMenu={onCanvasContextMenu ?? null}
-            onEdgeClick={onEdgeClick ?? null}
-            onEdgeContextMenu={onEdgeContextMenu ?? null}
-            onNodeClick={onNodeClick ?? null}
-            onNodeContextMenu={onNodeContextMenu ?? null}
-            onChange={onChange ?? null}
-            onNavigateTo={onNavigateTo ?? null}
-            onCanvasDblClick={onCanvasDblClick ?? null}
-            onOpenSource={onOpenSource ?? null}
-            onBurgerMenuClick={onBurgerMenuClick ?? null}
+        <IconRendererProvider value={renderIcon ?? null}>
+          <XYFlowProvider
+            fitView={fitView}
+            {...initialRef.current}
           >
-            <LikeC4DiagramInnerMemo
-              background={background}
-              showDiagramTitle={showDiagramTitle}
+            {!isEmpty(view.customColorDefinitions) && <LikeC4CustomColors customColors={view.customColorDefinitions} />}
+            <DiagramContextProvider
+              view={view}
+              keepAspectRatio={keepAspectRatio}
+              className={clsx(rootClassName, className)}
+              readonly={readonly}
+              experimentalEdgeEditing={!readonly && experimentalEdgeEditing}
+              pannable={pannable}
+              zoomable={zoomable}
+              nodesDraggable={nodesDraggable}
+              nodesSelectable={nodesSelectable || enableFocusMode}
+              hasLikeC4Model={hasLikec4model}
+              fitViewEnabled={fitView}
+              fitViewPadding={fitViewPadding}
+              controls={controls}
+              showNavigationButtons={showNavigationButtons && !!onNavigateTo}
+              showNotations={showNotations}
+              enableFocusMode={enableFocusMode}
               enableSearch={hasLikec4model && enableSearch}
-            />
-          </DiagramContextProvider>
-        </XYFlowProvider>
+              enableElementDetails={enableElementDetails && hasLikec4model}
+              enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+              enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model}
+              // TODO: temporary disable relationship details for deployment views
+              enableRelationshipDetails={enableRelationshipDetails && hasLikec4model && !isDeploymentView(view)}
+              // Apply where filter only in readonly mode
+              whereFilter={readonly ? (where ?? null) : null}
+              renderIcon={renderIcon ?? null}
+              onCanvasClick={onCanvasClick ?? null}
+              onCanvasContextMenu={onCanvasContextMenu ?? null}
+              onEdgeClick={onEdgeClick ?? null}
+              onEdgeContextMenu={onEdgeContextMenu ?? null}
+              onNodeClick={onNodeClick ?? null}
+              onNodeContextMenu={onNodeContextMenu ?? null}
+              onChange={onChange ?? null}
+              onNavigateTo={onNavigateTo ?? null}
+              onCanvasDblClick={onCanvasDblClick ?? null}
+              onOpenSource={onOpenSource ?? null}
+              onBurgerMenuClick={onBurgerMenuClick ?? null}
+            >
+              <LikeC4DiagramInnerMemo
+                background={background}
+                showDiagramTitle={showDiagramTitle}
+                enableSearch={hasLikec4model && enableSearch}
+              />
+            </DiagramContextProvider>
+          </XYFlowProvider>
+        </IconRendererProvider>
       </FramerMotionConfig>
     </EnsureMantine>
   )
@@ -153,20 +156,20 @@ type LikeC4DiagramInnerProps = {
 const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
   background,
   showDiagramTitle,
-  enableSearch
+  enableSearch,
 }) {
   const {
     isInitialized,
     pannable,
     fitView,
     enableFocusMode,
-    enableOverlays
+    enableOverlays,
   } = useDiagramState(s => ({
     isInitialized: s.initialized,
     pannable: s.pannable,
     fitView: s.fitViewEnabled,
     enableFocusMode: s.enableFocusMode,
-    enableOverlays: s.hasLikeC4Model && (s.enableRelationshipBrowser || s.enableElementDetails)
+    enableOverlays: s.hasLikeC4Model && (s.enableRelationshipBrowser || s.enableElementDetails),
   }))
 
   return (
@@ -175,10 +178,9 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
         className={clsx(
           'likec4-diagram',
           css.cssReactFlow,
-          css.cssNoControls,
           pannable !== true && css.cssDisablePan,
           background === 'transparent' && css.cssTransparentBg,
-          isInitialized ? 'initialized' : css.notInitialized
+          isInitialized ? 'initialized' : css.notInitialized,
         )}
       >
         <XYFlowInner

@@ -29,9 +29,9 @@ export type XYFlowEventHandlers = Simplify<
 export function useXYFlowEvents() {
   const diagramApi = useDiagramStoreApi()
 
-  const lastClickTimestamp = useRef<number>()
+  const lastClickTimestamp = useRef<number>(undefined)
 
-  const dblclickTimeout = useRef<number>()
+  const dblclickTimeout = useRef<number>(undefined)
 
   return useMemo(() => {
     const dbclickLock = () => {
@@ -57,7 +57,7 @@ export function useXYFlowEvents() {
           zoomable,
           viewportChanged,
           fitDiagram,
-          resetFocusAndLastClicked
+          resetFocusAndLastClicked,
         } = diagramApi.getState()
         resetFocusAndLastClicked()
         if (zoomable && viewportChanged) {
@@ -77,7 +77,7 @@ export function useXYFlowEvents() {
           activeWalkthrough,
           fitDiagram,
           onCanvasClick,
-          resetFocusAndLastClicked
+          resetFocusAndLastClicked,
         } = diagramApi.getState()
         if ((focusedNodeId ?? activeWalkthrough) !== null) {
           fitDiagram()
@@ -92,7 +92,7 @@ export function useXYFlowEvents() {
         diagramApi.getState().setLastClickedNode(xynode.id)
         diagramApi.getState().onNodeContextMenu?.(
           xynode.data.element,
-          event
+          event,
         )
       },
       onPaneContextMenu: (event) => {
@@ -103,7 +103,7 @@ export function useXYFlowEvents() {
         diagramApi.getState().setLastClickedEdge(xyedge.id)
         diagramApi.getState().onEdgeContextMenu?.(
           xyedge.data.edge,
-          event
+          event,
         )
       },
       onNodeClick: (event, xynode) => {
@@ -119,7 +119,7 @@ export function useXYFlowEvents() {
           enableElementDetails,
           setLastClickedNode,
           onOpenSource,
-          openOverlay
+          openOverlay,
         } = diagramApi.getState()
         const modelRef = DiagramNode.modelRef(xynode.data.element)
         const deploymentRef = DiagramNode.deploymentRef(xynode.data.element)
@@ -134,11 +134,11 @@ export function useXYFlowEvents() {
         if (clickedRecently && !!onOpenSource && (modelRef || deploymentRef)) {
           if (modelRef) {
             onOpenSource({
-              element: modelRef
+              element: modelRef,
             })
           } else if (deploymentRef) {
             onOpenSource({
-              deployment: deploymentRef
+              deployment: deploymentRef,
             })
           }
           stopPropagation = true
@@ -159,7 +159,7 @@ export function useXYFlowEvents() {
             }
             case !clickedRecently && modelRef && focusedNodeId === xynode.id && enableElementDetails: {
               openOverlay({
-                elementDetails: xynode.data.element.id
+                elementDetails: xynode.data.element.id,
               })
               stopPropagation = true
               break
@@ -169,7 +169,7 @@ export function useXYFlowEvents() {
           enableElementDetails && modelRef && (clickedRecently || focusedNodeId === xynode.id) && !onNodeClick
         ) {
           openOverlay({
-            elementDetails: xynode.data.element.id
+            elementDetails: xynode.data.element.id,
           })
           stopPropagation = true
         } else if (nodesSelectable) {
@@ -184,12 +184,12 @@ export function useXYFlowEvents() {
 
         onNodeClick?.(
           xynode.data.element,
-          event
+          event,
         )
       },
       onNodeDoubleClick: (event, xynode) => {
         const {
-          setLastClickedNode
+          setLastClickedNode,
         } = diagramApi.getState()
         setLastClickedNode(xynode.id)
         lastClickWasRecent()
@@ -208,7 +208,7 @@ export function useXYFlowEvents() {
           onOpenSource,
           focusOnNode,
           onEdgeClick,
-          setLastClickedEdge
+          setLastClickedEdge,
         } = diagramApi.getState()
         if (lastClickedEdgeId !== xyedge.id) {
           setLastClickedEdge(xyedge.id)
@@ -241,7 +241,7 @@ export function useXYFlowEvents() {
           }
         } else if (onOpenSource && !onEdgeClick) {
           onOpenSource({
-            relation: first(xyedge.data.edge.relations)!
+            relation: first(xyedge.data.edge.relations)!,
           })
           event.stopPropagation()
           return
@@ -254,7 +254,7 @@ export function useXYFlowEvents() {
         }
         onEdgeClick?.(
           xyedge.data.edge,
-          event
+          event,
         )
       },
       onEdgeDoubleClick: (event, xyedge) => {
@@ -267,7 +267,7 @@ export function useXYFlowEvents() {
           activeWalkthrough,
           activateWalkthrough,
           openOverlay,
-          enableRelationshipDetails
+          enableRelationshipDetails,
         } = diagramApi.getState()
         // if we are in dynamic view, and clicked on an edge, activate the step
         if (isDynamicView && enableDynamicViewWalkthrough) {
@@ -281,7 +281,7 @@ export function useXYFlowEvents() {
 
         if (enableRelationshipDetails) {
           openOverlay({
-            edgeDetails: xyedge.data.edge.id
+            edgeDetails: xyedge.data.edge.id,
           })
           event.stopPropagation()
           return
@@ -309,7 +309,7 @@ export function useXYFlowEvents() {
         if (hoveredEdgeId === xyedge.id) {
           setHoveredEdge(null)
         }
-      }
+      },
     }) satisfies XYFlowEventHandlers
   }, [diagramApi])
 }

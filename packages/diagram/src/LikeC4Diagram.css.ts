@@ -7,21 +7,21 @@ export const cssReactFlow = style({
     '(hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none)': {
       // TODO: this workaround disables animations in Safari (to improve performance)
       vars: {
-        [vars.safariAnimationHook]: ''
-      }
-    }
-  }
+        [vars.safariAnimationHook]: '',
+      },
+    },
+  },
 })
 
 export const notInitialized = style({
-  opacity: 0
+  opacity: 0,
 })
 
 globalStyle(`.react-flow${cssReactFlow}`, {
   vars: {
     [xyvars.background.color]: vars.likec4.background.color,
-    [xyvars.background.pattern.color]: vars.likec4.background.pattern.color
-  }
+    [xyvars.background.pattern.color]: vars.likec4.background.pattern.color,
+  },
 })
 
 // globalStyle(`.react-flow${cssReactFlow} .react-flow__node`, {
@@ -36,11 +36,10 @@ globalStyle(`.react-flow${cssReactFlow}${cssTransparentBg}`, {
   backgroundColor: 'transparent !important',
   vars: {
     [vars.likec4.background.color]: 'transparent !important',
-    [xyvars.background.color]: 'transparent !important'
-  }
+    [xyvars.background.color]: 'transparent !important',
+  },
 })
 
-export const cssNoControls = style({})
-globalStyle(`:where(${cssNoControls}, ${cssTransparentBg}) .react-flow__attribution`, {
-  display: 'none'
+globalStyle(`:where(.react-flow${cssReactFlow}, ${cssTransparentBg}) .react-flow__attribution`, {
+  display: 'none',
 })

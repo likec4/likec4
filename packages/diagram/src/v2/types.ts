@@ -1,0 +1,109 @@
+import type { DiagramNode, Fqn, ViewId } from '@likec4/core'
+import type { Edge as ReactFlowEdge, Node as RFNode } from '@xyflow/react'
+import type { SetRequired, Simplify } from 'type-fest'
+import type { BaseTypes } from '../base'
+
+type ReactFlowNode<Data extends Record<string, unknown>, NodeType extends string> = SetRequired<
+  RFNode<Data, NodeType>,
+  'type'
+>
+// SetRequired<ReactFlowNode<
+//       SharedFlowTypes.NonEmptyNodeData & NodeData,
+//       'element'>,
+//     'type'>
+
+export namespace Types {
+  export type LeafNodeData = Simplify<
+    & BaseTypes.NodeData
+    & Pick<
+      DiagramNode,
+      | 'title'
+      | 'technology'
+      | 'description'
+      | 'color'
+      | 'shape'
+      | 'width'
+      | 'level'
+      | 'height'
+    >
+    & {
+      icon: string | null
+    }
+  >
+
+  /**
+   * Represents element from logical model
+   */
+  export type ElementNodeData = LeafNodeData & {
+    fqn: Fqn
+    /**
+     * If set - this node has navigation to another view and diagram has handler for this
+     */
+    navigateTo: ViewId | null
+  }
+
+  /**
+   * Represents element from deployment model
+   */
+  export type DeploymentElementNodeData =
+    & LeafNodeData
+    & {
+      navigateTo: ViewId | null
+      deploymentFqn: Fqn
+      // If set - this node refers to a model element
+      modelRef: Fqn | null
+    }
+
+  export type CompoundNodeData = Simplify<
+    & BaseTypes.NodeData
+    & Pick<
+      DiagramNode,
+      | 'title'
+      | 'color'
+      | 'shape'
+      | 'depth'
+      | 'style'
+    >
+    & {
+      icon: string | null
+    }
+  >
+
+  export type CompoundElementNodeData = CompoundNodeData & {
+    fqn: Fqn
+    /**
+     * If set - this node has navigation to another view and diagram has handler for this
+     */
+    navigateTo: ViewId | null
+  }
+
+  export type CompoundDeploymentNodeData = CompoundNodeData & {
+    deploymentFqn: Fqn
+    /**
+     * If set - this node refers to a model element
+     */
+    modelRef: Fqn | null
+    /**
+     * If set - this node has navigation to another view and diagram has handler for this
+     */
+    navigateTo: ViewId | null
+  }
+
+  export type ViewGroupNodeData = CompoundNodeData & {
+    isViewGroup: true
+  }
+
+  // export type CompoundNode = ReactFlowNode<CompoundNodeData, 'compound'>
+
+  export type ElementNode = ReactFlowNode<ElementNodeData, 'element'>
+  export type DeploymentElementNode = ReactFlowNode<DeploymentElementNodeData, 'deployment'>
+  export type CompoundElementNode = ReactFlowNode<CompoundElementNodeData, 'compound-element'>
+  export type CompoundDeploymentNode = ReactFlowNode<CompoundDeploymentNodeData, 'compound-deployment'>
+  export type ViewGroupNode = ReactFlowNode<ViewGroupNodeData, 'view-group'>
+
+  export type Node = ElementNode | DeploymentElementNode | CompoundElementNode | CompoundDeploymentNode | ViewGroupNode
+
+  export type NodeData = Node['data']
+
+  export type Edge = ReactFlowEdge
+}

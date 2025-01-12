@@ -10,7 +10,7 @@ export function SidebarDrawer() {
 
   const [grouping, setGrouping] = useLocalStorage({
     key: 'sidebar-drawer-grouping',
-    defaultValue: 'by-files' as 'by-files' | 'by-folders' | 'none'
+    defaultValue: 'by-files' as 'by-files' | 'by-folders' | 'none',
   })
 
   return (
@@ -32,8 +32,8 @@ export function SidebarDrawer() {
               px={rem(5)}
               styles={{
                 section: {
-                  marginInlineEnd: 4
-                }
+                  marginInlineEnd: 4,
+                },
               }}
               size="xs">
               Overview
@@ -46,23 +46,28 @@ export function SidebarDrawer() {
               data={[
                 { label: 'By files', value: 'by-files' },
                 { label: 'By folders', value: 'by-folders' },
-                { label: 'List', value: 'none' }
+                { label: 'List', value: 'none' },
               ]}
             />
+
             <Button
-              component={Link}
-              to="/view/$viewId"
-              params={{ viewId: 'index' }}
               leftSection={<IconStarFilled size={12} stroke={2} />}
               color="dimmed"
               variant="subtle"
               px={rem(5)}
               styles={{
                 section: {
-                  marginInlineEnd: 4
-                }
+                  marginInlineEnd: 4,
+                },
               }}
-              size="xs">
+              size="xs"
+              renderRoot={(props) => (
+                <Link
+                  to="/view/$viewId"
+                  params={{ viewId: 'index' }}
+                  {...props}
+                />
+              )}>
               Open index
             </Button>
           </Group>

@@ -3,12 +3,12 @@ import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
 import {
   type BorderStyle,
-  ElementKind,
   type ElementShape,
   type ElementStyle,
   type Fqn,
   type Link,
   type Tag,
+  ElementKind,
 } from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { ExpressionV2, FqnExpr } from './expression-v2'
@@ -335,7 +335,7 @@ export interface ComputedNode {
    */
   icon?: IconUrl
   style: ElementStyle
-  navigateTo?: ViewId
+  navigateTo?: ViewId | null
   level: number
   // For compound nodes, the max depth of nested nodes
   depth?: number
