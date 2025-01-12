@@ -1,6 +1,6 @@
 import { type DiagramEdge, DiagramNode, type DiagramView, ElementKind, type Fqn } from '@likec4/core'
 import { nonNullable, whereOperatorAsPredicate } from '@likec4/core'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, pick } from 'remeda'
 import type { WhereOperator } from '../LikeC4Diagram.props'
 import { ZIndexes } from '../xyflow/const'
 import type { DiagramFlowTypes } from '../xyflow/types'
@@ -37,20 +37,23 @@ export function diagramViewToXYFlowData(
     }>()
   )
 
+  // namespace to force unique ids
+  const ns = ''
+  const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
+
   let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
   if (opts.where) {
     try {
-      visiblePredicate = whereOperatorAsPredicate(opts.where)
+      const filterablePredicate = whereOperatorAsPredicate(opts.where)
+      visiblePredicate = i => filterablePredicate({ 
+        ...pick(i, ['tags', 'kind']),
+        ...('source' in i ? { source: nodeById(i.source) } : i),
+        ...('target' in i ? { target: nodeById(i.target) } : i) 
+      })
     } catch (e) {
       console.error('Error in where filter:', e)
     }
   }
-
-  // const visiblePredicate = opts.where ? whereOperatorAsPredicate(opts.where) : () => true
-
-  // namespace to force unique ids
-  const ns = ''
-  const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
 
   let next: typeof traverse[0] | undefined
   while ((next = traverse.shift())) {

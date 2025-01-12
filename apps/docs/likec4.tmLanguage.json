@@ -302,7 +302,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|deployment|global|group|element|environment|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|notes|odiamond|odot|of|onormal|opacity|open|or|parallel|par|person|predicateGroup|predicate|queue|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|with|zone|vm)\\b"
+      "match": "\\b(and|autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|deployment|global|group|element|environment|exclude|extend|extends|head|icon|icons|include|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|notes|odiamond|odot|of|onormal|opacity|open|or|parallel|par|person|predicateGroup|predicate|queue|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with|zone|vm)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",
