@@ -1,11 +1,16 @@
-import type { DiagramNode, Fqn, ViewId } from '@likec4/core'
-import type { Edge as ReactFlowEdge, Node as RFNode } from '@xyflow/react'
+import type { DiagramEdge, DiagramNode, Fqn, ViewId } from '@likec4/core'
+import type { Edge as RFEdge, Node as RFNode } from '@xyflow/react'
 import type { SetRequired, Simplify } from 'type-fest'
 import type { BaseTypes } from '../base'
 
 type ReactFlowNode<Data extends Record<string, unknown>, NodeType extends string> = SetRequired<
   RFNode<Data, NodeType>,
   'type'
+>
+
+type ReactFlowEdge<Data extends Record<string, unknown>, EdgeType extends string> = SetRequired<
+  RFEdge<Data, EdgeType>,
+  'type' | 'data'
 >
 // SetRequired<ReactFlowNode<
 //       SharedFlowTypes.NonEmptyNodeData & NodeData,
@@ -105,5 +110,20 @@ export namespace Types {
 
   export type NodeData = Node['data']
 
-  export type Edge = ReactFlowEdge
+  export type RelationshipEdgeData = Simplify<
+    & BaseTypes.EdgeData
+    & Pick<
+      DiagramEdge,
+      | 'points'
+      | 'dir'
+      | 'color'
+      | 'line'
+      | 'head'
+      | 'tail'
+    >
+  >
+
+  export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>
+
+  export type Edge = RelationshipEdge
 }

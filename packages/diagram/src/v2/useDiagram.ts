@@ -18,7 +18,6 @@ export function useDiagram() {
 
       const bounds = view.bounds
       const maxZoom = Math.max(1, transform[2])
-      console.log('fitView', { view, rect, bounds, width, height, maxZoom, fitViewPadding })
       const viewport = getViewportForBounds(
         bounds,
         rect?.width ?? width,

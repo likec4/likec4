@@ -32,9 +32,11 @@ export const actionIcon = style({
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`,
   },
   background: `var(--ai-bg)`,
+  boxShadow: '1px 1px 3px 0px transparent',
   selectors: {
     [`:where([data-hovered='true']) &`]: {
       opacity: 1,
+      boxShadow: '1px 1px 3px 0px rgba(0, 0, 0, 0.2)',
       vars: {
         '--ai-bg': `var(--ai-bg-hover)`,
       },

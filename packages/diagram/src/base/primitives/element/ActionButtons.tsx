@@ -17,6 +17,9 @@ export function ActionButtons({
   },
   buttons,
 }: ActionButtonsProps) {
+  if (!buttons.length) {
+    return null
+  }
   return (
     <Box className={css.container} onClick={stopPropagation}>
       <Box

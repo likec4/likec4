@@ -2,7 +2,9 @@ import { useSelector } from '@xstate/react'
 import type { ExtractEventsFromPayloadMap } from '@xstate/store'
 import {
   type EdgeChange,
+  type EdgeReplaceChange,
   type NodeChange,
+  type NodeReplaceChange,
   type ReactFlowProps,
   ReactFlow,
   useOnViewportChange,
@@ -68,6 +70,8 @@ export type BaseXYFlowProps = {
    * @default 'dots'
    */
   background?: 'transparent' | 'solid' | XYBackground | undefined
+
+  fitViewPadding?: number | undefined
 }
 
 type Props<NodeType extends BaseTypes.Node, EdgeType extends BaseTypes.Edge> =
@@ -110,6 +114,9 @@ export const BaseXYFlow = <
   nodesDraggable = false,
   background = 'dots',
   children,
+  colorMode = 'system',
+  fitViewPadding = 0,
+  fitView = true,
   ...props
 }: Props<NodeType, EdgeType>) => {
   const {
@@ -126,6 +133,7 @@ export const BaseXYFlow = <
 
   return (
     <ReactFlow<NodeType, EdgeType>
+      colorMode={colorMode}
       nodes={nodes}
       edges={edges}
       className={clsx(
@@ -144,22 +152,13 @@ export const BaseXYFlow = <
       zoomOnDoubleClick={false}
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
-      fitView
-      // Fitview is handled by store in onInit
-      // fitView={false}
+      fitView={fitView}
       fitViewOptions={{
         minZoom: MinZoom,
         maxZoom: 1,
-        // padding: fitViewPadding,
+        padding: fitViewPadding,
         includeHiddenNodes: false,
       }}
-      // {...(!fitView && {
-      //   viewport: {
-      //     x: translateX,
-      //     y: translateY,
-      //     zoom: 1,
-      //   },
-      // })}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
@@ -183,7 +182,7 @@ export const BaseXYFlow = <
         actorRef.send({ type: 'applyEdgeChanges', changes })
       }, [actorRef])}
       onNodeMouseEnter={useCallback((_event, node) => {
-        const replaceChange: NodeChange<NodeType> = {
+        const replaceChange: NodeReplaceChange<NodeType> = {
           id: node.id,
           type: 'replace',
           item: {
@@ -197,7 +196,7 @@ export const BaseXYFlow = <
         actorRef.send({ type: 'applyNodeChanges', changes: [replaceChange] })
       }, [actorRef])}
       onNodeMouseLeave={useCallback((_event, node) => {
-        const replaceChange: NodeChange<NodeType> = {
+        const replaceChange: NodeReplaceChange<NodeType> = {
           id: node.id,
           type: 'replace',
           item: {
@@ -211,7 +210,7 @@ export const BaseXYFlow = <
         actorRef.send({ type: 'applyNodeChanges', changes: [replaceChange] })
       }, [actorRef])}
       onEdgeMouseEnter={useCallback((_event, edge) => {
-        const replaceChange: EdgeChange<EdgeType> = {
+        const replaceChange: EdgeReplaceChange<EdgeType> = {
           id: edge.id,
           type: 'replace',
           item: {
@@ -225,7 +224,7 @@ export const BaseXYFlow = <
         actorRef.send({ type: 'applyEdgeChanges', changes: [replaceChange] })
       }, [actorRef])}
       onEdgeMouseLeave={useCallback((_event, edge) => {
-        const replaceChange: EdgeChange<EdgeType> = {
+        const replaceChange: EdgeReplaceChange<EdgeType> = {
           id: edge.id,
           type: 'replace',
           item: {

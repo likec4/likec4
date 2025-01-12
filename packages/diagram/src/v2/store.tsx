@@ -33,11 +33,8 @@ type Input = {
   pannable: boolean
   nodesDraggable: boolean
   nodesSelectable: boolean
-  whereFilter: WhereOperator<string, string> | null
-  enableElementDetails: boolean
-  enableRelationshipBrowser: boolean
-  hasNavigateTo: boolean
   fitViewPadding: number
+  whereFilter: WhereOperator<string, string> | null
 }
 
 export type Context = Readonly<

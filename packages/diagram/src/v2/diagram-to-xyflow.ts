@@ -9,7 +9,8 @@ import {
   whereOperatorAsPredicate,
 } from '@likec4/core'
 import Queue from 'mnemonist/queue'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, pick } from 'remeda'
+import type { PickDeep } from 'type-fest'
 import { ZIndexes } from '../xyflow/const'
 import type { Context } from './store'
 import type { Types } from './types'
@@ -47,6 +48,11 @@ export function diagramViewToXYFlowData(
     },
     [] as TraverseItem[],
   ))
+
+  const {
+    nodesDraggable: draggable,
+    nodesSelectable: selectable,
+  } = opts
 
   let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
   if (opts.whereFilter) {
@@ -86,9 +92,9 @@ export function diagramViewToXYFlowData(
 
     const base = {
       id,
-      draggable: opts.nodesDraggable,
-      selectable: opts.nodesSelectable && node.kind !== ElementKind.Group,
-      focusable: opts.nodesSelectable && !isCompound,
+      draggable: draggable,
+      selectable: selectable && node.kind !== ElementKind.Group,
+      focusable: selectable && !isCompound,
       deletable: false,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
@@ -207,38 +213,36 @@ export function diagramViewToXYFlowData(
       }
     }
   }
-  // for (const edge of view.edges) {
-  //   const source = edge.source
-  //   const target = edge.target
-  //   const id = ns + edge.id
+  for (const edge of view.edges) {
+    const source = edge.source
+    const target = edge.target
+    const id = ns + edge.id
 
-  //   if (!hasAtLeast(edge.points, 2)) {
-  //     console.error('edge should have at least 2 points', edge)
-  //     continue
-  //   }
+    if (!hasAtLeast(edge.points, 2)) {
+      console.error('edge should have at least 2 points', edge)
+      continue
+    }
 
-  //   xyedges.push({
-  //     id,
-  //     type: 'relationship',
-  //     source: ns + source,
-  //     target: ns + target,
-  //     zIndex: ZIndexes.Edge,
-  //     selectable: opts.selectable,
-  //     hidden: !visiblePredicate(edge),
-  //     deletable: false,
-  //     data: {
-  //       edge,
-  //       controlPoints: edge.controlPoints || null,
-  //       label: !!edge.labelBBox
-  //         ? {
-  //           bbox: edge.labelBBox,
-  //           text: edge.label ?? '',
-  //         }
-  //         : null,
-  //     },
-  //     interactionWidth: 20,
-  //   })
-  // }
+    xyedges.push({
+      id,
+      type: 'relationship',
+      source: ns + source,
+      target: ns + target,
+      zIndex: ZIndexes.Edge,
+      selectable: selectable,
+      hidden: !visiblePredicate(edge),
+      deletable: false,
+      data: {
+        points: edge.points,
+        color: edge.color ?? 'gray',
+        line: edge.line ?? 'dashed',
+        dir: edge.dir ?? 'forward',
+        head: edge.head ?? 'normal',
+        tail: edge.tail ?? 'none',
+      },
+      interactionWidth: 20,
+    })
+  }
 
   return {
     xynodes,

@@ -2,6 +2,7 @@ import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import {
   ReactFlowProvider as XYFlowProvider,
 } from '@xyflow/react'
+import { fitView } from '@xyflow/system'
 import { useCallback, useMemo, useRef, useTransition } from 'react'
 import { type NodeProps, BaseXYFlow, DiagramContainer, DiagramEventHandlers, IconRendererProvider } from '../base'
 import { useDiagramEventHandlers } from '../base/context/DiagramEventHandlers'
@@ -21,6 +22,7 @@ import { EnsureMantine } from '../ui/EnsureMantine'
 import { FramerMotionConfig } from '../ui/FramerMotionConfig'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './FitviewOnDiagramChange'
+import { RelationshipEdge } from './RelationshipEdge'
 import { type Context, StoreProvider, useDiagramContext } from './store'
 import type { Types } from './types'
 import { useDiagram } from './useDiagram'
@@ -135,13 +137,11 @@ export function LikeC4DiagramV2({
                     nodesSelectable,
                     pannable,
                     zoomable,
-                    enableElementDetails,
-                    enableRelationshipBrowser,
-                    hasNavigateTo: !!onNavigateTo,
-                    whereFilter: where ?? null,
                     fitViewPadding,
+                    whereFilter: where ?? null,
                   }}>
                   <XYFlow
+                    enableRelationshipBrowser={enableRelationshipBrowser}
                     background={background}
                   />
                 </StoreProvider>
@@ -160,6 +160,7 @@ const selectXYProps = (ctx: Context) => ({
   nodesSelectable: ctx.nodesSelectable,
   pannable: ctx.pannable,
   zoomable: ctx.zoomable,
+  fitViewPadding: ctx.fitViewPadding,
 })
 
 const XYFlow = ({
@@ -171,7 +172,6 @@ const XYFlow = ({
     initialized,
     ...props
   } = useDiagramContext(selectXYProps)
-  console.log('XYFlow', { initialized, props })
   const nodeTypes = useMemo(() => ({
     element: customNode<Types.ElementNodeData>((props) => (
       <ElementNodeContainer {...props}>
@@ -208,11 +208,17 @@ const XYFlow = ({
     )),
   } satisfies { [key in Types.Node['type']]: any }), [enableRelationshipBrowser])
 
+  const edgeTypes = useMemo(() => ({
+    relationship: RelationshipEdge,
+  } satisfies { [key in Types.Edge['type']]: any }), [])
+
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
       nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
       actorRef={actor}
       background={background}
+      // Fitview is handled in onInit
       fitView={false}
       onNodeClick={useCallback((_, node) => {
         actor.send({ type: 'onNodeClick', node })

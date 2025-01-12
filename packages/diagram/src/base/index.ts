@@ -9,6 +9,7 @@ export {
 } from './context/IconRenderer'
 export type {
   BaseTypes,
+  EdgeProps,
   NodeProps,
 } from './types'
 

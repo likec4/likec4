@@ -24,9 +24,9 @@ globalStyle(`.react-flow${cssReactFlow}`, {
   },
 })
 
-// globalStyle(`.react-flow${cssReactFlow} .react-flow__node`, {
-//   willChange: 'transform'
-// })
+globalStyle(`.react-flow${cssReactFlow} .react-flow__pane`, {
+  WebkitUserSelect: 'none',
+})
 
 export const cssDisablePan = style({})
 
