@@ -31,7 +31,7 @@
     "@mantine/spotlight": "7.15.2",
     "@mantine/vanilla-extract": "7.15.2",
     "@nanostores/react": "0.8.4",
-    "@react-hookz/web": "^24.0.4",
+    "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.17.0",
     "@types/node": "^20.17.7",
     "@types/object-hash": "^3.0.6",
@@ -52,7 +52,7 @@
     "remeda": "^2.19.0",
     "tsx": "~4.19.2",
     "type-fest": "4.28.1",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vite": "5.4.11",
     "vscode-messenger-webview": "^0.4.5"
   }

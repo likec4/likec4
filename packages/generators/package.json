@@ -47,7 +47,7 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.7",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "unbuild": "^3.2.0",
     "vitest": "^2.1.8"
   },

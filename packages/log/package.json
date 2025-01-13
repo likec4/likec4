@@ -50,7 +50,7 @@
     "merge-error-cause": "^5.0.0",
     "safe-stringify": "^1.1.1",
     "std-env": "^3.8.0",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "unbuild": "^3.2.0",
     "wrap-error-message": "^3.0.0"
   },

@@ -41,7 +41,7 @@
     "@dagrejs/dagre": "1.1.4",
     "@likec4/core": "workspace:*",
     "@mantine/vanilla-extract": "7.15.2",
-    "@react-hookz/web": "^24.0.4",
+    "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.17.0",
     "@xstate/react": "^5.0.1",
     "@xstate/store": "^2.6.2",
@@ -84,7 +84,7 @@
     "bezier-js": "^6.1.4",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vite": "5.4.11",
     "vite-plugin-dts": "^4.4.0",
     "vitest": "^2.1.8"
