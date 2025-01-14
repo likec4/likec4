@@ -7,7 +7,7 @@ import type {
   DeploymentRelationModel,
 } from '../../../model/DeploymentElementModel'
 import { isElementModel } from '../../../model/ElementModel'
-import { isNestedElementOfDeployedInstanceModel } from '../../../model/guards'
+import { isDeploymentElementModel, isNestedElementOfDeployedInstanceModel } from '../../../model/guards'
 import type { RelationshipModel } from '../../../model/RelationModel'
 import type { AnyAux } from '../../../model/types'
 import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '../../../types'
@@ -150,8 +150,8 @@ export function applyPredicate<M extends AnyAux>(
   }
 
   return c.update({
-    model: new Set([...c.relations.model.values()].filter(r => where(toFilterableRelation(r)))),
-    deployment: new Set([...c.relations.deployment.values()].filter(r => where(toFilterableRelation(r)))),
+    model: new Set([...c.relations.model.values()].filter(r => where(toFilterableRelation(c)(r)))),
+    deployment: new Set([...c.relations.deployment.values()].filter(r => where(toFilterableRelation(c)(r)))),
   })
 }
 
@@ -169,30 +169,46 @@ export function matchConnections<M extends AnyAux>(
   )
 }
 
-function elementToFilterable<M extends AnyAux>(
-  element: DeploymentElementModel<M> | ElementModel<M> | DeploymentRelationEndpoint<M>,
-) {
-  if (isElementModel(element)) {
-    return pick(element.$element, ['tags', 'kind'])
+/**
+ * Builds filterable presentation for relation endpoint. Enriches model properties with deployment properties when needed.
+ * @param relationEndpoint Endpoint for which to build presentation
+ * @param connectionEndpoint Endpoint of connection which was build from the relation.
+ * @returns Presentation of the endpoint for usage in predicates
+ */
+function toFilterable<M extends AnyAux>(
+  relationEndpoint: ElementModel<M> | DeploymentRelationEndpoint<M>,
+  connectionEndpoint: DeploymentRelationEndpoint<M>,
+): Filterable {
+  if (isElementModel(relationEndpoint)) { // Element itself. Extend with tags of the deployed instance (TODO)
+    const deployedInstance = isDeploymentElementModel(connectionEndpoint) && isDeployedInstance(connectionEndpoint)
+      ? connectionEndpoint
+      : null
+    return {
+      kind: relationEndpoint.kind,
+      tags: [...relationEndpoint.tags, ...(deployedInstance?.tags ?? [])],
+    }
   }
-  if (isNestedElementOfDeployedInstanceModel(element)) {
-    return pick(element.element, ['tags', 'kind'])
+  if (isNestedElementOfDeployedInstanceModel(relationEndpoint)) { // Nested element. Has no own instance. No need to extend
+    return pick(relationEndpoint.element, ['tags', 'kind'])
   }
-  if (isDeployedInstance(element)) {
-    return pick(element.element, ['tags', 'kind'])
+  if (isDeployedInstance(relationEndpoint)) { // Deployed instance. Extend with tags of the model element
+    return {
+      kind: relationEndpoint.element.kind,
+      tags: [...relationEndpoint.tags, ...relationEndpoint.element.tags],
+    }
   }
-  if (isDeploymentNode(element)) {
-    return pick(element, ['tags', 'kind'])
+  if (isDeploymentNode(relationEndpoint)) { // Deployment node. Has no representation in model. No need to extend
+    return pick(relationEndpoint, ['tags', 'kind'])
   }
 
-  nonexhaustive(element)
+  nonexhaustive(relationEndpoint)
 }
 
-function toFilterableRelation<M extends AnyAux>(relation: RelationshipModel<M> | DeploymentRelationModel<M>) {
-  return {
+function toFilterableRelation<M extends AnyAux>(c: DeploymentConnectionModel<M>) {
+  return (relation: RelationshipModel<M> | DeploymentRelationModel<M>) => ({
     tags: relation.tags,
     kind: relation.kind,
-    source: elementToFilterable(relation.source),
-    target: elementToFilterable(relation.target),
-  }
+    source: toFilterable(relation.source, c.source),
+    target: toFilterable(relation.target, c.target),
+  })
 }
