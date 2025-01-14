@@ -4,7 +4,6 @@ import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
 export type StaticLikeC4DiagramProps = Pick<
   LikeC4DiagramProperties,
   | 'view'
-  | 'keepAspectRatio'
   | 'className'
   | 'fitView'
   | 'fitViewPadding'

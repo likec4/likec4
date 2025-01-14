@@ -1,16 +1,9 @@
+export { BaseXYFlow, type BaseXYFlowProps } from './BaseXYFlow'
+
 export {
-  BaseXYFlow,
-} from './BaseXYFlow'
-export {
-  DiagramEventHandlers,
-} from './context/DiagramEventHandlers'
-export {
-  IconRendererProvider,
-} from './context/IconRenderer'
-export type {
   BaseTypes,
-  EdgeProps,
-  NodeProps,
+  type EdgeProps,
+  type NodeProps,
 } from './types'
 
-export { DiagramContainer } from './context/DiagramContainer'
+export { xyflowMachine } from './xyflowMachine'

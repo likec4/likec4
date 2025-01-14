@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
 import { isEmpty } from 'remeda'
-import { IconRendererProvider } from './base/context/IconRenderer'
+import { DiagramEventHandlers, IconRendererProvider } from './context'
 import { rootClassName } from './globals.css'
 import { useDiagramState } from './hooks/useDiagramState'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
@@ -45,7 +45,7 @@ export function LikeC4Diagram({
   enableSearch = true,
   initialWidth,
   initialHeight,
-  keepAspectRatio = false,
+  // keepAspectRatio = false,
   experimentalEdgeEditing = false,
   onCanvasClick,
   onCanvasContextMenu,
@@ -98,7 +98,7 @@ export function LikeC4Diagram({
             {!isEmpty(view.customColorDefinitions) && <LikeC4CustomColors customColors={view.customColorDefinitions} />}
             <DiagramContextProvider
               view={view}
-              keepAspectRatio={keepAspectRatio}
+              keepAspectRatio={false}
               className={clsx(rootClassName, className)}
               readonly={readonly}
               experimentalEdgeEditing={!readonly && experimentalEdgeEditing}

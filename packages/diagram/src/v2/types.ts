@@ -5,17 +5,13 @@ import type { BaseTypes } from '../base'
 
 type ReactFlowNode<Data extends Record<string, unknown>, NodeType extends string> = SetRequired<
   RFNode<Data, NodeType>,
-  'type'
+  'type' | 'initialWidth' | 'initialHeight'
 >
 
 type ReactFlowEdge<Data extends Record<string, unknown>, EdgeType extends string> = SetRequired<
   RFEdge<Data, EdgeType>,
   'type' | 'data'
 >
-// SetRequired<ReactFlowNode<
-//       SharedFlowTypes.NonEmptyNodeData & NodeData,
-//       'element'>,
-//     'type'>
 
 export namespace Types {
   export type LeafNodeData = Simplify<

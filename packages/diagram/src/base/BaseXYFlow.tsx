@@ -1,134 +1,128 @@
-import { useSelector } from '@xstate/react'
-import type { ExtractEventsFromPayloadMap } from '@xstate/store'
+import { useCallbackRef } from '@mantine/hooks'
 import {
-  type EdgeChange,
-  type EdgeReplaceChange,
-  type NodeChange,
-  type NodeReplaceChange,
   type ReactFlowProps,
   ReactFlow,
   useOnViewportChange,
   useStoreApi,
 } from '@xyflow/react'
 import clsx from 'clsx'
-import { shallowEqual } from 'fast-equals'
-import { memo, useCallback } from 'react'
-import type { ActorRef, Snapshot } from 'xstate'
+import { useMemo } from 'react'
+import type { SetRequired, Simplify } from 'type-fest'
 import * as css from '../LikeC4Diagram.css'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
-import type { BaseTypes } from './types'
+import { BaseTypes } from './types'
 
-type StoreSnapshot<NodeType, EdgeType> = Snapshot<unknown> & {
-  context: {
-    initialized: boolean
-    xynodes: NodeType[]
-    xyedges: EdgeType[]
+// type StoreSnapshot<NodeType, EdgeType> = Snapshot<unknown> & {
+//   context: {
+//     initialized: boolean
+//     xynodes: NodeType[]
+//     xyedges: EdgeType[]
+//   }
+// }
+
+// type BaseActorRef<
+//   NodeType extends BaseTypes.Node,
+//   EdgeType extends BaseTypes.Edge,
+// > = ActorRef<
+//   StoreSnapshot<NodeType, EdgeType>,
+//   ExtractEventsFromPayloadMap<{
+//     onInit: {}
+//     applyNodeChanges: {
+//       changes: NodeChange<NodeType>[]
+//     }
+//     applyEdgeChanges: {
+//       changes: EdgeChange<EdgeType>[]
+//     }
+//   }>,
+//   any
+// >
+
+export type BaseXYFlowProps<NodeType extends BaseTypes.Node, EdgeType extends BaseTypes.Edge> = Simplify<
+  & {
+    pannable: boolean
+    zoomable: boolean
+    nodesSelectable: boolean
+    nodesDraggable: boolean
+    background: 'transparent' | 'solid' | XYBackground
+    fitViewPadding: number
   }
-}
-
-type BaseActorRef<
-  NodeType extends BaseTypes.Node,
-  EdgeType extends BaseTypes.Edge,
-> = ActorRef<
-  StoreSnapshot<NodeType, EdgeType>,
-  ExtractEventsFromPayloadMap<{
-    onInit: {}
-    applyNodeChanges: {
-      changes: NodeChange<NodeType>[]
-    }
-    applyEdgeChanges: {
-      changes: EdgeChange<EdgeType>[]
-    }
-  }>,
-  any
+  & SetRequired<
+    Omit<
+      ReactFlowProps<NodeType, EdgeType>,
+      // Omited props
+      | 'defaultNodes'
+      | 'defaultEdges'
+      | 'panOnScroll'
+      | 'panOnDrag'
+      | 'preventScrolling'
+      | 'zoomOnPinch'
+      | 'zoomActivationKeyCode'
+      | 'zoomOnDoubleClick'
+      | 'zoomOnScroll'
+      | 'elementsSelectable'
+      | 'onNodeMouseEnter'
+      | 'onNodeMouseLeave'
+      | 'onEdgeMouseEnter'
+      | 'onEdgeMouseLeave'
+      | 'fitViewOptions'
+    >,
+    // Required props
+    | 'nodes'
+    | 'edges'
+    | 'onNodesChange'
+    | 'onEdgesChange'
+  >
 >
 
-export type BaseXYFlowProps = {
-  /**
-   * Enable/disable panning
-   * @default true
-   */
-  pannable?: boolean | undefined
-  /**
-   * Enable/disable zooming
-   * @default true
-   */
-  zoomable?: boolean | undefined
-  /**
-   * @default true
-   */
-  nodesSelectable?: boolean | undefined
+// // type Props<NodeType extends BaseTypes.Node, EdgeType extends BaseTypes.Edge> =
+// //   & BaseXYFlowProps
+// //   & {
+// //     actorRef: BaseActorRef<NodeType, EdgeType>
 
-  /**
-   * @default false
-   */
-  nodesDraggable?: boolean | undefined
+// //     // Assert if the following props are passed
+// //     nodes?: never
+// //     edges?: never
+// //     onNodesChange?: never
+// //     onEdgesChange?: never
+// //   }
+// //   & Omit<
+// //     ReactFlowProps<
+// //       NodeType,
+// //       EdgeType
+// //     >,
+// //     'nodes' | 'edges' | 'onNodesChange' | 'onEdgesChange'
+// //   >
 
-  /**
-   * Background pattern
-   * @default 'dots'
-   */
-  background?: 'transparent' | 'solid' | XYBackground | undefined
-
-  fitViewPadding?: number | undefined
-}
-
-type Props<NodeType extends BaseTypes.Node, EdgeType extends BaseTypes.Edge> =
-  & BaseXYFlowProps
-  & {
-    actorRef: BaseActorRef<NodeType, EdgeType>
-
-    // Assert if the following props are passed
-    nodes?: never
-    edges?: never
-    onNodesChange?: never
-    onEdgesChange?: never
-  }
-  & Omit<
-    ReactFlowProps<
-      NodeType,
-      EdgeType
-    >,
-    'nodes' | 'edges' | 'onNodesChange' | 'onEdgesChange'
-  >
-
-const selector = <NodeType, EdgeType>(snapshot: StoreSnapshot<NodeType, EdgeType>) => ({
-  initialized: snapshot.context.initialized,
-  nodes: snapshot.context.xynodes,
-  edges: snapshot.context.xyedges,
-})
-type Selected = ReturnType<typeof selector>
-const compare = (a: Selected, b: Selected) =>
-  shallowEqual(a.nodes, b.nodes) && shallowEqual(a.edges, b.edges) && a.initialized === b.initialized
+// const selector = <NodeType, EdgeType>(snapshot: StoreSnapshot<NodeType, EdgeType>) => ({
+//   initialized: snapshot.context.initialized,
+//   nodes: snapshot.context.xynodes,
+//   edges: snapshot.context.xyedges,
+// })
+// type Selected = ReturnType<typeof selector>
+// const compare = (a: Selected, b: Selected) =>
+//   shallowEqual(a.nodes, b.nodes) && shallowEqual(a.edges, b.edges) && a.initialized === b.initialized
 
 export const BaseXYFlow = <
   NodeType extends BaseTypes.Node,
   EdgeType extends BaseTypes.Edge,
 >({
-  actorRef,
+  nodes,
+  edges,
+  onEdgesChange,
+  onNodesChange,
   className,
-  pannable = true,
-  zoomable = true,
-  nodesSelectable = true,
-  nodesDraggable = false,
-  background = 'dots',
+  pannable,
+  zoomable,
+  nodesSelectable,
+  nodesDraggable,
+  background,
   children,
   colorMode = 'system',
-  fitViewPadding = 0,
+  fitViewPadding,
   fitView = true,
   ...props
-}: Props<NodeType, EdgeType>) => {
-  const {
-    nodes,
-    edges,
-    initialized,
-  } = useSelector(
-    actorRef,
-    selector,
-    compare,
-  )
-
+}: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
 
   return (
@@ -141,7 +135,7 @@ export const BaseXYFlow = <
         css.cssReactFlow,
         pannable !== true && css.cssDisablePan,
         background === 'transparent' && css.cssTransparentBg,
-        initialized ? 'initialized' : css.notInitialized,
+        // initialized ? 'initialized' : css.notInitialized,
         className,
       )}
       zoomOnPinch={zoomable}
@@ -153,12 +147,12 @@ export const BaseXYFlow = <
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
-      fitViewOptions={{
+      fitViewOptions={useMemo(() => ({
         minZoom: MinZoom,
         maxZoom: 1,
         padding: fitViewPadding,
         includeHiddenNodes: false,
-      }}
+      }), [fitViewPadding])}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
@@ -175,81 +169,46 @@ export const BaseXYFlow = <
       nodeDragThreshold={4}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
-      onNodesChange={useCallback((changes) => {
-        actorRef.send({ type: 'applyNodeChanges', changes })
-      }, [actorRef])}
-      onEdgesChange={useCallback((changes) => {
-        actorRef.send({ type: 'applyEdgeChanges', changes })
-      }, [actorRef])}
-      onNodeMouseEnter={useCallback((_event, node) => {
-        const replaceChange: NodeReplaceChange<NodeType> = {
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onNodeMouseEnter={useCallbackRef((_event, node) => {
+        onNodesChange([{
           id: node.id,
           type: 'replace',
-          item: {
-            ...node,
-            data: {
-              ...node.data,
-              hovered: true,
-            },
-          },
-        }
-        actorRef.send({ type: 'applyNodeChanges', changes: [replaceChange] })
-      }, [actorRef])}
-      onNodeMouseLeave={useCallback((_event, node) => {
-        const replaceChange: NodeReplaceChange<NodeType> = {
+          item: BaseTypes.setHovered(node, true),
+        }])
+      })}
+      onNodeMouseLeave={useCallbackRef((_event, node) => {
+        onNodesChange([{
           id: node.id,
           type: 'replace',
-          item: {
-            ...node,
-            data: {
-              ...node.data,
-              hovered: false,
-            },
-          },
-        }
-        actorRef.send({ type: 'applyNodeChanges', changes: [replaceChange] })
-      }, [actorRef])}
-      onEdgeMouseEnter={useCallback((_event, edge) => {
-        const replaceChange: EdgeReplaceChange<EdgeType> = {
+          item: BaseTypes.setHovered(node, false),
+        }])
+      })}
+      onEdgeMouseEnter={useCallbackRef((_event, edge) => {
+        onEdgesChange([{
           id: edge.id,
           type: 'replace',
-          item: {
-            ...edge,
-            data: {
-              ...edge.data,
-              hovered: true,
-            },
-          },
-        }
-        actorRef.send({ type: 'applyEdgeChanges', changes: [replaceChange] })
-      }, [actorRef])}
-      onEdgeMouseLeave={useCallback((_event, edge) => {
-        const replaceChange: EdgeReplaceChange<EdgeType> = {
+          item: BaseTypes.setHovered(edge, true),
+        }])
+      })}
+      onEdgeMouseLeave={useCallbackRef((_event, edge) => {
+        onEdgesChange([{
           id: edge.id,
           type: 'replace',
-          item: {
-            ...edge,
-            data: {
-              ...edge.data,
-              hovered: false,
-            },
-          },
-        }
-        actorRef.send({ type: 'applyEdgeChanges', changes: [replaceChange] })
-      }, [actorRef])}
-      onInit={useCallback(() => {
-        actorRef.send({ type: 'onInit' })
-      }, [actorRef])}
+          item: BaseTypes.setHovered(edge, false),
+        }])
+      })}
       {...props}
     >
-      {isBgWithPattern && initialized && <Background background={background} />}
+      {isBgWithPattern && <Background background={background} />}
       <BaseXYFlowInner />
       {children}
     </ReactFlow>
   )
 }
 
-const BaseXYFlowInner = memo(() => {
+const BaseXYFlowInner = () => {
   const xyflowApi = useStoreApi()
 
   /**
@@ -269,4 +228,4 @@ const BaseXYFlowInner = memo(() => {
   })
 
   return <></>
-})
+}

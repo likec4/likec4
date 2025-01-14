@@ -90,7 +90,7 @@ export const elementDataContainer = style({
     //   paddingLeft: 40,
     //   paddingRight: 20
     // },
-    [`:not(:is([data-likec4-shape="queue"],[data-likec4-shape="mobile"])) &:is(${hasIcon})`]: {
+    [`.likec4-element-node:not(:is([data-likec4-shape="queue"],[data-likec4-shape="mobile"])) &:is(${hasIcon})`]: {
       paddingLeft: 24,
       paddingRight: 18,
     },

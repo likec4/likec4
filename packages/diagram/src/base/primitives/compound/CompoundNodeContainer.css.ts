@@ -6,7 +6,15 @@ export const varCompoundOpacity = createVar('opacity')
 export const varBorderRadius = createVar('borderRadius')
 export const varBorderTransparency = createVar('borderTransparency')
 export const varBorderColor = createVar('border-color')
-export const whereTransparent = '[data-compound-transparent="true"]'
+
+export const dimmed = style({})
+globalStyle(`.react-flow__node:has(${dimmed})`, {
+  opacity: 0.25,
+  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+  transitionDelay: '200ms',
+  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+  willChange: 'opacity, filter',
+})
 
 export const container = style({
   position: 'relative',
@@ -55,8 +63,19 @@ export const compoundBg = style({
   background: vars.element.fill,
   backgroundClip: 'border-box',
 })
-globalStyle(`:where(${whereTransparent}) ${compoundBg}`, {
+globalStyle(`:where([data-compound-transparent="true"]) ${compoundBg}`, {
   opacity: varCompoundOpacity,
+})
+
+globalStyle(`:where([data-mantine-color-scheme='dark'] [data-compound-transparent="true"])`, {
+  vars: {
+    ['--_compound-border-color']: `color-mix(in srgb, ${vars.compound.titleColor} 25%, ${vars.element.stroke})`,
+  },
+})
+globalStyle(`:where([data-mantine-color-scheme='light'] [data-compound-transparent="true"])`, {
+  vars: {
+    ['--_compound-title-color']: vars.element.stroke,
+  },
 })
 
 export const compoundBorder = style({

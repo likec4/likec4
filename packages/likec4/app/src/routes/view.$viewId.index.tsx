@@ -1,5 +1,5 @@
 import type { ViewId } from '@likec4/core'
-import { LikeC4Diagram, LikeC4DiagramV2, useLikeC4DiagramView } from '@likec4/diagram'
+import { LikeC4DiagramV2, useLikeC4DiagramView } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { RenderIcon } from '../components/RenderIcon'
@@ -47,8 +47,7 @@ function ViewReact() {
       enableRelationshipBrowser
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}
-      nodesDraggable
-      nodesSelectable
+      // nodesSelectable
       renderIcon={RenderIcon}
       onNavigateTo={onNavigateTo}
       onBurgerMenuClick={withOverviewGraph

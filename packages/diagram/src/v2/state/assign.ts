@@ -1,17 +1,33 @@
-import type { DiagramView } from '@likec4/core'
-import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import { diagramViewToXYFlowData } from '../diagram-to-xyflow'
-import type { Context } from '../store'
+import type { DiagramView, NodeId } from '@likec4/core'
+import { deepEqual as eq } from 'fast-equals'
+import { BaseTypes } from '../../base'
 import type { Types } from '../types'
+import type { Context } from './machine'
 
-export function updateView(ctx: Context, event: { view: DiagramView }): Context {
-  const nextView = event.view
-  const isSameView = ctx.view.id === nextView.id
+export function lastClickedNode(params: { context: Context; event: { node: Types.Node } }): Context['lastClickedNode'] {
+  const { lastClickedNode } = params.context
+  if (!lastClickedNode || lastClickedNode.id !== params.event.node.id) {
+    return {
+      id: params.event.node.id as NodeId,
+      clicks: 1,
+    }
+  }
+  return {
+    id: lastClickedNode.id,
+    clicks: lastClickedNode.clicks + 1,
+  }
+}
 
-  const update = diagramViewToXYFlowData(nextView, ctx)
+export function mergeUpdateViewEvent(params: {
+  context: Context
+  event: { view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
+}): Partial<Context> {
+  const nextView = params.event.view
+  const isSameView = params.context.view.id === nextView.id
 
-  update.xynodes = update.xynodes.map((update) => {
-    const existing = ctx.xynodes.find(n => n.id === update.id)
+  const currentNodes = params.context.xynodes
+  const xynodes = params.event.xynodes.map((update) => {
+    const existing = currentNodes.find(n => n.id === update.id)
     if (
       existing
       && existing.type === update.type
@@ -62,16 +78,21 @@ export function updateView(ctx: Context, event: { view: DiagramView }): Context 
   //     return update
   //   })
   // }
-  if (!isSameView) {
-    for (const node of update.xynodes) {
-      node.data.dimmed = false
-      node.data.hovered = false
-    }
-  }
+
+  // if (!isSameView) {
+  //   for (const node of xynodes) {
+
+  //     node.data.dimmed = false
+  //     node.data.hovered = false
+  //   }
+  //   for (const edge of params.event.xyedges) {
+  //     edge.data.active = false
+  //   }
+  // }
 
   return {
-    ...ctx,
-    ...update,
+    xynodes,
+    xyedges: params.event.xyedges,
     view: nextView,
   }
 }
@@ -275,3 +296,41 @@ export function updateView(ctx: Context, event: { view: DiagramView }): Context 
 //     isSameView ? 'update-view [same]' : 'update-view [another]',
 //   )
 // }
+
+export function focusNodesEdges(params: { context: Context }): Partial<Context> {
+  const { xynodes: _xynodes, xyedges: _xyedges, focusedNode } = params.context
+  if (!focusedNode) {
+    return {}
+  }
+  const focused = new Set([focusedNode as string])
+  const xyedges = _xyedges.map((edge) => {
+    if (edge.source === focusedNode || edge.target === focusedNode) {
+      focused.add(edge.source)
+      focused.add(edge.target)
+      return BaseTypes.setEdgeState(edge, {
+        dimmed: false,
+        active: true,
+      })
+    }
+    return BaseTypes.setEdgeState(edge, {
+      dimmed: true,
+      active: false,
+    })
+  })
+
+  return {
+    xynodes: _xynodes.map(n => BaseTypes.setDimmed(n, !focused.has(n.id))),
+    xyedges,
+  }
+}
+
+export function unfocusNodesEdges(params: { context: Context }): Partial<Context> {
+  const { xynodes, xyedges } = params.context
+  return {
+    xynodes: xynodes.map(BaseTypes.setDimmed(false)),
+    xyedges: xyedges.map(BaseTypes.setEdgeState({
+      dimmed: false,
+      active: false,
+    })),
+  }
+}

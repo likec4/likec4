@@ -1,7 +1,7 @@
 import { useSyncedRef } from '@react-hookz/web'
 import { type PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { isFunction, mapToObj } from 'remeda'
-import type { LikeC4DiagramEventHandlers } from '../../LikeC4Diagram.props'
+import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
 type RequiredOrNull<T> = {
   [P in keyof T]-?: NonNullable<T[P]> | null

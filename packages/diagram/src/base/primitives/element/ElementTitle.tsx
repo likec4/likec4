@@ -2,7 +2,7 @@ import type { DiagramNode } from '@likec4/core'
 import { Box, Text } from '@mantine/core'
 import clsx from 'clsx'
 import { isTruthy } from 'remeda'
-import { IconRenderer } from '../../context/IconRenderer'
+import { IconRenderer } from '../../../context/IconRenderer'
 import type { NodeProps } from '../../types'
 import * as css from './ElementTitle.css'
 
@@ -41,7 +41,8 @@ export function ElementTitle({ id, data }: ElementTitleProps) {
       <Box className={clsx(css.elementTextData, 'likec4-element-main-props')}>
         <Text
           component="h3"
-          className={clsx(css.title, 'likec4-element-title')}>
+          className={clsx(css.title, 'likec4-element-title')}
+          lineClamp={3}>
           {data.title}
         </Text>
 
@@ -52,6 +53,7 @@ export function ElementTitle({ id, data }: ElementTitleProps) {
             {data.technology}
           </Text>
         )}
+
         {data.description && (
           <Text
             component="div"

@@ -1,27 +1,26 @@
 import { ActionIcon, Box } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
-import { stopPropagation } from '../../../xyflow/utils'
 import type { NodeProps } from '../../types'
-import * as css from './ActionButtons.css'
+import * as css from './ElementActionButtons.css'
 
-type ActionButtonsProps = NodeProps & {
-  buttons: ActionButtons.Item[]
+type ElementActionButtonsProps = NodeProps & {
+  buttons: ElementActionButtons.Item[]
 }
 
-export function ActionButtons({
+export function ElementActionButtons({
   id,
   selected = false,
   data: {
     hovered: isHovered = false,
   },
   buttons,
-}: ActionButtonsProps) {
+}: ElementActionButtonsProps) {
   if (!buttons.length) {
     return null
   }
   return (
-    <Box className={css.container} onClick={stopPropagation}>
+    <Box className={css.container}>
       <Box
         component={m.div}
         layoutRoot
@@ -42,7 +41,7 @@ export function ActionButtons({
           <m.div
             key={`action-button-${id}-${button.key ?? index}`}
             initial={false}
-            whileTap={{ scale: 0.85 }}
+            whileTap={{ scale: 1 }}
             whileHover={{
               scale: 1.35,
             }}
@@ -62,7 +61,7 @@ export function ActionButtons({
   )
 }
 
-export namespace ActionButtons {
+export namespace ElementActionButtons {
   export type Item = {
     key?: string
     icon: React.ReactNode

@@ -7,7 +7,6 @@ const isEqualProps = <P extends Record<string, unknown> = BaseTypes.NodeData>(
   next: NodeProps<P>,
 ) => (
   prev.id === next.id
-  && prev.type === next.type
   && eq(prev.selected ?? false, next.selected ?? false)
   && eq(prev.dragging ?? false, next.dragging ?? false)
   && eq(prev.width ?? 0, next.width ?? 0)

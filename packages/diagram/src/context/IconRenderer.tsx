@@ -1,8 +1,10 @@
 import clsx from 'clsx'
-import { type ReactNode, createContext, use } from 'react'
-import type { ElementIconRenderer } from '../../LikeC4Diagram.props'
+import { type ReactNode, createContext, useContext } from 'react'
+import type { ElementIconRenderer } from '../LikeC4Diagram.props'
 
-export const IconRendererProvider = createContext<ElementIconRenderer | null>(null)
+const IconRendererContext = createContext<ElementIconRenderer | null>(null)
+
+export const IconRendererProvider = IconRendererContext.Provider
 
 export function IconRenderer({
   element,
@@ -15,18 +17,15 @@ export function IconRenderer({
   }
   className: string
 }) {
+  const RenderIcon = useContext(IconRendererContext)
   if (!element || !element.icon || element.icon === 'none') {
     return null
   }
-
   let icon: ReactNode
   if (element.icon.startsWith('http://') || element.icon.startsWith('https://')) {
     icon = <img src={element.icon} alt={element.title} />
-  } else {
-    const RenderIcon = use(IconRendererProvider)
-    if (RenderIcon) {
-      icon = <RenderIcon node={element} />
-    }
+  } else if (RenderIcon) {
+    icon = <RenderIcon node={element} />
   }
 
   if (!icon) {

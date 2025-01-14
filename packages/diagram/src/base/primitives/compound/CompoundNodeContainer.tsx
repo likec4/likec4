@@ -6,7 +6,7 @@ import { m } from 'framer-motion'
 import { type PropsWithChildren } from 'react'
 import { clamp, isNumber } from 'remeda'
 import type { NodeProps } from '../../types'
-import * as css from './compound.css'
+import * as css from './CompoundNodeContainer.css'
 
 type Data = Pick<
   DiagramNode,
@@ -21,10 +21,10 @@ type CompoundNodeContainerProps = PropsWithChildren<NodeProps<Data>>
 export function CompoundNodeContainer({
   data: {
     hovered: isHovered = false,
+    dimmed: isDimmed = false,
     style,
     ...data
   },
-  dragging = false,
   children,
 }: CompoundNodeContainerProps) {
   const isTransparent = isNumber(style.opacity) && style.opacity < 100
@@ -45,18 +45,11 @@ export function CompoundNodeContainer({
       component={m.div}
       className={clsx([
         css.container,
+        isDimmed && css.dimmed,
         'likec4-compound-node',
       ])}
       layoutRoot
       initial={false}
-      animate={!dragging}
-      // whileHover={{
-      //   scale: 1.07,
-      //   // transition: {
-      //   //   delay: 0.09,
-      //   // },
-      // }}
-      // whileTap={{ scale: 0.98 }}
       data-hovered={isHovered}
       data-likec4-color={data.color}
       data-compound-depth={data.depth ?? 1}

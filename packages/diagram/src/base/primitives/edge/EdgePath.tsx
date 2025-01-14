@@ -13,7 +13,7 @@ type Data = Pick<
 >
 
 type EdgePathProps = EdgeProps<Data> & {
-  edgeSvgPath: string
+  svgPath: string
 }
 
 export function EdgePath({
@@ -24,7 +24,7 @@ export function EdgePath({
     tail,
     head,
   },
-  edgeSvgPath,
+  svgPath,
   style,
   interactionWidth,
 }: EdgePathProps) {
@@ -51,7 +51,7 @@ export function EdgePath({
     <>
       <path
         className={clsx('react-flow__edge-interaction')}
-        d={edgeSvgPath}
+        d={svgPath}
         fill="none"
         stroke={'transparent'}
         strokeWidth={interactionWidth ?? 10}
@@ -63,14 +63,14 @@ export function EdgePath({
         </defs>
         <path
           className={clsx('react-flow__edge-path', css.edgePathBg)}
-          d={edgeSvgPath}
+          d={svgPath}
           style={style}
           strokeLinecap={'round'}
         />
         <path
           // ref={svgPathRef}
           className={clsx('react-flow__edge-path', css.cssEdgePath)}
-          d={edgeSvgPath}
+          d={svgPath}
           style={style}
           strokeLinecap={'round'}
           strokeDasharray={strokeDasharray}

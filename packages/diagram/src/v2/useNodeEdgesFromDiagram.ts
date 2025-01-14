@@ -2,33 +2,34 @@ import {
   type DiagramEdge,
   type DiagramView,
   type Fqn,
+  type WhereOperator,
   DiagramNode,
   ElementKind,
   invariant,
   nonNullable,
   whereOperatorAsPredicate,
 } from '@likec4/core'
+import { useDeepCompareMemo } from '@react-hookz/web'
 import Queue from 'mnemonist/queue'
-import { hasAtLeast, pick } from 'remeda'
-import type { PickDeep } from 'type-fest'
+import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../xyflow/const'
-import type { Context } from './store'
 import type { Types } from './types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
-
-export function diagramViewToXYFlowData(
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>,
-  opts: Pick<
-    Context,
-    | 'whereFilter'
-    | 'nodesDraggable'
-    | 'nodesSelectable'
-  >,
-): {
+function diagramViewToXYFlowData(opts: {
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>
+  where: WhereOperator<string, string> | undefined
+  nodesDraggable: boolean
+  nodesSelectable: boolean
+}): {
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
 } {
+  const {
+    view,
+    nodesDraggable: draggable,
+    nodesSelectable: selectable,
+  } = opts
   const isDynamicView = view.__ === 'dynamic',
     xynodes = [] as Types.Node[],
     xyedges = [] as Types.Edge[],
@@ -49,15 +50,10 @@ export function diagramViewToXYFlowData(
     [] as TraverseItem[],
   ))
 
-  const {
-    nodesDraggable: draggable,
-    nodesSelectable: selectable,
-  } = opts
-
   let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
-  if (opts.whereFilter) {
+  if (opts.where) {
     try {
-      visiblePredicate = whereOperatorAsPredicate(opts.whereFilter)
+      visiblePredicate = whereOperatorAsPredicate(opts.where)
     } catch (e) {
       console.error('Error in where filter:', e)
     }
@@ -102,6 +98,8 @@ export function diagramViewToXYFlowData(
         width: node.width,
         height: node.height,
       },
+      initialWidth: node.width,
+      initialHeight: node.height,
       hidden: node.kind !== ElementKind.Group && !visiblePredicate(node),
       ...(parent && {
         parentId: ns + parent.id,
@@ -248,4 +246,31 @@ export function diagramViewToXYFlowData(
     xynodes,
     xyedges,
   }
+}
+
+export function useNodeEdgesFromDiagram({
+  view: {
+    id,
+    nodes,
+    edges,
+    __ = 'element',
+  },
+  ...opts
+}: {
+  view: DiagramView
+  where: WhereOperator<string, string> | undefined
+  nodesDraggable: boolean
+  nodesSelectable: boolean
+}) {
+  return useDeepCompareMemo(() => {
+    return diagramViewToXYFlowData({
+      view: {
+        id,
+        nodes,
+        edges,
+        __,
+      },
+      ...opts,
+    })
+  }, [id, __, nodes, edges, opts])
 }

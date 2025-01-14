@@ -1,6 +1,6 @@
 import { createVar, fallbackVar, keyframes, style } from '@vanilla-extract/css'
 import { easings, mantine, vars } from '../../../theme-vars'
-import { container, stokeFillMix } from './element.css'
+import { container, stokeFillMix } from './ElementNodeContainer.css'
 
 const indicatorKeyframes = keyframes({
   'from': {
@@ -29,6 +29,7 @@ export const indicator = style({
   animationDirection: 'alternate',
   strokeOpacity: 0.8,
   visibility: 'hidden',
+  pointerEvents: 'none',
   vars: {
     [indicatorStroke]: vars.element.loContrast,
   },

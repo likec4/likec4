@@ -1,7 +1,6 @@
 import { rem } from '@mantine/core'
-import { globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 import { vars, whereLight } from '../../../theme-vars'
-import { whereTransparent } from './compound.css'
 
 export const compoundTitle = style({
   display: 'flex',
@@ -15,6 +14,9 @@ export const compoundTitle = style({
     [`:where(.react-flow__node.draggable) &`]: {
       cursor: 'grab',
     },
+    [`.likec4-compound-node:has(.compound-action) &`]: {
+      paddingLeft: 30,
+    },
   },
 })
 
@@ -26,6 +28,7 @@ export const title = style({
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
   // lineHeight: 1,
+  //
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
   // paddingLeft: 0,
   // paddingTop: 13,
@@ -36,11 +39,5 @@ export const title = style({
     [`${whereLight} &`]: {
       mixBlendMode: 'darken',
     },
-  },
-})
-
-globalStyle(`:where([data-mantine-color-scheme='light'] ${whereTransparent})`, {
-  vars: {
-    ['--_compound-title-color']: vars.element.stroke,
   },
 })
