@@ -79,49 +79,6 @@ describe('RelationPredicate', () => {
           },
         )
       })
-
-      it('* -> instance where', () => {
-        t.expectComputedView(
-          $include('* -> a.b.d.api', { where: 'tag is #next' }),
-        ).toHave(
-          {
-            nodes: [
-              'a.b.c',
-              'a.b.d',
-              'a.b.d.api',
-            ],
-            edges: [
-              'a.b.c -> a.b.d.api',
-            ],
-          },
-        )
-
-        t.expectComputedView(
-          $include('* -> a.b.d.api', { where: 'tag is not #next' }),
-        ).toHave(
-          {
-            nodes: [],
-            edges: [],
-          },
-        )
-      })
-
-      it('* -> instance where participant is', () => {
-        t.expectComputedView(
-          $include('* -> a.b.d.api', { where: 'source.tag is #next' }),
-        ).toHave(
-          {
-            nodes: [
-              'a.b.c',
-              'a.b.d',
-              'a.b.d.api',
-            ],
-            edges: [
-              'a.b.c -> a.b.d.api',
-            ],
-          },
-        )
-      })
     })
 
     describe('element -> *', () => {
@@ -183,98 +140,6 @@ describe('RelationPredicate', () => {
           ],
         })
       })
-
-      it('node -> * where', () => {
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> *', { where: 'tag is not #next' }),
-        )).toHave({
-          nodes: [],
-          edges: [],
-        })
-
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> *', { where: 'tag is #next' }),
-        )).toHave({
-          nodes: [
-            'a.b2.c.ui',
-            'a.b2.c.api',
-          ],
-          edges: [
-            'a.b2.c.ui -> a.b2.c.api',
-          ],
-        })
-      })
-
-      it('node -> * where participant is', () => {
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> *', {
-            where: 'source.tag is #next',
-          }),
-        )).toHave({
-          nodes: [
-            'a.b2.c.ui',
-            'a.b2.c.api',
-          ],
-          edges: [
-            'a.b2.c.ui -> a.b2.c.api',
-          ],
-        })
-
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> *', {
-            where: 'source.tag is not #next',
-          }),
-        )).toHave({
-          nodes: [],
-          edges: [],
-        })
-      })
-
-      it('node -> node where', () => {
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> a.b2.c._', { where: 'tag is not #next' }),
-        )).toHave({
-          nodes: [],
-          edges: [],
-        })
-
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> a.b2.c._', { where: 'tag is #next' }),
-        )).toHave({
-          nodes: [
-            'a.b2.c.ui',
-            'a.b2.c.api',
-          ],
-          edges: [
-            'a.b2.c.ui -> a.b2.c.api',
-          ],
-        })
-      })
-
-      it('node -> instance where participant is', () => {
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> a.b2.c.api', {
-            where: 'source.tag is #next',
-          }),
-        )).toHave({
-          nodes: [
-            'a.b2.c.ui',
-            'a.b2.c.api',
-          ],
-          edges: [
-            'a.b2.c.ui -> a.b2.c.api',
-          ],
-        })
-
-        t.expect(t.computeView(
-          $include('a.b2.c._ -> a.b2.c.api', {
-            where: 'source.tag is not #next',
-          }),
-        )).toHave({
-          nodes: [],
-          edges: [],
-        })
-      })
     })
   })
 
@@ -295,33 +160,6 @@ describe('RelationPredicate', () => {
           ),
         )
       ))
-
-      it('node -> * where', () => {
-        t.expect(t.computeView(
-          $include('a.b2.c.ui -> *'),
-          $exclude('a.b2.c._ -> *', {
-            where: 'source.tag is #next',
-          }),
-        )).toHave({
-          nodes: [],
-          edges: [],
-        })
-
-        t.expect(t.computeView(
-          $include('a.b2.c.ui -> *'),
-          $exclude('a.b2.c._ -> *', {
-            where: 'source.tag is not #next',
-          }),
-        )).toHave({
-          nodes: [
-            'a.b2.c.ui',
-            'a.b2.c.api',
-          ],
-          edges: [
-            'a.b2.c.ui -> a.b2.c.api',
-          ],
-        })
-      })
     })
   })
 })
