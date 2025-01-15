@@ -176,6 +176,8 @@ describe.concurrent('Deployment views:', () => {
       include * -> *
       include * -> * where tag is #next
       include * -> * where kind is https or tag is #next
+      include * -> * where source.kind is zone
+      include * -> * where source.kind is component
     `)
   })
 })

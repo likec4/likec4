@@ -74,12 +74,10 @@ When condition on relation participant is checked the following rules are applie
 - For a deployment instances tags are combined from tags defined in model and tags defined in deployment model
 - For a child of deployment instance the tags defined on child in model are used
 - For a deployment node the tags defined in deployment model are used
+- For a deployment instances the kind of the model element is used
+- For a child of deployment instance the kind of this child is used
+- For a deployment node the kind of this deployment node is used
 - Tags are not inherited from parent nodes/elements
-
-
-<Aside type='caution' title='In development'>
-Filtering by deployment node kind is not implemented
-</Aside>
 
 ```likec4
 model {
