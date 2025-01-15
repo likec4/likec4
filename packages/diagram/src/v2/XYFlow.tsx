@@ -38,7 +38,7 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
     nodes,
     edges,
     ...props
-  } = useDiagramContext(selectXYProps)
+  } = useDiagramContext(ctx => selectXYProps(ctx))
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>

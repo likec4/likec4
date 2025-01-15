@@ -4,6 +4,7 @@ import { map, mapToObj, pick } from 'remeda'
 import { useUpdateEffect } from '../hooks'
 
 const FeatureNames = [
+  'Controls',
   'ReadOnly',
   'FocusMode',
   'NavigateTo',
@@ -15,6 +16,11 @@ const FeatureNames = [
   'Notations',
   'DynamicViewWalkthrough',
   'EdgeEditing',
+  'ViewTitle',
+  /**
+   * LikeC4Model is available in context
+   */
+  'LikeC4Model',
   /**
    * Running in VSCode
    */
@@ -31,17 +37,55 @@ export const AllDisabled: EnabledFeatures = mapToObj(
 )
 const DiagramFeaturesContext = createContext<EnabledFeatures>(AllDisabled)
 
+const validate = (features: EnabledFeatures) => {
+  let {
+    enableLikeC4Model,
+    enableElementDetails,
+    enableRelationshipDetails,
+    enableRelationshipBrowser,
+    enableSearch,
+    ...rest
+  } = features
+  if (!enableLikeC4Model) {
+    if (enableElementDetails) {
+      console.warn('enableElementDetails is ignored because requires LikeC4Model')
+      enableElementDetails = false
+    }
+    if (enableRelationshipDetails) {
+      console.warn('enableRelationshipDetails is ignored because requires enableLikeC4Model')
+      enableRelationshipDetails = false
+    }
+    if (enableRelationshipBrowser) {
+      console.warn('enableRelationshipBrowser is ignored because requires LikeC4Model')
+      enableRelationshipBrowser = false
+    }
+    if (enableSearch) {
+      console.warn('enableSearch is ignored because requires LikeC4Model')
+      enableSearch = false
+    }
+  }
+
+  return {
+    ...rest,
+    enableLikeC4Model,
+    enableElementDetails,
+    enableRelationshipDetails,
+    enableRelationshipBrowser,
+    enableSearch,
+  }
+}
+
 export function DiagramFeatures({
   children,
   features,
 }: PropsWithChildren<{ features: EnabledFeatures }>) {
-  const [enabled, setFeatures] = useState(features)
+  const [enabled, setFeatures] = useState(() => validate(features))
 
   useUpdateEffect(() => {
-    setFeatures({
+    setFeatures(validate({
       ...AllDisabled,
       ...features,
-    })
+    }))
   }, [features])
 
   return (

@@ -16,7 +16,7 @@ import { ZIndexes } from '../xyflow/const'
 import type { Types } from './types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
-function diagramViewToXYFlowData(opts: {
+function viewToNodesEdge(opts: {
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>
   where: WhereOperator<string, string> | undefined
   nodesDraggable: boolean
@@ -248,7 +248,7 @@ function diagramViewToXYFlowData(opts: {
   }
 }
 
-export function useXYFlowData({
+export function useViewToNodesEdges({
   view: {
     id,
     nodes,
@@ -263,7 +263,7 @@ export function useXYFlowData({
   nodesSelectable: boolean
 }) {
   return useDeepCompareMemo(() => {
-    return diagramViewToXYFlowData({
+    return viewToNodesEdge({
       view: {
         id,
         nodes,

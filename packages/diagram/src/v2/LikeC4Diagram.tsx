@@ -7,7 +7,7 @@ import { EnsureMantine } from '../ui/EnsureMantine'
 import { FramerMotionConfig } from '../ui/FramerMotionConfig'
 import { DiagramActor } from './DiagramActor'
 import type { Types } from './types'
-import { useXYFlowData } from './useXYFlowData'
+import { useViewToNodesEdges } from './useViewToNodesEdges'
 import { LikeC4DiagramXYFlow } from './XYFlow'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
@@ -57,9 +57,7 @@ export function LikeC4DiagramV2({
     initialHeight: number
   }>(null)
 
-  const enableNavigateTo = !!onNavigateTo
-
-  const xyNodesEdges = useXYFlowData({
+  const xyNodesEdges = useViewToNodesEdges({
     view,
     where,
     nodesDraggable,
@@ -97,41 +95,44 @@ export function LikeC4DiagramV2({
     <EnsureMantine>
       <FramerMotionConfig>
         <IconRendererProvider value={renderIcon ?? null}>
-          <DiagramContainer>
-            <XYFlowProvider
-              fitView={fitView}
-              {...initialRef.current}
-            >
-              <DiagramFeatures
-                features={{
-                  enableReadOnly: readonly,
-                  enableFocusMode,
-                  enableNavigateTo,
-                  enableElementDetails,
-                  enableRelationshipDetails,
-                  enableRelationshipBrowser,
-                  enableSearch,
-                  enableNavigationButtons: showNavigationButtons,
-                  enableDynamicViewWalkthrough,
-                  enableEdgeEditing: experimentalEdgeEditing,
-                  enableNotations: showNotations,
-                  enableVscode: !!onOpenSource,
-                }}
-              >
-                <DiagramEventHandlers
-                  handlers={{
-                    onCanvasClick,
-                    onCanvasContextMenu,
-                    onCanvasDblClick,
-                    onEdgeClick,
-                    onChange,
-                    onEdgeContextMenu,
-                    onNavigateTo,
-                    onNodeClick,
-                    onNodeContextMenu,
-                    onOpenSource,
-                    onBurgerMenuClick,
-                  }}>
+          <DiagramFeatures
+            features={{
+              enableReadOnly: readonly,
+              enableFocusMode,
+              enableNavigateTo: !!onNavigateTo,
+              enableElementDetails,
+              enableRelationshipDetails,
+              enableRelationshipBrowser,
+              enableSearch,
+              enableNavigationButtons: showNavigationButtons,
+              enableDynamicViewWalkthrough,
+              enableEdgeEditing: experimentalEdgeEditing,
+              enableNotations: showNotations,
+              enableVscode: !!onOpenSource,
+              enableControls: controls,
+              enableViewTitle: showDiagramTitle,
+              enableLikeC4Model: hasLikec4model,
+            }}
+          >
+            <DiagramEventHandlers
+              handlers={{
+                onCanvasClick,
+                onCanvasContextMenu,
+                onCanvasDblClick,
+                onEdgeClick,
+                onChange,
+                onEdgeContextMenu,
+                onNavigateTo,
+                onNodeClick,
+                onNodeContextMenu,
+                onOpenSource,
+                onBurgerMenuClick,
+              }}>
+              <DiagramContainer className={className}>
+                <XYFlowProvider
+                  fitView={fitView}
+                  {...initialRef.current}
+                >
                   <DiagramActor
                     input={{
                       view,
@@ -148,10 +149,10 @@ export function LikeC4DiagramV2({
                       initialWidth={initialRef.current.initialWidth}
                     />
                   </DiagramActor>
-                </DiagramEventHandlers>
-              </DiagramFeatures>
-            </XYFlowProvider>
-          </DiagramContainer>
+                </XYFlowProvider>
+              </DiagramContainer>
+            </DiagramEventHandlers>
+          </DiagramFeatures>
         </IconRendererProvider>
       </FramerMotionConfig>
     </EnsureMantine>

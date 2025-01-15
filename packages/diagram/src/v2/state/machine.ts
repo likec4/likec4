@@ -68,6 +68,7 @@ export type Context = Readonly<
     lastClickedNode: null | {
       id: NodeId
       clicks: number
+      timestamp: number
     }
     focusedNode: NodeId | null
     viewportBeforeFocus: null | Viewport

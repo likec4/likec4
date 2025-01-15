@@ -10,11 +10,13 @@ export function lastClickedNode(params: { context: Context; event: { node: Types
     return {
       id: params.event.node.id as NodeId,
       clicks: 1,
+      timestamp: Date.now(),
     }
   }
   return {
     id: lastClickedNode.id,
     clicks: lastClickedNode.clicks + 1,
+    timestamp: Date.now(),
   }
 }
 
@@ -23,7 +25,6 @@ export function mergeUpdateViewEvent(params: {
   event: { view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
 }): Partial<Context> {
   const nextView = params.event.view
-  const isSameView = params.context.view.id === nextView.id
 
   const currentNodes = params.context.xynodes
   const xynodes = params.event.xynodes.map((update) => {
