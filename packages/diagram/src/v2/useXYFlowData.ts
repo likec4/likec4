@@ -248,7 +248,7 @@ function diagramViewToXYFlowData(opts: {
   }
 }
 
-export function useNodeEdgesFromDiagram({
+export function useXYFlowData({
   view: {
     id,
     nodes,

@@ -1,48 +1,35 @@
 import type { ViewId } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
-import { useUpdateEffect } from '@react-hookz/web'
-import { createBrowserInspector } from '@statelyai/inspect'
-import { createActorContext } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, useEffect } from 'react'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../context'
-import { type Input, likeC4ViewMachine } from './state/machine'
+import { useUpdateEffect } from '../hooks/useUpdateEffect'
+import { useInspector } from './state/inspector'
+import { type Input, likeC4ViewMachine, LikeC4ViewMachineContext } from './state/machine'
 import type { Types } from './types'
-
-let inspector = createBrowserInspector({
-  autoStart: false,
-  filter: (event) => {
-    return event.type !== '@xstate.event' || event.event.type !== 'xyflow.applyNodeChages'
-    // return !event.
-  },
-})
-
-const LikeC4ViewMachine = createActorContext(likeC4ViewMachine)
-
-export const useActorRef = LikeC4ViewMachine.useActorRef
-export const useSelector = LikeC4ViewMachine.useSelector
 
 type ActorContextInput = Omit<Input, 'xystore' | 'features'>
 
 export function DiagramActor({ input, children }: PropsWithChildren<{ input: ActorContextInput }>) {
   const { onNavigateTo, onOpenSource } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
+  const inspector = useInspector()
   return (
     (
-      <LikeC4ViewMachine.Provider
+      <LikeC4ViewMachineContext.Provider
         logic={likeC4ViewMachine.provide({
           actions: {
-            triggerNavigateTo: useCallbackRef((_, { viewId }) => {
+            'trigger:NavigateTo': useCallbackRef((_, { viewId }) => {
               onNavigateTo?.(viewId as ViewId)
             }),
 
-            triggerOpenSource: useCallbackRef((_, params) => {
+            'trigger:OpenSource': useCallbackRef((_, params) => {
               onOpenSource?.(params)
             }),
           },
         })}
         options={{
-          inspect: inspector.inspect,
+          ...inspector,
           id: `diagram${input.view.id}`,
           input: {
             xystore,
@@ -52,15 +39,14 @@ export function DiagramActor({ input, children }: PropsWithChildren<{ input: Act
       >
         <SyncStore input={input} />
         {children}
-      </LikeC4ViewMachine.Provider>
+      </LikeC4ViewMachineContext.Provider>
     )
   )
 }
 
 const SyncStore = ({ input: { view, xyedges, xynodes, ...inputs } }: { input: ActorContextInput }) => {
   const features = useEnabledFeatures()
-  const { send } = LikeC4ViewMachine.useActorRef()
-  // console.log('SyncStore', view, inputs)
+  const { send } = LikeC4ViewMachineContext.useActorRef()
   useUpdateEffect(() => {
     send({ type: 'update.inputs', inputs })
   }, [send, inputs])

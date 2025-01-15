@@ -12,7 +12,7 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import { getHotkeyHandler } from '@mantine/hooks'
+import { createActorContext } from '@xstate/react'
 import {
   type ReactFlowInstance,
   type useStoreApi,
@@ -23,14 +23,11 @@ import {
 import type { EdgeChange, NodeChange, Viewport } from '@xyflow/system'
 import { prop } from 'remeda'
 import {
-  type AnyEventObject,
-  type NonReducibleUnknown,
   type SnapshotFrom,
   and,
   assertEvent,
   assign,
   enqueueActions,
-  fromCallback,
   or,
   setup,
   stopChild,
@@ -41,11 +38,10 @@ import { AllDisabled } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
 import { focusNodesEdges, lastClickedNode, mergeUpdateViewEvent, unfocusNodesEdges } from './assign'
+import { type HotKeyEvent, hotkeyActor } from './hotkeyActor'
 import { focusedBounds } from './utils'
 
 type StoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
-
-type ViewToXYNodesEdges = (view: DiagramView) => { xynodes: Types.Node[]; xyedges: Types.Edge[] }
 
 export type Input = {
   view: DiagramView
@@ -75,66 +71,73 @@ export type Context = Readonly<
     }
     focusedNode: NodeId | null
     viewportBeforeFocus: null | Viewport
-    // hotkeyActor?: ActorRefFromLogic<typeof hotkeyListener> | null
   }
 >
 
-type HotKeyEvent = { type: 'key.esc' | `key.arrow.${'left' | 'right'}` }
-const hotkeyListener = fromCallback<AnyEventObject, NonReducibleUnknown, HotKeyEvent>(({ sendBack }: {
-  sendBack: (event: HotKeyEvent) => void
-}) => {
-  const handler = getHotkeyHandler([
-    ['Escape', () => sendBack({ type: 'key.esc' }), {
-      preventDefault: true,
-    }],
-    ['ArrowLeft', () => sendBack({ type: 'key.arrow.left' })],
-    ['ArrowRight', () => sendBack({ type: 'key.arrow.right' })],
-  ])
-  document.body.addEventListener('keydown', handler, { capture: true })
-
-  return () => {
-    document.body.removeEventListener('keydown', handler, { capture: true })
-  }
-})
-
-// const xyflowActor = (ctx: { context: Context }) => ctx.context.xyflow!
-
-const nodeRef = (node: DiagramNode) => DiagramNode.modelRef(node) ?? DiagramNode.deploymentRef(node)
+export type Events =
+  | HotKeyEvent
+  | { type: 'xyflow.init'; instance: ReactFlowInstance<Types.Node, Types.Edge> }
+  | { type: 'xyflow.applyNodeChages'; changes: NodeChange<Types.Node>[] }
+  | { type: 'xyflow.applyEdgeChages'; changes: EdgeChange<Types.Edge>[] }
+  | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }
+  | { type: 'xyflow.nodeClick'; node: Types.Node }
+  | { type: 'xyflow.paneClick' }
+  | { type: 'xyflow.paneDblClick' }
+  | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
+  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view'>> }
+  | { type: 'update.features'; features: EnabledFeatures }
+  | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
+  | { type: 'openElementDetails'; fqn: Fqn; fromNode?: NodeId }
+  | { type: 'navigateTo'; viewId: ViewId; fromNode?: NodeId }
 
 export const likeC4ViewMachine = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
     children: {} as {
-      hotkey: 'hotkeyListener'
-      // xyflow: 'xyflowMachine'
+      hotkey: 'hotkeyActor'
     },
-    events: {} as
-      | HotKeyEvent
-      | { type: 'xyflow.init'; instance: ReactFlowInstance<Types.Node, Types.Edge> }
-      | { type: 'xyflow.applyNodeChages'; changes: NodeChange<Types.Node>[] }
-      | { type: 'xyflow.applyEdgeChages'; changes: EdgeChange<Types.Edge>[] }
-      | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }
-      | { type: 'xyflow.nodeClick'; node: Types.Node }
-      | { type: 'xyflow.paneClick' }
-      | { type: 'xyflow.paneDblClick' }
-      | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
-      | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view'>> }
-      | { type: 'update.features'; features: EnabledFeatures }
-      | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
-      | { type: 'openElementDetails'; fqn: Fqn; fromNode?: NodeId }
-      | { type: 'navigateTo'; viewId: ViewId; fromNode?: NodeId },
+    events: {} as Events,
+  },
+  guards: {
+    'hasLastOnNavigate': ({ context }) => context.lastOnNavigate !== null,
+    'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
+    'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
+    'not readonly': ({ context }) => !context.features.enableReadOnly,
+    'viewport not moved': ({ context }) => !context.viewportChangedManually,
+    'is another view': ({ context, event }) => {
+      assertEvent(event, ['update.view', 'navigateTo'])
+      if (event.type === 'update.view') {
+        return context.view.id !== event.view.id
+      }
+      if (event.type === 'navigateTo') {
+        return context.view.id !== event.viewId
+      }
+      nonexhaustive(event.type)
+    },
+    'click: selected node ': ({ event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      return event.node.selected === true
+    },
+    'click: same node': ({ context, event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      return context.lastClickedNode?.id === event.node.id
+    },
+    'click: focused node': ({ context, event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      return context.focusedNode === event.node.id
+    },
   },
   actions: {
-    triggerNavigateTo: (_, _params: { viewId: ViewId }) => {
+    'trigger:NavigateTo': (_, _params: { viewId: ViewId }) => {
       // navigate to view
     },
-    triggerChangeElementStyle: (_, _change: ViewChange.ChangeElementStyle) => {
+    'trigger:ChangeElementStyle': (_, _change: ViewChange.ChangeElementStyle) => {
     },
-    triggerOpenSource: (_, _params: OpenSourceParams) => {
+    'trigger:OpenSource': (_, _params: OpenSourceParams) => {
     },
 
-    fitDiagram: ({ context }, params?: { duration?: number; bounds?: BBox }) => {
+    'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
       const {
         bounds = context.view.bounds,
         duration = 450,
@@ -155,14 +158,14 @@ export const likeC4ViewMachine = setup({
       panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
     },
 
-    setViewportCenter: ({ context }, params: { x: number; y: number }) => {
+    'xyflow:setViewportCenter': ({ context }, params: { x: number; y: number }) => {
       const { x, y } = params
       invariant(context.xyflow, 'xyflow is not initialized')
       const zoom = context.xyflow.getZoom()
       context.xyflow.setCenter(x, y, { zoom })
     },
 
-    setViewport: ({ context }, params: { viewport: Viewport; duration?: number }) => {
+    'xyflow:setViewport': ({ context }, params: { viewport: Viewport; duration?: number }) => {
       const {
         viewport,
         duration = 350,
@@ -170,7 +173,8 @@ export const likeC4ViewMachine = setup({
       const { panZoom } = context.xystore.getState()
       panZoom?.setViewport(viewport, duration > 0 ? { duration } : undefined)
     },
-    alignNodeFromToAfterNavigate: ({ context }, params: { fromNode: NodeId; toPosition: XYPoint }) => {
+
+    'xyflow:alignNodeFromToAfterNavigate': ({ context }, params: { fromNode: NodeId; toPosition: XYPoint }) => {
       const xyflow = nonNullable(context.xyflow, 'xyflow is not initialized')
       const elFrom = xyflow.getInternalNode(params.fromNode)
       if (!elFrom) return
@@ -185,46 +189,11 @@ export const likeC4ViewMachine = setup({
         }
       context.xystore.getState().panBy(diff)
     },
-    // updateNodesEdgesFromView: enqueueActions(({ enqueue, context }, params: { view: DiagramView }) => {
-    //   enqueue.assign(mergeNodesEdges(context, {
-    //     ...context.viewToXYNodesEdges(params.view),
-    //     view: params.view,
-    //   }))
-    // }),
-  },
-  guards: {
-    hasLastOnNavigate: ({ context }) => context.lastOnNavigate !== null,
-    enabledFocusMode: ({ context }) => context.features.enableFocusMode,
-    isViewportMoved: ({ context }) => context.viewportChangedManually,
-    isAnotherView: ({ context, event }) => {
-      assertEvent(event, ['update.view', 'navigateTo'])
-      if (event.type === 'update.view') {
-        return context.view.id !== event.view.id
-      }
-      if (event.type === 'navigateTo') {
-        return context.view.id !== event.viewId
-      }
-      nonexhaustive(event.type)
-    },
-    isClickOnSelectedNode: ({ event }) => {
-      assertEvent(event, 'xyflow.nodeClick')
-      return event.node.selected === true
-    },
-    isClickOnSameNode: ({ context, event }) => {
-      assertEvent(event, 'xyflow.nodeClick')
-      return context.lastClickedNode?.id === event.node.id
-    },
-    isClickOnFocusedNode: ({ context, event }) => {
-      assertEvent(event, 'xyflow.nodeClick')
-      return context.focusedNode === event.node.id
-    },
   },
   actors: {
-    hotkeyListener,
-    // xyflowMachine: xyflowMachine as ActorLogicFrom<typeof xyflowMachine>,
+    hotkeyActor,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAYgA8BPAMwBsB7AdwDp0AHVmigOTojAGFs6GLADaABgC6iUKzqxcAF1x18MkGUQB2AEwBGJjoBsAVhMBOLeIAc48zvE6ANCAqI9Npia3W9AZmsjHQAWczCtYIBfSJc0LDxCUkpaRhZ2TgBRaAEhEQlpJBA5BWVVdU0EXR0mPWsI3XE9Iz89MJc3BD0daNiMHAJicmp6ZgA3XDAGOQAnRQBZOlHIfPVipRU1QoqtP2rjM3Ngk12jI3E-dvc9EyMmKxaQ62tzWtMekDj+xJIqJQARXDCaboVArQprUqbUDbHY1LS1Ex6YLBBxnEyXBDmZpeYJGazBLTNF51d6fBKDfDocZQdCKMAAFToYNk8nWZS22i0GJ8JjutXhOj8lh8ei0pL65NIAFdWBBaWAmONJsyiqzIeVtEZzExxBF9OJzq1mkYMR4zjUQuZAsZgq9zOL4gMiEwCOt0DRcAAvAhQIYpZiuxQqiEbDUIPywvxGeFBbwvV4YnQRJimIJWYLWHS+cQ3B1fYguiA0MB+kZMfC8AQezAAa2DatDHPDkejTR0cb0CdciBMOmqcasmczQr8URiHwlTsLxdLqQrfH41bregKLJKjeh7lH2rMuK1-j8JkcGN7tyMKP5R9xQusecl05LyTLrHQhEXuFr9fX7M3nWCuqYcwIyOMJzEaI8Lm7BBgj8cQdXPcQMzqLEx16R1EgfWdmBfQg-gAIxod9PykVYGx-DQt3MXlrBvRooyCJ5ggxPwWKYDMLA8dtcX-bpxzJKcqDoTApVgSAsPLSsiLrEjwTIqEKMxUVDFCQ4sVMFEMSMVoam8fEtV1EdeLQ-NnUE4TRIgcT5yrD9l1XVVv3kioEKYJ4kzqGxmkaJioIjODBWRJEnijRE9DvAShJEsSazACgmDgTAvzZJzEBeLRlLCUJThMDSoNObVTB8CMrXxGijHCjCzKiyyn1SHCbOI+yQ3IiowPSy1VOy3KOgaHSfB0MCtW8W0KoLSlqVpH0SAgVQFVgRR5SYfiMPG3AaWUfAoCS9UmzajLOvU5woJ8dr+WuWMo2MUbnVW9afSYVgwHwCApplOU6UVCYGG2jcFLOAwtPhDNTi6UGMVsYJALxKwwKRflePHaz4EKZbiFIxywwG006h0tNdBUsITGul18DdD1vU29HkrDLQuV8zs7lHCN-Dxfk-GJ3AizAKmdt-OHeRKkIPEOf7rE0rNDAcE4uixIUib4ydKsiiyed+ip-H81NrlCXUrxPdsoeQ2CMyTK6FfQsaqTWybKdkjGmxaAqtDUy9bWjHyeqU3E6muEUIy04nbptqAHqel7bbXamHejFNnZBuocqaCJwZzHVdVp7XzzqdnzZM8srbuzamBmwhVZa7RESYIUczOWCwhzD3EEzdrvFpw8L0OMdoiAA */
   initial: 'initializing',
   context: ({ input }) => ({
     ...input,
@@ -248,7 +217,7 @@ export const likeC4ViewMachine = setup({
               xyflow: ({ event }) => event.instance,
             }),
             {
-              type: 'fitDiagram',
+              type: 'xyflow:fitDiagram',
               params: { duration: 0 },
             },
           ],
@@ -263,8 +232,11 @@ export const likeC4ViewMachine = setup({
           {
             // TODO: xstate fails to infer the type of the guard
             guard: and([
-              'enabledFocusMode',
-              or(['isClickOnSameNode', 'isClickOnSelectedNode']),
+              'enabled: FocusMode' as const,
+              or([
+                'click: same node' as const,
+                'click: selected node ' as const,
+              ]),
             ]) as any,
             actions: [
               assign({
@@ -288,7 +260,7 @@ export const likeC4ViewMachine = setup({
           ],
         },
         'xyflow.paneDblClick': {
-          actions: 'fitDiagram',
+          actions: 'xyflow:fitDiagram',
         },
       },
     },
@@ -296,18 +268,18 @@ export const likeC4ViewMachine = setup({
       entry: [
         assign(s => ({
           ...focusNodesEdges(s),
-          hotkeyActor: s.spawn('hotkeyListener', { id: 'hotkey' }),
+          hotkeyActor: s.spawn('hotkeyActor', { id: 'hotkey' }),
           viewportBeforeFocus: s.context.viewportBeforeFocus ?? { ...s.context.viewport },
         })),
         {
-          type: 'fitDiagram',
+          type: 'xyflow:fitDiagram',
           params: focusedBounds,
         },
       ],
       on: {
         'xyflow.nodeClick': [
           {
-            guard: 'isClickOnFocusedNode',
+            guard: 'click: focused node',
             target: '#idle',
           },
           {
@@ -318,7 +290,7 @@ export const likeC4ViewMachine = setup({
               }),
               assign(focusNodesEdges),
               {
-                type: 'fitDiagram',
+                type: 'xyflow:fitDiagram',
                 params: focusedBounds,
               },
             ],
@@ -335,9 +307,9 @@ export const likeC4ViewMachine = setup({
         stopChild('hotkey'),
         enqueueActions(({ enqueue, context }) => {
           if (context.viewportBeforeFocus) {
-            enqueue({ type: 'setViewport', params: { viewport: context.viewportBeforeFocus } })
+            enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
           } else {
-            enqueue({ type: 'fitDiagram' })
+            enqueue({ type: 'xyflow:fitDiagram' })
           }
         }),
         assign((s) => ({
@@ -355,24 +327,20 @@ export const likeC4ViewMachine = setup({
       states: {
         pending: {
           entry: {
-            type: 'triggerNavigateTo',
+            type: 'trigger:NavigateTo',
             params: ({ context }) => ({
               viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
             }),
           },
           on: {
             'update.view': {
-              actions: enqueueActions(({ enqueue, context, system, event }) => {
-                const fromNodeId = context.lastOnNavigate?.fromNode
-                const fromNode = fromNodeId && context.view.nodes.find(n => n.id === fromNodeId)
-                const fromRef = fromNode && nodeRef(fromNode)
-                const toNode = fromRef && event.view.nodes.find(n => nodeRef(n) === fromRef)
+              actions: enqueueActions(({ enqueue, context, event }) => {
+                const { fromNode, toNode } = findCorrespondingNode(context, event)
                 if (fromNode && toNode) {
-                  system._logger('alignNodeFromToAfterNavigate', { fromNode, toNode })
                   enqueue({
-                    type: 'alignNodeFromToAfterNavigate',
+                    type: 'xyflow:alignNodeFromToAfterNavigate',
                     params: {
-                      fromNode: fromNodeId,
+                      fromNode: fromNode.id,
                       toPosition: {
                         x: toNode.position[0],
                         y: toNode.position[1],
@@ -380,9 +348,8 @@ export const likeC4ViewMachine = setup({
                     },
                   })
                 } else {
-                  system._logger('setViewportCenter')
                   enqueue({
-                    type: 'setViewportCenter',
+                    type: 'xyflow:setViewportCenter',
                     params: getBBoxCenter(event.view.bounds),
                   })
                 }
@@ -427,12 +394,12 @@ export const likeC4ViewMachine = setup({
     },
     'fitDiagram': {
       actions: {
-        type: 'fitDiagram',
+        type: 'xyflow:fitDiagram',
         params: prop('event'),
       },
     },
     'navigateTo': {
-      guard: 'isAnotherView',
+      guard: 'is another view',
       actions: [
         assign({
           lastOnNavigate: ({ context, event }) => ({
@@ -445,19 +412,18 @@ export const likeC4ViewMachine = setup({
       target: '.navigating',
     },
     'update.view': {
-      actions: enqueueActions(({ enqueue, context, event }) => {
-        const isSameView = context.view.id === event.view.id
-        enqueue.assign(mergeUpdateViewEvent)
-        if (isSameView && context.viewportChangedManually) {
-          return
-        }
-        if (!isSameView) {
+      actions: enqueueActions(({ enqueue, event, check }) => {
+        const isAnotherView = check('is another view')
+        if (isAnotherView) {
           enqueue({
-            type: 'setViewportCenter',
+            type: 'xyflow:setViewportCenter',
             params: getBBoxCenter(event.view.bounds),
           })
         }
-        enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
+        if (isAnotherView || check('viewport not moved')) {
+          enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
+        }
+        enqueue.assign(mergeUpdateViewEvent)
       }),
     },
     'update.inputs': {
@@ -471,5 +437,16 @@ export const likeC4ViewMachine = setup({
   },
 })
 
+const nodeRef = (node: DiagramNode) => DiagramNode.modelRef(node) ?? DiagramNode.deploymentRef(node)
+function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
+  const fromNodeId = context.lastOnNavigate?.fromNode
+  const fromNode = fromNodeId && context.view.nodes.find(n => n.id === fromNodeId)
+  const fromRef = fromNode && nodeRef(fromNode)
+  const toNode = fromRef && event.view.nodes.find(n => nodeRef(n) === fromRef)
+  return { fromNode, toNode }
+}
+
 export type Logic = typeof likeC4ViewMachine
 export type State = SnapshotFrom<typeof likeC4ViewMachine>
+
+export const LikeC4ViewMachineContext = createActorContext(likeC4ViewMachine)

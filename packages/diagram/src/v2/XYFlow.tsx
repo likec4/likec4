@@ -5,7 +5,7 @@ import { BaseXYFlow } from '../base'
 import * as css from '../LikeC4Diagram.css'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { stopPropagation } from '../xyflow/utils'
-import { useEdgeTypes, useNodeTypes } from './custom'
+import { edgeTypes, nodeTypes } from './custom'
 import { useDiagramActor, useDiagramContext } from './hooks'
 import type { Context } from './state/machine'
 import type { Types } from './types'
@@ -45,8 +45,8 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
       nodes={nodes}
       edges={edges}
       className={clsx(initialized ? 'initialized' : css.notInitialized)}
-      nodeTypes={useNodeTypes()}
-      edgeTypes={useEdgeTypes()}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
       onNodesChange={useCallbackRef((changes) => {
         send({ type: 'xyflow.applyNodeChages', changes })
       })}

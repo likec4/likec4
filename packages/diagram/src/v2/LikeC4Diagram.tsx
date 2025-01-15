@@ -6,9 +6,9 @@ import { useLikeC4Model } from '../likec4model'
 import { EnsureMantine } from '../ui/EnsureMantine'
 import { FramerMotionConfig } from '../ui/FramerMotionConfig'
 import { DiagramActor } from './DiagramActor'
-import { LikeC4DiagramXYFlow } from './LikeC4DiagramXYFlow'
 import type { Types } from './types'
-import { useNodeEdgesFromDiagram } from './useNodeEdgesFromDiagram'
+import { useXYFlowData } from './useXYFlowData'
+import { LikeC4DiagramXYFlow } from './XYFlow'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
 export function LikeC4DiagramV2({
@@ -59,7 +59,7 @@ export function LikeC4DiagramV2({
 
   const enableNavigateTo = !!onNavigateTo
 
-  const xyNodesEdges = useNodeEdgesFromDiagram({
+  const xyNodesEdges = useXYFlowData({
     view,
     where,
     nodesDraggable,
@@ -104,6 +104,7 @@ export function LikeC4DiagramV2({
             >
               <DiagramFeatures
                 features={{
+                  enableReadOnly: readonly,
                   enableFocusMode,
                   enableNavigateTo,
                   enableElementDetails,
@@ -111,6 +112,10 @@ export function LikeC4DiagramV2({
                   enableRelationshipBrowser,
                   enableSearch,
                   enableNavigationButtons: showNavigationButtons,
+                  enableDynamicViewWalkthrough,
+                  enableEdgeEditing: experimentalEdgeEditing,
+                  enableNotations: showNotations,
+                  enableVscode: !!onOpenSource,
                 }}
               >
                 <DiagramEventHandlers
@@ -130,10 +135,10 @@ export function LikeC4DiagramV2({
                   <DiagramActor
                     input={{
                       view,
-                      ...xyNodesEdges,
                       pannable,
                       zoomable,
                       fitViewPadding,
+                      ...xyNodesEdges,
                     }}>
                     <LikeC4DiagramXYFlow
                       nodesDraggable={nodesDraggable}

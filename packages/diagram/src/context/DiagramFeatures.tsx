@@ -4,6 +4,7 @@ import { map, mapToObj, pick } from 'remeda'
 import { useUpdateEffect } from '../hooks'
 
 const FeatureNames = [
+  'ReadOnly',
   'FocusMode',
   'NavigateTo',
   'ElementDetails',
@@ -11,6 +12,13 @@ const FeatureNames = [
   'RelationshipBrowser',
   'Search',
   'NavigationButtons',
+  'Notations',
+  'DynamicViewWalkthrough',
+  'EdgeEditing',
+  /**
+   * Running in VSCode
+   */
+  'Vscode',
 ] as const
 type FeatureName = typeof FeatureNames[number]
 export type EnabledFeatures = {
@@ -22,8 +30,6 @@ export const AllDisabled: EnabledFeatures = mapToObj(
   (name) => [`enable${name}`, false] as const,
 )
 const DiagramFeaturesContext = createContext<EnabledFeatures>(AllDisabled)
-
-const isEnabled = (features: EnabledFeatures, name: FeatureName) => features[`enable${name}`]
 
 export function DiagramFeatures({
   children,

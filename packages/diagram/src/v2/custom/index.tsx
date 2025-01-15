@@ -1,5 +1,5 @@
 import { type NodeId, nonNullable } from '@likec4/core'
-import { useMemo, useTransition } from 'react'
+import { useTransition } from 'react'
 import {
   CompoundDetailsButton,
   CompoundNodeContainer,
@@ -19,11 +19,11 @@ import { DeploymentElementActions } from './DeploymentElementActions'
 import { ElementActions } from './ElementActions'
 import { RelationshipEdge } from './RelationshipEdge'
 
-export function useNodeTypes() {
-  const { send } = useDiagramActor()
-  const [, startTransition] = useTransition()
-  return useMemo(() => ({
-    element: customNode<Types.ElementNodeData>((props) => (
+export const nodeTypes = {
+  element: customNode<Types.ElementNodeData>((props) => {
+    const { send } = useDiagramActor()
+    const [, startTransition] = useTransition()
+    return (
       <ElementNodeContainer {...props}>
         <ElementShape {...props} />
         <ElementTitle {...props} />
@@ -43,8 +43,12 @@ export function useNodeTypes() {
         </IfEnabled>
         <DefaultHandles />
       </ElementNodeContainer>
-    )),
-    deployment: customNode<Types.DeploymentElementNodeData>((props) => (
+    )
+  }),
+  deployment: customNode<Types.DeploymentElementNodeData>((props) => {
+    const { send } = useDiagramActor()
+    const [, startTransition] = useTransition()
+    return (
       <ElementNodeContainer {...props}>
         <ElementShape {...props} />
         <ElementTitle {...props} />
@@ -65,8 +69,12 @@ export function useNodeTypes() {
         </IfEnabled>
         <DefaultHandles />
       </ElementNodeContainer>
-    )),
-    'compound-element': customNode<Types.CompoundElementNodeData>((props) => (
+    )
+  }),
+  'compound-element': customNode<Types.CompoundElementNodeData>((props) => {
+    const { send } = useDiagramActor()
+    const [, startTransition] = useTransition()
+    return (
       <CompoundNodeContainer {...props}>
         <CompoundTitle {...props} />
         <CompoundActions {...props} />
@@ -85,24 +93,22 @@ export function useNodeTypes() {
         </IfEnabled>
         <DefaultHandles />
       </CompoundNodeContainer>
-    )),
-    'compound-deployment': customNode<Types.CompoundDeploymentNodeData>((props) => (
-      <CompoundNodeContainer {...props}>
-        <CompoundTitle {...props} />
-        <DefaultHandles />
-      </CompoundNodeContainer>
-    )),
-    'view-group': customNode<Types.ViewGroupNodeData>((props) => (
-      <CompoundNodeContainer {...props}>
-        <CompoundTitle {...props} />
-        <DefaultHandles />
-      </CompoundNodeContainer>
-    )),
-  } satisfies { [key in Types.Node['type']]: any }), [])
-}
+    )
+  }),
+  'compound-deployment': customNode<Types.CompoundDeploymentNodeData>((props) => (
+    <CompoundNodeContainer {...props}>
+      <CompoundTitle {...props} />
+      <DefaultHandles />
+    </CompoundNodeContainer>
+  )),
+  'view-group': customNode<Types.ViewGroupNodeData>((props) => (
+    <CompoundNodeContainer {...props}>
+      <CompoundTitle {...props} />
+      <DefaultHandles />
+    </CompoundNodeContainer>
+  )),
+} satisfies { [key in Types.Node['type']]: any }
 
-export function useEdgeTypes() {
-  return useMemo(() => ({
-    relationship: RelationshipEdge,
-  } satisfies { [key in Types.Edge['type']]: any }), [])
-}
+export const edgeTypes = {
+  relationship: RelationshipEdge,
+} satisfies { [key in Types.Edge['type']]: any }

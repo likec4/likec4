@@ -1,17 +1,15 @@
 import type { NodeId } from '@likec4/core'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
-import { useTransition } from 'react'
 import { ElementActionButtons } from '../../base/primitives'
 import type { NodeProps } from '../../base/types'
 import { useEnabledFeature } from '../../context'
-import { useDiagramActor } from '../hooks'
+import { useDiagram } from '../hooks/useDiagram'
 import type { Types } from '../types'
 
 type DeploymentElementActionsProps = NodeProps<Types.DeploymentElementNodeData>
 export const DeploymentElementActions = (props: DeploymentElementActionsProps) => {
   const { enableNavigateTo, enableRelationshipBrowser } = useEnabledFeature('NavigateTo', 'RelationshipBrowser')
-  const { send } = useDiagramActor()
-  const [, startTransition] = useTransition()
+  const diagram = useDiagram()
 
   const buttons = [] as ElementActionButtons.Item[]
 
@@ -22,9 +20,7 @@ export const DeploymentElementActions = (props: DeploymentElementActionsProps) =
       icon: <IconZoomScan />,
       onClick: (e) => {
         e.stopPropagation()
-        startTransition(() => {
-          send({ type: 'navigateTo', viewId: navigateTo, fromNode: props.id as NodeId })
-        })
+        diagram.navigateTo(navigateTo, props.id as NodeId)
       },
     })
   }
