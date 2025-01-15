@@ -6,11 +6,12 @@ import {
   type CustomRelationExpr,
   type ElementExpression as C4ElementExpression,
   type Expression as C4Expression,
-  isElementPredicateExpr,
   type NonEmptyArray,
   type ViewRuleStyle,
   type WhereOperator,
+  isElementPredicateExpr,
 } from '../types'
+import type { KindEqual, Participant, TagEqual } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 
 export interface LikeC4ViewBuilder<
@@ -59,10 +60,14 @@ export namespace ViewPredicate {
 
   export type WhereTag<Tag extends string> = `tag ${'is' | 'is not'} #${Tag}`
   export type WhereKind<Kind extends string> = `kind ${'is' | 'is not'} ${Kind}`
+  export type WhereParticipant<Types extends AnyTypes> = `${Participant}.${
+    | WhereTag<Types['Tag']>
+    | WhereKind<Types['ElementKind']>}`
 
   export type WhereEq<Types extends AnyTypes> =
     | ViewPredicate.WhereTag<Types['Tag']>
     | ViewPredicate.WhereKind<Types['ElementKind']>
+    | ViewPredicate.WhereParticipant<Types>
 
   export type WhereOperator<Types extends AnyTypes> = ViewPredicate.WhereEq<Types> | {
     and: NonEmptyArray<ViewPredicate.WhereOperator<Types>>
@@ -115,6 +120,20 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
           kind: {
             eq: op.replace('kind is ', ''),
           },
+        }
+      case op.startsWith('source.'):
+        return {
+          operator: parseWhere(op.replace('source.', '') as ViewPredicate.WhereOperator<AnyTypes>) as
+            | KindEqual<string>
+            | TagEqual<string>,
+          participant: 'source',
+        }
+      case op.startsWith('target.'):
+        return {
+          operator: parseWhere(op.replace('target.', '') as ViewPredicate.WhereOperator<AnyTypes>) as
+            | KindEqual<string>
+            | TagEqual<string>,
+          participant: 'target',
         }
       default:
         throw new Error(`Unknown where operator: ${where}`)

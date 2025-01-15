@@ -415,9 +415,9 @@ WhereRelation:
   {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
   {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]? |
   {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[ElementKind:Id]?
+  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]?
 ;
-
+type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
 type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
 type WhereKindEqual = WhereElementKind | WhereRelationKind | WhereRelationParticipantKind;
 
