@@ -142,24 +142,4 @@ describe('RelationPredicate', () => {
       })
     })
   })
-
-  describe('exclude', () => {
-    describe('element -> *', () => {
-      const t = TestHelper.from(builder.deployment((_, deploymentModel) =>
-        deploymentModel(
-          _.node('a'),
-          _.node('a.b1'),
-          _.node('a.b1.c').with(
-            _.instanceOf('cloud.ui'),
-            _.instanceOf('cloud.backend.api'),
-          ),
-          _.node('a.b2'),
-          _.node('a.b2.c').with(
-            _.instanceOf('cloud.ui'),
-            _.instanceOf('cloud.backend.api'),
-          ),
-        )
-      ))
-    })
-  })
 })
