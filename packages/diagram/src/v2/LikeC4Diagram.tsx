@@ -7,6 +7,7 @@ import { EnsureMantine } from '../ui/EnsureMantine'
 import { FramerMotionConfig } from '../ui/FramerMotionConfig'
 import { DiagramActor } from './DiagramActor'
 import type { Types } from './types'
+import { Controls } from './ui'
 import { useViewToNodesEdges } from './useViewToNodesEdges'
 import { LikeC4DiagramXYFlow } from './XYFlow'
 
@@ -104,7 +105,7 @@ export function LikeC4DiagramV2({
               enableRelationshipDetails,
               enableRelationshipBrowser,
               enableSearch,
-              enableNavigationButtons: showNavigationButtons,
+              enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
               enableDynamicViewWalkthrough,
               enableEdgeEditing: experimentalEdgeEditing,
               enableNotations: showNotations,
@@ -148,6 +149,7 @@ export function LikeC4DiagramV2({
                       initialHeight={initialRef.current.initialHeight}
                       initialWidth={initialRef.current.initialWidth}
                     />
+                    <Controls />
                   </DiagramActor>
                 </XYFlowProvider>
               </DiagramContainer>

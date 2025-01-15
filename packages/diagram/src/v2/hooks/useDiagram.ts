@@ -11,10 +11,15 @@ export function useDiagram() {
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
       startTransition(() => {
         actor.send({
-          type: 'navigateTo',
+          type: 'navigate.to',
           viewId,
           ...(fromNode && { fromNode }),
         })
+      })
+    },
+    navigate: (direction: 'back' | 'forward') => {
+      startTransition(() => {
+        actor.send({ type: `navigate.${direction}` })
       })
     },
     fitDiagram: () => {

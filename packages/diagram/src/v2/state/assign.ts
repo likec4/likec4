@@ -1,8 +1,9 @@
-import type { DiagramView, NodeId } from '@likec4/core'
+import { type DiagramView, type NodeId, invariant, nonNullable } from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
+import { assertEvent } from 'xstate'
 import { BaseTypes } from '../../base'
 import type { Types } from '../types'
-import type { Context } from './machine'
+import type { Context, Events } from './machine'
 
 export function lastClickedNode(params: { context: Context; event: { node: Types.Node } }): Context['lastClickedNode'] {
   const { lastClickedNode } = params.context
@@ -333,5 +334,115 @@ export function unfocusNodesEdges(params: { context: Context }): Partial<Context
       dimmed: false,
       active: false,
     })),
+  }
+}
+
+export function updateNavigationHistory({ context, event }: { context: Context; event: Events }): Partial<Context> {
+  assertEvent(event, 'update.view')
+  let {
+    view,
+    navigationHistory: {
+      currentIndex,
+      history,
+    },
+    lastOnNavigate,
+    viewport,
+  } = context
+  const stepCurrent = nonNullable(history[currentIndex])
+  if (stepCurrent.viewId !== event.view.id) {
+    const stepBack = currentIndex > 0 ? nonNullable(history[currentIndex - 1]) : null
+    if (stepBack && stepBack.viewId === event.view.id) {
+      return {
+        navigationHistory: {
+          currentIndex: currentIndex - 1,
+          history,
+        },
+      }
+    }
+    const stepForward = currentIndex < history.length - 1 ? nonNullable(history[currentIndex + 1]) : null
+    if (stepForward && stepForward.viewId === event.view.id) {
+      return {
+        navigationHistory: {
+          currentIndex: currentIndex + 1,
+          history,
+        },
+      }
+    }
+
+    history = [
+      ...history.slice(0, currentIndex + 1),
+      {
+        viewId: event.view.id,
+        fromNode: lastOnNavigate?.fromNode ?? null,
+        viewport: { ...viewport },
+      },
+    ]
+    currentIndex = history.length - 1
+    return {
+      navigationHistory: {
+        currentIndex,
+        history,
+      },
+    }
+  } else {
+    // We are navigating to the same view as in the history
+    if (stepCurrent.fromNode && !lastOnNavigate) {
+      return {
+        lastOnNavigate: {
+          fromView: view.id,
+          toView: event.view.id,
+          fromNode: stepCurrent.fromNode,
+        },
+      }
+    }
+  }
+
+  return {}
+}
+
+export function navigateBack(params: { context: Context }): Partial<Context> {
+  const {
+    view,
+    navigationHistory: {
+      currentIndex,
+      history,
+    },
+  } = params.context
+  invariant(currentIndex > 0, 'Cannot navigate back')
+  const { fromNode } = history[currentIndex]!
+  const stepBack = history[currentIndex - 1]!
+  return {
+    navigationHistory: {
+      currentIndex: currentIndex - 1,
+      history,
+    },
+    lastOnNavigate: {
+      fromView: view.id,
+      toView: stepBack.viewId,
+      fromNode,
+    },
+  }
+}
+
+export function navigateForward(params: { context: Context }): Partial<Context> {
+  const {
+    view,
+    navigationHistory: {
+      currentIndex,
+      history,
+    },
+  } = params.context
+  invariant(currentIndex < history.length - 1, 'Cannot navigate forward')
+  const stepForward = history[currentIndex + 1]!
+  return {
+    navigationHistory: {
+      currentIndex: currentIndex + 1,
+      history,
+    },
+    lastOnNavigate: {
+      fromView: view.id,
+      toView: stepForward.viewId,
+      fromNode: stepForward.fromNode,
+    },
   }
 }

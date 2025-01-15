@@ -37,11 +37,28 @@ import type { EnabledFeatures } from '../../context'
 import { AllDisabled } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
-import { focusNodesEdges, lastClickedNode, mergeUpdateViewEvent, unfocusNodesEdges } from './assign'
+import {
+  focusNodesEdges,
+  lastClickedNode,
+  mergeUpdateViewEvent,
+  navigateBack,
+  navigateForward,
+  unfocusNodesEdges,
+  updateNavigationHistory,
+} from './assign'
 import { type HotKeyEvent, hotkeyActor } from './hotkeyActor'
 import { focusedBounds } from './utils'
 
 type StoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
+
+interface NavigationHistory {
+  history: ReadonlyArray<{
+    viewId: ViewId
+    fromNode: NodeId | null
+    viewport: Viewport
+  }>
+  currentIndex: number
+}
 
 export type Input = {
   view: DiagramView
@@ -65,6 +82,7 @@ export type Context = Readonly<
       toView: ViewId
       fromNode: NodeId | null
     }
+    navigationHistory: NavigationHistory
     lastClickedNode: null | {
       id: NodeId
       clicks: number
@@ -89,7 +107,9 @@ export type Events =
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'openElementDetails'; fqn: Fqn; fromNode?: NodeId }
-  | { type: 'navigateTo'; viewId: ViewId; fromNode?: NodeId }
+  | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId }
+  | { type: 'navigate.back' }
+  | { type: 'navigate.forward' }
 
 export const likeC4ViewMachine = setup({
   types: {
@@ -101,17 +121,15 @@ export const likeC4ViewMachine = setup({
     events: {} as Events,
   },
   guards: {
-    'hasLastOnNavigate': ({ context }) => context.lastOnNavigate !== null,
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
-    'viewport not moved': ({ context }) => !context.viewportChangedManually,
     'is another view': ({ context, event }) => {
-      assertEvent(event, ['update.view', 'navigateTo'])
+      assertEvent(event, ['update.view', 'navigate.to'])
       if (event.type === 'update.view') {
         return context.view.id !== event.view.id
       }
-      if (event.type === 'navigateTo') {
+      if (event.type === 'navigate.to') {
         return context.view.id !== event.viewId
       }
       nonexhaustive(event.type)
@@ -163,7 +181,7 @@ export const likeC4ViewMachine = setup({
       const { x, y } = params
       invariant(context.xyflow, 'xyflow is not initialized')
       const zoom = context.xyflow.getZoom()
-      context.xyflow.setCenter(x, y, { zoom })
+      context.xyflow.setCenter(Math.round(x), Math.round(y), { zoom })
     },
 
     'xyflow:setViewport': ({ context }, params: { viewport: Viewport; duration?: number }) => {
@@ -205,6 +223,10 @@ export const likeC4ViewMachine = setup({
     lastClickedNode: null,
     focusedNode: null,
     viewportBeforeFocus: null,
+    navigationHistory: {
+      currentIndex: 0,
+      history: [],
+    },
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
   }),
@@ -216,6 +238,14 @@ export const likeC4ViewMachine = setup({
             assign({
               initialized: true,
               xyflow: ({ event }) => event.instance,
+              navigationHistory: ({ context, event }) => ({
+                currentIndex: 0,
+                history: [{
+                  viewId: context.view.id,
+                  fromNode: null,
+                  viewport: { ...event.instance.getViewport() },
+                }],
+              }),
             }),
             {
               type: 'xyflow:fitDiagram',
@@ -270,7 +300,7 @@ export const likeC4ViewMachine = setup({
         assign(s => ({
           ...focusNodesEdges(s),
           hotkeyActor: s.spawn('hotkeyActor', { id: 'hotkey' }),
-          viewportBeforeFocus: s.context.viewportBeforeFocus ?? { ...s.context.viewport },
+          viewportBeforeFocus: { ...s.context.viewport },
         })),
         {
           type: 'xyflow:fitDiagram',
@@ -312,13 +342,14 @@ export const likeC4ViewMachine = setup({
           } else {
             enqueue({ type: 'xyflow:fitDiagram' })
           }
+          enqueue.assign((s) => ({
+            ...unfocusNodesEdges(s),
+            viewportBeforeFocus: null,
+            hotkeyActor: null,
+            focusedNode: null,
+            lastClickedNode: null,
+          }))
         }),
-        assign((s) => ({
-          ...unfocusNodesEdges(s),
-          hotkeyActor: null,
-          focusedNode: null,
-          lastClickedNode: null,
-        })),
       ],
     },
     // Navigating to a new view (after `navigateTo` event)
@@ -335,31 +366,34 @@ export const likeC4ViewMachine = setup({
           },
           on: {
             'update.view': {
-              actions: enqueueActions(({ enqueue, context, event }) => {
-                const { fromNode, toNode } = findCorrespondingNode(context, event)
-                if (fromNode && toNode) {
-                  enqueue({
-                    type: 'xyflow:alignNodeFromToAfterNavigate',
-                    params: {
-                      fromNode: fromNode.id,
-                      toPosition: {
-                        x: toNode.position[0],
-                        y: toNode.position[1],
+              actions: [
+                assign(updateNavigationHistory),
+                enqueueActions(({ enqueue, context, event }) => {
+                  const { fromNode, toNode } = findCorrespondingNode(context, event)
+                  if (fromNode && toNode) {
+                    enqueue({
+                      type: 'xyflow:alignNodeFromToAfterNavigate',
+                      params: {
+                        fromNode: fromNode.id,
+                        toPosition: {
+                          x: toNode.position[0],
+                          y: toNode.position[1],
+                        },
                       },
-                    },
+                    })
+                  } else {
+                    enqueue({
+                      type: 'xyflow:setViewportCenter',
+                      params: getBBoxCenter(event.view.bounds),
+                    })
+                  }
+                  enqueue.assign(mergeUpdateViewEvent)
+                  enqueue.assign({
+                    lastOnNavigate: null,
                   })
-                } else {
-                  enqueue({
-                    type: 'xyflow:setViewportCenter',
-                    params: getBBoxCenter(event.view.bounds),
-                  })
-                }
-                enqueue.assign(mergeUpdateViewEvent)
-                enqueue.assign({
-                  lastOnNavigate: null,
-                })
-                enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
-              }),
+                  enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
+                }),
+              ],
               target: 'done',
             },
           },
@@ -399,7 +433,7 @@ export const likeC4ViewMachine = setup({
         params: prop('event'),
       },
     },
-    'navigateTo': {
+    'navigate.to': {
       guard: 'is another view',
       actions: [
         assign({
@@ -412,20 +446,34 @@ export const likeC4ViewMachine = setup({
       ],
       target: '.navigating',
     },
+    'navigate.back': {
+      guard: ({ context }: { context: Context }) => context.navigationHistory.currentIndex > 0,
+      actions: assign(navigateBack),
+      target: '.navigating',
+    },
+    'navigate.forward': {
+      guard: ({ context }: { context: Context }) =>
+        context.navigationHistory.currentIndex < context.navigationHistory.history.length - 1,
+      actions: assign(navigateForward),
+      target: '.navigating',
+    },
     'update.view': {
-      actions: enqueueActions(({ enqueue, event, check }) => {
-        const isAnotherView = check('is another view')
-        if (isAnotherView) {
-          enqueue({
-            type: 'xyflow:setViewportCenter',
-            params: getBBoxCenter(event.view.bounds),
-          })
-        }
-        if (isAnotherView || check('viewport not moved')) {
-          enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
-        }
-        enqueue.assign(mergeUpdateViewEvent)
-      }),
+      actions: [
+        assign(updateNavigationHistory),
+        enqueueActions(({ enqueue, event, check, context }) => {
+          const isAnotherView = check('is another view')
+          if (isAnotherView) {
+            enqueue({
+              type: 'xyflow:setViewportCenter',
+              params: getBBoxCenter(event.view.bounds),
+            })
+          }
+          if (isAnotherView || !context.viewportChangedManually) {
+            enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
+          }
+          enqueue.assign(mergeUpdateViewEvent)
+        }),
+      ],
     },
     'update.inputs': {
       actions: assign(({ event }) => ({ ...event.inputs })),
@@ -448,6 +496,6 @@ function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
 }
 
 export type Logic = typeof likeC4ViewMachine
-export type State = SnapshotFrom<typeof likeC4ViewMachine>
+export type MachineSnapshot = SnapshotFrom<typeof likeC4ViewMachine>
 
 export const LikeC4ViewMachineContext = createActorContext(likeC4ViewMachine)

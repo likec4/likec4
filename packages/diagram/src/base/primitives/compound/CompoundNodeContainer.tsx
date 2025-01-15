@@ -33,7 +33,7 @@ export function CompoundNodeContainer({
     max: 1,
   })
   if (isTransparent && isHovered) {
-    opacity = Math.min(opacity + 0.1, 1)
+    opacity = Math.min(opacity + 0.11, 1)
   }
   const MAX_TRANSPARENCY = 40
   const borderTransparency = clamp(MAX_TRANSPARENCY - opacity * MAX_TRANSPARENCY, {

@@ -39,7 +39,7 @@ export const compoundBg = style({
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
   padding: 0,
   margin: 0,
-  transition: `all 220ms ${easings.inOut}`,
+  transition: `all 250ms ${easings.inOut}`,
   // backgroundClip: 'padding-box',
   // overflow: 'hidden',
   cursor: 'default',
@@ -52,6 +52,13 @@ export const compoundBg = style({
       outline: `3px solid ${outlineColor}`,
       outlineOffset: rem(1.5),
     },
+    [`:where([data-compound-transparent="true"]) &`]: {
+      opacity: varCompoundOpacity,
+    },
+    [`:where([data-compound-transparent="true"]:is([data-hovered="true"])) &`]: {
+      transitionDelay: '0.15s',
+      transitionDuration: '0.4s',
+    },
   },
   position: 'absolute',
   top: 0,
@@ -62,9 +69,6 @@ export const compoundBg = style({
   border: '0px solid transparent',
   background: vars.element.fill,
   backgroundClip: 'border-box',
-})
-globalStyle(`:where([data-compound-transparent="true"]) ${compoundBg}`, {
-  opacity: varCompoundOpacity,
 })
 
 globalStyle(`:where([data-mantine-color-scheme='dark'] [data-compound-transparent="true"])`, {
