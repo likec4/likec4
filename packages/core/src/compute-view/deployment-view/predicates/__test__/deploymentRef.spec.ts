@@ -2,7 +2,7 @@ import { describe, it } from 'vitest'
 import { Builder } from '../../../../builder'
 import { TestHelper } from '../../__test__/TestHelper'
 
-describe('Wildcard', () => {
+describe('DeploymentRef', () => {
   const builder = Builder
     .specification({
       elements: {
@@ -43,7 +43,7 @@ describe('Wildcard', () => {
       )
     )
 
-  const { $include, $exclude } = TestHelper
+  const { $include } = TestHelper
 
   it('include *', () => {
     const t = TestHelper.from(builder.deployment(({ nd, instanceOf }, d) =>

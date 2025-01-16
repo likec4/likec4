@@ -84,6 +84,9 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
               case ast.isFqnExpr(expr):
                 exprs.unshift(this.parseFqnExpr(expr))
                 break
+              case ast.isElementPredicateWhereV2(expr):
+                exprs.unshift(this.parseElementWhereExpr(expr))
+                break
               case ast.isRelationExpr(expr):
                 exprs.unshift(this.parseRelationExpr(expr))
                 break

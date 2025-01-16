@@ -279,6 +279,44 @@ describe('Stage', () => {
         ]
       `)
     })
+    
+    it('should keep explicit element explicit when neighbour is excluded', () => {
+      const model = createModel()
+      const zone1 = model.deployment.element('prod.eu.zone1')
+      const ui = model.deployment.element('prod.eu.zone1.ui')
+      const api = model.deployment.element('prod.eu.zone1.api')
+      const customer = model.deployment.element('customer')
+      const connection = findConnection(customer, ui)
+
+      const memory = Memory.empty().update({
+        elements: new Set([zone1, ui, api, customer]),
+        explicits: new Set([zone1, customer]),
+        final: new Set([zone1, ui, customer]),
+        connections: [...connection],
+      })
+      const stage = new StageExclude(memory, { wildcard: true })
+      stage.exclude(ui)
+
+      const result = omit(toReadableMemory(stage.commit()), ['connections'])
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "elements": [
+            "prod.eu.zone1",
+            "prod.eu.zone1.api",
+            "customer",
+          ],
+          "explicits": [
+            "prod.eu.zone1",
+            "customer",
+          ],
+          "final": [
+            "prod.eu.zone1",
+            "customer",
+          ],
+        }
+      `)
+    })
   })
 })
 

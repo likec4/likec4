@@ -1,4 +1,4 @@
-export * from './elements'
+export * from './deploymentRefs'
 export * from './relation-direct'
 export * from './relation-in-out'
 export * from './relation-incoming'

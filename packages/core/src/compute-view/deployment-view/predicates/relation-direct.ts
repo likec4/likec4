@@ -119,8 +119,9 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
 
         connections = pipe(
           sources,
-          flatMap(s => matchConnections(findConnectionsBetween(s, targets, dir), where)),
+          flatMap(s => findConnectionsBetween(s, targets, dir)),
           filter(c => isSource(c) && isTarget(c)),
+          applyPredicate(where),
         )
       }
     }
@@ -144,7 +145,7 @@ export const DirectRelationPredicate: PredicateExecutor<RelationExpr.Direct> = {
     switch (true) {
       // * -> *
       case FqnExpr.isWildcard(expr.source) && FqnExpr.isWildcard(expr.target):
-        stage.excludeConnections(matchConnections(memory.connections, where))
+        stage.excludeConnections(applyPredicate(memory.connections, where))
         return stage
 
       // model -> model
@@ -259,18 +260,4 @@ function matchConnection<M extends AnyAux>(
     ...Array.from(c.relations.model.values()).map(toFilterableRelation(c.source, c.target)),
   ]
     .filter(where).length > 0
-}
-
-function matchConnections<M extends AnyAux>(
-  connections: readonly DeploymentConnectionModel<M>[],
-  where: OperatorPredicate<Filterable> | null,
-): readonly DeploymentConnectionModel[] {
-  if (!where) {
-    return connections
-  }
-
-  return pipe(
-    connections,
-    filter(c => matchConnection(c, where)),
-  )
 }

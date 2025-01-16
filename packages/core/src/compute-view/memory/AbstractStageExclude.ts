@@ -209,7 +209,7 @@ export abstract class AbstractStageExclude<T extends AnyCtx> implements StageExc
       state = this.removeElements(state)
     }
 
-    state = this.moveDisconnectedExplicitsToImplicits(state)
+    //state = this.moveDisconnectedExplicitsToImplicits(state)
 
     return this.memory.update(this.postcommit(state))
   }
