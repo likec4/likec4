@@ -137,6 +137,7 @@ function viewToNodesEdge(opts: {
         },
         dragHandle: '.likec4-compound-title',
       })
+      continue
     }
 
     const modelRef = DiagramNode.modelRef(node)
@@ -231,6 +232,11 @@ function viewToNodesEdge(opts: {
       hidden: !visiblePredicate(edge),
       deletable: false,
       data: {
+        id: edge.id,
+        label: edge.label,
+        technology: edge.technology,
+        navigateTo: edge.navigateTo,
+        labelBBox: edge.labelBBox ?? null,
         points: edge.points,
         color: edge.color ?? 'gray',
         line: edge.line ?? 'dashed',

@@ -1,7 +1,16 @@
 import type { DiagramEdge, DiagramNode, Fqn, ViewId } from '@likec4/core'
 import type { Edge as RFEdge, Node as RFNode } from '@xyflow/react'
-import type { SetRequired, Simplify } from 'type-fest'
+import type { OptionalKeysOf, SetRequired, Simplify } from 'type-fest'
 import type { BaseTypes } from '../base'
+
+type NonOptional<T extends object> = Simplify<
+  & {
+    [P in Exclude<keyof T, OptionalKeysOf<T>>]: T[P]
+  }
+  & {
+    [P in OptionalKeysOf<T>]-?: T[P] | undefined
+  }
+>
 
 type ReactFlowNode<Data extends Record<string, unknown>, NodeType extends string> = SetRequired<
   RFNode<Data, NodeType>,
@@ -16,16 +25,18 @@ type ReactFlowEdge<Data extends Record<string, unknown>, EdgeType extends string
 export namespace Types {
   export type LeafNodeData = Simplify<
     & BaseTypes.NodeData
-    & Pick<
-      DiagramNode,
-      | 'title'
-      | 'technology'
-      | 'description'
-      | 'color'
-      | 'shape'
-      | 'width'
-      | 'level'
-      | 'height'
+    & NonOptional<
+      Pick<
+        DiagramNode,
+        | 'title'
+        | 'technology'
+        | 'description'
+        | 'color'
+        | 'shape'
+        | 'width'
+        | 'level'
+        | 'height'
+      >
     >
     & {
       icon: string | null
@@ -57,15 +68,17 @@ export namespace Types {
 
   export type CompoundNodeData = Simplify<
     & BaseTypes.NodeData
-    & Pick<
-      DiagramNode,
-      | 'title'
-      | 'color'
-      | 'shape'
-      | 'depth'
-      | 'style'
+    & NonOptional<
+      Pick<
+        DiagramNode,
+        | 'title'
+        | 'color'
+        | 'shape'
+        | 'style'
+      >
     >
     & {
+      depth: number
       icon: string | null
     }
   >
@@ -108,14 +121,21 @@ export namespace Types {
 
   export type RelationshipEdgeData = Simplify<
     & BaseTypes.EdgeData
-    & Pick<
-      DiagramEdge,
-      | 'points'
-      | 'dir'
-      | 'color'
-      | 'line'
-      | 'head'
-      | 'tail'
+    & NonOptional<
+      Pick<
+        DiagramEdge,
+        | 'id'
+        | 'label'
+        | 'labelBBox'
+        | 'technology'
+        | 'points'
+        | 'dir'
+        | 'color'
+        | 'line'
+        | 'head'
+        | 'tail'
+        | 'navigateTo'
+      >
     >
   >
 

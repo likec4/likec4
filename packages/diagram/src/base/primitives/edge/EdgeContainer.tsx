@@ -1,13 +1,16 @@
 import type { DiagramEdge } from '@likec4/core'
 import clsx from 'clsx'
 import { type PropsWithChildren } from 'react'
-import type { EdgeProps } from '../../types'
+import type { UndefinedOnPartialDeep } from 'type-fest'
+import type { EdgeProps, NonOptional } from '../../types'
 import * as css from './edge.css'
 
-type Data = Pick<
-  DiagramEdge,
-  | 'dir'
-  | 'color'
+type Data = UndefinedOnPartialDeep<
+  Pick<
+    DiagramEdge,
+    | 'dir'
+    | 'color'
+  >
 >
 
 type EdgeContainerProps = PropsWithChildren<EdgeProps<Data>>

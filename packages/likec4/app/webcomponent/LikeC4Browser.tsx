@@ -3,8 +3,8 @@ import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot } from '@mantine/core'
 import { useTimeoutEffect } from '@react-hookz/web'
 import { memo, useEffect, useState } from 'react'
-import { createRoot, type Root } from 'react-dom/client'
-import { type DiagramView, likeC4Model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
+import { type Root, createRoot } from 'react-dom/client'
+import { type DiagramView, type LikeC4ViewId, likeC4Model, LikeC4Views } from 'virtual:likec4/model'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
@@ -16,8 +16,8 @@ const BrowserModal = memo<{
   {
     view,
     onNavigateTo,
-    onClose
-  }
+    onClose,
+  },
 ) => {
   const [opened, setOpened] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -70,7 +70,6 @@ const BrowserModal = memo<{
                   nodesSelectable={false}
                   nodesDraggable={false}
                   enableSearch={false}
-                  keepAspectRatio={false}
                   experimentalEdgeEditing={false}
                   renderIcon={RenderIcon}
                   onNavigateTo={onNavigateTo} />
@@ -134,7 +133,7 @@ export class LikeC4Browser extends HTMLElement {
 
     this.shadow.adoptedStyleSheets = [
       this.bundledCSS,
-      this.hostCss
+      this.hostCss,
     ]
 
     this.render()
@@ -184,7 +183,7 @@ export class LikeC4Browser extends HTMLElement {
           view={view}
           onNavigateTo={(to) => this.setAttribute('view-id', to)}
           onClose={() => this.close()} />
-      </MantineProvider>
+      </MantineProvider>,
     )
   }
 

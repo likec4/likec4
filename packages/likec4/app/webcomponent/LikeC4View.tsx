@@ -1,8 +1,8 @@
-import { invariant, type ViewId } from '@likec4/core'
+import { type ViewId, invariant } from '@likec4/core'
 import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
-import { createRoot, type Root } from 'react-dom/client'
-import { type DiagramView, likeC4Model, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/model'
+import { type Root, createRoot } from 'react-dom/client'
+import { type DiagramView, type LikeC4ViewId, likeC4Model, LikeC4Views } from 'virtual:likec4/model'
 import { ComponentName } from './const'
 import { RenderIcon } from './RenderIcon'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
@@ -76,7 +76,7 @@ export class LikeC4View extends HTMLElement {
 
     this.shadow.adoptedStyleSheets = [
       this.bundledCSS,
-      this.hostCss
+      this.hostCss,
     ]
     this.render()
   }
@@ -144,7 +144,6 @@ export class LikeC4View extends HTMLElement {
             showNotations={false}
             controls={false}
             nodesSelectable={false}
-            keepAspectRatio={false}
             renderIcon={RenderIcon}
             onNavigateTo={to => {
               this.openBrowser(to)
@@ -158,7 +157,7 @@ export class LikeC4View extends HTMLElement {
             }}
           />
         </LikeC4ModelProvider>
-      </MantineProvider>
+      </MantineProvider>,
     )
   }
 

@@ -6,7 +6,9 @@ import {
 import type { XYPosition } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { hasAtLeast } from 'remeda'
-import { customEdge, EdgeContainer, EdgePath } from '../../base/primitives'
+import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from '../../base/primitives'
+import { useEnabledFeature } from '../../context'
+import { useDiagram } from '../hooks'
 import type { Types } from '../types'
 
 function bezierPath(bezierSpline: NonEmptyArray<Point>) {
@@ -30,14 +32,28 @@ const curve = d3line<XYPosition>()
   .y(d => d.y)
 
 export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) => {
+  const diagram = useDiagram()
+  const { enableNavigateTo } = useEnabledFeature('NavigateTo')
   const {
-    id,
-    data,
+    data: {
+      navigateTo,
+      points,
+    },
   } = props
-  const svgPath = bezierPath(data.points)
+  const svgPath = bezierPath(points)
   return (
     <EdgeContainer {...props}>
       <EdgePath {...props} svgPath={svgPath} />
+      <EdgeLabel {...props}>
+        {enableNavigateTo && navigateTo && (
+          <EdgeActionButton
+            {...props}
+            onClick={e => {
+              e.stopPropagation()
+              diagram.navigateTo(navigateTo)
+            }} />
+        )}
+      </EdgeLabel>
     </EdgeContainer>
   )
 })

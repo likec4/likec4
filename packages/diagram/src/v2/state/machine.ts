@@ -99,6 +99,7 @@ export type Events =
   | { type: 'xyflow.applyEdgeChages'; changes: EdgeChange<Types.Edge>[] }
   | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }
   | { type: 'xyflow.nodeClick'; node: Types.Node }
+  | { type: 'xyflow.edgeClick'; edge: Types.Edge }
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.paneDblClick' }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }

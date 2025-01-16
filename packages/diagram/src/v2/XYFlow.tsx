@@ -60,18 +60,23 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
         e.stopPropagation()
         send({ type: 'xyflow.nodeClick', node })
       })}
+      onEdgeClick={useCallbackRef((e, edge) => {
+        e.stopPropagation()
+        send({ type: 'xyflow.edgeClick', edge })
+      })}
       onPaneClick={useCallbackRef((e) => {
         e.stopPropagation()
         send({ type: 'xyflow.paneClick' })
       })}
       onNodeDoubleClick={stopPropagation}
+      onEdgeDoubleClick={stopPropagation}
       onDoubleClick={useCallbackRef(e => {
         e.stopPropagation()
         send({ type: 'xyflow.paneDblClick' })
       })}
       onMoveEnd={useCallbackRef((event, viewport) => {
         // if event is present, the move was triggered by user
-        send({ type: 'xyflow.viewportMoved', viewport: { ...viewport }, manually: !!event })
+        send({ type: 'xyflow.viewportMoved', viewport, manually: !!event })
       })}
       onInit={useCallbackRef((instance) => {
         send({ type: 'xyflow.init', instance })

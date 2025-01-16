@@ -1,22 +1,26 @@
 import type { DiagramEdge } from '@likec4/core'
 import clsx from 'clsx'
+import { forwardRef } from 'react'
+import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
 import * as css from './edge.css'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
 
-type Data = Pick<
-  DiagramEdge,
-  | 'line'
-  | 'dir'
-  | 'tail'
-  | 'head'
+type Data = UndefinedOnPartialDeep<
+  Pick<
+    DiagramEdge,
+    | 'line'
+    | 'dir'
+    | 'tail'
+    | 'head'
+  >
 >
 
 type EdgePathProps = EdgeProps<Data> & {
   svgPath: string
 }
 
-export function EdgePath({
+export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   id,
   data: {
     line,
@@ -27,7 +31,7 @@ export function EdgePath({
   svgPath,
   style,
   interactionWidth,
-}: EdgePathProps) {
+}, svgPathRef) => {
   let markerStartName = arrowTypeToMarker(tail)
   let markerEndName = arrowTypeToMarker(head ?? 'normal')
   if (dir === 'back') {
@@ -68,7 +72,7 @@ export function EdgePath({
           strokeLinecap={'round'}
         />
         <path
-          // ref={svgPathRef}
+          ref={svgPathRef}
           className={clsx('react-flow__edge-path', css.cssEdgePath)}
           d={svgPath}
           style={style}
@@ -80,4 +84,4 @@ export function EdgePath({
       </g>
     </>
   )
-}
+})

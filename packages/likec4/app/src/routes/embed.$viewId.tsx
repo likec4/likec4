@@ -5,7 +5,7 @@ import { RenderIcon } from '../components/RenderIcon'
 import { useTransparentBackground } from '../hooks'
 
 export const Route = createFileRoute('/embed/$viewId')({
-  component: EmbedPage
+  component: EmbedPage,
 })
 
 function EmbedPage() {
@@ -32,7 +32,7 @@ function EmbedPage() {
         width: '100vw',
         maxWidth: diagram.bounds.width + padding * 2,
         height: 'auto',
-        maxHeight: '100vh'
+        maxHeight: '100vh',
       }}
     >
       <LikeC4Diagram
@@ -55,7 +55,6 @@ function EmbedPage() {
         enableElementDetails={false}
         enableRelationshipBrowser={false}
         experimentalEdgeEditing={false}
-        keepAspectRatio={false}
         renderIcon={RenderIcon}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />

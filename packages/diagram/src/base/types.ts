@@ -5,7 +5,37 @@ import type {
   NodeProps as ReactFlowNodeProps,
 } from '@xyflow/react'
 import { hasSubObject } from 'remeda'
-import type { SetRequired } from 'type-fest'
+import type { OptionalKeysOf, SetRequired, Simplify } from 'type-fest'
+
+/**
+
+To cooperate with `exactOptionalPropertyTypes` in `tsconfig.json`
+
+@example
+```
+interface User {
+	name: string;
+	surname?: string;
+	luckyNumber?: number;
+}
+
+type NonOptionalUser = NonOptional<User>
+
+// NonOptionalUser = {
+//   name: string
+//   surname: string | undefined
+//   luckyNumber: number | undefined
+// }
+```
+ */
+export type NonOptional<T extends object, Keys extends OptionalKeysOf<T> = OptionalKeysOf<T>> = Simplify<
+  & {
+    [P in Exclude<keyof T, Keys>]: T[P]
+  }
+  & {
+    [P in Keys]-?: T[P] | undefined
+  }
+>
 
 /**
  * ReactFlow Custom Node properties with BaseNodeData at least

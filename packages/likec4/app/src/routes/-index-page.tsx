@@ -69,7 +69,6 @@ function DiagramPreview({ diagram }: { diagram: DiagramView }) {
         <StaticLikeC4Diagram
           background={'transparent'}
           view={diagram}
-          keepAspectRatio={false}
           renderIcon={RenderIcon}
           fitView
           fitViewPadding={0.1} />

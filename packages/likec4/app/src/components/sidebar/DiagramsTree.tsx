@@ -178,7 +178,6 @@ function DiagramPreview({
       <HoverCardDropdown style={{ width, height }} p={'xs'} onClick={onClick}>
         <StaticLikeC4Diagram
           view={diagram}
-          keepAspectRatio={false}
           renderIcon={RenderIcon}
           fitView
           fitViewPadding={0}

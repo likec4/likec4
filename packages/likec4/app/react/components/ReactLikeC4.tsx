@@ -107,7 +107,6 @@ export function ReactLikeC4<
           <LikeC4Diagram
             view={view as any}
             showNotations={showNotations && hasNotations}
-            keepAspectRatio={false}
             onNavigateTo={onNavigateTo as any}
             background={background}
             {...props}
