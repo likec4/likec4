@@ -48,14 +48,13 @@ But they refer to deployment nodes and instances.
   The following features are not supported yet or do not work as expected:
  
   - `with` expressions
-  - `where` expressions on elements
   - Shared styles and predicates
   - Relationships browser, Element and Relationship Details popups (work with logical model)
 
   ```likec4
   deployment view prod {
     include *                                   // works
-    include * where tag is #next                // does not work
+    include * where tag is #next                // works (see details below)
     include * with { color: red }               // does not work
 
     include * -> *                              // works
@@ -68,9 +67,9 @@ But they refer to deployment nodes and instances.
   ```
 </Aside>
 
-### Relation filters
-Filtering of relations in deployment views use the same principles as in normal views but takes into account relations and tags defined in deployment model.
-When condition on relation participant is checked the following rules are applied:
+### Filtering
+Filtering in deployment views use the same principles as in normal views but takes into account deployment nodes, relations and tags defined in deployment model.
+When condition on element is checked the following rules are applied:
 - For a deployment instances tags are combined from tags defined in model and tags defined in deployment model
 - For a child of deployment instance the tags defined on child in model are used
 - For a deployment node the tags defined in deployment model are used

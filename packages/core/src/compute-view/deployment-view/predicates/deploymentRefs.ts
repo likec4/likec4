@@ -1,4 +1,4 @@
-import { pipe, reduce } from 'remeda'
+import { filter, forEach, pipe, reduce } from 'remeda'
 import { isDeployedInstance } from '../../../model'
 import { findConnectionsBetween, findConnectionsWithin } from '../../../model/connection/deployment'
 import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model/DeploymentElementModel'
@@ -7,15 +7,18 @@ import type { Elem, IncludePredicateCtx, PredicateExecutor } from '../_types'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
 import type { StageInclude } from '../memory'
 import { deploymentExpressionToPredicate } from '../utils'
+import { applyElementPredicate } from './utils'
 
 export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = {
   include: (ctx) => {
-    const { expr } = ctx
+    const { expr, where } = ctx
     const el = ctx.model.element(expr.ref.deployment)
 
     if (isDeployedInstance(el)) {
-      ctx.stage.addExplicit(el)
-      ctx.stage.connectWithExisting(el)
+      if (applyElementPredicate(el, where)) {
+        ctx.stage.addExplicit(el)
+        ctx.stage.connectWithExisting(el)
+      }
       return ctx.stage
     }
 
@@ -30,16 +33,23 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
         includeDeployedNodeDescendants(el, ctx)
         break
       default: {
-        ctx.stage.addExplicit(el)
-        ctx.stage.connectWithExisting(el)
+        if (applyElementPredicate(el, where)) {
+          ctx.stage.addExplicit(el)
+          ctx.stage.connectWithExisting(el)
+        }
       }
     }
     return ctx.stage
   },
 
-  exclude: ({ expr, stage, memory }) => {
+  exclude: ({ expr, stage, memory, where }) => {
     const exprPredicate = deploymentExpressionToPredicate(expr)
-    stage.exclude([...memory.elements].filter(exprPredicate))
+    const toExclude = pipe(
+      [...memory.elements],
+      filter<DeploymentElementModel>(exprPredicate),
+      applyElementPredicate(where),
+    )
+    stage.exclude(toExclude)
     return stage
   },
 }
@@ -49,9 +59,9 @@ export const DeploymentRefPredicate: PredicateExecutor<FqnExpr.DeploymentRef> = 
  */
 function includeDeployedNodeChildren(
   node: DeploymentNodeModel,
-  { stage }: IncludePredicateCtx,
+  { stage, where }: IncludePredicateCtx,
 ) {
-  const children = [...node.children()]
+  const children = applyElementPredicate([...node.children()], where)
   if (children.length === 0) {
     return
   }
@@ -68,12 +78,12 @@ function includeDeployedNodeChildren(
  */
 function includeDeployedNodeWithExpanded(
   node: DeploymentNodeModel,
-  { memory, stage }: IncludePredicateCtx,
+  { memory, stage, where }: IncludePredicateCtx,
 ) {
-  const children = [...node.children()]
   stage.addImplicit(node)
   stage.connectWithExisting(node)
 
+  const children = applyElementPredicate([...node.children()], where)
   let hasConnectionsWithVisible = false
   for (const child of children) {
     if (findConnectionsBetween(child, memory.elements).length > 0) {
@@ -99,7 +109,7 @@ function includeDeployedNodeWithExpanded(
  */
 function includeDeployedNodeDescendants(
   node: DeploymentNodeModel,
-  { stage }: IncludePredicateCtx,
+  { stage, where }: IncludePredicateCtx,
 ) {
   const dfs = (node: DeploymentNodeModel): DeploymentElementModel[] => {
     const children = [] as DeploymentElementModel[]
@@ -107,7 +117,9 @@ function includeDeployedNodeDescendants(
       if (child.isDeploymentNode()) {
         children.push(...dfs(child))
       }
-      children.push(child)
+      if (applyElementPredicate(child, where)) {
+        children.push(child)
+      }
     }
     stage.connectWithExisting(children, 'in')
     stage.addConnections(findConnectionsWithin(children))
@@ -120,14 +132,13 @@ function includeDeployedNodeDescendants(
     return
   }
   stage.connectWithExisting(descendants, 'out')
-  // stage.addImplicit(descendants)
 
-  const allconnected = findConnectedElements(stage)
-  descendants.forEach((desc) => {
-    if (allconnected.has(desc)) {
-      stage.addExplicit(desc)
-    }
-  })
+  const allConnected = findConnectedElements(stage)
+  pipe(
+    descendants,
+    filter(desc => allConnected.has(desc)),
+    forEach(desc => stage.addExplicit(desc)),
+  )
 }
 
 function findConnectedElements(stage: StageInclude) {

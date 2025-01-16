@@ -67,6 +67,7 @@ export namespace ViewPredicate {
   export type WhereEq<Types extends AnyTypes> =
     | ViewPredicate.WhereTag<Types['Tag']>
     | ViewPredicate.WhereKind<Types['ElementKind']>
+    | ViewPredicate.WhereKind<Types['DeploymentKind']>
     | ViewPredicate.WhereParticipant<Types>
 
   export type WhereOperator<Types extends AnyTypes> = ViewPredicate.WhereEq<Types> | {
