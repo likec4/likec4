@@ -350,22 +350,35 @@ export function updateNavigationHistory({ context, event }: { context: Context; 
   } = context
   const stepCurrent = nonNullable(history[currentIndex])
   if (stepCurrent.viewId !== event.view.id) {
-    const stepBack = currentIndex > 0 ? nonNullable(history[currentIndex - 1]) : null
-    if (stepBack && stepBack.viewId === event.view.id) {
-      return {
-        navigationHistory: {
-          currentIndex: currentIndex - 1,
-          history,
-        },
+    // Navigation by browser back/forward ?
+    if (!lastOnNavigate) {
+      const stepBack = currentIndex > 0 ? nonNullable(history[currentIndex - 1]) : null
+      if (stepBack && stepBack.viewId === event.view.id) {
+        return {
+          navigationHistory: {
+            currentIndex: currentIndex - 1,
+            history,
+          },
+          lastOnNavigate: {
+            fromView: stepCurrent.viewId,
+            toView: stepBack.viewId,
+            fromNode: stepCurrent.fromNode,
+          },
+        }
       }
-    }
-    const stepForward = currentIndex < history.length - 1 ? nonNullable(history[currentIndex + 1]) : null
-    if (stepForward && stepForward.viewId === event.view.id) {
-      return {
-        navigationHistory: {
-          currentIndex: currentIndex + 1,
-          history,
-        },
+      const stepForward = currentIndex < history.length - 1 ? nonNullable(history[currentIndex + 1]) : null
+      if (stepForward && stepForward.viewId === event.view.id) {
+        return {
+          navigationHistory: {
+            currentIndex: currentIndex + 1,
+            history,
+          },
+          lastOnNavigate: {
+            fromView: stepCurrent.viewId,
+            toView: stepForward.viewId,
+            fromNode: stepForward.fromNode,
+          },
+        }
       }
     }
 
@@ -384,32 +397,19 @@ export function updateNavigationHistory({ context, event }: { context: Context; 
         history,
       },
     }
-  } else {
-    // We are navigating to the same view as in the history
-    if (stepCurrent.fromNode && !lastOnNavigate) {
-      return {
-        lastOnNavigate: {
-          fromView: view.id,
-          toView: event.view.id,
-          fromNode: stepCurrent.fromNode,
-        },
-      }
-    }
   }
-
   return {}
 }
 
 export function navigateBack(params: { context: Context }): Partial<Context> {
   const {
-    view,
     navigationHistory: {
       currentIndex,
       history,
     },
   } = params.context
   invariant(currentIndex > 0, 'Cannot navigate back')
-  const { fromNode } = history[currentIndex]!
+  const stepCurrent = history[currentIndex]!
   const stepBack = history[currentIndex - 1]!
   return {
     navigationHistory: {
@@ -417,22 +417,22 @@ export function navigateBack(params: { context: Context }): Partial<Context> {
       history,
     },
     lastOnNavigate: {
-      fromView: view.id,
+      fromView: stepCurrent.viewId,
       toView: stepBack.viewId,
-      fromNode,
+      fromNode: stepCurrent.fromNode,
     },
   }
 }
 
 export function navigateForward(params: { context: Context }): Partial<Context> {
   const {
-    view,
     navigationHistory: {
       currentIndex,
       history,
     },
   } = params.context
   invariant(currentIndex < history.length - 1, 'Cannot navigate forward')
+  const stepCurrent = history[currentIndex]!
   const stepForward = history[currentIndex + 1]!
   return {
     navigationHistory: {
@@ -440,7 +440,7 @@ export function navigateForward(params: { context: Context }): Partial<Context> 
       history,
     },
     lastOnNavigate: {
-      fromView: view.id,
+      fromView: stepCurrent.viewId,
       toView: stepForward.viewId,
       fromNode: stepForward.fromNode,
     },

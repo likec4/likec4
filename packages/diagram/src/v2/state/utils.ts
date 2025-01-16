@@ -43,10 +43,10 @@ export function focusedBounds(params: { context: Context }): { bounds: BBox; dur
   return {
     duration: 350,
     bounds: {
-      x: b.minX - 16,
-      y: b.minY - 16,
-      width: b.maxX - b.minX + 32,
-      height: b.maxY - b.minY + 32,
+      x: b.minX - 10,
+      y: b.minY - 10,
+      width: b.maxX - b.minX + 20,
+      height: b.maxY - b.minY + 20,
     },
   }
 }

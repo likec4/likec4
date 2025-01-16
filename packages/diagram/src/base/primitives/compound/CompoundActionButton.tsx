@@ -21,6 +21,7 @@ export function CompoundActionButton({
   return (
     <Box className={clsx(css.container, 'compound-action')}>
       <Box
+        className={clsx('nodrag nopan', css.actionButton)}
         component={m.div}
         initial={false}
         animate={{
@@ -34,13 +35,16 @@ export function CompoundActionButton({
           // y: 1,
         }}
         whileTap={{ scale: 1 }}
-        className={clsx('nodrag nopan', css.actionButton)}
+        // @ts-expect-error onTap handles also pointer events
+        onTap={onClick}
       >
         <ActionIcon
           className={css.actionIcon}
           size={'md'}
           radius="md"
-          onClick={onClick}
+          // Otherwise node receives click event and is selected
+          onClick={stopPropagation}
+          onDoubleClick={stopPropagation}
         >
           {icon ?? <IconZoomScan stroke={2} />}
         </ActionIcon>

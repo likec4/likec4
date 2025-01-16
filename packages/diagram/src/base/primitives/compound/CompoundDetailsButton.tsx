@@ -22,6 +22,7 @@ export function CompoundDetailsButton({
     <Box className={clsx(css.container, 'details-button')} onClick={stopPropagation}>
       <Box
         component={m.div}
+        className={clsx('nodrag nopan', css.actionIconWrapper)}
         initial={false}
         style={{
           originX: 0.45,
@@ -38,14 +39,16 @@ export function CompoundDetailsButton({
           scale: 1.42,
         }}
         whileTap={{ scale: 1.15 }}
-        className={clsx('nodrag nopan', css.actionIconWrapper)}
+        // @ts-expect-error onTap handles also pointer events
+        onTap={onClick}
       >
         <ActionIcon
           className={css.actionIcon}
           size={'md'}
           radius="md"
-          onClick={onClick}
-        >
+          // Otherwise node receives click event and is selected
+          onClick={stopPropagation}
+          onDoubleClick={stopPropagation}>
           {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
         </ActionIcon>
       </Box>

@@ -39,6 +39,7 @@ const DiagramFeaturesContext = createContext<EnabledFeatures>(AllDisabled)
 
 const validate = (features: EnabledFeatures) => {
   let {
+    enableReadOnly,
     enableLikeC4Model,
     enableElementDetails,
     enableRelationshipDetails,
@@ -64,9 +65,16 @@ const validate = (features: EnabledFeatures) => {
       enableSearch = false
     }
   }
+  if (enableReadOnly) {
+    if (rest.enableEdgeEditing) {
+      console.warn('enableEdgeEditing is ignored because enabled ReadOnly')
+      rest.enableEdgeEditing = false
+    }
+  }
 
   return {
     ...rest,
+    enableReadOnly,
     enableLikeC4Model,
     enableElementDetails,
     enableRelationshipDetails,

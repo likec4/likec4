@@ -49,9 +49,8 @@ import {
 import { type HotKeyEvent, hotkeyActor } from './hotkeyActor'
 import { focusedBounds } from './utils'
 
-type StoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
-
-interface NavigationHistory {
+export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
+export interface NavigationHistory {
   history: ReadonlyArray<{
     viewId: ViewId
     fromNode: NodeId | null
@@ -64,7 +63,7 @@ export type Input = {
   view: DiagramView
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
-  xystore: StoreApi
+  xystore: XYStoreApi
   zoomable: boolean
   pannable: boolean
   fitViewPadding: number
@@ -367,7 +366,6 @@ export const likeC4ViewMachine = setup({
           on: {
             'update.view': {
               actions: [
-                assign(updateNavigationHistory),
                 enqueueActions(({ enqueue, context, event }) => {
                   const { fromNode, toNode } = findCorrespondingNode(context, event)
                   if (fromNode && toNode) {
@@ -387,6 +385,7 @@ export const likeC4ViewMachine = setup({
                       params: getBBoxCenter(event.view.bounds),
                     })
                   }
+                  enqueue.assign(updateNavigationHistory)
                   enqueue.assign(mergeUpdateViewEvent)
                   enqueue.assign({
                     lastOnNavigate: null,
@@ -463,15 +462,32 @@ export const likeC4ViewMachine = setup({
         enqueueActions(({ enqueue, event, check, context }) => {
           const isAnotherView = check('is another view')
           if (isAnotherView) {
-            enqueue({
-              type: 'xyflow:setViewportCenter',
-              params: getBBoxCenter(event.view.bounds),
-            })
+            const { fromNode, toNode } = findCorrespondingNode(context, event)
+            if (fromNode && toNode) {
+              enqueue({
+                type: 'xyflow:alignNodeFromToAfterNavigate',
+                params: {
+                  fromNode: fromNode.id,
+                  toPosition: {
+                    x: toNode.position[0],
+                    y: toNode.position[1],
+                  },
+                },
+              })
+            } else {
+              enqueue({
+                type: 'xyflow:setViewportCenter',
+                params: getBBoxCenter(event.view.bounds),
+              })
+            }
           }
           if (isAnotherView || !context.viewportChangedManually) {
             enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
           }
           enqueue.assign(mergeUpdateViewEvent)
+          enqueue.assign({
+            lastOnNavigate: null,
+          })
         }),
       ],
     },

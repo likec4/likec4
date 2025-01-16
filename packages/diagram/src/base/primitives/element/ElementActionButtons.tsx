@@ -1,6 +1,7 @@
 import { ActionIcon, Box } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
+import { stopPropagation } from '../../../xyflow/utils'
 import type { NodeProps } from '../../types'
 import * as css from './ElementActionButtons.css'
 
@@ -45,12 +46,16 @@ export function ElementActionButtons({
             whileHover={{
               scale: 1.35,
             }}
-            onClick={button.onClick}
+            // @ts-expect-error onTap handles also pointer events
+            onTap={button.onClick}
           >
             <ActionIcon
               className={css.actionIcon}
               size={'md'}
               radius="md"
+              // Otherwise node receives click event and is selected
+              onClick={stopPropagation}
+              onDoubleClick={stopPropagation}
             >
               {button.icon}
             </ActionIcon>
