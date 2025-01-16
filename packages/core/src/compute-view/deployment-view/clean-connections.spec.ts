@@ -133,8 +133,11 @@ describe('Clean Connections', () => {
 
     state.next($exclude('z1.s1.api'))
     t.expect(state).toHaveElements(
+      'z1.s1.ui',
       'z1.s2.ui',
       'z1.s2.api',
+      'z1.s2',
+      'z1.s1',
     )
     t.expect(state.memory.connections).toBeEmpty()
 
