@@ -1,7 +1,8 @@
-import type { NonEmptyArray } from '@likec4/core'
+import type { ExclusiveUnion, NonEmptyArray } from '@likec4/core'
+import { useCustomCompareEffect } from '@react-hookz/web'
 import { type PropsWithChildren, createContext, useContext, useState } from 'react'
 import { map, mapToObj, pick } from 'remeda'
-import { useUpdateEffect } from '../hooks'
+import { depsShallowEqual } from '../hooks'
 
 const FeatureNames = [
   'Controls',
@@ -86,20 +87,49 @@ const validate = (features: EnabledFeatures) => {
 export function DiagramFeatures({
   children,
   features,
-}: PropsWithChildren<{ features: EnabledFeatures }>) {
-  const [enabled, setFeatures] = useState(() => validate(features))
+  overrides,
+}: PropsWithChildren<
+  ExclusiveUnion<{
+    features: {
+      features: EnabledFeatures
+    }
+    overrides: {
+      overrides: Partial<EnabledFeatures>
+    }
+  }>
+>) {
+  const scope = useContext(DiagramFeaturesContext)
+  const [enabled, setFeatures] = useState(scope)
 
-  useUpdateEffect(() => {
-    setFeatures(validate({
-      ...AllDisabled,
-      ...features,
-    }))
-  }, [features])
+  useCustomCompareEffect(
+    () => {
+      setFeatures(validate({
+        ...scope,
+        ...features,
+        ...overrides,
+      }))
+    },
+    [scope, features, overrides],
+    depsShallowEqual,
+  )
 
   return (
     <DiagramFeaturesContext.Provider value={enabled}>
       {children}
     </DiagramFeaturesContext.Provider>
+  )
+}
+
+DiagramFeatures.Overlays = ({ children }: PropsWithChildren) => {
+  return (
+    <DiagramFeatures
+      overrides={{
+        enableControls: false,
+        enableReadOnly: true,
+        enableEdgeEditing: false,
+      }}>
+      {children}
+    </DiagramFeatures>
   )
 }
 

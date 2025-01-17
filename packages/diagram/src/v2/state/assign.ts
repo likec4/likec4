@@ -1,7 +1,7 @@
 import { type DiagramView, type NodeId, invariant, nonNullable } from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
 import { assertEvent } from 'xstate'
-import { BaseTypes } from '../../base'
+import { Base } from '../../base'
 import type { Types } from '../types'
 import type { Context, Events } from './machine'
 
@@ -309,19 +309,19 @@ export function focusNodesEdges(params: { context: Context }): Partial<Context> 
     if (edge.source === focusedNode || edge.target === focusedNode) {
       focused.add(edge.source)
       focused.add(edge.target)
-      return BaseTypes.setEdgeState(edge, {
+      return Base.setData(edge, {
         dimmed: false,
         active: true,
       })
     }
-    return BaseTypes.setEdgeState(edge, {
+    return Base.setData(edge, {
       dimmed: true,
       active: false,
     })
   })
 
   return {
-    xynodes: _xynodes.map(n => BaseTypes.setDimmed(n, !focused.has(n.id))),
+    xynodes: _xynodes.map(n => Base.setDimmed(n, !focused.has(n.id))),
     xyedges,
   }
 }
@@ -329,8 +329,8 @@ export function focusNodesEdges(params: { context: Context }): Partial<Context> 
 export function unfocusNodesEdges(params: { context: Context }): Partial<Context> {
   const { xynodes, xyedges } = params.context
   return {
-    xynodes: xynodes.map(BaseTypes.setDimmed(false)),
-    xyedges: xyedges.map(BaseTypes.setEdgeState({
+    xynodes: xynodes.map(Base.setDimmed(false)),
+    xyedges: xyedges.map(Base.setData({
       dimmed: false,
       active: false,
     })),

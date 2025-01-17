@@ -16,6 +16,9 @@ export const cssReactFlow = style({
 export const notInitialized = style({
   opacity: 0,
 })
+globalStyle(`.react-flow.not-initialized`, {
+  opacity: 0,
+})
 
 globalStyle(`.react-flow${cssReactFlow}`, {
   vars: {

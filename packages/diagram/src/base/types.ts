@@ -1,7 +1,7 @@
 import type {
-  Edge as ReactFlowEdge,
+  Edge as RFEdge,
   EdgeProps as ReactFlowEdgeProps,
-  Node as ReactFlowNode,
+  Node as RFNode,
   NodeProps as ReactFlowNodeProps,
 } from '@xyflow/react'
 import { hasSubObject } from 'remeda'
@@ -41,7 +41,7 @@ export type NonOptional<T extends object, Keys extends OptionalKeysOf<T> = Optio
  * ReactFlow Custom Node properties with BaseNodeData at least
  */
 export type NodeProps<T extends Record<string, unknown> = {}> = ReactFlowNodeProps<
-  ReactFlowNode<BaseTypes.NodeData & T, any>
+  RFNode<Base.NodeData & T, any>
 >
 
 /**
@@ -49,47 +49,61 @@ export type NodeProps<T extends Record<string, unknown> = {}> = ReactFlowNodePro
  */
 export type EdgeProps<T extends Record<string, unknown> = {}> = SetRequired<
   ReactFlowEdgeProps<
-    ReactFlowEdge<BaseTypes.EdgeData & T, any>
+    RFEdge<Base.EdgeData & T, any>
   >,
   'data'
 >
 
-export namespace BaseTypes {
+export type ReactFlowNode<Data extends Record<string, unknown>, NodeType extends string> = SetRequired<
+  RFNode<Data, NodeType>,
+  'type' | 'initialWidth' | 'initialHeight'
+>
+
+export type ReactFlowEdge<Data extends Record<string, unknown>, EdgeType extends string> = SetRequired<
+  RFEdge<Data, EdgeType>,
+  'type' | 'data'
+>
+
+export namespace Base {
   // 'immediate' means that the node is dimmed without delay
   export type Dimmed = 'immediate' | boolean
 
-  export type NodeData = {
-    /**
-     * Whether the cursor is hovering over the node
-     */
-    hovered?: boolean
-    /**
-     * Whether the node is dimmed
-     * 'immediate' means that the node is dimmed without delay
-     */
-    dimmed?: Dimmed
-  }
+  export type NodeData<Data extends Record<string, unknown> = {}> = Simplify<
+    Data & {
+      /**
+       * Whether the cursor is hovering over the node
+       */
+      hovered?: boolean
+      /**
+       * Whether the node is dimmed
+       * 'immediate' means that the node is dimmed without delay
+       */
+      dimmed?: Dimmed
+    }
+  >
 
-  export type Node = ReactFlowNode<NodeData>
+  export type Node = RFNode<NodeData>
 
-  export type EdgeData = {
-    /**
-     * Whether the cursor is hovering over the edge
-     */
-    hovered?: boolean
-    /**
-     * Whether the edge is active (animated and highlighted)
-     */
-    active?: boolean
-    /**
-     * Whether the edge is dimmed
-     * 'immediate' means that the edge is dimmed without delay
-     */
-    dimmed?: Dimmed
-  }
+  export type EdgeData<Data extends Record<string, unknown> = {}> = Simplify<
+    Data & {
+      /**
+       * Whether the cursor is hovering over the edge
+       */
+      hovered?: boolean
+      /**
+       * Whether the edge is active (animated and highlighted)
+       */
+      active?: boolean
+      /**
+       * Whether the edge is dimmed
+       * 'immediate' means that the edge is dimmed without delay
+       */
+      dimmed?: Dimmed
+    }
+  >
 
   // export type Edge = SetRequired<ReactFlowEdge<EdgeData, 'relation'>, 'data' | 'type'>
-  export type Edge = SetRequired<ReactFlowEdge<EdgeData>, 'data'>
+  export type Edge = SetRequired<RFEdge<EdgeData>, 'data'>
 
   type WithDimmed = { data: { dimmed?: Dimmed } }
   type WithHovered = { data: { hovered?: boolean } }
@@ -129,25 +143,25 @@ export namespace BaseTypes {
     return (v: T) => _setHovered(v, arg1 as boolean)
   }
 
-  type WithEdgeData = { data: EdgeData }
-  function _setEdgeState<E extends WithEdgeData>(edge: E, state: Partial<EdgeData>): E {
-    if (hasSubObject(edge.data, state)) {
-      return edge
+  type WithData<D> = { data: D }
+  function _setData<D, E extends WithData<D>>(value: E, state: Partial<NoInfer<D>>): E {
+    if (hasSubObject(value.data as any, state as any)) {
+      return value
     }
     return {
-      ...edge,
+      ...value,
       data: {
-        ...edge.data,
+        ...value.data,
         ...state,
       },
     }
   }
-  export function setEdgeState<E extends WithEdgeData>(edge: E, state: Partial<EdgeData>): E
-  export function setEdgeState(state: Partial<EdgeData>): <E extends WithEdgeData>(edge: E) => E
-  export function setEdgeState<E extends WithEdgeData>(arg1: E | Partial<EdgeData>, arg2?: Partial<EdgeData>) {
+  export function setData<E extends WithData<any>>(value: E, state: Partial<E['data']>): E
+  export function setData<E extends WithData<any>>(state: Partial<E['data']>): (value: E) => E
+  export function setData<E extends WithData<any>>(arg1: E | Partial<E['data']>, arg2?: any) {
     if (arg2 !== undefined) {
-      return _setEdgeState(arg1 as E, arg2)
+      return _setData(arg1 as E, arg2)
     }
-    return (edge: E) => _setEdgeState(edge, arg1 as Partial<EdgeData>)
+    return (edge: E) => _setData(edge, arg1 as Partial<EdgeData>)
   }
 }

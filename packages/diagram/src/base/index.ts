@@ -1,9 +1,12 @@
 export { BaseXYFlow, type BaseXYFlowProps } from './BaseXYFlow'
 
 export {
-  BaseTypes,
+  Base,
   type EdgeProps,
   type NodeProps,
+  type NonOptional,
+  type ReactFlowEdge,
+  type ReactFlowNode,
 } from './types'
 
 export { xyflowMachine } from './xyflowMachine'

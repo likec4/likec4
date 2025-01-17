@@ -1,8 +1,9 @@
 import { useCallbackRef } from '@mantine/hooks'
 import { shallowEqual } from 'fast-equals'
-import { type MachineSnapshot, LikeC4ViewMachineContext } from '../state/machine'
+import { useSelector } from '../state/actorContext'
+import { type MachineSnapshot } from '../state/machine'
 
-export function useDiagramActorState<T>(selector: (state: MachineSnapshot) => T, compare = shallowEqual) {
+export function useDiagramActorState<T>(selector: (state: MachineSnapshot) => T, compare = shallowEqual): T {
   const select = useCallbackRef((s: MachineSnapshot) => selector(s))
-  return LikeC4ViewMachineContext.useSelector(select, compare)
+  return useSelector(select, compare)
 }

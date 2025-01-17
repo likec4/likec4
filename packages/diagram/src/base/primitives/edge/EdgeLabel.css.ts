@@ -75,9 +75,11 @@ export const edgeLabelText = style({
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
   lineHeight: 1.185,
+  color: xyvars.edge.labelColor,
 })
 
 export const edgeLabelTechnology = style({
+  color: xyvars.edge.labelColor,
   textAlign: 'center',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(11),
@@ -119,7 +121,7 @@ export const actionBtn = style({
   pointerEvents: 'all',
   color: xyvars.edge.labelColor,
   cursor: 'pointer',
-  opacity: 1,
+  opacity: 0.75,
   transition: transitions.fast,
   backgroundColor: 'var(--ai-bg)',
   vars: {
@@ -131,6 +133,11 @@ export const actionBtn = style({
   },
   ':active': {
     transform: 'translateY(-1px) scale(0.9)',
+  },
+  selectors: {
+    ':where([data-edge-hovered="true"]) &': {
+      opacity: 1,
+    },
   },
 })
 globalStyle(`${actionBtn} .tabler-icon`, {

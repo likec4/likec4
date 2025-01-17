@@ -1,7 +1,7 @@
 import type { DiagramEdge, DiagramNode, Fqn, ViewId } from '@likec4/core'
-import type { Edge as RFEdge, Node as RFNode } from '@xyflow/react'
-import type { OptionalKeysOf, SetRequired, Simplify } from 'type-fest'
-import type { BaseTypes } from '../base'
+import type { OptionalKeysOf, Simplify } from 'type-fest'
+import type { Base } from '../base'
+import type { ReactFlowEdge, ReactFlowNode } from '../base/types'
 
 type NonOptional<T extends object> = Simplify<
   & {
@@ -12,19 +12,8 @@ type NonOptional<T extends object> = Simplify<
   }
 >
 
-type ReactFlowNode<Data extends Record<string, unknown>, NodeType extends string> = SetRequired<
-  RFNode<Data, NodeType>,
-  'type' | 'initialWidth' | 'initialHeight'
->
-
-type ReactFlowEdge<Data extends Record<string, unknown>, EdgeType extends string> = SetRequired<
-  RFEdge<Data, EdgeType>,
-  'type' | 'data'
->
-
 export namespace Types {
-  export type LeafNodeData = Simplify<
-    & BaseTypes.NodeData
+  export type LeafNodeData = Base.NodeData<
     & NonOptional<
       Pick<
         DiagramNode,
@@ -66,8 +55,7 @@ export namespace Types {
       modelRef: Fqn | null
     }
 
-  export type CompoundNodeData = Simplify<
-    & BaseTypes.NodeData
+  export type CompoundNodeData = Base.NodeData<
     & NonOptional<
       Pick<
         DiagramNode,
@@ -119,9 +107,8 @@ export namespace Types {
 
   export type NodeData = Node['data']
 
-  export type RelationshipEdgeData = Simplify<
-    & BaseTypes.EdgeData
-    & NonOptional<
+  export type RelationshipEdgeData = Base.EdgeData<
+    NonOptional<
       Pick<
         DiagramEdge,
         | 'id'

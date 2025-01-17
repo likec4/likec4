@@ -4,8 +4,10 @@ import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, useEffect } from 'react'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../context'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
+import { useDiagramActor } from './hooks'
+import { LikeC4ViewMachineContextProvider } from './state/actorContext'
 import { useInspector } from './state/inspector'
-import { type Input, likeC4ViewMachine, LikeC4ViewMachineContext } from './state/machine'
+import { type Input, likeC4ViewMachine } from './state/machine'
 import type { Types } from './types'
 
 type ActorContextInput = Omit<Input, 'xystore' | 'features'>
@@ -16,7 +18,7 @@ export function DiagramActor({ input, children }: PropsWithChildren<{ input: Act
   const inspector = useInspector()
   return (
     (
-      <LikeC4ViewMachineContext.Provider
+      <LikeC4ViewMachineContextProvider
         logic={likeC4ViewMachine.provide({
           actions: {
             'trigger:NavigateTo': useCallbackRef((_, { viewId }) => {
@@ -39,14 +41,14 @@ export function DiagramActor({ input, children }: PropsWithChildren<{ input: Act
       >
         <SyncStore input={input} />
         {children}
-      </LikeC4ViewMachineContext.Provider>
+      </LikeC4ViewMachineContextProvider>
     )
   )
 }
 
 const SyncStore = ({ input: { view, xyedges, xynodes, ...inputs } }: { input: ActorContextInput }) => {
   const features = useEnabledFeatures()
-  const { send } = LikeC4ViewMachineContext.useActorRef()
+  const { send } = useDiagramActor()
   useUpdateEffect(() => {
     send({ type: 'update.inputs', inputs })
   }, [send, inputs])

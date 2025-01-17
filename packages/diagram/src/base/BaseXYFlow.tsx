@@ -9,43 +9,19 @@ import clsx from 'clsx'
 import { useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import * as css from '../LikeC4Diagram.css'
+import { stopPropagation } from '../xyflow/utils'
 import { type XYBackground, Background } from './Background'
 import { MaxZoom, MinZoom } from './const'
-import { BaseTypes } from './types'
+import { Base } from './types'
 
-// type StoreSnapshot<NodeType, EdgeType> = Snapshot<unknown> & {
-//   context: {
-//     initialized: boolean
-//     xynodes: NodeType[]
-//     xyedges: EdgeType[]
-//   }
-// }
-
-// type BaseActorRef<
-//   NodeType extends BaseTypes.Node,
-//   EdgeType extends BaseTypes.Edge,
-// > = ActorRef<
-//   StoreSnapshot<NodeType, EdgeType>,
-//   ExtractEventsFromPayloadMap<{
-//     onInit: {}
-//     applyNodeChanges: {
-//       changes: NodeChange<NodeType>[]
-//     }
-//     applyEdgeChanges: {
-//       changes: EdgeChange<EdgeType>[]
-//     }
-//   }>,
-//   any
-// >
-
-export type BaseXYFlowProps<NodeType extends BaseTypes.Node, EdgeType extends BaseTypes.Edge> = Simplify<
+export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Edge> = Simplify<
   & {
-    pannable: boolean
-    zoomable: boolean
-    nodesSelectable: boolean
-    nodesDraggable: boolean
-    background: 'transparent' | 'solid' | XYBackground
-    fitViewPadding: number
+    pannable?: boolean
+    zoomable?: boolean
+    nodesSelectable?: boolean
+    nodesDraggable?: boolean
+    background?: 'transparent' | 'solid' | XYBackground
+    fitViewPadding?: number
   }
   & SetRequired<
     Omit<
@@ -75,51 +51,23 @@ export type BaseXYFlowProps<NodeType extends BaseTypes.Node, EdgeType extends Ba
   >
 >
 
-// // type Props<NodeType extends BaseTypes.Node, EdgeType extends BaseTypes.Edge> =
-// //   & BaseXYFlowProps
-// //   & {
-// //     actorRef: BaseActorRef<NodeType, EdgeType>
-
-// //     // Assert if the following props are passed
-// //     nodes?: never
-// //     edges?: never
-// //     onNodesChange?: never
-// //     onEdgesChange?: never
-// //   }
-// //   & Omit<
-// //     ReactFlowProps<
-// //       NodeType,
-// //       EdgeType
-// //     >,
-// //     'nodes' | 'edges' | 'onNodesChange' | 'onEdgesChange'
-// //   >
-
-// const selector = <NodeType, EdgeType>(snapshot: StoreSnapshot<NodeType, EdgeType>) => ({
-//   initialized: snapshot.context.initialized,
-//   nodes: snapshot.context.xynodes,
-//   edges: snapshot.context.xyedges,
-// })
-// type Selected = ReturnType<typeof selector>
-// const compare = (a: Selected, b: Selected) =>
-//   shallowEqual(a.nodes, b.nodes) && shallowEqual(a.edges, b.edges) && a.initialized === b.initialized
-
 export const BaseXYFlow = <
-  NodeType extends BaseTypes.Node,
-  EdgeType extends BaseTypes.Edge,
+  NodeType extends Base.Node,
+  EdgeType extends Base.Edge,
 >({
   nodes,
   edges,
   onEdgesChange,
   onNodesChange,
   className,
-  pannable,
-  zoomable,
-  nodesSelectable,
-  nodesDraggable,
-  background,
+  pannable = true,
+  zoomable = true,
+  nodesSelectable = true,
+  nodesDraggable = false,
+  background = 'dots',
   children,
   colorMode = 'system',
-  fitViewPadding,
+  fitViewPadding = 0,
   fitView = true,
   ...props
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
@@ -135,7 +83,6 @@ export const BaseXYFlow = <
         css.cssReactFlow,
         pannable !== true && css.cssDisablePan,
         background === 'transparent' && css.cssTransparentBg,
-        // initialized ? 'initialized' : css.notInitialized,
         className,
       )}
       zoomOnPinch={zoomable}
@@ -167,6 +114,8 @@ export const BaseXYFlow = <
       edgesFocusable={false}
       nodesDraggable={nodesDraggable}
       nodeDragThreshold={4}
+      nodeClickDistance={1.9}
+      paneClickDistance={1.9}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
       onNodesChange={onNodesChange}
@@ -175,30 +124,32 @@ export const BaseXYFlow = <
         onNodesChange([{
           id: node.id,
           type: 'replace',
-          item: BaseTypes.setHovered(node, true),
+          item: Base.setHovered(node, true),
         }])
       })}
       onNodeMouseLeave={useCallbackRef((_event, node) => {
         onNodesChange([{
           id: node.id,
           type: 'replace',
-          item: BaseTypes.setHovered(node, false),
+          item: Base.setHovered(node, false),
         }])
       })}
       onEdgeMouseEnter={useCallbackRef((_event, edge) => {
         onEdgesChange([{
           id: edge.id,
           type: 'replace',
-          item: BaseTypes.setHovered(edge, true),
+          item: Base.setHovered(edge, true),
         }])
       })}
       onEdgeMouseLeave={useCallbackRef((_event, edge) => {
         onEdgesChange([{
           id: edge.id,
           type: 'replace',
-          item: BaseTypes.setHovered(edge, false),
+          item: Base.setHovered(edge, false),
         }])
       })}
+      onNodeDoubleClick={stopPropagation}
+      onEdgeDoubleClick={stopPropagation}
       {...props}
     >
       {isBgWithPattern && <Background background={background} />}

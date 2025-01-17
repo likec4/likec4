@@ -2,9 +2,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import clsx from 'clsx'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base'
-import * as css from '../LikeC4Diagram.css'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
-import { stopPropagation } from '../xyflow/utils'
 import { edgeTypes, nodeTypes } from './custom'
 import { useDiagramActor, useDiagramContext } from './hooks'
 import type { Context } from './state/machine'
@@ -23,8 +21,6 @@ type Picked = EnforceOptional<
   Pick<
     LikeC4DiagramProperties,
     | 'background'
-    | 'initialHeight'
-    | 'initialWidth'
     | 'nodesDraggable'
     | 'nodesSelectable'
   >
@@ -44,7 +40,7 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
     <BaseXYFlow<Types.Node, Types.Edge>
       nodes={nodes}
       edges={edges}
-      className={clsx(initialized ? 'initialized' : css.notInitialized)}
+      className={clsx(initialized ? 'initialized' : 'not-initialized')}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onNodesChange={useCallbackRef((changes) => {
@@ -68,8 +64,6 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
         e.stopPropagation()
         send({ type: 'xyflow.paneClick' })
       })}
-      onNodeDoubleClick={stopPropagation}
-      onEdgeDoubleClick={stopPropagation}
       onDoubleClick={useCallbackRef(e => {
         e.stopPropagation()
         send({ type: 'xyflow.paneDblClick' })

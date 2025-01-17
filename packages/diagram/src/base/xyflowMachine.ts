@@ -1,8 +1,8 @@
 import type { BBox } from '@likec4/core'
-import { type ReactFlowInstance, type useStoreApi, type Viewport, getViewportForBounds } from '@xyflow/react'
-import { type ActorLogicFrom, type ActorRefFrom, assign, setup } from 'xstate'
+import { type ReactFlowInstance, type useStoreApi, type Viewport } from '@xyflow/react'
+import { type ActorRefFrom, setup } from 'xstate'
 import { MaxZoom, MinZoom } from './const'
-import type { BaseTypes } from './types'
+import type { Base } from './types'
 
 export interface TodoItem {
   id: string
@@ -12,16 +12,16 @@ export interface TodoItem {
 
 export type TodosFilter = 'all' | 'active' | 'completed'
 
-type StoreApi = ReturnType<typeof useStoreApi<BaseTypes.Node, BaseTypes.Edge>>
+type StoreApi = ReturnType<typeof useStoreApi<Base.Node, Base.Edge>>
 
 export const xyflowMachine = setup({
   types: {
     input: {} as {
-      xyflow: ReactFlowInstance<BaseTypes.Node, BaseTypes.Edge>
+      xyflow: ReactFlowInstance<Base.Node, Base.Edge>
       fitViewPadding?: number
     },
     context: {} as {
-      xyflow: ReactFlowInstance<BaseTypes.Node, BaseTypes.Edge>
+      xyflow: ReactFlowInstance<Base.Node, Base.Edge>
       fitViewPadding: number
     },
     events: {} as

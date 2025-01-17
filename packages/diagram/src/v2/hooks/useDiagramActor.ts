@@ -1,5 +1,6 @@
-import { LikeC4ViewMachineContext } from '../state/machine'
+import { useActorRef } from '../state/actorContext'
+import type { LikeC4ViewActorRef } from '../state/machine'
 
-export function useDiagramActor() {
-  return LikeC4ViewMachineContext.useActorRef()
+export function useDiagramActor(): LikeC4ViewActorRef {
+  return useActorRef()
 }

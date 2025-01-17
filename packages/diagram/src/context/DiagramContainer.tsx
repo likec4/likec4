@@ -10,7 +10,7 @@ const DiagramContainerContext = createContext<() => HTMLDivElement | null>(
 export function DiagramContainer({
   className,
   children,
-}: PropsWithChildren<{ className: string | undefined }>) {
+}: PropsWithChildren<{ className?: string | undefined }>) {
   const ref = useRef<HTMLDivElement>(null)
   return (
     <Box className={clsx(rootClassName, className)} ref={ref}>

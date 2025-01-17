@@ -12,7 +12,6 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import { createActorContext } from '@xstate/react'
 import {
   type ReactFlowInstance,
   type useStoreApi,
@@ -23,15 +22,19 @@ import {
 import type { EdgeChange, NodeChange, Viewport } from '@xyflow/system'
 import { prop } from 'remeda'
 import {
+  type ActorRefFromLogic,
   type SnapshotFrom,
   and,
   assertEvent,
   assign,
   enqueueActions,
+  log,
   or,
   setup,
+  spawnChild,
   stopChild,
 } from 'xstate'
+import { relationshipsBrowserLogic } from '../../additional/relationships-browser/state'
 import { MinZoom } from '../../base/const'
 import type { EnabledFeatures } from '../../context'
 import { AllDisabled } from '../../context/DiagramFeatures'
@@ -59,7 +62,7 @@ export interface NavigationHistory {
   currentIndex: number
 }
 
-export type Input = {
+export interface Input {
   view: DiagramView
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
@@ -69,28 +72,26 @@ export type Input = {
   fitViewPadding: number
 }
 
-export type Context = Readonly<
-  Input & {
-    features: EnabledFeatures
-    xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
-    initialized: boolean
-    viewport: Viewport
-    viewportChangedManually: boolean
-    lastOnNavigate: null | {
-      fromView: ViewId
-      toView: ViewId
-      fromNode: NodeId | null
-    }
-    navigationHistory: NavigationHistory
-    lastClickedNode: null | {
-      id: NodeId
-      clicks: number
-      timestamp: number
-    }
-    focusedNode: NodeId | null
-    viewportBeforeFocus: null | Viewport
+export interface Context extends Input {
+  features: EnabledFeatures
+  xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
+  initialized: boolean
+  viewport: Viewport
+  viewportChangedManually: boolean
+  lastOnNavigate: null | {
+    fromView: ViewId
+    toView: ViewId
+    fromNode: NodeId | null
   }
->
+  navigationHistory: NavigationHistory
+  lastClickedNode: null | {
+    id: NodeId
+    clicks: number
+    timestamp: number
+  }
+  focusedNode: NodeId | null
+  viewportBeforeFocus: null | Viewport
+}
 
 export type Events =
   | HotKeyEvent
@@ -107,6 +108,7 @@ export type Events =
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'openElementDetails'; fqn: Fqn; fromNode?: NodeId }
+  | { type: 'openRelationshipsBrowser'; fqn: Fqn }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId }
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
@@ -117,6 +119,7 @@ export const likeC4ViewMachine = setup({
     input: {} as Input,
     children: {} as {
       hotkey: 'hotkeyActor'
+      relationshipsBrowser: 'relationshipsBrowserLogic'
     },
     events: {} as Events,
   },
@@ -210,7 +213,8 @@ export const likeC4ViewMachine = setup({
     },
   },
   actors: {
-    hotkeyActor,
+    hotkeyActor: hotkeyActor,
+    relationshipsBrowserLogic,
   },
 }).createMachine({
   initial: 'initializing',
@@ -229,6 +233,7 @@ export const likeC4ViewMachine = setup({
     },
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
+    overlayActorRef: null,
   }),
   states: {
     initializing: {
@@ -299,9 +304,9 @@ export const likeC4ViewMachine = setup({
       entry: [
         assign(s => ({
           ...focusNodesEdges(s),
-          hotkeyActor: s.spawn('hotkeyActor', { id: 'hotkey' }),
           viewportBeforeFocus: { ...s.context.viewport },
         })),
+        spawnChild('hotkeyActor', { id: 'hotkey' }),
         {
           type: 'xyflow:fitDiagram',
           params: focusedBounds,
@@ -331,6 +336,9 @@ export const likeC4ViewMachine = setup({
           target: 'idle',
         },
         'xyflow.paneClick': {
+          actions: assign({
+            lastClickedNode: null,
+          }),
           target: 'idle',
         },
       },
@@ -345,11 +353,46 @@ export const likeC4ViewMachine = setup({
           enqueue.assign((s) => ({
             ...unfocusNodesEdges(s),
             viewportBeforeFocus: null,
-            hotkeyActor: null,
             focusedNode: null,
-            lastClickedNode: null,
           }))
         }),
+      ],
+    },
+    overlay: {
+      entry: spawnChild('hotkeyActor', { id: 'hotkey' }),
+      initial: 'hole',
+      states: {
+        hole: {
+          target: '#idle',
+        },
+        relationshipsBrowser: {
+          invoke: {
+            id: 'relationshipsBrowser',
+            src: 'relationshipsBrowserLogic',
+            input: ({ context, event }) => {
+              assertEvent(event, 'openRelationshipsBrowser')
+              return {
+                subject: event.fqn,
+                scope: context.view,
+              }
+            },
+            onDone: {
+              target: '#idle',
+            },
+          },
+          on: {
+            // Catch event and do nothing
+            'openRelationshipsBrowser': {},
+          },
+        },
+      },
+      on: {
+        'key.esc': {
+          target: 'idle',
+        },
+      },
+      exit: [
+        stopChild('hotkey'),
       ],
     },
     // Navigating to a new view (after `navigateTo` event)
@@ -500,7 +543,14 @@ export const likeC4ViewMachine = setup({
         features: ({ event }) => event.features,
       }),
     },
+    // 'openElementDetails': {
+    //   target: '.overlay',
+    // },
+    'openRelationshipsBrowser': {
+      target: '.overlay.relationshipsBrowser',
+    },
   },
+  exit: log('exit'),
 })
 
 const nodeRef = (node: DiagramNode) => DiagramNode.modelRef(node) ?? DiagramNode.deploymentRef(node)
@@ -512,7 +562,6 @@ function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
   return { fromNode, toNode }
 }
 
-export type Logic = typeof likeC4ViewMachine
-export type MachineSnapshot = SnapshotFrom<typeof likeC4ViewMachine>
-
-export const LikeC4ViewMachineContext = createActorContext(likeC4ViewMachine)
+export type Machine = typeof likeC4ViewMachine
+export type MachineSnapshot = SnapshotFrom<Machine>
+export type LikeC4ViewActorRef = ActorRefFromLogic<Machine>

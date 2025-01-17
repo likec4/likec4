@@ -1,8 +1,8 @@
 import { deepEqual as eq } from 'fast-equals'
 import { type FunctionComponent, memo } from 'react'
-import type { BaseTypes, NodeProps } from '../types'
+import type { Base, NodeProps } from '../types'
 
-const isEqualProps = <P extends Record<string, unknown> = BaseTypes.NodeData>(
+export const nodePropsEqual = <P extends Record<string, unknown> = Base.NodeData>(
   prev: NodeProps<P>,
   next: NodeProps<P>,
 ) => (
@@ -14,8 +14,8 @@ const isEqualProps = <P extends Record<string, unknown> = BaseTypes.NodeData>(
   && eq(prev.data, next.data)
 )
 
-export function customNode<P extends Record<string, unknown> = BaseTypes.NodeData>(
+export function customNode<P extends Record<string, unknown> = Base.NodeData>(
   Node: FunctionComponent<NodeProps<P>>,
 ) {
-  return memo(Node, isEqualProps)
+  return memo(Node, nodePropsEqual)
 }

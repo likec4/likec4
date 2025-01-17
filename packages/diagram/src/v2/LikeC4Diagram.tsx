@@ -1,5 +1,6 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { useRef } from 'react'
+import { Overlays } from '../additional/Overlays'
 import { DiagramContainer, DiagramEventHandlers, DiagramFeatures, IconRendererProvider } from '../context'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useLikeC4Model } from '../likec4model'
@@ -146,12 +147,16 @@ export function LikeC4DiagramV2({
                       nodesDraggable={nodesDraggable}
                       nodesSelectable={nodesSelectable}
                       background={background}
-                      initialHeight={initialRef.current.initialHeight}
-                      initialWidth={initialRef.current.initialWidth}
                     />
                     <Controls />
+                    <Overlays />
                   </DiagramActor>
                 </XYFlowProvider>
+                {
+                  /* <Overlay>
+                  <RelationshipsBrowser />
+                </Overlay> */
+                }
               </DiagramContainer>
             </DiagramEventHandlers>
           </DiagramFeatures>
