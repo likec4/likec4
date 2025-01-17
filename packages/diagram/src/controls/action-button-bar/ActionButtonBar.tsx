@@ -112,6 +112,7 @@ export const ActionButtonBar = ({
     <Box className={clsx(css.container)}>
       {childrenArray.map((child, i, all) => (
         <ActionButtonBarContext.Provider
+          key={i}
           value={elementVariants(id, i, all.length, shiftDiffX, shiftDiffY)}>
           {child}
         </ActionButtonBarContext.Provider>
