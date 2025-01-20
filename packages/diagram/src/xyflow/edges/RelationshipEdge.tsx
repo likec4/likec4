@@ -216,19 +216,20 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
     const sourceCenterPos = { x: sourceX, y: sourceY }
     const targetCenterPos = { x: targetX, y: targetY }
 
+    const nodeMargin = 6
     const points = diagramEdge.dir === 'back'
       ? [
         targetCenterPos,
-        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos),
+        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos, nodeMargin),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos),
+        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos, nodeMargin),
         sourceCenterPos
       ]
       : [
         sourceCenterPos,
-        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos),
+        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos, nodeMargin),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos),
+        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos, nodeMargin),
         targetCenterPos
       ]
 
@@ -524,7 +525,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
           )}
           style={{
             ...assignInlineVars({
-              [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
+              [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 50%)` : `${labelX}px`,
               [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
             }),
             // ...(isEdgePathEditable && selected && {

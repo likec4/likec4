@@ -59,7 +59,7 @@ export function RelationshipEdge({
           gap={2}
           style={{
             position: 'absolute',
-            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            transform: `translate(${labelX}px,${labelY}px)`,
             maxWidth: Math.abs(props.targetX - props.sourceX - 70),
             zIndex: ZIndexes.max,
           }}

@@ -1,5 +1,6 @@
-import { Position, type XYPosition } from '@xyflow/react'
+import { type XYPosition, Position } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
+import { vector, VectorImpl } from '../../utils/vector'
 import type { DiagramFlowTypes } from '../types'
 
 export function getNodeCenter(node: DiagramFlowTypes.InternalNode): XYPosition {
@@ -8,76 +9,47 @@ export function getNodeCenter(node: DiagramFlowTypes.InternalNode): XYPosition {
 
   return {
     x: x + width / 2,
-    y: y + height / 2
+    y: y + height / 2,
   }
 }
 
-// this helper function returns the intersection point
-// of the line between the center of the intersectionNode and the target node
+/**
+ * Helper function returns the intersection point
+ * of the line between the center of the intersectionNode and the target
+ * 
+ * @param intersectionNode the node that is the center of the line
+ * @param target position of the target
+ * @param nodeMargin the margin of the intersectionNode. The point will be placed at nodeMargin distance from the border of the node
+ * @returns coordinates of the intersection point
+ */
 export function getNodeIntersectionFromCenterToPoint(
   intersectionNode: DiagramFlowTypes.InternalNode,
-  { x: x1, y: y1 }: XYPosition
+  target: XYPosition,
+  nodeMargin: number = 0
 ) {
-  // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
-  const {
-    width: intersectionNodeWidth,
-    height: intersectionNodeHeight
-  } = getNodeDimensions(intersectionNode)
+  const nodeCenter = getNodeCenter(intersectionNode)
+  const v = new VectorImpl(target.x, target.y).sub(nodeCenter)
+  const xScale = (nodeMargin + (intersectionNode.width || 0) / 2) / v.x
+  const yScale = (nodeMargin + (intersectionNode.height || 0) / 2) / v.y
 
-  const intersectionNodePosition = intersectionNode.internals.positionAbsolute
+  const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
 
-  const w = intersectionNodeWidth / 2
-  const h = intersectionNodeHeight / 2
-
-  const x2 = intersectionNodePosition.x + w
-  const y2 = intersectionNodePosition.y + h
-  // const x1 = targetPoint.x
-  // const y1 = targetPoint.y
-
-  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h)
-  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h)
-  const a = 1 / (Math.abs(xx1) + Math.abs(yy1))
-  const xx3 = a * xx1
-  const yy3 = a * yy1
-  const x = w * (xx3 + yy3) + x2
-  const y = h * (-xx3 + yy3) + y2
-
-  return { x, y }
+  return vector(v).mul(scale).add(nodeCenter)
 }
 
-// this helper function returns the intersection point
-// of the line between the center of the intersectionNode and the target node
-function getNodeIntersection(intersectionNode: DiagramFlowTypes.InternalNode, targetNode: DiagramFlowTypes.InternalNode): XYPosition {
-  // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
-  const {
-    width: intersectionNodeWidth,
-    height: intersectionNodeHeight
-  } = getNodeDimensions(intersectionNode)
-  const {
-    width: targetNodeWidth,
-    height: targetNodeHeight
-  } = getNodeDimensions(targetNode)
-
-  const intersectionNodePosition = intersectionNode.internals.positionAbsolute
-  const targetPosition = targetNode.internals.positionAbsolute
-
-  const w = intersectionNodeWidth / 2
-  const h = intersectionNodeHeight / 2
-
-  const x2 = intersectionNodePosition.x + w
-  const y2 = intersectionNodePosition.y + h
-  const x1 = targetPosition.x + targetNodeWidth / 2
-  const y1 = targetPosition.y + targetNodeHeight / 2
-
-  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h)
-  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h)
-  const a = 1 / (Math.abs(xx1) + Math.abs(yy1))
-  const xx3 = a * xx1
-  const yy3 = a * yy1
-  const x = w * (xx3 + yy3) + x2
-  const y = h * (-xx3 + yy3) + y2
-
-  return { x, y }
+/**
+ * Helper function returns the intersection point
+ * of the line between the center of the intersectionNode and the target
+ * 
+ * @param intersectionNode the node that is the center of the line
+ * @param targetNode the target node
+ * @returns coordinates of the intersection point
+ */
+function getNodeIntersection(
+  intersectionNode: DiagramFlowTypes.InternalNode,
+  targetNode: DiagramFlowTypes.InternalNode
+): XYPosition {
+  return getNodeIntersectionFromCenterToPoint(intersectionNode, getNodeCenter(targetNode))
 }
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
@@ -86,7 +58,7 @@ export function getPointPosition(node: DiagramFlowTypes.InternalNode, intersecti
     // x: node.data.element.position[0],
     // y: node.data.element.position[1],
     ...node.internals.positionAbsolute,
-    ...getNodeDimensions(node)
+    ...getNodeDimensions(node),
   }
   const nx = Math.round(n.x)
   const ny = Math.round(n.y)
@@ -130,7 +102,7 @@ export function getPointPosition(node: DiagramFlowTypes.InternalNode, intersecti
   return [
     intersectionPoint.x + offsetX,
     intersectionPoint.y + offsetY,
-    handlePosition
+    handlePosition,
   ] as const
 }
 
@@ -148,6 +120,6 @@ export function getEdgeParams(source: DiagramFlowTypes.InternalNode, target: Dia
     tx,
     ty,
     sourcePos,
-    targetPos
+    targetPos,
   }
 }
