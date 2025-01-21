@@ -219,3 +219,7 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     return this.$model.deployment.instancesOf(this)
   }
 }
+
+export function isElementModel<M extends AnyAux = AnyAux>(element: any): element is ElementModel<M> {
+  return element instanceof ElementModel
+}

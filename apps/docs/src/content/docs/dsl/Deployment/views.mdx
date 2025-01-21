@@ -54,18 +54,78 @@ But they refer to deployment nodes and instances.
 
   ```likec4
   deployment view prod {
-    include *                            // works
-    include * where tag is #next         // does not work
-    include * with { color: red }        // does not work
-      
-    include * -> *                       // works
-    include * -> * where tag is #next    // works
-    include * -> * with { color: red }   // does not work
+    include *                                   // works
+    include * where tag is #next                // does not work
+    include * with { color: red }               // does not work
 
-    global style applications            // does not work    
+    include * -> *                              // works
+    include * -> * where tag is #next           // works
+    include * -> * where source.tag is #next    // works (see details below)
+    include * -> * with { color: red }          // does not work
+
+    global style applications                   // does not work    
   }
   ```
 </Aside>
+
+### Relation filters
+Filtering of relations in deployment views use the same principles as in normal views but takes into account relations and tags defined in deployment model.
+When condition on relation participant is checked the following rules are applied:
+- For a deployment instances tags are combined from tags defined in model and tags defined in deployment model
+- For a child of deployment instance the tags defined on child in model are used
+- For a deployment node the tags defined in deployment model are used
+- For a deployment instances the kind of the model element is used
+- For a child of deployment instance the kind of this child is used
+- For a deployment node the kind of this deployment node is used
+- Tags are not inherited from parent nodes/elements
+
+```likec4
+model {
+  el cloud {
+    el frontend {
+      #next
+      -> backend "rel1"
+    }
+    el backend {
+      #next
+      -> db "rel2"
+    }
+    el db
+  }
+}
+deployment {
+  environment prod { // Resulting tags: #alpha
+    #alpha
+    zone eu { // Resulting tags: #beta
+      #beta
+      instanceOf frontend { // Resulting tags: #next, #gamma
+          #gamma
+      }
+      instanceOf backend { // Resulting tags: #next, #sigma
+          #sigma
+      }
+      eu -> prod.db "rel3"
+    }
+    instanceOf db { // Resulting tags: #delta
+      #delta
+    }
+  }
+}
+views {
+  deployment view some {
+    include prod.eu.frontend -> prod.eu.backend
+      where source.tag is #next // includes relation "rel1"
+    include prod.eu.frontend -> prod.eu.backend
+      where source.tag is #gamma // includes relation "rel1"
+    include prod.eu -> prod.db
+      where source.tag is #beta // includes relation "rel3"
+    include prod.eu -> prod.db
+      where source.tag is #sigma // does not include any relations
+    include eu.* -> prod.db
+      where source.tag is #sigma // includes relations "rel2"
+  }
+}
+```
 
 <br/>
 <br/>
