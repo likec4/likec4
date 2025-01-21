@@ -56,6 +56,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     enableRelationshipBrowser,
     isInActiveOverlay,
     renderIcon,
+    getSelectedNodeIds,
   } = useDiagramState(s => ({
     viewId: s.view.id,
     isEditable: s.readonly !== true,
@@ -68,6 +69,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     openOverlay: s.openOverlay,
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     renderIcon: s.renderIcon,
+    getSelectedNodeIds: s.getSelectedNodeIds,
   }))
 
   const w = toDomPrecision(width ?? element.width)
@@ -101,7 +103,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
 
   const isHovered = !!animateVariants && animateVariants.includes('hovered')
 
-  const _isToolbarVisible = (selected && !dragging) || isHovered
+  const _isToolbarVisible = (selected && !dragging && getSelectedNodeIds().length === 1) || isHovered
   // TODO: This is a workaround to prevent the toolbar from flickering when the node unhovered
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 1000)
 

@@ -29,7 +29,7 @@ import {
 import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import type { MouseEvent as ReactMouseEvent } from 'react'
+import { type MouseEvent as ReactMouseEvent } from 'react'
 import { entries, first, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
 import type { ConditionalKeys, Except, RequiredKeysOf, RequireExactlyOne, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
@@ -158,6 +158,7 @@ export type DiagramState = Simplify<
     resetFocusAndLastClicked: () => void
 
     getElement(id: Fqn): DiagramNode | null
+    getSelectedNodeIds(): string[]
     triggerChangeElementStyle: (change: ViewChange.ChangeElementStyle) => void
 
     /**
@@ -551,6 +552,10 @@ export function createDiagramStore(props: DiagramInitialState) {
           isEditable: () => {
             const { readonly, onChange } = get()
             return !readonly && !!onChange
+          },
+
+          getSelectedNodeIds: () => {
+            return get().xynodes.filter(x => x.selected).map(x => x.id)
           },
 
           triggerChangeElementStyle: (change) => {
