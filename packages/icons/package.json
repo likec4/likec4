@@ -56,8 +56,8 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/react": "18.3.11",
-    "@types/react-dom": "18.3.1",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
     "consola": "^3.3.3",
     "esbuild": "^0.24.2",
     "execa": "^9.3.1",
