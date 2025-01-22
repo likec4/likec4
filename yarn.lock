@@ -1944,7 +1944,7 @@ __metadata:
     "@types/d3-shape": "npm:^3.1.6"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
-    "@vanilla-extract/css": "npm:^1.16.1"
+    "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@xyflow/react": "npm:12.3.6"
@@ -2146,10 +2146,10 @@ __metadata:
     "@types/node": "npm:^20.17.7"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
-    "@vanilla-extract/css": "npm:^1.16.1"
+    "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@vanilla-extract/esbuild-plugin": "npm:^2.3.12"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.18"
+    "@vanilla-extract/esbuild-plugin": "npm:^2.3.13"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.19"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.2.1"
@@ -2209,8 +2209,8 @@ __metadata:
     "@types/react-dom": "npm:18.3.1"
     "@types/vscode": "npm:^1.89.0"
     "@types/vscode-webview": "npm:^1.57.5"
-    "@vanilla-extract/css": "npm:^1.16.1"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.18"
+    "@vanilla-extract/css": "npm:^1.17.0"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.19"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
     esm-env: "npm:^1.2.1"
     nanostores: "npm:0.11.3"
@@ -3893,12 +3893,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/babel-plugin-debug-ids@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@vanilla-extract/babel-plugin-debug-ids@npm:1.1.0"
+"@vanilla-extract/babel-plugin-debug-ids@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@vanilla-extract/babel-plugin-debug-ids@npm:1.2.0"
   dependencies:
     "@babel/core": "npm:^7.23.9"
-  checksum: 10c0/1f06a7ea8bf28af3ef4b9e06690121f394af268992c5e0e706b43cf38f13ba940ad556cd1d424725c143f64d9165ce0c09d6e0bd859366a81b849f997726817d
+  checksum: 10c0/8deacf21394fa400c70f0b5b2c9891b64265036aae2e579ee24e237b92f2350615a98c211a701972ef7287e0de42fcb6ac166d75036663cf660cf4f7a0e2e55e
   languageName: node
   linkType: hard
 
@@ -3909,9 +3909,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/css@npm:^1.16.1":
-  version: 1.16.1
-  resolution: "@vanilla-extract/css@npm:1.16.1"
+"@vanilla-extract/css@npm:^1.17.0":
+  version: 1.17.0
+  resolution: "@vanilla-extract/css@npm:1.17.0"
   dependencies:
     "@emotion/hash": "npm:^0.9.0"
     "@vanilla-extract/private": "npm:^1.0.6"
@@ -3925,7 +3925,7 @@ __metadata:
     media-query-parser: "npm:^2.0.2"
     modern-ahocorasick: "npm:^1.0.0"
     picocolors: "npm:^1.0.0"
-  checksum: 10c0/a26236e1a20fd4bb675b01905ccb489978c3cce39902618ee979a830bf3a44929d9183f2a38762ea4d791dccefc3ee8d8022dfec0f8920a5f3a372bf6aac4e70
+  checksum: 10c0/14f3129bd025245515fe8aac2bfff301610ac60b57a3907a5cf2511e4469cfd719c4a3381be343328a49c7994259bd0ef26cfd7868f78500bf7f063e4b886490
   languageName: node
   linkType: hard
 
@@ -3938,28 +3938,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/esbuild-plugin@npm:^2.3.12":
-  version: 2.3.12
-  resolution: "@vanilla-extract/esbuild-plugin@npm:2.3.12"
+"@vanilla-extract/esbuild-plugin@npm:^2.3.13":
+  version: 2.3.13
+  resolution: "@vanilla-extract/esbuild-plugin@npm:2.3.13"
   dependencies:
-    "@vanilla-extract/integration": "npm:^7.1.11"
+    "@vanilla-extract/integration": "npm:^7.1.12"
   peerDependencies:
     esbuild: ">=0.17.6"
   peerDependenciesMeta:
     esbuild:
       optional: true
-  checksum: 10c0/c85b9053d91219c2ab2084c6910909f87fbd6aa505b80997e54fe0f922ab218e9b1094059ee48459833f23d79942ba8746dd2cde218e9f14f99ed7795eb214b3
+  checksum: 10c0/17ab3d1773f2bb568f4bc6c1cedd114c3aef3884de055840260cae1fc1c9a835c7cfadeaeab2a2cd7f59337643e04fe3c0752783466701100c0b90d3a7cc4e31
   languageName: node
   linkType: hard
 
-"@vanilla-extract/integration@npm:^7.1.11":
-  version: 7.1.11
-  resolution: "@vanilla-extract/integration@npm:7.1.11"
+"@vanilla-extract/integration@npm:^7.1.12":
+  version: 7.1.12
+  resolution: "@vanilla-extract/integration@npm:7.1.12"
   dependencies:
     "@babel/core": "npm:^7.23.9"
     "@babel/plugin-syntax-typescript": "npm:^7.23.3"
-    "@vanilla-extract/babel-plugin-debug-ids": "npm:^1.1.0"
-    "@vanilla-extract/css": "npm:^1.16.1"
+    "@vanilla-extract/babel-plugin-debug-ids": "npm:^1.2.0"
+    "@vanilla-extract/css": "npm:^1.17.0"
     dedent: "npm:^1.5.3"
     esbuild: "npm:esbuild@>=0.17.6 <0.24.0"
     eval: "npm:0.1.8"
@@ -3968,7 +3968,7 @@ __metadata:
     mlly: "npm:^1.4.2"
     vite: "npm:^5.0.11"
     vite-node: "npm:^1.2.0"
-  checksum: 10c0/76a611a59be52cf58f4fe8525ae1a110857b3c26f9d1fe88ee6af0c7bb90ff840e62d6210ec7e832017be9896da2a099b825925528c0adcc19148e77031cc2b8
+  checksum: 10c0/4decc6ca253da30b0872760486762ff626eb433a0c32d98fd7643937156970ae86e297329b56536219a4b963839d82882b589b4b06e5f5f4b62ca3e18d4bbf40
   languageName: node
   linkType: hard
 
@@ -3979,14 +3979,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/vite-plugin@npm:^4.0.18":
-  version: 4.0.18
-  resolution: "@vanilla-extract/vite-plugin@npm:4.0.18"
+"@vanilla-extract/vite-plugin@npm:^4.0.19":
+  version: 4.0.19
+  resolution: "@vanilla-extract/vite-plugin@npm:4.0.19"
   dependencies:
-    "@vanilla-extract/integration": "npm:^7.1.11"
+    "@vanilla-extract/integration": "npm:^7.1.12"
   peerDependencies:
     vite: ^4.0.3 || ^5.0.0
-  checksum: 10c0/7d9d2c12e781c8ccd4f2901a092e1fc859c38462d7b9438b80d39d55f4591db6381343930f5a5abe0626a06c11be3a4c4d8224d860bde7392f2cd5b2af695834
+  checksum: 10c0/caf07b55d1c4405d31e4b6be00998b20f73818df5370c20a6affb0871b498c6e5478295543ed4395455ea1952bc58b237fa4af0b3c44b42e9dc651fb97900e4f
   languageName: node
   linkType: hard
 
@@ -8761,9 +8761,9 @@ __metadata:
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
     "@types/yargs": "npm:^17.0.33"
-    "@vanilla-extract/css": "npm:^1.16.1"
+    "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.18"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.19"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
     "@xyflow/react": "npm:12.3.6"
     "@xyflow/system": "npm:0.0.47"
