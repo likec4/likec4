@@ -171,7 +171,7 @@
     "prop-types": "^15.8.1",
     "react-error-boundary": "^4.1.2",
     "react-resizable-panels": "^2.1.7",
-    "react-shadow": "^20.5.0",
+    "react-shadow": "^20.6.0",
     "remeda": "^2.19.0",
     "std-env": "^3.8.0",
     "strip-indent": "^4.0.0",
