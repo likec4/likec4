@@ -53,7 +53,7 @@
     "tsx": "~4.19.2",
     "type-fest": "4.28.1",
     "typescript": "^5.7.2",
-    "vite": "5.4.11",
+    "vite": "5.4.12",
     "vscode-messenger-webview": "^0.4.5"
   }
 }
