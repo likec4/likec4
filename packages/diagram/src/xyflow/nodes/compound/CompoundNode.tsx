@@ -63,6 +63,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     renderIcon,
     isInActiveOverlay,
     enableElementDetails,
+    getSelectedNodeIds,
   } = useDiagramState(s => ({
     viewId: s.view.id,
     isEditable: s.readonly !== true,
@@ -74,6 +75,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
     renderIcon: s.renderIcon,
     isInActiveOverlay: (s.activeOverlay?.elementDetails ?? s.activeOverlay?.relationshipsOf) === id,
     enableElementDetails: isNotViewGroup && s.enableElementDetails,
+    getSelectedNodeIds: s.getSelectedNodeIds,
   }))
 
   const w = toDomPrecision(width ?? element.width)
@@ -107,7 +109,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>((
 
   const isHovered = Array.isArray(animateVariant) && animateVariant.includes('hovered')
 
-  const _isToolbarVisible = isNotViewGroup && ((selected && !dragging) || isHovered)
+  const _isToolbarVisible = isNotViewGroup &&
+    ((selected && !dragging && getSelectedNodeIds().length === 1) || isHovered)
   // TODO: This is a workaround to prevent the toolbar from flickering when the node unhovered
   const [isToolbarVisible] = useDebouncedValue(_isToolbarVisible, _isToolbarVisible ? 500 : 1000)
 

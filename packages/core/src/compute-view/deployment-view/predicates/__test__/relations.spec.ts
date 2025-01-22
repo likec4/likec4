@@ -11,13 +11,13 @@ describe('RelationPredicate', () => {
       deployments: {
         node: {},
       },
-      tags: ['next'],
+      tags: ['next', 'alpha'],
     })
     .model(({ el, rel }, _) =>
       _(
         el('client'),
         el('cloud'),
-        el('cloud.ui'),
+        el('cloud.ui', { tags: ['next'] }),
         el('cloud.backend'),
         el('cloud.backend.api'),
         el('cloud.db'),
@@ -29,8 +29,8 @@ describe('RelationPredicate', () => {
 
   const { $include, $exclude } = TestHelper
 
-  describe('* -> *', () => {
-    it('should include only instances and boundaries', () => {
+  describe('include', () => {
+    describe('* -> *', () => {
       const t = TestHelper.from(builder.deployment((_, deploymentModel) =>
         deploymentModel(
           _.node('a'),
@@ -39,107 +39,106 @@ describe('RelationPredicate', () => {
             _.instanceOf('cloud.ui'),
           ),
           _.node('a.b.d').with(
-            _.instanceOf('cloud.backend.api'),
+            _.instanceOf('api', 'cloud.backend.api', { tags: ['alpha'] }),
           ),
           _.node('a.b.d.e').with(
             _.instanceOf('cloud.db'),
           ),
         )
       ))
-      const state = t.processPredicates(
-        $include('* -> *'),
-      )
-      t.expect(state).toHaveElements(
-        'a.b.c.ui',
-        'a.b.d.api',
-        'a.b.d.e.db',
-        'a.b.d',
-      )
-      t.expect(state).toHaveConnections(
-        'a.b.c.ui -> a.b.d.api',
-        'a.b.d.api -> a.b.d.e.db',
-      )
-    })
-  })
 
-  describe('element -> *', () => {
-    const t = TestHelper.from(builder.deployment((_, deploymentModel) =>
-      deploymentModel(
-        _.node('a'),
-        _.node('a.b1'),
-        _.node('a.b1.c').with(
-          _.instanceOf('cloud.ui'),
-          _.instanceOf('cloud.backend.api'),
-        ),
-        _.node('a.b2'),
-        _.node('a.b2.c').with(
-          _.instanceOf('cloud.ui'),
-          _.instanceOf('cloud.backend.api'),
-        ),
-      )
-    ))
-
-    it('node -> *', () => {
-      t.expectComputedView(
-        $include('a.b2.c -> *'),
-      ).toHave({
-        nodes: [],
-        edges: [],
+      it('should include only instances and boundaries', () => {
+        const state = t.processPredicates(
+          $include('* -> *'),
+        )
+        t.expect(state).toHaveElements(
+          'a.b.c.ui',
+          'a.b.d.api',
+          'a.b.d.e.db',
+          'a.b.d',
+        )
+        t.expect(state).toHaveConnections(
+          'a.b.c.ui -> a.b.d.api',
+          'a.b.d.api -> a.b.d.e.db',
+        )
       })
 
-      t.expect(t.computeView(
-        $include('a.b2.c._ -> *'),
-      )).toHave({
-        nodes: [
-          'a.b2.c.ui',
-          'a.b2.c.api',
-        ],
-        edges: [
-          'a.b2.c.ui -> a.b2.c.api',
-        ],
-      })
-
-      t.expectComputedView(
-        $include('a.b2.c <-> *'),
-      ).toHave({
-        nodes: [],
-        edges: [],
+      it('* -> instance', () => {
+        t.expectComputedView(
+          $include('* -> a.b.d.api'),
+        ).toHave(
+          {
+            nodes: [
+              'a.b.c',
+              'a.b.d',
+              'a.b.d.api',
+            ],
+            edges: [
+              'a.b.c -> a.b.d.api',
+            ],
+          },
+        )
       })
     })
 
-    it('instance -> *', () => {
-      const view1 = t.computeView(
-        $include('a.b2.c.ui -> *'),
-      )
-      t.expect(view1).toHave({
-        nodes: [
-          'a.b2.c.ui',
-          'a.b2.c.api',
-        ],
-        edges: [
-          'a.b2.c.ui -> a.b2.c.api',
-        ],
-      })
-    })
+    describe('element -> *', () => {
+      const t = TestHelper.from(builder.deployment((_, deploymentModel) =>
+        deploymentModel(
+          _.node('a'),
+          _.node('a.b1'),
+          _.node('a.b1.c').with(
+            _.instanceOf('cloud.ui'),
+            _.instanceOf('cloud.backend.api'),
+          ),
+          _.node('a.b2'),
+          _.node('a.b2.c').with(
+            _.instanceOf('cloud.ui'),
+            _.instanceOf('cloud.backend.api'),
+          ),
+        )
+      ))
 
-    it('node -> * where', () => {
-      t.expect(t.computeView(
-        $include('a.b2.c._ -> *', { where: 'tag is not #next' }),
-      )).toHave({
-        nodes: [],
-        edges: [],
+      it('node -> *', () => {
+        t.expectComputedView(
+          $include('a.b2.c -> *'),
+        ).toHave({
+          nodes: [],
+          edges: [],
+        })
+
+        t.expect(t.computeView(
+          $include('a.b2.c._ -> *'),
+        )).toHave({
+          nodes: [
+            'a.b2.c.ui',
+            'a.b2.c.api',
+          ],
+          edges: [
+            'a.b2.c.ui -> a.b2.c.api',
+          ],
+        })
+
+        t.expectComputedView(
+          $include('a.b2.c <-> *'),
+        ).toHave({
+          nodes: [],
+          edges: [],
+        })
       })
 
-      t.expect(t.computeView(
-        $include('a.b2.c._ -> *', { where: 'tag is #next' }),
-      )).toHave({
-        nodes: [
-          'a.b2.c.ui',
-          'a.b2.c.api',
-        ],
-        edges: [
-          'a.b2.c.ui -> a.b2.c.api',
-        ],
+      it('instance -> *', () => {
+        const view1 = t.computeView(
+          $include('a.b2.c.ui -> *'),
+        )
+        t.expect(view1).toHave({
+          nodes: [
+            'a.b2.c.ui',
+            'a.b2.c.api',
+          ],
+          edges: [
+            'a.b2.c.ui -> a.b2.c.api',
+          ],
+        })
       })
     })
   })

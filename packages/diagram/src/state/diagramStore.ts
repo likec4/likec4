@@ -8,28 +8,28 @@ import type {
   NodeId,
   ViewChange,
   ViewId,
-  XYPoint
+  XYPoint,
 } from '@likec4/core'
 import {
+  type StepEdgeId,
   getBBoxCenter,
   getParallelStepsPrefix,
   invariant,
   isStepEdgeId,
   nonexhaustive,
   nonNullable,
-  type StepEdgeId
 } from '@likec4/core'
 import {
+  type OnEdgesChange,
+  type OnNodesChange,
   applyEdgeChanges,
   applyNodeChanges,
   getViewportForBounds,
-  type OnEdgesChange,
-  type OnNodesChange
 } from '@xyflow/react'
 import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import type { MouseEvent as ReactMouseEvent } from 'react'
+import { type MouseEvent as ReactMouseEvent } from 'react'
 import { entries, first, hasAtLeast, isNullish, map, prop, reduce } from 'remeda'
 import type { ConditionalKeys, Except, RequiredKeysOf, RequireExactlyOne, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
@@ -40,14 +40,14 @@ import type {
   DiagramNodeWithNavigate,
   ElementIconRenderer,
   LikeC4DiagramEventHandlers,
-  WhereOperator
+  WhereOperator,
 } from '../LikeC4Diagram.props'
 import { type Vector, vector, VectorImpl } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { DiagramFlowTypes } from '../xyflow/types'
 import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
-import { align, type AlignmentMode } from './diagramStore.layout'
+import { type AlignmentMode, align } from './diagramStore.layout'
 
 type RequiredOrNull<T> = {
   [P in keyof T]-?: NonNullable<T[P]> | null
@@ -158,6 +158,7 @@ export type DiagramState = Simplify<
     resetFocusAndLastClicked: () => void
 
     getElement(id: Fqn): DiagramNode | null
+    getSelectedNodeIds(): string[]
     triggerChangeElementStyle: (change: ViewChange.ChangeElementStyle) => void
 
     /**
@@ -211,7 +212,7 @@ const DEFAULT_PROPS: Except<
   lastClickedNodeId: null,
   lastClickedEdgeId: null,
   dimmed: new StringSet(),
-  lastOnNavigate: null
+  lastOnNavigate: null,
 }
 
 const noReplace = false
@@ -224,17 +225,17 @@ export function createDiagramStore(props: DiagramInitialState) {
   const storeDevId = 'DiagramStore' + String(StoreDevId++).padStart(2, '0')
   const {
     xynodes,
-    xyedges
+    xyedges,
   } = diagramViewToXYFlowData(props.view, {
     where: props.whereFilter,
     draggable: props.nodesDraggable,
-    selectable: props.nodesSelectable
+    selectable: props.nodesSelectable,
   })
   return createWithEqualityFn<
     DiagramState,
     [
       ['zustand/subscribeWithSelector', never],
-      ['zustand/devtools', never]
+      ['zustand/devtools', never],
     ]
   >(
     subscribeWithSelector(
@@ -248,18 +249,18 @@ export function createDiagramStore(props: DiagramInitialState) {
           xyedges,
           navigationHistory: [{
             viewId: props.view.id,
-            nodeId: null as Fqn | null
+            nodeId: null as Fqn | null,
           }],
           navigationHistoryIndex: 0,
 
           onNodesChange: (changes) => {
             set({
-              xynodes: applyNodeChanges(changes, get().xynodes)
+              xynodes: applyNodeChanges(changes, get().xynodes),
             })
           },
           onEdgesChange: (changes) => {
             set({
-              xyedges: applyEdgeChanges(changes, get().xyedges)
+              xyedges: applyEdgeChanges(changes, get().xyedges),
             })
           },
 
@@ -283,7 +284,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               nodesSelectable,
               hoveredEdgeId,
               xyedges,
-              xynodes
+              xynodes,
             } = get()
 
             if (viewSyncDebounceTimeout !== null) {
@@ -328,8 +329,8 @@ export function createDiagramStore(props: DiagramInitialState) {
                   ...navigationHistory.slice(0, navigationHistoryIndex + 1),
                   {
                     viewId: nextView.id,
-                    nodeId: lastOnNavigate?.fromNode || null
-                  }
+                    nodeId: lastOnNavigate?.fromNode || null,
+                  },
                 ]
                 navigationHistoryIndex = navigationHistory.length - 1
               } else {
@@ -338,7 +339,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                   lastOnNavigate ??= {
                     fromView: current.id,
                     toView: nextView.id,
-                    fromNode: stepCurrent.nodeId
+                    fromNode: stepCurrent.nodeId,
                   }
                 }
               }
@@ -360,15 +361,15 @@ export function createDiagramStore(props: DiagramInitialState) {
               if (lastOnNavigate && !!elTo && !!xynodeFrom) {
                 const fromPos = xyflow.flowToScreenPosition({
                     x: xynodeFrom.internals.positionAbsolute.x, // + dimensions.width / 2,
-                    y: xynodeFrom.internals.positionAbsolute.y // + dimensions.height / 2
+                    y: xynodeFrom.internals.positionAbsolute.y, // + dimensions.height / 2
                   }),
                   toPos = xyflow.flowToScreenPosition({
                     x: elTo.position[0], // + elFrom.width / 2,
-                    y: elTo.position[1] // + elFrom.height / 2
+                    y: elTo.position[1], // + elFrom.height / 2
                   }),
                   diff = {
                     x: toDomPrecision(fromPos.x - toPos.x),
-                    y: toDomPrecision(fromPos.y - toPos.y)
+                    y: toDomPrecision(fromPos.y - toPos.y),
                   }
                 xystore.getState().panBy(diff)
                 lastOnNavigate = null
@@ -387,7 +388,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             const update = diagramViewToXYFlowData(nextView, {
               where: whereFilter,
               draggable: nodesDraggable,
-              selectable: nodesSelectable
+              selectable: nodesSelectable,
             })
 
             update.xynodes = update.xynodes.map((update) => {
@@ -408,7 +409,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 }
                 return {
                   ...existing,
-                  ...update
+                  ...update,
                 } as DiagramFlowTypes.Node
               }
               return update
@@ -432,8 +433,8 @@ export function createDiagramStore(props: DiagramInitialState) {
                     ...update,
                     data: {
                       ...existing.data,
-                      ...update.data
-                    }
+                      ...update.data,
+                    },
                   }
                 }
                 return update
@@ -456,10 +457,10 @@ export function createDiagramStore(props: DiagramInitialState) {
                 navigationHistoryIndex,
                 dimmed,
                 xynodes: !isSameView || !shallowEqual(update.xynodes, xynodes) ? update.xynodes : xynodes,
-                xyedges: !isSameView || !shallowEqual(update.xyedges, xyedges) ? update.xyedges : xyedges
+                xyedges: !isSameView || !shallowEqual(update.xyedges, xyedges) ? update.xyedges : xyedges,
               },
               noReplace,
-              isSameView ? 'update-view [same]' : 'update-view [another]'
+              isSameView ? 'update-view [same]' : 'update-view [another]',
             )
           },
 
@@ -472,10 +473,10 @@ export function createDiagramStore(props: DiagramInitialState) {
                   activeWalkthrough: null,
                   activeOverlay: null,
                   focusedNodeId: null,
-                  dimmed: EmptyStringSet
+                  dimmed: EmptyStringSet,
                 },
                 noReplace,
-                `unfocus`
+                `unfocus`,
               )
               return
             }
@@ -501,10 +502,10 @@ export function createDiagramStore(props: DiagramInitialState) {
                   activeWalkthrough: null,
                   activeOverlay: null,
                   focusedNodeId: nodeId,
-                  dimmed
+                  dimmed,
                 },
                 noReplace,
-                `focus on node: ${nodeId}`
+                `focus on node: ${nodeId}`,
               )
             }
           },
@@ -535,10 +536,10 @@ export function createDiagramStore(props: DiagramInitialState) {
                 focusedNodeId: null,
                 lastClickedNodeId: null,
                 lastClickedEdgeId: null,
-                dimmed: EmptyStringSet
+                dimmed: EmptyStringSet,
               },
               noReplace,
-              'resetLastClicked'
+              'resetLastClicked',
             )
             get().xystore.getState().resetSelectedElements()
           },
@@ -551,6 +552,10 @@ export function createDiagramStore(props: DiagramInitialState) {
           isEditable: () => {
             const { readonly, onChange } = get()
             return !readonly && !!onChange
+          },
+
+          getSelectedNodeIds: () => {
+            return get().xynodes.filter(x => x.selected).map(x => x.id)
           },
 
           triggerChangeElementStyle: (change) => {
@@ -572,7 +577,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                     if (value !== element.shape) {
                       element = {
                         ...element,
-                        shape: value
+                        shape: value,
                       }
                     }
                     break
@@ -580,7 +585,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                     if (value !== element.color) {
                       element = {
                         ...element,
-                        color: value
+                        color: value,
                       }
                     }
                     break
@@ -590,8 +595,8 @@ export function createDiagramStore(props: DiagramInitialState) {
                         ...element,
                         style: {
                           ...element.style,
-                          opacity: value
-                        }
+                          opacity: value,
+                        },
                       }
                     }
                     break
@@ -601,8 +606,8 @@ export function createDiagramStore(props: DiagramInitialState) {
                         ...element,
                         style: {
                           ...element.style,
-                          border: value
-                        }
+                          border: value,
+                        },
                       }
                     }
                     break
@@ -619,7 +624,7 @@ export function createDiagramStore(props: DiagramInitialState) {
             if (hasChanges) {
               updateView({
                 ...view,
-                nodes
+                nodes,
               })
             }
             // Trigger change event, even if there are no changes with local state
@@ -649,7 +654,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               x: 0,
               y: 0,
               width: 1,
-              height: 1
+              height: 1,
             }
 
             const nodes = reduce([...nodeLookup.values()], (acc, node) => {
@@ -662,7 +667,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 x: Math.floor(node.internals.positionAbsolute.x),
                 y: Math.floor(node.internals.positionAbsolute.y),
                 width: Math.ceil(dimensions.width),
-                height: Math.ceil(dimensions.height)
+                height: Math.ceil(dimensions.height),
               }
               bounds = getBoundsOfRects(bounds, rect)
               return acc
@@ -679,7 +684,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                 return acc
               }
               const _updated: ViewChange.SaveManualLayout['layout']['edges'][string] = acc[data.edge.id] = {
-                points: data.edge.points
+                points: data.edge.points,
               }
               if (data.label?.bbox) {
                 _updated.labelBBox = data.label.bbox
@@ -696,18 +701,18 @@ export function createDiagramStore(props: DiagramInitialState) {
               const allX = [
                 ...data.edge.points.map(p => p[0]),
                 ...controlPoints.map(p => p.x),
-                ...(_updated.labelBBox ? [_updated.labelBBox.x, _updated.labelBBox.x + _updated.labelBBox.width] : [])
+                ...(_updated.labelBBox ? [_updated.labelBBox.x, _updated.labelBBox.x + _updated.labelBBox.width] : []),
               ]
               const allY = [
                 ...data.edge.points.map(p => p[1]),
                 ...controlPoints.map(p => p.y),
-                ...(_updated.labelBBox ? [_updated.labelBBox.y, _updated.labelBBox.y + _updated.labelBBox.height] : [])
+                ...(_updated.labelBBox ? [_updated.labelBBox.y, _updated.labelBBox.y + _updated.labelBBox.height] : []),
               ]
               const rect = boxToRect({
                 x: Math.floor(Math.min(...allX)),
                 y: Math.floor(Math.min(...allY)),
                 x2: Math.ceil(Math.max(...allX)),
-                y2: Math.ceil(Math.max(...allY))
+                y2: Math.ceil(Math.max(...allY)),
               })
               bounds = getBoundsOfRects(bounds, rect)
               return acc
@@ -720,8 +725,8 @@ export function createDiagramStore(props: DiagramInitialState) {
                 autoLayout: view.autoLayout,
                 nodes,
                 edges,
-                ...bounds
-              }
+                ...bounds,
+              },
             }
 
             if (DEV) {
@@ -735,11 +740,11 @@ export function createDiagramStore(props: DiagramInitialState) {
                 {
                   view: {
                     ...view,
-                    bounds
-                  }
+                    bounds,
+                  },
                 },
                 noReplace,
-                'update view bounds'
+                'update view bounds',
               )
             }
             onChange?.({ change })
@@ -750,10 +755,10 @@ export function createDiagramStore(props: DiagramInitialState) {
               {
                 viewSyncDebounceTimeout: setTimeout(() => {
                   get().triggerSaveManualLayout()
-                }, 1000) as any as number // explicit typecast to number to suppress TS error in astro build
+                }, 1000) as any as number, // explicit typecast to number to suppress TS error in astro build
               },
               noReplace,
-              'debounce sync state'
+              'debounce sync state',
             )
           },
 
@@ -773,16 +778,16 @@ export function createDiagramStore(props: DiagramInitialState) {
                 lastOnNavigate: {
                   fromView: view.id,
                   toView: element.navigateTo,
-                  fromNode: element.id
-                }
+                  fromNode: element.id,
+                },
               },
               noReplace,
-              'triggerOnNavigateTo'
+              'triggerOnNavigateTo',
             )
             onNavigateTo(
               element.navigateTo,
               event,
-              element as DiagramNodeWithNavigate
+              element as DiagramNodeWithNavigate,
             )
           },
 
@@ -800,12 +805,12 @@ export function createDiagramStore(props: DiagramInitialState) {
                     ? {
                       fromView: viewId,
                       toView: stepBack.viewId,
-                      fromNode: nodeId as Fqn
+                      fromNode: nodeId as Fqn,
                     }
-                    : null
+                    : null,
                 },
                 noReplace,
-                'goBack'
+                'goBack',
               )
               onNavigateTo(stepBack.viewId)
             }
@@ -826,12 +831,12 @@ export function createDiagramStore(props: DiagramInitialState) {
                     ? {
                       fromView: viewId,
                       toView: stepForward.viewId,
-                      fromNode: stepForward.nodeId as Fqn
+                      fromNode: stepForward.nodeId as Fqn,
                     }
-                    : null
+                    : null,
                 },
                 noReplace,
-                'goForward'
+                'goForward',
               )
               onNavigateTo(stepForward.viewId)
             }
@@ -840,7 +845,7 @@ export function createDiagramStore(props: DiagramInitialState) {
           onOpenSourceView: () => {
             const { view, onOpenSource } = get()
             onOpenSource?.({
-              view: view.id
+              view: view.id,
             })
           },
 
@@ -859,20 +864,20 @@ export function createDiagramStore(props: DiagramInitialState) {
             set(
               {
                 activeWalkthrough: null,
-                activeOverlay: overlay
+                activeOverlay: overlay,
               },
               noReplace,
-              'openOverlay'
+              'openOverlay',
             )
           },
           closeOverlay: () => {
             if (get().activeOverlay !== null) {
               set(
                 {
-                  activeOverlay: null
+                  activeOverlay: null,
                 },
                 noReplace,
-                'closeOverlay'
+                'closeOverlay',
               )
             }
           },
@@ -913,7 +918,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               xyedges,
               xystore,
               fitViewPadding,
-              activeWalkthrough
+              activeWalkthrough,
             } = get()
             invariant(isDynamicView, 'view is not dynamic')
             const edge = typeof step === 'string' ? xyedges.find(({ id }) => id === stepId) : step
@@ -923,7 +928,7 @@ export function createDiagramStore(props: DiagramInitialState) {
               stepId,
               hasPrevious: currentIndex > 0,
               hasNext: currentIndex < xyedges.length - 1,
-              parallelPrefix: getParallelStepsPrefix(stepId)
+              parallelPrefix: getParallelStepsPrefix(stepId),
             }
 
             const dimmed = new StringSet(
@@ -932,7 +937,7 @@ export function createDiagramStore(props: DiagramInitialState) {
                   id !== stepId
                   && !(activeWalkthrough.parallelPrefix && id.startsWith(activeWalkthrough.parallelPrefix))
                 )
-                .map(({ id }) => id)
+                .map(({ id }) => id),
             )
             const selected = [] as DiagramFlowTypes.Node[]
             for (const n of xyflow.getNodes()) {
@@ -949,16 +954,16 @@ export function createDiagramStore(props: DiagramInitialState) {
               maxZoom: Math.max(1, transform[2]),
               minZoom: MinZoom,
               padding: Math.max(fitViewPadding, 0.2),
-              nodes: selected
+              nodes: selected,
             })
             set(
               {
                 focusedNodeId: null,
                 activeWalkthrough,
-                dimmed
+                dimmed,
               },
               noReplace,
-              'activateWalkthrough'
+              'activateWalkthrough',
             )
           },
 
@@ -968,10 +973,10 @@ export function createDiagramStore(props: DiagramInitialState) {
                 {
                   activeWalkthrough: null,
                   focusedNodeId: null,
-                  dimmed: EmptyStringSet
+                  dimmed: EmptyStringSet,
                 },
                 noReplace,
-                'stopWalkthrough'
+                'stopWalkthrough',
               )
               get().fitDiagram()
             }
@@ -986,10 +991,10 @@ export function createDiagramStore(props: DiagramInitialState) {
               set(
                 {
                   xyflow: instance,
-                  initialized: true
+                  initialized: true,
                 },
                 noReplace,
-                'onInit'
+                'onInit',
               )
             }
           },
@@ -1014,7 +1019,7 @@ export function createDiagramStore(props: DiagramInitialState) {
 
             xyedges.forEach(edge => {
               xyflow.updateEdgeData(edge.id, {
-                controlPoints: getControlPointForEdge(edge)
+                controlPoints: getControlPointForEdge(edge),
               })
             })
 
@@ -1055,15 +1060,15 @@ export function createDiagramStore(props: DiagramInitialState) {
               }
 
               // Edge is a loop
-              if(source == target) {
-                const loopSize = 80                
+              if (source == target) {
+                const loopSize = 80
                 const centerOfTopBoundary = new VectorImpl(0, source.height || 0)
                   .mul(-0.5)
                   .add(sourceCenter)
 
                 return [
                   centerOfTopBoundary.add(new VectorImpl(-loopSize / 2.5, -loopSize)),
-                  centerOfTopBoundary.add(new VectorImpl(loopSize / 2.5, -loopSize))
+                  centerOfTopBoundary.add(new VectorImpl(loopSize / 2.5, -loopSize)),
                 ]
               }
 
@@ -1083,15 +1088,15 @@ export function createDiagramStore(props: DiagramInitialState) {
               return vector(v).mul(scale).add(nodeCenter)
             }
           },
-          align: align(get)
+          align: align(get),
         } satisfies DiagramState),
         {
           name: `${storeDevId} - ${props.view.id}`,
-          enabled: DEV
-        }
-      )
+          enabled: DEV,
+        },
+      ),
     ),
-    shallow
+    shallow,
   )
 }
 

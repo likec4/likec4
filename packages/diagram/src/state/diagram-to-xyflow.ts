@@ -1,6 +1,6 @@
-import { type DiagramEdge, DiagramNode, type DiagramView, ElementKind, type Fqn } from '@likec4/core'
+import { type DiagramEdge, type DiagramView, type Fqn, DiagramNode, ElementKind } from '@likec4/core'
 import { nonNullable, whereOperatorAsPredicate } from '@likec4/core'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, pick } from 'remeda'
 import type { WhereOperator } from '../LikeC4Diagram.props'
 import { ZIndexes } from '../xyflow/const'
 import type { DiagramFlowTypes } from '../xyflow/types'
@@ -13,7 +13,7 @@ export function diagramViewToXYFlowData(
     where: WhereOperator<string, string> | null
     draggable: boolean
     selectable: boolean
-  }
+  },
 ): {
   xynodes: DiagramFlowTypes.Node[]
   xyedges: DiagramFlowTypes.Edge[]
@@ -34,23 +34,27 @@ export function diagramViewToXYFlowData(
     new Array<{
       node: DiagramNode
       parent: DiagramNode | null
-    }>()
+    }>(),
   )
-
-  let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
-  if (opts.where) {
-    try {
-      visiblePredicate = whereOperatorAsPredicate(opts.where)
-    } catch (e) {
-      console.error('Error in where filter:', e)
-    }
-  }
-
-  // const visiblePredicate = opts.where ? whereOperatorAsPredicate(opts.where) : () => true
 
   // namespace to force unique ids
   const ns = ''
   const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
+
+  let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
+  if (opts.where) {
+    try {
+      const filterablePredicate = whereOperatorAsPredicate(opts.where)
+      visiblePredicate = i =>
+        filterablePredicate({
+          ...pick(i, ['tags', 'kind']),
+          ...('source' in i ? { source: nodeById(i.source) } : i),
+          ...('target' in i ? { target: nodeById(i.target) } : i),
+        })
+    } catch (e) {
+      console.error('Error in where filter:', e)
+    }
+  }
 
   let next: typeof traverse[0] | undefined
   while ((next = traverse.shift())) {
@@ -62,7 +66,7 @@ export function diagramViewToXYFlowData(
 
     const position = {
       x: node.position[0],
-      y: node.position[1]
+      y: node.position[1],
     }
     if (parent) {
       position.x -= parent.position[0]
@@ -83,8 +87,8 @@ export function diagramViewToXYFlowData(
       height: node.height,
       hidden: node.kind !== ElementKind.Group && !visiblePredicate(node),
       ...(parent && {
-        parentId: ns + parent.id
-      })
+        parentId: ns + parent.id,
+      }),
     }
 
     xynodes.push(
@@ -95,18 +99,18 @@ export function diagramViewToXYFlowData(
           data: {
             fqn: node.id,
             isViewGroup: node.kind === ElementKind.Group,
-            element: node
+            element: node,
           },
-          dragHandle: '.likec4-compound-title'
+          dragHandle: '.likec4-compound-title',
         }
         : {
           ...base,
           type: 'element',
           data: {
             fqn: node.id,
-            element: node
-          }
-        }
+            element: node,
+          },
+        },
     )
   }
 
@@ -135,16 +139,16 @@ export function diagramViewToXYFlowData(
         label: !!edge.labelBBox
           ? {
             bbox: edge.labelBBox,
-            text: edge.label ?? ''
+            text: edge.label ?? '',
           }
-          : null
+          : null,
       },
-      interactionWidth: 20
+      interactionWidth: 20,
     })
   }
 
   return {
     xynodes,
-    xyedges
+    xyedges,
   }
 }

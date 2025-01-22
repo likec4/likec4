@@ -18,10 +18,7 @@ import {
   type IconUrl,
   type IncomingExpr as C4IncomingExpr,
   type InOutExpr as C4InOutExpr,
-  isElementRef,
-  isElementWhere,
-  isRelationExpression,
-  isRelationWhere,
+  type KindEqual,
   type ModelRelation,
   type NonEmptyArray,
   type OutgoingExpr as C4OutgoingExpr,
@@ -30,6 +27,7 @@ import {
   type RelationshipLineType,
   type RelationWhereExpr,
   type Tag,
+  type TagEqual,
   type ViewId,
   type ViewRule,
   type ViewRuleGlobalPredicateRef,
@@ -38,8 +36,13 @@ import {
   type ViewRulePredicate,
   type ViewRuleStyle,
   type WhereOperator,
+  isElementRef,
+  isElementWhere,
+  isRelationExpression,
+  isRelationWhere,
 } from '../../../types'
 import { type DirectRelationExpr as C4RelationExpr } from '../../../types/expression'
+import type { Participant } from '../../../types/operators'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeElementView } from '../compute'
 
@@ -479,6 +482,16 @@ export function $where(
       expr: $expr(expr) as any,
       condition: operator,
     },
+  }
+}
+
+export function $participant(
+  participant: Participant,
+  operator: TagEqual<TestTag> | KindEqual<TestTag>,
+): WhereOperator<TestTag, string> {
+  return {
+    participant,
+    operator,
   }
 }
 

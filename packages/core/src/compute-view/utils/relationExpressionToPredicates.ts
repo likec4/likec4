@@ -1,13 +1,14 @@
+import { pick } from 'remeda'
 import { nonexhaustive } from '../../errors'
 import type { Element } from '../../types/element'
 import {
+  type RelationExpression,
+  type RelationWhereExpr,
   isIncoming,
   isInOut,
   isOutgoing,
   isRelation,
   isRelationWhere,
-  type RelationExpression,
-  type RelationWhereExpr
 } from '../../types/expression'
 import { whereOperatorAsPredicate } from '../../types/operators'
 import type { ModelRelation } from '../../types/relation'
@@ -21,13 +22,19 @@ export type FilterableEdge = Pick<ModelRelation, 'kind' | 'tags'> & {
 }
 
 export function relationExpressionToPredicates<T extends FilterableEdge>(
-  expr: RelationExpression | RelationWhereExpr
+  expr: RelationExpression | RelationWhereExpr,
 ): Predicate<T> {
   switch (true) {
     case isRelationWhere(expr): {
       const predicate = relationExpressionToPredicates(expr.where.expr)
       const where = whereOperatorAsPredicate(expr.where.condition)
-      return e => predicate(e) && where(e)
+      return e =>
+        predicate(e) && where({
+          source: { tags: e.source.tags, kind: e.source.kind },
+          target: { tags: e.target.tags, kind: e.target.kind },
+          ...(e.tags && { tags: e.tags }),
+          ...(e.kind && { kind: e.kind }),
+        })
     }
     case isRelation(expr): {
       const isSource = elementExprToPredicate(expr.source)

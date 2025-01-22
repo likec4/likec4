@@ -1,4 +1,5 @@
 import { type Filterable, whereOperatorAsPredicate } from '@likec4/core'
+import { fail } from 'assert'
 import { describe, expect, it } from 'vitest'
 
 type FTag = 'old' | 'new'
@@ -79,8 +80,8 @@ describe('operators', () => {
     const predicate = whereOperatorAsPredicate({
       and: [
         { kind: { eq: <FKind> 'a' } },
-        { tag: { eq: <FTag> 'old' } }
-      ]
+        { tag: { eq: <FTag> 'old' } },
+      ],
     })
 
     expect(predicate(matchingItem)).toBe(true)
@@ -97,13 +98,55 @@ describe('operators', () => {
     const predicate = whereOperatorAsPredicate({
       or: [
         { kind: { eq: <FKind> 'a' } },
-        { tag: { eq: <FTag> 'old' } }
-      ]
+        { tag: { eq: <FTag> 'old' } },
+      ],
     })
 
     expect(predicate(matchingItem1)).toBe(true)
     expect(predicate(matchingItem2)).toBe(true)
     expect(predicate(matchingItem3)).toBe(true)
     expect(predicate(nonMatchingItem)).toBe(false)
+  })
+
+  it('participant source', () => {
+    const matchingItem1 = item({ source: { kind: 'a', tags: ['old'] }, target: {} })
+    const matchingItem2 = item({ source: { kind: 'a', tags: ['new'] }, target: {} })
+    const matchingItem3 = item({ source: { kind: 'b', tags: ['old'] }, target: {} })
+    const nonMatchingItem1 = item({ source: {}, target: { kind: 'a', tags: ['old'] } })
+    const nonMatchingItem2 = item({ source: { kind: 'b', tags: ['new'] }, target: {} })
+
+    const predicate = whereOperatorAsPredicate({
+      or: [
+        { participant: 'source', operator: { kind: { eq: <FKind> 'a' } } },
+        { participant: 'source', operator: { tag: { eq: <FTag> 'old' } } },
+      ],
+    })
+
+    expect(predicate(matchingItem1)).toBe(true)
+    expect(predicate(matchingItem2)).toBe(true)
+    expect(predicate(matchingItem3)).toBe(true)
+    expect(predicate(nonMatchingItem1)).toBe(false)
+    expect(predicate(nonMatchingItem2)).toBe(false)
+  })
+
+  it('participant target', () => {
+    const matchingItem1 = item({ source: {}, target: { kind: 'a', tags: ['old'] } })
+    const matchingItem2 = item({ source: {}, target: { kind: 'a', tags: ['new'] } })
+    const matchingItem3 = item({ source: {}, target: { kind: 'b', tags: ['old'] } })
+    const nonMatchingItem1 = item({ source: { kind: 'a', tags: ['old'] }, target: {} })
+    const nonMatchingItem2 = item({ source: {}, target: { kind: 'b', tags: ['new'] } })
+
+    const predicate = whereOperatorAsPredicate({
+      or: [
+        { participant: 'target', operator: { kind: { eq: <FKind> 'a' } } },
+        { participant: 'target', operator: { tag: { eq: <FTag> 'old' } } },
+      ],
+    })
+
+    expect(predicate(matchingItem1)).toBe(true)
+    expect(predicate(matchingItem2)).toBe(true)
+    expect(predicate(matchingItem3)).toBe(true)
+    expect(predicate(nonMatchingItem1)).toBe(false)
+    expect(predicate(nonMatchingItem2)).toBe(false)
   })
 })

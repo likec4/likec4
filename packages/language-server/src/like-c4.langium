@@ -413,11 +413,13 @@ WhereRelationNegation:
 
 WhereRelation:
   {infer WhereRelationTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]?
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id]? |
+  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=[Tag:TagId]? |
+  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id]?
 ;
-
-type WhereTagEqual = WhereElementTag | WhereRelationTag;
-type WhereKindEqual = WhereElementKind | WhereRelationKind;
+type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
+type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
+type WhereKindEqual = WhereElementKind | WhereRelationKind | WhereRelationParticipantKind;
 
 type WhereExpression = WhereElementExpression | WhereRelationExpression;
 
@@ -769,6 +771,8 @@ ThemeColor returns string:
   'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string:
   'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
+Participant returns string:
+  'source' | 'target';
 
 CustomColorValue returns string:
   Hash (Id | Hex | Number);

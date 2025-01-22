@@ -1,10 +1,10 @@
 import {
   type CustomRelationExpr,
+  type RelationWhereExpr,
+  type ViewRulePredicate,
   isCustomRelationExpr,
   isRelationWhere,
   isViewRulePredicate,
-  type RelationWhereExpr,
-  type ViewRulePredicate
 } from '@likec4/core'
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
@@ -42,16 +42,16 @@ describe.concurrent('LikeC4ModelParser', () => {
           relation: {
             where: {
               condition: {
-                kind: { eq: 'r' }
+                kind: { eq: 'r' },
               },
               expr: {
                 isBidirectional: false,
                 source: { wildcard: true },
-                target: { wildcard: true }
-              }
-            }
-          }
-        }
+                target: { wildcard: true },
+              },
+            },
+          },
+        },
       })
     })
 
@@ -66,7 +66,7 @@ describe.concurrent('LikeC4ModelParser', () => {
           }
           views {
             view index {
-              include * -> * where kind = r
+              include * -> * where kind = r and source.kind = e
             }
           }
           `)
@@ -82,14 +82,21 @@ describe.concurrent('LikeC4ModelParser', () => {
       expect(wherePredicate).toStrictEqual({
         where: {
           condition: {
-            kind: { eq: 'r' }
+            and: [{
+              kind: { eq: 'r' },
+            }, {
+              participant: 'source',
+              operator: {
+                kind: { eq: 'e' },
+              },
+            }],
           },
           expr: {
             isBidirectional: false,
             source: { wildcard: true },
-            target: { wildcard: true }
-          }
-        }
+            target: { wildcard: true },
+          },
+        },
       })
     })
 
@@ -123,9 +130,9 @@ describe.concurrent('LikeC4ModelParser', () => {
           relation: {
             isBidirectional: false,
             source: { wildcard: true },
-            target: { wildcard: true }
-          }
-        }
+            target: { wildcard: true },
+          },
+        },
       })
     })
   })
@@ -174,49 +181,49 @@ describe.concurrent('LikeC4ModelParser', () => {
           id: expect.any(String),
           astPath: expect.any(String),
           source: {
-            id: 'n1'
+            id: 'n1',
           },
           target: {
-            id: 'n2'
-          }
-        },
-        {
-          id: expect.any(String),
-          astPath: expect.any(String),
-          source: {
-            id: 'n1.sys1'
+            id: 'n2',
           },
-          target: {
-            id: 'n2.sys2'
-          },
-          title: 'Nested',
-          color: 'red'
-        },
-        {
-          id: expect.any(String),
-          astPath: expect.any(String),
-          source: {
-            id: 'n1.sys1'
-          },
-          target: {
-            id: 'n2.sys2',
-            element: 'sys.c1'
-          },
-          title: 'title'
         },
         {
           id: expect.any(String),
           astPath: expect.any(String),
           source: {
             id: 'n1.sys1',
-            element: 'sys.c1'
           },
           target: {
             id: 'n2.sys2',
-            element: 'sys.c1.c2'
           },
-          tags: ['next']
-        }
+          title: 'Nested',
+          color: 'red',
+        },
+        {
+          id: expect.any(String),
+          astPath: expect.any(String),
+          source: {
+            id: 'n1.sys1',
+          },
+          target: {
+            id: 'n2.sys2',
+            element: 'sys.c1',
+          },
+          title: 'title',
+        },
+        {
+          id: expect.any(String),
+          astPath: expect.any(String),
+          source: {
+            id: 'n1.sys1',
+            element: 'sys.c1',
+          },
+          target: {
+            id: 'n2.sys2',
+            element: 'sys.c1.c2',
+          },
+          tags: ['next'],
+        },
       ])
     })
 
@@ -242,27 +249,27 @@ describe.concurrent('LikeC4ModelParser', () => {
       expect(doc.c4Views).toHaveLength(1)
       expect(doc.c4Views[0]!.rules).toEqual([{
         style: {
-          color: 'red'
+          color: 'red',
         },
         targets: [
           {
             selector: 'children',
             ref: {
-              deployment: 'n1'
-            }
+              deployment: 'n1',
+            },
           },
           {
             selector: 'expanded',
             ref: {
-              deployment: 'n2'
-            }
+              deployment: 'n2',
+            },
           },
           {
             ref: {
-              deployment: 'n1'
-            }
-          }
-        ]
+              deployment: 'n1',
+            },
+          },
+        ],
       }])
     })
 
@@ -296,14 +303,14 @@ describe.concurrent('LikeC4ModelParser', () => {
         include: [{
           isBidirectional: false,
           source: {
-            wildcard: true
+            wildcard: true,
           },
           target: {
             ref: {
-              deployment: 'root'
-            }
-          }
-        }]
+              deployment: 'root',
+            },
+          },
+        }],
       }])
     })
 
@@ -334,14 +341,14 @@ describe.concurrent('LikeC4ModelParser', () => {
         include: [{
           isBidirectional: false,
           source: {
-            wildcard: true
+            wildcard: true,
           },
           target: {
             ref: {
-              deployment: 'nd.root'
-            }
-          }
-        }]
+              deployment: 'nd.root',
+            },
+          },
+        }],
       }])
     })
 
@@ -372,14 +379,14 @@ describe.concurrent('LikeC4ModelParser', () => {
         include: [{
           isBidirectional: false,
           source: {
-            wildcard: true
+            wildcard: true,
           },
           target: {
             ref: {
-              model: 'root'
-            }
-          }
-        }]
+              model: 'root',
+            },
+          },
+        }],
       }])
     })
 
@@ -415,15 +422,15 @@ describe.concurrent('LikeC4ModelParser', () => {
           source: {
             ref: {
               deployment: 'nd.ins',
-              element: 'root.child1'
-            }
+              element: 'root.child1',
+            },
           },
           target: {
             ref: {
-              model: 'root.child2'
-            }
-          }
-        }]
+              model: 'root.child2',
+            },
+          },
+        }],
       }])
     })
   })

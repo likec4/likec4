@@ -1,8 +1,9 @@
+import { fail } from 'assert'
 import { describe, expect, it } from 'vitest'
 import type { Element } from '../../types/element'
 import type { RelationWhereExpr } from '../../types/expression'
 import type { ComputedNode } from '../../types/view'
-import { $incoming, $inout, $outgoing, $relation, $where } from '../element-view/__test__/fixture'
+import { $incoming, $inout, $outgoing, $participant, $relation, $where } from '../element-view/__test__/fixture'
 import { type FilterableEdge, relationExpressionToPredicates } from './relationExpressionToPredicates'
 
 function el(id: string): ComputedNode {
@@ -15,7 +16,7 @@ function r(id: string, props = {}): FilterableEdge {
     id,
     source: el(source!),
     target: el(target!),
-    ...props
+    ...props,
   } as FilterableEdge
 }
 
@@ -113,8 +114,8 @@ describe('relationExpressionToPredicates', () => {
       const predicate = relationExpressionToPredicates(
         $where(
           $relation('support -> cloud'),
-          { tag: { eq: 'aws' } }
-        ) as RelationWhereExpr
+          { tag: { eq: 'aws' } },
+        ) as RelationWhereExpr,
       )
 
       expect(predicate(matchingRelation)).toBe(true)
@@ -126,8 +127,8 @@ describe('relationExpressionToPredicates', () => {
       const predicate = relationExpressionToPredicates(
         $where(
           $relation('support -> cloud'),
-          { tag: { eq: 'aws' } }
-        ) as RelationWhereExpr
+          { tag: { eq: 'aws' } },
+        ) as RelationWhereExpr,
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)
@@ -139,8 +140,34 @@ describe('relationExpressionToPredicates', () => {
       const predicate = relationExpressionToPredicates(
         $where(
           $relation('support -> cloud'),
-          { tag: { eq: 'aws' } }
-        ) as RelationWhereExpr
+          { tag: { eq: 'aws' } },
+        ) as RelationWhereExpr,
+      )
+
+      expect(predicate(nonMatchingRelation)).toBe(false)
+    })
+
+    it('returns true if participant matches', () => {
+      const matchingRelation = r('support:cloud', { tags: ['aws'], source: { id: 'support', tags: ['aws'] } })
+
+      const predicate = relationExpressionToPredicates(
+        $where(
+          $relation('support -> cloud'),
+          $participant('source', { tag: { eq: 'aws' } }),
+        ) as RelationWhereExpr,
+      )
+
+      expect(predicate(matchingRelation)).toBe(true)
+    })
+
+    it('returns false if participant does not match', () => {
+      const nonMatchingRelation = r('support:cloud', { tags: ['aws'], source: { id: 'support', tags: ['next'] } })
+
+      const predicate = relationExpressionToPredicates(
+        $where(
+          $relation('support -> cloud'),
+          $participant('source', { tag: { eq: 'aws' } }),
+        ) as RelationWhereExpr,
       )
 
       expect(predicate(nonMatchingRelation)).toBe(false)

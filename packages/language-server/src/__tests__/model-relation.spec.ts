@@ -13,7 +13,7 @@ describe.concurrent('model relation', () => {
         person user2
         user1 -> user2
       }
-      `
+      `,
   )
 
   test(
@@ -26,7 +26,7 @@ describe.concurrent('model relation', () => {
         user1 = person "user1" {
         }
         -> user1
-      }`
+      }`,
   )
 
   test(
@@ -38,7 +38,7 @@ describe.concurrent('model relation', () => {
       model {
         person user1 {}
         it -> user1
-      }`
+      }`,
   )
 
   test(
@@ -50,7 +50,7 @@ describe.concurrent('model relation', () => {
       model {
         person user1 {}
         this -> user1
-      }`
+      }`,
   )
 
   test(
@@ -65,7 +65,7 @@ describe.concurrent('model relation', () => {
         extend user1 {
           -> user2
         }
-      }`
+      }`,
   )
 
   test(
@@ -80,7 +80,7 @@ describe.concurrent('model relation', () => {
         extend user1 {
           user2 -> this
         }
-      }`
+      }`,
   )
 
   test(
@@ -95,7 +95,7 @@ describe.concurrent('model relation', () => {
         extend user1 {
           it -> user2
         }
-      }`
+      }`,
   )
 
   test(
@@ -109,7 +109,7 @@ describe.concurrent('model relation', () => {
           it -> user2
         }
         person user2
-      }`
+      }`,
   )
 
   test(
@@ -123,7 +123,7 @@ describe.concurrent('model relation', () => {
           user2 -> it
         }
         person user2
-      }`
+      }`,
   )
 
   test(
@@ -137,7 +137,7 @@ describe.concurrent('model relation', () => {
           this -> user2
         }
         person user2
-      }`
+      }`,
   )
 
   test(
@@ -151,7 +151,7 @@ describe.concurrent('model relation', () => {
           user2 -> this
         }
         person user2
-      }`
+      }`,
   )
 
   test(
@@ -165,7 +165,7 @@ describe.concurrent('model relation', () => {
         person user2 {
           -> user1
         }
-      }`
+      }`,
   )
 
   test(
@@ -179,7 +179,7 @@ describe.concurrent('model relation', () => {
           -> user2
         }
         person user2
-      }`
+      }`,
   )
 
   test(
@@ -203,7 +203,7 @@ describe.concurrent('model relation', () => {
           }
         }
         user -> api
-      }`
+      }`,
   )
 
   test(
@@ -218,7 +218,7 @@ describe.concurrent('model relation', () => {
           -> user1 'calls'
         }
         user1 -> user2 'responds to'
-      }`
+      }`,
   )
 
   test(
@@ -241,7 +241,7 @@ describe.concurrent('model relation', () => {
             #one #two, #three;
           }
         }
-      }`
+      }`,
   )
 
   test(
@@ -265,7 +265,7 @@ describe.concurrent('model relation', () => {
         technology: 'technology';
         description 'description'
       }
-    }`
+    }`,
   )
 
   test(
@@ -282,7 +282,7 @@ describe.concurrent('model relation', () => {
           link https://path
         }
       }
-    }`
+    }`,
   )
 
   test(
@@ -303,7 +303,7 @@ describe.concurrent('model relation', () => {
       person user3
       user1 -> user2
       user1 -[async]-> user3
-    }`
+    }`,
   )
 
   test(
@@ -323,7 +323,7 @@ describe.concurrent('model relation', () => {
           tail none
         }
       }
-    }`
+    }`,
   )
 
   test(
@@ -341,7 +341,7 @@ describe.concurrent('model relation', () => {
           path '/users/:id'
         }
       }
-    }`
+    }`,
   )
 
   test(
@@ -361,7 +361,7 @@ describe.concurrent('model relation', () => {
       client2 -> server {
         technology 'graphql'
       }
-    }`
+    }`,
   )
 
   test(
@@ -377,13 +377,13 @@ describe.concurrent('model relation', () => {
       component server
 
       client1 -> server {
-        navigateTo target
+        navigateTo targetView
       }
     }
     views {
-      dynamic view target {
+      dynamic view targetView {
       }
-    }`
+    }`,
   )
 
   test(
@@ -399,12 +399,12 @@ describe.concurrent('model relation', () => {
       component server
 
       client1 -> server {
-        navigateTo target
+        navigateTo targetView
       }
     }
     views {
-      view target {
+      view targetView {
       }
-    }`
+    }`,
   )
 })

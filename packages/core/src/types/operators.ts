@@ -16,6 +16,7 @@ type AllNever = {
   or?: never
   tag?: never
   kind?: never
+  participant?: never
 }
 
 export type TagEqual<Tag> = Omit<AllNever, 'tag'> & {
@@ -30,6 +31,17 @@ export type KindEqual<Kind> = Omit<AllNever, 'kind'> & {
 }
 export const isKindEqual = <Kind>(operator: WhereOperator<any, Kind>): operator is KindEqual<Kind> => {
   return 'kind' in operator
+}
+
+export type Participant = 'source' | 'target'
+export type ParticipantOperator<Tag, Kind> = Omit<AllNever, 'participant'> & {
+  participant: Participant
+  operator: KindEqual<Kind> | TagEqual<Tag>
+}
+export const isParticipantOperator = <Tag, Kind>(
+  operator: WhereOperator<Tag, any>,
+): operator is ParticipantOperator<Tag, Kind> => {
+  return 'participant' in operator
 }
 
 export type NotOperator<Tag, Kind> = Omit<AllNever, 'not'> & {
@@ -56,6 +68,7 @@ export const isOrOperator = <Tag, Kind>(operator: WhereOperator<Tag, Kind>): ope
 export type WhereOperator<Tag, Kind> =
   | TagEqual<Tag>
   | KindEqual<Kind>
+  | ParticipantOperator<Tag, Kind>
   | NotOperator<Tag, Kind>
   | AndOperator<Tag, Kind>
   | OrOperator<Tag, Kind>
@@ -66,15 +79,23 @@ export type Filterable<
 > = {
   tags?: readonly FTag[] | null
   kind?: FKind
+  source?: Filterable<FTag, FKind>
+  target?: Filterable<FTag, FKind>
 }
 
 export type OperatorPredicate<V extends Filterable> = (value: V) => boolean
 
 export function whereOperatorAsPredicate<
-  FTag extends string = string,
-  FKind extends string = string,
+  FTag extends string | null = string | null,
+  FKind extends string | null = string | null,
 >(operator: WhereOperator<FTag, FKind>): OperatorPredicate<Filterable> {
   switch (true) {
+    case isParticipantOperator(operator): {
+      const participant = operator.participant
+      const participantPredicate = whereOperatorAsPredicate(operator.operator)
+
+      return participantIs(participant, participantPredicate)
+    }
     case isTagEqual(operator): {
       if ('eq' in operator.tag) {
         const tag = operator.tag.eq
@@ -113,5 +134,24 @@ export function whereOperatorAsPredicate<
     }
     default:
       nonexhaustive(operator)
+  }
+}
+
+function participantIs<FTag extends string | null, FKind extends string | null>(
+  participant: Participant,
+  predicate: OperatorPredicate<Filterable<FTag, FKind>>,
+): OperatorPredicate<Filterable<FTag, FKind>> {
+  return (value) => {
+    if (!value.source || !value.target) {
+      return false
+    }
+    switch (participant) {
+      case 'source': {
+        return predicate(value.source)
+      }
+      case 'target': {
+        return predicate(value.target)
+      }
+    }
   }
 }

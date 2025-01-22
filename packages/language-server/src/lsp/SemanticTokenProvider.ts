@@ -1,5 +1,5 @@
 import type { AstNode } from 'langium'
-import { AbstractSemanticTokenProvider, type SemanticTokenAcceptor } from 'langium/lsp'
+import { type SemanticTokenAcceptor, AbstractSemanticTokenProvider } from 'langium/lsp'
 import { isTruthy } from 'remeda'
 import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-types'
 import { ast } from '../ast'
@@ -8,7 +8,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   protected override highlightElement(
     node: AstNode,
-    acceptor: SemanticTokenAcceptor
+    acceptor: SemanticTokenAcceptor,
   ): void | undefined | 'prune' {
     if (ast.isElement(node) || ast.isDeploymentNode(node)) {
       return this.highlightNameAndKind(node, acceptor)
@@ -21,8 +21,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           type: SemanticTokenTypes.variable,
           modifier: [
             SemanticTokenModifiers.definition,
-            SemanticTokenModifiers.readonly
-          ]
+            SemanticTokenModifiers.readonly,
+          ],
         })
       }
       return
@@ -34,7 +34,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       return acceptor({
         node,
         property: 'name',
-        type: SemanticTokenTypes.function
+        type: SemanticTokenTypes.function,
       })
     }
     if (ast.isLibIcon(node)) {
@@ -42,7 +42,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         node,
         property: 'name',
         type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition]
+        modifier: [SemanticTokenModifiers.definition],
       })
       return 'prune'
     }
@@ -51,7 +51,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'kind',
-        type: SemanticTokenTypes.function
+        type: SemanticTokenTypes.function,
       })
       return
     }
@@ -59,14 +59,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'kind',
-        type: SemanticTokenTypes.function
+        type: SemanticTokenTypes.function,
       })
     }
     if (ast.isNavigateToProperty(node) || ast.isRelationNavigateToProperty(node)) {
       acceptor({
         node,
         property: 'key',
-        type: SemanticTokenTypes.property
+        type: SemanticTokenTypes.property,
       })
       acceptor({
         node,
@@ -74,8 +74,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.variable,
         modifier: [
           SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly
-        ]
+          SemanticTokenModifiers.readonly,
+        ],
       })
       return 'prune'
     }
@@ -85,8 +85,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.variable,
         modifier: [
           SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly
-        ]
+          SemanticTokenModifiers.readonly,
+        ],
       })
       return 'prune'
     }
@@ -98,8 +98,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           type: SemanticTokenTypes.variable,
           modifier: [
             SemanticTokenModifiers.definition,
-            SemanticTokenModifiers.readonly
-          ]
+            SemanticTokenModifiers.readonly,
+          ],
         })
       }
       return
@@ -108,7 +108,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'value',
-        type: SemanticTokenTypes.function
+        type: SemanticTokenTypes.function,
       })
       return
     }
@@ -119,17 +119,24 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [
           SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly
-        ]
+          SemanticTokenModifiers.readonly,
+        ],
       })
       return
+    }
+    if ((ast.isWhereRelationParticipantKind(node) || ast.isWhereRelationParticipantTag(node))) {
+      acceptor({
+        node,
+        property: 'participant',
+        type: SemanticTokenTypes.keyword,
+      })
     }
     if (ast.isElementKindExpression(node) && isTruthy(node.kind)) {
       acceptor({
         node,
         property: 'kind',
         type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition]
+        modifier: [SemanticTokenModifiers.definition],
       })
       return 'prune'
     }
@@ -138,7 +145,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         node,
         property: 'tag',
         type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition]
+        modifier: [SemanticTokenModifiers.definition],
       })
       return 'prune'
     }
@@ -149,8 +156,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable,
         modifier: [
           SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly
-        ]
+          SemanticTokenModifiers.readonly,
+        ],
       })
       return !node.parent ? 'prune' : undefined
     }
@@ -161,8 +168,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable,
         modifier: [
           SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly
-        ]
+          SemanticTokenModifiers.readonly,
+        ],
       })
       return !node.parent ? 'prune' : undefined
     }
@@ -170,7 +177,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         keyword: 'color',
-        type: SemanticTokenTypes.keyword
+        type: SemanticTokenTypes.keyword,
       })
       acceptor({
         node,
@@ -178,8 +185,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [
           SemanticTokenModifiers.declaration,
-          SemanticTokenModifiers.readonly
-        ]
+          SemanticTokenModifiers.readonly,
+        ],
       })
       return
     }
@@ -193,15 +200,15 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [
           SemanticTokenModifiers.declaration,
-          SemanticTokenModifiers.readonly
-        ]
+          SemanticTokenModifiers.readonly,
+        ],
       })
     }
     if (ast.isTags(node)) {
       return acceptor({
         node,
         property: 'values',
-        type: SemanticTokenTypes.interface
+        type: SemanticTokenTypes.interface,
       })
     }
     if (ast.isTag(node)) {
@@ -209,7 +216,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         node,
         property: 'name',
         type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition]
+        modifier: [SemanticTokenModifiers.definition],
       })
     }
     if (
@@ -219,19 +226,19 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'key',
-        type: SemanticTokenTypes.property
+        type: SemanticTokenTypes.property,
       })
     }
     if (ast.isOpacityProperty(node)) {
       acceptor({
         node,
         property: 'key',
-        type: SemanticTokenTypes.property
+        type: SemanticTokenTypes.property,
       })
       acceptor({
         node,
         property: 'value',
-        type: SemanticTokenTypes.number
+        type: SemanticTokenTypes.number,
       })
       return 'prune'
     }
@@ -243,14 +250,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'key',
-        type: SemanticTokenTypes.property
+        type: SemanticTokenTypes.property,
       })
       if (ast.isIconProperty(node) && (node.libicon || node.value === 'none')) {
         acceptor({
           node,
           property: node.libicon ? 'libicon' : 'value',
           type: SemanticTokenTypes.enum,
-          modifier: [SemanticTokenModifiers.defaultLibrary]
+          modifier: [SemanticTokenModifiers.defaultLibrary],
         })
         return 'prune'
       }
@@ -258,7 +265,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         acceptor({
           node,
           property: 'value',
-          type: SemanticTokenTypes.string
+          type: SemanticTokenTypes.string,
         })
       }
       return 'prune'
@@ -273,13 +280,13 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'key',
-        type: SemanticTokenTypes.property
+        type: SemanticTokenTypes.property,
       })
       if ('value' in node) {
         acceptor({
           node,
           property: 'value',
-          type: SemanticTokenTypes.enum
+          type: SemanticTokenTypes.enum,
         })
       }
       return 'prune'
@@ -293,14 +300,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       type: SemanticTokenTypes.variable,
       modifier: [
         SemanticTokenModifiers.declaration,
-        SemanticTokenModifiers.readonly
-      ]
+        SemanticTokenModifiers.readonly,
+      ],
     })
     acceptor({
       node,
       property: 'kind',
       type: SemanticTokenTypes.keyword,
-      modifier: []
+      modifier: [],
     })
   }
 
@@ -313,8 +320,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         modifier: [
           SemanticTokenModifiers.declaration,
           SemanticTokenModifiers.readonly,
-          'local'
-        ]
+          'local',
+        ],
       })
     }
   }

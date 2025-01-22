@@ -228,7 +228,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|metadata|mobile|actor|color|cylinder|description|environment|deployment|deploymentNode|dynamic|global|group|element|exclude|extends|extend|include|instance(Of)?|it|model|muted|notation|node|notes|of|parallel|par|person|predicateGroup|predicate|primary|queue|rectangle|secondary|shape|specification|storage|styleGroup|style|tag|technology|this|title|view|views|where|with|zone)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|metadata|mobile|actor|color|cylinder|description|environment|deployment|deploymentNode|dynamic|global|group|element|exclude|extends|extend|include|instance(Of)?|it|model|muted|notation|node|notes|of|parallel|par|person|predicateGroup|predicate|primary|queue|rectangle|secondary|shape|specification|storage|styleGroup|style|tag|technology|this|title|view|views|where|source|target|with|zone)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",
