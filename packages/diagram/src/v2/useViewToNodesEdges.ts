@@ -11,7 +11,7 @@ import {
 } from '@likec4/core'
 import { useDeepCompareMemo } from '@react-hookz/web'
 import Queue from 'mnemonist/queue'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../xyflow/const'
 import type { Types } from './types'
 
@@ -53,12 +53,17 @@ function viewToNodesEdge(opts: {
   let visiblePredicate = (_nodeOrEdge: DiagramNode | DiagramEdge): boolean => true
   if (opts.where) {
     try {
-      visiblePredicate = whereOperatorAsPredicate(opts.where)
+      const filterablePredicate = whereOperatorAsPredicate(opts.where)
+      visiblePredicate = i =>
+        filterablePredicate({
+          ...pick(i, ['tags', 'kind']),
+          ...('source' in i ? { source: nodeById(i.source) } : i),
+          ...('target' in i ? { target: nodeById(i.target) } : i),
+        })
     } catch (e) {
       console.error('Error in where filter:', e)
     }
   }
-
   // const visiblePredicate = opts.where ? whereOperatorAsPredicate(opts.where) : () => true
 
   // namespace to force unique ids
