@@ -1,7 +1,9 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { useRef } from 'react'
+import { isEmpty } from 'remeda'
 import { Overlays } from '../additional/Overlays'
-import { DiagramContainer, DiagramEventHandlers, DiagramFeatures, IconRendererProvider } from '../context'
+import { DiagramEventHandlers, DiagramFeatures, IconRendererProvider, RootContainer } from '../context'
+import { LikeC4CustomColors } from '../LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useLikeC4Model } from '../likec4model'
 import { EnsureMantine } from '../ui/EnsureMantine'
@@ -68,8 +70,10 @@ export function LikeC4DiagramV2({
 
   if (initialRef.current == null) {
     initialRef.current = {
-      defaultNodes: xyNodesEdges.xynodes,
-      defaultEdges: xyNodesEdges.xyedges,
+      defaultEdges: [],
+      defaultNodes: [],
+      // defaultNodes: xyNodesEdges.xynodes,
+      // defaultEdges: xyNodesEdges.xyedges,
       initialWidth: initialWidth ?? view.bounds.width,
       initialHeight: initialHeight ?? view.bounds.height,
     }
@@ -130,7 +134,10 @@ export function LikeC4DiagramV2({
                 onOpenSource,
                 onBurgerMenuClick,
               }}>
-              <DiagramContainer className={className}>
+              <RootContainer className={className}>
+                {!isEmpty(view.customColorDefinitions) && (
+                  <LikeC4CustomColors customColors={view.customColorDefinitions} />
+                )}
                 <XYFlowProvider
                   fitView={fitView}
                   {...initialRef.current}
@@ -157,7 +164,7 @@ export function LikeC4DiagramV2({
                   <RelationshipsBrowser />
                 </Overlay> */
                 }
-              </DiagramContainer>
+              </RootContainer>
             </DiagramEventHandlers>
           </DiagramFeatures>
         </IconRendererProvider>

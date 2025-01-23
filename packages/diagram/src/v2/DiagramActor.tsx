@@ -7,13 +7,14 @@ import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useDiagramActor } from './hooks'
 import { LikeC4ViewMachineContextProvider } from './state/actorContext'
 import { useInspector } from './state/inspector'
+import { layoutActor } from './state/layoutActor'
 import { type Input, likeC4ViewMachine } from './state/machine'
 import type { Types } from './types'
 
 type ActorContextInput = Omit<Input, 'xystore' | 'features'>
 
 export function DiagramActor({ input, children }: PropsWithChildren<{ input: ActorContextInput }>) {
-  const { onNavigateTo, onOpenSource } = useDiagramEventHandlers()
+  const { onNavigateTo, onOpenSource, onChange } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
   const inspector = useInspector()
   return (
@@ -25,14 +26,27 @@ export function DiagramActor({ input, children }: PropsWithChildren<{ input: Act
               onNavigateTo?.(viewId as ViewId)
             }),
 
+            'trigger:OnChange': useCallbackRef((_, params) => {
+              onChange?.(params)
+            }),
+
             'trigger:OpenSource': useCallbackRef((_, params) => {
               onOpenSource?.(params)
+            }),
+          },
+          actors: {
+            layoutActor: layoutActor.provide({
+              actions: {
+                'trigger:OnChange': useCallbackRef((_, params) => {
+                  onChange?.(params)
+                }),
+              },
             }),
           },
         })}
         options={{
           ...inspector,
-          id: `diagram${input.view.id}`,
+          id: `diagram:${input.view.id}`,
           input: {
             xystore,
             ...input,

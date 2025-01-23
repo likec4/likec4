@@ -103,7 +103,7 @@ export const shapeSvg = style({
   stroke: vars.element.stroke,
   overflow: 'visible',
   filter: filterShadow,
-  transition: `filter 130ms ${easings.inOut}`,
+  transition: `fill 120ms linear, filter 130ms ${easings.inOut}`,
   transitionDelay: '0ms',
   zIndex: -1,
   vars: {

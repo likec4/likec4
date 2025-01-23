@@ -13,7 +13,6 @@ export const hotkeyActor = fromCallback<AnyEventObject, NonReducibleUnknown, Hot
     ['ArrowRight', () => sendBack({ type: 'key.arrow.right' })],
   ])
   document.body.addEventListener('keydown', handler, { capture: true })
-
   return () => {
     document.body.removeEventListener('keydown', handler, { capture: true })
   }

@@ -1,11 +1,13 @@
 import { Stack } from '@mantine/core'
 import { clsx } from 'clsx'
 import { memo } from 'react'
-import { IfEnabled } from '../../../context'
+import { IfEnabled, useEnabledFeatures } from '../../../context'
+import { stopPropagation } from '../../../xyflow/utils'
 import { NavigationButtons } from './NavigationButtons'
 import * as css from './styles.css'
 
 export const Controls = memo(() => {
+  const { enableNavigationButtons } = useEnabledFeatures()
   return (
     <>
       <Stack
@@ -15,11 +17,9 @@ export const Controls = memo(() => {
           'likec4-top-left-panel',
         )}
         align="flex-start"
-        onClick={e => e.stopPropagation()}
+        onClick={stopPropagation}
         gap={'xs'}>
-        <IfEnabled feature="NavigationButtons">
-          <NavigationButtons />
-        </IfEnabled>
+        {enableNavigationButtons && <NavigationButtons />}
       </Stack>
     </>
   )

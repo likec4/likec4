@@ -2,7 +2,7 @@ import {
   Box,
   RemoveScroll,
 } from '@mantine/core'
-import { useDebouncedEffect } from '@react-hookz/web'
+import { useDebouncedCallback, useDebouncedEffect, useSyncedRef } from '@react-hookz/web'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
 import * as css from './Overlay.css'
@@ -15,10 +15,24 @@ export function Overlay({ children, onClose }: OverlayProps) {
   const [opened, setOpened] = useState(false)
   const ref = useRef<HTMLDialogElement>(null)
 
+  // Move dialog to the top of the DOM
   useLayoutEffect(() => ref.current?.showModal(), [])
 
+  // Enabling animation
+  // 1. Body is invisible
+  // 2. showModal() is called
+  // 3. Show body
   useDebouncedEffect(
     () => setOpened(true),
+    [],
+    50,
+  )
+
+  const onCloseRef = useSyncedRef(onClose)
+  const close = useDebouncedCallback(
+    () => {
+      onCloseRef.current()
+    },
     [],
     50,
   )
@@ -38,7 +52,6 @@ export function Overlay({ children, onClose }: OverlayProps) {
         '--backdrop-opacity': '60%',
         translateY: 0,
         opacity: 1,
-        scale: 1,
         // transition: {
         //   delay: 0.25,
         // }
@@ -55,12 +68,12 @@ export function Overlay({ children, onClose }: OverlayProps) {
       onClick={e => {
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
           e.stopPropagation()
-          onClose()
+          ref.current?.close()
         }
       }}
       onClose={e => {
         e.stopPropagation()
-        onClose()
+        close()
       }}
     >
       <RemoveScroll forwardProps>

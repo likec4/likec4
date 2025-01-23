@@ -88,7 +88,7 @@ export const Overlays = memo(() => {
     <AnimatePresence initial={false}>
       {relationshipsBrowser && (
         <Overlay
-          onClose={function(): void {
+          onClose={() => {
             relationshipsBrowser.send({ type: 'close' })
           }}>
           <RelationshipsBrowser actorRef={relationshipsBrowser} />

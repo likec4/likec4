@@ -4,13 +4,18 @@ import {
 } from '@xyflow/react'
 import { prop } from 'remeda'
 import {
+  type ActorLogic,
   type ActorRefFromLogic,
+  type ActorSystem,
+  type MachineSnapshot,
+  type NonReducibleUnknown,
+  type Snapshot,
   type SnapshotFrom,
   assign,
   raise,
   setup,
 } from 'xstate'
-import { MaxZoom, MinZoom } from '../../base/const'
+import { MinZoom } from '../../base/const'
 import type { RelationshipsBrowserTypes } from './_types'
 
 type XYFLowInstance = ReactFlowInstance<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>
@@ -76,18 +81,22 @@ export const relationshipsBrowserLogic = setup({
     'opening': {
       on: {
         'xyflow.init': {
-          actions: [
-            assign({
-              initialized: true,
-              xyflow: ({ event }) => event.instance,
-            }),
-            { type: 'xyflow:fitDiagram', params: { duration: 0 } },
-          ],
+          actions: assign({
+            initialized: true,
+            xyflow: ({ event }) => event.instance,
+          }),
           target: 'active',
+        },
+        'close': {
+          target: 'closed',
         },
       },
     },
     'active': {
+      entry: {
+        type: 'xyflow:fitDiagram',
+        params: { duration: 0 },
+      },
       on: {
         'xyflow.nodeClick': {
           actions: [
@@ -105,7 +114,14 @@ export const relationshipsBrowserLogic = setup({
             raise({ type: 'fitDiagram' }, { delay: 50 }),
           ],
         },
+        'close': {
+          target: 'closed',
+        },
       },
+      exit: assign({
+        initialized: false,
+        xyflow: null,
+      }),
     },
     'closed': {
       type: 'final',
@@ -118,15 +134,14 @@ export const relationshipsBrowserLogic = setup({
         params: prop('event'),
       },
     },
-    'close': {
-      target: '.closed',
-    },
   },
-  exit: assign({
-    // parentRef: null,
-    xyflow: null,
-  }),
-})
+}) as unknown as ActorLogic<
+  MachineSnapshot<Context, Events, any, 'opening' | 'active' | 'closed', any, any, any, any>,
+  Events,
+  Input,
+  any,
+  any
+> // TODO reduce type inference by forcing the types
 
 export type RelationshipsBrowserLogic = typeof relationshipsBrowserLogic
 export type RelationshipsBrowserActorRef = ActorRefFromLogic<typeof relationshipsBrowserLogic>

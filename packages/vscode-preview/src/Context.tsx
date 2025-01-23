@@ -8,7 +8,7 @@ export function LikeC4Context({ children }: PropsWithChildren) {
   const isModelLoaded = useIsModelLoaded()
   return (
     <LikeC4ModelProvider likec4model={likec4model}>
-      {isModelLoaded && children}
+      {isModelLoaded && <>{children}</>}
     </LikeC4ModelProvider>
   )
 }

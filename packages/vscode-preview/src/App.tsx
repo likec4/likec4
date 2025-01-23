@@ -1,4 +1,4 @@
-import { LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4DiagramV2 } from '@likec4/diagram'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
@@ -14,15 +14,15 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
       icon={<IconX style={{ width: 20, height: 20 }} />}
       styles={{
         icon: {
-          alignSelf: 'flex-start'
-        }
+          alignSelf: 'flex-start',
+        },
       }}
       color={'red'}
       title={'Oops, something went wrong'}
       withCloseButton={false}>
       <Text
         style={{
-          whiteSpace: 'preserve-breaks'
+          whiteSpace: 'preserve-breaks',
         }}>
         {error ?? 'Unknown error'}
       </Text>
@@ -37,13 +37,13 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
 export default function App() {
   const [{
     nodesDraggable,
-    edgesEditable
+    edgesEditable,
   }] = useVscodeAppState()
 
   const {
     state,
     view,
-    error
+    error,
   } = useLikeC4View()
 
   // Debounce loading state to prevent flickering
@@ -74,7 +74,7 @@ export default function App() {
           visible={isLoading}
           zIndex={1000}
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
-        <LikeC4Diagram
+        <LikeC4DiagramV2
           view={view}
           fitViewPadding={0.09}
           readonly={false}

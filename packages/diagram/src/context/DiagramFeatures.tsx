@@ -148,6 +148,14 @@ export function IfEnabled({
   children,
   and = true,
 }: PropsWithChildren<{ feature: FeatureName; and?: boolean }>) {
-  const enabled = useEnabledFeature(feature)
+  const enabled = useEnabledFeature(feature)[`enable${feature}`] === true
   return enabled && and ? <>{children}</> : null
+}
+
+export function IfNotEnabled({
+  feature,
+  children,
+}: PropsWithChildren<{ feature: FeatureName }>) {
+  const notEnabled = useEnabledFeature(feature)[`enable${feature}`] !== true
+  return notEnabled ? <>{children}</> : null
 }

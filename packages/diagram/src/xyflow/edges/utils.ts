@@ -1,4 +1,4 @@
-import { Position, type XYPosition } from '@xyflow/react'
+import { type InternalNode, type XYPosition, Position } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import type { DiagramFlowTypes } from '../types'
 
@@ -8,20 +8,20 @@ export function getNodeCenter(node: DiagramFlowTypes.InternalNode): XYPosition {
 
   return {
     x: x + width / 2,
-    y: y + height / 2
+    y: y + height / 2,
   }
 }
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
 export function getNodeIntersectionFromCenterToPoint(
-  intersectionNode: DiagramFlowTypes.InternalNode,
-  { x: x1, y: y1 }: XYPosition
+  intersectionNode: InternalNode,
+  { x: x1, y: y1 }: XYPosition,
 ) {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const {
     width: intersectionNodeWidth,
-    height: intersectionNodeHeight
+    height: intersectionNodeHeight,
   } = getNodeDimensions(intersectionNode)
 
   const intersectionNodePosition = intersectionNode.internals.positionAbsolute
@@ -47,15 +47,15 @@ export function getNodeIntersectionFromCenterToPoint(
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
-function getNodeIntersection(intersectionNode: DiagramFlowTypes.InternalNode, targetNode: DiagramFlowTypes.InternalNode): XYPosition {
+function getNodeIntersection(intersectionNode: InternalNode, targetNode: InternalNode): XYPosition {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const {
     width: intersectionNodeWidth,
-    height: intersectionNodeHeight
+    height: intersectionNodeHeight,
   } = getNodeDimensions(intersectionNode)
   const {
     width: targetNodeWidth,
-    height: targetNodeHeight
+    height: targetNodeHeight,
   } = getNodeDimensions(targetNode)
 
   const intersectionNodePosition = intersectionNode.internals.positionAbsolute
@@ -81,12 +81,12 @@ function getNodeIntersection(intersectionNode: DiagramFlowTypes.InternalNode, ta
 }
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
-export function getPointPosition(node: DiagramFlowTypes.InternalNode, intersectionPoint: XYPosition) {
+export function getPointPosition(node: InternalNode, intersectionPoint: XYPosition) {
   const n = {
     // x: node.data.element.position[0],
     // y: node.data.element.position[1],
     ...node.internals.positionAbsolute,
-    ...getNodeDimensions(node)
+    ...getNodeDimensions(node),
   }
   const nx = Math.round(n.x)
   const ny = Math.round(n.y)
@@ -130,7 +130,7 @@ export function getPointPosition(node: DiagramFlowTypes.InternalNode, intersecti
   return [
     intersectionPoint.x + offsetX,
     intersectionPoint.y + offsetY,
-    handlePosition
+    handlePosition,
   ] as const
 }
 
@@ -148,6 +148,6 @@ export function getEdgeParams(source: DiagramFlowTypes.InternalNode, target: Dia
     tx,
     ty,
     sourcePos,
-    targetPos
+    targetPos,
   }
 }

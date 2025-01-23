@@ -13,9 +13,14 @@ type Data = UndefinedOnPartialDeep<
   >
 >
 
-type EdgeContainerProps = PropsWithChildren<EdgeProps<Data>>
+type EdgeContainerProps = PropsWithChildren<
+  EdgeProps<Data> & {
+    className?: string | undefined
+  }
+>
 
 export function EdgeContainer({
+  className,
   data: {
     hovered: isHovered = false,
     active: isActive = false,
@@ -29,7 +34,7 @@ export function EdgeContainer({
       className={clsx(
         css.container,
         isDimmed && css.dimmed,
-        // isControlPointDragging && edgesCss.controlDragging,
+        className,
       )}
       data-likec4-color={data.color ?? 'gray'}
       data-edge-dir={data.dir ?? 'forward'}

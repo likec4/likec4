@@ -9,6 +9,7 @@ export const Tooltip = MantineTooltip.withProps({
   label: '',
   children: null,
   offset: 8,
+  withinPortal: false,
 })
 
 export const ActionIcon = MantineActionIcon.withProps({

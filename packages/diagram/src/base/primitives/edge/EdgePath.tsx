@@ -1,6 +1,6 @@
 import type { DiagramEdge } from '@likec4/core'
 import clsx from 'clsx'
-import { forwardRef } from 'react'
+import { type PointerEventHandler, forwardRef } from 'react'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { EdgeProps } from '../../types'
 import * as css from './edge.css'
@@ -18,6 +18,7 @@ type Data = UndefinedOnPartialDeep<
 
 type EdgePathProps = EdgeProps<Data> & {
   svgPath: string
+  onEdgePointerDown?: PointerEventHandler<SVGGElement> | undefined
 }
 
 export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
@@ -31,6 +32,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
   svgPath,
   style,
   interactionWidth,
+  onEdgePointerDown,
 }, svgPathRef) => {
   let markerStartName = arrowTypeToMarker(tail)
   let markerEndName = arrowTypeToMarker(head ?? 'normal')
@@ -60,7 +62,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
         stroke={'transparent'}
         strokeWidth={interactionWidth ?? 10}
       />
-      <g className={css.markerContext}>
+      <g className={css.markerContext} onPointerDown={onEdgePointerDown}>
         <defs>
           {MarkerStart && <MarkerStart id={'start' + id} />}
           {MarkerEnd && <MarkerEnd id={'end' + id} />}

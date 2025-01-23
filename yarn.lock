@@ -1949,7 +1949,7 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@xstate/react": "npm:^5.0.1"
+    "@xstate/react": "npm:^5.0.2"
     "@xstate/store": "npm:^2.6.2"
     "@xyflow/react": "npm:12.3.6"
     "@xyflow/system": "npm:0.0.47"
@@ -1971,14 +1971,14 @@ __metadata:
     vite: "npm:5.4.12"
     vite-plugin-dts: "npm:^4.4.0"
     vitest: "npm:^2.1.8"
-    xstate: "npm:^5.19.1"
+    xstate: "npm:^5.19.2"
     zustand: "npm:^4.5.5"
   peerDependencies:
     "@mantine/core": ^7.15.2
     "@mantine/hooks": ^7.15.2
     "@mantine/spotlight": ^7.15.2
-    react: ^18.2.0 || ^19.0.0
-    react-dom: ^18.2.0 || ^19.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
   languageName: unknown
   linkType: soft
 
@@ -2028,18 +2028,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/icons@workspace:packages/icons"
   dependencies:
-    "@types/react": "npm:18.3.11"
-    "@types/react-dom": "npm:18.3.1"
+    "@types/react": "npm:~19.0.4"
+    "@types/react-dom": "npm:~19.0.2"
     consola: "npm:^3.3.3"
     esbuild: "npm:^0.24.2"
     execa: "npm:^9.3.1"
     glob: "npm:^11.0.0"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
+    react: "npm:~19.0.0"
+    react-dom: "npm:~19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
   languageName: unknown
   linkType: soft
 
@@ -2212,8 +2212,8 @@ __metadata:
     "@tabler/icons-react": "npm:3.17.0"
     "@types/node": "npm:^20.17.7"
     "@types/object-hash": "npm:^3.0.6"
-    "@types/react": "npm:18.3.11"
-    "@types/react-dom": "npm:18.3.1"
+    "@types/react": "npm:~19.0.4"
+    "@types/react-dom": "npm:~19.0.2"
     "@types/vscode": "npm:^1.89.0"
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.17.0"
@@ -2223,8 +2223,8 @@ __metadata:
     nanostores: "npm:0.11.3"
     object-hash: "npm:^3.0.0"
     postcss: "npm:^8.4.49"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
+    react: "npm:~19.0.0"
+    react-dom: "npm:~19.0.0"
     react-error-boundary: "npm:^4.1.2"
     remeda: "npm:^2.19.0"
     tsx: "npm:~4.19.2"
@@ -4401,19 +4401,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xstate/react@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@xstate/react@npm:5.0.1"
+"@xstate/react@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@xstate/react@npm:5.0.2"
   dependencies:
     use-isomorphic-layout-effect: "npm:^1.1.2"
     use-sync-external-store: "npm:^1.2.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-0
-    xstate: ^5.19.1
+    xstate: ^5.19.2
   peerDependenciesMeta:
     xstate:
       optional: true
-  checksum: 10c0/555f61d6dcba37a221e883d91fc8308ac847c5c263a97efc132292e7f29a526d9c9bf362ba1bef1865cbfd448a1ee655403bed90b508346969c02d3972e98761
+  checksum: 10c0/9ecc3608ae80c83b7cb8e0e4bd3f8b2dc1a90594e993c60ad6229e69236e79a37b92770be31504e81ccc460a69bef2deb40c3a3366336072767d494f990b025d
   languageName: node
   linkType: hard
 
@@ -15112,10 +15112,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xstate@npm:^5.19.1":
-  version: 5.19.1
-  resolution: "xstate@npm:5.19.1"
-  checksum: 10c0/4562a692eb025f443765b7a55445fc9c7eef36ac534e3332ffcba1a73713b85346da6bc85e06ed4bf4e5490ec4955af163bdc6b91ecac84214ddbbbe9cb925a3
+"xstate@npm:^5.19.2":
+  version: 5.19.2
+  resolution: "xstate@npm:5.19.2"
+  checksum: 10c0/0ff24a88af9fbb8182240b1c0929b3aa46f5777e91e6446939016fa7128afffe2421619613720e6266cc2436a91631e471ee0572215e127a5bdf841891a2b057
   languageName: node
   linkType: hard
 

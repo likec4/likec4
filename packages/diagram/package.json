@@ -43,7 +43,7 @@
     "@mantine/vanilla-extract": "7.15.2",
     "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.17.0",
-    "@xstate/react": "^5.0.1",
+    "@xstate/react": "^5.0.2",
     "@xstate/store": "^2.6.2",
     "@xyflow/react": "12.3.6",
     "@xyflow/system": "0.0.47",
@@ -59,15 +59,15 @@
     "react-error-boundary": "^4.1.2",
     "remeda": "^2.19.0",
     "type-fest": "4.28.1",
-    "xstate": "^5.19.1",
+    "xstate": "^5.19.2",
     "zustand": "^4.5.5"
   },
   "peerDependencies": {
     "@mantine/core": "^7.15.2",
     "@mantine/hooks": "^7.15.2",
     "@mantine/spotlight": "^7.15.2",
-    "react": "^18.2.0 || ^19.0.0",
-    "react-dom": "^18.2.0 || ^19.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

@@ -1,7 +1,9 @@
 import {
   type DiagramEdge,
   type DiagramView,
+  type EdgeId,
   type Fqn,
+  type NodeId,
   type WhereOperator,
   DiagramNode,
   ElementKind,
@@ -89,7 +91,7 @@ function viewToNodesEdge(opts: {
       position.y -= parent.position[1]
     }
 
-    const id = ns + node.id
+    const id = ns + node.id as NodeId
 
     const base = {
       id,
@@ -118,6 +120,7 @@ function viewToNodesEdge(opts: {
       style: node.style,
       depth: node.depth ?? 0,
       icon: node.icon ?? null,
+      position: node.position,
     } satisfies Types.CompoundNodeData
 
     const leafNodeData = {
@@ -129,7 +132,9 @@ function viewToNodesEdge(opts: {
       level: node.level,
       color: node.color,
       shape: node.shape,
+      style: node.style,
       icon: node.icon ?? null,
+      position: node.position,
     } satisfies Types.LeafNodeData
 
     if (node.kind === ElementKind.Group) {
@@ -220,7 +225,7 @@ function viewToNodesEdge(opts: {
   for (const edge of view.edges) {
     const source = edge.source
     const target = edge.target
-    const id = ns + edge.id
+    const id = ns + edge.id as EdgeId
 
     if (!hasAtLeast(edge.points, 2)) {
       console.error('edge should have at least 2 points', edge)
@@ -241,7 +246,9 @@ function viewToNodesEdge(opts: {
         label: edge.label,
         technology: edge.technology,
         navigateTo: edge.navigateTo,
+        controlPoints: edge.controlPoints ?? null,
         labelBBox: edge.labelBBox ?? null,
+        labelXY: edge.labelBBox ? { x: edge.labelBBox.x, y: edge.labelBBox.y } : null,
         points: edge.points,
         color: edge.color ?? 'gray',
         line: edge.line ?? 'dashed',

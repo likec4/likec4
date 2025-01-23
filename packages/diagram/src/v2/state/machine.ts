@@ -1,6 +1,7 @@
 import {
   type BBox,
   type DiagramView,
+  type EdgeId,
   type Fqn,
   type NodeId,
   type ViewChange,
@@ -20,7 +21,7 @@ import {
   getViewportForBounds,
 } from '@xyflow/react'
 import type { EdgeChange, NodeChange, Viewport } from '@xyflow/system'
-import { prop } from 'remeda'
+import { pathOr, prop } from 'remeda'
 import {
   type ActorRefFromLogic,
   type SnapshotFrom,
@@ -28,8 +29,8 @@ import {
   assertEvent,
   assign,
   enqueueActions,
-  log,
   or,
+  sendTo,
   setup,
   spawnChild,
   stopChild,
@@ -43,13 +44,16 @@ import type { Types } from '../types'
 import {
   focusNodesEdges,
   lastClickedNode,
-  mergeUpdateViewEvent,
+  mergeXYNodesEdges,
   navigateBack,
   navigateForward,
   unfocusNodesEdges,
+  updateEdgeData,
   updateNavigationHistory,
+  updateNodeData,
 } from './assign'
 import { type HotKeyEvent, hotkeyActor } from './hotkeyActor'
+import { layoutActor } from './layoutActor'
 import { focusedBounds } from './utils'
 
 export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
@@ -74,7 +78,6 @@ export interface Input {
 
 export interface Context extends Input {
   features: EnabledFeatures
-  xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
   initialized: boolean
   viewport: Viewport
   viewportChangedManually: boolean
@@ -91,6 +94,8 @@ export interface Context extends Input {
   }
   focusedNode: NodeId | null
   viewportBeforeFocus: null | Viewport
+  xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
+  layoutActorRef: ActorRefFromLogic<typeof layoutActor>
 }
 
 export type Events =
@@ -103,15 +108,21 @@ export type Events =
   | { type: 'xyflow.edgeClick'; edge: Types.Edge }
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.paneDblClick' }
+  | { type: 'update.nodeData'; nodeId: NodeId; data: Partial<Types.NodeData> }
+  | { type: 'update.edgeData'; edgeId: EdgeId; data: Partial<Types.Edge['data']> }
   | { type: 'update.view'; view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
-  | { type: 'openElementDetails'; fqn: Fqn; fromNode?: NodeId }
-  | { type: 'openRelationshipsBrowser'; fqn: Fqn }
-  | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId }
+  | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
+  | { type: 'open.relationshipsBrowser'; fqn: Fqn }
+  | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
+  | { type: 'saveManualLayout.schedule' }
+  | { type: 'saveManualLayout.cancel' }
+
+export type ActionArg = { context: Context; event: Events }
 
 export const likeC4ViewMachine = setup({
   types: {
@@ -119,9 +130,15 @@ export const likeC4ViewMachine = setup({
     input: {} as Input,
     children: {} as {
       hotkey: 'hotkeyActor'
+      layout: 'layoutActor'
       relationshipsBrowser: 'relationshipsBrowserLogic'
     },
     events: {} as Events,
+  },
+  actors: {
+    hotkeyActor,
+    layoutActor,
+    relationshipsBrowserLogic,
   },
   guards: {
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
@@ -154,7 +171,8 @@ export const likeC4ViewMachine = setup({
     'trigger:NavigateTo': (_, _params: { viewId: ViewId }) => {
       // navigate to view
     },
-    'trigger:ChangeElementStyle': (_, _change: ViewChange.ChangeElementStyle) => {
+    'trigger:OnChange': (_, _params: { change: ViewChange }) => {
+      // apply change
     },
     'trigger:OpenSource': (_, _params: OpenSourceParams) => {
     },
@@ -212,13 +230,9 @@ export const likeC4ViewMachine = setup({
       context.xystore.getState().panBy(diff)
     },
   },
-  actors: {
-    hotkeyActor: hotkeyActor,
-    relationshipsBrowserLogic,
-  },
 }).createMachine({
   initial: 'initializing',
-  context: ({ input }) => ({
+  context: ({ input, self, spawn }) => ({
     ...input,
     features: { ...AllDisabled },
     initialized: false,
@@ -234,7 +248,9 @@ export const likeC4ViewMachine = setup({
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
     overlayActorRef: null,
+    layoutActorRef: spawn('layoutActor', { id: 'layout', input: { parent: self, viewId: input.view.id } }),
   }),
+  // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
   states: {
     initializing: {
       on: {
@@ -296,7 +312,22 @@ export const likeC4ViewMachine = setup({
           ],
         },
         'xyflow.paneDblClick': {
-          actions: 'xyflow:fitDiagram',
+          actions: [
+            { type: 'xyflow:fitDiagram' },
+            { type: 'trigger:OpenSource', params: ({ context }) => ({ view: context.view.id }) },
+          ],
+        },
+        'saveManualLayout.*': {
+          guard: 'not readonly',
+          actions: sendTo((c) => c.context.layoutActorRef, ({ event }) => {
+            if (event.type === 'saveManualLayout.schedule') {
+              return { type: 'sync' }
+            }
+            if (event.type === 'saveManualLayout.cancel') {
+              return { type: 'cancel' }
+            }
+            nonexhaustive(event)
+          }),
         },
       },
     },
@@ -341,6 +372,18 @@ export const likeC4ViewMachine = setup({
           }),
           target: 'idle',
         },
+        'saveManualLayout.*': {
+          guard: 'not readonly',
+          actions: sendTo(c => c.context.layoutActorRef, ({ event }) => {
+            if (event.type === 'saveManualLayout.schedule') {
+              return { type: 'sync' }
+            }
+            if (event.type === 'saveManualLayout.cancel') {
+              return { type: 'cancel' }
+            }
+            nonexhaustive(event)
+          }),
+        },
       },
       exit: [
         stopChild('hotkey'),
@@ -370,7 +413,7 @@ export const likeC4ViewMachine = setup({
             id: 'relationshipsBrowser',
             src: 'relationshipsBrowserLogic',
             input: ({ context, event }) => {
-              assertEvent(event, 'openRelationshipsBrowser')
+              assertEvent(event, 'open.relationshipsBrowser')
               return {
                 subject: event.fqn,
                 scope: context.view,
@@ -382,61 +425,58 @@ export const likeC4ViewMachine = setup({
           },
           on: {
             // Catch event and do nothing
-            'openRelationshipsBrowser': {},
+            'open.*': {},
+            'key.esc': {
+              actions: sendTo('relationshipsBrowser', { type: 'close' }),
+            },
           },
-        },
-      },
-      on: {
-        'key.esc': {
-          target: 'idle',
         },
       },
       exit: [
         stopChild('hotkey'),
       ],
     },
-    // Navigating to a new view (after `navigateTo` event)
+    // Navigating to another view (after `navigateTo` event)
     navigating: {
       initial: 'pending',
       type: 'compound',
       states: {
         pending: {
-          entry: {
-            type: 'trigger:NavigateTo',
-            params: ({ context }) => ({
-              viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
-            }),
-          },
+          entry: enqueueActions(({ enqueue }) => {
+            enqueue.sendTo(c => c.context.layoutActorRef, { type: 'stop' })
+            enqueue.stopChild('layout')
+            enqueue({
+              type: 'trigger:NavigateTo',
+              params: ({ context }) => ({
+                viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
+              }),
+            })
+          }),
           on: {
             'update.view': {
-              actions: [
-                enqueueActions(({ enqueue, context, event }) => {
-                  const { fromNode, toNode } = findCorrespondingNode(context, event)
-                  if (fromNode && toNode) {
-                    enqueue({
-                      type: 'xyflow:alignNodeFromToAfterNavigate',
-                      params: {
-                        fromNode: fromNode.id,
-                        toPosition: {
-                          x: toNode.position[0],
-                          y: toNode.position[1],
-                        },
+              actions: enqueueActions(({ enqueue, context, event }) => {
+                const { fromNode, toNode } = findCorrespondingNode(context, event)
+                if (fromNode && toNode) {
+                  enqueue({
+                    type: 'xyflow:alignNodeFromToAfterNavigate',
+                    params: {
+                      fromNode: fromNode.id,
+                      toPosition: {
+                        x: toNode.position[0],
+                        y: toNode.position[1],
                       },
-                    })
-                  } else {
-                    enqueue({
-                      type: 'xyflow:setViewportCenter',
-                      params: getBBoxCenter(event.view.bounds),
-                    })
-                  }
-                  enqueue.assign(updateNavigationHistory)
-                  enqueue.assign(mergeUpdateViewEvent)
-                  enqueue.assign({
-                    lastOnNavigate: null,
+                    },
                   })
-                  enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
-                }),
-              ],
+                } else {
+                  enqueue({
+                    type: 'xyflow:setViewportCenter',
+                    params: getBBoxCenter(event.view.bounds),
+                  })
+                }
+                enqueue.assign(updateNavigationHistory)
+                enqueue.assign(mergeXYNodesEdges)
+                enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
+              }),
               target: 'done',
             },
           },
@@ -447,10 +487,12 @@ export const likeC4ViewMachine = setup({
       },
       onDone: {
         target: 'idle',
-        actions: assign({
-          lastOnNavigate: null,
-        }),
       },
+      exit: assign({
+        layoutActorRef: ({ self, context, spawn }) =>
+          spawn('layoutActor', { id: 'layout', input: { parent: self, viewId: context.view.id } }),
+        lastOnNavigate: null,
+      }),
     },
   },
   on: {
@@ -490,12 +532,12 @@ export const likeC4ViewMachine = setup({
       target: '.navigating',
     },
     'navigate.back': {
-      guard: ({ context }: { context: Context }) => context.navigationHistory.currentIndex > 0,
+      guard: ({ context }: ActionArg) => context.navigationHistory.currentIndex > 0,
       actions: assign(navigateBack),
       target: '.navigating',
     },
     'navigate.forward': {
-      guard: ({ context }: { context: Context }) =>
+      guard: ({ context }: ActionArg) =>
         context.navigationHistory.currentIndex < context.navigationHistory.history.length - 1,
       actions: assign(navigateForward),
       target: '.navigating',
@@ -506,6 +548,13 @@ export const likeC4ViewMachine = setup({
         enqueueActions(({ enqueue, event, check, context }) => {
           const isAnotherView = check('is another view')
           if (isAnotherView) {
+            const viewId = event.view.id
+            enqueue.sendTo(c => c.context.layoutActorRef, { type: 'stop' })
+            enqueue.stopChild('layout')
+            enqueue.assign({
+              layoutActorRef: ({ self, spawn }) =>
+                spawn('layoutActor', { id: 'layout', input: { parent: self, viewId } }),
+            })
             const { fromNode, toNode } = findCorrespondingNode(context, event)
             if (fromNode && toNode) {
               enqueue({
@@ -524,11 +573,13 @@ export const likeC4ViewMachine = setup({
                 params: getBBoxCenter(event.view.bounds),
               })
             }
+          } else {
+            enqueue.sendTo(c => c.context.layoutActorRef, { type: 'synced' })
           }
           if (isAnotherView || !context.viewportChangedManually) {
             enqueue.raise({ type: 'fitDiagram' }, { delay: 75 })
           }
-          enqueue.assign(mergeUpdateViewEvent)
+          enqueue.assign(mergeXYNodesEdges)
           enqueue.assign({
             lastOnNavigate: null,
           })
@@ -543,14 +594,29 @@ export const likeC4ViewMachine = setup({
         features: ({ event }) => event.features,
       }),
     },
+    'update.nodeData': {
+      actions: assign(updateNodeData),
+    },
+    'update.edgeData': {
+      actions: assign(updateEdgeData),
+    },
     // 'openElementDetails': {
     //   target: '.overlay',
     // },
-    'openRelationshipsBrowser': {
+    'open.relationshipsBrowser': {
       target: '.overlay.relationshipsBrowser',
     },
   },
-  exit: log('exit'),
+  exit: [
+    stopChild('layout'),
+    stopChild('hotkey'),
+    assign({
+      xyflow: null,
+      xystore: null as any,
+      initialized: false,
+      layoutActorRef: null as any,
+    }),
+  ],
 })
 
 const nodeRef = (node: DiagramNode) => DiagramNode.modelRef(node) ?? DiagramNode.deploymentRef(node)

@@ -51,6 +51,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     clearScreen: false,
     base,
     resolve: {
+      dedupe: ['react', 'react-dom'],
       alias: {
         ...viteAliases(),
         'likec4/previews': likec4AssetsDir,
@@ -59,15 +60,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     configFile: false,
     mode: 'production',
     optimizeDeps: {
-      include: [
-        'likec4/model',
-        'likec4/react',
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom/client',
-      ],
       force: true,
     },
     define: {

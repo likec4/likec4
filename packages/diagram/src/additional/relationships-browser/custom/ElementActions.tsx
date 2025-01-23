@@ -22,7 +22,7 @@ export const ElementActions = (props: ElementActionsProps) => {
       icon: <IconZoomScan />,
       onClick: (e) => {
         e.stopPropagation()
-        diagram.navigateTo(navigateTo, props.id as NodeId)
+        diagram.navigateTo(navigateTo)
       },
     })
   }

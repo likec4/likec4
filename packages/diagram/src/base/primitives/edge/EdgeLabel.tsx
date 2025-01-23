@@ -62,6 +62,7 @@ export function EdgeLabel({
         data-edge-active={isActive}
         data-edge-animated={isActive}
         data-edge-hovered={isHovered}
+        data-edge-dimmed={isDimmed}
         style={{
           ...assignInlineVars({
             [css.varLabelX]: `${labelX}px`,

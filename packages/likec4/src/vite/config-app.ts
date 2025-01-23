@@ -68,6 +68,13 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     },
     resolve: {
       conditions: ['development'],
+      dedupe: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/client',
+      ],
       alias: {
         ...viteAliases(),
         'react-dom/server': resolve(pkgRoot, 'app/react/react-dom-server-mock.ts'),

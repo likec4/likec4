@@ -1,10 +1,9 @@
-import { hasAtLeast, invariant } from '@likec4/core'
 import type { DiagramEdge, Point } from '@likec4/core'
+import { hasAtLeast, invariant } from '@likec4/core'
 import type { InternalNode, Rect, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import { isArray } from 'remeda'
-import type { DiagramFlowTypes } from './types'
 
 export function toDomPrecision(v: number | null) {
   if (v === null) {
@@ -17,11 +16,11 @@ export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
-export const nodeToRect = (nd: DiagramFlowTypes.InternalNode): Rect => ({
+export const nodeToRect = (nd: InternalNode): Rect => ({
   x: nd.internals.positionAbsolute.x,
   y: nd.internals.positionAbsolute.y,
-  width: nd.measured.width ?? nd.width ?? nd.data.element.width,
-  height: nd.measured.height ?? nd.height ?? nd.data.element.height
+  width: nd.measured.width ?? nd.width ?? nd.initialWidth ?? 0,
+  height: nd.measured.height ?? nd.height ?? nd.initialHeight ?? 0,
 })
 
 /**
@@ -40,7 +39,7 @@ export const isInside = (test: Rect, target: Rect) => {
   )
 }
 
-export function bezierControlPoints(diagramEdge: DiagramEdge) {
+export function bezierControlPoints(diagramEdge: Pick<DiagramEdge, 'points'>) {
   let [start, ...bezierPoints] = diagramEdge.points
   invariant(start, 'start should be defined')
   const handles = [
@@ -59,7 +58,7 @@ export function bezierControlPoints(diagramEdge: DiagramEdge) {
       const { x, y } = bezier.get(t)
       handles.push({
         x: Math.round(x),
-        y: Math.round(y)
+        y: Math.round(y),
       })
     })
     bezierPoints = rest
@@ -93,6 +92,6 @@ export function centerXYInternalNode<N extends InternalNode>(nd: N) {
   const { width, height } = getNodeDimensions(nd)
   return {
     x: nd.internals.positionAbsolute.x + width / 2,
-    y: nd.internals.positionAbsolute.y + height / 2
+    y: nd.internals.positionAbsolute.y + height / 2,
   }
 }

@@ -2,11 +2,13 @@ import { useCallbackRef } from '@mantine/hooks'
 import clsx from 'clsx'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base'
+import { useEnabledFeature } from '../context'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { edgeTypes, nodeTypes } from './custom'
 import { useDiagramActor, useDiagramContext } from './hooks'
 import type { Context } from './state/machine'
 import type { Types } from './types'
+import { useLayoutConstraints } from './useLayoutConstraints'
 
 const selectXYProps = (ctx: Context) => ({
   initialized: ctx.initialized,
@@ -34,7 +36,11 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
     nodes,
     edges,
     ...props
-  } = useDiagramContext(ctx => selectXYProps(ctx))
+  } = useDiagramContext(selectXYProps)
+
+  const notReadOnly = !useEnabledFeature('ReadOnly').enableReadOnly
+
+  const layoutConstraints = useLayoutConstraints()
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
@@ -75,6 +81,7 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
       onInit={useCallbackRef((instance) => {
         send({ type: 'xyflow.init', instance })
       })}
+      {...(notReadOnly && rest.nodesDraggable && layoutConstraints)}
       {...props}
       {...rest} />
   )

@@ -1,4 +1,4 @@
-import type { DiagramView, Fqn } from '@likec4/core'
+import type { DiagramView } from '@likec4/core'
 import { useEdgesState, useNodesState } from '@xyflow/react'
 import { useRef } from 'react'
 import { BaseXYFlow } from '../../base/BaseXYFlow'

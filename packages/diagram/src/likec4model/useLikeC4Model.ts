@@ -1,4 +1,4 @@
-import { type ComputedView, type DiagramView, type Fqn, LikeC4Model, type ViewId } from '@likec4/core'
+import { type ComputedView, type DiagramView, type Fqn, type LikeC4Model, type ViewId } from '@likec4/core'
 import { useContext } from 'react'
 import { isDefined, isNonNullish, isString } from 'remeda'
 import type { LiteralUnion } from 'type-fest'

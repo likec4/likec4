@@ -1,9 +1,11 @@
-import { type DiagramView, type NodeId, invariant, nonNullable } from '@likec4/core'
+import { type NodeId, invariant, nonNullable } from '@likec4/core'
+import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
+import { mergeDeep, omit } from 'remeda'
 import { assertEvent } from 'xstate'
 import { Base } from '../../base'
 import type { Types } from '../types'
-import type { Context, Events } from './machine'
+import type { ActionArg, Context } from './machine'
 
 export function lastClickedNode(params: { context: Context; event: { node: Types.Node } }): Context['lastClickedNode'] {
   const { lastClickedNode } = params.context
@@ -21,31 +23,33 @@ export function lastClickedNode(params: { context: Context; event: { node: Types
   }
 }
 
-export function mergeUpdateViewEvent(params: {
-  context: Context
-  event: { view: DiagramView; xynodes: Types.Node[]; xyedges: Types.Edge[] }
-}): Partial<Context> {
-  const nextView = params.event.view
+export function mergeXYNodesEdges({ context, event }: ActionArg): Partial<Context> {
+  assertEvent(event, 'update.view')
+  const nextView = event.view
+  const isSameView = context.view.id === nextView.id
 
-  const currentNodes = params.context.xynodes
-  const xynodes = params.event.xynodes.map((update) => {
+  const currentNodes = context.xynodes
+  const xynodes = event.xynodes.map((update) => {
     const existing = currentNodes.find(n => n.id === update.id)
-    if (
-      existing
-      && existing.type === update.type
-      && eq(existing.parentId ?? null, update.parentId ?? null)
-    ) {
+    if (existing) {
+      const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
       if (
-        eq(existing.style, update.style)
+        eq(existing.type, update.type)
+        && eq(existingWidth, update.initialWidth)
+        && eq(existingHeight, update.initialHeight)
         && eq(existing.hidden ?? false, update.hidden ?? false)
         && eq(existing.position, update.position)
         && eq(existing.data, update.data)
+        && eq(existing.parentId ?? null, update.parentId ?? null)
       ) {
         return existing
       }
       return {
-        ...existing,
+        ...omit(existing, ['measured', 'parentId']),
         ...update,
+        // Force dimensions from update
+        width: update.initialWidth,
+        height: update.initialHeight,
         data: {
           ...existing.data,
           ...update.data,
@@ -56,45 +60,46 @@ export function mergeUpdateViewEvent(params: {
   })
   // Merge with existing edges, but only if the view is the same
   // and the edges have no layout drift
-  // if (isSameView && !nextView.hasLayoutDrift) {
-  //   update.xyedges = update.xyedges.map((update): Types.Edge => {
-  //     const existing = ctx.xyedges.find(n => n.id === update.id)
-  //     if (existing) {
-  //       if (
-  //         eq(existing.hidden ?? false, update.hidden ?? false)
-  //         && eq(existing.data.label, update.data.label)
-  //         && eq(existing.data.controlPoints, update.data.controlPoints)
-  //         && eq(existing.data.edge, update.data.edge)
-  //       ) {
-  //         return existing
-  //       }
-  //       return {
-  //         ...existing,
-  //         ...update,
-  //         data: {
-  //           ...existing.data,
-  //           ...update.data,
-  //         },
-  //       }
-  //     }
-  //     return update
-  //   })
-  // }
+  let xyedges = event.xyedges
+  if (isSameView && !nextView.hasLayoutDrift) {
+    const currentEdges = context.xyedges
+    xyedges = event.xyedges.map((update): Types.Edge => {
+      const existing = currentEdges.find(n => n.id === update.id)
+      if (existing) {
+        if (
+          eq(existing.hidden ?? false, update.hidden ?? false)
+          && eq(existing.data, update.data)
+        ) {
+          return existing
+        }
+        return {
+          ...existing,
+          ...update,
+          data: {
+            ...existing.data,
+            ...update.data,
+          },
+        }
+      }
+      return update
+    })
+  }
 
-  // if (!isSameView) {
-  //   for (const node of xynodes) {
-
-  //     node.data.dimmed = false
-  //     node.data.hovered = false
-  //   }
-  //   for (const edge of params.event.xyedges) {
-  //     edge.data.active = false
-  //   }
-  // }
+  if (!isSameView) {
+    for (const node of xynodes) {
+      node.data.dimmed = false
+      node.data.hovered = false
+    }
+    for (const edge of xyedges) {
+      edge.data.dimmed = false
+      edge.data.hovered = false
+      edge.data.active = false
+    }
+  }
 
   return {
     xynodes,
-    xyedges: params.event.xyedges,
+    xyedges,
     view: nextView,
   }
 }
@@ -337,7 +342,7 @@ export function unfocusNodesEdges(params: { context: Context }): Partial<Context
   }
 }
 
-export function updateNavigationHistory({ context, event }: { context: Context; event: Events }): Partial<Context> {
+export function updateNavigationHistory({ context, event }: ActionArg): Partial<Context> {
   assertEvent(event, 'update.view')
   let {
     view,
@@ -424,7 +429,7 @@ export function navigateBack(params: { context: Context }): Partial<Context> {
   }
 }
 
-export function navigateForward(params: { context: Context }): Partial<Context> {
+export function navigateForward(params: ActionArg): Partial<Context> {
   const {
     navigationHistory: {
       currentIndex,
@@ -445,4 +450,28 @@ export function navigateForward(params: { context: Context }): Partial<Context> 
       fromNode: stepForward.fromNode,
     },
   }
+}
+
+export function updateNodeData(params: ActionArg): Partial<Context> {
+  const { context, event } = params
+  assertEvent(event, 'update.nodeData')
+  const xynodes = context.xynodes.map((node): Types.Node =>
+    node.id !== event.nodeId ? node : (({
+      ...node,
+      data: mergeDeep(node.data as any, event.data as any),
+    }) as Types.Node)
+  )
+  return { xynodes }
+}
+
+export function updateEdgeData(params: ActionArg): Partial<Context> {
+  const { context, event } = params
+  assertEvent(event, 'update.edgeData')
+  const xyedges = context.xyedges.map((edge): Types.Edge =>
+    edge.id !== event.edgeId ? edge : (({
+      ...edge,
+      data: mergeDeep(edge.data as any, event.data as any),
+    }) as Types.Edge)
+  )
+  return { xyedges }
 }

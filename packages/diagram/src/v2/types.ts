@@ -1,4 +1,5 @@
 import type { DiagramEdge, DiagramNode, Fqn, ViewId } from '@likec4/core'
+import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
 import type { Base } from '../base'
 import type { ReactFlowEdge, ReactFlowNode } from '../base/types'
@@ -25,6 +26,8 @@ export namespace Types {
         | 'width'
         | 'level'
         | 'height'
+        | 'style'
+        | 'position'
       >
     >
     & {
@@ -63,6 +66,7 @@ export namespace Types {
         | 'color'
         | 'shape'
         | 'style'
+        | 'position'
       >
     >
     & {
@@ -123,7 +127,10 @@ export namespace Types {
         | 'tail'
         | 'navigateTo'
       >
-    >
+    > & {
+      labelXY: XYPosition | null
+      controlPoints: XYPosition[] | undefined | null
+    }
   >
 
   export type RelationshipEdge = ReactFlowEdge<RelationshipEdgeData, 'relationship'>

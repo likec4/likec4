@@ -38,8 +38,8 @@ export function DiagramEventHandlers({
       value={useMemo(() =>
         mapToObj(HandlerNames, (name) => {
           if (handlersRef.current[name]) {
-            // @ts-ignore
-            return [name, (...args: any[]) => handlersRef.current[name]!(...args)]
+            // @ts-expect-error TODO: fix this
+            return [name, (...args: any[]) => handlersRef.current[name]?.(...args)]
           }
           return [name, null]
         }), [handlersRef, ...deps])}>

@@ -84,6 +84,8 @@ export namespace Base {
 
   export type Node = RFNode<NodeData>
 
+  export type NodeProps = ReactFlowNodeProps<RFNode<Base.NodeData, any>>
+
   export type EdgeData<Data extends Record<string, unknown> = {}> = Simplify<
     Data & {
       /**
