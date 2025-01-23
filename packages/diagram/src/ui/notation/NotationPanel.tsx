@@ -14,7 +14,7 @@ import {
   TabsTab,
   Text,
   ThemeIcon,
-  Tooltip
+  Tooltip,
 } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { IconAlertTriangle, IconArrowDownRight, IconHelpCircle } from '@tabler/icons-react'
@@ -26,7 +26,7 @@ import { useXYStore } from '../../hooks'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { vars } from '../../theme-vars'
-import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
+// import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
 import * as css from './NotationPanel.css'
 
 type NodeKind = ComputedNode['kind']
@@ -35,7 +35,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
   const {
     title,
     color = 'primary',
-    shape = 'rectangle'
+    shape = 'rectangle',
   } = value
   const [onlyKind, setOnlyKind] = useState<NodeKind | null>(null)
   const diagramStore = useDiagramStoreApi()
@@ -48,7 +48,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
       py={'sm'}
       className={css.elementNotation}
       mod={{
-        'data-likec4-color': color
+        'data-likec4-color': color,
       }}
       onMouseEnter={() => {
         setOnlyKind(null)
@@ -68,19 +68,21 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
           flex={'0 0 70px'}
           style={{
             width: 70,
-            height: ceil(70 * (h / w), 0)
+            height: ceil(70 * (h / w), 0),
           }}>
           <svg
             className={clsx(
-              css.shapeSvg
+              css.shapeSvg,
             )}
             viewBox={`0 0 ${w} ${h}`}
           >
-            <ElementShapeSvg
+            {
+              /* <ElementShapeSvg
               shape={shape}
               w={w}
               h={h}
-            />
+            /> */
+            }
           </svg>
         </Box>
         <Stack gap={4} flex={1}>
@@ -110,7 +112,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
             fw={500}
             lh="1.25"
             style={{
-              textWrap: 'pretty'
+              textWrap: 'pretty',
             }}>
             {title}
           </Text>
@@ -123,7 +125,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
 const selector = (s: DiagramState) => ({
   id: s.view.id,
   notations: s.view.notation?.elements ?? [],
-  isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough)
+  isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
 })
 
 export function NotationPanel() {
@@ -131,11 +133,11 @@ export function NotationPanel() {
   const {
     id,
     notations,
-    isVisible
+    isVisible,
   } = useDiagramState(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'notation-webview-collapsed',
-    defaultValue: true
+    defaultValue: true,
   })
   const hasNotations = notations.length > 0
   const portalProps = useMantinePortalProps()
@@ -149,7 +151,7 @@ export function NotationPanel() {
           animate={{ opacity: 1, translateX: 0 }}
           exit={{
             translateX: '100%',
-            opacity: 0.6
+            opacity: 0.6,
           }}
           className={clsx('react-flow__panel', css.container)}>
           <Tooltip label="View has no notations" color="orange" {...portalProps}>
@@ -171,7 +173,7 @@ export function NotationPanel() {
           animate={{ opacity: 1, translateX: 0 }}
           exit={{
             translateX: '100%',
-            opacity: 0.6
+            opacity: 0.6,
           }}
           className={clsx('react-flow__panel', css.container)}
         >
@@ -195,16 +197,16 @@ export function NotationPanel() {
           initial={{
             opacity: 0.75,
             // translateX: '50%',
-            scale: 0.2
+            scale: 0.2,
           }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{
             opacity: 0,
-            scale: 0.25
+            scale: 0.25,
           }}
           className={clsx('react-flow__panel', css.container)}
           style={{
-            transformOrigin: 'bottom right'
+            transformOrigin: 'bottom right',
           }}
         >
           <Paper
@@ -221,7 +223,7 @@ export function NotationPanel() {
                   color="gray"
                   ml={2}
                   style={{
-                    alignSelf: 'center'
+                    alignSelf: 'center',
                   }}
                   onClick={() => setCollapsed(true)}
                 >
@@ -237,8 +239,8 @@ export function NotationPanel() {
                 <ScrollAreaAutosize
                   viewportProps={{
                     style: {
-                      maxHeight: `min(40vh, ${Math.max(height - 60, 50)}px)`
-                    }
+                      maxHeight: `min(40vh, ${Math.max(height - 60, 50)}px)`,
+                    },
                   }}>
                   <Stack gap={0}>
                     {notations.map((n, i) => <ElementNotation key={i} value={n} />)}

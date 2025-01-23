@@ -42,12 +42,11 @@ import type {
   LikeC4DiagramEventHandlers,
   WhereOperator,
 } from '../LikeC4Diagram.props'
+import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../utils'
 import { type Vector, vector, VectorImpl } from '../utils/vector'
 import { MinZoom } from '../xyflow/const'
 import type { DiagramFlowTypes } from '../xyflow/types'
-import { bezierControlPoints, isInside, isSamePoint, toDomPrecision } from '../xyflow/utils'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
-import { type AlignmentMode, align } from './diagramStore.layout'
 
 type RequiredOrNull<T> = {
   [P in keyof T]-?: NonNullable<T[P]> | null
@@ -186,9 +185,6 @@ export type DiagramState = Simplify<
     onEdgesChange: OnEdgesChange<DiagramFlowTypes.Edge>
 
     highlightByElementNotation: (notation: ElementNotation, onlyOfKind?: NodeKind) => void
-
-    resetEdgeControlPoints: () => void
-    align: (mode: AlignmentMode) => void
 
     onOpenSourceView: () => void
   }
@@ -1013,82 +1009,6 @@ export function createDiagramStore(props: DiagramInitialState) {
             })
             set({ dimmed }, noReplace, 'highlightByElementNotation')
           },
-
-          resetEdgeControlPoints: () => {
-            const { xyflow, scheduleSaveManualLayout, xynodes, xyedges } = get()
-
-            xyedges.forEach(edge => {
-              xyflow.updateEdgeData(edge.id, {
-                controlPoints: getControlPointForEdge(edge),
-              })
-            })
-
-            scheduleSaveManualLayout()
-
-            function getNodeCenter(node: DiagramFlowTypes.Node, nodes: DiagramFlowTypes.Node[]) {
-              const dimensions = vector({ x: node.width || 0, y: node.height || 0 })
-              let position = vector(node.position)
-                .add(dimensions.mul(0.5))
-
-              let currentNode = node
-              do {
-                const parent = currentNode.parentId && nodes.find(x => x.id == currentNode.parentId)
-
-                if (!parent) {
-                  break
-                }
-
-                currentNode = parent
-                position = position.add(parent.position)
-              } while (true)
-
-              return position
-            }
-
-            function getControlPointForEdge(edge: DiagramFlowTypes.Edge): XYPoint[] {
-              const source = xynodes.find(x => x.id == edge.source)
-              const target = xynodes.find(x => x.id == edge.target)
-              if (!source || !target) {
-                return []
-              }
-
-              const sourceCenter = getNodeCenter(source, xynodes)
-              const targetCenter = getNodeCenter(target, xynodes)
-
-              if (!sourceCenter || !targetCenter) {
-                return []
-              }
-
-              // Edge is a loop
-              if (source == target) {
-                const loopSize = 80
-                const centerOfTopBoundary = new VectorImpl(0, source.height || 0)
-                  .mul(-0.5)
-                  .add(sourceCenter)
-
-                return [
-                  centerOfTopBoundary.add(new VectorImpl(-loopSize / 2.5, -loopSize)),
-                  centerOfTopBoundary.add(new VectorImpl(loopSize / 2.5, -loopSize)),
-                ]
-              }
-
-              const sourceToTargetVector = targetCenter.sub(sourceCenter)
-              const sourceBorderPoint = getBorderPointOnVector(source, sourceCenter, sourceToTargetVector)
-              const targetBorderPoint = getBorderPointOnVector(target, targetCenter, sourceToTargetVector.mul(-1))
-
-              return [sourceBorderPoint.add(targetBorderPoint.sub(sourceBorderPoint).mul(0.3))]
-            }
-
-            function getBorderPointOnVector(node: DiagramFlowTypes.Node, nodeCenter: Vector, v: Vector) {
-              const xScale = (node.width || 0) / 2 / v.x
-              const yScale = (node.height || 0) / 2 / v.y
-
-              const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
-
-              return vector(v).mul(scale).add(nodeCenter)
-            }
-          },
-          align: align(get),
         } satisfies DiagramState),
         {
           name: `${storeDevId} - ${props.view.id}`,

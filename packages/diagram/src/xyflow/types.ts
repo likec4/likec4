@@ -1,10 +1,15 @@
 import type { BBox, DiagramEdge, DiagramNode, XYPoint } from '@likec4/core'
-import type { Edge as ReactFlowEdge, InternalNode as ReactFlowInternalNode, Node as ReactFlowNode, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
+import type {
+  Edge as ReactFlowEdge,
+  InternalNode as ReactFlowInternalNode,
+  Node as ReactFlowNode,
+  ReactFlowInstance,
+  ReactFlowState,
+} from '@xyflow/react'
 import type { SetRequired, Simplify } from 'type-fest'
-import type { SharedFlowTypes } from '../overlays/shared/xyflow/_types'
+import type { SharedFlowTypes } from '../overlays_/shared/xyflow/_types'
 
 export namespace DiagramFlowTypes {
-
   export type NodeData = {
     /**
      * The DiagramNode backing this node.
@@ -19,15 +24,21 @@ export namespace DiagramFlowTypes {
     isViewGroup: boolean
   }
 
-  export type ElementNode = SetRequired<ReactFlowNode<
+  export type ElementNode = SetRequired<
+    ReactFlowNode<
       SharedFlowTypes.NonEmptyNodeData & NodeData,
-      'element'>,
-    'type'>
+      'element'
+    >,
+    'type'
+  >
 
-  export type CompoundNode = SetRequired<ReactFlowNode<
+  export type CompoundNode = SetRequired<
+    ReactFlowNode<
       SharedFlowTypes.NonEmptyNodeData & CompoundNodeData,
-      'compound'>,
-    'type'>
+      'compound'
+    >,
+    'type'
+  >
 
   export type Node = ElementNode | CompoundNode
 

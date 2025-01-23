@@ -2,7 +2,7 @@ import '@xyflow/react/dist/style.css'
 
 export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
-export { LikeC4DiagramV2 } from './v2/LikeC4Diagram'
+export { LikeC4DiagramV2 } from './likec4diagram/LikeC4Diagram'
 
 export {
   useLikeC4DiagramView,

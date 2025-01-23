@@ -8,4 +8,4 @@ export {
   useEnabledFeatures,
 } from './DiagramFeatures'
 export { IconRenderer, IconRendererProvider } from './IconRenderer'
-export { RootContainer, useGetRootContainer, useRootContainer } from './RootContainer'
+export { RootContainer, useRootContainer, useRootContainerRef } from './RootContainer'

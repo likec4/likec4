@@ -1,7 +1,7 @@
 import { ActionIcon } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { stopPropagation } from '../../../xyflow/utils'
+import { stopPropagation } from '../../../utils/xyflow'
 import type { EdgeProps } from '../../types'
 import * as css from './EdgeLabel.css'
 

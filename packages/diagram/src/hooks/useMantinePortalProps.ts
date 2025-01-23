@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 
-import { useDiagramState } from './useDiagramState'
+import { useRootContainer } from '../context'
 
 export function useMantinePortalProps() {
-  const target = useDiagramState(s => s.getContainer())
+  const target = useRootContainer()
   return useMemo(() => target ? { portalProps: { target }, withinPortal: true } : { withinPortal: false }, [target])
 }

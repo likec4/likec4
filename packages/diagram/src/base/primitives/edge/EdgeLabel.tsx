@@ -13,7 +13,6 @@ import * as css from './EdgeLabel.css'
 type Data = UndefinedOnPartialDeep<
   Pick<
     DiagramEdge,
-    | 'id'
     | 'label'
     | 'technology'
     | 'labelBBox'
@@ -26,9 +25,9 @@ type EdgeLabelProps = PropsWithChildren<EdgeProps<Data>> & {
 }
 
 export function EdgeLabel({
+  id,
   children,
   data: {
-    id,
     technology,
     hovered: isHovered = false,
     active: isActive = false,

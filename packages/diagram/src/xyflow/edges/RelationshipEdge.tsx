@@ -1,11 +1,11 @@
 import {
+  type NonEmptyArray,
+  type Point,
+  type RelationshipArrowType,
   invariant,
   isStepEdgeId,
-  type NonEmptyArray,
   nonexhaustive,
   nonNullable,
-  type Point,
-  type RelationshipArrowType
 } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
@@ -13,18 +13,18 @@ import type { EdgeProps, XYPosition } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
-import { memo, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
+import { type PointerEvent as ReactPointerEvent, memo, useEffect, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
 import { useXYStoreApi } from '../../hooks/useXYFlow'
+import { bezierControlPoints } from '../../utils'
 import { vector, VectorImpl } from '../../utils/vector'
 import { ZIndexes } from '../const'
-import { EdgeMarkers, type EdgeMarkerType } from '../EdgeMarkers'
-import { bezierControlPoints } from '../utils'
+import { type EdgeMarkerType, EdgeMarkers } from '../EdgeMarkers'
+import type { DiagramFlowTypes } from '../types'
 import { EdgeLabel } from './EdgeLabel'
 import * as edgesCss from './edges.css'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
-import type { DiagramFlowTypes } from '../types'
 // import { getEdgeParams } from './utils'
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {
@@ -146,7 +146,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
   style,
   source,
   target,
-  interactionWidth
+  interactionWidth,
 }) {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const diagramStore = useDiagramStoreApi()
@@ -157,7 +157,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
     isEdgePathEditable,
     isHovered,
     isDimmed,
-    isActiveAsParallel
+    isActiveAsParallel,
   } = useDiagramState(s => ({
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true && s.focusedNodeId === null
       && s.activeWalkthrough === null,
@@ -166,7 +166,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
     // If activeWalkthrough and this edge is part of the parallel group
     isActiveAsParallel: !!s.activeWalkthrough?.parallelPrefix && id.startsWith(s.activeWalkthrough.parallelPrefix),
     isHovered: s.hoveredEdgeId === id,
-    isDimmed: s.dimmed.has(id)
+    isDimmed: s.dimmed.has(id),
   }))
 
   const isActive = connectedToFocusedNode || isActiveWalkthroughStep
@@ -186,7 +186,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
       color = 'gray',
       labelBBox,
       ...diagramEdge
-    }
+    },
   } = data
 
   let controlPoints = data.controlPoints ?? bezierControlPoints(data.edge)
@@ -207,7 +207,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
 
   const [labelPos, setLabelPos] = useState<XYPosition>({
     x: label?.bbox.x ?? labelX,
-    y: label?.bbox.y ?? labelY
+    y: label?.bbox.y ?? labelY,
   })
 
   let edgePath: string
@@ -222,14 +222,14 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
         getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos),
         ...controlPoints,
         getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos),
-        sourceCenterPos
+        sourceCenterPos,
       ]
       : [
         sourceCenterPos,
         getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos),
         ...controlPoints,
         getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos),
-        targetCenterPos
+        targetCenterPos,
       ]
 
     edgePath = nonNullable(curve(points))
@@ -244,7 +244,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
     const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
     const point = {
       x: Math.round(dompoint.x),
-      y: Math.round(dompoint.y)
+      y: Math.round(dompoint.y),
     }
     setLabelPos(current => isSamePoint(current, point) ? current : point)
   }, [edgePath])
@@ -259,14 +259,14 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
           ...label,
           bbox: {
             ...label.bbox,
-            ...labelPos
-          }
-        }
+            ...labelPos,
+          },
+        },
       })
     },
     [labelPos],
     50,
-    300
+    300,
   )
 
   if (isModified || isControlPointDragging) {
@@ -288,7 +288,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
     const onPointerMove = (e: PointerEvent) => {
       const clientPoint = {
         x: e.clientX,
-        y: e.clientY
+        y: e.clientY,
       }
       if (!isSamePoint(pointer, clientPoint)) {
         setIsControlPointDragging(true)
@@ -299,10 +299,10 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
           const cp = (xyedge.data.controlPoints ?? controlPoints).slice()
           cp[index] = {
             x: Math.round(x),
-            y: Math.round(y)
+            y: Math.round(y),
           }
           return {
-            controlPoints: cp
+            controlPoints: cp,
           }
         })
       }
@@ -311,7 +311,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
 
     const onPointerUp = (e: PointerEvent) => {
       domNode.removeEventListener('pointermove', onPointerMove, {
-        capture: true
+        capture: true,
       })
       if (hasMoved) {
         e.stopPropagation()
@@ -323,11 +323,11 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
     }
 
     domNode.addEventListener('pointermove', onPointerMove, {
-      capture: true
+      capture: true,
     })
     domNode.addEventListener('pointerup', onPointerUp, {
       once: true,
-      capture: true
+      capture: true,
     })
   }
 
@@ -349,14 +349,14 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
       }, 10)
 
       domNode.removeEventListener('pointerup', onPointerUp, {
-        capture: true
+        capture: true,
       })
       e.stopPropagation()
     }
 
     domNode.addEventListener('pointerup', onPointerUp, {
       once: true,
-      capture: true
+      capture: true,
     })
 
     e.stopPropagation()
@@ -393,7 +393,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
       const points: VectorImpl[] = [
         new VectorImpl(sourceX, sourceY),
         ...controlPoints.map(vector) || [],
-        new VectorImpl(targetX, targetY)
+        new VectorImpl(targetX, targetY),
       ]
 
       let pointer = { x: e.clientX, y: e.clientY }
@@ -457,7 +457,7 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
       className={clsx(
         edgesCss.container,
         isDimmed && edgesCss.dimmed,
-        isControlPointDragging && edgesCss.controlDragging
+        isControlPointDragging && edgesCss.controlDragging,
       )}
       data-likec4-color={color}
       data-edge-dir={diagramEdge.dir}
@@ -520,25 +520,25 @@ export const RelationshipEdge = memo<DiagramEdgeProps>(function RelationshipEdge
             'nodrag nopan',
             edgesCss.container,
             edgesCss.edgeLabel,
-            isDimmed && edgesCss.dimmed
+            isDimmed && edgesCss.dimmed,
           )}
           style={{
             ...assignInlineVars({
               [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
-              [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
+              [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`,
             }),
             // ...(isEdgePathEditable && selected && {
             //   pointerEvents: 'none'
             // }),
             ...(label && {
-              maxWidth: label.bbox.width + 18
+              maxWidth: label.bbox.width + 18,
             }),
-            zIndex: labelZIndex
+            zIndex: labelZIndex,
           }}
           mod={{
             'data-likec4-color': color,
             'data-edge-hovered': isHovered && !isActiveWalkthroughStep,
-            'data-edge-active': isActive
+            'data-edge-active': isActive,
           }}
         />
       )}

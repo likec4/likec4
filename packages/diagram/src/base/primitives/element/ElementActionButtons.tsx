@@ -1,7 +1,7 @@
 import { ActionIcon, Box } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
-import { stopPropagation } from '../../../xyflow/utils'
+import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 import * as css from './ElementActionButtons.css'
 

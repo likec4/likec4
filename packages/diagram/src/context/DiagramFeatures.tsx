@@ -18,6 +18,7 @@ const FeatureNames = [
   'DynamicViewWalkthrough',
   'EdgeEditing',
   'ViewTitle',
+  'FitView',
   /**
    * LikeC4Model is available in context
    */

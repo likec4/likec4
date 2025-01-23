@@ -4,9 +4,9 @@ import type { EdgeChange, NodeChange } from '@xyflow/react'
 import { getBoundsOfRects, getViewportForBounds } from '@xyflow/system'
 import { useUpdateEffect } from '../hooks'
 import { useDiagramState, useDiagramStoreApi } from '../hooks/useDiagramState'
+import { nodeToRect } from '../utils/xyflow'
 import { MinZoom } from './const'
 import type { DiagramFlowTypes } from './types'
-import { nodeToRect } from './utils'
 
 export function SelectEdgesOnNodeFocus() {
   const diagramStore = useDiagramStoreApi()
@@ -30,7 +30,7 @@ export function SelectEdgesOnNodeFocus() {
       panZoom,
       transform,
       triggerNodeChanges,
-      triggerEdgeChanges
+      triggerEdgeChanges,
     } = diagramStore.getState().xystore.getState()
 
     let focusBounds = nodeToRect(nonNullable(nodeLookup.get(focusedNodeId)))
@@ -45,7 +45,7 @@ export function SelectEdgesOnNodeFocus() {
         edgeChanges.push({
           id: edge.id,
           type: 'select',
-          selected: false
+          selected: false,
         })
       }
     }
@@ -54,14 +54,14 @@ export function SelectEdgesOnNodeFocus() {
         nodeChanges.push({
           id: node.id,
           type: 'select',
-          selected: false
+          selected: false,
         })
       }
     }
     nodeChanges.push({
       id: focusedNodeId,
       type: 'select',
-      selected: true
+      selected: true,
     })
     if (edgeChanges.length > 0) {
       triggerEdgeChanges(edgeChanges)
@@ -76,16 +76,16 @@ export function SelectEdgesOnNodeFocus() {
         x: focusBounds.x - 16,
         y: focusBounds.y - 16,
         width: focusBounds.width + 32,
-        height: focusBounds.height + 32
+        height: focusBounds.height + 32,
       },
       width,
       height,
       MinZoom,
       maxZoom,
-      0
+      0,
     )
     panZoom?.setViewport(viewport, {
-      duration: 350
+      duration: 350,
     })
   }, [focusedNodeId])
 
@@ -97,9 +97,9 @@ export function SelectEdgesOnNodeFocus() {
           const { resetFocusAndLastClicked, fitDiagram } = diagramStore.getState()
           resetFocusAndLastClicked()
           fitDiagram()
-        }, { preventDefault: true }]
+        }, { preventDefault: true }],
       ]
-      : []
+      : [],
   )
 
   return null

@@ -2,7 +2,7 @@ import { type ActionIconProps, ActionIcon, Tooltip } from '@mantine/core'
 import clsx from 'clsx'
 import { type HTMLMotionProps, type Variants, m } from 'framer-motion'
 import type { PropsWithoutRef } from 'react'
-import { stopPropagation } from '../../xyflow/utils'
+import { stopPropagation } from '../../utils/xyflow'
 import { useActionButtonBarCtx } from '../action-button-bar/useActionButtonBarCtx'
 import * as css from './ActionButton.css'
 

@@ -1,11 +1,9 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
-import { type PropsWithChildren, createContext, useCallback, useContext, useRef } from 'react'
+import { type PropsWithChildren, type RefObject, createContext, createRef, useContext, useRef } from 'react'
 import { rootClassName } from '../globals.css'
 
-const RootContainerContext = createContext<() => HTMLDivElement | null>(
-  () => null,
-)
+const RootContainerContext = createContext(createRef<HTMLDivElement>())
 
 export function RootContainer({
   className,
@@ -14,14 +12,14 @@ export function RootContainer({
   const ref = useRef<HTMLDivElement>(null)
   return (
     <Box className={clsx(rootClassName, className)} ref={ref}>
-      <RootContainerContext.Provider value={useCallback(() => ref.current, [ref])}>
+      <RootContainerContext.Provider value={ref}>
         {children}
       </RootContainerContext.Provider>
     </Box>
   )
 }
 
-export function useGetRootContainer() {
+export function useRootContainerRef() {
   return useContext(RootContainerContext)
 }
 
@@ -29,5 +27,5 @@ export function useGetRootContainer() {
  * NOTE: Non-reactive
  */
 export function useRootContainer() {
-  return useContext(RootContainerContext)()
+  return useContext(RootContainerContext).current
 }

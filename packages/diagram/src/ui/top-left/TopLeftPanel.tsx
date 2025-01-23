@@ -1,4 +1,5 @@
 import {
+  type PopoverProps,
   ActionIconGroup,
   Code,
   Group,
@@ -7,10 +8,9 @@ import {
   HoverCardTarget,
   Notification,
   Overlay,
-  type PopoverProps,
   Stack,
   Text,
-  TooltipGroup
+  TooltipGroup,
 } from '@mantine/core'
 import { openSpotlight } from '@mantine/spotlight'
 import {
@@ -20,7 +20,7 @@ import {
   IconFileSymlink,
   IconFocusCentered,
   IconMenu2,
-  IconSearch
+  IconSearch,
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
@@ -30,14 +30,13 @@ import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { mantine } from '../../theme-vars'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
-import { ManualLayoutToolsButton } from './ManualLayoutToolsButton'
 import * as css from './styles.css'
 
 const historySelector = (s: DiagramState) => ({
   showBurgerMenu: !!s.onBurgerMenuClick,
   hasStepBack: s.showNavigationButtons && !!s.onNavigateTo && s.navigationHistoryIndex > 0,
   hasStepForward: s.showNavigationButtons && !!s.onNavigateTo
-    && s.navigationHistoryIndex < s.navigationHistory.length - 1
+    && s.navigationHistoryIndex < s.navigationHistory.length - 1,
 })
 
 const BackwardForwardButtons = () => {
@@ -45,7 +44,7 @@ const BackwardForwardButtons = () => {
   const {
     showBurgerMenu,
     hasStepBack,
-    hasStepForward
+    hasStepForward,
   } = useDiagramState(historySelector)
   return (
     <LayoutGroup>
@@ -70,7 +69,7 @@ const BackwardForwardButtons = () => {
               animate={{ opacity: 1, transform: 'translateX(0)' }}
               exit={{
                 opacity: 0.05,
-                transform: 'translateX(-10px)'
+                transform: 'translateX(-10px)',
               }}
               key={'back'}>
               <ActionIcon
@@ -89,7 +88,7 @@ const BackwardForwardButtons = () => {
               animate={{ opacity: 1, transform: 'translateX(0)' }}
               exit={{
                 opacity: 0,
-                transform: 'translateX(10px)'
+                transform: 'translateX(10px)',
               }}
               key={'forward'}>
               <ActionIcon
@@ -147,7 +146,7 @@ export const TopLeftPanel = () => {
     showChangeAutoLayout,
     showGoToSource,
     viewportChanged,
-    showManualLayoutTools
+    showManualLayoutTools,
   } = useDiagramState(s => {
     const isNotWalkthrough = isNullish(s.activeWalkthrough)
     const isNotFocused = isNullish(s.focusedNodeId)
@@ -160,7 +159,7 @@ export const TopLeftPanel = () => {
       showChangeAutoLayout: s.controls && s.isEditable() && isNotActive,
       showGoToSource: s.controls && !!s.onOpenSource && isNotWalkthrough,
       viewportChanged: s.viewportChanged,
-      showManualLayoutTools: s.controls && s.readonly !== true && s.experimentalEdgeEditing === true
+      showManualLayoutTools: s.controls && s.readonly !== true && s.experimentalEdgeEditing === true,
     })
   })
   const portalProps = useMantinePortalProps()
@@ -171,7 +170,7 @@ export const TopLeftPanel = () => {
         className={clsx(
           'react-flow__panel',
           css.panel,
-          'likec4-top-left-panel'
+          'likec4-top-left-panel',
         )}
         align="flex-start"
         onClick={e => e.stopPropagation()}
@@ -200,7 +199,6 @@ export const TopLeftPanel = () => {
           )}
           {showChangeAutoLayout && <ChangeAutoLayoutButton {...portalProps} />}
           {showLayoutDriftWarning && <LayoutDriftNotification {...portalProps} />}
-          {showManualLayoutTools && <ManualLayoutToolsButton {...portalProps} />}
           {showFitDiagram && (
             <Tooltip label={viewportChanged ? 'Center camera' : 'Camera is centered'} {...portalProps}>
               <ActionIcon

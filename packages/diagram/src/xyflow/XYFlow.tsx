@@ -5,20 +5,8 @@ import { useDiagramState } from '../hooks/useDiagramState'
 import { useXYStoreApi } from '../hooks/useXYFlow'
 import type { DiagramState } from '../state/diagramStore'
 import { MaxZoom, MinZoom } from './const'
-import { RelationshipEdge } from './edges/RelationshipEdge'
-import { CompoundNode } from './nodes/compound'
-import { ElementNode } from './nodes/element'
-import { useLayoutConstraints } from './useLayoutConstraints'
-import { useXYFlowEvents } from './useXYFlowEvents'
 import type { DiagramFlowTypes } from './types'
-
-const nodeTypes = {
-  element: ElementNode,
-  compound: CompoundNode
-}
-const edgeTypes = {
-  relationship: RelationshipEdge
-}
+import { useXYFlowEvents } from './useXYFlowEvents'
 
 type XYFlowWrapperProps = PropsWithChildren<{
   colorMode?: 'system' | 'light' | 'dark'
@@ -57,14 +45,14 @@ const selector = (s: DiagramState) => ({
   // If fitView is not enabled
   // And diagram starts with a negative x or y - we need to translate viewprot
   translateX: s.fitViewEnabled ? 0 : -Math.min(s.view.bounds.x, 0),
-  translateY: s.fitViewEnabled ? 0 : -Math.min(s.view.bounds.y, 0)
+  translateY: s.fitViewEnabled ? 0 : -Math.min(s.view.bounds.y, 0),
 })
 
 export function XYFlow({
   colorMode = 'system',
   className,
   children,
-  style
+  style,
 }: XYFlowWrapperProps) {
   const xyflowApi = useXYStoreApi()
   const {
@@ -83,10 +71,10 @@ export function XYFlow({
     hasOnCanvasContextMenu,
     hasOnEdgeContextMenu,
     translateX,
-    translateY
+    translateY,
   } = useDiagramState(selector, shallowEqual)
   // const [zoomOnDoubleClick, setZoomOnDoubleClick] = useState(zoomable)
-  const layoutConstraints = useLayoutConstraints()
+  // const layoutConstraints = useLayoutConstraints()
   const {
     onNodeContextMenu,
     onPaneContextMenu,
@@ -108,7 +96,7 @@ export function XYFlow({
         xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
       }
       // setZoomOnDoubleClick(zoomable && zoom < 0.75)
-    }
+    },
   })
 
   // useEffect(() => {
@@ -126,12 +114,12 @@ export function XYFlow({
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onInit={onInit}
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
+      // nodeTypes={nodeTypes}
+      // edgeTypes={edgeTypes}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
       {...(!zoomable && {
-        zoomActivationKeyCode: null
+        zoomActivationKeyCode: null,
       })}
       zoomOnDoubleClick={false}
       maxZoom={zoomable ? MaxZoom : 1}
@@ -142,14 +130,14 @@ export function XYFlow({
         minZoom: MinZoom,
         maxZoom: 1,
         padding: fitViewPadding,
-        includeHiddenNodes: true
+        includeHiddenNodes: true,
       }}
       {...(!fitView && {
         viewport: {
           x: translateX,
           y: translateY,
-          zoom: 1
-        }
+          zoom: 1,
+        },
       })}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
@@ -158,13 +146,13 @@ export function XYFlow({
       panOnScroll={pannable}
       panOnDrag={pannable}
       {...(!pannable && {
-        selectionKeyCode: null
+        selectionKeyCode: null,
       })}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
       nodesDraggable={nodesDraggable}
-      {...nodesDraggable && layoutConstraints}
+      // {...nodesDraggable && layoutConstraints}
       nodeDragThreshold={4}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}

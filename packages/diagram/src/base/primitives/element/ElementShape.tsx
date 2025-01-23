@@ -1,5 +1,5 @@
 import { type DiagramNode, type ElementShape, nonexhaustive } from '@likec4/core'
-import { toDomPrecision } from '../../../xyflow/utils'
+import { toDomPrecision } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 import * as css from './ElementShape.css'
 
@@ -164,16 +164,19 @@ type Data = Pick<
   | 'height'
 >
 
-type ElementShapePrimitiveProps = NodeProps<Data>
+type ElementShapePrimitiveProps = NodeProps<Data> & {
+  /**
+   * @default true
+   */
+  withSelectedIndicator?: boolean | undefined
+}
 
-export function ElementShape({ data, width, height }: ElementShapePrimitiveProps) {
+export function ElementShape({ data, width, height, withSelectedIndicator = true }: ElementShapePrimitiveProps) {
   let w = !!width && width > 10 ? width : data.width
   let h = !!height && height > 10 ? height : data.height
   return (
     <svg className={css.shapeSvg}>
-      <g className={css.indicator}>
-        <SelectedIndicator shape={data.shape} w={w} h={h} />
-      </g>
+      {withSelectedIndicator && <SelectedIndicator shape={data.shape} w={w} h={h} />}
       <ElementShapeSvg shape={data.shape} w={w} h={h} />
     </svg>
   )
@@ -183,15 +186,18 @@ export function ElementShape({ data, width, height }: ElementShapePrimitiveProps
  * When element is selected, this component is used to render the indicator
  */
 export function SelectedIndicator({ shape, w, h }: ElementShapeProps) {
+  let svg
   switch (shape) {
     case 'queue':
-      return <path d={queueSVGPath(w, h).path} />
+      svg = <path d={queueSVGPath(w, h).path} />
+      break
     case 'storage':
     case 'cylinder': {
-      return <path d={cylinderSVGPath(w, h).path} />
+      svg = <path d={cylinderSVGPath(w, h).path} />
+      break
     }
     default: {
-      return (
+      svg = (
         <rect
           x={-1}
           y={-1}
@@ -199,6 +205,8 @@ export function SelectedIndicator({ shape, w, h }: ElementShapeProps) {
           height={h + 2}
           rx={6} />
       )
+      break
     }
   }
+  return <g className={css.indicator}>{svg}</g>
 }

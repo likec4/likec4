@@ -1,33 +1,37 @@
+import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
-import { isDefined } from 'remeda'
+import { isDefined, omit } from 'remeda'
 import type { Base } from './types'
 
-function _update<N extends Base.Node>(current: N[], update: N[]): N[] {
-  return update.map((next) => {
-    const existing = current.find(n => n.id === next.id)
-    if (
-      existing
-      && existing.type === next.type
-      && eq(existing.parentId ?? null, next.parentId ?? null)
-    ) {
+function _update<N extends Base.Node>(current: N[], updated: N[]): N[] {
+  return updated.map((update) => {
+    const existing = current.find(n => n.id === update.id)
+    if (existing) {
+      const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
       if (
-        eq(existing.style, next.style)
-        && eq(existing.hidden ?? false, next.hidden ?? false)
-        && eq(existing.position, next.position)
-        && eq(existing.data, next.data)
+        eq(existing.type, update.type)
+        && eq(existingWidth, update.initialWidth)
+        && eq(existingHeight, update.initialHeight)
+        && eq(existing.hidden ?? false, update.hidden ?? false)
+        && eq(existing.position, update.position)
+        && eq(existing.data, update.data)
+        && eq(existing.parentId ?? null, update.parentId ?? null)
       ) {
         return existing
       }
       return {
-        ...existing,
-        ...next,
+        ...omit(existing, ['measured', 'parentId']),
+        ...update,
+        // Force dimensions from update
+        width: update.initialWidth,
+        height: update.initialHeight,
         data: {
           ...existing.data,
-          ...next.data,
+          ...update.data,
         },
       } as N
     }
-    return next
+    return update
   })
 }
 
