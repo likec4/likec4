@@ -1,14 +1,20 @@
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { useRef } from 'react'
 import { isEmpty } from 'remeda'
-import { DiagramEventHandlers, DiagramFeatures, IconRendererProvider, IfEnabled, RootContainer } from '../context'
+import {
+  DiagramEventHandlers,
+  DiagramFeatures,
+  EnsureMantine,
+  FramerMotionConfig,
+  IconRendererProvider,
+  IfEnabled,
+  RootContainer,
+} from '../context'
 import { LikeC4CustomColors } from '../LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useLikeC4Model } from '../likec4model'
 import { LikeC4Search } from '../LikeC4Search'
 import { Overlays } from '../overlays/Overlays'
-import { EnsureMantine } from '../ui/EnsureMantine'
-import { FramerMotionConfig } from '../ui/FramerMotionConfig'
 import { DiagramActor } from './DiagramActor'
 import type { Types } from './types'
 import { Controls } from './ui'

@@ -5,6 +5,8 @@ import { deepEqual } from 'fast-equals'
 import { memo, useEffect, useRef } from 'react'
 import { isEmpty } from 'remeda'
 import { IconRendererProvider } from './context'
+import { EnsureMantine } from './context/EnsureMantine'
+import { FramerMotionConfig } from './context/FramerMotionConfig'
 import { rootClassName } from './globals.css'
 import { useDiagramState } from './hooks/useDiagramState'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
@@ -14,10 +16,6 @@ import { useLikeC4Model } from './likec4model'
 import { LikeC4Search } from './LikeC4Search'
 import { Overlays } from './overlays_'
 import { DiagramContextProvider } from './state/DiagramContext'
-import { EnsureMantine } from './ui/EnsureMantine'
-import { FramerMotionConfig } from './ui/FramerMotionConfig'
-import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
-import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import type { DiagramFlowTypes } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
 import { XYFlowInner } from './xyflow/XYFlowInner'
@@ -190,12 +188,14 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
       </XYFlow>
       {enableOverlays && <Overlays />}
       {enableSearch && <LikeC4Search />}
-      {isInitialized && (
+      {
+        /* {isInitialized && (
         <>
           {fitView && <FitViewOnDiagramChange />}
           {enableFocusMode && <SelectEdgesOnNodeFocus />}
         </>
-      )}
+      )} */
+      }
     </>
   )
 }, deepEqual)
