@@ -179,8 +179,8 @@ const Relationship = forwardRef<
     hasOnOpenSourceRelation: !!s.onOpenSource,
     hasOnNavigateTo: !!s.onNavigateTo,
   }))
-  const sourceId = getShortId(sourceNode, r.source.id, r)
-  const targetId = getShortId(targetNode, r.target.id, r)
+  const sourceId = getShortId(r, r.source.id, sourceNode)
+  const targetId = getShortId(r, r.target.id, targetNode)
   const navigateTo = hasOnNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
@@ -252,7 +252,11 @@ const Relationship = forwardRef<
   )
 })
 
-function getShortId(diagramNode: DiagramNode, actualEndpointId: NodeId<string>, r: LikeC4Model.AnyRelation<LikeC4Model.Any>) {
+function getShortId(
+  r: LikeC4Model.AnyRelation<LikeC4Model.Any>,
+  actualEndpointId: NodeId<string>,
+  diagramNode: DiagramNode,
+) {
   const diagramNodeId = r.isDeploymentRelation()
     // Relation defined in deployment model. Use id of the deployment node as is.
     ? diagramNode.id
