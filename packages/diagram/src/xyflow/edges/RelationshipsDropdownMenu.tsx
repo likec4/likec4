@@ -1,5 +1,6 @@
-import { type DiagramNode, invariant, LikeC4Model, nameFromFqn } from '@likec4/core'
+import { type NodeId, DiagramNode, FqnExpr, invariant, LikeC4Model, nameFromFqn } from '@likec4/core'
 import {
+  type StackProps,
   ActionIcon,
   Box,
   Group,
@@ -11,19 +12,18 @@ import {
   MenuTarget,
   Space,
   Stack,
-  type StackProps,
   Text,
   Tooltip as MantineTooltip,
-  TooltipGroup
+  TooltipGroup,
 } from '@mantine/core'
 import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { forwardRef, Fragment, type MouseEventHandler, type PropsWithChildren, useCallback } from 'react'
+import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pick, pipe } from 'remeda'
 import { useDiagramState, useDiagramStoreApi, useMantinePortalProps, useXYNodesData } from '../../hooks'
 import { Link } from '../../ui/Link'
-import * as css from './RelationshipsDropdownMenu.css'
 import type { DiagramFlowTypes } from '../types'
+import * as css from './RelationshipsDropdownMenu.css'
 
 const stopPropagation: MouseEventHandler = (e) => e.stopPropagation()
 
@@ -35,14 +35,14 @@ export const Tooltip = MantineTooltip.withProps({
   label: '',
   children: null,
   offset: 8,
-  withinPortal: false
+  withinPortal: false,
 })
 
 export function RelationshipsDropdownMenu({
   edge,
   disabled = false,
   likec4model,
-  children
+  children,
 }: PropsWithChildren<{
   edge: DiagramFlowTypes.DiagramEdgeData['edge']
   disabled?: boolean | undefined
@@ -50,7 +50,7 @@ export function RelationshipsDropdownMenu({
 }>) {
   const {
     openOverlay,
-    enableRelationshipBrowser
+    enableRelationshipBrowser,
   } = useDiagramState(pick(['openOverlay', 'enableRelationshipBrowser']))
   const portalProps = useMantinePortalProps()
   const [sourceXYNode, targetXYNode] = useXYNodesData([edge.source, edge.target])
@@ -67,20 +67,20 @@ export function RelationshipsDropdownMenu({
         // View was cached, but likec4model based on new data
         console.error(
           `View is cached and likec4model missing relationship ${id} from ${edge.source} -> ${edge.target}`,
-          e
+          e,
         )
         return null
       }
     }),
     filter(isTruthy),
-    partition(r => r.source.id === edge.source && r.target.id === edge.target)
+    partition(r => r.source.id === edge.source && r.target.id === edge.target),
   )
 
   const onClickOpenOverlay = useCallback((e: React.MouseEvent): void => {
     e.stopPropagation()
     if (enableRelationshipBrowser) {
       openOverlay({
-        edgeDetails: edge.id
+        edgeDetails: edge.id,
       })
     }
   }, [edge.id, openOverlay, enableRelationshipBrowser])
@@ -173,14 +173,14 @@ const Relationship = forwardRef<
   const {
     viewId,
     hasOnOpenSourceRelation,
-    hasOnNavigateTo
+    hasOnNavigateTo,
   } = useDiagramState(s => ({
     viewId: s.view.id,
     hasOnOpenSourceRelation: !!s.onOpenSource,
-    hasOnNavigateTo: !!s.onNavigateTo
+    hasOnNavigateTo: !!s.onNavigateTo,
   }))
-  const sourceId = nameFromFqn(edge.source) + r.source.id.slice(edge.source.length)
-  const targetId = nameFromFqn(edge.target) + r.target.id.slice(edge.target.length)
+  const sourceId = getShortId(sourceNode, r.source.id, r)
+  const targetId = getShortId(targetNode, r.target.id, r)
   const navigateTo = hasOnNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
@@ -226,7 +226,7 @@ const Relationship = forwardRef<
                   onClick={event => {
                     event.stopPropagation()
                     diagramApi.getState().onOpenSource?.({
-                      relation: r.id
+                      relation: r.id,
                     })
                   }}
                   role="button"
@@ -251,3 +251,13 @@ const Relationship = forwardRef<
     </Stack>
   )
 })
+
+function getShortId(diagramNode: DiagramNode, actualEndpointId: NodeId<string>, r: LikeC4Model.AnyRelation<LikeC4Model.Any>) {
+  const diagramNodeId = r.isDeploymentRelation()
+    // Relation defined in deployment model. Use id of the deployment node as is.
+    ? diagramNode.id
+    // Relation defined in model. Get id of the model element
+    : DiagramNode.modelRef(diagramNode) || ''
+
+  return nameFromFqn(diagramNodeId) + actualEndpointId.slice(diagramNodeId.length)
+}

@@ -114,9 +114,9 @@ export function LikeC4Diagram({
             enableSearch={hasLikec4model && enableSearch}
             enableElementDetails={enableElementDetails && hasLikec4model}
             enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-            enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model}
-            // TODO: temporary disable relationship details for deployment views
-            enableRelationshipDetails={enableRelationshipDetails && hasLikec4model && !isDeploymentView(view)}
+            // TODO: temporary disable relationship browser for deployment views
+            enableRelationshipBrowser={enableRelationshipBrowser && hasLikec4model && !isDeploymentView(view)}
+            enableRelationshipDetails={enableRelationshipDetails && hasLikec4model}
             // Apply where filter only in readonly mode
             whereFilter={readonly ? (where ?? null) : null}
             renderIcon={renderIcon ?? null}

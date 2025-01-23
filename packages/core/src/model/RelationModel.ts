@@ -7,6 +7,7 @@ import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { AnyAux } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
+import type { DeploymentRelationModel } from './DeploymentElementModel'
 
 export type RelationshipsIterator<M extends AnyAux> = IteratorLike<RelationshipModel<M>>
 
@@ -85,5 +86,9 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
       }
     }
     return
+  }
+  
+  public isDeploymentRelation(): this is DeploymentRelationModel<M> {
+    return false
   }
 }
