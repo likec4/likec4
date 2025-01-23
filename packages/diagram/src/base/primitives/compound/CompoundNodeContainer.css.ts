@@ -1,11 +1,13 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
+import { calc } from '@vanilla-extract/css-utils'
 import { easings, mantine, transitions, vars, whereLight } from '../../../theme-vars'
 
 export const varCompoundOpacity = createVar('opacity')
 export const varBorderRadius = createVar('borderRadius')
 export const varBorderTransparency = createVar('borderTransparency')
 export const varBorderColor = createVar('border-color')
+const varBorderWidth = createVar('border-width')
 
 export const dimmed = style({})
 globalStyle(`.react-flow__node:has(${dimmed})`, {
@@ -25,6 +27,7 @@ export const container = style({
   border: '0px solid transparent',
   vars: {
     [varBorderRadius]: '6px',
+    [varBorderWidth]: '3px',
   },
 })
 
@@ -54,6 +57,7 @@ export const compoundBg = style({
     },
     [`:where([data-compound-transparent="true"]) &`]: {
       opacity: varCompoundOpacity,
+      borderWidth: calc(varBorderWidth).subtract('1px').toString(),
     },
     [`:where([data-compound-transparent="true"]:is([data-hovered="true"])) &`]: {
       transitionDelay: '0.15s',
@@ -68,7 +72,7 @@ export const compoundBg = style({
   pointerEvents: 'none',
   border: '0px solid transparent',
   background: vars.element.fill,
-  backgroundClip: 'border-box',
+  backgroundClip: 'padding-box',
 })
 
 globalStyle(`:where([data-mantine-color-scheme='dark'] [data-compound-transparent="true"])`, {
@@ -86,7 +90,7 @@ export const compoundBorder = style({
   borderRadius: varBorderRadius,
   padding: 0,
   margin: 0,
-  transition: transitions.fast,
+  transition: `all 250ms ${easings.inOut}`,
   cursor: 'default',
   position: 'absolute',
   top: 0,
@@ -96,7 +100,7 @@ export const compoundBorder = style({
   pointerEvents: 'none',
   background: 'transparent',
   borderStyle: 'dashed',
-  borderWidth: 3,
+  borderWidth: varBorderWidth,
   borderColor: `color-mix(in srgb , ${varBorderColor}, transparent ${fallbackVar(varBorderTransparency, '5%')})`,
   vars: {
     [varBorderColor]: `var(--_compound-border-color,${vars.element.stroke})`,

@@ -21,7 +21,7 @@ import {
   getViewportForBounds,
 } from '@xyflow/react'
 import type { EdgeChange, NodeChange, Viewport } from '@xyflow/system'
-import { pathOr, prop } from 'remeda'
+import { hasAtLeast, prop } from 'remeda'
 import {
   type ActorRefFromLogic,
   type SnapshotFrom,
@@ -30,23 +30,27 @@ import {
   assign,
   enqueueActions,
   or,
+  raise,
   sendTo,
   setup,
   spawnChild,
   stopChild,
 } from 'xstate'
-import { relationshipsBrowserLogic } from '../../additional/relationships-browser/state'
+import { relationshipsBrowserActor } from '../../additional/relationships-browser/actor'
 import { MinZoom } from '../../base/const'
 import type { EnabledFeatures } from '../../context'
 import { AllDisabled } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
+import { createLayoutConstraints } from '../useLayoutConstraints'
+import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
 import {
   focusNodesEdges,
   lastClickedNode,
   mergeXYNodesEdges,
   navigateBack,
   navigateForward,
+  resetEdgeControlPoints,
   unfocusNodesEdges,
   updateEdgeData,
   updateNavigationHistory,
@@ -119,6 +123,8 @@ export type Events =
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
+  | { type: 'layout.align'; mode: AlignmentMode }
+  | { type: 'layout.resetEdgeControlPoints' }
   | { type: 'saveManualLayout.schedule' }
   | { type: 'saveManualLayout.cancel' }
 
@@ -131,14 +137,14 @@ export const likeC4ViewMachine = setup({
     children: {} as {
       hotkey: 'hotkeyActor'
       layout: 'layoutActor'
-      relationshipsBrowser: 'relationshipsBrowserLogic'
+      relationshipsBrowser: 'relationshipsBrowserActor'
     },
     events: {} as Events,
   },
   actors: {
     hotkeyActor,
     layoutActor,
-    relationshipsBrowserLogic,
+    relationshipsBrowserActor,
   },
   guards: {
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
@@ -228,6 +234,34 @@ export const likeC4ViewMachine = setup({
           y: Math.round(fromPos.y - toPos.y),
         }
       context.xystore.getState().panBy(diff)
+    },
+
+    'layout.align': ({ context }, params: { mode: AlignmentMode }) => {
+      const { mode } = params
+      const { xystore } = context
+      const { nodeLookup, parentLookup } = xystore.getState()
+
+      const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
+      const nodesToAlign = [...selectedNodes.difference(new Set(parentLookup.keys()))]
+
+      if (!hasAtLeast(nodesToAlign, 2)) {
+        console.warn('At least 2 nodes must be selected to align')
+        return
+      }
+      const constraints = createLayoutConstraints(xystore, nodesToAlign)
+
+      const aligner = getAligner(mode)
+
+      constraints.onMove(nodes => {
+        aligner.computeLayout(nodes.map(({ node }) => toNodeRect(node)))
+
+        nodes.forEach(({ rect, node }) => {
+          rect.positionAbsolute = {
+            ...rect.positionAbsolute,
+            ...aligner.applyPosition(toNodeRect(node)),
+          }
+        })
+      })
     },
   },
 }).createMachine({
@@ -411,7 +445,7 @@ export const likeC4ViewMachine = setup({
         relationshipsBrowser: {
           invoke: {
             id: 'relationshipsBrowser',
-            src: 'relationshipsBrowserLogic',
+            src: 'relationshipsBrowserActor',
             input: ({ context, event }) => {
               assertEvent(event, 'open.relationshipsBrowser')
               return {
@@ -552,6 +586,7 @@ export const likeC4ViewMachine = setup({
             enqueue.sendTo(c => c.context.layoutActorRef, { type: 'stop' })
             enqueue.stopChild('layout')
             enqueue.assign({
+              focusedNode: null,
               layoutActorRef: ({ self, spawn }) =>
                 spawn('layoutActor', { id: 'layout', input: { parent: self, viewId } }),
             })
@@ -599,6 +634,20 @@ export const likeC4ViewMachine = setup({
     },
     'update.edgeData': {
       actions: assign(updateEdgeData),
+    },
+    'layout.align': {
+      guard: 'not readonly',
+      actions: [
+        { type: 'layout.align', params: ({ event }) => ({ mode: event.mode }) },
+        raise({ type: 'saveManualLayout.schedule' }),
+      ],
+    },
+    'layout.resetEdgeControlPoints': {
+      guard: 'not readonly',
+      actions: [
+        assign(resetEdgeControlPoints),
+        raise({ type: 'saveManualLayout.schedule' }),
+      ],
     },
     // 'openElementDetails': {
     //   target: '.overlay',

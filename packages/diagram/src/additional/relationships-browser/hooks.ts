@@ -3,7 +3,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo, useTransition } from 'react'
-import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './state'
+import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
 
 export const RelationshipsBrowserActorContext = createContext<RelationshipsBrowserActorRef | null>(null)
 

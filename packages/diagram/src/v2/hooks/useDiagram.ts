@@ -1,6 +1,7 @@
 import type { EdgeId, Fqn, NodeId, ViewId } from '@likec4/core'
 import { useMemo, useTransition } from 'react'
 import type { PartialDeep } from 'type-fest'
+import type { AlignmentMode } from '../state/aligners'
 import type { Types } from '../types'
 import { useDiagramActor } from './useDiagramActor'
 
@@ -59,6 +60,14 @@ export function useDiagram() {
       const syncState = actor.getSnapshot().children.layout?.getSnapshot().value
       actor.send({ type: 'saveManualLayout.cancel' })
       return syncState === 'pending' || syncState === 'paused'
+    },
+
+    align: (mode: AlignmentMode) => {
+      actor.send({ type: 'layout.align', mode })
+    },
+
+    resetEdgeControlPoints: () => {
+      actor.send({ type: 'layout.resetEdgeControlPoints' })
     },
   }), [actor])
 }

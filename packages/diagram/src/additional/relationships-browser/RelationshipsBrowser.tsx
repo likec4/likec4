@@ -10,9 +10,9 @@ import { DiagramFeatures } from '../../context'
 import { useUpdateEffect } from '../../hooks'
 import { useRelationshipsView } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes as Types } from './_types'
+import type { RelationshipsBrowserActorRef } from './actor'
 import { edgeTypes, nodeTypes } from './custom'
 import { RelationshipsBrowserActorContext, useRelationshipsBrowserActor, useRelationshipsBrowserState } from './hooks'
-import type { RelationshipsBrowserActorRef } from './state'
 import { useViewToNodesEdges } from './useViewToNodesEdges'
 
 export type RelationshipsBrowserProps = {

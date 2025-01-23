@@ -6,10 +6,7 @@ import { prop } from 'remeda'
 import {
   type ActorLogic,
   type ActorRefFromLogic,
-  type ActorSystem,
   type MachineSnapshot,
-  type NonReducibleUnknown,
-  type Snapshot,
   type SnapshotFrom,
   assign,
   raise,
@@ -43,7 +40,7 @@ export type Events =
   | { type: 'navigate.to'; subject: Fqn }
   | { type: 'close' }
 
-export const relationshipsBrowserLogic = setup({
+export const relationshipsBrowserActor = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -143,6 +140,6 @@ export const relationshipsBrowserLogic = setup({
   any
 > // TODO reduce type inference by forcing the types
 
-export type RelationshipsBrowserLogic = typeof relationshipsBrowserLogic
-export type RelationshipsBrowserActorRef = ActorRefFromLogic<typeof relationshipsBrowserLogic>
+export type RelationshipsBrowserLogic = typeof relationshipsBrowserActor
+export type RelationshipsBrowserActorRef = ActorRefFromLogic<typeof relationshipsBrowserActor>
 export type RelationshipsBrowserSnapshot = SnapshotFrom<RelationshipsBrowserActorRef>
