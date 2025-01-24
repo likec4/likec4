@@ -35,7 +35,7 @@ export namespace SharedFlowTypes {
     /**
      * The ComputedNode backing this node
      */
-    element: Pick<ComputedNode, 'color' | 'title' | 'description' | 'shape' | 'kind'>
+    element: Pick<ComputedNode, 'color' | 'title' | 'description' | 'shape' | 'kind' | 'icon'>
     /**
      * The node's incoming and outgoing ports
      */

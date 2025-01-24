@@ -9,6 +9,7 @@ import {
   type ThemeColor,
   DefaultElementShape,
   DefaultThemeColor,
+  type IconUrl,
 } from '../types'
 import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
@@ -45,6 +46,10 @@ export class ElementModel<M extends AnyAux = AnyAux> {
 
   get color(): ThemeColor {
     return this.$element.color as ThemeColor ?? DefaultThemeColor
+  }
+
+  get icon(): IconUrl | undefined {
+    return this.$element.icon
   }
 
   get tags(): ReadonlyArray<C4Tag> {

@@ -10,6 +10,7 @@ import { useOverlayDialog } from '../../OverlayContext'
 import type { SharedFlowTypes } from '../../shared/xyflow/_types'
 import * as css from './styles.css'
 import { Text } from '../../../controls/Text'
+import { ElementIcon } from '../../../xyflow/nodes/shared/ElementIcon'
 
 const Action = ActionIcon.withProps({
   className: 'nodrag nopan ' + css.navigateBtn,
@@ -26,11 +27,13 @@ function selector(s: DiagramState) {
     currentViewId: s.view.id,
     enableRelationshipBrowser: s.enableRelationshipBrowser,
     onNavigateTo: s.onNavigateTo,
-    onOpenSource: s.onOpenSource
+    onOpenSource: s.onOpenSource,
+    renderIcon: s.renderIcon
   }
 }
 
 export function ElementNode({
+  id,
   data: {
     element,
     ports,
@@ -46,8 +49,17 @@ export function ElementNode({
     currentViewId,
     onNavigateTo,
     onOpenSource,
-    enableRelationshipBrowser
+    enableRelationshipBrowser,
+    renderIcon
   } = useDiagramState(selector)
+
+  const elementIcon = ElementIcon({
+    element: { id, ...element },
+    viewId: currentViewId,
+    className: css.elementIcon,
+    renderIcon: renderIcon
+  })
+
   return (
     <>
       <m.div
@@ -86,10 +98,15 @@ export function ElementNode({
           <ElementShapeSvg shape={element.shape} w={w} h={h} />
         </svg>
         <Box className={css.elementNodeContent}>
-          <Text className={css.elementNodeTitle} lineClamp={2}>{element.title}</Text>
-          {element.description && (
-            <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
-          )}
+          {elementIcon}
+          <Box className={css.elementNodeTextContent}>
+            <Text className={css.elementNodeTitle} lineClamp={2}>
+              {element.title}
+            </Text>
+            {element.description && (
+              <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
+            )}
+          </Box>
         </Box>
         <Group className={css.navigateBtnBox}>
           {navigateTo && onNavigateTo && navigateTo !== currentViewId && (

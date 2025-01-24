@@ -108,7 +108,8 @@ function nodeData(
       title: diagramNode?.title ?? element.title,
       description: diagramNode?.description ?? element.description,
       color: diagramNode?.color ?? ancestor?.color ?? element.color,
-      shape: diagramNode?.shape ?? element.shape
+      shape: diagramNode?.shape ?? element.shape,
+      icon: diagramNode?.icon ?? element.icon ?? 'none'
     },
     navigateTo: diagramNode?.navigateTo ?? first(element.scopedViews().take(1).toArray())?.id ?? null,
     ports: {

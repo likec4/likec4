@@ -1,11 +1,14 @@
-import { Handle, type NodeProps, Position, useStore } from '@xyflow/react'
+import { Box } from '@mantine/core'
+import { type NodeProps, Handle, Position, useStore } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo, useCallback } from 'react'
+import { Text } from '../../../controls/Text'
+import { useDiagramState } from '../../../hooks'
+import { ElementIcon } from '../../../xyflow/nodes/shared/ElementIcon'
 import type { RelationshipsOfFlowTypes } from '../_types'
 import * as css from './styles.css'
-import { Text } from '../../../controls/Text'
 
 type CompoundNodeProps = NodeProps<RelationshipsOfFlowTypes.CompoundNode>
 
@@ -25,7 +28,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
 }) => {
   const scale = (diff: number) => ({
     scaleX: (width + diff) / width,
-    scaleY: (height + diff) / height
+    scaleY: (height + diff) / height,
   })
 
   let opacity = 1
@@ -37,22 +40,32 @@ export const CompoundNode = memo<CompoundNodeProps>(({
   }
 
   const {
-    elementsSelectable
+    elementsSelectable,
   } = useStore(
     useCallback((s) => ({
-      elementsSelectable: s.elementsSelectable
+      elementsSelectable: s.elementsSelectable,
     }), []),
-    shallowEqual
+    shallowEqual,
   )
+  const { currentViewId, renderIcon } = useDiagramState(s => ({
+    currentViewId: s.view.id,
+    renderIcon: s.renderIcon,
+  }))
 
   const selectable = props.selectable ?? elementsSelectable
+  const elementIcon = ElementIcon({
+    element: { id, ...element },
+    viewId: currentViewId,
+    className: css.elementIcon,
+    renderIcon: renderIcon,
+  })
 
   return (
     <>
       <m.div
         className={clsx([
           css.compoundNodeBody,
-          'likec4-compound-node'
+          'likec4-compound-node',
         ])}
         layoutId={layoutId}
         data-compound-depth={data.depth ?? 1}
@@ -62,7 +75,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
             ...scale(-20),
             opacity: 0,
             width,
-            height
+            height,
           }
           : false}
         animate={{
@@ -74,26 +87,29 @@ export const CompoundNode = memo<CompoundNodeProps>(({
             opacity: {
               delay: !leaving && data.dimmed === true ? .4 : 0,
               ...((leaving || data.dimmed === 'immediate') && {
-                duration: 0.09
-              })
-            }
-          }
+                duration: 0.09,
+              }),
+            },
+          },
         }}
         {...(selectable && {
           whileHover: {
             ...scale(12),
             transition: {
-              delay: 0.1
-            }
+              delay: 0.1,
+            },
           },
           whileTap: {
-            ...scale(-8)
-          }
+            ...scale(-8),
+          },
         })}
       >
-        <Text className={css.compoundNodeTitle} maw={width - 20}>
-          {element.title}
-        </Text>
+        <Box className={css.compoundNodeTitle}>
+          {elementIcon}
+          <Text className={css.compoundNodeTitleText} maw={width - 20}>
+            {element.title}
+          </Text>
+        </Box>
       </m.div>
       {ports.in.map((id, i) => (
         <Handle
@@ -103,7 +119,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${20 * (i + 1)}px`
+            top: `${20 * (i + 1)}px`,
           }} />
       ))}
       {ports.out.map((id, i) => (
@@ -114,7 +130,7 @@ export const CompoundNode = memo<CompoundNodeProps>(({
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${20 * (i + 1)}px`
+            top: `${20 * (i + 1)}px`,
           }} />
       ))}
     </>

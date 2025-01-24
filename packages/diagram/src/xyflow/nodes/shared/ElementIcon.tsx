@@ -1,7 +1,6 @@
-import type { DiagramNode } from '@likec4/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
-import type { ElementIconRenderer } from '../../../LikeC4Diagram.props'
+import type { ElementIconNodeProps, ElementIconRenderer } from '../../../LikeC4Diagram.props'
 
 export const ElementIcon = ({
   element,
@@ -9,7 +8,7 @@ export const ElementIcon = ({
   className,
   renderIcon: RenderIcon
 }: {
-  element: DiagramNode
+  element: ElementIconNodeProps
   viewId: string
   className: string
   renderIcon: ElementIconRenderer | null

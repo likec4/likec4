@@ -1,24 +1,25 @@
 import { ActionIcon, Box, Group } from '@mantine/core'
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { type NodeProps, Handle, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
 import { m } from 'framer-motion'
 import { memo } from 'react'
+import { Text } from '../../../controls/Text'
 import { type DiagramState, useDiagramState } from '../../../hooks'
 import { ElementShapeSvg } from '../../../xyflow/nodes/element/ElementShapeSvg'
+import { ElementIcon } from '../../../xyflow/nodes/shared/ElementIcon'
 import { stopPropagation } from '../../../xyflow/utils'
 import { useOverlayDialog } from '../../OverlayContext'
 import type { RelationshipsOfFlowTypes } from '../_types'
 import * as css from './styles.css'
-import { Text } from '../../../controls/Text'
 
 const Action = ActionIcon.withProps({
   className: 'nodrag nopan ' + css.navigateBtn,
   radius: 'md',
   role: 'button',
   onDoubleClick: stopPropagation,
-  onPointerDownCapture: stopPropagation
+  onPointerDownCapture: stopPropagation,
 })
 
 type ElementNodeProps = NodeProps<RelationshipsOfFlowTypes.ElementNode>
@@ -27,7 +28,8 @@ function selector(s: DiagramState) {
   return {
     currentViewId: s.view.id,
     onNavigateTo: s.onNavigateTo,
-    onOpenSource: s.onOpenSource
+    onOpenSource: s.onOpenSource,
+    renderIcon: s.renderIcon,
   }
 }
 
@@ -44,13 +46,14 @@ export const ElementNode = memo<ElementNodeProps>(({
   },
   selectable = true,
   width: w = 100,
-  height: h = 100
+  height: h = 100,
 }) => {
   const overlay = useOverlayDialog()
   const {
     currentViewId,
     onNavigateTo,
-    onOpenSource
+    onOpenSource,
+    renderIcon,
   } = useDiagramState(selector)
 
   const maxWH = Math.max(w, h)
@@ -58,7 +61,7 @@ export const ElementNode = memo<ElementNodeProps>(({
     const s = (maxWH + diff) / maxWH
     return ({
       scaleX: s,
-      scaleY: s
+      scaleY: s,
     })
   }
 
@@ -70,21 +73,29 @@ export const ElementNode = memo<ElementNodeProps>(({
     opacity = 0
   }
 
+  const elementIcon = ElementIcon({
+    element: { id, ...element },
+    viewId: currentViewId,
+    className: css.elementIcon,
+    renderIcon,
+  })
+
   return (
     <>
       <m.div
         className={clsx([
           css.elementNode,
-          'likec4-element-node'
+          'likec4-element-node',
         ])}
         layoutId={layoutId}
         data-likec4-color={element.color}
+        data-likec4-shape={element.shape}
         initial={(layoutId === id && entering)
           ? {
             ...scale(-20),
             opacity: 0,
             width: w,
-            height: h
+            height: h,
           }
           : false}
         animate={{
@@ -96,26 +107,26 @@ export const ElementNode = memo<ElementNodeProps>(({
             opacity: {
               delay: !leaving && data.dimmed === true ? .4 : 0,
               ...((leaving || data.dimmed === 'immediate') && {
-                duration: 0.09
-              })
-            }
-          }
+                duration: 0.09,
+              }),
+            },
+          },
         }}
         {...(selectable && {
           whileHover: {
-            ...scale(16)
+            ...scale(16),
             // transition: {
             //   delay: 0.1
             // }
           },
           whileTap: {
-            ...scale(-8)
-          }
+            ...scale(-8),
+          },
         })}
       >
         <svg
           className={clsx(
-            css.cssShapeSvg
+            css.cssShapeSvg,
           )}
           viewBox={`0 0 ${w} ${h}`}
           width={w}
@@ -124,12 +135,15 @@ export const ElementNode = memo<ElementNodeProps>(({
           <ElementShapeSvg shape={element.shape} w={w} h={h} />
         </svg>
         <Box className={css.elementNodeContent}>
-          <Text className={css.elementNodeTitle} lineClamp={2}>
-            {element.title}
-          </Text>
-          {element.description && (
-            <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
-          )}
+          {elementIcon}
+          <Box className={css.elementNodeTextContent}>
+            <Text className={css.elementNodeTitle} lineClamp={2}>
+              {element.title}
+            </Text>
+            {element.description && (
+              <Text className={css.elementNodeDescription} lineClamp={4}>{element.description}</Text>
+            )}
+          </Box>
         </Box>
         <Group className={css.navigateBtnBox}>
           {navigateTo && onNavigateTo && navigateTo !== currentViewId && (
@@ -146,7 +160,7 @@ export const ElementNode = memo<ElementNodeProps>(({
               onClick={(event) => {
                 event.stopPropagation()
                 overlay.openOverlay({
-                  relationshipsOf: data.fqn
+                  relationshipsOf: data.fqn,
                 })
               }}>
               <IconTransform stroke={1.8} style={{ width: '72%' }} />
@@ -157,7 +171,7 @@ export const ElementNode = memo<ElementNodeProps>(({
               onClick={(event) => {
                 event.stopPropagation()
                 onOpenSource?.({
-                  element: data.fqn
+                  element: data.fqn,
                 })
               }}>
               <IconFileSymlink stroke={1.8} style={{ width: '72%' }} />
@@ -173,7 +187,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.in.length + 1))}px`,
           }} />
       ))}
       {ports.out.map((id, i) => (
@@ -184,7 +198,7 @@ export const ElementNode = memo<ElementNodeProps>(({
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`
+            top: `${15 + (i + 1) * ((h - 30) / (ports.out.length + 1))}px`,
           }} />
       ))}
     </>

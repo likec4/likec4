@@ -1,24 +1,52 @@
-import { rem } from '@mantine/core'
-import { globalStyle, style } from '@vanilla-extract/css'
+import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
 import { mixColor } from '../../Overlays.css'
+
+const iconSize = createVar('icon-size')
 
 export const elementNode = style({
   position: 'relative',
   width: '100%',
-  height: '100%'
+  height: '100%',
+  vars: {
+    [iconSize]: '64px'
+  },
 })
 
 export const elementNodeContent = style({
   width: '100%',
   height: '100%',
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'row',
   justifyContent: 'center',
   alignItems: 'center',
   overflow: 'hidden',
   gap: 6,
-  padding: 16
+  padding: 16,
+
+  selectors: {
+    ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
+      paddingLeft: 40,
+      paddingRight: 20
+    },
+    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+      paddingTop: 30
+    },
+    ':where([data-likec4-shape="browser"]) &': {
+      paddingTop: 32,
+      paddingBottom: 28
+    }
+  }
+})
+
+export const elementNodeTextContent = style({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  overflow: 'hidden',
+  flex: '0 1 auto',
+  gap: 6,
 })
 
 export const elementNodeTitle = style({
@@ -55,17 +83,28 @@ export const compoundNodeBody = style({
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 1px 1px 4px -1px rgba(0,0,0,0.3)',
   // background: `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
   background: vars.element.fill,
-  borderRadius: 6
+  borderRadius: 6,
+  vars: {
+    [iconSize]: '18px'
+  },
 })
 
 export const compoundNodeTitle = style({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 6,
+  paddingTop: 14,
+  paddingLeft: 12
+})
+
+export const compoundNodeTitleText = style({
+  flex: '1 1 auto',
   fontFamily: vars.compound.font,
   fontWeight: 600,
   fontSize: 15,
   lineHeight: 1,
   textTransform: 'uppercase',
-  paddingTop: 14,
-  paddingLeft: 12,
   mixBlendMode: 'screen',
   color: vars.compound.titleColor
 })
@@ -212,3 +251,27 @@ globalStyle(`:where(${elementNode}:hover) ${navigateBtn}`, {
 //     '--ai-bg': `var(--ai-bg-hover)`
 //   }
 // })
+
+export const elementIcon = style({
+  flex: `0 0 ${iconSize}`,
+  height: iconSize,
+  width: iconSize,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  mixBlendMode: 'hard-light'
+})
+globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
+  width: '100%',
+  height: 'auto',
+  maxHeight: '100%',
+  pointerEvents: 'none',
+  filter: `
+    drop-shadow(0 0 3px rgb(0 0 0 / 10%))
+    drop-shadow(0 1px 8px rgb(0 0 0 / 8%))
+    drop-shadow(1px 1px 16px rgb(0 0 0 / 3%))
+  `
+})
+globalStyle(`${elementIcon} img`, {
+  objectFit: 'contain'
+})

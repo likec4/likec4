@@ -17,7 +17,7 @@ export type DiagramNodeWithNavigate<ID extends string = ViewId> = Omit<DiagramNo
   navigateTo: ID
 }
 
-type ElementIconNodeProps = {
+export type ElementIconNodeProps = {
   id: string
   title: string
   icon?: string | undefined
