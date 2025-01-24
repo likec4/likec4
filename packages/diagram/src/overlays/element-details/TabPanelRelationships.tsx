@@ -28,8 +28,8 @@ export function TabPanelRelationships({
   const overlay = useOverlayDialog()
   const [scope, setScope] = useState<'global' | 'view'>('view')
 
-  const incoming = element.incoming().map(r => r.id).toArray()
-  const outgoing = element.outgoing().map(r => r.id).toArray()
+  const incoming = [...element.incoming()].map(r => r.id)
+  const outgoing = [...element.outgoing()].map(r => r.id)
 
   const incomingInView = unique(node.incoming().flatMap(e => e.$edge.relations).toArray())
   const outgoingInView = unique(node.outgoing().flatMap(e => e.$edge.relations).toArray())
