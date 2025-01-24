@@ -195,9 +195,12 @@ export function LikeC4Browser<
           box-sizing: border-box;
         }
         [data-likec4-instance="${id}"]::backdrop {
-          -webkit-backdrop-filter: blur(1px);
-          backdrop-filter: blur(1px);
-          background-color: rgb(${backdropRgb} / 30%);
+          /* Values of the final state is used in order to fix lack of support for backdrop animation in FF
+             See https://github.com/likec4/likec4/issues/1420
+           */
+          -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+          background-color: rgb(${backdropRgb} / ${colorScheme === 'dark' ? '85' : '75'}%);
         }
         [data-likec4-instance="${id}"][open]::backdrop {
           animation: likec4-dialog-backdrop-fade-in 450ms ease-out forwards;
