@@ -543,6 +543,10 @@ export class DeploymentRelationModel<M extends AnyAux = AnyAux> {
     }
     return
   }
+
+  public isDeploymentRelation(): this is DeploymentRelationModel<M> {
+    return true
+  }
 }
 
 export class RelationshipsAccum<M extends AnyAux> {
