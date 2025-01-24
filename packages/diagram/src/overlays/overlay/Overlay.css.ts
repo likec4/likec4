@@ -31,7 +31,7 @@ export const dialog = style({
       cursor: 'zoom-out',
       WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
       backdropFilter: 'blur(var(--backdrop-blur))',
-      backgroundColor: `rgb(0 0 0 / var(--backdrop-opacity))`,
+      backgroundColor: `rgb(25 25 25 / var(--backdrop-opacity))`,
     },
   },
   '@media': {

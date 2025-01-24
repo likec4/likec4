@@ -1,12 +1,12 @@
 import { Handle } from '@xyflow/react'
 import { getBezierPath, Position } from '@xyflow/system'
+import { m } from 'framer-motion'
 import type { NodeProps } from '../../../base'
 import {
   CompoundNodeContainer,
   CompoundTitle,
   customEdge,
   customNode,
-  DefaultHandles,
   EdgeActionButton,
   EdgeContainer,
   EdgeLabel,
@@ -26,7 +26,7 @@ export const nodeTypes = {
     return (
       <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
-        <ElementTitle {...props} />
+        <ElementTitle {...props} iconSize={40} />
         <ElementActions {...props} />
         <ElementPorts {...props} />
       </ElementNodeContainer>
@@ -60,9 +60,17 @@ export const edgeTypes = {
       <EdgeContainer {...props}>
         <EdgePath {...props} svgPath={svgPath} />
         <EdgeLabel
+          component={m.div}
+          drag
+          dragElastic={0}
+          dragMomentum={false}
           edgeProps={props}
+          labelXY={{
+            x: labelX,
+            y: labelY,
+          }}
           style={{
-            transform: `translate(${labelX}px, ${labelY}px)  translate(-50%, 0)`,
+            // transform: `translate(${labelX}px, ${labelY}px)  translate(-50%, 0)`,
             maxWidth: Math.abs(props.targetX - props.sourceX - 70),
             // translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})
           }}>

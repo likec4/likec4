@@ -118,9 +118,9 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
                 </>
               }
               {...(!hasChildren && {
-                onClick: () => {
-                  router.navigate({
-                    to: '.',
+                onClick: (e) => {
+                  e.stopPropagation()
+                  router.buildAndCommitLocation({
                     params: {
                       viewId: node.value,
                     },

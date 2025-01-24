@@ -17,7 +17,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   // Move dialog to the top of the DOM
-  useLayoutEffect(() => dialogRef.current?.showModal(), [])
+  // useLayoutEffect(() => dialogRef.current?.showModal(), [])
 
   const onCloseRef = useSyncedRef(onClose)
   const close = useDebouncedCallback(
@@ -34,20 +34,21 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
       className={css.dialog}
       initial={{
         '--backdrop-blur': '0px',
-        '--backdrop-opacity': '0%',
+        '--backdrop-opacity': '10%',
         translateY: -8,
-        opacity: 0.8,
+        // opacity: 0.8,
       }}
       animate={{
         '--backdrop-blur': '3px',
         '--backdrop-opacity': '60%',
         translateY: 0,
-        opacity: 1,
+        // opacity: 1,
         // transition: {
         //   delay: 0.25,
         // }
       }}
       onAnimationStart={() => {
+        dialogRef.current?.showModal()
         setOpened(true)
       }}
       exit={{

@@ -247,11 +247,11 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
       layoutRoot
       initial={{
         '--backdrop-blur': '0px',
-        '--backdrop-opacity': '0%',
+        '--backdrop-opacity': '10%',
       }}
       animate={{
-        '--backdrop-blur': '1px',
-        '--backdrop-opacity': '50%',
+        '--backdrop-blur': '3px',
+        '--backdrop-opacity': '60%',
       }}
       exit={{
         '--backdrop-blur': '0px',

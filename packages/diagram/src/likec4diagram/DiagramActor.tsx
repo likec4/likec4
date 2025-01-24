@@ -6,7 +6,6 @@ import { useDiagramEventHandlers, useEnabledFeatures } from '../context'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useDiagramActor } from '../hooks2'
 import { LikeC4ViewMachineContextProvider } from './state/actorContext'
-import { useInspector } from './state/inspector'
 import { type Input, diagramMachine } from './state/machine'
 import { syncManualLayoutActor } from './state/syncManualLayoutActor'
 import type { Types } from './types'
@@ -16,7 +15,7 @@ type ActorContextInput = Omit<Input, 'xystore' | 'features'>
 export function DiagramActor({ input, children }: PropsWithChildren<{ input: ActorContextInput }>) {
   const { onNavigateTo, onOpenSource, onChange } = useDiagramEventHandlers()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
-  const inspector = useInspector()
+  // const inspector = useInspector()
   return (
     (
       <LikeC4ViewMachineContextProvider
@@ -45,7 +44,7 @@ export function DiagramActor({ input, children }: PropsWithChildren<{ input: Act
           },
         })}
         options={{
-          ...inspector,
+          // ...inspector,
           id: `diagram:${input.view.id}`,
           input: {
             xystore,

@@ -1,5 +1,5 @@
 import type { ViewId } from '@likec4/core'
-import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4DiagramV2, useLikeC4DiagramView } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { RenderIcon } from '../components/RenderIcon'
@@ -7,7 +7,7 @@ import { SidebarDrawerOps } from '../components/sidebar/state'
 import { isDevelopment, withOverviewGraph } from '../const'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
-  component: ViewEditor
+  component: ViewEditor,
 })
 
 function ViewEditor() {
@@ -20,7 +20,7 @@ function ViewEditor() {
       to: '/view/$viewId/editor',
       params: { viewId },
       startTransition: true,
-      search: true
+      search: true,
     })
   })
 
@@ -32,7 +32,7 @@ function ViewEditor() {
   const hasNotations = notations.length > 0
 
   return (
-    <LikeC4Diagram
+    <LikeC4DiagramV2
       view={view}
       readonly={false}
       zoomable
@@ -55,7 +55,7 @@ function ViewEditor() {
         ? () => {
           router.navigate({
             to: '/',
-            search: true
+            search: true,
           })
         }
         : SidebarDrawerOps.open}

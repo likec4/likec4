@@ -1,7 +1,8 @@
 import type { DiagramNode } from '@likec4/core'
 import { Box, Text } from '@mantine/core'
+import { assignInlineVars } from '@vanilla-extract/dynamic'
 import clsx from 'clsx'
-import { isTruthy } from 'remeda'
+import { isNumber, isTruthy } from 'remeda'
 import { IconRenderer } from '../../../context/IconRenderer'
 import type { NodeProps } from '../../types'
 import * as css from './ElementTitle.css'
@@ -18,9 +19,11 @@ type Data =
     icon?: string | null
   }
 
-type ElementTitleProps = NodeProps<Data>
+type ElementTitleProps = NodeProps<Data> & {
+  iconSize?: number
+}
 
-export function ElementTitle({ id, data }: ElementTitleProps) {
+export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
   const elementIcon = IconRenderer({
     element: {
       id,
@@ -36,6 +39,11 @@ export function ElementTitle({ id, data }: ElementTitleProps) {
         isTruthy(elementIcon) && css.hasIcon,
         'likec4-element',
       )}
+      style={{
+        ...isNumber(iconSize) && assignInlineVars({
+          [css.iconSize]: `${iconSize}px`,
+        }),
+      }}
     >
       {elementIcon}
       <Box className={clsx(css.elementTextData, 'likec4-element-main-props')}>

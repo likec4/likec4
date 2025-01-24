@@ -144,7 +144,7 @@ function viewToNodesEdge(
               width: node.width,
               color: node.color,
               shape: node.shape,
-              icon: node.icon ?? null,
+              icon: node.icon ?? 'none',
               ports: node.ports,
               ...navigateTo,
             },

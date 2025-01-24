@@ -5,7 +5,7 @@ import { vars } from '../../../theme-vars'
 export const hasIcon = style({})
 
 const textAlign = createVar('text-align')
-const iconSize = createVar('icon-size')
+export const iconSize = createVar('icon-size')
 
 export const title = style({
   flex: '0 0 auto',

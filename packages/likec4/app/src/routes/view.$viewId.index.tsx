@@ -33,7 +33,7 @@ function ViewReact() {
   return (
     <LikeC4DiagramV2
       view={view}
-      readonly={false}
+      readonly
       zoomable
       pannable
       controls
@@ -45,9 +45,10 @@ function ViewReact() {
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser
-      experimentalEdgeEditing
+      experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}
-      // nodesSelectable
+      nodesDraggable={false}
+      nodesSelectable={false}
       renderIcon={RenderIcon}
       onNavigateTo={onNavigateTo}
       onBurgerMenuClick={withOverviewGraph
