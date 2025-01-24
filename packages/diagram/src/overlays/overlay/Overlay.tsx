@@ -56,13 +56,13 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '0%',
         transition: {
-          duration: 0.17,
+          duration: 0.1,
         },
       }}
       onClick={e => {
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
           e.stopPropagation()
-          dialogRef.current?.close()
+          close()
         }
       }}
       onClose={e => {

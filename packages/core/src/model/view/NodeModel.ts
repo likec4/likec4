@@ -4,6 +4,7 @@ import {
   type DeploymentNodeKind,
   type DiagramView,
   type ElementShape as C4ElementShape,
+  type IconUrl,
   type IteratorLike,
   type Link,
   type NodeId,
@@ -95,6 +96,10 @@ export class NodeModel<M extends AnyAux, V extends ComputedView | DiagramView = 
 
   get color(): C4Color {
     return this.$node.color
+  }
+
+  get icon(): IconUrl | null {
+    return this.$node.icon ?? null
   }
 
   get tags(): ReadonlyArray<C4Tag> {

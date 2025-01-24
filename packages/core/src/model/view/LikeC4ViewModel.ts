@@ -16,7 +16,7 @@ import {
   isElementView,
   isScopedElementView,
 } from '../../types/view'
-import { compareByFqnHierarchically, getOrCreate } from '../../utils'
+import { compareByFqnHierarchically, getOrCreate, ifind } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import { type AnyAux, getId } from '../types'
@@ -138,6 +138,12 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   public findNode(node: M['NodeOrId']): NodeModel<M, V> | null {
     return this.#nodes.get(getId(node) as C4NodeId) ?? null
   }
+
+  public findNodeWithElement(fqn: M['Element']): NodeModel.WithElement<M, V> | null {
+    const nd = ifind(this.#nodes.values(), node => node.element?.id === fqn) ?? null
+    return nd && nd.hasElement() ? nd : null
+  }
+
   /**
    * Iterate over all nodes.
    */

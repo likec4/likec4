@@ -1,4 +1,5 @@
 import { type Fqn, type NodeId } from '@likec4/core'
+import { m } from 'framer-motion'
 import type { NodeProps } from '../../../base'
 import {
   CompoundDetailsButton,

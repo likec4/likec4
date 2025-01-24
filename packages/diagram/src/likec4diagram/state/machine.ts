@@ -20,7 +20,7 @@ import {
   applyNodeChanges,
   getViewportForBounds,
 } from '@xyflow/react'
-import type { EdgeChange, NodeChange, Viewport } from '@xyflow/system'
+import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
 import { hasAtLeast, prop } from 'remeda'
 import {
   type ActorRefFromLogic,
@@ -98,6 +98,14 @@ export interface DiagramContext extends Input {
     timestamp: number
   }
   focusedNode: NodeId | null
+  activeElementDetails: null | {
+    fqn: Fqn
+    fromNode: NodeId | null
+    // internal xyflow node rect
+    nodeRect?: Rect | null
+    // in screen coordinates
+    nodeRectScreen?: Rect | null
+  }
   viewportBeforeFocus: null | Viewport
   xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
   syncLayoutActorRef: ActorRefFromLogic<typeof syncManualLayoutActor>
@@ -122,6 +130,7 @@ export type Events =
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
+  | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
@@ -279,6 +288,7 @@ export const diagramMachine = setup({
     lastOnNavigate: null,
     lastClickedNode: null,
     focusedNode: null,
+    activeElementDetails: null,
     viewportBeforeFocus: null,
     navigationHistory: {
       currentIndex: 0,
@@ -470,6 +480,54 @@ export const diagramMachine = setup({
         hole: {
           target: '#idle',
         },
+        elementDetails: {
+          guard: ({ context }: { context: DiagramContext }) => context.activeElementDetails !== null,
+          entry: assign({
+            activeElementDetails: ({ context }) => {
+              const fqn = context.activeElementDetails!.fqn
+              const fromNode = context.activeElementDetails!.fromNode
+              if (fromNode) {
+                const internalNode = nonNullable(
+                  context.xystore.getState().nodeLookup.get(fromNode),
+                  'XY Internal Node not found',
+                )
+                const nodeRect = nodeToRect(internalNode)
+                const zoom = context.xyflow!.getZoom()
+
+                const nodeRectScreen = {
+                  ...context.xyflow!.flowToScreenPosition(nodeRect),
+                  width: nodeRect.width * zoom,
+                  height: nodeRect.height * zoom,
+                }
+
+                return { fqn, fromNode, nodeRect, nodeRectScreen }
+              } else {
+                return { fqn, fromNode }
+              }
+            },
+          }),
+          on: {
+            // Catch event and do nothing
+            'open.elementDetails': {
+              actions: assign({
+                activeElementDetails: ({ event, context }) => ({
+                  ...context.activeElementDetails,
+                  fqn: event.fqn,
+                  fromNode: context.activeElementDetails?.fromNode ?? null,
+                }),
+              }),
+            },
+            'close.overlay': {
+              target: '#idle',
+            },
+            'key.esc': {
+              target: '#idle',
+            },
+          },
+          exit: assign({
+            activeElementDetails: null,
+          }),
+        },
         relationshipsBrowser: {
           invoke: {
             id: 'relationshipsBrowser',
@@ -487,7 +545,10 @@ export const diagramMachine = setup({
           },
           on: {
             // Catch event and do nothing
-            'open.*': {},
+            'open.relationshipsBrowser': {},
+            'close.overlay': {
+              actions: sendTo('relationshipsBrowser', { type: 'close' }),
+            },
             'key.esc': {
               actions: sendTo('relationshipsBrowser', { type: 'close' }),
             },
@@ -686,9 +747,16 @@ export const diagramMachine = setup({
         raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 200 }),
       ],
     },
-    // 'openElementDetails': {
-    //   target: '.overlay',
-    // },
+    'open.elementDetails': {
+      actions: assign({
+        activeElementDetails: ({ event, context }) => ({
+          fqn: event.fqn,
+          fromNode: event.fromNode ?? context.lastClickedNode?.id ?? null,
+          fromNodeScreenPosition: null,
+        }),
+      }),
+      target: '.overlay.elementDetails',
+    },
     'open.relationshipsBrowser': {
       target: '.overlay.relationshipsBrowser',
     },

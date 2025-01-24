@@ -3,17 +3,18 @@ import { useContext } from 'react'
 import { useStoreWithEqualityFn as useZustandStore } from 'zustand/traditional'
 
 import type { ViewId } from '@likec4/core'
-import { DiagramContext } from '../state/DiagramContext'
+// import { DiagramContext } from '../state/DiagramContext'
+import { type DiagramContext, useDiagramContext } from '../hooks2'
 import type { DiagramState, DiagramStoreApi } from '../state/diagramStore'
 
-const selectViewId = (state: DiagramState) => state.view.id
+const selectViewId = (state: DiagramContext) => state.view.id
 export function useCurrentViewId(): ViewId {
-  return useDiagramState(selectViewId)
+  return useDiagramContext(selectViewId)
 }
 
 export function useDiagramState<StateSlice = unknown>(
   selector: (state: DiagramState) => StateSlice,
-  equalityFn?: (a: StateSlice, b: StateSlice) => boolean
+  equalityFn?: (a: StateSlice, b: StateSlice) => boolean,
 ): StateSlice {
   const store = useContext(DiagramContext)
 

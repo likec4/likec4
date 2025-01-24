@@ -10,6 +10,9 @@ export function useDiagram() {
   const [, startTransition] = useTransition()
   return useMemo(() => ({
     send: actor.send,
+    currentView: () => actor.getSnapshot().context.view,
+    getState: () => actor.getSnapshot(),
+    getContext: () => actor.getSnapshot().context,
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
       startTransition(() => {
         actor.send({
@@ -38,6 +41,9 @@ export function useDiagram() {
       startTransition(() => {
         actor.send({ type: 'open.elementDetails', fqn, fromNode })
       })
+    },
+    closeOverlay: () => {
+      actor.send({ type: 'close.overlay' })
     },
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
       actor.send({ type: 'update.nodeData', nodeId, data })

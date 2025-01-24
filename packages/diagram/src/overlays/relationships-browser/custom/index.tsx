@@ -60,7 +60,7 @@ export const edgeTypes = {
       <EdgeContainer {...props}>
         <EdgePath {...props} svgPath={svgPath} />
         <EdgeLabel
-          {...props}
+          edgeProps={props}
           style={{
             transform: `translate(${labelX}px, ${labelY}px)  translate(-50%, 0)`,
             maxWidth: Math.abs(props.targetX - props.sourceX - 70),

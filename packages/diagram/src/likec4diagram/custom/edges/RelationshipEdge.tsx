@@ -298,13 +298,19 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
         </g>
       )}
       <EdgeLabel
-        {...props}
-        {...isControlPointDragging && {
-          data: {
-            ...props.data,
-            hovered: false,
-          },
-        }}
+        edgeProps={props}
+        renderRoot={({ children, ...rest }) => (
+          <span {...rest}>
+            {children}
+          </span>
+        )}
+        // {...props}
+        // {...isControlPointDragging && {
+        //   data: {
+        //     ...props.data,
+        //     hovered: false,
+        //   },
+        // }}
         labelXY={{ x: labelX, y: labelY }}
       >
         {!isControlPointDragging && enableNavigateTo && navigateTo && (

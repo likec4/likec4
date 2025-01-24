@@ -1,6 +1,7 @@
-import { ActionIcon, Group } from '@mantine/core'
+import type { Fqn } from '@likec4/core'
+import { ActionIcon, Box, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react'
 import clsx from 'clsx'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
@@ -19,6 +20,7 @@ import {
   useRelationshipsBrowser,
   useRelationshipsBrowserState,
 } from './hooks'
+import { SelectElement } from './SelectElement'
 import { useViewToNodesEdges } from './useViewToNodesEdges'
 
 export type RelationshipsBrowserProps = {
@@ -51,20 +53,20 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
 }
 
 const selector = (state: SnapshotFrom<RelationshipsBrowserActorRef>) => ({
-  subject: state.context.subject,
+  subjectId: state.context.subject,
   initialized: state.context.initialized,
   scope: state.context.scope,
 })
 
 const RelationshipsBrowserInner = memo(() => {
-  const { send, navigateTo } = useRelationshipsBrowser()
+  const browser = useRelationshipsBrowser()
   const {
-    subject,
+    subjectId,
     initialized,
     scope,
   } = useRelationshipsBrowserState(selector)
 
-  const view = useRelationshipsView(subject)
+  const view = useRelationshipsView(subjectId)
   const {
     xynodes,
     xyedges,
@@ -77,37 +79,19 @@ const RelationshipsBrowserInner = memo(() => {
     setEdges(updateEdges(xyedges))
   }, [xynodes, xyedges])
 
-  const [historySubjectId, historyOps, { history, current }] = useStateHistory(subject)
+  const [historySubjectId, historyOps, { history, current }] = useStateHistory(subjectId)
 
   useEffect(() => {
-    if (historySubjectId !== subject) {
-      historyOps.set(subject)
+    if (historySubjectId !== subjectId) {
+      historyOps.set(subjectId)
     }
-  }, [subject])
+  }, [subjectId])
 
   useEffect(() => {
-    if (historySubjectId !== subject) {
-      navigateTo(historySubjectId)
+    if (historySubjectId !== subjectId) {
+      browser.navigateTo(historySubjectId)
     }
   }, [historySubjectId])
-
-  // useEffect(() => {
-  //   if (readonly !== true && where != null) {
-  //     console.warn('Ignore filter, supported in readonly mode only\n', { where })
-  //   }
-  //   if (hasLikec4model) {
-  //     return
-  //   }
-  //   if (enableRelationshipDetails) {
-  //     console.warn('Invalid showRelationshipDetails=true, requires LikeC4ModelProvider')
-  //   }
-  //   if (enableElementDetails) {
-  //     console.warn('Invalid enableElementDetails=true, requires LikeC4ModelProvider')
-  //   }
-  //   if (enableRelationshipBrowser) {
-  //     console.warn('Invalid enableRelationshipBrowser=true, requires LikeC4ModelProvider')
-  //   }
-  // })
 
   const hasStepBack = current > 0
   const hasStepForward = current + 1 < history.length
@@ -125,77 +109,127 @@ const RelationshipsBrowserInner = memo(() => {
         onNodesChange={onNodesChange}
         fitViewPadding={0.05}
         onInit={useCallbackRef((instance) => {
-          send({ type: 'xyflow.init', instance })
+          browser.send({ type: 'xyflow.init', instance })
         })}
         onNodeClick={useCallbackRef((e, node) => {
           e.stopPropagation()
-          send({ type: 'xyflow.nodeClick', node })
+          browser.send({ type: 'xyflow.nodeClick', node })
         })}
         onEdgeClick={useCallbackRef((e, edge) => {
           e.stopPropagation()
-          send({ type: 'xyflow.edgeClick', edge })
+          browser.send({ type: 'xyflow.edgeClick', edge })
         })}
         onPaneClick={useCallbackRef((e) => {
           e.stopPropagation()
-          send({ type: 'xyflow.paneClick' })
+          browser.send({ type: 'xyflow.paneClick' })
         })}
         onViewportResize={() => {
-          send({ type: 'xyflow.resized' })
+          browser.send({ type: 'xyflow.resized' })
         }}
         nodesDraggable={false}
         fitView={false}
         pannable
         zoomable
       >
-        <Panel position="top-left">
-          <Group gap={4} wrap={'nowrap'}>
-            <AnimatePresence mode="popLayout">
-              {hasStepBack && (
-                <m.div
-                  layout
-                  initial={{ opacity: 0.05, transform: 'translateX(-5px)' }}
-                  animate={{ opacity: 1, transform: 'translateX(0)' }}
-                  exit={{
-                    opacity: 0.05,
-                    transform: 'translateX(-10px)',
-                  }}
-                  key={'back'}>
-                  <ActionIcon
-                    variant="default"
-                    color="gray"
-                    onClick={e => {
-                      e.stopPropagation()
-                      historyOps.back()
-                    }}>
-                    <IconChevronLeft />
-                  </ActionIcon>
-                </m.div>
-              )}
-              {hasStepForward && (
-                <m.div
-                  layout
-                  initial={{ opacity: 0.05, transform: 'translateX(5px)' }}
-                  animate={{ opacity: 1, transform: 'translateX(0)' }}
-                  exit={{
-                    opacity: 0,
-                    transform: 'translateX(5px)',
-                  }}
-                  key={'forward'}>
-                  <ActionIcon
-                    variant="default"
-                    color="gray"
-                    onClick={e => {
-                      e.stopPropagation()
-                      historyOps.forward()
-                    }}>
-                    <IconChevronRight />
-                  </ActionIcon>
-                </m.div>
-              )}
-            </AnimatePresence>
-          </Group>
+        <TopLeftPanel
+          subjectId={subjectId}
+          hasStepBack={hasStepBack}
+          hasStepForward={hasStepForward}
+          onStepBack={() => historyOps.back()}
+          onStepForward={() => historyOps.forward()}
+        />
+        <Panel position="top-right">
+          <ActionIcon
+            variant="default"
+            color="gray"
+            // color="gray"
+            // size={'lg'}
+            // data-autofocus
+            // autoFocus
+            onClick={(e) => {
+              e.stopPropagation()
+              browser.close()
+            }}>
+            <IconX />
+          </ActionIcon>
         </Panel>
       </BaseXYFlow>
     </LayoutGroup>
   )
 })
+
+type TopLeftPanelProps = {
+  subjectId: Fqn
+  hasStepBack: boolean
+  hasStepForward: boolean
+  onStepBack: () => void
+  onStepForward: () => void
+}
+const TopLeftPanel = ({
+  subjectId,
+  hasStepBack,
+  hasStepForward,
+  onStepBack,
+  onStepForward,
+}: TopLeftPanelProps) => {
+  const browser = useRelationshipsBrowser()
+  return (
+    <Panel position="top-left">
+      <Group gap={4} wrap={'nowrap'}>
+        <AnimatePresence mode="popLayout">
+          {hasStepBack && (
+            <m.div
+              layout
+              initial={{ opacity: 0.05, transform: 'translateX(-5px)' }}
+              animate={{ opacity: 1, transform: 'translateX(0)' }}
+              exit={{
+                opacity: 0.05,
+                transform: 'translateX(-10px)',
+              }}
+              key={'back'}>
+              <ActionIcon
+                variant="default"
+                color="gray"
+                onClick={e => {
+                  e.stopPropagation()
+                  onStepBack()
+                }}>
+                <IconChevronLeft />
+              </ActionIcon>
+            </m.div>
+          )}
+          {hasStepForward && (
+            <m.div
+              layout
+              initial={{ opacity: 0.05, transform: 'translateX(5px)' }}
+              animate={{ opacity: 1, transform: 'translateX(0)' }}
+              exit={{
+                opacity: 0,
+                transform: 'translateX(5px)',
+              }}
+              key={'forward'}>
+              <ActionIcon
+                variant="default"
+                color="gray"
+                onClick={e => {
+                  e.stopPropagation()
+                  onStepForward()
+                }}>
+                <IconChevronRight />
+              </ActionIcon>
+            </m.div>
+          )}
+          <Group gap={'xs'} wrap={'nowrap'} ml={'sm'}>
+            <Box fz={'xs'} fw={'500'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box>
+            <SelectElement
+              subjectId={subjectId}
+              onSelect={(id) => browser.navigateTo(id)}
+              viewId={browser.getState().scope?.id ?? '' as any}
+              scope={'global'}
+            />
+          </Group>
+        </AnimatePresence>
+      </Group>
+    </Panel>
+  )
+}

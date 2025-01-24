@@ -2,7 +2,7 @@ import type { DiagramNode } from '@likec4/core'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import clsx from 'clsx'
-import { type HTMLMotionProps, m } from 'framer-motion'
+import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { clamp, isNumber } from 'remeda'
 import type { NodeProps } from '../../types'
@@ -57,7 +57,6 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
           isDimmed && css.dimmed,
           'likec4-compound-node',
         ])}
-        layoutRoot
         initial={false}
         data-hovered={isHovered}
         data-likec4-color={data.color}

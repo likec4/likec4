@@ -1,7 +1,11 @@
+import { Box, Button, Code, Group, Notification } from '@mantine/core'
+import { IconX } from '@tabler/icons-react'
 import { AnimatePresence } from 'framer-motion'
 import { memo } from 'react'
+import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { DiagramFeatures } from '../context'
-import { useDiagramActorState } from '../hooks2'
+import { useDiagramActor, useDiagramActorState } from '../hooks2'
+import { ElementDetailsCard } from './element-details/ElementDetailsCard'
 import { Overlay } from './overlay/Overlay'
 import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrowser'
 // import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
@@ -10,41 +14,38 @@ import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrows
 // import * as css from './Overlays.css'
 // import { RelationshipsOverlay } from './relationships-of/RelationshipsOverlay'
 
-// function Fallback({ error, resetErrorBoundary }: FallbackProps) {
-//   // Call resetErrorBoundary() to reset the error boundary and retry the render.
-//   const errorString = error instanceof Error ? error.message : 'Unknown error'
-//   return (
-//     <Box className={css.container} p={'lg'}>
-//       <Notification
-//         icon={<IconX style={{ width: 16, height: 16 }} />}
-//         styles={{
-//           icon: {
-//             alignSelf: 'flex-start',
-//           },
-//         }}
-//         color={'red'}
-//         title={'Oops, something went wrong'}
-//         py={'lg'}
-//         withCloseButton={false}>
-//         <Text
-//           style={{
-//             whiteSpace: 'preserve-breaks',
-//           }}>
-//           {errorString}
-//         </Text>
-//         <Group gap={'xs'} mt="sm">
-//           <Button color="gray" size="xs" variant="light" onClick={() => resetErrorBoundary()}>Reset</Button>
-//         </Group>
-//       </Notification>
-//     </Box>
-//   )
-// }
+function Fallback({ error, resetErrorBoundary }: FallbackProps) {
+  const errorString = error instanceof Error ? error.message : 'Unknown error'
+  return (
+    <Box pos={'fixed'} top={0} left={0} w={'100%'} p={0} style={{ zIndex: 1000 }}>
+      <Notification
+        icon={<IconX style={{ width: 16, height: 16 }} />}
+        styles={{
+          icon: {
+            alignSelf: 'flex-start',
+          },
+        }}
+        color={'red'}
+        title={'Oops, something went wrong'}
+        p={'xl'}
+        withCloseButton={false}>
+        <Code block>{errorString}</Code>
+        <Group gap={'xs'} mt="xl">
+          <Button color="gray" size="xs" variant="light" onClick={() => resetErrorBoundary()}>Reset</Button>
+        </Group>
+      </Notification>
+    </Box>
+  )
+}
 
 export const Overlays = memo(() => {
+  const { send } = useDiagramActor()
   const {
     relationshipsBrowserActor,
+    activeElementDetailsOf,
   } = useDiagramActorState(s => ({
     relationshipsBrowserActor: s.children.relationshipsBrowser,
+    activeElementDetailsOf: s.context.activeElementDetails?.fqn ?? null,
   }))
   // )
   // const diagramStore = useDiagramStoreApi()
@@ -87,17 +88,20 @@ export const Overlays = memo(() => {
 
   return (
     <DiagramFeatures.Overlays>
-      <AnimatePresence initial={false}>
-        {relationshipsBrowserActor && (
-          <Overlay
-            key={'relationships-browser'}
-            onClose={() => {
-              relationshipsBrowserActor.send({ type: 'close' })
-            }}>
-            <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
-          </Overlay>
-        )}
-      </AnimatePresence>
+      <ErrorBoundary FallbackComponent={Fallback} onReset={() => send({ type: 'close.overlay' })}>
+        <AnimatePresence>
+          {relationshipsBrowserActor && (
+            <Overlay
+              key={'relationships-browser'}
+              onClose={() => {
+                relationshipsBrowserActor.send({ type: 'close' })
+              }}>
+              <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
+            </Overlay>
+          )}
+          {activeElementDetailsOf && <ElementDetailsCard fqn={activeElementDetailsOf} />}
+        </AnimatePresence>
+      </ErrorBoundary>
     </DiagramFeatures.Overlays>
     // <OverlayContext.Provider value={ctxValue}>
     //   <ErrorBoundary FallbackComponent={Fallback} onReset={() => ctxValue.close()}>

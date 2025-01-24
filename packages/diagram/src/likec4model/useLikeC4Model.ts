@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { isDefined, isNonNullish, isString } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { useCurrentViewId } from '../hooks'
+import { useDiagramContext } from '../hooks2'
 import { LikeC4ModelContext } from './LikeC4ModelContext'
 
 export function useLikeC4Model(): LikeC4Model | null
@@ -36,7 +37,7 @@ export function useLikeC4ViewModel(viewId: LiteralUnion<ViewId, string>): LikeC4
 }
 
 export function useLikeC4CurrentViewModel(): LikeC4Model.View {
-  const viewId = useCurrentViewId()
+  const viewId = useDiagramContext(s => s.view.id)
   return useLikeC4Model(true).view(viewId)
 }
 

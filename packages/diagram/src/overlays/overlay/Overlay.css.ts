@@ -34,6 +34,18 @@ export const dialog = style({
       backgroundColor: `rgb(0 0 0 / var(--backdrop-opacity))`,
     },
   },
+  '@media': {
+    [mantine.smallerThan('md')]: {
+      borderRadius: mantine.radius.sm,
+      inset: '2rem',
+      maxWidth: '100%',
+      maxHeight: '100%',
+    },
+    [mantine.smallerThan('sm')]: {
+      border: 'none',
+      inset: '0px',
+    },
+  },
 })
 
 export const body = style({

@@ -51,6 +51,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
           isDimmed && css.dimmed,
           'likec4-element-node',
         ])}
+        initial={false}
         layoutRoot
         {...selectable && {
           animate: {

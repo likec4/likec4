@@ -17,7 +17,7 @@ import { LikeC4Search } from '../LikeC4Search'
 import { Overlays } from '../overlays/Overlays'
 import { DiagramActor } from './DiagramActor'
 import type { Types } from './types'
-import { Controls } from './ui'
+import { Controls, DiagramTitlePanel } from './ui'
 import { useViewToNodesEdges } from './useViewToNodesEdges'
 import { LikeC4DiagramXYFlow } from './XYFlow'
 
@@ -169,6 +169,9 @@ export function LikeC4DiagramV2({
                     <Overlays />
                     <IfEnabled feature="Search">
                       <LikeC4Search />
+                    </IfEnabled>
+                    <IfEnabled feature="ViewTitle">
+                      <DiagramTitlePanel />
                     </IfEnabled>
                   </DiagramActor>
                 </XYFlowProvider>
