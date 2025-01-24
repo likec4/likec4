@@ -2,15 +2,8 @@ import { shallowEqual } from 'fast-equals'
 import { useContext } from 'react'
 import { useStoreWithEqualityFn as useZustandStore } from 'zustand/traditional'
 
-import type { ViewId } from '@likec4/core'
-// import { DiagramContext } from '../state/DiagramContext'
-import { type DiagramContext, useDiagramContext } from '../hooks2'
+import { DiagramContext } from '../state/DiagramContext'
 import type { DiagramState, DiagramStoreApi } from '../state/diagramStore'
-
-const selectViewId = (state: DiagramContext) => state.view.id
-export function useCurrentViewId(): ViewId {
-  return useDiagramContext(selectViewId)
-}
 
 export function useDiagramState<StateSlice = unknown>(
   selector: (state: DiagramState) => StateSlice,

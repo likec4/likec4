@@ -11,10 +11,8 @@ export const dialog = style({
   alignItems: 'stretch',
   width: 'auto',
   height: 'auto',
-  // width: '100%',
-  // height: '100%',
-  // maxWidth: '100%',
-  // maxHeight: '100%',
+  maxWidth: '100%',
+  maxHeight: '100%',
   background: mantine.colors.body,
   boxShadow: mantine.shadows.xl,
   border: `3px solid ${mantine.colors.defaultBorder}`,
@@ -38,8 +36,6 @@ export const dialog = style({
     [mantine.smallerThan('md')]: {
       borderRadius: mantine.radius.sm,
       inset: '2rem',
-      maxWidth: '100%',
-      maxHeight: '100%',
     },
     [mantine.smallerThan('sm')]: {
       border: 'none',
