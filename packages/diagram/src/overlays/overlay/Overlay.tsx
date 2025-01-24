@@ -2,31 +2,22 @@ import {
   Box,
   RemoveScroll,
 } from '@mantine/core'
-import { useDebouncedCallback, useDebouncedEffect, useSyncedRef } from '@react-hookz/web'
+import { useMergedRef } from '@mantine/hooks'
+import { useDebouncedCallback, useSyncedRef } from '@react-hookz/web'
 import { m } from 'framer-motion'
-import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
+import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
 import * as css from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<{
   onClose: () => void
 }>
 
-export function Overlay({ children, onClose }: OverlayProps) {
+export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, onClose }, ref) => {
   const [opened, setOpened] = useState(false)
-  const ref = useRef<HTMLDialogElement>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
 
   // Move dialog to the top of the DOM
-  useLayoutEffect(() => ref.current?.showModal(), [])
-
-  // Enabling animation
-  // 1. Body is invisible
-  // 2. showModal() is called
-  // 3. Show body
-  useDebouncedEffect(
-    () => setOpened(true),
-    [],
-    50,
-  )
+  useLayoutEffect(() => dialogRef.current?.showModal(), [])
 
   const onCloseRef = useSyncedRef(onClose)
   const close = useDebouncedCallback(
@@ -39,13 +30,13 @@ export function Overlay({ children, onClose }: OverlayProps) {
 
   return (
     <m.dialog
-      ref={ref}
+      ref={useMergedRef(ref, dialogRef)}
       className={css.dialog}
       initial={{
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '0%',
-        translateY: -10,
-        opacity: 0.5,
+        translateY: -8,
+        opacity: 0.8,
       }}
       animate={{
         '--backdrop-blur': '3px',
@@ -56,9 +47,12 @@ export function Overlay({ children, onClose }: OverlayProps) {
         //   delay: 0.25,
         // }
       }}
+      onAnimationStart={() => {
+        setOpened(true)
+      }}
       exit={{
         opacity: 0.1,
-        translateY: -40,
+        translateY: -10,
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '0%',
         transition: {
@@ -68,7 +62,7 @@ export function Overlay({ children, onClose }: OverlayProps) {
       onClick={e => {
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
           e.stopPropagation()
-          ref.current?.close()
+          dialogRef.current?.close()
         }
       }}
       onClose={e => {
@@ -83,4 +77,4 @@ export function Overlay({ children, onClose }: OverlayProps) {
       </RemoveScroll>
     </m.dialog>
   )
-}
+})

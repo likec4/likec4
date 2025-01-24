@@ -6,7 +6,7 @@ import {
   useStoreApi,
 } from '@xyflow/react'
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import * as css from '../LikeC4Diagram.css'
 import { stopPropagation } from '../utils/xyflow'
@@ -22,6 +22,7 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
     nodesDraggable?: boolean
     background?: 'transparent' | 'solid' | XYBackground
     fitViewPadding?: number
+    onViewportResize?: undefined | (() => void)
   }
   & SetRequired<
     Omit<
@@ -34,7 +35,6 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
       | 'preventScrolling'
       | 'zoomOnPinch'
       | 'zoomActivationKeyCode'
-      | 'zoomOnDoubleClick'
       | 'zoomOnScroll'
       | 'elementsSelectable'
       | 'onNodeMouseEnter'
@@ -69,6 +69,8 @@ export const BaseXYFlow = <
   colorMode = 'system',
   fitViewPadding = 0,
   fitView = true,
+  zoomOnDoubleClick = false,
+  onViewportResize,
   ...props
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
@@ -90,7 +92,7 @@ export const BaseXYFlow = <
       {...(!zoomable && {
         zoomActivationKeyCode: null,
       })}
-      zoomOnDoubleClick={false}
+      zoomOnDoubleClick={zoomOnDoubleClick}
       maxZoom={zoomable ? MaxZoom : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
@@ -153,13 +155,15 @@ export const BaseXYFlow = <
       {...props}
     >
       {isBgWithPattern && <Background background={background} />}
-      <BaseXYFlowInner />
+      <BaseXYFlowInner onViewportResize={onViewportResize} />
       {children}
     </ReactFlow>
   )
 }
 
-const BaseXYFlowInner = () => {
+const BaseXYFlowInner = ({
+  onViewportResize,
+}: Pick<BaseXYFlowProps<any, any>, 'onViewportResize'>) => {
   const xyflowApi = useStoreApi()
 
   /**
@@ -177,6 +181,20 @@ const BaseXYFlowInner = () => {
       }
     },
   })
+
+  const listenToViewportResize = !!onViewportResize
+  const onViewportResizeCb = useCallbackRef(onViewportResize)
+
+  useEffect(() => {
+    if (!listenToViewportResize) {
+      return
+    }
+    return xyflowApi.subscribe((state, prevState) => {
+      if (state.width !== prevState.width || state.height !== prevState.height) {
+        onViewportResizeCb()
+      }
+    })
+  }, [listenToViewportResize])
 
   return <></>
 }

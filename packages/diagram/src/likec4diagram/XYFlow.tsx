@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base'
 import { useDiagramEventHandlers, useEnabledFeature } from '../context'
-import { useDiagram, useDiagramActor, useDiagramContext } from '../hooks2'
+import { useDiagram, useDiagramContext } from '../hooks2'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { edgeTypes, nodeTypes } from './custom'
 import type { DiagramContext } from './state/machine'
@@ -45,7 +45,12 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
     onEdgeContextMenu,
   } = useDiagramEventHandlers()
 
-  const notReadOnly = !useEnabledFeature('ReadOnly').enableReadOnly
+  const {
+    enableFitView,
+    enableReadOnly,
+  } = useEnabledFeature('ReadOnly', 'FitView')
+
+  const notReadOnly = !enableReadOnly
 
   const layoutConstraints = useLayoutConstraints()
 
@@ -104,6 +109,11 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
         onPaneContextMenu: useCallbackRef((event) => {
           onCanvasContextMenu(event as any)
         }),
+      }}
+      {...enableFitView && {
+        onViewportResize: () => {
+          diagram.send({ type: 'xyflow.resized' })
+        },
       }}
       {...(notReadOnly && rest.nodesDraggable && layoutConstraints)}
       {...props}

@@ -9,6 +9,7 @@ import {
   type MachineSnapshot,
   type SnapshotFrom,
   assign,
+  cancel,
   enqueueActions,
   raise,
   setup,
@@ -37,6 +38,7 @@ export type Events =
   | { type: 'xyflow.nodeClick'; node: RelationshipsBrowserTypes.Node }
   | { type: 'xyflow.edgeClick'; edge: RelationshipsBrowserTypes.Edge }
   | { type: 'xyflow.paneClick' }
+  | { type: 'xyflow.resized' }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'navigate.to'; subject: Fqn }
   | { type: 'close' }
@@ -134,6 +136,12 @@ export const relationshipsBrowserActor = setup({
         type: 'xyflow:fitDiagram',
         params: prop('event'),
       },
+    },
+    'xyflow.resized': {
+      actions: [
+        cancel('fitDiagram'),
+        raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 200 }),
+      ],
     },
   },
 }) as unknown as ActorLogic<
