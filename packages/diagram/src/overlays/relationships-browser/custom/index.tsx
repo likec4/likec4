@@ -24,11 +24,7 @@ import { EmptyNode } from './EmptyNode'
 export const nodeTypes = {
   element: customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
     return (
-      <ElementNodeContainer
-        {...props}
-        motionProps={{
-          layoutId: props.id,
-        }}>
+      <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
         <ElementTitle {...props} />
         <ElementActions {...props} />
@@ -39,7 +35,7 @@ export const nodeTypes = {
 
   compound: customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
     return (
-      <CompoundNodeContainer {...props}>
+      <CompoundNodeContainer nodeProps={props}>
         <CompoundTitle {...props} />
         <CompoundPorts {...props} />
       </CompoundNodeContainer>

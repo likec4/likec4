@@ -16,7 +16,7 @@ import type { ExampleTypes } from './_types'
 export const nodeTypes = {
   element: customNode<ExampleTypes.ElementNodeData>((props) => {
     return (
-      <ElementNodeContainer {...props}>
+      <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
         <ElementTitle {...props} />
         <DefaultHandles />
@@ -26,7 +26,7 @@ export const nodeTypes = {
 
   compound: customNode<ExampleTypes.CompoundNodeData>((props) => {
     return (
-      <CompoundNodeContainer {...props}>
+      <CompoundNodeContainer nodeProps={props}>
         <CompoundTitle {...props} />
         <DefaultHandles />
       </CompoundNodeContainer>

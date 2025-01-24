@@ -13,6 +13,6 @@ const style: CSSProperties = {
 export const DefaultHandles = () => (
   <>
     <Handle type="target" position={Position.Top} style={style} />
-    <Handle type="source" position={Position.Top} style={style} />
+    <Handle type="source" position={Position.Bottom} style={style} />
   </>
 )

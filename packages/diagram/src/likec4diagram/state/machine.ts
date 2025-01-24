@@ -641,7 +641,7 @@ export const diagramMachine = setup({
             enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'synced' })
           }
           if (isAnotherView || !context.viewportChangedManually) {
-            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 75 })
+            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 90 })
           }
           enqueue.assign(mergeXYNodesEdges)
           enqueue.assign({

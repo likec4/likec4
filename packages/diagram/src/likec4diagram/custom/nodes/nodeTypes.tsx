@@ -38,7 +38,7 @@ const ElementDetailsButtonWithHandler = ({ fqn, ...props }: NodeProps<Types.Node
 
 export const nodeTypes = {
   element: customNode<Types.ElementNodeData>((props) => (
-    <ElementNodeContainer {...props}>
+    <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
       <ElementTitle {...props} />
       <ElementActions {...props} />
@@ -52,7 +52,7 @@ export const nodeTypes = {
     </ElementNodeContainer>
   )),
   deployment: customNode<Types.DeploymentElementNodeData>((props) => (
-    <ElementNodeContainer {...props}>
+    <ElementNodeContainer nodeProps={props}>
       <ElementShape {...props} />
       <ElementTitle {...props} />
       <DeploymentElementActions {...props} />
@@ -70,7 +70,7 @@ export const nodeTypes = {
   'compound-element': customNode<Types.CompoundElementNodeData>((props) => {
     const diagram = useDiagram()
     return (
-      <CompoundNodeContainer {...props}>
+      <CompoundNodeContainer nodeProps={props}>
         <CompoundTitle {...props} />
         <CompoundActions {...props} />
         <IfEnabled feature="ElementDetails">
@@ -89,7 +89,7 @@ export const nodeTypes = {
     )
   }),
   'compound-deployment': customNode<Types.CompoundDeploymentNodeData>((props) => (
-    <CompoundNodeContainer {...props}>
+    <CompoundNodeContainer nodeProps={props}>
       <CompoundTitle {...props} />
       <CompoundActions {...props} />
       <IfNotEnabled feature="ReadOnly">
@@ -99,7 +99,7 @@ export const nodeTypes = {
     </CompoundNodeContainer>
   )),
   'view-group': customNode<Types.ViewGroupNodeData>((props) => (
-    <CompoundNodeContainer {...props}>
+    <CompoundNodeContainer nodeProps={props}>
       <CompoundTitle {...props} />
       <DefaultHandles />
     </CompoundNodeContainer>
