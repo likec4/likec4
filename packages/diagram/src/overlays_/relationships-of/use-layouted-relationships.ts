@@ -164,7 +164,7 @@ function nodeData(
   // color from it if there is no diagram node
   const ancestor = diagramNode ?? (ctx.scope === 'view'
     ? pipe(
-      element.ancestors().toArray(),
+      [...element.ancestors()],
       map(ancestor => ctx.diagramNodes.get(ancestor.id)),
       filter(isTruthy),
       first(),
@@ -243,7 +243,7 @@ function createNode(
 
   // Create parent node
   const parent = pipe(
-    element.ancestors().toArray(),
+    [...element.ancestors()],
     takeWhile(ancestor => !isAncestor(ancestor.id, ctx.subjectId)),
     find(ancestor =>
       ctx.diagramNodes.has(ancestor.id) || ctx.connected[column].has(ancestor.id)
@@ -387,8 +387,8 @@ function layout(
     scope = 'global'
   } else {
     forEach([
-      ...subjectElement.incoming().map(r => r.id),
-      ...subjectElement.outgoing().map(r => r.id),
+      ...[...subjectElement.incoming()].map(r => r.id),
+      ...[...subjectElement.outgoing()].map(r => r.id),
     ], (relationId) => {
       if (!viewRelationships.has(relationId)) {
         notIncludedRelations.add(relationId)
@@ -400,8 +400,8 @@ function layout(
 
   if (scope === 'global') {
     relationships = {
-      incoming: subjectElement.incoming().map(r => r.$relationship).toArray(),
-      outgoing: subjectElement.outgoing().map(r => r.$relationship).toArray(),
+      incoming: [...subjectElement.incoming()].map(r => r.$relationship),
+      outgoing: [...subjectElement.outgoing()].map(r => r.$relationship),
     }
   } else {
     const subjectViewModel = likec4model.view(view.id).node(subjectId)

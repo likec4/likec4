@@ -3,6 +3,7 @@ import type { IteratorLike } from '../types'
 import type { Link, Tag } from '../types/element'
 import type { ModelRelation } from '../types/relation'
 import { commonAncestor } from '../utils/fqn'
+import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { AnyAux } from './types'
@@ -85,5 +86,9 @@ export class RelationshipModel<M extends AnyAux = AnyAux> {
       }
     }
     return
+  }
+
+  public isDeploymentRelation(): this is DeploymentRelationModel<M> {
+    return false
   }
 }

@@ -73,7 +73,7 @@ export function TabPanelStructure({
         messageNode(<Pill radius={'sm'}>no nested</Pill>),
       )
     }
-    let ancestor = element.ancestors().reduce((acc, parent) => ({
+    let ancestor = [...element.ancestors()].reduce((acc, parent) => ({
       label: <ElementLabel type="ancestor" element={parent} />,
       value: parent.id,
       element: parent,

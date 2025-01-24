@@ -95,7 +95,7 @@ function nodeData(
   // Ansector separetely, because we want to inherit
   // color from it if there is no diagram node
   const ancestor = diagramNode ?? pipe(
-    element.ancestors().toArray(),
+    [...element.ancestors()],
     map(ancestor => ctx.diagramNodes.get(ancestor.id)),
     filter(isTruthy),
     first(),
@@ -131,7 +131,7 @@ function createNode(
 
   // Create parent node
   const parent = pipe(
-    element.ancestors().toArray(),
+    [...element.ancestors()],
     takeWhile(ancestor => !isAncestor(ancestor.id, ctx.edge.source) && !isAncestor(ancestor.id, ctx.edge.target)),
     first(),
     found => found ? createNode('compound', found, ctx) : null,
