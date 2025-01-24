@@ -41,6 +41,7 @@ import { MinZoom } from '../../base/const'
 import type { EnabledFeatures } from '../../context'
 import { AllDisabled } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import { relationshipDetailsActor } from '../../overlays/relationship-details/actor'
 import { relationshipsBrowserActor } from '../../overlays/relationships-browser/actor'
 import type { Types } from '../types'
 import { createLayoutConstraints } from '../useLayoutConstraints'
@@ -150,6 +151,7 @@ export const diagramMachine = setup({
     children: {} as {
       hotkey: 'hotkeyActor'
       syncLayout: 'syncManualLayoutActor'
+      relationshipDetails: 'relationshipDetailsActor'
       relationshipsBrowser: 'relationshipsBrowserActor'
     },
     events: {} as Events,
@@ -158,6 +160,7 @@ export const diagramMachine = setup({
     hotkeyActor,
     syncManualLayoutActor,
     relationshipsBrowserActor,
+    relationshipDetailsActor,
   },
   guards: {
     'enabled: FitView': ({ context }) => context.features.enableFitView,
