@@ -2,7 +2,7 @@ import type { DiagramNode } from '@likec4/core'
 import { Box } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import clsx from 'clsx'
-import { m } from 'framer-motion'
+import { type HTMLMotionProps, m } from 'framer-motion'
 import { type PropsWithChildren } from 'react'
 import { clamp, isNumber } from 'remeda'
 import type { NodeProps } from '../../types'
@@ -16,7 +16,9 @@ type Data = Pick<
   | 'style'
 >
 
-type CompoundNodeContainerProps = PropsWithChildren<NodeProps<Data>>
+type CompoundNodeContainerProps = PropsWithChildren<NodeProps<Data>> & {
+  motionProps?: Omit<HTMLMotionProps<'div'>, 'className' | 'style'>
+}
 
 export function CompoundNodeContainer({
   data: {
@@ -26,6 +28,7 @@ export function CompoundNodeContainer({
     ...data
   },
   children,
+  motionProps,
 }: CompoundNodeContainerProps) {
   const isTransparent = isNumber(style.opacity) && style.opacity < 100
   let opacity = clamp((style.opacity ?? 100) / 100, {
@@ -59,6 +62,7 @@ export function CompoundNodeContainer({
         [css.varCompoundOpacity]: opacity.toFixed(2),
         [css.varBorderTransparency]: `${borderTransparency}%`,
       })}
+      {...motionProps}
     >
       <svg className={css.indicator}>
         <rect

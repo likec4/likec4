@@ -1,5 +1,15 @@
 import { computeRelationshipsView } from '@likec4/core/compute-view'
-import type { DiagramEdge, DiagramNode, DiagramView, EdgeId, Fqn, NodeId, Point, ViewId } from '@likec4/core/types'
+import type {
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  EdgeId,
+  ElementKind,
+  Fqn,
+  NodeId,
+  Point,
+  ViewId,
+} from '@likec4/core/types'
 import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
@@ -19,6 +29,7 @@ import {
   pipe,
   prop,
   reduce,
+  sortBy,
   tap,
 } from 'remeda'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
@@ -56,8 +67,9 @@ const Sizes = {
   },
 }
 type NodeData = {
+  column: RelationshipsBrowserTypes.Column
   portId: string
-  element: ElementModel
+  element: ElementModel | null
   isCompound: boolean
   inPorts: string[]
   outPorts: string[]
@@ -130,25 +142,26 @@ function treeFromElements(elements: Iterable<ElementModel>) {
 }
 
 function createNodes(
-  prefix: string,
+  column: RelationshipsBrowserTypes.Column,
   elements: ReadonlySet<ElementModel>,
   g: G,
 ) {
   const graphNodes = new DefaultMap<Fqn, { id: string; portId: string }>(key => ({
-    id: `${prefix}-${key}`,
-    portId: `${prefix}-${key}`,
+    id: `${column}-${key}`,
+    portId: `${column}-${key}`,
   }))
   const tree = treeFromElements(elements)
   for (const element of tree.sorted) {
     const isCompound = tree.children(element).length > 0
     const fqn = element.id
-    const id = `${prefix}-${fqn}`
+    const id = `${column}-${fqn}`
     const portId = isCompound ? `${id}${PortSuffix}` : id
     graphNodes.set(fqn, {
       id,
       portId,
     })
     g.setNode(id, {
+      column,
       element,
       isCompound,
       portId,
@@ -174,7 +187,7 @@ function createNodes(
 
     const parent = tree.parent(element)
     if (parent) {
-      g.setParent(id, `${prefix}-${parent.id}`)
+      g.setParent(id, `${column}-${parent.id}`)
     }
   }
   return {
@@ -228,8 +241,11 @@ export type LayoutRelationshipsViewResult = {
 }
 
 export namespace LayoutRelationshipsViewResult {
+  export const Empty = '@empty' as ElementKind
+
   export type Node = DiagramNode & {
     column: RelationshipsBrowserTypes.Column
+    ports: RelationshipsBrowserTypes.Ports
   }
   export type Edge = DiagramEdge & {
     // column: RelationshipsBrowserTypes.Column
@@ -239,9 +255,9 @@ export namespace LayoutRelationshipsViewResult {
 export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRelationshipsViewResult {
   const g = createGraph()
 
-  const incomers = createNodes('in', data.incomers, g),
-    subjects = createNodes('subject', data.subjects, g),
-    outgoers = createNodes('out', data.outgoers, g)
+  const incomers = createNodes('incomers', data.incomers, g),
+    subjects = createNodes('subjects', data.subjects, g),
+    outgoers = createNodes('outgoers', data.outgoers, g)
 
   const edges = [] as Array<{
     name: string
@@ -314,13 +330,54 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
     }
   }
 
-  const dagreBounds = applyDagreLayout(g)
-
   const nodeIds = [
     ...incomers.graphNodes.values(),
     ...subjects.graphNodes.values(),
     ...outgoers.graphNodes.values(),
   ]
+
+  if (incomers.graphNodes.size == 0) {
+    const id = 'incomers-empty'
+    g.setNode(id, {
+      column: 'incomers',
+      element: null,
+      isCompound: false,
+      portId: id,
+      inPorts: [],
+      outPorts: [],
+      width: Sizes.nodeWidth,
+      height: Sizes.nodeHeight,
+    })
+    for (const subjectNode of subjects.graphNodes.values()) {
+      g.setEdge(id, subjectNode.portId)
+    }
+    nodeIds.push({
+      id,
+      portId: id,
+    })
+  }
+  if (outgoers.graphNodes.size == 0) {
+    const id = 'outgoers-empty'
+    g.setNode(id, {
+      column: 'outgoers',
+      element: null,
+      isCompound: false,
+      portId: id,
+      inPorts: [],
+      outPorts: [],
+      width: Sizes.nodeWidth,
+      height: Sizes.nodeHeight,
+    })
+    for (const subjectNode of subjects.graphNodes.values()) {
+      g.setEdge(subjectNode.portId, id)
+    }
+    nodeIds.push({
+      id,
+      portId: id,
+    })
+  }
+
+  const dagreBounds = applyDagreLayout(g)
 
   // Calculate bounds for all nodes except compounds
   // We shrink compounds to fit their children
@@ -380,13 +437,89 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
     return 1 + Math.max(...children.map(nodeDepth))
   }
 
+  // Sort ports in subject vertically
+  const sortedPorts = (ports: string[]) => {
+    if (ports.length < 2) {
+      return ports
+    }
+    return pipe(
+      ports,
+      map(port => {
+        return {
+          port,
+          topY: nodeBounds(port).position.y,
+        }
+      }),
+      sortBy(prop('topY')),
+      map(prop('port')),
+    )
+  }
+
   // In case we got negative positions
   let minX = 0
   let minY = 0
 
+  const [subject] = [...subjects.root]
+  invariant(subject, 'Subjects should not be empty')
+  let subjectBounds = nodeBounds(subjects.graphNodes.get(subject.id).id)
+  // let subjectBounds = rest.reduce((bounds, el) => {
+  //   const elBounds = nodeBounds(subjects.graphNodes.get(el.id).id)
+  //   return {
+  //     position: {
+  //       x: Math.min(bounds.position.x, elBounds.position.x),
+  //       y: Math.min(bounds.position.y, elBounds.position.y),
+  //     },
+  //     width: Math.max(bounds.width, elBounds.width),
+  //     height: Math.max(bounds.height, elBounds.height),
+  //   }
+  // }, nodeBounds(subjects.graphNodes.get(subject.id).id))
+
   const nodes = nodeIds.map(({ id }): LayoutRelationshipsViewResult.Node => {
-    const { element } = g.node(id)
+    const { element, inPorts, outPorts, column } = g.node(id)
     let { position, width, height } = nodeBounds(id)
+
+    if (!element) {
+      height = Math.min(subjectBounds.height, 300)
+      position.y = subjectBounds.position.y + subjectBounds.height / 2 - height / 2
+      if (column === 'incomers') {
+        width = subjectBounds.position.x - Sizes.emptyNodeOffset - position.x
+      } else {
+        const rightX = position.x + width!
+        position.x = subjectBounds.position.x + subjectBounds.width + Sizes.emptyNodeOffset
+        width = rightX - position.x
+      }
+      return {
+        id: id as NodeId,
+        parent: null,
+        position: [position.x, position.y],
+        title: 'empty',
+        description: null,
+        technology: null,
+        tags: null,
+        links: null,
+        color: 'muted',
+        shape: 'rectangle',
+        style: {},
+        kind: LayoutRelationshipsViewResult.Empty,
+        level: 0,
+        labelBBox: {
+          x: position.x,
+          y: position.y,
+          width: width,
+          height: height,
+        },
+        inEdges: [],
+        outEdges: [],
+        children: [],
+        width,
+        height,
+        column,
+        ports: {
+          in: [],
+          out: [],
+        },
+      }
+    }
     const parentId = g.parent(id)
 
     const children = (g.children(id) as NodeId[] | undefined ?? []).filter(c => !c.endsWith(PortSuffix))
@@ -395,15 +528,6 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
     minY = Math.min(minY, position.y)
 
     const navigateTo = element.defaultView?.id ?? null
-
-    let column: RelationshipsBrowserTypes.Column
-    if (incomers.graphNodes.has(element.id)) {
-      column = 'incomers'
-    } else if (outgoers.graphNodes.has(element.id)) {
-      column = 'outgoers'
-    } else {
-      column = 'subjects'
-    }
 
     return {
       id: id as NodeId,
@@ -436,6 +560,10 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       width,
       height,
       column,
+      ports: {
+        in: sortedPorts(inPorts),
+        out: sortedPorts(outPorts),
+      },
     }
   })
 
@@ -447,20 +575,24 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       height: g.graph().height ?? 100,
     },
     nodes,
-    edges: g.edges().map(e => {
+    edges: g.edges().reduce((acc, e) => {
       const edge = g.edge(e)
       const ename = e.name
-      invariant(ename, `Edge ${e} has no name`)
+      if (!ename) {
+        return acc
+      }
       const { name, source, target, relations } = find(edges, e => e.name === ename)!
       const onlyRelation = only(relations)
       const label = onlyRelation?.title ?? 'untitled'
       const isMultiple = relations.length > 1
       const points = edge.points.map(p => [p.x, p.y] as Point)
-      invariant(hasAtLeast(points, 1), `Edge ${name} has less than 2 points`)
+      if (!hasAtLeast(points, 1)) {
+        return acc
+      }
       const navigateTo = onlyRelation?.navigateTo?.id ?? null
       // edge.points
       // const edge = g.edge(name)
-      return ({
+      acc.push({
         id: name as EdgeId,
         source: source as NodeId,
         target: target as NodeId,
@@ -473,7 +605,8 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
         tail: 'none',
         line: onlyRelation?.$relationship.line ?? 'dashed',
       })
-    }),
+      return acc
+    }, [] as LayoutRelationshipsViewResult.Edge[]),
   }
 }
 

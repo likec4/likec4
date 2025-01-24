@@ -1,5 +1,5 @@
 import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
-import { Box, Stack, Text } from '@mantine/core'
+import { type BoxProps, Box, Stack, Text } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { type XYPosition, EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
@@ -20,9 +20,11 @@ type Data = UndefinedOnPartialDeep<
   >
 >
 
-type EdgeLabelProps = PropsWithChildren<EdgeProps<Data>> & {
-  labelXY?: XYPosition | undefined
-}
+type EdgeLabelProps = PropsWithChildren<
+  BoxProps & EdgeProps<Data> & {
+    labelXY?: XYPosition | undefined
+  }
+>
 
 export function EdgeLabel({
   id,
@@ -36,6 +38,9 @@ export function EdgeLabel({
     ...data
   },
   labelXY,
+  className,
+  style,
+  ...props
 }: EdgeLabelProps) {
   const stepNum = isStepEdgeId(id) ? extractStep(id) : null
 
@@ -56,6 +61,7 @@ export function EdgeLabel({
           css.container,
           css.edgeLabel,
           isDimmed && css.dimmed,
+          className,
         )}
         data-likec4-color={data.color ?? 'gray'}
         data-edge-active={isActive}
@@ -71,7 +77,9 @@ export function EdgeLabel({
             maxWidth: labelBBox.width + 18,
           }),
           zIndex,
+          ...style,
         }}
+        {...props}
       >
         {stepNum !== null && (
           <Box className={css.stepEdgeNumber}>

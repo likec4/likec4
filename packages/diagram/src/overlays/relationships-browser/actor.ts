@@ -9,6 +9,7 @@ import {
   type MachineSnapshot,
   type SnapshotFrom,
   assign,
+  enqueueActions,
   raise,
   setup,
 } from 'xstate'
@@ -96,12 +97,15 @@ export const relationshipsBrowserActor = setup({
       },
       on: {
         'xyflow.nodeClick': {
-          actions: [
-            assign({
-              subject: ({ event }) => event.node.data.fqn,
-            }),
-            raise({ type: 'fitDiagram' }, { delay: 50 }),
-          ],
+          actions: enqueueActions(({ event, enqueue }) => {
+            if ('fqn' in event.node.data) {
+              const fqn = event.node.data.fqn
+              enqueue.assign({
+                subject: fqn,
+              })
+              enqueue.raise({ type: 'fitDiagram' }, { delay: 50 })
+            }
+          }),
         },
         'navigate.to': {
           actions: [

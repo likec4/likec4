@@ -46,7 +46,7 @@ export function DiagramActor({ input, children }: PropsWithChildren<{ input: Act
           },
         })}
         options={{
-          // ...inspector,
+          ...inspector,
           id: `diagram:${input.view.id}`,
           input: {
             xystore,

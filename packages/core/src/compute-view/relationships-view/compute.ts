@@ -1,12 +1,19 @@
 import type { ElementModel } from '../../model/ElementModel'
 import type { LikeC4Model } from '../../model/LikeC4Model'
+import type { RelationshipModel } from '../../model/RelationModel'
 import type { Fqn } from '../../types'
 import { ifind, toSet } from '../../utils/iterable'
 
 export function computeRelationshipsView(
   subjectId: Fqn,
   likec4model: LikeC4Model,
-) {
+): {
+  incomers: Set<ElementModel<LikeC4Model.Any>>
+  incoming: Set<RelationshipModel<LikeC4Model.Any>>
+  subjects: Set<ElementModel<LikeC4Model.Any>>
+  outgoing: Set<RelationshipModel<LikeC4Model.Any>>
+  outgoers: Set<ElementModel<LikeC4Model.Any>>
+} {
   const subject = likec4model.element(subjectId)
   let relationships = {
     incoming: [...subject.incoming()],

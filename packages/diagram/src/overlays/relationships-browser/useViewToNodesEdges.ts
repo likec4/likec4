@@ -2,13 +2,14 @@ import {
   type Fqn,
   DiagramNode,
   ElementKind,
+  invariant,
   nonNullable,
 } from '@likec4/core'
 import { useDeepCompareMemo } from '@react-hookz/web'
 import Queue from 'mnemonist/queue'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
-import type { LayoutRelationshipsViewResult } from './-useRelationshipsView'
+import { LayoutRelationshipsViewResult } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes } from './_types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
@@ -85,15 +86,28 @@ function viewToNodesEdge(
 
     const fqn = DiagramNode.modelRef(node)
     // const deploymentRef = DiagramNode.deploymentRef(node)
-    if (!fqn) {
-      console.error('Invalid node', node)
-      throw new Error('Element should have either modelRef or deploymentRef')
-    }
+    // if (!fqn) {
+    //   console.error('Invalid node', node)
+    //   throw new Error('Element should have either modelRef or deploymentRef')
+    // }
 
     const navigateTo = { navigateTo: node.navigateTo ?? null }
 
     switch (true) {
-      case isCompound: {
+      case node.kind === LayoutRelationshipsViewResult.Empty: {
+        xynodes.push(
+          {
+            ...base,
+            type: 'empty',
+            data: {
+              column: node.column,
+            },
+          },
+        )
+        break
+      }
+
+      case isCompound && !!fqn: {
         xynodes.push(
           {
             ...base,
@@ -106,6 +120,7 @@ function viewToNodesEdge(
               style: node.style,
               depth: node.depth ?? 0,
               icon: node.icon ?? null,
+              ports: node.ports,
               fqn,
               ...navigateTo,
             },
@@ -114,6 +129,7 @@ function viewToNodesEdge(
         break
       }
       default: {
+        invariant(fqn, 'Element should have either modelRef or deploymentRef')
         xynodes.push(
           {
             ...base,
@@ -129,6 +145,7 @@ function viewToNodesEdge(
               color: node.color,
               shape: node.shape,
               icon: node.icon ?? null,
+              ports: node.ports,
               ...navigateTo,
             },
           },
@@ -151,6 +168,8 @@ function viewToNodesEdge(
       type: 'relationships',
       source: ns + source,
       target: ns + target,
+      sourceHandle: ns + target,
+      targetHandle: ns + source,
       zIndex: ZIndexes.Edge,
       // selectable: selectable,
       // hidden: !visiblePredicate(edge),

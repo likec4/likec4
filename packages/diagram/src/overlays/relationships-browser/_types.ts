@@ -4,6 +4,14 @@ import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base
 export namespace RelationshipsBrowserTypes {
   export type Column = 'incomers' | 'subjects' | 'outgoers'
 
+  /**
+   * The node's incoming and outgoing ports
+   */
+  export type Ports = {
+    in: string[]
+    out: string[]
+  }
+
   export type ElementNodeData = Base.NodeData<
     & NonOptional<
       Pick<
@@ -22,6 +30,7 @@ export namespace RelationshipsBrowserTypes {
       column: Column
       fqn: Fqn
       icon: string | null
+      ports: Ports
     }
   >
 
@@ -40,6 +49,7 @@ export namespace RelationshipsBrowserTypes {
       fqn: Fqn
       depth: number
       icon: string | null
+      ports: Ports
     }
   >
 
@@ -49,9 +59,14 @@ export namespace RelationshipsBrowserTypes {
 
   // export type NonEmptyNode = ElementNode | CompoundNode
 
-  // export type EmptyNode = AddNodeData<SharedFlowTypes.EmptyNode, RelationshipsOfNodeData>
+  export type EmptyNodeData = Base.NodeData<{
+    column: Column
+  }>
 
-  export type Node = ElementNode | CompoundNode
+  export type EmptyNode = ReactFlowNode<EmptyNodeData, 'empty'>
+
+  export type Node = ElementNode | CompoundNode | EmptyNode
+  export type NodeData = Node['data']
 
   /**
    * Data that is exclusive to the relationships-of overlay. It will be merged into the edge types

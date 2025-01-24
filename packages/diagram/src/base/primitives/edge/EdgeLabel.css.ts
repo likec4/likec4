@@ -31,7 +31,7 @@ export const stepEdgeNumber = style({
 export const varLabelX = createVar('label-x')
 export const varLabelY = createVar('label-y')
 
-const varTranslate = createVar('translate')
+export const varTranslate = createVar('translate')
 
 export const edgeLabel = style({
   top: 0,

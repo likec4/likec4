@@ -33,7 +33,7 @@ function ViewReact() {
   return (
     <LikeC4DiagramV2
       view={view}
-      readonly
+      readonly={false}
       zoomable
       pannable
       controls
@@ -45,7 +45,7 @@ function ViewReact() {
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser
-      experimentalEdgeEditing={false}
+      experimentalEdgeEditing
       showNotations={isDevelopment || hasNotations}
       // nodesSelectable
       renderIcon={RenderIcon}

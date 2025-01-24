@@ -1,7 +1,7 @@
 import type { DiagramNode } from '@likec4/core'
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
-import { m } from 'framer-motion'
+import { type HTMLMotionProps, m } from 'framer-motion'
 import { type PropsWithChildren } from 'react'
 import type { NodeProps } from '../../types'
 import * as css from './ElementNodeContainer.css'
@@ -12,7 +12,9 @@ type Data = Pick<
   | 'shape'
 >
 
-type ElementNodeContainerProps = PropsWithChildren<NodeProps<Data>>
+type ElementNodeContainerProps = PropsWithChildren<NodeProps<Data>> & {
+  motionProps?: Omit<HTMLMotionProps<'div'>, 'className' | 'style'>
+}
 
 export function ElementNodeContainer({
   selected = false,
@@ -23,6 +25,7 @@ export function ElementNodeContainer({
     ...data
   },
   children,
+  motionProps,
 }: ElementNodeContainerProps) {
   let scale = 1
   switch (true) {
@@ -52,6 +55,7 @@ export function ElementNodeContainer({
       data-hovered={isHovered}
       data-likec4-color={data.color}
       data-likec4-shape={data.shape}
+      {...motionProps}
     >
       {children}
     </Box>

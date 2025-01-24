@@ -1,6 +1,7 @@
 import { useCallbackRef } from '@mantine/hooks'
 import { ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react'
 import clsx from 'clsx'
+import { LayoutGroup } from 'framer-motion'
 import { memo, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
@@ -90,7 +91,7 @@ const RelationshipsBrowserInner = memo(() => {
   // })
 
   return (
-    <DiagramFeatures.Overlays>
+    <LayoutGroup>
       <BaseXYFlow<Types.Node, Types.Edge>
         id="relationships-browser"
         nodes={nodes}
@@ -121,6 +122,6 @@ const RelationshipsBrowserInner = memo(() => {
         pannable
         zoomable
       />
-    </DiagramFeatures.Overlays>
+    </LayoutGroup>
   )
 })
