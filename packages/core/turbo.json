@@ -1,0 +1,17 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "package": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        "package.tgz"
+      ],
+      "outputLogs": "new-only"
+    }
+  }
+}

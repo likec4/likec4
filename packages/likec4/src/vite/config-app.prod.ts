@@ -51,7 +51,13 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     clearScreen: false,
     base,
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/client',
+      ],
       alias: {
         ...viteAliases(),
         'likec4/previews': likec4AssetsDir,
@@ -61,6 +67,14 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     mode: 'production',
     optimizeDeps: {
       force: true,
+      include: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/client',
+      ],
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
@@ -79,14 +93,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       minify: true,
       copyPublicDir: true,
       chunkSizeWarningLimit,
-      commonjsOptions: {
-        defaultIsModuleExports: (id: string) => {
-          if (id.includes('react')) {
-            return true
-          }
-          return 'auto'
-        },
-      },
       rollupOptions: {
         treeshake: {
           preset: 'recommended',

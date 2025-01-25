@@ -16,7 +16,8 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "rm -r -f dist"
+    "clean": "rm -r -f dist",
+    "package": "yarn pack"
   },
   "files": [
     "dist",
