@@ -1,10 +1,3 @@
-import DefaultMap from 'mnemonist/default-map'
-import LinkedList from 'mnemonist/linked-list'
-import Queue from 'mnemonist/queue'
-import Stack from 'mnemonist/stack'
-
-export { DefaultMap, LinkedList, Queue, Stack }
-
 export {
   commonHead,
 } from './common-head'

@@ -5,11 +5,10 @@ export default defineBuildConfig({
   stub: false,
   declaration: true,
   rollup: {
+    emitCJS: true,
     inlineDependencies: true,
     output: {
       hoistTransitiveImports: false,
-      chunkFileNames: 'shared/[name].[hash].js',
-      entryFileNames: '[name].js',
     },
     commonjs: {
       exclude: [

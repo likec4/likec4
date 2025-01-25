@@ -2,7 +2,7 @@ import type { ExclusiveUnion, NonEmptyArray } from '@likec4/core'
 import { useCustomCompareEffect } from '@react-hookz/web'
 import { type PropsWithChildren, createContext, useContext, useState } from 'react'
 import { map, mapToObj, pick } from 'remeda'
-import { depsShallowEqual } from '../hooks'
+import { depsShallowEqual } from '../hooks/useUpdateEffect'
 
 const FeatureNames = [
   'Controls',

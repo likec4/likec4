@@ -21,7 +21,7 @@
   "bin": "./bin/likec4.mjs",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "sources": "./src/index.ts",
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
