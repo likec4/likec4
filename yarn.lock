@@ -1901,7 +1901,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@likec4/core@workspace:*, @likec4/core@workspace:packages/core":
+"@likec4/core@workspace:*, @likec4/core@workspace:packages/core, @likec4/core@workspace:~":
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
@@ -8860,7 +8860,7 @@ __metadata:
   dependencies:
     "@fontsource/ibm-plex-sans": "npm:^5.1.1"
     "@hpcc-js/wasm-graphviz": "npm:1.7.0"
-    "@likec4/core": "workspace:*"
+    "@likec4/core": "workspace:~"
     "@likec4/diagram": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/icons": "workspace:*"
