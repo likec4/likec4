@@ -36,7 +36,7 @@ export const varTranslate = createVar('translate')
 export const edgeLabel = style({
   top: 0,
   left: 0,
-  padding: '2px 4px 4px 4px',
+  padding: '3px 5px 5px 5px',
   fontFamily: vars.likec4.font,
   display: 'flex',
   position: 'absolute',
@@ -49,6 +49,7 @@ export const edgeLabel = style({
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: labelBorderRadius,
   transform: varTranslate,
+  transition: transitions.fast,
   vars: {
     [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`,
   },

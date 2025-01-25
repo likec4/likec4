@@ -100,8 +100,17 @@ views {
 
     link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
 
-    customer -> ui.dashboard 'opens'
-    ui.dashboard -> cloud.graphql 'requests'
+    customer -> ui.dashboard 'opens' {
+      notes '
+        Customer opens dashboard in Browser
+      '
+    }
+    ui.dashboard -> cloud.graphql 'requests' {
+      notes '
+        Next notes
+        Multi line
+      '
+    }
     ui.dashboard <- cloud.graphql 'returns'
 
     ui.mobile -> cloud.graphql 'requests'

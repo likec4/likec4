@@ -48,7 +48,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
     from: '/view/$viewId',
   })
   const router = useRouter()
-  const diagram = useLikeC4Model(true).view(viewId).$view
+  const diagram = useLikeC4Model(true).findView(viewId)?.$view
 
   const tree = useTree({
     multiple: false,

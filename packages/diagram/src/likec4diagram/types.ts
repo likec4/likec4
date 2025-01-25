@@ -130,6 +130,7 @@ export namespace Types {
         | 'head'
         | 'tail'
         | 'navigateTo'
+        | 'notes'
       >
     > & {
       labelXY: XYPosition | null

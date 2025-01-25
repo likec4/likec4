@@ -1,5 +1,6 @@
 import {
   type EdgeId,
+  isStepEdgeId,
   nonNullable,
 } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
@@ -16,6 +17,7 @@ import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import * as edgesCss from './edges.css'
+import { NotePopover } from './NotePopover'
 import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
 
@@ -286,6 +288,28 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     e.stopPropagation()
   }
 
+  let renderLabel: undefined | ((props: any) => any)
+  if (!isControlPointDragging) {
+    const notes = props.data.notes
+    if (notes && isStepEdgeId(props.id) && diagram.getState().context.activeWalkthrough?.stepId === props.id) {
+      renderLabel = (props: any) => (
+        <NotePopover notes={notes}>
+          <div {...props} />
+        </NotePopover>
+      )
+    } else if (enableRelationshipDetails) {
+      renderLabel = (props: any) => (
+        <RelationshipsDropdownMenu
+          sourceNode={sourceNode}
+          targetNode={targetNode}
+          disabled={!!dimmed}
+          edgeId={edgeId}>
+          <div {...props} />
+        </RelationshipsDropdownMenu>
+      )
+    }
+  }
+
   return (
     <EdgeContainer {...props} className={clsx(isControlPointDragging && edgesCss.controlDragging)}>
       <EdgePath {...props} svgPath={edgePath} ref={svgPathRef} onEdgePointerDown={onEdgePointerDown} />
@@ -313,17 +337,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
           x: labelX,
           y: labelY,
         }}
-        {...enableRelationshipDetails && !isControlPointDragging && {
-          renderRoot: (props) => (
-            <RelationshipsDropdownMenu
-              sourceNode={sourceNode}
-              targetNode={targetNode}
-              disabled={!!dimmed}
-              edgeId={edgeId}>
-              <div {...props} />
-            </RelationshipsDropdownMenu>
-          ),
-        }}
+        {...renderLabel && { renderRoot: renderLabel }}
       >
         {!isControlPointDragging && enableNavigateTo && navigateTo && (
           <EdgeActionButton
