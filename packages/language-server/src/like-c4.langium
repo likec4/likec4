@@ -793,7 +793,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (

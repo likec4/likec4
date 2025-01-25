@@ -241,6 +241,12 @@ describe.concurrent('specification', () => {
       specification {
         tag epic_123
       }`
+
+    test('tags with reserved words').valid`
+      specification {
+        tag source
+        tag target
+      }`
   })
 
   describe('for relationshipKinds', () => {

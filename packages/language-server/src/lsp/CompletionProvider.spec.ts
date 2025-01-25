@@ -1,6 +1,6 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { map, prop, take } from 'remeda'
-import { describe, type ExpectStatic, it } from 'vitest'
+import { type ExpectStatic, describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
@@ -36,40 +36,40 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'views',
         'global',
         'deployment',
-        'likec4lib'
-      ]
+        'likec4lib',
+      ],
     })
 
     await completion({
       text,
       index: 1,
-      expectedItems: ['specification']
+      expectedItems: ['specification'],
     })
 
     await completion({
       text,
       index: 2,
-      expectedItems: ['element', 'tag', 'relationship', 'color', 'deploymentNode']
+      expectedItems: ['element', 'tag', 'relationship', 'color', 'deploymentNode'],
     })
     await completion({
       text,
       index: 3,
-      expectedItems: ['element']
+      expectedItems: ['element'],
     })
     await completion({
       text,
       index: 4,
-      expectedItems: ['technology', 'notation', 'style']
+      expectedItems: ['technology', 'notation', 'style'],
     })
     await completion({
       text,
       index: 5,
-      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon']
+      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon'],
     })
     await completion({
       text,
       index: 6,
-      expectedItems: ['rectangle', 'person', 'browser', 'mobile', 'cylinder', 'storage', 'queue']
+      expectedItems: ['rectangle', 'person', 'browser', 'mobile', 'cylinder', 'storage', 'queue'],
     })
     await completion({
       text,
@@ -86,8 +86,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'red',
         'gray',
         'green',
-        'amber'
-      ]
+        'amber',
+      ],
     })
   })
 
@@ -114,12 +114,12 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       assert: completions => {
         expect(completions.items).not.to.be.empty
         expect(pluck('label', completions.items)).to.include.members(['actor', 'system', 'extend'])
-      }
+      },
     })
     await completion({
       text,
       index: 1,
-      expectedItems: ['actor']
+      expectedItems: ['actor'],
     })
     await completion({
       text,
@@ -132,31 +132,36 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           'description',
           'link',
           'style',
-          'sys'
+          'sys',
         ])
-      }
+      },
     })
     await completion({
       text,
       index: 3,
-      expectedItems: ['title', 'technology']
+      expectedItems: [
+        'title',
+        'technology',
+        // target is reserved keyword and suggested as id new element
+        'target',
+      ],
     })
     // sys = <|>s<|>ystem {
     await completion({
       text,
       index: 4,
-      expectedItems: ['actor', 'system']
+      expectedItems: ['actor', 'system'],
     })
     await completion({
       text,
       index: 5,
-      expectedItems: ['system']
+      expectedItems: ['system'],
     })
     // -> <|>customer
     await completion({
       text,
       index: 6,
-      expectedItems: ['customer', 'sys']
+      expectedItems: ['customer', 'sys'],
     })
   })
 
@@ -195,10 +200,10 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           'style',
           'actor',
           'system',
-          'metadata'
+          'metadata',
         ])
         expect(labels).not.to.include.members(['extend'])
-      }
+      },
     })
     await completion({
       text,
@@ -209,10 +214,10 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         expect(labels).to.include.members([
           '#tag1',
           '#tag2',
-          '#tag3'
+          '#tag3',
         ])
         expect(labels).not.to.include.members(['extend'])
-      }
+      },
     })
     await completion({
       text,
@@ -223,9 +228,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           'customer',
           'extend',
           'actor',
-          'system'
+          'system',
         ])
-      }
+      },
     })
   })
 
@@ -247,8 +252,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       text,
       index: 0,
       expectedItems: [
-        '.uses'
-      ]
+        '.uses',
+      ],
     })
   })
 
@@ -280,24 +285,24 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       text,
       index: 0,
       expectedItems: ['root', 'cloud', 'cloud2', 'c1', 'c2', 'notunique'],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 1,
       expectedItems: ['c1', 'c2'],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 2,
       expectedItems: ['c2', 'notunique'],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 3,
-      expectedItems: ['notunique']
+      expectedItems: ['notunique'],
     })
   })
   it('should suggest nested elements inside view predicates', async ({ expect }) => {
@@ -336,9 +341,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'global',
         'group',
         'style',
-        'autoLayout'
+        'autoLayout',
       ],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
@@ -349,21 +354,21 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'b1',
         'b2',
         'element.tag',
-        'element.kind'
+        'element.kind',
       ],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 2,
       expectedItems: ['a', 'b1', 'b2'],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 3,
       expectedItems: ['b1', 'b2'],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
@@ -376,9 +381,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'global',
         'group',
         'style',
-        'autoLayout'
+        'autoLayout',
       ],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
   })
 
@@ -394,19 +399,19 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           const first = take(completions.items, 2)
           expect(pluck('label', first)).toEqual([
             '#tag1',
-            '#tag2'
+            '#tag2',
           ])
         },
-        disposeAfterCheck: true
+        disposeAfterCheck: true,
       })
       await completion({
         text,
         index: 1,
         expectedItems: [
           '#tag1',
-          '#tag2'
+          '#tag2',
         ],
-        disposeAfterCheck: true
+        disposeAfterCheck: true,
       })
       await completion({
         text,
@@ -416,10 +421,10 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           const first = take(completions.items, 2)
           expect(pluck('label', first)).toEqual([
             'service',
-            'component'
+            'component',
           ])
         },
-        disposeAfterCheck: true
+        disposeAfterCheck: true,
       })
     }
 
@@ -454,7 +459,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           }
         }
       `,
-        expect
+        expect,
       )
     })
 
@@ -491,7 +496,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
           }
         }
       `,
-        expect
+        expect,
       )
     })
   })
@@ -533,9 +538,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'global',
         'group',
         'style',
-        'autoLayout'
+        'autoLayout',
       ],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
@@ -550,15 +555,15 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'shape',
         'border',
         'opacity',
-        'icon'
+        'icon',
       ],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 2,
       expectedItems: ['index', 'view2', 'view3'],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
   })
 
@@ -596,9 +601,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'global',
         'group',
         'style',
-        'autoLayout'
+        'autoLayout',
       ],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
@@ -613,15 +618,15 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'color',
         'line',
         'head',
-        'tail'
+        'tail',
       ],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 2,
       expectedItems: ['view3'],
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
   })
 
@@ -651,17 +656,17 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         const first = take(completions.items, 2)
         expect(pluck('label', first)).toEqual([
           '#deprecated',
-          '#experimental'
+          '#experimental',
         ])
       },
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
 
     // #<|>deprecated
     await completion({
       text,
       index: 1,
-      expectedItems: ['#deprecated', '#experimental']
+      expectedItems: ['#deprecated', '#experimental'],
     })
     // > c1 <|>
     await completion({
@@ -672,10 +677,10 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         const first = take(completions.items, 2)
         expect(pluck('label', first)).toEqual([
           '#deprecated',
-          '#experimental'
+          '#experimental',
         ])
       },
-      disposeAfterCheck: true
+      disposeAfterCheck: true,
     })
   })
 
@@ -718,7 +723,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       assert: completions => {
         expect(completions.items).not.to.be.empty
         expect(pluck('label', completions.items)).to.include.members(['env', 'node'])
-      }
+      },
     })
 
     await completion({
@@ -726,8 +731,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       index: 1,
       expectedItems: [
         'env',
-        'node'
-      ]
+        'node',
+      ],
     })
 
     await completion({
@@ -735,8 +740,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       index: 2,
       expectedItems: [
         'c1',
-        'c2'
-      ]
+        'c2',
+      ],
     })
 
     await completion({
@@ -745,8 +750,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       expectedItems: [
         'n1',
         'n2',
-        'i1'
-      ]
+        'i1',
+      ],
     })
 
     await completion({
@@ -756,8 +761,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'dev',
         'n1',
         'n2',
-        'i1'
-      ]
+        'i1',
+      ],
     })
 
     await completion({
@@ -769,8 +774,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'n2',
         'i1',
         'c1',
-        'c2'
-      ]
+        'c2',
+      ],
     })
 
     await completion({
@@ -779,8 +784,8 @@ describe.concurrent('LikeC4CompletionProvider', () => {
       expectedItems: [
         'n1',
         'n2',
-        'i1'
-      ]
+        'i1',
+      ],
     })
   })
 })
