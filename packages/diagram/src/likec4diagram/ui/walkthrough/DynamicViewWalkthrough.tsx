@@ -8,7 +8,9 @@ import {
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { isNonNull, isTruthy } from 'remeda'
-import { useDiagram, useDiagramContext, useXYStore } from '../../../hooks'
+import { useXYStore } from '../../../hooks'
+import { useDiagram } from '../../../hooks/useDiagram'
+import { useDiagramContext } from '../../../hooks/useDiagramContext'
 import * as css from './DynamicViewWalkthrough.css'
 
 export function DynamicViewWalkthrough() {

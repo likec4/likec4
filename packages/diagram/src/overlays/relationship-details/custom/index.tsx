@@ -16,7 +16,7 @@ import {
   ElementTitle,
 } from '../../../base/primitives'
 import { useEnabledFeature } from '../../../context'
-import { useDiagram } from '../../../hooks'
+import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 import { ElementActions } from './ElementActions'
 

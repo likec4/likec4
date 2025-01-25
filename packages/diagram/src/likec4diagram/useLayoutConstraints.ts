@@ -3,9 +3,10 @@ import { type InternalNode as RFInternalNode, type NodeChange, type OnNodeDrag, 
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { filter, hasAtLeast, isNullish, map, pipe } from 'remeda'
-import { type XYStoreApi, useDiagram, useXYStoreApi } from '../hooks'
+import { type XYStoreApi, useXYStoreApi } from '../hooks'
 // import { type XYStoreApi } from '../hooks/useXYFlow'
 import { useSyncedRef } from '@react-hookz/web'
+import { useDiagram } from '../hooks/useDiagram'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.Node>

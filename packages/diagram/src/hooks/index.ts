@@ -1,8 +1,4 @@
 export { useCurrentViewId } from './useCurrentViewId'
-export { useDiagram } from './useDiagram'
-export { useDiagramActor } from './useDiagramActor'
-export { useDiagramActorState, useDiagramSyncLayoutState } from './useDiagramActorState'
-export { useDiagramContext } from './useDiagramContext'
 export type { DiagramContext } from './useDiagramContext'
 export { useMantinePortalProps } from './useMantinePortalProps'
 export { useSetState } from './useSetState'

@@ -2,7 +2,7 @@ import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
 import { useEnabledFeature } from '../../../context/DiagramFeatures'
-import { useDiagram } from '../../../hooks'
+import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes as Types } from '../_types'
 import { useRelationshipsBrowser } from '../hooks'
 
