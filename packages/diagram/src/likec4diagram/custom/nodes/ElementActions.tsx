@@ -3,7 +3,7 @@ import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
 import { useEnabledFeature } from '../../../context'
-import { useDiagram } from '../../../hooks2/useDiagram'
+import { useDiagram } from '../../../hooks/useDiagram'
 import type { Types } from '../../types'
 
 type ElementActionsProps = NodeProps<Types.ElementNodeData>

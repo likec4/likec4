@@ -7,7 +7,7 @@ import { keys } from 'remeda'
 import type { MergeExclusive } from 'type-fest'
 import type { NodeProps } from '../../../../base'
 import { useDiagramEventHandlers } from '../../../../context'
-import { useDiagram } from '../../../../hooks2'
+import { useDiagram } from '../../../../hooks'
 import type { Types } from '../../../types'
 
 export type OnStyleChange = (style: ViewChange.ChangeElementStyle['style']) => void

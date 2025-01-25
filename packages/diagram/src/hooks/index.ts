@@ -1,13 +1,11 @@
-import type { ViewId } from '@likec4/core'
-import { type DiagramContext, useDiagramContext } from '../hooks2'
-
-export * from './useDiagramState'
-export * from './useMantinePortalProps'
-export * from './useSetState'
-export * from './useUpdateEffect'
-export * from './useXYFlow'
-
-const selectViewId = (state: DiagramContext) => state.view.id
-export function useCurrentViewId(): ViewId {
-  return useDiagramContext(selectViewId)
-}
+export { useCurrentViewId } from './useCurrentViewId'
+export { useDiagram } from './useDiagram'
+export { useDiagramActor } from './useDiagramActor'
+export { useDiagramActorState, useDiagramSyncLayoutState } from './useDiagramActorState'
+export { useDiagramContext } from './useDiagramContext'
+export type { DiagramContext } from './useDiagramContext'
+export { useMantinePortalProps } from './useMantinePortalProps'
+export { useSetState } from './useSetState'
+export { depsShallowEqual, useUpdateEffect } from './useUpdateEffect'
+export { useXYFlow, useXYInternalNode, useXYStore, useXYStoreApi } from './useXYFlow'
+export type { XYStoreApi } from './useXYFlow'

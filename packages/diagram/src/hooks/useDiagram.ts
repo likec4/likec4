@@ -1,9 +1,9 @@
 import type { EdgeId, Fqn, NodeId, ViewId } from '@likec4/core'
 import { useMemo, useTransition } from 'react'
 import type { PartialDeep } from 'type-fest'
+import { useDiagramActor } from '../hooks/useDiagramActor'
 import type { AlignmentMode } from '../likec4diagram/state/aligners'
 import type { Types } from '../likec4diagram/types'
-import { useDiagramActor } from './useDiagramActor'
 
 export function useDiagram() {
   const actor = useDiagramActor()
@@ -93,6 +93,18 @@ export function useDiagram() {
 
     getDiagramEdge: (edgeId: EdgeId) => {
       return actor.getSnapshot().context.view.edges.find(e => e.id === edgeId) ?? null
+    },
+
+    startWalkthrough: () => {
+      actor.send({ type: 'walkthrough.start' })
+    },
+
+    walkthroughStep: (direction: 'next' | 'previous' = 'next') => {
+      actor.send({ type: 'walkthrough.step', direction })
+    },
+
+    stopWalkthrough: () => {
+      actor.send({ type: 'walkthrough.end' })
     },
   }), [actor])
 }

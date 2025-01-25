@@ -15,7 +15,6 @@ import {
 } from '@likec4/core'
 import { useMemo } from 'react'
 import { filter, first, forEach, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
-import { useDiagramContext } from '../../hooks2'
 import { useLikeC4Model } from '../../likec4model'
 import type { RelationshipDetailsTypes } from './_types'
 

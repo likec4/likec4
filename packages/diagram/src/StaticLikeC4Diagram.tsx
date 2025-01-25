@@ -1,5 +1,5 @@
+import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
-import { LikeC4DiagramV2 } from './likec4diagram/LikeC4Diagram'
 
 export type StaticLikeC4DiagramProps = Pick<
   LikeC4DiagramProperties,
@@ -28,7 +28,7 @@ export function StaticLikeC4Diagram({
   ...rest
 }: StaticLikeC4DiagramProps) {
   return (
-    <LikeC4DiagramV2
+    <LikeC4Diagram
       view={view}
       readonly
       fitView={fitView}

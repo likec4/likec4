@@ -1,47 +1,20 @@
-import { useInternalNode, useNodesData, useReactFlow, useStore, useStoreApi } from '@xyflow/react'
-import { deepEqual, shallowEqual } from 'fast-equals'
-import { useCallback } from 'react'
-import type { DiagramFlowTypes } from '../xyflow/types'
+import { type ReactFlowState, useInternalNode, useReactFlow, useStore, useStoreApi } from '@xyflow/react'
+import { shallowEqual } from 'fast-equals'
+import type { Types } from '../likec4diagram/types'
 
-export const useXYFlow = useReactFlow<DiagramFlowTypes.Node, DiagramFlowTypes.Edge>
-
-export const useXYNodesData = useNodesData<DiagramFlowTypes.Node>
-export const useXYInternalNode = useInternalNode<DiagramFlowTypes.Node>
+export const useXYFlow = useReactFlow<Types.Node, Types.Edge>
 
 export function useXYStore<StateSlice = unknown>(
-  selector: (state: DiagramFlowTypes.XYFlowState) => StateSlice,
-  equalityFn?: (a: StateSlice, b: StateSlice) => boolean
+  selector: (state: ReactFlowState<Types.Node, Types.Edge>) => StateSlice,
+  equalityFn?: (a: StateSlice, b: StateSlice) => boolean,
 ): StateSlice {
   return useStore(
     selector as any,
-    equalityFn ?? shallowEqual
+    equalityFn ?? shallowEqual,
   )
 }
-export const useXYStoreApi = useStoreApi<DiagramFlowTypes.Node, DiagramFlowTypes.Edge>
+
+export const useXYStoreApi = useStoreApi<Types.Node, Types.Edge>
 export type XYStoreApi = ReturnType<typeof useXYStoreApi>
 
-export function useXYEdgesData(edgeIds: string[]): Pick<DiagramFlowTypes.Edge, 'id' | 'data'>[] {
-  const ids = edgeIds.join(',')
-  const edgesData = useXYStore(
-    useCallback(
-      (s) => {
-        const data = [] as Pick<DiagramFlowTypes.Edge, 'id' | 'data'>[]
-        for (const id of edgeIds) {
-          const edge = s.edgeLookup.get(id)
-          if (edge) {
-            data.push({
-              id: edge.id,
-              data: edge.data
-            })
-          }
-        }
-
-        return data
-      },
-      [ids]
-    ),
-    deepEqual
-  )
-
-  return edgesData
-}
+export const useXYInternalNode = useInternalNode<Types.Node>

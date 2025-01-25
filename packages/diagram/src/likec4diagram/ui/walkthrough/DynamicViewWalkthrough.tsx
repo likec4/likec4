@@ -1,73 +1,51 @@
-import { nonNullable } from '@likec4/core'
 import { Badge, Box, Button, ButtonGroup } from '@mantine/core'
-import { useHotkeys } from '@mantine/hooks'
 import {
   IconPlayerPlayFilled,
   IconPlayerSkipBackFilled,
   IconPlayerSkipForwardFilled,
-  IconPlayerStopFilled
+  IconPlayerStopFilled,
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
-import { first, isNonNull, isTruthy } from 'remeda'
-import { useDiagramState, useDiagramStoreApi, useXYStore } from '../hooks'
+import { isNonNull, isTruthy } from 'remeda'
+import { useDiagram, useDiagramContext, useXYStore } from '../../../hooks'
 import * as css from './DynamicViewWalkthrough.css'
 
 export function DynamicViewWalkthrough() {
   const isMobile = useXYStore(s => s.width <= 750)
   const {
-    nextDynamicStep,
-    stopDynamicView,
     isActive,
     isParallel,
     hasNext,
-    hasPrevious
-  } = useDiagramState(s => ({
-    nextDynamicStep: s.nextDynamicStep,
-    stopDynamicView: s.stopWalkthrough,
+    hasPrevious,
+  } = useDiagramContext(s => ({
     isActive: isNonNull(s.activeWalkthrough),
     isParallel: isTruthy(s.activeWalkthrough?.parallelPrefix),
-    hasNext: s.activeWalkthrough?.hasNext ?? false,
-    hasPrevious: s.activeWalkthrough?.hasPrevious ?? false
+    hasNext: s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) < s.xyedges.length - 1,
+    hasPrevious: s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) > 0,
   }))
-  const diagramApi = useDiagramStoreApi()
-
-  useHotkeys(
-    isActive
-      ? [
-        ['ArrowLeft', () => nextDynamicStep(-1)],
-        ['ArrowRight', () => nextDynamicStep()],
-        ['Escape', (e) => {
-          e.stopImmediatePropagation()
-          stopDynamicView()
-        }, { preventDefault: true }]
-      ]
-      : [
-        ['ArrowLeft', () => nextDynamicStep()],
-        ['ArrowRight', () => nextDynamicStep()]
-      ]
-  )
+  const diagram = useDiagram()
 
   const buttonProps = {
     className: css.btn,
     size: isMobile ? 'compact-md' : 'lg',
-    radius: isMobile ? 'lg' : 'xl'
+    radius: isMobile ? 'lg' : 'xl',
   }
 
-  const startWalkthrough = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    const {
-      xyedges,
-      activateWalkthrough
-    } = diagramApi.getState()
-    const firstEdge = nonNullable(first(xyedges), 'expected at least one edge')
-    activateWalkthrough(firstEdge.data.edge.id)
-  }
+  // const startWalkthrough = (e: React.MouseEvent) => {
+  //   e.stopPropagation()
+  //   const {
+  //     xyedges,
+  //     activateWalkthrough
+  //   } = diagramApi.getState()
+  //   const firstEdge = nonNullable(first(xyedges), 'expected at least one edge')
+  //   activateWalkthrough(firstEdge.data.edge.id)
+  // }
 
-  const nextStep = (increment = 1) => (e: React.MouseEvent) => {
-    e.stopPropagation()
-    nextDynamicStep(increment)
-  }
+  // const nextStep = (increment = 1) => (e: React.MouseEvent) => {
+  //   e.stopPropagation()
+  //   nextDynamicStep(increment)
+  // }
 
   return (
     <AnimatePresence>
@@ -93,7 +71,7 @@ export function DynamicViewWalkthrough() {
               {...buttonProps}
               className={clsx(css.buttons, css.btn)}
               rightSection={<IconPlayerPlayFilled />}
-              onClick={startWalkthrough}
+              onClick={() => diagram.startWalkthrough()}
               px={'xl'}>
               Start
             </Button>
@@ -106,7 +84,7 @@ export function DynamicViewWalkthrough() {
             animate={{ opacity: 1, transform: 'translateY(0)' }}
             exit={{
               opacity: 0,
-              transform: 'translateY(20px)'
+              transform: 'translateY(20px)',
             }}
             variant="gradient"
             size={isMobile ? 'xs' : 'md'}
@@ -121,7 +99,7 @@ export function DynamicViewWalkthrough() {
               {...buttonProps}
               pl={'lg'}
               disabled={!hasPrevious}
-              onClick={nextStep(-1)}>
+              onClick={() => diagram.walkthroughStep('previous')}>
               <IconPlayerSkipBackFilled />
             </Button>
 
@@ -130,7 +108,7 @@ export function DynamicViewWalkthrough() {
               px={hasNext ? 'md' : 'xl'}
               onClick={e => {
                 e.stopPropagation()
-                stopDynamicView()
+                diagram.stopWalkthrough()
               }}>
               {hasNext && <IconPlayerStopFilled />}
               {!hasNext && 'End'}
@@ -139,7 +117,7 @@ export function DynamicViewWalkthrough() {
               <Button
                 {...buttonProps}
                 pr={'lg'}
-                onClick={nextStep()}>
+                onClick={() => diagram.walkthroughStep('next')}>
                 <IconPlayerSkipForwardFilled />
               </Button>
             )}

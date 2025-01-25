@@ -364,3 +364,21 @@ export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramC
     }),
   }
 }
+
+export function updateActiveWalkthrough({ context }: ActionArg): Partial<DiagramContext> {
+  const { stepId, parallelPrefix } = nonNullable(context.activeWalkthrough, 'activeWalkthrough is null')
+  const step = nonNullable(context.xyedges.find(x => x.id === stepId))
+  return {
+    xyedges: context.xyedges.map(edge => {
+      const active = stepId === edge.id || (!!parallelPrefix && edge.id.startsWith(parallelPrefix))
+      return Base.setData(edge, {
+        active,
+        dimmed: !active,
+      })
+    }),
+    xynodes: context.xynodes.map(node => {
+      const active = step.source === node.id || step.target === node.id
+      return Base.setDimmed(node, !active)
+    }),
+  }
+}

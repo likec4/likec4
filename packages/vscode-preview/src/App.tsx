@@ -1,4 +1,4 @@
-import { LikeC4DiagramV2 } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { Box, Button, Group, Loader, LoadingOverlay, Notification, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
@@ -74,7 +74,7 @@ export default function App() {
           visible={isLoading}
           zIndex={1000}
           overlayProps={{ blur: 1, backgroundOpacity: 0.1 }} />
-        <LikeC4DiagramV2
+        <LikeC4Diagram
           view={view}
           fitViewPadding={0.09}
           readonly={false}

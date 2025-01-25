@@ -1,3 +1,4 @@
+// @ts-ignore
 import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
 import {
   ActionIcon,
@@ -22,11 +23,10 @@ import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { useState } from 'react'
 import { ceil, isNonNullish, isNullish } from 'remeda'
-import { useXYStore } from '../../hooks'
-import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../../hooks/useDiagramState'
-import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import { vars } from '../../theme-vars'
 // import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
+import { type DiagramContext, useDiagram, useDiagramContext, useMantinePortalProps } from '../../../hooks'
+import { useXYStore } from '../../../hooks/useXYFlow'
+import { vars } from '../../../theme-vars'
 import * as css from './NotationPanel.css'
 
 type NodeKind = ComputedNode['kind']
@@ -38,7 +38,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
     shape = 'rectangle',
   } = value
   const [onlyKind, setOnlyKind] = useState<NodeKind | null>(null)
-  const diagramStore = useDiagramStoreApi()
+  const diagram = useDiagram()
   const w = 300
   const h = 200
   return (
@@ -52,11 +52,11 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
       }}
       onMouseEnter={() => {
         setOnlyKind(null)
-        diagramStore.getState().highlightByElementNotation(value)
+        // diagramStore.getState().highlightByElementNotation(value)
       }}
       onMouseLeave={() => {
         setOnlyKind(null)
-        diagramStore.setState({ dimmed: new Set() })
+        // diagramStore.setState({ dimmed: new Set() })
       }}
     >
       <Group
@@ -93,11 +93,11 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
                 className={css.shapeBadge}
                 onMouseEnter={() => {
                   setOnlyKind(kind)
-                  diagramStore.getState().highlightByElementNotation(value, kind)
+                  // diagramStore.getState().highlightByElementNotation(value, kind)
                 }}
                 onMouseLeave={() => {
                   setOnlyKind(null)
-                  diagramStore.getState().highlightByElementNotation(value)
+                  // diagramStore.getState().highlightByElementNotation(value)
                 }}
                 opacity={isNonNullish(onlyKind) && onlyKind !== kind ? 0.25 : 1}
                 color={isNonNullish(onlyKind) && onlyKind !== kind ? 'gray' : vars.element.fill}
@@ -122,10 +122,11 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
   )
 }
 
-const selector = (s: DiagramState) => ({
+const selector = (s: DiagramContext) => ({
   id: s.view.id,
   notations: s.view.notation?.elements ?? [],
-  isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
+  isVisible: true,
+  // isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
 })
 
 export function NotationPanel() {
@@ -134,7 +135,7 @@ export function NotationPanel() {
     id,
     notations,
     isVisible,
-  } = useDiagramState(selector)
+  } = useDiagramContext(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'notation-webview-collapsed',
     defaultValue: true,

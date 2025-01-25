@@ -12,7 +12,7 @@ import {
   ElementTitle,
 } from '../../../base/primitives'
 import { IfEnabled, IfNotEnabled, useEnabledFeature } from '../../../context'
-import { useDiagram } from '../../../hooks2'
+import { useDiagram } from '../../../hooks'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
 import { DeploymentElementActions, ElementActions } from './ElementActions'

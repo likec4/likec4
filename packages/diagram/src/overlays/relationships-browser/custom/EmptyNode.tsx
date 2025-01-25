@@ -1,6 +1,5 @@
-import { Box } from '@mantine/core'
+import { Box, Text } from '@mantine/core'
 import type { NodeProps } from '../../../base'
-import { Text } from '../../../controls/Text'
 import type { RelationshipsBrowserTypes } from '../_types'
 import * as css from './styles.css'
 

@@ -14,7 +14,7 @@ import {
 import { useDeepCompareMemo } from '@react-hookz/web'
 import Queue from 'mnemonist/queue'
 import { hasAtLeast, pick } from 'remeda'
-import { ZIndexes } from '../xyflow/const'
+import { ZIndexes } from '../base/const'
 import type { Types } from './types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)

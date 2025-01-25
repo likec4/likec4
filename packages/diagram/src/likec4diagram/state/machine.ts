@@ -4,24 +4,26 @@ import {
   type EdgeId,
   type Fqn,
   type NodeId,
+  type StepEdgeId,
   type ViewChange,
   type ViewId,
   type XYPoint,
   DiagramNode,
   getBBoxCenter,
+  getParallelStepsPrefix,
   invariant,
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
 import {
   type ReactFlowInstance,
-  type useStoreApi,
   applyEdgeChanges,
   applyNodeChanges,
   getViewportForBounds,
+  useStoreApi,
 } from '@xyflow/react'
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
-import { hasAtLeast, prop } from 'remeda'
+import { clamp, first, hasAtLeast, prop } from 'remeda'
 import {
   type ActorRefFromLogic,
   type SnapshotFrom,
@@ -54,6 +56,7 @@ import {
   navigateForward,
   resetEdgeControlPoints,
   unfocusNodesEdges,
+  updateActiveWalkthrough,
   updateEdgeData,
   updateNavigationHistory,
   updateNodeData,
@@ -62,7 +65,8 @@ import { type HotKeyEvent, hotkeyActor } from './hotkeyActor'
 import { syncManualLayoutActor } from './syncManualLayoutActor'
 import { focusedBounds } from './utils'
 
-export type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
+type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
+
 export interface NavigationHistory {
   history: ReadonlyArray<{
     viewId: ViewId
@@ -110,6 +114,12 @@ export interface DiagramContext extends Input {
   viewportBeforeFocus: null | Viewport
   xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
   syncLayoutActorRef: ActorRefFromLogic<typeof syncManualLayoutActor>
+
+  // If Dynamic View
+  activeWalkthrough: null | {
+    stepId: StepEdgeId
+    parallelPrefix: string | null
+  }
 }
 
 export type Events =
@@ -141,6 +151,9 @@ export type Events =
   | { type: 'saveManualLayout.schedule' }
   | { type: 'saveManualLayout.cancel' }
   | { type: 'focus.node'; nodeId: NodeId }
+  | { type: 'walkthrough.start'; stepId?: StepEdgeId }
+  | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
+  | { type: 'walkthrough.end' }
 
 export type ActionArg = { context: DiagramContext; event: Events }
 
@@ -168,6 +181,7 @@ export const diagramMachine = setup({
     'enabled: FocusMode': ({ context }) => context.features.enableFocusMode,
     'enabled: Readonly': ({ context }) => context.features.enableReadOnly,
     'not readonly': ({ context }) => !context.features.enableReadOnly,
+    'is dynamic view': ({ context }) => context.view.__ === 'dynamic',
     'is another view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
       if (event.type === 'update.view') {
@@ -304,6 +318,7 @@ export const diagramMachine = setup({
       id: 'syncLayout',
       input: { parent: self, viewId: input.view.id },
     }),
+    activeWalkthrough: null,
   }),
   // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
   states: {
@@ -651,6 +666,85 @@ export const diagramMachine = setup({
         lastOnNavigate: null,
       }),
     },
+    walkthrough: {
+      entry: [
+        spawnChild('hotkeyActor', { id: 'hotkey' }),
+        assign({
+          viewportBeforeFocus: ({ context }) => context.viewport,
+          activeWalkthrough: ({ context, event }) => {
+            assertEvent(event, 'walkthrough.start')
+            const stepId = event.stepId ?? first(context.xyedges)!.id as StepEdgeId
+            return {
+              stepId,
+              parallelPrefix: getParallelStepsPrefix(stepId),
+            }
+          },
+        }),
+        assign(updateActiveWalkthrough),
+        {
+          type: 'xyflow:fitDiagram',
+          params: focusedBounds,
+        },
+      ],
+      on: {
+        'key.esc': {
+          target: 'idle',
+        },
+        'key.arrow.left': {
+          actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
+        },
+        'key.arrow.right': {
+          actions: raise({ type: 'walkthrough.step', direction: 'next' }),
+        },
+        'walkthrough.step': {
+          actions: enqueueActions(({ enqueue, context, event }) => {
+            const { stepId } = context.activeWalkthrough!
+            const stepIndex = context.xyedges.findIndex(e => e.id === stepId)
+            const nextStepIndex = clamp(event.direction === 'next' ? stepIndex + 1 : stepIndex - 1, {
+              min: 0,
+              max: context.xyedges.length - 1,
+            })
+            if (nextStepIndex === stepIndex) {
+              return
+            }
+            const nextStepId = context.xyedges[nextStepIndex]!.id as StepEdgeId
+            enqueue.assign({
+              activeWalkthrough: {
+                stepId: nextStepId,
+                parallelPrefix: getParallelStepsPrefix(nextStepId),
+              },
+            })
+            enqueue.assign(updateActiveWalkthrough)
+            enqueue({
+              type: 'xyflow:fitDiagram',
+              params: focusedBounds,
+            })
+          }),
+        },
+        'walkthrough.end': {
+          target: 'idle',
+        },
+        // We received another view, close overlay and process event again
+        'update.view': {
+          guard: 'is another view',
+          actions: raise(({ event }) => event, { delay: 50 }),
+          target: 'idle',
+        },
+      },
+      exit: enqueueActions(({ enqueue, context }) => {
+        enqueue.stopChild('hotkey')
+        if (context.viewportBeforeFocus) {
+          enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
+        } else {
+          enqueue({ type: 'xyflow:fitDiagram' })
+        }
+        enqueue.assign((s) => ({
+          activeWalkthrough: null,
+          ...unfocusNodesEdges(s),
+          viewportBeforeFocus: null,
+        }))
+      }),
+    },
   },
   on: {
     'xyflow.applyNodeChages': {
@@ -796,6 +890,10 @@ export const diagramMachine = setup({
     },
     'open.relationshipsBrowser': {
       target: '.overlay.relationshipsBrowser',
+    },
+    'walkthrough.start': {
+      guard: 'is dynamic view',
+      target: '.walkthrough',
     },
   },
   exit: [

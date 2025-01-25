@@ -7,7 +7,7 @@ import { IconChevronLeft, IconMenu2 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { LayoutGroup } from 'framer-motion'
 import { useDiagramEventHandlers } from '../../../context'
-import { useDiagram, useDiagramContext } from '../../../hooks2'
+import { useDiagram, useDiagramContext } from '../../../hooks'
 import { ActionIcon } from './_shared'
 import * as css from './styles.css'
 

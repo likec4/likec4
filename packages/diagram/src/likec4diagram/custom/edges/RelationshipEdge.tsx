@@ -10,7 +10,7 @@ import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } f
 import { first, isTruthy, last } from 'remeda'
 import { customEdge, EdgeActionButton, EdgeContainer, EdgeLabel, EdgePath } from '../../../base/primitives'
 import { useEnabledFeature } from '../../../context'
-import { useDiagram, useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks2'
+import { useDiagram, useXYFlow, useXYInternalNode, useXYStoreApi } from '../../../hooks'
 import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'

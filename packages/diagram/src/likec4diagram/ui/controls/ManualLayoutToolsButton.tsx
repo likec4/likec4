@@ -10,7 +10,7 @@ import {
   IconLayoutCollage,
   IconRouteOff,
 } from '@tabler/icons-react'
-import { useDiagram } from '../../../hooks2'
+import { useDiagram } from '../../../hooks'
 import { ActionIcon, Tooltip } from './_shared'
 
 const Action = ({

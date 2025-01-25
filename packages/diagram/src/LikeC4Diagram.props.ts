@@ -9,7 +9,7 @@ import type {
   WhereOperator,
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { XYBackground } from './xyflow/XYFlowBackground'
+import type { XYBackground } from './base/Background'
 
 export type { WhereOperator }
 

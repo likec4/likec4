@@ -7,3 +7,5 @@ export function useDiagramContext<T>(selector: (state: DiagramContext) => T, com
   const select = useCallbackRef((s: MachineSnapshot) => selector(s.context))
   return useSelector(select, compare)
 }
+
+export type { DiagramContext } from '../likec4diagram/state/machine'

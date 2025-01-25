@@ -2,7 +2,6 @@ import '@xyflow/react/dist/style.css'
 
 export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
-export { LikeC4DiagramV2 } from './likec4diagram/LikeC4Diagram'
 
 export {
   useLikeC4DiagramView,
@@ -20,8 +19,6 @@ export { useUpdateEffect } from './hooks/useUpdateEffect'
 export { vars, xyvars } from './theme-vars'
 
 export type * from './LikeC4Diagram.props'
-
-export type * from './xyflow/types'
 
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
 export type { StaticLikeC4DiagramProps } from './StaticLikeC4Diagram'
