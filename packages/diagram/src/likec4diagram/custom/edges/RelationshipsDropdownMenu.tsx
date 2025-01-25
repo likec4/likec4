@@ -30,7 +30,7 @@ import type { InternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
-import { useDiagramEventHandlers, useEnabledFeature } from '../../../context'
+import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useLikeC4Model } from '../../../likec4model'
@@ -223,7 +223,7 @@ const Relationship = forwardRef<
                 </ActionIcon>
               </Tooltip>
             )}
-            {!!onOpenSource && (
+            <IfEnabled feature="Vscode">
               <Tooltip label={'Open source'}>
                 <ActionIcon
                   className={clsx('nodrag nopan')}
@@ -233,14 +233,14 @@ const Relationship = forwardRef<
                   onPointerDownCapture={stopPropagation}
                   onClick={event => {
                     event.stopPropagation()
-                    onOpenSource({ relation: r.id })
+                    diagram.openSource({ relation: r.id })
                   }}
                   role="button"
                 >
                   <IconFileSymlink size="80%" stroke={2} />
                 </ActionIcon>
               </Tooltip>
-            )}
+            </IfEnabled>
           </TooltipGroup>
         )}
       </Group>

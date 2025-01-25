@@ -4,6 +4,7 @@ import {
   type EdgeId,
   type Fqn,
   type NodeId,
+  type RelationId,
   type StepEdgeId,
   type ViewChange,
   type ViewId,
@@ -139,6 +140,7 @@ export type Events =
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
+  | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; edgeId: EdgeId }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
@@ -890,6 +892,12 @@ export const diagramMachine = setup({
     },
     'open.relationshipsBrowser': {
       target: '.overlay.relationshipsBrowser',
+    },
+    'open.source': {
+      actions: {
+        type: 'trigger:OpenSource',
+        params: prop('event'),
+      },
     },
     'walkthrough.start': {
       guard: 'is dynamic view',

@@ -12,7 +12,8 @@ import { updateNodes } from '../../base/updateNodes'
 import { useUpdateEffect } from '../../hooks'
 import type { RelationshipDetailsTypes as Types } from './_types'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
-import { edgeTypes, nodeTypes } from './custom'
+import { edgeTypes } from './custom/edgeTypes'
+import { nodeTypes } from './custom/nodeTypes'
 import {
   RelationshipDetailsActorContext,
   useRelationshipDetails,

@@ -63,8 +63,8 @@ export namespace RelationshipDetailsTypes {
     relationId: RelationId
     color: Color | undefined
     label: string | null
-    technology: string | null
-    description: string | null
+    technology?: string | undefined
+    description?: string | undefined
     navigateTo: ViewId | null
     line: RelationshipLineType
   }>

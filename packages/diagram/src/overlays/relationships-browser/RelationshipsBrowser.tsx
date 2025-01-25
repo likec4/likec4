@@ -14,7 +14,8 @@ import { useUpdateEffect } from '../../hooks'
 import { useRelationshipsView } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
-import { edgeTypes, nodeTypes } from './custom'
+import { edgeTypes } from './custom/edgeTypes'
+import { nodeTypes } from './custom/nodeTypes'
 import {
   RelationshipsBrowserActorContext,
   useRelationshipsBrowser,
@@ -122,6 +123,10 @@ const RelationshipsBrowserInner = memo(() => {
         onPaneClick={useCallbackRef((e) => {
           e.stopPropagation()
           browser.send({ type: 'xyflow.paneClick' })
+        })}
+        onDoubleClick={useCallbackRef(e => {
+          e.stopPropagation()
+          browser.send({ type: 'xyflow.paneDblClick' })
         })}
         onViewportResize={() => {
           browser.send({ type: 'xyflow.resized' })

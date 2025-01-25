@@ -1,10 +1,10 @@
 import { type DiagramEdge, extractStep, isStepEdgeId } from '@likec4/core'
 import { type BoxProps, Box, createPolymorphicComponent, Stack, Text } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
-import { type XYPosition, EdgeLabelRenderer } from '@xyflow/react'
+import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { type PropsWithChildren, forwardRef } from 'react'
-import { isTruthy } from 'remeda'
+import { isNumber, isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
@@ -106,10 +106,23 @@ type Data = UndefinedOnPartialDeep<
 
 type EdgeLabelProps = PropsWithChildren<
   BoxProps & {
-    labelXY?: XYPosition | undefined
+    /**
+     * label css translate
+     * @example
+     *   labelXY={{ x: 10, y: 20 }} // translate(10px, 20px)
+     *   labelXY={{ x: '50%', y: '50%' }} // translate(50%, 50%)
+     */
+    labelXY?: {
+      x: number | string
+      y: number | string
+    } | undefined
     edgeProps: EdgeProps<Data>
   }
 >
+
+const toCssVarValue = (value: number | string) => {
+  return isNumber(value) ? `${value}px` : value
+}
 
 export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
   forwardRef<HTMLDivElement, EdgeLabelProps>(({
@@ -140,7 +153,6 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
 
     let labelX = labelXY?.x ?? labelBBox?.x ?? 0,
       labelY = labelXY?.y ?? labelBBox?.y ?? 0
-
     return (
       <EdgeLabelRenderer>
         <Box
@@ -159,8 +171,8 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
           data-edge-dimmed={isDimmed}
           style={{
             ...assignInlineVars({
-              [css.varLabelX]: `${labelX}px`,
-              [css.varLabelY]: `${labelY}px`,
+              [css.varLabelX]: toCssVarValue(labelX),
+              [css.varLabelY]: toCssVarValue(labelY),
             }),
             ...(labelBBox && {
               maxWidth: labelBBox.width + 18,

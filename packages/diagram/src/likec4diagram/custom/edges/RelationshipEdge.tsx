@@ -309,8 +309,11 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       )}
       <EdgeLabel
         edgeProps={props}
-        labelXY={{ x: labelX, y: labelY }}
-        {...enableRelationshipDetails && {
+        labelXY={{
+          x: labelX,
+          y: labelY,
+        }}
+        {...enableRelationshipDetails && !isControlPointDragging && {
           renderRoot: (props) => (
             <RelationshipsDropdownMenu
               sourceNode={sourceNode}

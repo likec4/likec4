@@ -38,6 +38,7 @@ export type Events =
   | { type: 'xyflow.nodeClick'; node: RelationshipsBrowserTypes.Node }
   | { type: 'xyflow.edgeClick'; edge: RelationshipsBrowserTypes.Edge }
   | { type: 'xyflow.paneClick' }
+  | { type: 'xyflow.paneDblClick' }
   | { type: 'xyflow.resized' }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'navigate.to'; subject: Fqn }
@@ -116,6 +117,9 @@ export const relationshipsBrowserActor = setup({
             }),
             raise({ type: 'fitDiagram' }, { delay: 50 }),
           ],
+        },
+        'xyflow.paneDblClick': {
+          actions: 'xyflow:fitDiagram',
         },
         'close': {
           target: 'closed',

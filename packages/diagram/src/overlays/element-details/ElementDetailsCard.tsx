@@ -38,12 +38,12 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { useDebouncedCallback, useSessionStorage, useViewportSize } from '@mantine/hooks'
-import { IconCheck, IconCopy, IconExternalLink, IconStack2, IconZoomScan } from '@tabler/icons-react'
+import { IconCheck, IconCopy, IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'framer-motion'
 import { type PropsWithChildren, memo, useCallback, useLayoutEffect, useRef } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
-import { IconRenderer } from '../../context'
+import { IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useDiagramContext } from '../../hooks/useDiagramContext'
@@ -147,24 +147,6 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   }
 
   const defaultLink = only(elementModel.links)
-
-  // const onNavigateToCb = useCallback((toView: ViewId, e?: React.MouseEvent): void => {
-  //   e?.stopPropagation()
-  //   const { onNavigateTo } = diagramApi.getState()
-  //   if (!onNavigateTo) {
-  //     return
-  //   }
-  //   overlay.close(() => {
-  //     diagramApi.setState({
-  //       lastOnNavigate: {
-  //         fromView: viewModel.id,
-  //         toView,
-  //         fromNode: fqn,
-  //       },
-  //     })
-  //     onNavigateTo(toView)
-  //   })
-  // }, [fqn, viewModel.id])
   const controls = useDragControls()
 
   const isCompound = (nodeModel?.$node.children?.length ?? 0) > 0
@@ -374,8 +356,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                       <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
                     </ActionIcon>
                   )}
-                  {
-                    /* {onOpenSource && (
+                  <IfEnabled feature="Vscode">
                     <Tooltip label="Open source">
                       <ActionIcon
                         size="lg"
@@ -383,16 +364,14 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                         radius="sm"
                         onClick={e => {
                           e.stopPropagation()
-                          diagramApi.getState().onOpenSource?.({
+                          diagram.openSource({
                             element: elementModel.id,
                           })
-                        }}
-                      >
+                        }}>
                         <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
                       </ActionIcon>
                     </Tooltip>
-                  )} */
-                  }
+                  </IfEnabled>
                   {defaultView && (
                     <Tooltip label="Open default view">
                       <ActionIcon

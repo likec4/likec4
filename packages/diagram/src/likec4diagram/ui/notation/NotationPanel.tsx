@@ -21,7 +21,7 @@ import { useLocalStorage } from '@mantine/hooks'
 import { IconAlertTriangle, IconArrowDownRight, IconHelpCircle } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
 // import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
 import { type DiagramContext, useMantinePortalProps } from '../../../hooks'
@@ -131,7 +131,7 @@ const selector = (s: DiagramContext) => ({
   // isVisible: isNullish(s.focusedNodeId ?? s.activeWalkthrough),
 })
 
-export function NotationPanel() {
+export const NotationPanel = memo(() => {
   const height = useXYStore(s => s.height)
   const {
     id,
@@ -256,4 +256,4 @@ export function NotationPanel() {
       )}
     </AnimatePresence>
   )
-}
+})

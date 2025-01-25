@@ -2,6 +2,7 @@ import type { EdgeId, Fqn, NodeId, ViewId } from '@likec4/core'
 import { useMemo, useTransition } from 'react'
 import type { PartialDeep } from 'type-fest'
 import { useDiagramActor } from '../hooks/useDiagramActor'
+import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { AlignmentMode } from '../likec4diagram/state/aligners'
 import type { Types } from '../likec4diagram/types'
 
@@ -36,6 +37,9 @@ export function useDiagram() {
       startTransition(() => {
         actor.send({ type: 'open.relationshipsBrowser', fqn })
       })
+    },
+    openSource: (params: OpenSourceParams) => {
+      actor.send({ type: 'open.source', ...params })
     },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
       startTransition(() => {
