@@ -16,16 +16,16 @@ export function ElementToolbar(props: ElementToolbarProps) {
   const {
     data: {
       shape,
-      fqn,
+      modelFqn,
     },
   } = props
 
-  const { elementColor, onColorPreview, onChange } = useHandlers(fqn, props)
+  const { elementColor, onColorPreview, onChange } = useHandlers(modelFqn, props)
 
   return (
     <Toolbar
       nodeProps={props}
-      title={fqn}
+      title={modelFqn}
       align="start">
       <ElementShapeButton
         elementShape={shape}
@@ -37,8 +37,8 @@ export function ElementToolbar(props: ElementToolbarProps) {
         onChange={onChange}
         position="right-end"
       />
-      {enableVscode && <GoToSourceButton elementId={fqn} />}
-      {enableRelationshipBrowser && <BrowseRelationshipsButton fqn={fqn} />}
+      {enableVscode && <GoToSourceButton elementId={modelFqn} />}
+      {enableRelationshipBrowser && <BrowseRelationshipsButton fqn={modelFqn} />}
     </Toolbar>
   )
 }
@@ -50,7 +50,7 @@ export function DeploymentElementToolbar(props: DeploymentElementToolbarProps) {
     data: {
       shape,
       deploymentFqn,
-      modelRef,
+      modelFqn,
     },
   } = props
 
@@ -72,7 +72,7 @@ export function DeploymentElementToolbar(props: DeploymentElementToolbarProps) {
         position="right-end"
       />
       {enableVscode && <GoToSourceButton deploymentId={deploymentFqn} />}
-      {enableRelationshipBrowser && modelRef && <BrowseRelationshipsButton fqn={modelRef} />}
+      {enableRelationshipBrowser && modelFqn && <BrowseRelationshipsButton fqn={modelFqn} />}
     </Toolbar>
   )
 }

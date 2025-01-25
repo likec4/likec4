@@ -13,7 +13,7 @@ export const ElementActions = (props: ElementActionsProps) => {
 
   const buttons = [] as ElementActionButtons.Item[]
 
-  const { navigateTo, fqn } = props.data
+  const { navigateTo, modelFqn } = props.data
   if (navigateTo && enableNavigateTo) {
     buttons.push({
       key: 'navigate',
@@ -30,7 +30,7 @@ export const ElementActions = (props: ElementActionsProps) => {
       icon: <IconTransform />,
       onClick: (e) => {
         e.stopPropagation()
-        diagram.openRelationshipsBrowser(fqn)
+        diagram.openRelationshipsBrowser(modelFqn)
       },
     })
   }
@@ -49,7 +49,7 @@ export const DeploymentElementActions = (props: DeploymentElementActionsProps) =
 
   const buttons = [] as ElementActionButtons.Item[]
 
-  const { navigateTo, modelRef } = props.data
+  const { navigateTo, modelFqn } = props.data
   if (navigateTo && enableNavigateTo) {
     buttons.push({
       key: 'navigate',
@@ -60,13 +60,13 @@ export const DeploymentElementActions = (props: DeploymentElementActionsProps) =
       },
     })
   }
-  if (enableRelationshipBrowser && !!modelRef) {
+  if (enableRelationshipBrowser && !!modelFqn) {
     buttons.push({
       key: 'relationships',
       icon: <IconTransform />,
       onClick: (e) => {
         e.stopPropagation()
-        diagram.openRelationshipsBrowser(modelRef)
+        diagram.openRelationshipsBrowser(modelFqn)
       },
     })
   }

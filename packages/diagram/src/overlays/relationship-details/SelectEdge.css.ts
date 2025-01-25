@@ -97,3 +97,10 @@ export const edgeDataGrid = style({
   alignItems: 'baseline',
   justifyItems: 'start',
 })
+
+export const scrollArea = style({
+  maxHeight: [
+    '70vh',
+    'calc(100cqh - 70px)',
+  ],
+})

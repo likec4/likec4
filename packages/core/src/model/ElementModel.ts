@@ -3,6 +3,7 @@ import {
   type Element as C4Element,
   type ElementKind as C4ElementKind,
   type ElementShape as C4ElementShape,
+  type IconUrl,
   type IteratorLike,
   type Link,
   type Tag as C4Tag,
@@ -47,7 +48,7 @@ export class ElementModel<M extends AnyAux = AnyAux> {
     return this.$element.color as ThemeColor ?? DefaultThemeColor
   }
 
-  get icon(): string | null {
+  get icon(): IconUrl | null {
     return this.$element.icon ?? null
   }
 

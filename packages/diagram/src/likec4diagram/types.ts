@@ -18,6 +18,7 @@ export namespace Types {
     & NonOptional<
       Pick<
         DiagramNode,
+        | 'id'
         | 'title'
         | 'technology'
         | 'description'
@@ -39,7 +40,8 @@ export namespace Types {
    * Represents element from logical model
    */
   export type ElementNodeData = LeafNodeData & {
-    fqn: Fqn
+    modelFqn: Fqn
+    deploymentFqn?: never
     /**
      * If set - this node has navigation to another view and diagram has handler for this
      */
@@ -55,13 +57,14 @@ export namespace Types {
       navigateTo: ViewId | null
       deploymentFqn: Fqn
       // If set - this node refers to a model element
-      modelRef: Fqn | null
+      modelFqn: Fqn | null
     }
 
   export type CompoundNodeData = Base.NodeData<
     & NonOptional<
       Pick<
         DiagramNode,
+        | 'id'
         | 'title'
         | 'color'
         | 'shape'
@@ -76,7 +79,8 @@ export namespace Types {
   >
 
   export type CompoundElementNodeData = CompoundNodeData & {
-    fqn: Fqn
+    modelFqn: Fqn
+    deploymentFqn?: never
     /**
      * If set - this node has navigation to another view and diagram has handler for this
      */
@@ -88,7 +92,7 @@ export namespace Types {
     /**
      * If set - this node refers to a model element
      */
-    modelRef: Fqn | null
+    modelFqn: Fqn | null
     /**
      * If set - this node has navigation to another view and diagram has handler for this
      */

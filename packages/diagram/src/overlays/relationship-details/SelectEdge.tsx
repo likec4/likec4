@@ -12,7 +12,8 @@ import {
 } from '@mantine/core'
 import { IconArrowRight, IconSelector } from '@tabler/icons-react'
 import { useRef } from 'react'
-import { useOverlayDialog } from '../OverlayContext'
+import { useMantinePortalProps } from '../../hooks'
+import { useRelationshipDetails } from './hooks'
 import * as css from './SelectEdge.css'
 
 export const SelectEdge = ({
@@ -23,8 +24,9 @@ export const SelectEdge = ({
   view: DiagramView
   // onSelect: (id: Fqn) => void
 }) => {
-  const overlay = useOverlayDialog()
+  const overlay = useRelationshipDetails()
   const viewport = useRef<HTMLDivElement>(null)
+  const portalProps = useMantinePortalProps()
   // const data = useLikeC4ElementsTree(scope === 'view' ? viewId : undefined)
   // const tree = useTree({
   //   multiple: false
@@ -55,7 +57,7 @@ export const SelectEdge = ({
 
   return (
     <Popover
-      position="bottom"
+      position="bottom-start"
       shadow="md"
       keepMounted
       withinPortal={false}
@@ -103,7 +105,7 @@ export const SelectEdge = ({
         </Button>
       </PopoverTarget>
       <PopoverDropdown p={0} miw={250} maw={420}>
-        <ScrollAreaAutosize mah={'70vh'} scrollbars="y" type="never" viewportRef={viewport}>
+        <ScrollAreaAutosize className={css.scrollArea} scrollbars="y" type="never" viewportRef={viewport}>
           <Box className={css.edgeGrid} p="xs">
             {edges.map(e => (
               <div
@@ -112,9 +114,7 @@ export const SelectEdge = ({
                 data-selected={e.id === edge.id}
                 onClick={event => {
                   event.stopPropagation()
-                  overlay.openOverlay({
-                    edgeDetails: e.id,
-                  })
+                  overlay.navigateTo(e.id)
                 }}>
                 <Box
                   className={css.edgeSource}

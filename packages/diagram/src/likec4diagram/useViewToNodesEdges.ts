@@ -114,6 +114,7 @@ function viewToNodesEdge(opts: {
     } satisfies Omit<Types.Node, 'data' | 'type'>
 
     const compoundData = {
+      id: node.id,
       title: node.title,
       color: node.color,
       shape: node.shape,
@@ -124,6 +125,7 @@ function viewToNodesEdge(opts: {
     } satisfies Types.CompoundNodeData
 
     const leafNodeData = {
+      id: node.id,
       title: node.title,
       technology: node.technology,
       description: node.description,
@@ -150,9 +152,9 @@ function viewToNodesEdge(opts: {
       continue
     }
 
-    const modelRef = DiagramNode.modelRef(node)
-    const deploymentRef = DiagramNode.deploymentRef(node)
-    if (!modelRef && !deploymentRef) {
+    const modelFqn = DiagramNode.modelRef(node)
+    const deploymentFqn = DiagramNode.deploymentRef(node)
+    if (!modelFqn && !deploymentFqn) {
       console.error('Invalid node', node)
       throw new Error('Element should have either modelRef or deploymentRef')
     }
@@ -160,7 +162,7 @@ function viewToNodesEdge(opts: {
     const navigateTo = { navigateTo: node.navigateTo ?? null }
 
     switch (true) {
-      case isCompound && !!deploymentRef: {
+      case isCompound && !!deploymentFqn: {
         xynodes.push(
           {
             ...base,
@@ -168,15 +170,15 @@ function viewToNodesEdge(opts: {
             data: {
               ...compoundData,
               ...navigateTo,
-              deploymentFqn: deploymentRef,
-              modelRef,
+              deploymentFqn: deploymentFqn,
+              modelFqn,
             },
           } satisfies Types.CompoundDeploymentNode,
         )
         break
       }
       case isCompound: {
-        invariant(!!modelRef, 'ModelRef expected')
+        invariant(!!modelFqn, 'ModelRef expected')
         xynodes.push(
           {
             ...base,
@@ -184,14 +186,14 @@ function viewToNodesEdge(opts: {
             data: {
               ...compoundData,
               ...navigateTo,
-              fqn: modelRef,
+              modelFqn,
             },
             dragHandle: '.likec4-compound-title',
           } satisfies Types.CompoundElementNode,
         )
         break
       }
-      case !!deploymentRef: {
+      case !!deploymentFqn: {
         xynodes.push(
           {
             ...base,
@@ -199,15 +201,15 @@ function viewToNodesEdge(opts: {
             data: {
               ...leafNodeData,
               ...navigateTo,
-              deploymentFqn: deploymentRef,
-              modelRef,
+              deploymentFqn: deploymentFqn,
+              modelFqn: modelFqn,
             },
           } satisfies Types.DeploymentElementNode,
         )
         break
       }
       default: {
-        invariant(!!modelRef, 'ModelRef expected')
+        invariant(!!modelFqn, 'ModelRef expected')
         xynodes.push(
           {
             ...base,
@@ -215,7 +217,7 @@ function viewToNodesEdge(opts: {
             data: {
               ...leafNodeData,
               ...navigateTo,
-              fqn: modelRef,
+              modelFqn: modelFqn,
             },
           } satisfies Types.ElementNode,
         )

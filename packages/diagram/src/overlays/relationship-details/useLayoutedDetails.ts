@@ -13,10 +13,8 @@ import {
   invariant,
   isAncestor,
 } from '@likec4/core'
-import { MarkerType } from '@xyflow/system'
 import { useMemo } from 'react'
 import { filter, first, forEach, isTruthy, map, pipe, prop, reverse, sort, sortBy, takeWhile } from 'remeda'
-import { useDiagramState } from '../../hooks/useDiagramState'
 import { useDiagramContext } from '../../hooks2'
 import { useLikeC4Model } from '../../likec4model'
 import type { RelationshipDetailsTypes } from './_types'
@@ -26,16 +24,18 @@ import type { RelationshipDetailsTypes } from './_types'
  */
 const Sizes = {
   dagre: {
-    ranksep: 40,
-    nodesep: 25,
-    edgesep: 15,
+    ranksep: 60,
+    nodesep: 35,
+    edgesep: 25,
   } satisfies GraphLabel,
   edgeLabel: {
     width: 120,
+    height: 10,
+    minlen: 1,
   } satisfies Label,
 
-  nodeWidth: 270,
-  hodeHeight: 160,
+  nodeWidth: 330,
+  hodeHeight: 180,
 
   // Spacer between elements in a compound node
   // 0 means no spacer
@@ -121,7 +121,7 @@ function nodeData(
     navigateTo: diagramNode?.navigateTo ?? first(element.scopedViews().take(1).toArray())?.id ?? null,
     width: 0,
     height: 0,
-    depth: 0,
+    depth: 1,
     ports: {
       in: [],
       out: [],
@@ -226,18 +226,15 @@ function applyDagreLayout(g: G) {
 }
 
 function layout(
-  edgeId: EdgeId,
+  edge: DiagramEdge,
   view: DiagramView,
   likec4model: LikeC4Model,
 ): {
-  view: DiagramView
   edge: DiagramEdge
   xynodes: RelationshipDetailsTypes.Node[]
   xyedges: RelationshipDetailsTypes.Edge[]
   bounds: { x: number; y: number; width: number; height: number }
 } {
-  const edge = view.edges.find(e => e.id === edgeId)
-  invariant(edge, 'edge not found')
   const all = new Set([edge.source, edge.target])
 
   const relations = edge.relations
@@ -334,6 +331,10 @@ function layout(
     const { position, width, height } = nodebounds(node.id, node.parentId)
     node.data.ports.in = sortedPorts(node.data.ports.in)
     node.data.ports.out = sortedPorts(node.data.ports.out)
+    if (node.type === 'element') {
+      node.data.width = width
+      node.data.height = height
+    }
     node.position = position
     node.initialHeight = height
     node.initialWidth = width
@@ -345,7 +346,6 @@ function layout(
   })
 
   return {
-    view,
     edge,
     xyedges: ctx.xyedges,
     xynodes,
@@ -358,24 +358,23 @@ function layout(
   }
 }
 
-export function useLayoutedDetails(edgeId: EdgeId): {
-  view: DiagramView
+export function useLayoutedDetails(edgeId: EdgeId, view: DiagramView): {
   edge: DiagramEdge
   xynodes: RelationshipDetailsTypes.Node[]
   xyedges: RelationshipDetailsTypes.Edge[]
   bounds: { x: number; y: number; width: number; height: number }
 } {
-  const view = useDiagramContext(s => s.view)
+  const edge = view.edges.find(e => e.id === edgeId)
+  invariant(edge, `edge ${edgeId} not found in ${view.id}`)
   const likec4model = useLikeC4Model(true)
   return useMemo(() =>
     layout(
-      edgeId,
+      edge,
       view,
       likec4model,
     ), [
-    edgeId,
+    edge,
     view,
-    likec4model,
     layout,
   ])
 }

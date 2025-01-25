@@ -14,7 +14,6 @@ import * as css from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { useLikeC4Model } from './likec4model'
 import { LikeC4Search } from './LikeC4Search'
-import { Overlays } from './overlays_'
 import { DiagramContextProvider } from './state/DiagramContext'
 import type { DiagramFlowTypes } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
@@ -186,7 +185,7 @@ const LikeC4DiagramInnerMemo = /* @__PURE__ */ memo<LikeC4DiagramInnerProps>(fun
           background={background}
         />
       </XYFlow>
-      {enableOverlays && <Overlays />}
+      {/* {enableOverlays && <Overlays />} */}
       {enableSearch && <LikeC4Search />}
       {
         /* {isInitialized && (

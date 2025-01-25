@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { type DiagramView, type LikeC4Model, nameFromFqn } from '@likec4/core'
 import { Box, Button, Group, Paper, SegmentedControl, Stack, Text, ThemeIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
@@ -7,9 +8,9 @@ import { LayoutGroup } from 'framer-motion'
 import { useState } from 'react'
 import { unique } from 'remeda'
 import { useDiagramState } from '../../hooks'
-import { useOverlayDialog } from '../OverlayContext'
-import { RelationshipsXYFlow } from '../relationships-of/RelationshipsXYFlow'
-import { useLayoutedRelationships } from '../relationships-of/use-layouted-relationships'
+// import { useOverlayDialog } from '../OverlayContext'
+// import { RelationshipsXYFlow } from '../relationships-of/RelationshipsXYFlow'
+// import { useLayoutedRelationships } from '../relationships-of/use-layouted-relationships'
 import * as css from './TabPanelRelationships.css'
 
 type RelationshipsTabPanelProps = {
@@ -25,7 +26,7 @@ export function TabPanelRelationships({
 }: RelationshipsTabPanelProps) {
   const layoutId = useId()
   const enableRelationshipBrowser = useDiagramState(s => s.enableRelationshipBrowser)
-  const overlay = useOverlayDialog()
+  // const overlay = useOverlayDialog()
   const [scope, setScope] = useState<'global' | 'view'>('view')
 
   const incoming = [...element.incoming()].map(r => r.id)

@@ -7,6 +7,7 @@ import { DiagramFeatures } from '../context'
 import { useDiagramActor, useDiagramActorState } from '../hooks2'
 import { ElementDetailsCard } from './element-details/ElementDetailsCard'
 import { Overlay } from './overlay/Overlay'
+import { RelationshipDetails } from './relationship-details/RelationshipDetails'
 import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrowser'
 // import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
 // import { ElementDetailsCard } from './element-details/ElementDetailsCard'
@@ -42,9 +43,11 @@ export const Overlays = memo(() => {
   const { send } = useDiagramActor()
   const {
     relationshipsBrowserActor,
+    relationshipDetailsActor,
     activeElementDetailsOf,
   } = useDiagramActorState(s => ({
     relationshipsBrowserActor: s.children.relationshipsBrowser,
+    relationshipDetailsActor: s.children.relationshipDetails,
     activeElementDetailsOf: s.context.activeElementDetails?.fqn ?? null,
   }))
   // )
@@ -97,6 +100,15 @@ export const Overlays = memo(() => {
                 relationshipsBrowserActor.send({ type: 'close' })
               }}>
               <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
+            </Overlay>
+          )}
+          {relationshipDetailsActor && (
+            <Overlay
+              key={'relationship-details'}
+              onClose={() => {
+                relationshipDetailsActor.send({ type: 'close' })
+              }}>
+              <RelationshipDetails actorRef={relationshipDetailsActor} />
             </Overlay>
           )}
           {activeElementDetailsOf && <ElementDetailsCard fqn={activeElementDetailsOf} />}

@@ -2,6 +2,8 @@ import { style } from '@vanilla-extract/css'
 import { mantine } from '../../theme-vars'
 
 export const dialog = style({
+  containerName: 'overlay-dialog',
+  containerType: 'size',
   boxSizing: 'border-box',
   margin: 0,
   padding: 0,

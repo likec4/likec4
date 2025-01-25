@@ -3,14 +3,15 @@ import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
 import { useEnabledFeature } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks2'
-import type { RelationshipsBrowserTypes as Types } from '../_types'
-import { useRelationshipsBrowser } from '../hooks'
+import type { RelationshipDetailsTypes as Types } from '../_types'
+import { useRelationshipDetails } from '../hooks'
+// import { useRelationshipsBrowser } from '../hooks'
 
 type ElementActionsProps = NodeProps<Types.ElementNodeData>
 export const ElementActions = (props: ElementActionsProps) => {
   const { enableNavigateTo } = useEnabledFeature('NavigateTo')
   const diagram = useDiagram()
-  const browser = useRelationshipsBrowser()
+  const browser = useRelationshipDetails()
 
   const buttons = [] as ElementActionButtons.Item[]
 
@@ -25,16 +26,16 @@ export const ElementActions = (props: ElementActionsProps) => {
       },
     })
   }
-  if (fqn !== browser.getState().subject) {
-    buttons.push({
-      key: 'relationships',
-      icon: <IconTransform />,
-      onClick: (e) => {
-        e.stopPropagation()
-        browser.navigateTo(fqn)
-      },
-    })
-  }
+  // if (fqn !== browser.getState().subject) {
+  //   buttons.push({
+  //     key: 'relationships',
+  //     icon: <IconTransform />,
+  //     onClick: (e) => {
+  //       e.stopPropagation()
+  //       browser.navigateTo(fqn)
+  //     },
+  //   })
+  // }
   return (
     <ElementActionButtons
       buttons={buttons}

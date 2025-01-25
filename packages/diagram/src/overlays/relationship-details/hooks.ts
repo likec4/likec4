@@ -1,4 +1,4 @@
-import { nonNullable } from '@likec4/core'
+import { type EdgeId, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
@@ -26,14 +26,14 @@ export function useRelationshipDetails() {
   return useMemo(() => ({
     getState: () => actor.getSnapshot().context,
     send: actor.send,
-    // navigateTo: (subject: Fqn) => {
-    //   startTransition(() => {
-    //     actor.send({
-    //       type: 'navigate.to',
-    //       subject,
-    //     })
-    //   })
-    // },
+    navigateTo: (edgeId: EdgeId) => {
+      startTransition(() => {
+        actor.send({
+          type: 'navigate.to',
+          edgeId,
+        })
+      })
+    },
     fitDiagram: () => {
       startTransition(() => {
         actor.send({ type: 'fitDiagram' })

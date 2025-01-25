@@ -42,8 +42,15 @@ export function useDiagram() {
         actor.send({ type: 'open.elementDetails', fqn, fromNode })
       })
     },
+    openRelationshipDetails: (edgeId: EdgeId) => {
+      startTransition(() => {
+        actor.send({ type: 'open.relationshipDetails', edgeId })
+      })
+    },
     closeOverlay: () => {
-      actor.send({ type: 'close.overlay' })
+      startTransition(() => {
+        actor.send({ type: 'close.overlay' })
+      })
     },
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
       actor.send({ type: 'update.nodeData', nodeId, data })

@@ -7,7 +7,7 @@ import type {
   ReactFlowState,
 } from '@xyflow/react'
 import type { SetRequired, Simplify } from 'type-fest'
-import type { SharedFlowTypes } from '../overlays_/shared/xyflow/_types'
+// import type { SharedFlowTypes } from '../overlays_/shared/xyflow/_types'
 
 export namespace DiagramFlowTypes {
   export type NodeData = {
@@ -26,7 +26,7 @@ export namespace DiagramFlowTypes {
 
   export type ElementNode = SetRequired<
     ReactFlowNode<
-      SharedFlowTypes.NonEmptyNodeData & NodeData,
+      NodeData,
       'element'
     >,
     'type'
@@ -34,7 +34,7 @@ export namespace DiagramFlowTypes {
 
   export type CompoundNode = SetRequired<
     ReactFlowNode<
-      SharedFlowTypes.NonEmptyNodeData & CompoundNodeData,
+      CompoundNodeData,
       'compound'
     >,
     'type'

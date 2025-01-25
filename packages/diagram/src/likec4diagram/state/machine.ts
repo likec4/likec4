@@ -130,6 +130,7 @@ export type Events =
   | { type: 'update.features'; features: EnabledFeatures }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
+  | { type: 'open.relationshipDetails'; edgeId: EdgeId }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
   | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
@@ -547,8 +548,6 @@ export const diagramMachine = setup({
             },
           },
           on: {
-            // Catch event and do nothing
-            'open.relationshipsBrowser': {},
             'close.overlay': {
               actions: sendTo('relationshipsBrowser', { type: 'close' }),
             },
@@ -556,6 +555,38 @@ export const diagramMachine = setup({
               actions: sendTo('relationshipsBrowser', { type: 'close' }),
             },
           },
+        },
+        relationshipDetails: {
+          invoke: {
+            id: 'relationshipDetails',
+            src: 'relationshipDetailsActor',
+            input: ({ event, context }) => {
+              assertEvent(event, 'open.relationshipDetails')
+              return {
+                edgeId: event.edgeId,
+                view: context.view,
+              }
+            },
+            onDone: {
+              target: '#idle',
+            },
+          },
+          on: {
+            'close.overlay': {
+              actions: sendTo('relationshipDetails', { type: 'close' }),
+            },
+            'key.esc': {
+              actions: sendTo('relationshipDetails', { type: 'close' }),
+            },
+          },
+        },
+      },
+      on: {
+        // We received another view, close overlay and process event again
+        'update.view': {
+          guard: 'is another view',
+          actions: raise(({ event }) => event, { delay: 50 }),
+          target: '#idle',
         },
       },
       exit: [
@@ -759,6 +790,9 @@ export const diagramMachine = setup({
         }),
       }),
       target: '.overlay.elementDetails',
+    },
+    'open.relationshipDetails': {
+      target: '.overlay.relationshipDetails',
     },
     'open.relationshipsBrowser': {
       target: '.overlay.relationshipsBrowser',

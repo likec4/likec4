@@ -17,12 +17,11 @@ import {
 } from '../../../base/primitives'
 import { useEnabledFeature } from '../../../context'
 import { useDiagram } from '../../../hooks2'
-import type { RelationshipsBrowserTypes } from '../_types'
+import type { RelationshipDetailsTypes } from '../_types'
 import { ElementActions } from './ElementActions'
-import { EmptyNode } from './EmptyNode'
 
 export const nodeTypes = {
-  element: customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
+  element: customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
     return (
       <ElementNodeContainer nodeProps={props}>
         <ElementShape {...props} />
@@ -33,7 +32,7 @@ export const nodeTypes = {
     )
   }),
 
-  compound: customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
+  compound: customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
     return (
       <CompoundNodeContainer nodeProps={props}>
         <CompoundTitle {...props} />
@@ -41,13 +40,10 @@ export const nodeTypes = {
       </CompoundNodeContainer>
     )
   }),
-  empty: customNode<RelationshipsBrowserTypes.EmptyNodeData>((props) => {
-    return <EmptyNode {...props} />
-  }),
-} satisfies { [key in RelationshipsBrowserTypes.Node['type']]: any }
+} satisfies { [key in RelationshipDetailsTypes.Node['type']]: any }
 
 export const edgeTypes = {
-  relationships: customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
+  relationship: customEdge<RelationshipDetailsTypes.EdgeData>((props) => {
     const { enableNavigateTo } = useEnabledFeature('NavigateTo')
     const {
       sourceX,
@@ -64,6 +60,7 @@ export const edgeTypes = {
           drag
           dragElastic={0}
           dragMomentum={false}
+          // @ts-expect-error TODO: fix this
           edgeProps={props}
           labelXY={{
             x: labelX,
@@ -91,11 +88,11 @@ export const edgeTypes = {
       </EdgeContainer>
     )
   }),
-} satisfies { [key in RelationshipsBrowserTypes.Edge['type']]: any }
+} satisfies { [key in RelationshipDetailsTypes.Edge['type']]: any }
 
 type ElementPortsProps = NodeProps<
   Pick<
-    RelationshipsBrowserTypes.ElementNodeData,
+    RelationshipDetailsTypes.ElementNodeData,
     | 'ports'
     | 'height'
   >
@@ -131,7 +128,7 @@ export const ElementPorts = ({ data: { ports, height: h } }: ElementPortsProps) 
 }
 type CompoundPortsProps = NodeProps<
   Pick<
-    RelationshipsBrowserTypes.CompoundNodeData,
+    RelationshipDetailsTypes.CompoundNodeData,
     'ports'
   >
 >

@@ -15,6 +15,7 @@ import { vector, VectorImpl } from '../../../utils/vector'
 import { bezierControlPoints, bezierPath, isSamePoint } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import * as edgesCss from './edges.css'
+import { RelationshipsDropdownMenu } from './RelationshipsDropdownMenu'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
 
 const curve = d3line<XYPosition>()
@@ -27,7 +28,11 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
   const diagram = useDiagram()
-  const { enableNavigateTo, enableEdgeEditing } = useEnabledFeature('NavigateTo', 'EdgeEditing')
+  const { enableNavigateTo, enableEdgeEditing, enableRelationshipDetails } = useEnabledFeature(
+    'NavigateTo',
+    'EdgeEditing',
+    'RelationshipDetails',
+  )
   const {
     id,
     source,
@@ -37,9 +42,11 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     targetX,
     targetY,
     data: {
+      id: edgeId,
       navigateTo,
       points,
       active = false,
+      dimmed = false,
       labelBBox,
       labelXY,
       ...data
@@ -300,6 +307,17 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       <EdgeLabel
         edgeProps={props}
         labelXY={{ x: labelX, y: labelY }}
+        {...enableRelationshipDetails && {
+          renderRoot: (props) => (
+            <RelationshipsDropdownMenu
+              sourceNode={sourceNode}
+              targetNode={targetNode}
+              disabled={!!dimmed}
+              edgeId={edgeId}>
+              <div {...props} />
+            </RelationshipsDropdownMenu>
+          ),
+        }}
       >
         {!isControlPointDragging && enableNavigateTo && navigateTo && (
           <EdgeActionButton

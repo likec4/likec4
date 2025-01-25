@@ -1,5 +1,4 @@
 import { type Fqn, type NodeId } from '@likec4/core'
-import { m } from 'framer-motion'
 import type { NodeProps } from '../../../base'
 import {
   CompoundDetailsButton,
@@ -44,7 +43,7 @@ export const nodeTypes = {
       <ElementTitle {...props} />
       <ElementActions {...props} />
       <ElementDetailsButtonWithHandler
-        fqn={props.data.fqn}
+        fqn={props.data.modelFqn}
         {...props} />
       <IfNotEnabled feature="ReadOnly">
         <ElementToolbar {...props} />
@@ -57,9 +56,9 @@ export const nodeTypes = {
       <ElementShape {...props} />
       <ElementTitle {...props} />
       <DeploymentElementActions {...props} />
-      {!!props.data.modelRef && (
+      {!!props.data.modelFqn && (
         <ElementDetailsButtonWithHandler
-          fqn={props.data.modelRef}
+          fqn={props.data.modelFqn}
           {...props} />
       )}
       <IfNotEnabled feature="ReadOnly">
@@ -79,7 +78,7 @@ export const nodeTypes = {
             {...props}
             onClick={e => {
               e.stopPropagation()
-              diagram.openElementDetails(props.data.fqn, props.id as NodeId)
+              diagram.openElementDetails(props.data.modelFqn, props.id as NodeId)
             }} />
         </IfEnabled>
         <IfNotEnabled feature="ReadOnly">

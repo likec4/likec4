@@ -1,4 +1,4 @@
-import type { DiagramEdge } from '@likec4/core'
+import type { DiagramEdge, DiagramView } from '@likec4/core'
 import { ActionIcon, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
@@ -18,6 +18,7 @@ import {
   useRelationshipDetails,
   useRelationshipsBrowserState,
 } from './hooks'
+import { SelectEdge } from './SelectEdge'
 import { useLayoutedDetails } from './useLayoutedDetails'
 
 export type RelationshipDetailsProps = {
@@ -51,6 +52,7 @@ export function RelationshipDetails({ actorRef }: RelationshipDetailsProps) {
 
 const selector = (state: RelationshipDetailsSnapshot) => ({
   edgeId: state.context.edgeId,
+  view: state.context.view,
   initialized: state.context.initialized,
 })
 
@@ -58,16 +60,16 @@ const RelationshipDetailsInner = memo(() => {
   const browser = useRelationshipDetails()
   const {
     edgeId,
+    view,
     initialized,
   } = useRelationshipsBrowserState(selector)
 
   const {
-    view,
     edge,
     xynodes,
     xyedges,
     bounds,
-  } = useLayoutedDetails(edgeId)
+  } = useLayoutedDetails(edgeId, view)
   const [nodes, setNodes, onNodesChange] = useNodesState(xynodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(xyedges)
 
@@ -130,6 +132,7 @@ const RelationshipDetailsInner = memo(() => {
       >
         <TopLeftPanel
           edge={edge}
+          view={view}
           hasStepBack={hasStepBack}
           hasStepForward={hasStepForward}
           onStepBack={() => historyOps.back()}
@@ -157,6 +160,7 @@ const RelationshipDetailsInner = memo(() => {
 
 type TopLeftPanelProps = {
   edge: DiagramEdge
+  view: DiagramView
   hasStepBack: boolean
   hasStepForward: boolean
   onStepBack: () => void
@@ -164,6 +168,7 @@ type TopLeftPanelProps = {
 }
 const TopLeftPanel = ({
   edge,
+  view,
   hasStepBack,
   hasStepForward,
   onStepBack,
@@ -216,17 +221,11 @@ const TopLeftPanel = ({
               </ActionIcon>
             </m.div>
           )}
-          {
-            /* <Group gap={'xs'} wrap={'nowrap'} ml={'sm'}>
-            <Box fz={'xs'} fw={'500'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box>
-            <SelectElement
-              subjectId={subjectId}
-              onSelect={(id) => browser.navigateTo(id)}
-              viewId={browser.getState().scope?.id ?? '' as any}
-              scope={'global'}
-            />
-          </Group> */
-          }
+
+          <Group gap={'xs'} wrap={'nowrap'} ml={'sm'}>
+            {/* <Box fz={'xs'} fw={'500'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box> */}
+            <SelectEdge edge={edge} view={view} />
+          </Group>
         </AnimatePresence>
       </Group>
     </Panel>

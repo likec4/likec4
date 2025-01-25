@@ -1,4 +1,4 @@
-import { type BBox, type DiagramView, type EdgeId, type Fqn, invariant } from '@likec4/core'
+import { type BBox, type DiagramView, type EdgeId, invariant } from '@likec4/core'
 import {
   type ReactFlowInstance,
 } from '@xyflow/react'
@@ -10,7 +10,6 @@ import {
   type SnapshotFrom,
   assign,
   cancel,
-  enqueueActions,
   raise,
   setup,
 } from 'xstate'
@@ -21,6 +20,7 @@ type XYFLowInstance = ReactFlowInstance<RelationshipDetailsTypes.Node, Relations
 
 export type Input = {
   edgeId: EdgeId
+  view: DiagramView
   // scope?: DiagramView | null
   // parentRef?: AnyActorRef| null
 }
@@ -30,6 +30,7 @@ export type Context = Readonly<
     // parentRef: AnyActorRef | null
     xyflow: XYFLowInstance | null
     initialized: boolean
+    // bounds: BBox | null
   }
 >
 
@@ -39,8 +40,9 @@ export type Events =
   | { type: 'xyflow.edgeClick'; edge: RelationshipDetailsTypes.Edge }
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.resized' }
+  // | { type: 'update.bounds'; bounds: BBox }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
-  // | { type: 'navigate.to'; subject: Fqn }
+  | { type: 'navigate.to'; edgeId: EdgeId }
   | { type: 'close' }
 
 export const relationshipDetailsActor = setup({
@@ -109,14 +111,14 @@ export const relationshipDetailsActor = setup({
         //     }
         //   }),
         // },
-        // 'navigate.to': {
-        //   actions: [
-        //     assign({
-        //       subject: ({ event }) => event.subject,
-        //     }),
-        //     raise({ type: 'fitDiagram' }, { delay: 50 }),
-        //   ],
-        // },
+        'navigate.to': {
+          actions: [
+            assign({
+              edgeId: ({ event }) => event.edgeId,
+            }),
+            raise({ type: 'fitDiagram' }, { delay: 50 }),
+          ],
+        },
         'close': {
           target: 'closed',
         },

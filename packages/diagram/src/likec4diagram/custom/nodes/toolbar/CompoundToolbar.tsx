@@ -15,16 +15,16 @@ export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
   const {
     data: {
       style,
-      fqn,
+      modelFqn,
     },
   } = props
 
-  const { elementColor, onColorPreview, onChange } = useHandlers(fqn, props)
+  const { elementColor, onColorPreview, onChange } = useHandlers(modelFqn, props)
 
   return (
     <Toolbar
       nodeProps={props}
-      title={fqn}
+      title={modelFqn}
       align="start">
       <ColorButton
         elementColor={elementColor}
@@ -38,8 +38,8 @@ export function CompoundElementToolbar(props: CompoundElementToolbarProps) {
         elementBorderStyle={style?.border}
         onChange={onChange}
       />
-      {enableVscode && <GoToSourceButton elementId={fqn} />}
-      {enableRelationshipBrowser && <BrowseRelationshipsButton fqn={fqn} />}
+      {enableVscode && <GoToSourceButton elementId={modelFqn} />}
+      {enableRelationshipBrowser && <BrowseRelationshipsButton fqn={modelFqn} />}
     </Toolbar>
   )
 }
@@ -51,7 +51,7 @@ export function CompoundDeploymentToolbar(props: CompoundDeploymentToolbarProps)
     data: {
       deploymentFqn,
       style,
-      modelRef,
+      modelFqn,
     },
   } = props
 
@@ -75,7 +75,7 @@ export function CompoundDeploymentToolbar(props: CompoundDeploymentToolbarProps)
         onChange={onChange}
       />
       {enableVscode && <GoToSourceButton deploymentId={deploymentFqn} />}
-      {enableRelationshipBrowser && modelRef && <BrowseRelationshipsButton fqn={modelRef} />}
+      {enableRelationshipBrowser && modelFqn && <BrowseRelationshipsButton fqn={modelFqn} />}
     </Toolbar>
   )
 }
