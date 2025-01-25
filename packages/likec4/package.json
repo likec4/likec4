@@ -104,7 +104,7 @@
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "1.7.0",
-    "@likec4/core": "workspace:*",
+    "@likec4/core": "workspace:~",
     "@vitejs/plugin-react-swc": "3.7.2",
     "playwright": "1.49.1",
     "react": "~19.0.0",
