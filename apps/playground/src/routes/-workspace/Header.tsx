@@ -14,7 +14,7 @@ import {
   PopoverDropdown,
   PopoverTarget,
   Text,
-  ThemeIcon
+  ThemeIcon,
 } from '@mantine/core'
 import { IconAlertCircle, IconChevronDown, IconShare, IconTrash } from '@tabler/icons-react'
 import { Link, useLoaderData } from '@tanstack/react-router'
@@ -27,7 +27,7 @@ import { useWorkspaces } from '../../state/use-workspaces'
 
 export const Header = memo(() => {
   const { isCustom, title } = useLoaderData({
-    from: '/w/$id'
+    from: '/w/$id',
   })
   const isModified = useWorkspaceState(s => s.isModified())
 
@@ -38,7 +38,7 @@ export const Header = memo(() => {
         <Anchor href="https://likec4.dev/" target="_blank" display="contents">
           <Logo
             style={{
-              height: 22
+              height: 22,
             }} />
         </Anchor>
         <Box fz={'sm'} fw={500} visibleFrom="md">{title}</Box>
@@ -118,13 +118,23 @@ function PlaygroundsMenu() {
       </MenuTarget>
 
       <MenuDropdown>
-        <MenuItem component={Link} to={'/w/$id/'} params={{ id: nanoid(6) }}>New blank...</MenuItem>
+        <MenuItem renderRoot={(props) => <Link {...props} to={'/w/$id/'} params={{ id: nanoid(6) }} />}>
+          New blank...
+        </MenuItem>
         <MenuDivider />
         <MenuLabel>Examples</MenuLabel>
-        <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'tutorial' }}>Tutorial</MenuItem>
-        <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'bigbank' }}>BigBank</MenuItem>
-        <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'dynamic' }}>Dynamic View</MenuItem>
-        <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'deployment' }}>Deployments</MenuItem>
+        <MenuItem renderRoot={(props) => <Link {...props} to={'/w/$id/'} params={{ id: 'tutorial' }} />}>
+          Tutorial
+        </MenuItem>
+        <MenuItem renderRoot={(props) => <Link {...props} to={'/w/$id/'} params={{ id: 'bigbank' }} />}>
+          BigBank
+        </MenuItem>
+        <MenuItem renderRoot={(props) => <Link {...props} to={'/w/$id/'} params={{ id: 'dynamic' }} />}>
+          Dynamic View
+        </MenuItem>
+        <MenuItem renderRoot={(props) => <Link {...props} to={'/w/$id/'} params={{ id: 'deployment' }} />}>
+          Deployments
+        </MenuItem>
         {workspaces.length > 0 && (
           <>
             <MenuDivider />
@@ -134,13 +144,15 @@ function PlaygroundsMenu() {
         {workspaces.map(({ key, name, title }) => (
           <MenuItem
             key={key}
-            activeProps={{
-              // @ts-expect-error data-hovered is not in MenuItemProps
-              ['data-hovered']: true
-            }}
-            component={Link}
-            to={'/w/$id/'}
-            params={{ id: name }}
+            renderRoot={(props) => (
+              <Link
+                to={'/w/$id/'}
+                params={{ id: name }}
+                activeProps={{
+                  ['data-hovered']: true,
+                }}
+                {...props} />
+            )}
             rightSection={current !== name
               ? (
                 <ActionIcon

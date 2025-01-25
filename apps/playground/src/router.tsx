@@ -7,7 +7,7 @@ import { routeTree } from './routeTree.gen'
 type RouteTree = typeof routeTree
 
 function createRouter() {
-  return createTanstackRouter<RouteTree, 'always'>({
+  return createTanstackRouter<RouteTree, 'always', true>({
     routeTree,
     context: {},
     basepath,
@@ -19,7 +19,7 @@ function createRouter() {
     defaultPreload: false,
     defaultNotFoundComponent: () => {
       return <NotFound />
-    }
+    },
     // defaultPreloadDelay: 200,
 
     // defaultPendingComponent: () => (

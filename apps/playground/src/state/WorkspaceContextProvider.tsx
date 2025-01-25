@@ -4,7 +4,7 @@ import { WorkspaceContext } from './WorkspaceContext'
 
 // export type WorkspaceContextValue = ReturnType<CreateWorkspaceStore>
 export function WorkspaceContextProvider({ children, ...props }: PropsWithChildren<CreateWorkspaceStore>) {
-  const store = useRef<CreatedWorkspaceStore>()
+  const store = useRef<CreatedWorkspaceStore>(null)
 
   if (!store.current) {
     store.current = createWorkspaceStore(props)
@@ -18,7 +18,7 @@ export function WorkspaceContextProvider({ children, ...props }: PropsWithChildr
         throw new Error('Workspace name cannot be changed, force remount')
       }
     },
-    [name]
+    [name],
   )
 
   /**
@@ -30,11 +30,11 @@ export function WorkspaceContextProvider({ children, ...props }: PropsWithChildr
     globalThis['currentDiagram'] = () => {
       const {
         diagrams,
-        viewId
+        viewId,
       } = store.current!.getState()
       console.dir({
         viewId,
-        ...diagrams[viewId]
+        ...diagrams[viewId],
       })
     }
     return () => {
