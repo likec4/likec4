@@ -1,15 +1,15 @@
-import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { Box, LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { RenderIcon } from '../components/RenderIcon'
-import { useTransparentBackground } from '../hooks'
+import { useLikeC4DiagramView, useTransparentBackground } from '../hooks'
 import * as css from './view.css'
 
 async function downloadAsPng({
   pngFilename,
-  viewport
+  viewport,
 }: {
   pngFilename: string
   viewport: HTMLElement
@@ -17,7 +17,7 @@ async function downloadAsPng({
   const { toBlob } = await import('html-to-image')
   const {
     width,
-    height
+    height,
   } = viewport.getBoundingClientRect()
   try {
     const blob = await toBlob(viewport, {
@@ -25,7 +25,7 @@ async function downloadAsPng({
       width,
       height,
       cacheBust: true,
-      imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+      imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
     })
     if (!blob) {
       throw new Error('Failed to create PNG blob')
@@ -72,15 +72,15 @@ export const Route = createFileRoute('/export/$viewId')({
   component: ExportPage,
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      download: asBoolean(search.download)
+      download: asBoolean(search.download),
     }
-  }
+  },
 })
 
 function ExportPage() {
   const {
     padding = 20,
-    download = false
+    download = false,
   } = Route.useSearch()
   const { viewId } = Route.useParams()
   const diagram = useLikeC4DiagramView(viewId)
@@ -114,11 +114,11 @@ function ExportPage() {
       downloadedRef.current = true
       downloadAsPng({
         pngFilename: viewId,
-        viewport
+        viewport,
       })
     },
     [],
-    500
+    500,
   )
 
   if (!diagram) {
@@ -138,7 +138,7 @@ function ExportPage() {
         minWidth: width,
         width: width,
         minHeight: height,
-        height: height
+        height: height,
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <LikeC4Diagram

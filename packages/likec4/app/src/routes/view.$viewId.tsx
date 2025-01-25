@@ -1,14 +1,15 @@
-import { useLikeC4DiagramView, useUpdateEffect } from '@likec4/diagram'
+import { useUpdateEffect } from '@likec4/diagram'
 import { Alert, Box, Button, Code, Container, Text } from '@mantine/core'
 import { createFileRoute, isNotFound, Outlet, useRouter } from '@tanstack/react-router'
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
+import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
+import { useLikeC4Model } from 'virtual:likec4/model'
 import { SidebarDrawer } from '../components/sidebar/Drawer'
 import { Header } from '../components/view-page/Header'
 import { withOverviewGraph } from '../const'
 import * as css from './view.css'
 
 export const Route = createFileRoute('/view/$viewId')({
-  component: ViewLayout
+  component: ViewLayout,
 })
 
 function Fallback({ error, resetErrorBoundary }: FallbackProps) {
@@ -35,7 +36,7 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
               resetErrorBoundary()
               router.navigate({
                 to: '/',
-                search: true
+                search: true,
               })
             }}
             variant="light"
@@ -75,7 +76,7 @@ function ViewLayout() {
 }
 
 function ViewHeader() {
-  const view = useLikeC4DiagramView(Route.useParams().viewId)
+  const view = useLikeC4Model().findView(Route.useParams().viewId)?.$view
   if (!view) {
     return null
   }

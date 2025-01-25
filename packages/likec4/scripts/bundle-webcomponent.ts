@@ -25,6 +25,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
     resolve: {
       conditions: ['production'],
       alias: {
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         '@likec4/core': resolve('../core/src'),
         '@likec4/diagram': resolve('../diagram/src'),
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),

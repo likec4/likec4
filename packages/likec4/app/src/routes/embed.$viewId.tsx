@@ -1,8 +1,8 @@
-import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { RenderIcon } from '../components/RenderIcon'
-import { useTransparentBackground } from '../hooks'
+import { useLikeC4DiagramView, useTransparentBackground } from '../hooks'
 
 export const Route = createFileRoute('/embed/$viewId')({
   component: EmbedPage,

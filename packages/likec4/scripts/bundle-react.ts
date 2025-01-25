@@ -7,6 +7,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
+import dts from 'vite-plugin-dts'
 import { shadowStyle } from 'vite-plugin-shadow-style'
 import { amIExecuted } from './_utils'
 
@@ -28,10 +29,11 @@ export async function buildReact(_isDev = false) {
     resolve: {
       conditions: ['production'],
       alias: {
-        '@likec4/core/model': resolve('../core/src/model'),
-        '@likec4/core/types': resolve('../core/src/types'),
-        '@likec4/core': resolve('../core/src'),
-        '@likec4/diagram': resolve('../diagram/src'),
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+        // '@likec4/core/model': resolve('../core/src/model'),
+        // '@likec4/core/types': resolve('../core/src/types'),
+        // '@likec4/core': resolve('../core/src'),
+        // '@likec4/diagram': resolve('../diagram/src'),
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
       },
     },
@@ -86,6 +88,7 @@ export async function buildReact(_isDev = false) {
           'react-dom/client',
           'likec4/model',
           'likec4/react',
+          /@likec4\/core/,
           '@emotion/is-prop-valid', // dev-only import from framer-motion
         ],
         plugins: [
@@ -105,6 +108,24 @@ export async function buildReact(_isDev = false) {
       react(),
       vanillaExtractPlugin({
         identifiers: 'short',
+      }),
+      dts({
+        // entryRoot: resolve('app/react/components'),
+        tsconfigPath: resolve('app/react/tsconfig.dts-bundle.json'),
+        rollupTypes: true,
+        staticImport: true,
+        bundledPackages: [
+          '@mantine/core',
+          '@mantine/hooks',
+          '@xyflow/react',
+          '@xyflow/system',
+          '@likec4/diagram',
+          'nanostores',
+          '@nanostores/react',
+        ],
+        compilerOptions: {
+          declarationMap: false,
+        },
       }),
     ],
   })

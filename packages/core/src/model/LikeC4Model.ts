@@ -239,8 +239,8 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   public view(viewId: M['View']): LikeC4ViewModel<M> {
     return nonNullable(this.#views.get(viewId as any), `View ${viewId} not found`)
   }
-  public findView(viewId: M['View']): LikeC4ViewModel<M> {
-    return nonNullable(this.#views.get(viewId as M['ViewId']), `View ${viewId} not found`)
+  public findView(viewId: M['View']): LikeC4ViewModel<M> | null {
+    return this.#views.get(viewId as M['ViewId']) ?? null
   }
 
   /**

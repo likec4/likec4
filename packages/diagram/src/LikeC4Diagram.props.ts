@@ -9,7 +9,6 @@ import type {
   WhereOperator,
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { XYBackground } from './base/Background'
 
 export type { WhereOperator }
 
@@ -110,7 +109,7 @@ export interface LikeC4DiagramProperties {
    * Background pattern
    * @default 'dots'
    */
-  background?: 'transparent' | 'solid' | XYBackground | undefined
+  background?: 'transparent' | 'solid' | 'dots' | 'lines' | 'cross' | undefined
 
   /**
    * Display webview with diagram title / description

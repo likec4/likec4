@@ -15,7 +15,6 @@
     "checkJs": false,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "strictBuiltinIteratorReturn": true,
     "baseUrl": ".",
     "types": [
       "react",

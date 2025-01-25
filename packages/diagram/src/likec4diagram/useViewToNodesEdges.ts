@@ -9,10 +9,10 @@ import {
   ElementKind,
   invariant,
   nonNullable,
+  Queue,
   whereOperatorAsPredicate,
 } from '@likec4/core'
 import { useDeepCompareMemo } from '@react-hookz/web'
-import Queue from 'mnemonist/queue'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../base/const'
 import type { Types } from './types'

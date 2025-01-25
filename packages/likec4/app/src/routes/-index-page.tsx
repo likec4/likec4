@@ -1,17 +1,18 @@
 import { Link } from '@tanstack/react-router'
 
-import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4Views } from '@likec4/diagram'
+import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { memo, useLayoutEffect, useState } from 'react'
 
 import type { DiagramView } from '@likec4/core'
 import { Box, Card, Group, SimpleGrid, Text } from '@mantine/core'
 import { useInViewport } from '@mantine/hooks'
 import { keys } from 'remeda'
+import { useLikeC4Model } from 'virtual:likec4/model'
 import { RenderIcon } from '../components/RenderIcon'
 import * as styles from './index.css'
 
 export default function IndexPage() {
-  const views = keys(useLikeC4Views())
+  const views = keys(useLikeC4Model().$model.views)
 
   return (
     <SimpleGrid
@@ -26,7 +27,7 @@ export default function IndexPage() {
 }
 
 const ViewCard = memo<{ viewId: string }>(({ viewId }) => {
-  const diagram = useLikeC4DiagramView(viewId)
+  const diagram = useLikeC4Model().findView(viewId)?.$view
   if (!diagram) {
     return null
   }

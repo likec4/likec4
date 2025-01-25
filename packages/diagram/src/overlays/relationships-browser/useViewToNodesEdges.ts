@@ -4,9 +4,9 @@ import {
   ElementKind,
   invariant,
   nonNullable,
+  Queue,
 } from '@likec4/core'
 import { useDeepCompareMemo } from '@react-hookz/web'
-import Queue from 'mnemonist/queue'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import { LayoutRelationshipsViewResult } from './-useRelationshipsView'

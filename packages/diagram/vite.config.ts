@@ -9,6 +9,11 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env.NODE_ENV': JSON.stringify('production'),
     },
+    resolve: {
+      alias: {
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+      },
+    },
     mode: 'production',
     build: {
       emptyOutDir: true,

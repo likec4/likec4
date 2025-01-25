@@ -1,4 +1,4 @@
-import { StaticLikeC4Diagram, useLikeC4DiagramView, useLikeC4View, useUpdateEffect } from '@likec4/diagram'
+import { StaticLikeC4Diagram, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
 import {
   type BoxProps,
   type TreeNodeData,
@@ -48,7 +48,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
     from: '/view/$viewId',
   })
   const router = useRouter()
-  const diagram = useLikeC4View(viewId)
+  const diagram = useLikeC4Model(true).view(viewId).$view
 
   const tree = useTree({
     multiple: false,
@@ -159,7 +159,7 @@ function DiagramPreview({
   children,
   onClick,
 }: PropsWithChildren<{ viewId: string; onClick: (event: MouseEvent) => void }>) {
-  const diagram = useLikeC4DiagramView(viewId)
+  const diagram = useLikeC4Model(true, 'layouted').view(viewId).$view
 
   if (!diagram) {
     return children

@@ -1,10 +1,11 @@
 import type { ViewId } from '@likec4/core'
-import { LikeC4Diagram, useLikeC4DiagramView } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { RenderIcon } from '../components/RenderIcon'
 import { SidebarDrawerOps } from '../components/sidebar/state'
 import { isDevelopment, withOverviewGraph } from '../const'
+import { useLikeC4DiagramView } from '../hooks'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
   component: ViewEditor,

@@ -32,6 +32,8 @@ export async function bundleApp() {
     resolve: {
       conditions: ['production'],
       alias: {
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+        '@likec4/core/compute-view': resolve('../core/src/compute-view'),
         '@likec4/core/model': resolve('../core/src/model'),
         '@likec4/core/types': resolve('../core/src/types'),
         '@likec4/core': resolve('../core/src'),
@@ -116,6 +118,7 @@ export async function bundleApp() {
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           resolve(cwd, 'app/src/const.js'),
+          /@likec4\/core/,
           /virtual\:likec4/,
         ],
       },

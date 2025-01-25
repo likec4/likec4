@@ -32,16 +32,16 @@
     "@fontsource/ibm-plex-sans": "^5.1.1",
     "astro": "~4.16.18",
     "astro-og-canvas": "^0.5.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "starlight-heading-badges": "^0.3.0",
     "starlight-links-validator": "^0.13.4",
     "typescript": "^5.7.3"
   },
   "devDependencies": {
     "@types/picomatch": "^2.3.4",
-    "@types/react": "18.3.11",
-    "@types/react-dom": "18.3.1",
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3",
     "likec4": "workspace:*",
     "npm-run-all2": "^7.0.1",
     "tsx": "~4.19.2"

@@ -14,9 +14,8 @@ import type {
 import { useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { invariant, isAncestor, isDescendantOf, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
+import { DefaultMap, invariant, isAncestor, isDescendantOf, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
 import type { ElementModel, RelationshipModel } from '@likec4/core/model'
-import DefaultMap from 'mnemonist/default-map'
 import {
   concat,
   filter,

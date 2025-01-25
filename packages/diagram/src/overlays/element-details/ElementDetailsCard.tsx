@@ -47,7 +47,7 @@ import { IconRenderer } from '../../context'
 import { useDiagramContext, useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
 import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.props'
-import { useLikeC4CurrentViewModel } from '../../likec4model'
+import { useLikeC4Model } from '../../likec4model'
 import * as css from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelStructure } from './TabPanelStructure'
@@ -93,9 +93,11 @@ type TabName = typeof TABS[number]
 
 export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   const {
+    viewId,
     fromNode,
     rectFromNode,
   } = useDiagramContext(s => ({
+    viewId: s.view.id,
     fromNode: s.activeElementDetails?.fromNode ?? null,
     rectFromNode: s.activeElementDetails?.nodeRectScreen ?? null,
   }))
@@ -108,7 +110,8 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
     defaultValue: 'Properties',
   })
   const diagram = useDiagram()
-  const viewModel = useLikeC4CurrentViewModel()
+  const likec4model = useLikeC4Model(true)
+  const viewModel = likec4model.view(viewId)
   // const currentView = diagram.currentView()
 
   // const diagramNode = currentView.nodes.find(n => n.id === fqn)
@@ -116,7 +119,6 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   const nodeModel = fromNode ? viewModel.findNode(fromNode) : viewModel.findNodeWithElement(fqn)
   // invariant(nodeModel && nodeModel.hasElement(), `NodeModel with fqn ${fqn} not found`)
   const elementModel = viewModel.$model.element(fqn)
-  const viewId = viewModel.id
 
   // const incoming = elementModel.incoming().map(r => r.id).toArray()
   // const outgoing = elementModel.outgoing().map(r => r.id).toArray()
@@ -139,7 +141,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
   )
 
   let defaultView = nodeModel?.navigateTo?.$view ?? elementModel.defaultView?.$view ?? null
-  if (defaultView?.id === diagram.currentView().id) {
+  if (defaultView?.id === viewId) {
     defaultView = null
   }
 

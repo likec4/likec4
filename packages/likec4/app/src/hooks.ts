@@ -1,4 +1,5 @@
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
+import { useLikeC4Model } from 'virtual:likec4/model'
 
 // To get the transparent background
 // We need to add a class to the HTML element
@@ -13,4 +14,8 @@ export function useTransparentBackground(enabled = true) {
       htmlEl.classList.remove(classname)
     }
   }, [enabled])
+}
+
+export function useLikeC4DiagramView(viewId: string) {
+  return useLikeC4Model().findView(viewId)?.$view ?? null
 }

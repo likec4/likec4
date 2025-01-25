@@ -4,14 +4,10 @@ export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
 
 export {
-  useLikeC4DiagramView,
-  useLikeC4ElementModel,
   useLikeC4ElementsTree,
   useLikeC4Model,
-  useLikeC4View,
-  useLikeC4ViewModel,
-  useLikeC4Views,
 } from './likec4model'
+
 export { LikeC4ModelProvider } from './LikeC4ModelProvider'
 
 export { useSetState } from './hooks/useSetState'
@@ -22,5 +18,3 @@ export type * from './LikeC4Diagram.props'
 
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
 export type { StaticLikeC4DiagramProps } from './StaticLikeC4Diagram'
-
-export { BaseXYFlow } from './base/BaseXYFlow'
