@@ -8921,7 +8921,7 @@ __metadata:
     react-dom: "npm:~19.0.0"
     react-error-boundary: "npm:^4.1.2"
     react-resizable-panels: "npm:^2.1.7"
-    react-shadow: "npm:^20.5.0"
+    react-shadow: "npm:^20.6.0"
     remeda: "npm:^2.19.0"
     std-env: "npm:^3.8.0"
     strip-indent: "npm:^4.0.0"
@@ -11977,16 +11977,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-shadow@npm:^20.5.0":
-  version: 20.5.0
-  resolution: "react-shadow@npm:20.5.0"
+"react-shadow@npm:^20.6.0":
+  version: 20.6.0
+  resolution: "react-shadow@npm:20.6.0"
   dependencies:
     humps: "npm:^2.0.1"
   peerDependencies:
     prop-types: ^15.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/662c98518b2ba5a76534f8fdfcbb44414535cd92f4cb2f1e76142672ac1f29ddc0f730d2bf846972aeb1205e4c7ff8c978832d7cecce8faba82b7a60e2844d45
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/29860a603977193babbbe3b0959cad4e6f6c6045219c4a2cf249178bddb8aeb09aba4e30ad325086ca8ac18d481436d2284ce4476815a1f1937e05651eb041fa
   languageName: node
   linkType: hard
 

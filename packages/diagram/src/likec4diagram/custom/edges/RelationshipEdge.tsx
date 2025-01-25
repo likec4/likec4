@@ -69,19 +69,20 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     const sourceCenterPos = { x: sourceX, y: sourceY }
     const targetCenterPos = { x: targetX, y: targetY }
 
+    const nodeMargin = 6
     const points = data.dir === 'back'
       ? [
         targetCenterPos,
-        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos),
+        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos, nodeMargin),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos),
+        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos, nodeMargin),
         sourceCenterPos,
       ]
       : [
         sourceCenterPos,
-        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos),
+        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos, nodeMargin),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos),
+        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos, nodeMargin),
         targetCenterPos,
       ]
 
@@ -115,6 +116,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       if (!labelBBox || labelBBox.x === labelPos.x && labelBBox.y === labelPos.y) {
         return
       }
+      // This update stays only in internal xystate, not in diagram xstate
       xyflow.updateEdgeData(id, {
         labelXY: {
           x: labelPos.x,
