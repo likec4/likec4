@@ -16,7 +16,6 @@
   "devDependencies": {
     "@playwright/test": "^1.49.1",
     "@types/react": "18.3.4",
-    "@likec4/core": "file:../packages/core/package.tgz",
     "likec4": "file:../packages/likec4/package.tgz",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -24,5 +23,8 @@
     "typescript": "^5.7.2",
     "vitest": "^2.1.8",
     "zx": "^8.1.8"
+  },
+  "resolutions": {
+    "@likec4/core": "file:../packages/core/package.tgz"
   }
 }
