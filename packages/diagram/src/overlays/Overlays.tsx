@@ -1,9 +1,11 @@
 import { Box, Button, Code, Group, Notification } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { AnimatePresence } from 'framer-motion'
-import { memo } from 'react'
+import { AnimatePresence, useReducedMotion } from 'framer-motion'
+import { animate } from 'framer-motion/dom'
+import { memo, useEffect, useMemo } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { DiagramFeatures } from '../context'
+import { useXYStore } from '../hooks'
 import { useDiagramActor, useDiagramActorState } from '../hooks/useDiagramActor'
 import { ElementDetailsCard } from './element-details/ElementDetailsCard'
 import { Overlay } from './overlay/Overlay'
@@ -40,6 +42,10 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
 }
 
 export const Overlays = memo(() => {
+  const xyflowDomNode = useXYStore(s => s.domNode)
+  const xyflowRendererDom = useMemo(() => xyflowDomNode?.querySelector('.react-flow__renderer') ?? null, [
+    xyflowDomNode,
+  ])
   const { send } = useDiagramActor()
   const {
     relationshipsBrowserActor,
@@ -50,6 +56,22 @@ export const Overlays = memo(() => {
     relationshipDetailsActor: s.children.relationshipDetails,
     activeElementDetailsOf: s.context.activeElementDetails?.fqn ?? null,
   }))
+
+  const isMotionReduced = useReducedMotion() ?? false
+
+  const isActiveOverlay = !!activeElementDetailsOf
+
+  useEffect(() => {
+    if (!xyflowRendererDom || isMotionReduced) return
+    animate(xyflowRendererDom, {
+      opacity: isActiveOverlay ? 0.7 : 1,
+      filter: isActiveOverlay ? 'grayscale(1)' : 'grayscale(0)',
+      transform: isActiveOverlay ? `perspective(400px) translateZ(-12px) translateY(3px)` : `translateY(0)`,
+    }, {
+      duration: isActiveOverlay ? 0.35 : 0.17,
+    })
+  }, [isActiveOverlay, xyflowRendererDom])
+
   // )
   // const diagramStore = useDiagramStoreApi()
   // const {

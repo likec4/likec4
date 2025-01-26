@@ -76,7 +76,7 @@ export const SelectElement = ({
         </Button>
       </PopoverTarget>
       <PopoverDropdown p={0} miw={250} maw={400}>
-        <ScrollAreaAutosize mah={'70vh'} scrollbars="y" type="never" viewportRef={viewport}>
+        <ScrollAreaAutosize scrollbars="y" type="never" viewportRef={viewport} className={classes.scrollArea}>
           <Tree
             allowRangeSelection={false}
             selectOnClick={false}

@@ -72,6 +72,9 @@ export const relationshipDetailsActor = setup({
       }
     },
   },
+  guards: {
+    'enable: navigate.to': () => true,
+  },
 }).createMachine({
   initial: 'opening',
   context: ({ input }) => ({

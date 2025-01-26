@@ -2,15 +2,12 @@ import type { Fqn } from '@likec4/core'
 import { ActionIcon, Box, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
-import { Panel, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react'
+import { Panel, ReactFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { memo, useEffect, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
-import { updateEdges } from '../../base/updateEdges'
-import { updateNodes } from '../../base/updateNodes'
-import { useUpdateEffect } from '../../hooks'
 import { useRelationshipsView } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
@@ -22,7 +19,6 @@ import {
   useRelationshipsBrowserState,
 } from './hooks'
 import { SelectElement } from './SelectElement'
-import { useViewToNodesEdges } from './useViewToNodesEdges'
 
 export type RelationshipsBrowserProps = {
   actorRef: RelationshipsBrowserActorRef
@@ -57,6 +53,10 @@ const selector = (state: SnapshotFrom<RelationshipsBrowserActorRef>) => ({
   subjectId: state.context.subject,
   initialized: state.context.initialized,
   scope: state.context.scope,
+  nodes: state.context.xynodes,
+  edges: state.context.xyedges,
+  closeable: state.context.closeable,
+  enableNavigationMenu: state.context.enableNavigationMenu,
 })
 
 const RelationshipsBrowserInner = memo(() => {
@@ -65,21 +65,13 @@ const RelationshipsBrowserInner = memo(() => {
     subjectId,
     initialized,
     scope,
+    nodes,
+    edges,
+    closeable,
+    enableNavigationMenu,
   } = useRelationshipsBrowserState(selector)
 
-  const view = useRelationshipsView(subjectId)
-  const {
-    xynodes,
-    xyedges,
-  } = useViewToNodesEdges(view)
-  const [nodes, setNodes, onNodesChange] = useNodesState(xynodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(xyedges)
-
-  useUpdateEffect(() => {
-    setNodes(updateNodes(xynodes))
-    setEdges(updateEdges(xyedges))
-  }, [xynodes, xyedges])
-
+  const layouted = useRelationshipsView(subjectId)
   const [historySubjectId, historyOps, { history, current }] = useStateHistory(subjectId)
 
   useEffect(() => {
@@ -94,6 +86,10 @@ const RelationshipsBrowserInner = memo(() => {
     }
   }, [historySubjectId])
 
+  useEffect(() => {
+    browser.send({ type: 'update.view', layouted })
+  }, [layouted])
+
   const hasStepBack = current > 0
   const hasStepForward = current + 1 < history.length
 
@@ -106,8 +102,6 @@ const RelationshipsBrowserInner = memo(() => {
         className={clsx(initialized ? 'initialized' : 'not-initialized')}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        onEdgesChange={onEdgesChange}
-        onNodesChange={onNodesChange}
         fitViewPadding={0.05}
         onInit={useCallbackRef((instance) => {
           browser.send({ type: 'xyflow.init', instance })
@@ -131,6 +125,12 @@ const RelationshipsBrowserInner = memo(() => {
         onViewportResize={() => {
           browser.send({ type: 'xyflow.resized' })
         }}
+        onNodesChange={useCallbackRef((changes) => {
+          browser.send({ type: 'xyflow.applyNodeChages', changes })
+        })}
+        onEdgesChange={useCallbackRef((changes) => {
+          browser.send({ type: 'xyflow.applyEdgeChages', changes })
+        })}
         nodesDraggable={false}
         fitView={false}
         pannable
@@ -143,27 +143,30 @@ const RelationshipsBrowserInner = memo(() => {
           onStepBack={() => historyOps.back()}
           onStepForward={() => historyOps.forward()}
         />
-        <Panel position="top-right">
-          <ActionIcon
-            variant="default"
-            color="gray"
-            // color="gray"
-            // size={'lg'}
-            // data-autofocus
-            // autoFocus
-            onClick={(e) => {
-              e.stopPropagation()
-              browser.close()
-            }}>
-            <IconX />
-          </ActionIcon>
-        </Panel>
+        {closeable && (
+          <Panel position="top-right">
+            <ActionIcon
+              variant="default"
+              color="gray"
+              // color="gray"
+              // size={'lg'}
+              // data-autofocus
+              // autoFocus
+              onClick={(e) => {
+                e.stopPropagation()
+                browser.close()
+              }}>
+              <IconX />
+            </ActionIcon>
+          </Panel>
+        )}
       </BaseXYFlow>
     </LayoutGroup>
   )
 })
 
 type TopLeftPanelProps = {
+  enableNavigationMenu: boolean
   subjectId: Fqn
   hasStepBack: boolean
   hasStepForward: boolean
@@ -171,6 +174,7 @@ type TopLeftPanelProps = {
   onStepForward: () => void
 }
 const TopLeftPanel = ({
+  enableNavigationMenu,
   subjectId,
   hasStepBack,
   hasStepForward,
@@ -224,15 +228,17 @@ const TopLeftPanel = ({
               </ActionIcon>
             </m.div>
           )}
-          <Group gap={'xs'} wrap={'nowrap'} ml={'sm'}>
-            <Box fz={'xs'} fw={'500'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box>
-            <SelectElement
-              subjectId={subjectId}
-              onSelect={(id) => browser.navigateTo(id)}
-              viewId={browser.getState().scope?.id ?? '' as any}
-              scope={'global'}
-            />
-          </Group>
+          {enableNavigationMenu && (
+            <Group gap={'xs'} wrap={'nowrap'} ml={'sm'}>
+              <Box fz={'xs'} fw={'500'} style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>Relationships of</Box>
+              <SelectElement
+                subjectId={subjectId}
+                onSelect={(id) => browser.navigateTo(id)}
+                viewId={browser.getState().scope?.id ?? '' as any}
+                scope={'global'}
+              />
+            </Group>
+          )}
         </AnimatePresence>
       </Group>
     </Panel>

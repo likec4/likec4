@@ -49,7 +49,7 @@ function ViewReact() {
       experimentalEdgeEditing={false}
       showNotations={isDevelopment || hasNotations}
       nodesDraggable={false}
-      nodesSelectable={false}
+      nodesSelectable
       renderIcon={RenderIcon}
       onNavigateTo={onNavigateTo}
       onBurgerMenuClick={withOverviewGraph

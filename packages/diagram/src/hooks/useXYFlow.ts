@@ -1,3 +1,4 @@
+import { useCallbackRef } from '@mantine/hooks'
 import { type ReactFlowState, useInternalNode, useReactFlow, useStore, useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import type { Types } from '../likec4diagram/types'
@@ -9,7 +10,7 @@ export function useXYStore<StateSlice = unknown>(
   equalityFn?: (a: StateSlice, b: StateSlice) => boolean,
 ): StateSlice {
   return useStore(
-    selector as any,
+    useCallbackRef(selector as any),
     equalityFn ?? shallowEqual,
   )
 }

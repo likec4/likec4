@@ -51,6 +51,7 @@ import type { ElementIconRenderer, OnNavigateTo } from '../../LikeC4Diagram.prop
 import { useLikeC4Model } from '../../likec4model'
 import * as css from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
+import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
 
 const Divider = MantineDivider.withProps({
@@ -432,16 +433,14 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                 </ScrollArea>
               </TabsPanel>
 
-              {
-                /* <TabsPanel value="Relationships">
-                {activeTab === 'Relationships' && (
+              <TabsPanel value="Relationships">
+                {nodeModel && activeTab === 'Relationships' && (
                   <TabPanelRelationships
                     element={elementModel}
                     node={nodeModel}
-                    currentView={currentView} />
+                    currentView={diagram.currentView()} />
                 )}
-              </TabsPanel> */
-              }
+              </TabsPanel>
 
               <TabsPanel value="Views">
                 <ScrollArea scrollbars="y" type="auto">

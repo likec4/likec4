@@ -16,3 +16,10 @@ export const label = style({
     },
   },
 })
+
+export const scrollArea = style({
+  maxHeight: [
+    '70vh',
+    'calc(100cqh - 70px)',
+  ],
+})

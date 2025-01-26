@@ -24,7 +24,7 @@ export const edgeTypes = {
             y: `calc(${labelY}px - 100%)`,
           }}
           style={{
-            maxWidth: Math.abs(props.targetX - props.sourceX - 70),
+            maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
           }}>
           {enableNavigateTo && navigateTo && (
             <EdgeActionButton

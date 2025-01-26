@@ -1,16 +1,14 @@
-// @ts-nocheck
-import { type DiagramView, type LikeC4Model, nameFromFqn } from '@likec4/core'
-import { Box, Button, Group, Paper, SegmentedControl, Stack, Text, ThemeIcon } from '@mantine/core'
+import { type DiagramView, type Fqn, type LikeC4Model, nameFromFqn } from '@likec4/core'
+import { Box, Group, Paper, Stack, Text, ThemeIcon } from '@mantine/core'
 import { useId } from '@mantine/hooks'
-import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
-import { Panel } from '@xyflow/react'
+import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
+import { useActorRef } from '@xstate/react'
 import { LayoutGroup } from 'framer-motion'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { unique } from 'remeda'
-import { useDiagramState } from '../../hooks'
-// import { useOverlayDialog } from '../OverlayContext'
-// import { RelationshipsXYFlow } from '../relationships-of/RelationshipsXYFlow'
-// import { useLayoutedRelationships } from '../relationships-of/use-layouted-relationships'
+import { DiagramFeatures, useEnabledFeature } from '../../context'
+import { relationshipsBrowserActor } from '../relationships-browser/actor'
+import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
 import * as css from './TabPanelRelationships.css'
 
 type RelationshipsTabPanelProps = {
@@ -25,8 +23,6 @@ export function TabPanelRelationships({
   element,
 }: RelationshipsTabPanelProps) {
   const layoutId = useId()
-  const enableRelationshipBrowser = useDiagramState(s => s.enableRelationshipBrowser)
-  // const overlay = useOverlayDialog()
   const [scope, setScope] = useState<'global' | 'view'>('view')
 
   const incoming = [...element.incoming()].map(r => r.id)
@@ -39,13 +35,6 @@ export function TabPanelRelationships({
     ...incoming,
     ...outgoing,
   ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
-
-  const {
-    edges,
-    nodes,
-    bounds,
-  } = useLayoutedRelationships(element.id, currentView, scope)
-
   return (
     <Stack gap={'xs'} pos={'relative'} w={'100%'} h={'100%'}>
       {(incoming.length + outgoing.length) > 0 && (
@@ -88,7 +77,9 @@ export function TabPanelRelationships({
 
       <Box className={css.xyflow}>
         <LayoutGroup id={layoutId}>
-          <RelationshipsXYFlow
+          <EmbeddedRelationshipsBrowser subjectId={element.id} currentView={currentView} />
+          {
+            /* <RelationshipsXYFlow
             subjectId={element.id}
             bounds={bounds}
             nodes={nodes}
@@ -129,7 +120,8 @@ export function TabPanelRelationships({
                 </Button>
               </Panel>
             )}
-          </RelationshipsXYFlow>
+          </RelationshipsXYFlow> */
+          }
         </LayoutGroup>
       </Box>
     </Stack>
@@ -199,3 +191,27 @@ function RelationshipsStat({
     </Paper>
   )
 }
+
+const EmbeddedRelationshipsBrowser = memo<{ subjectId: Fqn; currentView: DiagramView }>(
+  ({ subjectId, currentView }) => {
+    const actor = useActorRef(relationshipsBrowserActor, {
+      input: {
+        subject: subjectId,
+        scope: currentView,
+        closeable: false,
+        enableNavigationMenu: false,
+      },
+    })
+
+    return (
+      <DiagramFeatures
+        overrides={{
+          enableRelationshipBrowser: false,
+          enableNavigateTo: false,
+        }}>
+        <RelationshipsBrowser actorRef={actor} />
+      </DiagramFeatures>
+    )
+  },
+  (prev, next) => prev.subjectId === next.subjectId,
+)

@@ -13,7 +13,7 @@ import { LayoutRelationshipsViewResult } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes } from './_types'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
-function viewToNodesEdge(
+export function viewToNodesEdge(
   view: Pick<LayoutRelationshipsViewResult, 'nodes' | 'edges'>,
 ): {
   xynodes: RelationshipsBrowserTypes.Node[]
