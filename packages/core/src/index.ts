@@ -2,6 +2,7 @@ import DefaultMap from 'mnemonist/default-map'
 import LinkedList from 'mnemonist/linked-list'
 import Queue from 'mnemonist/queue'
 import Stack from 'mnemonist/stack'
+// import dagre from '@dagrejs/dagre'
 
 export { DefaultMap, LinkedList, Queue, Stack }
 
@@ -39,5 +40,3 @@ export {
   unsafeComputeView,
 } from './compute-view'
 export type { ComputeViewResult } from './compute-view'
-
-export { default as dagre } from '@dagrejs/dagre'

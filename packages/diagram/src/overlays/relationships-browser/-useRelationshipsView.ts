@@ -13,9 +13,8 @@ import type {
 } from '@likec4/core/types'
 import { useMemo } from 'react'
 
-import { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
+import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import {
-  dagre,
   DefaultMap,
   invariant,
   isAncestor,

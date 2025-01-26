@@ -107,10 +107,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@dagrejs/dagre": "1.1.4",
     "type-fest": "4.28.1"
   },
   "devDependencies": {
+    "@dagrejs/dagre": "1.1.4",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "7.15.2",
     "@types/natural-compare-lite": "^1.4.2",
