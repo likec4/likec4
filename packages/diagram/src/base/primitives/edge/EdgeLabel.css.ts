@@ -23,7 +23,7 @@ export const stepEdgeNumber = style({
     [`${whereDark} :where([data-likec4-color="gray"]) &`]: {
       backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`,
     },
-    [`:where([data-edge-active='true']) &`]: {
+    [`:where([data-edge-active='true'], [data-edge-hovered="true"]) &`]: {
       backgroundColor: 'transparent',
     },
   },
