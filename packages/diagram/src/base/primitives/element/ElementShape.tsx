@@ -164,21 +164,35 @@ type Data = Pick<
   | 'height'
 >
 
-type ElementShapePrimitiveProps = NodeProps<Data> & {
+// type ElementShapePrimitiveProps = NodeProps<Data> & {
+type ElementShapePrimitiveProps = {
+  data: Data
+  width?: number
+  height?: number
+  isMultiple?: boolean | undefined
   /**
    * @default true
    */
   withSelectedIndicator?: boolean | undefined
 }
 
-export function ElementShape({ data, width, height, withSelectedIndicator = true }: ElementShapePrimitiveProps) {
+export function ElementShape(
+  { data, width, height, isMultiple = false, withSelectedIndicator = true }: ElementShapePrimitiveProps,
+) {
   let w = !!width && width > 10 ? width : data.width
   let h = !!height && height > 10 ? height : data.height
   return (
-    <svg className={css.shapeSvg}>
-      {withSelectedIndicator && <SelectedIndicator shape={data.shape} w={w} h={h} />}
-      <ElementShapeSvg shape={data.shape} w={w} h={h} />
-    </svg>
+    <>
+      {isMultiple && (
+        <svg className={css.shapeSvgMultiple} viewBox={`0 0 ${w} ${h}`}>
+          <ElementShapeSvg shape={data.shape} w={w} h={h} />
+        </svg>
+      )}
+      <svg className={css.shapeSvg} viewBox={`0 0 ${w} ${h}`}>
+        {withSelectedIndicator && <SelectedIndicator shape={data.shape} w={w} h={h} />}
+        <ElementShapeSvg shape={data.shape} w={w} h={h} />
+      </svg>
+    </>
   )
 }
 

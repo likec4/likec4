@@ -1,4 +1,4 @@
-import { createVar, fallbackVar, keyframes, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { easings, mantine, vars } from '../../../theme-vars'
 import { container, stokeFillMix } from './ElementNodeContainer.css'
 
@@ -68,31 +68,7 @@ export const fillMixStroke = style({
 
 const filterShadow = createVar('filter-shadow')
 
-export const shapeSvgMultiple = style({
-  top: 0,
-  left: 0,
-  position: 'absolute',
-  pointerEvents: 'none',
-  transformOrigin: '50% 50%',
-  fill: vars.element.fill,
-  stroke: 'none',
-  zIndex: -1,
-  transition: 'opacity 500ms ease-out',
-  transform: 'translate(8px,10px)',
-  opacity: 0.5,
-  selectors: {
-    [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-      visibility: 'hidden',
-    },
-    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      transform: 'translate(8px,8px)',
-    },
-    ':where([data-likec4-shape="queue"]) &': {
-      transform: 'translate(-10px,8px)',
-    },
-  },
-})
-export const shapeSvg = style({
+const shapeBase = style({
   top: 0,
   left: 0,
   position: 'absolute',
@@ -102,10 +78,35 @@ export const shapeSvg = style({
   fill: vars.element.fill,
   stroke: vars.element.stroke,
   overflow: 'visible',
+  zIndex: -1,
+})
+
+export const shapeSvgMultiple = style([shapeBase, {
+  transformOrigin: '50% 25%',
+  transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
+  filter: ' brightness(0.65) saturate(0.8)',
+  stroke: 'none',
+  selectors: {
+    // [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
+    //   visibility: 'hidden',
+    // },
+    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+      transformOrigin: '50% 100%',
+    },
+    ':where([data-likec4-shape="queue"]) &': {
+      transformOrigin: '75% 25%',
+      // transform: 'translate(14px,15px) perspective(200px) translateZ(-2px)',
+    },
+  },
+  // filter: 'brightness(0.5)'
+}])
+globalStyle(`.${shapeSvgMultiple} ${fillMixStroke}`, {
+  fill: vars.element.fill,
+})
+export const shapeSvg = style([shapeBase, {
   filter: filterShadow,
   transition: `fill 120ms linear, filter 130ms ${easings.inOut}`,
   transitionDelay: '0ms',
-  zIndex: -1,
   vars: {
     [filterShadow]: `
       drop-shadow(0 2px 1px rgba(0, 0, 0, 0.21))
@@ -130,4 +131,4 @@ export const shapeSvg = style({
       },
     },
   },
-})
+}])
