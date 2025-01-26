@@ -2030,7 +2030,7 @@ __metadata:
     consola: "npm:^3.3.3"
     esbuild: "npm:^0.24.2"
     execa: "npm:^9.3.1"
-    glob: "npm:^11.0.0"
+    glob: "npm:^11.0.1"
     react: "npm:~19.0.0"
     react-dom: "npm:~19.0.0"
     typescript: "npm:^5.7.3"
@@ -7398,9 +7398,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "glob@npm:11.0.0"
+"glob@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "glob@npm:11.0.1"
   dependencies:
     foreground-child: "npm:^3.1.0"
     jackspeak: "npm:^4.0.1"
@@ -7410,7 +7410,7 @@ __metadata:
     path-scurry: "npm:^2.0.0"
   bin:
     glob: dist/esm/bin.mjs
-  checksum: 10c0/419866015d8795258a8ac51de5b9d1a99c72634fc3ead93338e4da388e89773ab21681e494eac0fbc4250b003451ca3110bb4f1c9393d15d14466270094fdb4e
+  checksum: 10c0/2b32588be52e9e90f914c7d8dec32f3144b81b84054b0f70e9adfebf37cd7014570489f2a79d21f7801b9a4bd4cca94f426966bfd00fb64a5b705cfe10da3a03
   languageName: node
   linkType: hard
 
@@ -8902,7 +8902,7 @@ __metadata:
     fdir: "npm:^6.4.2"
     framer-motion: "npm:^11.16.0"
     get-port: "npm:^7.1.0"
-    glob: "npm:^11.0.0"
+    glob: "npm:^11.0.1"
     html-to-image: "npm:^1.11.11"
     json5: "npm:^2.2.3"
     langium: "npm:3.3.0"
