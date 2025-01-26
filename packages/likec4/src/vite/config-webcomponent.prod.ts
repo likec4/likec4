@@ -32,6 +32,9 @@ export async function viteWebcomponentConfig({
     configFile: false,
     publicDir: false,
     mode: 'production',
+    resolve: {
+      conditions: ['production'],
+    },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       'process.env.NODE_ENV': '"production"',

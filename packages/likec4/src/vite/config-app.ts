@@ -67,7 +67,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       'process.env.NODE_ENV': '"development"',
     },
     resolve: {
-      conditions: ['development'],
+      conditions: ['development', 'sources'],
       dedupe: [
         'react',
         'react-dom',

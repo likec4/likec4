@@ -1,4 +1,4 @@
-import { computeRelationshipsView } from '@likec4/core/compute-view'
+import { computeRelationshipsView } from '@likec4/core'
 import type {
   DiagramEdge,
   DiagramNode,
@@ -13,8 +13,17 @@ import type {
 } from '@likec4/core/types'
 import { useMemo } from 'react'
 
-import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { DefaultMap, invariant, isAncestor, isDescendantOf, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
+import { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
+import {
+  dagre,
+  DefaultMap,
+  invariant,
+  isAncestor,
+  isDescendantOf,
+  nonNullable,
+  sortParentsFirst,
+  toArray,
+} from '@likec4/core'
 import type { ElementModel, RelationshipModel } from '@likec4/core/model'
 import {
   concat,

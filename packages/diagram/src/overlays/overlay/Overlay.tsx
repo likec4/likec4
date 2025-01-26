@@ -71,6 +71,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
         }
       }}
       onClose={e => {
+        e.preventDefault()
         e.stopPropagation()
         close()
       }}

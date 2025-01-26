@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { memo, useState } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
-import type { DiagramView, ViewId } from '@likec4/core/types'
+import type { DiagramView, ViewId } from '@likec4/core'
 import { shallowEqual } from '@mantine/hooks'
 import { AnimatePresence } from 'framer-motion'
 import { isBoolean } from 'remeda'
@@ -15,8 +15,8 @@ import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
 export function LikeC4View<
   ViewId extends string = string,
-  Tag extends string = string,
-  Kind extends string = string,
+  Tag = string,
+  Kind = string,
 >({
   viewId,
   ...props
@@ -59,7 +59,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   injectFontCss = true,
   controls = false,
   fitView = true,
-  fitViewPadding = 0,
+  fitViewPadding = 0.05,
   background = 'transparent',
   browser = true,
   showDiagramTitle = false,

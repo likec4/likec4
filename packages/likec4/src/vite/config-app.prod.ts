@@ -51,6 +51,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     clearScreen: false,
     base,
     resolve: {
+      conditions: ['production'],
       dedupe: [
         'react',
         'react-dom',

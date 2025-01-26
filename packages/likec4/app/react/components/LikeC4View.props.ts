@@ -1,8 +1,8 @@
-import type { WhereOperator } from '@likec4/core/types'
+import type { WhereOperator } from '@likec4/core'
 import type { ElementIconRenderer } from '@likec4/diagram'
 import type { CSSProperties } from 'react'
 
-export interface LikeC4ViewProps<ViewId extends string, Tag extends string, Kind extends string> {
+export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   /**
    * View to display.
    */
@@ -65,7 +65,7 @@ export interface LikeC4ViewProps<ViewId extends string, Tag extends string, Kind
 
   /**
    * Seems like this is percentage of the view size
-   * @default 0
+   * @default 0.05
    */
   fitViewPadding?: number | undefined
 

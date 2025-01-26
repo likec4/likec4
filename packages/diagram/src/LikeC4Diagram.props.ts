@@ -12,7 +12,7 @@ import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 
 export type { WhereOperator }
 
-export type DiagramNodeWithNavigate<ID extends string = ViewId> = Omit<DiagramNode, 'navigateTo'> & {
+export type DiagramNodeWithNavigate<ID = ViewId> = Omit<DiagramNode, 'navigateTo'> & {
   navigateTo: ID
 }
 
@@ -26,7 +26,7 @@ type ElementIconRendererProps = {
 
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
-export type OnNavigateTo<ID extends string = ViewId> = (
+export type OnNavigateTo<ID = ViewId> = (
   to: ID,
   // These fields present if navigateTo triggered by a node click
   event?: ReactMouseEvent,

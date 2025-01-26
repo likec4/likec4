@@ -27,7 +27,7 @@ export async function buildReact(_isDev = false) {
     root,
     configFile: false,
     resolve: {
-      conditions: ['production'],
+      conditions: ['production', 'sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         // '@likec4/core/model': resolve('../core/src/model'),
@@ -48,10 +48,13 @@ export async function buildReact(_isDev = false) {
       jsxDev: false,
       legalComments: 'none',
       tsconfigRaw: readFileSync(tsconfig, { encoding: 'utf-8' }),
+      minifyIdentifiers: false,
+      minifySyntax: true,
+      minifyWhitespace: true,
     },
     build: {
       outDir,
-      emptyOutDir: false,
+      emptyOutDir: true,
       cssCodeSplit: false,
       cssMinify: true,
       minify: true,
@@ -87,8 +90,7 @@ export async function buildReact(_isDev = false) {
           'react/jsx-dev-runtime',
           'react-dom/client',
           'likec4/model',
-          'likec4/react',
-          /@likec4\/core/,
+          /@likec4\/core.*/,
           '@emotion/is-prop-valid', // dev-only import from framer-motion
         ],
         plugins: [

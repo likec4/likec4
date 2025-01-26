@@ -61,13 +61,10 @@ const App = () => {
 | Property            | Description                                                                                         |
 | -----------------   | --------------------------------------------------------------------------------------------------- |
 | `viewId`            | Typed enumeration of your views                                                                     |
-| `interactive`       | Click on the view opens a modal with the views browser.<br/>Default value is `true`.                |
 | `where`             | Optional, see [filter](#filter) |
 | `injectFontCss`     | Injects CSS that loads <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans</a> from CDN.<br/>Default is `true` |
-| `background`        | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default is `transparent`. |
-| `browserBackground` | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default is `dots`. |
 
-Check <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/types.ts#L18" target="_blank">source code</a> for other properties.
+Check <a href="https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/LikeC4View.props.ts#L5#L18" target="_blank">source code</a> for other properties.
 
 :::caution
 `LikeC4View` does not rehydrate correctly if rendered on the server, prefer client-side.
@@ -147,17 +144,18 @@ Code generation prepares component, which is already "bound" to your model.
 But it is possible to use a generic from the library:
 
 ```tsx
-import { ReactLikeC4 } from 'likec4/react'
-import { RenderIcon, LikeC4Views } from './likec4.generated'
+import { ReactLikeC4, LikeC4ModelProvider } from 'likec4/react'
+import { RenderIcon, likeC4Model } from './likec4.generated'
 
 const App = () => {
-  const view = LikeC4Views['index']
   return (
-    <ReactLikeC4
-      view={view} // required DiagramView
-      renderIcon={RenderIcon} // Optional, used for bundled icons
-      onEdgeClick={...}
-    />
+    <LikeC4ModelProvider likec4model={likeC4Model}>
+      <ReactLikeC4
+        viewId={"index"}
+        renderIcon={RenderIcon} // Optional, used for bundled icons
+        onEdgeClick={...}
+      />
+    </LikeC4ModelProvider>
   )
 }
 ```

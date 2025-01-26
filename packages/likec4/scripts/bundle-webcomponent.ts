@@ -23,7 +23,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
     root,
     configFile: false,
     resolve: {
-      conditions: ['production'],
+      conditions: ['production', 'sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         '@likec4/core': resolve('../core/src'),
@@ -92,6 +92,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
           'react-dom/client',
           'likec4/react',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
+          /@likec4\/core.*/,
           /virtual\:likec4/,
         ],
         plugins: [

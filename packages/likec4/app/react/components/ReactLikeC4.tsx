@@ -1,4 +1,4 @@
-import type { DiagramView, WhereOperator } from '@likec4/core/types'
+import type { DiagramView, WhereOperator } from '@likec4/core'
 import { type LikeC4DiagramProps, type OnNavigateTo, LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import clsx from 'clsx'
 import { type CSSProperties } from 'react'
@@ -11,9 +11,9 @@ import { cssLikeC4View } from './styles.css'
 import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
 export type ReactLikeC4Props<
-  ViewId extends string,
-  Tag extends string,
-  Kind extends string,
+  ViewId = string,
+  Tag = string,
+  Kind = string,
 > = Omit<LikeC4DiagramProps, 'view' | 'where' | 'onNavigateTo'> & {
   viewId: ViewId
 
@@ -53,8 +53,8 @@ export type ReactLikeC4Props<
 
 export function ReactLikeC4<
   ViewId extends string = string,
-  Tag extends string = string,
-  Kind extends string = string,
+  Tag = string,
+  Kind = string,
 >({
   viewId,
   ...props

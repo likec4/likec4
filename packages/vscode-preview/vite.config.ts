@@ -8,16 +8,16 @@ export default defineConfig(({ mode }) => {
   const isDev = isWatchDev || mode === 'development'
   return {
     resolve: {
-      conditions: ['sources'],
-      alias: {
-        '@likec4/core/model': resolve(__dirname, '../core/src/model'),
-        '@likec4/core/types': resolve(__dirname, '../core/src/types'),
-        '@likec4/core': resolve(__dirname, '../core/src'),
-        '@likec4/diagram': resolve(__dirname, '../diagram/src'),
-      },
+      conditions: ['production', 'sources'],
+      // alias: {
+      //   '@likec4/core/model': resolve(__dirname, '../core/src/model'),
+      //   '@likec4/core/types': resolve(__dirname, '../core/src/types'),
+      //   '@likec4/core': resolve(__dirname, '../core/src'),
+      //   '@likec4/diagram': resolve(__dirname, '../diagram/src'),
+      // },
     },
-    define: isDev ? {} : {
-      'process.env.NODE_ENV': JSON.stringify('production'),
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
     },
     esbuild: {
       jsxDev: false,
@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       cssCodeSplit: false,
       cssMinify: true,
+      minify: !isDev,
       assetsInlineLimit: 1_000_000,
       chunkSizeWarningLimit: 10_000,
       assetsDir: '',

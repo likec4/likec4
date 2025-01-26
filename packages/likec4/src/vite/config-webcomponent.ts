@@ -38,11 +38,11 @@ export async function viteWebcomponentConfig({
     root,
     configFile: false,
     resolve: {
-      conditions: ['development'],
+      conditions: ['development', 'sources'],
       alias: {
         'likec4/icons': resolve(pkgRoot, '../icons'),
-        '@likec4/core': resolve(pkgRoot, '../core/src'),
-        '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
+        // '@likec4/core': resolve(pkgRoot, '../core/src'),
+        // '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
       },
     },
     clearScreen: false,

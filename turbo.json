@@ -30,7 +30,6 @@
     "build": {
       "dependsOn": [
         "^build",
-        "topo",
         "generate"
       ],
       "outputs": [

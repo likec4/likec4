@@ -15,15 +15,19 @@ globalStyle(`.${rootClassName}`, {
   margin: 0,
   boxSizing: 'border-box',
   WebkitFontSmoothing: mantine.webkitFontSmoothing,
-  MozOsxFontSmoothing: mantine.mozFontSmoothing
+  MozOsxFontSmoothing: mantine.mozFontSmoothing,
+})
+globalStyle(`:where(.${rootClassName}) *`, {
+  boxSizing: 'border-box',
+  outline: 'none',
 })
 globalStyle(`:where(.${rootClassName}) .mantine-ActionIcon-icon .tabler-icon`, {
   width: '75%',
-  height: '75%'
+  height: '75%',
 })
 
 createGlobalTheme(`.${rootClassName}`, {
-  ...omit(vars, ['optionsPanel', 'navigationPanel', 'safariAnimationHook', 'default'])
+  ...omit(vars, ['optionsPanel', 'navigationPanel', 'safariAnimationHook', 'default']),
 }, {
   likec4: {
     font:
@@ -31,39 +35,39 @@ createGlobalTheme(`.${rootClassName}`, {
     background: {
       color: mantine.colors.body,
       pattern: {
-        color: mantine.colors.gray[4]
-      }
-    }
+        color: mantine.colors.gray[4],
+      },
+    },
   },
   compound: {
     font: vars.likec4.font,
-    titleColor: vars.element.loContrast
+    titleColor: vars.element.loContrast,
   },
   element: {
     font: vars.likec4.font,
-    ...defaultTheme.elements.primary
+    ...defaultTheme.elements.primary,
   },
   relation: {
-    ...defaultTheme.relationships.slate
-  }
+    ...defaultTheme.relationships.slate,
+  },
 })
 
 createGlobalTheme(`${whereDark} .${rootClassName}`, {
   likec4: {
     background: {
       pattern: {
-        color: vars.likec4.background.pattern.color
-      }
-    }
-  }
+        color: vars.likec4.background.pattern.color,
+      },
+    },
+  },
 }, {
   likec4: {
     background: {
       pattern: {
-        color: mantine.colors.dark[5]
-      }
-    }
-  }
+        color: mantine.colors.dark[5],
+      },
+    },
+  },
 })
 
 for (const color of keys(defaultTheme.elements)) {
@@ -72,38 +76,38 @@ for (const color of keys(defaultTheme.elements)) {
       fill: vars.element.fill,
       stroke: vars.element.stroke,
       hiContrast: vars.element.hiContrast,
-      loContrast: vars.element.loContrast
+      loContrast: vars.element.loContrast,
     },
     compound: {
-      titleColor: vars.compound.titleColor
+      titleColor: vars.compound.titleColor,
     },
-    relation: vars.relation
+    relation: vars.relation,
   }, {
     element: defaultTheme.elements[color],
     compound: {
-      titleColor: defaultTheme.elements[color].loContrast
+      titleColor: defaultTheme.elements[color].loContrast,
     },
-    relation: defaultTheme.relationships[color]
+    relation: defaultTheme.relationships[color],
   })
 
   const compoundDarkColor = (color: string, depth: number) =>
     toHex(
       scale(color, {
         l: -22 - 5 * depth,
-        s: -10 - 6 * depth
-      })
+        s: -10 - 6 * depth,
+      }),
     )
   const compoundLightColor = (color: string, depth: number) =>
     toHex(
       scale(color, {
         l: -20 - 3 * depth,
-        s: -3 - 6 * depth
-      })
+        s: -3 - 6 * depth,
+      }),
     )
 
   const compounds = {
     fill: vars.element.fill,
-    stroke: vars.element.stroke
+    stroke: vars.element.stroke,
   }
 
   for (let depth = 1; depth <= 6; depth++) {
@@ -112,8 +116,8 @@ for (const color of keys(defaultTheme.elements)) {
       compounds,
       {
         fill: compoundLightColor(defaultTheme.elements[color].fill, depth),
-        stroke: compoundLightColor(defaultTheme.elements[color].stroke, depth)
-      }
+        stroke: compoundLightColor(defaultTheme.elements[color].stroke, depth),
+      },
     )
 
     createGlobalTheme(
@@ -121,8 +125,8 @@ for (const color of keys(defaultTheme.elements)) {
       compounds,
       {
         fill: compoundDarkColor(defaultTheme.elements[color].fill, depth),
-        stroke: compoundDarkColor(defaultTheme.elements[color].stroke, depth)
-      }
+        stroke: compoundDarkColor(defaultTheme.elements[color].stroke, depth),
+      },
     )
   }
 }

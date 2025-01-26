@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
       'process.env.NODE_ENV': JSON.stringify('production'),
     },
     resolve: {
+      conditions: ['production', 'sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       },
@@ -32,13 +33,16 @@ export default defineConfig(({ mode }) => {
         external: [
           ...Object.keys(packageJson.dependencies || {}),
           ...Object.keys(packageJson.peerDependencies || {}),
+          /framer-motion/,
+          /motion-dom/,
+          /motion-utils/,
           'react/jsx-runtime',
+          'react/jsx-dev-runtime',
           'react-dom/client',
           'react-dom/server',
-          /zustand/,
         ],
         treeshake: {
-          preset: 'recommended',
+          preset: 'safest',
         },
         output: {
           preserveModules: true,

@@ -1,4 +1,4 @@
-import dagre, { type GraphLabel, type Label } from '@dagrejs/dagre'
+import { type GraphLabel, type Label } from '@dagrejs/dagre'
 import {
   type AbstractRelation,
   type DiagramEdge,
@@ -10,6 +10,7 @@ import {
   type XYPoint,
   compareFqnHierarchically,
   compareRelations,
+  dagre,
   invariant,
   isAncestor,
 } from '@likec4/core'
