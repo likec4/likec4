@@ -51,7 +51,7 @@
     "monaco-editor-wrapper": "5.5.3",
     "monaco-languageclient": "8.8.3",
     "nanoid": "^5.0.9",
-    "p-limit": "^6.1.0",
+    "p-limit": "^6.2.0",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
     "react-error-boundary": "^4.1.2",
