@@ -24,6 +24,7 @@ import { AnimatePresence, m } from 'framer-motion'
 import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
 // import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
+import { ElementShape } from '../../../base/primitives'
 import { type DiagramContext, useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useDiagramContext } from '../../../hooks/useDiagramContext'
@@ -50,7 +51,7 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
       py={'sm'}
       className={css.elementNotation}
       mod={{
-        'data-likec4-color': color,
+        'likec4-color': color,
       }}
       onMouseEnter={() => {
         setOnlyKind(null)
@@ -69,23 +70,17 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
         <Box
           flex={'0 0 70px'}
           style={{
+            position: 'relative',
             width: 70,
             height: ceil(70 * (h / w), 0),
           }}>
-          <svg
-            className={clsx(
-              css.shapeSvg,
-            )}
-            viewBox={`0 0 ${w} ${h}`}
-          >
-            {
-              /* <ElementShapeSvg
-              shape={shape}
-              w={w}
-              h={h}
-            /> */
-            }
-          </svg>
+          <ElementShape
+            data={{
+              shape,
+              width: w,
+              height: h,
+            }}
+          />
         </Box>
         <Stack gap={4} flex={1}>
           <Group gap={4} flex={'0 0 auto'}>
