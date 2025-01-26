@@ -28,19 +28,17 @@ for (const view of layoutedModel.views()) {
 import { test, expect } from "@playwright/test";
 
 test('${view.id} - compare snapshots', async ({ page }) => {
-  console.log('Compare - ${view.id}, go to /export/${encodeURIComponent(view.id)}?padding=20')
   await page.setViewportSize({ width: ${view.$view.bounds.width + 40}, height: ${view.$view.bounds.height + 40} });
   await page.goto('/export/${encodeURIComponent(view.id)}?padding=20');
   const diagramElement = page.getByRole('presentation')
-  console.log('waitFor - ${view.id}')
   await diagramElement.waitFor()
   await expect(diagramElement).toHaveScreenshot('${view.id}.png', {
     omitBackground: true
   });
 });
 `
-  await fs.writeFile(`tests/${view.id}.spec.ts`, content, { encoding: 'utf-8' })
-  echo(`Generated tests/${view.id}.spec.ts`)
+  await fs.writeFile(`tests/${view.id}-gen.spec.ts`, content, { encoding: 'utf-8' })
+  echo(`Generated tests/${view.id}-gen.spec.ts`)
 }
 
 $`npx likec4 codegen model src`

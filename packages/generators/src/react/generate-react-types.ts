@@ -53,11 +53,11 @@ export function generateReactTypes(model: LikeC4Model.Layouted) {
 import type { PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import type {
+  DiagramView,
   LikeC4Model as GenericLikeC4Model,
 } from 'likec4/model'
 import type {
   LikeC4ViewProps as GenericLikeC4ViewProps,
-  ViewData,
   ReactLikeC4Props as GenericReactLikeC4Props
 } from 'likec4/react'
 
@@ -76,14 +76,9 @@ ${toUnion(kinds)}
 type LikeC4Tag =
 ${toUnion(new Set(tags))}
 
-type LikeC4ViewData = ViewData<LikeC4ViewId, LikeC4Tag>
-
-declare const LikeC4Views: {
-  readonly [K in LikeC4ViewId]: LikeC4ViewData
-};
 declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId;
 
-type Aux = GenericLikeC4Model.Typed<LikeC4ElementId, LikeC4DeploymentId, LikeC4ViewId, LikeC4ViewData>;
+type Aux = GenericLikeC4Model.Typed<LikeC4ElementId, LikeC4DeploymentId, LikeC4ViewId, DiagramView<LikeC4ViewId>>;
 type LikeC4Model = GenericLikeC4Model<Aux>;
 type LikeC4ViewModel = GenericLikeC4Model.View<Aux>;
 
@@ -106,11 +101,7 @@ declare function RenderIcon(props: IconRendererProps): JSX.Element;
 type LikeC4ViewProps = GenericLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>;
 declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): JSX.Element;
 
-type ReactLikeC4Props =
-  & Omit<GenericReactLikeC4Props<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>, 'view' | 'renderIcon'>
-  & {
-    viewId: LikeC4ViewId
-  };
+type ReactLikeC4Props = GenericReactLikeC4Props<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
 declare function ReactLikeC4({viewId, ...props}: ReactLikeC4Props): JSX.Element;
 
 export {
@@ -119,7 +110,6 @@ export {
   type LikeC4ViewId,
   type LikeC4Tag,
   type LikeC4ElementKind,
-  type LikeC4ViewData,
   type LikeC4ViewProps,
   type ReactLikeC4Props,
   type LikeC4Model,
@@ -128,7 +118,6 @@ export {
   useLikeC4View,
   useLikeC4ViewModel,
   likeC4Model,
-  LikeC4Views,
   LikeC4ModelProvider,
   LikeC4View,
   RenderIcon,

@@ -24,7 +24,7 @@ export function RenderIcon({ node }: IconRendererProps) {
   return IconComponent ? <IconComponent /> : null
 }
 
-export { likeC4Model, LikeC4Views, useLikeC4Model }
+export { likeC4Model, useLikeC4Model }
 
 export function useLikeC4ViewModel(viewId: ViewId): LikeC4Model.View {
   return useLikeC4Model().view(viewId as any)

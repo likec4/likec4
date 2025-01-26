@@ -21,7 +21,7 @@ export const likeC4Model = /* @__PURE__ */ createLikeC4Model(Object.assign(
 export const $likec4model = /* @__PURE__ */ nano.atom(likeC4Model)
 
 export function useLikeC4Model() {
-  return nano.useStore($likec4model)
+  return /* @__PURE__ */ nano.useStore($likec4model)
 }
 
 if (import.meta.hot) {
