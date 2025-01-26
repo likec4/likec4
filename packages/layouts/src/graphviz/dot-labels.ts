@@ -67,7 +67,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       maxLines: 3,
     }),
   ]
-  if (isTruthy(node.technology)) {
+  if (isTruthy(node.technology?.trim())) {
     lines.push(
       wrapWithFont({
         text: node.technology,
@@ -78,7 +78,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       }),
     )
   }
-  if (isTruthy(node.description)) {
+  if (isTruthy(node.description?.trim())) {
     lines.push(
       wrapWithFont({
         text: node.description,
@@ -138,7 +138,7 @@ const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelB
 
 export function edgelabel({ label, technology }: ComputedEdge) {
   const lines = [] as string[]
-  if (isTruthy(label)) {
+  if (isTruthy(label?.trim())) {
     lines.push(
       wrapWithFont({
         text: label,
@@ -159,7 +159,7 @@ export function edgelabel({ label, technology }: ComputedEdge) {
   //     })
   //   )
   // }
-  if (isTruthy(technology)) {
+  if (isTruthy(technology?.trim())) {
     lines.push(
       wrapWithFont({
         text: `[ ${technology} ]`,
@@ -181,7 +181,7 @@ export function stepEdgeLabel(step: number, text?: string | null) {
     pxToPoints(14)
   }"><B>${step}</B></FONT></TD></TR></TABLE>`
 
-  if (!isTruthy(text)) {
+  if (!isTruthy(text?.trim())) {
     return `<${num}>`
   }
 
@@ -189,11 +189,12 @@ export function stepEdgeLabel(step: number, text?: string | null) {
     `<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">`,
     `<TR>`,
     `<TD>${num}</TD>`,
-    `<TD ${BGCOLOR} CELLPADDING="2">`,
+    `<TD ${BGCOLOR} CELLPADDING="3">`,
     wrapWithFont({
       text,
       maxchars: EDGE_LABEL_MAX_CHARS,
       fontsize: 14,
+      maxLines: 5,
     }),
     `</TD>`,
     `</TR>`,

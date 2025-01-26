@@ -5,15 +5,13 @@ import { useDiagramActor } from '../hooks/useDiagramActor'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { AlignmentMode } from '../likec4diagram/state/aligners'
 import type { Types } from '../likec4diagram/types'
+import { DiagramContext } from './useDiagramContext'
 
 export function useDiagram() {
   const actor = useDiagramActor()
   const [, startTransition] = useTransition()
   return useMemo(() => ({
     send: actor.send,
-    currentView: () => actor.getSnapshot().context.view,
-    getState: () => actor.getSnapshot(),
-    getContext: () => actor.getSnapshot().context,
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
       startTransition(() => {
         actor.send({
@@ -91,12 +89,29 @@ export function useDiagram() {
       actor.send({ type: 'focus.node', nodeId })
     },
 
-    getDiagramNode: (nodeId: NodeId) => {
-      return actor.getSnapshot().context.view.nodes.find(n => n.id === nodeId) ?? null
+    /**
+     * @warning Do not use in render phase
+     */
+    currentView: () => actor.getSnapshot().context.view,
+    /**
+     * @warning Do not use in render phase
+     */
+    getState: () => actor.getSnapshot(),
+    /**
+     * @warning Do not use in render phase
+     */
+    getContext: () => actor.getSnapshot().context,
+    /**
+     * @warning Do not use in render phase
+     */
+    findDiagramNode: (xynodeId: string) => {
+      return DiagramContext.findDiagramNode(actor.getSnapshot().context, xynodeId)
     },
-
-    getDiagramEdge: (edgeId: EdgeId) => {
-      return actor.getSnapshot().context.view.edges.find(e => e.id === edgeId) ?? null
+    /**
+     * @warning Do not use in render phase
+     */
+    findDiagramEdge: (xyedgeId: string) => {
+      return DiagramContext.findDiagramEdge(actor.getSnapshot().context, xyedgeId)
     },
 
     startWalkthrough: () => {

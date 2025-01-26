@@ -1,37 +1,45 @@
-import { style } from '@vanilla-extract/css'
-import { mantine } from '../../theme-vars'
+import { createVar, style } from '@vanilla-extract/css'
+import { calc } from '@vanilla-extract/css-utils'
+import { mantine, whereLight } from '../../theme-vars'
 
+const borderRadius = createVar('border-radius')
 export const dialog = style({
   containerName: 'overlay-dialog',
   containerType: 'size',
   boxSizing: 'border-box',
   margin: 0,
-  padding: 0,
   position: 'fixed',
   inset: '5rem 4rem 4rem 4rem',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'stretch',
   width: 'auto',
   height: 'auto',
   maxWidth: '100%',
   maxHeight: '100%',
-  background: mantine.colors.body,
+  background: `color-mix(in srgb, ${mantine.colors.defaultBorder}, transparent 50%)`,
   boxShadow: mantine.shadows.xl,
-  border: `3px solid ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.md,
+  border: `0 solid transparent`,
+  outline: 'none',
+  borderRadius: borderRadius,
+  padding: 6,
   vars: {
+    [borderRadius]: '8px',
+    '--backdrop-color': '34 34 34',
     '--backdrop-opacity': '0%',
     '--backdrop-blur': '0px',
   },
   selectors: {
-    [`&[open]`]: {
-      // visibility: 'visible',
-    },
     [`&::backdrop`]: {
       cursor: 'zoom-out',
       WebkitBackdropFilter: 'blur(var(--backdrop-blur))',
       backdropFilter: 'blur(var(--backdrop-blur))',
-      backgroundColor: `rgb(25 25 25 / var(--backdrop-opacity))`,
+      backgroundColor: `rgb(var(--backdrop-color) / var(--backdrop-opacity))`,
+    },
+    [`${whereLight} &`]: {
+      vars: {
+        '--backdrop-color': '15 15 15',
+      },
     },
   },
   '@media': {
@@ -47,6 +55,11 @@ export const dialog = style({
 })
 
 export const body = style({
+  border: `0 solid transparent`,
+  borderRadius: calc(borderRadius).subtract('2px').toString(),
+  // borderRadius: borderRadius,
+  backgroundColor: mantine.colors.body,
+  overflow: 'hidden',
   flex: 1,
   width: '100%',
   height: '100%',

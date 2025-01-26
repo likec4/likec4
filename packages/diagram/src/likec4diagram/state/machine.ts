@@ -123,6 +123,16 @@ export interface DiagramContext extends Input {
   }
 }
 
+export namespace DiagramContext {
+  export function findDiagramNode(ctx: DiagramContext, xynodeId: string) {
+    return ctx.view.nodes.find(n => n.id === xynodeId) ?? null
+  }
+
+  export function findDiagramEdge(ctx: DiagramContext, xyedgeId: string) {
+    return ctx.view.edges.find(e => e.id === xyedgeId) ?? null
+  }
+}
+
 export type Events =
   | HotKeyEvent
   | { type: 'xyflow.init'; instance: ReactFlowInstance<Types.Node, Types.Edge> }

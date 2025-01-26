@@ -17,10 +17,6 @@ globalStyle(`.${rootClassName}`, {
   WebkitFontSmoothing: mantine.webkitFontSmoothing,
   MozOsxFontSmoothing: mantine.mozFontSmoothing,
 })
-globalStyle(`:where(.${rootClassName}) *`, {
-  boxSizing: 'border-box',
-  outline: 'none',
-})
 globalStyle(`:where(.${rootClassName}) .mantine-ActionIcon-icon .tabler-icon`, {
   width: '75%',
   height: '75%',

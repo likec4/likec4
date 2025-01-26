@@ -117,8 +117,10 @@ export const shapeSvg = style({
     [`:where([data-hovered='true']) &`]: {
       vars: {
         [filterShadow]: `
-          drop-shadow(0 5px 3px rgba(0, 0, 0, 0.2))
-          drop-shadow(0 12px 10px rgba(0, 0, 0, 0.12))
+        drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
+        drop-shadow(0 8px 3px rgba(0, 0, 0, 0.1))
+        drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))
+
         `,
       },
     },

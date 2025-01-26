@@ -4,7 +4,9 @@ import { memo, useState } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
 import type { DiagramView, ViewId } from '@likec4/core'
+import { ActionIcon, Box } from '@mantine/core'
 import { shallowEqual } from '@mantine/hooks'
+import { IconX } from '@tabler/icons-react'
 import { AnimatePresence } from 'framer-motion'
 import { isBoolean } from 'remeda'
 import type { LikeC4ViewProps } from './LikeC4View.props'
@@ -169,6 +171,17 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
                     showNotations={(browserProps.showNotations ?? true) &&
                       (browserView.notation?.elements.length ?? 0) > 0}
                   />
+                  <Box pos="absolute" top={'1rem'} right={'1rem'}>
+                    <ActionIcon
+                      variant="default"
+                      color="gray"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onNavigateTo(null)
+                      }}>
+                      <IconX />
+                    </ActionIcon>
+                  </Box>
                 </Overlay>
               )}
             </AnimatePresence>

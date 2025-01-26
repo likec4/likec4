@@ -1,12 +1,13 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { easings, mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
+import { easings, mantine, transitions, vars, whereDark, whereLight, xyvars } from '../../../theme-vars'
 import { mixColor } from './edge.css'
 
 export { dimmed, edgeVars } from './edge.css'
 
-const labelBorderRadius = 2
+const labelBorderRadius = 4
 export const stepEdgeNumber = style({
+  alignSelf: 'stretch',
   flex: '0 0 auto',
   fontWeight: 600,
   fontSize: rem(14),
@@ -52,12 +53,9 @@ export const edgeLabelContainer = style({
   },
   selectors: {
     '&[data-edge-hovered="true"]': {
+      mixBlendMode: 'normal',
       transition: `all 140ms ${easings.inOut}`,
       transform: `${varTranslate} scale(1.12)`,
-    },
-    [`&:has(${stepEdgeNumber})`]: {
-      padding: 0,
-      gap: 2,
     },
     '&:is([data-edge-dimmed="true"])': {
       opacity: 0.3,
@@ -65,6 +63,9 @@ export const edgeLabelContainer = style({
       transitionDelay: '200ms',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
       willChange: 'opacity, filter',
+    },
+    [`${whereLight} &`]: {
+      mixBlendMode: 'screen',
     },
   },
 })
@@ -91,6 +92,32 @@ export const edgeLabel = style({
   //   [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`,
   // },
   //
+  selectors: {
+    [`&:has(${stepEdgeNumber})`]: {
+      flexDirection: 'row',
+      padding: 0,
+      gap: 0,
+    },
+  },
+})
+
+export const secondColumn = style({
+  display: 'contents',
+  selectors: {
+    [`${edgeLabel}:has(${stepEdgeNumber}) &`]: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      // width: 'max-content',
+      // maxWidth: '100%',
+      // gap: rem(4),
+      padding: '1px 5px 5px 5px',
+    },
+  },
+  ':empty': {
+    display: 'none !important',
+  },
 })
 
 export const edgeLabelText = style({

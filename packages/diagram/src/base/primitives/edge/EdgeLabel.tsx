@@ -62,7 +62,7 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
     const stepNum = isStepEdgeId(id) ? extractStep(id) : null
 
     let zIndex = ZIndexes.Edge
-    if (isHovered) {
+    if (isHovered || isActive) {
       // Move above the elements
       zIndex = ZIndexes.Element + 1
     }
@@ -114,19 +114,19 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
                 {stepNum}
               </Box>
             )}
-            {/* <Stack gap={4} align="center"> */}
-            {isTruthy(data.label) && (
-              <Text component="div" className={css.edgeLabelText} lineClamp={5}>
-                {data.label}
-              </Text>
-            )}
-            {isTruthy(technology) && (
-              <Text component="div" className={css.edgeLabelTechnology}>
-                {'[ ' + technology + ' ]'}
-              </Text>
-            )}
-            {children}
-            {/* </Stack> */}
+            <Box className={css.secondColumn}>
+              {isTruthy(data.label) && (
+                <Text component="div" className={css.edgeLabelText} lineClamp={5}>
+                  {data.label}
+                </Text>
+              )}
+              {isTruthy(technology) && (
+                <Text component="div" className={css.edgeLabelTechnology}>
+                  {'[ ' + technology + ' ]'}
+                </Text>
+              )}
+              {children}
+            </Box>
           </Box>
         </Box>
       </EdgeLabelRenderer>

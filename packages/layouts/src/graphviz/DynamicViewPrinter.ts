@@ -1,6 +1,6 @@
 import type { ComputedDynamicView, ComputedEdge } from '@likec4/core'
 import { DefaultArrowType, DefaultRelationshipColor, extractStep, isome } from '@likec4/core'
-import { first, last } from 'remeda'
+import { first, isTruthy, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { stepEdgeLabel } from './dot-labels'
@@ -44,8 +44,13 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       })
     }
 
+    const labelText = [
+      edge.label?.trim(),
+      edge.technology?.trim(),
+    ].filter(isTruthy).join('\n')
+
     const step = extractStep(edge.id)
-    const label = stepEdgeLabel(step, edge.label?.trim())
+    const label = stepEdgeLabel(step, labelText)
     e.attributes.set(_.label, label)
 
     const thisEdgeDistance = this.edgeDistances.get(edge.id) ?? 0

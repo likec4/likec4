@@ -78,12 +78,12 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
       onNodeClick={useCallbackRef((e, node) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.nodeClick', node })
-        onNodeClick?.(diagram.getDiagramNode(node.id as NodeId)!, e)
+        onNodeClick?.(diagram.findDiagramNode(node.id as NodeId)!, e)
       })}
       onEdgeClick={useCallbackRef((e, edge) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.edgeClick', edge })
-        onEdgeClick?.(diagram.getDiagramEdge(edge.id as EdgeId)!, e)
+        onEdgeClick?.(diagram.findDiagramEdge(edge.id as EdgeId)!, e)
       })}
       onPaneClick={useCallbackRef((e) => {
         e.stopPropagation()
@@ -104,13 +104,19 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
       })}
       {...onNodeContextMenu && {
         onNodeContextMenu: useCallbackRef((event, node) => {
-          const diagramNode = nonNullable(diagram.getDiagramNode(node.id as NodeId), `diagramNode ${node.id} not found`)
+          const diagramNode = nonNullable(
+            diagram.findDiagramNode(node.id as NodeId),
+            `diagramNode ${node.id} not found`,
+          )
           onNodeContextMenu(diagramNode, event)
         }),
       }}
       {...onEdgeContextMenu && {
         onEdgeContextMenu: useCallbackRef((event, edge) => {
-          const diagramEdge = nonNullable(diagram.getDiagramEdge(edge.id as EdgeId), `diagramEdge ${edge.id} not found`)
+          const diagramEdge = nonNullable(
+            diagram.findDiagramEdge(edge.id as EdgeId),
+            `diagramEdge ${edge.id} not found`,
+          )
           onEdgeContextMenu(diagramEdge, event)
         }),
       }}

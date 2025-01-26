@@ -6,7 +6,7 @@ import { useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef } from '@react-hookz/web'
 import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
-import { type PropsWithChildren, forwardRef, useRef, useState } from 'react'
+import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
 import * as css from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<
@@ -32,21 +32,33 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
     50,
   )
 
+  useLayoutEffect(() => {
+    const cancel = (e: Event) => {
+      e.preventDefault()
+      close()
+    }
+    dialogRef.current?.addEventListener('cancel', cancel, { capture: true })
+    return () => {
+      dialogRef.current?.removeEventListener('cancel', cancel, { capture: true })
+    }
+  }, [])
+
   return (
     <m.dialog
       ref={useMergedRef(ref, dialogRef)}
       className={clsx(css.dialog, className)}
       initial={{
         '--backdrop-blur': '0px',
-        '--backdrop-opacity': '10%',
-        translateY: -8,
-        // opacity: 0.8,
+        '--backdrop-opacity': '5%',
+        opacity: 0.85,
+        translateY: 12,
+        // opacity: 02.8,
       }}
       animate={{
-        '--backdrop-blur': '3px',
+        '--backdrop-blur': '6px',
         '--backdrop-opacity': '60%',
         translateY: 0,
-        // opacity: 1,
+        opacity: 1,
         // transition: {
         //   delay: 0.25,
         // }

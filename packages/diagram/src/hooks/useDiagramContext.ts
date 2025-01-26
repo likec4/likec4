@@ -8,4 +8,4 @@ export function useDiagramContext<T>(selector: (state: DiagramContext) => T, com
   return useSelector(select, compare)
 }
 
-export type { DiagramContext } from '../likec4diagram/state/machine'
+export { DiagramContext } from '../likec4diagram/state/machine'

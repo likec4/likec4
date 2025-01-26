@@ -3,10 +3,8 @@ import {
   type EdgeId,
   type NodeId,
   DiagramNode,
-  invariant,
   LikeC4Model,
   nameFromFqn,
-  nonNullable,
 } from '@likec4/core'
 import {
   type StackProps,
@@ -26,15 +24,14 @@ import {
   TooltipGroup,
 } from '@mantine/core'
 import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@tabler/icons-react'
-import type { InternalNode } from '@xyflow/react'
 import clsx from 'clsx'
 import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { DiagramContext, useDiagramContext } from '../../../hooks/useDiagramContext'
 import { useLikeC4Model } from '../../../likec4model'
-import type { Types } from '../../types'
 import { Link } from '../../ui/diagram-title/Link'
 import * as css from './RelationshipsDropdownMenu.css'
 
@@ -53,16 +50,21 @@ export const Tooltip = MantineTooltip.withProps({
 
 export function RelationshipsDropdownMenu({
   edgeId,
-  sourceNode,
-  targetNode,
+  source,
+  target,
   disabled = false,
   children,
 }: PropsWithChildren<{
   edgeId: EdgeId
-  sourceNode: DiagramNode
-  targetNode: DiagramNode
+  source: string
+  target: string
   disabled?: boolean | undefined
 }>) {
+  const { diagramEdge, sourceNode, targetNode } = useDiagramContext(ctx => ({
+    diagramEdge: DiagramContext.findDiagramEdge(ctx, edgeId),
+    sourceNode: DiagramContext.findDiagramNode(ctx, source),
+    targetNode: DiagramContext.findDiagramNode(ctx, target),
+  }))
   const likec4model = useLikeC4Model(true)
   const diagram = useDiagram()
 
@@ -72,8 +74,7 @@ export function RelationshipsDropdownMenu({
     diagram.openRelationshipDetails(edgeId)
   }, [edgeId])
 
-  const diagramEdge = diagram.getDiagramEdge(edgeId)
-  if (!diagramEdge) {
+  if (!diagramEdge || !sourceNode || !targetNode) {
     return <>{children}</>
   }
 

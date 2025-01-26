@@ -301,9 +301,9 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     } else if (enableRelationshipDetails) {
       renderLabel = (props: any) => (
         <RelationshipsDropdownMenu
-          sourceNode={nonNullable(diagram.getDiagramNode(source as NodeId))}
-          targetNode={nonNullable(diagram.getDiagramNode(target as NodeId))}
           disabled={!!dimmed}
+          source={source}
+          target={target}
           edgeId={edgeId}>
           <div {...props} />
         </RelationshipsDropdownMenu>

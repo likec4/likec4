@@ -105,13 +105,21 @@ views {
         Customer opens dashboard in Browser
       '
     }
-    ui.dashboard -> cloud.graphql 'requests' {
+    ui.dashboard -> cloud.graphql {
+      title '
+        requests data overt rest
+        for dashboard
+      '
+      technology 'unknown'
       notes '
         Next notes
         Multi line
       '
     }
-    ui.dashboard <- cloud.graphql 'returns'
+    ui.dashboard <- cloud.graphql 'returns' {
+      technology 'unknown'
+      navigateTo cloud-to-amazon
+    }
 
     ui.mobile -> cloud.graphql 'requests'
     ui.mobile <- cloud.graphql
