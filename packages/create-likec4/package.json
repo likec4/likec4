@@ -36,7 +36,7 @@
     "prompts": "^2.4.2",
     "tsx": "~4.19.2",
     "typescript": "^5.7.3",
-    "unbuild": "^3.2.0"
+    "unbuild": "^3.3.1"
   },
   "packageManager": "yarn@4.6.0"
 }
