@@ -1,9 +1,9 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
-import { dimmed, mixColor } from './edge.css'
+import { easings, mantine, transitions, vars, whereDark, xyvars } from '../../../theme-vars'
+import { mixColor } from './edge.css'
 
-export { container, dimmed } from './edge.css'
+export { dimmed, edgeVars } from './edge.css'
 
 const labelBorderRadius = 2
 export const stepEdgeNumber = style({
@@ -33,36 +33,33 @@ export const varLabelY = createVar('label-y')
 
 export const varTranslate = createVar('translate')
 
-export const edgeLabel = style({
+export const edgeLabelContainer = style({
   top: 0,
   left: 0,
-  padding: '3px 5px 5px 5px',
-  fontFamily: vars.likec4.font,
-  display: 'flex',
   position: 'absolute',
   pointerEvents: 'all',
   cursor: 'pointer',
-  width: 'fit-content',
-  transformOrigin: '50% 50%',
-  mixBlendMode: 'plus-lighter',
-  color: xyvars.edge.labelColor,
+  width: 'auto',
+  height: 'auto',
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: labelBorderRadius,
+  border: '0px solid transparent',
+  mixBlendMode: 'plus-lighter',
   transform: varTranslate,
   transition: transitions.fast,
   vars: {
-    [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`,
+    [varTranslate]: `translate(0,0)`,
   },
   selectors: {
     '&[data-edge-hovered="true"]': {
-      transition: 'all 140ms ease-in-out',
+      transition: `all 140ms ${easings.inOut}`,
       transform: `${varTranslate} scale(1.12)`,
     },
     [`&:has(${stepEdgeNumber})`]: {
       padding: 0,
       gap: 2,
     },
-    [`&:is(${dimmed})`]: {
+    '&:is([data-edge-dimmed="true"])': {
       opacity: 0.3,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
@@ -70,6 +67,30 @@ export const edgeLabel = style({
       willChange: 'opacity, filter',
     },
   },
+})
+
+export const edgeLabel = style({
+  fontFamily: vars.likec4.font,
+  padding: '3px 5px 5px 5px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  width: 'max-content',
+  maxWidth: '100%',
+  gap: rem(4),
+  // position: 'absolute',
+  // pointerEvents: 'all',
+  // cursor: 'pointer',
+  // width: 'fit-content',
+  // // transformOrigin: '50% 50%',
+  // mixBlendMode: 'plus-lighter',
+  color: xyvars.edge.labelColor,
+  // // transform: varTranslate,
+  // transition: transitions.fast,
+  // vars: {
+  //   [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`,
+  // },
+  //
 })
 
 export const edgeLabelText = style({

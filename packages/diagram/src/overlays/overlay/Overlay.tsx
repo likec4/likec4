@@ -4,15 +4,19 @@ import {
 } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef } from '@react-hookz/web'
-import { m } from 'framer-motion'
-import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
+import clsx from 'clsx'
+import { type HTMLMotionProps, m } from 'framer-motion'
+import { type PropsWithChildren, forwardRef, useRef, useState } from 'react'
 import * as css from './Overlay.css'
 
-type OverlayProps = PropsWithChildren<{
-  onClose: () => void
-}>
+type OverlayProps = PropsWithChildren<
+  HTMLMotionProps<'dialog'> & {
+    onClose: () => void
+    onClick?: never
+  }
+>
 
-export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, onClose }, ref) => {
+export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, onClose, className, ...rest }, ref) => {
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
 
@@ -31,7 +35,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
   return (
     <m.dialog
       ref={useMergedRef(ref, dialogRef)}
-      className={css.dialog}
+      className={clsx(css.dialog, className)}
       initial={{
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '10%',
@@ -70,6 +74,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
         e.stopPropagation()
         close()
       }}
+      {...rest}
     >
       <RemoveScroll forwardProps>
         <Box className={css.body}>

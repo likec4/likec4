@@ -137,6 +137,7 @@ const RelationshipsBrowserInner = memo(() => {
         zoomable
       >
         <TopLeftPanel
+          enableNavigationMenu={enableNavigationMenu}
           subjectId={subjectId}
           hasStepBack={hasStepBack}
           hasStepForward={hasStepForward}

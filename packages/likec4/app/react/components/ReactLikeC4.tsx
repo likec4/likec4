@@ -1,22 +1,21 @@
-import type { WhereOperator } from '@likec4/core/types'
-import { type LikeC4DiagramProps, type OnNavigateTo, LikeC4Diagram } from '@likec4/diagram'
+import type { DiagramView, WhereOperator } from '@likec4/core/types'
+import { type LikeC4DiagramProps, type OnNavigateTo, LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import clsx from 'clsx'
 import { type CSSProperties } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 
-import type { MantineThemeOverride } from '@mantine/core'
 import { isFunction, isString } from 'remeda'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { useColorScheme, useShadowRootStyle } from './style'
 import { cssLikeC4View } from './styles.css'
-import type { ViewData } from './types'
+import { ErrorMessage, ViewNotFound } from './ViewNotFound'
 
 export type ReactLikeC4Props<
   ViewId extends string,
   Tag extends string,
   Kind extends string,
 > = Omit<LikeC4DiagramProps, 'view' | 'where' | 'onNavigateTo'> & {
-  view: ViewData<ViewId>
+  viewId: ViewId
 
   /**
    * Keep aspect ratio of the diagram
@@ -46,7 +45,7 @@ export type ReactLikeC4Props<
 
   onNavigateTo?: OnNavigateTo<ViewId> | undefined
 
-  mantineTheme?: MantineThemeOverride | undefined
+  mantineTheme?: any
 
   /** Function to generate nonce attribute added to all generated `<style />` tags */
   styleNonce?: string | (() => string) | undefined
@@ -57,6 +56,39 @@ export function ReactLikeC4<
   Tag extends string = string,
   Kind extends string = string,
 >({
+  viewId,
+  ...props
+}: ReactLikeC4Props<ViewId, Tag, Kind>) {
+  const likec4model = useLikeC4Model()
+  const view = likec4model?.findView(viewId)
+
+  if (!likec4model) {
+    return (
+      <ErrorMessage>
+        LikeC4Model not found. Make sure you have LikeC4ModelProvider.
+      </ErrorMessage>
+    )
+  }
+
+  if (!view) {
+    return <ViewNotFound viewId={viewId} />
+  }
+
+  if (!view.isDiagram()) {
+    return (
+      <ErrorMessage>
+        LikeC4Model is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
+      </ErrorMessage>
+    )
+  }
+
+  return <ReactLikeC4Inner view={view.$view} {...props} />
+}
+
+type ReactLikeC4InnerProps = Omit<ReactLikeC4Props<any, any, any>, 'viewId'> & {
+  view: DiagramView
+}
+function ReactLikeC4Inner({
   className,
   view,
   colorScheme: explicitColorScheme,
@@ -69,7 +101,7 @@ export function ReactLikeC4<
   mantineTheme,
   styleNonce,
   ...props
-}: ReactLikeC4Props<ViewId, Tag, Kind>) {
+}: ReactLikeC4InnerProps) {
   const colorScheme = useColorScheme(explicitColorScheme)
 
   const [shadowRootProps, cssstyle] = useShadowRootStyle(keepAspectRatio, view)

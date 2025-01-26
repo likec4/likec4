@@ -12,5 +12,5 @@ createRoot(document.getElementById('likec4-root')!).render(
     <MantineProvider defaultColorScheme="auto">
       <LikeC4View viewId={viewId} />
     </MantineProvider>
-  </>
+  </>,
 )

@@ -59,8 +59,8 @@ export function RelationshipsDropdownMenu({
   children,
 }: PropsWithChildren<{
   edgeId: EdgeId
-  sourceNode: InternalNode<Types.Node>
-  targetNode: InternalNode<Types.Node>
+  sourceNode: DiagramNode
+  targetNode: DiagramNode
   disabled?: boolean | undefined
 }>) {
   const likec4model = useLikeC4Model(true)
@@ -77,10 +77,10 @@ export function RelationshipsDropdownMenu({
     return <>{children}</>
   }
 
-  const { source, target } = diagramEdge
+  // const { source, target } = diagramEdge
 
-  invariant(sourceNode.type !== 'view-group', 'View group node cannot have relationships')
-  invariant(targetNode.type !== 'view-group', 'View group node cannot have relationships')
+  // invariant(sourceNode.type !== 'view-group', 'View group node cannot have relationships')
+  // invariant(targetNode.type !== 'view-group', 'View group node cannot have relationships')
 
   const [direct, nested] = pipe(
     diagramEdge.relations,
@@ -90,14 +90,14 @@ export function RelationshipsDropdownMenu({
       } catch (e) {
         // View was cached, but likec4model based on new data
         console.error(
-          `View is cached and likec4model missing relationship ${id} from ${source} -> ${target}`,
+          `View is cached and likec4model missing relationship ${id} from ${sourceNode.id} -> ${targetNode.id}`,
           e,
         )
         return null
       }
     }),
     filter(isTruthy),
-    partition(r => r.source.id === source && r.target.id === target),
+    partition(r => r.source.id === sourceNode.id && r.target.id === targetNode.id),
   )
 
   const renderRelationship = (relationship: LikeC4Model.AnyRelation, index: number) => (
@@ -107,8 +107,8 @@ export function RelationshipsDropdownMenu({
         onClick={onClickOpenOverlay}
         component={Relationship}
         relationship={relationship}
-        sourceNode={nonNullable(diagram.getDiagramNode(sourceNode.data.id))}
-        targetNode={nonNullable(diagram.getDiagramNode(targetNode.data.id))}
+        sourceNode={sourceNode}
+        targetNode={targetNode}
         edge={diagramEdge} />
     </Fragment>
   )
@@ -122,12 +122,12 @@ export function RelationshipsDropdownMenu({
       trigger={'click-hover'}
       openDelay={300}
       closeDelay={450}
-      floatingStrategy={'fixed'}
       closeOnClickOutside
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       closeOnEscape
       closeOnItemClick={false}
       disabled={disabled}
+      position="bottom-start"
       {...portalProps}
     >
       <MenuTarget>

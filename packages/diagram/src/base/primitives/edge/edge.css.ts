@@ -1,12 +1,11 @@
-import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { cssReactFlow } from '../../../LikeC4Diagram.css'
-import { mantine, transitions, vars, xyvars } from '../../../theme-vars'
+import { vars, xyvars } from '../../../theme-vars'
 import { whereDark, whereLight } from '../../../theme-vars.css'
 
 export const mixColor = createVar('mix-color')
 
-export const container = style({
+export const edgeVars = style({
   vars: {
     [mixColor]: `black`,
     [xyvars.edge.stroke]: vars.relation.lineColor,
@@ -17,7 +16,7 @@ export const container = style({
   },
 })
 
-globalStyle(`${whereDark} ${container}`, {
+globalStyle(`${whereDark} ${edgeVars}`, {
   vars: {
     [mixColor]: `white`,
     [xyvars.edge.labelColor]: vars.relation.labelColor,
@@ -27,14 +26,14 @@ globalStyle(`${whereDark} ${container}`, {
 
 const isSelected = '.react-flow__edge.selected'
 
-globalStyle(`:where(${isSelected}) ${container}`, {
+globalStyle(`:where(${isSelected}) ${edgeVars}`, {
   vars: {
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
     [xyvars.edge.strokeWidth]: '3',
   },
 })
 
-globalStyle(`${container}:is([data-edge-hovered='true'],[data-edge-active='true'])`, {
+globalStyle(`${edgeVars}:is([data-edge-hovered='true'],[data-edge-active='true'])`, {
   vars: {
     // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
@@ -42,7 +41,7 @@ globalStyle(`${container}:is([data-edge-hovered='true'],[data-edge-active='true'
   },
 })
 
-globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
+globalStyle(`:where(${isSelected}) ${edgeVars}[data-edge-hovered='true']`, {
   vars: {
     [xyvars.edge.strokeWidth]: '4',
   },

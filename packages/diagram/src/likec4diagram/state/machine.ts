@@ -565,6 +565,12 @@ export const diagramMachine = setup({
             },
           },
           on: {
+            'open.relationshipsBrowser': {
+              actions: sendTo('relationshipsBrowser', ({ event }) => ({
+                type: 'navigate.to',
+                subject: event.fqn,
+              })),
+            },
             'close.overlay': {
               actions: sendTo('relationshipsBrowser', { type: 'close' }),
             },

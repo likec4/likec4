@@ -35,15 +35,13 @@ export function CompoundActionButton({
           // y: 1,
         }}
         whileTap={{ scale: 1 }}
-        // @ts-expect-error onTap handles also pointer events
-        onTap={onClick}
       >
         <ActionIcon
           className={css.actionIcon}
           size={'md'}
           radius="md"
           // Otherwise node receives click event and is selected
-          onClick={stopPropagation}
+          onClick={onClick}
           onDoubleClick={stopPropagation}
         >
           {icon ?? <IconZoomScan stroke={2} />}

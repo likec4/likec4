@@ -46,15 +46,13 @@ export function ElementActionButtons({
             whileHover={{
               scale: 1.35,
             }}
-            // @ts-expect-error onTap handles also pointer events
-            onTap={button.onClick}
           >
             <ActionIcon
               className={css.actionIcon}
               size={'md'}
               radius="md"
               // Otherwise node receives click event and is selected
-              onClick={stopPropagation}
+              onClick={button.onClick}
               onDoubleClick={stopPropagation}
             >
               {button.icon}

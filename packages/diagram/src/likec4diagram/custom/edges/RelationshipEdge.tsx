@@ -1,5 +1,6 @@
 import {
   type EdgeId,
+  type NodeId,
   isStepEdgeId,
   nonNullable,
 } from '@likec4/core'
@@ -300,8 +301,8 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
     } else if (enableRelationshipDetails) {
       renderLabel = (props: any) => (
         <RelationshipsDropdownMenu
-          sourceNode={sourceNode}
-          targetNode={targetNode}
+          sourceNode={nonNullable(diagram.getDiagramNode(source as NodeId))}
+          targetNode={nonNullable(diagram.getDiagramNode(target as NodeId))}
           disabled={!!dimmed}
           edgeId={edgeId}>
           <div {...props} />
@@ -333,9 +334,10 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       )}
       <EdgeLabel
         edgeProps={props}
-        labelXY={{
-          x: isModified ? `calc(${labelX}px - 50%)` : labelX,
-          y: isModified ? `calc(${labelY}px - 50%)` : labelY,
+        labelPosition={{
+          x: labelX,
+          y: labelY,
+          translate: isModified ? 'translate(-50%, 0)' : undefined,
         }}
         {...renderLabel && { renderRoot: renderLabel }}
       >

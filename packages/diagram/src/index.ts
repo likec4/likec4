@@ -1,7 +1,9 @@
 import '@xyflow/react/dist/style.css'
 
+export { FramerMotionConfig } from './context/FramerMotionConfig'
 export { LikeC4Diagram } from './LikeC4Diagram'
 export type { LikeC4DiagramProps } from './LikeC4Diagram'
+export { Overlay } from './overlays/overlay/Overlay'
 
 export {
   useLikeC4ElementsTree,

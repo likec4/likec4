@@ -1,17 +1,14 @@
 import type { LikeC4Model } from '@likec4/core/model'
+import type { DiagramView, ViewId } from '@likec4/core/types'
 import {
-  type LikeC4ViewProps as BaseLikeC4ViewProps,
+  type LikeC4ViewProps,
   type ReactLikeC4Props as GenericReactLikeC4Props,
-  LikeC4Browser,
   LikeC4ModelProvider as GenericLikeC4ModelProvider,
-  LikeC4ViewEmbedded,
+  LikeC4View as GenericLikeC4View,
   ReactLikeC4 as GenericReactLikeC4,
-  useColorScheme,
-  ViewNotFound,
 } from 'likec4/react'
-import { type PropsWithChildren, memo, useCallback, useState } from 'react'
+import { type PropsWithChildren } from 'react'
 import { Icons } from 'virtual:likec4/icons'
-import type { DiagramView, LikeC4ElementKind, LikeC4Tag, LikeC4ViewId } from 'virtual:likec4/model'
 import { likeC4Model, LikeC4Views, useLikeC4Model } from 'virtual:likec4/model'
 
 type IconRendererProps = {
@@ -29,17 +26,14 @@ export function RenderIcon({ node }: IconRendererProps) {
 
 export { likeC4Model, LikeC4Views, useLikeC4Model }
 
-export function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4Model.View {
+export function useLikeC4ViewModel(viewId: ViewId): LikeC4Model.View {
   return useLikeC4Model().view(viewId as any)
 }
 
-export function useLikeC4View(viewId: LikeC4ViewId): DiagramView {
+export function useLikeC4View(viewId: ViewId): DiagramView {
   return useLikeC4Model().view(viewId as any).$view as DiagramView
 }
-
-export type LikeC4ViewProps = BaseLikeC4ViewProps<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
-
-export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
+export function isLikeC4ViewId(value: unknown): value is ViewId {
   return (
     value != null
     && typeof value === 'string'
@@ -56,117 +50,25 @@ export function LikeC4ModelProvider({ children }: PropsWithChildren) {
   )
 }
 
-const LikeC4ViewMemo = /* @__PURE__ */ memo<LikeC4ViewProps>(function LikeC4View({
-  viewId,
-  interactive = true,
-  colorScheme: explicitColorScheme,
-  injectFontCss = true,
-  background = 'transparent',
-  browserBackground = 'dots',
-  where,
-  showDiagramTitle = false,
-  showNavigationButtons = false,
-  showNotations = false,
-  enableFocusMode = false,
-  enableElementDetails = false,
-  enableRelationshipDetails = false,
-  enableRelationshipBrowser = enableRelationshipDetails,
-  browserClassName,
-  browserStyle,
-  mantineTheme,
-  styleNonce,
-  ...props
-}) {
-  const view = LikeC4Views[viewId]
-
-  const [browserViewId, onNavigateTo] = useState(null as LikeC4ViewId | null)
-
-  const browserView = browserViewId ? LikeC4Views[browserViewId] : null
-
-  const closeBrowser = useCallback(() => {
-    onNavigateTo(null)
-  }, [onNavigateTo])
-
-  const colorScheme = useColorScheme(explicitColorScheme)
-
-  if (!view) {
-    return <ViewNotFound viewId={viewId} />
-  }
-
-  if (browserViewId && !browserView) {
-    return <ViewNotFound viewId={browserViewId} />
-  }
-
-  if (interactive && enableFocusMode) {
-    console.warn('Focus mode is not supported in interactive mode')
-  }
-
+export function LikeC4View(props: LikeC4ViewProps<string, string, string>) {
   return (
     <LikeC4ModelProvider>
-      <LikeC4ViewEmbedded<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
-        view={view}
-        colorScheme={colorScheme}
-        injectFontCss={injectFontCss}
-        onNavigateTo={interactive ? onNavigateTo : undefined}
-        background={background}
+      <GenericLikeC4View
         renderIcon={RenderIcon}
-        showDiagramTitle={showDiagramTitle}
-        showNavigationButtons={showNavigationButtons}
-        showNotations={showNotations}
-        enableFocusMode={enableFocusMode}
-        enableElementDetails={enableElementDetails}
-        enableRelationshipBrowser={enableRelationshipBrowser}
-        enableRelationshipDetails={enableRelationshipDetails}
-        where={where}
-        mantineTheme={mantineTheme}
-        styleNonce={styleNonce}
-        {...props}
-      />
-      {browserView && (
-        <LikeC4Browser<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>
-          view={browserView}
-          injectFontCss={false}
-          colorScheme={colorScheme}
-          onNavigateTo={onNavigateTo}
-          background={browserBackground}
-          onClose={closeBrowser}
-          renderIcon={RenderIcon}
-          where={where}
-          className={browserClassName}
-          style={browserStyle}
-          mantineTheme={mantineTheme}
-          styleNonce={styleNonce}
-          enableElementDetails
-          enableRelationshipBrowser
-          enableRelationshipDetails
-        />
-      )}
+        {...props} />
     </LikeC4ModelProvider>
   )
-})
-LikeC4ViewMemo.displayName = 'LikeC4ViewMemo'
+}
 
-export type ReactLikeC4Props =
-  & Omit<GenericReactLikeC4Props<LikeC4ViewId, LikeC4Tag, LikeC4ElementKind>, 'view' | 'renderIcon'>
-  & {
-    viewId: LikeC4ViewId
-  }
+type ReactLikeC4Props = Omit<GenericReactLikeC4Props<string, string, string>, 'renderIcon'>
 
-const ReactLikeC4Memo = /* @__PURE__ */ memo<ReactLikeC4Props>(function ReactLikeC4({ viewId, ...props }) {
-  const view = LikeC4Views[viewId]
-  if (!view) {
-    return <ViewNotFound viewId={viewId} />
-  }
+export function ReactLikeC4(props: ReactLikeC4Props) {
   return (
     <LikeC4ModelProvider>
       <GenericReactLikeC4
-        view={view}
         renderIcon={RenderIcon}
         {...props}
       />
     </LikeC4ModelProvider>
   )
-})
-ReactLikeC4Memo.displayName = 'ReactLikeC4Memo'
-
-export { LikeC4ViewMemo as LikeC4View, ReactLikeC4Memo as ReactLikeC4 }
+}

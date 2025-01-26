@@ -44,6 +44,10 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
     onNodeContextMenu,
     onCanvasContextMenu,
     onEdgeContextMenu,
+    onNodeClick,
+    onEdgeClick,
+    onCanvasClick,
+    onCanvasDblClick,
   } = useDiagramEventHandlers()
 
   const {
@@ -74,18 +78,22 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
       onNodeClick={useCallbackRef((e, node) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.nodeClick', node })
+        onNodeClick?.(diagram.getDiagramNode(node.id as NodeId)!, e)
       })}
       onEdgeClick={useCallbackRef((e, edge) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.edgeClick', edge })
+        onEdgeClick?.(diagram.getDiagramEdge(edge.id as EdgeId)!, e)
       })}
       onPaneClick={useCallbackRef((e) => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.paneClick' })
+        onCanvasClick?.(e as any)
       })}
       onDoubleClick={useCallbackRef(e => {
         e.stopPropagation()
         diagram.send({ type: 'xyflow.paneDblClick' })
+        onCanvasDblClick?.(e as any)
       })}
       onMoveEnd={useCallbackRef((event, viewport) => {
         // if event is present, the move was triggered by user

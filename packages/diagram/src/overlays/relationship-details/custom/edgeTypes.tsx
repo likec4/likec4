@@ -19,14 +19,13 @@ export const edgeTypes = {
         <EdgePath {...props} svgPath={svgPath} />
         <EdgeLabel
           edgeProps={props}
-          labelXY={{
-            x: `calc(${labelX}px - 50%)`,
-            y: `calc(${labelY}px - 100%)`,
+          labelPosition={{
+            x: labelX,
+            y: labelY,
+            translate: 'translate(-50%, 0)',
           }}
           style={{
-            // transform: `translate(${labelX}px, ${labelY}px)  translate(-50%, 0)`,
             maxWidth: Math.abs(props.targetX - props.sourceX - 70),
-            // translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})
           }}>
           {enableNavigateTo && navigateTo && (
             <EdgeActionButton

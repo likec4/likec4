@@ -8,11 +8,12 @@ export const shadowRoot = style({
   height: '100%',
   overflow: 'hidden',
   backgroundColor: 'transparent',
+  position: 'relative',
   vars: {
     ['--likec4-default-font-family']:
-      `"IBM Plex Sans",ui-sans-serif system-ui, sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`
+      `"IBM Plex Sans",ui-sans-serif system-ui, sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
     // ['--mantine-font-family']: 'var(--likec4-default-font-family)'
-  }
+  },
 })
 
 export const cssLikeC4View = style({})
@@ -20,12 +21,16 @@ export const cssLikeC4View = style({})
 export const cssInteractive = style({
   cursor: 'pointer',
   vars: {
-    ['--mantine-cursor-pointer']: 'pointer'
-  }
+    ['--mantine-cursor-pointer']: 'pointer',
+  },
 })
 
 globalStyle(`${cssInteractive} :where(.likec4-diagram, .likec4-compound-node, .likec4-element-node)`, {
-  cursor: 'pointer'
+  cursor: 'pointer',
 })
 
 export const cssLikeC4Browser = style({})
+
+export const browserOverlay = style({
+  inset: '2rem',
+})

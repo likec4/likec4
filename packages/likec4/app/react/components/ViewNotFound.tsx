@@ -1,9 +1,10 @@
 import { Box, Code } from '@mantine/core'
+import type { PropsWithChildren } from 'react'
 
-export const ViewNotFound = ({ viewId }: { viewId: string }) => (
+export const ErrorMessage = ({ children }: PropsWithChildren) => (
   <Box
     style={{
-      margin: '1rem 0'
+      margin: '1rem 0',
     }}>
     <div
       style={{
@@ -11,9 +12,15 @@ export const ViewNotFound = ({ viewId }: { viewId: string }) => (
         display: 'inline-block',
         padding: '2rem',
         background: 'rgba(250,82,82,.15)',
-        color: '#ffa8a8'
+        color: '#ffa8a8',
       }}>
-      View <Code>{viewId}</Code> not found
+      {children}
     </div>
   </Box>
+)
+
+export const ViewNotFound = ({ viewId }: { viewId: string }) => (
+  <ErrorMessage>
+    View <Code>{viewId}</Code> not found
+  </ErrorMessage>
 )

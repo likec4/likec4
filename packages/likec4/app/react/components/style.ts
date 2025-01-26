@@ -148,6 +148,8 @@ export function useShadowRootStyle(
   border: 0 solid transparent;
   background: transparent;
   padding: 0;
+  margin: 0;
+  overflow: hidden;
   width: 100%;
   height: 100%;
   min-width: 80px;
@@ -168,6 +170,7 @@ export function useShadowRootStyle(
   border: 0 solid transparent;
   background: transparent;
   padding: 0;
+  overflow: hidden;
   ${
       isLandscape ? '' : `
   max-width: var(--likec4-view-max-width, ${Math.ceil(view.bounds.width)}px);
