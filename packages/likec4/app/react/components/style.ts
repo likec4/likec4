@@ -1,3 +1,4 @@
+import type { DiagramView } from '@likec4/core'
 import { type MantineThemeOverride, createTheme } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMutationObserver } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
@@ -5,7 +6,6 @@ import { useId, useState } from 'react'
 import { first, isFunction, isString } from 'remeda'
 import fontCss from './font.css?inline'
 import { shadowRoot } from './styles.css'
-import type { ViewData } from './types'
 
 declare const __likec4styles: Map<string, string>
 declare const __USE_STYLE_BUNDLE__: boolean
@@ -134,7 +134,7 @@ export function useColorScheme(explicit?: ColorScheme): ColorScheme {
 
 export function useShadowRootStyle(
   keepAspectRatio: boolean,
-  view: ViewData<string>,
+  view: DiagramView,
 ): [{ 'data-likec4-instance': string }, style: string] {
   const id = useId()
 
