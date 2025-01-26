@@ -1993,7 +1993,7 @@ __metadata:
     "@types/react": "npm:19.0.8"
     "@types/react-dom": "npm:19.0.3"
     astro: "npm:~4.16.18"
-    astro-og-canvas: "npm:^0.5.5"
+    astro-og-canvas: "npm:^0.5.6"
     likec4: "workspace:*"
     npm-run-all2: "npm:^7.0.1"
     react: "npm:19.0.0"
@@ -4740,16 +4740,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro-og-canvas@npm:^0.5.5":
-  version: 0.5.5
-  resolution: "astro-og-canvas@npm:0.5.5"
+"astro-og-canvas@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "astro-og-canvas@npm:0.5.6"
   dependencies:
     canvaskit-wasm: "npm:^0.39.1"
     deterministic-object-hash: "npm:^2.0.2"
     entities: "npm:^4.4.0"
   peerDependencies:
     astro: ^3.0.0 || ^4.0.0 || ^5.0.0
-  checksum: 10c0/b2812360385be9bbdbc3350567de8d5b935ca80499443f7199b19ab09364b8ef49103e1fe288d1589b03a49e72d5f72297a229a31a2758b761a656d11e376132
+  checksum: 10c0/e2bc426d61e6ea7b244e74ad0aa3cc01e51123eca0f0e325e084a6f593f897765346f89bd26f11163de1bb7a7dc29f8018b268347f567a4c824b66d1406705d4
   languageName: node
   linkType: hard
 
