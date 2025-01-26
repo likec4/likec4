@@ -334,8 +334,8 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
       <EdgeLabel
         edgeProps={props}
         labelXY={{
-          x: labelX,
-          y: labelY,
+          x: isModified ? `calc(${labelX}px - 50%)` : labelX,
+          y: isModified ? `calc(${labelY}px - 50%)` : labelY,
         }}
         {...renderLabel && { renderRoot: renderLabel }}
       >

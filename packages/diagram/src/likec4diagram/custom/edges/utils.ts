@@ -27,9 +27,11 @@ export function getNodeIntersectionFromCenterToPoint(
   nodeMargin: number = 0,
 ) {
   const nodeCenter = getNodeCenter(intersectionNode)
+  const { width, height } = getNodeDimensions(intersectionNode)
   const v = new VectorImpl(target.x, target.y).sub(nodeCenter)
-  const xScale = (nodeMargin + (intersectionNode.width || 0) / 2) / v.x
-  const yScale = (nodeMargin + (intersectionNode.height || 0) / 2) / v.y
+  console.log(intersectionNode)
+  const xScale = (nodeMargin + (width || 0) / 2) / v.x
+  const yScale = (nodeMargin + (height || 0) / 2) / v.y
 
   const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
 
