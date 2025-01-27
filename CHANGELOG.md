@@ -1,3 +1,12 @@
+## [1.20.1](https://github.com/likec4/likec4/compare/v1.20.0...v1.20.1) (2025-01-27)
+
+
+### Bug Fixes
+
+* broken layout in vscode previes ([#1472](https://github.com/likec4/likec4/issues/1472)) ([e50cf63](https://github.com/likec4/likec4/commit/e50cf63a69732a8e30796dd9830f3efc507e1543)), closes [#1471](https://github.com/likec4/likec4/issues/1471)
+
+
+
 # [1.20.0](https://github.com/likec4/likec4/compare/v1.19.2...v1.20.0) (2025-01-27)
 
 ### 🚀 Features
