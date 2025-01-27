@@ -6,7 +6,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/likec4/likec4.git",
+    "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/core"
   },
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -31,74 +31,74 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
       }
     },
     "./builder": {
       "sources": "./src/builder/index.ts",
+      "require": {
+        "types": "./dist/builder/index.d.cts",
+        "default": "./dist/builder/index.cjs"
+      },
       "default": {
         "types": "./dist/builder/index.d.mts",
         "import": "./dist/builder/index.mjs",
         "default": "./dist/builder/index.mjs"
-      },
-      "require": {
-        "types": "./dist/builder/index.d.cts",
-        "default": "./dist/builder/index.cjs"
       }
     },
     "./compute-view": {
       "sources": "./src/compute-view/index.ts",
+      "require": {
+        "types": "./dist/compute-view/index.d.cts",
+        "default": "./dist/compute-view/index.cjs"
+      },
       "default": {
         "types": "./dist/compute-view/index.d.mts",
         "import": "./dist/compute-view/index.mjs",
         "default": "./dist/compute-view/index.mjs"
-      },
-      "require": {
-        "types": "./dist/compute-view/index.d.cts",
-        "default": "./dist/compute-view/index.cjs"
       }
     },
     "./model": {
       "sources": "./src/model/index.ts",
+      "require": {
+        "types": "./dist/model/index.d.cts",
+        "default": "./dist/model/index.cjs"
+      },
       "default": {
         "types": "./dist/model/index.d.mts",
         "import": "./dist/model/index.mjs",
         "default": "./dist/model/index.mjs"
-      },
-      "require": {
-        "types": "./dist/model/index.d.cts",
-        "default": "./dist/model/index.cjs"
       }
     },
     "./utils": {
       "sources": "./src/utils/index.ts",
+      "require": {
+        "types": "./dist/utils/index.d.cts",
+        "default": "./dist/utils/index.cjs"
+      },
       "default": {
         "types": "./dist/utils/index.d.mts",
         "import": "./dist/utils/index.mjs",
         "default": "./dist/utils/index.mjs"
-      },
-      "require": {
-        "types": "./dist/utils/index.d.cts",
-        "default": "./dist/utils/index.cjs"
       }
     },
     "./types": {
       "sources": "./src/types/index.ts",
+      "require": {
+        "types": "./dist/types/index.d.cts",
+        "default": "./dist/types/index.cjs"
+      },
       "default": {
         "types": "./dist/types/index.d.mts",
         "import": "./dist/types/index.mjs",
         "default": "./dist/types/index.mjs"
-      },
-      "require": {
-        "types": "./dist/types/index.d.cts",
-        "default": "./dist/types/index.cjs"
       }
     }
   },

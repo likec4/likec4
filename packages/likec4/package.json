@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/likec4/likec4.git",
+    "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/likec4"
   },
   "engines": {
@@ -22,25 +22,26 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
       }
     },
     "./model": {
       "sources": "./src/model/index.ts",
-      "import": {
-        "types": "./dist/model/index.d.mts",
-        "default": "./dist/model/index.mjs"
-      },
       "require": {
         "types": "./dist/model/index.d.cts",
         "default": "./dist/model/index.cjs"
+      },
+      "default": {
+        "types": "./dist/model/index.d.mts",
+        "import": "./dist/model/index.mjs",
+        "default": "./dist/model/index.mjs"
       }
     },
     "./react": {

@@ -6,7 +6,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/likec4/likec4.git",
+    "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/create-likec4"
   },
   "bin": "index.js",

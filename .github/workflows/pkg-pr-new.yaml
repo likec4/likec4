@@ -24,4 +24,4 @@ jobs:
 
       - name: publish
         run: |
-          yarn dlx pkg-pr-new publish --comment=off './packages/likec4'
+          yarn dlx pkg-pr-new publish --yarn --comment=off './packages/core' './packages/likec4'
