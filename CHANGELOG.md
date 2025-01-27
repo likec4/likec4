@@ -18,23 +18,13 @@
   [Documentation](https://likec4.dev/dsl/views/#filter) (thanks @pavelpykhtin)
 
 * **Refreshed UI and more customization options for React components**
+
+  ![image](https://github.com/user-attachments/assets/ca8bbb0f-aa14-4606-906f-4c26e6d82101)
   
-  Browser looks more like modal
+  More options available - [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/LikeC4View.props.ts)
 
-  Available - [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/LikeC4View.props.ts)
-
-  > [!WARNING]  
-  > Diagrams migrated to React 19, you may get dependency resolution issues
-
-
- **diagram:** deployment relationships details (thanks @pavelpykhtin, [#1461](https://github.com/likec4/likec4/issues/1461)) ([27fe625](https://github.com/likec4/likec4/commit/27fe6257d233ee7fd955858fd27b6fa3cc4e2b82)), closes [#1377](https://github.com/likec4/likec4/issues/1377)
-* enhance relationship details and browser functionality with optional fields and double-click event ([619134c](https://github.com/likec4/likec4/commit/619134c7d7e8387a11805e7d38739ca89c1d3989))
-* enhance relationships browser and improve component structure ([17487cf](https://github.com/likec4/likec4/commit/17487cfa924fa8e3f869bf541ff1267915b5310a))
-* predicates on participants of the relation for element views ([#1371](https://github.com/likec4/likec4/issues/1371)) ([81c448d](https://github.com/likec4/likec4/commit/81c448d1c6e1ae6e4b405b398674e4b71a8dbae9))
-* **relationship-details:** implement relationship details overlay and associated types ([180a9bd](https://github.com/likec4/likec4/commit/180a9bdcefa17414ff1bca07439cad1cc8467433))
-* **relationships-browser:** enhance relationships view with empty state and port handling ([084bc94](https://github.com/likec4/likec4/commit/084bc94a16c608aab5d0f2babb21824a3b6b8dee))
-* update LikeC4View props and improve test file generation ([c7bba76](https://github.com/likec4/likec4/commit/c7bba765cff9d1f4bb21373977f5089da0db68f4))
-
+> [!WARNING]  
+> Diagrams migrated to React 19, you may get dependency resolution issues
 
 
 ### Bug Fixes
