@@ -84,7 +84,7 @@ type LikeC4ViewModel = GenericLikeC4Model.View<Aux>;
 
 declare const likeC4Model: LikeC4Model;
 declare function useLikeC4Model(): LikeC4Model;
-declare function useLikeC4View(viewId: LikeC4ViewId): LikeC4ViewData;
+declare function useLikeC4View(viewId: LikeC4ViewId): DiagramView<LikeC4ViewId>;
 declare function useLikeC4ViewModel(viewId: LikeC4ViewId): LikeC4ViewModel;
 
 declare function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element;
