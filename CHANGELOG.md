@@ -1,3 +1,45 @@
+# [1.20.0](https://github.com/likec4/likec4/compare/v1.19.2...v1.20.0) (2025-01-27)
+
+### 🚀 Features
+
+* **Filter relationships by tag or kind of its endpoints**
+
+  ```zig
+  include
+    // only relationships outgoing from elements with with tag #next
+    cloud.* -> amazon.*
+      where source.tag is #next,
+
+    // only incoming relations of elements with kind microservice
+    -> *
+      where target.kind is microservice
+  ```
+
+  [Documentation](https://likec4.dev/dsl/views/#filter) (thanks @pavelpykhtin)
+
+* **Refreshed UI and more customization options for React components**
+
+  ![image](https://github.com/user-attachments/assets/ca8bbb0f-aa14-4606-906f-4c26e6d82101)
+  
+  More options available - [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/likec4/app/react/components/LikeC4View.props.ts)
+
+> [!WARNING]  
+> Diagrams migrated to React 19, you may get dependency resolution issues
+
+
+### Bug Fixes
+
+* **diagram:** added key prop for action bar content (thanks @pavelpykhtin, [#1443](https://github.com/likec4/likec4/issues/1443)) ([3d9e7f8](https://github.com/likec4/likec4/commit/3d9e7f8e62439da015fc65549b8836940cdbb465)), closes [#1424](https://github.com/likec4/likec4/issues/1424)
+* **diagram:** adjusted label and endpoint position of relationships on manual layout (thanks @pavelpykhtin, [#1445](https://github.com/likec4/likec4/issues/1445)) ([629271e](https://github.com/likec4/likec4/commit/629271ee99b6a76aa4e1764b558632d802b9921c)), closes [#1322](https://github.com/likec4/likec4/issues/1322)
+* **diagram:**  for '<iterator object>.<array function> is not a function' (thanks @pavelpykhtin, [#1463](https://github.com/likec4/likec4/issues/1463)) ([e141586](https://github.com/likec4/likec4/commit/e14158681853aedb50b272c64532fe650f493500)), closes [#1425](https://github.com/likec4/likec4/issues/1425)
+* **diagram:**  hide element toolbar when more then one element selected (thanks @pavelpykhtin, [#1446](https://github.com/likec4/likec4/issues/1446)) ([56acca0](https://github.com/likec4/likec4/commit/56acca0478724d6becf4a66a3fe395142cb4e7be)), closes [#1422](https://github.com/likec4/likec4/issues/1422)
+* **diagram:**  incorrect merge of relation labels (thanks @davydkov, [#1435](https://github.com/likec4/likec4/issues/1435)) ([a7b4120](https://github.com/likec4/likec4/commit/a7b4120cdd4c9545521cbc203a60c3e5ce84aea2))
+* **diagram:**  overlay transparency in FF (thanks @pavelpykhtin, [#1462](https://github.com/likec4/likec4/issues/1462)) ([f59308f](https://github.com/likec4/likec4/commit/f59308f02ef7e0ba4684fd30e0655aff41e2dd5c)), closes [#1420](https://github.com/likec4/likec4/issues/1420)
+* **diagram:**  incorrect merge of relation labels (thanks @davydkov, [#1435](https://github.com/likec4/likec4/issues/1435)) ([a7b4120](https://github.com/likec4/likec4/commit/a7b4120cdd4c9545521cbc203a60c3e5ce84aea2))
+* **diagram:**  Icon does not render in 'Browse relationships' view (thanks @davydkov,  closes [#1219](https://github.com/likec4/likec4/issues/1219))
+
+
+
 ## [1.19.2](https://github.com/likec4/likec4/compare/v1.19.1...v1.19.2) (2025-01-06)
 
 ### Bug Fixes
