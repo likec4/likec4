@@ -57,7 +57,6 @@ export const SelectElement = ({
       onOpen={() => {
         setTimeout(() => {
           const item = viewport.current?.querySelector(`[data-value="${subjectId}"]`)
-          console.log('item', item)
           item?.scrollIntoView({ behavior: 'instant', block: 'nearest' })
         }, 100)
       }}

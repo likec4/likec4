@@ -9,12 +9,12 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       conditions: ['production', 'sources'],
-      // alias: {
-      //   '@likec4/core/model': resolve(__dirname, '../core/src/model'),
-      //   '@likec4/core/types': resolve(__dirname, '../core/src/types'),
-      //   '@likec4/core': resolve(__dirname, '../core/src'),
-      //   '@likec4/diagram': resolve(__dirname, '../diagram/src'),
-      // },
+      alias: {
+        '@likec4/core/model': resolve(__dirname, '../core/src/model'),
+        '@likec4/core/types': resolve(__dirname, '../core/src/types'),
+        '@likec4/core': resolve(__dirname, '../core/src'),
+        '@likec4/diagram': resolve(__dirname, '../diagram/src'),
+      },
     },
     define: {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
