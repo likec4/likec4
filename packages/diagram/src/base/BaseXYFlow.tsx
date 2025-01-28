@@ -111,6 +111,8 @@ export const BaseXYFlow = <
       {...(!pannable && {
         selectionKeyCode: null,
       })}
+      snapGrid={[20, 20]}
+      snapToGrid={true}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
