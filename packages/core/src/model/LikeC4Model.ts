@@ -27,9 +27,9 @@ import { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
   /**
-   * Only available in compile tim
+   * Don't use in runtime, only for type inference
    */
-  readonly Aux!: M
+  readonly Aux: M = {} as M
 
   readonly #elements = new Map<M['Element'], ElementModel<M>>()
   // Parent element for given FQN

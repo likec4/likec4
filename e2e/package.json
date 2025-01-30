@@ -18,7 +18,7 @@
     "@playwright/test": "^1.49.1",
     "likec4": "file:../packages/likec4/package.tgz",
     "std-env": "^3.7.0",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vitest": "^2.1.8",
     "zx": "^8.1.8"
   },
