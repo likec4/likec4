@@ -16,10 +16,7 @@
   "devDependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
     "@playwright/test": "^1.49.1",
-    "@types/react": "18.3.4",
     "likec4": "file:../packages/likec4/package.tgz",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "std-env": "^3.7.0",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8",
