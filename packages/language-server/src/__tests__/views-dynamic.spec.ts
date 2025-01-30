@@ -1,4 +1,4 @@
-import { describe, it, type TestContext, vi } from 'vitest'
+import { type TestContext, describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
 const model = `
@@ -62,7 +62,7 @@ async function mkTestServices({ expect }: TestContext) {
     invalid: async (view: string) => {
       const { errors } = await validateView(view)
       expect(errors).not.toEqual([])
-    }
+    },
   }
 }
 
@@ -100,6 +100,7 @@ describe.concurrent('dynamic views', () => {
 
         style * {
           color red
+          multiple true
         }
         autoLayout BottomTop
       }

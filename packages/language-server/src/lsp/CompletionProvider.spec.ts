@@ -64,7 +64,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 5,
-      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon'],
+      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon', 'multiple'],
     })
     await completion({
       text,
@@ -556,6 +556,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'border',
         'opacity',
         'icon',
+        'multiple',
       ],
       disposeAfterCheck: true,
     })

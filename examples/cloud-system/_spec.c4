@@ -30,6 +30,9 @@ specification {
   }
   element app {
     notation "Application"
+    style {
+      multiple true
+    }
   }
   element component {
     style {

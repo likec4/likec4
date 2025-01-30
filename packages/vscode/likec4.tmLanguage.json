@@ -29,6 +29,10 @@
       "name": "keyword.control.likec4"
     },
     {
+      "match": "\\b(true|false)\\b",
+      "name": "constant.language.likec4"
+    },
+    {
       "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
       "captures": {
         "1": {
@@ -93,7 +97,7 @@
     },
     {
       "name": "variable.other.property.likec4",
-      "match": "\\b(title|description|technology|navigateTo|notation)\\b"
+      "match": "\\b(title|description|technology|navigateTo|notation|multiple)\\b"
     },
     {
       "name": "keyword.control.likec4",

@@ -11,6 +11,7 @@ import { elementChecks } from './element'
 import { iconPropertyRuleChecks, notesPropertyRuleChecks, opacityPropertyRuleChecks } from './property-checks'
 import { relationBodyChecks, relationChecks } from './relation'
 import {
+  deploymentNodeKindChecks,
   elementKindChecks,
   globalPredicateChecks,
   globalsChecks,
@@ -123,6 +124,7 @@ export function registerValidationChecks(services: LikeC4Services) {
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
     DeployedInstance: deployedInstanceChecks(services),
+    DeploymentNodeKind: deploymentNodeKindChecks(services),
     DeploymentNode: deploymentNodeChecks(services),
     DeploymentRelation: deploymentRelationChecks(services),
     FqnRefExpr: fqnRefExprChecks(services),

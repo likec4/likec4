@@ -128,6 +128,7 @@ describe.concurrent('model', () => {
           shape person
           color secondary
           border none
+          multiple true
           opacity 10%
         }
       }

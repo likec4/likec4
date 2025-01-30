@@ -1,5 +1,5 @@
 import { isEmpty, isNullish, omitBy } from 'remeda'
-import { ComputedNode, isCustomElement, isViewRuleGroup, isViewRulePredicate, type ViewRule } from '../../types'
+import { type ViewRule, ComputedNode, isCustomElement, isViewRuleGroup, isViewRulePredicate } from '../../types'
 import type { Expression } from '../../types/expression'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 
@@ -24,10 +24,10 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
   const nodes = [..._nodes]
   for (
     const {
-      custom: { expr, ...props }
+      custom: { expr, ...props },
     } of rules
   ) {
-    const { border, opacity, ...rest } = omitBy(props, isNullish)
+    const { border, opacity, multiple, ...rest } = omitBy(props, isNullish)
     const notEmpty = !isEmpty(rest)
     const satisfies = elementExprToPredicate(expr)
     nodes.forEach((node, i) => {
@@ -38,7 +38,7 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
         node = {
           ...node,
           isCustomized: true,
-          ...rest
+          ...rest,
         }
       }
 
@@ -49,14 +49,17 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
       if (opacity !== undefined) {
         styleOverride = { ...styleOverride, opacity }
       }
+      if (multiple !== undefined) {
+        styleOverride = { ...styleOverride, multiple }
+      }
       if (styleOverride) {
         node = {
           ...node,
           isCustomized: true,
           style: {
             ...node.style,
-            ...styleOverride
-          }
+            ...styleOverride,
+          },
         }
       }
       nodes[i] = node

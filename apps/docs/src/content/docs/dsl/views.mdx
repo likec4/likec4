@@ -226,6 +226,7 @@ include cloud.backend with {
   icon tech:java
   color amber
   shape browser
+  multiple true
 }
 // Include all nested elements and change color
 include cloud.* with {
@@ -695,6 +696,7 @@ view apiApp of internetBankingSystem.apiApplication {
   // apply only to nested of apiApplication
   style apiApplication.* {
     color primary
+    multiple true
   }
 
   // apply to apiApplication and nested
@@ -930,4 +932,4 @@ views {
   }
 
 }
-```
+```import { Aside, TabItem, Tabs } from '@astrojs/starlight/components';

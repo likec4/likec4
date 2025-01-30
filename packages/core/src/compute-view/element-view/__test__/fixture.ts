@@ -451,6 +451,7 @@ export function $custom(
     icon?: string
     opacity?: number
     navigateTo?: string
+    multiple?: boolean
   },
 ): C4CustomElementExpr {
   return {
@@ -588,6 +589,7 @@ type CustomProps = {
     icon?: string
     opacity?: number
     navigateTo?: string
+    multiple?: boolean
   } & Omit<C4CustomRelationExpr['customRelation'], 'relation' | 'navigateTo'>
 }
 export function $include(expr: Expression | C4Expression, props?: CustomProps): ViewRulePredicate {

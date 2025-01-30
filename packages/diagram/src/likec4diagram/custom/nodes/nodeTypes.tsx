@@ -39,7 +39,7 @@ const ElementDetailsButtonWithHandler = ({ fqn, ...props }: NodeProps<Types.Node
 export const nodeTypes = {
   element: customNode<Types.ElementNodeData>((props) => (
     <ElementNodeContainer nodeProps={props}>
-      <ElementShape {...props} />
+      <ElementShape {...props} isMultiple={props.data.isMultiple} />
       <ElementTitle {...props} />
       <ElementActions {...props} />
       <ElementDetailsButtonWithHandler
@@ -53,7 +53,7 @@ export const nodeTypes = {
   )),
   deployment: customNode<Types.DeploymentElementNodeData>((props) => (
     <ElementNodeContainer nodeProps={props}>
-      <ElementShape {...props} />
+      <ElementShape {...props} isMultiple={props.data.isMultiple} />
       <ElementTitle {...props} />
       <DeploymentElementActions {...props} />
       {!!props.data.modelFqn && (

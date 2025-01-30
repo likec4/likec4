@@ -19,6 +19,7 @@ import {
   flatMap,
   groupBy,
   indexBy,
+  isBoolean,
   isDefined,
   isEmpty,
   isNonNullish,
@@ -36,6 +37,7 @@ import {
   sort,
   values,
 } from 'remeda'
+import { isBooleanObject } from 'util/types'
 import type {
   ParsedAstDeploymentRelation,
   ParsedAstElement,
@@ -115,6 +117,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         icon,
         opacity,
         border,
+        multiple,
       },
       id,
       kind,
@@ -136,6 +139,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         opacity ??= __kind.style.opacity
         border ??= __kind.style.border
         technology ??= __kind.technology
+        multiple ??= __kind.style.multiple
         return {
           ...(color && { color }),
           ...(shape && { shape }),
@@ -144,6 +148,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...(__kind.notation && { notation: __kind.notation }),
           style: {
             ...(border && { border }),
+            ...(isBoolean(multiple) && { multiple }),
             ...(isNumber(opacity) && { opacity }),
           },
           links,

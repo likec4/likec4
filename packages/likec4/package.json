@@ -90,6 +90,7 @@
     "dev:docs:theme": "run cli:serve ../../apps/docs/src/components/likec4-theme",
     "dev:playground:deployment": "run cli:serve ../../apps/playground/src/examples/deployment",
     "dev:template": "run cli:serve ../create-likec4/template",
+    "dev:e2e": "run cli:serve ../../e2e/src",
     "dev:example-cloud": "run cli:serve ../../examples/cloud-system",
     "dev:failed": "run cli:serve ../../examples/failed",
     "dev:example-dev": "run cli:serve ../../examples/diagrams-dev/likec4",

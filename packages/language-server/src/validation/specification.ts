@@ -72,6 +72,40 @@ export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast
   })
 }
 
+export const deploymentNodeKindChecks = (services: LikeC4Services): ValidationCheck<ast.DeploymentNodeKind> => {
+  const index = services.shared.workspace.IndexManager
+  return tryOrLog((node, accept) => {
+    if (RESERVED_WORDS.includes(node.name)) {
+      accept('error', `Reserved word: ${node.name}`, {
+        node: node,
+        property: 'name',
+      })
+    }
+    const sameKind = index
+      .allElements(ast.DeploymentNodeKind)
+      .filter(n => n.name === node.name && n.node !== node)
+      .head()
+    if (sameKind) {
+      const isAnotherDoc = sameKind.documentUri !== AstUtils.getDocument(node).uri
+      accept('error', `Duplicate deploymentNode kind '${node.name}'`, {
+        node: node,
+        property: 'name',
+        ...isAnotherDoc && {
+          relatedInformation: [
+            {
+              location: {
+                range: sameKind.nameSegment!.range,
+                uri: sameKind.documentUri.toString(),
+              },
+              message: `conflicting definition`,
+            },
+          ],
+        },
+      })
+    }
+  })
+}
+
 export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {

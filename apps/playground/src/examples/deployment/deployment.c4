@@ -20,7 +20,11 @@ deployment {
     eu = zone 'EU' {
       zone zone1 {
         instanceOf saas.ui
-        instanceOf saas.backend
+        instanceOf saas.backend {
+          style {
+            multiple true
+          }
+        }
       }
       zone zone2 {
         instanceOf saas.ui
@@ -32,7 +36,11 @@ deployment {
     us = zone 'US' {
       zone zone1 {
         instanceOf saas.ui
-        instanceOf saas.backend
+        instanceOf saas.backend {
+          style {
+            multiple true
+          }
+        }
       }
       zone zone2 {
         instanceOf saas.ui

@@ -21,7 +21,10 @@ deployment {
         ui = instanceOf cloud.ui.dashboard
         instanceOf cloud.next.graphql
       }
+
+      instanceOf cloud.next.backend
     }
+
     us = zone 'US' {
       zone zone1 {
         ui = instanceOf cloud.ui.dashboard
@@ -31,6 +34,8 @@ deployment {
         ui = instanceOf cloud.ui.dashboard
         instanceOf cloud.next.graphql
       }
+
+      instanceOf cloud.next.backend
     }
   }
 }
@@ -42,16 +47,18 @@ views {
     include
       customer,
       prod._,
-      eu.zone1._,
-      eu.zone2._,
-      us.zone1._,
-      us.zone2._
-
-    exclude
-      eu._ <-> us._
+      eu.**,
+      us.**
 
     style * {
       color secondary
+    }
+
+    style eu._ {
+      color green
+    }
+    style us._ {
+      color indigo
     }
 	}
 }

@@ -92,14 +92,30 @@ views {
   	autoLayout BottomTop
 	}
 
-  dynamic view dynamic-view-1 {
+dynamic view dynamic-view-1 {
     title 'Dynamic View Example'
 
     link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'
 
-    customer -> ui.dashboard 'opens'
-    ui.dashboard -> cloud.graphql 'requests'
-    ui.dashboard <- cloud.graphql 'returns'
+    customer -> ui.dashboard 'opens' {
+      notes '
+        Customer opens dashboard in Browser
+      '
+    }
+    ui.dashboard -> cloud.graphql {
+      title '
+        requests data over rest
+        for dashboard
+      '
+      notes '
+        Next notes
+        Multi line
+      '
+    }
+    ui.dashboard <- cloud.graphql 'returns' {
+      technology 'unknown'
+      navigateTo cloud-to-amazon
+    }
 
     ui.mobile -> cloud.graphql 'requests'
     ui.mobile <- cloud.graphql

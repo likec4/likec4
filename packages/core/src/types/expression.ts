@@ -53,6 +53,7 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
     border?: BorderStyle
     opacity?: number
     navigateTo?: ViewId
+    multiple?: boolean
   }
 }
 

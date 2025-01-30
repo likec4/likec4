@@ -25,6 +25,10 @@
       "match": "\\b(specification|model|views)\\b"
     },
     {
+      "match": "\\b(true|false)\\b",
+      "name": "constant.language.likec4"
+    },
+    {
       "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
       "captures": {
         "1": {
@@ -104,9 +108,13 @@
       "name": "entity.name.class.likec4",
       "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
     },
-        {
+    {
       "name": "entity.name.class.likec4",
       "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate|none)\\b"
+    },
+    {
+      "match": "\\b(title|description|technology|notation|multiple|prop\\d*):?\\b",
+      "name": "variable.parameter.function.likec4"
     },
     {
       "match": "\\b([^\\W]+)\\s*(=)\\s*([^\\W]+)\\b",
