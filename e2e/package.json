@@ -14,9 +14,9 @@
     "test:update-screenshots": "playwright test --update-snapshots"
   },
   "devDependencies": {
+    "@likec4/core": "file:../packages/core/package.tgz",
     "@playwright/test": "^1.49.1",
     "@types/react": "18.3.4",
-    "@likec4/core": "file:../packages/core/package.tgz",
     "likec4": "file:../packages/likec4/package.tgz",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

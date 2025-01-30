@@ -12,6 +12,8 @@
 !README.md
 
 # Exclude the following
+**/*.spec.ts
+**/*.test-d.ts
 **/*.map
 **/*.tsbuildinfo
 __app__/react/components.mjs
