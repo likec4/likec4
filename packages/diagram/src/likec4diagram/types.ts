@@ -32,6 +32,7 @@ export namespace Types {
       >
     >
     & {
+      isMultiple?: boolean | undefined
       icon: string | null
     }
   >

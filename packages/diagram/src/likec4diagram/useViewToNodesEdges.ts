@@ -137,6 +137,7 @@ function viewToNodesEdge(opts: {
       style: node.style,
       icon: node.icon ?? null,
       position: node.position,
+      isMultiple: node.style?.multiple ?? false,
     } satisfies Types.LeafNodeData
 
     if (node.kind === ElementKind.Group) {

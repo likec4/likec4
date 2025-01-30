@@ -42,23 +42,23 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       customer: {
         kind: 'user',
         shape: 'person',
-        title: 'Customer'
+        title: 'Customer',
       },
       system: {
         kind: 'component',
-        title: 'system'
+        title: 'system',
       },
       spa: {
         kind: 'component',
         shape: 'browser',
-        title: 'SPA'
+        title: 'SPA',
       },
       mobile: {
         kind: 'component',
         shape: 'mobile',
         color: 'green',
-        title: 'Mobile'
-      }
+        title: 'Mobile',
+      },
     })
     expect(elements['customer']).not.toHaveProperty('color')
     expect(elements['system']).not.toHaveProperty('shape')
@@ -111,20 +111,20 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         kind: 'user',
         shape: 'person',
         description: null,
-        technology: null
+        technology: null,
       },
       'system.backend': {
         color: 'secondary',
         title: 'Backend',
         description: null,
-        technology: 'NodeJS'
+        technology: 'NodeJS',
       },
       'system.frontend': {
         color: 'muted',
         shape: 'browser',
         description: 'Frontend description',
-        technology: null
-      }
+        technology: null,
+      },
     })
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
@@ -149,12 +149,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       system1: {
         kind: 'component',
-        tags: null
+        tags: null,
       },
       system2: {
         kind: 'component',
-        tags: ['deprecated']
-      }
+        tags: ['deprecated'],
+      },
     })
   })
 
@@ -178,14 +178,14 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       system1: {
-        kind: 'component'
+        kind: 'component',
       },
       system2: {
         kind: 'component',
         metadata: {
-          version: '1.1.1'
-        }
-      }
+          version: '1.1.1',
+        },
+      },
     })
   })
 
@@ -222,27 +222,27 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     `)
     expect(errors).toHaveLength(0)
     expect(warnings).toEqual([
-      'Redundant as icon defined on element'
+      'Redundant as icon defined on element',
     ])
     const model = await buildModel()
     expect(model).toHaveProperty('elements', expect.any(Object))
     expect(model.elements).toMatchObject({
       system1: {
         kind: 'system',
-        icon: 'https://system1.png'
+        icon: 'https://system1.png',
       },
       system2: {
         kind: 'system',
-        icon: 'tech:react'
+        icon: 'tech:react',
       },
       system3: {
         kind: 'system',
-        icon: 'tech:astro'
+        icon: 'tech:astro',
       },
       component1: {
         kind: 'component',
-        icon: 'https://component.png'
-      }
+        icon: 'https://component.png',
+      },
     })
   })
 
@@ -321,11 +321,11 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       'client': {
-        kind: 'user'
+        kind: 'user',
       },
       'system.backend.api': {
-        kind: 'component'
-      }
+        kind: 'component',
+      },
     })
     expect(keys(model.relations)).toHaveLength(2)
 
@@ -334,14 +334,14 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       index: {
         id: 'index',
         title: 'Index',
-        autoLayout: { direction: 'TB' }
+        autoLayout: { direction: 'TB' },
       },
       v1: {
         id: 'v1',
         viewOf: 'system.backend.api',
         title: 'api',
-        autoLayout: { direction: 'LR' }
-      }
+        autoLayout: { direction: 'LR' },
+      },
     })
     expect(model.views['index' as ViewId]).not.toHaveProperty('viewOf')
 
@@ -393,7 +393,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       system1: {
         kind: 'component',
         tags: ['v2'],
-        links: null
+        links: null,
       },
       system2: {
         kind: 'component',
@@ -404,9 +404,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           { url: '../dir/another.js?query=1', relative: 'dir/another.js?query=1' },
           { url: '/workspace-root', relative: 'workspace-root' },
           { url: '/root/another.js#L2', relative: 'root/another.js#L2' },
-          { url: 'https://example1.com', title: 'component link title' }
-        ]
-      }
+          { url: 'https://example1.com', title: 'component link title' },
+        ],
+      },
     })
     expect(model.views).toMatchObject({
       index: {
@@ -414,7 +414,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         title: 'Index',
         description: null,
         tags: null,
-        links: null
+        links: null,
         // docUri: document.uri.toString()
       },
       withLinks: {
@@ -425,10 +425,10 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         links: [
           { url: 'https://example1.com' },
           { url: 'https://example2.com/', title: 'view link title' },
-          { url: './samefolder.html', relative: 'src/samefolder.html' }
-        ]
+          { url: './samefolder.html', relative: 'src/samefolder.html' },
+        ],
         // docUri: 'file:///test/workspace/src/1.c4'
-      }
+      },
     })
   })
 
@@ -455,7 +455,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `,
-      'index.c4'
+      'index.c4',
     )
 
     // vscode-vfs://host/virtual/src/subdir/doc2.c4
@@ -475,7 +475,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `,
-      'subdir/doc2.c4'
+      'subdir/doc2.c4',
     )
 
     const { errors } = await validateAll()
@@ -489,27 +489,27 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           { url: './samefolder.js', relative: 'src/samefolder.js' },
           { url: './sub/folder.js#L1-2', relative: 'src/sub/folder.js#L1-2' },
           { url: '../dir/another.js', relative: 'dir/another.js' },
-          { url: '/workspace-root' }
-        ]
+          { url: '/workspace-root' },
+        ],
       },
       sys2: {
         links: [
           { url: './samefolder.c4', relative: 'src/subdir/samefolder.c4' },
           { url: '../sys2.c4', relative: 'src/sys2.c4' },
-          { url: '/workspace-root' }
-        ]
-      }
+          { url: '/workspace-root' },
+        ],
+      },
     })
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
       links: [{ url: './samefolder.c4', relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: 'index.c4'
+      relativePath: 'index.c4',
     })
     expect(views['sys2']).toMatchObject({
       links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir/doc2.c4'
+      relativePath: 'subdir/doc2.c4',
     })
   })
 
@@ -533,7 +533,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `,
-      'index.c4'
+      'index.c4',
     )
 
     // vscode-vfs://host/virtual/src/subdir/doc2.c4
@@ -552,7 +552,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `,
-      'subdir/doc2.c4'
+      'subdir/doc2.c4',
     )
 
     // vscode-vfs://host/virtual/src/a/b/c/doc3.c4
@@ -571,7 +571,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `,
-      'a/b/c/doc3.c4'
+      'a/b/c/doc3.c4',
     )
 
     const { errors } = await validateAll()
@@ -581,37 +581,37 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       sys1: {
-        links: [{ relative: 'src/samefolder.c4' }]
+        links: [{ relative: 'src/samefolder.c4' }],
       },
       sys2: {
         links: [
           { relative: 'src/subdir/samefolder.c4' },
-          { relative: 'src/sys2.c4' }
-        ]
+          { relative: 'src/sys2.c4' },
+        ],
       },
       sys3: {
         links: [
           { relative: 'src/a/b/c/samefolder.c4' },
-          { relative: 'src/sys3.c4' }
-        ]
-      }
+          { relative: 'src/sys3.c4' },
+        ],
+      },
     })
     const views = model.views as Record<string, any>
     expect(views['index']).toMatchObject({
       links: [{ relative: 'src/samefolder.c4' }],
       // docUri: 'vscode-vfs://host/virtual/src/index.c4',
-      relativePath: 'index.c4'
+      relativePath: 'index.c4',
     })
     expect(views['index']).not.toHaveProperty('docUri')
     expect(views['sys2']).toMatchObject({
       links: [{ relative: 'src/subdir/doc2.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
-      relativePath: 'subdir/doc2.c4'
+      relativePath: 'subdir/doc2.c4',
     })
     expect(views['sys3']).toMatchObject({
       links: [{ relative: 'src/a/b/c/sys3/index.html' }],
       // docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
-      relativePath: 'a/b/c/doc3.c4'
+      relativePath: 'a/b/c/doc3.c4',
     })
   })
 
@@ -637,7 +637,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       source: 'user1',
       target: 'user2',
       kind: 'async',
-      tags: ['next']
+      tags: ['next'],
     })
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
@@ -665,7 +665,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       source: 'user1',
       target: 'user2',
       kind: 'async',
-      technology: 'Async'
+      technology: 'Async',
     })
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
@@ -700,7 +700,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       color: 'red',
       line: 'dotted',
       head: 'diamond',
-      tail: 'none'
+      tail: 'none',
     })
     expect(edge).not.toHaveProperty('description')
     expect(edge).not.toHaveProperty('technology')
@@ -741,7 +741,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       color: 'red',
       line: 'dotted',
       head: 'diamond',
-      tail: 'none'
+      tail: 'none',
     })
   })
 
@@ -783,7 +783,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(system1Node).toMatchObject({
       title: 'system1',
       description: 'Custom description',
-      navigateTo: 'index'
+      navigateTo: 'index',
     })
 
     // Check buildModel
@@ -800,7 +800,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     const system2Node = views['system1' as ViewId]!.nodes.find(n => n.id === 'system2')
     expect(system2Node).toMatchObject({
       title: 'Custom',
-      navigateTo: 'system1'
+      navigateTo: 'system1',
     })
   })
 
@@ -871,8 +871,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       target: 'system1',
       links: [
         { url: './samefolder.html', relative: 'src/samefolder.html' },
-        { url: 'https://example1.com', title: 'example 1' }
-      ]
+        { url: 'https://example1.com', title: 'example 1' },
+      ],
     })
   })
 
@@ -904,8 +904,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       target: 'system1',
       metadata: {
         rps: '100',
-        messageSize: '10'
-      }
+        messageSize: '10',
+      },
     })
   })
 
@@ -931,7 +931,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       source: 'system2',
       target: 'system1',
       title: 'uses',
-      technology: 'http'
+      technology: 'http',
     })
   })
 
@@ -969,14 +969,14 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       height: 100,
       width: 200,
       nodes: {
-        'sys1': { x: 0, y: 0, width: 100, height: 100, isCompound: false }
+        'sys1': { x: 0, y: 0, width: 100, height: 100, isCompound: false },
       },
       edges: {
         'edge1': {
           points: [[0, 0], [100, 100]],
-          controlPoints: [{ x: 10, y: 10 }]
-        }
-      }
+          controlPoints: [{ x: 10, y: 10 }],
+        },
+      },
     })
   })
 
@@ -1004,27 +1004,27 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           fill: '#ff09ff',
           hiContrast: '#ffe8ff',
           loContrast: '#ffceff',
-          stroke: '#e400e4'
+          stroke: '#e400e4',
         },
         relationships: {
           labelBgColor: '#b100b2',
           labelColor: '#ff64ff',
-          lineColor: '#fe37fe'
-        }
+          lineColor: '#fe37fe',
+        },
       },
       'custom-color2': {
         elements: {
           fill: '#ffff09',
           hiContrast: '#ffffe1',
           loContrast: '#ffffcc',
-          stroke: '#e3e300'
+          stroke: '#e3e300',
         },
         relationships: {
           labelBgColor: '#adae00',
           labelColor: '#ffff64',
-          lineColor: '#ffff38'
-        }
-      }
+          lineColor: '#ffff38',
+        },
+      },
     })
   })
 
@@ -1601,6 +1601,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
           }
         }
         style style_name * {
+          multiple true
           color red
         }
       }
@@ -1608,8 +1609,12 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     expect(diagnostics.length).toBe(0)
     const model = await buildModel()
     const indexView = model?.views['index' as ViewId]!
-    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
-    expect(indexView.nodes.find(n => n.id === 'sys1')?.style.opacity).toBe(70)
+    const sys1 = indexView.nodes.find(n => n.id === 'sys1')!
+    expect(sys1.color).toBe('red')
+    expect(sys1.style).toMatchObject({
+      multiple: true,
+      opacity: 70,
+    })
   })
 
   it('global style group should not share a name with a global style', async ({ expect }) => {

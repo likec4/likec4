@@ -61,13 +61,14 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
   injectFontCss = true,
   controls = false,
   fitView = true,
-  fitViewPadding = 0.05,
+  fitViewPadding = 0.1,
   background = 'transparent',
   browser = true,
   showDiagramTitle = false,
   showNavigationButtons = false,
   showNotations = false,
   enableFocusMode = false,
+  enableDynamicViewWalkthrough = enableFocusMode,
   enableElementDetails = false,
   enableRelationshipBrowser = enableElementDetails,
   enableRelationshipDetails = enableRelationshipBrowser,
@@ -129,7 +130,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
               fitViewPadding={fitViewPadding}
               showDiagramTitle={showDiagramTitle}
               showNotations={showNotations && hasNotations}
-              enableDynamicViewWalkthrough={enableFocusMode}
+              enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
               showNavigationButtons={showNavigationButtons}
               experimentalEdgeEditing={false}
               enableFocusMode={enableFocusMode}
@@ -165,7 +166,7 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
                     controls
                     readonly
                     fitView
-                    fitViewPadding={0.1}
+                    fitViewPadding={fitViewPadding}
                     {...props}
                     {...browserProps}
                     showNotations={(browserProps.showNotations ?? true) &&

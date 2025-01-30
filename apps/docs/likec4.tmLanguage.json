@@ -18,6 +18,10 @@
       }
     },
     {
+      "match": "\\b(true|false)\\b",
+      "name": "constant.language.likec4"
+    },
+    {
       "match": "\\b(tag)\\s+(is|==)(\\s+not)?\\b",
       "name": "keyword.control.likec4"
     },
@@ -158,7 +162,7 @@
       }
     },
     {
-      "match": "\\b(title|description|technology|notation|prop\\d*):?\\b",
+      "match": "\\b(title|description|technology|notation|multiple|prop\\d*):?\\b",
       "name": "variable.parameter.function.likec4"
     },
     {

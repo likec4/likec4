@@ -24,7 +24,7 @@ export const ElementShapes = [
   'mobile',
   'cylinder',
   'storage',
-  'queue'
+  'queue',
 ] as const
 
 export type ElementShape = TupleToUnion<typeof ElementShapes>
@@ -39,6 +39,11 @@ export interface ElementStyle {
    * @default 100
    */
   readonly opacity?: number
+  /**
+   * If true, the element is rendered as multiple shapes
+   * @default false
+   */
+  readonly multiple?: boolean
 }
 
 export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
@@ -60,7 +65,7 @@ export interface TypedElement<
   Ids extends string,
   Kinds extends string,
   Tags extends string,
-  MetadataKeys extends string = never
+  MetadataKeys extends string = never,
 > {
   readonly id: Fqn<Ids>
   readonly kind: ElementKind<Kinds>

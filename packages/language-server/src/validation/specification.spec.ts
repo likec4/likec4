@@ -83,6 +83,55 @@ describe('specification checks', () => {
     }
   })
 
+  it('deploymentNodeKindChecks: unique in one document', async ({ expect }) => {
+    const { diagnostics } = await validate(`
+      specification {
+        deploymentNode component
+        deploymentNode user
+        deploymentNode component
+      }
+    `)
+    expect(diagnostics).toHaveLength(2)
+    for (const diagnostic of diagnostics) {
+      expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+      expect(diagnostic.message, 'diagnostic message').toBe('Duplicate deploymentNode kind \'component\'')
+    }
+  })
+
+  it('deploymentNodeKindChecks is not reserved word', async ({ expect }) => {
+    const { diagnostics } = await validate(`
+    specification {
+      deploymentNode this
+    }
+  `)
+    expect(diagnostics).toHaveLength(1)
+    for (const diagnostic of diagnostics) {
+      expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+      expect(diagnostic.message, 'diagnostic message').toBe('Reserved word: this')
+    }
+  })
+
+  it('deploymentNodeKindChecks: unique across documents', async ({ expect }) => {
+    await parse(`
+      specification {
+        deploymentNode component
+        deploymentNode user
+      }
+    `)
+    await parse(`
+      specification {
+        deploymentNode user
+      }
+    `)
+
+    const { diagnostics } = await validateAll()
+    expect(diagnostics).toHaveLength(2)
+    for (const diagnostic of diagnostics) {
+      expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+      expect(diagnostic.message, 'diagnostic message').toBe('Duplicate deploymentNode kind \'user\'')
+    }
+  })
+
   it('tagChecks: unique in one document', async ({ expect }) => {
     const { diagnostics } = await validate(`
     specification {

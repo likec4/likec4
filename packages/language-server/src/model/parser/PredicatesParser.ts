@@ -1,6 +1,6 @@
 import type * as c4 from '@likec4/core'
 import { invariant, nonexhaustive } from '@likec4/core'
-import { isDefined, isTruthy } from 'remeda'
+import { isBoolean, isDefined, isTruthy } from 'remeda'
 import { ast, parseAstOpacityProperty, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
 import { elementRef } from '../../utils/elementRef'
@@ -53,14 +53,14 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
     parseElementExpression(astNode: ast.ElementExpression): c4.ElementExpression {
       if (ast.isWildcardExpression(astNode)) {
         return {
-          wildcard: true
+          wildcard: true,
         }
       }
       if (ast.isElementKindExpression(astNode)) {
         invariant(astNode.kind?.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
         return {
           elementKind: astNode.kind.ref.name as c4.ElementKind,
-          isEqual: astNode.isEqual
+          isEqual: astNode.isEqual,
         }
       }
       if (ast.isElementTagExpression(astNode)) {
@@ -71,7 +71,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         }
         return {
           elementTag: elementTag as c4.Tag,
-          isEqual: astNode.isEqual
+          isEqual: astNode.isEqual,
         }
       }
       if (ast.isExpandElementExpression(astNode)) {
@@ -79,7 +79,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         invariant(elementNode, 'Element not found ' + astNode.expand.$cstNode?.text)
         const expanded = this.resolveFqn(elementNode)
         return {
-          expanded
+          expanded,
         }
       }
       if (ast.isElementDescedantsExpression(astNode)) {
@@ -89,7 +89,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         return {
           element,
           isChildren: astNode.suffix === '.*',
-          isDescendants: astNode.suffix === '.**'
+          isDescendants: astNode.suffix === '.**',
         }
       }
       if (ast.isElementRef(astNode)) {
@@ -97,7 +97,7 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         invariant(elementNode, 'Element not found ' + astNode.$cstNode?.text)
         const element = this.resolveFqn(elementNode)
         return {
-          element
+          element,
         }
       }
       nonexhaustive(astNode)
@@ -109,9 +109,9 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         where: {
           expr,
           condition: astNode.where ? parseWhereClause(astNode.where) : {
-            kind: { neq: '--always-true--' }
-          }
-        }
+            kind: { neq: '--always-true--' },
+          },
+        },
       }
     }
 
@@ -174,13 +174,19 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
+          if (ast.isMultipleProperty(prop)) {
+            if (isBoolean(prop.value)) {
+              acc.custom[prop.key] = prop.value
+            }
+            return acc
+          }
           nonexhaustive(prop)
         },
         {
           custom: {
-            expr
-          }
-        } as c4.CustomElementExpr
+            expr,
+          },
+        } as c4.CustomElementExpr,
       )
     }
 
@@ -207,15 +213,15 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         where: {
           expr,
           condition: astNode.where ? parseWhereClause(astNode.where) : {
-            kind: { neq: '--always-true--' }
-          }
-        }
+            kind: { neq: '--always-true--' },
+          },
+        },
       }
     }
 
     parseRelationPredicateWith(
       astNode: ast.RelationPredicateWith,
-      relation: c4.RelationExpression | c4.RelationWhereExpr
+      relation: c4.RelationExpression | c4.RelationWhereExpr,
     ): c4.CustomRelationExpr {
       const props = astNode.custom?.props ?? []
       return props.reduce(
@@ -256,9 +262,9 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         },
         {
           customRelation: {
-            relation
-          }
-        } as c4.CustomRelationExpr
+            relation,
+          },
+        } as c4.CustomRelationExpr,
       )
     }
 
@@ -267,22 +273,22 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
         return {
           source: this.parseElementExpression(astNode.source.from),
           target: this.parseElementExpression(astNode.target),
-          isBidirectional: astNode.source.isBidirectional
+          isBidirectional: astNode.source.isBidirectional,
         }
       }
       if (ast.isInOutRelationExpression(astNode)) {
         return {
-          inout: this.parseElementExpression(astNode.inout.to)
+          inout: this.parseElementExpression(astNode.inout.to),
         }
       }
       if (ast.isOutgoingRelationExpression(astNode)) {
         return {
-          outgoing: this.parseElementExpression(astNode.from)
+          outgoing: this.parseElementExpression(astNode.from),
         }
       }
       if (ast.isIncomingRelationExpression(astNode)) {
         return {
-          incoming: this.parseElementExpression(astNode.to)
+          incoming: this.parseElementExpression(astNode.to),
         }
       }
       nonexhaustive(astNode)

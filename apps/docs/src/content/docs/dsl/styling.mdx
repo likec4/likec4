@@ -82,6 +82,7 @@ Every `style` block may contain the following properties:
 {'-'} icon  
 {'-'} opacity  
 {'-'} border
+{'-'} multiple
 
 #### Shape
 
@@ -155,6 +156,23 @@ specification {
 ```
 
 <LikeC4ThemeView viewId="border_example" interactive={false}/>
+
+#### Multiple
+
+To display element as multiple instances, set `multiple` to `true`:
+
+```likec4
+specification {
+  element element {
+    style {
+      multiple true
+    }
+  }
+}
+
+```
+
+<LikeC4ThemeView viewId="multiple_example" interactive={false} fitViewPadding={0.2}/>
 
 #### Icon
 

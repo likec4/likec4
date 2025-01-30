@@ -1,4 +1,4 @@
-import { describe, it, type TestContext } from 'vitest'
+import { type TestContext, describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 const model = `
@@ -64,7 +64,7 @@ async function mkTestServices({ expect }: TestContext) {
       invalid: async (view: string) => {
         const { errors } = await validateView(view)
         expect(errors).not.toEqual([])
-      }
+      },
     },
     valid: async (rules: string) => {
       const { errors, warnings } = await validateRules(rules)
@@ -80,14 +80,14 @@ async function mkTestServices({ expect }: TestContext) {
       const { errors, warnings } = await validateRules(rules)
       expect(errors.join('\n'), 'errors').not.to.be.empty
       expect(warnings.join('\n'), 'warnings').to.be.empty
-    }
+    },
   }
 }
 
 describe.concurrent('views2', () => {
   it('valid views', async ctx => {
     const {
-      view: { valid, invalid }
+      view: { valid, invalid },
     } = await mkTestServices(ctx)
     await valid(`
       view index {
@@ -109,7 +109,7 @@ describe.concurrent('views2', () => {
 
   it('view scope', async ctx => {
     const {
-      view: { valid, invalid }
+      view: { valid, invalid },
     } = await mkTestServices(ctx)
     // inambiqutes "of"
     await invalid(`
@@ -132,7 +132,7 @@ describe.concurrent('views2', () => {
 
   it('view properties', async ctx => {
     const {
-      view: { valid }
+      view: { valid },
     } = await mkTestServices(ctx)
     await valid(`
       view {
@@ -156,7 +156,7 @@ describe.concurrent('views2', () => {
 
   it('autoLayout and rules order', async ctx => {
     const {
-      view: { valid }
+      view: { valid },
     } = await mkTestServices(ctx)
     await valid(`
       view {
@@ -301,6 +301,12 @@ describe.concurrent('views2', () => {
         include system.backend with {
           shape storage
           color green
+          multiple true
+        }
+      `)
+      await valid(`
+        include system.backend with {
+          multiple false
         }
       `)
     })

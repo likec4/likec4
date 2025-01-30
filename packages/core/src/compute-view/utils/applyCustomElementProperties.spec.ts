@@ -26,14 +26,14 @@ describe('applyElementCustomProperties', () => {
       $include('cloud', {
         with: {
           title: 'value1',
-          technology: 'value2'
-        }
+          technology: 'value2',
+        },
       }),
       // EXCLUDE SHOULD BE IGNORED
       $exclude($custom('amazon', {
         title: 'value1',
-        technology: 'value2'
-      }))
+        technology: 'value2',
+      })),
     ]
     const result = applyCustomElementProperties(rules, nodes)
     expect(result).toEqual([
@@ -41,9 +41,9 @@ describe('applyElementCustomProperties', () => {
         id: 'cloud',
         isCustomized: true,
         title: 'value1',
-        technology: 'value2'
+        technology: 'value2',
       },
-      { id: 'amazon' }
+      { id: 'amazon' },
     ])
     expect(result).not.toBe(nodes) // should return new array
     expect(result[0]).not.toBe(nodes[0]) // should return new node
@@ -59,29 +59,29 @@ describe('applyElementCustomProperties', () => {
         $group([
           $group([
             $include($custom('cloud', {
-              title: 'value1'
-            }))
+              title: 'value1',
+            })),
           ]),
           $group([
             $include($custom('amazon', {
-              technology: 'amazon technology'
-            }))
-          ])
-        ])
-      ])
+              technology: 'amazon technology',
+            })),
+          ]),
+        ]),
+      ]),
     ]
     const result = applyCustomElementProperties(rules, nodes)
     expect(result).toEqual([
       {
         id: 'cloud',
         isCustomized: true,
-        title: 'value1'
+        title: 'value1',
       },
       {
         id: 'amazon',
         isCustomized: true,
-        technology: 'amazon technology'
-      }
+        technology: 'amazon technology',
+      },
     ])
     expect(result).not.toBe(nodes) // should return new array
     expect(result[0]).not.toBe(nodes[0]) // should return new node
@@ -91,17 +91,25 @@ describe('applyElementCustomProperties', () => {
 
   it('should apply custom properties to matching nodes and omit nils', () => {
     const nodes = [
-      nd('cloud'),
+      {
+        ...nd('cloud'),
+        style: {
+          multiple: true,
+        },
+      },
       {
         ...nd('customer'),
         title: 'Title',
         description: null,
         technology: null,
         shape: 'mobile',
-        style: {}
-      } satisfies ComputedNode
-    ]
+        style: {},
+      },
+    ] satisfies ComputedNode[]
     const rules = [
+      $include($custom('cloud', {
+        multiple: false,
+      })),
       $include($custom('customer', {
         title: null as any, // null should be ignored
         technology: undefined as any, // undefined should be ignored
@@ -109,13 +117,18 @@ describe('applyElementCustomProperties', () => {
         border: undefined as any, // undefined should be ignored
         shape: 'queue',
         color: 'indigo',
-        opacity: 90
-      }))
+        opacity: 90,
+        multiple: true,
+      })),
     ]
     const result = applyCustomElementProperties(rules, nodes)
     expect(result).toEqual([
       {
-        id: 'cloud'
+        id: 'cloud',
+        isCustomized: true,
+        style: {
+          multiple: false,
+        },
       },
       {
         id: 'customer',
@@ -126,9 +139,10 @@ describe('applyElementCustomProperties', () => {
         color: 'indigo',
         isCustomized: true,
         style: {
-          opacity: 90
-        }
-      }
+          opacity: 90,
+          multiple: true,
+        },
+      },
     ])
   })
 
@@ -137,8 +151,8 @@ describe('applyElementCustomProperties', () => {
     const rules = [
       $include($custom('cloud', {
         title: 'value1',
-        technology: 'value2'
-      }))
+        technology: 'value2',
+      })),
     ]
     const result = applyCustomElementProperties(rules, nodes)
     expect(result).not.toBe(nodes) // should return new array

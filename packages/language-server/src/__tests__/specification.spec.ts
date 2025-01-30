@@ -85,6 +85,7 @@ describe.concurrent('specification', () => {
           style {
             shape browser
             color secondary
+            multiple true
           }
         }
         element person {
@@ -374,6 +375,191 @@ describe.concurrent('specification', () => {
     test('fail if relationshipkind is "it"').invalid`
       specification {
         relationship it
+      }`
+  })
+
+  describe('for deployment kinds', () => {
+    test('valid with uppercase').valid`
+      specification {
+        deploymentNode Server
+        deploymentNode virtualMachine
+      }`
+
+    test('deployment kind starts with underscore').valid`
+      specification {
+        deploymentNode _c1
+        deploymentNode ___c1
+      }`
+
+    test('deployment kind with underscore').valid`
+      specification {
+        deploymentNode c_
+      }`
+
+    test('deployment kind with dash').valid`
+      specification {
+        deploymentNode c-
+      }`
+
+    test('deployment kind does not start with dash').invalid`
+      specification {
+        deploymentNode -kind
+      }`
+
+    test('fail if deployment kind starts with number').invalid`
+      specification {
+        deploymentNode 1container
+      }`
+
+    test('fail if deployment kind is "this"').invalid`
+      specification {
+        deploymentNode this
+      }`
+
+    test('fail if deployment kind is "it"').invalid`
+      specification {
+        deploymentNode it
+      }`
+
+    test('allow deployment with kinds "element"/"node"/"deployment"').valid`
+      specification {
+        deploymentNode element
+        deploymentNode component
+        deploymentNode node
+        deploymentNode deployment
+      }`
+
+    test('deployment kind with style').valid`
+      specification {
+        deploymentNode frontend {
+          style {
+            shape browser
+            color secondary
+            multiple true
+          }
+        }
+        deploymentNode person {
+          style {
+            shape: person
+            border none
+            opacity 10%
+            multiple false
+          }
+        }
+      }
+      `
+
+    test('deployment kind with style with colon and semicolon').valid`
+      specification {
+        deploymentNode frontend {
+          style {
+            shape: browser;
+            color secondary;
+          }
+        }
+      }`
+
+    test('deployment kind with icon').valid`
+      specification {
+        deploymentNode frontend {
+          style {
+            icon https://icons.terrastruct.com/dev%2Ftypescript.svg
+          }
+        }
+      }`
+
+    test('deployment kind with icon none').valid`
+      specification {
+        deploymentNode frontend {
+          style {
+            icon none
+          }
+        }
+      }`
+
+    test('deployment kind the same name as color').valid`
+      specification {
+        deploymentNode green {
+          style {
+            color green
+          }
+        }
+        deploymentNode red {
+          style {
+            color red
+          }
+        }
+      }
+      `
+
+    test('deployment kind the same name as shape').valid`
+      specification {
+        deploymentNode storage {
+          style {
+            shape storage
+          }
+        }
+      }`
+
+    test('deployment kind the same name as relationship line').valid`
+      specification {
+        deploymentNode solid
+        deploymentNode dotted
+      }`
+
+    test('fail if deployment only underscores').invalid`
+      specification {
+        deploymentNode __
+      }`
+
+    test('fail if deployment starts with dash').invalid`
+      specification {
+        deploymentNode -service
+      }`
+
+    test('with technology').valid`
+      specification {
+        deploymentNode Container {
+          technology "docker"
+        }
+        deploymentNode softwareSystem {
+          technology: "docker";
+        }
+      }`
+
+    test('with notation and technology').valid`
+      specification {
+        deploymentNode Container {
+          technology "docker"
+          notation "C4 Container"
+        }
+      }`
+
+    test('invalid with empty notation').invalid`
+      specification {
+        deploymentNode Container {
+          notation
+          technology "docker"
+        }
+      }`
+
+    test('with notation, technology and style').valid`
+      specification {
+        deploymentNode Container {
+          technology "docker"
+          notation "C4 Container"
+          style {
+            shape storage
+          }
+        }
+        // Different order
+        deploymentNode SoftwareSystem {
+          technology "docker"
+          style {
+            shape storage
+          }
+          notation "C4 Container"
+        }
       }`
   })
 })

@@ -30,6 +30,9 @@ model {
       #api
       icon tech:nestjs
       description 'The next version of backend'
+      style {
+        multiple true
+      }
     }
 
     graphql = component 'GraphQL' {

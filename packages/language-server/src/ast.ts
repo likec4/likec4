@@ -2,7 +2,7 @@ import type * as c4 from '@likec4/core'
 import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, LinkedList, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
-import { clamp, isDefined, isNullish, isTruthy } from 'remeda'
+import { clamp, isBoolean, isDefined, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
@@ -42,6 +42,7 @@ type ParsedElementStyle = {
   color?: c4.Color
   border?: c4.BorderStyle
   opacity?: number
+  multiple?: boolean
 }
 
 export interface ParsedAstSpecification {
@@ -361,6 +362,10 @@ export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isVa
       }
       case ast.isOpacityProperty(prop): {
         result.opacity = parseAstOpacityProperty(prop)
+        break
+      }
+      case ast.isMultipleProperty(prop): {
+        result.multiple = isBoolean(prop.value) ? prop.value : false
         break
       }
       default:

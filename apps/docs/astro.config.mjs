@@ -145,6 +145,7 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
         // Alias to bundled React components, can't use 'development' condition html#server
         'likec4/react': new URL('../../packages/likec4/react', import.meta.url).pathname,

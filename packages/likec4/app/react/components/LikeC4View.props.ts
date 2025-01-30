@@ -33,12 +33,14 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
 
   /**
    * Click on the view opens a modal with browser.
-   * You can customize or disable the browser view.
+   * You can customize or disable the browser.
+   *
+   * @default true
    */
   browser?: boolean | LikeC4BrowserProps | undefined
 
   /**
-   * By default determined by the user's system preferences.
+   * @default - determined by the user's system preferences.
    */
   colorScheme?: 'light' | 'dark' | undefined
 
@@ -65,12 +67,13 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
 
   /**
    * Seems like this is percentage of the view size
-   * @default 0.05
+   * @default 0.1
    */
   fitViewPadding?: number | undefined
 
   /**
-   * Display webview with diagram title / description
+   * Display diagram title / description
+   *
    * @default false
    */
   showDiagramTitle?: boolean | undefined
@@ -89,11 +92,17 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
 
   /**
    * If double click on a node should enable focus mode, i.e. highlight incoming/outgoing edges
-   * Conflicts with `interactive`
+   * Conflicts with `browser` prop
    *
    * @default false
    */
   enableFocusMode?: boolean | undefined
+
+  /**
+   * If Walkthrough for dynamic views should be enabled
+   * @default enableFocusMode
+   */
+  enableDynamicViewWalkthrough?: boolean | undefined
 
   /**
    * Enable popup with element details
@@ -119,6 +128,9 @@ export interface LikeC4ViewProps<ViewId = string, Tag = string, Kind = string> {
   className?: string | undefined
   style?: CSSProperties | undefined
 
+  /**
+   * Override Mantine theme
+   */
   mantineTheme?: any
 
   /** Function to generate nonce attribute added to all generated `<style />` tags */
@@ -139,11 +151,48 @@ export interface LikeC4BrowserProps {
   background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
 
   /**
+   * Seems like this is percentage of the view size
+   * @default 0.1
+   */
+  fitViewPadding?: number | undefined
+
+  /**
+   * Show/hide panel with top left controls,
+   * @default true
+   */
+  controls?: boolean | undefined
+
+  /**
+   * Display diagram title / description
+   *
+   * @default true
+   */
+  showDiagramTitle?: boolean | undefined
+
+  /**
+   * Show back/forward navigation buttons
+   * @default true
+   */
+  showNavigationButtons?: undefined | boolean
+
+  /**
+   * Enable search popup for elements and views
+   * @default true
+   */
+  enableSearch?: boolean | undefined
+
+  /**
    * If double click on a node should enable focus mode
    *
    * @default true
    */
   enableFocusMode?: boolean | undefined
+
+  /**
+   * If Walkthrough for dynamic views should be enabled
+   * @default true
+   */
+  enableDynamicViewWalkthrough?: boolean | undefined
 
   /**
    * Enable popup with element details

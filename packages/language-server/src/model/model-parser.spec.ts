@@ -10,6 +10,73 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
 describe.concurrent('LikeC4ModelParser', () => {
+  describe('parses logical model', () => {
+    it('parses styles', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element system {
+            style {
+              multiple true
+            }
+          }
+          element component
+        }
+        model {
+          system sys {
+            component c1 {
+              style {
+                multiple true
+              }
+              component c2 {
+                style {
+                  multiple false
+                }
+              }
+
+            }
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Elements).toHaveLength(3)
+      expect(doc.c4Specification).toMatchObject({
+        elements: {
+          system: {
+            style: {
+              multiple: true,
+            },
+          },
+          component: {},
+        },
+      })
+      expect(doc.c4Specification.elements).not.toHaveProperty(['component', 'style', 'multiple'])
+      expect(doc.c4Elements).toMatchObject([
+        {
+          'id': 'sys',
+          'kind': 'system',
+          'title': 'sys',
+        },
+        {
+          'id': 'sys.c1',
+          'kind': 'component',
+          'style': {
+            'multiple': true,
+          },
+          'title': 'c1',
+        },
+        {
+          'id': 'sys.c1.c2',
+          'kind': 'component',
+          'style': {
+            'multiple': false,
+          },
+          'title': 'c2',
+        },
+      ])
+    })
+  })
+
   describe('parses relation predicate', () => {
     it('combined of "with" and "where"', async ({ expect }) => {
       const { parse, services } = createTestServices()
@@ -138,6 +205,105 @@ describe.concurrent('LikeC4ModelParser', () => {
   })
 
   describe('parses deployment model', () => {
+    it('parses styles of specification ', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element component
+          deploymentNode node
+          deploymentNode nodes {
+            style {
+              multiple true
+            }
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Specification).toMatchObject({
+        elements: {
+          component: {},
+        },
+        deployments: {
+          nodes: {
+            style: {
+              multiple: true,
+            },
+          },
+          node: {},
+        },
+      })
+      expect(doc.c4Specification.deployments).not.toHaveProperty(['node', 'style', 'multiple'])
+    })
+
+    it('parses styles', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        specification {
+          element component
+          deploymentNode node
+        }
+        model {
+          component sys {
+            component c1 {
+              component c2
+            }
+          }
+        }
+        deployment {
+          node n1 {
+            instanceOf sys.c1 {
+              style {
+                multiple true
+              }
+            }
+          }
+          node n2 {
+            instanceOf sys.c2
+          }
+          node n3 {
+            style {
+              multiple true
+            }
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Deployments).toMatchObject([
+        {
+          'id': 'n1',
+          'kind': 'node',
+          'style': {},
+          'title': 'n1',
+        },
+        {
+          'id': 'n2',
+          'kind': 'node',
+          'style': {},
+          'title': 'n2',
+        },
+        {
+          'id': 'n3',
+          'kind': 'node',
+          'style': {
+            'multiple': true,
+          },
+          'title': 'n3',
+        },
+        {
+          'element': 'sys.c1',
+          'id': 'n1.c1',
+          'style': {
+            'multiple': true,
+          },
+        },
+        {
+          'element': 'sys.c1.c2',
+          'id': 'n2.c2',
+          'style': {},
+        },
+      ])
+    })
+
     it('parses deployment relation', async ({ expect }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
@@ -432,6 +598,57 @@ describe.concurrent('LikeC4ModelParser', () => {
           },
         }],
       }])
+    })
+  })
+
+  describe('parses global rules', () => {
+    it('parses styles', async ({ expect }) => {
+      const { parse, services } = createTestServices()
+      const langiumDocument = await parse(`
+        global {
+          styleGroup style_group_name {
+            style * {
+              color green
+              opacity 70%
+            }
+          }
+          style style_name * {
+            multiple true
+            color red
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      expect(doc.c4Globals).toMatchObject({
+        styles: {
+          style_group_name: [
+            {
+              style: {
+                color: 'green',
+                opacity: 70,
+              },
+              targets: [
+                {
+                  wildcard: true,
+                },
+              ],
+            },
+          ],
+          style_name: [
+            {
+              style: {
+                color: 'red',
+                multiple: true,
+              },
+              targets: [
+                {
+                  wildcard: true,
+                },
+              ],
+            },
+          ],
+        },
+      })
     })
   })
 })

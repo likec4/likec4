@@ -9,6 +9,7 @@ import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 const root = dirname(__filename)
 
 const alias = {
+  '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
   '@likec4/diagram': resolve('../../packages/diagram/src'),
@@ -26,6 +27,14 @@ const baseConfig: UserConfigFnObject = () => {
       cssCodeSplit: false,
     },
     optimizeDeps: {
+      include: [
+        'react',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom',
+        'react-dom/client',
+        '@likec4/icons/all',
+      ],
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin as any,

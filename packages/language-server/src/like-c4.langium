@@ -115,7 +115,11 @@ ElementBody: '{'
 ;
 
 ElementProperty:
-  ElementStringProperty | ElementStyleProperty | LinkProperty | IconProperty | MetadataProperty;
+  ElementStringProperty |
+  ElementStyleProperty |
+  LinkProperty |
+  IconProperty |
+  MetadataProperty;
 
 ElementStringProperty:
   key=('title' | 'technology' | 'description') ':'? value=String ';'?;
@@ -711,13 +715,15 @@ ColorProperty:
 OpacityProperty:
   key='opacity' ':'? value=Percent ';'?;
 
+MultipleProperty:
+  key='multiple' ':'? value=Boolean ';'?;
+
 // Element properties -------------------------------------
 IconProperty:
   key='icon' ':'? (libicon=[LibIcon:IconId] | value=('none'|Uri)) ';'?;
 
 ShapeProperty:
   key='shape' ':'? value=ElementShape ';'?;
-
 
 BorderStyleValue returns string:
   LineOptions | 'none';
@@ -730,7 +736,8 @@ StyleProperty:
   ShapeProperty |
   BorderProperty |
   OpacityProperty |
-  IconProperty;
+  IconProperty |
+  MultipleProperty;
 
 ElementStyleProperty:
   key='style' '{'
@@ -747,6 +754,8 @@ ArrowProperty:
 
 RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
+
+Boolean returns boolean: 'true' | 'false';
 
 LineOptions returns string:
   'solid' |
@@ -825,6 +834,8 @@ hidden terminal NL: /[\r\n]+/;
 // -----------------------------------
 // Terminals
 //terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
+// terminal Boolean returns boolean: 'true' | 'false';
+
 
 // LibIcons
 terminal LIB_ICON: /(aws|azure|gcp|tech):[-\w]*/;
