@@ -11,11 +11,21 @@ import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.Node>
 
+const GRID_SIZE = 20
+
+function roundToGrid(n: number): number {
+  return Math.round(n / GRID_SIZE) * GRID_SIZE;
+}
+
+function ceilToGrid(n: number): number {
+  return Math.ceil(n / GRID_SIZE) * GRID_SIZE;
+}
+
 abstract class Rect {
-  static readonly LeftPadding = 40
-  static readonly RightPadding = 40
-  static readonly TopPadding = 55
-  static readonly BottomPadding = 40
+  static readonly LeftPadding = 2*GRID_SIZE
+  static readonly RightPadding = 2*GRID_SIZE
+  static readonly TopPadding = 3*GRID_SIZE
+  static readonly BottomPadding = 2*GRID_SIZE
 
   id!: string
   minX: number = Infinity
@@ -31,8 +41,8 @@ abstract class Rect {
   }
 
   set positionAbsolute(pos: XYPosition) {
-    const x = Math.round(pos.x)
-    const y = Math.round(pos.y)
+    const x = roundToGrid(pos.x)
+    const y = roundToGrid(pos.y)
     this.maxX += x - this.minX
     this.maxY += y - this.minY
 
@@ -90,8 +100,8 @@ class Leaf extends Rect {
 
     const { width, height } = getNodeDimensions(xynode)
 
-    this.maxX = this.minX + Math.ceil(width)
-    this.maxY = this.minY + Math.ceil(height)
+    this.maxX = this.minX + ceilToGrid(width)
+    this.maxY = this.minY + ceilToGrid(height)
 
     if (parent) {
       parent.children.push(this)
