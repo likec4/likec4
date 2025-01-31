@@ -1,4 +1,4 @@
-import { IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
 import { useEnabledFeature } from '../../../context/DiagramFeatures'
@@ -35,6 +35,14 @@ export const ElementActions = (props: ElementActionsProps) => {
       },
     })
   }
+  buttons.push({
+    key: 'goToSource',
+    icon: <IconFileSymlink />,
+    onClick: (e) => {
+      e.stopPropagation()
+      diagram.openSource({ element: fqn })
+    },
+  })
   return (
     <ElementActionButtons
       buttons={buttons}
