@@ -16,8 +16,9 @@ specification{
 
   tag   tag1
   color    custom      #123456
-}`
-          )
+  deploymentNode    node{}
+}`,
+          ),
         ).toMatchInlineSnapshot(
           `
         "
@@ -28,15 +29,17 @@ specification{
 
           tag tag1
           color custom #123456
+          deploymentNode node {
+          }
         }"
-      `
-        )
+      `,
+        ),
     )
   })
 
   describe('formats globals', () => {
     it(
-      'formats globals',
+      'formats syles and styleGroups',
       async () =>
         expect(
           await format(
@@ -51,8 +54,8 @@ specification{
   opacity 20%
   }
   }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -67,8 +70,38 @@ specification{
               }
             }
           }"
-        `
-        )
+        `,
+        ),
+    )
+
+    it(
+      'formats predicate groups',
+      async () =>
+        expect(
+          await format(
+            `
+  global{
+  predicateGroup    global-predicate-group{
+  include    *  ,   some.*
+  include *->*
+  }
+  dynamicPredicateGroup    global-dynamic-predicate-group{
+  include    *  ,   some.*
+  }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(`
+          "
+          global {
+            predicateGroup global-predicate-group {
+              include *, some.*
+              include * -> *
+            }
+            dynamicPredicateGroup global-dynamic-predicate-group {
+              include *, some.*
+            }
+          }"
+        `),
     )
   })
 
@@ -84,8 +117,8 @@ model {
   system    sys2   'title'  'description'   'tech'   'tag1, tag2'
   sys3=   system
   sys4 = system       'title'  'description'   'tech'   'tag1, tag2'
-}`
-          )
+}`,
+          ),
         ).toMatchInlineSnapshot(
           `
         "
@@ -95,8 +128,8 @@ model {
           sys3 = system
           sys4 = system 'title' 'description' 'tech' 'tag1, tag2'
         }"
-      `
-        )
+      `,
+        ),
     )
 
     it(
@@ -120,8 +153,8 @@ model {
         prop3  :    'another'   ;
       }
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -141,8 +174,8 @@ model {
               }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -156,8 +189,8 @@ model {
   }
   model {
     el     sys1 'test'
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -167,8 +200,136 @@ model {
           model {
             el sys1 'test'
           }"
-        `
-        )
+        `,
+        ),
+    )
+  })
+
+  describe('formats deployments', () => {
+    it(
+      'formats node declarations',
+      async () =>
+        expect(
+          await format(
+            `
+  deployment{
+  node   zone1    {
+  instanceOf test
+  }
+  node   zone2    'zone2'    {
+  cluster=node{
+  }
+  }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(`
+          "
+          deployment {
+            node zone1 {
+              instanceOf test
+            }
+            node zone2 'zone2' {
+              cluster = node {
+              }
+            }
+          }"
+        `),
+    )
+
+    it(
+      'formats instance declarations',
+      async () =>
+        expect(
+          await format(
+            `
+  deployment{
+  node   zone1    {
+  instanceOf    test
+  instanceOf test2{
+  title    'test2'
+  }
+  testInst=   instanceOf    test
+  }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(`
+          "
+          deployment {
+            node zone1 {
+              instanceOf test
+              instanceOf test2 {
+                title 'test2'
+              }
+              testInst = instanceOf test
+            }
+          }"
+        `),
+    )
+
+    it(
+      'surrounds arrows with space',
+      async () =>
+        expect(
+          await format(
+            `
+  specification {
+    element component
+    relationship http
+    deploymentNode node
+    tag tag1
+  }
+  model {
+    component system1
+  }
+  deployment {
+    node zone1 {
+      instance1 = instanceOf system1
+    }
+    node zone2 {
+      node cluster {
+        instance2 = instanceOf system1
+
+        zone2.cluster.instance2   ->     zone1.instance1
+        zone2.cluster.instance2   ->zone1.instance1
+        zone2.cluster.instance2   -[   http   ]->   zone1.instance1
+        zone2.cluster.instance2  .http   zone1.instance1   'title'  'REST'  #tag1
+      }
+    }
+    zone1.instance1    ->zone2.cluster.instance2   {
+    }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(
+          `
+          "
+          specification {
+            element component
+            relationship http
+            deploymentNode node
+            tag tag1
+          }
+          model {
+            component system1
+          }
+          deployment {
+            node zone1 {
+              instance1 = instanceOf system1
+            }
+            node zone2 {
+              node cluster {
+                instance2 = instanceOf system1
+
+                zone2.cluster.instance2 -> zone1.instance1
+                zone2.cluster.instance2 -> zone1.instance1
+                zone2.cluster.instance2 -[http]-> zone1.instance1
+                zone2.cluster.instance2 .http zone1.instance1 'title' 'REST' #tag1
+              }
+            }
+            zone1.instance1 -> zone2.cluster.instance2 {
+            }
+          }"
+        `,
+        ),
     )
   })
 
@@ -179,6 +340,24 @@ model {
         expect(
           await format(
             `
+  specification {
+    element el
+    deploymentNode node
+  }
+  model {
+    el test
+    el test1
+    el test2
+    el test3
+  }
+  deployment {
+    node prod {
+      instanceOf test
+      instanceOf test1
+      instanceOf test2
+      instanceOf test3
+    }
+  }
   views {
     view index {
       include      test , test.*
@@ -187,11 +366,35 @@ model {
       include *   ,    * -> *  ,  * ->
       exclude * ,   * -> *, * ->
     }
-  }`
-          )
-        ).toMatchInlineSnapshot(
-          `
+    deployment   view    prod  {
+      include     test  , test.*
+      include      test1 
+      , test2.*, test3      
+      include *   ,    * -> *  ,  * ->
+      exclude * ,   * -> *, * ->
+    }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(`
           "
+          specification {
+            element el
+            deploymentNode node
+          }
+          model {
+            el test
+            el test1
+            el test2
+            el test3
+          }
+          deployment {
+            node prod {
+              instanceOf test
+              instanceOf test1
+              instanceOf test2
+              instanceOf test3
+            }
+          }
           views {
             view index {
               include test, test.*
@@ -202,10 +405,48 @@ model {
               include *, * -> *, * ->
               exclude *, * -> *, * ->
             }
+            deployment view prod {
+              include test, test.*
+              include
+                test1,
+                test2.*,
+                test3
+              include *, * -> *, * ->
+              exclude *, * -> *, * ->
+            }
           }"
-        `
-        )
+        `),
     )
+
+    it('formats relation predicates', async () => {
+      expect(await format(`
+views {
+  deployment view index {
+    include    ->   test
+    include ->   test   ->
+    include test   <->
+    include test   -[  http  ]->
+    include test   .http
+    include test   ->
+    include test   ->  test2
+  }
+}        
+`)).toMatchInlineSnapshot(`
+  "
+  views {
+    deployment view index {
+      include -> test
+      include -> test ->
+      include test <->
+      include test -[http]->
+      include test .http
+      include test ->
+      include test -> test2
+    }
+  }        
+  "
+`)
+    })
 
     it(
       'formats where expression',
@@ -222,8 +463,8 @@ views {
        or(tag!=#tag2   and   kind    is   not    kind2)
     and   not  tag is   #tag2
   }
-}`
-          )
+}`,
+          ),
         ).toMatchInlineSnapshot(
           `
         "
@@ -235,8 +476,37 @@ views {
               * -> * where tag == #tag2 or (tag != #tag2 and kind is not kind2) and not tag is #tag2
           }
         }"
-      `
-        )
+      `,
+        ),
+    )
+
+    
+
+    it(
+      'formats where expression v2',
+      async () =>
+        expect(
+          await format(
+            `
+views {
+  deployment view index {
+    include *->* where    tag==#tag2 
+       or(tag!=#tag2   and   kind    is   not    kind2)
+    and   not  tag is   #tag2
+  }
+}`,
+          ),
+        ).toMatchInlineSnapshot(
+          `
+        "
+        views {
+          deployment view index {
+            include
+              * -> * where tag == #tag2 or (tag != #tag2 and kind is not kind2) and not tag is #tag2
+          }
+        }"
+      `,
+        ),
     )
 
     it(
@@ -249,8 +519,11 @@ views {
   view {
   global    style     global-style
   }
-  }`
-          )
+  dynamic view view-dynamic {
+  global    style     global-style
+  }
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -258,9 +531,42 @@ views {
             view {
               global style global-style
             }
+            dynamic view view-dynamic {
+              global style global-style
+            }
           }"
-        `
-        )
+        `,
+        ),
+    )
+
+    it(
+      'formats global predicate references',
+      async () =>
+        expect(
+          await format(
+            `
+  views {
+  view {
+  global    predicate     global-predicate
+  }
+  dynamic view view-dynamic {
+  global    predicate     global-predicate
+  }
+  }`,
+          ),
+        ).toMatchInlineSnapshot(
+          `
+          "
+          views {
+            view {
+              global predicate global-predicate
+            }
+            dynamic view view-dynamic {
+              global predicate global-predicate
+            }
+          }"
+        `,
+        ),
     )
 
     it(
@@ -274,8 +580,12 @@ views {
       style   *  ,sys1   ,   sys2 {
       } 
     }
-  }`
-          )
+    deployment view prod {
+      style   *  ,sys1   ,   sys2 {
+      }
+    }
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -284,9 +594,13 @@ views {
               style *, sys1, sys2 {
               }
             }
+            deployment view prod {
+              style *, sys1, sys2 {
+              }
+            }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -306,8 +620,10 @@ views {
     }
     dynamic     view  view3  {
     }
-  }`
-          )
+    deployment     view  view4  {
+    }
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -322,9 +638,11 @@ views {
             }
             dynamic view view3 {
             }
+            deployment view view4 {
+            }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -340,8 +658,8 @@ views {
       include -> *  with{ }
       include -> * where tag = #test    with    {}
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -357,8 +675,8 @@ views {
               }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -374,8 +692,8 @@ views {
     view {
       autoLayout     TopBottom   123   321
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -387,8 +705,8 @@ views {
               autoLayout TopBottom 123 321
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -416,8 +734,8 @@ views {
   opacity  :   10% ;
   }
   }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -443,8 +761,8 @@ views {
               }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
   })
 
@@ -470,8 +788,8 @@ par {
 sys2 -> sys3
 }
 } 
-}`
-          )
+}`,
+          ),
         ).toMatchInlineSnapshot(
           `
         "
@@ -491,8 +809,8 @@ sys2 -> sys3
             }
           }
         }"
-      `
-        )
+      `,
+        ),
     )
 
     it(
@@ -505,8 +823,8 @@ views{
   view index   {
     include *
   }
-}`
-          )
+}`,
+          ),
         ).toMatchInlineSnapshot(
           `
         "
@@ -515,8 +833,8 @@ views{
             include *
           }
         }"
-      `
-        )
+      `,
+        ),
     )
 
     it(
@@ -538,8 +856,8 @@ views{
     // comment
   #tag1
   }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -557,8 +875,8 @@ views{
               #tag1
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -571,8 +889,8 @@ model {
   system sys1 {
     #tag1    #tag2,   #tag3,#tag4, #tag5     #tag6
   }
-}`
-          )
+}`,
+          ),
         ).toMatchInlineSnapshot(
           `
         "
@@ -581,8 +899,8 @@ model {
             #tag1 #tag2, #tag3, #tag4, #tag5 #tag6
           }
         }"
-      `
-        )
+      `,
+        ),
     )
 
     it(
@@ -599,8 +917,8 @@ specification {
 model {
   el sys1 'test' {           #tag1, #tag2
   }
-}`
-          )
+}`,
+          ),
         ).toMatchInlineSnapshot(
           `
         "
@@ -614,8 +932,8 @@ model {
             #tag1, #tag2
           }
         }"
-      `
-        )
+      `,
+        ),
     )
 
     it(
@@ -630,8 +948,8 @@ model {
       link      http://example.com    'title'
       link  :   http://example.com   'title'   ;
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -642,8 +960,8 @@ model {
               link: http://example.com 'title';
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -659,8 +977,8 @@ model {
           navigateTo    viewB
         }
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -672,8 +990,8 @@ model {
                 }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -690,6 +1008,7 @@ model {
         icon    aws:person
         shape   queue
         border     solid
+        multiple     true
       }
     }
     relationship rel1 {
@@ -741,8 +1060,8 @@ model {
         border     solid
       }
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -754,6 +1073,7 @@ model {
                 icon aws:person
                 shape queue
                 border solid
+                multiple true
               }
             }
             relationship rel1 {
@@ -808,8 +1128,8 @@ model {
               }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -860,8 +1180,8 @@ model {
         technology  :    'test'   ;
       }
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -910,8 +1230,8 @@ model {
                 }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -979,8 +1299,8 @@ model {
         border  :     solid   ;
       }
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -1046,8 +1366,8 @@ model {
               }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -1095,8 +1415,8 @@ model {
         technology    'test'
       }
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -1142,8 +1462,8 @@ model {
                 }
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -1159,8 +1479,8 @@ model {
     view index {
       include *
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -1172,8 +1492,8 @@ model {
               include *
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -1188,8 +1508,8 @@ model {
   model {
     component user {     title 'some title';    description 'description';
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -1202,8 +1522,8 @@ model {
               description 'description';
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -1256,8 +1576,8 @@ model {
       system2.module1   -[   http   ]->   system1.module1
       system2.module1  .http   system1.module1   'title' 
     }
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -1306,8 +1626,8 @@ model {
               system2.module1 .http system1.module1 'title'
             }
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it(
@@ -1327,8 +1647,8 @@ model {
       metadata
     }
   
-  }`
-          )
+  }`,
+          ),
         ).toMatchInlineSnapshot(
           `
           "
@@ -1344,8 +1664,8 @@ model {
             }
 
           }"
-        `
-        )
+        `,
+        ),
     )
 
     it('is idempotent', async () => {
@@ -1516,7 +1836,12 @@ model {
 })
 
 async function format(source: string) {
-  const { format } = createTestServices()
+  const { format, validate } = createTestServices()
+
+  // const validationResult = await validate(source)
+  // if(validationResult.errors.length > 0 || validationResult.warnings.length > 0) {
+  //   return validationResult.warnings.join('\n')
+  // }
 
   return await format(source)
 }
