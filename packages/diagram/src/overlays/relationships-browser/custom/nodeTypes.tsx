@@ -1,5 +1,6 @@
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
+import { m } from 'framer-motion'
 import type { NodeProps } from '../../../base'
 import {
   CompoundNodeContainer,
@@ -16,7 +17,7 @@ import { EmptyNode } from './EmptyNode'
 export const nodeTypes = {
   element: customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
     return (
-      <ElementNodeContainer nodeProps={props}>
+      <ElementNodeContainer component={m.div} layoutId={props.id} nodeProps={props}>
         <ElementShape {...props} />
         <ElementTitle {...props} iconSize={40} />
         <ElementActions {...props} />
@@ -27,7 +28,7 @@ export const nodeTypes = {
 
   compound: customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
     return (
-      <CompoundNodeContainer nodeProps={props}>
+      <CompoundNodeContainer component={m.div} layoutId={props.id} nodeProps={props}>
         <CompoundTitle {...props} />
         <CompoundPorts {...props} />
       </CompoundNodeContainer>

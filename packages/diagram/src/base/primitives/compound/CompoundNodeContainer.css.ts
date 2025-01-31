@@ -1,22 +1,13 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { easings, mantine, transitions, vars, whereLight } from '../../../theme-vars'
+import { easings, mantine, vars, whereLight } from '../../../theme-vars'
 
 export const varCompoundOpacity = createVar('opacity')
 export const varBorderRadius = createVar('borderRadius')
 export const varBorderTransparency = createVar('borderTransparency')
 export const varBorderColor = createVar('border-color')
 const varBorderWidth = createVar('border-width')
-
-export const dimmed = style({})
-globalStyle(`.react-flow__node:has(${dimmed})`, {
-  opacity: 0.25,
-  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-  transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  willChange: 'opacity, filter',
-})
 
 export const container = style({
   position: 'relative',
@@ -29,6 +20,21 @@ export const container = style({
     [varBorderRadius]: '6px',
     [varBorderWidth]: '3px',
   },
+})
+
+globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="true"])`, {
+  opacity: 0.25,
+  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+  transitionDelay: '200ms',
+  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+  willChange: 'opacity, filter',
+})
+
+globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="immediate"])`, {
+  opacity: 0.25,
+  transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
+  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+  willChange: 'opacity, filter',
 })
 
 const outlineColor = fallbackVar(

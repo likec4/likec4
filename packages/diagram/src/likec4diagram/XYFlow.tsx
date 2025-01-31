@@ -1,6 +1,7 @@
 import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import clsx from 'clsx'
+import { shallowEqual } from 'fast-equals'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base'
 import { useDiagramEventHandlers, useEnabledFeature } from '../context'
@@ -19,7 +20,18 @@ const selectXYProps = (ctx: DiagramContext) => ({
   pannable: ctx.pannable,
   zoomable: ctx.zoomable,
   fitViewPadding: ctx.fitViewPadding,
+  enableFitView: ctx.features.enableFitView,
+  enableReadOnly: ctx.features.enableReadOnly,
 })
+const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
+  a.initialized === b.initialized &&
+  a.pannable === b.pannable &&
+  a.zoomable === b.zoomable &&
+  a.fitViewPadding === b.fitViewPadding &&
+  a.enableFitView === b.enableFitView &&
+  a.enableReadOnly === b.enableReadOnly &&
+  shallowEqual(a.nodes, b.nodes) &&
+  shallowEqual(a.edges, b.edges)
 
 type Picked = EnforceOptional<
   Pick<
@@ -37,8 +49,10 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
     initialized,
     nodes,
     edges,
+    enableReadOnly,
+    enableFitView,
     ...props
-  } = useDiagramContext(selectXYProps)
+  } = useDiagramContext(selectXYProps, equalsXYProps)
 
   const {
     onNodeContextMenu,
@@ -50,14 +64,13 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
     onCanvasDblClick,
   } = useDiagramEventHandlers()
 
-  const {
-    enableFitView,
-    enableReadOnly,
-  } = useEnabledFeature('ReadOnly', 'FitView')
-
   const notReadOnly = !enableReadOnly
 
   const layoutConstraints = useLayoutConstraints()
+
+  const onViewportResize = useCallbackRef(() => {
+    diagram.send({ type: 'xyflow.resized' })
+  })
 
   return (
     <BaseXYFlow<Types.Node, Types.Edge>
@@ -126,9 +139,7 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
         }),
       }}
       {...enableFitView && {
-        onViewportResize: () => {
-          diagram.send({ type: 'xyflow.resized' })
-        },
+        onViewportResize,
       }}
       {...(notReadOnly && rest.nodesDraggable && layoutConstraints)}
       {...props}

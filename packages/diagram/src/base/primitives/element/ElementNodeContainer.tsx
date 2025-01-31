@@ -48,11 +48,9 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         ref={ref}
         className={clsx([
           css.container,
-          isDimmed && css.dimmed,
           'likec4-element-node',
         ])}
         initial={false}
-        layoutRoot
         {...selectable && {
           animate: {
             scale,
@@ -62,6 +60,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         data-hovered={isHovered}
         data-likec4-color={data.color}
         data-likec4-shape={data.shape}
+        data-likec4-dimmed={isDimmed}
         {...rest}
       >
         {children}

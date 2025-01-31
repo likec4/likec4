@@ -1,4 +1,5 @@
-import { useCallbackRef } from '@mantine/hooks'
+import { useCallbackRef, useMounted } from '@mantine/hooks'
+import { useIsMounted } from '@react-hookz/web'
 import {
   type ReactFlowProps,
   ReactFlow,
@@ -182,6 +183,7 @@ const BaseXYFlowInner = ({
     },
   })
 
+  const isMounted = useIsMounted()
   const listenToViewportResize = !!onViewportResize
   const onViewportResizeCb = useCallbackRef(onViewportResize)
 
@@ -190,6 +192,9 @@ const BaseXYFlowInner = ({
       return
     }
     return xyflowApi.subscribe((state, prevState) => {
+      if (!isMounted()) {
+        return
+      }
       if (state.width !== prevState.width || state.height !== prevState.height) {
         onViewportResizeCb()
       }
