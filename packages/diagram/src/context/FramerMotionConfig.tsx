@@ -6,7 +6,7 @@ export const FramerMotionConfig = ({ children }: PropsWithChildren) => {
   const nonce = useMantineStyleNonce()?.()
   return (
     <LazyMotion features={domMax} strict>
-      <MotionConfig reducedMotion="user" {...nonce && { nonce }}>
+      <MotionConfig {...nonce && { nonce }}>
         {children}
       </MotionConfig>
     </LazyMotion>
