@@ -51,7 +51,7 @@
     "clsx": "^2.1.1",
     "d3-shape": "^3.2.0",
     "esm-env": "^1.2.2",
-    "fast-equals": "^5.0.1",
+    "fast-equals": "^5.2.2",
     "framer-motion": "^11.16.0",
     "khroma": "^2.1.0",
     "react-error-boundary": "^4.1.2",
