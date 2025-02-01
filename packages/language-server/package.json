@@ -21,7 +21,7 @@
     "directory": "packages/language-server"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.18.2"
   },
   "engineStrict": true,
   "type": "module",
@@ -97,7 +97,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@msgpack/msgpack": "^3.0.0-beta3",
     "@smithy/util-base64": "^3.0.0",
-    "@types/node": "^20.17.7",
+    "@types/node": "^20.17.16",
     "@types/which": "^3.0.4",
     "@vitest/coverage-v8": "^2.1.8",
     "esm-env": "^1.2.2",

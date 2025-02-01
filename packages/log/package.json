@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.17.7",
+    "@types/node": "^20.17.16",
     "consola": "^3.4.0",
     "merge-error-cause": "^5.0.0",
     "safe-stringify": "^1.1.1",

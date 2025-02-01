@@ -33,7 +33,7 @@
     "@nanostores/react": "0.8.4",
     "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.29.0",
-    "@types/node": "^20.17.7",
+    "@types/node": "^20.17.16",
     "@types/object-hash": "^3.0.6",
     "@types/react": "~19.0.8",
     "@types/react-dom": "~19.0.3",

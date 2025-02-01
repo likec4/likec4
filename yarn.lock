@@ -2011,7 +2011,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     json5: "npm:^2.2.3"
     langium: "npm:3.3.1"
     remeda: "npm:^2.19.0"
@@ -2051,7 +2051,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@msgpack/msgpack": "npm:^3.0.0-beta3"
     "@smithy/util-base64": "npm:^3.0.0"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     "@types/which": "npm:^3.0.4"
     "@vitest/coverage-v8": "npm:^2.1.8"
     esm-env: "npm:^1.2.2"
@@ -2092,7 +2092,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     execa: "npm:^9.3.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
@@ -2114,7 +2114,7 @@ __metadata:
   resolution: "@likec4/log@workspace:packages/log"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     consola: "npm:^3.4.0"
     merge-error-cause: "npm:^5.0.0"
     safe-stringify: "npm:^1.1.1"
@@ -2149,7 +2149,7 @@ __metadata:
     "@tanstack/router-cli": "npm:1.97.17"
     "@tanstack/router-vite-plugin": "npm:1.97.17"
     "@typefox/monaco-editor-react": "npm:4.5.3"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     "@types/react": "npm:~19.0.8"
     "@types/react-dom": "npm:~19.0.3"
     "@vanilla-extract/css": "npm:^1.17.0"
@@ -2210,7 +2210,7 @@ __metadata:
     "@nanostores/react": "npm:0.8.4"
     "@react-hookz/web": "npm:^25.0.1"
     "@tabler/icons-react": "npm:3.29.0"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     "@types/object-hash": "npm:^3.0.6"
     "@types/react": "npm:~19.0.8"
     "@types/react-dom": "npm:~19.0.3"
@@ -3788,7 +3788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.17.7":
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
   version: 20.17.8
   resolution: "@types/node@npm:20.17.8"
   dependencies:
@@ -3801,6 +3801,15 @@ __metadata:
   version: 17.0.45
   resolution: "@types/node@npm:17.0.45"
   checksum: 10c0/0db377133d709b33a47892581a21a41cd7958f22723a3cc6c71d55ac018121382de42fbfc7970d5ae3e7819dbe5f40e1c6a5174aedf7e7964e9cb8fa72b580b0
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.17.16":
+  version: 20.17.16
+  resolution: "@types/node@npm:20.17.16"
+  dependencies:
+    undici-types: "npm:~6.19.2"
+  checksum: 10c0/50c589dd6a377238bc51b6fb5b8fc60ff6d688df0bde621d4a9fc59f480eb956cdf6d46052e1cb9536f150bc62e9194ddc733aa78b65e812155b4d3a32717de2
   languageName: node
   linkType: hard
 
@@ -5707,7 +5716,7 @@ __metadata:
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
     "@likec4/tsconfig": "workspace:*"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^9.3.1"
     prompts: "npm:^2.4.2"
@@ -8837,7 +8846,7 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     "@types/vscode": "npm:^1.84.0"
     "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.8"
@@ -8889,7 +8898,7 @@ __metadata:
     "@tanstack/react-router": "npm:1.97.17"
     "@tanstack/router-cli": "npm:1.97.17"
     "@tanstack/router-vite-plugin": "npm:1.97.17"
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     "@types/prop-types": "npm:^15.7.14"
     "@types/react": "npm:~19.0.8"
     "@types/react-dom": "npm:~19.0.3"
@@ -12648,7 +12657,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root@workspace:."
   dependencies:
-    "@types/node": "npm:^20.17.7"
+    "@types/node": "npm:^20.17.16"
     "@vitest/ui": "npm:^2.1.8"
     dprint: "npm:0.48.0"
     esbuild: "npm:^0.24.2"
