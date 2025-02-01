@@ -7,21 +7,21 @@ import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from '.
 
 export const RelationshipDetailsActorContext = createContext<RelationshipDetailsActorRef | null>(null)
 
-export function useRelationshipsBrowserActor() {
-  return nonNullable(useContext(RelationshipDetailsActorContext), 'No RelationshipsBrowserActorContext')
+export function useRelationshipDetailsActor() {
+  return nonNullable(useContext(RelationshipDetailsActorContext), 'No RelationshipDetailsActorContext')
 }
 
-export function useRelationshipsBrowserState<T>(
+export function useRelationshipDetailsState<T = unknown>(
   selector: (state: RelationshipDetailsSnapshot) => T,
-  compare: (a: T, b: T) => boolean = shallowEqual,
+  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
 ) {
   const select = useCallbackRef(selector)
-  const actor = useRelationshipsBrowserActor()
+  const actor = useRelationshipDetailsActor()
   return useSelector(actor, select, compare)
 }
 
 export function useRelationshipDetails() {
-  const actor = useRelationshipsBrowserActor()
+  const actor = useRelationshipDetailsActor()
   const [, startTransition] = useTransition()
   return useMemo(() => ({
     getState: () => actor.getSnapshot().context,

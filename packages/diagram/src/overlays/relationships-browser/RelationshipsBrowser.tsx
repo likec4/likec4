@@ -1,8 +1,6 @@
 import type { Fqn } from '@likec4/core'
-import { logger } from '@likec4/log'
 import { ActionIcon, Box, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
-import { useLifecycleLogger } from '@react-hookz/web'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useStoreApi } from '@xyflow/react'
 import clsx from 'clsx'
@@ -44,23 +42,6 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
     }
   }
 
-  useEffect(() => {
-    const s = actorRef.subscribe({
-      next: (state) => {
-        logger.debug('RelationshipsBrowserActor', state)
-      },
-      error: (error) => {
-        logger.error('RelationshipsBrowserActor', error)
-      },
-      complete: () => {
-        logger.success('RelationshipsBrowserActor - complete')
-      },
-    })
-    return () => s.unsubscribe()
-  }, [actorRef])
-
-  useLifecycleLogger('RelationshipsBrowser', [actorRef])
-
   return (
     <RelationshipsBrowserActorContext.Provider value={actorRef}>
       <ReactFlowProvider {...initialRef.current}>
@@ -95,11 +76,11 @@ const RelationshipsBrowserXYFlow = memo(() => {
     selectorEq,
   )
 
-  useLifecycleLogger('RelationshipsBrowserXYFlow.browser', [browser])
-  useLifecycleLogger('RelationshipsBrowserXYFlow.xystore', [xystore])
-  useLifecycleLogger('RelationshipsBrowserXYFlow.initialized, isActive', [initialized, isActive])
-  useLifecycleLogger('RelationshipsBrowserXYFlow.nodes', [nodes])
-  useLifecycleLogger('RelationshipsBrowserXYFlow.edges', [edges])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.browser', [browser])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.xystore', [xystore])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.initialized, isActive', [initialized, isActive])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.nodes', [nodes])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.edges', [edges])
 
   return (
     <LayoutGroup>
@@ -186,14 +167,14 @@ const RelationshipsBrowserInner = memo(() => {
   const hasStepBack = current > 0
   const hasStepForward = current + 1 < history.length
 
-  useLifecycleLogger('RelationshipsBrowserInner.browser', [browser])
-  useLifecycleLogger('RelationshipsBrowserInner.layouted', [layouted])
-  useLifecycleLogger('RelationshipsBrowserInner', [
-    historySubjectId,
-    subjectId,
-    closeable,
-    enableNavigationMenu,
-  ])
+  // useLifecycleLogger('RelationshipsBrowserInner.browser', [browser])
+  // useLifecycleLogger('RelationshipsBrowserInner.layouted', [layouted])
+  // useLifecycleLogger('RelationshipsBrowserInner', [
+  //   historySubjectId,
+  //   subjectId,
+  //   closeable,
+  //   enableNavigationMenu,
+  // ])
 
   return (
     <>
@@ -210,10 +191,6 @@ const RelationshipsBrowserInner = memo(() => {
           <ActionIcon
             variant="default"
             color="gray"
-            // color="gray"
-            // size={'lg'}
-            // data-autofocus
-            // autoFocus
             onClick={(e) => {
               e.stopPropagation()
               browser.close()

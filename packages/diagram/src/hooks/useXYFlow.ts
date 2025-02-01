@@ -7,7 +7,7 @@ export const useXYFlow = useReactFlow<Types.Node, Types.Edge>
 
 export function useXYStore<StateSlice = unknown>(
   selector: (state: ReactFlowState<Types.Node, Types.Edge>) => StateSlice,
-  equalityFn?: (a: StateSlice, b: StateSlice) => boolean,
+  equalityFn?: (a: NoInfer<StateSlice>, b: NoInfer<StateSlice>) => boolean,
 ): StateSlice {
   return useStore(
     useCallbackRef(selector as any),

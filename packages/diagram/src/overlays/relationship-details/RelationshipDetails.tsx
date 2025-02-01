@@ -17,7 +17,7 @@ import { nodeTypes } from './custom/nodeTypes'
 import {
   RelationshipDetailsActorContext,
   useRelationshipDetails,
-  useRelationshipsBrowserState,
+  useRelationshipDetailsState,
 } from './hooks'
 import { SelectEdge } from './SelectEdge'
 import { useLayoutedDetails } from './useLayoutedDetails'
@@ -63,7 +63,7 @@ const RelationshipDetailsInner = memo(() => {
     edgeId,
     view,
     initialized,
-  } = useRelationshipsBrowserState(selector)
+  } = useRelationshipDetailsState(selector)
 
   const {
     edge,
@@ -123,9 +123,9 @@ const RelationshipDetailsInner = memo(() => {
           e.stopPropagation()
           browser.send({ type: 'xyflow.paneClick' })
         })}
-        onViewportResize={() => {
+        onViewportResize={useCallbackRef(() => {
           browser.send({ type: 'xyflow.resized' })
-        }}
+        })}
         nodesDraggable={false}
         fitView={false}
         pannable

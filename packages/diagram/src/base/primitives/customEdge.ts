@@ -17,6 +17,8 @@ export const edgePropsEqual = <P extends Record<string, unknown> = Base.EdgeData
   && eq(prev.target, next.target)
   && eq(prev.targetHandleId ?? null, next.targetHandleId ?? null)
   && eq(prev.selected ?? false, next.selected ?? false)
+  && eq(prev.sourcePosition, next.sourcePosition)
+  && eq(prev.targetPosition, next.targetPosition)
   && isSame(prev.sourceX, next.sourceX)
   && isSame(prev.sourceY, next.sourceY)
   && isSame(prev.targetX, next.targetX)
