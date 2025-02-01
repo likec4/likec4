@@ -150,7 +150,7 @@
     "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.24.2",
     "esbuild-node-externals": "^1.16.0",
-    "esm-env": "^1.2.1",
+    "esm-env": "^1.2.2",
     "execa": "^9.3.1",
     "fast-equals": "^5.0.1",
     "fdir": "^6.4.2",
