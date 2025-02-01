@@ -6,6 +6,7 @@ import type { ast, DocFqnIndexAstNodeDescription, FqnIndexedDocument } from '../
 import { ElementOps, isFqnIndexedDocument, isLikeC4LangiumDocument } from '../ast'
 import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { ADisposable } from '../utils'
 import { computeDocumentFqn } from './fqn-computation'
 
 export interface FqnIndexEntry {
@@ -16,31 +17,37 @@ export interface FqnIndexEntry {
   path: string
 }
 
-export class FqnIndex {
+export class FqnIndex extends ADisposable {
   protected langiumDocuments: LangiumDocuments
 
   constructor(private services: LikeC4Services) {
+    super()
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.IndexedContent,
-      async (docs, _cancelToken) => {
-        for (const doc of docs) {
-          if (isLikeC4LangiumDocument(doc)) {
-            delete doc.c4fqnIndex
-            delete doc.c4Elements
-            delete doc.c4Specification
-            delete doc.c4Relations
-            delete doc.c4Views
-            try {
-              computeDocumentFqn(doc, services)
-            } catch (e) {
-              logWarnError(e)
+    this.onDispose(
+      services.shared.workspace.DocumentBuilder.onBuildPhase(
+        DocumentState.IndexedContent,
+        async (docs, _cancelToken) => {
+          for (const doc of docs) {
+            if (isLikeC4LangiumDocument(doc)) {
+              delete doc.c4fqnIndex
+              delete doc.c4Elements
+              delete doc.c4Specification
+              delete doc.c4Relations
+              delete doc.c4Deployments
+              delete doc.c4DeploymentRelations
+              delete doc.c4Globals
+              delete doc.c4Views
+              try {
+                computeDocumentFqn(doc, services)
+              } catch (e) {
+                logWarnError(e)
+              }
             }
           }
-        }
-        return await Promise.resolve()
-      }
+          return await Promise.resolve()
+        },
+      ),
     )
     logger.debug(`[FqnIndex] Created`)
   }
@@ -125,7 +132,7 @@ export class FqnIndex {
           return iterator.next()
         }
         return DONE_RESULT as IteratorResult<AstNodeDescription>
-      }
+      },
     )
   }
 }

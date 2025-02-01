@@ -7,8 +7,8 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
+    "bin",
     "dist",
-    "contrib",
     "src",
     "!**/__mocks__/",
     "!**/__tests__/",
@@ -20,8 +20,15 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/language-server"
   },
+  "engines": {
+    "node": ">=20"
+  },
+  "engineStrict": true,
   "type": "module",
   "sideEffects": false,
+  "bin": {
+    "likec4-language-server": "./bin/likec4-language-server.mjs"
+  },
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -59,7 +66,8 @@
         "import": "./dist/protocol.js",
         "default": "./dist/protocol.js"
       }
-    }
+    },
+    "./bundled": "./dist/bundled.mjs"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -81,44 +89,42 @@
     "vitest:ui": "vitest --no-isolate --ui",
     "test:watch": "vitest"
   },
-  "dependencies": {
+  "devDependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@msgpack/msgpack": "^3.0.0-beta3",
     "@smithy/util-base64": "^3.0.0",
+    "@types/node": "^20.17.7",
+    "@types/which": "^3.0.4",
+    "@vitest/coverage-v8": "^2.1.8",
     "esm-env": "^1.2.2",
+    "execa": "^9.3.1",
     "fast-equals": "^5.0.1",
     "fdir": "^6.4.2",
     "indent-string": "^5.0.0",
     "json5": "^2.2.3",
     "langium": "3.3.1",
+    "langium-cli": "3.3.0",
+    "natural-compare-lite": "^1.4.0",
+    "npm-run-all2": "^7.0.1",
     "p-debounce": "^4.0.0",
     "remeda": "^2.19.0",
     "strip-indent": "^4.0.0",
+    "tsx": "~4.19.2",
+    "turbo": "^2.3.4",
     "type-fest": "4.28.1",
+    "typescript": "^5.7.3",
     "ufo": "^1.5.4",
+    "unbuild": "^3.3.1",
+    "vitest": "^2.1.8",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-types": "3.17.5",
     "vscode-uri": "3.0.8",
     "which": "^4.0.0"
-  },
-  "devDependencies": {
-    "@likec4/icons": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.17.7",
-    "@types/which": "^3.0.4",
-    "@vitest/coverage-v8": "^2.1.8",
-    "execa": "^9.3.1",
-    "langium-cli": "3.3.0",
-    "natural-compare-lite": "^1.4.0",
-    "npm-run-all2": "^7.0.1",
-    "tsx": "~4.19.2",
-    "turbo": "^2.3.4",
-    "typescript": "^5.7.3",
-    "unbuild": "^3.3.1",
-    "vitest": "^2.1.8"
   },
   "packageManager": "yarn@4.6.0"
 }

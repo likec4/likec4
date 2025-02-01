@@ -9,17 +9,20 @@ export const RESERVED_WORDS = [
   'self',
   'super',
   'likec4lib',
-  'global'
+  'global',
 ]
 
 export function tryOrLog<T extends AstNode>(fn: ValidationCheck<T>): ValidationCheck<T> {
-  return async (node: T, accept: ValidationAcceptor, cancelToken: CancellationToken) => {
+  return async function tryOrLogFn(node: T, accept: ValidationAcceptor, cancelToken: CancellationToken) {
     try {
       const result = fn(node, accept, cancelToken)
       if (isPromise(result)) {
         await result
       }
+      return
     } catch (e) {
+      const message = e instanceof Error ? e.message : String(e)
+      accept('error', `Validation failed: ${message}`, { node })
       logWarnError(e)
     }
   }

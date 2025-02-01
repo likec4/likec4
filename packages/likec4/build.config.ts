@@ -62,9 +62,9 @@ export default defineBuildConfig({
     },
     commonjs: {
       exclude: [
-        /\.ts$/,
-        /\.cts$/,
-        /\.mts$/,
+        /\.d\.ts$/,
+        /\.d\.cts$/,
+        /\.d\.mts$/,
       ],
     },
     dts: {

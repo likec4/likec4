@@ -49,6 +49,7 @@ import type {
 import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { ADisposable } from '../utils'
 import { assignNavigateTo, resolveRelativePaths } from '../view-utils'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
@@ -453,37 +454,41 @@ const CACHE_KEY_COMPUTED_MODEL = 'ComputedLikeC4Model'
 
 type ModelParsedListener = (docs: URI[]) => void
 
-export class LikeC4ModelBuilder {
+export class LikeC4ModelBuilder extends ADisposable {
   private langiumDocuments: LangiumDocuments
   private listeners: ModelParsedListener[] = []
 
   constructor(private services: LikeC4Services) {
+    super()
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     const parser = services.likec4.ModelParser
 
-    services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
-      if (deleted.length > 0) {
-        this.notifyListeners(deleted)
-      }
-    })
-
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.Validated,
-      async (docs, _cancelToken) => {
-        let parsed = [] as URI[]
-        try {
+    this.onDispose(
+      services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
+        if (deleted.length > 0) {
+          this.notifyListeners(deleted)
+        }
+      }),
+    )
+    this.onDispose(
+      services.shared.workspace.DocumentBuilder.onBuildPhase(
+        DocumentState.Validated,
+        async (docs, _cancelToken) => {
+          let parsed = [] as URI[]
           logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)`)
           for (const doc of docs) {
-            parsed.push(parser.parse(doc).uri)
+            try {
+              parsed.push(parser.parse(doc).uri)
+            } catch (e) {
+              logWarnError(e)
+            }
           }
-        } catch (e) {
-          logWarnError(e)
-        }
-        if (parsed.length > 0) {
-          this.notifyListeners(parsed)
-        }
-        return await Promise.resolve()
-      },
+          await interruptAndCheck(_cancelToken)
+          if (parsed.length > 0) {
+            this.notifyListeners(parsed)
+          }
+        },
+      ),
     )
     logger.debug(`[ModelBuilder] Created`)
   }

@@ -47,6 +47,7 @@
     "esm-env": "^1.2.2",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.16.0",
+    "langium": "3.3.1",
     "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@8.0.4",
     "monaco-editor-wrapper": "5.5.3",
     "monaco-languageclient": "8.8.3",
