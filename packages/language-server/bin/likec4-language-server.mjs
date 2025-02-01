@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { startLanguageServer } from '../dist/index.js'
+import { startLanguageServer } from '../dist/bundled.mjs'
 
 startLanguageServer()

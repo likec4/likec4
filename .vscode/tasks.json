@@ -30,7 +30,12 @@
       "label": "build_extension",
       "type": "npm",
       "script": "build:turbo",
-      "path": "packages/vscode"
+      "path": "packages/vscode",
+      "options": {
+        "env": {
+          "NODE_ENV": "development",
+        }
+      },
     }
   ]
 }
