@@ -1,4 +1,4 @@
-import DefaultMap from 'mnemonist/default-map'
+import { DefaultMap } from 'mnemonist'
 import { values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'

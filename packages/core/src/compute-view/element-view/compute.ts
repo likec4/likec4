@@ -1,4 +1,4 @@
-import DefaultMap from 'mnemonist/default-map'
+import { DefaultMap } from 'mnemonist'
 import { filter, findLast, forEach, map, pipe } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'

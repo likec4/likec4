@@ -1,4 +1,4 @@
-import DefaultMap from 'mnemonist/default-map'
+import { DefaultMap } from 'mnemonist'
 import { Connection } from '../../model'
 import { isAncestor, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'

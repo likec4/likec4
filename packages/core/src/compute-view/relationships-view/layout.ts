@@ -1,5 +1,5 @@
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import DefaultMap from 'mnemonist/default-map'
+import { DefaultMap } from 'mnemonist'
 import { concat, filter, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 import { invariant } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'

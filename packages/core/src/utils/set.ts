@@ -1,6 +1,8 @@
-import { intersection as _intersection, symmetricDifference as _symmetricDifference } from 'mnemonist/set'
-import type { NonEmptyArray } from '../types/_common'
+import { set } from 'mnemonist'
 import { hasAtLeast } from 'remeda'
+import type { NonEmptyArray } from '../types/_common'
+
+const { intersection: _intersection, symmetricDifference: _symmetricDifference } = set
 
 /**
  * Returns new set as a union of given sets

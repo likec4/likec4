@@ -1,4 +1,4 @@
-import DefaultMap from 'mnemonist/default-map'
+import { DefaultMap } from 'mnemonist'
 import { forEach, only, pipe } from 'remeda'
 import { differenceConnections } from '../../../model/connection'
 import type { RelationshipModel } from '../../../model/RelationModel'
