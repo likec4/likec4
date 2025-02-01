@@ -1,6 +1,7 @@
-import { MantineProvider } from '@mantine/core'
+import { useMantineColorScheme } from '@mantine/core'
+import { useSyncedRef } from '@react-hookz/web'
 import { createRootRouteWithContext, Outlet, ScrollRestoration } from '@tanstack/react-router'
-import { theme as mantineTheme } from '../theme'
+import { memo, useEffect } from 'react'
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
   if (typeof v !== 'string') {
@@ -22,20 +23,33 @@ export const Route = createRootRouteWithContext<{}>()({
   component: RootComponent,
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     return {
-      theme: asTheme(search['theme'])
+      theme: asTheme(search['theme']),
     }
-  }
+  },
 })
 
 function RootComponent() {
-  const { theme } = Route.useSearch()
   return (
-    <MantineProvider
-      {...(theme && { forceColorScheme: theme })}
-      defaultColorScheme="dark"
-      theme={mantineTheme}>
+    <>
       <ScrollRestoration />
       <Outlet />
-    </MantineProvider>
+      <ThemeSync />
+    </>
   )
 }
+
+const ThemeSync = memo(() => {
+  const { theme } = Route.useSearch()
+  const m = useSyncedRef(useMantineColorScheme())
+
+  useEffect(() => {
+    if (!theme) {
+      return
+    }
+    if (theme !== m.current.colorScheme) {
+      m.current.setColorScheme(theme)
+    }
+  }, [theme])
+
+  return null
+})

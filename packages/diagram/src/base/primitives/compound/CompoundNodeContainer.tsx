@@ -54,7 +54,6 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         component={m.div}
         className={clsx([
           css.container,
-          isDimmed && css.dimmed,
           'likec4-compound-node',
         ])}
         initial={false}
@@ -62,6 +61,7 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         data-likec4-color={data.color}
         data-compound-depth={data.depth ?? 1}
         data-compound-transparent={isTransparent}
+        data-likec4-dimmed={isDimmed}
         data-likec4-shape={data.shape}
         style={assignInlineVars({
           [css.varCompoundOpacity]: opacity.toFixed(2),

@@ -1,13 +1,17 @@
 import { useCallbackRef } from '@mantine/hooks'
 import {
   type ReactFlowProps,
+  type ReactFlowState,
   ReactFlow,
   useOnViewportChange,
+  useStore,
   useStoreApi,
 } from '@xyflow/react'
 import clsx from 'clsx'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
+import { useUpdateEffect } from '../hooks'
+import { useIsZoomTooSmall } from '../hooks/useXYFlow'
 import * as css from '../LikeC4Diagram.css'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
@@ -74,7 +78,7 @@ export const BaseXYFlow = <
   ...props
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
-
+  const isZoomTooSmall = useIsZoomTooSmall()
   return (
     <ReactFlow<NodeType, EdgeType>
       colorMode={colorMode}
@@ -87,6 +91,7 @@ export const BaseXYFlow = <
         background === 'transparent' && css.cssTransparentBg,
         className,
       )}
+      data-likec4-zoom-small={isZoomTooSmall}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
       {...(!zoomable && {
@@ -111,6 +116,7 @@ export const BaseXYFlow = <
       {...(!pannable && {
         selectionKeyCode: null,
       })}
+      onlyRenderVisibleElements={nodes.length > 75}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
@@ -182,19 +188,22 @@ const BaseXYFlowInner = ({
     },
   })
 
-  const listenToViewportResize = !!onViewportResize
-  const onViewportResizeCb = useCallbackRef(onViewportResize)
+  return (
+    <>
+      {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
+    </>
+  )
+}
 
-  useEffect(() => {
-    if (!listenToViewportResize) {
-      return
-    }
-    return xyflowApi.subscribe((state, prevState) => {
-      if (state.width !== prevState.width || state.height !== prevState.height) {
-        onViewportResizeCb()
-      }
-    })
-  }, [listenToViewportResize])
+const selectDimensions = ({ width, height }: ReactFlowState) => ({ width, height })
+
+const ViewportResizeHanlder = ({
+  onViewportResize,
+}: {
+  onViewportResize: () => void
+}) => {
+  const { width, height } = useStore(selectDimensions)
+  useUpdateEffect(onViewportResize, [width, height])
 
   return <></>
 }

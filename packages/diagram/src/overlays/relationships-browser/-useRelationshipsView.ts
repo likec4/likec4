@@ -256,6 +256,8 @@ export namespace LayoutRelationshipsViewResult {
     ports: RelationshipsBrowserTypes.Ports
   }
   export type Edge = DiagramEdge & {
+    sourceHandle: string
+    targetHandle: string
     // column: RelationshipsBrowserTypes.Column
   }
 }
@@ -271,6 +273,8 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
     name: string
     source: string // node id
     target: string // node id
+    sourceHandle: string
+    targetHandle: string
     relations: RelationshipModel[]
   }>
 
@@ -319,7 +323,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       edges.push({
         name,
         source: source.id,
+        sourceHandle: source.id + '_out' + (g.node(source.id).outPorts.length - 1),
         target: target.id,
+        targetHandle: target.id + '_in' + (g.node(target.id).inPorts.length - 1),
         relations: map(grouped, prop('relation')),
       })
     }),
@@ -446,15 +452,12 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
   }
 
   // Sort ports in subject vertically
-  const sortedPorts = (ports: string[]) => {
-    if (ports.length < 2) {
-      return ports
-    }
+  const sortedPorts = (nodeId: string, type: 'in' | 'out', ports: string[]) => {
     return pipe(
       ports,
-      map(port => {
+      map((port, index) => {
         return {
-          port,
+          port: nodeId + '_' + type + index,
           topY: nodeBounds(port).position.y,
         }
       }),
@@ -462,7 +465,6 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       map(prop('port')),
     )
   }
-
   // In case we got negative positions
   let minX = 0
   let minY = 0
@@ -573,16 +575,16 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       height,
       column,
       ports: {
-        in: sortedPorts(inPorts),
-        out: sortedPorts(outPorts),
+        in: sortedPorts(id, 'in', inPorts),
+        out: sortedPorts(id, 'out', outPorts),
       },
     }
   })
 
   return {
     bounds: {
-      x: minX,
-      y: minY,
+      x: Math.min(minX, 0),
+      y: Math.min(minY, 0),
       width: g.graph().width ?? 100,
       height: g.graph().height ?? 100,
     },
@@ -593,7 +595,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       if (!ename) {
         return acc
       }
-      const { name, source, target, relations } = find(edges, e => e.name === ename)!
+      const { name, source, target, relations, sourceHandle, targetHandle } = find(edges, e => e.name === ename)!
       const onlyRelation = only(relations)
       const label = onlyRelation?.title ?? 'untitled'
       const isMultiple = relations.length > 1
@@ -607,7 +609,9 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
       acc.push({
         id: name as EdgeId,
         source: source as NodeId,
+        sourceHandle,
         target: target as NodeId,
+        targetHandle,
         label: isMultiple ? `${relations.length} relationships` : label,
         relations: relations.map(r => r.id),
         parent: null,

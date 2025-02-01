@@ -67,6 +67,7 @@ const validate = (features: EnabledFeatures) => {
       enableSearch = false
     }
   }
+
   if (enableReadOnly) {
     if (rest.enableEdgeEditing) {
       console.warn('enableEdgeEditing is ignored because enabled ReadOnly')

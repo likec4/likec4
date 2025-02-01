@@ -29,7 +29,7 @@ import {
   map,
   mapToObj,
   mapValues,
-  pick,
+  omit,
   pipe,
   prop,
   reduce,
@@ -37,7 +37,6 @@ import {
   sort,
   values,
 } from 'remeda'
-import { isBooleanObject } from 'util/types'
 import type {
   ParsedAstDeploymentRelation,
   ParsedAstElement,
@@ -551,15 +550,7 @@ export class LikeC4ModelBuilder {
       })
       this.previousViews = { ...views }
       return {
-        ...structuredClone(
-          pick(model, [
-            'specification',
-            'elements',
-            'relations',
-            'globals',
-            'deployments',
-          ]),
-        ),
+        ...omit(model, ['views']),
         views,
       }
     })

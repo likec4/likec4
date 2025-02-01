@@ -1,5 +1,5 @@
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { transitions, vars } from '../../../theme-vars'
+import { vars } from '../../../theme-vars'
 
 export const stokeFillMix = createVar('stroke-fill-mix')
 
@@ -36,12 +36,17 @@ export const container = style({
   },
 })
 
-export const dimmed = style({})
-
-globalStyle(`.react-flow__node:has(${dimmed})`, {
+globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="true"])`, {
   opacity: 0.25,
   transition: 'opacity 400ms ease-in-out, filter 500ms ease-in-out',
   transitionDelay: '50ms',
+  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+  willChange: 'opacity, filter',
+})
+
+globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="immediate"])`, {
+  opacity: 0.25,
+  transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
   filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
   willChange: 'opacity, filter',
 })

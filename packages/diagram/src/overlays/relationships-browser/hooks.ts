@@ -1,6 +1,7 @@
 import { type Fqn, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
+import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo, useTransition } from 'react'
 import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
@@ -26,11 +27,12 @@ export function useRelationshipsBrowser() {
   return useMemo(() => ({
     getState: () => actor.getSnapshot().context,
     send: actor.send,
-    navigateTo: (subject: Fqn) => {
+    navigateTo: (subject: Fqn, fromNode?: string) => {
       startTransition(() => {
         actor.send({
           type: 'navigate.to',
           subject,
+          fromNode,
         })
       })
     },

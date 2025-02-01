@@ -11,11 +11,10 @@ type ElementActionsProps = NodeProps<Types.ElementNodeData>
 export const ElementActions = (props: ElementActionsProps) => {
   const { enableNavigateTo } = useEnabledFeature('NavigateTo')
   const diagram = useDiagram()
-  const browser = useRelationshipDetails()
 
   const buttons = [] as ElementActionButtons.Item[]
 
-  const { navigateTo, fqn } = props.data
+  const { navigateTo } = props.data
   if (navigateTo && enableNavigateTo) {
     buttons.push({
       key: 'navigate',

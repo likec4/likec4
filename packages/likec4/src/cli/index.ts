@@ -21,6 +21,8 @@ if (DEV) {
   consola.warn('running cli in dev mode')
 }
 
+consola.wrapConsole()
+
 const cli = yargs(hideBin(argv))
   .scriptName('likec4')
   .usage(`Usage: $0 <command>`)

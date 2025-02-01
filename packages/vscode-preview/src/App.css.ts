@@ -5,7 +5,7 @@ globalStyle('*, :before, :after', {
   outline: 'none',
   borderWidth: '0',
   borderStyle: 'solid',
-  borderColor: 'transparent'
+  borderColor: 'transparent',
 })
 
 globalStyle('html, body, #root', {
@@ -13,7 +13,7 @@ globalStyle('html, body, #root', {
   height: '100%',
   minHeight: '100vh',
   padding: '0',
-  margin: '0'
+  margin: '0',
 })
 globalStyle('body', {
   vars: {
@@ -22,8 +22,8 @@ globalStyle('body', {
     '--mantine-default-font-family': 'var(--likec4-default-font-family)',
     '--mantine-font-family': 'var(--likec4-default-font-family)',
     '--mantine-color-body': 'var(--vscode-editor-background)',
-    '--likec4-background-color': 'var(--vscode-editor-background )'
-  }
+    '--likec4-background-color': 'var(--vscode-editor-background )',
+  },
 })
 
 export const likec4Container = style({
@@ -33,8 +33,8 @@ export const likec4Container = style({
   vars: {
     '--likec4-options-panel-top': '0.5rem',
     '--likec4-navigation-panel-top': '0.25rem',
-    '--likec4-navigation-panel-left': '0.25rem'
-  }
+    '--likec4-navigation-panel-left': '0.25rem',
+  },
 })
 
 // export const likec4error = style({
@@ -52,27 +52,27 @@ export const likec4Container = style({
 // })
 
 export const likec4ParsingScreen = style({
-  padding: '1rem'
+  padding: '1rem',
 })
 
 globalStyle(`${likec4ParsingScreen} section`, {
   marginTop: '1rem',
-  marginBottom: '1rem'
+  marginBottom: '1rem',
 })
 
 globalStyle('.react-flow .react-flow__attribution', {
-  display: 'none'
+  display: 'none',
 })
 
 globalStyle(`${likec4Container} .likec4-top-left-panel .action-icon`, {
   vars: {
-    ['--ai-size']: 'var(--ai-size-md)'
-  }
+    ['--ai-size']: 'var(--ai-size-md)',
+  },
 })
 
 export const stateAlert = style({
   position: 'absolute',
   top: '0.75rem',
   left: '0.5rem',
-  userSelect: 'none'
+  userSelect: 'none',
 })

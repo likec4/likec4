@@ -2,15 +2,17 @@ import type { Fqn } from '@likec4/core'
 import { ActionIcon, Box, Group } from '@mantine/core'
 import { useCallbackRef, useStateHistory } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
-import { Panel, ReactFlowProvider } from '@xyflow/react'
+import { Panel, ReactFlowProvider, useStoreApi } from '@xyflow/react'
 import clsx from 'clsx'
+import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { memo, useEffect, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useRelationshipsView } from './-useRelationshipsView'
-import type { RelationshipsBrowserTypes as Types } from './_types'
+import type { RelationshipsBrowserTypes, RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
+import { ViewPadding } from './const'
 import { edgeTypes } from './custom/edgeTypes'
 import { nodeTypes } from './custom/nodeTypes'
 import {
@@ -29,32 +31,108 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
   //   return null
   // }
   const initialRef = useRef<{
-    defaultNodes: Types.Node[]
-    defaultEdges: Types.Edge[]
+    initialNodes: Types.Node[]
+    initialEdges: Types.Edge[]
   }>(null)
 
   if (initialRef.current == null) {
     initialRef.current = {
-      defaultNodes: [],
-      defaultEdges: [],
+      initialNodes: [],
+      initialEdges: [],
     }
   }
 
   return (
     <RelationshipsBrowserActorContext.Provider value={actorRef}>
       <ReactFlowProvider {...initialRef.current}>
-        <RelationshipsBrowserInner />
+        <RelationshipsBrowserXYFlow />
       </ReactFlowProvider>
     </RelationshipsBrowserActorContext.Provider>
   )
 }
 
 const selector = (state: SnapshotFrom<RelationshipsBrowserActorRef>) => ({
-  subjectId: state.context.subject,
   initialized: state.context.initialized,
-  scope: state.context.scope,
+  isActive: state.hasTag('active'),
   nodes: state.context.xynodes,
   edges: state.context.xyedges,
+})
+const selectorEq = (a: ReturnType<typeof selector>, b: ReturnType<typeof selector>) =>
+  a.initialized === b.initialized &&
+  a.isActive === b.isActive &&
+  shallowEqual(a.nodes, b.nodes) &&
+  shallowEqual(a.edges, b.edges)
+
+const RelationshipsBrowserXYFlow = memo(() => {
+  const xystore = useStoreApi<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>()
+  const browser = useRelationshipsBrowser()
+  const {
+    initialized,
+    isActive,
+    nodes,
+    edges,
+  } = useRelationshipsBrowserState(
+    selector,
+    selectorEq,
+  )
+
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.browser', [browser])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.xystore', [xystore])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.initialized, isActive', [initialized, isActive])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.nodes', [nodes])
+  // useLifecycleLogger('RelationshipsBrowserXYFlow.edges', [edges])
+
+  return (
+    <LayoutGroup>
+      <BaseXYFlow<Types.Node, Types.Edge>
+        id="relationships-browser"
+        nodes={nodes}
+        edges={edges}
+        className={clsx(initialized && isActive ? 'initialized' : 'not-initialized')}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        fitViewPadding={ViewPadding}
+        onInit={useCallbackRef((instance) => {
+          browser.send({ type: 'xyflow.init', instance, store: xystore })
+        })}
+        onNodeClick={useCallbackRef((e, node) => {
+          e.stopPropagation()
+          browser.send({ type: 'xyflow.nodeClick', node })
+        })}
+        onEdgeClick={useCallbackRef((e, edge) => {
+          e.stopPropagation()
+          browser.send({ type: 'xyflow.edgeClick', edge })
+        })}
+        onPaneClick={useCallbackRef((e) => {
+          e.stopPropagation()
+          browser.send({ type: 'xyflow.paneClick' })
+        })}
+        onDoubleClick={useCallbackRef(e => {
+          e.stopPropagation()
+          browser.send({ type: 'xyflow.paneDblClick' })
+        })}
+        onViewportResize={useCallbackRef(() => {
+          browser.send({ type: 'xyflow.resized' })
+        })}
+        onNodesChange={useCallbackRef((changes) => {
+          browser.send({ type: 'xyflow.applyNodeChages', changes })
+        })}
+        onEdgesChange={useCallbackRef((changes) => {
+          browser.send({ type: 'xyflow.applyEdgeChages', changes })
+        })}
+        nodesDraggable={false}
+        fitView={false}
+        pannable
+        zoomable
+      >
+        {initialized && <RelationshipsBrowserInner />}
+      </BaseXYFlow>
+    </LayoutGroup>
+  )
+})
+
+const selector2 = (state: SnapshotFrom<RelationshipsBrowserActorRef>) => ({
+  subjectId: state.context.subject,
   closeable: state.context.closeable,
   enableNavigationMenu: state.context.enableNavigationMenu,
 })
@@ -63,13 +141,9 @@ const RelationshipsBrowserInner = memo(() => {
   const browser = useRelationshipsBrowser()
   const {
     subjectId,
-    initialized,
-    scope,
-    nodes,
-    edges,
     closeable,
     enableNavigationMenu,
-  } = useRelationshipsBrowserState(selector)
+  } = useRelationshipsBrowserState(selector2)
 
   const layouted = useRelationshipsView(subjectId)
   const [historySubjectId, historyOps, { history, current }] = useStateHistory(subjectId)
@@ -93,76 +167,39 @@ const RelationshipsBrowserInner = memo(() => {
   const hasStepBack = current > 0
   const hasStepForward = current + 1 < history.length
 
+  // useLifecycleLogger('RelationshipsBrowserInner.browser', [browser])
+  // useLifecycleLogger('RelationshipsBrowserInner.layouted', [layouted])
+  // useLifecycleLogger('RelationshipsBrowserInner', [
+  //   historySubjectId,
+  //   subjectId,
+  //   closeable,
+  //   enableNavigationMenu,
+  // ])
+
   return (
-    <LayoutGroup>
-      <BaseXYFlow<Types.Node, Types.Edge>
-        id="relationships-browser"
-        nodes={nodes}
-        edges={edges}
-        className={clsx(initialized ? 'initialized' : 'not-initialized')}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        fitViewPadding={0.05}
-        onInit={useCallbackRef((instance) => {
-          browser.send({ type: 'xyflow.init', instance })
-        })}
-        onNodeClick={useCallbackRef((e, node) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.nodeClick', node })
-        })}
-        onEdgeClick={useCallbackRef((e, edge) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.edgeClick', edge })
-        })}
-        onPaneClick={useCallbackRef((e) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.paneClick' })
-        })}
-        onDoubleClick={useCallbackRef(e => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.paneDblClick' })
-        })}
-        onViewportResize={() => {
-          browser.send({ type: 'xyflow.resized' })
-        }}
-        onNodesChange={useCallbackRef((changes) => {
-          browser.send({ type: 'xyflow.applyNodeChages', changes })
-        })}
-        onEdgesChange={useCallbackRef((changes) => {
-          browser.send({ type: 'xyflow.applyEdgeChages', changes })
-        })}
-        nodesDraggable={false}
-        fitView={false}
-        pannable
-        zoomable
-      >
-        <TopLeftPanel
-          enableNavigationMenu={enableNavigationMenu}
-          subjectId={subjectId}
-          hasStepBack={hasStepBack}
-          hasStepForward={hasStepForward}
-          onStepBack={() => historyOps.back()}
-          onStepForward={() => historyOps.forward()}
-        />
-        {closeable && (
-          <Panel position="top-right">
-            <ActionIcon
-              variant="default"
-              color="gray"
-              // color="gray"
-              // size={'lg'}
-              // data-autofocus
-              // autoFocus
-              onClick={(e) => {
-                e.stopPropagation()
-                browser.close()
-              }}>
-              <IconX />
-            </ActionIcon>
-          </Panel>
-        )}
-      </BaseXYFlow>
-    </LayoutGroup>
+    <>
+      <TopLeftPanel
+        enableNavigationMenu={enableNavigationMenu}
+        subjectId={subjectId}
+        hasStepBack={hasStepBack}
+        hasStepForward={hasStepForward}
+        onStepBack={() => historyOps.back()}
+        onStepForward={() => historyOps.forward()}
+      />
+      {closeable && (
+        <Panel position="top-right">
+          <ActionIcon
+            variant="default"
+            color="gray"
+            onClick={(e) => {
+              e.stopPropagation()
+              browser.close()
+            }}>
+            <IconX />
+          </ActionIcon>
+        </Panel>
+      )}
+    </>
   )
 })
 

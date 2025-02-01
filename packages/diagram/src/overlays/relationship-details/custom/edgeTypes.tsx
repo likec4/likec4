@@ -36,11 +36,6 @@ export const edgeTypes = {
               }} />
           )}
         </EdgeLabel>
-        {
-          /* <EdgeLabel {...props}>
-
-        </EdgeLabel> */
-        }
       </EdgeContainer>
     )
   }),

@@ -1,5 +1,5 @@
 import { deepEqual as eq } from 'fast-equals'
-import { isDefined } from 'remeda'
+import { isDefined, omit } from 'remeda'
 import type { Base } from './types'
 
 function _update<E extends Base.Edge>(current: E[], update: E[]): E[] {
@@ -12,12 +12,13 @@ function _update<E extends Base.Edge>(current: E[], update: E[]): E[] {
         && eq(existing.sourceHandle ?? null, next.sourceHandle ?? null)
         && eq(existing.target, next.target)
         && eq(existing.targetHandle ?? null, next.targetHandle ?? null)
+        && eq(existing.zIndex ?? 0, next.zIndex ?? 0)
         && eq(existing.data, next.data)
       ) {
         return existing
       }
       return {
-        ...existing,
+        ...omit(existing, ['hidden', 'zIndex']),
         ...next,
         data: {
           ...existing.data,

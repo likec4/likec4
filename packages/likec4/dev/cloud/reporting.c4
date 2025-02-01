@@ -6,6 +6,7 @@ model {
       -> cloud.billing.subscriptions 'sync daily'
       -> amazon.rds.pg 'read data'
       -> cloud.backend.graphql 'read tenants'
+      -> cloud.backend.graphql 'read'
     }
 
   }

@@ -1,4 +1,4 @@
-import type { Color, DiagramNode, Fqn, RelationshipLineType, ViewId } from '@likec4/core'
+import type { Color, DiagramNode, Fqn, NonEmptyArray, RelationId, RelationshipLineType, ViewId } from '@likec4/core'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace RelationshipsBrowserTypes {
@@ -79,6 +79,7 @@ export namespace RelationshipsBrowserTypes {
   // Extend the edge types provided by SharedFlowTypes with RelationshipsOfEdgeData
 
   export type EdgeData = Base.EdgeData<{
+    relations: NonEmptyArray<RelationId>
     color: Color | undefined
     label: string | null
     navigateTo: ViewId | null

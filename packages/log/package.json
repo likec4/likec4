@@ -30,9 +30,12 @@
       }
     },
     "./browser": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/browser.mjs",
-      "require": "./dist/browser.cjs"
+      "sources": "./src/browser.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/browser.mjs",
+        "require": "./dist/browser.cjs"
+      }
     }
   },
   "publishConfig": {

@@ -11,6 +11,9 @@ export const nodePropsEqual = <P extends Record<string, unknown> = Base.NodeData
   && eq(prev.dragging ?? false, next.dragging ?? false)
   && eq(prev.width ?? 0, next.width ?? 0)
   && eq(prev.height ?? 0, next.height ?? 0)
+  && eq(prev.zIndex, next.zIndex)
+  && eq(prev.positionAbsoluteX, next.positionAbsoluteX)
+  && eq(prev.positionAbsoluteY, next.positionAbsoluteY)
   && eq(prev.data, next.data)
 )
 

@@ -2,6 +2,7 @@ import { ActionIcon, Box } from '@mantine/core'
 import { IconId } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 import * as css from './CompoundDetailsButton.css'
@@ -19,7 +20,7 @@ export function CompoundDetailsButton({
   onClick,
 }: CompoundDetailsButtonProps) {
   return (
-    <Box className={clsx(css.container, 'details-button')} onClick={stopPropagation}>
+    <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'details-button')} onClick={stopPropagation}>
       <Box
         component={m.div}
         className={clsx('nodrag nopan', css.actionIconWrapper)}

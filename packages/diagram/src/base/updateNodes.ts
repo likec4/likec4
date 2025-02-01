@@ -12,15 +12,16 @@ function _update<N extends Base.Node>(current: N[], updated: N[]): N[] {
         eq(existing.type, update.type)
         && eq(existingWidth, update.initialWidth)
         && eq(existingHeight, update.initialHeight)
+        && eq(existing.parentId ?? null, update.parentId ?? null)
         && eq(existing.hidden ?? false, update.hidden ?? false)
+        && eq(existing.zIndex ?? 0, update.zIndex ?? 0)
         && eq(existing.position, update.position)
         && eq(existing.data, update.data)
-        && eq(existing.parentId ?? null, update.parentId ?? null)
       ) {
         return existing
       }
       return {
-        ...omit(existing, ['measured', 'parentId']),
+        ...omit(existing, ['measured', 'parentId', 'hidden', 'zIndex']),
         ...update,
         // Force dimensions from update
         width: update.initialWidth,

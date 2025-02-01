@@ -290,8 +290,8 @@ function layout(
       type: 'relationship',
       source: source.id,
       target: target.id,
-      sourceHandle: target.id,
-      targetHandle: source.id,
+      sourceHandle: source.id + '_out' + (source.data.ports.out.length - 1),
+      targetHandle: target.id + '_in' + (target.data.ports.in.length - 1),
       data: {
         relationId: relation.id,
         color: relation.color,
@@ -309,15 +309,12 @@ function layout(
   const nodebounds = applyDagreLayout(ctx.g)
 
   // Sort ports
-  const sortedPorts = (ports: string[]) => {
-    if (ports.length < 2) {
-      return ports
-    }
+  const sortedPorts = (nodeId: string, type: 'in' | 'out', ports: string[]) => {
     return pipe(
       ports,
-      map(port => {
+      map((port, index) => {
         return {
-          port,
+          port: nodeId + '_' + type + index,
           topY: nodebounds(port).position.y,
         }
       }),
@@ -328,8 +325,8 @@ function layout(
 
   const xynodes = [...ctx.xynodes.values()].map((node) => {
     const { position, width, height } = nodebounds(node.id, node.parentId)
-    node.data.ports.in = sortedPorts(node.data.ports.in)
-    node.data.ports.out = sortedPorts(node.data.ports.out)
+    node.data.ports.in = sortedPorts(node.id, 'in', node.data.ports.in)
+    node.data.ports.out = sortedPorts(node.id, 'out', node.data.ports.out)
     if (node.type === 'element') {
       node.data.width = width
       node.data.height = height

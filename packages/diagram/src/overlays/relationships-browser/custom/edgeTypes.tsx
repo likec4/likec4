@@ -8,17 +8,36 @@ export const edgeTypes = {
   relationships: customEdge<RelationshipsBrowserTypes.EdgeData>((props) => {
     const { enableNavigateTo } = useEnabledFeature('NavigateTo')
     const {
-      sourceX,
-      targetY,
-      data: { navigateTo },
+      data: {
+        navigateTo,
+        relations,
+      },
     } = props
     const [svgPath, labelX, labelY] = getBezierPath(props)
     const diagram = useDiagram()
+
+    const edgeProps = relations.length > 1
+      ? {
+        ...props,
+        data: {
+          ...props.data,
+          line: 'solid',
+          color: 'amber',
+        } satisfies RelationshipsBrowserTypes.EdgeData,
+      }
+      : props
+
     return (
-      <EdgeContainer {...props}>
-        <EdgePath {...props} svgPath={svgPath} />
+      <EdgeContainer {...edgeProps}>
+        <EdgePath
+          {...edgeProps}
+          svgPath={svgPath}
+          {...relations.length > 1 && {
+            strokeWidth: 5,
+          }}
+        />
         <EdgeLabel
-          edgeProps={props}
+          edgeProps={edgeProps}
           labelPosition={{
             x: labelX,
             y: labelY,

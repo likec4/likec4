@@ -2,6 +2,7 @@ import { ActionIcon, Box } from '@mantine/core'
 import { IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 import * as css from './CompoundActionButton.css'
@@ -19,7 +20,7 @@ export function CompoundActionButton({
   onClick,
 }: CompoundActionButtonProps) {
   return (
-    <Box className={clsx(css.container, 'compound-action')}>
+    <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'compound-action')}>
       <Box
         className={clsx('nodrag nopan', css.actionButton)}
         component={m.div}

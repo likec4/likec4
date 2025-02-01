@@ -1,6 +1,7 @@
 import { ActionIcon, Box } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
 import * as css from './ElementActionButtons.css'
@@ -21,7 +22,7 @@ export function ElementActionButtons({
     return null
   }
   return (
-    <Box className={css.container}>
+    <Box className={clsx(css.container, hiddenIfZoomTooSmall)}>
       <Box
         component={m.div}
         layoutRoot

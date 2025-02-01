@@ -46,11 +46,12 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     outputChannel,
   )
 
-  const serverModule = path.join(
-    context.extensionPath,
-    'dist',
-    'node',
-    'language-server.js',
+  const serverModule = context.asAbsolutePath(
+    path.join(
+      'dist',
+      'node',
+      'language-server.js',
+    ),
   )
 
   // If the extension is launched in debug mode then the debug server options are used
@@ -106,6 +107,12 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   documentSelector.push({ language: languageId, scheme: 'vscode-remote' })
   documentSelector.push({ language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme })
 
+  let fileSystemWatcher: vscode.FileSystemWatcher | undefined
+  if (!isVirtual()) {
+    fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
+    context.subscriptions.push(fileSystemWatcher)
+  }
+
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     revealOutputChannelOn: isDev ? RevealOutputChannelOn.Info : RevealOutputChannelOn.Warn,
@@ -120,6 +127,11 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       },
     },
     progressOnInitialization: true,
+    synchronize: fileSystemWatcher
+      ? {
+        fileEvents: fileSystemWatcher,
+      }
+      : {},
   }
   logger.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)
 
