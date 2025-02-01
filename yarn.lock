@@ -2094,7 +2094,7 @@ __metadata:
     execa: "npm:^9.3.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
-    p-limit: "npm:^6.1.0"
+    p-limit: "npm:^6.2.0"
     remeda: "npm:^2.19.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
@@ -2163,7 +2163,7 @@ __metadata:
     monaco-editor-wrapper: "npm:5.5.3"
     monaco-languageclient: "npm:8.8.3"
     nanoid: "npm:^5.0.9"
-    p-limit: "npm:^6.1.0"
+    p-limit: "npm:^6.2.0"
     react: "npm:~19.0.0"
     react-dom: "npm:~19.0.0"
     react-error-boundary: "npm:^4.1.2"
@@ -9043,7 +9043,7 @@ __metadata:
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:0.11.3"
     npm-run-all2: "npm:^7.0.1"
-    p-limit: "npm:^6.1.0"
+    p-limit: "npm:^6.2.0"
     package-up: "npm:^5.0.0"
     playwright: "npm:1.49.1"
     postcss: "npm:^8.4.49"
@@ -11004,6 +11004,15 @@ __metadata:
   dependencies:
     yocto-queue: "npm:^1.1.1"
   checksum: 10c0/40af29461206185a81bdc971ed499d97ceb344114fd21420db95debd9c979b6c02d66a41c321246d09245a51e68410e13df92622cc8c0130f87c6bd81a15d777
+  languageName: node
+  linkType: hard
+
+"p-limit@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "p-limit@npm:6.2.0"
+  dependencies:
+    yocto-queue: "npm:^1.1.1"
+  checksum: 10c0/448bf55a1776ca1444594d53b3c731e68cdca00d44a6c8df06a2f6e506d5bbd540ebb57b05280f8c8bff992a630ed782a69612473f769a7473495d19e2270166
   languageName: node
   linkType: hard
 

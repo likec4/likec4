@@ -56,7 +56,7 @@
     "execa": "^9.3.1",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
-    "p-limit": "^6.1.0",
+    "p-limit": "^6.2.0",
     "remeda": "^2.19.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
