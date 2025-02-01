@@ -1527,12 +1527,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-collapsible-sections@npm:^0.38.3":
-  version: 0.38.3
-  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.38.3"
+"@expressive-code/core@npm:^0.40.1":
+  version: 0.40.1
+  resolution: "@expressive-code/core@npm:0.40.1"
   dependencies:
-    "@expressive-code/core": "npm:^0.38.3"
-  checksum: 10c0/bfb7a823c86a1e8c37ad0a674bd8e7c50c46500dd58ec910e3546fbcdf0cab6084de73beae94c6357b4fd36d453a7cc8f25395a0e904d27682f13db917b24958
+    "@ctrl/tinycolor": "npm:^4.0.4"
+    hast-util-select: "npm:^6.0.2"
+    hast-util-to-html: "npm:^9.0.1"
+    hast-util-to-text: "npm:^4.0.1"
+    hastscript: "npm:^9.0.0"
+    postcss: "npm:^8.4.38"
+    postcss-nested: "npm:^6.0.1"
+    unist-util-visit: "npm:^5.0.0"
+    unist-util-visit-parents: "npm:^6.0.1"
+  checksum: 10c0/60cf7e2fe4303f13fb91d75f35a793eecac43156aa8a6da6e898d55c63cafee9bf0d02d5d65d00f76e883eb7b5c5390030e124bbae3f2e50f8b3b77c1e3aa924
+  languageName: node
+  linkType: hard
+
+"@expressive-code/plugin-collapsible-sections@npm:^0.40.1":
+  version: 0.40.1
+  resolution: "@expressive-code/plugin-collapsible-sections@npm:0.40.1"
+  dependencies:
+    "@expressive-code/core": "npm:^0.40.1"
+  checksum: 10c0/bc1f1133ebabd67b1571edbb4580c05ca8552d45b852e966068f4ae708f9bb2151efc925cc2491bf4e5c2269bf9d662d9f3d6e33f1b02ba4061ed34823443be4
   languageName: node
   linkType: hard
 
@@ -1545,12 +1562,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expressive-code/plugin-line-numbers@npm:^0.38.3":
-  version: 0.38.3
-  resolution: "@expressive-code/plugin-line-numbers@npm:0.38.3"
+"@expressive-code/plugin-line-numbers@npm:^0.40.1":
+  version: 0.40.1
+  resolution: "@expressive-code/plugin-line-numbers@npm:0.40.1"
   dependencies:
-    "@expressive-code/core": "npm:^0.38.3"
-  checksum: 10c0/f875173c3c8383b1476ef2b3339076cc97c95b029f09e2eafe38d4f4d80850a809c642383b543ac2b08ea42e83e960382349390fd94d50d3c594774bceb1867f
+    "@expressive-code/core": "npm:^0.40.1"
+  checksum: 10c0/c0da387a37be5c62e5511fd6d5237df0445de00c0f2a257d646ccd4cb7e819af63cfa4dff55312bdab62d03ee8f068895a10e178a6ab20b025326cf450c4d14b
   languageName: node
   linkType: hard
 
@@ -1986,8 +2003,8 @@ __metadata:
     "@astrojs/check": "npm:^0.9.4"
     "@astrojs/react": "npm:^3.6.3"
     "@astrojs/starlight": "npm:^0.29.2"
-    "@expressive-code/plugin-collapsible-sections": "npm:^0.38.3"
-    "@expressive-code/plugin-line-numbers": "npm:^0.38.3"
+    "@expressive-code/plugin-collapsible-sections": "npm:^0.40.1"
+    "@expressive-code/plugin-line-numbers": "npm:^0.40.1"
     "@fontsource/ibm-plex-sans": "npm:^5.1.1"
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:19.0.8"
