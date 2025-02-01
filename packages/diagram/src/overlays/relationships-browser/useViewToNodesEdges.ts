@@ -163,18 +163,24 @@ export function viewToNodesEdge(
       continue
     }
 
+    if (!hasAtLeast(edge.relations, 1)) {
+      console.error('edge should have at least 1 relation', edge)
+      continue
+    }
+
     xyedges.push({
       id,
       type: 'relationships',
       source: ns + source,
       target: ns + target,
-      sourceHandle: ns + target,
-      targetHandle: ns + source,
+      sourceHandle: edge.sourceHandle,
+      targetHandle: edge.targetHandle,
       zIndex: ZIndexes.Edge,
       // selectable: selectable,
       // hidden: !visiblePredicate(edge),
       deletable: false,
       data: {
+        relations: edge.relations,
         color: edge.color ?? 'gray',
         label: edge.label,
         navigateTo: edge.navigateTo ?? null,

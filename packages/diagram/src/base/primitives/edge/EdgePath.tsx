@@ -18,6 +18,7 @@ type Data = UndefinedOnPartialDeep<
 
 type EdgePathProps = EdgeProps<Data> & {
   svgPath: string
+  strokeWidth?: number
   onEdgePointerDown?: PointerEventHandler<SVGGElement> | undefined
 }
 
@@ -29,6 +30,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
     tail,
     head,
   },
+  strokeWidth,
   svgPath,
   style,
   interactionWidth,
@@ -78,6 +80,7 @@ export const EdgePath = forwardRef<SVGPathElement, EdgePathProps>(({
           className={clsx('react-flow__edge-path', css.cssEdgePath)}
           d={svgPath}
           style={style}
+          strokeWidth={strokeWidth}
           strokeLinecap={'round'}
           strokeDasharray={strokeDasharray}
           markerStart={MarkerStart ? `url(#start${id})` : undefined}

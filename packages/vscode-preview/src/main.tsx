@@ -1,23 +1,13 @@
-import '@fontsource/ibm-plex-sans/latin-400.css'
-import '@fontsource/ibm-plex-sans/latin-500.css'
-import '@fontsource/ibm-plex-sans/latin-600.css'
-import '@fontsource/ibm-plex-sans/latin-ext-400.css'
-import '@fontsource/ibm-plex-sans/latin-ext-500.css'
-import '@fontsource/ibm-plex-sans/latin-ext-600.css'
-import '@fontsource/ibm-plex-sans/cyrillic-400.css'
-import '@fontsource/ibm-plex-sans/cyrillic-500.css'
-import '@fontsource/ibm-plex-sans/cyrillic-600.css'
-import '@fontsource/ibm-plex-sans/cyrillic-ext-400.css'
-import '@fontsource/ibm-plex-sans/cyrillic-ext-500.css'
-import '@fontsource/ibm-plex-sans/cyrillic-ext-600.css'
-
-import '@mantine/core/styles.css'
-import '@mantine/spotlight/styles.css'
+import '@fontsource/ibm-plex-sans/400.css'
+import '@fontsource/ibm-plex-sans/500.css'
+import '@fontsource/ibm-plex-sans/600.css'
 
 import { Box, MantineProvider, Notification } from '@mantine/core'
+import '@mantine/core/styles.css'
+import '@mantine/spotlight/styles.css'
 import { IconX } from '@tabler/icons-react'
 import ReactDOM from 'react-dom/client'
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
+import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { isError } from 'remeda'
 import App from './App'
 import { LikeC4Context } from './Context'
@@ -34,7 +24,7 @@ const Fallback = ({ error }: FallbackProps) => {
         icon={<IconX style={{ width: 20, height: 20 }} />}
         color={'red'}
         style={{
-          whiteSpace: 'preserve-breaks'
+          whiteSpace: 'preserve-breaks',
         }}
         withCloseButton={false}>
         {isError<Error>(error) ? (error.stack ?? error.message) : `Something went wrong:\n${error}`}
@@ -50,5 +40,5 @@ ReactDOM.createRoot(root).render(
         <App />
       </LikeC4Context>
     </ErrorBoundary>
-  </MantineProvider>
+  </MantineProvider>,
 )

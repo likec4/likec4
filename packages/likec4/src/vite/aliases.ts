@@ -8,6 +8,7 @@ export function viteAliases() {
     'likec4/icons': resolve(pkg, '../icons'),
     'likec4/react': resolve(pkg, 'app/react/components'),
     'likec4/model': resolve(pkg, 'src/model'),
+    '@likec4/log': resolve(pkg, '../log/src/browser.ts'),
     // '@likec4/core/model': resolve(pkg, '../core/src/model'),
     // '@likec4/core/types': resolve(pkg, '../core/src/types'),
     // '@likec4/core': resolve(pkg, '../core/src'),

@@ -1,5 +1,4 @@
-import { type BBox, type DiagramView, type Fqn, delay, invariant, isAncestor, nonNullable } from '@likec4/core'
-import { logger } from '@likec4/log/browser'
+import { type BBox, type DiagramView, type Fqn, delay, invariant, nonNullable } from '@likec4/core'
 import {
   type EdgeChange,
   type NodeChange,
@@ -8,7 +7,7 @@ import {
   applyNodeChanges,
   useStoreApi,
 } from '@xyflow/react'
-import { getNodeDimensions, getViewportForBounds } from '@xyflow/system'
+import { type InternalNodeUpdate, getNodeDimensions, getViewportForBounds } from '@xyflow/system'
 import { isNullish, omit, prop } from 'remeda'
 import {
   type ActorLogic,
@@ -20,7 +19,6 @@ import {
   cancel,
   enqueueActions,
   fromPromise,
-  log,
   raise,
   setup,
 } from 'xstate'
@@ -31,6 +29,7 @@ import { updateNodes } from '../../base/updateNodes'
 import { centerXYInternalNode } from '../../utils'
 import type { LayoutRelationshipsViewResult } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes } from './_types'
+import { ViewPadding } from './const'
 import { viewToNodesEdge } from './useViewToNodesEdges'
 
 type XYFLowInstance = ReactFlowInstance<RelationshipsBrowserTypes.Node, RelationshipsBrowserTypes.Edge>
@@ -79,6 +78,7 @@ export type Events =
   | { type: 'xyflow.resized' }
   | { type: 'xyflow.edgeMouseEnter'; edge: RelationshipsBrowserTypes.Edge }
   | { type: 'xyflow.edgeMouseLeave'; edge: RelationshipsBrowserTypes.Edge }
+  | { type: 'xyflow.updateNodeInternals' }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'navigate.to'; subject: Fqn; fromNode?: string | undefined }
   | {
@@ -97,6 +97,26 @@ export const relationshipsBrowserActor = setup({
     events: {} as Events,
   },
   actions: {
+    'xyflow:updateNodeInternals': ({ context }) => {
+      invariant(context.xystore, 'xystore is not initialized')
+      const { domNode, updateNodeInternals } = context.xystore.getState()
+      const nodeIds = new Set(context.xyedges.flatMap((e) => [e.source, e.target]))
+
+      if (nodeIds.size === 0 || !domNode) {
+        return
+      }
+
+      const updates = new Map<string, InternalNodeUpdate>()
+
+      for (const updateId of nodeIds) {
+        const nodeElement = domNode.querySelector(`.react-flow__node[data-id="${updateId}"]`) as HTMLDivElement
+        if (nodeElement) {
+          updates.set(updateId, { id: updateId, nodeElement, force: true })
+        }
+      }
+
+      requestAnimationFrame(() => updateNodeInternals(updates, { triggerFitView: false }))
+    },
     'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
       let {
         duration = 450,
@@ -109,15 +129,17 @@ export const relationshipsBrowserActor = setup({
       const maxZoom = Math.max(xyflow.getZoom(), 1)
       if (bounds) {
         const { width, height } = xystore.getState()
-        const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, 0.05)
-        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined)
+        const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
+        requestAnimationFrame(() => xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined))
       } else {
-        xyflow.fitView({
-          minZoom: MinZoom,
-          maxZoom,
-          padding: 0.05,
-          ...(duration > 0 && { duration }),
-        })
+        requestAnimationFrame(() =>
+          xyflow.fitView({
+            minZoom: MinZoom,
+            maxZoom,
+            padding: ViewPadding,
+            ...(duration > 0 && { duration }),
+          })
+        )
       }
     },
   },
@@ -143,9 +165,8 @@ export const relationshipsBrowserActor = setup({
         xystore,
         update,
       } = input
-      const {
+      let {
         nodes: currentNodes,
-        edges: currentEdges,
         setNodes,
         setEdges,
         width,
@@ -153,33 +174,33 @@ export const relationshipsBrowserActor = setup({
       } = xystore.getState()
       const next = viewToNodesEdge(update)
 
-      const updateCurrent = () => {
+      const updateXYData = () => {
         const { nodes, edges } = xystore.getState()
         return {
           xynodes: updateNodes(nodes, next.xynodes),
           xyedges: updateEdges(edges, next.xyedges),
         }
       }
-      // next.xynodes = updateNodes(currentNodes, next.xynodes.map(Base.setDimmed(false)))
-      // next.xyedges = updateEdges(currentEdges, next.xyedges.map(Base.setDimmed(false)))
 
-      const nextSubjectNode = findRootSubject(next.xynodes)
+      let zoom = xyflow.getZoom()
+      const maxZoom = Math.max(zoom, 1)
+      const nextviewport = getViewportForBounds(update.bounds, width, height, MinZoom, maxZoom, ViewPadding)
+
+      const nextSubjectNode = next.xynodes.find(n =>
+        n.type !== 'empty' && n.data.column === 'subjects' && n.data.fqn === subjectId
+      ) ?? findRootSubject(next.xynodes)
+      if (!nextSubjectNode || nextSubjectNode.type === 'empty') {
+        xyflow.setViewport(nextviewport, { duration: 250 })
+        return updateXYData()
+      }
       const currentSubjectNode = findRootSubject(currentNodes)
-
-      const parent = nonNullable(self._parent) as BaseActorRef<Events>
-
       //  If subject node is the same, don't animate
-      if (currentSubjectNode && nextSubjectNode?.data.fqn === currentSubjectNode.data.fqn) {
-        return updateCurrent()
+      if (currentSubjectNode && nextSubjectNode.data.fqn === currentSubjectNode.data.fqn) {
+        xyflow.setViewport(nextviewport, { duration: 250 })
+        return updateXYData()
       }
 
-      if (!nextSubjectNode) {
-        console.error('Subject node not found')
-      } else if (nextSubjectNode.data.fqn !== subjectId) {
-        console.error(`Subject node mismatch, expected: ${subjectId} got: ${nextSubjectNode.data.fqn}`)
-      }
-
-      const nextSubjectCenter = nextSubjectNode && {
+      const nextSubjectCenter = {
         x: nextSubjectNode.position.x + (nextSubjectNode.initialWidth ?? 0) / 2,
         y: nextSubjectNode.position.y + (nextSubjectNode.initialHeight ?? 0) / 2,
       }
@@ -189,7 +210,8 @@ export const relationshipsBrowserActor = setup({
         : currentNodes.find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subjectId)
 
       if (!existingNode || !nextSubjectCenter || !nextSubjectNode || !currentSubjectNode) {
-        return updateCurrent()
+        xyflow.setViewport(nextviewport, { duration: 250 })
+        return updateXYData()
       }
 
       // Center of current subject
@@ -200,95 +222,76 @@ export const relationshipsBrowserActor = setup({
       const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
       const existingDimensions = getNodeDimensions(existingInternalNode)
 
-      logger.debug('layouter - Dim all nodes except the existing node')
       // Dim all nodes except the existing node
-      logger.debug('layouter - setNodes')
-      setNodes(currentNodes.map(n => {
-        if (n.id !== existingNode.id) {
+      // Hide nested nodes
+      const nested = new Set<string>()
+      currentNodes.forEach(n => {
+        if (n.id === existingNode.id) {
+          return
+        }
+        if (n.data.column === 'subjects') {
+          nested.add(n.id)
+          return
+        }
+        if (n.parentId && (n.parentId === existingNode.id || nested.has(n.parentId))) {
+          nested.add(n.id)
+        }
+      })
+      currentNodes = updateNodes(
+        currentNodes,
+        currentNodes.flatMap(n => {
+          if (nested.has(n.id)) {
+            return []
+          }
+          if (n.id !== existingNode.id) {
+            return {
+              ...n,
+              data: {
+                ...n.data,
+                hovered: false,
+                dimmed: n.data.column === 'subjects' ? 'immediate' : true,
+              },
+            } as RelationshipsBrowserTypes.Node
+          }
+          // Move existing node
           return {
-            ...n,
+            ...omit(n, ['parentId']),
+            position: {
+              x: currentSubjectCenter.x - existingDimensions.width / 2,
+              y: currentSubjectCenter.y - existingDimensions.height / 2,
+            },
+            zIndex: ZIndexes.Max,
+            hidden: false,
             data: {
               ...n.data,
-              dimmed: 'immediate' as const,
-              // dimmed: n.data.column === 'subjects' ? 'immediate' : true,
-              // dimmed: 'immediate',
+              hovered: false,
+              dimmed: false,
             },
-            // hidden: n.data.column === 'subjects',
           } as RelationshipsBrowserTypes.Node
-        }
-        // Move existing node
-        return {
-          ...omit(n, ['parentId']),
-          position: {
-            x: currentSubjectCenter.x - existingDimensions.width / 2,
-            y: currentSubjectCenter.y - existingDimensions.height / 2,
-          },
-          zIndex: ZIndexes.Max,
-          data: {
-            ...n.data,
-            dimmed: false,
-          },
-        } as RelationshipsBrowserTypes.Node
-      }))
-      logger.debug('layouter - setEdges')
-      setEdges(currentEdges.map(e => ({
-        ...e,
-        data: {
-          ...e.data,
-          dimmed: 'immediate' as const,
-        },
-        hidden: e.source === existingNode.id
-          || e.target === existingNode.id
-          || isAncestor(existingNode.id, e.source)
-          || isAncestor(existingNode.id, e.target),
-      })))
-
-      const nextzoom = getViewportForBounds(input.update.bounds, width, height, MinZoom, 1, 0.1).zoom
+        }),
+      )
+      const parent = nonNullable(self._parent) as BaseActorRef<Events>
+      parent.send({
+        type: 'update.xydata',
+        xynodes: currentNodes,
+        xyedges: [],
+      })
 
       // Pick the smaller zoom level
-      const zoom = Math.min(
-        xyflow.getViewport().zoom,
-        nextzoom,
+      zoom = Math.min(
+        zoom,
+        nextviewport.zoom,
       )
-      // allow frameer to render
-      await delay(150)
-
+      // allow framer to render
+      await delay(180)
       next.xynodes = next.xynodes.map(Base.setDimmed(false))
-      next.xyedges = next.xyedges.map(Base.setDimmed(false))
 
       if (signal.aborted) {
-        return updateCurrent()
+        return updateXYData()
       }
-
-      logger.debug('layouter.setCenter animate')
-      await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 250 })
-
-      if (signal.aborted) {
-        return updateCurrent()
-      }
-
-      logger.debug('layouter.setCenter istant')
+      await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 350 })
       xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
-      const final = updateCurrent()
-      // requestAnimationFrame(() => {
-      logger.debug('layouter - setNodes')
-      setNodes(final.xynodes)
-      logger.debug('layouter - setEdges')
-      setEdges(final.xyedges)
-      // })
-
-      await delay(100)
-
-      // parent.send({
-      //   type: 'set.nodes.edges',
-      //   xynodes: next.xynodes.map(Base.setDimmed(false)),
-      //   xyedges: next.xyedges.map(Base.setDimmed(false)),
-      //   layouted: input.update,
-      // })
-
-      // await delay(100)
-      logger.debug('layouter - done')
-      return final
+      return updateXYData()
     }),
   },
 }).createMachine({
@@ -345,9 +348,6 @@ export const relationshipsBrowserActor = setup({
       states: {
         'idle': {},
         'layouting': {
-          entry: [
-            log('enter layouting'),
-          ],
           invoke: {
             id: 'layouter',
             src: 'layouter',
@@ -363,30 +363,30 @@ export const relationshipsBrowserActor = setup({
             onDone: {
               target: 'idle',
               actions: [
-                log('layouting.onDone'),
                 assign({
                   xynodes: ({ event }) => event.output.xynodes,
                   xyedges: ({ event }) => event.output.xyedges,
                   navigateFromNode: null,
                 }),
-                raise({ type: 'fitDiagram' }, { delay: 50 }),
+                raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 }),
+                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 }),
+                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 250 }),
+                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 500 }),
               ],
             },
           },
           on: {
             'update.xydata': {
-              actions: [
-                assign({
-                  xynodes: ({ event }) => event.xynodes,
-                  xyedges: ({ event }) => event.xyedges,
-                }),
-              ],
+              actions: assign({
+                xynodes: ({ event }) => event.xynodes,
+                xyedges: ({ event }) => event.xyedges,
+              }),
             },
             'xyflow.applyEdgeChages': {
-              actions: log('layouting: ignore xyflow.applyEdgeChages'),
+              // actions: log('layouting: ignore xyflow.applyEdgeChages'),
             },
             'xyflow.applyNodeChages': {
-              actions: log('layouting: ignore xyflow.applyNodeChages'),
+              // actions: log('layouting: ignore xyflow.applyNodeChages'),
             },
           },
         },
@@ -418,30 +418,26 @@ export const relationshipsBrowserActor = setup({
           actions: 'xyflow:fitDiagram',
         },
         'update.view': {
-          actions: [
-            assign({
-              layouted: ({ event }) => event.layouted,
-            }),
-            log('update.view'),
-          ],
+          actions: assign({
+            layouted: ({ event }) => event.layouted,
+          }),
           target: '.layouting',
-          // actions: enqueueActions(({ context, event, enqueue }) => {
-          //   const updated = viewToNodesEdge(event.layouted)
-          //   enqueue.assign({
-          //     layouted: event.layouted,
-          //     xynodes: updateNodes(context.xynodes, updated.xynodes),
-          //     xyedges: updateEdges(context.xyedges, updated.xyedges),
-          //   })
-          //   enqueue.raise({ type: 'fitDiagram' }, { delay: 50 })
-          // }),
         },
-        // 'set.nodes.edges': {
-        //   actions: assign({
-        //     xynodes: ({ event, context }) => updateNodes(context.xynodes, event.xynodes),
-        //     xyedges: ({ event, context }) => updateEdges(context.xyedges, event.xyedges),
-        //     layouted: ({ event, context }) => event.layouted ?? context.layouted,
-        //   }),
-        // },
+        'xyflow.updateNodeInternals': {
+          actions: 'xyflow:updateNodeInternals',
+        },
+        'fitDiagram': {
+          actions: {
+            type: 'xyflow:fitDiagram',
+            params: prop('event'),
+          },
+        },
+        'xyflow.resized': {
+          actions: [
+            cancel('fitDiagram'),
+            raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 300 }),
+          ],
+        },
         'close': {
           guard: 'closeable',
           target: 'closed',
@@ -458,22 +454,9 @@ export const relationshipsBrowserActor = setup({
     },
   },
   on: {
-    'fitDiagram': {
-      actions: {
-        type: 'xyflow:fitDiagram',
-        params: prop('event'),
-      },
-    },
-    'xyflow.resized': {
-      actions: [
-        cancel('fitDiagram'),
-        raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 200 }),
-      ],
-    },
     'xyflow.applyNodeChages': {
       actions: assign({
         xynodes: ({ context, event }) => {
-          logger.debug('xyflow.applyNodeChages', event.changes)
           return applyNodeChanges(event.changes, context.xynodes)
         },
       }),
@@ -481,14 +464,22 @@ export const relationshipsBrowserActor = setup({
     'xyflow.applyEdgeChages': {
       actions: assign({
         xyedges: ({ context, event }) => {
-          logger.debug('xyflow.applyEdgeChanges', event.changes)
           return applyEdgeChanges(event.changes, context.xyedges)
         },
       }),
     },
   },
 }) as unknown as ActorLogic<
-  MachineSnapshot<Context, Events, any, 'initializing' | 'waiting-data' | 'active' | 'closed', 'active', any, any, any>,
+  MachineSnapshot<
+    Context,
+    Events,
+    any,
+    'initializing' | 'waiting-data' | 'closed' | { active: 'idle' | 'layouting' },
+    'active',
+    any,
+    any,
+    any
+  >,
   Events,
   Input,
   any,

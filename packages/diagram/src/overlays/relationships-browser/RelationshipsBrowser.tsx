@@ -14,6 +14,7 @@ import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useRelationshipsView } from './-useRelationshipsView'
 import type { RelationshipsBrowserTypes, RelationshipsBrowserTypes as Types } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
+import { ViewPadding } from './const'
 import { edgeTypes } from './custom/edgeTypes'
 import { nodeTypes } from './custom/nodeTypes'
 import {
@@ -32,14 +33,14 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
   //   return null
   // }
   const initialRef = useRef<{
-    defaultNodes: Types.Node[]
-    defaultEdges: Types.Edge[]
+    initialNodes: Types.Node[]
+    initialEdges: Types.Edge[]
   }>(null)
 
   if (initialRef.current == null) {
     initialRef.current = {
-      defaultNodes: [],
-      defaultEdges: [],
+      initialNodes: [],
+      initialEdges: [],
     }
   }
 
@@ -109,7 +110,7 @@ const RelationshipsBrowserXYFlow = memo(() => {
         className={clsx(initialized && isActive ? 'initialized' : 'not-initialized')}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        fitViewPadding={0.05}
+        fitViewPadding={ViewPadding}
         onInit={useCallbackRef((instance) => {
           browser.send({ type: 'xyflow.init', instance, store: xystore })
         })}
