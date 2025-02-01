@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { isNumber, isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
+import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
 import { ZIndexes } from '../../const'
 import type { EdgeProps } from '../../types'
 import * as css from './EdgeLabel.css'
@@ -59,6 +60,7 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
     children,
     ...rest
   }, ref) => {
+    const isZoomTooSmall = useIsZoomTooSmall()
     const stepNum = isStepEdgeId(id) ? extractStep(id) : null
 
     let zIndex = ZIndexes.Edge
@@ -70,7 +72,7 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
     let labelX = labelXY?.x ?? labelBBox?.x,
       labelY = labelXY?.y ?? labelBBox?.y
 
-    if (labelX === undefined || labelY === undefined) {
+    if (labelX === undefined || labelY === undefined || isZoomTooSmall) {
       return null
     }
 

@@ -1,6 +1,7 @@
 import { type DiagramNode, type ElementShape, nonexhaustive } from '@likec4/core'
+import clsx from 'clsx'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { toDomPrecision } from '../../../utils/xyflow'
-import type { NodeProps } from '../../types'
 import * as css from './ElementShape.css'
 
 export function cylinderSVGPath(diameter: number, height: number, tilt = 0.065) {
@@ -184,7 +185,7 @@ export function ElementShape(
   return (
     <>
       {isMultiple && (
-        <svg className={css.shapeSvgMultiple} viewBox={`0 0 ${w} ${h}`}>
+        <svg className={clsx(css.shapeSvgMultiple, hiddenIfZoomTooSmall)} viewBox={`0 0 ${w} ${h}`}>
           <ElementShapeSvg shape={data.shape} w={w} h={h} />
         </svg>
       )}
@@ -222,5 +223,5 @@ export function SelectedIndicator({ shape, w, h }: ElementShapeProps) {
       break
     }
   }
-  return <g className={css.indicator}>{svg}</g>
+  return <g className={clsx(css.indicator, hiddenIfZoomTooSmall)}>{svg}</g>
 }

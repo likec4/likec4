@@ -4,6 +4,7 @@ import { assignInlineVars } from '@vanilla-extract/dynamic'
 import clsx from 'clsx'
 import { isNumber, isTruthy } from 'remeda'
 import { IconRenderer } from '../../../context/IconRenderer'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import type { NodeProps } from '../../types'
 import * as css from './ElementTitle.css'
 
@@ -57,7 +58,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         {data.technology && (
           <Text
             component="div"
-            className={clsx(css.technology, 'likec4-element-technology')}>
+            className={clsx(css.technology, hiddenIfZoomTooSmall, 'likec4-element-technology')}>
             {data.technology}
           </Text>
         )}

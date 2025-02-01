@@ -181,6 +181,7 @@ export const relationshipsBrowserActor = setup({
           xyedges: updateEdges(edges, next.xyedges),
         }
       }
+      const parent = nonNullable(self._parent) as BaseActorRef<Events>
 
       let zoom = xyflow.getZoom()
       const maxZoom = Math.max(zoom, 1)
@@ -189,29 +190,23 @@ export const relationshipsBrowserActor = setup({
       const nextSubjectNode = next.xynodes.find(n =>
         n.type !== 'empty' && n.data.column === 'subjects' && n.data.fqn === subjectId
       ) ?? findRootSubject(next.xynodes)
-      if (!nextSubjectNode || nextSubjectNode.type === 'empty') {
-        xyflow.setViewport(nextviewport, { duration: 250 })
-        return updateXYData()
-      }
       const currentSubjectNode = findRootSubject(currentNodes)
-      //  If subject node is the same, don't animate
-      if (currentSubjectNode && nextSubjectNode.data.fqn === currentSubjectNode.data.fqn) {
-        xyflow.setViewport(nextviewport, { duration: 250 })
+
+      const existingNode = navigateFromNode
+        ? currentNodes.find(n => n.id === navigateFromNode)
+        : currentNodes.find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subjectId)
+
+      if (
+        !nextSubjectNode || !existingNode || nextSubjectNode.type === 'empty' || !currentSubjectNode ||
+        nextSubjectNode.data.fqn === currentSubjectNode.data.fqn
+      ) {
+        xyflow.setViewport(nextviewport)
         return updateXYData()
       }
 
       const nextSubjectCenter = {
         x: nextSubjectNode.position.x + (nextSubjectNode.initialWidth ?? 0) / 2,
         y: nextSubjectNode.position.y + (nextSubjectNode.initialHeight ?? 0) / 2,
-      }
-
-      const existingNode = navigateFromNode
-        ? currentNodes.find(n => n.id === navigateFromNode)
-        : currentNodes.find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subjectId)
-
-      if (!existingNode || !nextSubjectCenter || !nextSubjectNode || !currentSubjectNode) {
-        xyflow.setViewport(nextviewport, { duration: 250 })
-        return updateXYData()
       }
 
       // Center of current subject
@@ -248,7 +243,6 @@ export const relationshipsBrowserActor = setup({
               ...n,
               data: {
                 ...n.data,
-                hovered: false,
                 dimmed: n.data.column === 'subjects' ? 'immediate' : true,
               },
             } as RelationshipsBrowserTypes.Node
@@ -264,13 +258,11 @@ export const relationshipsBrowserActor = setup({
             hidden: false,
             data: {
               ...n.data,
-              hovered: false,
               dimmed: false,
             },
           } as RelationshipsBrowserTypes.Node
         }),
       )
-      const parent = nonNullable(self._parent) as BaseActorRef<Events>
       parent.send({
         type: 'update.xydata',
         xynodes: currentNodes,
