@@ -2181,7 +2181,7 @@ __metadata:
     vscode-languageserver: "npm:~9.0.1"
     vscode-languageserver-types: "npm:~3.17.5"
     vscode-uri: "npm:~3.0.8"
-    zustand: "npm:^4.5.5"
+    zustand: "npm:^4.5.6"
   languageName: unknown
   linkType: soft
 
@@ -14369,7 +14369,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.2.0, use-sync-external-store@npm:^1.4.0":
+"use-sync-external-store@npm:^1.2.0, use-sync-external-store@npm:^1.2.2, use-sync-external-store@npm:^1.4.0":
   version: 1.4.0
   resolution: "use-sync-external-store@npm:1.4.0"
   peerDependencies:
@@ -15258,7 +15258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.4.0, zustand@npm:^4.5.5":
+"zustand@npm:^4.4.0":
   version: 4.5.5
   resolution: "zustand@npm:4.5.5"
   dependencies:
@@ -15275,6 +15275,26 @@ __metadata:
     react:
       optional: true
   checksum: 10c0/d04469d76b29c7e4070da269886de4efdadedd3d3824dc2a06ac4ff62e3b5877f925e927afe7382de651829872b99adec48082f1bd69fe486149be666345e626
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^4.5.6":
+  version: 4.5.6
+  resolution: "zustand@npm:4.5.6"
+  dependencies:
+    use-sync-external-store: "npm:^1.2.2"
+  peerDependencies:
+    "@types/react": ">=16.8"
+    immer: ">=9.0.6"
+    react: ">=16.8"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    immer:
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/5b39aff2ef57e5a8ada647261ec1115697d397be311c51461d9ea81b5b63c6d2c498b960477ad2db72dc21db6aa229a92bdf644f6a8ecf7b1d71df5b4a5e95d3
   languageName: node
   linkType: hard
 
