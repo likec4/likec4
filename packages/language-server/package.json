@@ -27,7 +27,9 @@
   "engineStrict": true,
   "type": "module",
   "sideEffects": false,
-  "bin": "./bin/likec4-language-server.mjs",
+  "bin": {
+    "likec4-language-server": "./bin/likec4-language-server.mjs"
+  },
   "exports": {
     ".": {
       "sources": "./src/index.ts",

@@ -2079,6 +2079,8 @@ __metadata:
     vscode-languageserver-types: "npm:3.17.5"
     vscode-uri: "npm:3.0.8"
     which: "npm:^4.0.0"
+  bin:
+    likec4-language-server: ./bin/likec4-language-server.mjs
   languageName: unknown
   linkType: soft
 
@@ -8803,7 +8805,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium@npm:3.3.1":
+"langium@npm:3.3.1, langium@npm:~3.3.0":
   version: 3.3.1
   resolution: "langium@npm:3.3.1"
   dependencies:
@@ -8813,19 +8815,6 @@ __metadata:
     vscode-languageserver-textdocument: "npm:~1.0.11"
     vscode-uri: "npm:~3.0.8"
   checksum: 10c0/0c54803068addb0f7c16a57fdb2db2e5d4d9a21259d477c3c7d0587c2c2f65a313f9eeef3c95ac1c2e41cd11d4f2eaf620d2c03fe839a3350ffee59d2b4c7647
-  languageName: node
-  linkType: hard
-
-"langium@npm:~3.3.0":
-  version: 3.3.0
-  resolution: "langium@npm:3.3.0"
-  dependencies:
-    chevrotain: "npm:~11.0.3"
-    chevrotain-allstar: "npm:~0.3.0"
-    vscode-languageserver: "npm:~9.0.1"
-    vscode-languageserver-textdocument: "npm:~1.0.11"
-    vscode-uri: "npm:~3.0.8"
-  checksum: 10c0/fd2f92ca37bd8b8917a98208830b5577bb777986a8de8d285d0a23cd5b8a54979a705d6b0918e39aeab2ee35b381c516480436a570c997956dd33ad9d0c797ed
   languageName: node
   linkType: hard
 
