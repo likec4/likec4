@@ -1951,8 +1951,8 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@xstate/react": "npm:^5.0.2"
     "@xstate/store": "npm:^2.6.2"
-    "@xyflow/react": "npm:12.3.6"
-    "@xyflow/system": "npm:0.0.47"
+    "@xyflow/react": "npm:12.4.2"
+    "@xyflow/system": "npm:0.0.50"
     bezier-js: "npm:^6.1.4"
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
@@ -4423,23 +4423,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xyflow/react@npm:12.3.6":
-  version: 12.3.6
-  resolution: "@xyflow/react@npm:12.3.6"
+"@xyflow/react@npm:12.4.2":
+  version: 12.4.2
+  resolution: "@xyflow/react@npm:12.4.2"
   dependencies:
-    "@xyflow/system": "npm:0.0.47"
+    "@xyflow/system": "npm:0.0.50"
     classcat: "npm:^5.0.3"
     zustand: "npm:^4.4.0"
   peerDependencies:
     react: ">=17"
     react-dom: ">=17"
-  checksum: 10c0/eebf6ad2bc2dc2a6216c37c5cea9d31cb6c7871925de86197036f9d6e51e62f14639bb0b2a89e95f5311380d189b1d1176b5f3d479a66ff081f8a35d653fde07
+  checksum: 10c0/7f58fd5fa7d9a04645228ad867273c660cc4ca4b77f8dc045c4d2dd52dec2ce31d5a7d92290ec54ea46aaf2e32e4fbf90f81c07cdd4da5ee8a64f06bea6ab373
   languageName: node
   linkType: hard
 
-"@xyflow/system@npm:0.0.47":
-  version: 0.0.47
-  resolution: "@xyflow/system@npm:0.0.47"
+"@xyflow/system@npm:0.0.50":
+  version: 0.0.50
+  resolution: "@xyflow/system@npm:0.0.50"
   dependencies:
     "@types/d3-drag": "npm:^3.0.7"
     "@types/d3-selection": "npm:^3.0.10"
@@ -4448,7 +4448,7 @@ __metadata:
     d3-drag: "npm:^3.0.0"
     d3-selection: "npm:^3.0.0"
     d3-zoom: "npm:^3.0.0"
-  checksum: 10c0/5ed03a557f0d7dac880cec1a79c6f7c77b941028dcd63da65a6f5e76ab06ec6d4b19d6cab2944fbc9fc7d4557134a35fef2b05e5a6f9696534436e4d7747c6d3
+  checksum: 10c0/7a7e45340efb7e59f898eed726a1f3323857bdeb5b700eb3f2d9338f0bbddccb75c74ddecae15b244fbefe3d5a45d58546e7768730797d39f8219181c8a65753
   languageName: node
   linkType: hard
 
@@ -8891,8 +8891,8 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vanilla-extract/vite-plugin": "npm:^4.0.19"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
-    "@xyflow/react": "npm:12.3.6"
-    "@xyflow/system": "npm:0.0.47"
+    "@xyflow/react": "npm:12.4.2"
+    "@xyflow/system": "npm:0.0.50"
     autoprefixer: "npm:^10.4.20"
     classnames: "npm:^2.5.1"
     clsx: "npm:^2.1.1"
