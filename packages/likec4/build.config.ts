@@ -60,13 +60,13 @@ export default defineBuildConfig({
     resolve: {
       exportConditions: isProduction ? ['node', 'production'] : ['sources'],
     },
-    commonjs: {
-      exclude: [
-        /\.ts$/,
-        /\.cts$/,
-        /\.mts$/,
-      ],
-    },
+    // commonjs: {
+    //   exclude: [
+    //     /\.d\.ts$/,
+    //     /\.d\.cts$/,
+    //     /\.d\.mts$/,
+    //   ],
+    // },
     dts: {
       // tsconfig: 'tsconfig.cli.json',
       // respectExternal: true,

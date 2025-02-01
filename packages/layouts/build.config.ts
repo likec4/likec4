@@ -13,13 +13,13 @@ export default defineBuildConfig({
       ],
     },
   },
-  declaration: true,
+  declaration: isProduction,
   rollup: {
     commonjs: {
       exclude: [
-        /\.ts$/,
-        /\.cts$/,
-        /\.mts$/,
+        /\.d\.ts$/,
+        /\.d\.cts$/,
+        /\.d\.mts$/,
       ],
     },
     output: {

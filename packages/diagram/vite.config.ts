@@ -4,6 +4,10 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import packageJson from './package.json' with { type: 'json' }
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+console.log(`diagrams vite isProduction = ${isProduction}`)
+
 export default defineConfig(({ mode }) => {
   return {
     define: {
@@ -53,7 +57,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       vanillaExtractPlugin({}),
-      dts({
+      isProduction && dts({
         staticImport: true,
         compilerOptions: {
           declarationMap: false,
