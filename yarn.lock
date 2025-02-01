@@ -2079,15 +2079,6 @@ __metadata:
     vscode-languageserver-types: "npm:3.17.5"
     vscode-uri: "npm:3.0.8"
     which: "npm:^4.0.0"
-  peerDependencies:
-    "@hpcc-js/wasm-graphviz": 1.7.0
-    "@likec4/core": "workspace:~"
-    langium: 3.3.1
-    type-fest: 4.28.1
-    vscode-jsonrpc: 8.2.0
-    vscode-languageserver: 9.0.1
-    vscode-languageserver-types: 3.17.5
-    vscode-uri: 3.0.8
   bin:
     likec4-language-server: ./bin/likec4-language-server.mjs
   languageName: unknown
