@@ -1,5 +1,5 @@
 import { invariant } from '@likec4/core'
-import type { LangiumDocument } from 'langium'
+import { type LangiumDocument, DocumentCache, DocumentState } from 'langium'
 import DefaultWeakMap from 'mnemonist/default-weak-map'
 import { pipe } from 'remeda'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
@@ -26,18 +26,17 @@ const DocumentParserFromMixins = pipe(
   PredicatesParser,
   SpecificationParser,
   ViewsParser,
-  GlobalsParser
+  GlobalsParser,
 )
 
 export class DocumentParser extends DocumentParserFromMixins {
 }
 
 export class LikeC4ModelParser {
-  private cachedParsers = new DefaultWeakMap<LangiumDocument, DocumentParser>((doc: LangiumDocument) =>
-    new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument)
-  )
+  private cachedParsers: DocumentCache<string, DocumentParser>
 
   constructor(private services: LikeC4Services) {
+    this.cachedParsers = new DocumentCache(services.shared, DocumentState.Validated)
   }
 
   parse(doc: LangiumDocument): ParsedLikeC4LangiumDocument {
@@ -49,7 +48,7 @@ export class LikeC4ModelParser {
           elements: {},
           relationships: {},
           colors: {},
-          deployments: {}
+          deployments: {},
         },
         c4Elements: [],
         c4Relations: [],
@@ -58,12 +57,12 @@ export class LikeC4ModelParser {
         c4Globals: {
           predicates: {},
           dynamicPredicates: {},
-          styles: {}
+          styles: {},
         },
-        c4Views: []
+        c4Views: [],
       }
       doc = Object.assign(doc, props)
-      const parser = this.cachedParsers.get(doc)
+      const parser = this.forDocument(doc)
       parser.parseSpecification()
       parser.parseModel()
       parser.parseGlobals()
@@ -77,6 +76,10 @@ export class LikeC4ModelParser {
 
   forDocument(doc: LangiumDocument): DocumentParser {
     invariant(isFqnIndexedDocument(doc), `Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
-    return this.cachedParsers.get(doc)
+    return this.cachedParsers.get(
+      doc.uri,
+      'DocumentParser',
+      () => new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument),
+    )
   }
 }
