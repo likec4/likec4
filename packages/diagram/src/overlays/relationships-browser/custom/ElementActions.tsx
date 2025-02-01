@@ -8,7 +8,7 @@ import { useRelationshipsBrowser } from '../hooks'
 
 type ElementActionsProps = NodeProps<Types.ElementNodeData>
 export const ElementActions = (props: ElementActionsProps) => {
-  const { enableNavigateTo } = useEnabledFeature('NavigateTo')
+  const { enableNavigateTo, enableVscode } = useEnabledFeature('NavigateTo', 'Vscode')
   const diagram = useDiagram()
   const browser = useRelationshipsBrowser()
 
@@ -35,14 +35,16 @@ export const ElementActions = (props: ElementActionsProps) => {
       },
     })
   }
-  buttons.push({
-    key: 'goToSource',
-    icon: <IconFileSymlink />,
-    onClick: (e) => {
-      e.stopPropagation()
-      diagram.openSource({ element: fqn })
-    },
-  })
+  if (enableVscode) {
+    buttons.push({
+      key: 'goToSource',
+      icon: <IconFileSymlink />,
+      onClick: (e) => {
+        e.stopPropagation()
+        diagram.openSource({ element: fqn })
+      },
+    })
+  }
   return (
     <ElementActionButtons
       buttons={buttons}
