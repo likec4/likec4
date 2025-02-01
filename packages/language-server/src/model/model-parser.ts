@@ -1,6 +1,6 @@
 import { invariant } from '@likec4/core'
 import type { LangiumDocument } from 'langium'
-import DefaultWeakMap from 'mnemonist/default-weak-map'
+import { DefaultWeakMap } from 'mnemonist'
 import { pipe } from 'remeda'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
 import { isFqnIndexedDocument } from '../ast'
@@ -26,7 +26,7 @@ const DocumentParserFromMixins = pipe(
   PredicatesParser,
   SpecificationParser,
   ViewsParser,
-  GlobalsParser
+  GlobalsParser,
 )
 
 export class DocumentParser extends DocumentParserFromMixins {
@@ -49,7 +49,7 @@ export class LikeC4ModelParser {
           elements: {},
           relationships: {},
           colors: {},
-          deployments: {}
+          deployments: {},
         },
         c4Elements: [],
         c4Relations: [],
@@ -58,9 +58,9 @@ export class LikeC4ModelParser {
         c4Globals: {
           predicates: {},
           dynamicPredicates: {},
-          styles: {}
+          styles: {},
         },
-        c4Views: []
+        c4Views: [],
       }
       doc = Object.assign(doc, props)
       const parser = this.cachedParsers.get(doc)
