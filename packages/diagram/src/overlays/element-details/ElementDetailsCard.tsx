@@ -3,7 +3,6 @@ import {
   type Element,
   type Fqn,
   type LikeC4View,
-  type Link,
   ComputedNode,
   ComputedView,
   isDeploymentView,
@@ -43,6 +42,7 @@ import clsx from 'clsx'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'framer-motion'
 import { type PropsWithChildren, memo, useCallback, useLayoutEffect, useRef } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
+import { Link } from '../../base'
 import { IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
@@ -424,7 +424,7 @@ export const ElementDetailsCard = memo(({ fqn }: ElementDetailsCardProps) => {
                       <>
                         <PropertyLabel>links</PropertyLabel>
                         <Stack gap={'xs'} align="flex-start">
-                          {elementModel.links.map((link, i) => <ElementLink key={i} value={link} />)}
+                          {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
                         </Stack>
                       </>
                     )}
@@ -599,54 +599,6 @@ function ElementProperty({
       </Text>
     </>
   )
-}
-
-function ElementLink({
-  value,
-}: {
-  value: Link
-}) {
-  const url = new URL(value.url, window.location.href).toString()
-  return (
-    <CopyButton value={url}>
-      {({ copied, copy }) => (
-        <Anchor href={url} target="_blank" underline="never" className={css.elementLink}>
-          <Group gap={4} align="center" wrap="nowrap">
-            <ActionIcon
-              tabIndex={-1}
-              size={24}
-              variant={copied ? 'light' : 'subtle'}
-              color={copied ? 'teal' : 'gray'}
-              onClick={e => {
-                e.stopPropagation()
-                e.preventDefault()
-                copy()
-              }}
-            >
-              {copied ? <IconCheck /> : <IconCopy style={{ width: '65%', opacity: 0.8 }} />}
-            </ActionIcon>
-            <Box flex={1}>
-              <Text fz={'sm'} truncate lh={1.3} fw={value.title ? 500 : 400}>
-                {value.title || url}
-              </Text>
-              {value.title && (
-                <Text component="div" fz={10} c={'dimmed'} lh={1.2} truncate>
-                  {url}
-                </Text>
-              )}
-            </Box>
-          </Group>
-        </Anchor>
-      )}
-    </CopyButton>
-  )
-  // <Anchor href={value.url} fz={'sm'}>
-  //   {value.title || url}
-  // </Anchor><Button variant='default' size='sm'>
-  //     {value.title || value.url}
-  //   </Button>
-  //  </Box>
-  // )
 }
 
 function ElementMetata({

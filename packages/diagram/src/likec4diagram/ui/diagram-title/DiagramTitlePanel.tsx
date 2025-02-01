@@ -3,10 +3,10 @@ import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
+import { Link } from '../../../base'
 import { useDiagramContext } from '../../../hooks/useDiagramContext'
 import type { DiagramContext } from '../../state/machine'
 import * as css from './DiagramTitlePanel.css'
-import { Link } from './Link'
 
 const selector = (s: DiagramContext) => ({
   id: s.view.id,
@@ -150,10 +150,11 @@ export function DiagramTitlePanel() {
               )}
               {links && (
                 <Stack
-                  gap={3}
+                  mt={'xs'}
+                  gap={4}
                   justify="stretch"
                   align="stretch">
-                  {links.map((link) => <Link link={link} key={link.url} />)}
+                  {links.map((link) => <Link value={link} key={link.url} />)}
                 </Stack>
               )}
             </>

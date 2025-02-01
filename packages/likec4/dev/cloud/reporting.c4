@@ -17,6 +17,11 @@ views {
 
   view reporting of cloud.reporting {
     title "[context] Reporting"
+
+    link https://github.com/likec4/likec4 'source'
+    link /view/reporting/editor
+    link ./cloud/reporting.c4#L3
+
     include cloud, *
     autoLayout BottomTop
 

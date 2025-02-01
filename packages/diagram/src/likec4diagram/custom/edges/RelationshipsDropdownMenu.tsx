@@ -27,12 +27,12 @@ import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@
 import clsx from 'clsx'
 import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
+import { Link } from '../../../base'
 import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { DiagramContext, useDiagramContext } from '../../../hooks/useDiagramContext'
 import { useLikeC4Model } from '../../../likec4model'
-import { Link } from '../../ui/diagram-title/Link'
 import * as css from './RelationshipsDropdownMenu.css'
 
 const stopPropagation: MouseEventHandler = (e) => e.stopPropagation()
@@ -252,7 +252,7 @@ const Relationship = forwardRef<
           gap={3}
           justify="stretch"
           align="stretch">
-          {links.map((link) => <Link key={link.url} link={link} />)}
+          {links.map((link) => <Link key={link.url} size="sm" value={link} />)}
         </Stack>
       )}
     </Stack>

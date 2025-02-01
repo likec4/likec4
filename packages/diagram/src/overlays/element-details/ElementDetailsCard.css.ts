@@ -275,34 +275,6 @@ export const propertyLabel = style({
   justifySelf: 'end',
 })
 
-export const elementLink = style({
-  transition: transitions.fast,
-  border: `1px dashed ${mantine.colors.defaultBorder}`,
-  borderRadius: mantine.radius.sm,
-  minHeight: 30,
-  padding: '3px 16px 3px 3px',
-  cursor: 'pointer',
-  color: mantine.colors.gray[7],
-  ':hover': {
-    transitionTimingFunction: easings.out,
-    borderStyle: 'solid',
-    color: mantine.colors.defaultColor,
-    background: mantine.colors.defaultHover,
-  },
-  selectors: {
-    [`${whereDark} &`]: {
-      color: mantine.colors.dark[1],
-    },
-  },
-})
-globalStyle(`${elementLink} > *`, {
-  transition: transitions.fast,
-})
-globalStyle(`${elementLink}:hover > *`, {
-  transitionTimingFunction: easings.out,
-  transform: 'translateX(1px)',
-})
-
 export const resizeHandle = style({
   position: 'absolute',
   width: 14,

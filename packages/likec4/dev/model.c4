@@ -43,6 +43,9 @@ model {
         -> backend.graphql 'fetch data' {
            #v1 #v2
           technology 'graphql'
+          link https://react.dev 'docs'
+
+          link /view/1231
         }
       }
       customer -> dashboard 'open in browser'
