@@ -1918,7 +1918,7 @@ __metadata:
     mnemonist: "npm:^0.39.8"
     natural-compare-lite: "npm:^1.4.0"
     object-hash: "npm:^3.0.0"
-    obliterator: "npm:^2.0.4"
+    obliterator: "npm:^2.0.5"
     remeda: "npm:^2.19.0"
     turbo: "npm:^2.3.3"
     type-fest: "npm:4.28.1"
@@ -10852,10 +10852,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"obliterator@npm:^2.0.1, obliterator@npm:^2.0.2, obliterator@npm:^2.0.4":
+"obliterator@npm:^2.0.1, obliterator@npm:^2.0.2":
   version: 2.0.4
   resolution: "obliterator@npm:2.0.4"
   checksum: 10c0/ff2c10d4de7d62cd1d588b4d18dfc42f246c9e3a259f60d5716f7f88e5b3a3f79856b3207db96ec9a836a01d0958a21c15afa62a3f4e73a1e0b75f2c2f6bab40
+  languageName: node
+  linkType: hard
+
+"obliterator@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "obliterator@npm:2.0.5"
+  checksum: 10c0/36e67d88271c51aa6412a7d449d6c60ae6387176f94dbc557eea67456bf6ccedbcbcecdb1e56438aa4f4694f68f531b3bf2be87b019e2f69961b144bec124e70
   languageName: node
   linkType: hard
 
