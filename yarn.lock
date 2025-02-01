@@ -2027,7 +2027,7 @@ __metadata:
   dependencies:
     "@types/react": "npm:~19.0.8"
     "@types/react-dom": "npm:~19.0.3"
-    consola: "npm:^3.3.3"
+    consola: "npm:^3.4.0"
     esbuild: "npm:^0.24.2"
     execa: "npm:^9.3.1"
     glob: "npm:^11.0.1"
@@ -2115,7 +2115,7 @@ __metadata:
   dependencies:
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.17.7"
-    consola: "npm:^3.3.3"
+    consola: "npm:^3.4.0"
     merge-error-cause: "npm:^5.0.0"
     safe-stringify: "npm:^1.1.1"
     std-env: "npm:^3.8.0"
@@ -5567,6 +5567,13 @@ __metadata:
   version: 3.3.3
   resolution: "consola@npm:3.3.3"
   checksum: 10c0/9f6f457f3d83fbb339b9f2ff4f5c2776a1a05fad7ce3939d8dc41765431d5f52401b5a632f4b10ed9145b2aadec1e84cea78c30178479d3a2fd4880894592fa5
+  languageName: node
+  linkType: hard
+
+"consola@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "consola@npm:3.4.0"
+  checksum: 10c0/bc7f7ad46514375109a80f3ae8330097eb1e5d89232a24eb830f3ac383e22036a62c53d33561cd73d7cda4b3691fba85e3dcf35229ef7721b324aae291ceb40c
   languageName: node
   linkType: hard
 
