@@ -1,4 +1,4 @@
-import DefaultMap from 'mnemonist/default-map'
+import { DefaultMap } from 'mnemonist'
 import { mapValues, pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { computeView, unsafeComputeView } from '../compute-view'

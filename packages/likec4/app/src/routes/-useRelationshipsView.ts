@@ -4,9 +4,8 @@ import { useMemo } from 'react'
 import { useLikeC4Model } from 'virtual:likec4/model'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { invariant, isAncestor, isDescendantOf, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
+import { DefaultMap, invariant, isAncestor, isDescendantOf, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
 import type { ElementModel, RelationshipModel } from '@likec4/core/model'
-import DefaultMap from 'mnemonist/default-map'
 import { concat, filter, find, forEachObj, groupBy, hasAtLeast, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 
 /**

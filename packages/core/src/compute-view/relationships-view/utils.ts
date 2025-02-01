@@ -1,4 +1,4 @@
-import DefaultMap from 'mnemonist/default-map'
+import { DefaultMap } from 'mnemonist'
 import { nonNullable } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
 import type { Fqn } from '../../types'

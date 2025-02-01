@@ -1,6 +1,6 @@
 import { invariant } from '@likec4/core'
 import { type LangiumDocument, DocumentCache, DocumentState } from 'langium'
-import DefaultWeakMap from 'mnemonist/default-weak-map'
+import { DefaultWeakMap } from 'mnemonist'
 import { pipe } from 'remeda'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
 import { isFqnIndexedDocument } from '../ast'

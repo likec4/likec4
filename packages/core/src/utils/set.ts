@@ -1,5 +1,8 @@
-import { intersection as _intersection, symmetricDifference as _symmetricDifference } from 'mnemonist/set'
+import { set } from 'mnemonist'
+import { hasAtLeast } from 'remeda'
 import type { NonEmptyArray } from '../types/_common'
+
+const { intersection: _intersection, symmetricDifference: _symmetricDifference } = set
 
 /**
  * Returns new set as a union of given sets
@@ -25,7 +28,7 @@ export function intersection<T>(first: ReadonlySet<T>, ...sets: NonEmptyArray<Re
   if (first.size === 0) {
     return result
   }
-  let other = sets.length > 1 ? _intersection(...sets as any) : sets[0]
+  let other = hasAtLeast(sets, 2) ? _intersection(...sets) : sets[0]
   if (other.size === 0) {
     return result
   }
