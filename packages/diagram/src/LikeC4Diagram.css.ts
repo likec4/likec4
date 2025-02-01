@@ -50,3 +50,11 @@ globalStyle(`.react-flow${cssReactFlow}${cssTransparentBg}`, {
 globalStyle(`:where(.react-flow${cssReactFlow}, ${cssTransparentBg}) .react-flow__attribution`, {
   display: 'none',
 })
+
+export const hiddenIfZoomTooSmall = style({
+  selectors: {
+    [`:where([data-likec4-zoom-small="true"]) &`]: {
+      visibility: 'hidden',
+    },
+  },
+})

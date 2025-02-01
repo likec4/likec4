@@ -1,4 +1,4 @@
-import { useCallbackRef, useMounted } from '@mantine/hooks'
+import { useCallbackRef } from '@mantine/hooks'
 import { useIsMounted } from '@react-hookz/web'
 import {
   type ReactFlowProps,
@@ -9,6 +9,7 @@ import {
 import clsx from 'clsx'
 import { useEffect, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
+import { useIsZoomTooSmall } from '../hooks/useXYFlow'
 import * as css from '../LikeC4Diagram.css'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
@@ -75,7 +76,7 @@ export const BaseXYFlow = <
   ...props
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
-
+  const isZoomTooSmall = useIsZoomTooSmall()
   return (
     <ReactFlow<NodeType, EdgeType>
       colorMode={colorMode}
@@ -88,6 +89,7 @@ export const BaseXYFlow = <
         background === 'transparent' && css.cssTransparentBg,
         className,
       )}
+      data-likec4-zoom-small={isZoomTooSmall}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
       {...(!zoomable && {
@@ -112,6 +114,7 @@ export const BaseXYFlow = <
       {...(!pannable && {
         selectionKeyCode: null,
       })}
+      onlyRenderVisibleElements={nodes.length > 75}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
