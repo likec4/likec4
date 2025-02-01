@@ -206,7 +206,7 @@
     "esm-env": "^1.2.2",
     "execa": "^9.3.1",
     "langium": "3.3.1",
-    "mnemonist": "^0.39.8",
+    "mnemonist": "^0.40.0",
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
     "remeda": "^2.19.0",
