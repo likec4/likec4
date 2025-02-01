@@ -44,7 +44,7 @@
     "@vanilla-extract/vite-plugin": "^4.0.19",
     "@vitejs/plugin-react-swc": "3.7.2",
     "clsx": "^2.1.1",
-    "esm-env": "^1.2.1",
+    "esm-env": "^1.2.2",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.16.0",
     "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@8.0.4",
