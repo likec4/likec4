@@ -205,7 +205,7 @@
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
     "esm-env": "^1.2.2",
     "execa": "^9.3.1",
-    "langium": "3.3.0",
+    "langium": "3.3.1",
     "mnemonist": "^0.39.8",
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",

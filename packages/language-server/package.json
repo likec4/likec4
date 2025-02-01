@@ -92,7 +92,7 @@
     "fdir": "^6.4.2",
     "indent-string": "^5.0.0",
     "json5": "^2.2.3",
-    "langium": "3.3.0",
+    "langium": "3.3.1",
     "p-debounce": "^4.0.0",
     "remeda": "^2.19.0",
     "strip-indent": "^4.0.0",
