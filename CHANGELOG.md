@@ -1,3 +1,23 @@
+## [1.20.2](https://github.com/likec4/likec4/compare/v1.20.1...v1.20.2) (2025-02-01)
+
+### Improvements
+
+* `multiple` style option (thanks @davydkov, [#1478](https://github.com/likec4/likec4/issues/1478)) ([5beae43](https://github.com/likec4/likec4/commit/5beae43be4bdc2f4001bb2c18fe5e5f525c8cf4d))
+
+  <img width="400" alt="SCR-20250201-ozip" src="https://github.com/user-attachments/assets/b103ae95-f5ac-4d91-8e58-c388e3426ba0" />
+
+* **lsp:** format deployment and global predicates syntax  (thanks @pavelpykhtin, [#1484](https://github.com/likec4/likec4/issues/1484)) ([0d0d5ba](https://github.com/likec4/likec4/commit/0d0d5badc91f6ab62512bdc0b052d8ef5dee0fbe))
+* **lsp:** `likec4-language-server` as standalone server ([#1501](https://github.com/likec4/likec4/issues/1501)) ([3f5d053](https://github.com/likec4/likec4/commit/3f5d0539a48131e9e7b9c36ea68b0b6105dfb482))
+* **diagram:** animations in RelationshipsBrowser
+* **diagrams:** hide buttons and edge labels if zoom too small ([e67e2fe](https://github.com/likec4/likec4/commit/e67e2fe8c8564074a367e3d47288f45c550d31c5))
+* **diagrams:** render only visible elements if total number of nodes is more than 75 ([4d6ac08](https://github.com/likec4/likec4/commit/4d6ac0862481126fd96fa587ca12cbbe45b20354))
+
+
+### Bug Fixes
+
+* **playground:** mantine provider should stay in the root of the app ([19aeb57](https://github.com/likec4/likec4/commit/19aeb5740733e4dcb0232d945ce527021f89085d))
+
+
 ## [1.20.1](https://github.com/likec4/likec4/compare/v1.20.0...v1.20.1) (2025-01-27)
 
 ### Bug Fixes
