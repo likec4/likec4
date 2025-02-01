@@ -7,6 +7,7 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
+    "bin",
     "dist",
     "contrib",
     "src",
@@ -20,8 +21,13 @@
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/language-server"
   },
+  "engines": {
+    "node": ">=20"
+  },
+  "engineStrict": true,
   "type": "module",
   "sideEffects": false,
+  "bin": "./bin/likec4-language-server.mjs",
   "exports": {
     ".": {
       "sources": "./src/index.ts",

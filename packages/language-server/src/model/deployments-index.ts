@@ -1,5 +1,5 @@
 import type { Fqn } from '@likec4/core'
-import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
+import type { DocumentCache, LangiumDocuments, Stream } from 'langium'
 import { AstUtils, DocumentState, MultiMap } from 'langium'
 import { forEachObj, groupBy, isTruthy, pipe, prop } from 'remeda'
 import {
@@ -13,28 +13,15 @@ import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
 
-const DeploymentsIndexKey = Symbol.for('DeploymentsIndex')
-
-type IndexedDocument = LangiumDocument & {
-  [DeploymentsIndexKey]?: DocumentDeploymentsIndex
-}
-
 export class DeploymentsIndex {
   protected Names: LikeC4NameProvider
   protected langiumDocuments: LangiumDocuments
+  protected documentCache: DocumentCache<string, DocumentDeploymentsIndex>
 
   constructor(private services: LikeC4Services) {
     this.Names = services.references.NameProvider
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
-
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.IndexedContent,
-      (docs, _cancelToken) => {
-        for (const doc of docs) {
-          delete (doc as IndexedDocument)[DeploymentsIndexKey]
-        }
-      },
-    )
+    this.documentCache = services.DocumentCache
   }
 
   private documents() {
@@ -47,7 +34,7 @@ export class DeploymentsIndex {
     if (document.state < DocumentState.IndexedContent) {
       logWarnError(`Document ${document.uri.path} is not indexed`)
     }
-    return (document as IndexedDocument)[DeploymentsIndexKey] ??= this.createDocumentIndex(document)
+    return this.documentCache.get(document.uri, 'DeploymentsIndex', () => this.createDocumentIndex(document))
   }
   /**
    * Nested elements (nodes/artifacts) of the node

@@ -1,4 +1,4 @@
-import type { AstNode } from 'langium'
+import { type AstNode, DocumentState } from 'langium'
 import { isNullish } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
@@ -98,7 +98,9 @@ const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefin
 }
 
 export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
-  const errors = doc.diagnostics?.filter(d => d.severity === DiagnosticSeverity.Error) ?? []
+  const errors = doc.state >= DocumentState.Validated
+    ? (doc.diagnostics?.filter(d => d.severity === DiagnosticSeverity.Error) ?? [])
+    : []
   const invalidNodes = new WeakSet()
   for (const { node } of errors) {
     if (isNullish(node) || invalidNodes.has(node)) {
