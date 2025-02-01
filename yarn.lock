@@ -1920,7 +1920,7 @@ __metadata:
     object-hash: "npm:^3.0.0"
     obliterator: "npm:^2.0.5"
     remeda: "npm:^2.19.0"
-    turbo: "npm:^2.3.3"
+    turbo: "npm:^2.3.4"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     unbuild: "npm:^3.3.1"
@@ -2068,7 +2068,7 @@ __metadata:
     remeda: "npm:^2.19.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.3"
+    turbo: "npm:^2.3.4"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
@@ -2098,7 +2098,7 @@ __metadata:
     remeda: "npm:^2.19.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    turbo: "npm:^2.3.3"
+    turbo: "npm:^2.3.4"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     unbuild: "npm:^3.3.1"
@@ -2171,7 +2171,7 @@ __metadata:
     remeda: "npm:^2.19.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.3"
+    turbo: "npm:^2.3.4"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
@@ -8843,7 +8843,7 @@ __metadata:
     std-env: "npm:^3.8.0"
     tslib: "npm:^2.8.1"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.3"
+    turbo: "npm:^2.3.4"
     typescript: "npm:^5.7.3"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
@@ -8928,7 +8928,7 @@ __metadata:
     terser: "npm:^5.37.0"
     tinyrainbow: "npm:^1.2.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.3"
+    turbo: "npm:^2.3.4"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
@@ -12639,7 +12639,7 @@ __metadata:
     npm-run-all2: "npm:^7.0.1"
     shipjs: "npm:^0.27.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.3"
+    turbo: "npm:^2.3.4"
     typescript: "npm:^5.7.3"
     vite: "npm:5.4.14"
     vitest: "npm:^2.1.8"
@@ -13829,58 +13829,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.3.3":
-  version: 2.3.3
-  resolution: "turbo-darwin-64@npm:2.3.3"
+"turbo-darwin-64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "turbo-darwin-64@npm:2.4.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.3.3":
-  version: 2.3.3
-  resolution: "turbo-darwin-arm64@npm:2.3.3"
+"turbo-darwin-arm64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "turbo-darwin-arm64@npm:2.4.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.3.3":
-  version: 2.3.3
-  resolution: "turbo-linux-64@npm:2.3.3"
+"turbo-linux-64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "turbo-linux-64@npm:2.4.0"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.3.3":
-  version: 2.3.3
-  resolution: "turbo-linux-arm64@npm:2.3.3"
+"turbo-linux-arm64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "turbo-linux-arm64@npm:2.4.0"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.3.3":
-  version: 2.3.3
-  resolution: "turbo-windows-64@npm:2.3.3"
+"turbo-windows-64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "turbo-windows-64@npm:2.4.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.3.3":
-  version: 2.3.3
-  resolution: "turbo-windows-arm64@npm:2.3.3"
+"turbo-windows-arm64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "turbo-windows-arm64@npm:2.4.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.3.3":
-  version: 2.3.3
-  resolution: "turbo@npm:2.3.3"
+"turbo@npm:^2.3.4":
+  version: 2.4.0
+  resolution: "turbo@npm:2.4.0"
   dependencies:
-    turbo-darwin-64: "npm:2.3.3"
-    turbo-darwin-arm64: "npm:2.3.3"
-    turbo-linux-64: "npm:2.3.3"
-    turbo-linux-arm64: "npm:2.3.3"
-    turbo-windows-64: "npm:2.3.3"
-    turbo-windows-arm64: "npm:2.3.3"
+    turbo-darwin-64: "npm:2.4.0"
+    turbo-darwin-arm64: "npm:2.4.0"
+    turbo-linux-64: "npm:2.4.0"
+    turbo-linux-arm64: "npm:2.4.0"
+    turbo-windows-64: "npm:2.4.0"
+    turbo-windows-arm64: "npm:2.4.0"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -13896,7 +13896,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10c0/9aab52fb868a2b6246f41fe2343dec56c70252a9cb7729a3ea183458cfa728c1445d1b98882dd43542f0ffd46524e8ba7776fe0925e31a86904b113222778fa5
+  checksum: 10c0/c4fe9b2c19dd039865469c3a3fef28fb53aebbae20e1e87e198e006a7d6d70b87cacc1450323b349078a7290889bfbb70c7d369dfda9cd04abfcab6996ad6ae3
   languageName: node
   linkType: hard
 
