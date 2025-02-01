@@ -1,29 +1,21 @@
 ## [1.20.2](https://github.com/likec4/likec4/compare/v1.20.1...v1.20.2) (2025-02-01)
 
+### Improvements
+
+* `multiple` style shape (thanks @davydkov, [#1478](https://github.com/likec4/likec4/issues/1478)) ([5beae43](https://github.com/likec4/likec4/commit/5beae43be4bdc2f4001bb2c18fe5e5f525c8cf4d))
+
+<img width="400" alt="SCR-20250201-ozip" src="https://github.com/user-attachments/assets/b103ae95-f5ac-4d91-8e58-c388e3426ba0" />
+
+* **lsp:** format deployment and global predicates syntax  (thanks @pavelpykhtin, [#1484](https://github.com/likec4/likec4/issues/1484)) ([0d0d5ba](https://github.com/likec4/likec4/commit/0d0d5badc91f6ab62512bdc0b052d8ef5dee0fbe))
+* **lsp:** `likec4-language-server` as standalone server ([#1501](https://github.com/likec4/likec4/issues/1501)) ([3f5d053](https://github.com/likec4/likec4/commit/3f5d0539a48131e9e7b9c36ea68b0b6105dfb482))
+* **diagram:** animations in RelationshipsBrowser
+* **diagrams:** hide buttons and edge labels if zoom too small ([e67e2fe](https://github.com/likec4/likec4/commit/e67e2fe8c8564074a367e3d47288f45c550d31c5))
+* **diagrams:** render only visible elements if total number of nodes is more than 75 ([4d6ac08](https://github.com/likec4/likec4/commit/4d6ac0862481126fd96fa587ca12cbbe45b20354))
+
 
 ### Bug Fixes
 
-* **deps:** update [@xyflow](https://github.com/xyflow) ([#1504](https://github.com/likec4/likec4/issues/1504)) ([73f634c](https://github.com/likec4/likec4/commit/73f634c2c48681b55ee8d56929623f152025b178))
-* **deps:** update dependency @msgpack/msgpack to ^3.0.0-beta3 ([#1490](https://github.com/likec4/likec4/issues/1490)) ([803897b](https://github.com/likec4/likec4/commit/803897ba2f3643423d99fe2c092876afbe6d92a6))
-* **deps:** update dependency esm-env to ^1.2.2 ([#1491](https://github.com/likec4/likec4/issues/1491)) ([8afcaba](https://github.com/likec4/likec4/commit/8afcabaf066890b3b9655964bc5f394fdd34a70c))
-* **deps:** update dependency fast-equals to ^5.2.2 ([#1507](https://github.com/likec4/likec4/issues/1507)) ([ac089cf](https://github.com/likec4/likec4/commit/ac089cff58058e00930e7399106a49286524ad84))
-* **deps:** update dependency langium to v3.3.1 ([#1493](https://github.com/likec4/likec4/issues/1493)) ([14309e4](https://github.com/likec4/likec4/commit/14309e434c1dd1ef5f77138fd0833076dafcc6c4))
-* **deps:** update dependency p-limit to ^6.2.0 ([#1412](https://github.com/likec4/likec4/issues/1412)) ([d7aa87e](https://github.com/likec4/likec4/commit/d7aa87e90f40519c17f41b1664b4bff06aa912fb))
-* **deps:** update dependency turbo to ^2.3.4 ([#1494](https://github.com/likec4/likec4/issues/1494)) ([04f3f60](https://github.com/likec4/likec4/commit/04f3f609ce8c5d42ed2df237d01b824dc15ffd0a))
-* exclude test files from packages ([a840288](https://github.com/likec4/likec4/commit/a8402881abac24115b30e2ee743447cda5fc42ed))
 * **playground:** mantine provider should stay in the root of the app ([19aeb57](https://github.com/likec4/likec4/commit/19aeb5740733e4dcb0232d945ce527021f89085d))
-
-
-### Features
-
-* **diagram:** animations in RelationshipsBrowser ([5eeee75](https://github.com/likec4/likec4/commit/5eeee75d92d7064b47684b0a54291ab8acd2621d))
-* **diagrams:** hide buttons and edge labels if zoom too small ([e67e2fe](https://github.com/likec4/likec4/commit/e67e2fe8c8564074a367e3d47288f45c550d31c5))
-* **diagrams:** render only visible elements if total number of nodes is more than 75 ([4d6ac08](https://github.com/likec4/likec4/commit/4d6ac0862481126fd96fa587ca12cbbe45b20354))
-* format deployment and global predicates syntax  ([#1484](https://github.com/likec4/likec4/issues/1484)) ([0d0d5ba](https://github.com/likec4/likec4/commit/0d0d5badc91f6ab62512bdc0b052d8ef5dee0fbe))
-* **lsp:** `likec4-language-server` bin entry point ([#1501](https://github.com/likec4/likec4/issues/1501)) ([3f5d053](https://github.com/likec4/likec4/commit/3f5d0539a48131e9e7b9c36ea68b0b6105dfb482))
-* **lsp:** `likec4-language-server` bin entry point ([#1502](https://github.com/likec4/likec4/issues/1502)) ([facfa78](https://github.com/likec4/likec4/commit/facfa78c2c9b277bc7c1c04cc777350e3095837a))
-* **lsp:** `multiple` style shape ([#1478](https://github.com/likec4/likec4/issues/1478)) ([5beae43](https://github.com/likec4/likec4/commit/5beae43be4bdc2f4001bb2c18fe5e5f525c8cf4d))
-
 
 
 ## [1.20.1](https://github.com/likec4/likec4/compare/v1.20.0...v1.20.1) (2025-01-27)
