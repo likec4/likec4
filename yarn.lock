@@ -8934,6 +8934,7 @@ __metadata:
     react-resizable-panels: "npm:^2.1.7"
     react-shadow: "npm:^20.6.0"
     remeda: "npm:^2.19.0"
+    rollup: "npm:4.32.0"
     std-env: "npm:^3.8.0"
     strip-indent: "npm:^4.0.0"
     terser: "npm:^5.37.0"
@@ -12573,7 +12574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^4.20.0, rollup@npm:^4.30.1":
+"rollup@npm:4.32.0, rollup@npm:^4.20.0, rollup@npm:^4.30.1":
   version: 4.32.0
   resolution: "rollup@npm:4.32.0"
   dependencies:

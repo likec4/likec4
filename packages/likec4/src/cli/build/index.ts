@@ -2,7 +2,7 @@
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { CommandModule } from 'yargs'
-import { base, path, useDotBin, useHashHistory, useOverview, webcomponentPrefix, outputSingleFile } from '../options'
+import { base, outputSingleFile, path, useDotBin, useHashHistory, useOverview, webcomponentPrefix } from '../options'
 import { buildHandler as handler } from './build'
 
 export const buildCmd = {
@@ -17,7 +17,7 @@ export const buildCmd = {
         type: 'string',
         desc: 'output directory for production build',
         normalize: true,
-        coerce: resolve
+        coerce: resolve,
       })
       .option('base', base)
       .option('use-hash-history', useHashHistory)
@@ -27,7 +27,7 @@ export const buildCmd = {
       .option('output-single-file', outputSingleFile)
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
-        k.gray('Search for likec4 files in \'src\' and output static site to \'build\'')
+        k.gray('Search for likec4 files in \'src\' and output static site to \'build\''),
       ),
   handler: async (args) => {
     await handler({
@@ -38,9 +38,9 @@ export const buildCmd = {
       useDotBin: args['use-dot'],
       useOverview: args['use-overview'] ?? false,
       webcomponentPrefix: args['webcomponent-prefix'],
-      outputSingleFile: args['output-single-file'] ?? false
+      outputSingleFile: args['output-single-file'] ?? false,
     })
-  }
+  },
 } satisfies CommandModule<object, {
   output: string | undefined
   path: string
@@ -49,6 +49,7 @@ export const buildCmd = {
   'use-hash-history': boolean | undefined
   'use-overview': boolean | undefined
   'webcomponent-prefix': string
+  'output-single-file': boolean | undefined
 }>
 
 export default buildCmd
