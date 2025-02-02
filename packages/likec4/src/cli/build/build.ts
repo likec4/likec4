@@ -33,7 +33,9 @@ type HandlerParams = {
 
   useHashHistory: boolean | undefined
 
-  webcomponentPrefix: string
+  webcomponentPrefix: string,
+
+  outputSingleFile : boolean | undefined
 }
 
 export async function buildHandler({
@@ -43,6 +45,7 @@ export async function buildHandler({
   webcomponentPrefix,
   useOverview = false,
   output: outputDir,
+  outputSingleFile,
   base
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:build')
@@ -78,13 +81,14 @@ export async function buildHandler({
   }
   await viteBuild({
     base,
-    useHashHistory,
+    useHashHistory: outputSingleFile || useHashHistory,
     customLogger: logger,
     useOverviewGraph: useOverview,
     webcomponentPrefix,
     languageServices,
     likec4AssetsDir,
-    outputDir
+    outputDir,
+    outputSingleFile
   })
 
   if (useOverview) {

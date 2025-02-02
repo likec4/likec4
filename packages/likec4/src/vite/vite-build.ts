@@ -1,6 +1,6 @@
 import { viteConfig } from '@/vite/config-app'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
-import { copyFileSync, existsSync } from 'node:fs'
+import { copyFileSync, existsSync, rmSync, readdirSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -21,6 +21,7 @@ export const viteBuild = async ({
   webcomponentPrefix = 'likec4',
   languageServices,
   likec4AssetsDir,
+  outputSingleFile,
   ...cfg
 }: Config) => {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
@@ -29,7 +30,8 @@ export const viteBuild = async ({
     ...cfg,
     languageServices,
     likec4AssetsDir,
-    webcomponentPrefix
+    webcomponentPrefix,
+    outputSingleFile
   })
 
   const publicDir = await mkTempPublicDir()
@@ -72,12 +74,19 @@ export const viteBuild = async ({
     mode: 'production'
   })
 
-  // Copy index.html to 404.html
-  const indexHtml = resolve(config.build.outDir, 'index.html')
-  if (existsSync(indexHtml)) {
-    copyFileSync(
-      indexHtml,
-      resolve(config.build.outDir, '404.html')
-    )
+  if (outputSingleFile) {
+    // Delete all files other than index.html
+    for(let extraFile of readdirSync(resolve(config.build.outDir)).filter(f => f !== "index.html")) {
+      rmSync(resolve(config.build.outDir, extraFile), {recursive: true});
+    }
+  } else {
+    // Copy index.html to 404.html
+    const indexHtml = resolve(config.build.outDir, 'index.html')
+    if (existsSync(indexHtml)) {
+      copyFileSync(
+        indexHtml,
+        resolve(config.build.outDir, '404.html')
+      )
+    }
   }
 }
