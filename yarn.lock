@@ -8948,6 +8948,7 @@ __metadata:
     vite-plugin-css-injected-by-js: "npm:^3.5.2"
     vite-plugin-dts: "npm:^4.5.0"
     vite-plugin-shadow-style: "npm:^1.2.0"
+    vite-plugin-singlefile: "npm:^2.1.0"
     vitest: "npm:^2.1.8"
     yargs: "npm:17.7.2"
   bin:
@@ -12662,7 +12663,6 @@ __metadata:
     turbo: "npm:^2.3.4"
     typescript: "npm:^5.7.3"
     vite: "npm:5.4.14"
-    vite-plugin-singlefile: "npm:^2.1.0"
     vitest: "npm:^2.1.8"
   languageName: unknown
   linkType: soft
