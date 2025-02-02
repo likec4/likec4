@@ -30,62 +30,47 @@ digraph {
     shape = "rect";
     width = 4.445;
     height = 2.5;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
     style = "filled";
     penwidth = 0;
   ];
   "client" [
     likec4_id = "client";
     likec4_level = 0;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">client</FONT>>;
+    margin = "0.362,0.362";
   ];
   "ui" [
     likec4_id = "z1.s1.ui";
     likec4_level = 2;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">ui</FONT>>;
+    margin = "0.362,0.362";
   ];
-  "s2_ui" [
+  "ui_1" [
     likec4_id = "z1.s2.ui";
     likec4_level = 2;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">ui</FONT>>;
+    margin = "0.362,0.362";
   ];
   "api" [
     likec4_id = "z1.s1.api";
     likec4_level = 2;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">api</FONT>>;
+    margin = "0.362,0.362";
   ];
-  "s2_api" [
+  "api_1" [
     likec4_id = "z1.s2.api";
     likec4_level = 2;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">api</FONT>>;
+    margin = "0.362,0.362";
   ];
   "db" [
     likec4_id = "z1.db";
     likec4_level = 1;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">db</FONT>>;
+    margin = "0.362,0.362";
   ];
   subgraph "cluster_z1" {
     likec4_id = "z1";
@@ -118,26 +103,26 @@ digraph {
       style = "filled";
       margin = 50;
       label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>S2</B></FONT>>;
-      "s2_ui";
-      "s2_api";
+      "ui_1";
+      "api_1";
     }
   }
   subgraph {
     rank = "same";
     "ui";
-    "s2_ui";
+    "ui_1";
   }
   subgraph {
     rank = "same";
     "api";
-    "s2_api";
+    "api_1";
   }
   "client" -> "ui" [
     likec4_id = "7dqxgw";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">uses</FONT></TD></TR></TABLE>>;
   ];
-  "client" -> "s2_ui" [
+  "client" -> "ui_1" [
     likec4_id = "7drqs3";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">uses</FONT></TD></TR></TABLE>>;
@@ -145,13 +130,13 @@ digraph {
   "ui" -> "api" [
     likec4_id = "1tp0394";
     style = "dashed";
-    weight = 2;
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
   ];
-  "s2_ui" -> "s2_api" [
+  "ui_1" -> "api_1" [
     likec4_id = "ugfmg";
     style = "dashed";
-    weight = 2;
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">fetches</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ REST ]</FONT></TD></TR></TABLE>>;
   ];
   "api" -> "db" [
@@ -159,7 +144,7 @@ digraph {
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">very very very long title that should be<BR/>wrapped to multiple lines</FONT></TD></TR></TABLE>>;
   ];
-  "s2_api" -> "db" [
+  "api_1" -> "db" [
     likec4_id = "yziy5";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">very very very long title that should be<BR/>wrapped to multiple lines</FONT></TD></TR></TABLE>>;

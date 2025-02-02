@@ -8,8 +8,6 @@ digraph {
   outputorder = "nodesfirst";
   nodesep = 1.528;
   ranksep = 1.667;
-  pack = 120;
-  packmode = "array_3";
   pad = 0.209;
   fontname = "Arial";
   graph [
@@ -31,26 +29,23 @@ digraph {
     shape = "rect";
     width = 4.445;
     height = 2.5;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
     style = "filled";
     penwidth = 0;
   ];
   "backend" [
     likec4_id = "cloud.backend";
     likec4_level = 1;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">Backend</FONT>>;
+    margin = "0.362,0.362";
   ];
   "s3" [
     likec4_id = "amazon.s3";
     likec4_level = 1;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">S3</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">S3 is a storage service</FONT></TD></TR></TABLE>>;
+    margin = "0.362,0.362";
   ];
   subgraph "cluster_cloud" {
     likec4_id = "cloud";
@@ -77,6 +72,7 @@ digraph {
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";

@@ -285,7 +285,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     {
       "dotpos": "e,354.16,680.87 555.92,511.86 496.53,561.61 422.47,623.65 361.86,674.42",
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
-      "label": "fetches data in zero trust network with
+      "label": "fetches data in zero trust network with 
 sso authentification",
       "labelBBox": {
         "height": 34,
