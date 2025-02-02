@@ -1,40 +1,31 @@
-import { defineBuildConfig } from 'unbuild'
+import { type BuildEntry, defineBuildConfig } from 'unbuild'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-export default defineBuildConfig({
-  clean: true,
-  stub: !isProduction,
-  stubOptions: {
-    jiti: {
-      moduleCache: false,
-      nativeModules: [
-        '@hpcc-js/wasm-graphviz',
-      ],
-    },
+const mkdist: BuildEntry = {
+  input: './src/',
+  outDir: './dist/',
+  builder: 'mkdist',
+  ext: 'js',
+  addRelativeDeclarationExtensions: false,
+  declaration: true,
+  globOptions: {
+    ignore: [
+      '**/__*/**',
+      '**/*.spec.ts',
+    ],
   },
-  declaration: isProduction,
+}
+
+export default defineBuildConfig({
+  entries: [mkdist],
+  clean: true,
   rollup: {
-    commonjs: {
-      exclude: [
-        /\.d\.ts$/,
-        /\.d\.cts$/,
-        /\.d\.mts$/,
-      ],
-    },
-    output: {
-      compact: isProduction,
+    esbuild: {
+      minify: true,
+      minifyIdentifiers: false,
+      lineLimit: 500,
     },
     inlineDependencies: true,
-    // dts: {
-    //   respectExternal: true,
-    //   compilerOptions: {
-    //     noEmitOnError: false,
-    //     strict: false,
-    //     alwaysStrict: false,
-    //     skipLibCheck: true,
-    //     skipDefaultLibCheck: true
-    //   }
-    // }
   },
 })

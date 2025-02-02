@@ -5,7 +5,7 @@ import {
   DefaultRelationshipColor,
   defaultTheme as Theme,
 } from '@likec4/core'
-import { isDefined, isTruthy, only } from 'remeda'
+import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
 
@@ -13,11 +13,20 @@ export function sanitize(text: string) {
   return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 }
 
-export function wrap(text: string, maxChars: number, maxLines?: number) {
+type WrapOptions = {
+  maxchars: number
+  maxLines?: number | undefined
+  sanitize?: ((v: string) => string) | undefined
+}
+export function wrap(text: string, {
+  maxchars,
+  maxLines,
+  sanitize: escape = identity(),
+}: WrapOptions) {
   let lines = wordWrap(text, {
-    width: maxChars,
+    width: maxchars,
     indent: '',
-    escape: sanitize,
+    escape,
   }).split('\n')
   if (isDefined(maxLines) && maxLines > 0 && lines.length > maxLines) {
     lines = lines.slice(0, maxLines - 1)
@@ -40,7 +49,7 @@ function wrapWithFont({
   bold?: boolean
   color?: string | undefined
 }): string {
-  let html = wrap(text, maxchars, maxLines).join('<BR/>')
+  let html = wrap(text, { maxchars, maxLines, sanitize }).join('<BR/>')
   if (bold) {
     html = `<B>${html}</B>`
   }
@@ -134,6 +143,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
 }
 
 export const EDGE_LABEL_MAX_CHARS = 40
+export const EDGE_LABEL_MAX_LINES = 5
 const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
 
 export function edgelabel({ label, technology }: ComputedEdge) {
@@ -144,7 +154,7 @@ export function edgelabel({ label, technology }: ComputedEdge) {
         text: label,
         maxchars: EDGE_LABEL_MAX_CHARS,
         fontsize: 14,
-        maxLines: 5,
+        maxLines: EDGE_LABEL_MAX_LINES,
         bold: label === '[...]',
       }),
     )

@@ -49,6 +49,9 @@ export async function handler({
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
   // await mkdir(likec4AssetsDir, { recursive: true })
 
+  // Explicitly set NODE_ENV to development
+  process.env['NODE_ENV'] = 'development'
+
   const server = await viteDev({
     buildWebcomponent: !DEV,
     hmr: true,
