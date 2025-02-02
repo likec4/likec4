@@ -12662,6 +12662,7 @@ __metadata:
     turbo: "npm:^2.3.4"
     typescript: "npm:^5.7.3"
     vite: "npm:5.4.14"
+    vite-plugin-singlefile: "npm:^2.1.0"
     vitest: "npm:^2.1.8"
   languageName: unknown
   linkType: soft
@@ -14529,6 +14530,18 @@ __metadata:
   version: 1.2.0
   resolution: "vite-plugin-shadow-style@npm:1.2.0"
   checksum: 10c0/3721202ab6a702762dec10daf0ad46a617fb18fdd80bdde3dc86e60c6d9ce54e97ce24a9524c316f82b9b59c5f6b2645baf93d5b33c08df8f0a1ee3a2c92cb50
+  languageName: node
+  linkType: hard
+
+"vite-plugin-singlefile@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "vite-plugin-singlefile@npm:2.1.0"
+  dependencies:
+    micromatch: "npm:^4.0.8"
+  peerDependencies:
+    rollup: ^4.28.1
+    vite: ^5.4.11 || ^6.0.0
+  checksum: 10c0/04b41a05ad9228011ec81dc06426b93724adfe8d7b966aa8c6e28da746be3c1b20b17451201172514df84f60b71cd8fe2477d57cd0cc346727c27a41f19702d3
   languageName: node
   linkType: hard
 

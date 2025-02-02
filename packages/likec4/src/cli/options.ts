@@ -50,3 +50,9 @@ export const useOverview = {
   desc: 'overview all diagrams as graph [experimental]',
   default: false
 } as const satisfies Options
+
+export const outputSingleFile = {
+  boolean: true,
+  type: 'boolean',
+  desc: 'outputs a single self-contained HTML file with all required resources inlined'
+} as const satisfies Options

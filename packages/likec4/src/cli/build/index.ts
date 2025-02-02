@@ -2,7 +2,7 @@
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { CommandModule } from 'yargs'
-import { base, path, useDotBin, useHashHistory, useOverview, webcomponentPrefix } from '../options'
+import { base, path, useDotBin, useHashHistory, useOverview, webcomponentPrefix, outputSingleFile } from '../options'
 import { buildHandler as handler } from './build'
 
 export const buildCmd = {
@@ -24,6 +24,7 @@ export const buildCmd = {
       .option('use-dot', useDotBin)
       .option('webcomponent-prefix', webcomponentPrefix)
       .option('use-overview', useOverview)
+      .option('output-single-file', outputSingleFile)
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
         k.gray('Search for likec4 files in \'src\' and output static site to \'build\'')
@@ -36,7 +37,8 @@ export const buildCmd = {
       useHashHistory: args['use-hash-history'],
       useDotBin: args['use-dot'],
       useOverview: args['use-overview'] ?? false,
-      webcomponentPrefix: args['webcomponent-prefix']
+      webcomponentPrefix: args['webcomponent-prefix'],
+      outputSingleFile: args['output-single-file'] ?? false
     })
   }
 } satisfies CommandModule<object, {
