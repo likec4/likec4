@@ -1,4 +1,4 @@
-import { IconTransform, IconZoomScan } from '@tabler/icons-react'
+import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base/primitives'
 import type { NodeProps } from '../../../base/types'
 import { useEnabledFeature } from '../../../context/DiagramFeatures'
@@ -8,7 +8,7 @@ import { useRelationshipsBrowser } from '../hooks'
 
 type ElementActionsProps = NodeProps<Types.ElementNodeData>
 export const ElementActions = (props: ElementActionsProps) => {
-  const { enableNavigateTo } = useEnabledFeature('NavigateTo')
+  const { enableNavigateTo, enableVscode } = useEnabledFeature('NavigateTo', 'Vscode')
   const diagram = useDiagram()
   const browser = useRelationshipsBrowser()
 
@@ -32,6 +32,16 @@ export const ElementActions = (props: ElementActionsProps) => {
       onClick: (e) => {
         e.stopPropagation()
         browser.navigateTo(fqn, props.id)
+      },
+    })
+  }
+  if (enableVscode) {
+    buttons.push({
+      key: 'goToSource',
+      icon: <IconFileSymlink />,
+      onClick: (e) => {
+        e.stopPropagation()
+        diagram.openSource({ element: fqn })
       },
     })
   }
