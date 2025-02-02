@@ -155,7 +155,7 @@
     "execa": "^9.3.1",
     "fast-equals": "^5.2.2",
     "fdir": "^6.4.2",
-    "framer-motion": "^11.16.0",
+    "framer-motion": "^11.18.2",
     "get-port": "^7.1.0",
     "glob": "^11.0.1",
     "html-to-image": "^1.11.11",

@@ -1958,7 +1958,7 @@ __metadata:
     d3-shape: "npm:^3.2.0"
     esm-env: "npm:^1.2.2"
     fast-equals: "npm:^5.2.2"
-    framer-motion: "npm:^11.16.0"
+    framer-motion: "npm:^11.18.2"
     khroma: "npm:^2.1.0"
     react: "npm:~19.0.0"
     react-dom: "npm:~19.0.0"
@@ -2160,7 +2160,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.2.2"
     fast-equals: "npm:^5.2.2"
-    framer-motion: "npm:^11.16.0"
+    framer-motion: "npm:^11.18.2"
     langium: "npm:3.3.1"
     monaco-editor: "npm:@codingame/monaco-vscode-editor-api@8.0.4"
     monaco-editor-wrapper: "npm:5.5.3"
@@ -7132,12 +7132,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.16.0":
-  version: 11.16.3
-  resolution: "framer-motion@npm:11.16.3"
+"framer-motion@npm:^11.18.2":
+  version: 11.18.2
+  resolution: "framer-motion@npm:11.18.2"
   dependencies:
-    motion-dom: "npm:^11.16.3"
-    motion-utils: "npm:^11.16.0"
+    motion-dom: "npm:^11.18.1"
+    motion-utils: "npm:^11.18.1"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -7150,7 +7150,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/2b4284f6175d59107a7db1890debceb4b4db975d2af30c626851a16c0b761a544eb70eb8ebfc136b9fec2b6f5616f5451025728582acbae6ba4b690e191f49b0
+  checksum: 10c0/41b1ef1b4e54ea13adaf01d61812a8783d2352f74641c91b50519775704bc6274db6b6863ff494a1f705fa6c6ed8f4df3497292327c906d53ea0129cef3ec361
   languageName: node
   linkType: hard
 
@@ -8911,7 +8911,7 @@ __metadata:
     execa: "npm:^9.3.1"
     fast-equals: "npm:^5.2.2"
     fdir: "npm:^6.4.2"
-    framer-motion: "npm:^11.16.0"
+    framer-motion: "npm:^11.18.2"
     get-port: "npm:^7.1.0"
     glob: "npm:^11.0.1"
     html-to-image: "npm:^1.11.11"
@@ -10430,19 +10430,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^11.16.3":
-  version: 11.16.3
-  resolution: "motion-dom@npm:11.16.3"
+"motion-dom@npm:^11.18.1":
+  version: 11.18.1
+  resolution: "motion-dom@npm:11.18.1"
   dependencies:
-    motion-utils: "npm:^11.16.0"
-  checksum: 10c0/240eca76c58fa2a652b3744e6bb5112b266676699890d05a9ccc80e7976ec9d1b64f7cea93723900192185ab1508487f8d83466a8b4a8b06b981582b7027a6ac
+    motion-utils: "npm:^11.18.1"
+  checksum: 10c0/98378bdf9d77870829cdf3624c5eff02e48cfa820dfc74450364d7421884700048d60e277bfbf477df33270fbae4c1980e5914586f5b6dff28d4921fdca8ac47
   languageName: node
   linkType: hard
 
-"motion-utils@npm:^11.16.0":
-  version: 11.16.0
-  resolution: "motion-utils@npm:11.16.0"
-  checksum: 10c0/e68efa08b9546a2fb065537cedcbab1a416d43cdc5773e02ea01408c276e56bbea9ef76d330e80d8536a6ac585b0bbb6f4f2b9d97637d8d36418483e4492ddff
+"motion-utils@npm:^11.18.1":
+  version: 11.18.1
+  resolution: "motion-utils@npm:11.18.1"
+  checksum: 10c0/dac083bdeb6e433a277ac4362211b0fdce59ff09d6f7897f0f49d1e3561209c6481f676876daf99a33485054bc7e4b1d1b8d1de16f7b1e5c6f117fe76358ca00
   languageName: node
   linkType: hard
 
