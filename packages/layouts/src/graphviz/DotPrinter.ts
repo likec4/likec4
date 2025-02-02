@@ -1,6 +1,7 @@
 import {
   compareFqnHierarchically,
   DefaultRelationshipColor,
+  defaultTheme,
   defaultTheme as Theme,
   DefaultThemeColor,
   hierarchyDistance,
@@ -8,21 +9,23 @@ import {
   isThemeColor,
   nameFromFqn,
   nonNullable,
-  parentFqn,
 } from '@likec4/core'
-import type {
-  Color,
-  ComputedEdge,
+import {
+  type Color,
+  type ComputedEdge,
+  type ComputedView,
+  type EdgeId,
+  type ElementThemeColorValues,
+  type Fqn,
+  type NodeId,
+  type RelationshipLineType,
+  type RelationshipThemeColorValues,
+  type XYPoint,
   ComputedNode,
-  ComputedView,
-  EdgeId,
-  ElementThemeColorValues,
-  Fqn,
-  RelationshipLineType,
-  RelationshipThemeColorValues,
-  XYPoint,
 } from '@likec4/core/types'
 import { logger } from '@likec4/log'
+import Graph from 'graphology'
+
 import {
   concat,
   difference,
@@ -80,14 +83,33 @@ export type ApplyManualLayoutData = {
   }>
 }
 
+type GraphologyNodeAttributes = {
+  modelRef: Fqn | null
+  deploymentRef: Fqn | null
+  origin: ComputedNode
+  level: number
+  depth: number
+  maxConnectedHierarchyDistance: number
+}
+type GraphologyEdgeAttributes = {
+  origin: ComputedEdge
+  weight: number
+  hierarchyDistance: number
+}
+
 export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   private ids = new Set<string>()
-  private subgraphs = new Map<Fqn, SubgraphModel>()
-  private nodes = new Map<Fqn, NodeModel>()
+  private subgraphs = new Map<NodeId, SubgraphModel>()
+  private nodes = new Map<NodeId, NodeModel>()
   protected edges = new Map<EdgeId, EdgeModel>()
-  protected compoundIds: Set<Fqn>
+  protected compoundIds: Set<NodeId>
   protected edgesWithCompounds: Set<EdgeId>
-  protected edgeDistances: ReadonlyMap<string, number>
+
+  protected graphology = new Graph<GraphologyNodeAttributes, GraphologyEdgeAttributes>({
+    allowSelfLoops: true,
+    multi: true,
+    type: 'directed',
+  })
 
   public readonly graphvizModel: RootGraphModel
 
@@ -100,11 +122,72 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
           .map(n => n.id)
         : [],
     )
-    const edgeDistances = new Map<string, number>()
-    for (const edge of view.edges) {
-      edgeDistances.set(edge.id, hierarchyDistance(edge.source, edge.target))
+    for (const node of view.nodes) {
+      this.graphology.addNode(node.id, {
+        origin: node,
+        level: node.level,
+        depth: node.depth ?? 0,
+        modelRef: ComputedNode.modelRef(node),
+        deploymentRef: ComputedNode.deploymentRef(node),
+        maxConnectedHierarchyDistance: 0,
+      })
     }
-    this.edgeDistances = edgeDistances
+
+    for (const edge of view.edges) {
+      // First compare deploymentRef of any
+      let sourceFqn = this.graphology.getNodeAttribute(edge.source, 'deploymentRef')
+      let targetFqn = this.graphology.getNodeAttribute(edge.target, 'deploymentRef')
+      if (sourceFqn === null || targetFqn === null) {
+        // Then compare modelRef
+        sourceFqn = this.graphology.getNodeAttribute(edge.source, 'modelRef')
+        targetFqn = this.graphology.getNodeAttribute(edge.target, 'modelRef')
+      }
+
+      let distance = -1
+      if (sourceFqn !== null && targetFqn !== null) {
+        distance = hierarchyDistance(sourceFqn, targetFqn)
+      } else {
+        logger.warn(`Edge ${edge.id} of view ${view.id} is invalid, sourceFqn: ${sourceFqn}, targetFqn: ${targetFqn}`)
+      }
+
+      this.graphology.addEdgeWithKey(edge.id, edge.source, edge.target, {
+        origin: edge,
+        hierarchyDistance: distance,
+        weight: 1,
+      })
+
+      if (distance > this.graphology.getNodeAttribute(edge.source, 'maxConnectedHierarchyDistance')) {
+        this.graphology.mergeNodeAttributes(edge.source, {
+          maxConnectedHierarchyDistance: distance,
+        })
+      }
+      if (distance > this.graphology.getNodeAttribute(edge.target, 'maxConnectedHierarchyDistance')) {
+        this.graphology.mergeNodeAttributes(edge.target, {
+          maxConnectedHierarchyDistance: distance,
+        })
+      }
+    }
+
+    this.graphology.forEachEdge((edgeId, { hierarchyDistance }, _s, _t, sourceAttributes, targetAttributes) => {
+      const maxDistance = Math.max(
+        sourceAttributes.maxConnectedHierarchyDistance,
+        targetAttributes.maxConnectedHierarchyDistance,
+      )
+      if (maxDistance > hierarchyDistance) {
+        this.graphology.mergeEdgeAttributes(edgeId, {
+          weight: maxDistance - hierarchyDistance + 1,
+        })
+      } else {
+        const sourceDegree = this.graphology.directedDegree(_s)
+        const targetDegree = this.graphology.directedDegree(_t)
+        if (sourceDegree === 1 && targetDegree === 1 && hierarchyDistance > 1) {
+          this.graphology.mergeEdgeAttributes(edgeId, {
+            weight: hierarchyDistance,
+          })
+        }
+      }
+    })
+
     const G = this.graphvizModel = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
@@ -122,11 +205,11 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     // ----------------------------------------------
     // Traverse clusters first
     const traverseClusters = (element: ComputedNode, parent: GraphBaseModel) => {
-      const id = this.nodeId(element)
+      const id = this.generateGraphvizId(element)
       const subgraph = this.elementToSubgraph(element, parent.subgraph(id))
       this.subgraphs.set(element.id, subgraph)
       for (const childId of element.children) {
-        const child = this.viewElement(childId)
+        const child = this.computedNode(childId)
         if (isCompound(child)) {
           traverseClusters(child, subgraph)
         } else {
@@ -143,7 +226,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
           topCompound.push(element)
         }
       } else {
-        const id = this.nodeId(element)
+        const id = this.generateGraphvizId(element)
         const node = this.elementToNode(element, G.node(id))
         this.nodes.set(element.id, node)
       }
@@ -183,14 +266,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
-      // [_.mclimit]: 5,
-      // [_.nslimit]: 5,
-      // [_.nslimit1]: 5,
-      // [_.ratio]
       [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 110),
       [_.ranksep]: pxToInch(autoLayout.rankSep ?? 120),
-      [_.pack]: pxToPoints(autoLayout.rankSep ?? 120),
-      [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15),
       [_.fontname]: FontName,
     })
@@ -210,6 +287,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.shape]: 'rect',
       [_.width]: pxToInch(320),
       [_.height]: pxToInch(180),
+      [_.fillcolor]: defaultTheme.elements[DefaultThemeColor].fill,
+      [_.fontcolor]: defaultTheme.elements[DefaultThemeColor].hiContrast,
+      [_.color]: defaultTheme.elements[DefaultThemeColor].stroke,
       [_.style]: 'filled',
       [_.penwidth]: 0,
     })
@@ -238,23 +318,12 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     return null
   }
 
-  protected nodeId(node: ComputedNode) {
+  protected generateGraphvizId(node: ComputedNode) {
     const _compound = isCompound(node)
     let elementName = nameFromFqn(node.id).toLowerCase()
     let name = this.checkNodeId(elementName, _compound)
     if (name !== null) {
       return name
-    }
-    // try to use parent name
-    let fqn = node.id
-    let parentId
-    while ((parentId = parentFqn(fqn))) {
-      elementName = nameFromFqn(parentId).toLowerCase() + '_' + elementName
-      name = this.checkNodeId(elementName, _compound)
-      if (name !== null) {
-        return name
-      }
-      fqn = parentId
     }
     // use post-index
     elementName = nameFromFqn(node.id).toLowerCase()
@@ -292,11 +361,17 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
-      [_.fillcolor]: colorValues.fill,
-      [_.fontcolor]: colorValues.hiContrast,
-      [_.color]: colorValues.stroke,
+      [_.label]: nodeLabel(element, colorValues),
       [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(26)}`,
     })
+
+    if (element.color !== DefaultThemeColor) {
+      node.attributes.apply({
+        [_.fillcolor]: colorValues.fill,
+        [_.fontcolor]: colorValues.hiContrast,
+        [_.color]: colorValues.stroke,
+      })
+    }
     switch (element.shape) {
       case 'cylinder':
       case 'storage': {
@@ -330,8 +405,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       default:
         break
     }
-    // add label to the end
-    node.attributes.set(_.label, nodeLabel(element, colorValues))
     return node
   }
 
@@ -340,38 +413,38 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
    */
   protected abstract addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null
 
-  protected leafElements(parentId: Fqn | null): ComputedNode[] {
+  protected leafElements(parentId: NodeId | null): ComputedNode[] {
     if (parentId === null) {
       return this.view.nodes.filter(n => !isCompound(n))
     }
-    return this.viewElement(parentId).children.flatMap(childId => {
-      const child = this.viewElement(childId)
+    return this.computedNode(parentId).children.flatMap(childId => {
+      const child = this.computedNode(childId)
       return isCompound(child) ? this.leafElements(child.id) : child
     })
   }
 
-  protected descendants(parentId: Fqn | null): ComputedNode[] {
+  protected descendants(parentId: NodeId | null): ComputedNode[] {
     if (parentId === null) {
       return this.view.nodes.slice()
     }
-    return this.viewElement(parentId).children.flatMap(childId => {
-      const child = this.viewElement(childId)
+    return this.computedNode(parentId).children.flatMap(childId => {
+      const child = this.computedNode(childId)
       return [child, ...this.descendants(child.id)]
     })
   }
 
-  protected viewElement(id: Fqn) {
+  protected computedNode(id: NodeId) {
     return nonNullable(
       this.view.nodes.find(n => n.id === id),
       `Node ${id} not found`,
     )
   }
 
-  protected getGraphNode(id: Fqn) {
+  protected getGraphNode(id: NodeId) {
     return this.nodes.get(id) ?? null
   }
 
-  protected getSubgraph(id: Fqn) {
+  protected getSubgraph(id: NodeId) {
     return this.subgraphs.get(id) ?? null
   }
 
@@ -380,10 +453,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
    * pick nested node to use as endpoint
    */
   protected edgeEndpoint(
-    endpointId: Fqn,
+    endpointId: NodeId,
     pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined,
   ) {
-    let element = this.viewElement(endpointId)
+    let element = this.computedNode(endpointId)
     let endpoint = this.getGraphNode(endpointId)
     // see https://graphviz.org/docs/attrs/lhead/
     let logicalEndpoint: string | undefined
@@ -409,7 +482,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     if (parentId === null) {
       return this.view.edges.slice()
     }
-    const parent = this.viewElement(parentId)
+    const parent = this.computedNode(parentId)
     return pipe(
       this.descendants(parentId),
       flatMap(child => {

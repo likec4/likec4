@@ -1,7 +1,7 @@
 import type { ComputedEdge, ComputedElementView, ComputedNode, ComputedView, Fqn } from '@likec4/core'
-import { DefaultArrowType, isome, nonNullable } from '@likec4/core'
+import { DefaultArrowType, nonNullable } from '@likec4/core'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
-import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
+import type { EdgeModel, NodeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
@@ -21,11 +21,13 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
       return acc
     }, [] as ComputedNode[])
 
+    let applyNewRank = false
+
     for (const compound of compounds) {
       const children = pipe(
         compound.children,
         filter(id => !this.compoundIds.has(id)),
-        map(id => this.viewElement(id)),
+        map(id => this.computedNode(id)),
         filter(nd => nd.inEdges.length === 0 && nd.outEdges.length === 0),
       )
       if (children.length <= 2) {
@@ -64,22 +66,44 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
             prevChunkHead = nd
           }
         })
+        applyNewRank = applyNewRank || !!ranked
       })
     }
-    // Remove pack layout if there are labeled edges with compounds
-    if (isome(this.edgesWithCompounds, edgeId => this.view.edges.some(e => e.id === edgeId && e.label))) {
-      G.delete(_.pack)
-      G.delete(_.packmode)
+
+    // let sources: SubgraphModel | undefined
+    // let sinks: SubgraphModel | undefined
+    // this.graphology.forEachNode((nodeId, { origin }) => {
+    //   if (isCompound(origin) || isNonNullish(origin.parent)) {
+    //     return
+    //   }
+    //   const nd = nonNullable(this.getGraphNode(origin.id))
+    //   if (this.graphology.inDegree(nodeId) === 0) {
+    //     sources ??= G.createSubgraph({ [_.rank]: 'min' })
+    //     sources.node(nd.id)
+    //   }
+    //   if (this.graphology.outDegree(nodeId) === 0 && this.graphology.inDegree(nodeId) > 0) {
+    //     sinks ??= G.createSubgraph({ [_.rank]: 'max' })
+    //     sinks.node(nd.id)
+    //   }
+    // })
+
+    // applyNewRank = applyNewRank || !!sources || !!sinks
+
+    if (applyNewRank) {
+      G.set(_.newrank, true)
+      G.set(_.clusterrank, 'global')
     }
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
-    const viewEdges = this.view.edges
+    // const viewEdges = this.view.edges
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
     const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
     const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
 
     const edgeParentId = edge.parent
+
+    const edgeAttrs = this.graphology.getEdgeAttributes(edge.id)
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
@@ -91,15 +115,8 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
 
     const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
 
-    const thisEdgeDistance = this.edgeDistances.get(edge.id) ?? 0
-    const maxDistance = [
-      ...sourceNode.inEdges,
-      ...sourceNode.outEdges,
-      ...targetNode.inEdges,
-      ...targetNode.outEdges,
-    ].reduce((max, edgeId) => Math.max(max, this.edgeDistances.get(edgeId) ?? 0), 0)
-    if (maxDistance - thisEdgeDistance > 1) {
-      e.attributes.set(_.weight, maxDistance - thisEdgeDistance)
+    if (!this.graphology.hasDirectedEdge(edge.target, edge.source) && edgeAttrs.weight > 1) {
+      e.attributes.set(_.weight, edgeAttrs.weight)
     }
 
     const label = edgelabel(edge)
@@ -163,7 +180,7 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
     }
 
     // Skip the following heuristic if this is the only edge in view
-    if (viewEdges.length === 1) {
+    if (this.view.edges.length === 1) {
       return e
     }
 
@@ -171,7 +188,7 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
     // if it is the only edge within container.
     let otherEdges
     if (edgeParentId === null && sourceNode.parent == null && targetNode.parent == null) {
-      otherEdges = viewEdges.filter(e => {
+      otherEdges = this.view.edges.filter(e => {
         // exclude self
         if (e.id === edge.id) {
           return false
@@ -187,8 +204,8 @@ export class ElementViewPrinter<V extends ComputedView = ComputedElementView> ex
         ) {
           return false
         }
-        const edgeSource = this.viewElement(e.source)
-        const edgeTarget = this.viewElement(e.target)
+        const edgeSource = this.computedNode(e.source)
+        const edgeTarget = this.computedNode(e.target)
         // hide edges with compound endpoints
         if (isCompound(edgeSource) || isCompound(edgeTarget)) {
           return false

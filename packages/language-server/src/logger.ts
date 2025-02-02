@@ -10,11 +10,10 @@ export function logError(err: unknown): void {
   logger.error(err)
 }
 
+/**
+ * Logs an error as warning (not critical)
+ */
 export function logWarnError(err: unknown): void {
-  if (err instanceof Error) {
-    logger.warn(err.stack ?? err.message)
-    return
-  }
   logger.warn(err)
 }
 

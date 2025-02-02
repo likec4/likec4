@@ -8,8 +8,6 @@ digraph {
   outputorder = "nodesfirst";
   nodesep = 1.528;
   ranksep = 1.667;
-  pack = 120;
-  packmode = "array_3";
   pad = 0.209;
   fontname = "Arial";
   graph [
@@ -31,44 +29,35 @@ digraph {
     shape = "rect";
     width = 4.445;
     height = 2.5;
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
     style = "filled";
     penwidth = 0;
   ];
   "customer" [
     likec4_id = "customer";
     likec4_level = 0;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">customer</FONT>>;
+    margin = "0.362,0.362";
   ];
   "support" [
     likec4_id = "support";
     likec4_level = 0;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Support Engineer</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Support engineers are responsible for<BR/>supporting customers</FONT></TD></TR></TABLE>>;
+    margin = "0.362,0.362";
   ];
   "cloud" [
     likec4_id = "cloud";
     likec4_level = 0;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<FONT POINT-SIZE="19">cloud</FONT>>;
+    margin = "0.362,0.362";
   ];
   "amazon" [
     likec4_id = "amazon";
     likec4_level = 0;
-    fillcolor = "#3b82f6";
-    fontcolor = "#eff6ff";
-    color = "#2563eb";
-    margin = "0.362,0.362";
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
+    margin = "0.362,0.362";
   ];
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";

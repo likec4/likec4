@@ -15,11 +15,6 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
 
   protected override postBuild(G: RootGraphModel): void {
     G.set(_.TBbalance, 'max')
-    // Remove pack layout if there are labeled edges with compounds
-    if (isome(this.edgesWithCompounds, edgeId => this.view.edges.some(e => e.id === edgeId && e.label))) {
-      G.delete(_.pack)
-      G.delete(_.packmode)
-    }
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
@@ -53,15 +48,10 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     const label = stepEdgeLabel(step, labelText)
     e.attributes.set(_.label, label)
 
-    const thisEdgeDistance = this.edgeDistances.get(edge.id) ?? 0
-    const maxDistance = [
-      ...sourceNode.inEdges,
-      ...sourceNode.outEdges,
-      ...targetNode.inEdges,
-      ...targetNode.outEdges,
-    ].reduce((max, edgeId) => Math.max(max, this.edgeDistances.get(edgeId) ?? 0), 0)
-    if (maxDistance - thisEdgeDistance > 1) {
-      e.attributes.set(_.weight, maxDistance - thisEdgeDistance)
+    const weight = this.graphology.getEdgeAttribute(edge.id, 'weight')
+
+    if (edge.source !== edge.target && weight > 1) {
+      e.attributes.set(_.weight, weight)
     }
 
     // IF we already have "seen" the target node in previous steps

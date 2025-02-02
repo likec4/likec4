@@ -3,7 +3,6 @@ import {
   type ComputedEdge,
   ComputedNode,
   DefaultArrowType,
-  hierarchyDistance,
   nonNullable,
 } from '@likec4/core'
 import { filter, first, forEach, groupBy, hasAtLeast, isNonNullish, last, map, pipe, tap, values } from 'remeda'
@@ -83,15 +82,9 @@ export class DeploymentViewPrinter extends DotPrinter<ComputedDeploymentView> {
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    const thisEdgeDistance = this.edgeDistances.get(edge.id) ?? 0
-    const maxDistance = [
-      ...sourceNode.inEdges,
-      ...sourceNode.outEdges,
-      ...targetNode.inEdges,
-      ...targetNode.outEdges,
-    ].reduce((max, edgeId) => Math.max(max, this.edgeDistances.get(edgeId) ?? 0), 0)
-    if (maxDistance - thisEdgeDistance > 1) {
-      e.attributes.set(_.weight, maxDistance - thisEdgeDistance)
+    const weight = this.graphology.getEdgeAttribute(edge.id, 'weight')
+    if (weight > 1 && !this.graphology.hasDirectedEdge(edge.target, edge.source)) {
+      e.attributes.set(_.weight, weight)
     }
 
     const label = edgelabel(edge)

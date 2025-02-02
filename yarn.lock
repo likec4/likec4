@@ -2094,6 +2094,8 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.17.7"
     execa: "npm:^9.3.1"
+    graphology: "npm:^0.25.4"
+    graphology-types: "npm:^0.24.8"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
     p-limit: "npm:^6.2.0"
