@@ -1,7 +1,5 @@
 import { type BuildEntry, defineBuildConfig } from 'unbuild'
 
-const isProduction = process.env.NODE_ENV === 'production'
-
 const mkdist: BuildEntry = {
   input: './src/',
   outDir: './dist/',
@@ -26,7 +24,7 @@ const bundled: BuildEntry = {
 }
 
 export default defineBuildConfig({
-  entries: isProduction ? [mkdist, bundled] : [mkdist],
+  entries: [mkdist, bundled],
   clean: true,
   rollup: {
     esbuild: {
