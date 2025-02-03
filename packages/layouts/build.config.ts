@@ -1,7 +1,5 @@
 import { type BuildEntry, defineBuildConfig } from 'unbuild'
 
-const isProduction = process.env.NODE_ENV === 'production'
-
 const mkdist: BuildEntry = {
   input: './src/',
   outDir: './dist/',
