@@ -111,7 +111,7 @@ export class ActiveGroupMemory extends Memory<ActiveGroupCtx> {
   ): ActiveGroupMemory {
     const groupId = `@gr${memory.groups.length + 1}` as NodeId
     if (memory instanceof ActiveGroupMemory) {
-      const stack = Stack.from(memory.stack)
+      const stack = Stack.from([...memory.stack].reverse())
       const state = memory.mutableState()
       state.groups.push(new NodesGroup(groupId, rule, memory.activeGroupId))
       stack.push(groupId)
