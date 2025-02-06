@@ -233,4 +233,36 @@ describe('groups', () => {
       }
     `)
   })
+
+  it('should work with deep nesting', () => {
+    const { nodeIds, nodes } = computeView([
+      $group([
+        $group([
+          $group([]),
+          $group([]),
+        ]),
+      ])
+    ])
+    expect.soft(nodeIds).toEqual([
+      '@gr1',
+      '@gr2',
+      '@gr3',
+      '@gr4',
+    ])
+    // parent of each node
+    expect(
+      pipe(
+        nodes,
+        indexBy(prop('id')),
+        mapValues(prop('parent')),
+      ),
+    ).toMatchInlineSnapshot(`
+      {
+        "@gr1": null,
+        "@gr2": "@gr1",
+        "@gr3": "@gr2",
+        "@gr4": "@gr2",
+      }
+    `)
+  })
 })
