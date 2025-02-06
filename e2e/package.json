@@ -15,11 +15,11 @@
   },
   "devDependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.50.1",
     "likec4": "file:../packages/likec4/package.tgz",
     "std-env": "^3.7.0",
     "typescript": "^5.7.3",
-    "vitest": "^2.1.8",
+    "vitest": "^2.1.9",
     "zx": "^8.1.8"
   },
   "resolutions": {
