@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.20.2",
+  "version": "1.20.3",
   "packageManager": "yarn@4.6.0",
   "private": true,
   "scripts": {

@@ -1,3 +1,22 @@
+## [1.20.3](https://github.com/likec4/likec4/compare/v1.20.2...v1.20.3) (2025-02-06)
+
+### Improvements
+
+* **cli:** Add --output-single-file flag to build give self-contained HTML file (thanks @rnwood, [#1510](https://github.com/likec4/likec4/issues/1510))
+* **diagram:** Added go-to-source button to nodes inside relationship browser (thanks @pavelpykhtin, [#1485](https://github.com/likec4/likec4/issues/1485))
+
+### Bug Fixes
+
+* **diagram:**  boundaries of a parent node calculated incorrectly on manual layout (thanks @pavelpykhtin, closes [#1516](https://github.com/likec4/likec4/issues/1516))
+* **layout:** nesting of the groups on 3+ level (thanks @pavelpykhtin, closes [#1519](https://github.com/likec4/likec4/issues/1519))
+* **diagram:** `n.incoming().flatMap is not a function` in safari (thanks @davydkov, [afd6293](https://github.com/likec4/likec4/commit/afd6293e6cf4039b4fa238158e33764d6970e4da))
+* **layout:** dont use `pack` in graphviz (thanks @davydkov, [#1512](https://github.com/likec4/likec4/issues/1512))
+
+### New Contributors
+
+@rnwood made their first contribution in [#1510](https://github.com/likec4/likec4/issues/1510)
+
+
 ## [1.20.2](https://github.com/likec4/likec4/compare/v1.20.1...v1.20.2) (2025-02-01)
 
 ### Improvements
