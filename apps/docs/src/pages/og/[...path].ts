@@ -6,7 +6,7 @@ const collectionEntries = await getCollection('docs')
 /** Paths for all of our Markdown content we want to generate OG images for. */
 const pages = process.env.SKIP_OG
   ? []
-  : Object.fromEntries(collectionEntries.map(({ slug, data }) => [slug, data]))
+  : Object.fromEntries(collectionEntries.map(({ id, data }) => [id, data]))
 
 export const { getStaticPaths, GET } = OGImageRoute({
   param: 'path',
@@ -23,32 +23,32 @@ export const { getStaticPaths, GET } = OGImageRoute({
       },
       bgImage: {
         path: './src/assets/og/og-bg.png',
-        fit: 'cover'
+        fit: 'cover',
       },
       font: {
         title: {
           size: 72,
           lineHeight: 1.25,
           families: [
-            'IBM Plex Sans'
+            'IBM Plex Sans',
           ],
           weight: 'Medium',
-          color: [255, 255, 255]
+          color: [255, 255, 255],
         },
         description: {
           size: 42,
           lineHeight: 1.3,
           families: [
-            'IBM Plex Sans'
+            'IBM Plex Sans',
           ],
           weight: 'Normal',
-          color: [255, 255, 255]
-        }
+          color: [255, 255, 255],
+        },
       },
       fonts: [
         './src/pages/og/_fonts/ibm-plex-sans-medium.ttf',
-        './src/pages/og/_fonts/ibm-plex-sans-regular.ttf'
-      ]
+        './src/pages/og/_fonts/ibm-plex-sans-regular.ttf',
+      ],
     }
-  }
+  },
 })

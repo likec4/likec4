@@ -77,6 +77,7 @@ export async function viteReactConfig({
       rollupOptions: {
         external: [
           'likec4/react',
+          'likec4/model',
           'react',
           'react-dom',
           'react/jsx-runtime',
