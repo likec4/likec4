@@ -1920,7 +1920,7 @@ __metadata:
     object-hash: "npm:^3.0.0"
     obliterator: "npm:^2.0.5"
     remeda: "npm:^2.19.0"
-    turbo: "npm:^2.3.4"
+    turbo: "npm:^2.4.0"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     unbuild: "npm:^3.3.1"
@@ -2068,7 +2068,7 @@ __metadata:
     remeda: "npm:^2.19.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.4"
+    turbo: "npm:^2.4.0"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
@@ -2102,7 +2102,7 @@ __metadata:
     remeda: "npm:^2.19.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    turbo: "npm:^2.3.4"
+    turbo: "npm:^2.4.0"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     unbuild: "npm:^3.3.1"
@@ -2176,7 +2176,7 @@ __metadata:
     remeda: "npm:^2.19.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.4"
+    turbo: "npm:^2.4.0"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
@@ -9006,7 +9006,7 @@ __metadata:
     std-env: "npm:^3.8.0"
     tslib: "npm:^2.8.1"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.4"
+    turbo: "npm:^2.4.0"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     vscode-jsonrpc: "npm:8.2.0"
@@ -9093,7 +9093,7 @@ __metadata:
     terser: "npm:^5.37.0"
     tinyrainbow: "npm:^1.2.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.4"
+    turbo: "npm:^2.4.0"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
@@ -12886,7 +12886,7 @@ __metadata:
     npm-run-all2: "npm:^7.0.1"
     shipjs: "npm:^0.27.0"
     tsx: "npm:~4.19.2"
-    turbo: "npm:^2.3.4"
+    turbo: "npm:^2.4.0"
     typescript: "npm:^5.7.3"
     vite: "npm:5.4.14"
     vitest: "npm:^2.1.8"
@@ -14118,7 +14118,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.3.4":
+"turbo@npm:^2.4.0":
   version: 2.4.0
   resolution: "turbo@npm:2.4.0"
   dependencies:
