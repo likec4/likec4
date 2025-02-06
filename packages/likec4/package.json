@@ -188,7 +188,7 @@
     "vite-plugin-dts": "^4.5.0",
     "vite-plugin-shadow-style": "^1.2.0",
     "vite-plugin-singlefile": "^2.1.0",
-    "vitest": "^2.1.8",
+    "vitest": "^2.1.9",
     "yargs": "17.7.2"
   },
   "packageManager": "yarn@4.6.0"
