@@ -1,21 +1,20 @@
 ## [1.20.3](https://github.com/likec4/likec4/compare/v1.20.2...v1.20.3) (2025-02-06)
 
+### Improvements
+
+* **cli:** Add --output-single-file flag to build give self-contained HTML file (thanks @rnwood, [#1510](https://github.com/likec4/likec4/issues/1510))
+* **diagram:** Added go-to-source button to nodes inside relationship browser (thanks @pavelpykhtin, [#1485](https://github.com/likec4/likec4/issues/1485))
 
 ### Bug Fixes
 
-* boundaries of a parent node calculated incorrectly on manual layout ([#1520](https://github.com/likec4/likec4/issues/1520)) ([a689e06](https://github.com/likec4/likec4/commit/a689e063440066d19029c63b035f6be59650bd68)), closes [#1516](https://github.com/likec4/likec4/issues/1516)
-* **deps:** update [@vanilla-extract](https://github.com/vanilla-extract) ([#1511](https://github.com/likec4/likec4/issues/1511)) ([b6b5586](https://github.com/likec4/likec4/commit/b6b5586898dc377020c5045964ee3e864efd535a))
-* dev build is broken ([1f4cab1](https://github.com/likec4/likec4/commit/1f4cab13754dd9e0bac4201fe61e31a941bf6c6c)), closes [#1515](https://github.com/likec4/likec4/issues/1515)
-* **diagram:** `n.incoming().flatMap is not a function` in safari ([afd6293](https://github.com/likec4/likec4/commit/afd6293e6cf4039b4fa238158e33764d6970e4da))
-* **layout:** dont use `pack` in graphviz ([#1512](https://github.com/likec4/likec4/issues/1512)) ([5b2bb1b](https://github.com/likec4/likec4/commit/5b2bb1b8eca228121ed707c0cbd61d0d46a9b9e8))
-* nesting of the groups on 3+ level ([#1524](https://github.com/likec4/likec4/issues/1524)) ([4f57236](https://github.com/likec4/likec4/commit/4f572368146f45253910600419e1633651e44bd4)), closes [#1519](https://github.com/likec4/likec4/issues/1519)
+* **diagram:**  boundaries of a parent node calculated incorrectly on manual layout (thanks @pavelpykhtin, closes [#1516](https://github.com/likec4/likec4/issues/1516))
+* **layout:** nesting of the groups on 3+ level (thanks @pavelpykhtin, closes [#1519](https://github.com/likec4/likec4/issues/1519))
+* **diagram:** `n.incoming().flatMap is not a function` in safari (thanks @davydkov, [afd6293](https://github.com/likec4/likec4/commit/afd6293e6cf4039b4fa238158e33764d6970e4da))
+* **layout:** dont use `pack` in graphviz (thanks @davydkov, [#1512](https://github.com/likec4/likec4/issues/1512))
 
+### New Contributors
 
-### Features
-
-* **cli:** Add --output-single-file flag to build give self-contained HTML file ([#1510](https://github.com/likec4/likec4/issues/1510)) ([1cfb31c](https://github.com/likec4/likec4/commit/1cfb31c016dc486cad6fad457ee61d5b4dccec2d))
-* **diagram:** Added go-to-source button to nodes inside relationship browser ([#1485](https://github.com/likec4/likec4/issues/1485)) ([0674f2d](https://github.com/likec4/likec4/commit/0674f2d8cb931c9ca77afa6085f9f2b030cca698))
-
+@rnwood made their first contribution in [#1510](https://github.com/likec4/likec4/issues/1510)
 
 
 ## [1.20.2](https://github.com/likec4/likec4/compare/v1.20.1...v1.20.2) (2025-02-01)
