@@ -1999,7 +1999,7 @@ __metadata:
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     starlight-heading-badges: "npm:^0.3.0"
-    starlight-links-validator: "npm:^0.13.4"
+    starlight-links-validator: "npm:^0.14.2"
     tsx: "npm:~4.19.2"
     typescript: "npm:^5.7.3"
   languageName: unknown
@@ -3953,17 +3953,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/picomatch@npm:2.3.3":
-  version: 2.3.3
-  resolution: "@types/picomatch@npm:2.3.3"
-  checksum: 10c0/5ad7f891eb3e16e8eb1f51615f0b755bc44ac5dff5a1e2513229f307f72e226c917c6b9a829a97134cedbec727036f885890a55b1975b6e3f381b6545b962c4d
-  languageName: node
-  linkType: hard
-
 "@types/picomatch@npm:^2.3.4":
   version: 2.3.4
   resolution: "@types/picomatch@npm:2.3.4"
   checksum: 10c0/6eaa55e2867f8dd6c974261ff7f3e463c8f6afa8045225868ff45b25acc08c17c9705f213035700df51e4a6bb45633eb258b91b654eddd3f21acf0bab088d092
+  languageName: node
+  linkType: hard
+
+"@types/picomatch@npm:^3.0.1":
+  version: 3.0.2
+  resolution: "@types/picomatch@npm:3.0.2"
+  checksum: 10c0/f35d16fe10a6e13ead6499dd7d7d317e4fd78e48260398104e837e5ca83d393024bdc6f432cb644c0a69b0726a071fcc6eb09befbbcfafb3c3c5f71dbbfde487
   languageName: node
   linkType: hard
 
@@ -7529,7 +7529,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"github-slugger@npm:2.0.0, github-slugger@npm:^2.0.0":
+"github-slugger@npm:^2.0.0":
   version: 2.0.0
   resolution: "github-slugger@npm:2.0.0"
   checksum: 10c0/21b912b6b1e48f1e5a50b2292b48df0ff6abeeb0691b161b3d93d84f4ae6b1acd6ae23702e914af7ea5d441c096453cf0f621b72d57893946618d21dd1a1c486
@@ -7734,20 +7734,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hast-util-from-html@npm:2.0.1":
-  version: 2.0.1
-  resolution: "hast-util-from-html@npm:2.0.1"
-  dependencies:
-    "@types/hast": "npm:^3.0.0"
-    devlop: "npm:^1.1.0"
-    hast-util-from-parse5: "npm:^8.0.0"
-    parse5: "npm:^7.0.0"
-    vfile: "npm:^6.0.0"
-    vfile-message: "npm:^4.0.0"
-  checksum: 10c0/856ceec209940ac4f9db52bf6338b97fb11f27e6d5b930f89676bc16ee282c06f9ff2a17254280803aefdf740507cf3004f181d0286b04dda11907852decbe77
-  languageName: node
-  linkType: hard
-
 "hast-util-from-html@npm:^2.0.0, hast-util-from-html@npm:^2.0.1, hast-util-from-html@npm:^2.0.3":
   version: 2.0.3
   resolution: "hast-util-from-html@npm:2.0.3"
@@ -7778,7 +7764,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hast-util-has-property@npm:3.0.0, hast-util-has-property@npm:^3.0.0":
+"hast-util-has-property@npm:^3.0.0":
   version: 3.0.0
   resolution: "hast-util-has-property@npm:3.0.0"
   dependencies:
@@ -8297,7 +8283,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-absolute-url@npm:4.0.1":
+"is-absolute-url@npm:^4.0.1":
   version: 4.0.1
   resolution: "is-absolute-url@npm:4.0.1"
   checksum: 10c0/6f8f603945bd9f2c6031758bbc12352fc647bd5d807cad10d96cc6300fd0e15240cc091521a61db767e4ec0bacff257b4f1015fd5249c147bbb4a4497356c72e
@@ -8911,17 +8897,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kleur@npm:4.1.5, kleur@npm:^4.1.5":
-  version: 4.1.5
-  resolution: "kleur@npm:4.1.5"
-  checksum: 10c0/e9de6cb49657b6fa70ba2d1448fd3d691a5c4370d8f7bbf1c2f64c24d461270f2117e1b0afe8cb3114f13bbd8e51de158c2a224953960331904e636a5e4c0f2a
-  languageName: node
-  linkType: hard
-
 "kleur@npm:^3.0.3":
   version: 3.0.3
   resolution: "kleur@npm:3.0.3"
   checksum: 10c0/cd3a0b8878e7d6d3799e54340efe3591ca787d9f95f109f28129bdd2915e37807bf8918bb295ab86afb8c82196beec5a1adcaf29042ce3f2bd932b038fe3aa4b
+  languageName: node
+  linkType: hard
+
+"kleur@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "kleur@npm:4.1.5"
+  checksum: 10c0/e9de6cb49657b6fa70ba2d1448fd3d691a5c4370d8f7bbf1c2f64c24d461270f2117e1b0afe8cb3114f13bbd8e51de158c2a224953960331904e636a5e4c0f2a
   languageName: node
   linkType: hard
 
@@ -9678,7 +9664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mdast-util-to-string@npm:4.0.0, mdast-util-to-string@npm:^4.0.0":
+"mdast-util-to-string@npm:^4.0.0":
   version: 4.0.0
   resolution: "mdast-util-to-string@npm:4.0.0"
   dependencies:
@@ -11386,17 +11372,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picomatch@npm:4.0.2, picomatch@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "picomatch@npm:4.0.2"
-  checksum: 10c0/7c51f3ad2bb42c776f49ebf964c644958158be30d0a510efd5a395e8d49cb5acfed5b82c0c5b365523ce18e6ab85013c9ebe574f60305892ec3fa8eee8304ccc
-  languageName: node
-  linkType: hard
-
 "picomatch@npm:^2.0.4, picomatch@npm:^2.2.1, picomatch@npm:^2.3.1":
   version: 2.3.1
   resolution: "picomatch@npm:2.3.1"
   checksum: 10c0/26c02b8d06f03206fc2ab8d16f19960f2ff9e81a658f831ecb656d8f17d9edc799e8364b1f4a7873e89d9702dff96204be0fa26fe4181f6843f040f819dac4be
+  languageName: node
+  linkType: hard
+
+"picomatch@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "picomatch@npm:4.0.2"
+  checksum: 10c0/7c51f3ad2bb42c776f49ebf964c644958158be30d0a510efd5a395e8d49cb5acfed5b82c0c5b365523ce18e6ab85013c9ebe574f60305892ec3fa8eee8304ccc
   languageName: node
   linkType: hard
 
@@ -13520,23 +13506,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starlight-links-validator@npm:^0.13.4":
-  version: 0.13.4
-  resolution: "starlight-links-validator@npm:0.13.4"
+"starlight-links-validator@npm:^0.14.2":
+  version: 0.14.2
+  resolution: "starlight-links-validator@npm:0.14.2"
   dependencies:
-    "@types/picomatch": "npm:2.3.3"
-    github-slugger: "npm:2.0.0"
-    hast-util-from-html: "npm:2.0.1"
-    hast-util-has-property: "npm:3.0.0"
-    is-absolute-url: "npm:4.0.1"
-    kleur: "npm:4.1.5"
-    mdast-util-to-string: "npm:4.0.0"
-    picomatch: "npm:4.0.2"
-    unist-util-visit: "npm:5.0.0"
+    "@types/picomatch": "npm:^3.0.1"
+    github-slugger: "npm:^2.0.0"
+    hast-util-from-html: "npm:^2.0.3"
+    hast-util-has-property: "npm:^3.0.0"
+    is-absolute-url: "npm:^4.0.1"
+    kleur: "npm:^4.1.5"
+    mdast-util-to-string: "npm:^4.0.0"
+    picomatch: "npm:^4.0.2"
+    unist-util-visit: "npm:^5.0.0"
   peerDependencies:
     "@astrojs/starlight": ">=0.15.0"
-    astro: ">=4.0.0"
-  checksum: 10c0/e86a1a4a3565509f8cc8d241454742dd96328df8f22bc5bd4860c356f9fb09cccbc94441c8f520a3a6d9d2627417e2a6bc2070f0dd339364f171d2dd38fe67d6
+  checksum: 10c0/2fb7e6ea6ca3b455775e7d78facf39cbe754b27bc2c4fe921e21a6bd1258ec648173caaea84fb19de5856c58c1e59fe6ba4a111118979c25a5d6b1ac311dd85d
   languageName: node
   linkType: hard
 
@@ -14438,7 +14423,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unist-util-visit@npm:5.0.0, unist-util-visit@npm:^5.0.0":
+"unist-util-visit@npm:^5.0.0":
   version: 5.0.0
   resolution: "unist-util-visit@npm:5.0.0"
   dependencies:

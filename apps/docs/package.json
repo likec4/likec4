@@ -35,7 +35,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "starlight-heading-badges": "^0.3.0",
-    "starlight-links-validator": "^0.13.4",
+    "starlight-links-validator": "^0.14.2",
     "typescript": "^5.7.3"
   },
   "devDependencies": {
