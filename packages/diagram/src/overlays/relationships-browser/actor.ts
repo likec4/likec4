@@ -21,6 +21,7 @@ import {
   fromPromise,
   raise,
   setup,
+  stopChild,
 } from 'xstate'
 import { Base } from '../../base'
 import { MinZoom, ZIndexes } from '../../base/const'
@@ -145,7 +146,6 @@ export const relationshipsBrowserActor = setup({
   },
   guards: {
     'enable: navigate.to': () => true,
-    'closeable': ({ context }) => context.closeable,
   },
   actors: {
     layouter: fromPromise<{
@@ -380,6 +380,10 @@ export const relationshipsBrowserActor = setup({
             'xyflow.applyNodeChages': {
               // actions: log('layouting: ignore xyflow.applyNodeChages'),
             },
+            'close': {
+              target: '#closed',
+              actions: stopChild('layouter'),
+            },
           },
         },
       },
@@ -431,18 +435,21 @@ export const relationshipsBrowserActor = setup({
           ],
         },
         'close': {
-          guard: 'closeable',
           target: 'closed',
         },
       },
-      exit: assign({
-        initialized: false,
-        xyflow: null,
-        xystore: null,
-      }),
     },
     'closed': {
+      id: 'closed',
       type: 'final',
+      entry: [
+        stopChild('layouter'),
+        assign({
+          initialized: false,
+          xyflow: null,
+          xystore: null,
+        }),
+      ],
     },
   },
   on: {

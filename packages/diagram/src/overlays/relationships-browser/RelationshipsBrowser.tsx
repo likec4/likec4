@@ -83,51 +83,49 @@ const RelationshipsBrowserXYFlow = memo(() => {
   // useLifecycleLogger('RelationshipsBrowserXYFlow.edges', [edges])
 
   return (
-    <LayoutGroup>
-      <BaseXYFlow<Types.Node, Types.Edge>
-        id="relationships-browser"
-        nodes={nodes}
-        edges={edges}
-        className={clsx(initialized && isActive ? 'initialized' : 'not-initialized')}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        fitViewPadding={ViewPadding}
-        onInit={useCallbackRef((instance) => {
-          browser.send({ type: 'xyflow.init', instance, store: xystore })
-        })}
-        onNodeClick={useCallbackRef((e, node) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.nodeClick', node })
-        })}
-        onEdgeClick={useCallbackRef((e, edge) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.edgeClick', edge })
-        })}
-        onPaneClick={useCallbackRef((e) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.paneClick' })
-        })}
-        onDoubleClick={useCallbackRef(e => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.paneDblClick' })
-        })}
-        onViewportResize={useCallbackRef(() => {
-          browser.send({ type: 'xyflow.resized' })
-        })}
-        onNodesChange={useCallbackRef((changes) => {
-          browser.send({ type: 'xyflow.applyNodeChages', changes })
-        })}
-        onEdgesChange={useCallbackRef((changes) => {
-          browser.send({ type: 'xyflow.applyEdgeChages', changes })
-        })}
-        nodesDraggable={false}
-        fitView={false}
-        pannable
-        zoomable
-      >
-        {initialized && <RelationshipsBrowserInner />}
-      </BaseXYFlow>
-    </LayoutGroup>
+    <BaseXYFlow<Types.Node, Types.Edge>
+      id="relationships-browser"
+      nodes={nodes}
+      edges={edges}
+      className={clsx(initialized && isActive ? 'initialized' : 'not-initialized')}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      fitViewPadding={ViewPadding}
+      onInit={useCallbackRef((instance) => {
+        browser.send({ type: 'xyflow.init', instance, store: xystore })
+      })}
+      onNodeClick={useCallbackRef((e, node) => {
+        e.stopPropagation()
+        browser.send({ type: 'xyflow.nodeClick', node })
+      })}
+      onEdgeClick={useCallbackRef((e, edge) => {
+        e.stopPropagation()
+        browser.send({ type: 'xyflow.edgeClick', edge })
+      })}
+      onPaneClick={useCallbackRef((e) => {
+        e.stopPropagation()
+        browser.send({ type: 'xyflow.paneClick' })
+      })}
+      onDoubleClick={useCallbackRef(e => {
+        e.stopPropagation()
+        browser.send({ type: 'xyflow.paneDblClick' })
+      })}
+      onViewportResize={useCallbackRef(() => {
+        browser.send({ type: 'xyflow.resized' })
+      })}
+      onNodesChange={useCallbackRef((changes) => {
+        browser.send({ type: 'xyflow.applyNodeChages', changes })
+      })}
+      onEdgesChange={useCallbackRef((changes) => {
+        browser.send({ type: 'xyflow.applyEdgeChages', changes })
+      })}
+      nodesDraggable={false}
+      fitView={false}
+      pannable
+      zoomable
+    >
+      {initialized && <RelationshipsBrowserInner />}
+    </BaseXYFlow>
   )
 })
 

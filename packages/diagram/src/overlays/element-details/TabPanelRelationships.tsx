@@ -1,12 +1,9 @@
 import { type DiagramView, type Fqn, type LikeC4Model, nameFromFqn } from '@likec4/core'
 import { Box, Group, Paper, Stack, Text, ThemeIcon } from '@mantine/core'
-import { useId } from '@mantine/hooks'
 import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
 import { useActorRef } from '@xstate/react'
-import { LayoutGroup } from 'framer-motion'
-import { memo, useState } from 'react'
+import { useState } from 'react'
 import { unique } from 'remeda'
-import { DiagramFeatures, useEnabledFeature } from '../../context'
 import { relationshipsBrowserActor } from '../relationships-browser/actor'
 import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
 import * as css from './TabPanelRelationships.css'
@@ -22,7 +19,6 @@ export function TabPanelRelationships({
   node,
   element,
 }: RelationshipsTabPanelProps) {
-  const layoutId = useId()
   const [scope, setScope] = useState<'global' | 'view'>('view')
 
   const incoming = [...element.incoming()].map(r => r.id)
@@ -76,53 +72,7 @@ export function TabPanelRelationships({
       )}
 
       <Box className={css.xyflow}>
-        <LayoutGroup id={layoutId}>
-          <EmbeddedRelationshipsBrowser subjectId={element.id} currentView={currentView} />
-          {
-            /* <RelationshipsXYFlow
-            subjectId={element.id}
-            bounds={bounds}
-            nodes={nodes}
-            edges={edges}
-            view={currentView}
-            elementsSelectable={false}
-          >
-            <Panel position="top-left" className={css.panelScope}>
-              <SegmentedControl
-                size="xs"
-                withItemsBorders={false}
-                value={scope}
-                onChange={setScope as any}
-                data={[
-                  { label: 'Global', value: 'global' },
-                  { label: 'View', value: 'view' },
-                ]}
-              />
-            </Panel>
-            {enableRelationshipBrowser && (
-              <Panel position="top-right">
-                <Button
-                  size="compact-sm"
-                  variant="default"
-                  fz={'xs'}
-                  fw={500}
-                  rightSection={<IconExternalLink stroke={1.6} style={{ width: 16 }} />}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    overlay.close(() => {
-                      overlay.openOverlay({
-                        relationshipsOf: element.id,
-                      })
-                    })
-                  }}
-                >
-                  Open
-                </Button>
-              </Panel>
-            )}
-          </RelationshipsXYFlow> */
-          }
-        </LayoutGroup>
+        <EmbeddedRelationshipsBrowser subjectId={element.id} currentView={currentView} />
       </Box>
     </Stack>
   )
@@ -192,26 +142,14 @@ function RelationshipsStat({
   )
 }
 
-const EmbeddedRelationshipsBrowser = memo<{ subjectId: Fqn; currentView: DiagramView }>(
-  ({ subjectId, currentView }) => {
-    const actor = useActorRef(relationshipsBrowserActor, {
-      input: {
-        subject: subjectId,
-        scope: currentView,
-        closeable: false,
-        enableNavigationMenu: false,
-      },
-    })
-
-    return (
-      <DiagramFeatures
-        overrides={{
-          enableRelationshipBrowser: false,
-          enableNavigateTo: false,
-        }}>
-        <RelationshipsBrowser actorRef={actor} />
-      </DiagramFeatures>
-    )
-  },
-  (prev, next) => prev.subjectId === next.subjectId,
-)
+const EmbeddedRelationshipsBrowser = ({ subjectId, currentView }: { subjectId: Fqn; currentView: DiagramView }) => {
+  const actor = useActorRef(relationshipsBrowserActor, {
+    input: {
+      subject: subjectId,
+      scope: currentView,
+      closeable: false,
+      enableNavigationMenu: false,
+    },
+  })
+  return <RelationshipsBrowser actorRef={actor} />
+}
