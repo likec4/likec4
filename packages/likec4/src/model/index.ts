@@ -1,4 +1,4 @@
-import { LikeC4Model } from '@likec4/core/model'
+import { LikeC4Model } from '@likec4/core'
 
 /**
  * Used by vite plugin to generate `virtual:likec4/model`

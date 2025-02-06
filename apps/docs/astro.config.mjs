@@ -23,6 +23,7 @@ export default defineConfig({
       description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
       social: {
         github: 'https://github.com/likec4/likec4',
+        discord: 'https://discord.gg/86ZSpjKAdA',
       },
       logo: {
         dark: './src/assets/logo-dark.svg',
@@ -34,18 +35,9 @@ export default defineConfig({
       },
       customCss: [
         // Fontsource files for to regular and semi-bold font weights.
-        '@fontsource/ibm-plex-sans/cyrillic-400.css',
-        '@fontsource/ibm-plex-sans/cyrillic-500.css',
-        '@fontsource/ibm-plex-sans/cyrillic-600.css',
-        '@fontsource/ibm-plex-sans/cyrillic-ext-400.css',
-        '@fontsource/ibm-plex-sans/cyrillic-ext-500.css',
-        '@fontsource/ibm-plex-sans/cyrillic-ext-600.css',
-        '@fontsource/ibm-plex-sans/latin-400.css',
-        '@fontsource/ibm-plex-sans/latin-500.css',
-        '@fontsource/ibm-plex-sans/latin-600.css',
-        '@fontsource/ibm-plex-sans/latin-ext-400.css',
-        '@fontsource/ibm-plex-sans/latin-ext-500.css',
-        '@fontsource/ibm-plex-sans/latin-ext-600.css',
+        '@fontsource/ibm-plex-sans/400.css',
+        '@fontsource/ibm-plex-sans/500.css',
+        '@fontsource/ibm-plex-sans/600.css',
         './src/styles/global.css',
       ],
       sidebar: [
