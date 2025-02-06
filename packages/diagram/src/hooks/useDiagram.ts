@@ -4,8 +4,8 @@ import type { PartialDeep } from 'type-fest'
 import { useDiagramActor } from '../hooks/useDiagramActor'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { AlignmentMode } from '../likec4diagram/state/aligners'
+import { DiagramContext } from '../likec4diagram/state/machine'
 import type { Types } from '../likec4diagram/types'
-import { DiagramContext } from './useDiagramContext'
 
 export function useDiagram() {
   const actor = useDiagramActor()
