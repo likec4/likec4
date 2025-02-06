@@ -7,7 +7,8 @@ describe('Builder (style 2)', () => {
       elements: {
         system: {
           style: {
-            size: 'large',
+            size: 'lg',
+            textSize: 'sm',
           },
         },
         component: {},
@@ -16,7 +17,7 @@ describe('Builder (style 2)', () => {
       deployments: {
         env: {
           style: {
-            size: 'large',
+            size: 'lg',
           },
         },
         node: {},

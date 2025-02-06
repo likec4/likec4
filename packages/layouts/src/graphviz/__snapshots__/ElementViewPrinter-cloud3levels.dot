@@ -27,8 +27,6 @@ digraph {
   node [
     fontname = "Arial";
     shape = "rect";
-    width = 4.445;
-    height = 2.5;
     fillcolor = "#3b82f6";
     fontcolor = "#eff6ff";
     color = "#2563eb";
@@ -39,40 +37,52 @@ digraph {
     likec4_id = "customer";
     likec4_level = 0;
     label = <<FONT POINT-SIZE="19">customer</FONT>>;
-    margin = "0.362,0.362";
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   "support" [
     likec4_id = "support";
     likec4_level = 0;
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Support Engineer</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Support engineers are responsible for<BR/>supporting customers</FONT></TD></TR></TABLE>>;
-    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><FONT POINT-SIZE="19">Support Engineer</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Support engineers are responsible for<BR/>supporting customers</FONT></TD></TR></TABLE>>;
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   "dashboard" [
     likec4_id = "cloud.frontend.dashboard";
     likec4_level = 1;
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Customer Dashboard Webapp</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">The customer dashboard is a webapp that<BR/>allows customers to view their data.</FONT></TD></TR></TABLE>>;
-    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><FONT POINT-SIZE="19">Customer Dashboard Webapp</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">The customer dashboard is a webapp that<BR/>allows customers to view their data.</FONT></TD></TR></TABLE>>;
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
     group = "cloud";
   ];
   "adminpanel" [
     likec4_id = "cloud.frontend.adminPanel";
     likec4_level = 1;
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Admin Panel Webapp</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">The admin panel is a webapp that allows<BR/>support staff to manage customer data.</FONT></TD></TR></TABLE>>;
-    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><FONT POINT-SIZE="19">Admin Panel Webapp</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">The admin panel is a webapp that allows<BR/>support staff to manage customer data.</FONT></TD></TR></TABLE>>;
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
     group = "cloud";
   ];
   "graphql" [
     likec4_id = "cloud.backend.graphql";
     likec4_level = 2;
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Graphql API</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Component that allows to query data via<BR/>GraphQL.</FONT></TD></TR></TABLE>>;
-    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><FONT POINT-SIZE="19">Graphql API</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Component that allows to query data via<BR/>GraphQL.</FONT></TD></TR></TABLE>>;
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
     group = "cloud";
   ];
   "storage" [
     likec4_id = "cloud.backend.storage";
     likec4_level = 2;
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Backend Storage</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">The backend storage is a component that<BR/>stores data.</FONT></TD></TR></TABLE>>;
-    margin = "0.362,0";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><FONT POINT-SIZE="19">Backend Storage</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">The backend storage is a component that<BR/>stores data.</FONT></TD></TR></TABLE>>;
+    margin = "0.334,0";
+    width = 4.445;
+    height = 2.5;
     penwidth = 2;
     shape = "cylinder";
     group = "cloud";
@@ -80,8 +90,10 @@ digraph {
   "amazon" [
     likec4_id = "amazon";
     likec4_level = 0;
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT POINT-SIZE="19">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
-    margin = "0.362,0.362";
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><FONT POINT-SIZE="19">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   subgraph "cluster_cloud" {
     likec4_id = "cloud";

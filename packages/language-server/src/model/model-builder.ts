@@ -119,6 +119,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         border,
         size,
         multiple,
+        padding,
+        textSize,
       },
       id,
       kind,
@@ -142,6 +144,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         technology ??= __kind.technology
         multiple ??= __kind.style.multiple
         size ??= __kind.style.size
+        padding ??= __kind.style.padding
+        textSize ??= __kind.style.textSize
         return {
           ...(color && { color }),
           ...(shape && { shape }),
@@ -151,6 +155,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           style: {
             ...(border && { border }),
             ...(size && { size }),
+            ...(padding && { padding }),
+            ...(textSize && { textSize }),
             ...(isBoolean(multiple) && { multiple }),
             ...(isNumber(opacity) && { opacity }),
           },

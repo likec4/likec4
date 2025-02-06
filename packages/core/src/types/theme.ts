@@ -21,7 +21,14 @@ export type ColorLiteral = HexColorLiteral
 
 export type Color = LiteralUnion<ThemeColor, string>
 
-export type ShapeSize = 'small' | 'medium' | 'large'
+export type ShapeSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+
+/**
+ * For padding, margin, etc.
+ */
+export type SpacingSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+
+export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 export function isThemeColor(color: Color): color is ThemeColor {
   return color in ThemeColors
@@ -65,5 +72,11 @@ export interface LikeC4Theme {
       width: number
       height: number
     }
+  }
+  spacing: {
+    [key in SpacingSize]: number
+  }
+  textSizes: {
+    [key in TextSize]: number
   }
 }

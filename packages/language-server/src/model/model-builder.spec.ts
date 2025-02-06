@@ -976,25 +976,25 @@ describe.concurrent('LikeC4ModelBuilder', () => {
       c2: {
         kind: 'component',
         style: {
-          size: 'large',
+          size: 'lg',
         },
       },
       sm: {
         kind: 'small',
         style: {
-          size: 'small',
+          size: 'sm',
         },
       },
       lg: {
         kind: 'large',
         style: {
-          size: 'large',
+          size: 'lg',
         },
       },
       smOverride: {
         kind: 'small',
         style: {
-          size: 'medium',
+          size: 'md',
         },
       },
     })

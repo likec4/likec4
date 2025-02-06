@@ -1,11 +1,12 @@
 import { rem } from '@mantine/core'
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
+import { calc } from '@vanilla-extract/css-utils'
 import { vars } from '../../../theme-vars'
+import { iconSize, paddingSize, textSize } from './styles.css'
 
 export const hasIcon = style({})
 
 const textAlign = createVar('text-align')
-export const iconSize = createVar('icon-size')
 
 export const title = style({
   flex: '0 0 auto',
@@ -14,7 +15,7 @@ export const title = style({
   fontStyle: 'normal',
   textAlign: textAlign,
   fontWeight: 500,
-  fontSize: 19,
+  fontSize: textSize,
   lineHeight: 1.15,
   textWrap: 'balance',
   color: vars.element.hiContrast,
@@ -27,7 +28,7 @@ export const description = style({
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
-  fontSize: 14,
+  fontSize: calc(textSize).multiply(0.74).toString(),
   lineHeight: 1.2,
   textAlign: textAlign,
   textWrap: 'pretty',
@@ -39,6 +40,9 @@ export const description = style({
     [`:where(${hasIcon}) &`]: {
       textWrap: 'wrap',
     },
+    [`:where([data-likec4-shape-size="xs"], [data-likec4-shape-size="sm"]) &`]: {
+      display: 'none',
+    },
   },
 })
 
@@ -48,7 +52,7 @@ export const technology = style({
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
-  fontSize: 12,
+  fontSize: calc(textSize).multiply(0.635).toString(),
   lineHeight: 1.125,
   textAlign: textAlign,
   textWrap: 'balance',
@@ -57,6 +61,9 @@ export const technology = style({
   selectors: {
     [`:where([data-hovered='true']) &`]: {
       opacity: 1,
+    },
+    [`:where([data-likec4-shape-size="xs"], [data-likec4-shape-size="sm"]) &`]: {
+      display: 'none',
     },
   },
 })
@@ -68,12 +75,9 @@ export const elementDataContainer = style({
   alignItems: 'center',
   justifyContent: 'center',
   flexDirection: 'row',
-  padding: rem(24),
+  padding: paddingSize,
   overflow: 'hidden',
-  gap: rem(10),
-  vars: {
-    [iconSize]: '48px',
-  },
+  gap: rem(12),
   selectors: {
     ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
       paddingLeft: 40,
@@ -86,21 +90,10 @@ export const elementDataContainer = style({
       paddingTop: 32,
       paddingBottom: 28,
     },
-    // [`&:is(${hasIcon})`]: {
-    //   paddingLeft: 40,
-    //   paddingRight: 20
-    // },
-    [`.likec4-element-node:not(:is([data-likec4-shape="queue"],[data-likec4-shape="mobile"])) &:is(${hasIcon})`]: {
-      paddingLeft: 24,
-      paddingRight: 18,
-    },
-    [`&:has(${description}, ${technology})`]: {
-      gap: rem(16),
-      vars: {
-        [iconSize]: '60px',
-      },
-    },
   },
+})
+globalStyle(`:where([data-likec4-shape-size="lg"]) ${elementDataContainer}`, {
+  gap: rem(16),
 })
 
 export const elementTextData = style({
@@ -121,7 +114,7 @@ export const elementTextData = style({
       gap: rem(6),
     },
     [`:where(${hasIcon}) &`]: {
-      minWidth: 'calc(100% - 160px)',
+      minWidth: `calc(100% - ${iconSize} - ${calc(paddingSize).multiply(2).toString()})`,
       alignItems: 'flex-start',
       'vars': {
         [textAlign]: 'left',

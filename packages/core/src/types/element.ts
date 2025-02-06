@@ -1,6 +1,6 @@
 import type { Tagged, TupleToUnion } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
-import type { Color, ShapeSize, ThemeColor } from './theme'
+import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColor } from './theme'
 
 // Full-qualified-name
 export type Fqn<Id extends string = string> = Tagged<Id, 'Fqn'>
@@ -30,7 +30,9 @@ export const ElementShapes = [
 export type ElementShape = TupleToUnion<typeof ElementShapes>
 export const DefaultThemeColor: ThemeColor = 'primary'
 export const DefaultElementShape: ElementShape = 'rectangle'
-export const DefaultElementSize: ShapeSize = 'medium'
+export const DefaultShapeSize: ShapeSize = 'md'
+export const DefaultPaddingSize: SpacingSize = 'md'
+export const DefaultTextSize: TextSize = 'md'
 
 export interface ElementStyle {
   readonly border?: BorderStyle
@@ -49,9 +51,13 @@ export interface ElementStyle {
   /**
    * Shape size
    *
-   * @default 'medium'
+   * @default 'md'
    */
   readonly size?: ShapeSize
+
+  readonly padding?: SpacingSize
+
+  readonly textSize?: TextSize
 }
 
 export type Tag<Tags extends string = string> = Tagged<Tags, 'Tag'>
@@ -100,7 +106,10 @@ export interface ElementKindSpecificationStyle {
   border?: BorderStyle
   opacity?: number
   size?: ShapeSize
+  padding?: SpacingSize
+  textSize?: TextSize
 }
+
 export interface ElementKindSpecification {
   readonly technology?: string
   readonly notation?: string

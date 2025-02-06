@@ -9,18 +9,40 @@ export const defaultTheme: LikeC4Theme = {
   font: 'Arial',
   shadow: '#0a0a0a',
   sizes: {
-    small: {
-      width: 180,
-      height: 100,
+    xs: {
+      width: 120,
+      height: 80,
     },
-    medium: {
+    sm: {
+      width: 180,
+      height: 110,
+    },
+    md: {
       width: 320,
       height: 180,
     },
-    large: {
-      width: 400,
-      height: 225,
+    lg: {
+      width: 420,
+      height: 234,
     },
+    xl: {
+      width: 520,
+      height: 290,
+    },
+  },
+  spacing: {
+    xs: 8, // 0.5rem
+    sm: 10, // 0.625rem
+    md: 24, // 1.5rem = 16px + 8px
+    lg: 32, // 2rem
+    xl: 48,
+  },
+  textSizes: {
+    xs: 12,
+    sm: 14,
+    md: 19,
+    lg: 24,
+    xl: 32,
   },
 }
 

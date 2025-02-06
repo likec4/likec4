@@ -276,7 +276,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       || ast.isArrowProperty(node)
       || ast.isLineProperty(node)
       || ast.isBorderProperty(node)
-      || ast.isShapeSizeProperty(node)
+      || ast.isSizeProperty(node)
     ) {
       acceptor({
         node,

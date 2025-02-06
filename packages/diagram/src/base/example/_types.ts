@@ -13,6 +13,7 @@ export namespace ExampleTypes {
         | 'description'
         | 'color'
         | 'shape'
+        | 'style'
         | 'width'
         | 'height'
         | 'navigateTo'

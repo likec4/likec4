@@ -16,7 +16,7 @@ describe('Builder (style1)', () => {
       elements: {
         system: {
           style: {
-            size: 'large',
+            size: 'lg',
             color: 'green',
             opacity: 10,
           },
@@ -24,6 +24,7 @@ describe('Builder (style1)', () => {
         component: {
           style: {
             shape: 'browser',
+            textSize: 'sm',
           },
         },
       },

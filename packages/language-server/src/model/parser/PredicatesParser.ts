@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
 import { invariant, nonexhaustive } from '@likec4/core'
 import { isBoolean, isDefined, isTruthy } from 'remeda'
-import { ast, parseAstOpacityProperty, toColor } from '../../ast'
+import { ast, parseAstOpacityProperty, parseAstSizeValue, toColor } from '../../ast'
 import { logWarnError } from '../../logger'
 import { elementRef } from '../../utils/elementRef'
 import { parseWhereClause } from '../model-parser-where'
@@ -182,7 +182,19 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
           }
           if (ast.isShapeSizeProperty(prop)) {
             if (isTruthy(prop.value)) {
-              acc.custom[prop.key] = prop.value
+              acc.custom[prop.key] = parseAstSizeValue(prop)
+            }
+            return acc
+          }
+          if (ast.isTextSizeProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = parseAstSizeValue(prop)
+            }
+            return acc
+          }
+          if (ast.isPaddingSizeProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = parseAstSizeValue(prop)
             }
             return acc
           }

@@ -55,6 +55,8 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
     navigateTo?: ViewId
     multiple?: boolean
     size?: ShapeSize
+    padding?: ShapeSize
+    textSize?: ShapeSize
   }
 }
 

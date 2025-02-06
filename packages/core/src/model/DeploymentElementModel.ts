@@ -18,7 +18,7 @@ import {
   DefaultElementShape,
   DefaultThemeColor,
 } from '../types'
-import { DefaultElementSize } from '../types/element'
+import { DefaultShapeSize } from '../types/element'
 import { commonAncestor, hierarchyLevel } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
@@ -48,7 +48,7 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
     return {
       shape: DefaultElementShape,
       color: DefaultThemeColor,
-      size: DefaultElementSize,
+      size: DefaultShapeSize,
       ...this.$node.style,
     }
   }
@@ -351,11 +351,12 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
     return nonNullable(this.$model.parent(this), `Parent of ${this.id} not found`)
   }
 
-  override get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
+  override get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
     const { icon, style } = this.element.$element
     return {
       shape: this.element.shape,
       color: this.element.color,
+      size: DefaultShapeSize,
       ...icon && { icon },
       ...style,
       ...this.$instance.style,

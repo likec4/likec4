@@ -89,7 +89,7 @@
     },
     {
       "name": "entity.name.type.enum.likec4",
-      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft|small|medium|large)\\b"
+      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft|xsmall|xs|small|sm|medium|md|large|lg|xl|xlarge)\\b"
     },
     {
       "name": "entity.name.type.enum.likec4",
@@ -97,7 +97,7 @@
     },
     {
       "name": "variable.other.property.likec4",
-      "match": "\\b(title|description|technology|navigateTo|notation|multiple|size)\\b"
+      "match": "\\b(title|description|technology|navigateTo|notation|multiple|size|padding|textSize)\\b"
     },
     {
       "name": "keyword.control.likec4",

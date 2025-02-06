@@ -11,7 +11,7 @@ exports[`Builder (style 2) > should build  1`] = `
         "kind": "env",
         "shape": "rectangle",
         "style": {
-          "size": "large",
+          "size": "lg",
         },
         "tags": null,
         "technology": null,
@@ -35,7 +35,7 @@ exports[`Builder (style 2) > should build  1`] = `
         "kind": "env",
         "shape": "rectangle",
         "style": {
-          "size": "large",
+          "size": "lg",
         },
         "tags": null,
         "technology": null,
@@ -68,7 +68,8 @@ exports[`Builder (style 2) > should build  1`] = `
       "links": null,
       "shape": "rectangle",
       "style": {
-        "size": "large",
+        "size": "lg",
+        "textSize": "sm",
       },
       "tags": null,
       "technology": null,
@@ -109,7 +110,7 @@ exports[`Builder (style 2) > should build  1`] = `
     "deployments": {
       "env": {
         "style": {
-          "size": "large",
+          "size": "lg",
         },
       },
       "node": {},
@@ -119,7 +120,8 @@ exports[`Builder (style 2) > should build  1`] = `
       "component": {},
       "system": {
         "style": {
-          "size": "large",
+          "size": "lg",
+          "textSize": "sm",
         },
       },
     },

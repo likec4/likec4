@@ -22,6 +22,9 @@ import {
   type RelationshipThemeColorValues,
   type XYPoint,
   ComputedNode,
+  DefaultPaddingSize,
+  DefaultShapeSize,
+  DefaultTextSize,
 } from '@likec4/core/types'
 import { logger } from '@likec4/log'
 import Graph from 'graphology'
@@ -285,8 +288,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     node.apply({
       [_.fontname]: FontName,
       [_.shape]: 'rect',
-      [_.width]: pxToInch(320),
-      [_.height]: pxToInch(180),
       [_.fillcolor]: defaultTheme.elements[DefaultThemeColor].fill,
       [_.fontcolor]: defaultTheme.elements[DefaultThemeColor].hiContrast,
       [_.color]: defaultTheme.elements[DefaultThemeColor].stroke,
@@ -358,12 +359,33 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
     const colorValues = this.getElementColorValues(element.color)
+    let size = element.style.size
+    let textSize = element.style.textSize
+
+    if (!size && !!textSize) {
+      size = textSize
+    }
+    if (!textSize && !!size) {
+      textSize = size
+    }
+    size ??= DefaultShapeSize
+    textSize ??= DefaultTextSize
+
+    const paddingSize = element.style.padding ?? DefaultPaddingSize
+    const padding = defaultTheme.spacing[paddingSize]
+
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
-      [_.label]: nodeLabel(element, colorValues),
-      [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(26)}`,
+      [_.label]: nodeLabel(element, colorValues, {
+        shape: size,
+        padding: paddingSize,
+        text: textSize,
+      }),
+      [_.margin]: `${pxToInch(hasIcon ? 10 : padding)},${pxToInch(padding)}`,
     })
+    node.attributes.set(_.width, pxToInch(defaultTheme.sizes[size].width))
+    node.attributes.set(_.height, pxToInch(defaultTheme.sizes[size].height))
 
     if (element.color !== DefaultThemeColor) {
       node.attributes.apply({
@@ -376,7 +398,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(0)}`,
+          [_.margin]: `${pxToInch(hasIcon ? 10 : padding)},${pxToInch(0)}`,
           [_.penwidth]: pxToPoints(2),
           [_.shape]: 'cylinder',
         })
@@ -384,21 +406,21 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       }
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(32)}`,
+          [_.margin]: `${pxToInch(hasIcon ? 10 : padding + 4)},${pxToInch(padding + 6)}`,
         })
         break
       }
       case 'mobile': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`,
+          [_.margin]: `${pxToInch(hasIcon ? 10 : padding + 4)},${pxToInch(padding)}`,
         })
         break
       }
       case 'queue': {
         node.attributes.apply({
-          [_.width]: pxToInch(320),
-          [_.height]: pxToInch(165),
-          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`,
+          [_.width]: pxToInch(defaultTheme.sizes[size].width),
+          [_.height]: pxToInch(defaultTheme.sizes[size].height - 8),
+          [_.margin]: `${pxToInch(hasIcon ? 10 : padding + 4)},${pxToInch(padding)}`,
         })
         break
       }

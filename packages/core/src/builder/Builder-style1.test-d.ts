@@ -36,14 +36,18 @@ test('Builder types - style 1', () => {
       },
       system: {
         style: {
-          size: 'large',
+          size: 'lg',
         },
       },
       component: {},
     },
     deployments: {
       env: {},
-      vm: {},
+      vm: {
+        style: {
+          textSize: 'sm',
+        },
+      },
     },
     relationships: {
       like: {},

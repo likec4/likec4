@@ -1,4 +1,4 @@
-import type { DiagramNode } from '@likec4/core'
+import { type DiagramNode, DefaultPaddingSize, DefaultShapeSize, DefaultTextSize } from '@likec4/core'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
@@ -10,6 +10,7 @@ type RequiredData = Pick<
   DiagramNode,
   | 'color'
   | 'shape'
+  | 'style'
 >
 
 type ElementNodeContainerProps =
@@ -42,6 +43,22 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         break
     }
 
+    let {
+      size,
+      padding,
+      textSize,
+    } = data.style
+
+    // if (size === DefaultShapeSize && textSize !== DefaultTextSize) {
+    //   size = textSize
+    // }
+    if (!size && !!textSize) {
+      size = textSize
+    }
+    if (!textSize && !!size) {
+      textSize = size
+    }
+
     return (
       <Box
         component={m.div}
@@ -60,6 +77,9 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         data-hovered={isHovered}
         data-likec4-color={data.color}
         data-likec4-shape={data.shape}
+        data-likec4-shape-size={size ?? DefaultShapeSize}
+        data-likec4-padding={padding ?? DefaultPaddingSize}
+        data-likec4-text-size={textSize ?? DefaultTextSize}
         data-likec4-dimmed={isDimmed}
         {...rest}
       >

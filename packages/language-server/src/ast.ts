@@ -44,6 +44,8 @@ type ParsedElementStyle = {
   opacity?: number
   multiple?: boolean
   size?: c4.ShapeSize
+  padding?: c4.SpacingSize
+  textSize?: c4.TextSize
 }
 
 export interface ParsedAstSpecification {
@@ -325,6 +327,29 @@ export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number 
   return isNaN(opacity) ? 100 : clamp(opacity, { min: 0, max: 100 })
 }
 
+export function parseAstSizeValue({ value }: { value: ast.SizeValue }): 'xs' | 'sm' | 'md' | 'lg' | 'xl' {
+  switch (value) {
+    case 'xs':
+    case 'sm':
+    case 'md':
+    case 'lg':
+    case 'xl':
+      return value
+    case 'xsmall':
+      return 'xs'
+    case 'small':
+      return 'sm'
+    case 'medium':
+      return 'md'
+    case 'large':
+      return 'lg'
+    case 'xlarge':
+      return 'xl'
+    default:
+      nonexhaustive(value)
+  }
+}
+
 export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isValid: IsValidFn) {
   const result = {} as ParsedElementStyle
   if (!props || props.length === 0) {
@@ -371,7 +396,19 @@ export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isVa
       }
       case ast.isShapeSizeProperty(prop): {
         if (isTruthy(prop.value)) {
-          result.size = prop.value
+          result.size = parseAstSizeValue(prop)
+        }
+        break
+      }
+      case ast.isPaddingSizeProperty(prop): {
+        if (isTruthy(prop.value)) {
+          result.padding = parseAstSizeValue(prop)
+        }
+        break
+      }
+      case ast.isTextSizeProperty(prop): {
+        if (isTruthy(prop.value)) {
+          result.textSize = parseAstSizeValue(prop)
         }
         break
       }
