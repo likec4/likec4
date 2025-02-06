@@ -35,7 +35,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
   useLayoutEffect(() => {
     const cancel = (e: Event) => {
       e.preventDefault()
-      close()
+      onCloseRef.current()
     }
     dialogRef.current?.addEventListener('cancel', cancel, { capture: true })
     return () => {
