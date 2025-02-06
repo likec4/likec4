@@ -48,7 +48,7 @@ npm install --global likec4
 
 # Then, you can call `likec4` directly:
 likec4 [command]
-```                                                     
+```
 
 ## Usage
 
@@ -87,7 +87,7 @@ Build a single HTML with diagrams, ready to be embedded into your website:
 likec4 build -o ./dist
 ```
 
-Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
+Example [https://template.likec4.dev](https://template.likec4.dev/view/index/)
 
 When you deploy the website, you can use the "Share" button to get links.
 
@@ -170,7 +170,7 @@ Recursively searches and parses source files from the wokrkspace directory:
 import { LikeC4 } from 'likec4'
 
 const likec4 = await LikeC4.fromWorkspace('path to workspace', opts)
-```  
+```
 
 ### From source
 

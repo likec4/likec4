@@ -8,7 +8,7 @@
   <p>
     <a href="https://likec4.dev/">docs</a> |
     <a href="https://playground.likec4.dev/">playground</a> |
-    <a href="https://template.likec4.dev/view/cloud">demo</a>
+    <a href="https://template.likec4.dev/view/index/">demo</a>
   </p>
 
 ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
@@ -44,7 +44,7 @@ And result:
 </div>
 
 Template repository - [likec4/template](https://github.com/likec4/template)\
-Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
+Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/index/)
 
 Check the [Tutorial](https://likec4.dev/tutorial/) - a bit better overview of LikeC4.
 
