@@ -22,7 +22,7 @@
     "ci:generate": "turbo run generate --filter='!@likec4/docs-astro' --filter='!@likec4/playground'",
     "ci:typecheck": "turbo run typecheck --filter='!@likec4/docs-astro' --filter='!@likec4/playground'",
     "ci:build": "turbo run build --filter='!@likec4/docs-astro' --filter='!@likec4/playground'",
-    "ci:test": "vitest run --reporter=basic --reporter=github-actions --no-isolate",
+    "ci:test": "vitest run --no-isolate",
     "vscode:typecheck": "turbo run typecheck --filter='!@likec4/docs-astro'",
     "release": "shipjs prepare",
     "clean": "turbo run clean",
