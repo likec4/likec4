@@ -1,4 +1,4 @@
-import type { Color, DiagramNode, Fqn } from '@likec4/core'
+import type { Color, DiagramNode, Fqn, IconUrl } from '@likec4/core'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../types'
 
 export namespace ExampleTypes {
@@ -39,7 +39,7 @@ export namespace ExampleTypes {
       // column: Column
       fqn: Fqn
       depth: number
-      icon: string | null
+      icon: IconUrl
     }
   >
 

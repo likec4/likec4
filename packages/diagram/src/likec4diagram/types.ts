@@ -1,4 +1,4 @@
-import type { DiagramEdge, DiagramNode, Fqn, ViewId } from '@likec4/core'
+import type { DiagramEdge, DiagramNode, Fqn, IconUrl, ViewId } from '@likec4/core'
 import type { XYPosition } from '@xyflow/system'
 import type { OptionalKeysOf, Simplify } from 'type-fest'
 import type { Base } from '../base'
@@ -75,7 +75,7 @@ export namespace Types {
     >
     & {
       depth: number
-      icon: string | null
+      icon?: IconUrl
     }
   >
 

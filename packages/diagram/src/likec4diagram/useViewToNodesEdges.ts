@@ -120,7 +120,7 @@ function viewToNodesEdge(opts: {
       shape: node.shape,
       style: node.style,
       depth: node.depth ?? 0,
-      icon: node.icon ?? null,
+      icon: node.icon ?? 'none',
       position: node.position,
     } satisfies Types.CompoundNodeData
 
