@@ -34,7 +34,7 @@
     "astro-og-canvas": "^0.5.6",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "starlight-heading-badges": "^0.3.0",
+    "starlight-heading-badges": "^0.4.0",
     "starlight-links-validator": "^0.13.4",
     "typescript": "^5.7.3"
   },
