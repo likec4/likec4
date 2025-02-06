@@ -16,6 +16,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "shape": "rectangle",
       "style": {
         "opacity": 10,
+        "size": "large",
       },
       "tags": null,
       "technology": null,
@@ -42,6 +43,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       "shape": "rectangle",
       "style": {
         "opacity": 10,
+        "size": "large",
       },
       "tags": null,
       "technology": null,
@@ -121,6 +123,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
         "style": {
           "color": "green",
           "opacity": 10,
+          "size": "large",
         },
       },
     },

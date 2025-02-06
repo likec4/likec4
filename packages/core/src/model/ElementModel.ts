@@ -1,8 +1,10 @@
 import { isTruthy } from 'remeda'
+import type { SetRequired } from 'type-fest'
 import {
   type Element as C4Element,
   type ElementKind as C4ElementKind,
   type ElementShape as C4ElementShape,
+  type ElementStyle,
   type IconUrl,
   type IteratorLike,
   type Link,
@@ -11,6 +13,7 @@ import {
   DefaultElementShape,
   DefaultThemeColor,
 } from '../types'
+import { DefaultElementSize } from '../types/element'
 import { commonAncestor, hierarchyLevel, isAncestor, sortNaturalByFqn } from '../utils'
 import { type DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
@@ -78,6 +81,13 @@ export class ElementModel<M extends AnyAux = AnyAux> {
 
   get isRoot(): boolean {
     return this.parent === null
+  }
+
+  get style(): SetRequired<ElementStyle, 'size'> {
+    return {
+      size: DefaultElementSize,
+      ...this.$element.style,
+    }
   }
 
   public isAncestorOf(another: ElementModel<M>): boolean {

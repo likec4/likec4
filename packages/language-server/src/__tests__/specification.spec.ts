@@ -95,6 +95,16 @@ describe.concurrent('specification', () => {
             opacity 10%
           }
         }
+        element smperson {
+          style {
+            size small
+          }
+        }
+        element lgperson {
+          style {
+            size large
+          }
+        }
       }
       `
 

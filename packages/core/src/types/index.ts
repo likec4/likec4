@@ -28,6 +28,7 @@ export {
   AsFqn,
   BorderStyles,
   DefaultElementShape,
+  DefaultElementSize,
   DefaultThemeColor,
   ElementKind,
   ElementShapes,
@@ -147,6 +148,7 @@ export type {
   LikeC4Theme,
   RelationshipThemeColors,
   RelationshipThemeColorValues,
+  ShapeSize,
   ThemeColor,
   ThemeColorValues,
 } from './theme'

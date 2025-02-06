@@ -18,6 +18,7 @@ import {
   DefaultElementShape,
   DefaultThemeColor,
 } from '../types'
+import { DefaultElementSize } from '../types/element'
 import { commonAncestor, hierarchyLevel } from '../utils'
 import { difference, intersection, union } from '../utils/set'
 import type { LikeC4DeploymentModel } from './DeploymentModel'
@@ -43,10 +44,11 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
   abstract readonly $model: LikeC4DeploymentModel<M>
   abstract readonly $node: DeploymentNode | DeployedInstance
 
-  get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color'> {
+  get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
     return {
       shape: DefaultElementShape,
       color: DefaultThemeColor,
+      size: DefaultElementSize,
       ...this.$node.style,
     }
   }

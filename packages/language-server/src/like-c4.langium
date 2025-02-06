@@ -731,13 +731,20 @@ BorderStyleValue returns string:
 BorderProperty:
   key='border' ':'? value=BorderStyleValue ';'?;
 
+ShapeSizeValue returns string:
+  'small' | 'medium' | 'large';
+
+ShapeSizeProperty:
+  key='size' ':'? value=ShapeSizeValue ';'?;
+
 StyleProperty:
   ColorProperty |
   ShapeProperty |
   BorderProperty |
   OpacityProperty |
   IconProperty |
-  MultipleProperty;
+  MultipleProperty |
+  ShapeSizeProperty;
 
 ElementStyleProperty:
   key='style' '{'
@@ -802,7 +809,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | ShapeSizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (

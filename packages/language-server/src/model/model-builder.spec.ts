@@ -935,6 +935,71 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds elements with custom size', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    await validate(`
+    specification {
+      element component
+      element small {
+        style {
+          size small
+        }
+      }
+      element large {
+        style {
+          size large
+        }
+      }
+    }
+    model {
+      component c1
+      component c2 {
+        style {
+          size large
+        }
+      }
+      small sm
+      large lg
+      small smOverride {
+        style {
+          size medium
+        }
+      }
+    }
+    `)
+    const model = await buildModel()
+    expect(model.elements).toMatchObject({
+      c1: {
+        kind: 'component',
+        style: {},
+      },
+      c2: {
+        kind: 'component',
+        style: {
+          size: 'large',
+        },
+      },
+      sm: {
+        kind: 'small',
+        style: {
+          size: 'small',
+        },
+      },
+      lg: {
+        kind: 'large',
+        style: {
+          size: 'large',
+        },
+      },
+      smOverride: {
+        kind: 'small',
+        style: {
+          size: 'medium',
+        },
+      },
+    })
+  })
+
   // Base64 taken from saveManualLayout.spec.ts
   it('parses manual layout', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()

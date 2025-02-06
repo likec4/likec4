@@ -5,12 +5,20 @@ describe('Builder (style 2)', () => {
   const spec = Builder
     .specification({
       elements: {
-        system: {},
+        system: {
+          style: {
+            size: 'large',
+          },
+        },
         component: {},
         actor: {},
       },
       deployments: {
-        env: {},
+        env: {
+          style: {
+            size: 'large',
+          },
+        },
         node: {},
       },
     })

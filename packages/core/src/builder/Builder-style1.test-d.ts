@@ -34,7 +34,11 @@ test('Builder types - style 1', () => {
           shape: 'person',
         },
       },
-      system: {},
+      system: {
+        style: {
+          size: 'large',
+        },
+      },
       component: {},
     },
     deployments: {

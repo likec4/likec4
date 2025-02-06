@@ -89,7 +89,7 @@
     },
     {
       "name": "entity.name.type.enum.likec4",
-      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
+      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft|small|medium|large)\\b"
     },
     {
       "name": "entity.name.type.enum.likec4",
@@ -97,7 +97,7 @@
     },
     {
       "name": "variable.other.property.likec4",
-      "match": "\\b(title|description|technology|navigateTo|notation|multiple)\\b"
+      "match": "\\b(title|description|technology|navigateTo|notation|multiple|size)\\b"
     },
     {
       "name": "keyword.control.likec4",

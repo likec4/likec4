@@ -43,6 +43,7 @@ type ParsedElementStyle = {
   border?: c4.BorderStyle
   opacity?: number
   multiple?: boolean
+  size?: c4.ShapeSize
 }
 
 export interface ParsedAstSpecification {
@@ -366,6 +367,12 @@ export function toElementStyle(props: Array<ast.StyleProperty> | undefined, isVa
       }
       case ast.isMultipleProperty(prop): {
         result.multiple = isBoolean(prop.value) ? prop.value : false
+        break
+      }
+      case ast.isShapeSizeProperty(prop): {
+        if (isTruthy(prop.value)) {
+          result.size = prop.value
+        }
         break
       }
       default:

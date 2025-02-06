@@ -11,7 +11,7 @@ const ThemeColors = [
   'primary',
   'red',
   'secondary',
-  'sky'
+  'sky',
 ] as const
 export type ThemeColor = typeof ThemeColors[number]
 
@@ -20,6 +20,8 @@ export type HexColorLiteral = `#${string}`
 export type ColorLiteral = HexColorLiteral
 
 export type Color = LiteralUnion<ThemeColor, string>
+
+export type ShapeSize = 'small' | 'medium' | 'large'
 
 export function isThemeColor(color: Color): color is ThemeColor {
   return color in ThemeColors
@@ -58,4 +60,10 @@ export interface LikeC4Theme {
   shadow: ColorLiteral
   relationships: RelationshipThemeColors
   elements: ElementThemeColors
+  sizes: {
+    [key in ShapeSize]: {
+      width: number
+      height: number
+    }
+  }
 }

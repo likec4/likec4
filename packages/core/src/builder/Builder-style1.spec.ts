@@ -16,6 +16,7 @@ describe('Builder (style1)', () => {
       elements: {
         system: {
           style: {
+            size: 'large',
             color: 'green',
             opacity: 10,
           },

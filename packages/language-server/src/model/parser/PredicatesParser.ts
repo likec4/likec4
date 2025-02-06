@@ -180,6 +180,12 @@ export function PredicatesParser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
+          if (ast.isShapeSizeProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = prop.value
+            }
+            return acc
+          }
           nonexhaustive(prop)
         },
         {
