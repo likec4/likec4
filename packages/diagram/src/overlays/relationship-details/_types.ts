@@ -1,4 +1,4 @@
-import type { Color, DiagramNode, Fqn, RelationId, RelationshipLineType, ViewId } from '@likec4/core'
+import type { Color, DiagramNode, Fqn, IconUrl, RelationId, RelationshipLineType, ViewId } from '@likec4/core'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace RelationshipDetailsTypes {
@@ -27,7 +27,7 @@ export namespace RelationshipDetailsTypes {
     >
     & {
       fqn: Fqn
-      icon: string | null
+      icon: IconUrl
       ports: Ports
     }
   >
@@ -45,7 +45,7 @@ export namespace RelationshipDetailsTypes {
     & {
       fqn: Fqn
       depth: number
-      icon: string | null
+      icon?: IconUrl
       ports: Ports
     }
   >

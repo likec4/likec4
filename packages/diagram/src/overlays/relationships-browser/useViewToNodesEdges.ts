@@ -119,7 +119,7 @@ export function viewToNodesEdge(
               shape: node.shape,
               style: node.style,
               depth: node.depth ?? 0,
-              icon: node.icon ?? null,
+              icon: node.icon ?? 'none',
               ports: node.ports,
               fqn,
               ...navigateTo,

@@ -115,7 +115,7 @@ function nodeData(
     description: diagramNode?.description ?? element.description,
     color: diagramNode?.color ?? ancestor?.color ?? element.color,
     shape: diagramNode?.shape ?? element.shape,
-    icon: diagramNode?.icon ?? element.icon,
+    icon: diagramNode?.icon ?? element.icon ?? 'none',
     style: diagramNode?.style ?? element.$element.style ?? {},
     navigateTo: diagramNode?.navigateTo ?? first(element.scopedViews().take(1).toArray())?.id ?? null,
     width: 0,
