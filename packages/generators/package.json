@@ -42,7 +42,7 @@
     "@likec4/core": "workspace:*",
     "json5": "^2.2.3",
     "langium": "3.3.1",
-    "remeda": "^2.19.0"
+    "remeda": "^2.20.1"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

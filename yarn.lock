@@ -1919,7 +1919,7 @@ __metadata:
     natural-compare-lite: "npm:^1.4.0"
     object-hash: "npm:^3.0.0"
     obliterator: "npm:^2.0.5"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     turbo: "npm:^2.4.0"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
@@ -1963,7 +1963,7 @@ __metadata:
     react: "npm:~19.0.0"
     react-dom: "npm:~19.0.0"
     react-error-boundary: "npm:^4.1.2"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
     vite: "npm:5.4.14"
@@ -2014,7 +2014,7 @@ __metadata:
     "@types/node": "npm:^20.17.7"
     json5: "npm:^2.2.3"
     langium: "npm:3.3.1"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     typescript: "npm:^5.7.3"
     unbuild: "npm:^3.3.1"
     vitest: "npm:^2.1.8"
@@ -2065,7 +2065,7 @@ __metadata:
     natural-compare-lite: "npm:^1.4.0"
     npm-run-all2: "npm:^7.0.1"
     p-debounce: "npm:^4.0.0"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
@@ -2099,7 +2099,7 @@ __metadata:
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
     p-limit: "npm:^6.2.0"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
     turbo: "npm:^2.4.0"
@@ -2173,7 +2173,7 @@ __metadata:
     react-dom: "npm:~19.0.0"
     react-error-boundary: "npm:^4.1.2"
     react-resizable-panels: "npm:^2.1.7"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
@@ -2228,7 +2228,7 @@ __metadata:
     react: "npm:~19.0.0"
     react-dom: "npm:~19.0.0"
     react-error-boundary: "npm:^4.1.2"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     tsx: "npm:~4.19.2"
     type-fest: "npm:4.28.1"
     typescript: "npm:^5.7.3"
@@ -9002,7 +9002,7 @@ __metadata:
     mnemonist: "npm:^0.40.0"
     p-timeout: "npm:^6.1.4"
     pretty-ms: "npm:^9.2.0"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     std-env: "npm:^3.8.0"
     tslib: "npm:^2.8.1"
     tsx: "npm:~4.19.2"
@@ -9086,7 +9086,7 @@ __metadata:
     react-error-boundary: "npm:^4.1.2"
     react-resizable-panels: "npm:^2.1.7"
     react-shadow: "npm:^20.6.0"
-    remeda: "npm:^2.19.0"
+    remeda: "npm:^2.20.1"
     rollup: "npm:4.34.0"
     std-env: "npm:^3.8.0"
     strip-indent: "npm:^4.0.0"
@@ -12541,12 +12541,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^2.19.0":
-  version: 2.19.0
-  resolution: "remeda@npm:2.19.0"
+"remeda@npm:^2.20.1":
+  version: 2.20.1
+  resolution: "remeda@npm:2.20.1"
   dependencies:
-    type-fest: "npm:^4.30.0"
-  checksum: 10c0/e6e44ea99687f3e671495b3d7690bc354dc5548ac04b27a44eb1e246561299520e5afd72a3c04f66f483f3fc9914f970726a4acb0dd2645bbfbc923a1887c3a8
+    type-fest: "npm:^4.33.0"
+  checksum: 10c0/8240a14ec01745cab7773e489b71b61209eae5f595148dceba8920d455f29f43137973e421c9aa2141b0a61ca675c1258551699774996757390d458206953228
   languageName: node
   linkType: hard
 
@@ -14182,10 +14182,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.21.0, type-fest@npm:^4.27.0, type-fest@npm:^4.30.0":
+"type-fest@npm:^4.21.0, type-fest@npm:^4.27.0":
   version: 4.31.0
   resolution: "type-fest@npm:4.31.0"
   checksum: 10c0/a5bb69e3b0f82e068af8c645ac3d50b1fa5c588ebc83735a6add4ef6dacf277bb3605801f66c72c069af20120ee7387a3ae6dd84e12c152f5982784c710b4051
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.33.0":
+  version: 4.33.0
+  resolution: "type-fest@npm:4.33.0"
+  checksum: 10c0/20015eea353605e08e3f4b967291b225fa4e7c43361de44f39b88131715e41877458af80da59c8f17e40c0e3842298996f0651219dc9823e35c7e46ecbc8a44f
   languageName: node
   linkType: hard
 
