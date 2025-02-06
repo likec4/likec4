@@ -60,33 +60,17 @@ abstract class Rect {
     }
   }
   protected abstract parent: Compound | null
-}
-
-class Compound extends Rect {
-  public readonly children = [] as Rect[]
 
   constructor(
     xynode: InternalNode,
-    protected readonly parent: Compound | null = null,
+    parent: Compound | null = null,
   ) {
-    super()
     this.id = xynode.id
 
-    if (parent) {
-      parent.children.push(this)
+    this.positionAbsolute = !parent ? xynode.position : {
+      x: xynode.position.x + parent.minX,
+      y: xynode.position.y + parent.minY,
     }
-  }
-}
-
-class Leaf extends Rect {
-  constructor(
-    xynode: InternalNode,
-    public readonly parent: Compound | null = null,
-  ) {
-    super()
-    this.id = xynode.id
-
-    this.positionAbsolute = xynode.internals.positionAbsolute
 
     const { width, height } = getNodeDimensions(xynode)
 
@@ -96,6 +80,26 @@ class Leaf extends Rect {
     if (parent) {
       parent.children.push(this)
     }
+  }
+}
+
+class Compound extends Rect {
+  public readonly children = [] as Rect[]
+
+  constructor(
+    xynode: InternalNode,
+    public readonly parent: Compound | null = null,
+  ) {
+    super(xynode, parent)
+  }
+}
+
+class Leaf extends Rect {
+  constructor(
+    xynode: InternalNode,
+    public readonly parent: Compound | null = null,
+  ) {
+    super(xynode, parent)
   }
 }
 
