@@ -34,7 +34,7 @@
     "@tanstack/react-router": "1.97.17",
     "@tanstack/router-cli": "1.97.17",
     "@tanstack/router-vite-plugin": "1.97.17",
-    "@typefox/monaco-editor-react": "4.5.3",
+    "@typefox/monaco-editor-react": "6.2.1",
     "@types/node": "^20.17.7",
     "@types/react": "~19.0.8",
     "@types/react-dom": "~19.0.3",
