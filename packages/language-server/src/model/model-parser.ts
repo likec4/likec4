@@ -51,6 +51,7 @@ export class LikeC4ModelParser {
           deployments: {},
         },
         c4Elements: [],
+        c4ExtendElements: [],
         c4Relations: [],
         c4Deployments: [],
         c4DeploymentRelations: [],

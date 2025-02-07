@@ -1,8 +1,9 @@
 import type * as c4 from '@likec4/core'
 import { isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
-import { filter, first, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { filter, first, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
   type ParsedAstElement,
+  type ParsedAstExtendElement,
   type ParsedAstRelation,
   ast,
   resolveRelationPoints,
@@ -29,6 +30,13 @@ export function ModelParser<TBase extends Base>(B: TBase) {
           if (ast.isRelation(el)) {
             if (this.isValid(el)) {
               doc.c4Relations.push(this.parseRelation(el))
+            }
+            continue
+          }
+          if (ast.isExtendElement(el)) {
+            const parsed = this.parseExtendElement(el)
+            if (parsed) {
+              doc.c4ExtendElements.push(parsed)
             }
             continue
           }
@@ -84,6 +92,27 @@ export function ModelParser<TBase extends Base>(B: TBase) {
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
         style,
+      }
+    }
+
+    parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtendElement | null {
+      const isValid = this.isValid
+      const id = this.resolveFqn(astNode)
+      const tags = this.parseTags(astNode.body)
+      const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+      const astPath = this.getAstNodePath(astNode)
+      const links = this.parseLinks(astNode.body) ?? []
+
+      if (!tags && isEmpty(metadata ?? {}) && isEmpty(links)) {
+        return null
+      }
+
+      return {
+        id,
+        astPath,
+        ...(metadata && { metadata }),
+        ...(tags && { tags }),
+        ...(links && isNonEmptyArray(links) && { links }),
       }
     }
 

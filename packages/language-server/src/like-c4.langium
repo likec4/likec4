@@ -125,10 +125,13 @@ ElementStringProperty:
   key=('title' | 'technology' | 'description') ':'? value=String ';'?;
 
 ExtendElement:
-  'extend' element=FqnElementRef body=ExtendElementBody
+  'extend' element=StrictFqnElementRef body=ExtendElementBody
 ;
 
 ExtendElementBody:  '{'
+  tags=Tags?
+  props+=ExtendElementProperty*
+
   elements+=(
     Relation<true> |
     Element
@@ -136,9 +139,13 @@ ExtendElementBody:  '{'
 '}'
 ;
 
+ExtendElementProperty:
+  LinkProperty |
+  MetadataProperty;
+
 //
-FqnElementRef:
-  el=[Element:Id] ({infer FqnElementRef.parent=current} StickyDot el=[Element:Id])*;
+StrictFqnElementRef:
+  el=[Element:Id] ({infer StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
 ElementRef:
   el=[Element:Id] ({infer ElementRef.parent=current} StickyDot el=[Element:Id])*;

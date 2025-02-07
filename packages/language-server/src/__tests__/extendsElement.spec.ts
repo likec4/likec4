@@ -1,9 +1,11 @@
-import { expect, test, vi } from 'vitest'
+import { expect, test } from 'vitest'
 import { createTestServices } from '../test'
 
 const document1 = `
 specification {
   element component
+  tag tag1
+  tag tag2
 }
 model {
   component system {
@@ -17,6 +19,7 @@ model {
 const document2 = `
 model {
   extend system.sub {
+    #tag1
     component sub2 {
       -> sub1
     }
@@ -28,6 +31,7 @@ model {
   system.sub1 -> system.sub2
 
   extend system.sub.sub2 {
+    #tag2
     sub2 -> system2
   }
 }

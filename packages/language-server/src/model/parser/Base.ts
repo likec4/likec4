@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
 import { invariant, isNonEmptyArray } from '@likec4/core'
 import type { AstNode } from 'langium'
-import { filter, flatMap, isNonNullish, isTruthy, mapToObj, pipe } from 'remeda'
+import { filter, flatMap, fromEntries, isEmpty, isNonNullish, isTruthy, map, pipe, unique } from 'remeda'
 import stripIndent from 'strip-indent'
 import { type ParsedLikeC4LangiumDocument, type ParsedLink, ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
@@ -49,10 +49,16 @@ export class BaseParser {
   }
 
   getMetadata(metadataAstNode: ast.MetadataProperty | undefined): { [key: string]: string } | undefined {
-    if (!metadataAstNode || !this.isValid(metadataAstNode)) {
+    if (!metadataAstNode || !this.isValid(metadataAstNode) || isEmpty(metadataAstNode.props)) {
       return undefined
     }
-    return mapToObj(metadataAstNode.props, p => [p.key, removeIndent(p.value)] as [string, string])
+    const data = pipe(
+      metadataAstNode.props,
+      map(p => [p.key, removeIndent(p.value)] as [string, string]),
+      filter(([_, value]) => isTruthy(value)),
+      fromEntries(),
+    )
+    return isEmpty(data) ? undefined : data
   }
 
   convertTags<E extends { tags?: ast.Tags }>(withTags?: E) {
@@ -63,7 +69,7 @@ export class BaseParser {
     if (!iter) {
       return null
     }
-    const tags = [] as c4.Tag[]
+    let tags = [] as c4.Tag[]
     while (iter) {
       try {
         if (this.isValid(iter)) {
@@ -77,7 +83,7 @@ export class BaseParser {
       }
       iter = iter.prev
     }
-    tags.reverse()
+    tags = unique(tags.reverse())
     return isNonEmptyArray(tags) ? tags : null
   }
 
