@@ -1,3 +1,26 @@
+# [1.21.0](https://github.com/likec4/likec4/compare/v1.20.3...v1.21.0) (2025-02-07)
+
+
+### Bug Fixes
+
+* compound nodes miss icons ([#1550](https://github.com/likec4/likec4/issues/1550)) ([214c951](https://github.com/likec4/likec4/commit/214c95106e03d266d02c9b529fbf666f36969716)), closes [#1482](https://github.com/likec4/likec4/issues/1482)
+* **deps:** update dependency playwright to v1.50.1 ([#1533](https://github.com/likec4/likec4/issues/1533)) ([66409df](https://github.com/likec4/likec4/commit/66409dfe6242b4cecb3fecf56063024539893772))
+* **deps:** update dependency turbo to ^2.4.0 ([#1532](https://github.com/likec4/likec4/issues/1532)) ([02a1189](https://github.com/likec4/likec4/commit/02a118991d6b7aa512cd365021de283d029e434e))
+* **deps:** update mantine monorepo to v7.16.2 ([#1538](https://github.com/likec4/likec4/issues/1538)) ([18121a1](https://github.com/likec4/likec4/commit/18121a1e243602143b65b11be0fbe6453fc64d25))
+* **diagram:** `ElementDetails` stays in memory after navigation in nested `RelationshipsBrowser` ([921fb79](https://github.com/likec4/likec4/commit/921fb79ba6eba4c6841f6d7685a319724fd1e55e))
+* **diagram:** nonresponsive UI after navigation in RelationshipBrowser ([a4db769](https://github.com/likec4/likec4/commit/a4db76980020682d2c96d61dbef0a4a653e9b006))
+* **docs:** update links in README files to point to the new index view ([d150d78](https://github.com/likec4/likec4/commit/d150d78dd201d808284d823831503be767c58489))
+
+
+### Features
+
+* allow extending tags on elements  ([#1557](https://github.com/likec4/likec4/issues/1557)) ([b4d5bbc](https://github.com/likec4/likec4/commit/b4d5bbcbe1ad9932d65e116ab3e4a6fb77747822)), closes [#666](https://github.com/likec4/likec4/issues/666)
+* formatter support of new properties and predicates ([#1558](https://github.com/likec4/likec4/issues/1558)) ([986cc15](https://github.com/likec4/likec4/commit/986cc158aa980c7504dc1dbe069b3fc92d0f3ae8))
+* **lsp:** semantic tokens for global styles, predicates and groups ([#1552](https://github.com/likec4/likec4/issues/1552)) ([f3a4946](https://github.com/likec4/likec4/commit/f3a49464dbba8f6529913caf77e22b5aefdf5c5e)), closes [#1182](https://github.com/likec4/likec4/issues/1182)
+* support various sizes of shapes for elements  ([#1556](https://github.com/likec4/likec4/issues/1556)) ([adca9d7](https://github.com/likec4/likec4/commit/adca9d77d82b607488675fc38aa548f90a6dfd8c)), closes [#1440](https://github.com/likec4/likec4/issues/1440)
+
+
+
 ## [1.20.3](https://github.com/likec4/likec4/compare/v1.20.2...v1.20.3) (2025-02-06)
 
 ### Improvements

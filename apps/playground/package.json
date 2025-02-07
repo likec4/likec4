@@ -1,7 +1,7 @@
 {
   "name": "@likec4/playground",
   "type": "module",
-  "version": "1.20.3",
+  "version": "1.21.0",
   "private": true,
   "scripts": {
     "generate:routes": "tsr generate",
