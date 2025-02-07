@@ -98,16 +98,17 @@ export function nodeLabel(
     text: SpacingSize
   },
 ) {
+  const isSmOrXs = ['sm', 'xs'].includes(sizes.shape)
   const hasIcon = isTruthy(node.icon)
   const lines = [
     wrapWithFont({
       text: node.title,
       fontsize: fontSize(sizes.text),
       maxchars: maxchars(sizes.shape),
-      maxLines: 3,
+      maxLines: isSmOrXs ? 1 : 3,
     }),
   ]
-  if (sizes.shape !== 'sm' && sizes.shape !== 'xs') {
+  if (sizes.shape !== 'xs') {
     if (isTruthy(node.technology?.trim())) {
       lines.push(
         wrapWithFont({
@@ -125,7 +126,7 @@ export function nodeLabel(
           text: node.description,
           fontsize: Math.ceil(fontSize(sizes.text) * 0.75),
           maxchars: hasIcon ? 35 : 45,
-          maxLines: 5,
+          maxLines: isSmOrXs ? 3 : 5,
           color: colorValues.loContrast,
         }),
       )
@@ -162,7 +163,7 @@ export function nodeLabel(
       return `<TR><TD>${line}</TD></TR>`
     }
   const rows = lines.map(rowMapper).join('')
-  return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5">${rows}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">${rows}</TABLE>>`
 }
 
 export function compoundLabel(node: ComputedNode, color?: string) {

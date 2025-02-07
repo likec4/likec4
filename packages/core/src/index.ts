@@ -3,7 +3,7 @@ export {
   defaultTheme,
   ElementColors,
   RelationshipColors,
-} from './colors'
+} from './theme'
 
 export {
   invariant,

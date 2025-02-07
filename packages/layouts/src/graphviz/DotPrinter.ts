@@ -361,6 +361,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     const colorValues = this.getElementColorValues(element.color)
     let size = element.style.size
     let textSize = element.style.textSize
+    let paddingSize = element.style.padding
 
     if (!size && !!textSize) {
       size = textSize
@@ -368,10 +369,13 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     if (!textSize && !!size) {
       textSize = size
     }
+    if (!paddingSize && !!size) {
+      paddingSize = size
+    }
     size ??= DefaultShapeSize
     textSize ??= DefaultTextSize
+    paddingSize ??= DefaultPaddingSize
 
-    const paddingSize = element.style.padding ?? DefaultPaddingSize
     const padding = defaultTheme.spacing[paddingSize]
 
     node.attributes.apply({
@@ -382,7 +386,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         padding: paddingSize,
         text: textSize,
       }),
-      [_.margin]: `${pxToInch(hasIcon ? 10 : padding)},${pxToInch(padding)}`,
+      [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(padding)}`,
     })
     node.attributes.set(_.width, pxToInch(defaultTheme.sizes[size].width))
     node.attributes.set(_.height, pxToInch(defaultTheme.sizes[size].height))
@@ -398,7 +402,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : padding)},${pxToInch(0)}`,
+          [_.margin]: `${pxToInch(hasIcon ? 8 : padding)},${pxToInch(0)}`,
           [_.penwidth]: pxToPoints(2),
           [_.shape]: 'cylinder',
         })
@@ -406,13 +410,13 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       }
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : padding + 4)},${pxToInch(padding + 6)}`,
+          [_.margin]: `${pxToInch(hasIcon ? 8 : padding + 4)},${pxToInch(padding + 6)}`,
         })
         break
       }
       case 'mobile': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(hasIcon ? 10 : padding + 4)},${pxToInch(padding)}`,
+          [_.margin]: `${pxToInch(hasIcon ? 8 : padding + 4)},${pxToInch(padding)}`,
         })
         break
       }
@@ -420,7 +424,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         node.attributes.apply({
           [_.width]: pxToInch(defaultTheme.sizes[size].width),
           [_.height]: pxToInch(defaultTheme.sizes[size].height - 8),
-          [_.margin]: `${pxToInch(hasIcon ? 10 : padding + 4)},${pxToInch(padding)}`,
+          [_.margin]: `${pxToInch(hasIcon ? 8 : padding + 4)},${pxToInch(padding)}`,
         })
         break
       }

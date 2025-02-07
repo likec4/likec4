@@ -2,6 +2,7 @@ import { style } from '@vanilla-extract/css'
 import { mantine, vars } from '../../../theme-vars'
 
 export const menuDropdown = style({
+  overflowY: 'scroll',
   minWidth: 250,
   maxWidth: 'min(90vw, 500px)',
 })

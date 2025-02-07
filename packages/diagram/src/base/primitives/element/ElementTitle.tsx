@@ -6,6 +6,7 @@ import { isNumber, isTruthy } from 'remeda'
 import { IconRenderer } from '../../../context/IconRenderer'
 import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import type { NodeProps } from '../../types'
+import { nodeSizes } from './ElementNodeContainer'
 import * as css from './ElementTitle.css'
 import { iconSize as varIconSize } from './styles.css'
 
@@ -35,6 +36,9 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
     },
     className: css.elementIcon,
   })
+  const size = nodeSizes(data.style).size
+  const isSm = size === 'sm'
+  const isSmOrXs = isSm || size === 'xs'
   return (
     <Box
       className={clsx(
@@ -53,7 +57,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
         <Text
           component="h3"
           className={clsx(css.title, 'likec4-element-title')}
-          lineClamp={3}>
+          lineClamp={isSmOrXs ? 2 : 3}>
           {data.title}
         </Text>
 
@@ -69,7 +73,7 @@ export function ElementTitle({ id, data, iconSize }: ElementTitleProps) {
           <Text
             component="div"
             className={clsx(css.description, 'likec4-element-description')}
-            lineClamp={5}>
+            lineClamp={isSmOrXs ? 3 : 5}>
             {data.description}
           </Text>
         )}

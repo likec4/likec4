@@ -2,7 +2,7 @@ import type { Fqn, LikeC4Model } from '@likec4/core'
 import { Alert, Box, Button, Group, Menu, rem, Text, ThemeIcon, Tree, useTree } from '@mantine/core'
 import { IconInfoCircle, IconTarget, IconZoomScan } from '@tabler/icons-react'
 import { type ReactNode, memo, useEffect, useMemo } from 'react'
-import { useCurrentViewId } from '../../hooks/useCurrentViewId'
+import { useDiagram } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import { stopPropagation } from '../../utils'
 import * as css from './TabPanelDeployments.css'
@@ -36,8 +36,8 @@ const DeployedInstanceRenderer = (
     instance: LikeC4Model.DeployedInstance
   },
 ) => {
-  const currentViewId = useCurrentViewId()
-  // const diagramApi = useDiagramStoreApi()
+  const diagram = useDiagram()
+  const currentViewId = diagram.currentView().id
   const views = [...instance.views()]
   return (
     (
@@ -91,7 +91,7 @@ const DeployedInstanceRenderer = (
                     }}
                     onClick={e => {
                       e.stopPropagation()
-                      // diagramApi.getState().onNavigateTo?.(view.id)
+                      diagram.navigateTo(view.id)
                     }}>
                     {view.title}
                   </Menu.Item>

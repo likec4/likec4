@@ -1,6 +1,5 @@
 import {
   type EdgeId,
-  type NodeId,
   isStepEdgeId,
   nonNullable,
 } from '@likec4/core'

@@ -34,13 +34,18 @@ views {
     autoLayout LeftRight
   }
 
+  /**
+   * @likec4-generated(v1)
+   * iKRoYXNo2Sg1Y2I3MjVhM2U1MWNjNDdjYzdjYTc1N2M0ZDkxMzNlN2VmM2U5NzM5qmF1dG9MYXlvdXSBqWRpcmVjdGlvbqJUQqF40f9soXkApXdpZHRozQWspmhlaWdodM0DHaVub2Rlc4alY2xvdWSCoWKU0f9szLnNBazNAXKhY8OmYW1hem9ugqFilM0Bi80Cac0BgMy0oWPCqGNsb3VkLnVpgqFilNCUzQEnzQFAzLShY8KqY2xvdWQubmV4dIKhYpTNA53NASrNAVPMtKFjwrRjbG91ZC5sZWdhY3kuYmFja2VuZIKhYpTNAX3M8M0Bls0BE6Fjw71jbG91ZC5sZWdhY3kuYmFja2VuZC5zZXJ2aWNlc4KhYpTNAaXNASfNAUbMtKFjwqVlZGdlc4OmZHVzMjA5g6JjcJGCoXjLQHErMzMzMzOhec0BgaFshKF4zQFAoXnNAXWld2lkdGhwpmhlaWdodBKhcJSSzQEDzPmSzQEb
+   * zQEjks0BN80BVZLNAVDNAYCmN3loNDBpg6JjcJGCoXjLQIs8zMzMzM2hectAeCsKrmk1TqFshKF4zQNEoXnNAYOld2lkdGhMpmhlaWdodBKhcJSSzQJBzPmSzQIgzQEjks0B980BVpLNAdXNAYGmdGRkbWYwg6JjcJGCoXjLQIJJ4htZXIuhectAgCzMzMzMzaFshKF4zQJJoXnNAiKld2lkdGhPpmhlaWdodBKhcJSSzQGIzQI9ks0BiM0CbJLNAYjNAqWSzQGIzQLW
+   */
   view cloud_legacy_backend of cloud.legacy.backend {
     include
       *,
-
       cloud
 
     style cloud {
+      opacity 0%
       color muted
     }
 
@@ -50,6 +55,11 @@ views {
 
     style cloud.legacy.* {
       color green
+      opacity 25%
+    }
+
+    style amazon {
+      size large
     }
   }
 

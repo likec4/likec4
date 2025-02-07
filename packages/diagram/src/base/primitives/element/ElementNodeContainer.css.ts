@@ -1,12 +1,9 @@
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { vars } from '../../../theme-vars'
+import { easings, vars } from '../../../theme-vars'
 
 export const stokeFillMix = createVar('stroke-fill-mix')
 
 export const container = style({
-  // position: 'absolute',
-  // top: 0,
-  // left: 0,
   position: 'relative',
   width: '100%',
   height: '100%',
@@ -30,7 +27,7 @@ export const container = style({
     top: '100%',
     left: 0,
     right: 0,
-    height: 20,
+    height: 24,
     background: 'transparent',
     pointerEvents: 'all',
   },
@@ -38,7 +35,7 @@ export const container = style({
 
 globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="true"])`, {
   opacity: 0.25,
-  transition: 'opacity 400ms ease-in-out, filter 500ms ease-in-out',
+  transition: `opacity 400ms ${easings.inOut}, filter 500ms ${easings.inOut}`,
   transitionDelay: '50ms',
   filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
   willChange: 'opacity, filter',
@@ -46,7 +43,7 @@ globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="true"])`, {
 
 globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="immediate"])`, {
   opacity: 0.25,
-  transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
+  transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
   filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
   willChange: 'opacity, filter',
 })

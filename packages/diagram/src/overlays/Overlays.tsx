@@ -73,7 +73,7 @@ export const Overlays = memo(() => {
 
   const isMotionReduced = useReducedMotion() ?? false
 
-  const isActiveOverlay = !!activeElementDetailsOf
+  const isActiveOverlay = !!activeElementDetailsOf || !!relationshipsBrowserActor || !!relationshipDetailsActor
 
   useEffect(() => {
     if (!xyflowRendererDom || isMotionReduced) return

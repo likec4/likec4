@@ -15,9 +15,11 @@ views {
 
     style amazon {
       color indigo
+      size large
     }
     style customer {
       color green
+      size small
     }
     style cloud {
       color sky

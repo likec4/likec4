@@ -85,7 +85,6 @@ export const BaseXYFlow = <
       nodes={nodes}
       edges={edges}
       className={clsx(
-        'likec4-diagram',
         css.cssReactFlow,
         pannable !== true && css.cssDisablePan,
         background === 'transparent' && css.cssTransparentBg,

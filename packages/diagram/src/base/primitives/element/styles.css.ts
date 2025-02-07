@@ -25,50 +25,28 @@ globalStyle(`${container}[data-likec4-shape-size="sm"]`, {
     [iconSize]: '36px',
   },
 })
-globalStyle(`${container}[data-likec4-shape-size="lg"], ${container}[data-likec4-shape-size="xl"]`, {
+globalStyle(`${container}[data-likec4-shape-size="lg"]`, {
   vars: {
     [iconSize]: '82px',
   },
 })
-
-globalStyle(`${container}[data-likec4-text-size="xs"]`, {
+globalStyle(`${container}[data-likec4-shape-size="xl"]`, {
   vars: {
-    [textSize]: rem(defaultTheme.textSizes.xs),
-  },
-})
-globalStyle(`${container}[data-likec4-text-size="sm"]`, {
-  vars: {
-    [textSize]: rem(defaultTheme.textSizes.sm),
-  },
-})
-globalStyle(`${container}[data-likec4-text-size="lg"]`, {
-  vars: {
-    [textSize]: rem(defaultTheme.textSizes.lg),
-  },
-})
-globalStyle(`${container}[data-likec4-text-size="xl"]`, {
-  vars: {
-    [textSize]: rem(defaultTheme.textSizes.xl),
+    [iconSize]: '90px',
   },
 })
 
-globalStyle(`${container}[data-likec4-padding="xs"]`, {
-  vars: {
-    [paddingSize]: rem(defaultTheme.spacing.xs),
-  },
-})
-globalStyle(`${container}[data-likec4-padding="sm"]`, {
-  vars: {
-    [paddingSize]: rem(defaultTheme.spacing.sm),
-  },
-})
-globalStyle(`${container}[data-likec4-padding="lg"]`, {
-  vars: {
-    [paddingSize]: rem(defaultTheme.spacing.lg),
-  },
-})
-globalStyle(`${container}[data-likec4-padding="xl"]`, {
-  vars: {
-    [paddingSize]: rem(defaultTheme.spacing.xl),
-  },
+const sizes = ['xs', 'sm', 'lg', 'xl'] as const
+sizes.forEach((size) => {
+  globalStyle(`${container}[data-likec4-text-size="${size}"]`, {
+    vars: {
+      [textSize]: rem(defaultTheme.textSizes[size]),
+    },
+  })
+
+  globalStyle(`${container}[data-likec4-padding="${size}"]`, {
+    vars: {
+      [paddingSize]: rem(defaultTheme.spacing[size]),
+    },
+  })
 })

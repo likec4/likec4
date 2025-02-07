@@ -50,6 +50,9 @@ model {
   customer .uses cloud 'uses and pays' {
     navigateTo dynamic-view-1
   }
+  cloud .uses amazon 'uses' {
+    navigateTo cloud-to-amazon
+  }
 
 }
 
@@ -60,15 +63,19 @@ views {
 
     group {
       color green
-      opacity 100%
-      include customer with {
-        color green
-      }
+      opacity 10%
+      include
+        customer with {
+          color green
+          size small
+        }
     }
 
-    group {
+    group 'System' {
       color primary
-      opacity 100%
+      opacity 20%
+      border dotted
+
       include *
       exclude -> customer
     }
@@ -89,10 +96,10 @@ views {
     style supportUser {
       color indigo
     }
-  	autoLayout BottomTop
-	}
+    autoLayout BottomTop
+  }
 
-dynamic view dynamic-view-1 {
+  dynamic view dynamic-view-1 {
     title 'Dynamic View Example'
 
     link https://docs.likec4.dev/dsl/dynamic-views/ 'Docs'

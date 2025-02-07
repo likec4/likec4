@@ -10,12 +10,12 @@ export const defaultTheme: LikeC4Theme = {
   shadow: '#0a0a0a',
   sizes: {
     xs: {
-      width: 120,
-      height: 80,
+      width: 180,
+      height: 100,
     },
     sm: {
-      width: 180,
-      height: 110,
+      width: 240,
+      height: 135,
     },
     md: {
       width: 320,
@@ -33,9 +33,9 @@ export const defaultTheme: LikeC4Theme = {
   spacing: {
     xs: 8, // 0.5rem
     sm: 10, // 0.625rem
-    md: 24, // 1.5rem = 16px + 8px
-    lg: 32, // 2rem
-    xl: 48,
+    md: 16, // 1rem
+    lg: 24, // 1.5rem = 16px + 8px
+    xl: 32, // 2rem
   },
   textSizes: {
     xs: 12,

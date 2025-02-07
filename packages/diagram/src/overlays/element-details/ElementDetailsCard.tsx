@@ -112,11 +112,8 @@ export function ElementDetailsCard({
   const diagram = useDiagram()
   const likec4model = useLikeC4Model(true)
   const viewModel = likec4model.view(viewId)
-  // const currentView = diagram.currentView()
-  // const diagramNode = currentView.nodes.find(n => n.id === fqn)
-  // invariant(diagramNode, `DiagramNode with fqn ${fqn} not found`)
   const nodeModel = fromNode ? viewModel.findNode(fromNode) : viewModel.findNodeWithElement(fqn)
-  // invariant(nodeModel && nodeModel.hasElement(), `NodeModel with fqn ${fqn} not found`)
+
   const elementModel = viewModel.$model.element(fqn)
 
   // const incoming = elementModel.incoming().map(r => r.id).toArray()

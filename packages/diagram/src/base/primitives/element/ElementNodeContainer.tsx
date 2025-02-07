@@ -1,4 +1,10 @@
-import { type DiagramNode, DefaultPaddingSize, DefaultShapeSize, DefaultTextSize } from '@likec4/core'
+import {
+  type DiagramNode,
+  type ElementStyle,
+  DefaultPaddingSize,
+  DefaultShapeSize,
+  DefaultTextSize,
+} from '@likec4/core'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
@@ -18,6 +24,30 @@ type ElementNodeContainerProps =
   & PropsWithChildren<{
     nodeProps: NodeProps<RequiredData>
   }>
+
+export function nodeSizes({
+  size,
+  padding,
+  textSize,
+}: ElementStyle) {
+  if (!size && !!textSize) {
+    size = textSize
+  }
+  if (!textSize && !!size) {
+    textSize = size
+  }
+  if (!padding && !!size) {
+    padding = size
+  }
+  size ??= DefaultShapeSize
+  textSize ??= DefaultTextSize
+  padding ??= DefaultPaddingSize
+  return {
+    size,
+    padding,
+    textSize,
+  }
+}
 
 export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNodeContainerProps>(
   forwardRef<HTMLDivElement, ElementNodeContainerProps>(({
@@ -43,21 +73,11 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         break
     }
 
-    let {
+    const {
       size,
       padding,
       textSize,
-    } = data.style
-
-    // if (size === DefaultShapeSize && textSize !== DefaultTextSize) {
-    //   size = textSize
-    // }
-    if (!size && !!textSize) {
-      size = textSize
-    }
-    if (!textSize && !!size) {
-      textSize = size
-    }
+    } = nodeSizes(data.style)
 
     return (
       <Box
@@ -77,9 +97,9 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
         data-hovered={isHovered}
         data-likec4-color={data.color}
         data-likec4-shape={data.shape}
-        data-likec4-shape-size={size ?? DefaultShapeSize}
-        data-likec4-padding={padding ?? DefaultPaddingSize}
-        data-likec4-text-size={textSize ?? DefaultTextSize}
+        data-likec4-shape-size={size}
+        data-likec4-padding={padding}
+        data-likec4-text-size={textSize}
         data-likec4-dimmed={isDimmed}
         {...rest}
       >

@@ -7,6 +7,8 @@ import { mantine, vars, whereDark } from './theme-vars'
 export const rootClassName = 'likec4-diagram-root'
 
 globalStyle(`.${rootClassName}`, {
+  containerName: 'likec4-diagram-root',
+  containerType: 'size',
   overflow: 'hidden',
   position: 'relative',
   width: '100%',

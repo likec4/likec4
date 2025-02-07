@@ -1,11 +1,10 @@
 import { logger } from '@likec4/log'
 import { execa } from 'execa'
-import { cpus } from 'node:os'
 import pLimit from 'p-limit'
 import type { GraphvizPort } from '../GraphvizLayoter'
 import type { DotSource } from '../types'
 
-const limit = pLimit(cpus().length || 1)
+const limit = pLimit(2)
 
 export class GraphvizBinaryAdapter implements GraphvizPort {
   constructor(

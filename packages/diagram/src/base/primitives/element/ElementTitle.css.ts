@@ -37,10 +37,7 @@ export const description = style({
   textOverflow: 'ellipsis',
   overflow: 'hidden',
   selectors: {
-    [`:where(${hasIcon}) &`]: {
-      textWrap: 'wrap',
-    },
-    [`:where([data-likec4-shape-size="xs"], [data-likec4-shape-size="sm"]) &`]: {
+    [`:where([data-likec4-shape-size="xs"]) &`]: {
       display: 'none',
     },
   },
@@ -71,17 +68,22 @@ export const technology = style({
 export const elementDataContainer = style({
   flex: '1',
   height: 'fit-content',
+  width: 'fit-content',
+  margin: '0 auto',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   flexDirection: 'row',
-  padding: paddingSize,
+  paddingTop: paddingSize,
+  paddingBottom: paddingSize,
+  paddingLeft: calc(paddingSize).add('8px').toString(),
+  paddingRight: calc(paddingSize).add('8px').toString(),
   overflow: 'hidden',
   gap: rem(12),
   selectors: {
     ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
-      paddingLeft: 40,
-      paddingRight: 20,
+      paddingLeft: 46,
+      paddingRight: 16,
     },
     ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
       paddingTop: 30,
@@ -98,7 +100,8 @@ globalStyle(`:where([data-likec4-shape-size="lg"], [data-likec4-shape-size="xl"]
 
 export const elementTextData = style({
   height: 'fit-content',
-  width: 'max-content',
+  width: 'fit-content',
+  flex: '0 1 auto',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'stretch',
@@ -114,7 +117,7 @@ export const elementTextData = style({
       gap: rem(6),
     },
     [`:where(${hasIcon}) &`]: {
-      minWidth: `calc(100% - ${iconSize} - ${calc(paddingSize).multiply(2).toString()})`,
+      minWidth: `calc(50% + ${iconSize})`,
       alignItems: 'flex-start',
       'vars': {
         [textAlign]: 'left',

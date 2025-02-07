@@ -130,6 +130,7 @@ export function RelationshipsDropdownMenu({
       closeOnItemClick={false}
       disabled={disabled}
       position="bottom-start"
+      middlewares={{ size: { padding: 8 } }}
       {...portalProps}
     >
       <MenuTarget>
