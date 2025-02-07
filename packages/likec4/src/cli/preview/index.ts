@@ -22,10 +22,16 @@ export const previewCmd = {
         base: {
           type: 'string',
           desc: 'base url the app is being served from'
+        },
+        'interface': {
+          alias: 'i',
+          type: 'string',
+          desc: 'ip address of the network interface to listen on'
         }
       })
       .coerce(['path', 'output'], resolve)
-      .default('path', resolve('.'), '.'),
+      .default('path', resolve('.'), '.')
+      .default('interface', '127.0.0.1', 'localhost'),
 
   async handler(args) {
     await handler(args)

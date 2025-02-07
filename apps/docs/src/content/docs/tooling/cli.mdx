@@ -13,6 +13,7 @@ tableOfContents:
 ---
 
 import { LinkCard } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
 <p>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
@@ -94,6 +95,10 @@ Any change in the sources triggers hot update in the browser immediately.
 :::tip
 You can start the process in a separate terminal window and keep it running while you're editing model in editor, or even serve multiple projects at once.
 :::
+
+<Aside type="caution">
+By default the web server listening localhost (127.0.0.1). If you want it to listen on all newtwork interfaces add '--interface 0.0.0.0' to the serve command.
+</Aside>
 
 ### Build static website
 
