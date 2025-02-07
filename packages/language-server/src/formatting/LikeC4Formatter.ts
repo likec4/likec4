@@ -241,6 +241,9 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isBorderProperty(node)
       || ast.isOpacityProperty(node)
       || ast.isMultipleProperty(node)
+      || ast.isShapeSizeProperty(node)
+      || ast.isPaddingSizeProperty(node)
+      || ast.isTextSizeProperty(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const colon = formatter.keyword(':')
@@ -258,6 +261,9 @@ export class LikeC4Formatter extends AbstractFormatter {
         'border',
         'opacity',
         'multiple',
+        'size',
+        'padding',
+        'textSize',
       )
 
       if (colon.nodes.length === 0) {
@@ -471,7 +477,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected formatWhereExpressionV2(node: AstNode) {
     if (
       ast.isRelationPredicateOrWhereV2(node)
-      // || ast.isElementPredicateOrWhere(node)
+      || ast.isElementPredicateOrWhereV2(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       formatter.keyword('where').append(FormattingOptions.oneSpace)
