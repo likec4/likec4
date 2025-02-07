@@ -369,7 +369,7 @@ WhereElementNegation:
 
 WhereElement:
   {infer WhereElementTag} 'tag' EqOperator value=[Tag:TagId]? |
-  {infer WhereElementKind} 'kind' EqOperator value=[ElementKind]?
+  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]?
 ;
 
 ElementExpression:
@@ -634,7 +634,11 @@ DeploymentViewRulePredicateExpression:
 
 ExpressionV2:
   RelationPredicateOrWhereV2 |
-  FqnExpr
+  ElementPredicateOrWhereV2
+;
+
+ElementPredicateOrWhereV2:
+  FqnExpr ({infer ElementPredicateWhereV2.subject=current} 'where' where=WhereElementExpression?)?
 ;
 
 RelationPredicateOrWhereV2:

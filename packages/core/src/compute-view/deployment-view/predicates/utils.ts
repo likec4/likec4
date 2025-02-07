@@ -14,7 +14,7 @@ import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '
 import { hasIntersection, intersection } from '../../../utils/set'
 import type { ExcludePredicateCtx, PredicateCtx } from '../_types'
 import type { StageExclude, StageInclude } from '../memory'
-import { DeploymentRefPredicate } from './elements'
+import { DeploymentRefPredicate } from './deploymentRefs'
 import { DirectRelationPredicate } from './relation-direct'
 import { InOutRelationPredicate } from './relation-in-out'
 import { IncomingRelationPredicate } from './relation-incoming'
@@ -37,6 +37,7 @@ export function predicateToPatch(
       return DeploymentRefPredicate[op]({ ...ctx, expr, where } as any)
     case FqnExpr.isWildcard(expr):
       return WildcardPredicate[op]({ ...ctx, expr, where } as any)
+
     case RelationExpr.isDirect(expr):
       return DirectRelationPredicate[op]({ ...ctx, expr, where } as any)
     case RelationExpr.isInOut(expr):
@@ -153,6 +154,60 @@ export function applyPredicate<M extends AnyAux>(
     model: new Set([...c.relations.model.values()].filter(r => where(toFilterableRelation(c)(r)))),
     deployment: new Set([...c.relations.deployment.values()].filter(r => where(toFilterableRelation(c)(r)))),
   })
+}
+
+/**
+ * Checks elements using the provided predicate.
+ *
+ * @param c The collection of element to apply the predicate to
+ * @param where The predicate
+ * @returns Returns array of elements those match the predicate
+ */
+export function applyElementPredicate<M extends AnyAux>(
+  c: readonly DeploymentElementModel<M>[],
+  where: OperatorPredicate<Filterable> | null,
+): readonly DeploymentElementModel<M>[]
+/**
+ * Checks element using the provided predicate.
+ *
+ * @param c The element to apply the predicate to
+ * @param where The predicate
+ * @returns The result of the check
+ */
+export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
+  c: E,
+  where: OperatorPredicate<Filterable> | null,
+): boolean
+/**
+ * Creates a function that filters elemetns using the provided predicate.
+ *
+ * @param where The predicate
+ * @returns A function to filter elements
+ */
+export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
+  where: OperatorPredicate<Filterable> | null,
+): (data: readonly E[]) => readonly E[]
+export function applyElementPredicate<M extends AnyAux, E extends DeploymentElementModel<M>>(
+  ...args:
+    | [readonly E[], OperatorPredicate<Filterable> | null]
+    | [OperatorPredicate<Filterable> | null]
+    | [c: E, OperatorPredicate<Filterable> | null]
+):
+  | boolean
+  | readonly E[]
+  | ((data: readonly E[]) => readonly E[])
+{
+  if (args.length === 1) {
+    return x => applyElementPredicate(x, args[0]) as readonly E[]
+  }
+
+  const [c, where] = args
+
+  if (isArray(c)) {
+    return c.filter(x => applyElementPredicate(x, where))
+  }
+
+  return where?.(toFilterable(c, c)) ?? true
 }
 
 export function matchConnections<M extends AnyAux>(

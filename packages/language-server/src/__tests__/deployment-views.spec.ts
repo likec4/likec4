@@ -169,7 +169,7 @@ describe.concurrent('Deployment views:', () => {
     `)
   })
 
-  it('valid rules', async ctx => {
+  it('valid relation rules', async ctx => {
     const { valid } = await mkTestServices(ctx)
 
     await valid(`
@@ -178,6 +178,20 @@ describe.concurrent('Deployment views:', () => {
       include * -> * where kind is https or tag is #next
       include * -> * where source.kind is zone
       include * -> * where source.kind is component
+    `)
+  })
+
+  it('valid element rules', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+
+    await valid(`
+      include *
+      include *, user
+
+      include * where tag is #next
+      include * where kind is zone
+      include * where kind is component
+      include user, * where tag is #next
     `)
   })
 })

@@ -74,6 +74,17 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       }
     }
 
+    parseElementWhereExpr(astNode: ast.ElementPredicateWhereV2): c4.RelationExpr {
+      return {
+        where: {
+          expr: this.parseFqnExpr(astNode.subject as ast.FqnExpr),
+          condition: astNode.where ? parseWhereClause(astNode.where) : {
+            kind: { neq: '--always-true--' },
+          },
+        },
+      }
+    }
+
     parseFqnExpressions(astNode: ast.FqnExpressions): c4.FqnExpr[] {
       const exprs = [] as c4.FqnExpr[]
       let iter: ast.FqnExpressions['prev'] = astNode
