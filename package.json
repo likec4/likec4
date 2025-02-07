@@ -14,7 +14,7 @@
   },
   "scripts": {
     "fmt": "dprint fmt",
-    "prepare": "husky install",
+    "postinstall": "husky install",
     "build": "turbo run build --filter='!@likec4/docs-astro' --filter='!@likec4/playground'",
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck --filter='!@likec4/docs-astro'",
@@ -26,7 +26,7 @@
     "vscode:typecheck": "turbo run typecheck --filter='!@likec4/docs-astro'",
     "release": "shipjs prepare",
     "clean": "turbo run clean",
-    "git:pre-commit": "lint-staged",
+    "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
     "test:e2e": "NODE_ENV=production turbo run package --filter='likec4' && cd e2e && yarn install && yarn bootstrap && yarn test",
@@ -37,10 +37,10 @@
     "@vitest/ui": "^3.0.4",
     "dprint": "0.49.0",
     "esbuild": "^0.24.2",
-    "execa": "^9.3.1",
+    "execa": "^9.5.2",
     "global": "^4.4.0",
     "husky": "^8.0.3",
-    "lint-staged": "15.2.11",
+    "nano-staged": "^0.8.0",
     "npm-run-all2": "^7.0.1",
     "shipjs": "^0.27.0",
     "tsx": "~4.19.2",
@@ -57,7 +57,7 @@
     "vscode-languageserver-types": "3.17.5",
     "vscode-uri": "3.0.8"
   },
-  "lint-staged": {
+  "nano-staged": {
     "**/*.{ts,tsx,mjs,js,jsx}": [
       "dprint fmt"
     ]

@@ -1,37 +1,48 @@
 import { logger } from '@likec4/log'
-import { execa } from 'execa'
+import { execa, ExecaError } from 'execa'
+import os from 'node:os'
 import pLimit from 'p-limit'
+import which from 'which'
 import type { GraphvizPort } from '../GraphvizLayoter'
 import type { DotSource } from '../types'
 
-const limit = pLimit(2)
+const limit = pLimit(Math.max(1, os.cpus().length))
 
 export class GraphvizBinaryAdapter implements GraphvizPort {
+  private dotpath: string
+  private unflattenpath: string
+
   constructor(
     // Path to the binary, e.g. 'dot' or '/usr/bin/dot'
-    public path: string = 'dot',
+    path?: string,
   ) {
+    // const dotpath =
+    // if (!dotpath) {
+    //   throw new Error('Graphviz binary not found')
+    // }
+    this.dotpath = path || which.sync('dot')
+    this.unflattenpath = which.sync('unflatten')
   }
 
   async unflatten(dot: DotSource): Promise<DotSource> {
     return await limit(async () => {
       const log = logger.withTag('graphviz-binary')
-      const unflatten = await execa('unflatten', ['-l 1', '-c 3'], {
+      const unflatten = await execa(this.unflattenpath, ['-l 1', '-c 3'], {
         reject: false,
         timeout: 10_000,
         input: dot,
+        detached: true,
         stdin: 'pipe',
-        encoding: 'utf8',
+        stdout: 'pipe',
+        stderr: 'pipe',
       })
-      if (unflatten instanceof Error) {
+      if (unflatten.failed) {
         if (unflatten.stdout) {
           log.warn(
             `Command: '${unflatten.command}' failed: ${unflatten.stderr}\n\nbut returned\n${unflatten.stdout}`,
           )
         } else {
-          log.error(
-            `Command: '${unflatten.command}' failed: ${unflatten.stderr}\n\nnothing returned, ignoring...`,
-          )
+          log.error(unflatten)
         }
       }
 
@@ -45,23 +56,26 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   async layoutJson(dot: DotSource): Promise<string> {
     return await limit(async () => {
       const log = logger.withTag('graphviz-binary')
-      const dotcmd = await execa(this.path, ['-Tjson', '-y'], {
+      const dotcmd = await execa(this.dotpath, ['-Tjson', '-y'], {
         reject: false,
         timeout: 10_000,
         input: dot,
+        detached: true,
         stdin: 'pipe',
-        encoding: 'utf8',
+        stdout: 'pipe',
+        stderr: 'pipe',
       })
-      if (dotcmd instanceof Error) {
+      if (dotcmd.failed) {
         if (!dotcmd.stdout) {
           log.error(
-            `Command: '${dotcmd.command}' nothing returned and failed: "${dotcmd.stderr}"`,
+            `Command: '${dotcmd.command}' nothing returned and failed (exitcode ${dotcmd.exitCode}): "${dotcmd.stderr}"`,
           )
+          log.error(dotcmd)
           log.warn(`FAILED DOT:\n${dot}`)
           throw dotcmd
         }
         log.warn(
-          `Command: '${dotcmd.command}' returned result but also failed "${dotcmd.stderr}"`,
+          `Command: '${dotcmd.command}' returned result but also failed (exitcode ${dotcmd.exitCode}): "${dotcmd.stderr}"`,
         )
       }
       return dotcmd.stdout
@@ -75,15 +89,17 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   async svg(dot: DotSource): Promise<string> {
     return await limit(async () => {
       const log = logger.withTag('graphviz-binary')
-      const result = await execa(this.path, ['-Tsvg', '-y'], {
+      const result = await execa(this.dotpath, ['-Tsvg', '-y'], {
         reject: false,
         timeout: 10_000,
         input: dot,
+        detached: true,
         stdin: 'pipe',
-        encoding: 'utf8',
+        stdout: 'pipe',
+        stderr: 'pipe',
       })
 
-      if (result instanceof Error) {
+      if (result.failed) {
         log.warn(`DOT:\n${dot}`)
         if (!result.stdout) {
           log.error(
