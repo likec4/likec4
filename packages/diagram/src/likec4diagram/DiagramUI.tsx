@@ -6,7 +6,7 @@ import { Controls, DiagramTitlePanel } from './ui'
 import NotationPanel from './ui/notation'
 import { DynamicViewWalkthrough } from './ui/walkthrough/DynamicViewWalkthrough'
 
-export const DiagramUI = memo(() => {
+export function DiagramUI() {
   return (
     <>
       <Controls />
@@ -25,4 +25,4 @@ export const DiagramUI = memo(() => {
       </IfEnabled>
     </>
   )
-})
+}

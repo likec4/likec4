@@ -27,12 +27,13 @@ import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@
 import clsx from 'clsx'
 import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
-import { Link } from '../../../base'
+import { Link } from '../../../base/Link'
 import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
-import { DiagramContext, useDiagramContext } from '../../../hooks/useDiagramContext'
+import { useDiagramContext } from '../../../hooks/useDiagramContext'
 import { useLikeC4Model } from '../../../likec4model'
+import { DiagramContext } from '../../state/machine'
 import * as css from './RelationshipsDropdownMenu.css'
 
 const stopPropagation: MouseEventHandler = (e) => e.stopPropagation()

@@ -1,22 +1,21 @@
 import { Box, Button, Code, Group, Notification } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
+import { useLifecycleLogger } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
-import { AnimatePresence, useReducedMotion } from 'framer-motion'
+import { deepEqual } from 'fast-equals'
+import { useReducedMotion } from 'framer-motion'
 import { animate } from 'framer-motion/dom'
 import { memo, useEffect, useMemo } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { DiagramFeatures } from '../context'
 import { useXYStore } from '../hooks'
-import { useDiagramActor, useDiagramActorState } from '../hooks/useDiagramActor'
+import { useDiagram } from '../hooks/useDiagram'
+import { useDiagramActorState } from '../hooks/useDiagramActor'
+import type { MachineSnapshot } from '../likec4diagram/state/machine'
 import { ElementDetailsCard } from './element-details/ElementDetailsCard'
 import { Overlay } from './overlay/Overlay'
 import { RelationshipDetails } from './relationship-details/RelationshipDetails'
 import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrowser'
-// import { EdgeDetailsXYFlow } from './edge-details/EdgeDetailsXYFlow'
-// import { ElementDetailsCard } from './element-details/ElementDetailsCard'
-// import { OverlayContext, useOverlayDialog } from './OverlayContext'
-// import * as css from './Overlays.css'
-// import { RelationshipsOverlay } from './relationships-of/RelationshipsOverlay'
 
 function Fallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorString = error instanceof Error ? error.message : 'Unknown error'
@@ -42,12 +41,28 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
   )
 }
 
+const selector = (s: MachineSnapshot) => ({
+  relationshipsBrowserActor: s.children.relationshipsBrowser,
+  relationshipDetailsActor: s.children.relationshipDetails,
+  viewId: s.context.view.id,
+  activeElementDetailsOf: s.context.activeElementDetails?.fqn ?? null,
+  fromNode: s.context.activeElementDetails?.fromNode ?? null,
+  rectFromNode: s.context.activeElementDetails?.nodeRectScreen ?? null,
+})
+const equals = (a: ReturnType<typeof selector>, b: ReturnType<typeof selector>) =>
+  a.relationshipDetailsActor == b.relationshipDetailsActor &&
+  a.relationshipsBrowserActor == b.relationshipsBrowserActor &&
+  a.activeElementDetailsOf === b.activeElementDetailsOf &&
+  a.viewId === b.viewId &&
+  a.fromNode === b.fromNode &&
+  deepEqual(a.rectFromNode, b.rectFromNode)
+
 export const Overlays = memo(() => {
   const xyflowDomNode = useXYStore(s => s.domNode)
   const xyflowRendererDom = useMemo(() => xyflowDomNode?.querySelector('.react-flow__renderer') ?? null, [
     xyflowDomNode,
   ])
-  const { send } = useDiagramActor()
+  const diagram = useDiagram()
   const {
     relationshipsBrowserActor,
     relationshipDetailsActor,
@@ -55,14 +70,9 @@ export const Overlays = memo(() => {
     viewId,
     fromNode,
     rectFromNode,
-  } = useDiagramActorState(s => ({
-    relationshipsBrowserActor: s.children.relationshipsBrowser,
-    relationshipDetailsActor: s.children.relationshipDetails,
-    viewId: s.context.view.id,
-    activeElementDetailsOf: s.context.activeElementDetails?.fqn ?? null,
-    fromNode: s.context.activeElementDetails?.fromNode ?? null,
-    rectFromNode: s.context.activeElementDetails?.nodeRectScreen ?? null,
-  }))
+  } = useDiagramActorState(selector, equals)
+
+  useLifecycleLogger('Overlays', [relationshipsBrowserActor])
 
   const isMotionReduced = useReducedMotion() ?? false
 
@@ -79,72 +89,31 @@ export const Overlays = memo(() => {
     })
   }, [isActiveOverlay, xyflowRendererDom])
 
-  // )
-  // const diagramStore = useDiagramStoreApi()
-  // const {
-  //   activeOverlay,
-  //   viewId,
-  // } = useDiagramState(s => ({
-  //   activeOverlay: s.activeOverlay,
-  //   viewId: s.view.id,
-  // }))
-
-  // const onCloseCbRef = useRef<(() => void)>(undefined)
-
-  // const ctxValue = useMemo(() => ({
-  //   openOverlay: ((overlay) => {
-  //     diagramStore.getState().openOverlay(overlay)
-  //   }) as DiagramState['openOverlay'],
-  //   close: (cb?: () => void) => {
-  //     onCloseCbRef.current = cb
-  //     diagramStore.getState().closeOverlay()
-  //   },
-  // }), [diagramStore])
-
-  // const onExitComplete = () => {
-  //   onCloseCbRef.current?.()
-  //   onCloseCbRef.current = undefined
-  // }
-
-  // const isActive = !!activeOverlay
-  // useHotkeys(
-  //   isActive
-  //     ? [
-  //       ['Escape', (e) => {
-  //         e.stopPropagation()
-  //         ctxValue.close()
-  //       }, { preventDefault: true }],
-  //     ]
-  //     : [],
-  // )
-
-  // useLifecycleLogger('Overlays', [activeElementDetailsOf, viewId, fromNode, rectFromNode])
-
   const onClose = useCallbackRef(() => {
-    relationshipsBrowserActor?.send({ type: 'close' })
-    relationshipDetailsActor?.send({ type: 'close' })
-    send({ type: 'close.overlay' })
+    diagram.closeOverlay()
+    // relationshipsBrowserActor?.send({ type: 'close' })
+    // relationshipDetailsActor?.send({ type: 'close' })
+    // send({ type: 'close.overlay' })
   })
 
   return (
     <DiagramFeatures.Overlays>
       <ErrorBoundary FallbackComponent={Fallback} onReset={onClose}>
-        <AnimatePresence>
-          {relationshipsBrowserActor && (
-            <Overlay
-              key={'relationships-browser'}
-              onClose={onClose}>
-              <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
-            </Overlay>
-          )}
-          {relationshipDetailsActor && (
-            <Overlay
-              key={'relationship-details'}
-              onClose={onClose}>
-              <RelationshipDetails actorRef={relationshipDetailsActor} />
-            </Overlay>
-          )}
-        </AnimatePresence>
+        {relationshipsBrowserActor && (
+          <Overlay
+            key={'relationships-browser'}
+            onClose={onClose}>
+            <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
+          </Overlay>
+        )}
+        {relationshipDetailsActor && (
+          <Overlay
+            key={'relationship-details'}
+            onClose={onClose}>
+            <RelationshipDetails actorRef={relationshipDetailsActor} />
+          </Overlay>
+        )}
+
         {/* TODO: Somehow ElementDetailsCard does not work properly inside AnimatePresence} */}
         {!!activeElementDetailsOf && (
           <ElementDetailsCard
@@ -160,3 +129,4 @@ export const Overlays = memo(() => {
     </DiagramFeatures.Overlays>
   )
 })
+Overlays.displayName = 'Overlays'

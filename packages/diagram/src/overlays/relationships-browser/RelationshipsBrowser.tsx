@@ -5,7 +5,7 @@ import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useStoreApi } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
-import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { memo, useEffect, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
@@ -164,15 +164,6 @@ const RelationshipsBrowserInner = memo(() => {
 
   const hasStepBack = current > 0
   const hasStepForward = current + 1 < history.length
-
-  // useLifecycleLogger('RelationshipsBrowserInner.browser', [browser])
-  // useLifecycleLogger('RelationshipsBrowserInner.layouted', [layouted])
-  // useLifecycleLogger('RelationshipsBrowserInner', [
-  //   historySubjectId,
-  //   subjectId,
-  //   closeable,
-  //   enableNavigationMenu,
-  // ])
 
   return (
     <>

@@ -140,6 +140,60 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
+    if (
+      ast.isGlobalStyleGroup(node)
+      || ast.isGlobalStyle(node)
+    ) {
+      acceptor({
+        node,
+        property: 'id',
+        type: SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly,
+        ],
+      })
+      return
+    }
+    if (ast.isViewRuleGlobalStyle(node)) {
+      acceptor({
+        node,
+        property: 'style',
+        type: SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly,
+        ],
+      })
+      return
+    }
+    if (
+      ast.isGlobalPredicateGroup(node)
+      || ast.isGlobalDynamicPredicateGroup(node)
+    ) {
+      acceptor({
+        node,
+        property: 'name',
+        type: SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly,
+        ],
+      })
+      return
+    }
+    if (ast.isViewRuleGlobalPredicateRef(node)) {
+      acceptor({
+        node,
+        property: 'predicate',
+        type: SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly,
+        ],
+      })
+      return
+    }
     if (ast.isElementTagExpression(node) && isTruthy(node.tag)) {
       acceptor({
         node,

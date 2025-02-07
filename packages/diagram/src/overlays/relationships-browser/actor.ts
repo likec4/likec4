@@ -167,8 +167,6 @@ export const relationshipsBrowserActor = setup({
       } = input
       let {
         nodes: currentNodes,
-        setNodes,
-        setEdges,
         width,
         height,
       } = xystore.getState()
@@ -275,7 +273,7 @@ export const relationshipsBrowserActor = setup({
         nextviewport.zoom,
       )
       // allow framer to render
-      await delay(180)
+      await delay(175)
       next.xynodes = next.xynodes.map(Base.setDimmed(false))
 
       if (signal.aborted) {
@@ -379,10 +377,6 @@ export const relationshipsBrowserActor = setup({
             },
             'xyflow.applyNodeChages': {
               // actions: log('layouting: ignore xyflow.applyNodeChages'),
-            },
-            'close': {
-              target: '#closed',
-              actions: stopChild('layouter'),
             },
           },
         },
