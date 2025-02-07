@@ -1,6 +1,5 @@
 import { Box, Button, Code, Group, Notification } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
-import { useLifecycleLogger } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
 import { deepEqual } from 'fast-equals'
 import { useReducedMotion } from 'framer-motion'
@@ -71,8 +70,6 @@ export const Overlays = memo(() => {
     fromNode,
     rectFromNode,
   } = useDiagramActorState(selector, equals)
-
-  useLifecycleLogger('Overlays', [relationshipsBrowserActor])
 
   const isMotionReduced = useReducedMotion() ?? false
 

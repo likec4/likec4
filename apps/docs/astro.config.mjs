@@ -139,6 +139,7 @@ export default defineConfig({
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
         'likec4/icons': new URL('../../packages/icons', import.meta.url).pathname,
+        'likec4/model': new URL('../../packages/likec4/src/model', import.meta.url).pathname,
         // Alias to bundled React components, can't use 'development' condition html#server
         'likec4/react': new URL('../../packages/likec4/react', import.meta.url).pathname,
         '@': new URL('./src', import.meta.url).pathname,
