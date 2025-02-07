@@ -130,5 +130,10 @@ export const shapeSvg = style([shapeBase, {
         [filterShadow]: `none`,
       },
     },
+    [`:where([data-likec4-zoom-small="true"]) &`]: {
+      vars: {
+        [filterShadow]: `none`,
+      },
+    },
   },
 }])

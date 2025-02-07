@@ -11,7 +11,7 @@ globalStyle(`${container}`, {
   vars: {
     [textSize]: rem(defaultTheme.textSizes.md),
     [paddingSize]: rem(defaultTheme.spacing.md),
-    [iconSize]: '52px',
+    [iconSize]: '60px',
   },
 })
 
@@ -22,15 +22,10 @@ globalStyle(`${container}[data-likec4-shape-size="xs"]`, {
 })
 globalStyle(`${container}[data-likec4-shape-size="sm"]`, {
   vars: {
-    [iconSize]: '32px',
+    [iconSize]: '36px',
   },
 })
-globalStyle(`${container}[data-likec4-shape-size="lg"]`, {
-  vars: {
-    [iconSize]: '82px',
-  },
-})
-globalStyle(`${container}[data-likec4-shape-size="xl"]`, {
+globalStyle(`${container}[data-likec4-shape-size="lg"], ${container}[data-likec4-shape-size="xl"]`, {
   vars: {
     [iconSize]: '82px',
   },

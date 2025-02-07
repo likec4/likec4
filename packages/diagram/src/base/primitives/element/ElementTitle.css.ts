@@ -92,7 +92,7 @@ export const elementDataContainer = style({
     },
   },
 })
-globalStyle(`:where([data-likec4-shape-size="lg"]) ${elementDataContainer}`, {
+globalStyle(`:where([data-likec4-shape-size="lg"], [data-likec4-shape-size="xl"]) ${elementDataContainer}`, {
   gap: rem(16),
 })
 

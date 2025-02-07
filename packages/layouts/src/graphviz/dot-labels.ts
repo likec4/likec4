@@ -143,8 +143,8 @@ export function nodeLabel(
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
         let leftwidth = 76 // icon is 60px, plus 10px here and plus 10px padding from node margin
 
-        if (sizes.shape === 'sm') {
-          leftwidth = 26
+        if (['xs', 'sm'].includes(sizes.shape)) {
+          leftwidth = 16
         }
 
         if (node.shape === 'queue' || node.shape === 'mobile') {
