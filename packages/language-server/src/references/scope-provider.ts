@@ -3,18 +3,18 @@ import { nonexhaustive } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
+  type ReferenceInfo,
+  type Scope,
+  type Stream,
   AstUtils,
   DefaultScopeProvider,
   DONE_RESULT,
   EMPTY_SCOPE,
   EMPTY_STREAM,
   MapScope,
-  type ReferenceInfo,
-  type Scope,
-  type Stream,
   stream,
   StreamImpl,
-  StreamScope
+  StreamScope,
 } from 'langium'
 import { ast } from '../ast'
 import { logger } from '../logger'
@@ -54,7 +54,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           return iterator.next()
         }
         return DONE_RESULT
-      }
+      },
     )
   }
 
@@ -99,7 +99,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           return this.getGlobalScope(referenceType, context)
         }
 
-        if (ast.isFqnElementRef(container) && context.property === 'el') {
+        if (ast.isStrictFqnElementRef(container) && context.property === 'el') {
           const parent = container.parent
           if (!parent) {
             return this.getGlobalScope(referenceType, context)
@@ -116,7 +116,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
             const closestElement = AstUtils.getContainerOfType(container, ast.isElement)
             if (closestElement) {
               return new MapScope([
-                this.descriptions.createDescription(closestElement, context.reference.$refText)
+                this.descriptions.createDescription(closestElement, context.reference.$refText),
               ])
             } else {
               return EMPTY_SCOPE
@@ -146,8 +146,8 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           // Third preference for elements if we are in deployment view
           AstUtils.hasContainerOfType(container, ast.isDeploymentView)
             ? this.computeScope(context, ast.Element)
-            : EMPTY_SCOPE
-        )
+            : EMPTY_SCOPE,
+        ),
       )
     }
     const parentRef = parent.value.ref

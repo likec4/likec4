@@ -5,6 +5,7 @@ import {
   compareRelations,
   computeColorValues,
   DeploymentElement,
+  isNonEmptyArray,
   isScopedElementView,
   LikeC4Model,
   parentFqn,
@@ -18,6 +19,7 @@ import {
   filter,
   flatMap,
   groupBy,
+  hasAtLeast,
   indexBy,
   isBoolean,
   isDefined,
@@ -35,11 +37,13 @@ import {
   reduce,
   reverse,
   sort,
+  unique,
   values,
 } from 'remeda'
 import type {
   ParsedAstDeploymentRelation,
   ParsedAstElement,
+  ParsedAstExtendElement,
   ParsedAstRelation,
   ParsedAstSpecification,
   ParsedAstView,
@@ -175,9 +179,55 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     }
   }
 
+  const elementsExtendData = new Map<string, Pick<c4.Element, 'links' | 'tags' | 'metadata'>>()
+  function mergeAllC4ExtendElements(doc: ParsedLikeC4LangiumDocument) {
+    for (const el of doc.c4ExtendElements) {
+      let links = el.links ? resolveLinks(doc, el.links) : null
+      const existing = elementsExtendData.get(el.id)
+      if (existing) {
+        links = existing.links ? [...existing.links, ...(links ?? [])] : links
+
+        let tags: c4.Tag[] | null = [...(existing.tags ?? []), ...(el.tags ?? [])]
+        if (!hasAtLeast(tags, 1)) {
+          tags = null
+        }
+
+        elementsExtendData.set(el.id, {
+          tags,
+          links,
+          metadata: { ...existing.metadata, ...el.metadata },
+        })
+      } else {
+        elementsExtendData.set(el.id, {
+          tags: el.tags ?? null,
+          links,
+          metadata: { ...el.metadata },
+        })
+      }
+    }
+  }
+  function withExtendElementData(el: c4.Element): c4.Element {
+    const extendData = elementsExtendData.get(el.id)
+    if (extendData) {
+      const links = [...(el.links ?? []), ...(extendData.links ?? [])]
+      const tags = unique([...(el.tags ?? []), ...(extendData.tags ?? [])])
+      const metadata = { ...el.metadata, ...extendData.metadata }
+      return {
+        ...el,
+        tags: hasAtLeast(tags, 1) ? tags : null,
+        links: hasAtLeast(links, 1) ? links : null,
+        ...(!isEmpty(metadata) && { metadata }),
+      }
+    }
+    return el
+  }
+
   const elements = pipe(
     docs,
-    flatMap(d => map(d.c4Elements, toModelElement(d))),
+    flatMap(d => {
+      mergeAllC4ExtendElements(d)
+      return map(d.c4Elements, toModelElement(d))
+    }),
     filter(isTruthy),
     // sort from root elements to nested, so that parent is always present
     // Import to preserve the order from the source
@@ -189,7 +239,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           logWarnError(`No parent found for ${el.id}`)
           return acc
         }
-        acc[el.id] = el
+        acc[el.id] = withExtendElementData(el)
         return acc
       },
       {} as c4.ParsedLikeC4Model['elements'],
@@ -228,7 +278,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         } satisfies c4.ModelRelation
       }
       return {
-        ...links && { links },
+        ...(links && { links }),
         ...model,
         source,
         target,
@@ -272,8 +322,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         } = parsed
         return {
           ...parsed,
-          ...notation && { notation },
-          ...technology && { technology },
+          ...(notation && { notation }),
+          ...(technology && { technology }),
           style: {
             border: 'dashed',
             opacity: 10,
@@ -342,7 +392,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         } satisfies c4.DeploymentRelation
       }
       return {
-        ...links && { links },
+        ...(links && { links }),
         ...model,
         source,
         target,

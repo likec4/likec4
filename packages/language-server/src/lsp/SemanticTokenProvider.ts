@@ -215,7 +215,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return !node.parent ? 'prune' : undefined
     }
-    if (ast.isElementRef(node) || ast.isFqnElementRef(node)) {
+    if (ast.isElementRef(node) || ast.isStrictFqnElementRef(node)) {
       acceptor({
         node,
         property: 'el',

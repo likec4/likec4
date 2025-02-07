@@ -88,6 +88,14 @@ export interface ParsedAstElement {
   metadata?: { [key: string]: string }
 }
 
+export interface ParsedAstExtendElement {
+  id: c4.Fqn
+  astPath: string
+  tags?: c4.NonEmptyArray<c4.Tag>
+  links?: c4.NonEmptyArray<ParsedLink>
+  metadata?: { [key: string]: string }
+}
+
 export interface ParsedAstRelation {
   id: c4.RelationId
   astPath: string
@@ -205,6 +213,7 @@ export interface LikeC4DocumentProps {
   diagnostics?: Array<LikeC4DocumentDiagnostic>
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
+  c4ExtendElements?: ParsedAstExtendElement[]
   c4Relations?: ParsedAstRelation[]
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
@@ -237,6 +246,7 @@ export function isParsedLikeC4LangiumDocument(
     && doc.state == DocumentState.Validated
     && !!doc.c4Specification
     && !!doc.c4Elements
+    && !!doc.c4ExtendElements
     && !!doc.c4Relations
     && !!doc.c4Views
     && !!doc.c4fqnIndex
@@ -254,15 +264,7 @@ export function* streamModel(doc: LikeC4LangiumDocument) {
       relations.push(el)
       continue
     }
-    if (ast.isExtendElement(el)) {
-      if (el.body && el.body.elements.length > 0) {
-        for (const child of el.body.elements) {
-          traverseStack.push(child)
-        }
-      }
-      continue
-    }
-    if (el.body && el.body.elements.length > 0) {
+    if (el.body && el.body.elements && el.body.elements.length > 0) {
       for (const child of el.body.elements) {
         traverseStack.push(child)
       }

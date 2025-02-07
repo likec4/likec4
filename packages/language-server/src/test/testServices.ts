@@ -1,3 +1,4 @@
+import { LikeC4Model } from '@likec4/core'
 import { DocumentState, EmptyFileSystem, TextDocument } from 'langium'
 import * as assert from 'node:assert'
 import stripIndent from 'strip-indent'
@@ -16,7 +17,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   const formatter = services.lsp.Formatter
   const workspaceFolder = {
     name: 'test',
-    uri: workspaceUri.toString()
+    uri: workspaceUri.toString(),
   }
   let isInitialized = false
   let documentIndex = 1
@@ -32,7 +33,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
           capabilities: {},
           processId: null,
           rootUri: null,
-          workspaceFolders: [workspaceFolder]
+          workspaceFolders: [workspaceFolder],
         })
         await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
       })
@@ -40,11 +41,11 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     const docUri = Utils.resolvePath(
       workspaceUri,
       './src/',
-      uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`
+      uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`,
     )
     const document = services.shared.workspace.LangiumDocumentFactory.fromString(
       stripIndent(input),
-      docUri
+      docUri,
     )
     langiumDocuments.addDocument(document)
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
@@ -65,7 +66,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
       document,
       diagnostics,
       warnings,
-      errors
+      errors,
     }
   }
 
@@ -79,8 +80,8 @@ export function createTestServices(workspace = 'file:///test/workspace') {
       document,
       {
         options: { tabSize: 2, insertSpaces: true },
-        textDocument: { uri: document.uri.toString() }
-      }
+        textDocument: { uri: document.uri.toString() },
+      },
     )
 
     return TextDocument.applyEdits(document.textDocument, edits ?? [])
@@ -106,7 +107,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     return {
       diagnostics,
       errors,
-      warnings
+      warnings,
     }
   }
 
@@ -115,6 +116,13 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     const model = await modelBuilder.buildComputedModel()
     if (!model) throw new Error('No model found')
     return model
+  }
+
+  const buildLikeC4Model = async () => {
+    await validateAll()
+    const model = await modelBuilder.buildComputedModel()
+    if (!model) throw new Error('No model found')
+    return LikeC4Model.create(model)
   }
 
   /**
@@ -133,8 +141,9 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     validate,
     validateAll,
     buildModel,
+    buildLikeC4Model,
     resetState,
-    format
+    format,
   }
 }
 

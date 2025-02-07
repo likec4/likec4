@@ -3,15 +3,15 @@ import type { ast } from '../ast'
 /**
  * Returns referenced AST Element
  */
-export function elementRef(node: ast.ElementRef | ast.FqnElementRef) {
+export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef) {
   return node.el.ref
 }
 
 /**
- * Returns FQN of FqnElementRef
+ * Returns FQN of StrictFqnElementRef
  * a.b.c.d - for c node returns a.b.c
  */
-export function getFqnElementRef(node: ast.FqnElementRef): c4.Fqn {
+export function getFqnElementRef(node: ast.StrictFqnElementRef): c4.Fqn {
   // invariant(isElementRefHead(node), 'Expected head StrictElementRef')
   const name = [node.el.$refText]
   let parent = node.parent
