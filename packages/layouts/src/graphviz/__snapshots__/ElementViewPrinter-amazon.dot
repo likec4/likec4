@@ -37,7 +37,7 @@ digraph {
     likec4_id = "cloud.backend";
     likec4_level = 1;
     label = <<FONT POINT-SIZE="19">Backend</FONT>>;
-    margin = "0.334,0.334";
+    margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
@@ -45,7 +45,7 @@ digraph {
     likec4_id = "amazon.s3";
     likec4_level = 1;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="19">S3</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">S3 is a storage service</FONT></TD></TR></TABLE>>;
-    margin = "0.334,0.334";
+    margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];

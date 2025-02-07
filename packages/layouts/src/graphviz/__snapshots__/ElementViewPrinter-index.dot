@@ -37,7 +37,7 @@ digraph {
     likec4_id = "customer";
     likec4_level = 0;
     label = <<FONT POINT-SIZE="19">customer</FONT>>;
-    margin = "0.334,0.334";
+    margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
@@ -45,7 +45,7 @@ digraph {
     likec4_id = "support";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="19">Support Engineer</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Support engineers are responsible for<BR/>supporting customers</FONT></TD></TR></TABLE>>;
-    margin = "0.334,0.334";
+    margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
@@ -53,7 +53,7 @@ digraph {
     likec4_id = "cloud";
     likec4_level = 0;
     label = <<FONT POINT-SIZE="19">cloud</FONT>>;
-    margin = "0.334,0.334";
+    margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
@@ -61,7 +61,7 @@ digraph {
     likec4_id = "amazon";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="19">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
-    margin = "0.334,0.334";
+    margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
   ];
