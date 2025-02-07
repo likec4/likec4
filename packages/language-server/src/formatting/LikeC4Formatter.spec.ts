@@ -490,6 +490,9 @@ views {
             `
 views {
   deployment view index {
+    include * where    tag==#tag1 
+       or(tag!=#tag1   and   kind    is   not    kind1)
+    and   not  tag   is   #tag1
     include *->* where    tag==#tag2 
        or(tag!=#tag2   and   kind    is   not    kind2)
     and   not  tag is   #tag2
@@ -501,6 +504,8 @@ views {
         "
         views {
           deployment view index {
+            include
+              * where tag == #tag1 or (tag != #tag1 and kind is not kind1) and not tag is #tag1
             include
               * -> * where tag == #tag2 or (tag != #tag2 and kind is not kind2) and not tag is #tag2
           }
@@ -1009,6 +1014,9 @@ model {
         shape   queue
         border     solid
         multiple     true
+        size     xs
+        padding     small
+        textSize     md
       }
     }
     relationship rel1 {
@@ -1074,6 +1082,9 @@ model {
                 shape queue
                 border solid
                 multiple true
+                size xs
+                padding small
+                textSize md
               }
             }
             relationship rel1 {
