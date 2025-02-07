@@ -16,18 +16,25 @@ type HandlerParams = {
    * @default '/'
    */
   base?: string | undefined
+
+  /**
+   * ip address of the network interface to listen on
+   * @default '127.0.0.1'
+   */
+  listenInterface?: string | undefined
 }
 
 export async function handler({
   path,
   output: outputDir,
-  base
+  base,
+  listenInterface
 }: HandlerParams) {
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite'
   })
 
-  const server = await vitePreview({ base, languageServices, outputDir, open: true })
+  const server = await vitePreview({ base, languageServices, outputDir, open: true, listenInterface })
 
   printServerUrls(server)
 }
