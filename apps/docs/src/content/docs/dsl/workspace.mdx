@@ -112,7 +112,6 @@ model {
 }
 ```
 
-
 <Aside type='caution'>
 Extended element must be referenced by a fully qualified name.  
 
@@ -125,3 +124,24 @@ model {
 }
 ```
 </Aside>
+
+#### Additional properties
+
+You can extend element with additional tags, links and metadata:
+
+```likec4
+model {
+  extend cloud {
+    // Add tags
+    #additional-tag, #another-tag
+
+    // Add metadata
+    metadata {
+      prop1 'value1'
+    }
+
+    // Add links
+    link ../src/index.ts#L1-L10
+  }
+}
+```
