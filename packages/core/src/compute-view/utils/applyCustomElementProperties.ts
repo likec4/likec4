@@ -27,7 +27,15 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
       custom: { expr, ...props },
     } of rules
   ) {
-    const { border, opacity, multiple, ...rest } = omitBy(props, isNullish)
+    const {
+      border,
+      opacity,
+      multiple,
+      padding,
+      size,
+      textSize,
+      ...rest
+    } = omitBy(props, isNullish)
     const notEmpty = !isEmpty(rest)
     const satisfies = elementExprToPredicate(expr)
     nodes.forEach((node, i) => {
@@ -51,6 +59,15 @@ export function applyCustomElementProperties(_rules: ViewRule[], _nodes: Compute
       }
       if (multiple !== undefined) {
         styleOverride = { ...styleOverride, multiple }
+      }
+      if (padding !== undefined) {
+        styleOverride = { ...styleOverride, padding }
+      }
+      if (size !== undefined) {
+        styleOverride = { ...styleOverride, size }
+      }
+      if (textSize !== undefined) {
+        styleOverride = { ...styleOverride, textSize }
       }
       if (styleOverride) {
         node = {

@@ -14,7 +14,7 @@ import type { ElementExpression, ElementPredicateExpression, Expression } from '
 import type { ExpressionV2, FqnExpr } from './expression-v2'
 import type { GlobalPredicateId, GlobalStyleID } from './global'
 import type { RelationId, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
-import type { Color, ThemeColorValues } from './theme'
+import type { Color, ShapeSize, SpacingSize, TextSize, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
 
 export type ViewId<Id extends string = string> = Tagged<Id, 'ViewID'>
@@ -94,6 +94,10 @@ export interface ViewRuleGroup {
   border?: BorderStyle
   // 0-100
   opacity?: number
+  multiple?: boolean
+  size?: ShapeSize
+  padding?: SpacingSize
+  textSize?: TextSize
 }
 
 export function isViewRuleGroup(rule: ViewRule): rule is ViewRuleGroup {

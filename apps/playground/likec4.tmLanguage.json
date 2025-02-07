@@ -106,14 +106,14 @@
     },
     {
       "name": "entity.name.class.likec4",
-      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
+      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft|xsmall|xs|small|sm|medium|md|large|lg|xl|xlarge)\\b"
     },
     {
       "name": "entity.name.class.likec4",
       "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate|none)\\b"
     },
     {
-      "match": "\\b(title|description|technology|notation|multiple|prop\\d*):?\\b",
+      "match": "\\b(title|description|technology|notation|multiple|padding|size|textSize|prop\\d*):?\\b",
       "name": "variable.parameter.function.likec4"
     },
     {

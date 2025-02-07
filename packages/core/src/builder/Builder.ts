@@ -5,9 +5,6 @@ import { invariant } from '../errors'
 import { LikeC4Model } from '../model/LikeC4Model'
 import {
   type Color,
-  DefaultElementShape,
-  DefaultThemeColor,
-  DeploymentElement,
   type DeploymentRelation,
   type DeploymentView,
   type Element,
@@ -15,7 +12,6 @@ import {
   type ElementView,
   type Fqn,
   type IconUrl,
-  isScopedElementView,
   type LikeC4View,
   type Link,
   type ModelGlobals,
@@ -23,6 +19,10 @@ import {
   type NonEmptyArray,
   type RelationId,
   type Tag,
+  DefaultElementShape,
+  DefaultThemeColor,
+  DeploymentElement,
+  isScopedElementView,
 } from '../types'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
 import type { AnyTypes, BuilderSpecification, Types } from './_types'
@@ -38,7 +38,7 @@ import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelper
 import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 import type { ElementViewRulesBuilder } from './Builder.view-element'
-import { mkViewBuilder, type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers } from './Builder.views'
+import { type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers, mkViewBuilder } from './Builder.views'
 import type { BuilderMethods } from './Builder.with'
 
 export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
@@ -427,6 +427,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 style: pickBy({
                   border: specStyle?.border,
                   opacity: specStyle?.opacity,
+                  size: specStyle?.size,
+                  padding: specStyle?.padding,
+                  textSize: specStyle?.textSize,
                   ...style,
                 }, isNonNullish),
                 links,
@@ -662,6 +665,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
                 style: pickBy({
                   border: specStyle?.border,
                   opacity: specStyle?.opacity,
+                  size: specStyle?.size,
+                  padding: specStyle?.padding,
+                  textSize: specStyle?.textSize,
                   ...style,
                 }, isNonNullish),
                 ...links && { links: mapLinks(links) },

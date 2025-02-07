@@ -34,6 +34,15 @@ export function applyViewRuleStyle<Rule extends CommonViewRuleStyle>(
       if (isDefined(rule.style.multiple)) {
         styleOverride = { ...styleOverride, multiple: rule.style.multiple }
       }
+      if (isDefined(rule.style.padding)) {
+        styleOverride = { ...styleOverride, padding: rule.style.padding }
+      }
+      if (isDefined(rule.style.size)) {
+        styleOverride = { ...styleOverride, size: rule.style.size }
+      }
+      if (isDefined(rule.style.textSize)) {
+        styleOverride = { ...styleOverride, textSize: rule.style.textSize }
+      }
       if (styleOverride) {
         n.style = {
           ...n.style,

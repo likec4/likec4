@@ -126,6 +126,7 @@ function viewToNodesEdge(
               width: node.width,
               color: node.color,
               shape: node.shape,
+              style: node.style,
               icon: node.icon ?? null,
               ...navigateTo,
             },

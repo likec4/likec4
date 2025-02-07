@@ -79,6 +79,9 @@ model {
 Every `style` block may contain the following properties:  
 {'-'} shape  
 {'-'} color  
+{'-'} size 
+{'-'} padding
+{'-'} textSize 
 {'-'} icon  
 {'-'} opacity  
 {'-'} border
@@ -121,6 +124,34 @@ If not set, the default color is `primary`.
 
 It's also possible to use custom colors defined in [specification](/dsl/specification/#color).
 
+#### Size
+
+Size of an element is controlled by following properties:
+
+| property  | explanation |
+| :-------- | :----- |
+| size      | size of the shape |
+| padding   | space around element's title |
+| textSize  | font size of element's title  |
+
+Every property accepts: `xsmall`, `small`, `medium`, `large`, `xlarge`  
+(or short `xs`, `sm`, `md`, `lg`, `xl`).  
+Default size is `medium`.
+
+When shape size is `small` or `xsmall`, only element's title is displayed.
+
+```likec4
+specification {
+  element element {
+    style {
+      size large
+      textSize xl
+    }
+  }
+}
+```
+<LikeC4ThemeView viewId="sizes1_example" interactive={false}/>
+<LikeC4ThemeView viewId="sizes2_example" interactive={false}/>
 
 #### Opacity
 
@@ -152,7 +183,6 @@ specification {
     }
   }
 }
-
 ```
 
 <LikeC4ThemeView viewId="border_example" interactive={false}/>
@@ -331,4 +361,10 @@ model {
 ```
 
 
-Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.
+Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
+import { Aside } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
+import { Aside } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';

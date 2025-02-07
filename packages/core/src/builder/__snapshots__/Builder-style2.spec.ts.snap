@@ -10,7 +10,9 @@ exports[`Builder (style 2) > should build  1`] = `
         "id": "dev",
         "kind": "env",
         "shape": "rectangle",
-        "style": {},
+        "style": {
+          "size": "lg",
+        },
         "tags": null,
         "technology": null,
         "title": "dev",
@@ -32,7 +34,9 @@ exports[`Builder (style 2) > should build  1`] = `
         "id": "prod",
         "kind": "env",
         "shape": "rectangle",
-        "style": {},
+        "style": {
+          "size": "lg",
+        },
         "tags": null,
         "technology": null,
         "title": "prod",
@@ -63,7 +67,10 @@ exports[`Builder (style 2) > should build  1`] = `
       "kind": "system",
       "links": null,
       "shape": "rectangle",
-      "style": {},
+      "style": {
+        "size": "lg",
+        "textSize": "sm",
+      },
       "tags": null,
       "technology": null,
       "title": "cloud",
@@ -101,13 +108,22 @@ exports[`Builder (style 2) > should build  1`] = `
   "relations": {},
   "specification": {
     "deployments": {
-      "env": {},
+      "env": {
+        "style": {
+          "size": "lg",
+        },
+      },
       "node": {},
     },
     "elements": {
       "actor": {},
       "component": {},
-      "system": {},
+      "system": {
+        "style": {
+          "size": "lg",
+          "textSize": "sm",
+        },
+      },
     },
     "relationships": {},
     "tags": [],

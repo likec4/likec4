@@ -28,8 +28,6 @@ digraph {
   node [
     fontname = "Arial";
     shape = "rect";
-    width = 4.445;
-    height = 2.5;
     fillcolor = "#3b82f6";
     fontcolor = "#eff6ff";
     color = "#2563eb";
@@ -40,37 +38,49 @@ digraph {
     likec4_id = "client";
     likec4_level = 0;
     label = <<FONT POINT-SIZE="19">client</FONT>>;
-    margin = "0.362,0.362";
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   "ui" [
     likec4_id = "z1.s1.ui";
     likec4_level = 2;
     label = <<FONT POINT-SIZE="19">ui</FONT>>;
-    margin = "0.362,0.362";
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   "ui_1" [
     likec4_id = "z1.s2.ui";
     likec4_level = 2;
     label = <<FONT POINT-SIZE="19">ui</FONT>>;
-    margin = "0.362,0.362";
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   "api" [
     likec4_id = "z1.s1.api";
     likec4_level = 2;
     label = <<FONT POINT-SIZE="19">api</FONT>>;
-    margin = "0.362,0.362";
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   "api_1" [
     likec4_id = "z1.s2.api";
     likec4_level = 2;
     label = <<FONT POINT-SIZE="19">api</FONT>>;
-    margin = "0.362,0.362";
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   "db" [
     likec4_id = "z1.db";
     likec4_level = 1;
     label = <<FONT POINT-SIZE="19">db</FONT>>;
-    margin = "0.362,0.362";
+    margin = "0.334,0.334";
+    width = 4.445;
+    height = 2.5;
   ];
   subgraph "cluster_z1" {
     likec4_id = "z1";

@@ -12,7 +12,7 @@ function expectCompletion() {
   return langiumExpectCompletion(services)
 }
 
-describe.concurrent('LikeC4CompletionProvider', () => {
+describe('LikeC4CompletionProvider', () => {
   it('should suggest keywords inside specification', async ({ expect }) => {
     const text = `
       <|>spe<|>cification {
@@ -64,7 +64,7 @@ describe.concurrent('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 5,
-      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon', 'multiple'],
+      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon', 'multiple', 'size', 'padding', 'textSize'],
     })
     await completion({
       text,
@@ -557,6 +557,9 @@ describe.concurrent('LikeC4CompletionProvider', () => {
         'opacity',
         'icon',
         'multiple',
+        'size',
+        'padding',
+        'textSize',
       ],
       disposeAfterCheck: true,
     })

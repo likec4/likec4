@@ -2,8 +2,13 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type ElementThemeColorValues,
+  type ShapeSize,
+  type SpacingSize,
+  type TextSize,
   DefaultRelationshipColor,
+  defaultTheme,
   defaultTheme as Theme,
+  nonexhaustive,
 } from '@likec4/core'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
@@ -66,37 +71,65 @@ export function nodeIcon() {
   return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#112233" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
-export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValues) {
+function fontSize(textSize: TextSize) {
+  return defaultTheme.textSizes[textSize]
+}
+function maxchars(size: ShapeSize) {
+  switch (size) {
+    case 'xs':
+    case 'sm':
+      return 25
+    case 'md':
+      return 35
+    case 'lg':
+    case 'xl':
+      return 45
+    default:
+      nonexhaustive(size)
+  }
+}
+
+export function nodeLabel(
+  node: ComputedNode,
+  colorValues: ElementThemeColorValues,
+  sizes: {
+    shape: ShapeSize
+    padding: SpacingSize
+    text: SpacingSize
+  },
+) {
   const hasIcon = isTruthy(node.icon)
   const lines = [
     wrapWithFont({
       text: node.title,
-      fontsize: 19,
-      maxchars: 35,
+      fontsize: fontSize(sizes.text),
+      maxchars: maxchars(sizes.shape),
       maxLines: 3,
     }),
   ]
-  if (isTruthy(node.technology?.trim())) {
-    lines.push(
-      wrapWithFont({
-        text: node.technology,
-        fontsize: 12,
-        maxchars: hasIcon ? 35 : 45,
-        maxLines: 1,
-        color: colorValues.loContrast,
-      }),
-    )
-  }
-  if (isTruthy(node.description?.trim())) {
-    lines.push(
-      wrapWithFont({
-        text: node.description,
-        fontsize: 14,
-        maxchars: hasIcon ? 35 : 45,
-        maxLines: 5,
-        color: colorValues.loContrast,
-      }),
-    )
+  if (sizes.shape !== 'sm' && sizes.shape !== 'xs') {
+    if (isTruthy(node.technology?.trim())) {
+      lines.push(
+        wrapWithFont({
+          text: node.technology,
+          fontsize: Math.ceil(fontSize(sizes.text) * 0.65),
+          maxchars: hasIcon ? 35 : 45,
+          maxLines: 1,
+          color: colorValues.loContrast,
+        }),
+      )
+    }
+    if (isTruthy(node.description?.trim())) {
+      lines.push(
+        wrapWithFont({
+          text: node.description,
+          fontsize: Math.ceil(fontSize(sizes.text) * 0.75),
+          maxchars: hasIcon ? 35 : 45,
+          maxLines: 5,
+          color: colorValues.loContrast,
+        }),
+      )
+    }
   }
   if (lines.length === 1 && !hasIcon) {
     return `<${lines[0]}>`
@@ -109,6 +142,11 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       if (idx === 0) {
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
         let leftwidth = 76 // icon is 60px, plus 10px here and plus 10px padding from node margin
+
+        if (['xs', 'sm'].includes(sizes.shape)) {
+          leftwidth = 16
+        }
+
         if (node.shape === 'queue' || node.shape === 'mobile') {
           // add 20px padding more
           leftwidth += 20
@@ -124,7 +162,7 @@ export function nodeLabel(node: ComputedNode, colorValues: ElementThemeColorValu
       return `<TR><TD>${line}</TD></TR>`
     }
   const rows = lines.map(rowMapper).join('')
-  return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6">${rows}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="5">${rows}</TABLE>>`
 }
 
 export function compoundLabel(node: ComputedNode, color?: string) {

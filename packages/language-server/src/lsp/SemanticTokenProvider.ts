@@ -155,7 +155,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if(ast.isViewRuleGlobalStyle(node)) {
+    if (ast.isViewRuleGlobalStyle(node)) {
       acceptor({
         node,
         property: 'style',
@@ -182,7 +182,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if(ast.isViewRuleGlobalPredicateRef(node)) {
+    if (ast.isViewRuleGlobalPredicateRef(node)) {
       acceptor({
         node,
         property: 'predicate',
@@ -330,6 +330,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       || ast.isArrowProperty(node)
       || ast.isLineProperty(node)
       || ast.isBorderProperty(node)
+      || ast.isSizeProperty(node)
     ) {
       acceptor({
         node,

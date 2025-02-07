@@ -2,7 +2,7 @@ import type { IconUrl } from './_common'
 import type { BorderStyle, ElementKind, ElementShape, Fqn, Tag } from './element'
 import type { WhereOperator } from './operators'
 import type { RelationshipArrowType, RelationshipLineType } from './relation'
-import type { Color } from './theme'
+import type { Color, ShapeSize } from './theme'
 import type { ViewId } from './view'
 
 interface BaseExpr {
@@ -54,6 +54,9 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
     opacity?: number
     navigateTo?: ViewId
     multiple?: boolean
+    size?: ShapeSize
+    padding?: ShapeSize
+    textSize?: ShapeSize
   }
 }
 

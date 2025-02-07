@@ -34,12 +34,20 @@ test('Builder types - style 1', () => {
           shape: 'person',
         },
       },
-      system: {},
+      system: {
+        style: {
+          size: 'lg',
+        },
+      },
       component: {},
     },
     deployments: {
       env: {},
-      vm: {},
+      vm: {
+        style: {
+          textSize: 'sm',
+        },
+      },
     },
     relationships: {
       like: {},

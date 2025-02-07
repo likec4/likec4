@@ -146,6 +146,7 @@ export function viewToNodesEdge(
               shape: node.shape,
               icon: node.icon ?? 'none',
               ports: node.ports,
+              style: node.style,
               ...navigateTo,
             },
           },

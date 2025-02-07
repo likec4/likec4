@@ -12,6 +12,9 @@ import type {
   RelationshipArrowType,
   RelationshipKindSpecification,
   RelationshipLineType,
+  ShapeSize,
+  SpacingSize,
+  TextSize,
 } from '../types'
 import type { ExpressionV2 } from '../types/expression-v2'
 import type { Builder } from './Builder'
@@ -47,6 +50,9 @@ export type NewElementProps<Tag, Metadata> = {
     border?: BorderStyle
     // 0-100
     opacity?: number
+    size?: ShapeSize
+    padding?: SpacingSize
+    textSize?: TextSize
   }
 }
 
@@ -64,6 +70,9 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
     border?: BorderStyle
     // 0-100
     opacity?: number
+    size?: ShapeSize
+    padding?: SpacingSize
+    textSize?: TextSize
   }
 }
 

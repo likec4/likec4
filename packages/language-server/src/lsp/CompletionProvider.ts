@@ -16,6 +16,7 @@ const STYLE_FIELDS = [
   'border',
   'opacity',
   'multiple',
+  'size',
 ].join(',')
 
 export class LikeC4CompletionProvider extends DefaultCompletionProvider {

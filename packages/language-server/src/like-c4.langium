@@ -731,13 +731,40 @@ BorderStyleValue returns string:
 BorderProperty:
   key='border' ':'? value=BorderStyleValue ';'?;
 
+SizeValue returns string:
+  'xs' |
+  'sm' |
+  'md' |
+  'lg' |
+  'xl' |
+  'xsmall' |
+  'small' |
+  'medium' |
+  'large' |
+  'xlarge';
+
+ShapeSizeProperty:
+  key='size' ':'? value=SizeValue ';'?;
+
+PaddingSizeProperty:
+  key='padding' ':'? value=SizeValue ';'?;
+
+TextSizeProperty:
+  key='textSize' ':'? value=SizeValue ';'?;
+
+type SizeProperty = ShapeSizeProperty | PaddingSizeProperty | TextSizeProperty;
+
 StyleProperty:
   ColorProperty |
   ShapeProperty |
   BorderProperty |
   OpacityProperty |
   IconProperty |
-  MultipleProperty;
+  MultipleProperty |
+  ShapeSizeProperty |
+  PaddingSizeProperty |
+  TextSizeProperty
+;
 
 ElementStyleProperty:
   key='style' '{'
@@ -802,7 +829,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | Participant | SizeValue | 'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance';
 
 fragment EqOperator:
   (

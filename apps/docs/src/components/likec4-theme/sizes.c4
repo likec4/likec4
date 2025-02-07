@@ -1,0 +1,44 @@
+
+model {
+  xs = rectangle 'xsmall' {
+    style {
+      size xs
+    }
+  }
+  sm = rectangle 'small' {
+    style {
+      size sm
+    }
+  }
+  md = rectangle 'medium' {
+    style {
+      size md
+    }
+  }
+  lg = rectangle 'large' {
+    style {
+      size lg
+    }
+  }
+  xl = rectangle 'xlarge' {
+    style {
+      size xl
+    }
+  }
+}
+
+views {
+
+  view sizes1_example {
+      include xs, sm, md
+    //include lg,xl
+
+    autoLayout LeftRight
+  }
+  view sizes2_example {
+      //include xs, sm, md
+    include lg,xl
+
+    autoLayout LeftRight
+  }
+}

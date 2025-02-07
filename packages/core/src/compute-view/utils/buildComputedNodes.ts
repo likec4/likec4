@@ -2,12 +2,12 @@ import type { Simplify } from 'type-fest'
 import { nonNullable } from '../../errors'
 import {
   type ComputedNode,
+  type Element,
+  type Fqn,
+  type NodeId,
   DefaultElementShape,
   DefaultThemeColor,
-  type Element,
   ElementKind,
-  type Fqn,
-  type NodeId
 } from '../../types'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
 import { NodesGroup } from '../element-view/memory'
@@ -28,7 +28,7 @@ function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, Comp
 const modelElementAsNodeSource = (element: Element): ComputedNodeSource => {
   return {
     ...element,
-    modelRef: 1
+    modelRef: 1,
   }
 }
 
@@ -44,7 +44,7 @@ export function buildComputedNodesFromElements(elements: ReadonlyArray<Element>,
 
 export function buildComputedNodes(
   elements: ReadonlyArray<ComputedNodeSource>,
-  groups?: ReadonlyArray<NodesGroup>
+  groups?: ReadonlyArray<NodesGroup>,
 ): ReadonlyMap<Fqn, ComputedNode> {
   const nodesMap = new Map<Fqn, ComputedNode>()
 
@@ -72,8 +72,12 @@ export function buildComputedNodes(
       links: null,
       style: {
         border: viewRule.border ?? 'dashed',
-        opacity: viewRule.opacity ?? 0
-      }
+        opacity: viewRule.opacity ?? 0,
+        size: viewRule.size ?? 'md',
+        multiple: viewRule.multiple ?? false,
+        padding: viewRule.padding ?? 'md',
+        textSize: viewRule.textSize ?? 'md',
+      },
     })
     for (const e of elements) {
       elementToGroup.set(e.id, id)
@@ -128,8 +132,8 @@ export function buildComputedNodes(
         outEdges: [],
         ...el,
         style: {
-          ...style
-        }
+          ...style,
+        },
       }
       nodesMap.set(id, node)
     })

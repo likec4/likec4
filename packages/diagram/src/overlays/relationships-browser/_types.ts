@@ -1,4 +1,13 @@
-import type { Color, DiagramNode, Fqn, IconUrl, NonEmptyArray, RelationId, RelationshipLineType, ViewId } from '@likec4/core'
+import type {
+  Color,
+  DiagramNode,
+  Fqn,
+  IconUrl,
+  NonEmptyArray,
+  RelationId,
+  RelationshipLineType,
+  ViewId,
+} from '@likec4/core'
 import type { Base, NonOptional, ReactFlowEdge, ReactFlowNode } from '../../base/types'
 
 export namespace RelationshipsBrowserTypes {
@@ -21,6 +30,7 @@ export namespace RelationshipsBrowserTypes {
         | 'description'
         | 'color'
         | 'shape'
+        | 'style'
         | 'width'
         | 'height'
         | 'navigateTo'
