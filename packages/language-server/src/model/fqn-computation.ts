@@ -3,7 +3,7 @@ import { AsFqn, LinkedList, nonexhaustive } from '@likec4/core'
 import { type AstNodeDescription, type AstNodeLocator, AstUtils, CstUtils, GrammarUtils, MultiMap } from 'langium'
 import { isDefined, isEmpty } from 'remeda'
 import { type LikeC4LangiumDocument, ast, ElementOps } from '../ast'
-import { logError } from '../logger'
+import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { getFqnElementRef } from '../utils/elementRef'
 
@@ -77,7 +77,7 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
       }
       nonexhaustive(el)
     } catch (e) {
-      logError(e)
+      logWarnError(e)
     }
   }
 }
