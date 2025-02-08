@@ -228,9 +228,10 @@ include cloud.backend with {
   shape browser
   multiple true
 }
-// Include all nested elements and change color
+// Include all nested elements, change color and textSize
 include cloud.* with {
   color amber
+  textSize small
 }  
 ```
 
@@ -274,6 +275,46 @@ exclude element.tag = #next
 :::caution
 These predicates may be deprecated in the future, please consider [`where`](#filter) operator
 :::
+
+#### Element Selectors
+
+##### Children `.*`
+
+The children selector includes element's children and their relationships with visible elements.
+
+```likec4
+include cloud.*
+
+// Same as
+include cloud.backend
+include cloud.ui
+```
+
+##### Descendants `.**`
+
+The descendants selector includes element's descendants **IF** they have a relationship with visible elements.
+
+```likec4
+include cloud.**
+
+// Same as
+include cloud.backend
+include cloud.ui
+include cloud.ui.webApp
+```
+
+##### Expand `._`
+
+The expand selector includes element's children **IF** they have a relationship with visible elements.
+All other children are omitted.
+
+```likec4
+include cloud._
+
+// Same as
+include cloud
+include -> cloud.* ->
+```
 
 #### Relationship predicates
 
@@ -397,46 +438,6 @@ include
   webApp -> backend.api with {
     navigateTo dashboardRequestFlow
   }
-```
-
-### Suffix predicates
-
-#### Children `.*`
-
-The children suffix includes an alement's children and their relationships to other visible elements.
-
-```likec4
-include cloud.*
-
-// Same as
-include cloud.backend
-include cloud.ui
-```
-
-#### Descendants `.**`
-
-The descendants suffix includes all of an element's descendants and their relationships to other visible elements.
-
-```likec4
-include cloud.**
-
-// Same as
-include cloud.backend
-include cloud.ui
-include cloud.ui.webApp
-```
-
-#### Expand `._`
-
-The expand predicate includes an element's children **IF** they have a relationship with another visible element.
-All other children are omitted.
-
-```likec4
-include cloud._
-
-// Same as
-include cloud
-include -> cloud.* ->
 ```
 
 ### Filter
@@ -691,6 +692,7 @@ view apiApp of internetBankingSystem.apiApplication {
   // apply only to these elements
   style singlePageApplication, mobileApp {
     color secondary
+    size xlarge
   }
 
   // apply only to nested of apiApplication

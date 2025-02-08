@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css'
 import { mantine } from '../theme-vars'
-import { easings, whereDark } from '../theme-vars.css'
+import { easings, transitions, whereDark } from '../theme-vars.css'
 
 export const elementLink = style({
   display: 'flex',
@@ -8,7 +8,7 @@ export const elementLink = style({
   alignItems: 'center',
   gap: 3,
   justifyContent: 'stretch',
-  // transition: transitions.fast,
+  transition: transitions.fast,
   border: `1px dashed ${mantine.colors.defaultBorder}`,
   borderRadius: mantine.radius.sm,
   minHeight: 30,
@@ -38,7 +38,7 @@ export const linkIcon = style({
 
 export const linkTitleBox = style({
   flex: '1 1 100%',
-  transition: `transform 130ms ${easings.inOut}`,
+  transition: `transform 100ms ${easings.inOut}`,
   selectors: {
     [`${elementLink}:hover &`]: {
       transitionTimingFunction: easings.out,

@@ -84,6 +84,10 @@ export const SelectElement = ({
             classNames={classes}
             levelOffset={8}
             styles={{
+              root: {
+                maxWidth: 400,
+                overflow: 'hidden',
+              },
               label: {
                 paddingTop: 5,
                 paddingBottom: 6,

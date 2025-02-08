@@ -32,6 +32,7 @@ export const edgeLabel = style({
   borderBottom: `1px solid ${mantine.colors.defaultBorder}`,
   marginBottom: '0px',
   padding: '0 4px 5px 4px',
+  width: '100%',
   // gridArea: '2 / 1 / 3 / 3',
   // selectors: {
   //   '&:last-child': {

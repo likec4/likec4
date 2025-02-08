@@ -104,9 +104,9 @@ export const SelectEdge = ({
           </Box>
         </Button>
       </PopoverTarget>
-      <PopoverDropdown p={0} miw={250} maw={420}>
+      <PopoverDropdown p={0} miw={250} maw={400}>
         <ScrollAreaAutosize className={css.scrollArea} scrollbars="y" type="never" viewportRef={viewport}>
-          <Box className={css.edgeGrid} p="xs">
+          <Box className={css.edgeGrid} p="xs" maw={400}>
             {edges.map(e => (
               <div
                 key={e.id}
@@ -118,7 +118,6 @@ export const SelectEdge = ({
                 }}>
                 <Box
                   className={css.edgeSource}
-                  maw={160}
                   mod={{
                     'edge-id': e.id,
                     'likec4-color': e.source.color,
@@ -133,7 +132,6 @@ export const SelectEdge = ({
                 </Box>
                 <Box
                   className={css.edgeTarget}
-                  maw={160}
                   mod={{
                     'likec4-color': e.target.color,
                   }}
