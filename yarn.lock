@@ -8947,7 +8947,7 @@ __metadata:
     rollup: "npm:4.34.3"
     std-env: "npm:^3.8.0"
     strip-indent: "npm:^4.0.0"
-    terser: "npm:^5.37.0"
+    terser: "npm:^5.38.0"
     tinyrainbow: "npm:^2.0.0"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
@@ -13646,9 +13646,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.37.0":
-  version: 5.37.0
-  resolution: "terser@npm:5.37.0"
+"terser@npm:^5.38.0":
+  version: 5.38.1
+  resolution: "terser@npm:5.38.1"
   dependencies:
     "@jridgewell/source-map": "npm:^0.3.3"
     acorn: "npm:^8.8.2"
@@ -13656,7 +13656,7 @@ __metadata:
     source-map-support: "npm:~0.5.20"
   bin:
     terser: bin/terser
-  checksum: 10c0/ff0dc79b0a0da821e7f5bf7a047eab6d04e70e88b62339a0f1d71117db3310e255f5c00738fa3b391f56c3571f800a00047720261ba04ced0241c1f9922199f4
+  checksum: 10c0/7e96239ff94ca8f653c359d8825d0a98a3afc3f2f0f06c80b97785671ed5ca821cc280ce198576b08db7d4c0d08ae349619903f8213555a635eebee0786b7b63
   languageName: node
   linkType: hard
 
