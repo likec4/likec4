@@ -89,11 +89,8 @@
     "vitest:ui": "vitest --no-isolate --ui",
     "test:watch": "vitest"
   },
-  "dependencies": {
-    "@msgpack/msgpack": "^3.0.0-beta3",
-    "execa": "9.5.2"
-  },
   "devDependencies": {
+    "@msgpack/msgpack": "^3.0.0-beta3",
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
