@@ -1863,7 +1863,7 @@ __metadata:
     "@types/object-hash": "npm:^3.0.6"
     chroma-js: "npm:^3.1.2"
     defu: "npm:^6.1.4"
-    graphology: "npm:^0.25.4"
+    graphology: "npm:^0.26.0"
     graphology-dag: "npm:^0.4.1"
     graphology-types: "npm:^0.24.8"
     mnemonist: "npm:^0.40.0"
@@ -2042,7 +2042,7 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.17.7"
-    graphology: "npm:^0.25.4"
+    graphology: "npm:^0.26.0"
     graphology-types: "npm:^0.24.8"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
@@ -7586,15 +7586,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphology@npm:^0.25.4":
-  version: 0.25.4
-  resolution: "graphology@npm:0.25.4"
+"graphology@npm:^0.26.0":
+  version: 0.26.0
+  resolution: "graphology@npm:0.26.0"
   dependencies:
     events: "npm:^3.3.0"
-    obliterator: "npm:^2.0.2"
   peerDependencies:
     graphology-types: ">=0.24.0"
-  checksum: 10c0/b650a43619ccd9201ab02bafcbbcca2e2c4de646b22659ff660ad0669b4a2df3a5afb2f38a9135b3753b748cf2e897acfe9a34f0f3324362d9cd522282d41937
+  checksum: 10c0/9a480853c7075be21cbdd7dc0efb1677c9acb8d3d4d882e44d4e0944ce74a279cf666a70e8a777274a7800ed57d8b47fff5ff66689bfd37d318fc32aff7137a0
   languageName: node
   linkType: hard
 
@@ -10695,7 +10694,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"obliterator@npm:^2.0.1, obliterator@npm:^2.0.2, obliterator@npm:^2.0.4, obliterator@npm:^2.0.5":
+"obliterator@npm:^2.0.1, obliterator@npm:^2.0.4, obliterator@npm:^2.0.5":
   version: 2.0.5
   resolution: "obliterator@npm:2.0.5"
   checksum: 10c0/36e67d88271c51aa6412a7d449d6c60ae6387176f94dbc557eea67456bf6ccedbcbcecdb1e56438aa4f4694f68f531b3bf2be87b019e2f69961b144bec124e70
