@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-* **cli**: broken "--use-dot" in 1.21.0 (closes [#1563](https://github.com/likec4/likec4/issues/1563)
+* **cli**: broken "--use-dot" in 1.21.0 (closes [#1563](https://github.com/likec4/likec4/issues/1563))
 
 
 # [1.21.0](https://github.com/likec4/likec4/compare/v1.20.3...v1.21.0) (2025-02-07)
