@@ -110,7 +110,7 @@ const SvgPowerPlatform = (props: SVGProps<SVGSVGElement>) => (
         d="M11.867 10.869h-9.56a1.31 1.31 0 0 0-1.171.723l2.379-4.758a1.31 1.31 0 0 1 1.171-.723H14.3a2.67 2.67 0 0 0 2.38-1.464l-2.359 4.706a2.74 2.74 0 0 1-2.454 1.516"
         opacity={0.7}
         style={{
-          isolation: 'isolate'
+          isolation: 'isolate',
         }}
       />
     </g>

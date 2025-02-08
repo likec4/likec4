@@ -91,28 +91,28 @@ const SvgPythonPoetry = (props: SVGProps<SVGSVGElement>) => (
       fill="url(#Python-Poetry_svg__c)"
       d="m16.215 100.941 3.68 3.68c25.933-.95 49.363-11.875 66.558-29.062l-2.621-2.618a95.3 95.3 0 0 1-67.617 28m0 0"
       style={{
-        mixBlendMode: 'multiply'
+        mixBlendMode: 'multiply',
       }}
     />
     <path
       fill="url(#Python-Poetry_svg__d)"
       d="M40.07 124.8a121.7 121.7 0 0 0 62.242-33.366L16.216 5.332v95.61Zm0 0"
       style={{
-        mixBlendMode: 'multiply'
+        mixBlendMode: 'multiply',
       }}
     />
     <path
       fill="url(#Python-Poetry_svg__e)"
       d="M102.313 91.434 16.215 5.332l78.27 93.254a122 122 0 0 0 7.828-7.152m0 0"
       style={{
-        mixBlendMode: 'multiply'
+        mixBlendMode: 'multiply',
       }}
     />
     <path
       fill="url(#Python-Poetry_svg__f)"
       d="m16.215 5.332 67.605 67.61a99 99 0 0 0 1.782-1.837Zm0 0"
       style={{
-        mixBlendMode: 'screen'
+        mixBlendMode: 'screen',
       }}
     />
   </svg>

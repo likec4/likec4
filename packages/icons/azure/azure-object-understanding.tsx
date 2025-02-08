@@ -20,7 +20,7 @@ const SvgAzureObjectUnderstanding = (props: SVGProps<SVGSVGElement>) => (
       fill="url(#Azure-Object-Understanding_svg__a)"
       d="m7.846 9.132 3.342-6.582a.357.357 0 0 1 .633-.006l3.334 6.291a2.24 2.24 0 0 1 .333 1.285c0 1.356-1.786 2.455-3.989 2.455S7.51 11.476 7.51 10.12a1.7 1.7 0 0 1 .336-.988"
       style={{
-        isolation: 'isolate'
+        isolation: 'isolate',
       }}
     />
     <path fill="#50e6ff" d="M10.548 8.127v4.741L6.45 15.25v-4.748z" />

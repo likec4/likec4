@@ -11,7 +11,7 @@ const SvgVscode = (props: SVGProps<SVGSVGElement>) => (
       y={0}
       maskUnits="userSpaceOnUse"
       style={{
-        maskType: 'alpha'
+        maskType: 'alpha',
       }}
     >
       <path
@@ -45,7 +45,7 @@ const SvgVscode = (props: SVGProps<SVGSVGElement>) => (
         clipRule="evenodd"
         opacity={0.25}
         style={{
-          mixBlendMode: 'overlay'
+          mixBlendMode: 'overlay',
         }}
       />
     </g>

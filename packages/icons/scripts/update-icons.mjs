@@ -100,7 +100,7 @@ const techRenames = {
   'WebStorm': 'Webstorm-',
   'WordPress': 'Wordpress-',
   'Windows-8': 'Windows8',
-  'Windows-11': 'Windows11'
+  'Windows-11': 'Windows11',
 }
 for (const [oldName, newName] of Object.entries(techRenames)) {
   await $`mv .tmp/src/tech/${oldName}.svg .tmp/src/tech/${newName}.svg`
@@ -143,11 +143,11 @@ const azureSvgs = await glob('.tmp/azure/**/*.svg')
 for (const svg of azureSvgs) {
   let name = path.basename(svg).replace(/^\d+-icon-service-/, '')
   name = path.resolve('.tmp/src/azure', name)
-  await $`mv ${path.resolve(svg)} ${name}'`
+  await $`mv ${path.resolve(svg)} ${name}`
 }
 
 const azureRenames = {
-  'Multi-Factor-Authentication': 'Identity-Multi-Factor-Authentication'
+  'Multi-Factor-Authentication': 'Identity-Multi-Factor-Authentication',
 }
 for (const [oldName, newName] of Object.entries(azureRenames)) {
   await $`mv .tmp/src/azure/${oldName}.svg .tmp/src/azure/${newName}.svg`
@@ -163,7 +163,7 @@ const opts = [
   '--jsx-runtime',
   'automatic',
   '--svgo-config',
-  'svgo.config.json'
+  'svgo.config.json',
 ]
 
 await $`npx @svgr/cli ${opts} --out-dir . -- .tmp/src`

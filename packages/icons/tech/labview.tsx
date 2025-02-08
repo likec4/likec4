@@ -24,7 +24,7 @@ const SvgLabview = (props: SVGProps<SVGSVGElement>) => (
         shapePadding: 0,
         isolation: 'auto',
         mixBlendMode: 'normal',
-        solidColor: '#000'
+        solidColor: '#000',
       }}
     />
     <path
@@ -48,7 +48,7 @@ const SvgLabview = (props: SVGProps<SVGSVGElement>) => (
         shapePadding: 0,
         isolation: 'auto',
         mixBlendMode: 'normal',
-        solidColor: '#000'
+        solidColor: '#000',
       }}
     />
     <path

@@ -31,7 +31,7 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           isolation: 'auto',
           mixBlendMode: 'normal',
           solidColor: '#000',
-          solidOpacity: 1
+          solidOpacity: 1,
         }}
       />
       <path
@@ -61,7 +61,7 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           isolation: 'auto',
           mixBlendMode: 'normal',
           solidColor: '#000',
-          solidOpacity: 1
+          solidOpacity: 1,
         }}
       />
       <path
@@ -91,7 +91,7 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           isolation: 'auto',
           mixBlendMode: 'normal',
           solidColor: '#000',
-          solidOpacity: 1
+          solidOpacity: 1,
         }}
       />
       <path
@@ -121,7 +121,7 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           isolation: 'auto',
           mixBlendMode: 'normal',
           solidColor: '#000',
-          solidOpacity: 1
+          solidOpacity: 1,
         }}
       />
     </g>

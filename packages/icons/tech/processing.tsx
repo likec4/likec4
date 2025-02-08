@@ -29,7 +29,7 @@ const SvgProcessing = (props: SVGProps<SVGSVGElement>) => (
         stroke="#326a9c"
         d="m124.68 212.54-20.638 28.575-12.435-29.633"
         style={{
-          fontVariationSettings: 'normal'
+          fontVariationSettings: 'normal',
         }}
       />
       <path fill="none" stroke="#e5b828" strokeWidth={0.514} d="m89.88 208.57 12.521 30.631" />
@@ -40,7 +40,7 @@ const SvgProcessing = (props: SVGProps<SVGSVGElement>) => (
         strokeWidth={0.8}
         d="m83.873 249.96 15.214 25.532"
         style={{
-          fontVariationSettings: 'normal'
+          fontVariationSettings: 'normal',
         }}
       />
       <path fill="none" stroke="#19344e" strokeWidth={0.6} d="m85.53 293.66-11.383-18.655" />
@@ -50,14 +50,14 @@ const SvgProcessing = (props: SVGProps<SVGSVGElement>) => (
             strokeWidth={0.8}
             d="m99.086 275.49-24.672 10.385"
             style={{
-              fontVariationSettings: 'normal'
+              fontVariationSettings: 'normal',
             }}
           />
           <path
             strokeWidth={0.4}
             d="m62.045 291.24 12.369-5.358"
             style={{
-              fontVariationSettings: 'normal'
+              fontVariationSettings: 'normal',
             }}
           />
           <path
@@ -65,7 +65,7 @@ const SvgProcessing = (props: SVGProps<SVGSVGElement>) => (
             d="m106.89 280.52-7.938-4.366"
             style={{
               InkscapeStroke: 'none',
-              fontVariationSettings: 'normal'
+              fontVariationSettings: 'normal',
             }}
           />
         </g>
@@ -75,7 +75,7 @@ const SvgProcessing = (props: SVGProps<SVGSVGElement>) => (
           d="m99.219 275.63 22.357-51.197"
           style={{
             InkscapeStroke: 'none',
-            fontVariationSettings: 'normal'
+            fontVariationSettings: 'normal',
           }}
         />
       </g>
