@@ -16,7 +16,21 @@ export { useSetState } from './hooks/useSetState'
 export { useUpdateEffect } from './hooks/useUpdateEffect'
 export { vars, xyvars } from './theme-vars'
 
-export type * from './LikeC4Diagram.props'
+export type {
+  ChangeEvent,
+  DiagramNodeWithNavigate,
+  ElementIconRenderer,
+  LikeC4ColorScheme,
+  LikeC4DiagramEventHandlers,
+  LikeC4DiagramProperties,
+  OnCanvasClick,
+  OnChange,
+  OnEdgeClick,
+  OnNavigateTo,
+  OnNodeClick,
+  OpenSourceParams,
+  WhereOperator,
+} from './LikeC4Diagram.props'
 
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
 export type { StaticLikeC4DiagramProps } from './StaticLikeC4Diagram'

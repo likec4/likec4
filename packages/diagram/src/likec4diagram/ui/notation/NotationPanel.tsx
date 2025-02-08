@@ -1,4 +1,3 @@
-// @ts-ignore
 import { type ComputedNode, type ElementNotation as ElementNotationData } from '@likec4/core'
 import {
   ActionIcon,
@@ -23,12 +22,12 @@ import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
-// import { ElementShapeSvg } from '../../xyflow/nodes/element/ElementShapeSvg'
 import { ElementShape } from '../../../base/primitives'
-import { type DiagramContext, useMantinePortalProps } from '../../../hooks'
+import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useDiagramContext } from '../../../hooks/useDiagramContext'
 import { useXYStore } from '../../../hooks/useXYFlow'
+import { DiagramContext } from '../../../likec4diagram/state/machine'
 import { vars } from '../../../theme-vars'
 import * as css from './NotationPanel.css'
 

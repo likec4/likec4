@@ -13,10 +13,11 @@ const selector = (s: DiagramContext) => ({
   title: s.view.title ?? 'untitled',
   description: s.view.description,
   links: s.view.links,
+  isNotActiveWalkthrough: s.activeWalkthrough === null,
 })
 
 export function DiagramTitlePanel() {
-  const { id, title, description, links } = useDiagramContext(selector)
+  const { id, title, description, links, isNotActiveWalkthrough } = useDiagramContext(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'diagram-title-webview-collapsed',
     defaultValue: false,
@@ -41,126 +42,128 @@ export function DiagramTitlePanel() {
         </div>
       </ViewportPortal> */
       }
-      <m.div
-        key={id}
-        initial={{ opacity: 0.05, scale: 0.7 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{
-          opacity: 0.05,
-          scale: 0.6,
-        }}
-        className={clsx('react-flow__panel', css.container)}
-        style={{
-          transformOrigin: 'left center',
-        }}
-      >
-        <Card
-          radius="sm"
-          className={css.card}
-          withBorder={!isCollapsed}
-          p={isCollapsed ? 'sm' : 'md'}
-          onDoubleClick={e => e.stopPropagation()}>
-          {isCollapsed && (
-            <CardSection>
-              <Button
-                fullWidth
-                justify="stretch"
-                size="md"
-                radius={'0'}
-                variant={'subtle'}
-                color="gray"
-                onClick={toggle}
-                fw={500}
-                fz={'sm'}
-                tabIndex={-1}
-              >
-                {title}
-              </Button>
-            </CardSection>
-          )}
-          {!isCollapsed && (
-            <>
-              <CardSection mb={'xs'}>
+      {isNotActiveWalkthrough && (
+        <m.div
+          key={id}
+          initial={{ opacity: 0.05, scale: 0.7 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{
+            opacity: 0.05,
+            scale: 0.6,
+          }}
+          className={clsx('react-flow__panel', css.container)}
+          style={{
+            transformOrigin: 'left center',
+          }}
+        >
+          <Card
+            radius="sm"
+            className={css.card}
+            withBorder={!isCollapsed}
+            p={isCollapsed ? 'sm' : 'md'}
+            onDoubleClick={e => e.stopPropagation()}>
+            {isCollapsed && (
+              <CardSection>
                 <Button
                   fullWidth
-                  size="xs"
-                  h={'sm'}
-                  py={2}
+                  justify="stretch"
+                  size="md"
                   radius={'0'}
                   variant={'subtle'}
                   color="gray"
                   onClick={toggle}
+                  fw={500}
+                  fz={'sm'}
                   tabIndex={-1}
                 >
-                  <IconMenu size={11} opacity={0.7} />
+                  {title}
                 </Button>
               </CardSection>
+            )}
+            {!isCollapsed && (
+              <>
+                <CardSection mb={'xs'}>
+                  <Button
+                    fullWidth
+                    size="xs"
+                    h={'sm'}
+                    py={2}
+                    radius={'0'}
+                    variant={'subtle'}
+                    color="gray"
+                    onClick={toggle}
+                    tabIndex={-1}
+                  >
+                    <IconMenu size={11} opacity={0.7} />
+                  </Button>
+                </CardSection>
 
-              <Group justify="stretch" wrap="nowrap" mb={'sm'}>
-                <Text
-                  component={'div'}
-                  flex={'1'}
-                  size={'md'}
-                  fw={500}
-                  lh={1.1}
-                  className={css.title}
-                >
-                  {title}
-                </Text>
-                <Text
-                  hidden={isCollapsed}
-                  component={'div'}
-                  flex={'0 0 auto'}
-                  inline
-                  size="xs"
-                  fz={9}
-                  fw={500}
-                  c={'dimmed'}
-                  style={{
-                    userSelect: 'all',
-                  }}>
-                  <span style={{ userSelect: 'none' }}>id:{' '}</span>
-                  {id}
-                </Text>
-              </Group>
-              {description && (
-                <Spoiler
-                  maxHeight={42}
-                  showLabel={
-                    <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>show more</Button>
-                  }
-                  hideLabel={
-                    <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>hide</Button>
-                  }>
+                <Group justify="stretch" wrap="nowrap" mb={'sm'}>
                   <Text
                     component={'div'}
-                    size="sm"
-                    className={css.description}>
-                    {description || 'no description'}
+                    flex={'1'}
+                    size={'md'}
+                    fw={500}
+                    lh={1.1}
+                    className={css.title}
+                  >
+                    {title}
                   </Text>
-                </Spoiler>
-              )}
-              {!description && (
-                <Text
-                  component={'div'}
-                  size="xs"
-                  c={'dimmed'}>
-                  no description
-                </Text>
-              )}
-              {links && (
-                <Stack
-                  mt={'xs'}
-                  gap={4}
-                  justify="stretch"
-                  align="stretch">
-                  {links.map((link) => <Link value={link} key={link.url} />)}
-                </Stack>
-              )}
-            </>
-          )}
-        </Card>
-      </m.div>
+                  <Text
+                    hidden={isCollapsed}
+                    component={'div'}
+                    flex={'0 0 auto'}
+                    inline
+                    size="xs"
+                    fz={9}
+                    fw={500}
+                    c={'dimmed'}
+                    style={{
+                      userSelect: 'all',
+                    }}>
+                    <span style={{ userSelect: 'none' }}>id:{' '}</span>
+                    {id}
+                  </Text>
+                </Group>
+                {description && (
+                  <Spoiler
+                    maxHeight={42}
+                    showLabel={
+                      <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>show more</Button>
+                    }
+                    hideLabel={
+                      <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>hide</Button>
+                    }>
+                    <Text
+                      component={'div'}
+                      size="sm"
+                      className={css.description}>
+                      {description || 'no description'}
+                    </Text>
+                  </Spoiler>
+                )}
+                {!description && (
+                  <Text
+                    component={'div'}
+                    size="xs"
+                    c={'dimmed'}>
+                    no description
+                  </Text>
+                )}
+                {links && (
+                  <Stack
+                    mt={'xs'}
+                    gap={4}
+                    justify="stretch"
+                    align="stretch">
+                    {links.map((link) => <Link value={link} key={link.url} />)}
+                  </Stack>
+                )}
+              </>
+            )}
+          </Card>
+        </m.div>
+      )}
     </AnimatePresence>
   )
 }

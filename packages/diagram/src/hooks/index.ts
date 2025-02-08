@@ -1,5 +1,4 @@
 export { useCurrentViewId } from './useCurrentViewId'
-export type { DiagramContext } from './useDiagramContext'
 export { useMantinePortalProps } from './useMantinePortalProps'
 export { useSetState } from './useSetState'
 export { useUpdateEffect } from './useUpdateEffect'

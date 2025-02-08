@@ -1,10 +1,7 @@
-import { memo } from 'react'
 import { IfEnabled } from '../context'
 import { LikeC4Search } from '../LikeC4Search'
 import { Overlays } from '../overlays/Overlays'
-import { Controls, DiagramTitlePanel } from './ui'
-import NotationPanel from './ui/notation'
-import { DynamicViewWalkthrough } from './ui/walkthrough/DynamicViewWalkthrough'
+import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
 
 export function DiagramUI() {
   return (
