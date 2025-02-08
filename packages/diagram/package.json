@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -41,9 +41,9 @@
     "@dagrejs/dagre": "1.1.4",
     "@likec4/core": "workspace:*",
     "@mantine/vanilla-extract": "7.16.2",
-    "@vanilla-extract/dynamic": "^2.1.2",
     "@react-hookz/web": "^25.0.1",
     "@tabler/icons-react": "3.29.0",
+    "@vanilla-extract/dynamic": "^2.1.2",
     "@xstate/react": "^5.0.2",
     "@xstate/store": "^2.6.2",
     "@xyflow/react": "12.4.2",
