@@ -90,7 +90,7 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@msgpack/msgpack": "^3.0.0-beta3",
+    "@msgpack/msgpack": "^3.0.0-beta4",
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
