@@ -9,6 +9,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { version } from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
+import { checkAvailableUpdate, notifyAvailableUpdate } from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
 import previewCmd from './preview'
@@ -23,6 +24,8 @@ if (DEV) {
 
 consola.wrapConsole()
 
+notifyAvailableUpdate()
+
 const cli = yargs(hideBin(argv))
   .scriptName('likec4')
   .usage(`Usage: $0 <command>`)
@@ -31,6 +34,13 @@ const cli = yargs(hideBin(argv))
   .command(codegenCmd)
   .command(exportCmd)
   .command(previewCmd)
+  .command({
+    command: 'check-update',
+    describe: 'Check for updates',
+    handler: async () => {
+      await checkAvailableUpdate()
+    },
+  })
   .help('help')
   .version(version)
   .alias('v', 'version')
