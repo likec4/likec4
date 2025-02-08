@@ -3888,7 +3888,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:^7":
+"@types/semver@npm:^7.5.8":
   version: 7.5.8
   resolution: "@types/semver@npm:7.5.8"
   checksum: 10c0/8663ff927234d1c5fcc04b33062cb2b9fcfbe0f5f351ed26c4d1e1581657deebd506b41ff7fdf89e787e3d33ce05854bc01686379b89e9c49b564c4cfa988efa
@@ -8903,7 +8903,7 @@ __metadata:
     "@types/prop-types": "npm:^15.7.14"
     "@types/react": "npm:~19.0.8"
     "@types/react-dom": "npm:~19.0.3"
-    "@types/semver": "npm:^7"
+    "@types/semver": "npm:^7.5.8"
     "@types/yargs": "npm:^17.0.33"
     "@vanilla-extract/css": "npm:^1.17.1"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
