@@ -1,12 +1,8 @@
 ## [1.21.1](https://github.com/likec4/likec4/compare/v1.21.0...v1.21.1) (2025-02-08)
 
-
 ### Bug Fixes
 
-* broken "--use-dot" in 1.21.0 ([e93c9b5](https://github.com/likec4/likec4/commit/e93c9b51d224b7ce5c03fae2a47cf5cfa2d8c4da)), closes [#1563](https://github.com/likec4/likec4/issues/1563)
-* **deps:** update dependency react-error-boundary to v5 ([#1548](https://github.com/likec4/likec4/issues/1548)) ([e0dec7d](https://github.com/likec4/likec4/commit/e0dec7d36ce4944a33a196b2489029b4a34c495b))
-* **deps:** update dependency rollup to v4.34.2 ([#1551](https://github.com/likec4/likec4/issues/1551)) ([164e910](https://github.com/likec4/likec4/commit/164e9106394caaecebe5d53bb9b4e3cd7bf2444f))
-
+* **cli**: broken "--use-dot" in 1.21.0 (closes [#1563](https://github.com/likec4/likec4/issues/1563)
 
 
 # [1.21.0](https://github.com/likec4/likec4/compare/v1.20.3...v1.21.0) (2025-02-07)
