@@ -11,17 +11,17 @@ export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 
     nodes: pipe(
       view.nodes,
       map(pick(['id', 'title', 'description', 'technology', 'shape', 'icon', 'children'])),
-      mapToObj(({ id, icon, ...node }) => [id, { ...node, icon: isTruthy(icon) ? 'Y' : 'N' }])
+      mapToObj(({ id, icon, ...node }) => [id, { ...node, icon: isTruthy(icon) ? 'Y' : 'N' }]),
     ),
     edges: pipe(
       view.edges,
       map(pick(['source', 'target', 'label', 'description', 'technology', 'dir', 'head', 'tail', 'line'])),
-      mapToObj(({ source, target, ...edge }) => [`${source}:${target}`, edge])
-    )
+      mapToObj(({ source, target, ...edge }) => [`${source}:${target}`, edge]),
+    ),
   }
   view.hash = objectHash(tohash, {
     ignoreUnknown: true,
-    respectType: false
+    respectType: false,
   })
-  return view as V
+  return view as unknown as V
 }
