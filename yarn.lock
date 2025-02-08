@@ -2107,7 +2107,7 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.17.1"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.14"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.20"
+    "@vanilla-extract/vite-plugin": "npm:^5.0.0"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.2.2"
@@ -2169,7 +2169,7 @@ __metadata:
     "@types/vscode": "npm:^1.89.0"
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.17.1"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.20"
+    "@vanilla-extract/vite-plugin": "npm:^5.0.0"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
     esm-env: "npm:^1.2.2"
     nanostores: "npm:0.11.3"
@@ -4061,7 +4061,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/compiler@npm:^0.1.0":
+"@vanilla-extract/compiler@npm:^0.1.1":
   version: 0.1.1
   resolution: "@vanilla-extract/compiler@npm:0.1.1"
   dependencies:
@@ -4148,15 +4148,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/vite-plugin@npm:^4.0.20":
-  version: 4.0.20
-  resolution: "@vanilla-extract/vite-plugin@npm:4.0.20"
+"@vanilla-extract/vite-plugin@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@vanilla-extract/vite-plugin@npm:5.0.0"
   dependencies:
-    "@vanilla-extract/compiler": "npm:^0.1.0"
+    "@vanilla-extract/compiler": "npm:^0.1.1"
     "@vanilla-extract/integration": "npm:^8.0.0"
   peerDependencies:
-    vite: ^4.0.3 || ^5.0.0
-  checksum: 10c0/a41cfa90e5fa41efc272470b1625753f78d6b84fd2992c0a54b1f19a853097e7e16f34259c9d896858bf4d234e93313d23382d4c51f5e83bebdf2feaa82a29d4
+    vite: ^5.0.0 || ^6.0.0
+  checksum: 10c0/878199d02f86a8aeee9e0a326c6ee7b794245cd53e69c5ded2ba4ee0dc6b25767ea465d58ad1595b3391c16ad7ecb78fb11ecb8b43aab9b93fb6d7d8689814a7
   languageName: node
   linkType: hard
 
@@ -8938,7 +8938,7 @@ __metadata:
     "@types/yargs": "npm:^17.0.33"
     "@vanilla-extract/css": "npm:^1.17.1"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.20"
+    "@vanilla-extract/vite-plugin": "npm:^5.0.0"
     "@vitejs/plugin-react-swc": "npm:3.7.2"
     "@xyflow/react": "npm:12.4.2"
     "@xyflow/system": "npm:0.0.50"
