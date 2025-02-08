@@ -1,12 +1,8 @@
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
-import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
-import { shadowStyle } from 'vite-plugin-shadow-style'
 import { amIExecuted } from './_utils'
 
 export async function buildWebcomponentBundle(_isDev = false) {
@@ -26,8 +22,6 @@ export async function buildWebcomponentBundle(_isDev = false) {
       conditions: ['production', 'sources'],
       alias: {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-        '@likec4/core': resolve('../core/src'),
-        '@likec4/diagram': resolve('../diagram/src'),
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts'),
       },
     },
@@ -91,28 +85,15 @@ export async function buildWebcomponentBundle(_isDev = false) {
           'react/jsx-dev-runtime',
           'react-dom/client',
           'likec4/react',
+          'likec4/model',
           '@emotion/is-prop-valid', // dev-only import from framer-motion
           /@likec4\/core.*/,
           /virtual\:likec4/,
-        ],
-        plugins: [
-          shadowStyle(),
-        ],
-      },
-    },
-    css: {
-      postcss: {
-        plugins: [
-          autoprefixer(),
-          postcssPresetMantine(),
         ],
       },
     },
     plugins: [
       react({}),
-      vanillaExtractPlugin({
-        identifiers: 'short',
-      }),
     ],
   })
 
@@ -125,7 +106,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
     )
   }
 
-  await rm(resolve(outDir, 'style.css'))
+  // await rm(resolve(outDir, 'style.css'))
 }
 
 if (amIExecuted(import.meta.filename)) {

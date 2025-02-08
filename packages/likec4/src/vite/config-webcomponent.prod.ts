@@ -1,5 +1,6 @@
 import { createLikeC4Logger } from '../logger'
 
+import { viteAliases } from '@/vite/aliases'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
@@ -34,6 +35,7 @@ export async function viteWebcomponentConfig({
     mode: 'production',
     resolve: {
       conditions: ['production'],
+      alias: viteAliases(),
     },
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),

@@ -1,4 +1,5 @@
-import { MantineProvider, type MantineThemeOverride } from '@mantine/core'
+import { type MantineThemeOverride, MantineProvider } from '@mantine/core'
+import { useCallbackRef } from '@mantine/hooks'
 import clsx from 'clsx'
 import { type PropsWithChildren, useRef } from 'react'
 import { isDefined } from 'remeda'
@@ -16,7 +17,7 @@ export function ShadowRootMantineProvider({
   children,
   className,
   colorScheme,
-  styleNonce
+  styleNonce,
 }: ShadowRootMantineProps) {
   const mantineRootRef = useRef<HTMLDivElement>(null)
 
@@ -24,6 +25,8 @@ export function ShadowRootMantineProvider({
   if (isDefined(styleNonce)) {
     getStyleNonce = typeof styleNonce === 'function' ? styleNonce : () => styleNonce
   }
+
+  const getRootElement = useCallbackRef(() => mantineRootRef.current ?? undefined)
 
   return (
     <div
@@ -34,7 +37,7 @@ export function ShadowRootMantineProvider({
       <MantineProvider
         {...(colorScheme && { forceColorScheme: colorScheme })}
         defaultColorScheme={'auto'}
-        getRootElement={() => mantineRootRef.current ?? undefined}
+        getRootElement={getRootElement}
         {...getStyleNonce && { getStyleNonce }}
         cssVariablesSelector={ShadowRootCssSelector}
         theme={theme}>

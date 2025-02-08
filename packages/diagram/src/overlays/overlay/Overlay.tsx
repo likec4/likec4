@@ -2,11 +2,10 @@ import {
   Box,
   RemoveScroll,
 } from '@mantine/core'
-import { useMergedRef } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef } from '@react-hookz/web'
 import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
-import { type PropsWithChildren, forwardRef, useLayoutEffect, useRef, useState } from 'react'
+import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
 import * as css from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<
@@ -16,17 +15,20 @@ type OverlayProps = PropsWithChildren<
   }
 >
 
-export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, onClose, className, ...rest }, ref) => {
+export function Overlay({ children, onClose, className, ...rest }: OverlayProps) {
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const isClosingRef = useRef(false)
 
   // Move dialog to the top of the DOM
   // useLayoutEffect(() => dialogRef.current?.showModal(), [])
-
   const onCloseRef = useSyncedRef(onClose)
   const close = useDebouncedCallback(
     () => {
-      onCloseRef.current()
+      if (isClosingRef.current === false) {
+        isClosingRef.current = true
+        onCloseRef.current()
+      }
     },
     [],
     50,
@@ -35,7 +37,10 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
   useLayoutEffect(() => {
     const cancel = (e: Event) => {
       e.preventDefault()
-      onCloseRef.current()
+      if (isClosingRef.current === false) {
+        isClosingRef.current = true
+        onCloseRef.current()
+      }
     }
     dialogRef.current?.addEventListener('cancel', cancel, { capture: true })
     return () => {
@@ -45,7 +50,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
 
   return (
     <m.dialog
-      ref={useMergedRef(ref, dialogRef)}
+      ref={dialogRef}
       className={clsx(css.dialog, className)}
       initial={{
         '--backdrop-blur': '0px',
@@ -68,12 +73,15 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
         setOpened(true)
       }}
       exit={{
-        opacity: 0.1,
+        opacity: 0,
         translateY: -10,
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '0%',
         transition: {
           duration: 0.1,
+        },
+        transitionEnd: {
+          display: 'none',
         },
       }}
       onClick={e => {
@@ -96,4 +104,4 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({ children, 
       </RemoveScroll>
     </m.dialog>
   )
-})
+}

@@ -1,3 +1,4 @@
+import { viteAliases } from '@/vite/aliases'
 import { consola } from '@likec4/log'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
@@ -39,11 +40,7 @@ export async function viteWebcomponentConfig({
     configFile: false,
     resolve: {
       conditions: ['development', 'sources'],
-      alias: {
-        'likec4/icons': resolve(pkgRoot, '../icons'),
-        // '@likec4/core': resolve(pkgRoot, '../core/src'),
-        // '@likec4/diagram': resolve(pkgRoot, '../diagram/src'),
-      },
+      alias: viteAliases(),
     },
     clearScreen: false,
     base,
@@ -96,12 +93,5 @@ export async function viteWebcomponentConfig({
         useOverviewGraph: false,
       }),
     ],
-    css: {
-      postcss: {
-        plugins: [
-          postcssPresetMantine(),
-        ],
-      },
-    },
   }
 }

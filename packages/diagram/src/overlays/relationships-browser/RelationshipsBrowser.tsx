@@ -5,8 +5,8 @@ import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useStoreApi } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
-import { AnimatePresence, m } from 'framer-motion'
-import { memo, useEffect, useRef } from 'react'
+import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
+import { memo, useEffect, useId, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useRelationshipsView } from './-useRelationshipsView'
@@ -26,6 +26,7 @@ export type RelationshipsBrowserProps = {
   actorRef: RelationshipsBrowserActorRef
 }
 export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
+  const id = useId()
   // const actorRef = useDiagramActorState(s => s.children.relationshipsBrowser)
   // if (actorRef == null) {
   //   return null
@@ -44,9 +45,11 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
 
   return (
     <RelationshipsBrowserActorContext.Provider value={actorRef}>
-      <ReactFlowProvider {...initialRef.current}>
-        <RelationshipsBrowserXYFlow />
-      </ReactFlowProvider>
+      <LayoutGroup id={id}>
+        <ReactFlowProvider {...initialRef.current}>
+          <RelationshipsBrowserXYFlow />
+        </ReactFlowProvider>
+      </LayoutGroup>
     </RelationshipsBrowserActorContext.Provider>
   )
 }

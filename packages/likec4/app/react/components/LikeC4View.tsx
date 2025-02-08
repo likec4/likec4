@@ -7,7 +7,6 @@ import type { DiagramView, ViewId } from '@likec4/core'
 import { ActionIcon, Box } from '@mantine/core'
 import { shallowEqual } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
-import { AnimatePresence } from 'framer-motion'
 import { isBoolean } from 'remeda'
 import type { LikeC4ViewProps } from './LikeC4View.props'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
@@ -150,42 +149,40 @@ const LikeC4ViewInner = memo<LikeC4ViewInnerProps>(({
               }}
               {...props}
             />
-            <AnimatePresence>
-              {browserView && (
-                <Overlay className={css.browserOverlay} onClose={() => onNavigateTo(null)}>
-                  <LikeC4Diagram
-                    view={browserView}
-                    background="dots"
-                    onNavigateTo={to => onNavigateTo(to as ViewId)}
-                    enableDynamicViewWalkthrough
-                    enableFocusMode
-                    enableRelationshipBrowser
-                    enableElementDetails
-                    enableRelationshipDetails
-                    enableSearch
-                    controls
-                    readonly
-                    fitView
-                    fitViewPadding={fitViewPadding}
-                    {...props}
-                    {...browserProps}
-                    showNotations={(browserProps.showNotations ?? true) &&
-                      (browserView.notation?.elements.length ?? 0) > 0}
-                  />
-                  <Box pos="absolute" top={'1rem'} right={'1rem'}>
-                    <ActionIcon
-                      variant="default"
-                      color="gray"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onNavigateTo(null)
-                      }}>
-                      <IconX />
-                    </ActionIcon>
-                  </Box>
-                </Overlay>
-              )}
-            </AnimatePresence>
+            {browserView && (
+              <Overlay className={css.browserOverlay} onClose={() => onNavigateTo(null)}>
+                <LikeC4Diagram
+                  view={browserView}
+                  background="dots"
+                  onNavigateTo={to => onNavigateTo(to as ViewId)}
+                  enableDynamicViewWalkthrough
+                  enableFocusMode
+                  enableRelationshipBrowser
+                  enableElementDetails
+                  enableRelationshipDetails
+                  enableSearch
+                  controls
+                  readonly
+                  fitView
+                  fitViewPadding={fitViewPadding}
+                  {...props}
+                  {...browserProps}
+                  showNotations={(browserProps.showNotations ?? true) &&
+                    (browserView.notation?.elements.length ?? 0) > 0}
+                />
+                <Box pos="absolute" top={'1rem'} right={'1rem'}>
+                  <ActionIcon
+                    variant="default"
+                    color="gray"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onNavigateTo(null)
+                    }}>
+                    <IconX />
+                  </ActionIcon>
+                </Box>
+              </Overlay>
+            )}
           </FramerMotionConfig>
         </ShadowRootMantineProvider>
       </ShadowRoot>
