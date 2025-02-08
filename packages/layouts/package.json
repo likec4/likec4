@@ -62,7 +62,7 @@
     "remeda": "^2.20.1",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
-    "type-fest": "4.28.1",
+    "type-fest": "4.33.0",
     "which": "^5.0.0",
     "word-wrap": "^1.2.5"
   },

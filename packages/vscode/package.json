@@ -214,7 +214,7 @@
     "tslib": "^2.8.1",
     "tsx": "~4.19.2",
     "turbo": "^2.4.0",
-    "type-fest": "4.28.1",
+    "type-fest": "4.33.0",
     "typescript": "^5.7.3",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",
