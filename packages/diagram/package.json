@@ -57,7 +57,7 @@
     "khroma": "^2.1.0",
     "react-error-boundary": "^5.0.0",
     "remeda": "^2.20.1",
-    "type-fest": "4.28.1",
+    "type-fest": "4.33.0",
     "xstate": "^5.19.2"
   },
   "peerDependencies": {

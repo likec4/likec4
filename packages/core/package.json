@@ -108,7 +108,7 @@
     "access": "public"
   },
   "dependencies": {
-    "type-fest": "4.28.1"
+    "type-fest": "4.33.0"
   },
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
