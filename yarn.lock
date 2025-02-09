@@ -8951,7 +8951,7 @@ __metadata:
     semver: "npm:^7.7.1"
     std-env: "npm:^3.8.0"
     strip-indent: "npm:^4.0.0"
-    terser: "npm:^5.38.0"
+    terser: "npm:^5.38.1"
     tinyrainbow: "npm:^2.0.0"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
@@ -13650,7 +13650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.38.0":
+"terser@npm:^5.38.1":
   version: 5.38.1
   resolution: "terser@npm:5.38.1"
   dependencies:
