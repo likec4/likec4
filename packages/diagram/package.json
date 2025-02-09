@@ -53,7 +53,7 @@
     "d3-shape": "^3.2.0",
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",
-    "framer-motion": "^12.3.1",
+    "framer-motion": "^12.4.0",
     "khroma": "^2.1.0",
     "react-error-boundary": "^5.0.0",
     "remeda": "^2.20.1",
