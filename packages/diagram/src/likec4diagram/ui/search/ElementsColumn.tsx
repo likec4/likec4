@@ -45,6 +45,12 @@ function buildNode(
   }
 }
 
+function centerY(element: HTMLElement) {
+  const rect = element.getBoundingClientRect()
+  const y = rect.y + Math.floor(rect.height / 2)
+  return y
+}
+
 export function ElementsColumn() {
   const search = useNormalizedSearch()
   const model = useLikeC4Model(true)
@@ -136,10 +142,12 @@ export function ElementsColumn() {
             return
           }
           const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
-          const maxY = label.getBoundingClientRect().bottom
-          const view = [...document.querySelectorAll<HTMLButtonElement>(
+          const maxY = centerY(label)
+          const viewButtons = [...document.querySelectorAll<HTMLButtonElement>(
             `[data-likec4-search-views] .${css.focusable}`,
-          )].reverse().find((el, i, all) => i === all.length - 1 || el.getBoundingClientRect().y < maxY)
+          )]
+          let view = viewButtons.length > 1 ? viewButtons.findLast((el) => el.getBoundingClientRect().y <= maxY) : null
+          view ??= first(viewButtons)
           if (view) {
             e.stopPropagation()
             view.focus()
@@ -195,7 +203,7 @@ function ElementTreeNode(
       </ActionIcon>
       <UnstyledButton
         tabIndex={-1}
-        className={css.elementButton}
+        className={clsx(css.elementButton, 'likec4-element-button')}
         {...views.length > 0 && {
           onClick: (e) => {
             if (!hasChildren || expanded) {

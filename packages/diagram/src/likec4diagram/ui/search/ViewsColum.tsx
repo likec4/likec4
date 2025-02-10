@@ -18,6 +18,7 @@ import {
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
+import { first } from 'remeda'
 import { useCurrentViewId } from '../../../hooks'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
 import { useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
@@ -42,14 +43,21 @@ export function ViewsColumn() {
       data-likec4-search-views
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft') {
-          const maxY = (e.target as HTMLLIElement).getBoundingClientRect().bottom
-          const view = [...document.querySelectorAll<HTMLButtonElement>(
+          const thisRect = (e.target as HTMLElement).getBoundingClientRect()
+          const half = thisRect.height / 2
+          const thisRectCenter = thisRect.y + half
+          const elementButtons = [...document.querySelectorAll<HTMLButtonElement>(
             `[data-likec4-search-elements] .${css.focusable}`,
-          )].reverse().find((el, i, all) => i === all.length - 1 || el.getBoundingClientRect().y < maxY)
-          if (view) {
+          )]
+          let elementButton = elementButtons.length > 1
+            ? elementButtons.findLast((el) => el.getBoundingClientRect().y <= thisRectCenter)
+            : null
+          elementButton ??= first(elementButtons)
+          if (elementButton) {
             e.stopPropagation()
-            view.focus()
+            elementButton.focus()
           }
+          return
         }
       }}>
       {views.length === 0 && (

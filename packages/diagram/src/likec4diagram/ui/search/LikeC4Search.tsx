@@ -11,7 +11,15 @@ import {
   Stack,
   Title,
 } from '@mantine/core'
-import { useCallbackRef, useDisclosure, useFocusTrap, useFocusWithin, useHotkeys, useWindowEvent } from '@mantine/hooks'
+import {
+  useCallbackRef,
+  useDisclosure,
+  useFocusReturn,
+  useFocusTrap,
+  useFocusWithin,
+  useHotkeys,
+  useWindowEvent,
+} from '@mantine/hooks'
 import { IconSearch, IconX } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'framer-motion'
 import { useRef } from 'react'
@@ -194,8 +202,9 @@ function LikeC4SearchInput() {
       leftSection={<IconSearch style={{ width: rem(20) }} stroke={2} />}
       onChange={(e) => setSearch(e.target.value)}
       onKeyDown={(e) => {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        if (e.key === 'ArrowDown') {
           e.stopPropagation()
+          e.preventDefault()
           document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
           return
         }
@@ -207,6 +216,9 @@ function PickView() {
   const pickview = usePickView()
   // const navigateTo = useCloseSearchAndNavigateTo()
   const focusTrapRef = useFocusTrap(!!pickview)
+  useFocusReturn({
+    opened: !!pickview,
+  })
 
   return (
     <AnimatePresence>
