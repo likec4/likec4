@@ -1,11 +1,11 @@
 import { defaultTheme } from '@likec4/core'
 import { rem } from '@mantine/core'
-import { createVar, globalStyle } from '@vanilla-extract/css'
+import { createGlobalVar, createVar, globalStyle } from '@vanilla-extract/css'
 import { container } from './ElementNodeContainer.css'
 
 export const textSize = createVar('text-size')
 export const paddingSize = createVar('padding-size')
-export const iconSize = createVar('icon-size')
+export const iconSize = createGlobalVar('likec4-icon-size')
 
 globalStyle(`${container}`, {
   vars: {

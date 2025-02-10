@@ -1,4 +1,4 @@
-import { compareNatural, type Fqn, type LikeC4Model, type ViewId } from '@likec4/core'
+import { type Fqn, type LikeC4Model, type ViewId, compareNatural } from '@likec4/core'
 import { useMemo } from 'react'
 import { useLikeC4Model } from './useLikeC4Model'
 
@@ -8,15 +8,15 @@ interface LikeC4ModelTreeNodeData {
   children: LikeC4ModelTreeNodeData[]
 }
 
-const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeData) => compareNatural(a.label, b.label)
+export const sortByLabel = (a: LikeC4ModelTreeNodeData, b: LikeC4ModelTreeNodeData) => compareNatural(a.label, b.label)
 
 function buildNode(
-  element: LikeC4Model.Node | LikeC4Model.Element
+  element: LikeC4Model.Node | LikeC4Model.Element,
 ): LikeC4ModelTreeNodeData {
   return {
     label: element.title,
     value: element.id,
-    children: [...element.children()].map(buildNode).sort(sortByLabel)
+    children: [...element.children()].map(buildNode).sort(sortByLabel),
   }
 }
 

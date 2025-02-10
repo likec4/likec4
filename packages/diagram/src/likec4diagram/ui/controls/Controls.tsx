@@ -1,14 +1,15 @@
-import { ActionIconGroup, Badge, Loader, Stack } from '@mantine/core'
-import { openSpotlight } from '@mantine/spotlight'
-import { IconFileSymlink, IconFocusCentered, IconSearch } from '@tabler/icons-react'
+import { ActionIconGroup, Badge, Group, Loader, Stack } from '@mantine/core'
+import { IconFileSymlink, IconFocusCentered, IconMenu2 } from '@tabler/icons-react'
 import { clsx } from 'clsx'
+import { LayoutGroup } from 'framer-motion'
 import { memo } from 'react'
-import { IfNotEnabled, useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
+import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useDiagramSyncLayoutState } from '../../../hooks/useDiagramActor'
 import { useDiagramContext } from '../../../hooks/useDiagramContext'
 import { stopPropagation } from '../../../utils'
+import { LikeC4Search } from '../search/LikeC4Search'
 import { ActionIcon, Tooltip } from './_shared'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
 import { LayoutDriftNotification } from './LayoutDriftNotification'
@@ -25,6 +26,7 @@ export const Controls = memo(() => {
   const diagram = useDiagram()
   const {
     onOpenSource,
+    onBurgerMenuClick,
   } = useDiagramEventHandlers()
   const {
     enableControls,
@@ -47,19 +49,24 @@ export const Controls = memo(() => {
         align="flex-start"
         onClick={stopPropagation}
         gap={'xs'}>
-        {enableNavigationButtons && <NavigationButtons />}
-        <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
-          {enableControls && enableSearch && (
-            <Tooltip label="Search (Ctrl+F or ⌘+F)" {...portalProps}>
+        <LayoutGroup>
+          <Group
+            className={clsx(css.navigationButtons, 'likec4-navigation-webview')}
+            gap={'xs'}>
+            {onBurgerMenuClick && (
               <ActionIcon
                 onClick={e => {
                   e.stopPropagation()
-                  openSpotlight()
+                  onBurgerMenuClick()
                 }}>
-                <IconSearch />
+                <IconMenu2 />
               </ActionIcon>
-            </Tooltip>
-          )}
+            )}
+            {enableNavigationButtons && <NavigationButtons />}
+            {enableSearch && <LikeC4Search />}
+          </Group>
+        </LayoutGroup>
+        <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
           {enableVscode && (
             <Tooltip label="Open source" {...portalProps}>
               <ActionIcon

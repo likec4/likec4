@@ -8,5 +8,3 @@ export {
   type ReactFlowEdge,
   type ReactFlowNode,
 } from './types'
-
-export { Link } from './Link'

@@ -8,9 +8,6 @@ export function DiagramUI() {
     <>
       <Controls />
       <Overlays />
-      <IfEnabled feature="Search">
-        <LikeC4Search />
-      </IfEnabled>
       <IfEnabled feature="ViewTitle">
         <DiagramTitlePanel />
       </IfEnabled>
