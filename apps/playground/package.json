@@ -46,7 +46,7 @@
     "clsx": "^2.1.1",
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",
-    "framer-motion": "^12.4.0",
+    "framer-motion": "^12.4.1",
     "langium": "3.3.1",
     "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@8.0.4",
     "monaco-editor-wrapper": "5.5.3",
