@@ -117,10 +117,10 @@ const RelationshipsBrowserXYFlow = memo(() => {
         browser.send({ type: 'xyflow.resized' })
       })}
       onNodesChange={useCallbackRef((changes) => {
-        browser.send({ type: 'xyflow.applyNodeChages', changes })
+        browser.send({ type: 'xyflow.applyNodeChanges', changes })
       })}
       onEdgesChange={useCallbackRef((changes) => {
-        browser.send({ type: 'xyflow.applyEdgeChages', changes })
+        browser.send({ type: 'xyflow.applyEdgeChanges', changes })
       })}
       nodesDraggable={false}
       fitView={false}

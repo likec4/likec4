@@ -136,8 +136,8 @@ export namespace DiagramContext {
 export type Events =
   | HotKeyEvent
   | { type: 'xyflow.init'; instance: ReactFlowInstance<Types.Node, Types.Edge> }
-  | { type: 'xyflow.applyNodeChages'; changes: NodeChange<Types.Node>[] }
-  | { type: 'xyflow.applyEdgeChages'; changes: EdgeChange<Types.Edge>[] }
+  | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<Types.Node>[] }
+  | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<Types.Edge>[] }
   | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }
   | { type: 'xyflow.nodeClick'; node: Types.Node }
   | { type: 'xyflow.edgeClick'; edge: Types.Edge }
@@ -634,7 +634,7 @@ export const diagramMachine = setup({
         pending: {
           entry: enqueueActions(({ enqueue }) => {
             enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'stop' })
-            enqueue.stopChild('layout')
+            enqueue.stopChild('syncLayout')
             enqueue({
               type: 'trigger:NavigateTo',
               params: ({ context }) => ({
@@ -765,12 +765,12 @@ export const diagramMachine = setup({
     },
   },
   on: {
-    'xyflow.applyNodeChages': {
+    'xyflow.applyNodeChanges': {
       actions: assign({
         xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),
       }),
     },
-    'xyflow.applyEdgeChages': {
+    'xyflow.applyEdgeChanges': {
       actions: assign({
         xyedges: ({ context, event }) => applyEdgeChanges(event.changes, context.xyedges),
       }),
