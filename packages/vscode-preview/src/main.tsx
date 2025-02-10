@@ -4,7 +4,6 @@ import '@fontsource/ibm-plex-sans/600.css'
 
 import { Box, MantineProvider, Notification } from '@mantine/core'
 import '@mantine/core/styles.css'
-import '@mantine/spotlight/styles.css'
 import { IconX } from '@tabler/icons-react'
 import ReactDOM from 'react-dom/client'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'

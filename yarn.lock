@@ -1888,7 +1888,6 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/core": "npm:7.16.2"
     "@mantine/hooks": "npm:7.16.2"
-    "@mantine/spotlight": "npm:7.16.2"
     "@mantine/vanilla-extract": "npm:7.16.2"
     "@nanostores/react": "npm:0.8.4"
     "@react-hookz/web": "npm:^25.0.1"
@@ -1926,7 +1925,6 @@ __metadata:
   peerDependencies:
     "@mantine/core": ^7.16.2
     "@mantine/hooks": ^7.16.2
-    "@mantine/spotlight": ^7.16.2
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
   languageName: unknown
@@ -2095,7 +2093,6 @@ __metadata:
     "@likec4/log": "workspace:*"
     "@mantine/core": "npm:7.16.2"
     "@mantine/hooks": "npm:7.16.2"
-    "@mantine/spotlight": "npm:7.16.2"
     "@mantine/vanilla-extract": "npm:7.16.2"
     "@react-hookz/web": "npm:^25.0.1"
     "@tabler/icons-react": "npm:3.29.0"
@@ -2159,7 +2156,6 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/core": "npm:7.16.2"
     "@mantine/hooks": "npm:7.16.2"
-    "@mantine/spotlight": "npm:7.16.2"
     "@mantine/vanilla-extract": "npm:7.16.2"
     "@nanostores/react": "npm:0.8.4"
     "@react-hookz/web": "npm:^25.0.1"
@@ -2222,29 +2218,6 @@ __metadata:
   peerDependencies:
     react: ^18.x || ^19.x
   checksum: 10c0/392bbd4d875db82305be7e5cc658f693c8add70b24aae0bc13c2e74078c6ac11e11926cd61431b28fd37a405f1706ce65658c3c47d252d29a94159aaca6bd3c4
-  languageName: node
-  linkType: hard
-
-"@mantine/spotlight@npm:7.16.2":
-  version: 7.16.2
-  resolution: "@mantine/spotlight@npm:7.16.2"
-  dependencies:
-    "@mantine/store": "npm:7.16.2"
-  peerDependencies:
-    "@mantine/core": 7.16.2
-    "@mantine/hooks": 7.16.2
-    react: ^18.x || ^19.x
-    react-dom: ^18.x || ^19.x
-  checksum: 10c0/a5b0b85bbb13867344d8c67f64477d90049ab84a0f96cf96b2b49f777323280389bc6fea69362de449727c38ed6cf28ee6c85c2733c0abfbbbd69bd64020c0db
-  languageName: node
-  linkType: hard
-
-"@mantine/store@npm:7.16.2":
-  version: 7.16.2
-  resolution: "@mantine/store@npm:7.16.2"
-  peerDependencies:
-    react: ^18.x || ^19.x
-  checksum: 10c0/fb61118ed7b7805f85de824a92cde54f476df7e365fad7af10851585af1eb026666850b069c4dd7b11c5ef970a5e635e59c9b9273c1bdf879c00e08edb4e6fad
   languageName: node
   linkType: hard
 
@@ -8893,7 +8866,6 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@mantine/core": "npm:7.16.2"
     "@mantine/hooks": "npm:7.16.2"
-    "@mantine/spotlight": "npm:7.16.2"
     "@mantine/vanilla-extract": "npm:7.16.2"
     "@nanostores/react": "npm:0.8.4"
     "@react-hookz/web": "npm:^25.0.1"

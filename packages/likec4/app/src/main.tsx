@@ -4,7 +4,6 @@ import '@fontsource/ibm-plex-sans/600.css'
 
 // dprint-ignore
 import '@mantine/core/styles.css'
-import '@mantine/spotlight/styles.css'
 import '@xyflow/react/dist/style.css'
 import './main.css'
 

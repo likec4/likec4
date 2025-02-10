@@ -126,7 +126,6 @@
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "7.16.2",
     "@mantine/hooks": "7.16.2",
-    "@mantine/spotlight": "7.16.2",
     "@mantine/vanilla-extract": "7.16.2",
     "@nanostores/react": "0.8.4",
     "@react-hookz/web": "^25.0.1",
