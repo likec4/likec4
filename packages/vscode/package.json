@@ -201,7 +201,7 @@
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.8",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
     "esm-env": "^1.2.2",
     "execa": "^9.5.2",
