@@ -1,4 +1,12 @@
-import { type Fqn, ifilter, LikeC4Model, nameFromFqn, nonNullable, sortParentsFirst, toArray } from '@likec4/core'
+import {
+  type Fqn,
+  ifilter,
+  isAncestor,
+  LikeC4Model,
+  nameFromFqn,
+  sortParentsFirst,
+  toArray,
+} from '@likec4/core'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
@@ -22,7 +30,8 @@ import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
 import * as css from './ElementsColumn.css'
-import { setPickView, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
+import { moveFocusToSearchInput, setPickView, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
+import { NothingFound } from './ViewsColum'
 
 interface LikeC4ModelTreeNodeData {
   label: string
@@ -55,26 +64,25 @@ export function ElementsColumn() {
   const search = useNormalizedSearch()
   const model = useLikeC4Model(true)
   const data = useMemo((): LikeC4ModelTreeNodeData[] => {
-    if (isEmpty(search)) {
+    if (isEmpty(search) || search === 'kind:') {
       return [...model.roots()].map(e => buildNode(e)).sort(sortByLabel)
     }
     const searchTerms = search.split('.')
     const { roots } = pipe(
       model.elements(),
       ifilter(element => {
+        if (search.startsWith('kind:')) {
+          return element.kind.toLocaleLowerCase().startsWith(search.slice(5))
+        }
         if (search.startsWith('#')) {
           return element.tags.some((tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
         }
-        return (element.title + ' ' + element.kind + ' ' + element.id + ' ' + (element.description ?? ''))
+        return (element.title + ' ' + element.id + ' ' + (element.description ?? ''))
           .toLocaleLowerCase().includes(search)
       }),
       toArray(),
-      flatMap(element => [...element.ancestors(), element]),
-      unique(),
-      // sort((a, b) => compareNatural(a.title, b.title)),
       sortParentsFirst,
       reduce((acc, element) => {
-        const parentId = element.parent?.id
         const treeItem: LikeC4ModelTreeNodeData = acc.byid[element.id] = {
           label: element.title,
           value: element.id,
@@ -82,8 +90,8 @@ export function ElementsColumn() {
           searchTerms,
           children: [],
         }
-        if (parentId) {
-          const parent = nonNullable(acc.byid[parentId])
+        const parent = acc.roots.find((root) => isAncestor(root.value, treeItem.value))
+        if (parent) {
           parent.children.push(treeItem)
           if (parent.children.length > 1) {
             parent.children.sort(sortByLabel)
@@ -111,58 +119,64 @@ export function ElementsColumn() {
   const handleClick = useHandleElementSelection()
 
   return (
-    <Tree
-      data-likec4-search-elements
-      allowRangeSelection={false}
-      clearSelectionOnOutsideClick
-      selectOnClick={false}
-      tree={tree}
-      data={data}
-      levelOffset={'lg'}
-      classNames={{
-        root: css.treeRoot,
-        node: clsx(css.focusable, css.treeNode),
-        label: css.treeLabel,
-        subtree: css.treeSubtree,
-      }}
-      onKeyDownCapture={(e) => {
-        const target = e.target as HTMLElement
-        const id = target.getAttribute('data-value')
-        if (!id) return
-        if (e.key === 'ArrowUp') {
-          if (id === first(data)?.value) {
-            e.stopPropagation()
-            document.getElementById('likec4searchinput')?.focus()
-          }
-          return
-        }
-        if (e.key === 'ArrowRight') {
-          const hasChildren = model.children(id).size > 0
-          if (hasChildren && !tree.expandedState[id]) {
+    <>
+      {data.length === 0 && <NothingFound />}
+      <Tree
+        data-likec4-search-elements
+        allowRangeSelection={false}
+        clearSelectionOnOutsideClick
+        selectOnClick={false}
+        tree={tree}
+        data={data}
+        levelOffset={'lg'}
+        classNames={{
+          root: css.treeRoot,
+          node: clsx(css.focusable, css.treeNode),
+          label: css.treeLabel,
+          subtree: css.treeSubtree,
+        }}
+        onKeyDownCapture={(e) => {
+          const target = e.target as HTMLElement
+          const id = target.getAttribute('data-value')
+          if (!id) return
+          if (e.key === 'ArrowUp') {
+            if (id === first(data)?.value) {
+              e.preventDefault()
+              e.stopPropagation()
+              moveFocusToSearchInput()
+            }
             return
           }
-          const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
-          const maxY = centerY(label)
-          const viewButtons = [...document.querySelectorAll<HTMLButtonElement>(
-            `[data-likec4-search-views] .${css.focusable}`,
-          )]
-          let view = viewButtons.length > 1 ? viewButtons.findLast((el) => el.getBoundingClientRect().y <= maxY) : null
-          view ??= first(viewButtons)
-          if (view) {
-            e.stopPropagation()
-            view.focus()
+          if (e.key === 'ArrowRight') {
+            const hasChildren = model.children(id).size > 0
+            if (hasChildren && !tree.expandedState[id]) {
+              return
+            }
+            const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
+            const maxY = centerY(label)
+            const viewButtons = [...document.querySelectorAll<HTMLButtonElement>(
+              `[data-likec4-search-views] .${css.focusable}`,
+            )]
+            let view = viewButtons.length > 1
+              ? viewButtons.findLast((el) => el.getBoundingClientRect().y <= maxY)
+              : null
+            view ??= first(viewButtons)
+            if (view) {
+              e.stopPropagation()
+              view.focus()
+            }
+            return
           }
-          return
-        }
-        if (e.key === ' ' || e.key === 'Enter') {
-          e.stopPropagation()
-          const element = model.element(id)
-          handleClick(element)
-          return
-        }
-      }}
-      renderNode={ElementTreeNode}
-    />
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.stopPropagation()
+            const element = model.element(id)
+            handleClick(element)
+            return
+          }
+        }}
+        renderNode={ElementTreeNode}
+      />
+    </>
   )
 }
 
@@ -215,7 +229,7 @@ function ElementTreeNode(
       >
         {elementIcon}
         <Stack gap={3} style={{ flexGrow: 1 }}>
-          <Group gap={'xs'} wrap="nowrap" align="center">
+          <Group gap={'xs'} wrap="nowrap" align="center" className={css.elementTitleAndId}>
             <Highlight component="div" highlight={searchTerms} className={css.elementTitle}>
               {node.label as any}
             </Highlight>
@@ -230,7 +244,7 @@ function ElementTreeNode(
           </Highlight>
         </Stack>
 
-        <Text component="div" className={css.elementViewsButton}>
+        <Text component="div" className={css.elementViewsCount}>
           {views.length === 0 ? 'No views' : (
             <>
               {views.length} view{views.length > 1 ? 's' : ''}

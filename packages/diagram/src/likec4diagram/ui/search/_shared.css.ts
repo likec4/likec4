@@ -6,16 +6,16 @@ export const titleColor = createVar('title-color')
 export const descriptionColor = createVar('description-color')
 export const iconColor = createVar('icon-color')
 
-export const buttonFocused: StyleRule = {
+export const buttonFocused = {
   outline: 'none',
-  backgroundColor: `color-mix(in srgb, ${mantine.colors.primaryColors[8]}, transparent 10%)`,
-  borderColor: mantine.colors.primaryColors[8],
+  backgroundColor: mantine.colors.primaryColors[8],
+  borderColor: mantine.colors.primaryColors[9],
   vars: {
     [iconColor]: mantine.colors.primaryColors[2],
     [titleColor]: mantine.colors.primaryColors[0],
     [descriptionColor]: mantine.colors.primaryColors[1],
   },
-}
+} satisfies StyleRule
 
 export const button = style({
   display: 'flex',
@@ -33,12 +33,12 @@ export const button = style({
     [iconColor]: mantine.colors.dimmed,
     [descriptionColor]: mantine.colors.dimmed,
   },
+  ':hover': {
+    ...buttonFocused,
+    backgroundColor: `color-mix(in srgb, ${buttonFocused.backgroundColor}, transparent 40%)`,
+  },
   ':focus': buttonFocused,
   selectors: {
-    [`&:hover:not([data-disabled])`]: {
-      ...buttonFocused,
-      backgroundColor: mantine.colors.primaryColors[7],
-    },
     [`${whereDark} &`]: {
       borderColor: 'transparent',
       backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
@@ -52,7 +52,7 @@ export const button = style({
       },
     },
     [`${whereDark} &:hover`]: {
-      borderColor: 'transparent',
+      // borderColor: 'transparent',
       // vars: {
       //   [iconColor]: mantine.colors.gray[7],
       // },
@@ -74,7 +74,7 @@ export const title = style({
   fontWeight: 500,
   lineHeight: 1.1,
   selectors: {
-    [`:where(${button}[data-disabled]) &`]: {
+    [`:where([data-disabled]) &`]: {
       opacity: 0.4,
     },
   },
@@ -85,8 +85,22 @@ export const description = style({
   fontSize: 13,
   lineHeight: 1.4,
   selectors: {
-    [`:where(${button}[data-disabled]) &`]: {
+    [`:where([data-disabled]) &`]: {
       opacity: 0.85,
     },
   },
+})
+
+export const emptyBoX = style({
+  width: '100%',
+  height: '100%',
+  border: `2px dashed ${mantine.colors.defaultBorder}`,
+  borderRadius: mantine.radius.md,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  fontSize: mantine.fontSizes.md,
+  color: mantine.colors.dimmed,
+  padding: mantine.spacing.md,
+  paddingBlock: mantine.spacing.xl,
 })

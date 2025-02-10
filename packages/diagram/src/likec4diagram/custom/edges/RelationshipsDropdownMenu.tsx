@@ -127,6 +127,7 @@ export function RelationshipsDropdownMenu({
       closeOnClickOutside
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       closeOnEscape
+      keepMounted={false}
       closeOnItemClick={false}
       disabled={disabled}
       position="bottom-start"

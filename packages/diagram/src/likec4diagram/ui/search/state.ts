@@ -50,6 +50,11 @@ export function wasResetPickView() {
   return false
 }
 
+const $pickViewActive = computed($pickView, pickView => pickView !== null)
+export function useIsPickViewActive() {
+  return useStore($pickViewActive)
+}
+
 export function useCloseSearchAndNavigateTo() {
   const diagram = useDiagram()
   const close = useCloseSearch()
@@ -59,4 +64,13 @@ export function useCloseSearchAndNavigateTo() {
       diagram.navigateTo(viewId)
     })
   })
+}
+
+export function moveFocusToSearchInput() {
+  const input = document.getElementById('likec4searchinput') as HTMLInputElement | null
+  if (input) {
+    const length = input.value.length
+    input.focus()
+    input.setSelectionRange(length, length)
+  }
 }

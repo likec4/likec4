@@ -2,7 +2,7 @@ import { rem } from '@mantine/core'
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../../theme-vars'
 import { vars, whereDark, whereLight } from '../../../theme-vars.css'
-import { button } from './_shared.css'
+import { button, buttonFocused } from './_shared.css'
 export { focusable } from './_shared.css'
 
 export const backdrop = style({
@@ -20,6 +20,8 @@ export const backdrop = style({
   },
 })
 export const root = style({
+  containerName: 'likec4-search',
+  containerType: 'size',
   position: 'fixed',
   zIndex: 901,
   top: 0,
@@ -40,11 +42,17 @@ export const root = style({
 export const input = style({
   borderColor: 'transparent',
   backgroundColor: 'transparent',
+  ':focus-within': {
+    backgroundColor: `color-mix(in srgb, ${mantine.colors.primaryColors[2]}, transparent 65%)`,
+  },
   selectors: {
     [`${whereDark} &`]: {
       WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
       backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
       background: `color-mix(in srgb, var(--input-bg), transparent 50%)`,
+    },
+    [`${whereDark} &:focus-within`]: {
+      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[4]}, transparent 45%)`,
     },
   },
 })
@@ -92,10 +100,11 @@ globalStyle(`${whereDark} ${pickview} ${button}`, {
   borderColor: mantine.colors.dark[5],
   backgroundColor: mantine.colors.dark[6],
 })
-globalStyle(`${whereDark} ${pickview} ${button}:focus`, {
-  backgroundColor: mantine.colors.primaryColors[8],
-  borderColor: mantine.colors.primaryColors[8],
+globalStyle(`${whereDark} ${pickview} ${button}:hover`, {
+  ...buttonFocused,
+  backgroundColor: `color-mix(in srgb, ${buttonFocused.backgroundColor}, transparent 40%)`,
 })
+globalStyle(`${whereDark} ${pickview} ${button}:focus`, buttonFocused)
 
 export const scrollarea = style({
   display: 'flex',

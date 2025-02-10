@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Box,
+  Combobox,
   Group,
   Input,
   Portal,
@@ -9,7 +10,9 @@ import {
   ScrollArea,
   ScrollAreaAutosize,
   Stack,
+  Text,
   Title,
+  useCombobox,
 } from '@mantine/core'
 import {
   useCallbackRef,
@@ -18,20 +21,26 @@ import {
   useFocusTrap,
   useFocusWithin,
   useHotkeys,
+  useMergedRef,
   useWindowEvent,
 } from '@mantine/hooks'
+import { useLifecycleLogger } from '@react-hookz/web'
 import { IconSearch, IconX } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'framer-motion'
-import { useRef } from 'react'
+import { type ReactNode, useRef } from 'react'
+import { keys } from 'remeda'
 import { SearchControl } from '../../../components/SearchControl'
 import { useMantinePortalProps } from '../../../hooks'
+import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
 import { ElementsColumn } from './ElementsColumn'
 import * as css from './LikeC4Search.css'
 import {
   LikeC4SearchContext,
+  moveFocusToSearchInput,
   setPickView,
   setSearch,
   useCloseSearch,
+  useIsPickViewActive,
   usePickView,
   useSearch,
   wasResetPickView,
@@ -95,23 +104,41 @@ export function LikeC4Search() {
 function LikeC4SearchOverlay() {
   const close = useCloseSearch()
   const focusTrapRef = useFocusTrap()
+  const { ref: forcusRef, focused } = useFocusWithin()
+
+  const ref = useMergedRef(forcusRef, focusTrapRef)
 
   useWindowEvent(
     'keydown',
     (event) => {
       if (event.key === 'Escape') {
+        event.stopPropagation()
+        event.preventDefault()
         if (!wasResetPickView()) {
           close()
         }
+        return
+      }
+      if (event.key === 'ArrowUp' && !focused) {
+        event.stopPropagation()
+        event.preventDefault()
+        moveFocusToSearchInput()
+      }
+      if (event.key === 'ArrowDown' && !focused) {
+        event.stopPropagation()
+        event.preventDefault()
+        document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
       }
     },
-    { capture: true },
+    // { capture: true },
   )
+
+  useLifecycleLogger('LikeC4SearchOverlay.focused', [focused])
 
   return (
     <RemoveScroll>
       <m.div
-        ref={focusTrapRef}
+        ref={ref}
         className={css.root}
         // initial={{
         //   opacity: 0,
@@ -171,16 +198,30 @@ function LikeC4SearchOverlay() {
   )
 }
 
+function startingWithKind(search: string) {
+  return search.match(/^k(i(nd?)?)?$/) != null
+}
+
 function LikeC4SearchInput() {
-  const { ref, focused } = useFocusWithin()
+  const isPickViewActive = useIsPickViewActive()
+  const likec4model = useLikeC4Model(true)
+  const combobox = useCombobox()
+  const { ref, focused } = useFocusWithin({
+    onFocus: () => {
+      combobox.openDropdown()
+    },
+    onBlur: () => {
+      combobox.closeDropdown()
+    },
+  })
   const search = useSearch()
 
   useWindowEvent(
     'keydown',
     (event) => {
       try {
-        if (!focused && (event.key === 'Backspace' || event.key.match(/^\p{L}$/u))) {
-          ref.current?.focus()
+        if (!focused && !isPickViewActive && (event.key === 'Backspace' || event.key.match(/^\p{L}$/u))) {
+          moveFocusToSearchInput()
         }
       } catch (e) {
         console.warn(e)
@@ -188,27 +229,121 @@ function LikeC4SearchInput() {
     },
   )
 
+  let options = [] as ReactNode[]
+
+  switch (true) {
+    case search.startsWith('#'): {
+      const searchTag = search.toLocaleLowerCase().slice(1)
+      const alloptions = likec4model.allTags().filter((tag) => tag.toLocaleLowerCase().includes(searchTag))
+      options = alloptions.map((tag) => (
+        <Combobox.Option value={`#${tag}`} key={tag}>
+          <Text component="span" c="dimmed" mr={1} fz={'sm'}>#</Text>
+          {tag}
+        </Combobox.Option>
+      ))
+      break
+    }
+    case search.startsWith('kind:'):
+    case startingWithKind(search): {
+      const term = search.length > 6 ? search.slice(5) : ''
+      let alloptions = keys(likec4model.$model.specification.elements)
+      if (term) {
+        alloptions = alloptions.filter((kind) => kind.toLocaleLowerCase().includes(term))
+      }
+      options = alloptions.map((kind) => (
+        <Combobox.Option value={`kind:${kind}`} key={kind}>
+          <Text component="span" c="dimmed" mr={1} fz={'sm'}>kind:</Text>
+          {kind}
+        </Combobox.Option>
+      ))
+      break
+    }
+  }
+
+  // const options = ['gmail.com', 'outlook.com', 'mantine.dev'].map((item) => (
+  //   <Combobox.Option value={`${search}@${item}`} key={item}>
+  //     {`${search}@${item}`}
+  //   </Combobox.Option>
+  // ))
+
   return (
-    <Input
-      ref={ref}
-      id="likec4searchinput"
-      placeholder="Search by title, description, tag"
-      tabIndex={0}
-      classNames={{
-        input: css.input,
-      }}
-      size="xl"
-      value={search}
-      leftSection={<IconSearch style={{ width: rem(20) }} stroke={2} />}
-      onChange={(e) => setSearch(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === 'ArrowDown') {
-          e.stopPropagation()
-          e.preventDefault()
+    <Combobox
+      onOptionSubmit={(optionValue) => {
+        setSearch(optionValue)
+        combobox.closeDropdown()
+        // Let react to display filtered elements
+        setTimeout(() => {
           document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
-          return
-        }
-      }} />
+        }, 50)
+      }}
+      width={'max-content'}
+      position="bottom-start"
+      shadow="md"
+      offset={{
+        mainAxis: 4,
+        crossAxis: 50,
+      }}
+      resetSelectionOnOptionHover
+      store={combobox}
+      withinPortal={false}
+    >
+      <Combobox.Target>
+        <Input
+          ref={ref}
+          id="likec4searchinput"
+          placeholder="Search by title, description or start with # or kind:"
+          tabIndex={0}
+          classNames={{
+            input: css.input,
+          }}
+          size="xl"
+          value={search}
+          leftSection={<IconSearch style={{ width: rem(20) }} stroke={2} />}
+          onChange={(event) => {
+            setSearch(event.currentTarget.value)
+            combobox.openDropdown()
+          }}
+          // onClick={() => combobox.openDropdown()}
+          // onFocus={() => combobox.openDropdown()}
+          // onBlur={() => combobox.closeDropdown()}
+          onKeyDown={(e) => {
+            if (e.key === 'Tab' && startingWithKind(search)) {
+              e.stopPropagation()
+              e.preventDefault()
+              setSearch('kind:')
+              return
+            }
+            if (e.key === 'Backspace' && combobox.dropdownOpened && options.length === 1) {
+              if (search.startsWith('kind:')) {
+                e.stopPropagation()
+                e.preventDefault()
+                setSearch('kind:')
+              }
+              return
+            }
+            if (e.key === 'Escape' && combobox.dropdownOpened && options.length > 0) {
+              e.stopPropagation()
+              e.preventDefault()
+              combobox.closeDropdown()
+              return
+            }
+            if (e.key === 'ArrowDown' && (!combobox.dropdownOpened || options.length === 0)) {
+              e.stopPropagation()
+              e.preventDefault()
+              document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
+              return
+            }
+          }} />
+      </Combobox.Target>
+
+      <Combobox.Dropdown hidden={options.length === 0} style={{ minWidth: 200 }}>
+        <Combobox.Options>
+          <ScrollAreaAutosize mah={'min(300px, calc(100cqh - 50px))'} type="always">
+            {options}
+          </ScrollAreaAutosize>
+        </Combobox.Options>
+      </Combobox.Dropdown>
+    </Combobox>
   )
 }
 

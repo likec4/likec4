@@ -15,6 +15,29 @@ import pLimit from 'p-limit'
 import { forEachObj, isError, mapValues, mergeDeep } from 'remeda'
 import { type LocalStorageWorkspace, LikeC4WorkspacesKey } from './use-workspaces'
 
+type DiagramState = {
+  // Never loaded
+  state: 'pending'
+  view: null
+  dot: null
+  error: null
+} | {
+  state: 'success'
+  view: DiagramView
+  dot: string
+  error: null
+} | {
+  state: 'error'
+  view: DiagramView | null
+  dot: string | null
+  error: string
+} | {
+  state: 'stale'
+  view: DiagramView | null
+  dot: string | null
+  error: string | null
+}
+
 export type WorkspaceStore = {
   readonly uniqueId: string
   /**
@@ -55,31 +78,7 @@ export type WorkspaceStore = {
    */
   viewId: ViewId
 
-  diagrams: Record<
-    LiteralUnion<ViewId, string>,
-    {
-      // Never loaded
-      state: 'pending'
-      view: null
-      dot: null
-      error: null
-    } | {
-      state: 'success'
-      view: DiagramView
-      dot: string
-      error: null
-    } | {
-      state: 'error'
-      view: DiagramView | null
-      dot: string | null
-      error: string
-    } | {
-      state: 'stale'
-      view: DiagramView | null
-      dot: string | null
-      error: string | null
-    }
-  >
+  diagrams: Record<LiteralUnion<ViewId, string>, DiagramState>
 
   requestedLocation: Location | null
 }
@@ -119,6 +118,9 @@ type PersistedState = Pick<WorkspaceState, 'name' | 'title' | 'currentFilename' 
 
 export type CreatedWorkspaceStore = ReturnType<typeof createWorkspaceStore>
 
+const layoutLimit = pLimit(1)
+const fetchModelLimit = pLimit(1)
+
 export function createWorkspaceStore<T extends CreateWorkspaceStore>({
   name,
   title,
@@ -129,9 +131,6 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
 }: T) {
   let seq = 1
   const uniqueId = nanoid(6)
-
-  const layoutLimit = pLimit(1)
-  const fetchModelLimit = pLimit(1)
 
   return createWithEqualityFn<
     WorkspaceState,
@@ -265,8 +264,17 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
             },
 
             layoutView: (viewId) => {
-              const client = get().languageClient()
+              const {
+                languageClient,
+                likeC4Model,
+              } = get()
+              if (!likeC4Model?.$model.views[viewId as ViewId]) {
+                // Do nothing
+                return
+              }
+              const client = languageClient()
               invariant(client, 'Language client is not initialized')
+
               if (layoutLimit.pendingCount > 0) {
                 console.warn('clearing layoutLimit queue')
                 layoutLimit.clearQueue()
@@ -280,9 +288,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                   return
                 }
 
-                const diagrams = {
-                  ...currentDiagrams,
-                }
+                let diagram: DiagramState | null = null
 
                 const label = `layoutView: ${computedView.id}`
                 console.time(label)
@@ -290,14 +296,14 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 try {
                   const { result } = await client.sendRequest(layoutView, { viewId })
                   if (!result) {
-                    diagrams[viewId] = {
+                    diagram = {
                       view: currentDiagrams[viewId]?.view ?? null,
                       dot: currentDiagrams[viewId]?.dot ?? null,
                       state: 'error',
                       error: 'Unknown error',
                     }
                   } else {
-                    diagrams[viewId] = {
+                    diagram = {
                       view: result.diagram,
                       dot: result.dot,
                       state: 'success',
@@ -306,7 +312,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                   }
                 } catch (e) {
                   console.error(e)
-                  diagrams[viewId] = {
+                  diagram = {
                     view: currentDiagrams[viewId]?.view ?? null,
                     dot: currentDiagrams[viewId]?.dot ?? null,
                     state: 'error',
@@ -314,7 +320,17 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                   }
                 } finally {
                   console.timeEnd(label)
-                  set({ diagrams }, noReplace, 'layoutView')
+                  const { diagrams } = get()
+                  set(
+                    {
+                      diagrams: {
+                        ...diagrams,
+                        [viewId]: diagram,
+                      },
+                    },
+                    noReplace,
+                    'layoutView',
+                  )
                 }
               })
             },

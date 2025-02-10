@@ -21,20 +21,30 @@ import clsx from 'clsx'
 import { first } from 'remeda'
 import { useCurrentViewId } from '../../../hooks'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
-import { useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
+import { emptyBoX } from './_shared.css'
+import { moveFocusToSearchInput, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import * as css from './ViewsColumn.css'
+
+export const NothingFound = () => (
+  <Box className={emptyBoX}>
+    Nothing found
+  </Box>
+)
 
 export function ViewsColumn() {
   const search = useNormalizedSearch()
   let views = [...useLikeC4Model(true).views()]
   if (search) {
-    views = views.filter(view => {
-      if (search.startsWith('#')) {
-        return view.tags.some((tag: Tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
-      }
-      return (view.title ?? '').toLocaleLowerCase().includes(search) ||
-        (view.$view.description ?? '').toLocaleLowerCase().includes(search)
-    })
+    if (search.startsWith('kind:')) {
+      views = []
+    } else {
+      views = views.filter(view => {
+        if (search.startsWith('#')) {
+          return view.tags.some((tag: Tag) => tag.toLocaleLowerCase().includes(search.slice(1)))
+        }
+        return (view.title ?? '' + view.$view.description ?? '').toLocaleLowerCase().includes(search)
+      })
+    }
   }
 
   return (
@@ -60,11 +70,7 @@ export function ViewsColumn() {
           return
         }
       }}>
-      {views.length === 0 && (
-        <Box py={'md'} c={'dimmed'}>
-          No views found
-        </Box>
-      )}
+      {views.length === 0 && <NothingFound />}
       {views.length > 0 && (
         <VisuallyHidden>
           <UnstyledButton
@@ -72,7 +78,7 @@ export function ViewsColumn() {
             tabIndex={-1}
             onFocus={e => {
               e.stopPropagation()
-              document.getElementById('likec4searchinput')?.focus()
+              moveFocusToSearchInput()
             }} />
         </VisuallyHidden>
       )}
@@ -112,10 +118,8 @@ export function ViewButton(
         navigateTo(view.id)
       }}
       onKeyDown={createScopedKeydownHandler({
-        siblingSelector: '[data-likec4-view]:not([data-disabled])',
-        // siblingSelector: `.${css.focusable}`,
+        siblingSelector: '[data-likec4-view]',
         parentSelector: '[data-likec4-search-views]',
-        // parentSelector: `.${css.root}`,
         activateOnFocus: false,
         loop,
         orientation: 'vertical',

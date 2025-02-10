@@ -1,9 +1,13 @@
-import { createGlobalVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+import { createContainer, createGlobalVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../../theme-vars'
 import { whereLight } from '../../../theme-vars.css'
 import { button, buttonFocused, description, descriptionColor, iconColor, title } from './_shared.css'
 
 export { focusable } from './_shared.css'
+
+export const treeContainer = createContainer('likec4-elements-tree')
+
+const whenContainerIsNarrow = `${treeContainer} (width < 450px)`
 
 export const treeNode = style({
   outline: 'none',
@@ -11,6 +15,8 @@ export const treeNode = style({
 })
 export const treeRoot = style({
   overflow: 'hidden',
+  containerName: treeContainer,
+  containerType: 'inline-size',
 })
 export const treeLabel = style({
   display: 'flex',
@@ -32,9 +38,26 @@ export const elementButton = style([button, {
   vars: {
     [iconSize]: '24px',
   },
+  '@container': {
+    [`${whenContainerIsNarrow}`]: {
+      vars: {
+        [iconSize]: '18px',
+      },
+    },
+  },
 }])
 
 globalStyle(`${treeNode}:focus > ${treeLabel} ${elementButton}`, buttonFocused)
+
+export const elementTitleAndId = style({
+  '@container': {
+    [`${whenContainerIsNarrow}`]: {
+      flexDirection: 'column-reverse',
+      alignItems: 'flex-start',
+      gap: 2,
+    },
+  },
+})
 
 export const elementTitle = style([title])
 export const elementId = style({
@@ -80,11 +103,16 @@ globalStyle(`${elementIcon}.likec4-shape-icon svg`, {
   strokeWidth: 1.5,
 })
 
-export const elementViewsButton = style({
+export const elementViewsCount = style({
   flex: 0,
   color: fallbackVar(descriptionColor, mantine.colors.dimmed),
   fontSize: 10,
   fontWeight: 600,
   whiteSpace: 'nowrap',
   lineHeight: 1.1,
+  '@container': {
+    [`${whenContainerIsNarrow}`]: {
+      display: 'none',
+    },
+  },
 })

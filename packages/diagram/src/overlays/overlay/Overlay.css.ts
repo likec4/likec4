@@ -4,19 +4,14 @@ import { mantine, whereLight } from '../../theme-vars'
 
 const borderRadius = createVar('border-radius')
 export const dialog = style({
-  containerName: 'overlay-dialog',
-  containerType: 'size',
   boxSizing: 'border-box',
   margin: 0,
   position: 'fixed',
   inset: '5rem 4rem 4rem 4rem',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'stretch',
-  width: 'auto',
-  height: 'auto',
-  maxWidth: '100%',
-  maxHeight: '100%',
+  width: 'calc(100vw - 8rem)',
+  height: 'calc(100vh - 9rem)',
+  maxWidth: 'calc(100vw - 8rem)',
+  maxHeight: 'calc(100vh - 9rem)',
   background: `color-mix(in srgb, ${mantine.colors.defaultBorder}, transparent 50%)`,
   boxShadow: mantine.shadows.xl,
   border: `0 solid transparent`,
@@ -46,15 +41,26 @@ export const dialog = style({
     [mantine.smallerThan('md')]: {
       borderRadius: mantine.radius.sm,
       inset: '2rem',
+      width: 'calc(100vw - 4rem)',
+      maxWidth: 'calc(100vw - 4rem)',
+      height: 'calc(100vh - 4rem)',
+      maxHeight: 'calc(100vh - 4rem)',
     },
     [mantine.smallerThan('sm')]: {
       border: 'none',
-      inset: '0px',
+      inset: 0,
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
     },
   },
 })
 
 export const body = style({
+  position: 'relative',
+  containerName: 'overlay-dialog',
+  containerType: 'size',
   border: `0 solid transparent`,
   borderRadius: calc(borderRadius).subtract('2px').toString(),
   // borderRadius: borderRadius,
