@@ -38,7 +38,7 @@ function ViewReact() {
       zoomable
       pannable
       controls
-      fitViewPadding={0.1}
+      fitViewPadding={0.12}
       showDiagramTitle
       showNavigationButtons
       enableFocusMode
