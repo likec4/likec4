@@ -2000,7 +2000,7 @@ __metadata:
     "@likec4/layouts": "workspace:*"
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@msgpack/msgpack": "npm:^3.0.0-beta4"
+    "@msgpack/msgpack": "npm:^3.0.0"
     "@smithy/util-base64": "npm:^4.0.0"
     "@types/node": "npm:^20.17.7"
     "@types/which": "npm:^3.0.4"
@@ -2445,7 +2445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@msgpack/msgpack@npm:^3.0.0-beta4":
+"@msgpack/msgpack@npm:^3.0.0":
   version: 3.0.0
   resolution: "@msgpack/msgpack@npm:3.0.0"
   checksum: 10c0/7616654e175129e5b6f823d3c9ebed6711a7dd7460e11c2278ac69bacb565e45e3503919914af50dd7cf7d9723302314676b94e31ab735a892ca6db4bef0e17b
