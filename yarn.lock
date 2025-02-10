@@ -1866,7 +1866,7 @@ __metadata:
     graphology: "npm:^0.25.4"
     graphology-dag: "npm:^0.4.1"
     graphology-types: "npm:^0.24.8"
-    mnemonist: "npm:^0.40.0"
+    mnemonist: "npm:^0.40.1"
     natural-compare-lite: "npm:^1.4.0"
     object-hash: "npm:^3.0.0"
     obliterator: "npm:^2.0.5"
@@ -8856,7 +8856,7 @@ __metadata:
     esm-env: "npm:^1.2.2"
     execa: "npm:^9.5.2"
     langium: "npm:3.3.1"
-    mnemonist: "npm:^0.40.0"
+    mnemonist: "npm:^0.40.1"
     p-timeout: "npm:^6.1.4"
     pretty-ms: "npm:^9.2.0"
     remeda: "npm:^2.20.1"
@@ -10275,12 +10275,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mnemonist@npm:^0.40.0":
-  version: 0.40.0
-  resolution: "mnemonist@npm:0.40.0"
+"mnemonist@npm:^0.40.1":
+  version: 0.40.2
+  resolution: "mnemonist@npm:0.40.2"
   dependencies:
     obliterator: "npm:^2.0.4"
-  checksum: 10c0/7ab0a00cfe07a5beaf13c3b39e5275db422761aeebf37fd6f8561133a4c991ea558a51a3a26ff64db41ce18acadda997281cacb5b67649b098cdb9cdb1a00fe8
+  checksum: 10c0/0c94a7ac588f1430005fcfaadb4baed25a3b88f5dd06830f4eef6715b79612636ed488332f772d10c8933e568fbc3e00c2b195c22664c4410978ec2f5c3b9325
   languageName: node
   linkType: hard
 
