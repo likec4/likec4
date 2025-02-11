@@ -142,7 +142,6 @@ export function LikeC4Diagram({
                       nodesSelectable={nodesSelectable}
                       background={background}
                     />
-                    <DiagramUI />
                   </DiagramActor>
                 </XYFlowProvider>
               </RootContainer>

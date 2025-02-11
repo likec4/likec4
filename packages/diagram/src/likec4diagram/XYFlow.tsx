@@ -2,6 +2,7 @@ import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
+import { memo } from 'react'
 import type { EnforceOptional } from 'type-fest/source/enforce-optional'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
@@ -9,6 +10,7 @@ import { useDiagram } from '../hooks/useDiagram'
 import { useDiagramContext } from '../hooks/useDiagramContext'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { edgeTypes, nodeTypes } from './custom'
+import { DiagramUI } from './DiagramUI'
 import type { DiagramContext } from './state/machine'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -43,7 +45,7 @@ type Picked = EnforceOptional<
 >
 export type LikeC4DiagramXYFlowProps = Required<Picked>
 
-export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlowProps) => {
+export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({ background, nodesDraggable, nodesSelectable }) => {
   const diagram = useDiagram()
   const {
     initialized,
@@ -105,6 +107,7 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
       })}
       onDoubleClick={useCallbackRef(e => {
         e.stopPropagation()
+        e.preventDefault()
         diagram.send({ type: 'xyflow.paneDblClick' })
         onCanvasDblClick?.(e as any)
       })}
@@ -115,34 +118,31 @@ export const LikeC4DiagramXYFlow = ({ background, ...rest }: LikeC4DiagramXYFlow
       onInit={useCallbackRef((instance) => {
         diagram.send({ type: 'xyflow.init', instance })
       })}
-      {...onNodeContextMenu && {
-        onNodeContextMenu: useCallbackRef((event, node) => {
-          const diagramNode = nonNullable(
-            diagram.findDiagramNode(node.id as NodeId),
-            `diagramNode ${node.id} not found`,
-          )
-          onNodeContextMenu(diagramNode, event)
-        }),
-      }}
-      {...onEdgeContextMenu && {
-        onEdgeContextMenu: useCallbackRef((event, edge) => {
-          const diagramEdge = nonNullable(
-            diagram.findDiagramEdge(edge.id as EdgeId),
-            `diagramEdge ${edge.id} not found`,
-          )
-          onEdgeContextMenu(diagramEdge, event)
-        }),
-      }}
-      {...onCanvasContextMenu && {
-        onPaneContextMenu: useCallbackRef((event) => {
-          onCanvasContextMenu(event as any)
-        }),
-      }}
+      onNodeContextMenu={useCallbackRef((event, node) => {
+        const diagramNode = nonNullable(
+          diagram.findDiagramNode(node.id as NodeId),
+          `diagramNode ${node.id} not found`,
+        )
+        onNodeContextMenu?.(diagramNode, event)
+      })}
+      onEdgeContextMenu={useCallbackRef((event, edge) => {
+        const diagramEdge = nonNullable(
+          diagram.findDiagramEdge(edge.id as EdgeId),
+          `diagramEdge ${edge.id} not found`,
+        )
+        onEdgeContextMenu?.(diagramEdge, event)
+      })}
+      onPaneContextMenu={useCallbackRef((event) => {
+        onCanvasContextMenu?.(event as any)
+      })}
       {...enableFitView && {
         onViewportResize,
       }}
-      {...(notReadOnly && rest.nodesDraggable && layoutConstraints)}
-      {...props}
-      {...rest} />
+      nodesDraggable={nodesDraggable}
+      nodesSelectable={nodesSelectable}
+      {...(notReadOnly && nodesDraggable && layoutConstraints)}
+      {...props}>
+      <DiagramUI />
+    </BaseXYFlow>
   )
-}
+}, shallowEqual)

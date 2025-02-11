@@ -40,12 +40,12 @@ export const Controls = memo(() => {
 
   return (
     <Group
+      align="flex-start"
       className={clsx(
         'react-flow__panel',
         css.panel,
         'likec4-top-left-panel',
       )}
-      align="flex-start"
       gap="xs"
       onClick={stopPropagation}
     >
@@ -97,9 +97,11 @@ export const Controls = memo(() => {
             </Tooltip>
           )}
         </ActionIconGroup>
-        {notReadOnly && <SyncLayoutBadge />}
       </Stack>
-      {enableSearch && <LikeC4Search />}
+      <Group>
+        {enableSearch && <LikeC4Search />}
+        {notReadOnly && <SyncLayoutBadge />}
+      </Group>
     </Group>
   )
 })

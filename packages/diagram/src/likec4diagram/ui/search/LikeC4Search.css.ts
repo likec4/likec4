@@ -102,8 +102,8 @@ globalStyle(`${whereDark} ${pickview} ${button}:focus`, buttonFocused)
 
 export const scrollArea = style({
   height: [
-    '100cqh',
     '100%',
+    '100cqh',
   ],
 })
 

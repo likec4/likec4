@@ -5,7 +5,6 @@ import { useMemo, useRef } from 'react'
 import { filter, hasAtLeast, isNullish, map, pipe } from 'remeda'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 // import { type XYStoreApi } from '../hooks/useXYFlow'
-import { useSyncedRef } from '@react-hookz/web'
 import { useDiagram } from '../hooks/useDiagram'
 import type { Types } from './types'
 
@@ -255,11 +254,11 @@ type LayoutConstraints = {
  */
 export function useLayoutConstraints(): LayoutConstraints {
   const xystore = useXYStoreApi()
-  const diagram = useSyncedRef(useDiagram())
+  const diagram = useDiagram()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>(undefined)
   return useMemo((): LayoutConstraints => ({
     onNodeDragStart: (_event, xynode) => {
-      diagram.current.cancelSaveManualLayout()
+      diagram.cancelSaveManualLayout()
       const { nodeLookup } = xystore.getState()
       const draggingNodes = pipe(
         Array.from(nodeLookup.values()),
@@ -280,9 +279,9 @@ export function useLayoutConstraints(): LayoutConstraints {
     },
     onNodeDragStop: () => {
       solverRef.current?.updateXYFlowNodes()
-      diagram.current.scheduleSaveManualLayout()
+      diagram.scheduleSaveManualLayout()
       // diagramApi.getState().scheduleSaveManualLayout()
       solverRef.current = undefined
     },
-  }), [xystore])
+  }), [xystore, diagram])
 }
