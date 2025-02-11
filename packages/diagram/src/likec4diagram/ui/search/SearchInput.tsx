@@ -29,7 +29,9 @@ const SEARCH_PREFIXES = ['#', 'kind:']
 export function LikeC4SearchInput() {
   const isPickViewActive = useIsPickViewActive()
   const likec4model = useLikeC4Model(true)
-  const combobox = useCombobox()
+  const combobox = useCombobox({
+    scrollBehavior: 'smooth',
+  })
   const { ref, focused } = useFocusWithin()
   const search = useSearch()
   const previous = usePreviousDistinct(search)
@@ -99,6 +101,7 @@ export function LikeC4SearchInput() {
     <Combobox
       onOptionSubmit={(optionValue) => {
         setSearch(optionValue)
+        combobox.resetSelectedOption()
         if (!['#', 'kind:'].includes(optionValue)) {
           combobox.closeDropdown()
           // Let react to display filtered elements
@@ -145,14 +148,17 @@ export function LikeC4SearchInput() {
             if (e.key === 'Backspace' && combobox.dropdownOpened) {
               if (search === 'kind:') {
                 setSearch('')
+                combobox.resetSelectedOption()
                 return stopAndPrevent(e)
               }
               if (search.startsWith('kind:') && isExactMatch) {
                 setSearch('kind:')
+                combobox.resetSelectedOption()
                 return stopAndPrevent(e)
               }
               if (search.startsWith('#') && isExactMatch) {
                 setSearch('#')
+                combobox.resetSelectedOption()
                 return stopAndPrevent(e)
               }
             }
@@ -161,7 +167,14 @@ export function LikeC4SearchInput() {
               combobox.closeDropdown()
               return
             }
-            if (e.key === 'ArrowDown' && (!combobox.dropdownOpened || options.length === 0 || isExactMatch)) {
+            if (
+              e.key === 'ArrowDown' && (
+                !combobox.dropdownOpened ||
+                options.length === 0 || isExactMatch ||
+                // reached the last option and the search is empty
+                (search === '' && combobox.getSelectedOptionIndex() === options.length - 1)
+              )
+            ) {
               combobox.closeDropdown()
               stopAndPrevent(e)
               document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()

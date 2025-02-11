@@ -79,9 +79,17 @@ export function LikeC4Search() {
                   key={'backdrop'}
                   className={css.backdrop}
                   initial={{ opacity: 0.7 }}
-                  animate={{ opacity: 1 }}
+                  animate={{
+                    opacity: 1,
+                    transition: {
+                      duration: 0.1,
+                    },
+                  }}
                   exit={{
                     opacity: 0,
+                    transition: {
+                      duration: 0.1,
+                    },
                   }}>
                 </m.div>
                 <LikeC4SearchOverlay key="overlay" />
@@ -145,6 +153,9 @@ function LikeC4SearchOverlay() {
       exit={{
         opacity: 0,
         scale: 0.9,
+        transition: {
+          duration: 0.1,
+        },
       }}
     >
       <Group wrap="nowrap">

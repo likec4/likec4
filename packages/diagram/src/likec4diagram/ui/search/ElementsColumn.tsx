@@ -258,20 +258,22 @@ function ElementTreeNode(
 
 function useHandleElementSelection() {
   const navigateTo = useCloseSearchAndNavigateTo()
-  const currentViewId = useCurrentViewId()
 
   return useCallbackRef((element: LikeC4Model.Element) => {
     const views = [...element.views()]
     if (views.length === 0) {
       return
     }
-    const withoutCurrent = views.length > 1 ? views.filter(v => v.id !== currentViewId) : views
-    const singleView = only(withoutCurrent)
+    const singleView = only(views)
     if (singleView) {
-      navigateTo(singleView.id)
+      navigateTo(singleView.id, element.id)
       return
     }
     const [scoped, others] = partition(views, v => v.viewOf?.id === element.id)
-    setPickView({ scoped, others })
+    setPickView({
+      elementFqn: element.id,
+      scoped,
+      others,
+    })
   })
 }

@@ -1,4 +1,4 @@
-import type { LikeC4Model, ViewId } from '@likec4/core'
+import { type Fqn, type LikeC4Model, type ViewId, DiagramNode } from '@likec4/core'
 import { createSafeContext } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useStore } from '@nanostores/react'
@@ -30,7 +30,11 @@ export function useNormalizedSearch() {
 
 export const [LikeC4SearchContext, useCloseSearch] = createSafeContext<(cb?: () => void) => void>('LikeC4Search')
 
-type PickView = { scoped: LikeC4Model.View[]; others: LikeC4Model.View[] }
+type PickView = {
+  elementFqn: Fqn
+  scoped: LikeC4Model.View[]
+  others: LikeC4Model.View[]
+}
 const $pickView = atom<PickView | null>(null)
 onMount($search, () => {
   // reset search on mount
@@ -59,10 +63,18 @@ export function useIsPickViewActive() {
 export function useCloseSearchAndNavigateTo() {
   const diagram = useDiagram()
   const close = useCloseSearch()
-  return useCallbackRef((viewId: ViewId) => {
+  return useCallbackRef((viewId: ViewId, fromElementFqn?: Fqn) => {
     close(() => {
+      fromElementFqn ??= $pickView.get()?.elementFqn
       setPickView(null)
-      diagram.navigateTo(viewId)
+      const fromNode = fromElementFqn
+        ? diagram.getContext().view.nodes.find(n => DiagramNode.modelRef(n) === fromElementFqn)?.id
+        : undefined
+      if (diagram.currentView().id === viewId && fromNode) {
+        diagram.focusNode(fromNode)
+        return
+      }
+      diagram.navigateTo(viewId, fromNode)
     })
   })
 }

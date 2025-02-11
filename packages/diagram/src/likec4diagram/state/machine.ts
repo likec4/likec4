@@ -4,7 +4,6 @@ import {
   type EdgeId,
   type Fqn,
   type NodeId,
-  type RelationId,
   type StepEdgeId,
   type ViewChange,
   type ViewId,
@@ -657,15 +656,16 @@ export const diagramMachine = setup({
                       },
                     },
                   })
+                  enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
                 } else {
                   enqueue({
                     type: 'xyflow:setViewportCenter',
                     params: getBBoxCenter(event.view.bounds),
                   })
+                  enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
                 }
                 enqueue.assign(updateNavigationHistory)
                 enqueue.assign(mergeXYNodesEdges)
-                enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 75 })
               }),
               target: 'done',
             },
@@ -838,17 +838,19 @@ export const diagramMachine = setup({
                   },
                 },
               })
+              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
             } else {
               enqueue({
                 type: 'xyflow:setViewportCenter',
                 params: getBBoxCenter(event.view.bounds),
               })
+              enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
           } else {
             enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'synced' })
-          }
-          if (isAnotherView || !context.viewportChangedManually) {
-            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 90 })
+            if (!context.viewportChangedManually) {
+              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
+            }
           }
           enqueue.assign(mergeXYNodesEdges)
           enqueue.assign({
