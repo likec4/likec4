@@ -17,7 +17,7 @@ import { EmptyNode } from './EmptyNode'
 export const nodeTypes = {
   element: customNode<RelationshipsBrowserTypes.ElementNodeData>((props) => {
     return (
-      <ElementNodeContainer component={m.div} layoutId={props.id} nodeProps={props}>
+      <ElementNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
         <ElementShape {...props} />
         <ElementTitle {...props} iconSize={40} />
         <ElementActions {...props} />
@@ -28,7 +28,7 @@ export const nodeTypes = {
 
   compound: customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
     return (
-      <CompoundNodeContainer component={m.div} layoutId={props.id} nodeProps={props}>
+      <CompoundNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
         <CompoundTitle {...props} />
         <CompoundPorts {...props} />
       </CompoundNodeContainer>

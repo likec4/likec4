@@ -17,6 +17,7 @@ export const treeRoot = style({
   overflow: 'hidden',
   containerName: treeContainer,
   containerType: 'inline-size',
+  height: '100%',
 })
 export const treeLabel = style({
   display: 'flex',

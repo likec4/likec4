@@ -45,11 +45,13 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
 
   return (
     <RelationshipsBrowserActorContext.Provider value={actorRef}>
-      <LayoutGroup id={id}>
-        <ReactFlowProvider {...initialRef.current}>
-          <RelationshipsBrowserXYFlow />
-        </ReactFlowProvider>
-      </LayoutGroup>
+      <ReactFlowProvider {...initialRef.current}>
+        <AnimatePresence>
+          <LayoutGroup id={id}>
+            <RelationshipsBrowserXYFlow />
+          </LayoutGroup>
+        </AnimatePresence>
+      </ReactFlowProvider>
     </RelationshipsBrowserActorContext.Provider>
   )
 }

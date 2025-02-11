@@ -18,7 +18,7 @@ import {
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { AnimatePresence, m } from 'framer-motion'
+import { m } from 'framer-motion'
 import { first } from 'remeda'
 import { useCurrentViewId } from '../../../hooks'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
@@ -51,6 +51,7 @@ export function ViewsColumn() {
 
   return (
     <Stack
+      renderRoot={props => <m.div layout {...props} />}
       gap={8}
       data-likec4-search-views
       onKeyDown={(e) => {
@@ -83,17 +84,15 @@ export function ViewsColumn() {
             }} />
         </VisuallyHidden>
       )}
-      <AnimatePresence>
-        {views.map((view, i) => (
-          <m.div layout key={view.id}>
-            <ViewButton
-              view={view}
-              search={search}
-              tabIndex={i === 0 ? 0 : -1}
-            />
-          </m.div>
-        ))}
-      </AnimatePresence>
+      {views.map((view, i) => (
+        <m.div layoutId={`@view${view.id}`} key={view.id}>
+          <ViewButton
+            view={view}
+            search={search}
+            tabIndex={i === 0 ? 0 : -1}
+          />
+        </m.div>
+      ))}
     </Stack>
   )
 }

@@ -22,6 +22,7 @@ import {
 import { useCallbackRef } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
 import clsx from 'clsx'
+import { m } from 'framer-motion'
 import { useEffect, useMemo } from 'react'
 import { first, isEmpty, only, partition, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../../context/IconRenderer'
@@ -189,8 +190,10 @@ function ElementTreeNode(
 
   const handleClick = useHandleElementSelection()
 
+  const key = `@tree.${node.value}`
+
   return (
-    <Box {...elementProps}>
+    <m.div layoutId={key} key={key} {...elementProps as any}>
       <ActionIcon
         variant="transparent"
         size={16}
@@ -208,6 +211,8 @@ function ElementTreeNode(
           }} />
       </ActionIcon>
       <UnstyledButton
+        component={m.button}
+        layout
         tabIndex={-1}
         className={clsx(css.elementButton, 'likec4-element-button')}
         {...views.length > 0 && {
@@ -244,7 +249,7 @@ function ElementTreeNode(
           )}
         </Text>
       </UnstyledButton>
-    </Box>
+    </m.div>
   )
 }
 

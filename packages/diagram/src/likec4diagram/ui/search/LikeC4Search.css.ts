@@ -79,11 +79,6 @@ export const pickview = style({
   minWidth: 200,
   transform: 'translateX(-50%)',
   zIndex: 903,
-  // backgroundColor: mantine.colors.dark[6],
-  // padding: rem(16),
-  // display: 'flex',
-  // flexDirection: 'column',
-  // gap: rem(16),
 })
 
 export const pickviewGroup = style({
@@ -105,8 +100,18 @@ globalStyle(`${whereDark} ${pickview} ${button}:hover`, {
 })
 globalStyle(`${whereDark} ${pickview} ${button}:focus`, buttonFocused)
 
-export const scrollarea = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: rem(8),
+export const scrollArea = style({
+  height: [
+    '100cqh',
+    '100%',
+  ],
+})
+
+globalStyle(`.${scrollArea} .mantine-ScrollArea-viewport`, {
+  minHeight: '100%',
+})
+
+globalStyle(`.${scrollArea} .mantine-ScrollArea-viewport > div`, {
+  minHeight: '100%',
+  height: '100%',
 })

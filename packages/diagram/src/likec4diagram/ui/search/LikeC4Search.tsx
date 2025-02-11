@@ -1,6 +1,8 @@
 import {
   ActionIcon,
   Box,
+  Grid,
+  GridCol,
   Group,
   Portal,
   RemoveScroll,
@@ -87,7 +89,7 @@ export function LikeC4Search() {
                   exit={{
                     opacity: 0,
                     transition: {
-                      duration: 0.1,
+                      duration: 0.075,
                     },
                   }}>
                 </m.div>
@@ -159,34 +161,50 @@ function LikeC4SearchOverlay() {
           </ActionIcon>
         </Box>
       </Group>
-      <Group grow>
-        <Title component={'div'} order={6} c="dimmed" pl="sm">Elements</Title>
-        <Title component={'div'} order={6} c="dimmed">Views</Title>
-      </Group>
-      <Group
-        grow
-        preventGrowOverflow
+      <Grid>
+        <GridCol span={6}>
+          <Title component={'div'} order={6} c="dimmed" pl="sm">Elements</Title>
+        </GridCol>
+        <GridCol span={6}>
+          <Title component={'div'} order={6} c="dimmed" pl="sm">Views</Title>
+        </GridCol>
+      </Grid>
+      <Grid
         style={{
           containerName: 'likec4-search-elements',
           containerType: 'size',
           overflow: 'hidden',
           flexGrow: 1,
         }}>
-        <LayoutGroup inherit={false}>
-          <ScrollArea type="hover" h="100cqh" pr="xs" scrollbars="y">
-            <ElementsColumn />
+        <GridCol span={6}>
+          <ScrollArea
+            type="hover"
+            className={css.scrollArea}
+            pr="xs"
+            scrollbars="y">
+            <AnimatePresence>
+              <LayoutGroup id="likec4-search-elements">
+                <ElementsColumn />
+              </LayoutGroup>
+            </AnimatePresence>
           </ScrollArea>
-        </LayoutGroup>
-        <LayoutGroup inherit={false}>
-          <ScrollArea type="hover" h="100cqh" pr="xs" scrollbars="y">
-            <ViewsColumn />
+        </GridCol>
+        <GridCol span={6}>
+          <ScrollArea
+            type="hover"
+            className={css.scrollArea}
+            pr="xs"
+            scrollbars="y">
+            <AnimatePresence>
+              <LayoutGroup id="likec4-search-views">
+                <ViewsColumn />
+              </LayoutGroup>
+            </AnimatePresence>
           </ScrollArea>
-        </LayoutGroup>
-      </Group>
+        </GridCol>
+      </Grid>
       <Box></Box>
-      <LayoutGroup inherit={false}>
-        <PickView />
-      </LayoutGroup>
+      <PickView />
     </m.div>
   )
 }
@@ -201,92 +219,94 @@ function PickView() {
 
   return (
     <AnimatePresence>
-      {pickview && (
-        <>
-          <m.div
-            key="backdrop"
-            className={css.pickviewBackdrop}
-            onClick={e => {
-              e.stopPropagation()
-              setPickView(null)
-            }}>
-          </m.div>
-          <m.div
-            key="pickview"
-            initial={{
-              opacity: 0,
-              scale: 0.95,
-              originY: 0,
-              translateX: '-50%',
-              translateY: -20,
-            }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              translateY: 0,
-            }}
-            exit={{
-              opacity: 0,
-              scale: 0.98,
-              translateY: -20,
-              transition: {
-                duration: 0.1,
-              },
-            }}
-            className={css.pickview}
-            data-likec4-search-views
-            ref={focusTrapRef}>
-            <Group px="sm" py="md" justify="space-between">
-              <Title order={2} lh={1}>Select view</Title>
-              <ActionIcon
-                size={'md'}
-                variant="default"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setPickView(null)
-                }}>
-                <IconX />
-              </ActionIcon>
-            </Group>
+      <LayoutGroup id="likec4-search-pickview">
+        {pickview && (
+          <>
+            <m.div
+              key="backdrop"
+              className={css.pickviewBackdrop}
+              onClick={e => {
+                e.stopPropagation()
+                setPickView(null)
+              }}>
+            </m.div>
+            <m.div
+              key="pickview"
+              initial={{
+                opacity: 0,
+                scale: 0.95,
+                originY: 0,
+                translateX: '-50%',
+                translateY: -20,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                translateY: 0,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.98,
+                translateY: -20,
+                transition: {
+                  duration: 0.1,
+                },
+              }}
+              className={css.pickview}
+              data-likec4-search-views
+              ref={focusTrapRef}>
+              <Group px="sm" py="md" justify="space-between">
+                <Title order={2} lh={1}>Select view</Title>
+                <ActionIcon
+                  size={'md'}
+                  variant="default"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setPickView(null)
+                  }}>
+                  <IconX />
+                </ActionIcon>
+              </Group>
 
-            <ScrollAreaAutosize mah={'calc(100vh - 8rem - 50px)'} type="never">
-              {pickview.scoped.length > 0 && (
-                <Stack gap={'sm'} px={'sm'} className={css.pickviewGroup}>
-                  <Title order={6} c={'dimmed'}>scoped views of the element</Title>
-                  {pickview.scoped.map((view, i) => (
-                    <ViewButton
-                      key={view.id}
-                      view={view}
-                      search={''}
-                      loop
-                      mod={{
-                        autofocus: i === 0,
-                      }}
-                    />
-                  ))}
-                </Stack>
-              )}
+              <ScrollAreaAutosize mah={'calc(100vh - 8rem - 50px)'} type="never">
+                {pickview.scoped.length > 0 && (
+                  <Stack gap={'sm'} px={'sm'} className={css.pickviewGroup}>
+                    <Title order={6} c={'dimmed'}>scoped views of the element</Title>
+                    {pickview.scoped.map((view, i) => (
+                      <ViewButton
+                        key={view.id}
+                        view={view}
+                        search={''}
+                        loop
+                        mod={{
+                          autofocus: i === 0,
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                )}
 
-              {pickview.others.length > 0 && (
-                <Stack gap={'sm'} px={'sm'} className={css.pickviewGroup}>
-                  <Title order={6} c={'dimmed'}>views including this element</Title>
-                  {pickview.others.map((view, i) => (
-                    <ViewButton
-                      key={view.id}
-                      view={view}
-                      search={''}
-                      loop
-                      mod={{
-                        autofocus: i === 0 && pickview.scoped.length === 0,
-                      }}
-                    />
-                  ))}
-                </Stack>
-              )}
-            </ScrollAreaAutosize>
-          </m.div>
-        </>
-      )}
+                {pickview.others.length > 0 && (
+                  <Stack gap={'sm'} px={'sm'} className={css.pickviewGroup}>
+                    <Title order={6} c={'dimmed'}>views including this element</Title>
+                    {pickview.others.map((view, i) => (
+                      <ViewButton
+                        key={view.id}
+                        view={view}
+                        search={''}
+                        loop
+                        mod={{
+                          autofocus: i === 0 && pickview.scoped.length === 0,
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                )}
+              </ScrollAreaAutosize>
+            </m.div>
+          </>
+        )}
+      </LayoutGroup>
     </AnimatePresence>
   )
 }
