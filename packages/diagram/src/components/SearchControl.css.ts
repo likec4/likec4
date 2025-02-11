@@ -1,40 +1,50 @@
-import { createVar, fallbackVar, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine, transitions, vars, whereDark, whereLight } from '../theme-vars'
 
 const transparent = createVar('transparent')
+const bgColor = createVar('bgcolor')
 export const root = style({
   height: '32px',
   paddingLeft: mantine.spacing.sm,
   paddingRight: '4px',
   borderRadius: mantine.radius.sm,
   color: mantine.colors.placeholder,
-  boxShadow: mantine.shadows.sm,
+  boxShadow: mantine.shadows.xs,
   border: '1px solid',
   cursor: 'pointer',
   transition: transitions.fast,
   WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
   vars: {
-    [transparent]: '40%',
+    [transparent]: '20%',
+    [bgColor]: mantine.colors.default,
   },
   selectors: {
     [`${whereLight} &`]: {
-      borderColor: `color-mix(in srgb, ${mantine.colors.gray[4]}, transparent 10%)`,
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.white}, transparent ${transparent})`,
+      borderColor: mantine.colors.gray[4],
+      vars: {
+        [bgColor]: mantine.colors.white,
+      },
     },
     [`${whereDark} &`]: {
-      color: mantine.colors.placeholder,
-      borderColor: `color-mix(in srgb, ${mantine.colors.dark[4]}, transparent 10%)`,
-      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent ${transparent})`,
+      borderColor: mantine.colors.dark[4],
+      vars: {
+        [bgColor]: mantine.colors.dark[6],
+      },
     },
   },
   ':hover': {
-    color: mantine.colors.text,
     borderColor: mantine.colors.defaultBorder,
+    boxShadow: mantine.shadows.sm,
     vars: {
-      [transparent]: '0%',
+      [transparent]: '10%',
+      [bgColor]: mantine.colors.defaultHover,
     },
   },
+})
+globalStyle(`${root} .tabler-icon`, {
+  color: mantine.colors.text,
 })
 
 export const shortcut = style({

@@ -33,7 +33,6 @@ export const Controls = memo(() => {
     enableSearch,
     enableNavigationButtons,
     enableReadOnly,
-    enableEdgeEditing,
     enableVscode,
   } = useEnabledFeatures()
   const notReadOnly = !enableReadOnly
