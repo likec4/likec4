@@ -150,7 +150,7 @@
     "conf": "^13.1.0",
     "defu": "^6.1.4",
     "dts-bundle-generator": "^9.5.1",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "esbuild-node-externals": "^1.16.0",
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",

@@ -36,7 +36,7 @@
     "@types/node": "^20.17.7",
     "@vitest/ui": "^3.0.4",
     "dprint": "0.49.0",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "execa": "^9.5.2",
     "global": "^4.4.0",
     "husky": "^8.0.3",
