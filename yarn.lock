@@ -1858,7 +1858,7 @@ __metadata:
   dependencies:
     "@dagrejs/dagre": "npm:1.1.4"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/colors-generator": "npm:7.16.2"
+    "@mantine/colors-generator": "npm:7.16.3"
     "@types/natural-compare-lite": "npm:^1.4.2"
     "@types/object-hash": "npm:^3.0.6"
     chroma-js: "npm:^3.1.2"
@@ -1886,9 +1886,9 @@ __metadata:
     "@dagrejs/dagre": "npm:1.1.4"
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.16.2"
-    "@mantine/hooks": "npm:7.16.2"
-    "@mantine/vanilla-extract": "npm:7.16.2"
+    "@mantine/core": "npm:7.16.3"
+    "@mantine/hooks": "npm:7.16.3"
+    "@mantine/vanilla-extract": "npm:7.16.3"
     "@nanostores/react": "npm:0.8.4"
     "@react-hookz/web": "npm:^25.0.1"
     "@statelyai/inspect": "npm:^0.4.0"
@@ -1923,8 +1923,8 @@ __metadata:
     vitest: "npm:^3.0.4"
     xstate: "npm:^5.19.2"
   peerDependencies:
-    "@mantine/core": ^7.16.2
-    "@mantine/hooks": ^7.16.2
+    "@mantine/core": ^7.16.3
+    "@mantine/hooks": ^7.16.3
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
   languageName: unknown
@@ -2091,9 +2091,9 @@ __metadata:
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@likec4/log": "workspace:*"
-    "@mantine/core": "npm:7.16.2"
-    "@mantine/hooks": "npm:7.16.2"
-    "@mantine/vanilla-extract": "npm:7.16.2"
+    "@mantine/core": "npm:7.16.3"
+    "@mantine/hooks": "npm:7.16.3"
+    "@mantine/vanilla-extract": "npm:7.16.3"
     "@react-hookz/web": "npm:^25.0.1"
     "@tabler/icons-react": "npm:3.29.0"
     "@tanstack/react-router": "npm:1.97.17"
@@ -2154,9 +2154,9 @@ __metadata:
     "@likec4/diagram": "workspace:*"
     "@likec4/icons": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.16.2"
-    "@mantine/hooks": "npm:7.16.2"
-    "@mantine/vanilla-extract": "npm:7.16.2"
+    "@mantine/core": "npm:7.16.3"
+    "@mantine/hooks": "npm:7.16.3"
+    "@mantine/vanilla-extract": "npm:7.16.3"
     "@nanostores/react": "npm:0.8.4"
     "@react-hookz/web": "npm:^25.0.1"
     "@tabler/icons-react": "npm:3.29.0"
@@ -2185,18 +2185,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mantine/colors-generator@npm:7.16.2":
-  version: 7.16.2
-  resolution: "@mantine/colors-generator@npm:7.16.2"
+"@mantine/colors-generator@npm:7.16.3":
+  version: 7.16.3
+  resolution: "@mantine/colors-generator@npm:7.16.3"
   peerDependencies:
     chroma-js: ">=2.4.2"
-  checksum: 10c0/af3b3bb8dbc156993a279fbfb2e6f3aba857becf432625dbcd8f624cebc7c5102dacf5af88d2a3d573d63b284bbbd25b32177d7af88abdd7ec6359a3f1c1dd5b
+  checksum: 10c0/bed6354bfbe852228248ff11702893ce7c100da2283fb50daa372920353b7f4927273890235828f9d9d5e323eb37b4c6fb3521a9cf85fd8b8bb915b9fe70a502
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:7.16.2":
-  version: 7.16.2
-  resolution: "@mantine/core@npm:7.16.2"
+"@mantine/core@npm:7.16.3":
+  version: 7.16.3
+  resolution: "@mantine/core@npm:7.16.3"
   dependencies:
     "@floating-ui/react": "npm:^0.26.28"
     clsx: "npm:^2.1.1"
@@ -2205,28 +2205,28 @@ __metadata:
     react-textarea-autosize: "npm:8.5.6"
     type-fest: "npm:^4.27.0"
   peerDependencies:
-    "@mantine/hooks": 7.16.2
+    "@mantine/hooks": 7.16.3
     react: ^18.x || ^19.x
     react-dom: ^18.x || ^19.x
-  checksum: 10c0/c359f44f12b52a2867b0607d847d4e2ef1e6270268949f5a7beef784bbbbad247d5fc492c22d9d84e59d6cb887f202be44d2915356dd976c1329a7f2aaaa2f0c
+  checksum: 10c0/39f0b45e4d0097e03cfa82f9750c01f43dece5394d3e8a96433c03574cb963591ef3cdf95f67d052b08571310ad074875084a5c9ba7148a38372ec9332fbd876
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:7.16.2":
-  version: 7.16.2
-  resolution: "@mantine/hooks@npm:7.16.2"
+"@mantine/hooks@npm:7.16.3":
+  version: 7.16.3
+  resolution: "@mantine/hooks@npm:7.16.3"
   peerDependencies:
     react: ^18.x || ^19.x
-  checksum: 10c0/392bbd4d875db82305be7e5cc658f693c8add70b24aae0bc13c2e74078c6ac11e11926cd61431b28fd37a405f1706ce65658c3c47d252d29a94159aaca6bd3c4
+  checksum: 10c0/35411be6abc611f716c60623f902394ba9cee73692048df1c048278baaca645005e2a65124d359955b1112880fbf9c2ca39dad37d78f0e6d29892fbe07f5211b
   languageName: node
   linkType: hard
 
-"@mantine/vanilla-extract@npm:7.16.2":
-  version: 7.16.2
-  resolution: "@mantine/vanilla-extract@npm:7.16.2"
+"@mantine/vanilla-extract@npm:7.16.3":
+  version: 7.16.3
+  resolution: "@mantine/vanilla-extract@npm:7.16.3"
   peerDependencies:
-    "@mantine/core": 7.16.2
-  checksum: 10c0/47ea779587c29d9f8d6e9489e5e3e3df061c6166b21bd8adba981277499cfbded8047b2216213a93e8af94dae143c5099e0b9181274c323c2b836a37a605f4d5
+    "@mantine/core": 7.16.3
+  checksum: 10c0/53d76e11cf466a4eae67c093befb1bc415807f9783982da8c08156a54e56eb03c6593216ca4a0a38fd0d8081f630c9771bbbdf47487fe1ae3a8ce3402f27000a
   languageName: node
   linkType: hard
 
@@ -8997,9 +8997,9 @@ __metadata:
     "@likec4/layouts": "workspace:*"
     "@likec4/log": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.16.2"
-    "@mantine/hooks": "npm:7.16.2"
-    "@mantine/vanilla-extract": "npm:7.16.2"
+    "@mantine/core": "npm:7.16.3"
+    "@mantine/hooks": "npm:7.16.3"
+    "@mantine/vanilla-extract": "npm:7.16.3"
     "@nanostores/react": "npm:0.8.4"
     "@react-hookz/web": "npm:^25.0.1"
     "@tabler/icons-react": "npm:3.29.0"
