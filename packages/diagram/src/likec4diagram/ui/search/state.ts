@@ -78,12 +78,3 @@ export function useCloseSearchAndNavigateTo() {
     })
   })
 }
-
-export function moveFocusToSearchInput() {
-  const input = document.getElementById('likec4searchinput') as HTMLInputElement | null
-  if (input) {
-    const length = input.value.length
-    input.focus()
-    input.setSelectionRange(length, length)
-  }
-}

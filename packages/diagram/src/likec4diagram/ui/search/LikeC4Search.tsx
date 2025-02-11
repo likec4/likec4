@@ -19,7 +19,6 @@ import {
   useMergedRef,
   useWindowEvent,
 } from '@mantine/hooks'
-import { useLifecycleLogger } from '@react-hookz/web'
 import { IconX } from '@tabler/icons-react'
 import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
 import { useRef } from 'react'
@@ -30,12 +29,12 @@ import * as css from './LikeC4Search.css'
 import { LikeC4SearchInput } from './SearchInput'
 import {
   LikeC4SearchContext,
-  moveFocusToSearchInput,
   setPickView,
   useCloseSearch,
   usePickView,
   wasResetPickView,
 } from './state'
+import { stopAndPrevent } from './utils'
 import { ViewButton, ViewsColumn } from './ViewsColum'
 
 export function LikeC4Search() {
@@ -113,28 +112,14 @@ function LikeC4SearchOverlay() {
     'keydown',
     (event) => {
       if (event.key === 'Escape') {
-        event.stopPropagation()
-        event.preventDefault()
+        stopAndPrevent(event)
         if (!wasResetPickView()) {
           close()
         }
         return
       }
-      if (event.key === 'ArrowUp' && !focused) {
-        event.stopPropagation()
-        event.preventDefault()
-        moveFocusToSearchInput()
-      }
-      if (event.key === 'ArrowDown' && !focused) {
-        event.stopPropagation()
-        event.preventDefault()
-        document.querySelector<HTMLButtonElement>(`.${css.root} .${css.focusable}`)?.focus()
-      }
     },
-    // { capture: true },
   )
-
-  useLifecycleLogger('LikeC4SearchOverlay.focused', [focused])
 
   return (
     <m.div

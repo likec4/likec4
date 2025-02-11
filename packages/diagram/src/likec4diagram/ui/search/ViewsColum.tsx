@@ -23,8 +23,8 @@ import { first } from 'remeda'
 import { useCurrentViewId } from '../../../hooks'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
 import { emptyBoX } from './_shared.css'
-import { centerY } from './ElementsColumn'
-import { moveFocusToSearchInput, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
+import { useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
+import { centerY, moveFocusToSearchInput } from './utils'
 import * as css from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -54,7 +54,7 @@ export function ViewsColumn() {
       gap={8}
       data-likec4-search-views
       onKeyDown={(e) => {
-        if (e.key === 'ArrowLeft') {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
           const maxY = (e.target as HTMLElement).getBoundingClientRect().y
           const elementButtons = [...document.querySelectorAll<HTMLButtonElement>(
             `[data-likec4-search-elements] .likec4-element-button`,

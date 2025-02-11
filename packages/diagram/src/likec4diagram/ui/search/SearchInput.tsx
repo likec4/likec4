@@ -2,6 +2,7 @@ import { compareNatural } from '@likec4/core'
 import {
   Combobox,
   ComboboxDropdown,
+  ComboboxEmpty,
   ComboboxOption,
   ComboboxOptions,
   ComboboxTarget,
@@ -18,10 +19,11 @@ import { type ReactNode } from 'react'
 import { isString, keys, only } from 'remeda'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
 import * as css from './LikeC4Search.css'
-import { moveFocusToSearchInput, setSearch, useIsPickViewActive, useSearch } from './state'
+import { setSearch, useIsPickViewActive, useSearch } from './state'
+import { moveFocusToSearchInput, stopAndPrevent } from './utils'
 
 function startingWithKind(search: string) {
-  return search.match(/^k(i(nd?)?)?$/) != null
+  return search.match(/^(k|ki|kin|kind|kind:)$/) != null
 }
 
 const SEARCH_PREFIXES = ['#', 'kind:']
@@ -43,7 +45,13 @@ export function LikeC4SearchInput() {
     'keydown',
     (event) => {
       try {
-        if (!focused && !isPickViewActive && (event.key === 'Backspace' || event.key.match(/^\p{L}$/u))) {
+        if (
+          !focused && !isPickViewActive && (
+            event.key === 'Backspace' ||
+            event.key.startsWith('Arrow') ||
+            event.key.match(/^\p{L}$/u)
+          )
+        ) {
           moveFocusToSearchInput()
         }
       } catch (e) {
@@ -56,7 +64,7 @@ export function LikeC4SearchInput() {
   let isExactMatch = false
 
   switch (true) {
-    case search === '' && isEmptyForSomeTime: {
+    case search === '' && (isEmptyForSomeTime || SEARCH_PREFIXES.includes(previous ?? '')): {
       options = SEARCH_PREFIXES.map((prefix) => (
         <ComboboxOption value={prefix} key={prefix}>
           <Text component="span" opacity={.5} mr={4} fz={'sm'}>Search by</Text>
@@ -71,12 +79,20 @@ export function LikeC4SearchInput() {
         compareNatural,
       )
       isExactMatch = only(alloptions)?.toLocaleLowerCase() === searchTag
-      options = alloptions.map((tag) => (
-        <ComboboxOption value={`#${tag}`} key={tag}>
-          <Text component="span" opacity={.5} mr={1} fz={'sm'}>#</Text>
-          {tag}
-        </ComboboxOption>
-      ))
+      if (alloptions.length === 0) {
+        options = [
+          <ComboboxEmpty>
+            No tags found
+          </ComboboxEmpty>,
+        ]
+      } else {
+        options = alloptions.map((tag) => (
+          <ComboboxOption value={`#${tag}`} key={tag}>
+            <Text component="span" opacity={.5} mr={1} fz={'sm'}>#</Text>
+            {tag}
+          </ComboboxOption>
+        ))
+      }
       break
     }
     case search.startsWith('kind:'):
@@ -87,12 +103,20 @@ export function LikeC4SearchInput() {
         alloptions = alloptions.filter((kind) => kind.toLocaleLowerCase().includes(term))
         isExactMatch = only(alloptions)?.toLocaleLowerCase() === term
       }
-      options = alloptions.map((kind) => (
-        <ComboboxOption value={`kind:${kind}`} key={kind}>
-          <Text component="span" opacity={.5} mr={1} fz={'sm'}>kind:</Text>
-          {kind}
-        </ComboboxOption>
-      ))
+      if (alloptions.length === 0) {
+        options = [
+          <ComboboxEmpty>
+            No kinds found
+          </ComboboxEmpty>,
+        ]
+      } else {
+        options = alloptions.map((kind) => (
+          <ComboboxOption value={`kind:${kind}`} key={kind}>
+            <Text component="span" opacity={.5} mr={1} fz={'sm'}>kind:</Text>
+            {kind}
+          </ComboboxOption>
+        ))
+      }
       break
     }
   }
@@ -102,7 +126,7 @@ export function LikeC4SearchInput() {
       onOptionSubmit={(optionValue) => {
         setSearch(optionValue)
         combobox.resetSelectedOption()
-        if (!['#', 'kind:'].includes(optionValue)) {
+        if (!SEARCH_PREFIXES.includes(optionValue)) {
           combobox.closeDropdown()
           // Let react to display filtered elements
           setTimeout(() => {
@@ -141,9 +165,25 @@ export function LikeC4SearchInput() {
           onFocus={() => combobox.openDropdown()}
           onBlur={() => combobox.closeDropdown()}
           onKeyDownCapture={(e) => {
-            if (e.key === 'Tab' && startingWithKind(search)) {
-              setSearch('kind:')
-              return stopAndPrevent(e)
+            if (e.key === 'Tab') {
+              switch (true) {
+                case combobox.getSelectedOptionIndex() >= 0: {
+                  combobox.clickSelectedOption()
+                  return stopAndPrevent(e)
+                }
+                case options.length === 1: {
+                  const firstOption = combobox.selectFirstOption()
+                  if (firstOption) {
+                    combobox.clickSelectedOption()
+                  }
+                  return stopAndPrevent(e)
+                }
+                case startingWithKind(search): {
+                  setSearch('kind:')
+                  return stopAndPrevent(e)
+                }
+              }
+              return
             }
             if (e.key === 'Backspace' && combobox.dropdownOpened) {
               if (search === 'kind:') {
@@ -192,9 +232,4 @@ export function LikeC4SearchInput() {
       </ComboboxDropdown>
     </Combobox>
   )
-}
-function stopAndPrevent(e: React.KeyboardEvent) {
-  e.stopPropagation()
-  e.preventDefault()
-  return
 }

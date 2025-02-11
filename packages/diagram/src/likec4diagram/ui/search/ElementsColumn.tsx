@@ -25,11 +25,11 @@ import clsx from 'clsx'
 import { useEffect, useMemo } from 'react'
 import { first, isEmpty, only, partition, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../../context/IconRenderer'
-import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
 import * as css from './ElementsColumn.css'
-import { moveFocusToSearchInput, setPickView, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
+import { setPickView, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
+import { centerY, moveFocusToSearchInput, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
 
 interface LikeC4ModelTreeNodeData {
@@ -51,12 +51,6 @@ function buildNode(
     searchTerms,
     children: [...element.children()].map(e => buildNode(e, searchTerms)).sort(sortByLabel),
   }
-}
-
-export function centerY(element: HTMLElement) {
-  const rect = element.getBoundingClientRect()
-  const y = rect.y + Math.floor(rect.height / 2)
-  return y
 }
 
 export function ElementsColumn() {
@@ -140,8 +134,7 @@ export function ElementsColumn() {
           if (!id) return
           if (e.key === 'ArrowUp') {
             if (id === first(data)?.value) {
-              e.preventDefault()
-              e.stopPropagation()
+              stopAndPrevent(e)
               moveFocusToSearchInput()
             }
             return
@@ -161,14 +154,13 @@ export function ElementsColumn() {
               : null
             view ??= first(viewButtons)
             if (view) {
-              e.preventDefault()
-              e.stopPropagation()
+              stopAndPrevent(e)
               view.focus()
             }
             return
           }
           if (e.key === ' ' || e.key === 'Enter') {
-            e.stopPropagation()
+            stopAndPrevent(e)
             const element = model.element(id)
             handleClick(element)
             return
