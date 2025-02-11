@@ -72,8 +72,8 @@ export type Events =
   | { type: 'xyflow.init'; instance: XYFLowInstance; store: XYStoreApi }
   | { type: 'xyflow.nodeClick'; node: RelationshipsBrowserTypes.Node }
   | { type: 'xyflow.edgeClick'; edge: RelationshipsBrowserTypes.Edge }
-  | { type: 'xyflow.applyNodeChages'; changes: NodeChange<RelationshipsBrowserTypes.Node>[] }
-  | { type: 'xyflow.applyEdgeChages'; changes: EdgeChange<RelationshipsBrowserTypes.Edge>[] }
+  | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<RelationshipsBrowserTypes.Node>[] }
+  | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<RelationshipsBrowserTypes.Edge>[] }
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.paneDblClick' }
   | { type: 'xyflow.resized' }
@@ -198,7 +198,7 @@ export const relationshipsBrowserActor = setup({
         !nextSubjectNode || !existingNode || nextSubjectNode.type === 'empty' || !currentSubjectNode ||
         nextSubjectNode.data.fqn === currentSubjectNode.data.fqn
       ) {
-        xyflow.setViewport(nextviewport)
+        await xyflow.setViewport(nextviewport)
         return updateXYData()
       }
 
@@ -280,7 +280,7 @@ export const relationshipsBrowserActor = setup({
         return updateXYData()
       }
       await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 350 })
-      xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
+      await xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
       return updateXYData()
     }),
   },
@@ -372,11 +372,11 @@ export const relationshipsBrowserActor = setup({
                 xyedges: ({ event }) => event.xyedges,
               }),
             },
-            'xyflow.applyEdgeChages': {
-              // actions: log('layouting: ignore xyflow.applyEdgeChages'),
+            'xyflow.applyEdgeChanges': {
+              // actions: log('layouting: ignore xyflow.applyEdgeChanges'),
             },
-            'xyflow.applyNodeChages': {
-              // actions: log('layouting: ignore xyflow.applyNodeChages'),
+            'xyflow.applyNodeChanges': {
+              // actions: log('layouting: ignore xyflow.applyNodeChanges'),
             },
           },
         },
@@ -447,14 +447,14 @@ export const relationshipsBrowserActor = setup({
     },
   },
   on: {
-    'xyflow.applyNodeChages': {
+    'xyflow.applyNodeChanges': {
       actions: assign({
         xynodes: ({ context, event }) => {
           return applyNodeChanges(event.changes, context.xynodes)
         },
       }),
     },
-    'xyflow.applyEdgeChages': {
+    'xyflow.applyEdgeChanges': {
       actions: assign({
         xyedges: ({ context, event }) => {
           return applyEdgeChanges(event.changes, context.xyedges)

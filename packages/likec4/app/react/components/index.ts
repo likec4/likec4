@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css'
-import '@mantine/spotlight/styles.css'
 import '@xyflow/react/dist/style.css'
 
 export { LikeC4View } from './LikeC4View'

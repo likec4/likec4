@@ -10,13 +10,13 @@ export function generateReactNext(views: Iterable<DiagramView>) {
     viewsData: {
       fileName: 'likec4-views-data',
       js: generateViewsDataJs(views),
-      dts: generateViewsDataDTs(views)
+      dts: generateViewsDataDTs(views),
     },
     components: {
       fileName: 'likec4-components',
-      ...generateComponents()
+      ...generateComponents(),
     },
-    index: generateIndex()
+    index: generateIndex(),
   }
 }
 
@@ -71,7 +71,7 @@ function generateComponents() {
   `
   return {
     js: toString(js),
-    dts: toString(dts)
+    dts: toString(dts),
   }
 }
 
@@ -83,7 +83,6 @@ function generateIndex() {
     // You are safe to edit/move these style imports,
     // but they are required
     import "@mantine/core/styles.css";
-    import '@mantine/spotlight/styles.css'
     import "@likec4/diagram/style.css";
 
     export * from "./likec4-components";
@@ -107,6 +106,6 @@ function generateIndex() {
   `
   return {
     js: toString(js),
-    dts: toString(dts)
+    dts: toString(dts),
   }
 }

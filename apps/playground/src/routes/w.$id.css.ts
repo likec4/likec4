@@ -3,9 +3,7 @@ import { mantine } from '../mantine.css'
 
 const bg = createVar()
 
-export const panel = style({
-  isolation: 'isolate'
-})
+export const panel = style({})
 
 export const resize = style({
   cursor: 'ew-resize',
@@ -38,20 +36,20 @@ export const resize = style({
 
   ':hover': {
     transform: 'scaleX(2)',
-    backgroundColor: mantine.colors.primaryColors.filledHover
+    backgroundColor: mantine.colors.primaryColors.filledHover,
     // vars: {
     //   [bg]: mantine.colors.primaryColors.filledHover
     // },
-  }
+  },
 })
 
 export const stateAlert = style({
   position: 'absolute',
   top: '0.75rem',
   left: '0.5rem',
-  userSelect: 'none'
+  userSelect: 'none',
 })
 
 globalStyle(`${stateAlert} .mantine-Notification-description`, {
-  whiteSpace: 'pre-line'
+  whiteSpace: 'pre-line',
 })

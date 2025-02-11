@@ -45,11 +45,13 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
 
   return (
     <RelationshipsBrowserActorContext.Provider value={actorRef}>
-      <LayoutGroup id={id}>
-        <ReactFlowProvider {...initialRef.current}>
-          <RelationshipsBrowserXYFlow />
-        </ReactFlowProvider>
-      </LayoutGroup>
+      <ReactFlowProvider {...initialRef.current}>
+        <AnimatePresence>
+          <LayoutGroup id={id}>
+            <RelationshipsBrowserXYFlow />
+          </LayoutGroup>
+        </AnimatePresence>
+      </ReactFlowProvider>
     </RelationshipsBrowserActorContext.Provider>
   )
 }
@@ -117,10 +119,10 @@ const RelationshipsBrowserXYFlow = memo(() => {
         browser.send({ type: 'xyflow.resized' })
       })}
       onNodesChange={useCallbackRef((changes) => {
-        browser.send({ type: 'xyflow.applyNodeChages', changes })
+        browser.send({ type: 'xyflow.applyNodeChanges', changes })
       })}
       onEdgesChange={useCallbackRef((changes) => {
-        browser.send({ type: 'xyflow.applyEdgeChages', changes })
+        browser.send({ type: 'xyflow.applyEdgeChanges', changes })
       })}
       nodesDraggable={false}
       fitView={false}

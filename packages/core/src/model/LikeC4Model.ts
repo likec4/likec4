@@ -357,6 +357,10 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
     }
   }
 
+  public allTags(): ReadonlyArray<C4Tag> {
+    return Array.from(this.#allTags.keys())
+  }
+
   private addElement(element: Element) {
     if (this.#elements.has(element.id)) {
       throw new Error(`Element ${element.id} already exists`)

@@ -27,7 +27,7 @@ import { IconArrowRight, IconFileSymlink, IconInfoCircle, IconZoomScan } from '@
 import clsx from 'clsx'
 import { type MouseEventHandler, type PropsWithChildren, forwardRef, Fragment, useCallback } from 'react'
 import { filter, isTruthy, map, partition, pipe } from 'remeda'
-import { Link } from '../../../base/Link'
+import { Link } from '../../../components/Link'
 import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
@@ -127,6 +127,7 @@ export function RelationshipsDropdownMenu({
       closeOnClickOutside
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       closeOnEscape
+      keepMounted={false}
       closeOnItemClick={false}
       disabled={disabled}
       position="bottom-start"

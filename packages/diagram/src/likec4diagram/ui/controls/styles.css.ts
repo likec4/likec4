@@ -5,12 +5,14 @@ import { mantine, vars } from '../../../theme-vars'
 
 export const navigationButtons = style({
   gap: calc(mantine.spacing.xs).divide(1.5).toString(),
+  ':empty': {
+    display: 'none',
+  },
 })
 
 export const panel = style({
   top: fallbackVar(vars.navigationPanel.top, '1rem'),
   left: fallbackVar(vars.navigationPanel.left, '1rem'),
-  gap: calc(mantine.spacing.xs).divide(1.5).toString(),
   margin: 0,
 })
 

@@ -321,7 +321,7 @@ export function resetEdgeControlPoints({ context }: ActionArg): Partial<DiagramC
     }
 
     // Edge is a loop
-    if (source == target) {
+    if (source === target) {
       const loopSize = 80
       const centerOfTopBoundary = new VectorImpl(0, source.height || 0)
         .mul(-0.5)

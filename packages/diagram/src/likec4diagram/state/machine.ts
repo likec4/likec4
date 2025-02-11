@@ -4,7 +4,6 @@ import {
   type EdgeId,
   type Fqn,
   type NodeId,
-  type RelationId,
   type StepEdgeId,
   type ViewChange,
   type ViewId,
@@ -136,8 +135,8 @@ export namespace DiagramContext {
 export type Events =
   | HotKeyEvent
   | { type: 'xyflow.init'; instance: ReactFlowInstance<Types.Node, Types.Edge> }
-  | { type: 'xyflow.applyNodeChages'; changes: NodeChange<Types.Node>[] }
-  | { type: 'xyflow.applyEdgeChages'; changes: EdgeChange<Types.Edge>[] }
+  | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<Types.Node>[] }
+  | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<Types.Edge>[] }
   | { type: 'xyflow.viewportMoved'; viewport: Viewport; manually: boolean }
   | { type: 'xyflow.nodeClick'; node: Types.Node }
   | { type: 'xyflow.edgeClick'; edge: Types.Edge }
@@ -634,7 +633,7 @@ export const diagramMachine = setup({
         pending: {
           entry: enqueueActions(({ enqueue }) => {
             enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'stop' })
-            enqueue.stopChild('layout')
+            enqueue.stopChild('syncLayout')
             enqueue({
               type: 'trigger:NavigateTo',
               params: ({ context }) => ({
@@ -657,15 +656,16 @@ export const diagramMachine = setup({
                       },
                     },
                   })
+                  enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
                 } else {
                   enqueue({
                     type: 'xyflow:setViewportCenter',
                     params: getBBoxCenter(event.view.bounds),
                   })
+                  enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
                 }
                 enqueue.assign(updateNavigationHistory)
                 enqueue.assign(mergeXYNodesEdges)
-                enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 75 })
               }),
               target: 'done',
             },
@@ -765,12 +765,12 @@ export const diagramMachine = setup({
     },
   },
   on: {
-    'xyflow.applyNodeChages': {
+    'xyflow.applyNodeChanges': {
       actions: assign({
         xynodes: ({ context, event }) => applyNodeChanges(event.changes, context.xynodes),
       }),
     },
-    'xyflow.applyEdgeChages': {
+    'xyflow.applyEdgeChanges': {
       actions: assign({
         xyedges: ({ context, event }) => applyEdgeChanges(event.changes, context.xyedges),
       }),
@@ -838,17 +838,19 @@ export const diagramMachine = setup({
                   },
                 },
               })
+              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
             } else {
               enqueue({
                 type: 'xyflow:setViewportCenter',
                 params: getBBoxCenter(event.view.bounds),
               })
+              enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
             }
           } else {
             enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'synced' })
-          }
-          if (isAnotherView || !context.viewportChangedManually) {
-            enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 90 })
+            if (!context.viewportChangedManually) {
+              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
+            }
           }
           enqueue.assign(mergeXYNodesEdges)
           enqueue.assign({

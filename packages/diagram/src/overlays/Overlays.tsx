@@ -2,7 +2,7 @@ import { Box, Button, Code, Group, Notification } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { deepEqual } from 'fast-equals'
-import { useReducedMotion } from 'framer-motion'
+import { AnimatePresence, useReducedMotion } from 'framer-motion'
 import { animate } from 'framer-motion/dom'
 import { memo, useEffect, useMemo } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
@@ -96,32 +96,38 @@ export const Overlays = memo(() => {
   return (
     <DiagramFeatures.Overlays>
       <ErrorBoundary FallbackComponent={Fallback} onReset={onClose}>
-        {relationshipsBrowserActor && (
-          <Overlay
-            key={'relationships-browser'}
-            onClose={onClose}>
-            <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
-          </Overlay>
-        )}
-        {relationshipDetailsActor && (
-          <Overlay
-            key={'relationship-details'}
-            onClose={onClose}>
-            <RelationshipDetails actorRef={relationshipDetailsActor} />
-          </Overlay>
-        )}
+        <AnimatePresence onExitComplete={onClose}>
+          {relationshipsBrowserActor && (
+            <Overlay
+              key={'relationships-browser'}
+              onClose={() => relationshipsBrowserActor.send({ type: 'close' })}>
+              <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
+            </Overlay>
+          )}
+        </AnimatePresence>
+        <AnimatePresence onExitComplete={onClose}>
+          {relationshipDetailsActor && (
+            <Overlay
+              key={'relationship-details'}
+              onClose={() => relationshipDetailsActor.send({ type: 'close' })}>
+              <RelationshipDetails actorRef={relationshipDetailsActor} />
+            </Overlay>
+          )}
+        </AnimatePresence>
 
         {/* TODO: Somehow ElementDetailsCard does not work properly inside AnimatePresence} */}
-        {!!activeElementDetailsOf && (
-          <ElementDetailsCard
-            key={'element-details'}
-            fqn={activeElementDetailsOf}
-            viewId={viewId}
-            fromNode={fromNode}
-            rectFromNode={rectFromNode}
-            onClose={onClose}
-          />
-        )}
+        <AnimatePresence>
+          {!!activeElementDetailsOf && (
+            <ElementDetailsCard
+              key={'element-details'}
+              fqn={activeElementDetailsOf}
+              viewId={viewId}
+              fromNode={fromNode}
+              rectFromNode={rectFromNode}
+              onClose={onClose}
+            />
+          )}
+        </AnimatePresence>
       </ErrorBoundary>
     </DiagramFeatures.Overlays>
   )

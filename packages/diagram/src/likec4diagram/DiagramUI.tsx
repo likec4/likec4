@@ -1,5 +1,4 @@
 import { IfEnabled } from '../context'
-import { LikeC4Search } from '../LikeC4Search'
 import { Overlays } from '../overlays/Overlays'
 import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
 
@@ -8,9 +7,6 @@ export function DiagramUI() {
     <>
       <Controls />
       <Overlays />
-      <IfEnabled feature="Search">
-        <LikeC4Search />
-      </IfEnabled>
       <IfEnabled feature="ViewTitle">
         <DiagramTitlePanel />
       </IfEnabled>
