@@ -24,7 +24,7 @@ import { IconChevronRight } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { useEffect, useMemo } from 'react'
-import { first, isEmpty, only, partition, pipe, reduce } from 'remeda'
+import { first, indexBy, isEmpty, only, partition, pipe, prop, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../../context/IconRenderer'
 import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
@@ -57,14 +57,17 @@ function buildNode(
 export function ElementsColumn() {
   const search = useNormalizedSearch()
   const model = useLikeC4Model(true)
-  const data = useMemo((): LikeC4ModelTreeNodeData[] => {
-    if (isEmpty(search) || search === 'kind:') {
-      return [...model.roots()].map(e => buildNode(e)).sort(sortByLabel)
-    }
+  const {
+    all,
+    byid,
+    roots: data,
+  } = useMemo(() => {
     const searchTerms = search.split('.')
-    const { roots } = pipe(
-      model.elements(),
-      ifilter(element => {
+    let elements
+    if (isEmpty(search) || search === 'kind:') {
+      elements = model.elements()
+    } else {
+      elements = ifilter(model.elements(), element => {
         if (search.startsWith('kind:')) {
           return element.kind.toLocaleLowerCase().startsWith(search.slice(5))
         }
@@ -73,18 +76,21 @@ export function ElementsColumn() {
         }
         return (element.title + ' ' + element.id + ' ' + (element.description ?? ''))
           .toLocaleLowerCase().includes(search)
-      }),
+      })
+    }
+    const { all, roots } = pipe(
+      elements,
       toArray(),
       sortParentsFirst,
       reduce((acc, element) => {
-        const treeItem: LikeC4ModelTreeNodeData = acc.byid[element.id] = {
+        const treeItem: LikeC4ModelTreeNodeData = {
           label: element.title,
           value: element.id,
           element,
           searchTerms,
           children: [],
         }
-        const parent = acc.roots.find((root) => isAncestor(root.value, treeItem.value))
+        const parent = acc.all.findLast((root) => isAncestor(root.value, treeItem.value))
         if (parent) {
           parent.children.push(treeItem)
           if (parent.children.length > 1) {
@@ -93,22 +99,31 @@ export function ElementsColumn() {
         } else {
           acc.roots.push(treeItem)
         }
+        acc.all.push(treeItem)
         return acc
       }, {
-        byid: {} as Record<Fqn, LikeC4ModelTreeNodeData>,
+        all: [] as LikeC4ModelTreeNodeData[],
         roots: [] as LikeC4ModelTreeNodeData[],
       }),
     )
-    return roots.sort(sortByLabel)
+    return {
+      all,
+      byid: indexBy(all, prop('value')),
+      roots: roots.sort(sortByLabel),
+    }
   }, [model, search])
 
   const tree = useTree({
     multiple: false,
   })
   useEffect(() => {
-    if (isEmpty(data)) return
-    tree.expandAllNodes()
-  }, [data])
+    tree.collapseAllNodes()
+    for (const nd of all) {
+      if (nd.children.length > 0) {
+        tree.expand(nd.value)
+      }
+    }
+  }, [all])
 
   const handleClick = useHandleElementSelection()
 
@@ -132,17 +147,18 @@ export function ElementsColumn() {
         onKeyDownCapture={(e) => {
           const target = e.target as HTMLElement
           const id = target.getAttribute('data-value')
-          if (!id) return
+          const node = !!id && byid[id as Fqn]
+          if (!node) return
           if (e.key === 'ArrowUp') {
-            if (id === first(data)?.value) {
+            if (id === data[0]?.value) {
               stopAndPrevent(e)
               moveFocusToSearchInput()
             }
             return
           }
           if (e.key === 'ArrowRight') {
-            const hasChildren = model.children(id).size > 0
-            if (hasChildren && !tree.expandedState[id]) {
+            const hasChildren = node.children.length > 0
+            if (hasChildren && tree.expandedState[id] === false) {
               return
             }
             const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
@@ -162,8 +178,7 @@ export function ElementsColumn() {
           }
           if (e.key === ' ' || e.key === 'Enter') {
             stopAndPrevent(e)
-            const element = model.element(id)
-            handleClick(element)
+            handleClick(node.element)
             return
           }
         }}

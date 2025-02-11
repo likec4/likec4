@@ -34,7 +34,7 @@ export function LikeC4SearchInput() {
   const combobox = useCombobox({
     scrollBehavior: 'smooth',
   })
-  const { ref, focused } = useFocusWithin()
+  const { ref, focused } = useFocusWithin<HTMLInputElement>()
   const search = useSearch()
   const previous = usePreviousDistinct(search)
   const isFirstRender = useIsFirstRender()

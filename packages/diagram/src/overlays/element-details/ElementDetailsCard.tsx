@@ -222,12 +222,13 @@ export function ElementDetailsCard({
 
   useTimeoutEffect(() => {
     setOpened(true)
-  }, !opened ? 100 : undefined)
+  }, 120)
 
   return (
     <m.dialog
       ref={ref}
       className={css.dialog}
+      layout
       initial={{
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '10%',

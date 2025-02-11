@@ -7,10 +7,6 @@ import { useDeferredValue } from 'react'
 import { useDiagram } from '../../../hooks/useDiagram'
 
 const $search = atom('')
-onMount($search, () => {
-  // reset search on mount
-  $search.set('')
-})
 
 export function setSearch(term: string) {
   $search.set(term)
