@@ -1,4 +1,4 @@
-import { type StyleRule, createVar, fallbackVar, style } from '@vanilla-extract/css'
+import { type StyleRule, createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../../theme-vars'
 import { whereDark, whereLight } from '../../../theme-vars.css'
 
@@ -35,6 +35,7 @@ export const button = style({
   },
   ':hover': {
     ...buttonFocused,
+    borderColor: mantine.colors.primaryColors[9],
     backgroundColor: `color-mix(in srgb, ${buttonFocused.backgroundColor}, transparent 40%)`,
   },
   ':focus': buttonFocused,
@@ -51,18 +52,15 @@ export const button = style({
         [titleColor]: mantine.colors.gray[7],
       },
     },
-    [`${whereDark} &:hover`]: {
-      // borderColor: 'transparent',
-      // vars: {
-      //   [iconColor]: mantine.colors.gray[7],
-      // },
+    [`${whereLight} &:hover`]: {
+      borderColor: mantine.colors.primaryColors[6],
+      backgroundColor: mantine.colors.primaryColors[5],
+      vars: {
+        [iconColor]: mantine.colors.primaryColors[3],
+        [titleColor]: mantine.colors.primaryColors[0],
+        [descriptionColor]: mantine.colors.primaryColors[1],
+      },
     },
-    // [`&[data-disabled="true"]`]: {
-    //   vars: {
-    //     [titleColor]: mantine.colors.dimmed
-    //   },
-    // },
-    // [`[data-likec4-views]:not(:focus-within) &:hover`]: onhover,
   },
 })
 
@@ -82,7 +80,7 @@ export const title = style({
 export const description = style({
   marginTop: 4,
   color: fallbackVar(descriptionColor, mantine.colors.dimmed),
-  fontSize: 13,
+  fontSize: 12,
   lineHeight: 1.4,
   selectors: {
     [`:where([data-disabled]) &`]: {

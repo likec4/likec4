@@ -38,17 +38,19 @@ export const Controls = memo(() => {
   } = useEnabledFeatures()
   const notReadOnly = !enableReadOnly
   const portalProps = useMantinePortalProps()
+
   return (
-    <>
-      <Stack
-        className={clsx(
-          'react-flow__panel',
-          css.panel,
-          'likec4-top-left-panel',
-        )}
-        align="flex-start"
-        onClick={stopPropagation}
-        gap={'xs'}>
+    <Group
+      className={clsx(
+        'react-flow__panel',
+        css.panel,
+        'likec4-top-left-panel',
+      )}
+      align="flex-start"
+      gap="xs"
+      onClick={stopPropagation}
+    >
+      <Stack align="flex-start" gap="xs">
         <LayoutGroup>
           <Group
             className={clsx(css.navigationButtons, 'likec4-navigation-webview')}
@@ -63,7 +65,6 @@ export const Controls = memo(() => {
               </ActionIcon>
             )}
             {enableNavigationButtons && <NavigationButtons />}
-            {enableSearch && <LikeC4Search />}
           </Group>
         </LayoutGroup>
         <ActionIconGroup className={css.actionIconGroup} orientation="vertical">
@@ -99,7 +100,8 @@ export const Controls = memo(() => {
         </ActionIconGroup>
         {notReadOnly && <SyncLayoutBadge />}
       </Stack>
-    </>
+      {enableSearch && <LikeC4Search />}
+    </Group>
   )
 })
 

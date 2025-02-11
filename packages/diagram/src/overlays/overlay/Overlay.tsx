@@ -85,8 +85,8 @@ export function Overlay({ children, onClose, className, ...rest }: OverlayProps)
         },
       }}
       onClick={e => {
+        e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          e.stopPropagation()
           close()
         }
       }}

@@ -41,16 +41,14 @@ export const root = style({
 })
 export const input = style({
   borderColor: 'transparent',
+  WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
+  backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
   backgroundColor: 'transparent',
   ':focus-within': {
-    backgroundColor: `color-mix(in srgb, ${mantine.colors.primaryColors[2]}, transparent 65%)`,
+    backgroundColor: `color-mix(in srgb, ${mantine.colors.gray[3]}, transparent 45%)`,
   },
   selectors: {
-    [`${whereDark} &`]: {
-      WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
-      backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(6px)'),
-      background: `color-mix(in srgb, var(--input-bg), transparent 50%)`,
-    },
+    [`${whereDark} &`]: {},
     [`${whereDark} &:focus-within`]: {
       backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[4]}, transparent 45%)`,
     },
@@ -89,9 +87,10 @@ export const pickview = style({
 })
 
 export const pickviewGroup = style({
+  marginTop: rem(8),
   selectors: {
     '& + &': {
-      marginTop: rem(16),
+      marginTop: rem(32),
     },
   },
 })

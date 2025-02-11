@@ -3,6 +3,7 @@ import { createSafeContext } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useStore } from '@nanostores/react'
 import { atom, computed, onMount } from 'nanostores'
+import { useDeferredValue } from 'react'
 import { useDiagram } from '../../../hooks/useDiagram'
 
 const $search = atom('')
@@ -24,7 +25,7 @@ const $normalizedSearch = computed($search, search => {
   return v.length > 1 ? v : ''
 })
 export function useNormalizedSearch() {
-  return useStore($normalizedSearch)
+  return useDeferredValue(useStore($normalizedSearch))
 }
 
 export const [LikeC4SearchContext, useCloseSearch] = createSafeContext<(cb?: () => void) => void>('LikeC4Search')

@@ -13,7 +13,6 @@ import {
   Box,
   Group,
   Highlight,
-  Stack,
   Text,
   Tooltip,
   Tree,
@@ -24,7 +23,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { useEffect, useMemo } from 'react'
-import { first, flatMap, isEmpty, only, partition, pipe, reduce, unique } from 'remeda'
+import { first, isEmpty, only, partition, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../../context/IconRenderer'
 import { useCurrentViewId } from '../../../hooks/useCurrentViewId'
 import { sortByLabel } from '../../../likec4model/useLikeC4ElementsTree'
@@ -54,7 +53,7 @@ function buildNode(
   }
 }
 
-function centerY(element: HTMLElement) {
+export function centerY(element: HTMLElement) {
   const rect = element.getBoundingClientRect()
   const y = rect.y + Math.floor(rect.height / 2)
   return y
@@ -153,15 +152,16 @@ export function ElementsColumn() {
               return
             }
             const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
-            const maxY = centerY(label)
+            const maxY = label.getBoundingClientRect().y
             const viewButtons = [...document.querySelectorAll<HTMLButtonElement>(
               `[data-likec4-search-views] .${css.focusable}`,
             )]
             let view = viewButtons.length > 1
-              ? viewButtons.findLast((el) => el.getBoundingClientRect().y <= maxY)
+              ? viewButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
               : null
             view ??= first(viewButtons)
             if (view) {
+              e.preventDefault()
               e.stopPropagation()
               view.focus()
             }
@@ -228,7 +228,7 @@ function ElementTreeNode(
         }}
       >
         {elementIcon}
-        <Stack gap={3} style={{ flexGrow: 1 }}>
+        <Box style={{ flexGrow: 1 }}>
           <Group gap={'xs'} wrap="nowrap" align="center" className={css.elementTitleAndId}>
             <Highlight component="div" highlight={searchTerms} className={css.elementTitle}>
               {node.label as any}
@@ -242,7 +242,7 @@ function ElementTreeNode(
           <Highlight component="div" highlight={searchTerms} className={css.elementDescription} lineClamp={1}>
             {element.description || 'No description'}
           </Highlight>
-        </Stack>
+        </Box>
 
         <Text component="div" className={css.elementViewsCount}>
           {views.length === 0 ? 'No views' : (

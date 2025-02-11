@@ -3,11 +3,11 @@ import { mantine, transitions, vars, whereDark, whereLight } from '../theme-vars
 
 const transparent = createVar('transparent')
 export const root = style({
-  height: '34px',
+  height: '32px',
   paddingLeft: mantine.spacing.sm,
   paddingRight: '4px',
-  borderRadius: mantine.radius.md,
-  color: mantine.colors.text,
+  borderRadius: mantine.radius.sm,
+  color: mantine.colors.placeholder,
   boxShadow: mantine.shadows.sm,
   border: '1px solid',
   cursor: 'pointer',
@@ -23,12 +23,13 @@ export const root = style({
       backgroundColor: `color-mix(in srgb, ${mantine.colors.white}, transparent ${transparent})`,
     },
     [`${whereDark} &`]: {
-      color: mantine.colors.text,
+      color: mantine.colors.placeholder,
       borderColor: `color-mix(in srgb, ${mantine.colors.dark[4]}, transparent 10%)`,
       backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent ${transparent})`,
     },
   },
   ':hover': {
+    color: mantine.colors.text,
     borderColor: mantine.colors.defaultBorder,
     vars: {
       [transparent]: '0%',

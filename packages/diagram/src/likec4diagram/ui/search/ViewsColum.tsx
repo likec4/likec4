@@ -18,10 +18,12 @@ import {
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
+import { AnimatePresence, m } from 'framer-motion'
 import { first } from 'remeda'
 import { useCurrentViewId } from '../../../hooks'
 import { useLikeC4Model } from '../../../likec4model/useLikeC4Model'
 import { emptyBoX } from './_shared.css'
+import { centerY } from './ElementsColumn'
 import { moveFocusToSearchInput, useCloseSearchAndNavigateTo, useNormalizedSearch } from './state'
 import * as css from './ViewsColumn.css'
 
@@ -53,16 +55,15 @@ export function ViewsColumn() {
       data-likec4-search-views
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft') {
-          const thisRect = (e.target as HTMLElement).getBoundingClientRect()
-          const half = thisRect.height / 2
-          const thisRectCenter = thisRect.y + half
+          const maxY = (e.target as HTMLElement).getBoundingClientRect().y
           const elementButtons = [...document.querySelectorAll<HTMLButtonElement>(
-            `[data-likec4-search-elements] .${css.focusable}`,
+            `[data-likec4-search-elements] .likec4-element-button`,
           )]
           let elementButton = elementButtons.length > 1
-            ? elementButtons.findLast((el) => el.getBoundingClientRect().y <= thisRectCenter)
+            ? elementButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
             : null
           elementButton ??= first(elementButtons)
+
           if (elementButton) {
             e.stopPropagation()
             elementButton.focus()
@@ -82,14 +83,17 @@ export function ViewsColumn() {
             }} />
         </VisuallyHidden>
       )}
-      {views.map((view, i) => (
-        <ViewButton
-          key={view.id}
-          view={view}
-          search={search}
-          tabIndex={i === 0 ? 0 : -1}
-        />
-      ))}
+      <AnimatePresence>
+        {views.map((view, i) => (
+          <m.div layout key={view.id}>
+            <ViewButton
+              view={view}
+              search={search}
+              tabIndex={i === 0 ? 0 : -1}
+            />
+          </m.div>
+        ))}
+      </AnimatePresence>
     </Stack>
   )
 }
@@ -135,7 +139,7 @@ export function ViewButton(
           ? <IconStack2 stroke={1.8} />
           : <IconZoomScan stroke={1.8} />}
       </ThemeIcon>
-      <Stack gap={3} style={{ flexGrow: 1 }}>
+      <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
           <Highlight component="div" highlight={search} className={css.viewTitle}>
             {view.title || 'untitled'}
@@ -149,7 +153,7 @@ export function ViewButton(
           lineClamp={1}>
           {view.$view.description || 'No description'}
         </Highlight>
-      </Stack>
+      </Box>
     </UnstyledButton>
   )
 }

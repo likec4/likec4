@@ -107,7 +107,7 @@ export const elementViewsCount = style({
   flex: 0,
   color: fallbackVar(descriptionColor, mantine.colors.dimmed),
   fontSize: 10,
-  fontWeight: 600,
+  fontWeight: 500,
   whiteSpace: 'nowrap',
   lineHeight: 1.1,
   '@container': {
