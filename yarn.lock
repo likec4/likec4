@@ -2047,7 +2047,7 @@ __metadata:
     obliterator: "npm:^2.0.5"
     remeda: "npm:^2.20.1"
     turbo: "npm:^2.4.0"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     unbuild: "npm:^3.3.1"
     vitest: "npm:^3.0.4"
@@ -2091,7 +2091,7 @@ __metadata:
     react-dom: "npm:~19.0.0"
     react-error-boundary: "npm:^5.0.0"
     remeda: "npm:^2.20.1"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     vite: "npm:5.4.14"
     vite-plugin-dts: "npm:^4.5.0"
@@ -2193,7 +2193,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
     unbuild: "npm:^3.3.1"
@@ -2227,7 +2227,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
     turbo: "npm:^2.4.0"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     unbuild: "npm:^3.3.1"
     vitest: "npm:^3.0.4"
@@ -2301,7 +2301,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
     vite: "npm:5.4.14"
@@ -2353,7 +2353,7 @@ __metadata:
     react-error-boundary: "npm:^5.0.0"
     remeda: "npm:^2.20.1"
     tsx: "npm:~4.19.2"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     vite: "npm:5.4.14"
     vscode-messenger-webview: "npm:^0.4.5"
@@ -9233,7 +9233,7 @@ __metadata:
     tslib: "npm:^2.8.1"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
@@ -9323,7 +9323,7 @@ __metadata:
     tinyrainbow: "npm:^2.0.0"
     tsx: "npm:~4.19.2"
     turbo: "npm:^2.4.0"
-    type-fest: "npm:4.33.0"
+    type-fest: "npm:4.34.1"
     typescript: "npm:^5.7.3"
     ufo: "npm:^1.5.4"
     unbuild: "npm:^3.3.1"
@@ -14382,10 +14382,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:4.33.0, type-fest@npm:^4.18.2, type-fest@npm:^4.21.0, type-fest@npm:^4.27.0, type-fest@npm:^4.33.0":
-  version: 4.33.0
-  resolution: "type-fest@npm:4.33.0"
-  checksum: 10c0/20015eea353605e08e3f4b967291b225fa4e7c43361de44f39b88131715e41877458af80da59c8f17e40c0e3842298996f0651219dc9823e35c7e46ecbc8a44f
+"type-fest@npm:4.34.1":
+  version: 4.34.1
+  resolution: "type-fest@npm:4.34.1"
+  checksum: 10c0/4aa016be91f4225b772d77da91415cd25961a937f84e68d763b2dfeb936ef1671b039bbb0f75019affb8f591c26d65966024343aae75b17ab49db6f9c50c38a8
   languageName: node
   linkType: hard
 
@@ -14414,6 +14414,13 @@ __metadata:
   version: 0.8.1
   resolution: "type-fest@npm:0.8.1"
   checksum: 10c0/dffbb99329da2aa840f506d376c863bd55f5636f4741ad6e65e82f5ce47e6914108f44f340a0b74009b0cb5d09d6752ae83203e53e98b1192cf80ecee5651636
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.18.2, type-fest@npm:^4.21.0, type-fest@npm:^4.27.0, type-fest@npm:^4.33.0":
+  version: 4.33.0
+  resolution: "type-fest@npm:4.33.0"
+  checksum: 10c0/20015eea353605e08e3f4b967291b225fa4e7c43361de44f39b88131715e41877458af80da59c8f17e40c0e3842298996f0651219dc9823e35c7e46ecbc8a44f
   languageName: node
   linkType: hard
 
