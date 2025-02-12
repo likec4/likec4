@@ -4,6 +4,7 @@ import { useSelector } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo, useTransition } from 'react'
+import { useOverlays } from '../../hooks/useOverlays'
 import type { RelationshipsBrowserActorRef, RelationshipsBrowserSnapshot } from './actor'
 
 export const RelationshipsBrowserActorContext = createContext<RelationshipsBrowserActorRef | null>(null)
@@ -22,6 +23,7 @@ export function useRelationshipsBrowserState<T>(
 }
 
 export function useRelationshipsBrowser() {
+  const overlays = useOverlays()
   const actor = useRelationshipsBrowserActor()
   const [, startTransition] = useTransition()
   return useMemo(() => ({
@@ -42,9 +44,7 @@ export function useRelationshipsBrowser() {
       })
     },
     close: () => {
-      startTransition(() => {
-        actor.send({ type: 'close' })
-      })
+      overlays.close(actor)
     },
   }), [actor])
 }

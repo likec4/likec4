@@ -359,9 +359,9 @@ export function ElementDetailsCard({
                     radius="sm"
                     onClick={e => {
                       e.stopPropagation()
-                      diagram.openSource({
-                        element: elementModel.id,
-                      })
+                      // diagram.openSource({
+                      //   element: elementModel.id,
+                      // })
                     }}>
                     <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
                   </ActionIcon>

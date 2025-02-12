@@ -10,18 +10,18 @@ import {
 import { type InternalNodeUpdate, getNodeDimensions, getViewportForBounds } from '@xyflow/system'
 import { isNullish, omit, prop } from 'remeda'
 import {
-  type ActorLogic,
+  type ActorLogicFrom,
   type ActorRefFromLogic,
   type BaseActorRef,
-  type MachineSnapshot,
   type SnapshotFrom,
   assign,
   cancel,
   enqueueActions,
   fromPromise,
+  log,
   raise,
+  sendParent,
   setup,
-  stopChild,
 } from 'xstate'
 import { Base } from '../../base'
 import { MinZoom, ZIndexes } from '../../base/const'
@@ -90,12 +90,154 @@ export type Events =
   | { type: 'update.view'; layouted: LayoutRelationshipsViewResult }
   | { type: 'close' }
 
-export const relationshipsBrowserActor = setup({
+export const layouter = fromPromise<{
+  xyedges: RelationshipsBrowserTypes.Edge[]
+  xynodes: RelationshipsBrowserTypes.Node[]
+}, {
+  subjectId: Fqn
+  navigateFromNode: string | null
+  xyflow: XYFLowInstance
+  xystore: XYStoreApi
+  update: LayoutRelationshipsViewResult
+}>(async ({ input, self, signal }) => {
+  const {
+    subjectId,
+    navigateFromNode,
+    xyflow,
+    xystore,
+    update,
+  } = input
+  let {
+    nodes: currentNodes,
+    width,
+    height,
+  } = xystore.getState()
+  const next = viewToNodesEdge(update)
+
+  const updateXYData = () => {
+    const { nodes, edges } = xystore.getState()
+    return {
+      xynodes: updateNodes(nodes, next.xynodes),
+      xyedges: updateEdges(edges, next.xyedges),
+    }
+  }
+  const parent = nonNullable(self._parent) as BaseActorRef<Events>
+
+  let zoom = xyflow.getZoom()
+  const maxZoom = Math.max(zoom, 1)
+  const nextviewport = getViewportForBounds(update.bounds, width, height, MinZoom, maxZoom, ViewPadding)
+
+  const nextSubjectNode = next.xynodes.find(n =>
+    n.type !== 'empty' && n.data.column === 'subjects' && n.data.fqn === subjectId
+  ) ?? findRootSubject(next.xynodes)
+  const currentSubjectNode = findRootSubject(currentNodes)
+
+  const existingNode = navigateFromNode
+    ? currentNodes.find(n => n.id === navigateFromNode)
+    : currentNodes.find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subjectId)
+
+  if (
+    !nextSubjectNode || !existingNode || nextSubjectNode.type === 'empty' || !currentSubjectNode ||
+    nextSubjectNode.data.fqn === currentSubjectNode.data.fqn
+  ) {
+    await xyflow.setViewport(nextviewport)
+    return updateXYData()
+  }
+
+  const nextSubjectCenter = {
+    x: nextSubjectNode.position.x + (nextSubjectNode.initialWidth ?? 0) / 2,
+    y: nextSubjectNode.position.y + (nextSubjectNode.initialHeight ?? 0) / 2,
+  }
+
+  // Center of current subject
+  const currentSubjectInternalNode = xyflow.getInternalNode(currentSubjectNode.id)!
+  const currentSubjectCenter = centerXYInternalNode(currentSubjectInternalNode)
+
+  // Move to center of existing node
+  const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
+  const existingDimensions = getNodeDimensions(existingInternalNode)
+
+  // Dim all nodes except the existing node
+  // Hide nested nodes
+  const nested = new Set<string>()
+  currentNodes.forEach(n => {
+    if (n.id === existingNode.id) {
+      return
+    }
+    if (n.data.column === 'subjects') {
+      nested.add(n.id)
+      return
+    }
+    if (n.parentId && (n.parentId === existingNode.id || nested.has(n.parentId))) {
+      nested.add(n.id)
+    }
+  })
+  currentNodes = updateNodes(
+    currentNodes,
+    currentNodes.flatMap(n => {
+      if (nested.has(n.id)) {
+        return []
+      }
+      if (n.id !== existingNode.id) {
+        return {
+          ...n,
+          data: {
+            ...n.data,
+            dimmed: n.data.column === 'subjects' ? 'immediate' : true,
+          },
+        } as RelationshipsBrowserTypes.Node
+      }
+      // Move existing node
+      return {
+        ...omit(n, ['parentId']),
+        position: {
+          x: currentSubjectCenter.x - existingDimensions.width / 2,
+          y: currentSubjectCenter.y - existingDimensions.height / 2,
+        },
+        zIndex: ZIndexes.Max,
+        hidden: false,
+        data: {
+          ...n.data,
+          dimmed: false,
+        },
+      } as RelationshipsBrowserTypes.Node
+    }),
+  )
+  parent.send({
+    type: 'update.xydata',
+    xynodes: currentNodes,
+    xyedges: [],
+  })
+
+  // Pick the smaller zoom level
+  zoom = Math.min(
+    zoom,
+    nextviewport.zoom,
+  )
+  // allow framer to render
+  await delay(175)
+  next.xynodes = next.xynodes.map(Base.setDimmed(false))
+
+  if (signal.aborted) {
+    return updateXYData()
+  }
+  await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 350 })
+  await xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
+  return updateXYData()
+})
+
+export const relationshipsBrowserLogic = setup({
   types: {
     context: {} as Context,
     tags: '' as 'active',
+    children: {} as {
+      layouter: 'layouter'
+    },
     input: {} as Input,
     events: {} as Events,
+  },
+  actors: {
+    layouter,
   },
   actions: {
     'xyflow:updateNodeInternals': ({ context }) => {
@@ -145,147 +287,10 @@ export const relationshipsBrowserActor = setup({
     },
   },
   guards: {
-    'enable: navigate.to': () => true,
-  },
-  actors: {
-    layouter: fromPromise<{
-      xyedges: RelationshipsBrowserTypes.Edge[]
-      xynodes: RelationshipsBrowserTypes.Node[]
-    }, {
-      subjectId: Fqn
-      navigateFromNode: string | null
-      xyflow: XYFLowInstance
-      xystore: XYStoreApi
-      update: LayoutRelationshipsViewResult
-    }>(async ({ input, self, signal }) => {
-      const {
-        subjectId,
-        navigateFromNode,
-        xyflow,
-        xystore,
-        update,
-      } = input
-      let {
-        nodes: currentNodes,
-        width,
-        height,
-      } = xystore.getState()
-      const next = viewToNodesEdge(update)
-
-      const updateXYData = () => {
-        const { nodes, edges } = xystore.getState()
-        return {
-          xynodes: updateNodes(nodes, next.xynodes),
-          xyedges: updateEdges(edges, next.xyedges),
-        }
-      }
-      const parent = nonNullable(self._parent) as BaseActorRef<Events>
-
-      let zoom = xyflow.getZoom()
-      const maxZoom = Math.max(zoom, 1)
-      const nextviewport = getViewportForBounds(update.bounds, width, height, MinZoom, maxZoom, ViewPadding)
-
-      const nextSubjectNode = next.xynodes.find(n =>
-        n.type !== 'empty' && n.data.column === 'subjects' && n.data.fqn === subjectId
-      ) ?? findRootSubject(next.xynodes)
-      const currentSubjectNode = findRootSubject(currentNodes)
-
-      const existingNode = navigateFromNode
-        ? currentNodes.find(n => n.id === navigateFromNode)
-        : currentNodes.find(n => n.type !== 'empty' && n.data.column !== 'subjects' && n.data.fqn === subjectId)
-
-      if (
-        !nextSubjectNode || !existingNode || nextSubjectNode.type === 'empty' || !currentSubjectNode ||
-        nextSubjectNode.data.fqn === currentSubjectNode.data.fqn
-      ) {
-        await xyflow.setViewport(nextviewport)
-        return updateXYData()
-      }
-
-      const nextSubjectCenter = {
-        x: nextSubjectNode.position.x + (nextSubjectNode.initialWidth ?? 0) / 2,
-        y: nextSubjectNode.position.y + (nextSubjectNode.initialHeight ?? 0) / 2,
-      }
-
-      // Center of current subject
-      const currentSubjectInternalNode = xyflow.getInternalNode(currentSubjectNode.id)!
-      const currentSubjectCenter = centerXYInternalNode(currentSubjectInternalNode)
-
-      // Move to center of existing node
-      const existingInternalNode = xyflow.getInternalNode(existingNode.id)!
-      const existingDimensions = getNodeDimensions(existingInternalNode)
-
-      // Dim all nodes except the existing node
-      // Hide nested nodes
-      const nested = new Set<string>()
-      currentNodes.forEach(n => {
-        if (n.id === existingNode.id) {
-          return
-        }
-        if (n.data.column === 'subjects') {
-          nested.add(n.id)
-          return
-        }
-        if (n.parentId && (n.parentId === existingNode.id || nested.has(n.parentId))) {
-          nested.add(n.id)
-        }
-      })
-      currentNodes = updateNodes(
-        currentNodes,
-        currentNodes.flatMap(n => {
-          if (nested.has(n.id)) {
-            return []
-          }
-          if (n.id !== existingNode.id) {
-            return {
-              ...n,
-              data: {
-                ...n.data,
-                dimmed: n.data.column === 'subjects' ? 'immediate' : true,
-              },
-            } as RelationshipsBrowserTypes.Node
-          }
-          // Move existing node
-          return {
-            ...omit(n, ['parentId']),
-            position: {
-              x: currentSubjectCenter.x - existingDimensions.width / 2,
-              y: currentSubjectCenter.y - existingDimensions.height / 2,
-            },
-            zIndex: ZIndexes.Max,
-            hidden: false,
-            data: {
-              ...n.data,
-              dimmed: false,
-            },
-          } as RelationshipsBrowserTypes.Node
-        }),
-      )
-      parent.send({
-        type: 'update.xydata',
-        xynodes: currentNodes,
-        xyedges: [],
-      })
-
-      // Pick the smaller zoom level
-      zoom = Math.min(
-        zoom,
-        nextviewport.zoom,
-      )
-      // allow framer to render
-      await delay(175)
-      next.xynodes = next.xynodes.map(Base.setDimmed(false))
-
-      if (signal.aborted) {
-        return updateXYData()
-      }
-      await xyflow.setCenter(currentSubjectCenter.x, currentSubjectCenter.y, { zoom, duration: 350 })
-      await xyflow.setCenter(nextSubjectCenter.x, nextSubjectCenter.y, { zoom })
-      return updateXYData()
-    }),
+    'enable: navigate.to': ({ context }) => context.enableNavigationMenu,
   },
 }).createMachine({
-  initial: 'initializing',
+  id: 'relationships-browser',
   context: ({ input }) => ({
     ...input,
     closeable: input.closeable ?? true,
@@ -298,8 +303,25 @@ export const relationshipsBrowserActor = setup({
     xynodes: [],
     xyedges: [],
   }),
+  initial: 'initializing',
+  on: {
+    'xyflow.applyNodeChanges': {
+      actions: assign({
+        xynodes: ({ context, event }) => {
+          return applyNodeChanges(event.changes, context.xynodes)
+        },
+      }),
+    },
+    'xyflow.applyEdgeChanges': {
+      actions: assign({
+        xyedges: ({ context, event }) => {
+          return applyEdgeChanges(event.changes, context.xyedges)
+        },
+      }),
+    },
+  },
   states: {
-    'initializing': {
+    initializing: {
       on: {
         'xyflow.init': {
           actions: [
@@ -311,9 +333,8 @@ export const relationshipsBrowserActor = setup({
           ],
           target: 'waiting-data',
         },
-        'close': {
-          target: 'closed',
-        },
+        'stop': 'closed',
+        'close': 'closed',
       },
     },
     'waiting-data': {
@@ -428,57 +449,26 @@ export const relationshipsBrowserActor = setup({
             raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 300 }),
           ],
         },
-        'close': {
-          target: 'closed',
-        },
+        'close': 'closed',
       },
     },
-    'closed': {
+    closed: {
       id: 'closed',
       type: 'final',
-      entry: [
-        stopChild('layouter'),
-        assign({
-          initialized: false,
-          xyflow: null,
-          xystore: null,
-        }),
-      ],
     },
   },
-  on: {
-    'xyflow.applyNodeChanges': {
-      actions: assign({
-        xynodes: ({ context, event }) => {
-          return applyNodeChanges(event.changes, context.xynodes)
-        },
-      }),
-    },
-    'xyflow.applyEdgeChanges': {
-      actions: assign({
-        xyedges: ({ context, event }) => {
-          return applyEdgeChanges(event.changes, context.xyedges)
-        },
-      }),
-    },
-  },
-}) as unknown as ActorLogic<
-  MachineSnapshot<
-    Context,
-    Events,
-    any,
-    'initializing' | 'waiting-data' | 'closed' | { active: 'idle' | 'layouting' },
-    'active',
-    any,
-    any,
-    any
-  >,
-  Events,
-  Input,
-  any,
-  any
-> // TODO reduce type inference by forcing the types
+  exit: assign({
+    initialized: false,
+    xyflow: null,
+    layouted: null,
+    xystore: null,
+    xyedges: [],
+    xynodes: [],
+  }),
+})
 
-export type RelationshipsBrowserLogic = typeof relationshipsBrowserActor
-export type RelationshipsBrowserActorRef = ActorRefFromLogic<typeof relationshipsBrowserActor>
+export interface RelationshipsBrowserLogic extends ActorLogicFrom<typeof relationshipsBrowserLogic> {
+}
+export interface RelationshipsBrowserActorRef extends ActorRefFromLogic<RelationshipsBrowserLogic> {
+}
 export type RelationshipsBrowserSnapshot = SnapshotFrom<RelationshipsBrowserActorRef>

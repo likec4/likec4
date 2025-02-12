@@ -3,7 +3,6 @@ import { useMemo, useTransition } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
 import { useDiagramActor } from '../hooks/useDiagramActor'
-import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { AlignmentMode } from '../likec4diagram/state/aligners'
 import { DiagramContext } from '../likec4diagram/state/machine'
 import type { Types } from '../likec4diagram/types'
@@ -37,9 +36,9 @@ export function useDiagram() {
         actor.send({ type: 'open.relationshipsBrowser', fqn })
       })
     },
-    openSource: (params: OpenSourceParams) => {
-      actor.send({ type: 'open.source', ...params })
-    },
+    // openSource: (params: OpenSourceParams) => {
+    //   actor.send({ type: 'open.source', ...params })
+    // },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
       startTransition(() => {
         actor.send({ type: 'open.elementDetails', fqn, fromNode })
@@ -52,7 +51,7 @@ export function useDiagram() {
     },
     closeOverlay: () => {
       startTransition(() => {
-        actor.send({ type: 'close.overlay' })
+        // actor.send({ type: 'close.overlay' })
       })
     },
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {

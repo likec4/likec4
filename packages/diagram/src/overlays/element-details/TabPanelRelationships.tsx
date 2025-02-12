@@ -4,7 +4,7 @@ import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
 import { useActorRef } from '@xstate/react'
 import { useState } from 'react'
 import { unique } from 'remeda'
-import { relationshipsBrowserActor } from '../relationships-browser/actor'
+import { relationshipsBrowserLogic } from '../relationships-browser/actor'
 import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
 import * as css from './TabPanelRelationships.css'
 
@@ -143,7 +143,7 @@ function RelationshipsStat({
 }
 
 const EmbeddedRelationshipsBrowser = ({ subjectId, currentView }: { subjectId: Fqn; currentView: DiagramView }) => {
-  const actor = useActorRef(relationshipsBrowserActor, {
+  const actor = useActorRef(relationshipsBrowserLogic, {
     input: {
       subject: subjectId,
       scope: currentView,

@@ -1,8 +1,8 @@
 import type { ViewId } from '@likec4/core'
-import { useCallbackRef } from '@mantine/hooks'
+import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, useEffect } from 'react'
-import { DiagramFeatures, useDiagramEventHandlers, useEnabledFeatures } from '../context'
+import { DiagramFeatures, useDiagramEventHandlers, useEnabledFeatures, useDiagramEventHandlersRef } from '../context/DiagramEventHandlers'
 import { useDiagramActor } from '../hooks/useDiagramActor'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { LikeC4ViewMachineContextProvider } from './state/actorContext'
@@ -15,45 +15,51 @@ import type { Types } from './types'
 type ActorContextInput = Omit<Input, 'xystore' | 'features'>
 
 export function DiagramActor({ input, children }: PropsWithChildren<{ input: ActorContextInput }>) {
-  const { onNavigateTo, onOpenSource, onChange } = useDiagramEventHandlers()
+  const handlersRef = useDiagramEventHandlersRef()
   const xystore = useStoreApi<Types.Node, Types.Edge>()
-  // const inspector = useInspector()
+  //const inspector = useInspector()
+
+  const actorRef = useActorRef(
+    diagramMachine.provide({
+      actions: {
+        'trigger:NavigateTo': ((_, { viewId }) => {
+          handlersRef.current.onNavigateTo?.(viewId as ViewId)
+        }),
+
+        'trigger:OnChange': ((_, params) => {
+          handlersRef.current.onChange?.(params)
+        }),
+
+        'trigger:OpenSource': ((_, params) => {
+          handlersRef.current.onOpenSource?.(params)
+        }),
+      },
+      actors: {
+        syncManualLayoutActor: syncManualLayoutActor.provide({
+          actions: {
+            'trigger:OnChange': ((_, params) => {
+              handlersRef.current.onChange?.(params)
+            }),
+          },
+        }),
+      },
+    }),
+    {
+      id: `diagram:${input.view.id}`,
+      ...inspector,
+      input: {
+        xystore,
+        ...input,
+      },
+      logger(...args: [any, ...any[]]) {
+        consola.debug(...args)
+      },
+    },
+  )
+
   return (
     (
-      <LikeC4ViewMachineContextProvider
-        logic={diagramMachine.provide({
-          actions: {
-            'trigger:NavigateTo': useCallbackRef((_, { viewId }) => {
-              onNavigateTo?.(viewId as ViewId)
-            }),
-
-            'trigger:OnChange': useCallbackRef((_, params) => {
-              onChange?.(params)
-            }),
-
-            'trigger:OpenSource': useCallbackRef((_, params) => {
-              onOpenSource?.(params)
-            }),
-          },
-          actors: {
-            syncManualLayoutActor: syncManualLayoutActor.provide({
-              actions: {
-                'trigger:OnChange': useCallbackRef((_, params) => {
-                  onChange?.(params)
-                }),
-              },
-            }),
-          },
-        })}
-        options={{
-          // ...inspector,
-          id: `diagram:${input.view.id}`,
-          input: {
-            xystore,
-            ...input,
-          },
-        }}
-      >
+      <LikeC4ViewMachineContextProvider value={actorRef}>
         <SyncStore input={input} />
         <DiagramActorToggledFeatures>
           {children}

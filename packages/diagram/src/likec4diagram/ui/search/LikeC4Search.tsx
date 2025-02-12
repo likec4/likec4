@@ -105,10 +105,7 @@ export function LikeC4Search() {
 
 function LikeC4SearchOverlay() {
   const close = useCloseSearch()
-  const focusTrapRef = useFocusTrap()
-  const { ref: forcusRef, focused } = useFocusWithin()
-
-  const ref = useMergedRef(forcusRef, focusTrapRef)
+  const ref = useFocusTrap()
 
   useWindowEvent(
     'keydown',

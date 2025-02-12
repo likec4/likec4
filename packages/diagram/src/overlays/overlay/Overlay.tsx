@@ -5,7 +5,7 @@ import {
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
 import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
-import { type PropsWithChildren, useRef, useState } from 'react'
+import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
 import * as css from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<
@@ -22,11 +22,14 @@ type OverlayProps = PropsWithChildren<
 export function Overlay({ children, onClose, className, classes, ...rest }: OverlayProps) {
   const [opened, setOpened] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const isClosingRef = useRef(false)
 
   // Move dialog to the top of the DOM
   const onCloseRef = useSyncedRef(onClose)
   const close = useDebouncedCallback(
     () => {
+      if (isClosingRef.current) return
+      isClosingRef.current = true
       onCloseRef.current()
     },
     [],
@@ -41,16 +44,16 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
   //   }
   // })
 
-  // useLayoutEffect(() => {
-  //   const cancel = (e: Event) => {
-  //     e.preventDefault()
-  //     close()
-  //   }
-  //   dialogRef.current?.addEventListener('cancel', cancel, { capture: true })
-  //   return () => {
-  //     dialogRef.current?.removeEventListener('cancel', cancel, { capture: true })
-  //   }
-  // }, [])
+  useLayoutEffect(() => {
+    const cancel = (e: Event) => {
+      e.preventDefault()
+      close()
+    }
+    dialogRef.current?.addEventListener('cancel', cancel, { capture: true })
+    return () => {
+      dialogRef.current?.removeEventListener('cancel', cancel, { capture: true })
+    }
+  }, [])
 
   useTimeoutEffect(() => {
     if (!dialogRef.current?.open) {

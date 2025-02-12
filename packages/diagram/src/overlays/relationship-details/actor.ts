@@ -5,6 +5,7 @@ import {
 import { prop } from 'remeda'
 import {
   type ActorLogic,
+  type ActorLogicFrom,
   type ActorRefFromLogic,
   type MachineSnapshot,
   type SnapshotFrom,
@@ -20,7 +21,7 @@ type XYFLowInstance = ReactFlowInstance<RelationshipDetailsTypes.Node, Relations
 
 export type Input = {
   edgeId: EdgeId
-  view: DiagramView
+  currentView: DiagramView
   // scope?: DiagramView | null
   // parentRef?: AnyActorRef| null
 }
@@ -45,7 +46,7 @@ export type Events =
   | { type: 'navigate.to'; edgeId: EdgeId }
   | { type: 'close' }
 
-export const relationshipDetailsActor = setup({
+export const relationshipDetailsLogic = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -149,14 +150,10 @@ export const relationshipDetailsActor = setup({
       ],
     },
   },
-}) as unknown as ActorLogic<
-  MachineSnapshot<Context, Events, any, 'opening' | 'active' | 'closed', any, any, any, any>,
-  Events,
-  Input,
-  any,
-  any
-> // TODO reduce type inference by forcing the types
+})
 
-export type RelationshipDetailsLogic = typeof relationshipDetailsActor
-export type RelationshipDetailsActorRef = ActorRefFromLogic<typeof relationshipDetailsActor>
+export interface RelationshipDetailsLogic extends ActorLogicFrom<typeof relationshipDetailsLogic> {
+}
+export interface RelationshipDetailsActorRef extends ActorRefFromLogic<RelationshipDetailsLogic> {
+}
 export type RelationshipDetailsSnapshot = SnapshotFrom<RelationshipDetailsActorRef>

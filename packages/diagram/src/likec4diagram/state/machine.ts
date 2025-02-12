@@ -43,8 +43,7 @@ import { MinZoom } from '../../base/const'
 import type { EnabledFeatures } from '../../context'
 import { type FeatureName, AllDisabled } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
-import { relationshipDetailsActor } from '../../overlays/relationship-details/actor'
-import { relationshipsBrowserActor } from '../../overlays/relationships-browser/actor'
+import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import type { Types } from '../types'
 import { createLayoutConstraints } from '../useLayoutConstraints'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
@@ -61,7 +60,7 @@ import {
   updateNavigationHistory,
   updateNodeData,
 } from './assign'
-import { type HotKeyEvent, hotkeyActor } from './hotkeyActor'
+import { type HotKeyEvent } from './hotkeyActor'
 import { syncManualLayoutActor } from './syncManualLayoutActor'
 import { focusedBounds } from './utils'
 
@@ -118,6 +117,7 @@ export interface DiagramContext extends Input {
   viewportBeforeFocus: null | Viewport
   xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
   syncLayoutActorRef: ActorRefFromLogic<typeof syncManualLayoutActor>
+  overlaysActorRef: ActorRefFromLogic<typeof overlaysActorLogic>
 
   // If Dynamic View
   activeWalkthrough: null | {
@@ -157,7 +157,7 @@ export type Events =
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; edgeId: EdgeId }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
-  | { type: 'close.overlay' }
+  // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
@@ -179,18 +179,16 @@ export const diagramMachine = setup({
     context: {} as DiagramContext,
     input: {} as Input,
     children: {} as {
-      hotkey: 'hotkeyActor'
+      // hotkey: 'hotkeyActor'
       syncLayout: 'syncManualLayoutActor'
-      relationshipDetails: 'relationshipDetailsActor'
-      relationshipsBrowser: 'relationshipsBrowserActor'
+      overlays: 'overlaysActor'
     },
     events: {} as Events,
   },
   actors: {
-    hotkeyActor,
+    // hotkeyActor,
     syncManualLayoutActor,
-    relationshipsBrowserActor,
-    relationshipDetailsActor,
+    overlaysActor: overlaysActorLogic,
   },
   guards: {
     'enabled: FitView': ({ context }) => context.features.enableFitView,
@@ -346,6 +344,9 @@ export const diagramMachine = setup({
       id: 'syncLayout',
       input: { parent: self, viewId: input.view.id },
     }),
+    overlaysActorRef: spawn('overlaysActor', {
+      id: 'overlays',
+    }),
     activeWalkthrough: null,
   }),
   // entry: ({ spawn }) => spawn(layoutActor, { id: 'layout', input: { parent: self } }),
@@ -444,7 +445,7 @@ export const diagramMachine = setup({
           ...focusNodesEdges(s),
           viewportBeforeFocus: { ...s.context.viewport },
         })),
-        spawnChild('hotkeyActor', { id: 'hotkey' }),
+        // spawnChild('hotkeyActor', { id: 'hotkey' }),
         {
           type: 'xyflow:fitDiagram',
           params: focusedBounds,
@@ -521,114 +522,114 @@ export const diagramMachine = setup({
       ],
     },
     overlay: {
-      entry: spawnChild('hotkeyActor', { id: 'hotkey' }),
+      // entry: spawnChild('hotkeyActor', { id: 'hotkey' }),
       initial: 'hole',
       states: {
         hole: {
           target: '#idle',
         },
-        elementDetails: {
-          guard: ({ context }: { context: DiagramContext }) => context.activeElementDetails !== null,
-          entry: assign({
-            activeElementDetails: ({ context }) => {
-              const fqn = context.activeElementDetails!.fqn
-              const fromNode = context.activeElementDetails!.fromNode
-              if (fromNode) {
-                const internalNode = nonNullable(
-                  context.xystore.getState().nodeLookup.get(fromNode),
-                  'XY Internal Node not found',
-                )
-                const nodeRect = nodeToRect(internalNode)
-                const zoom = context.xyflow!.getZoom()
+        // elementDetails: {
+        //   guard: ({ context }: { context: DiagramContext }) => context.activeElementDetails !== null,
+        //   entry: assign({
+        //     activeElementDetails: ({ context }) => {
+        //       const fqn = context.activeElementDetails!.fqn
+        //       const fromNode = context.activeElementDetails!.fromNode
+        //       if (fromNode) {
+        //         const internalNode = nonNullable(
+        //           context.xystore.getState().nodeLookup.get(fromNode),
+        //           'XY Internal Node not found',
+        //         )
+        //         const nodeRect = nodeToRect(internalNode)
+        //         const zoom = context.xyflow!.getZoom()
 
-                const nodeRectScreen = {
-                  ...context.xyflow!.flowToScreenPosition(nodeRect),
-                  width: nodeRect.width * zoom,
-                  height: nodeRect.height * zoom,
-                }
+        //         const nodeRectScreen = {
+        //           ...context.xyflow!.flowToScreenPosition(nodeRect),
+        //           width: nodeRect.width * zoom,
+        //           height: nodeRect.height * zoom,
+        //         }
 
-                return { fqn, fromNode, nodeRect, nodeRectScreen }
-              } else {
-                return { fqn, fromNode }
-              }
-            },
-          }),
-          on: {
-            // Catch event and do nothing
-            'open.elementDetails': {
-              actions: assign({
-                activeElementDetails: ({ event, context }) => ({
-                  ...context.activeElementDetails,
-                  fqn: event.fqn,
-                  fromNode: context.activeElementDetails?.fromNode ?? null,
-                }),
-              }),
-            },
-            'close.overlay': {
-              target: '#idle',
-            },
-            'key.esc': {
-              target: '#idle',
-            },
-          },
-          exit: assign({
-            activeElementDetails: null,
-          }),
-        },
-        relationshipsBrowser: {
-          invoke: {
-            id: 'relationshipsBrowser',
-            src: 'relationshipsBrowserActor',
-            input: ({ context, event }) => {
-              assertEvent(event, 'open.relationshipsBrowser')
-              return {
-                subject: event.fqn,
-                scope: context.view,
-              }
-            },
-            onDone: {
-              target: '#idle',
-            },
-          },
-          on: {
-            'open.relationshipsBrowser': {
-              actions: sendTo('relationshipsBrowser', ({ event }) => ({
-                type: 'navigate.to',
-                subject: event.fqn,
-              })),
-            },
-            'close.overlay': {
-              actions: sendTo('relationshipsBrowser', { type: 'close' }),
-            },
-            'key.esc': {
-              actions: sendTo('relationshipsBrowser', { type: 'close' }),
-            },
-          },
-        },
-        relationshipDetails: {
-          invoke: {
-            id: 'relationshipDetails',
-            src: 'relationshipDetailsActor',
-            input: ({ event, context }) => {
-              assertEvent(event, 'open.relationshipDetails')
-              return {
-                edgeId: event.edgeId,
-                view: context.view,
-              }
-            },
-            onDone: {
-              target: '#idle',
-            },
-          },
-          on: {
-            'close.overlay': {
-              actions: sendTo('relationshipDetails', { type: 'close' }),
-            },
-            'key.esc': {
-              actions: sendTo('relationshipDetails', { type: 'close' }),
-            },
-          },
-        },
+        //         return { fqn, fromNode, nodeRect, nodeRectScreen }
+        //       } else {
+        //         return { fqn, fromNode }
+        //       }
+        //     },
+        //   }),
+        //   on: {
+        //     // Catch event and do nothing
+        //     'open.elementDetails': {
+        //       actions: assign({
+        //         activeElementDetails: ({ event, context }) => ({
+        //           ...context.activeElementDetails,
+        //           fqn: event.fqn,
+        //           fromNode: context.activeElementDetails?.fromNode ?? null,
+        //         }),
+        //       }),
+        //     },
+        //     // 'close.overlay': {
+        //     //   target: '#idle',
+        //     // },
+        //     'key.esc': {
+        //       target: '#idle',
+        //     },
+        //   },
+        //   exit: assign({
+        //     activeElementDetails: null,
+        //   }),
+        // },
+        // relationshipsBrowser: {
+        //   entry: [
+        //     sendTo(
+        //       ({ context }) => context.overlaysActorRef,
+        //       ({ event }) => {
+        //         assertEvent(event, 'open.relationshipsBrowser')
+        //         return ({
+        //           type: 'open.relationshipsBrowser',
+        //           subject: event.fqn,
+        //         })
+        //       },
+        //     ),
+        //   ],
+        //   on: {
+        //     // 'open.relationshipsBrowser': {
+        //     //   actions: sendTo('relationshipsBrowser', ({ event }) => ({
+        //     //     type: 'navigate.to',
+        //     //     subject: event.fqn,
+        //     //   })),
+        //     // },
+        //     // 'close.overlay': {
+        //     //   actions: sendTo('relationshipsBrowser', { type: 'close' }),
+        //     // },
+        //     'key.esc': {
+        //       actions: forwardTo(({ context }) => context.overlaysActorRef),
+        //       // actions: sendTo((
+        //       // { context }) => context.overlaysActorRef, { type: 'close' }),
+        //     },
+        //   },
+        // },
+        // relationshipDetails: {
+        //   invoke: {
+        //     id: 'relationshipDetails',
+        //     src: 'relationshipDetailsActor',
+        //     input: ({ event, context }) => {
+        //       assertEvent(event, 'open.relationshipDetails')
+        //       return {
+        //         edgeId: event.edgeId,
+        //         view: context.view,
+        //       }
+        //     },
+        //     onDone: {
+        //       target: '#idle',
+        //     },
+        //   },
+        //   on: {
+        //     'close.overlay': {
+        //       actions: sendTo('relationshipDetails', { type: 'close' }),
+        //     },
+        //     'key.esc': {
+        //       actions: sendTo('relationshipDetails', { type: 'close' }),
+        //     },
+        //   },
+        // },
       },
       on: {
         // We received another view, close overlay and process event again
@@ -703,7 +704,7 @@ export const diagramMachine = setup({
     },
     walkthrough: {
       entry: [
-        spawnChild('hotkeyActor', { id: 'hotkey' }),
+        // spawnChild('hotkeyActor', { id: 'hotkey' }),
         assign({
           viewportBeforeFocus: ({ context }) => context.viewport,
           activeWalkthrough: ({ context, event }) => {
@@ -911,20 +912,55 @@ export const diagramMachine = setup({
       ],
     },
     'open.elementDetails': {
-      actions: assign({
-        activeElementDetails: ({ event, context }) => ({
-          fqn: event.fqn,
-          fromNode: event.fromNode ?? context.lastClickedNode?.id ?? null,
-          fromNodeScreenPosition: null,
-        }),
+      actions: (({ context, event }) => {
+        if (event.fromNode) {
+          const internalNode = nonNullable(
+            context.xystore.getState().nodeLookup.get(event.fromNode),
+            'XY Internal Node not found',
+          )
+          const nodeRect = nodeToRect(internalNode)
+          const zoom = context.xyflow!.getZoom()
+
+          const clientRect = {
+            ...context.xyflow!.flowToScreenPosition(nodeRect),
+            width: nodeRect.width * zoom,
+            height: nodeRect.height * zoom,
+          }
+
+          context.overlaysActorRef.send({
+            type: 'open.elementDetails',
+            subject: event.fqn,
+            currentView: context.view,
+            initiatedFrom: {
+              node: event.fromNode,
+              clientRect,
+            },
+          })
+        } else {
+          context.overlaysActorRef.send({
+            type: 'open.elementDetails',
+            subject: event.fqn,
+            currentView: context.view,
+          })
+        }
       }),
-      target: '.overlay.elementDetails',
+    },
+    // 'open.relationshipDetails': {
+    //   target: '.overlay.relationshipDetails',
+    // },
+    'open.relationshipsBrowser': {
+      actions: sendTo(({ context }) => context.overlaysActorRef, ({ context, event }) => ({
+        type: 'open.relationshipsBrowser',
+        subject: event.fqn,
+        scope: context.view,
+      })),
     },
     'open.relationshipDetails': {
-      target: '.overlay.relationshipDetails',
-    },
-    'open.relationshipsBrowser': {
-      target: '.overlay.relationshipsBrowser',
+      actions: sendTo(({ context }) => context.overlaysActorRef, ({ context, event }) => ({
+        type: 'open.relationshipDetails',
+        currentView: context.view,
+        edgeId: event.edgeId,
+      })),
     },
     'open.source': {
       actions: {
@@ -947,13 +983,15 @@ export const diagramMachine = setup({
     },
   },
   exit: [
-    stopChild('layout'),
+    stopChild(({ context }) => context.syncLayoutActorRef),
+    stopChild(({ context }) => context.overlaysActorRef),
     stopChild('hotkey'),
     assign({
       xyflow: null,
       xystore: null as any,
       initialized: false,
       syncLayoutActorRef: null as any,
+      overlaysActorRef: null as any,
     }),
   ],
 })
