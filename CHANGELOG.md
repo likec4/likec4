@@ -1,3 +1,15 @@
+## [1.22.1](https://github.com/likec4/likec4/compare/v1.22.0...v1.22.1) (2025-02-13)
+
+### Improvement
+
+* **diagram:** manual layout is locked by default ([a847a28](https://github.com/likec4/likec4/commit/a847a2872602db9c3cefbf0f5435e012813d7e60)), closes [#1518](https://github.com/likec4/likec4/issues/1518)
+
+### Bug Fixes
+
+* **cli:** failing check update command ([a6b9544](https://github.com/likec4/likec4/commit/a6b954484534f23b360212b033c21f278abdbc66))
+* **export:** manual layout causes the exported landscape view losing nodes and links, when exporting to .png ([5ebbc03](https://github.com/likec4/likec4/commit/5ebbc03da84c59d62c6ca7c3e7ba65abfbc3bdaf)), closes [#1594](https://github.com/likec4/likec4/issues/1594)
+
+
 # [1.22.0](https://github.com/likec4/likec4/compare/v1.21.1...v1.22.0) (2025-02-13)
 
 ### Features
