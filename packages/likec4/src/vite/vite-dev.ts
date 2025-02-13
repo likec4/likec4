@@ -14,7 +14,7 @@ type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   buildWebcomponent?: boolean
   openBrowser?: boolean
   hmr?: boolean,
-  listenInterface?: string | undefined
+  listen?: string | undefined
 }
 
 export async function viteDev({
@@ -24,7 +24,7 @@ export async function viteDev({
   languageServices,
   likec4AssetsDir,
   openBrowser,
-  listenInterface,
+  listen,
   ...cfg
 }: Config): Promise<ViteDevServer> {
   likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
@@ -79,7 +79,7 @@ export async function viteDev({
     mode: hmr ? 'development' : config.mode,
     publicDir,
     server: {
-      host: listenInterface ?? '127.0.0.1',
+      host: listen ?? '127.0.0.1',
       port,
       hmr: hmr && {
         overlay: true,

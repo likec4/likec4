@@ -57,8 +57,8 @@ export const outputSingleFile = {
   desc: 'outputs a single self-contained HTML file with all required resources inlined'
 } as const satisfies Options
 
-export const listenInterface = {
-  alias: 'i',
+export const listen = {
+  alias: 'l',
   type: 'string',
   desc: 'ip address of the network interface to listen on',
   default: '127.0.0.1'

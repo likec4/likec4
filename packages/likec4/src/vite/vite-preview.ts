@@ -8,7 +8,7 @@ type VitePreviewParams = {
   outputDir?: string | undefined
   base?: string | undefined
   open?: boolean,
-  listenInterface?: string | undefined
+  listen?: string | undefined
 }
 
 export async function vitePreview(cfg: VitePreviewParams) {
@@ -26,7 +26,7 @@ export async function vitePreview(cfg: VitePreviewParams) {
     ...config,
     mode: 'production',
     preview: {
-      host: cfg.listenInterface ?? '127.0.0.1',
+      host: cfg.listen ?? '127.0.0.1',
       port,
       open
     }
