@@ -76,7 +76,7 @@
       automerge: true,
       matchDepNames: [
         'turbo',
-        'yarn'
+        'pnpm'
       ]
     },
     {

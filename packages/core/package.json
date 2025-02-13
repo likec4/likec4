@@ -17,7 +17,7 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "rm -r -f dist",
-    "package": "yarn pack"
+    "package": "pnpm pack"
   },
   "files": [
     "dist",
@@ -131,5 +131,5 @@
     "unbuild": "^3.3.1",
     "vitest": "^3.0.4"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@9.15.5"
 }

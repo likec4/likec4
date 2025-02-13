@@ -3,7 +3,7 @@
   "version": "1.22.1",
   "private": true,
   "license": "MIT",
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "pnpm@9.15.5",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -14,7 +14,6 @@
   },
   "scripts": {
     "fmt": "dprint fmt",
-    "postinstall": "husky install",
     "build": "turbo run build --filter='!@likec4/docs-astro' --filter='!@likec4/playground'",
     "build:all": "turbo run build",
     "typecheck": "turbo run typecheck --filter='!@likec4/docs-astro'",
@@ -29,7 +28,7 @@
     "git:pre-commit": "nano-staged",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
-    "test:e2e": "NODE_ENV=production turbo run package --filter='likec4' && cd e2e && yarn install && yarn bootstrap && yarn test",
+    "test:e2e": "NODE_ENV=production turbo run package --filter='likec4' && cd e2e && pnpm install && pnpm bootstrap && pnpm test",
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {

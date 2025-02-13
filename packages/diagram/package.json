@@ -29,7 +29,7 @@
     },
     "./style.css": "./dist/style.css"
   },
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "pnpm@9.15.5",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "vite build",

@@ -66,5 +66,5 @@
     "react-dom": "~19.0.0",
     "typescript": "^5.7.3"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@9.15.5"
 }

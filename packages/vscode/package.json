@@ -28,14 +28,14 @@
   },
   "scripts": {
     "vscode:prepublish": "tsx scripts/prepublish.mts",
-    "open-web": "run build:turbo && yarn dlx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
+    "open-web": "pnpm build:turbo && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
     "build": "tsx scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f contrib dist src/generated",
-    "vsce:pack": "yarn dlx vsce package",
-    "vsce:publish": "yarn dlx vsce publish --skip-duplicate"
+    "vsce:pack": "pnpx vsce package",
+    "vsce:publish": "pnpx vsce publish --skip-duplicate"
   },
   "engines": {
     "vscode": "^1.84.0"
@@ -223,5 +223,5 @@
     "vscode-messenger": "^0.4.5",
     "vscode-uri": "3.0.8"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@9.15.5"
 }

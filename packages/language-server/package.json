@@ -126,5 +126,5 @@
     "vscode-uri": "3.0.8",
     "which": "^5.0.0"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@9.15.5"
 }

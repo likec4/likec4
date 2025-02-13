@@ -21,7 +21,6 @@
   "excludes": [
     "**/node_modules",
     "**/*-lock.json",
-    ".yarn/*",
     ".turbo",
     ".astro",
     ".vscode",

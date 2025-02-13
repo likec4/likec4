@@ -14,4 +14,4 @@ consola.info('clean dist')
 await rm('dist/', { recursive: true, force: true })
 
 // Run build
-await $`yarn build:turbo`
+await $`pnpm build:turbo`

@@ -3,18 +3,22 @@ description: Init Node.js, caches and install dependencies
 
 inputs:
   node-version:
-    description: 'The version of Node.js to use'
+    description: "The version of Node.js to use"
     required: false
-    default: '20'
+    default: "20"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
     - name: setup Node.js
       uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'yarn'
+        cache: "pnpm"
 
     # - name: yarn cache directory path
     #   id: yarn-cache-dir-path
@@ -28,4 +32,4 @@ runs:
 
     - name: install dependencies
       shell: bash
-      run: yarn install --immutable
+      run: yarn install

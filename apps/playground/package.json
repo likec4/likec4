@@ -71,7 +71,7 @@
     "vscode-uri": "~3.0.8",
     "zustand": "^4.5.5"
   },
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "pnpm@9.15.5",
   "devDependencies": {
     "vite-plugin-node-polyfills": "^0.23.0"
   }

@@ -2,7 +2,6 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.enable": false,
-  "npm.packageManager": "yarn",
   "[typescript]": {
     "editor.defaultFormatter": "dprint.dprint",
   },
@@ -34,15 +33,15 @@
     ".yarn/**": true,
     "yarn.lock": true,
     "node_modules/**": true,
-    "*/*/dist/**": true,
-    "packages/*/node_modules/**": true
+    "packages/*/dist/**": true,
   },
   "files.exclude": {
     "**/.tsbuildinfo": true,
     "**/*.tsbuildinfo": true,
     "**/.turbo": true,
     "packages/likec4/__app__": true,
-    "packages/*/.vscode-test-web": true
+    "packages/*/.vscode-test-web": true,
+    "packages/*/node_modules/**": true
   },
   "json.schemas": [
     {
