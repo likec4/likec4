@@ -870,6 +870,9 @@ importers:
       conf:
         specifier: ^13.1.0
         version: 13.1.0
+      consola:
+        specifier: ^3.4.0
+        version: 3.4.0
       defu:
         specifier: ^6.1.4
         version: 6.1.4

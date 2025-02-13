@@ -142,6 +142,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "conf": "^13.1.0",
+    "consola": "^3.4.0",
     "defu": "^6.1.4",
     "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.25.0",

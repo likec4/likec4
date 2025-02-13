@@ -1,11 +1,9 @@
-import consola from 'consola'
 import { $ } from 'execa'
 import { fdir } from 'fdir'
 import { rmSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { emptyDir } from './_utils'
 
-consola.info('Generating routes...')
 await $`tsr generate`
 
 emptyDir(resolve('icons'))
@@ -16,7 +14,7 @@ const copyDirs = [
   '../icons/aws',
   '../icons/azure',
   '../icons/gcp',
-  '../icons/tech'
+  '../icons/tech',
 ]
 await $`cp -r ${copyDirs} icons`
 
@@ -26,7 +24,7 @@ const files = new fdir({
   includeBasePath: true,
   filters: [(name, isDir) => {
     return !isDir && (name.endsWith('/index.js') || !name.endsWith('.js'))
-  }]
+  }],
 }).crawl('icons').sync()
 
 for (const file of files) {
@@ -36,8 +34,6 @@ for (const file of files) {
 const copyFiles = [
   '../icons/icon.d.ts',
   '../icons/all.d.ts',
-  '../icons/all.js'
+  '../icons/all.js',
 ]
 await $`cp ${copyFiles} icons/`
-
-consola.success('Copied icons')

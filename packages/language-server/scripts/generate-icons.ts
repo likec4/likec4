@@ -1,5 +1,4 @@
 import { Icons } from '@likec4/icons/all'
-import { consola } from 'consola'
 import { CompositeGeneratorNode, joinToNode, toString } from 'langium/generate'
 import compareNatural from 'natural-compare-lite'
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -31,4 +30,4 @@ out
 mkdirSync('src/generated-lib', { recursive: true })
 writeFileSync('src/generated-lib/icons.ts', toString(out), 'utf-8')
 
-consola.success(`Generated src/generated-lib/icons.ts with ${icons.length} icons`)
+console.info(`Generated src/generated-lib/icons.ts with ${icons.length} icons`)
