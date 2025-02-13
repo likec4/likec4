@@ -26,3 +26,5 @@ runs:
 
     - run: pnpm install --frozen-lockfile
       shell: sh
+      env:
+        NODE_ENV: development
