@@ -23,7 +23,7 @@ const selectXYProps = (ctx: DiagramContext) => ({
   zoomable: ctx.zoomable,
   fitViewPadding: ctx.fitViewPadding,
   enableFitView: ctx.features.enableFitView,
-  enableReadOnly: ctx.features.enableReadOnly,
+  enableReadOnly: ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly,
   ...(!ctx.features.enableFitView && {
     viewport: {
       x: -Math.min(ctx.view.bounds.x, 0),
@@ -146,7 +146,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({ background,
       {...enableFitView && {
         onViewportResize,
       }}
-      nodesDraggable={nodesDraggable}
+      nodesDraggable={notReadOnly && nodesDraggable}
       nodesSelectable={nodesSelectable}
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
       {...props}>
