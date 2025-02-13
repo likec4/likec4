@@ -1,12 +1,14 @@
+import { invariant } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import ConfigStore from 'conf'
 import JSON5 from 'json5'
-import latestVersion from 'latest-version'
+import ky from 'ky'
 import spawn from 'nano-spawn'
 import { isEmpty, isNullish } from 'remeda'
 import { gt as semverGt } from 'semver'
 import { isMinimal, nodeENV } from 'std-env'
 import k from 'tinyrainbow'
+import type { PackageJson } from 'type-fest'
 import { name, version } from '../../../package.json' with { type: 'json' }
 import { boxen, logger } from '../../logger'
 
@@ -55,7 +57,8 @@ export function notifyAvailableUpdate() {
 
 export async function checkAvailableUpdate() {
   try {
-    const latest = await latestVersion(name)
+    const latest = await fetchLatestVersion()
+    invariant(latest, 'No version found in latest npm')
     conf.set({
       lastUpdateCheck: Date.now(),
       latestVersion: latest,
@@ -68,11 +71,17 @@ export async function checkAvailableUpdate() {
         k.green(latest),
       ].join(''))
     } else {
-      logger.info(
-        k.dim(`Up to date: `) + ' ' + k.green(version),
-      )
+      boxen(k.dim(`Up to date: `) + ' ' + k.green(version))
     }
   } catch (error) {
     logger.error(loggable(error))
   }
+}
+
+async function fetchLatestVersion() {
+  const headers = {
+    accept: 'application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*',
+  }
+  let latest = await ky('https://registry.npmjs.org/likec4/latest', { headers, keepalive: true }).json<PackageJson>()
+  return latest.version
 }

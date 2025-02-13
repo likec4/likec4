@@ -68,7 +68,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
         }
       } catch (error) {
         log.error(`FAILED GraphvizBinaryAdapter.layoutJson`, { error })
-        log.warn`FAILED DOT:\n${dot}`
+        log.warn(`FAILED DOT:\n${dot}`)
         if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
           log.warn(
             `Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}): "${error.stderr}"`,

@@ -22,10 +22,6 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      },
       "default": {
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
@@ -34,10 +30,6 @@
     },
     "./model": {
       "sources": "./src/model/index.ts",
-      "require": {
-        "types": "./dist/model/index.d.cts",
-        "default": "./dist/model/index.cjs"
-      },
       "default": {
         "types": "./dist/model/index.d.mts",
         "import": "./dist/model/index.mjs",
@@ -161,8 +153,8 @@
     "glob": "^11.0.1",
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
+    "ky": "^1.7.5",
     "langium": "3.3.1",
-    "latest-version": "^9.0.0",
     "merge-error-cause": "^5.0.0",
     "mkdirp": "^3.0.1",
     "nano-spawn": "^0.2.0",
