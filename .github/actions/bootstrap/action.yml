@@ -24,4 +24,4 @@ runs:
 
     - name: install dependencies
       shell: bash
-      run: yarn install
+      run: pnpm install
