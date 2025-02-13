@@ -1,3 +1,26 @@
+# [1.22.0](https://github.com/likec4/likec4/compare/v1.21.1...v1.22.0) (2025-02-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @vanilla-extract/vite-plugin to v5 ([#1545](https://github.com/likec4/likec4/issues/1545)) ([ba2a645](https://github.com/likec4/likec4/commit/ba2a64561b31f10df00173ec3d8f1eaa687ffdc0))
+* **deps:** update dependency framer-motion to ^12.3.1 ([#1570](https://github.com/likec4/likec4/issues/1570)) ([db8e7d7](https://github.com/likec4/likec4/commit/db8e7d7307408ccadddbe89b3a586ac7b348192f))
+* **deps:** update dependency framer-motion to ^12.4.0 ([#1579](https://github.com/likec4/likec4/issues/1579)) ([f60b273](https://github.com/likec4/likec4/commit/f60b273175031950dff2374834896c4923a826e5))
+* **deps:** update dependency framer-motion to ^12.4.1 ([#1581](https://github.com/likec4/likec4/issues/1581)) ([47777f5](https://github.com/likec4/likec4/commit/47777f50c18f36d73bdf8e9399ddfe6ffac1d2e2))
+* **deps:** update dependency framer-motion to v12 ([#1547](https://github.com/likec4/likec4/issues/1547)) ([6aaf1b1](https://github.com/likec4/likec4/commit/6aaf1b15b4dcafe36176f3f8d6f5fcd0e4c180b9))
+* **deps:** update dependency rollup to v4.34.3 ([#1571](https://github.com/likec4/likec4/issues/1571)) ([c75c363](https://github.com/likec4/likec4/commit/c75c36334dd2ed6d2814601d25875d4b28a5c856))
+* **deps:** update mantine monorepo to v7.16.3 ([#1592](https://github.com/likec4/likec4/issues/1592)) ([675d54f](https://github.com/likec4/likec4/commit/675d54fa06f7f49f3c015f241899870e11c7d986))
+* **deps:** update node.js to >=20.18.3 ([#1600](https://github.com/likec4/likec4/issues/1600)) ([39a1a2e](https://github.com/likec4/likec4/commit/39a1a2e83ebe387444a5e5dfd3bfc93194bd1b74))
+
+
+### Features
+
+* check for new releases and notify if update available ([#1574](https://github.com/likec4/likec4/issues/1574)) ([d57fc40](https://github.com/likec4/likec4/commit/d57fc4063ca151131a48dced630d7ed5d1b97201)), closes [#1573](https://github.com/likec4/likec4/issues/1573)
+* **cli:** added an option to set the listen address of serve and preview commands ([#1559](https://github.com/likec4/likec4/issues/1559)) ([3522c5d](https://github.com/likec4/likec4/commit/3522c5dc49e6ec16c77ed1c1cca8545eeda0ef9b)), closes [#1526](https://github.com/likec4/likec4/issues/1526)
+* revamp search functionality ([#1584](https://github.com/likec4/likec4/issues/1584)) ([9b5f949](https://github.com/likec4/likec4/commit/9b5f949858fdf59a66411ae3a2c5406ca640cbd0)), closes [#1553](https://github.com/likec4/likec4/issues/1553)
+
+
+
 ## [1.21.1](https://github.com/likec4/likec4/compare/v1.21.0...v1.21.1) (2025-02-08)
 
 ### Bug Fixes
