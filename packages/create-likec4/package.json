@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.17.7",
+    "@types/node": "^20.17.17",
     "@types/prompts": "^2.4.8",
     "execa": "^9.5.2",
     "prompts": "^2.4.2",
