@@ -10,7 +10,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-
     - name: 🛠️ Setup pnpm
       uses: pnpm/action-setup@v4
 
@@ -26,3 +25,4 @@ runs:
         cache-prefix: turbo_cache_
 
     - run: pnpm install --frozen-lockfile
+      shell: sh
