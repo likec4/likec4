@@ -8,7 +8,7 @@
   
   thanks @davydkov, closes [#1553](https://github.com/likec4/likec4/issues/1553)
 
-* **cli:** added an option to set the listen address of serve and preview commands ([#1559](https://github.com/likec4/likec4/issues/1559)) ([3522c5d](https://github.com/likec4/likec4/commit/3522c5dc49e6ec16c77ed1c1cca8545eeda0ef9b)), closes [#1526](https://github.com/likec4/likec4/issues/1526)
+* **cli:** added an option to set the listen address of serve and preview commands, thanks @pavelpykhtin, ([#1559](https://github.com/likec4/likec4/issues/1559)) ([3522c5d](https://github.com/likec4/likec4/commit/3522c5dc49e6ec16c77ed1c1cca8545eeda0ef9b)), closes [#1526](https://github.com/likec4/likec4/issues/1526)
 * **cli:**  check for new releases and notify if update available ([#1574](https://github.com/likec4/likec4/issues/1574)) ([d57fc40](https://github.com/likec4/likec4/commit/d57fc4063ca151131a48dced630d7ed5d1b97201)), closes [#1573](https://github.com/likec4/likec4/issues/1573)
 
 
