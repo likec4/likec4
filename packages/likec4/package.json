@@ -113,7 +113,7 @@
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
     "rollup": "4.34.6",
-    "type-fest": "4.33.0",
+    "type-fest": "4.34.1",
     "vite": "5.4.14"
   },
   "devDependencies": {
