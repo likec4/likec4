@@ -201,6 +201,10 @@ export class ExtensionController extends AbstractDisposable {
     return nonNullable(this._likec4model, 'LikeC4Model not initialized')
   }
 
+  static get telemetry(): TelemetryReporter | null {
+    return ExtensionController._instance?.telemetry ?? null
+  }
+
   protected constructor(
     public readonly client: LanguageClient,
     public readonly outputChannel: vscode.LogOutputChannel,
@@ -292,7 +296,6 @@ Restart VSCode. Please report this issue, if it persists.`)
   // public setPreviewPanelState(state: PreviewPanelInternalState) {
   //   this._context.workspaceState.update(StateKeys.previewPanelState, state)
   // }
-
   private async enableTelemetry() {
     logger.debug(`Enable telemetry`)
     const ctrl = this
@@ -316,22 +319,5 @@ Restart VSCode. Please report this issue, if it persists.`)
         logWarn(e)
       }
     }))
-    // ctrl.onDispose(addLogReporter((logObj, _ctx) => {
-    //   if (telemetry.telemetryLevel === 'off') {
-    //     return
-    //   }
-    //   if (logObj.type !== 'error' && logObj.type !== 'fatal' && logObj.type !== 'fail') {
-    //     return
-    //   }
-    //   const { message, error } = formatLogObj(logObj)
-    //   if (error) {
-    //     if ('stack' in error) {
-    //       error.stack = new vscode.TelemetryTrustedValue(error.stack) as any as string
-    //     }
-    //     telemetry.sendTelemetryErrorEvent('error', error)
-    //   } else {
-    //     telemetry.sendTelemetryErrorEvent('error', { message })
-    //   }
-    // }))
   }
 }

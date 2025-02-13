@@ -1,9 +1,8 @@
-import { configureLogger, getAnsiColorFormatter, getConsoleSink, getTextFormatter } from '@likec4/log'
+import { configureLogger, getConsoleSink, getTextFormatter } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
-import { hasTTY } from 'std-env'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { LikeC4FileSystem } from './LikeC4FileSystem'
-import { getLspConnectionSink, logger } from './logger'
+import { getTelemetrySink, logger } from './logger'
 import { type LikeC4Services, type LikeC4SharedServices, createCustomLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/configurable-layouter'
 
@@ -21,23 +20,18 @@ export async function startLanguageServer(): Promise<{
   likec4: LikeC4Services
 }> {
   const connection = createConnection(ProposedFeatures.all)
-  // @ts-ignore
-  const isDebug = process.env.NODE_ENV === 'development'
 
   await configureLogger({
     sinks: {
       console: getConsoleSink({
         formatter: getTextFormatter(),
       }),
-      lsp: getLspConnectionSink(connection),
+      telemetry: getTelemetrySink(connection),
     },
-    // filters: {
-    //   errors: 'error'
-    // },
     loggers: [
       {
         category: ['likec4'],
-        sinks: ['console', 'lsp'],
+        sinks: ['console', 'telemetry'],
       },
     ],
   })

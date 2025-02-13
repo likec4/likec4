@@ -36,27 +36,53 @@ export function getLspConnectionSink(connection: Connection, props?: LspConnecti
       return `${category} ${message}`
     },
   })
+  return (logObj) => {
+    try {
+      switch (logObj.level) {
+        case 'debug':
+          connection.console.debug(format(logObj))
+          break
+        case 'info':
+          connection.console.info(format(logObj))
+          break
+        case 'warning':
+          connection.console.warn(format(logObj))
+          break
+        case 'error':
+        case 'fatal': {
+          connection.console.error(format(logObj))
+          break
+        }
+      }
+    } catch (e) {
+      console.error('Error while logging to LSP connection:', e)
+    }
+  }
+}
+
+export function getTelemetrySink(connection: Connection): Sink {
   const messageOnly = getMessageOnlyFormatter()
   return (logObj) => {
     try {
       switch (logObj.level) {
-        // case 'debug':
-        //   connection.console.debug(format(logObj).trimEnd())
-        //   break
-        // case 'info':
-        //   connection.console.info(format(logObj).trimEnd())
-        //   break
-        // case 'warning':
-        //   connection.console.warn(format(logObj).trimEnd())
-        //   break
         case 'error':
         case 'fatal': {
-          // connection.console.error(format(logObj))
           const err = errorFromLogRecord(logObj)
           if (err) {
-            connection.telemetry.logEvent({ eventName: 'error', ...err })
+            connection.telemetry.logEvent({
+              eventName: 'error',
+              message: `${err.name}: ${err.message}`,
+              category: logObj.category.join('.'),
+              ...(err.stack && {
+                stack: err.stack,
+              }),
+            })
           } else {
-            connection.telemetry.logEvent({ eventName: 'error', message: messageOnly(logObj) })
+            connection.telemetry.logEvent({
+              eventName: 'error',
+              message: messageOnly(logObj),
+              category: logObj.category.join('.'),
+            })
           }
           break
         }

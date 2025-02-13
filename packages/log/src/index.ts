@@ -25,6 +25,10 @@ export {
 } from './formatters'
 
 export {
+  withFilter,
+} from '@logtape/logtape'
+
+export {
   logger as consola,
   logger as rootLogger,
 }

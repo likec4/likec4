@@ -12,6 +12,7 @@ import {
   getTextFormatter as getLogtapeTextFormatter,
 } from '@logtape/logtape'
 import mergeErrorCause from 'merge-error-cause'
+import wrapErrorMessage from 'wrap-error-message'
 import { ident, parseStack } from './utils'
 
 // export function formatProperties(properties: Record<string, unknown>): {
@@ -69,7 +70,7 @@ import { ident, parseStack } from './utils'
 //   }
 // }
 
-export function errorFromLogRecord(record: LogRecord): Error | null {
+function gerErrorFromLogRecord(record: LogRecord): Error | null {
   const errors = Object
     .values(record.properties)
     .filter((v) => v instanceof Error)
@@ -84,21 +85,25 @@ export function errorFromLogRecord(record: LogRecord): Error | null {
     return null
   }
   return errors.length === 1 ? errors[0]! : new AggregateError(errors)
-  // if (typeof record.rawMessage === 'string') {
-  //   return wrapErrorMessage(error, record.rawMessage + Z'\n')
-  // }
-  // return error
 }
 
-export function appendErrorToMessage(values: FormattedValues, color = false): FormattedValues {
-  const error = errorFromLogRecord(values.record)
+export function errorFromLogRecord(record: LogRecord): Error | null {
+  const error = gerErrorFromLogRecord(record)
+  if (error && typeof record.rawMessage === 'string') {
+    return wrapErrorMessage(error, record.rawMessage + '\n')
+  }
+  return error
+}
+
+export function appendErrorToMessage(values: FormattedValues, color?: boolean): FormattedValues {
+  const error = gerErrorFromLogRecord(values.record)
   if (error) {
     let errorMessge = error.message
     if (error.stack) {
       errorMessge = errorMessge + '\n' + ident(error.stack.split('\n').slice(1))
     }
     if (color) {
-      errorMessge = `RED: ${ansiColors.red}${errorMessge}${RESET}`
+      errorMessge = `${ansiColors.red}${errorMessge}${RESET}`
     }
     return {
       ...values,
@@ -143,7 +148,7 @@ export function getMessageOnlyFormatter(): TextFormatter {
 const level = (l: LogLevel): string => levelAbbreviations[l]
 
 export function getTextFormatter(options?: TextFormatterOptions): TextFormatter {
-  const format = options?.format ?? (({ timestamp, level, category, message }: FormattedValues): string => {
+  const _format = options?.format ?? (({ timestamp, level, category, message }: FormattedValues): string => {
     return `${timestamp} ${level} ${category} ${message}`
   })
   // const format = options?.format
@@ -152,7 +157,9 @@ export function getTextFormatter(options?: TextFormatterOptions): TextFormatter 
     level,
     category: '.',
     ...options,
-    format: (values) => format(appendErrorToMessage(values)),
+    format: (values) => {
+      return _format(appendErrorToMessage(values))
+    },
   })
 }
 
@@ -170,7 +177,7 @@ const ansiColors = {
 } as const
 
 export function getAnsiColorFormatter(options?: AnsiColorFormatterOptions): TextFormatter {
-  const format = options?.format ?? (({ timestamp, level, category, message }: FormattedValues): string => {
+  const _format = options?.format ?? (({ timestamp, level, category, message }: FormattedValues): string => {
     return `${timestamp} ${level} ${category} ${message}`
   })
   return getLogtapeAnsiColorFormatter({
@@ -181,7 +188,7 @@ export function getAnsiColorFormatter(options?: AnsiColorFormatterOptions): Text
     category: '.',
     ...options,
     format: (values) => {
-      return format(appendErrorToMessage(values, true))
+      return _format(appendErrorToMessage(values, true))
     },
   })
 }

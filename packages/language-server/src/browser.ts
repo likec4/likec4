@@ -29,12 +29,11 @@ export async function startLanguageServer(): Promise<{
   await configureLogger({
     sinks: {
       console: getConsoleSink(),
-      lsp: getLspConnectionSink(connection),
     },
     loggers: [
       {
         category: 'likec4',
-        sinks: ['console', 'lsp'],
+        sinks: ['console'],
         lowestLevel: 'debug',
       },
     ],
