@@ -10,18 +10,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: install pnpm
+
+    - name: 🛠️ Setup pnpm
       uses: pnpm/action-setup@v4
-    - name: setup Node.js
+
+    - name: 🛠️ Setup node
       uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
       with:
         node-version: ${{ inputs.node-version }}
         cache: "pnpm"
-    - name: cache for turbo
+
+    - name: 🛠️ Cache for turbo
       uses: rharkor/caching-for-turbo@v1.5
       with:
         cache-prefix: turbo_cache_
 
-    - name: install dependencies
-      shell: bash
-      run: pnpm install
+    - run: pnpm install --frozen-lockfile

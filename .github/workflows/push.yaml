@@ -24,18 +24,19 @@ jobs:
       !contains(github.event.head_commit.message, 'ci skip') && (
         github.event_name == 'push' || github.event.pull_request.head.repo.fork
       )
+    name: ʦ typescript
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: generate
+      - name: ⚙️ generate
         run: pnpm ci:generate
 
-      - name: typecheck
+      - name: ʦ typecheck
         run: pnpm ci:typecheck
 
   check-build:
