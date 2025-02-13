@@ -1,4 +1,4 @@
-name: Bootstrap
+name: bootstrap
 description: Init Node.js, caches and install dependencies
 
 inputs:
@@ -10,21 +10,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install pnpm
+    - name: install pnpm
       uses: pnpm/action-setup@v4
-      with:
-        version: 9
     - name: setup Node.js
       uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
       with:
         node-version: ${{ inputs.node-version }}
         cache: "pnpm"
-
-    # - name: yarn cache directory path
-    #   id: yarn-cache-dir-path
-    #   shell: bash
-    #   run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
     - name: cache for turbo
       uses: rharkor/caching-for-turbo@v1.5
       with:
