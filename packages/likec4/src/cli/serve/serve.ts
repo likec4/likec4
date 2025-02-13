@@ -31,6 +31,12 @@ type HandlerParams = {
   useOverview?: boolean | undefined
 
   webcomponentPrefix: string
+
+  /**
+   * ip address of the network interface to listen on
+   * @default '127.0.0.1'
+   */
+  listen?: string | undefined
 }
 
 export async function handler({
@@ -40,6 +46,7 @@ export async function handler({
   useHashHistory,
   useOverview = false,
   base,
+  listen,
 }: HandlerParams) {
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
@@ -61,6 +68,7 @@ export async function handler({
     useHashHistory,
     useOverviewGraph: useOverview,
     likec4AssetsDir,
+    listen,
   })
 
   server.config.logger.clearScreen('info')
