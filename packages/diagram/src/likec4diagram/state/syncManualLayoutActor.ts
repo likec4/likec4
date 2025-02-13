@@ -1,5 +1,5 @@
 import type { ViewChange, ViewId } from '@likec4/core'
-import { boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
+import { type Rect, boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, reduce } from 'remeda'
 import {
   type ActorRef,
@@ -132,12 +132,7 @@ function createViewChange(parentContext: Machine.DiagramContext): ViewChange.Sav
 
   const { nodeLookup } = xystore.getState()
   const movedNodes = new Set<string>()
-  let bounds = {
-    x: 0,
-    y: 0,
-    width: 1,
-    height: 1,
-  }
+  let bounds: Rect | undefined
 
   const nodes = reduce([...nodeLookup.values()], (acc, node) => {
     const dimensions = getNodeDimensions(node)
@@ -154,7 +149,7 @@ function createViewChange(parentContext: Machine.DiagramContext): ViewChange.Sav
       width: Math.ceil(dimensions.width),
       height: Math.ceil(dimensions.height),
     }
-    bounds = getBoundsOfRects(bounds, rect)
+    bounds = bounds ? getBoundsOfRects(bounds, rect) : rect
     return acc
   }, {} as ViewChange.SaveManualLayout['layout']['nodes'])
 
@@ -202,9 +197,11 @@ function createViewChange(parentContext: Machine.DiagramContext): ViewChange.Sav
       x2: Math.ceil(Math.max(...allX)),
       y2: Math.ceil(Math.max(...allY)),
     })
-    bounds = getBoundsOfRects(bounds, rect)
+    bounds = bounds ? getBoundsOfRects(bounds, rect) : rect
     return acc
   }, {} as ViewChange.SaveManualLayout['layout']['edges'])
+
+  bounds ??= view.bounds
 
   return {
     op: 'save-manual-layout',
