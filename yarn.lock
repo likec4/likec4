@@ -2085,7 +2085,7 @@ __metadata:
     d3-shape: "npm:^3.2.0"
     esm-env: "npm:^1.2.2"
     fast-equals: "npm:^5.2.2"
-    framer-motion: "npm:^12.4.1"
+    framer-motion: "npm:^12.4.2"
     khroma: "npm:^2.1.0"
     nanostores: "npm:0.11.3"
     react: "npm:~19.0.0"
@@ -2289,7 +2289,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.2.2"
     fast-equals: "npm:^5.2.2"
-    framer-motion: "npm:^12.4.1"
+    framer-motion: "npm:^12.4.2"
     langium: "npm:3.3.1"
     monaco-editor: "npm:@codingame/monaco-vscode-editor-api@8.0.4"
     monaco-editor-wrapper: "npm:5.5.3"
@@ -7717,9 +7717,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.4.1":
-  version: 12.4.1
-  resolution: "framer-motion@npm:12.4.1"
+"framer-motion@npm:^12.4.2":
+  version: 12.4.2
+  resolution: "framer-motion@npm:12.4.2"
   dependencies:
     motion-dom: "npm:^12.0.0"
     motion-utils: "npm:^12.0.0"
@@ -7735,7 +7735,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/8d1f521f836d475330b1f9b9073d366f4aa7fcf15b7e697309847fdeeedc65928eff844aa6887ecc908451521934dec73726d8bf6c3895c4e58a88997df9f448
+  checksum: 10c0/31d1a5360278de19ccf8e3e79cf442e15b5c04980130914f8cdcd3becc99fbd47088041b9b92fc9c06af7dc4030dc3b6e2da2c9c3d25cce9e36dc35d1bf6ac51
   languageName: node
   linkType: hard
 
@@ -9633,7 +9633,7 @@ __metadata:
     esm-env: "npm:^1.2.2"
     fast-equals: "npm:^5.2.2"
     fdir: "npm:^6.4.3"
-    framer-motion: "npm:^12.4.1"
+    framer-motion: "npm:^12.4.2"
     get-port: "npm:^7.1.0"
     glob: "npm:^11.0.1"
     html-to-image: "npm:^1.11.11"
