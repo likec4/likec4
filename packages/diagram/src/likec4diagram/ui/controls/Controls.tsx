@@ -16,6 +16,7 @@ import { LayoutDriftNotification } from './LayoutDriftNotification'
 import { ManualLayoutToolsButton } from './ManualLayoutToolsButton'
 import { NavigationButtons } from './NavigationButtons'
 import * as css from './styles.css'
+import { ToggleReadonly } from './ToggleReadonly'
 
 export const Controls = memo(() => {
   const { viewId, hasLayoutDrift, viewportChanged } = useDiagramContext(c => ({
@@ -78,6 +79,7 @@ export const Controls = memo(() => {
               </ActionIcon>
             </Tooltip>
           )}
+          {enableControls && <ToggleReadonly />}
           {enableControls && hasLayoutDrift && <LayoutDriftNotification {...portalProps} />}
           {enableControls && notReadOnly && (
             <>

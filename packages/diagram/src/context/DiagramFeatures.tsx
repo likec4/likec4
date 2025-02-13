@@ -28,7 +28,7 @@ const FeatureNames = [
    */
   'Vscode',
 ] as const
-type FeatureName = typeof FeatureNames[number]
+export type FeatureName = typeof FeatureNames[number]
 export type EnabledFeatures = {
   [P in `enable${FeatureName}`]: boolean
 }

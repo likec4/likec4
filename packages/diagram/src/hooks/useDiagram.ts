@@ -1,6 +1,7 @@
 import type { EdgeId, Fqn, NodeId, ViewId } from '@likec4/core'
 import { useMemo, useTransition } from 'react'
 import type { PartialDeep } from 'type-fest'
+import type { FeatureName } from '../context/DiagramFeatures'
 import { useDiagramActor } from '../hooks/useDiagramActor'
 import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { AlignmentMode } from '../likec4diagram/state/aligners'
@@ -124,6 +125,10 @@ export function useDiagram() {
 
     stopWalkthrough: () => {
       actor.send({ type: 'walkthrough.end' })
+    },
+
+    toggleFeature: (feature: FeatureName, forceValue?: boolean) => {
+      actor.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
     },
   }), [actor])
 }

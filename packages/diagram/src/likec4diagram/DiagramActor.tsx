@@ -2,11 +2,12 @@ import type { ViewId } from '@likec4/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, useEffect } from 'react'
-import { useDiagramEventHandlers, useEnabledFeatures } from '../context'
+import { DiagramFeatures, useDiagramEventHandlers, useEnabledFeatures } from '../context'
 import { useDiagramActor } from '../hooks/useDiagramActor'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { LikeC4ViewMachineContextProvider } from './state/actorContext'
 // import { useInspector } from './state/inspector'
+import { useDiagramContext } from '../hooks/useDiagramContext'
 import { type Input, diagramMachine } from './state/machine'
 import { syncManualLayoutActor } from './state/syncManualLayoutActor'
 import type { Types } from './types'
@@ -54,7 +55,9 @@ export function DiagramActor({ input, children }: PropsWithChildren<{ input: Act
         }}
       >
         <SyncStore input={input} />
-        {children}
+        <DiagramActorToggledFeatures>
+          {children}
+        </DiagramActorToggledFeatures>
       </LikeC4ViewMachineContextProvider>
     )
   )
@@ -76,4 +79,14 @@ const SyncStore = ({ input: { view, xyedges, xynodes, ...inputs } }: { input: Ac
   }, [send, view, xyedges, xynodes])
 
   return null
+}
+
+function DiagramActorToggledFeatures({ children }: PropsWithChildren) {
+  const toggledFeatures = useDiagramContext(s => s.toggledFeatures)
+  return (
+    <DiagramFeatures
+      overrides={toggledFeatures}>
+      {children}
+    </DiagramFeatures>
+  )
 }
