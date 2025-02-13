@@ -1,62 +1,18 @@
-import { nonexhaustive } from '@likec4/core'
-import { type ConsolaReporter, formatLogObj, logger } from '@likec4/log'
-import type { Disposable, LogOutputChannel } from 'vscode'
-import { disposable } from './util'
+import {
+  type Sink,
+  type TextFormatter,
+  configureLogger as configure,
+  getConsoleSink,
+  getTextFormatter,
+  rootLogger,
+} from '@likec4/log'
+import type { LogOutputChannel } from 'vscode'
 
-export { logger }
-
-export function addLogReporter(log: ConsolaReporter['log']): Disposable {
-  const reporter = { log }
-  logger.addReporter(reporter)
-  return disposable(() => {
-    logger.removeReporter(reporter)
-  })
-}
-export function logToChannel(channel: LogOutputChannel): Disposable {
-  return addLogReporter((logObj, _ctx) => {
-    const { message } = formatLogObj(logObj)
-    switch (logObj.type) {
-      case 'silent': {
-        // ignore
-        break
-      }
-      case 'verbose':
-      case 'trace': {
-        channel.trace(message)
-        break
-      }
-      case 'debug':
-      case 'log': {
-        channel.debug(message)
-        break
-      }
-      case 'info':
-      case 'box':
-      case 'ready':
-      case 'start':
-      case 'success': {
-        channel.info(message)
-        break
-      }
-      case 'warn': {
-        channel.warn(message)
-        break
-      }
-      case 'fail':
-      case 'error':
-      case 'fatal': {
-        channel.error(message)
-        break
-      }
-      default:
-        nonexhaustive(logObj.type)
-    }
-  })
-}
+export const logger = rootLogger.getChild('vscode')
 
 export function logWarn(e: unknown): void {
   if (e instanceof Error) {
-    logger.warn(e)
+    logger.warn`${e}`
     return
   }
   const error = new Error(`Unknown error: ${e}`)
@@ -65,12 +21,12 @@ export function logWarn(e: unknown): void {
   } catch {
     // ignore
   }
-  logger.warn(error)
+  logger.warn`${error}`
 }
 
 export function logError(e: unknown): void {
   if (e instanceof Error) {
-    logger.error(e)
+    logger.error`${e}`
     return
   }
   const error = new Error(`Unknown error: ${e}`)
@@ -79,5 +35,64 @@ export function logError(e: unknown): void {
   } catch {
     // ignore
   }
-  logger.error(error)
+  logger.error`${error}`
 }
+
+type OutputChannelSinkProps = {
+  /**
+   * The text formatter to use.  Defaults to {@link defaultTextFormatter}.
+   */
+  formatter?: TextFormatter
+}
+export function getOutputChannelSink(channel: LogOutputChannel, props?: OutputChannelSinkProps): Sink {
+  const format = props?.formatter ?? getTextFormatter({
+    format({ category, message }) {
+      return `${category} ${message}`
+    },
+  })
+  return (logObj) => {
+    try {
+      switch (logObj.level) {
+        case 'debug':
+          channel.debug(format(logObj))
+          break
+        case 'info':
+          channel.info(format(logObj))
+          break
+        case 'warning':
+          channel.warn(format(logObj))
+          break
+        case 'error':
+        case 'fatal':
+          channel.error(format(logObj))
+          break
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+}
+
+export async function configureLogger(channel: LogOutputChannel) {
+  await configure({
+    sinks: {
+      console: getConsoleSink(),
+      vscode: getOutputChannelSink(channel),
+    },
+    loggers: [
+      {
+        category: 'likec4',
+        sinks: ['console', 'vscode'],
+      },
+    ],
+  })
+}
+
+// export const lspErrorHandler: ErrorHandler = {
+//   error(error: Error, message: string, count: number): void {
+//     logError(error)
+//   },
+//   closed(): void {
+//     // ignore
+//   },
+// }

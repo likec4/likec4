@@ -98,7 +98,7 @@ function parseLabelBbox(
       }
     }
   } catch (e) {
-    logger.warn(`Failed on parsing label draw ops: ${e}\n${JSON.stringify(labelDrawOps, null, 2)}`)
+    logger.warn(`Failed on parsing label draw ops: \n{labelDrawOps}`, { e, labelDrawOps })
     return null
   }
 
@@ -164,8 +164,7 @@ function parseGraphvizEdge(
   }
 }
 
-export function parseGraphvizJson(json: string, computedView: ComputedView): DiagramView {
-  const graphvizJson = JSON.parse(json) as GraphvizJson
+export function parseGraphvizJson(graphvizJson: GraphvizJson, computedView: ComputedView): DiagramView {
   const page = parseBB(graphvizJson.bb)
   const {
     nodes: computedNodes,
@@ -207,7 +206,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   for (const computedEdge of computedEdges) {
     const graphvizEdge = graphvizEdges.find(e => e.likec4_id === computedEdge.id)
     if (!graphvizEdge) {
-      logger.warn(`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`)
+      logger.warn`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`
       continue
     }
     diagram.edges.push(
@@ -220,8 +219,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
 
 const idFromGvId = (id: GvId) => String(id + 1).padStart(2, '0')
 
-export function parseOverviewGraphvizJson(json: string): OverviewGraph {
-  const graphvizJson = JSON.parse(json) as GraphvizJson
+export function parseOverviewGraphvizJson(graphvizJson: GraphvizJson): OverviewGraph {
   const page = parseBB(graphvizJson.bb)
   const overviewGraph: OverviewGraph = {
     nodes: [],
@@ -285,8 +283,8 @@ export function parseOverviewGraphvizJson(json: string): OverviewGraph {
         target,
         points: parseEdgePoints(edge),
       })
-    } catch (e) {
-      logger.warn(e)
+    } catch (error) {
+      logger.warn(`Failed on parsing edge:\n{edge}`, { error, edge })
     }
   }
 

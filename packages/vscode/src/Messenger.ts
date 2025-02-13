@@ -7,13 +7,13 @@ import {
   FetchDiagramView,
   GetLastClickedNode,
   OnOpenView,
-  WebviewMsgs
+  WebviewMsgs,
 } from '@likec4/vscode-preview/protocol'
 import { Messenger as VsCodeMessenger } from 'vscode-messenger'
 import { BROADCAST } from 'vscode-messenger-common'
 import { cmdLocate } from './const'
 import type { ExtensionController } from './ExtensionController'
-import { logger } from './logger'
+import { logError, logger } from './logger'
 import { AbstractDisposable } from './util'
 import { PreviewPanel } from './webview/PreviewPanel'
 
@@ -23,27 +23,27 @@ export class Messenger extends AbstractDisposable {
   private messenger = new VsCodeMessenger()
 
   constructor(
-    ctrl: ExtensionController
+    ctrl: ExtensionController,
   ) {
     super()
 
     this.onDispose(
       this.messenger.onNotification(WebviewMsgs.CloseMe, () => {
         PreviewPanel.current?.dispose()
-      })
+      }),
     )
     this.onDispose(
       this.messenger.onNotification(WebviewMsgs.NavigateTo, ({ viewId }) => {
         PreviewPanel.createOrReveal({
           viewId: viewId ?? ('index' as ViewID),
-          ctrl
+          ctrl,
         })
-      })
+      }),
     )
     this.onDispose(
       this.messenger.onNotification(WebviewMsgs.Locate, async params => {
         await vscode.commands.executeCommand(cmdLocate, params)
-      })
+      }),
     )
     this.onDispose(
       this.messenger.onNotification(WebviewMsgs.OnChange, async ({ viewId, change }) => {
@@ -63,7 +63,7 @@ export class Messenger extends AbstractDisposable {
           const editor = await vscode.window.showTextDocument(location.uri, {
             viewColumn,
             selection,
-            preserveFocus
+            preserveFocus,
           })
           editor.revealRange(selection)
 
@@ -71,7 +71,7 @@ export class Messenger extends AbstractDisposable {
         } catch (e) {
           logger.error(`[Messenger] onChange error: ${e}`)
         }
-      })
+      }),
     )
 
     // this.onDispose(
@@ -95,12 +95,12 @@ export class Messenger extends AbstractDisposable {
         try {
           return await ctrl.likec4model.fetchComputedModel()
         } catch (e) {
-          logger.error(e)
+          logError(e)
           return {
-            model: null
+            model: null,
           }
         }
-      })
+      }),
     )
 
     this.onDispose(
@@ -112,15 +112,15 @@ export class Messenger extends AbstractDisposable {
           }
           return {
             view: result.diagram,
-            error: null
+            error: null,
           }
         } catch (e) {
           return {
             view: null,
-            error: e instanceof Error ? (e.stack ?? e.message) : '' + e
+            error: e instanceof Error ? (e.stack ?? e.message) : '' + e,
           }
         }
-      })
+      }),
     )
   }
 
@@ -130,7 +130,7 @@ export class Messenger extends AbstractDisposable {
 
   registerWebViewPanel(panel: vscode.WebviewPanel) {
     const participantId = this.messenger.registerWebviewPanel(panel, {
-      broadcastMethods: [BroadcastModelUpdate.method]
+      broadcastMethods: [BroadcastModelUpdate.method],
     })
     return {
       notifyToChangeView: (viewId: ViewID) => {
@@ -139,7 +139,7 @@ export class Messenger extends AbstractDisposable {
 
       getLastClickedNode: async () => {
         return await this.messenger.sendRequest(GetLastClickedNode, participantId)
-      }
+      },
     }
   }
   //   logger.info(`[Messenger] diagramUpdate`)
@@ -162,7 +162,7 @@ export class Messenger extends AbstractDisposable {
 
   get diagnostics() {
     return this.messenger.diagnosticApi({
-      withParameterData: true
+      withParameterData: true,
     })
   }
 }

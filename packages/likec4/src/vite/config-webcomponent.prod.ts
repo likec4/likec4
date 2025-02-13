@@ -1,11 +1,9 @@
-import { createLikeC4Logger } from '../logger'
-
 import { viteAliases } from '@/vite/aliases'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit, JsBanners, viteAppRoot } from './utils'
+import { chunkSizeWarningLimit, JsBanners, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
   webcomponentPrefix: string | undefined
@@ -22,7 +20,7 @@ export async function viteWebcomponentConfig({
   webcomponentPrefix = 'likec4',
   filename = 'likec4-views.js',
 }: LikeC4ViteWebcomponentConfig) {
-  const customLogger = createLikeC4Logger('c4:lib')
+  const customLogger = viteLogger
   const root = viteAppRoot()
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 

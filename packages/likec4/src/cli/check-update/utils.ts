@@ -1,13 +1,14 @@
-import { consola } from '@likec4/log'
+import { loggable } from '@likec4/log'
 import ConfigStore from 'conf'
 import JSON5 from 'json5'
 import latestVersion from 'latest-version'
 import spawn from 'nano-spawn'
 import { isEmpty, isNullish } from 'remeda'
 import { gt as semverGt } from 'semver'
-import { isMinimal } from 'std-env'
+import { isMinimal, nodeENV } from 'std-env'
 import k from 'tinyrainbow'
 import { name, version } from '../../../package.json' with { type: 'json' }
+import { boxen, logger } from '../../logger'
 
 type StoredConfiguration = {
   lastUpdateCheck?: number // timestamp
@@ -21,8 +22,10 @@ export const conf = new ConfigStore<StoredConfiguration>({
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
+const ENV_CHECK_UPDATE = 'check-update'
+
 export function notifyAvailableUpdate() {
-  if (isMinimal) {
+  if (isMinimal || nodeENV === ENV_CHECK_UPDATE) {
     return
   }
   const lastUpdateCheck = conf.get('lastUpdateCheck')
@@ -33,12 +36,15 @@ export function notifyAvailableUpdate() {
       stdio: 'ignore',
       preferLocal: true,
       detached: true,
-    }).catch(err => {
-      consola.error(err)
+      env: {
+        'NODE_ENV': ENV_CHECK_UPDATE,
+      },
+    }).catch(() => {
+      // ignore output
     })
   }
   if (latestVersion && semverGt(latestVersion, version)) {
-    consola.box([
+    boxen([
       `Update available: `,
       k.dim(version),
       k.reset(' → '),
@@ -48,21 +54,25 @@ export function notifyAvailableUpdate() {
 }
 
 export async function checkAvailableUpdate() {
-  const latest = await latestVersion(name)
-  conf.set({
-    lastUpdateCheck: Date.now(),
-    latestVersion: latest,
-  })
-  if (semverGt(latest, version)) {
-    consola.box([
-      `Update available: `,
-      k.dim(version),
-      k.reset(' → '),
-      k.green(latest),
-    ].join(''))
-  } else {
-    consola.box(
-      k.dim(`Up to date: `) + ' ' + k.green(version),
-    )
+  try {
+    const latest = await latestVersion(name)
+    conf.set({
+      lastUpdateCheck: Date.now(),
+      latestVersion: latest,
+    })
+    if (semverGt(latest, version)) {
+      boxen([
+        `Update available: `,
+        k.dim(version),
+        k.reset(' → '),
+        k.green(latest),
+      ].join(''))
+    } else {
+      logger.info(
+        k.dim(`Up to date: `) + ' ' + k.green(version),
+      )
+    }
+  } catch (error) {
+    logger.error(loggable(error))
   }
 }

@@ -17,7 +17,7 @@ const mkdist: BuildEntry = {
 }
 
 const bundled: BuildEntry = {
-  input: './src/index.ts',
+  input: './src/bundled.ts',
   name: 'bundled',
   builder: 'rollup',
   declaration: false,

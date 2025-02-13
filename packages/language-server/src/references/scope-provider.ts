@@ -17,7 +17,7 @@ import {
   StreamScope,
 } from 'langium'
 import { ast } from '../ast'
-import { logger } from '../logger'
+import { logger, logWarnError } from '../logger'
 import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 import { elementRef, getFqnElementRef } from '../utils/elementRef'
@@ -125,11 +125,11 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         }
         return this.computeScope(context)
       } catch (e) {
-        logger.warn(e)
+        logWarnError(e)
         return this.getGlobalScope(referenceType, context)
       }
     } catch (e) {
-      logger.warn(e)
+      logWarnError(e)
       return EMPTY_SCOPE
     }
   }

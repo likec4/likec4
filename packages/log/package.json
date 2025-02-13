@@ -18,23 +18,10 @@
   "exports": {
     ".": {
       "sources": "./src/index.ts",
-      "node": {
+      "default": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.mjs",
         "require": "./dist/index.cjs"
-      },
-      "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/browser.mjs",
-        "require": "./dist/browser.cjs"
-      }
-    },
-    "./browser": {
-      "sources": "./src/browser.ts",
-      "default": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/browser.mjs",
-        "require": "./dist/browser.cjs"
       }
     }
   },
@@ -45,6 +32,9 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "unbuild"
+  },
+  "dependencies": {
+    "@logtape/logtape": "^0.8.2"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",

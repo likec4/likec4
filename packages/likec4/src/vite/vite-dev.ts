@@ -1,6 +1,6 @@
 import { type LikeC4ViteConfig, viteConfig } from '@/vite/config-app'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
-import { consola } from '@likec4/log'
+import { logger as consola } from '@likec4/log'
 import getPort, { portNumbers } from 'get-port'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'

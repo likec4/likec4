@@ -1,5 +1,4 @@
 import { generateLikeC4Model } from '@likec4/generators'
-import { consola } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { mkdir, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
@@ -7,7 +6,7 @@ import { cwd } from 'node:process'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { LikeC4 } from '../../../LikeC4'
-import { createLikeC4Logger, startTimer } from '../../../logger'
+import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
   /**
@@ -23,7 +22,7 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
 
   logger.info(`${k.dim('format')} ${k.green('model')}`)
@@ -33,7 +32,7 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
   for (const view of model.views()) {
     if (view.$view.hasLayoutDrift) {
       logger.warn(
-        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id)
+        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),
       )
     }
   }
@@ -63,23 +62,23 @@ export async function modelHandler({ path, useDotBin, outfile }: HandlerParams) 
   await mkdir(outDir, { recursive: true })
 
   await writeFile(outfilepath, generateLikeC4Model(model), {
-    encoding: 'utf-8'
+    encoding: 'utf-8',
   })
 
-  consola.box({
-    message: stripIndent(`
+  boxen(
+    stripIndent(`
     ${k.dim('Source with LikeC4Model generated:')}
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
       ${k.underline('https://likec4.dev/tooling/code-generation/model/')}
   `).trim(),
-    style: {
+    {
       padding: 2,
       borderColor: 'green',
-      borderStyle: 'rounded'
-    }
-  })
+      borderStyle: 'round',
+    },
+  )
 
   timer.stopAndLog()
 }

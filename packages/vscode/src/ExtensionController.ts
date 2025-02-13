@@ -3,7 +3,6 @@ import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient
 
 import { type ViewId as ViewID, nonNullable } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
-import { formatLogObj } from '@likec4/log'
 import type TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
 import { values } from 'remeda'
@@ -18,7 +17,7 @@ import {
   isProd,
 } from './const'
 import { LikeC4Model } from './LikeC4Model'
-import { addLogReporter, logger } from './logger'
+import { logError, logger, logWarn } from './logger'
 import { Messenger } from './Messenger'
 import { Rpc } from './Rpc'
 import { AbstractDisposable } from './util'
@@ -123,7 +122,7 @@ export class ExtensionController extends AbstractDisposable {
 
           viewId = selected.viewId
         } catch (e) {
-          logger.warn(e)
+          logWarn(e)
           return
         }
       }
@@ -272,7 +271,7 @@ Restart VSCode. Please report this issue, if it persists.`)
     } catch (e) {
       if (e instanceof Error) {
         void vscode.window.showErrorMessage(e.message)
-        logger.error(e)
+        logError(e)
       }
       return Promise.reject(e)
     }
@@ -314,25 +313,25 @@ Restart VSCode. Please report this issue, if it persists.`)
         }
         telemetry.sendTelemetryEvent(eventName, properties)
       } catch (e) {
-        logger.warn(e)
+        logWarn(e)
       }
     }))
-    ctrl.onDispose(addLogReporter((logObj, _ctx) => {
-      if (telemetry.telemetryLevel === 'off') {
-        return
-      }
-      if (logObj.type !== 'error' && logObj.type !== 'fatal' && logObj.type !== 'fail') {
-        return
-      }
-      const { message, error } = formatLogObj(logObj)
-      if (error) {
-        if ('stack' in error) {
-          error.stack = new vscode.TelemetryTrustedValue(error.stack) as any as string
-        }
-        telemetry.sendTelemetryErrorEvent('error', error)
-      } else {
-        telemetry.sendTelemetryErrorEvent('error', { message })
-      }
-    }))
+    // ctrl.onDispose(addLogReporter((logObj, _ctx) => {
+    //   if (telemetry.telemetryLevel === 'off') {
+    //     return
+    //   }
+    //   if (logObj.type !== 'error' && logObj.type !== 'fatal' && logObj.type !== 'fail') {
+    //     return
+    //   }
+    //   const { message, error } = formatLogObj(logObj)
+    //   if (error) {
+    //     if ('stack' in error) {
+    //       error.stack = new vscode.TelemetryTrustedValue(error.stack) as any as string
+    //     }
+    //     telemetry.sendTelemetryErrorEvent('error', error)
+    //   } else {
+    //     telemetry.sendTelemetryErrorEvent('error', { message })
+    //   }
+    // }))
   }
 }

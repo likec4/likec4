@@ -1,11 +1,11 @@
 import type * as c4 from '@likec4/core'
-import { isAutoLayoutDirection, type ViewManualLayout } from '@likec4/core'
+import { type ViewManualLayout, isAutoLayoutDirection } from '@likec4/core'
 import { decode, encode } from '@msgpack/msgpack'
 import { fromBase64, toBase64 } from '@smithy/util-base64'
 import { AstUtils, CstUtils } from 'langium'
 import { mapValues } from 'remeda'
 import type { ast } from '../ast'
-import { logger } from '../logger'
+import { logger, logWarnError } from '../logger'
 
 const { getDocument } = AstUtils
 
@@ -19,15 +19,15 @@ function pack({
     nodes: mapValues(nodes, ({ x, y, width, height, isCompound, ...n }) => ({
       ...n,
       b: [x, y, width, height] as const,
-      c: isCompound
+      c: isCompound,
     })),
     edges: mapValues(edges, ({ points, controlPoints, labelBBox, dotpos, ...e }) => ({
       ...!!controlPoints && { cp: controlPoints },
       ...!!labelBBox && { l: labelBBox },
       ...!!dotpos && { dp: dotpos },
       ...e,
-      p: points
-    }))
+      p: points,
+    })),
   }
 }
 
@@ -47,15 +47,15 @@ function unpack({
       width: b[2],
       height: b[3],
       isCompound: c,
-      ...n
+      ...n,
     })),
     edges: mapValues(edges, ({ p, cp, l, dp, ...e }) => ({
       ...!!cp && { controlPoints: cp },
       ...!!l && { labelBBox: l },
       ...!!dp && { dotpos: dp },
       ...e,
-      points: p
-    }))
+      points: p,
+    })),
   }
 }
 
@@ -71,7 +71,7 @@ export function serializeToComment(layout: ViewManualLayout) {
   }
   lines.unshift(
     '/**',
-    ' * @likec4-generated(v1)'
+    ' * @likec4-generated(v1)',
   )
   lines.push(' */')
 
@@ -105,11 +105,11 @@ export function parseViewManualLayout(node: ast.LikeC4View): c4.ViewManualLayout
     return deserializeFromComment(commentNode.text)
   } catch (e) {
     const doc = getDocument(node)
-    logger.warn(e)
+    logWarnError(e)
     logger.warn(
       `Ignoring manual layout of "${node.name ?? 'unnamed'}" at ${doc.uri.fsPath}:${
         1 + (commentNode.range.start.line || 0)
-      }`
+      }`,
     )
     return undefined
   }

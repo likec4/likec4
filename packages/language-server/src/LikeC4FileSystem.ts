@@ -2,7 +2,7 @@ import { fdir } from 'fdir'
 import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { LikeC4LanguageMetaData } from './generated/module'
-import { logger } from './logger'
+import { logError, logger } from './logger'
 
 export const LikeC4FileSystem = {
   fileSystemProvider: () => new SymLinkTraversingFileSystemProvider(),
@@ -31,7 +31,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider {
         })
       }
     } catch (error) {
-      logger.error(error)
+      logError(error)
     }
     return entries
   }

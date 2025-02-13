@@ -4,7 +4,7 @@ import prettyMilliseconds from 'pretty-ms'
 import { keys } from 'remeda'
 import { isDev } from './const'
 import type { ExtensionController } from './ExtensionController'
-import { logger } from './logger'
+import { logger, logWarn } from './logger'
 import { AbstractDisposable } from './util'
 
 export class LikeC4Model extends AbstractDisposable {
@@ -86,7 +86,7 @@ export class LikeC4Model extends AbstractDisposable {
       logger.debug(`[LikeC4Model] send telemetry`, { ...metrics, ms })
       this.ctrl.telemetry.sendTelemetryEvent('model-metrics', {}, { ...metrics, ms })
     } catch (e) {
-      logger.warn(e)
+      logWarn(e)
     }
   }
 

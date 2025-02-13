@@ -1,62 +1,24 @@
 import { defineBuildConfig } from 'unbuild'
 
-export default defineBuildConfig([
-  {
-    entries: ['src/browser.ts'],
-    failOnWarn: false,
-    declaration: false,
-    clean: true,
-    rollup: {
-      emitCJS: true,
-      esbuild: {
-        platform: 'browser',
-      },
-      resolve: {
-        browser: true,
-      },
-      inlineDependencies: true,
-    },
-    // hooks: {
-    //   'rollup:options'(_, options) {
-    //     for (const output of options.output as any[]) {
-    //       // @ts-ignore
-    //       output.exports = 'named'
-    //     }
-    //   }
-    // }
+export default defineBuildConfig({
+  clean: true,
+  declaration: true,
+  rollup: {
+    emitCJS: true,
+    inlineDependencies: true,
+    // esbuild: {
+    //   platform: 'node',
+    // },
+    // commonjs: {
+    //   exclude: [
+    //     /\.ts$/,
+    //     /\.cts$/,
+    //     /\.mts$/,
+    //   ],
+    // },
+    // resolve: {
+    //   browser: false,
+    //   exportConditions: ['node', 'production'],
+    // },
   },
-  {
-    entries: ['src/index.ts'],
-    declaration: true,
-    // failOnWarn: false,
-    clean: false,
-    rollup: {
-      emitCJS: true,
-      esbuild: {
-        platform: 'node',
-      },
-      commonjs: {
-        exclude: [
-          /\.ts$/,
-        ],
-      },
-      output: {
-        exports: 'named',
-        hoistTransitiveImports: false,
-      },
-      resolve: {
-        browser: false,
-        exportConditions: ['node', 'production'],
-      },
-      inlineDependencies: true,
-    },
-    // hooks: {
-    //   'rollup:options'(_, options) {
-    //     for (const output of options.output as any[]) {
-    //       // @ts-ignore
-    //       output.exports = 'named'
-    //     }
-    //   }
-    // }
-  },
-])
+})

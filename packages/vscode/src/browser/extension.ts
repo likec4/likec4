@@ -1,10 +1,10 @@
 import { hasAtLeast } from '@likec4/core'
 import type { Scheme as LibScheme } from '@likec4/language-server/likec4lib'
 import * as vscode from 'vscode'
-import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
+import { type LanguageClientOptions, LanguageClient as BrowserLanguageClient } from 'vscode-languageclient/browser'
 import { extensionName, extensionTitle, isDev, languageId } from '../const'
 import { ExtensionController } from '../ExtensionController'
-import { logger, logToChannel } from '../logger'
+import { configureLogger, logger } from '../logger'
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -19,12 +19,12 @@ export function deactivate() {
 
 function createLanguageClient(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
-    log: true
+    log: true,
   })
   context.subscriptions.push(
     outputChannel,
-    logToChannel(outputChannel)
   )
+  configureLogger(outputChannel)
   logger.info('active browser extension')
 
   if (isDev) {
@@ -36,13 +36,13 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     context.extensionUri,
     'dist',
     'browser',
-    'language-server-worker.js'
+    'language-server-worker.js',
   ).toString(true)
 
   logger.debug(`worker: ${serverMain}`)
 
   const worker = new Worker(serverMain, {
-    name: 'LikeC4 Language Server'
+    name: 'LikeC4 Language Server',
   })
 
   const workspaceFolders = vscode.workspace.workspaceFolders ?? []
@@ -57,8 +57,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' },
       { language: languageId, scheme: 'vscode-remote' },
-      { language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme }
-    ]
+      { language: languageId, scheme: 'likec4builtin' satisfies typeof LibScheme },
+    ],
   }
 
   if (hasAtLeast(workspaceFolders, 1)) {

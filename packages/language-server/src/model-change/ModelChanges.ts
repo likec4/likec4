@@ -25,7 +25,7 @@ export class LikeC4ModelChanges {
         const { doc, edits, modifiedRange } = this.convertToTextEdit(changeView)
         const textDocument = {
           uri: doc.textDocument.uri,
-          version: doc.textDocument.version
+          version: doc.textDocument.version,
         }
         if (!edits.length) {
           return
@@ -34,9 +34,9 @@ export class LikeC4ModelChanges {
           label: `LikeC4 - change view ${changeView.viewId}`,
           edit: {
             changes: {
-              [textDocument.uri]: edits
-            }
-          }
+              [textDocument.uri]: edits,
+            },
+          },
         })
         if (!applyResult.applied) {
           lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
@@ -44,11 +44,11 @@ export class LikeC4ModelChanges {
         }
         result = {
           uri: textDocument.uri,
-          range: modifiedRange
+          range: modifiedRange,
         }
       })
-    } catch (e) {
-      logger.error(`Failed to apply change ${changeView.change.op} ${changeView.viewId}`, e)
+    } catch (error) {
+      logger.error(`Failed to apply change ${changeView.change.op} ${changeView.viewId}`, { error })
     }
     return result
   }
@@ -69,30 +69,30 @@ export class LikeC4ModelChanges {
           ...changeElementStyle(this.services, {
             ...lookup,
             targets: change.targets,
-            style: change.style
-          })
+            style: change.style,
+          }),
         }
       }
       case 'change-autolayout': {
         const edit = changeViewLayout(this.services, {
           ...lookup,
-          layout: change.layout
+          layout: change.layout,
         })
         return {
           doc: lookup.doc,
           modifiedRange: edit.range,
-          edits: [edit]
+          edits: [edit],
         }
       }
       case 'save-manual-layout':
         const edit = saveManualLayout(this.services, {
           ...lookup,
-          layout: change.layout
+          layout: change.layout,
         })
         return {
           doc: lookup.doc,
           modifiedRange: edit.range,
-          edits: [edit]
+          edits: [edit],
         }
       default:
         nonexhaustive(change)

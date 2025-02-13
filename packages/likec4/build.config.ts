@@ -29,7 +29,7 @@ export default defineBuildConfig({
         'json5',
         '@hpcc-js/wasm-graphviz',
         'vite',
-        '@vitejs/plugin-react-swc',
+        '@vitejs/plugin-react',
       ],
     },
   },

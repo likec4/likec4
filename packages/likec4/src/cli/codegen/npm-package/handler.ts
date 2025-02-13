@@ -1,4 +1,4 @@
-import { consola } from '@likec4/log'
+import { consola } from 'consola'
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, relative, resolve } from 'node:path'
@@ -28,27 +28,27 @@ async function resolvePkgOutDir() {
   const pkgJsonPath = resolve(pkgOutDir, 'package.json')
   if (existsSync(pkgJsonPath)) {
     return {
-      pkgOutDir
+      pkgOutDir,
     }
   }
   const cwdRelative = relative(cwd, pkgOutDir)
   if (existsSync(pkgOutDir)) {
     const yes = await consola.prompt('Use this path as output?\n - ' + cwdRelative, {
       type: 'confirm',
-      initial: true
+      initial: true,
     })
     if (yes) {
       return {
-        pkgOutDir
+        pkgOutDir,
       }
     }
   }
   pkgOutDir = await consola.prompt('Enter output path', {
     initial: cwdRelative,
-    type: 'text'
+    type: 'text',
   })
   return {
-    pkgOutDir
+    pkgOutDir,
   }
 }
 
@@ -58,7 +58,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
 
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
 
   const diagrams = [...await languageServices.diagrams()]
@@ -102,7 +102,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
     isNewPackage = true
     pkgName = await consola.prompt('Package name:', {
       type: 'text',
-      initial: '@likec4/views'
+      initial: '@likec4/views',
     })
   }
 
@@ -114,7 +114,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
   consola.info(`${k.dim('generate sources to:')} ${relative(cwd, pkgOutDir)}`)
   await writeSources({
     outputDir: pkgOutDir,
-    diagrams
+    diagrams,
   })
 
   let pkgUp = pkgUpSync()
@@ -133,7 +133,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
         consola.warn(`${k.dim('invalid dependency, should be')} "${pkgName}":"${dependencyFilePath}"`)
         const yes = await consola.prompt('Do you want to change?', {
           type: 'confirm',
-          initial: false
+          initial: false,
         })
         if (yes) {
           pkgJson.dependencies[pkgName] = dependencyFilePath
@@ -143,7 +143,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
     } else if (!pkgJson.dependencies[pkgName]) {
       const yes = await consola.prompt(`Add ${pkgName} as dependency to ${relativePkgUp}?`, {
         type: 'confirm',
-        initial: true
+        initial: true,
       })
       if (yes) {
         pkgJson.dependencies[pkgName] = dependencyFilePath

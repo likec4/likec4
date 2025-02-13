@@ -9,7 +9,6 @@
   "files": [
     "bin",
     "dist",
-    "src",
     "!**/__mocks__/",
     "!**/__tests__/",
     "!**/*.spec.*",
@@ -88,6 +87,9 @@
     "test-dbg": "vitest run --no-isolate -t formating",
     "vitest:ui": "vitest --no-isolate --ui",
     "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@hpcc-js/wasm-graphviz": "1.7.0"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",

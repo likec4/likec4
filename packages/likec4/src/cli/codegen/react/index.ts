@@ -9,7 +9,7 @@ import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
-import { createLikeC4Logger, startTimer } from '../../../logger'
+import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 
 type HandlerParams = {
   /**
@@ -25,7 +25,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
 
   logger.info(`${k.dim('format')} ${k.green('react')}`)
@@ -39,7 +39,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   diagrams.forEach(view => {
     if (view.hasLayoutDrift) {
       logger.warn(
-        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id)
+        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),
       )
     }
   })
@@ -70,35 +70,35 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   const cfg = await viteReactConfig({
     languageServices,
     outDir,
-    filename
+    filename,
   })
 
   await build({
     ...cfg,
-    logLevel: 'warn'
+    logLevel: 'warn',
   })
 
   const model = await languageServices.layoutedModel()
 
   await writeFile(
     resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts')),
-    generateReactTypes(model)
+    generateReactTypes(model),
   )
 
-  consola.box({
-    message: stripIndent(`
+  boxen(
+    stripIndent(`
     ${k.dim('Source generated:')}
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
       ${k.underline('https://likec4.dev/tooling/code-generation/react/')}
-  `).trim(),
-    style: {
+  `),
+    {
       padding: 2,
       borderColor: 'green',
-      borderStyle: 'rounded'
-    }
-  })
+      borderStyle: 'round',
+    },
+  )
 
   timer.stopAndLog()
 }

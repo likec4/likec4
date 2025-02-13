@@ -20,5 +20,8 @@ Valid arguments:
 
 ```js
 import { startLanguageServer } from '@likec4/language-server/bundled';
-startLanguageServer();
+startLanguageServer().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```

@@ -9,8 +9,5 @@ export default defineProject({
     chaiConfig: {
       truncateThreshold: 300,
     },
-    setupFiles: [
-      'test/setup.ts',
-    ],
   },
 })

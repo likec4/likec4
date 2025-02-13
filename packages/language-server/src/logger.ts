@@ -1,80 +1,68 @@
-import { nonexhaustive } from '@likec4/core'
-import { type ConsolaReporter, formatLogObj, LogLevels, rootLogger as root } from '@likec4/log'
-import { BROWSER } from 'esm-env'
+import {
+  type Sink,
+  type TextFormatter,
+  errorFromLogRecord,
+  getMessageOnlyFormatter,
+  getTextFormatter,
+  loggable,
+  logger as root,
+} from '@likec4/log'
 import type { Connection } from 'vscode-languageserver'
 
-export const logger = root.withTag('lsp')
+export const logger = root.getChild('server')
 // export const logger = root
 
 export function logError(err: unknown): void {
-  logger.error(err)
+  logger.error(loggable(err))
 }
 
 /**
  * Logs an error as warning (not critical)
  */
 export function logWarnError(err: unknown): void {
-  logger.warn(err)
+  logger.warn(loggable(err))
 }
 
-export function setLogLevel(level: keyof typeof LogLevels): void {
-  logger.level = LogLevels[level]
+type LspConnectionSinkProps = {
+  /**
+   * The text formatter to use.  Defaults to {@link defaultTextFormatter}.
+   */
+  formatter?: TextFormatter
 }
 
-export function logToLspConnection(connection: Connection): void {
-  const reporter: ConsolaReporter = {
-    log: (logObj, _ctx) => {
-      const { message, error } = formatLogObj(logObj)
-      switch (logObj.type) {
-        case 'silent': {
-          // ignore
-          break
-        }
-        case 'verbose':
-        case 'trace': {
-          connection.tracer.log(message)
-          break
-        }
-        case 'debug': {
-          connection.console.debug(message)
-          break
-        }
-        case 'log': {
-          connection.console.log(message)
-          break
-        }
-        case 'info':
-        case 'box':
-        case 'ready':
-        case 'start':
-        case 'success': {
-          connection.console.info(message)
-          break
-        }
-        case 'warn': {
-          connection.console.warn(message)
-          break
-        }
-        case 'fail':
+export function getLspConnectionSink(connection: Connection, props?: LspConnectionSinkProps): Sink {
+  const format = props?.formatter ?? getTextFormatter({
+    format: ({ category, message }) => {
+      return `${category} ${message}`
+    },
+  })
+  const messageOnly = getMessageOnlyFormatter()
+  return (logObj) => {
+    try {
+      switch (logObj.level) {
+        // case 'debug':
+        //   connection.console.debug(format(logObj).trimEnd())
+        //   break
+        // case 'info':
+        //   connection.console.info(format(logObj).trimEnd())
+        //   break
+        // case 'warning':
+        //   connection.console.warn(format(logObj).trimEnd())
+        //   break
         case 'error':
         case 'fatal': {
-          connection.console.error(message)
-          if (error) {
-            connection.telemetry.logEvent({ eventName: 'error', ...error })
+          // connection.console.error(format(logObj))
+          const err = errorFromLogRecord(logObj)
+          if (err) {
+            connection.telemetry.logEvent({ eventName: 'error', ...err })
           } else {
-            connection.telemetry.logEvent({ eventName: 'error', message })
+            connection.telemetry.logEvent({ eventName: 'error', message: messageOnly(logObj) })
           }
           break
         }
-        default:
-          nonexhaustive(logObj.type)
       }
-    },
+    } catch (e) {
+      console.error('Error while logging to LSP connection:', e)
+    }
   }
-  if (BROWSER) {
-    root.addReporter(reporter)
-  } else {
-    root.setReporters([reporter])
-  }
-  logger.setReporters(root.options.reporters)
 }

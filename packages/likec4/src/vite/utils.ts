@@ -1,4 +1,4 @@
-import { consola } from '@likec4/log'
+import { rootLogger } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -6,6 +6,9 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { packageUpSync } from 'package-up'
 import { find } from 'remeda'
+import { createLikeC4Logger } from '../logger'
+
+export const viteLogger = createLikeC4Logger('vite')
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -50,7 +53,7 @@ export function viteAppRoot() {
   ]
   const root = find(roots, existsSync)
   if (!root) {
-    consola.error(`likec4 app root does not exist, tried:\n${roots.join('\n')}`)
+    rootLogger.error(`likec4 app root does not exist, tried:\n${roots.join('\n')}`)
     throw new Error(`likec4 app root does not exist`)
   }
   return root
