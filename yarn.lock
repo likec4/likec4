@@ -2077,7 +2077,7 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     "@vitejs/plugin-react": "npm:4.3.4"
     "@xstate/react": "npm:^5.0.2"
-    "@xstate/store": "npm:^2.6.2"
+    "@xstate/store": "npm:^3.0.0"
     "@xyflow/react": "npm:12.4.2"
     "@xyflow/system": "npm:0.0.50"
     bezier-js: "npm:^6.1.4"
@@ -4438,9 +4438,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xstate/store@npm:^2.6.2":
-  version: 2.6.2
-  resolution: "@xstate/store@npm:2.6.2"
+"@xstate/store@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@xstate/store@npm:3.0.0"
   peerDependencies:
     react: ^18.2.0 || ^19.0.0-0
     solid-js: ^1.7.6
@@ -4449,7 +4449,7 @@ __metadata:
       optional: true
     solid-js:
       optional: true
-  checksum: 10c0/8303d1b59240e668da37050304bdc8612a6b32b8eef2ec915c1509aa052627c3ee6352c018eabc509b0d0488907b10255ee16fa08d13d1cbdd94b4bb88610f47
+  checksum: 10c0/9ee9a7b778d84aedf4dd46fc1c3ef843ff6ef5ab63cf47b2835199b31033591ec2ad019dd12fdda26f86a9ededdedfda37a0ea6dfc380b50a28ba78fc96717ff
   languageName: node
   linkType: hard
 
