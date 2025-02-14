@@ -16,6 +16,7 @@ on:
 env:
   NODE_ENV: production
   FORCE_COLOR: true
+  HUSKY: '0'
 
 jobs:
   e2e-tests:
@@ -99,7 +100,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
+        with:
+          ssh-strict: 'no'
 
       # - uses: actions/create-github-app-token@v1
       #   id: app-token
@@ -147,4 +150,3 @@ jobs:
         run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
         env:
           GH_TOKEN: ${{ env.BOT_TOKEN }}}
-
