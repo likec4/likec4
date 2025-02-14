@@ -213,7 +213,7 @@
     "std-env": "^3.8.0",
     "tslib": "^2.8.1",
     "tsx": "~4.19.2",
-    "turbo": "^2.4.0",
+    "turbo": "^2.4.1",
     "type-fest": "4.34.1",
     "typescript": "^5.7.3",
     "vscode-jsonrpc": "8.2.0",
