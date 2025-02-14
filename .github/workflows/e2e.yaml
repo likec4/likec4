@@ -99,16 +99,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
     steps:
-      - uses: wow-actions/use-app-token@v2
-        id: likec4-bot
+      - uses: actions/checkout@v4
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
         with:
           app_id: ${{ secrets.BOT_APP_ID }}
-          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          fetch-depth: 0
-          token: ${{ env.BOT_TOKEN }}
+          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}          
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
@@ -133,7 +130,8 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ env.BOT_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
+          sign-commits: true
           commit-message: "chore: update e2e screenshots"
           title: "chore: update e2e screenshots"
           branch: update-screenshots/${{ github.ref_name }}
@@ -144,4 +142,5 @@ jobs:
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
         env:
-          GH_TOKEN: ${{ env.BOT_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
