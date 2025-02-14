@@ -104,6 +104,9 @@ importers:
         specifier: ^5.7.3
         version: 5.7.3
     devDependencies:
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@types/picomatch':
         specifier: ^2.3.4
         version: 2.3.4
@@ -155,6 +158,9 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../../packages/log
+      '@likec4/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: 7.16.3
         version: 7.16.3(@mantine/hooks@7.16.3(react@19.0.0))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)

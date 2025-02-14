@@ -30,7 +30,7 @@ jobs:
 
       - name: 📦 pack
         run: |
-          turbo run pack --filter='likec4'
+          pnpm turbo run pack --filter='likec4'
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
@@ -80,7 +80,7 @@ jobs:
 
       - name: 📦 pack
         run: |
-          turbo run pack --filter='likec4'
+          pnpm turbo run pack --filter='likec4'
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
@@ -115,7 +115,7 @@ jobs:
 
       - name: 📦 pack
         run: |
-          turbo run pack --filter='likec4'
+          pnpm turbo run pack --filter='likec4'
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e

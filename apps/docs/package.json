@@ -12,7 +12,6 @@
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./src/components/bigbank",
     "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./src/components/index-page",
     "generate": "run-p 'generate:*'",
-    "build:turbo": "run -T turbo run build --filter='@likec4/docs-astro'",
     "dev": "astro dev",
     "start": "astro dev",
     "typecheck": "astro check",
@@ -42,6 +41,7 @@
     "@types/picomatch": "^2.3.4",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
+    "@likec4/core": "workspace:*",
     "likec4": "workspace:*",
     "npm-run-all2": "^7.0.1",
     "tsx": "~4.19.2"
