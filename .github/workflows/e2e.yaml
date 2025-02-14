@@ -53,7 +53,6 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy playwright-report --project-name likec4-e2e --commit-dirty --branch preview
           workingDirectory: e2e
-          packageManager: yarn
 
       - name: print url to published report
         if: ${{ failure() }}
