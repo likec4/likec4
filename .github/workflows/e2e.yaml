@@ -100,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
     permissions:
-      pull_requests: write
+      pull-requests: write
       contents: write
     steps:
       - uses: actions/checkout@v4
