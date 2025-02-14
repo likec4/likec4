@@ -8,6 +8,7 @@ export const cmdRebuild = `${extensionName}.rebuild` as const
 export const cmdPreviewContextOpenSource = `${extensionName}.preview-context-open-source` as const
 export const cmdLocate = `${extensionName}.locate` as const
 export const cmdPrintDot = `${extensionName}.print-dot-of-currentview` as const
+export const cmdValidateLayout = `${extensionName}.validate-layout` as const
 
 export const fileExtensions = ['.c4', '.likec4', '.like-c4'] as const
 

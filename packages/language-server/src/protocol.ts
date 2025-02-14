@@ -9,7 +9,7 @@ import type {
   ViewId,
 } from '@likec4/core'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-jsonrpc'
-import type { DocumentUri, Location } from 'vscode-languageserver-types'
+import type { DiagnosticSeverity, DocumentUri, Location, Position } from 'vscode-languageserver-types'
 
 // #region From server
 export const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
@@ -53,6 +53,26 @@ export const layoutView = new RequestType<
   void
 >('likec4/layout-view')
 export type LayoutViewRequest = typeof layoutView
+
+/**
+ * Request to layout all existing views.
+ */
+export const validateLayout = new RequestType<
+  {},
+  {
+    result:
+      | {
+        uri: string
+        viewId: ViewId
+        message: string
+        severity: DiagnosticSeverity
+        range: { start: Position; end: Position }
+      }[]
+      | null
+  },
+  void
+>('likec4/validate-layout')
+export type ValidateLayoutRequest = typeof validateLayout
 
 /**
  * Request to build documents.
