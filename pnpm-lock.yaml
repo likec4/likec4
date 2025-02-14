@@ -1101,6 +1101,9 @@ importers:
       '@vscode/extension-telemetry':
         specifier: ^0.9.8
         version: 0.9.8(tslib@2.8.1)
+      consola:
+        specifier: ^3.4.0
+        version: 3.4.0
       esbuild:
         specifier: ^0.25.0
         version: 0.25.0
