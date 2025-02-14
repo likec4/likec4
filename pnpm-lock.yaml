@@ -134,6 +134,9 @@ importers:
       '@codingame/monaco-vscode-editor-service-override':
         specifier: 8.0.4
         version: 8.0.4
+      '@codingame/monaco-vscode-files-service-override':
+        specifier: 8.0.4
+        version: 8.0.4
       '@codingame/monaco-vscode-theme-defaults-default-extension':
         specifier: 8.0.4
         version: 8.0.4
@@ -287,6 +290,9 @@ importers:
       vscode-languageserver:
         specifier: 9.0.1
         version: 9.0.1
+      vscode-languageserver-protocol:
+        specifier: 3.17.5
+        version: 3.17.5
       vscode-languageserver-types:
         specifier: 3.17.5
         version: 3.17.5
