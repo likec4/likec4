@@ -4,8 +4,7 @@
   "version": "1.22.1",
   "private": true,
   "scripts": {
-    "generate:routes": "tsr generate",
-    "generate": "run generate:routes",
+    "generate": "tsr generate",
     "dev": "vite dev --clearScreen false",
     "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
