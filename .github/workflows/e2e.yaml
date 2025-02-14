@@ -99,6 +99,9 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
+    permissions:
+      pull_requests: write
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -142,11 +145,11 @@ jobs:
           commit-message: "chore: update e2e screenshots"
           title: "chore: update e2e screenshots"
           branch: update-screenshots/${{ github.ref_name }}
-          # add-paths: "e2e/tests/**"
+          add-paths: "e2e/tests/**"
           delete-branch: true
 
       - name: enable automerge
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
         env:
-          GH_TOKEN: ${{ env.BOT_TOKEN }}}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
