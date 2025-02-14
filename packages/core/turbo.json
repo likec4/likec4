@@ -4,7 +4,7 @@
     "//"
   ],
   "tasks": {
-    "package": {
+    "pack": {
       "dependsOn": [
         "build"
       ],

@@ -5,13 +5,13 @@ on:
   workflow_dispatch:
     inputs:
       job:
-        description: 'Job to run'
+        description: "Job to run"
         required: true
-        default: 'run tests'
+        default: "run tests"
         type: choice
         options:
-        - run tests
-        - update screenshots
+          - run tests
+          - update screenshots
 
 env:
   NODE_ENV: production
@@ -25,28 +25,28 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: pack
+      - name: 📦 pack
         run: |
-          yarn turbo run package --filter='likec4'
+          turbo run pack --filter='likec4'
 
-      - name: install e2e dependencies
+      - name: 🛠️ install e2e dependencies
         working-directory: e2e
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+          NODE_ENV: development
         run: |
-          yarn install
-          yarn bootstrap
+          pnpm install
+          pnpm bootstrap
 
-      - name: run playwright tests
+      - name: ⚙️ run playwright tests
         working-directory: e2e
-        run: yarn test
+        run: pnpm test
 
       - id: cloudflare
         if: ${{ failure() }}
-        name: publish playwright-report
+        name: ⚙️ publish playwright-report
         uses: cloudflare/wrangler-action@392082e81ffbcb9ebdde27400634aa004b35ea37 # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -75,24 +75,24 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: pack
+      - name: 📦 pack
         run: |
-          yarn turbo run package --filter='likec4'
+          turbo run pack --filter='likec4'
 
-      - name: install e2e dependencies
+      - name: 🛠️ install e2e dependencies
         working-directory: e2e
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+          NODE_ENV: development
         run: |
-          yarn install
-          yarn bootstrap
+          pnpm install
+          pnpm bootstrap
 
-      - name: typecheck test
+      - name: ʦ typecheck test
         working-directory: e2e
-        run: yarn typecheck
+        run: pnpm typecheck
 
   update-screenshots:
     timeout-minutes: 5
@@ -110,24 +110,24 @@ jobs:
           fetch-depth: 0
           token: ${{ env.BOT_TOKEN }}
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: pack
+      - name: 📦 pack
         run: |
-          yarn turbo run package --filter='likec4'
+          turbo run pack --filter='likec4'
 
-      - name: install e2e dependencies
+      - name: 🛠️ install e2e dependencies
         working-directory: e2e
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+          NODE_ENV: development
         run: |
-          yarn install
-          yarn bootstrap
+          pnpm install
+          pnpm bootstrap
 
       - name: update screenshots
         working-directory: e2e
-        run: yarn test:update-screenshots
+        run: pnpm test:update-screenshots
 
       - name: create pull request
         id: cpr

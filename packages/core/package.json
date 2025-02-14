@@ -17,7 +17,9 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "rm -r -f dist",
-    "package": "pnpm pack"
+    "prepack": "turbo run build",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz"
   },
   "files": [
     "dist",
