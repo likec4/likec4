@@ -7,6 +7,7 @@
     ".tool-versions",
     "package.json"
   ],
+  "ui": "tui",
   "tasks": {
     "topo": {
       "dependsOn": [

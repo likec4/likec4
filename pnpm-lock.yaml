@@ -50,7 +50,7 @@ importers:
         specifier: ~4.19.2
         version: 4.19.2
       turbo:
-        specifier: ^2.4.0
+        specifier: ^2.4.2
         version: 2.4.2
       typescript:
         specifier: ^5.7.3
@@ -625,6 +625,9 @@ importers:
       langium-cli:
         specifier: 3.3.0
         version: 3.3.0
+      mnemonist:
+        specifier: ^0.40.2
+        version: 0.40.2
       natural-compare-lite:
         specifier: ^1.4.0
         version: 1.4.0
@@ -685,6 +688,9 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      fast-equals:
+        specifier: ^5.2.2
+        version: 5.2.2
       graphology:
         specifier: ^0.25.4
         version: 0.25.4(graphology-types@0.24.8)
@@ -728,6 +734,9 @@ importers:
       '@types/node':
         specifier: ^20.17.17
         version: 20.17.18
+      '@types/which':
+        specifier: ^3.0.4
+        version: 3.0.4
       turbo:
         specifier: ^2.4.0
         version: 2.4.2
@@ -1005,6 +1014,9 @@ importers:
       vitest:
         specifier: ^3.0.4
         version: 3.0.5(@types/debug@4.1.12)(@types/node@20.17.18)(@vitest/ui@3.0.5)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)
+      vscode-languageserver-types:
+        specifier: 3.17.5
+        version: 3.17.5
       which:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1095,6 +1107,9 @@ importers:
       execa:
         specifier: ^9.5.2
         version: 9.5.2
+      fast-equals:
+        specifier: ^5.2.2
+        version: 5.2.2
       langium:
         specifier: 3.3.1
         version: 3.3.1
@@ -1141,8 +1156,11 @@ importers:
         specifier: 3.17.5
         version: 3.17.5
       vscode-messenger:
-        specifier: ^0.4.5
-        version: 0.4.5
+        specifier: ^0.5.1
+        version: 0.5.1
+      vscode-messenger-common:
+        specifier: ^0.5.1
+        version: 0.5.1
       vscode-uri:
         specifier: 3.0.8
         version: 3.0.8
@@ -1245,9 +1263,12 @@ importers:
       vite:
         specifier: 5.4.14
         version: 5.4.14(@types/node@20.17.18)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)
+      vscode-messenger-common:
+        specifier: ^0.5.1
+        version: 0.5.1
       vscode-messenger-webview:
-        specifier: ^0.4.5
-        version: 0.4.5
+        specifier: ^0.5.1
+        version: 0.5.1
 
 packages:
 
@@ -7373,14 +7394,14 @@ packages:
     resolution: {integrity: sha512-woByF3PDpkHFUreUa7Hos7+pUWdeWMXRd26+ZX2A8cFx6v/JPTtd4/uN0/jB6XQHYaOlHbio03NTHCqrgG5n7g==}
     hasBin: true
 
-  vscode-messenger-common@0.4.5:
-    resolution: {integrity: sha512-opA+BEYTWdy1fFC3oOw30b0zc/KEuMtw+1pOiH5fEp+BGeA5xff7omSQTZeZJSDJszM471Vi+YY/ipRdRglAlQ==}
+  vscode-messenger-common@0.5.1:
+    resolution: {integrity: sha512-YJRUdK278/K7vNyhVoePINOHmz3xjQFQbSiuNXCm3+GfQ6NSmjjWTpumAYAzNs05HKAeF9glU532livdwc3W0A==}
 
-  vscode-messenger-webview@0.4.5:
-    resolution: {integrity: sha512-pzGB6HoTfPszMF4HQG+u5WMJ959iGLmow6ehYVTZnZjZ+phBKEBtpTYAjJSNotyUfZJ58NCdq5+ZSvMgkAuAJw==}
+  vscode-messenger-webview@0.5.1:
+    resolution: {integrity: sha512-3IXFORcjD3c9khECdqRUeBh05mt0AZA/86FhY/MlCRB2YHGzqpJeD/5rRX92fO2M42rUjXLi5bnzmXSvVGXadw==}
 
-  vscode-messenger@0.4.5:
-    resolution: {integrity: sha512-a6e54dpPRi/ITmVex49LGU6YXlqcuxGPlDPauvZig20G1D1/QD2E8GfhtvlTj3ml5aU/QV3LHghyepq3riy7sw==}
+  vscode-messenger@0.5.1:
+    resolution: {integrity: sha512-pHexyKLr6FgVkdXi9NcCgygikVkFsbpk9PoObT4JXSQfnosNLTWS2NTdGJ+nv/xhUw5OodmVId/oJwNU7HxoQw==}
 
   vscode-nls@5.2.0:
     resolution: {integrity: sha512-RAaHx7B14ZU04EU31pT+rKz2/zSl7xMsfIZuo8pd+KZO6PXtQmpevpq3vxvWNcrGbdmhM/rr5Uw5Mz+NBfhVng==}
@@ -14625,15 +14646,15 @@ snapshots:
     dependencies:
       vscode-languageserver-protocol: 3.17.5
 
-  vscode-messenger-common@0.4.5: {}
+  vscode-messenger-common@0.5.1: {}
 
-  vscode-messenger-webview@0.4.5:
+  vscode-messenger-webview@0.5.1:
     dependencies:
-      vscode-messenger-common: 0.4.5
+      vscode-messenger-common: 0.5.1
 
-  vscode-messenger@0.4.5:
+  vscode-messenger@0.5.1:
     dependencies:
-      vscode-messenger-common: 0.4.5
+      vscode-messenger-common: 0.5.1
 
   vscode-nls@5.2.0: {}
 
