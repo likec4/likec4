@@ -101,11 +101,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/create-github-app-token@v1
-        id: app-token
+      # - uses: actions/create-github-app-token@v1
+      #   id: app-token
+      #   with:
+      #     app_id: ${{ secrets.BOT_APP_ID }}
+      #     private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }} 
+      - uses: wow-actions/use-app-token@v2
+        id: likec4-bot
         with:
           app_id: ${{ secrets.BOT_APP_ID }}
-          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}          
+          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}      
 
       - name: bootstrap
         uses: ./.github/actions/bootstrap
@@ -130,7 +135,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ env.BOT_TOKEN }}
           sign-commits: true
           commit-message: "chore: update e2e screenshots"
           title: "chore: update e2e screenshots"
@@ -142,5 +147,5 @@ jobs:
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ env.BOT_TOKEN }}}
 
