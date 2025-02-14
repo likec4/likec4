@@ -14,6 +14,7 @@ import codegenCmd from './codegen'
 import exportCmd from './export'
 import previewCmd from './preview'
 import serveCmd from './serve'
+import validateCmd from './validate'
 
 consola.level = LogLevels.debug
 
@@ -24,7 +25,7 @@ if (DEV) {
 
 consola.wrapConsole()
 
-notifyAvailableUpdate()
+// notifyAvailableUpdate()
 
 const cli = yargs(hideBin(argv))
   .scriptName('likec4')
@@ -34,6 +35,7 @@ const cli = yargs(hideBin(argv))
   .command(codegenCmd)
   .command(exportCmd)
   .command(previewCmd)
+  .command(validateCmd)
   .command({
     command: 'check-update',
     describe: 'Check for updates',
