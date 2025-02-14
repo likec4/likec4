@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       # - uses: actions/create-github-app-token@v1
       #   id: app-token
@@ -136,11 +136,10 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ env.BOT_TOKEN }}
-          sign-commits: true
           commit-message: "chore: update e2e screenshots"
           title: "chore: update e2e screenshots"
           branch: update-screenshots/${{ github.ref_name }}
-          add-paths: "e2e/tests/**"
+          # add-paths: "e2e/tests/**"
           delete-branch: true
 
       - name: enable automerge
