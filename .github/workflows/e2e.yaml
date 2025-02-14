@@ -44,7 +44,7 @@ jobs:
         working-directory: e2e
         run: pnpm test
 
-      - id: cloudflare
+      - id: cloudflarepn
         if: ${{ failure() }}
         name: ⚙️ publish playwright-report
         uses: cloudflare/wrangler-action@392082e81ffbcb9ebdde27400634aa004b35ea37 # v3

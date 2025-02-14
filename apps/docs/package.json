@@ -31,17 +31,19 @@
     "@fontsource/ibm-plex-sans": "^5.1.1",
     "astro": "5.2.5",
     "astro-og-canvas": "^0.5.6",
+    "canvaskit-wasm": "^0.39.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "sharp": "^0.33.5",
     "starlight-heading-badges": "^0.4.0",
     "starlight-links-validator": "^0.14.2",
     "typescript": "^5.7.3"
   },
   "devDependencies": {
+    "@likec4/core": "workspace:*",
     "@types/picomatch": "^2.3.4",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
-    "@likec4/core": "workspace:*",
     "likec4": "workspace:*",
     "npm-run-all2": "^7.0.1",
     "tsx": "~4.19.2"
