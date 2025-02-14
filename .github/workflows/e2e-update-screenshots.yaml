@@ -1,0 +1,65 @@
+name: e2e update screenshots
+
+on:
+  workflow_dispatch:
+
+env:
+  NODE_ENV: production
+  FORCE_COLOR: true
+  HUSKY: "0"
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  update-screenshots:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ssh-strict: "no"
+
+      - uses: wow-actions/use-app-token@v2
+        id: likec4-bot
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: 📦 pack
+        run: |
+          pnpm turbo run pack --filter='likec4'
+
+      - name: 🛠️ install e2e dependencies
+        working-directory: e2e
+        env:
+          NODE_ENV: development
+        run: |
+          pnpm install
+          pnpm bootstrap
+
+      - name: ⚙️ update screenshots
+        working-directory: e2e
+        run: |
+          pnpm test:update-screenshots
+
+      - name: create pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ env.BOT_TOKEN }}
+          commit-message: "chore: update e2e screenshots"
+          title: "chore: update e2e screenshots"
+          branch: update-screenshots/${{ github.ref_name }}
+          add-paths: "e2e/tests/**"
+          delete-branch: true
+
+      - name: enable automerge
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,26 +2,16 @@ name: e2e
 
 on:
   workflow_call:
-  workflow_dispatch:
-    inputs:
-      job:
-        description: "Job to run"
-        required: true
-        default: "run tests"
-        type: choice
-        options:
-          - run tests
-          - update screenshots
 
 env:
   NODE_ENV: production
   FORCE_COLOR: true
+  HUSKY: "0"
 
 jobs:
   e2e-tests:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'run tests' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
@@ -44,7 +34,7 @@ jobs:
         working-directory: e2e
         run: pnpm test
 
-      - id: cloudflarepn
+      - id: cloudflare
         if: ${{ failure() }}
         name: ⚙️ publish playwright-report
         uses: cloudflare/wrangler-action@392082e81ffbcb9ebdde27400634aa004b35ea37 # v3
@@ -53,6 +43,7 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy playwright-report --project-name likec4-e2e --commit-dirty --branch preview
           workingDirectory: e2e
+          packageManager: pnpm
 
       - name: print url to published report
         if: ${{ failure() }}
@@ -70,7 +61,6 @@ jobs:
   e2e-typecheck:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'run tests' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
@@ -92,55 +82,3 @@ jobs:
       - name: ʦ typecheck test
         working-directory: e2e
         run: pnpm typecheck
-
-  update-screenshots:
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.job == 'update screenshots' }}
-    steps:
-      - uses: wow-actions/use-app-token@v2
-        id: likec4-bot
-        with:
-          app_id: ${{ secrets.BOT_APP_ID }}
-          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          fetch-depth: 0
-          token: ${{ env.BOT_TOKEN }}
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: 📦 pack
-        run: |
-          pnpm turbo run pack --filter='likec4'
-
-      - name: 🛠️ install e2e dependencies
-        working-directory: e2e
-        env:
-          NODE_ENV: development
-        run: |
-          pnpm install
-          pnpm bootstrap
-
-      - name: update screenshots
-        working-directory: e2e
-        run: pnpm test:update-screenshots
-
-      - name: create pull request
-        id: cpr
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ env.BOT_TOKEN }}
-          commit-message: "chore: update e2e screenshots"
-          title: "chore: update e2e screenshots"
-          branch: update-screenshots/${{ github.ref_name }}
-          add-paths: "e2e/tests/**"
-          delete-branch: true
-
-      - name: enable automerge
-        if: ${{ steps.cpr.outputs.pull-request-number }}
-        run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
-        env:
-          GH_TOKEN: ${{ env.BOT_TOKEN }}
