@@ -72,7 +72,10 @@
     "vscode-languageserver-types": "3.17.5",
     "vscode-languageserver-protocol": "3.17.5",
     "vscode-uri": "~3.0.8",
-    "zustand": "^4.5.5"
+    "zustand": "^4.5.5",
+    "@xstate/react": "^5.0.2",
+    "@xyflow/system": "0.0.50",
+    "xstate": "^5.19.2"
   },
   "packageManager": "pnpm@9.15.5",
   "devDependencies": {
