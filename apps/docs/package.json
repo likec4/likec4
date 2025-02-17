@@ -2,7 +2,7 @@
   "name": "@likec4/docs-astro",
   "type": "module",
   "version": "1.22.1",
-  "packageManager": "pnpm@9.15.5",
+  "packageManager": "pnpm@10.4.1",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",

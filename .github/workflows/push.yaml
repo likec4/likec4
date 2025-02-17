@@ -50,10 +50,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
+      - name: ⚙️ build
         run: pnpm ci:build
 
       - name: test
@@ -66,14 +66,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: typecheck
+      - name: ʦ typecheck
         run: |
           pnpm turbo run typecheck --filter='@likec4/playground'
 
-      - name: build
+      - name: ⚙️ build
         run: |
           pnpm turbo run build --filter='@likec4/playground'
 
@@ -86,14 +86,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: typecheck
+      - name: ʦ typecheck
         run: |
           pnpm turbo run typecheck --filter='@likec4/docs-astro'
 
-      - name: build
+      - name: ⚙️ build
         run: |
           pnpm turbo run build --filter='@likec4/docs-astro'
 

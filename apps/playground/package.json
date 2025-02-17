@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.22.1",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "generate": "tsr generate",
     "dev": "vite dev --clearScreen false",
@@ -13,7 +14,8 @@
     "deploy:prod": "run deploy --branch main",
     "clean": "rm -r -f dist"
   },
-  "dependencies": {
+  "packageManager": "pnpm@10.4.1",
+  "devDependencies": {
     "@codingame/esbuild-import-meta-url-plugin": "^1.0.2",
     "@codingame/monaco-vscode-editor-service-override": "8.0.4",
     "@codingame/monaco-vscode-files-service-override": "8.0.4",
@@ -75,10 +77,7 @@
     "zustand": "^4.5.5",
     "@xstate/react": "^5.0.2",
     "@xyflow/system": "0.0.50",
-    "xstate": "^5.19.2"
-  },
-  "packageManager": "pnpm@9.15.5",
-  "devDependencies": {
+    "xstate": "^5.19.2",
     "vite-plugin-node-polyfills": "^0.23.0"
   }
 }

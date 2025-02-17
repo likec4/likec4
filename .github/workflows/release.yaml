@@ -32,7 +32,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: configure git user

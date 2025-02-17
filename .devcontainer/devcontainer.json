@@ -9,7 +9,8 @@
     // "ghcr.io/devcontainers-contrib/features/tsx:1": {}
   },
   "containerEnv": {
-    "TURBO_CACHE_DIR": "/workspace/.turbo"
+    "TURBO_CACHE_DIR": "/workspace/.turbo",
+    "NODE_ENV": "development"
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
@@ -23,7 +24,7 @@
     62002 // likec4 cli - preview
   ],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "sudo chown -R node /home/node/.yarn node_modules .yarn /workspace/.turbo && yarn install && yarn build",
+  "postCreateCommand": "sudo chown node .pnpm-store node_modules .turbo && pnpm install",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
@@ -45,7 +46,7 @@
     }
   },
   "mounts": [
-    "source=likec4-yarn-cache,target=/home/node/.yarn/berry/cache,type=volume",
+    "source=pnpm-store,target=${containerWorkspaceFolder}/.pnpm-store,type=volume",
     "source=likec4-turbo-cache,target=${containerWorkspaceFolder}/.turbo,type=volume",
     "source=${devcontainerId}-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
   ],

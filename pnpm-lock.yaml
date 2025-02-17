@@ -133,7 +133,7 @@ importers:
         version: 4.19.2
 
   apps/playground:
-    dependencies:
+    devDependencies:
       '@codingame/esbuild-import-meta-url-plugin':
         specifier: ^1.0.2
         version: 1.0.3
@@ -296,6 +296,9 @@ importers:
       vite:
         specifier: 5.4.14
         version: 5.4.14(@types/node@20.17.18)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)
+      vite-plugin-node-polyfills:
+        specifier: ^0.23.0
+        version: 0.23.0(rollup@4.34.6)(vite@5.4.14(@types/node@20.17.18)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0))
       vscode:
         specifier: npm:@codingame/monaco-vscode-api@8.0.4
         version: '@codingame/monaco-vscode-api@8.0.4'
@@ -320,10 +323,6 @@ importers:
       zustand:
         specifier: ^4.5.5
         version: 4.5.6(@types/react@19.0.8)(react@19.0.0)
-    devDependencies:
-      vite-plugin-node-polyfills:
-        specifier: ^0.23.0
-        version: 0.23.0(rollup@4.34.6)(vite@5.4.14(@types/node@20.17.18)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0))
 
   packages/core:
     dependencies:
