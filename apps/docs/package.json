@@ -37,7 +37,7 @@
     "sharp": "^0.33.5",
     "starlight-heading-badges": "^0.4.0",
     "starlight-links-validator": "^0.14.2",
-    "typescript": "^5.7.3"
+    "typescript": "catalog:"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",

@@ -10,6 +10,6 @@ export type LocalStorageWorkspace = {
 export function useWorkspaces() {
   return useLocalStorage<LocalStorageWorkspace[]>({
     key: LikeC4WorkspacesKey,
-    defaultValue: []
+    defaultValue: [],
   })
 }

@@ -44,7 +44,7 @@
     "shipjs": "^0.27.0",
     "tsx": "~4.19.2",
     "turbo": "^2.4.2",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:",
     "vite": "5.4.14",
     "vitest": "^3.0.4"
   },
@@ -54,7 +54,7 @@
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "3.17.5",
     "vscode-languageserver-types": "3.17.5",
-    "vscode-uri": "3.0.8"
+    "vscode-uri": "3.1.0"
   },
   "nano-staged": {
     "**/*.{ts,tsx,mjs,js,jsx}": [
