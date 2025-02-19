@@ -35,11 +35,6 @@ export const title = style({
   // paddingBottom: 6,
   // minHeight: 20,
   mixBlendMode: 'screen',
-  selectors: {
-    [`${whereLight} &`]: {
-      mixBlendMode: 'darken',
-    },
-  },
 })
 
 const iconSize = '20px'
