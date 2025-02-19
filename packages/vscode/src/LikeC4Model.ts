@@ -43,6 +43,11 @@ export class LikeC4Model extends AbstractDisposable {
     return result
   }
 
+  public async validateLayout() {
+    const { result } = await this.ctrl.rpc.validateLayout()
+    return result
+  }
+
   override dispose() {
     super.dispose()
     logger.debug(`[LikeC4Model] disposed`)

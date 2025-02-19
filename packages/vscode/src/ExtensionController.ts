@@ -1,11 +1,15 @@
-import vscode from 'vscode'
-import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
+import vscode, { Diagnostic } from 'vscode'
+import type {
+  BaseLanguageClient as LanguageClient,
+  DiagnosticSeverity as lcDiagnosticSeverity,
+} from 'vscode-languageclient'
+import lc from 'vscode-languageclient'
 
 import { type ViewId as ViewID, nonNullable } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import type TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
-import { values } from 'remeda'
+import { entries, groupBy, map, pipe, prop, values } from 'remeda'
 import { BuiltInFileSystemProvider } from './common/BuiltInFileSystemProvider'
 import { initWorkspace, rebuildWorkspace } from './common/initWorkspace'
 import {
@@ -14,6 +18,7 @@ import {
   cmdPreviewContextOpenSource,
   cmdPrintDot,
   cmdRebuild,
+  cmdValidateLayout,
   isProd,
 } from './const'
 import { LikeC4Model } from './LikeC4Model'
@@ -36,6 +41,7 @@ export class ExtensionController extends AbstractDisposable {
   protected _rpc: Rpc | null = null
   protected _messenger: Messenger | null = null
   protected _likec4model: LikeC4Model | null = null
+  protected _layoutDiagnosticsCollection: vscode.DiagnosticCollection | null = null
 
   private static _instance: ExtensionController | null = null
 
@@ -73,6 +79,12 @@ export class ExtensionController extends AbstractDisposable {
 
     const likeC4Model = ctrl._likec4model = new LikeC4Model(ctrl)
     ctrl.onDispose(likeC4Model)
+
+    const layoutDiagnosticsCollection = ctrl._layoutDiagnosticsCollection = vscode.languages.createDiagnosticCollection(
+      'likec4:layout',
+    )
+    context.subscriptions.push(layoutDiagnosticsCollection)
+    ctrl.onDispose(layoutDiagnosticsCollection)
 
     ctrl.registerCommand(cmdRebuild, () => {
       void rebuildWorkspace(ctrl.rpc)
@@ -162,6 +174,34 @@ export class ExtensionController extends AbstractDisposable {
         preserveFocus: viewColumn === vscode.ViewColumn.Beside,
       })
       editor.revealRange(location.range)
+    })
+
+    ctrl.registerCommand(cmdValidateLayout, async () => {
+      const result = await ctrl.likec4model.validateLayout()
+
+      if (!result) {
+        logger.warn('Failed to layout views')
+        ctrl.outputChannel.show(true)
+        return
+      }
+
+      const diagnostic = pipe(
+        result,
+        groupBy(prop('uri')),
+        entries(),
+        map(([uri, messages]) => ([
+          vscode.Uri.parse(uri),
+          messages.map(m =>
+            new Diagnostic(
+              ExtensionController.convertRange(m.range),
+              m.message,
+              ExtensionController.convertSeverity(m.severity ?? lc.DiagnosticSeverity.Error),
+            )
+          ),
+        ] satisfies [vscode.Uri, Diagnostic[]])),
+      )
+      layoutDiagnosticsCollection.clear()
+      layoutDiagnosticsCollection.set(diagnostic)
     })
 
     if (isProd) {
@@ -285,17 +325,6 @@ Restart VSCode. Please report this issue, if it persists.`)
     this.onDispose(vscode.commands.registerCommand(command, callback))
   }
 
-  // public getPreviewPanelState(): PreviewPanelInternalState {
-  //   const state = this._context.workspaceState.get<Partial<PreviewPanelInternalState>>(StateKeys.previewPanelState)
-  //   return {
-  //     edgesEditable: state?.edgesEditable ?? true,
-  //     nodesDraggable: state?.nodesDraggable ?? true
-  //   }
-  // }
-
-  // public setPreviewPanelState(state: PreviewPanelInternalState) {
-  //   this._context.workspaceState.update(StateKeys.previewPanelState, state)
-  // }
   private async enableTelemetry() {
     logger.debug(`Enable telemetry`)
     const ctrl = this
@@ -319,5 +348,22 @@ Restart VSCode. Please report this issue, if it persists.`)
         logWarn(e)
       }
     }))
+  }
+
+  private static convertSeverity(severity: lcDiagnosticSeverity): vscode.DiagnosticSeverity {
+    switch (severity) {
+      case 1:
+        return vscode.DiagnosticSeverity.Error
+      case 2:
+        return vscode.DiagnosticSeverity.Warning
+      case 3:
+        return vscode.DiagnosticSeverity.Information
+      case 4:
+        return vscode.DiagnosticSeverity.Hint
+    }
+  }
+
+  private static convertRange(range: lc.Range): vscode.Range {
+    return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
   }
 }

@@ -1,10 +1,12 @@
-import { debounce, funnel } from 'remeda'
-import { logError, logger } from './logger'
+import { filter, funnel, map, pipe } from 'remeda'
+import { logger } from './logger'
 import type { LikeC4Services } from './module'
 
-import { nonexhaustive } from '@likec4/core'
+import { type DiagramView, nonexhaustive } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
+import { type PublishDiagnosticsParams, DiagnosticSeverity } from 'vscode-languageserver'
 import { isLikeC4LangiumDocument } from './ast'
+import type { Model } from './generated/ast'
 import { Scheme } from './likec4lib'
 import {
   buildDocuments,
@@ -15,6 +17,7 @@ import {
   layoutView,
   locate,
   onDidChangeModel,
+  validateLayout,
 } from './protocol'
 import { ADisposable } from './utils'
 
@@ -61,6 +64,7 @@ export class Rpc extends ADisposable {
           this.services.DocumentCache.clear()
         }
         const model = await modelBuilder.buildComputedModel(cancelToken)
+
         return { model }
       }),
       connection.onRequest(fetchModel, async cancelToken => {
@@ -73,6 +77,13 @@ export class Rpc extends ADisposable {
       }),
       connection.onRequest(layoutView, async ({ viewId }, cancelToken) => {
         const result = await views.layoutView(viewId, cancelToken)
+        return { result }
+      }),
+      connection.onRequest(validateLayout, async (_, cancelToken) => {
+        const layouts = await views.layoutAllViews(cancelToken)
+
+        const result = reportLayoutDrift(layouts.map(l => l.diagram))
+
         return { result }
       }),
       connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {
@@ -130,5 +141,21 @@ export class Rpc extends ADisposable {
         notifyModelParsed.cancel()
       }),
     )
+
+    function reportLayoutDrift(diagrams: DiagramView<string, string>[]) {
+      return pipe(
+        diagrams,
+        filter(d => !!d.hasLayoutDrift),
+        map(d => {
+          return {
+            uri: modelLocator.locateView(d.id)!.uri,
+            viewId: d.id,
+            severity: DiagnosticSeverity.Warning,
+            message: `Layout drift detected for view '${d.id}'`,
+            range: modelLocator.locateView(d.id)!.range,
+          }
+        }),
+      )
+    }
   }
 }

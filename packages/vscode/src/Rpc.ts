@@ -8,6 +8,7 @@ import type {
   LayoutViewRequest,
   LocateParams,
   LocateRequest,
+  ValidateLayoutRequest,
 } from '@likec4/language-server/protocol'
 import vscode from 'vscode'
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
@@ -27,6 +28,7 @@ const buildDocuments: BuildDocumentsRequest = new RequestType('likec4/build')
 const locate: LocateRequest = new RequestType('likec4/locate')
 const changeView: ChangeViewRequest = new RequestType('likec4/change-view')
 const layoutView: LayoutViewRequest = new RequestType('likec4/layout-view')
+const validateLayout: ValidateLayoutRequest = new RequestType('likec4/validate-layout')
 
 // #endregion
 
@@ -58,6 +60,10 @@ export class Rpc extends AbstractDisposable {
 
   async layoutView(viewId: ViewID) {
     return await this.client.sendRequest(layoutView, { viewId })
+  }
+
+  async validateLayout() {
+    return await this.client.sendRequest(validateLayout, {})
   }
 
   async buildDocuments(docs: DocumentUri[]) {

@@ -180,6 +180,11 @@
         "command": "likec4.print-dot-of-currentview",
         "title": "%ext.cmd.print-dot-of-currentview%",
         "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.validate-layout",
+        "title": "%ext.cmd.validate-layout%",
+        "category": "%ext.title%"
       }
     ]
   },

@@ -14,6 +14,7 @@ import codegenCmd from './codegen'
 import exportCmd from './export'
 import previewCmd from './preview'
 import serveCmd from './serve'
+import validateCmd from './validate'
 
 async function main() {
   await configureLogger({
@@ -28,7 +29,6 @@ async function main() {
       },
     ],
   })
-
   notifyAvailableUpdate()
 
   return await yargs(hideBin(argv))
@@ -39,6 +39,7 @@ async function main() {
     .command(codegenCmd)
     .command(exportCmd)
     .command(previewCmd)
+    .command(validateCmd)    
     .command({
       command: 'check-update',
       describe: 'Check for updates',
