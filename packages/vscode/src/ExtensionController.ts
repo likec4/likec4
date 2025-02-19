@@ -325,17 +325,6 @@ Restart VSCode. Please report this issue, if it persists.`)
     this.onDispose(vscode.commands.registerCommand(command, callback))
   }
 
-  // public getPreviewPanelState(): PreviewPanelInternalState {
-  //   const state = this._context.workspaceState.get<Partial<PreviewPanelInternalState>>(StateKeys.previewPanelState)
-  //   return {
-  //     edgesEditable: state?.edgesEditable ?? true,
-  //     nodesDraggable: state?.nodesDraggable ?? true
-  //   }
-  // }
-
-  // public setPreviewPanelState(state: PreviewPanelInternalState) {
-  //   this._context.workspaceState.update(StateKeys.previewPanelState, state)
-  // }
   private async enableTelemetry() {
     logger.debug(`Enable telemetry`)
     const ctrl = this
@@ -357,23 +346,6 @@ Restart VSCode. Please report this issue, if it persists.`)
         telemetry.sendTelemetryEvent(eventName, properties)
       } catch (e) {
         logWarn(e)
-      }
-    }))
-    ctrl.onDispose(addLogReporter((logObj, _ctx) => {
-      if (telemetry.telemetryLevel === 'off') {
-        return
-      }
-      if (logObj.type !== 'error' && logObj.type !== 'fatal' && logObj.type !== 'fail') {
-        return
-      }
-      const { message, error } = formatLogObj(logObj)
-      if (error) {
-        if ('stack' in error) {
-          error.stack = new vscode.TelemetryTrustedValue(error.stack) as any as string
-        }
-        telemetry.sendTelemetryErrorEvent('error', error)
-      } else {
-        telemetry.sendTelemetryErrorEvent('error', { message })
       }
     }))
   }
