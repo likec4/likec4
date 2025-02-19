@@ -72,7 +72,7 @@
     "@types/node": "^20.17.17",
     "@types/which": "^3.0.4",
     "turbo": "^2.4.1",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:",
     "unbuild": "^3.3.1",
     "vitest": "^3.0.4"
   },

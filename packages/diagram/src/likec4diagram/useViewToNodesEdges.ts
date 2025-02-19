@@ -21,7 +21,6 @@ import type { Types } from './types'
 function viewToNodesEdge(opts: {
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__'>
   where: WhereOperator<string, string> | undefined
-  nodesDraggable: boolean
   nodesSelectable: boolean
 }): {
   xynodes: Types.Node[]
@@ -29,7 +28,6 @@ function viewToNodesEdge(opts: {
 } {
   const {
     view,
-    nodesDraggable: draggable,
     nodesSelectable: selectable,
   } = opts
   const isDynamicView = view.__ === 'dynamic',
@@ -95,7 +93,6 @@ function viewToNodesEdge(opts: {
 
     const base = {
       id,
-      draggable: draggable,
       selectable: selectable && node.kind !== ElementKind.Group,
       focusable: selectable && !isCompound,
       deletable: false,
@@ -281,7 +278,6 @@ export function useViewToNodesEdges({
 }: {
   view: DiagramView
   where: WhereOperator<string, string> | undefined
-  nodesDraggable: boolean
   nodesSelectable: boolean
 }) {
   return useDeepCompareMemo(() => {

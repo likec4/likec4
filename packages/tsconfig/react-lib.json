@@ -21,5 +21,6 @@
       "esnext",
       "webworker"
     ],
+    "skipLibCheck": true
   }
 }

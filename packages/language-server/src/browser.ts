@@ -1,7 +1,6 @@
-import { configureLogger, getConsoleSink } from '@likec4/log'
+import { configureLogger, getAnsiColorFormatter, getConsoleSink } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser'
-import { getLspConnectionSink } from './logger'
 import { type LikeC4Services, type LikeC4SharedServices, createLanguageServices } from './module'
 
 export { logger as lspLogger } from './logger'
@@ -11,24 +10,25 @@ export { createCustomLanguageServices, createLanguageServices, LikeC4Module } fr
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'
 
-// This is an example copied as is from here:
-// https://github.com/microsoft/vscode-extension-samples/blob/main/lsp-web-extension-sample/server/src/browserServerMain.ts
-// the only addition is the following line:
-declare const self: DedicatedWorkerGlobalScope
-
-export async function startLanguageServer(): Promise<{
+export async function startLanguageServer(port: MessagePort | DedicatedWorkerGlobalScope): Promise<{
   shared: LikeC4SharedServices
   likec4: LikeC4Services
 }> {
   /* browser specific setup code */
 
-  const messageReader = new BrowserMessageReader(self)
-  const messageWriter = new BrowserMessageWriter(self)
+  const messageReader = new BrowserMessageReader(port)
+  const messageWriter = new BrowserMessageWriter(port)
 
   const connection = createConnection(messageReader, messageWriter)
   await configureLogger({
     sinks: {
-      console: getConsoleSink(),
+      console: getConsoleSink({
+        formatter: getAnsiColorFormatter({
+          format: ({ level, category, message }) => {
+            return `${level} ${category} ${message}`
+          },
+        }),
+      }),
     },
     loggers: [
       {

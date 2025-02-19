@@ -47,42 +47,29 @@ const validate = (features: EnabledFeatures) => {
     enableRelationshipDetails,
     enableRelationshipBrowser,
     enableSearch,
+    enableEdgeEditing,
     ...rest
   } = features
   if (!enableLikeC4Model) {
-    if (enableElementDetails) {
-      console.warn('enableElementDetails is ignored because requires LikeC4Model')
-      enableElementDetails = false
-    }
-    if (enableRelationshipDetails) {
-      console.warn('enableRelationshipDetails is ignored because requires enableLikeC4Model')
-      enableRelationshipDetails = false
-    }
-    if (enableRelationshipBrowser) {
-      console.warn('enableRelationshipBrowser is ignored because requires LikeC4Model')
-      enableRelationshipBrowser = false
-    }
-    if (enableSearch) {
-      console.warn('enableSearch is ignored because requires LikeC4Model')
-      enableSearch = false
-    }
+    enableElementDetails = false
+    enableRelationshipDetails = false
+    enableRelationshipBrowser = false
+    enableSearch = false
   }
 
   if (enableReadOnly) {
-    if (rest.enableEdgeEditing) {
-      console.warn('enableEdgeEditing is ignored because enabled ReadOnly')
-      rest.enableEdgeEditing = false
-    }
+    enableEdgeEditing = false
   }
 
   return {
-    ...rest,
     enableReadOnly,
     enableLikeC4Model,
     enableElementDetails,
     enableRelationshipDetails,
     enableRelationshipBrowser,
     enableSearch,
+    enableEdgeEditing,
+    ...rest,
   }
 }
 

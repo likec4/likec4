@@ -28,10 +28,10 @@
     },
     {
       "label": "build_extension",
-      "type": "npm",
-      "script": "build:turbo",
-      "path": "packages/vscode",
+      "type": "shell",
+      "command": "pnpm turbo run build --log-order=grouped --filter='likec4-vscode' --filter='@likec4/vscode-preview' --only",
       "options": {
+        "cwd": "${workspaceFolder}/packages/vscode",
         "env": {
           "NODE_ENV": "development",
         }

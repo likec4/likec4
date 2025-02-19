@@ -12,7 +12,6 @@ import {
 import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { DiagramActor } from './likec4diagram/DiagramActor'
-import { DiagramUI } from './likec4diagram/DiagramUI'
 import type { Types } from './likec4diagram/types'
 import { useViewToNodesEdges } from './likec4diagram/useViewToNodesEdges'
 import { LikeC4DiagramXYFlow } from './likec4diagram/XYFlow'
@@ -68,7 +67,6 @@ export function LikeC4Diagram({
   const xyNodesEdges = useViewToNodesEdges({
     view,
     where,
-    nodesDraggable,
     nodesSelectable,
   })
 
