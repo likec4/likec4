@@ -5,7 +5,7 @@ import { dirname, extname, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { Logger } from 'vite'
 import { LikeC4 } from '../../LikeC4'
-import { createLikeC4Logger, startTimer } from '../../logger'
+import { createLikeC4Logger, logger as cliLogger, startTimer } from '../../logger'
 
 type HandlerParams =
   & {
@@ -58,23 +58,23 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.viewsService.layoutAllViews()
+  const views = await languageServices.viewsService.computedViews()
   let succeeded = 0
-  for (const { diagram, dot } of views) {
+  for (const view of views) {
     try {
-      const relativePath = diagram.relativePath ?? ''
+      const dot = await languageServices.viewsService.layouter.dot(view)
+      const relativePath = view.relativePath ?? ''
       if (relativePath !== '' && !createdDirs.has(relativePath)) {
         await mkdir(resolve(outdir, relativePath), { recursive: true })
         createdDirs.add(relativePath)
       }
-      const outfile = resolve(outdir, relativePath, diagram.id + '.dot')
-      invariant(dot, `dot for ${diagram.id} not found`)
+      const outfile = resolve(outdir, relativePath, view.id + '.dot')
       await writeFile(outfile, dot)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger.error(`error while generating ${diagram.id}`, { error: error as any })
+      cliLogger.error(`error while generating ${view.id}`, { error })
     }
   }
   if (succeeded > 0) {

@@ -80,7 +80,7 @@ This repository's contents are:
 - `language-server`: parser and language server
 - `layouts`: layout algorithms for views
 - `likec4`: CLI, published to npm as `likec4`
-- `log`: Shared instance of [consola](https://github.com/unjs/consola)
+- `log`: Common loqgger
 - `tsconfig`: typescript configuration
 - `vscode`: vscode extension
 - `vscode-preview`: preview panel in vscode extension

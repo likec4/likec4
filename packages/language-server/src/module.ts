@@ -21,7 +21,7 @@ import {
   LikeC4GeneratedModule,
   LikeC4GeneratedSharedModule,
 } from './generated/module'
-import { logger, logToLspConnection } from './logger'
+import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
@@ -202,9 +202,9 @@ export function createSharedServices(context: LanguageServicesContext = {}): Lik
     ...EmptyFileSystem,
     ...context,
   }
-  if (context.connection) {
-    logToLspConnection(context.connection)
-  }
+  // if (context.connection) {
+  //   logToLspConnection(context.connection)
+  // }
 
   return inject(
     createDefaultSharedModule(moduleContext),

@@ -1,9 +1,10 @@
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { dirname, resolve } from 'node:path'
 import { type AliasOptions, type UserConfig, type UserConfigFnObject, defineConfig, mergeConfig } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
 const root = dirname(__filename)
@@ -13,7 +14,6 @@ const alias = {
   '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
   '#monaco/config': resolve('src/monaco/config.ts'),
   '@likec4/diagram': resolve('../../packages/diagram/src'),
-  '@likec4/log': resolve('../../packages/log/src/browser.ts'),
 } satisfies AliasOptions
 
 const baseConfig: UserConfigFnObject = () => {
@@ -51,8 +51,9 @@ export default defineConfig((env) => {
       return mergeConfig(baseConfig(env), {
         plugins: [
           vanillaExtractPlugin({}),
-          TanStackRouterVite(tanStackRouterViteCfg),
+          nodePolyfills(),
           react({}),
+          TanStackRouterVite(tanStackRouterViteCfg),
         ],
       })
     // Pre-build for production
@@ -116,12 +117,11 @@ export default defineConfig((env) => {
           },
         },
         plugins: [
+          nodePolyfills(),
           vanillaExtractPlugin({
             identifiers: 'short',
           }),
-          react({
-            // jsxRuntime: 'classic'
-          }),
+          react(),
         ],
       })
     case env.command === 'build':
@@ -164,9 +164,8 @@ export default defineConfig((env) => {
           },
         },
         plugins: [
-          react({
-            // jsxRuntime: 'classic'
-          }),
+          nodePolyfills(),
+          react(),
         ],
       })
     default:

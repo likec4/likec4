@@ -23,7 +23,14 @@ const selectXYProps = (ctx: DiagramContext) => ({
   zoomable: ctx.zoomable,
   fitViewPadding: ctx.fitViewPadding,
   enableFitView: ctx.features.enableFitView,
-  enableReadOnly: ctx.features.enableReadOnly,
+  enableReadOnly: ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly,
+  ...(!ctx.features.enableFitView && {
+    viewport: {
+      x: -Math.min(ctx.view.bounds.x, 0),
+      y: -Math.min(ctx.view.bounds.y, 0),
+      zoom: 1,
+    },
+  }),
 })
 const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
   a.initialized === b.initialized &&
@@ -33,7 +40,8 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.enableFitView === b.enableFitView &&
   a.enableReadOnly === b.enableReadOnly &&
   shallowEqual(a.nodes, b.nodes) &&
-  shallowEqual(a.edges, b.edges)
+  shallowEqual(a.edges, b.edges) &&
+  shallowEqual(a.viewport, b.viewport)
 
 type Picked = EnforceOptional<
   Pick<
@@ -138,7 +146,7 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({ background,
       {...enableFitView && {
         onViewportResize,
       }}
-      nodesDraggable={nodesDraggable}
+      nodesDraggable={notReadOnly && nodesDraggable}
       nodesSelectable={nodesSelectable}
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
       {...props}>

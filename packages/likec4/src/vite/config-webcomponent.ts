@@ -1,18 +1,16 @@
 import { viteAliases } from '@/vite/aliases'
-import { consola } from '@likec4/log'
+import { logger as consola } from '@likec4/log'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import postcssPresetMantine from 'postcss-preset-mantine'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
-import { createLikeC4Logger } from '../logger'
 import type { LikeC4ViteWebcomponentConfig } from './config-webcomponent.prod'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit } from './utils'
+import { chunkSizeWarningLimit, viteLogger } from './utils'
 
 const _dirname = dirname(fileURLToPath(import.meta.url))
 const pkgRoot = resolve(_dirname, '../..')
@@ -24,7 +22,7 @@ export async function viteWebcomponentConfig({
   webcomponentPrefix = 'likec4',
   filename = 'likec4-views.js',
 }: LikeC4ViteWebcomponentConfig): Promise<InlineConfig> {
-  const customLogger = createLikeC4Logger('c4:lib')
+  const customLogger = viteLogger
 
   const root = resolve(pkgRoot, 'app')
   if (!fs.existsSync(root)) {

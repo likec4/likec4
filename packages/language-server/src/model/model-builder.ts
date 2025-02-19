@@ -5,7 +5,6 @@ import {
   compareRelations,
   computeColorValues,
   DeploymentElement,
-  isNonEmptyArray,
   isScopedElementView,
   LikeC4Model,
   parentFqn,
@@ -43,7 +42,6 @@ import {
 import type {
   ParsedAstDeploymentRelation,
   ParsedAstElement,
-  ParsedAstExtendElement,
   ParsedAstRelation,
   ParsedAstSpecification,
   ParsedAstView,
@@ -136,7 +134,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       try {
         const __kind = c4Specification.elements[kind]
         if (!__kind) {
-          logger.warn(`No kind '${kind}' found for ${id}`)
+          logger.warn`No kind '${kind}' found for ${id}`
           return null
         }
         const links = unresolvedLinks ? resolveLinks(doc, unresolvedLinks) : null
@@ -236,7 +234,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       (acc, el) => {
         const parent = parentFqn(el.id)
         if (parent && isNullish(acc[parent])) {
-          logWarnError(`No parent found for ${el.id}`)
+          logger.debug`No parent found for ${el.id}`
           return acc
         }
         acc[el.id] = withExtendElementData(el)
@@ -257,11 +255,10 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       ...model
     }: ParsedAstRelation): c4.ModelRelation | null => {
       if (isNullish(elements[source]) || isNullish(elements[target])) {
-        logger.warn(
-          `Invalid relation ${id} at ${doc.uri.path} ${astPath}, source: ${source}(${!!elements[
-            source
-          ]}), target: ${target}(${!!elements[target]})`,
-        )
+        logger.debug`Invalid relation ${id}
+  source: ${source} resolved: ${!!elements[source]}
+  target: ${target} resolved: ${!!elements[target]}
+  at ${doc.uri.path}\n`
         return null
       }
       const links = unresolvedLinks ? resolveLinks(doc, unresolvedLinks) : null
@@ -311,7 +308,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       try {
         const __kind = c4Specification.deployments[parsed.kind]
         if (!__kind) {
-          logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
+          logger.warn`No kind ${parsed.kind} found for ${parsed.id}`
           return null
         }
         let {
@@ -350,7 +347,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       (acc, el) => {
         const parent = parentFqn(el.id)
         if (parent && isNullish(acc[parent])) {
-          logWarnError(`No parent found for deployment element ${el.id}`)
+          logger.debug`No parent found for deployment element ${el.id}`
           return acc
         }
         acc[el.id] = el
@@ -371,11 +368,11 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       ...model
     }: ParsedAstDeploymentRelation): c4.DeploymentRelation | null => {
       if (isNullish(deploymentElements[source.id]) || isNullish(deploymentElements[target.id])) {
-        logger.warn(
-          `Invalid deployment relation ${id} at ${doc.uri.path} ${astPath}, source: ${source.id}(${!!deploymentElements[
+        logger
+          .warn`Invalid deployment relation ${id} at ${doc.uri.path} ${astPath}, source: ${source.id}(${!!deploymentElements[
             source.id
-          ]}), target: ${target.id}(${!!deploymentElements[target.id]})`,
-        )
+          ]}), target: ${target.id}(${!!deploymentElements[target.id]})`
+
         return null
       }
       const links = unresolvedLinks ? resolveLinks(doc, unresolvedLinks) : null
@@ -408,7 +405,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     reduce(
       (acc, el) => {
         if (isDefined(acc[el.id])) {
-          logWarnError(`Duplicate deployment relation ${el.id}`)
+          logger.debug`Duplicate deployment relation ${el.id}`
           return acc
         }
         acc[el.id] = el
@@ -534,7 +531,7 @@ export class LikeC4ModelBuilder extends ADisposable {
         DocumentState.Validated,
         async (docs, _cancelToken) => {
           let parsed = [] as URI[]
-          logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)`)
+          logger.debug`[ModelBuilder] onValidated (${docs.length} docs)`
           for (const doc of docs) {
             try {
               parsed.push(parser.parse(doc).uri)
@@ -549,7 +546,7 @@ export class LikeC4ModelBuilder extends ADisposable {
         },
       ),
     )
-    logger.debug(`[ModelBuilder] Created`)
+    logger.debug`[ModelBuilder] Created`
   }
 
   /**
@@ -565,7 +562,7 @@ export class LikeC4ModelBuilder extends ADisposable {
     }
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
     return cache.get(CACHE_KEY_PARSED_MODEL, () => {
-      logger.debug(`[ModelBuilder] buildModel (${docs.length} docs)`)
+      logger.debug`[ModelBuilder] buildModel (${docs.length} docs)`
       return buildModel(this.services, docs)
     })
   }

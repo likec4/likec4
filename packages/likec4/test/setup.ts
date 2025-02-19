@@ -1,7 +1,6 @@
-import { logger } from '@likec4/log'
-import { beforeEach, vi } from 'vitest'
+import { beforeEach } from 'vitest'
 
 beforeEach(() => {
   // Vitest
-  logger.mockTypes(() => vi.fn())
+  // logger.mockTypes(() => vi.fn())
 })

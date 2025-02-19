@@ -1,5 +1,5 @@
 import { type DiagramView, type OverviewGraph, ComputedView, nonexhaustive } from '@likec4/core'
-import { logger } from '@likec4/log'
+import { loggable, rootLogger } from '@likec4/log'
 import { applyManualLayout } from '../manual/applyManualLayout'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
@@ -7,6 +7,7 @@ import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson, parseOverviewGraphvizJson } from './GraphvizParser'
 import { OverviewDiagramsPrinter } from './OverviewDiagramsPrinter'
 import type { DotSource } from './types'
+import type { GraphvizJson } from './types-dot'
 
 export interface GraphvizPort {
   unflatten(dot: DotSource): Promise<DotSource>
@@ -32,6 +33,8 @@ export type LayoutResult = {
   dot: DotSource
   diagram: DiagramView
 }
+const logger = rootLogger.getChild('graphviz-layouter')
+
 export class GraphvizLayouter {
   constructor(private graphviz: GraphvizPort) {}
 
@@ -43,13 +46,29 @@ export class GraphvizLayouter {
     this.graphviz = graphviz
   }
 
+  async dotToJson(dot: DotSource): Promise<GraphvizJson> {
+    let json
+    try {
+      json = await this.graphviz.layoutJson(dot)
+    } catch (error) {
+      logger.error(loggable(error))
+      logger.error`Failed to convert DOT to JSON:\n${dot}`
+      throw error
+    }
+    try {
+      return JSON.parse(json) as GraphvizJson
+    } catch (error) {
+      logger.error(loggable(error))
+      logger.error`Failed to parse JSON:\n${json}\n. Generated from DOT:\n${dot}`
+      throw error
+    }
+  }
+
   async layout(view: ComputedView): Promise<LayoutResult> {
     try {
       let dot = await this.dot(view)
-      // logger.debug('View ${view.id} DOT:')
-      // logger.debug(dot)
-      const rawjson = await this.graphviz.layoutJson(dot)
-      let diagram = parseGraphvizJson(rawjson, view)
+      const json = await this.dotToJson(dot)
+      let diagram = parseGraphvizJson(json, view)
 
       if (view.manualLayout) {
         const result = applyManualLayout(diagram, view.manualLayout)
@@ -67,7 +86,7 @@ export class GraphvizLayouter {
               logger.warn(`Manual layout for view ${view.id} is ignored, as edges with compounds are not supported`)
             } else {
               printer.applyManualLayout(result.relayout)
-              const rawjson = await this.graphviz.layoutJson(printer.print())
+              const rawjson = await this.dotToJson(printer.print())
               diagram = parseGraphvizJson(rawjson, view)
             }
           }
@@ -106,8 +125,8 @@ export class GraphvizLayouter {
     }
     try {
       return await this.graphviz.unflatten(dot)
-    } catch (e) {
-      logger.warn(`Error during unflatten: ${computedView.id}`, e)
+    } catch (error) {
+      logger.warn(`Error during unflatten: ${computedView.id}`, { error })
       return dot
     }
   }
@@ -121,7 +140,7 @@ export class GraphvizLayouter {
       })
     }
     const dot = OverviewDiagramsPrinter.toDot(views)
-    const rawjson = await this.graphviz.layoutJson(dot)
-    return parseOverviewGraphvizJson(rawjson)
+    const json = await this.dotToJson(dot)
+    return parseOverviewGraphvizJson(json)
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.21.1",
+  "version": "1.22.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -46,7 +46,6 @@
     "@tabler/icons-react": "3.29.0",
     "@vanilla-extract/dynamic": "^2.1.2",
     "@xstate/react": "^5.0.2",
-    "@xstate/store": "^2.6.2",
     "@xyflow/react": "12.4.2",
     "@xyflow/system": "0.0.50",
     "bezier-js": "^6.1.4",
@@ -54,12 +53,12 @@
     "d3-shape": "^3.2.0",
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",
-    "framer-motion": "^12.4.1",
+    "framer-motion": "^12.4.2",
     "khroma": "^2.1.0",
     "nanostores": "0.11.3",
     "react-error-boundary": "^5.0.0",
     "remeda": "^2.20.1",
-    "type-fest": "4.33.0",
+    "type-fest": "4.34.1",
     "xstate": "^5.19.2"
   },
   "peerDependencies": {
@@ -79,6 +78,7 @@
     "@types/react-dom": "~19.0.3",
     "@vanilla-extract/css": "^1.17.1",
     "@vanilla-extract/css-utils": "^0.1.4",
+    "@vitejs/plugin-react": "4.3.4",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
     "typescript": "^5.7.3",

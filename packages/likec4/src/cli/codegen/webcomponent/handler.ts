@@ -9,7 +9,7 @@ import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { build } from 'vite'
 import { LikeC4 } from '../../../LikeC4'
-import { createLikeC4Logger, startTimer } from '../../../logger'
+import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
 import { mkTempPublicDir } from '../../../vite/utils'
 
 type HandlerParams = {
@@ -26,13 +26,13 @@ export async function webcomponentHandler({
   path,
   useDotBin,
   webcomponentPrefix = 'likec4',
-  outfile
+  outfile,
 }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
   const languageServices = await LikeC4.fromWorkspace(path, {
     logger: 'vite',
-    graphviz: useDotBin ? 'binary' : 'wasm'
+    graphviz: useDotBin ? 'binary' : 'wasm',
   })
 
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
@@ -79,12 +79,12 @@ export async function webcomponentHandler({
     outDir: publicDir,
     filename: filename,
     webcomponentPrefix,
-    base: '/'
+    base: '/',
   })
   consola.debug(`${k.dim('vite build webcomponent')}`)
   await build({
     ...webcomponentConfig,
-    logLevel: 'warn'
+    logLevel: 'warn',
   })
 
   const viteOutputFile = resolve(publicDir, filename)
@@ -99,14 +99,14 @@ export async function webcomponentHandler({
   consola.debug(`${k.dim('remove temp public')}`)
   await rm(publicDir, { recursive: true, force: true })
 
-  consola.box(
+  boxen(
     stripIndent(`
     ${k.dim('Webcomponents generated to:')}
      ${relative(cwd(), outfilepath)}
 
     ${k.dim('Setup and usage instructions:')}
      ${k.blue('https://likec4.dev/tooling/code-generation/webcomponent/')}
-  `)
+  `),
   )
 
   timer.stopAndLog()

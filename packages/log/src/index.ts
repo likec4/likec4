@@ -1,36 +1,88 @@
-import { createConsola } from 'consola'
-import { type LogObject, LogLevels } from 'consola/core'
-import { sep } from 'node:path'
-import { cwd } from 'node:process'
-import { type FormattedLogObject, formattedLogObj } from './format'
+import {
+  type Config,
+  configure as configureLogtape,
+  getLogger,
+} from '@logtape/logtape'
+import { getConsoleSink } from './formatters'
 
-export type * from 'consola/core'
-export type { FormattedLogObject }
+export type {
+  Filter,
+  Logger,
+  LogLevel,
+  LogRecord,
+  Sink,
+  TextFormatter,
+} from '@logtape/logtape'
 
-function parseStack(stack: string): string[] {
-  const currentDir = cwd() + sep
-  const lines = stack.split('\n').map((l) => l.trim().replace('file://', '').replace(currentDir, ''))
-  return lines
+export {
+  errorFromLogRecord,
+  // formatProperties,
+  // formatRecord,
+  getAnsiColorFormatter,
+  getConsoleSink,
+  getMessageOnlyFormatter,
+  getTextFormatter,
+} from './formatters'
+
+export {
+  withFilter,
+} from '@logtape/logtape'
+
+export {
+  logger as consola,
+  logger as rootLogger,
 }
 
-export function formatLogObj(logObj: LogObject): FormattedLogObject {
-  return formattedLogObj(logObj, parseStack)
+export {
+  loggable,
+} from './utils'
+
+export const logger = getLogger('likec4')
+
+/**
+ * Get a child logger with the given subcategory.
+ *
+ * @param subcategory The subcategory.
+ * @returns The child logger.
+ */
+export function createLogger(subcategory: string | readonly [string] | readonly [string, ...string[]]) {
+  return logger.getChild(subcategory)
 }
 
-const level = LogLevels.debug
+let configureWasCalled = false
 
-const consola = createConsola({
-  level,
-  defaults: {
-    level,
-  },
-  throttle: 2,
-  throttleMin: 500,
-  formatOptions: {
-    colors: true,
-    compact: false,
-    date: false,
-  },
-})
+export async function configureLogger<TSinkId extends string, TFilterId extends string>(
+  config?: Config<TSinkId, TFilterId>,
+) {
+  try {
+    configureWasCalled = true
+    const sinks = config?.sinks ?? {}
+    await configureLogtape<any, any>({
+      ...config,
+      sinks: {
+        ...sinks,
+        // @ts-expect-error console is not a valid sink id
+        console: sinks['console'] ?? getConsoleSink(),
+      },
+      loggers: [
+        { category: ['logtape', 'meta'], sinks: ['console' as any], lowestLevel: 'warning' },
+        ...(config?.loggers ?? [
+          {
+            category: 'likec4',
+            sinks: ['console' as any],
+            lowestLevel: 'debug',
+          },
+        ]),
+      ],
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}
 
-export { consola, consola as logger, consola as rootLogger, LogLevels }
+export function ensureLoggerIsConfigured() {
+  if (!configureWasCalled) {
+    configureLogger()
+    console.warn('logger automatically configured with default settings')
+  }
+}

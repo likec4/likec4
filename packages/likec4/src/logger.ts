@@ -1,62 +1,59 @@
-import { consola } from '@likec4/log'
-import mergeErrorCause from 'merge-error-cause'
+import { rootLogger } from '@likec4/log'
 import { hrtime } from 'node:process'
-import { inspect } from 'node:util'
 import prettyMilliseconds from 'pretty-ms'
-import { isCI } from 'std-env'
 import k from 'tinyrainbow'
-import type { LogErrorOptions, LogOptions } from 'vite'
-import { createLogger } from 'vite'
+import type { LogErrorOptions, LogType } from 'vite'
+
+export const logger = rootLogger.getChild('cli')
 
 const ERROR = k.bold(k.bgRed(k.white('ERROR')))
 const WARN = k.bold(k.yellow('WARN'))
 const INFO = k.bold(k.green('INFO'))
 
 export function createLikeC4Logger(prefix: string) {
-  const logger = createLogger('info', {
-    prefix,
-    allowClearScreen: !isCI,
-  })
-
-  const timestamp = !isCI
-
+  const logger = rootLogger.getChild(prefix)
   return {
-    ...logger,
-    info(msg: string, options?: LogOptions) {
-      logger.info(`${INFO} ${msg}`, {
-        timestamp,
-        ...options,
-      })
+    info(msg: string) {
+      logger.info(msg)
     },
-    warn(msg: unknown, options?: LogOptions) {
+    warn(msg: unknown) {
       if (msg instanceof Error) {
-        logger.warn(`${WARN} ${k.red(msg.name + ' ' + msg.message)}\n${inspect(msg, { colors: true })}`, {
-          timestamp,
-          ...options,
-        })
+        logger.warn(`${k.red(msg.name + ' ' + msg.message)}`, { msg })
         return
       }
-      logger.warn(`${WARN} ${msg}`, {
-        timestamp,
-        ...options,
-      })
-    },
-    error(err: unknown, options?: LogErrorOptions) {
-      if (err instanceof Error) {
-        const mergedErr = mergeErrorCause(err)
-        logger.error(`${ERROR} ${k.red(mergedErr.message)}\n${inspect(mergedErr, { colors: true })}`, {
-          timestamp,
-          error: err,
-          ...options,
-        })
+      if (typeof msg === 'string') {
+        logger.warn(msg)
         return
       }
-      logger.error(`${ERROR} ${err}`, {
-        timestamp,
-        ...options,
-      })
-      return
+      logger.warn`${msg}`
     },
+    warnOnce(msg: string): void {
+      logger.warn(msg)
+    },
+    error(msg: unknown, options?: LogErrorOptions): void {
+      let error = options?.error ?? msg
+      if (error instanceof Error) {
+        if (msg === error) {
+          logger.error(`${k.red(error.name + ' ' + error.message)}`, { error })
+          return
+        }
+        ;``
+        logger.error(`${msg}`, { error })
+        return
+      }
+      if (typeof msg === 'string') {
+        logger.error(`${k.red(msg)}`)
+        return
+      }
+      logger.error`${msg}`
+    },
+    clearScreen: function(type: LogType): void {
+      // console.clear()
+    },
+    hasErrorLogged: function(error: any): boolean {
+      throw new Error('Function not implemented.')
+    },
+    hasWarned: false,
   }
 }
 export type ViteLogger = ReturnType<typeof createLikeC4Logger>
@@ -84,16 +81,23 @@ export function inMillis(start: [number, number]) {
   }
 }
 
-export function startTimer(logger?: Logger) {
+export function startTimer(log?: Logger) {
   const start = hrtime()
   return {
     stopAndLog(msg = 'done in ') {
       msg = k.green(`${msg}${inMillis(start).pretty}`)
-      if (logger) {
-        logger.info(msg)
-      } else {
-        consola.success(msg)
-      }
+      ;(log || logger).info(msg)
     },
   }
+}
+
+import _boxen, { type Options as BoxenOptions } from 'boxen'
+
+export function boxen(text: string, options?: BoxenOptions): void {
+  console.log(_boxen(text, {
+    padding: 1,
+    margin: 1,
+    dimBorder: true,
+    ...options,
+  }))
 }

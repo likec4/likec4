@@ -1,8 +1,7 @@
 import { viteAliases } from '@/vite/aliases'
-import { consola } from '@likec4/log'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,10 +11,10 @@ import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 import { viteSingleFile } from 'vite-plugin-singlefile'
-import { createLikeC4Logger } from '../logger'
+import { logger } from '../logger'
 import type { LikeC4ViteConfig } from './config-app.prod'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit } from './utils'
+import { chunkSizeWarningLimit, viteLogger } from './utils'
 
 export type { LikeC4ViteConfig }
 
@@ -23,13 +22,13 @@ const _dirname = dirname(fileURLToPath(import.meta.url))
 export const pkgRoot = resolve(_dirname, '../..')
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
-  consola.warn('DEVELOPMENT MODE')
+  logger.warn('DEVELOPMENT MODE')
   const useOverviewGraph = cfg?.useOverviewGraph === true
-  const customLogger = cfg.customLogger ?? createLikeC4Logger('c4:vite')
+  const customLogger = cfg.customLogger ?? viteLogger
 
   const root = resolve(pkgRoot, 'app')
   if (!fs.existsSync(root)) {
-    consola.error(`app root does not exist: ${root}`)
+    customLogger.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
   }
 

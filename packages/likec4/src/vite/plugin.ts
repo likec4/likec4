@@ -1,4 +1,4 @@
-import { consola } from '@likec4/log'
+import { rootLogger } from '@likec4/log'
 import pLimit from 'p-limit'
 import { mapToObj } from 'remeda'
 import k from 'tinyrainbow'
@@ -12,7 +12,7 @@ import {
   generateIconRendererSource,
   generateMmdSources,
   generateOverviewGraphSource,
-  likec4ModelSources
+  likec4ModelSources,
 } from './generators'
 
 export type LikeC4PluginOptions = {
@@ -40,7 +40,7 @@ const dotSourcesModule = {
     const views = await likec4.viewsService.viewsAsGraphvizOut()
     const sources = mapToObj(views, ({ id, svg, dot }) => [id, { dot, svg }])
     return generateDotSources(sources)
-  }
+  },
 } satisfies Module
 
 const d2SourcesModule = {
@@ -50,7 +50,7 @@ const d2SourcesModule = {
     logger.info(k.dim('generating virtual:likec4/d2-sources'))
     const views = await likec4.viewsService.computedViews()
     return generateD2Sources(views)
-  }
+  },
 } satisfies Module
 
 const mmdSourcesModule = {
@@ -60,7 +60,7 @@ const mmdSourcesModule = {
     logger.info(k.dim('generating virtual:likec4/mmd-sources'))
     const views = await likec4.viewsService.computedViews()
     return generateMmdSources(views)
-  }
+  },
 } satisfies Module
 
 const iconsModule = {
@@ -70,7 +70,7 @@ const iconsModule = {
     logger.info(k.dim('generating virtual:likec4/icons'))
     const views = await likec4.viewsService.computedViews()
     return generateIconRendererSource(views)
-  }
+  },
 } satisfies Module
 
 const overviewGraphModule = {
@@ -90,9 +90,9 @@ const overviewGraphModule = {
     return generateOverviewGraphSource({
       nodes: [],
       edges: [],
-      bounds: { x: 0, y: 0, width: 10, height: 10 }
+      bounds: { x: 0, y: 0, width: 10, height: 10 },
     })
-  }
+  },
 } satisfies Module
 
 const previewsModule = {
@@ -102,7 +102,7 @@ const previewsModule = {
     logger.info(k.dim('generating virtual:likec4/previews'))
     const views = await likec4.viewsService.computedViews()
     return diagramPreviewsSources(views, assetsDir)
-  }
+  },
 } satisfies Module
 
 const likec4ModelModule = {
@@ -112,7 +112,7 @@ const likec4ModelModule = {
     logger.info(k.dim('generating virtual:likec4/model'))
     const model = await likec4.layoutedModel()
     return likec4ModelSources(model)
-  }
+  },
 } satisfies Module
 
 // const hmrmodules = [
@@ -132,7 +132,7 @@ export const modules = [
   mmdSourcesModule,
   overviewGraphModule,
   previewsModule,
-  likec4ModelModule
+  likec4ModelModule,
 ]
 
 const isTarget = (path: string) => {
@@ -142,7 +142,7 @@ const isTarget = (path: string) => {
 
 export function likec4Plugin({
   useOverviewGraph = false,
-  languageServices: likec4
+  languageServices: likec4,
 }: LikeC4PluginOptions): PluginOption {
   let logger: ViteLogger
   let assetsDir = likec4.workspace
@@ -178,7 +178,7 @@ export function likec4Plugin({
           logger,
           likec4,
           assetsDir,
-          useOverviewGraph: useOverviewGraph
+          useOverviewGraph: useOverviewGraph,
         })
       }
       return null
@@ -201,9 +201,9 @@ export function likec4Plugin({
                 loc: {
                   file: error.sourceFsPath,
                   line: error.range.start.line + 1,
-                  column: error.range.start.character + 1
-                }
-              }
+                  column: error.range.start.character + 1,
+                },
+              },
             })
             return
           }
@@ -250,9 +250,9 @@ export function likec4Plugin({
       }
 
       likec4.onModelUpdate(() => {
-        consola.debug('likec4 model update')
+        rootLogger.debug('likec4 model update triggered')
         triggerHMR()
       })
-    }
+    },
   }
 }

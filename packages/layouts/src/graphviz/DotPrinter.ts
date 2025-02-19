@@ -26,7 +26,7 @@ import {
   DefaultShapeSize,
   DefaultTextSize,
 } from '@likec4/core/types'
-import { logger } from '@likec4/log'
+import { createLogger } from '@likec4/log'
 import Graph from 'graphology'
 
 import {
@@ -65,6 +65,8 @@ import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } f
 export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 
 const FontName = Theme.font
+
+const logger = createLogger('dot')
 
 export type ApplyManualLayoutData = {
   x: number
@@ -562,8 +564,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
           processed.add(edge.target)
           sourceNode.attributes.set(_.group, group.id)
           targetNode.attributes.set(_.group, group.id)
-        } catch (e) {
-          logger.error(e)
+        } catch (error) {
+          logger.error(`Failed to assign group to edge ${edge.id}`, { error })
         }
       }
     }

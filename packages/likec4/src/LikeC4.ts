@@ -1,4 +1,5 @@
 import type { LikeC4Views } from '@likec4/language-server'
+import { loggable } from '@likec4/log'
 import defu from 'defu'
 import { URI, UriUtils } from 'langium'
 import { existsSync } from 'node:fs'
@@ -268,7 +269,7 @@ export class LikeC4 {
       })
       return completed
     } catch (e) {
-      this.logger.error(e)
+      this.logger.error(loggable(e))
       return false
     }
   }

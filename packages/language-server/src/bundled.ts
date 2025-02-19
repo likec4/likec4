@@ -1,37 +1,27 @@
-import { configureLogger, getConsoleSink, getTextFormatter } from '@likec4/log'
+import { configureLogger, getConsoleSink } from '@likec4/log'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
 import { LikeC4FileSystem } from './LikeC4FileSystem'
-import { getTelemetrySink, logger } from './logger'
+import { logger } from './logger'
 import { type LikeC4Services, type LikeC4SharedServices, createCustomLanguageServices } from './module'
 import { ConfigurableLayouter } from './views/configurable-layouter'
 
-export { getLspConnectionSink, logger as lspLogger } from './logger'
-
-export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
-
-export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
-export type { LikeC4Services, LikeC4SharedServices } from './module'
-export type { LikeC4Views } from './views'
-export { LikeC4FileSystem }
-
+/**
+ * This is used as `bin` entry point to start the language server.
+ */
 export async function startLanguageServer(): Promise<{
   shared: LikeC4SharedServices
   likec4: LikeC4Services
 }> {
   const connection = createConnection(ProposedFeatures.all)
-
   await configureLogger({
     sinks: {
-      console: getConsoleSink({
-        formatter: getTextFormatter(),
-      }),
-      telemetry: getTelemetrySink(connection),
+      console: getConsoleSink(),
     },
     loggers: [
       {
         category: ['likec4'],
-        sinks: ['console', 'telemetry'],
+        sinks: ['console'],
       },
     ],
   })

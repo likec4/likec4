@@ -7,7 +7,7 @@ specification {
     }
   }
 
-  element softwareSystem {
+  element softreSystem {
     notation "Software System"
     style {
       opacity 25%

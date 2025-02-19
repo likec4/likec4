@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "1.21.1",
+  "version": "1.22.1",
   "license": "MIT",
   "private": true,
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.17.7",
+    "@types/node": "^20.17.17",
     "typescript": "^5.7.3",
     "unbuild": "^3.3.1",
     "vitest": "^3.0.4"

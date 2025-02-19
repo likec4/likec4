@@ -16,11 +16,11 @@ export class GraphvizWasmAdapter implements GraphvizPort {
 
   private async attempt<T>(logMessage: string, dot: string, fn: () => Promise<T>): Promise<T> {
     return await limit(async () => {
-      const log = logger.withTag('graphviz-wasm')
+      const log = logger.getChild('graphviz-wasm')
       try {
         return await fn()
       } catch (e) {
-        log.error(`FAILED GraphvizWasm.${logMessage}`, e)
+        log.error(`FAILED GraphvizWasm.${logMessage}`, { error: e })
         log.warn(`FAILED DOT:\n${dot}`)
         Graphviz.unload()
         GraphvizWasmAdapter._graphviz = null

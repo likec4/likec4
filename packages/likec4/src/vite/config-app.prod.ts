@@ -1,14 +1,14 @@
 import { viteAliases } from '@/vite/aliases'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
+import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
-import { type ViteLogger, createLikeC4Logger } from '../logger'
+import { type ViteLogger } from '../logger'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit, viteAppRoot } from './utils'
-import { viteSingleFile } from "vite-plugin-singlefile"
+import { chunkSizeWarningLimit, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteConfig = {
   customLogger?: ViteLogger
@@ -18,14 +18,12 @@ export type LikeC4ViteConfig = {
   webcomponentPrefix?: string | undefined
   useHashHistory?: boolean | undefined
   useOverviewGraph?: boolean | undefined
-  likec4AssetsDir: string,
+  likec4AssetsDir: string
   outputSingleFile?: boolean | undefined
-
 }
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
-
-  const customLogger = cfg.customLogger ?? createLikeC4Logger('c4:vite')
+  const customLogger = cfg.customLogger ?? viteLogger
   const root = viteAppRoot()
   const useOverviewGraph = cfg?.useOverviewGraph === true
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
@@ -114,7 +112,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       likec4Plugin({
         languageServices,
         useOverviewGraph,
-      })
+      }),
     ].concat(cfg.outputSingleFile ? [viteSingleFile()] : []),
   } satisfies InlineConfig & Omit<LikeC4ViteConfig, 'customLogger'> & { isDev: boolean }
 }

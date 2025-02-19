@@ -2,7 +2,7 @@ import type { ComputedView, DiagramView, OverviewGraph, ViewId } from '@likec4/c
 import { GraphvizLayouter } from '@likec4/layouts'
 import { type Cancellation, type WorkspaceCache } from 'langium'
 import { values } from 'remeda'
-import { logger, logWarnError } from '../logger'
+import { logError, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 export type GraphvizOut = {
@@ -24,7 +24,7 @@ export class LikeC4Views {
   constructor(private services: LikeC4Services) {
   }
 
-  private get layouter(): GraphvizLayouter {
+  get layouter(): GraphvizLayouter {
     return this.services.likec4.Layouter
   }
 
@@ -87,7 +87,7 @@ export class LikeC4Views {
         this.services.shared.lsp.Connection?.window.showErrorMessage(`LikeC4: ${errMessage}`)
         this.viewsWithReportedErrors.add(viewId)
       }
-      logger.error(e)
+      logError(e)
       return Promise.reject(e)
     }
   }

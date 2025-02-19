@@ -29,7 +29,7 @@ export default defineBuildConfig({
         'json5',
         '@hpcc-js/wasm-graphviz',
         'vite',
-        '@vitejs/plugin-react-swc',
+        '@vitejs/plugin-react',
       ],
     },
   },
@@ -46,13 +46,15 @@ export default defineBuildConfig({
   failOnWarn: false,
   declaration: isProduction,
   rollup: {
-    emitCJS: true,
+    emitCJS: false,
     inlineDependencies: true,
     esbuild: {
       platform: 'node',
       target: 'node20',
       legalComments: 'none',
       minify: isProduction,
+      minifyIdentifiers: false,
+      lineLimit: 500,
     },
     output: {
       compact: isProduction,

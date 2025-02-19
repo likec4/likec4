@@ -7,14 +7,15 @@ type VitePreviewParams = {
   languageServices: LikeC4
   outputDir?: string | undefined
   base?: string | undefined
-  open?: boolean
+  open?: boolean,
+  listen?: string | undefined
 }
 
 export async function vitePreview(cfg: VitePreviewParams) {
   const { isDev, ...config } = await viteConfig({
     ...cfg,
     likec4AssetsDir: '',
-    webcomponentPrefix: undefined
+    webcomponentPrefix: undefined    
   })
   const port = await getPort({
     port: portNumbers(62001, 62010)
@@ -25,7 +26,7 @@ export async function vitePreview(cfg: VitePreviewParams) {
     ...config,
     mode: 'production',
     preview: {
-      host: '0.0.0.0',
+      host: cfg.listen ?? '127.0.0.1',
       port,
       open
     }

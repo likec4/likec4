@@ -9,7 +9,7 @@ function graphvizBinPath() {
   try {
     return which.sync('dot')
   } catch (error) {
-    logger.error('Error checking for native Graphviz:', error)
+    logger.error('Error checking for native Graphviz:', { error })
     return null
   }
 }
@@ -22,7 +22,7 @@ export const ConfigurableLayouter = {
       const layouter = new GraphvizLayouter(wasmAdapter)
       const langId = services.LanguageMetaData.languageId
       services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate((update) => {
-        logger.debug('Configuration update', update)
+        logger.debug('Configuration update', { update })
         if (update.section === langId) {
           try {
             const { mode, path } = update.configuration.graphviz ?? {
@@ -51,12 +51,12 @@ export const ConfigurableLayouter = {
 
             logger.info(`use graphviz binary: ${binaryPath}`)
           } catch (error) {
-            logger.error('Failed to update configuration', error)
+            logger.error('Failed to update configuration', { error })
           }
           return
         }
 
-        logger.warn('Unexpected configuration update', update)
+        logger.warn('Unexpected configuration update', { update })
       })
 
       return layouter

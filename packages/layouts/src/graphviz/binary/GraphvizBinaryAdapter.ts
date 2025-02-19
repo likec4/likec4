@@ -23,7 +23,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
 
   async unflatten(dot: DotSource): Promise<DotSource> {
     return await limit(async () => {
-      const log = logger.withTag('graphviz-binary')
+      const log = logger.getChild('graphviz-binary')
       let result: string | undefined
       try {
         const unflatten = await spawn(this.unflattenpath, ['-l 1', '-c 3'], {
@@ -32,13 +32,15 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
             string: dot,
           },
         })
-        result = unflatten.output
+        result = unflatten.stdout
+        if (!isEmpty(unflatten.stderr)) {
+          log.warn`Command ${unflatten.command} has stderr:\n${unflatten.stderr}`
+        }
       } catch (error) {
-        log.error(error)
+        log.error(`FAILED GraphvizBinaryAdapter.unflatten`, { error })
         if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
-          log.warn(
-            `Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}): "${error.stderr}"`,
-          )
+          log
+            .warn`Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}): "${error.stderr}"`
           result = error.stdout
         }
       }
@@ -51,7 +53,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
 
   async layoutJson(dot: DotSource): Promise<string> {
     return await limit(async () => {
-      const log = logger.withTag('graphviz-binary')
+      const log = logger.getChild('graphviz-binary')
       let result: string | undefined
       try {
         const dotcmd = await spawn(this.dotpath, ['-Tjson', '-y'], {
@@ -60,9 +62,12 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
             string: dot,
           },
         })
-        result = dotcmd.output
+        result = dotcmd.stdout
+        if (!isEmpty(dotcmd.stderr)) {
+          log.warn`Command ${dotcmd.command} has stderr:\n${dotcmd.stderr}`
+        }
       } catch (error) {
-        log.error(error)
+        log.error(`FAILED GraphvizBinaryAdapter.layoutJson`, { error })
         log.warn(`FAILED DOT:\n${dot}`)
         if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
           log.warn(
@@ -83,7 +88,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
 
   async svg(dot: DotSource): Promise<string> {
     return await limit(async () => {
-      const log = logger.withTag('graphviz-binary')
+      const log = logger.getChild('graphviz-binary')
       let result: string | undefined
       try {
         const dotcmd = await spawn(this.dotpath, ['-Tsvg', '-y'], {
@@ -92,14 +97,16 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
             string: dot,
           },
         })
-        result = dotcmd.output
+        result = dotcmd.stdout
+        if (!isEmpty(dotcmd.stderr)) {
+          log.warn`Command ${dotcmd.command} has stderr:\n${dotcmd.stderr}`
+        }
       } catch (error) {
-        log.error(error)
-        log.warn(`FAILED DOT:\n${dot}`)
+        log.error(`FAILED GraphvizBinaryAdapter.svg`, { error })
+        log.warn`FAILED DOT:\n${dot}`
         if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
-          log.warn(
-            `Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}): "${error.stderr}"`,
-          )
+          log
+            .warn`Command: '${error.command}' returned result but also failed (exitcode ${error.exitCode}): "${error.stderr}"`
           result = error.stdout
         } else {
           throw error

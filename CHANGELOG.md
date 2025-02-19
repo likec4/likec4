@@ -1,3 +1,35 @@
+## [1.22.1](https://github.com/likec4/likec4/compare/v1.22.0...v1.22.1) (2025-02-13)
+
+### Improvement
+
+* **diagram:** manual layout is locked by default ([a847a28](https://github.com/likec4/likec4/commit/a847a2872602db9c3cefbf0f5435e012813d7e60)), closes [#1518](https://github.com/likec4/likec4/issues/1518)
+
+### Bug Fixes
+
+* **cli:** failing check update command ([a6b9544](https://github.com/likec4/likec4/commit/a6b954484534f23b360212b033c21f278abdbc66))
+* **export:** manual layout causes the exported landscape view losing nodes and links, when exporting to .png ([5ebbc03](https://github.com/likec4/likec4/commit/5ebbc03da84c59d62c6ca7c3e7ba65abfbc3bdaf)), closes [#1594](https://github.com/likec4/likec4/issues/1594)
+
+
+# [1.22.0](https://github.com/likec4/likec4/compare/v1.21.1...v1.22.0) (2025-02-13)
+
+### Features
+
+* **Revamped search**
+
+  <img src="https://github.com/user-attachments/assets/8e6ec03b-7a0f-4089-bc99-1406160985d9" />
+  
+  thanks @davydkov, closes [#1553](https://github.com/likec4/likec4/issues/1553)
+
+* **cli:** added an option to set the listen address of serve and preview commands, thanks @pavelpykhtin, ([#1559](https://github.com/likec4/likec4/issues/1559)) ([3522c5d](https://github.com/likec4/likec4/commit/3522c5dc49e6ec16c77ed1c1cca8545eeda0ef9b)), closes [#1526](https://github.com/likec4/likec4/issues/1526)
+* **cli:**  check for new releases and notify if update available ([#1574](https://github.com/likec4/likec4/issues/1574)) ([d57fc40](https://github.com/likec4/likec4/commit/d57fc4063ca151131a48dced630d7ed5d1b97201)), closes [#1573](https://github.com/likec4/likec4/issues/1573)
+
+
+### Bug Fixes
+
+* Extended view not generated when using dot (closes [#1582](https://github.com/likec4/likec4/issues/1582))
+
+
+
 ## [1.21.1](https://github.com/likec4/likec4/compare/v1.21.0...v1.21.1) (2025-02-08)
 
 ### Bug Fixes

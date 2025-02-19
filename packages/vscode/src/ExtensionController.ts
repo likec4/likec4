@@ -7,7 +7,6 @@ import lc from 'vscode-languageclient'
 
 import { type ViewId as ViewID, nonNullable } from '@likec4/core'
 import type { LocateParams } from '@likec4/language-server/protocol'
-import { formatLogObj } from '@likec4/log'
 import type TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
 import { entries, groupBy, map, pipe, prop, values } from 'remeda'
@@ -23,7 +22,7 @@ import {
   isProd,
 } from './const'
 import { LikeC4Model } from './LikeC4Model'
-import { addLogReporter, logger } from './logger'
+import { logError, logger, logWarn } from './logger'
 import { Messenger } from './Messenger'
 import { Rpc } from './Rpc'
 import { AbstractDisposable } from './util'
@@ -135,7 +134,7 @@ export class ExtensionController extends AbstractDisposable {
 
           viewId = selected.viewId
         } catch (e) {
-          logger.warn(e)
+          logWarn(e)
           return
         }
       }
@@ -242,6 +241,10 @@ export class ExtensionController extends AbstractDisposable {
     return nonNullable(this._likec4model, 'LikeC4Model not initialized')
   }
 
+  static get telemetry(): TelemetryReporter | null {
+    return ExtensionController._instance?.telemetry ?? null
+  }
+
   protected constructor(
     public readonly client: LanguageClient,
     public readonly outputChannel: vscode.LogOutputChannel,
@@ -312,7 +315,7 @@ Restart VSCode. Please report this issue, if it persists.`)
     } catch (e) {
       if (e instanceof Error) {
         void vscode.window.showErrorMessage(e.message)
-        logger.error(e)
+        logError(e)
       }
       return Promise.reject(e)
     }
@@ -333,7 +336,6 @@ Restart VSCode. Please report this issue, if it persists.`)
   // public setPreviewPanelState(state: PreviewPanelInternalState) {
   //   this._context.workspaceState.update(StateKeys.previewPanelState, state)
   // }
-
   private async enableTelemetry() {
     logger.debug(`Enable telemetry`)
     const ctrl = this
@@ -354,7 +356,7 @@ Restart VSCode. Please report this issue, if it persists.`)
         }
         telemetry.sendTelemetryEvent(eventName, properties)
       } catch (e) {
-        logger.warn(e)
+        logWarn(e)
       }
     }))
     ctrl.onDispose(addLogReporter((logObj, _ctx) => {

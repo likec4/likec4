@@ -41,7 +41,7 @@ import {
 } from 'xstate'
 import { MinZoom } from '../../base/const'
 import type { EnabledFeatures } from '../../context'
-import { AllDisabled } from '../../context/DiagramFeatures'
+import { type FeatureName, AllDisabled } from '../../context/DiagramFeatures'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import { relationshipDetailsActor } from '../../overlays/relationship-details/actor'
 import { relationshipsBrowserActor } from '../../overlays/relationships-browser/actor'
@@ -86,8 +86,12 @@ export interface Input {
   fitViewPadding: number
 }
 
+type ToggledFeatures = Partial<EnabledFeatures>
+
 export interface DiagramContext extends Input {
   features: EnabledFeatures
+  // This is used to override features from props
+  toggledFeatures: ToggledFeatures
   initialized: boolean
   viewport: Viewport
   viewportChangedManually: boolean
@@ -165,6 +169,7 @@ export type Events =
   | { type: 'walkthrough.start'; stepId?: StepEdgeId }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }
+  | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
 
 export type ActionArg = { context: DiagramContext; event: Events }
 
@@ -306,12 +311,24 @@ export const diagramMachine = setup({
         })
       })
     },
+
+    'updateFeatures': assign(({ event }) => {
+      assertEvent(event, 'update.features')
+      return {
+        features: {
+          ...event.features,
+        },
+      }
+    }),
   },
 }).createMachine({
   initial: 'initializing',
   context: ({ input, self, spawn }) => ({
     ...input,
     features: { ...AllDisabled },
+    toggledFeatures: {
+      enableReadOnly: true,
+    },
     initialized: false,
     viewportChangedManually: false,
     lastOnNavigate: null,
@@ -863,9 +880,7 @@ export const diagramMachine = setup({
       actions: assign(({ event }) => ({ ...event.inputs })),
     },
     'update.features': {
-      actions: assign({
-        features: ({ event }) => event.features,
-      }),
+      actions: 'updateFeatures',
     },
     'update.nodeData': {
       actions: assign(updateNodeData),
@@ -920,6 +935,15 @@ export const diagramMachine = setup({
     'walkthrough.start': {
       guard: 'is dynamic view',
       target: '.walkthrough',
+    },
+    'toggle.feature': {
+      actions: assign({
+        toggledFeatures: ({ context, event }) => ({
+          ...context.toggledFeatures,
+          [`enable${event.feature}`]: event.forceValue ??
+            !(context.toggledFeatures[`enable${event.feature}`] ?? context.features[`enable${event.feature}`]),
+        }),
+      }),
     },
   },
   exit: [

@@ -13,7 +13,7 @@ import {
 import { isLikeC4Source } from '../common/initWorkspace'
 import { extensionTitle, globPattern, isDev, isVirtual, languageId } from '../const'
 import { ExtensionController } from '../ExtensionController'
-import { logger, logToChannel } from '../logger'
+import { configureLogger, logger } from '../logger'
 
 function isWindows() {
   return os.platform() === 'win32'
@@ -26,11 +26,12 @@ export function activate(context: vscode.ExtensionContext) {
   })
   context.subscriptions.push(
     extensionOutputChannel,
-    logToChannel(extensionOutputChannel),
   )
-  logger.info('createLanguageClient - node')
-  const client = createLanguageClient(context)
-  ExtensionController.activate(context, client, extensionOutputChannel)
+  configureLogger(extensionOutputChannel).then(() => {
+    logger.info('createLanguageClient - node')
+    const client = createLanguageClient(context)
+    ExtensionController.activate(context, client, extensionOutputChannel)
+  })
 }
 
 // This function is called when the extension is deactivated.
@@ -39,9 +40,7 @@ export function deactivate() {
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
-  const outputChannel = vscode.window.createOutputChannel('LikeC4 Language Server', {
-    log: true,
-  })
+  const outputChannel = vscode.window.createOutputChannel('LikeC4 Language Server')
   context.subscriptions.push(
     outputChannel,
   )
@@ -117,7 +116,6 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   const clientOptions: LanguageClientOptions = {
     revealOutputChannelOn: isDev ? RevealOutputChannelOn.Info : RevealOutputChannelOn.Warn,
     outputChannel,
-    traceOutputChannel: outputChannel,
     documentSelector,
     diagnosticCollectionName: 'likec4',
     diagnosticPullOptions: {

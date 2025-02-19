@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.21.1",
+  "version": "1.22.1",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.6.0",
@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": "^20.18.1"
+    "node": "^20.18.3"
   },
   "scripts": {
     "fmt": "dprint fmt",
@@ -33,7 +33,7 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@types/node": "^20.17.7",
+    "@types/node": "^20.17.17",
     "@vitest/ui": "^3.0.4",
     "dprint": "0.49.0",
     "esbuild": "^0.25.0",
@@ -44,7 +44,7 @@
     "npm-run-all2": "^7.0.1",
     "shipjs": "^0.27.0",
     "tsx": "~4.19.2",
-    "turbo": "^2.4.0",
+    "turbo": "^2.4.1",
     "typescript": "^5.7.3",
     "vite": "5.4.14",
     "vitest": "^3.0.4"

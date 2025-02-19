@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { consola, LogLevels } from '@likec4/log'
-import { DEV } from 'esm-env'
+import { configureLogger, getConsoleSink } from '@likec4/log'
 import { argv, exit, stdout } from 'node:process'
 import { clamp } from 'remeda'
+import { nodeENV } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -16,52 +16,59 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 import validateCmd from './validate'
 
-consola.level = LogLevels.debug
+async function main() {
+  await configureLogger({
+    sinks: {
+      console: getConsoleSink(),
+    },
+    loggers: [
+      {
+        category: 'likec4',
+        sinks: ['console'],
+        lowestLevel: nodeENV === 'development' ? 'debug' : 'info',
+      },
+    ],
+  })
+  notifyAvailableUpdate()
 
-if (DEV) {
-  consola.level = LogLevels.trace
-  consola.warn('running cli in dev mode')
+  return await yargs(hideBin(argv))
+    .scriptName('likec4')
+    .usage(`Usage: $0 <command>`)
+    .command(serveCmd)
+    .command(buildCmd)
+    .command(codegenCmd)
+    .command(exportCmd)
+    .command(previewCmd)
+    .command(validateCmd)    
+    .command({
+      command: 'check-update',
+      describe: 'Check for updates',
+      handler: async () => {
+        await checkAvailableUpdate()
+      },
+    })
+    .help('help')
+    .version(version)
+    .alias('v', 'version')
+    .alias('h', 'help')
+    .demandCommand(1, 'Please run with valid command')
+    .strict()
+    .recommendCommands()
+    .showHelpOnFail(true, 'Something is wrong, run with --help')
+    .updateStrings({
+      'Options:': k.bold('Options:'),
+      'Positionals:': k.bold('Arguments:'),
+      'Commands:': k.bold('Commands:'),
+      'Examples:': k.bold('Examples:'),
+    })
+    .wrap(clamp(stdout.columns - 20, { min: 80, max: 120 }))
+    .parseAsync()
 }
 
-consola.wrapConsole()
-
-// notifyAvailableUpdate()
-
-const cli = yargs(hideBin(argv))
-  .scriptName('likec4')
-  .usage(`Usage: $0 <command>`)
-  .command(serveCmd)
-  .command(buildCmd)
-  .command(codegenCmd)
-  .command(exportCmd)
-  .command(previewCmd)
-  .command(validateCmd)
-  .command({
-    command: 'check-update',
-    describe: 'Check for updates',
-    handler: async () => {
-      await checkAvailableUpdate()
-    },
-  })
-  .help('help')
-  .version(version)
-  .alias('v', 'version')
-  .alias('h', 'help')
-  .demandCommand(1, 'Please run with valid command')
-  .strict()
-  .recommendCommands()
-  .showHelpOnFail(true, 'Something is wrong, run with --help')
-  .updateStrings({
-    'Options:': k.bold('Options:'),
-    'Positionals:': k.bold('Arguments:'),
-    'Commands:': k.bold('Commands:'),
-    'Examples:': k.bold('Examples:'),
-  })
-  .wrap(clamp(stdout.columns - 20, { min: 80, max: 120 }))
-  .parseAsync()
-
-cli.catch(() => exit(1))
+main().catch(() => {
+  exit(1)
+})
 
 process.on('unhandledRejection', (err) => {
-  consola.error(err)
+  console.error(`Unhandled rejection`, err)
 })

@@ -10,7 +10,7 @@
     "noEmit": false,
     "composite": true,
     "tsBuildInfoFile": "cli.tsbuildinfo",
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "types": [
       "node"
     ],

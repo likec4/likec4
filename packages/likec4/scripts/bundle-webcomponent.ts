@@ -1,6 +1,6 @@
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { consola } from 'consola'
-import { readFile, rm } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { build } from 'vite'
 import { amIExecuted } from './_utils'

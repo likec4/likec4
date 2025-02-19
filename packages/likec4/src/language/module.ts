@@ -2,19 +2,15 @@ import {
   type LikeC4Services,
   createCustomLanguageServices,
   LikeC4FileSystem,
-  lspLogger,
-  setLogLevel,
 } from '@likec4/language-server'
 import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
-import { consola, LogLevels } from '@likec4/log'
 import defu from 'defu'
 import type { DeepPartial, Module } from 'langium'
-import { isError } from 'remeda'
 import k from 'tinyrainbow'
 import type { Constructor } from 'type-fest'
 import { version } from '../../package.json' with { type: 'json' }
-import { type Logger, createLikeC4Logger, NoopLogger } from '../logger'
+import { type Logger, createLikeC4Logger, logger as cliLogger, NoopLogger } from '../logger'
 import { CliWorkspace } from './Workspace'
 
 export type CliAddedServices = {
@@ -78,13 +74,14 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
       logger = NoopLogger
       break
     case 'vite':
-      logger = createLikeC4Logger('c4:lsp ')
+      logger = createLikeC4Logger('lang')
       break
     case 'default':
-      logger = consola.withTag('lsp')
+      logger = cliLogger.getChild('lang')
       break
     default:
       logger = options.logger
+      break
   }
   const useDotBin = options.graphviz === 'binary'
   logger.info(`${k.dim('version')} ${version}`)
@@ -97,50 +94,6 @@ export function createLanguageServices(opts?: CreateLanguageServiceOptions): Cli
         new GraphvizLayouter(useDotBin === true ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
     },
   } satisfies Module<CliServices, DeepPartial<CliAddedServices>>
-
-  setLogLevel(options.logger === false ? 'silent' : 'info')
-  if (options.logger !== false && options.logger !== 'default') {
-    lspLogger.setReporters([{
-      log: ({ level, ...logObj }, ctx) => {
-        const tag = logObj.tag || ''
-        const parts = logObj.args.map((arg) => {
-          if (isError(arg)) {
-            return arg.stack ?? arg.message
-          }
-          if (typeof arg === 'string') {
-            return arg
-          }
-          return String(arg)
-        })
-        if (tag) {
-          parts.unshift(`[${tag}]`)
-        }
-        const message = parts.join(' ')
-        switch (true) {
-          case level >= LogLevels.debug: {
-            // ignore
-            break
-          }
-          case level >= LogLevels.info: {
-            logger.info(message)
-            break
-          }
-          case level >= LogLevels.log: {
-            logger.info(message)
-            break
-          }
-          case level >= LogLevels.warn: {
-            logger.warn(message)
-            break
-          }
-          case level >= LogLevels.fatal: {
-            logger.error(message)
-            break
-          }
-        }
-      },
-    }])
-  }
 
   return createCustomLanguageServices(options.useFileSystem ? LikeC4FileSystem : {}, CliModule, module).likec4
 }

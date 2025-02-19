@@ -81,7 +81,7 @@ export function LikeC4SearchInput() {
       isExactMatch = only(alloptions)?.toLocaleLowerCase() === searchTag
       if (alloptions.length === 0) {
         options = [
-          <ComboboxEmpty>
+          <ComboboxEmpty key="empty-tags">
             No tags found
           </ComboboxEmpty>,
         ]
@@ -105,7 +105,7 @@ export function LikeC4SearchInput() {
       }
       if (alloptions.length === 0) {
         options = [
-          <ComboboxEmpty>
+          <ComboboxEmpty key="empty-kinds">
             No kinds found
           </ComboboxEmpty>,
         ]
