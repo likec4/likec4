@@ -56,7 +56,7 @@
     "@mantine/vanilla-extract": "7.17.0",
     "@react-hookz/web": "^25.0.1",
     "@statelyai/inspect": "^0.4.0",
-    "@tabler/icons-react": "3.29.0",
+    "@tabler/icons-react": "3.30.0",
     "@tanstack/react-router": "1.105.0",
     "@tanstack/router-cli": "1.105.0",
     "@tanstack/router-vite-plugin": "1.105.0",

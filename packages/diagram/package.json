@@ -43,7 +43,7 @@
     "@mantine/vanilla-extract": "7.17.0",
     "@nanostores/react": "0.8.4",
     "@react-hookz/web": "^25.0.1",
-    "@tabler/icons-react": "3.29.0",
+    "@tabler/icons-react": "3.30.0",
     "@vanilla-extract/dynamic": "^2.1.2",
     "@xstate/react": "^5.0.2",
     "@xyflow/react": "12.4.2",
