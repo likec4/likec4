@@ -30,18 +30,18 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
    asdf install
    ```
 
-3. Install dependencies with yarn – `yarn`
+3. Install dependencies with pnpm – `pnpm install`
 
 4. Generate sources by running build in root:
    ```sh
-   yarn build
+   pnpm build
    ```
 
 5. Mostly used dev tasks:
-   1. `yarn dev` in `apps/playground`
-   2. `yarn dev` (or any `yarn dev:*`) in `package/likec4`
-   3. `yarn vitest:ui` in root
-   4. `yarn typecheck` in root
+   1. `pnpm dev` in `apps/playground`
+   2. `pnpm dev` (or any `pnpm dev:*`) in `package/likec4`
+   3. `pnpm vitest:ui` in root
+   4. `pnpm typecheck` in root
 
 6. To work on VSCode extension:
    - Launch [`Run Extension`](https://github.com/likec4/likec4/blob/c88cfdb3856aff4b28c5f72da7ded8caf8c47c62/.vscode/launch.json#L18) to start a new VSCode instance with the extension loaded.
@@ -57,7 +57,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
 To run from root workspace:
 
 ```sh
-yarn test:e2e
+pnpm test:e2e
 ```
 
 ## About this repository
