@@ -280,10 +280,10 @@ importers:
         specifier: ^2.1.2
         version: 2.1.2
       '@vanilla-extract/esbuild-plugin':
-        specifier: ^2.3.14
+        specifier: ^2.3.15
         version: 2.3.15(esbuild@0.25.0)
       '@vanilla-extract/vite-plugin':
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: 5.0.1(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)(tsx@4.19.2)(vite@6.1.0(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
       '@vitejs/plugin-react':
         specifier: 4.3.4
@@ -603,7 +603,7 @@ importers:
         specifier: ^0.1.4
         version: 0.1.4
       '@vanilla-extract/vite-plugin':
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: 5.0.1(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)(tsx@4.19.2)(vite@6.1.0(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
       '@vitejs/plugin-react':
         specifier: 4.3.4
@@ -976,7 +976,7 @@ importers:
         specifier: ^2.1.2
         version: 2.1.2
       '@vanilla-extract/vite-plugin':
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: 5.0.1(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)(tsx@4.19.2)(vite@5.4.14(@types/node@20.17.18)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0))(yaml@2.7.0)
       '@xyflow/react':
         specifier: 12.4.2
@@ -1342,7 +1342,7 @@ importers:
         specifier: ^1.17.1
         version: 1.17.1
       '@vanilla-extract/vite-plugin':
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: 5.0.1(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)(tsx@4.19.2)(vite@6.1.0(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.2))(terser@5.39.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
       '@vitejs/plugin-react':
         specifier: 4.3.4
