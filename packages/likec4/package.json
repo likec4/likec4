@@ -178,7 +178,7 @@
     "semver": "^7.7.1",
     "std-env": "^3.8.0",
     "strip-indent": "^4.0.0",
-    "terser": "^5.38.1",
+    "terser": "^5.39.0",
     "tinyrainbow": "^2.0.0",
     "tsx": "~4.19.2",
     "turbo": "^2.4.1",
