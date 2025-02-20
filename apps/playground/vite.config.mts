@@ -9,7 +9,6 @@ import tsconfigpaths from 'vite-tsconfig-paths'
 import packageJson from './package.json' with { type: 'json' }
 import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
-
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
   '@likec4/diagram': resolve('../../packages/diagram/src'),
@@ -32,6 +31,9 @@ function devconfig(): UserConfig {
         '@likec4/icons/all',
         'langium/lsp',
         'langium',
+        '@codingame/monaco-vscode-api/vscode/src/vs/editor/common/services/editorSimpleWorker',
+        '@codingame/monaco-vscode-api/workers/editor.worker',
+        '@codingame/monaco-vscode-textmate-service-override/worker',
         '@codingame/monaco-vscode-api',
         '@codingame/monaco-vscode-editor-api',
         'vscode-textmate',
@@ -43,6 +45,9 @@ function devconfig(): UserConfig {
         'vscode-languageclient',
         'vscode-languageserver-types',
         'vscode-languageserver',
+        '@tabler/icons-react',
+        'framer-motion',
+        'framer-motion/dom',
       ],
       esbuildOptions: {
         plugins: [
@@ -157,7 +162,7 @@ function build(): UserConfig {
     build: {
       emptyOutDir: true,
       cssCodeSplit: false,
-      cssMinify: 'lightningcss',
+      cssMinify: true,
       minify: true,
       // minify: 'terser',
     },

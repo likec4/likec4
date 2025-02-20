@@ -65,6 +65,7 @@ export const createWrapperConfig = (params: {
     $type: 'extended',
     fsProvider,
     vscodeApiConfig: {
+      enableExtHostWorker: false,
       viewsConfig: {
         viewServiceType: 'EditorService',
         openEditorFunc,

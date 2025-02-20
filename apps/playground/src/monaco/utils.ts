@@ -1,6 +1,6 @@
+import TextEditorWorker from '@codingame/monaco-vscode-api/workers/editor.worker?worker'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { type IDisposable, Uri } from '@codingame/monaco-vscode-editor-api'
-import TextEditorWorker from '@codingame/monaco-vscode-editor-api/esm/vs/editor/editor.worker.js?worker'
 import {
   type RegisteredFileSystemProvider,
   RegisteredMemoryFile,

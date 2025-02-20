@@ -45,16 +45,18 @@
     "tsx": "~4.19.2",
     "turbo": "^2.4.2",
     "typescript": "catalog:",
-    "vite": "5.4.14",
+    "vite": "6.1.0",
     "vitest": "^3.0.4"
   },
-  "resolutions": {
-    "vscode-jsonrpc": "8.2.0",
-    "vscode-languageclient": "9.0.1",
-    "vscode-languageserver": "9.0.1",
-    "vscode-languageserver-protocol": "3.17.5",
-    "vscode-languageserver-types": "3.17.5",
-    "vscode-uri": "3.1.0"
+  "pnpm": {
+    "overrides": {
+      "vscode-jsonrpc": "8.2.0",
+      "vscode-languageclient": "9.0.1",
+      "vscode-languageserver": "9.0.1",
+      "vscode-languageserver-protocol": "3.17.5",
+      "vscode-languageserver-types": "3.17.5",
+      "vscode-uri": "3.1.0"
+    }
   },
   "nano-staged": {
     "**/*.{ts,tsx,mjs,js,jsx}": [
