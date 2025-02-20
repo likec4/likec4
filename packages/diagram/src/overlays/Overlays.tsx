@@ -90,28 +90,25 @@ export const Overlays = memo(() => {
 
   const onClose = useCallbackRef(() => {
     diagram.closeOverlay()
-    // relationshipsBrowserActor?.send({ type: 'close' })
-    // relationshipDetailsActor?.send({ type: 'close' })
-    // send({ type: 'close.overlay' })
   })
 
   return (
     <DiagramFeatures.Overlays>
       <ErrorBoundary FallbackComponent={Fallback} onReset={onClose}>
-        <AnimatePresence onExitComplete={onClose}>
+        <AnimatePresence onExitComplete={() => relationshipsBrowserActor?.send({ type: 'close' })}>
           {relationshipsBrowserActor && (
             <Overlay
               key={'relationships-browser'}
-              onClose={() => relationshipsBrowserActor.send({ type: 'close' })}>
+              onClose={onClose}>
               <RelationshipsBrowser actorRef={relationshipsBrowserActor} />
             </Overlay>
           )}
         </AnimatePresence>
-        <AnimatePresence onExitComplete={onClose}>
+        <AnimatePresence onExitComplete={() => relationshipDetailsActor?.send({ type: 'close' })}>
           {relationshipDetailsActor && (
             <Overlay
               key={'relationship-details'}
-              onClose={() => relationshipDetailsActor.send({ type: 'close' })}>
+              onClose={onClose}>
               <RelationshipDetails actorRef={relationshipDetailsActor} />
             </Overlay>
           )}
