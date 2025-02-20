@@ -355,7 +355,7 @@ importers:
         specifier: ~4.19.2
         version: 4.19.2
       turbo:
-        specifier: ^2.4.1
+        specifier: ^2.4.2
         version: 2.4.2
       type-fest:
         specifier: 4.34.1
@@ -458,7 +458,7 @@ importers:
         specifier: ^2.20.1
         version: 2.20.1
       turbo:
-        specifier: ^2.4.1
+        specifier: ^2.4.2
         version: 2.4.2
       typescript:
         specifier: 'catalog:'
@@ -758,7 +758,7 @@ importers:
         specifier: ~4.19.2
         version: 4.19.2
       turbo:
-        specifier: ^2.4.1
+        specifier: ^2.4.2
         version: 2.4.2
       type-fest:
         specifier: 4.34.1
@@ -852,7 +852,7 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4
       turbo:
-        specifier: ^2.4.1
+        specifier: ^2.4.2
         version: 2.4.2
       typescript:
         specifier: 'catalog:'
@@ -1105,7 +1105,7 @@ importers:
         specifier: ~4.19.2
         version: 4.19.2
       turbo:
-        specifier: ^2.4.1
+        specifier: ^2.4.2
         version: 2.4.2
       typescript:
         specifier: 'catalog:'
@@ -1255,7 +1255,7 @@ importers:
         specifier: ~4.19.2
         version: 4.19.2
       turbo:
-        specifier: ^2.4.1
+        specifier: ^2.4.2
         version: 2.4.2
       type-fest:
         specifier: 4.34.1
