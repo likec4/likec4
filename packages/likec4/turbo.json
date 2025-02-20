@@ -64,10 +64,10 @@
       "inputs": [],
       "outputLogs": "new-only"
     },
-    "package": {
+    "pack": {
       "dependsOn": [
         "build",
-        "@likec4/core#package"
+        "@likec4/core#pack"
       ],
       "outputs": [
         "package.tgz"

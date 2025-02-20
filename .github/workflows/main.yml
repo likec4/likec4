@@ -3,9 +3,9 @@ name: main
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     tags-ignore:
-      - '**'
+      - "**"
 
 permissions:
   actions: write
@@ -30,26 +30,26 @@ jobs:
       - name: checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: generate
-        run: yarn ci:generate
+      - name: ⚙️ generate
+        run: pnpm ci:generate
 
-      - name: typecheck
-        run: yarn ci:typecheck
+      - name: ʦ typecheck
+        run: pnpm ci:typecheck
 
-      - name: build
-        run: yarn ci:build
+      - name: ⚙️ build
+        run: pnpm ci:build
 
       - name: test
         env:
           NODE_ENV: test
-        run: yarn ci:test
+        run: pnpm ci:test
 
-      - name: typecheck apps
+      - name: ʦ typecheck apps
         run:
-          yarn turbo run typecheck --filter='./apps/*'
+          pnpm turbo run typecheck --filter='./apps/*'
 
   release:
     uses: ./.github/workflows/release.yaml

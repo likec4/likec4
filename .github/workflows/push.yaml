@@ -24,19 +24,20 @@ jobs:
       !contains(github.event.head_commit.message, 'ci skip') && (
         github.event_name == 'push' || github.event.pull_request.head.repo.fork
       )
+    name: ʦ typescript
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: generate
-        run: yarn ci:generate
+      - name: ⚙️ generate
+        run: pnpm ci:generate
 
-      - name: typecheck
-        run: yarn ci:typecheck
+      - name: ʦ typecheck
+        run: pnpm ci:typecheck
 
   check-build:
     # If on pull request, run only if coming from forked repos
@@ -49,14 +50,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
-        run: yarn ci:build
+      - name: ⚙️ build
+        run: pnpm ci:build
 
       - name: test
-        run: yarn ci:test
+        run: pnpm ci:test
 
   check-playground:
     timeout-minutes: 10
@@ -65,16 +66,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: typecheck
+      - name: ʦ typecheck
         run: |
-          yarn turbo run typecheck --filter='@likec4/playground'
+          pnpm turbo run typecheck --filter='@likec4/playground'
 
-      - name: build
+      - name: ⚙️ build
         run: |
-          yarn turbo run build --filter='@likec4/playground'
+          pnpm turbo run build --filter='@likec4/playground'
 
   check-docs-astro:
     timeout-minutes: 10
@@ -85,16 +86,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: typecheck
+      - name: ʦ typecheck
         run: |
-          yarn turbo run typecheck --filter='@likec4/docs-astro'
+          pnpm turbo run typecheck --filter='@likec4/docs-astro'
 
-      - name: build
+      - name: ⚙️ build
         run: |
-          yarn turbo run build --filter='@likec4/docs-astro'
+          pnpm turbo run build --filter='@likec4/docs-astro'
 
   check-e2e:
     uses: ./.github/workflows/e2e.yaml

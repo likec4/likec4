@@ -53,6 +53,7 @@
     "@hpcc-js/wasm-graphviz": "1.7.0",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
+    "fast-equals": "^5.2.2",
     "graphology": "^0.25.4",
     "graphology-types": "^0.24.8",
     "indent-string": "^5.0.0",
@@ -69,10 +70,11 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.17",
+    "@types/which": "^3.0.4",
     "turbo": "^2.4.1",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:",
     "unbuild": "^3.3.1",
     "vitest": "^3.0.4"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@10.4.1"
 }

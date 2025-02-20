@@ -50,6 +50,14 @@
         "default": "./dist/likec4lib.js"
       }
     },
+    "./browser-worker": {
+      "sources": "./src/browser-worker.ts",
+      "default": {
+        "types": "./dist/browser-worker.d.ts",
+        "import": "./dist/browser-worker.js",
+        "default": "./dist/browser-worker.js"
+      }
+    },
     "./browser": {
       "sources": "./src/browser.ts",
       "default": {
@@ -109,6 +117,7 @@
     "json5": "^2.2.3",
     "langium": "3.3.1",
     "langium-cli": "3.3.0",
+    "mnemonist": "^0.40.2",
     "natural-compare-lite": "^1.4.0",
     "p-debounce": "^4.0.0",
     "remeda": "^2.20.1",
@@ -116,15 +125,15 @@
     "tsx": "~4.19.2",
     "turbo": "^2.4.1",
     "type-fest": "4.34.1",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:",
     "ufo": "^1.5.4",
     "unbuild": "^3.3.1",
     "vitest": "^3.0.4",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-types": "3.17.5",
-    "vscode-uri": "3.0.8",
+    "vscode-uri": "3.1.0",
     "which": "^5.0.0"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@10.4.1"
 }

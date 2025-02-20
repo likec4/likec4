@@ -2,7 +2,7 @@
   "name": "@likec4/docs-astro",
   "type": "module",
   "version": "1.22.1",
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "pnpm@10.4.1",
   "private": true,
   "scripts": {
     "gupdate-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -12,7 +12,6 @@
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./src/components/bigbank",
     "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./src/components/index-page",
     "generate": "run-p 'generate:*'",
-    "build:turbo": "run -T turbo run build --filter='@likec4/docs-astro'",
     "dev": "astro dev",
     "start": "astro dev",
     "typecheck": "astro check",
@@ -32,13 +31,16 @@
     "@fontsource/ibm-plex-sans": "^5.1.1",
     "astro": "5.2.5",
     "astro-og-canvas": "^0.5.6",
+    "canvaskit-wasm": "^0.39.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "sharp": "^0.33.5",
     "starlight-heading-badges": "^0.4.0",
     "starlight-links-validator": "^0.14.2",
-    "typescript": "^5.7.3"
+    "typescript": "catalog:"
   },
   "devDependencies": {
+    "@likec4/core": "workspace:*",
     "@types/picomatch": "^2.3.4",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",

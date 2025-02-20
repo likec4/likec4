@@ -15,35 +15,35 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: pack
+      - name: 📦 pack
         run: |
-          yarn turbo run package --filter='likec4'
+          pnpm turbo run pack --filter='likec4'
 
-      - name: install e2e dependencies
+      - name: 🛠️ install e2e dependencies
         working-directory: e2e
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+          NODE_ENV: development
         run: |
-          yarn install
-          yarn bootstrap
+          pnpm install
+          pnpm bootstrap
 
-      - name: run playwright tests
+      - name: ⚙️ run playwright tests
         working-directory: e2e
-        run: yarn test
+        run: pnpm test
 
       - id: cloudflare
         if: ${{ failure() }}
-        name: publish playwright-report
+        name: ⚙️ publish playwright-report
         uses: cloudflare/wrangler-action@392082e81ffbcb9ebdde27400634aa004b35ea37 # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy playwright-report --project-name likec4-e2e --commit-dirty --branch preview
           workingDirectory: e2e
-          packageManager: yarn
+          packageManager: pnpm
 
       - name: print url to published report
         if: ${{ failure() }}
@@ -64,21 +64,21 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: pack
+      - name: 📦 pack
         run: |
-          yarn turbo run package --filter='likec4'
+          pnpm turbo run pack --filter='likec4'
 
-      - name: install e2e dependencies
+      - name: 🛠️ install e2e dependencies
         working-directory: e2e
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+          NODE_ENV: development
         run: |
-          yarn install
-          yarn bootstrap
+          pnpm install
+          pnpm bootstrap
 
-      - name: typecheck test
+      - name: ʦ typecheck test
         working-directory: e2e
-        run: yarn typecheck
+        run: pnpm typecheck

@@ -8,13 +8,14 @@ env:
   FORCE_COLOR: true
   HUSKY: "0"
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   update-screenshots:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,24 +27,25 @@ jobs:
           app_id: ${{ secrets.BOT_APP_ID }}
           private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: pack
+      - name: 📦 pack
         run: |
-          yarn turbo run package --filter='likec4'
+          pnpm turbo run pack --filter='likec4'
 
-      - name: install e2e dependencies
+      - name: 🛠️ install e2e dependencies
         working-directory: e2e
         env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+          NODE_ENV: development
         run: |
-          yarn install
-          yarn bootstrap
+          pnpm install
+          pnpm bootstrap
 
-      - name: update screenshots
+      - name: ⚙️ update screenshots
         working-directory: e2e
-        run: yarn test:update-screenshots
+        run: |
+          pnpm test:update-screenshots
 
       - name: create pull request
         id: cpr

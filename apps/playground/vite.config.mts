@@ -2,29 +2,25 @@ import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
-import { dirname, resolve } from 'node:path'
-import { type AliasOptions, type UserConfig, type UserConfigFnObject, defineConfig, mergeConfig } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { resolve } from 'node:path'
+import { difference } from 'remeda'
+import { type AliasOptions, type UserConfig, defineConfig } from 'vite'
+import tsconfigpaths from 'vite-tsconfig-paths'
+import packageJson from './package.json' with { type: 'json' }
 import tanStackRouterViteCfg from './tsr.config.json' with { type: 'json' }
 
-const root = dirname(__filename)
 
 const alias = {
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-  '#monaco/bootstrap': resolve('src/monaco/bootstrap.ts'),
-  '#monaco/config': resolve('src/monaco/config.ts'),
   '@likec4/diagram': resolve('../../packages/diagram/src'),
 } satisfies AliasOptions
 
-const baseConfig: UserConfigFnObject = () => {
+function devconfig(): UserConfig {
   return {
-    root,
     resolve: {
       conditions: ['sources'],
       alias,
-    },
-    build: {
-      cssCodeSplit: false,
+      dedupe: ['vscode'],
     },
     optimizeDeps: {
       include: [
@@ -34,6 +30,19 @@ const baseConfig: UserConfigFnObject = () => {
         'react-dom',
         'react-dom/client',
         '@likec4/icons/all',
+        'langium/lsp',
+        'langium',
+        '@codingame/monaco-vscode-api',
+        '@codingame/monaco-vscode-editor-api',
+        'vscode-textmate',
+        'vscode-oniguruma',
+        'vscode',
+        'vscode-uri',
+        '@hpcc-js/wasm-graphviz',
+        'vscode-languageserver/browser',
+        'vscode-languageclient',
+        'vscode-languageserver-types',
+        'vscode-languageserver',
       ],
       esbuildOptions: {
         plugins: [
@@ -41,134 +50,134 @@ const baseConfig: UserConfigFnObject = () => {
         ],
       },
     },
-    plugins: [],
+    esbuild: {
+      jsxDev: true,
+    },
+    worker: {
+      format: 'es',
+    },
+    plugins: [
+      vanillaExtractPlugin(),
+      tsconfigpaths(),
+      react(),
+      TanStackRouterVite({
+        ...tanStackRouterViteCfg,
+        quoteStyle: 'single',
+      }),
+    ],
+  }
+}
+
+function prebuild(): UserConfig {
+  return {
+    define: {
+      'process.env.NODE_ENV': '\'production\'',
+    },
+    resolve: {
+      conditions: ['sources'],
+      alias,
+      dedupe: ['vscode'],
+    },
+    mode: 'production',
+    esbuild: {
+      jsxDev: false,
+    },
+    build: {
+      emptyOutDir: true,
+      cssCodeSplit: false,
+      cssMinify: false,
+      minify: false,
+      outDir: resolve('prebuild'),
+      target: 'esnext',
+      lib: {
+        entry: 'src/main.tsx',
+        formats: ['es'],
+        fileName(format, entryName) {
+          return `${entryName}.mjs`
+        },
+      },
+      rollupOptions: {
+        input: ['src/main.tsx'],
+        external: difference([
+          ...Object.keys(packageJson.dependencies || {}),
+          ...Object.keys(packageJson.devDependencies || {}),
+          /@codingame/,
+          /framer-motion/,
+          /motion-dom/,
+          /motion-utils/,
+          /monaco-languageclient/,
+          /@likec4\/language-server\/browser/,
+          /@likec4\/icons/,
+          'react/jsx-runtime',
+          'react/jsx-dev-runtime',
+          'react-dom/client',
+          'react-dom/server',
+        ], [
+          '@tabler/icons-react',
+          '@likec4/diagram',
+        ]),
+        treeshake: {
+          preset: 'recommended',
+        },
+        output: {
+          preserveModules: true,
+          preserveModulesRoot: 'src',
+        },
+      },
+    },
+    plugins: [
+      vanillaExtractPlugin({}),
+      tsconfigpaths(),
+      react(),
+      TanStackRouterVite({
+        ...tanStackRouterViteCfg,
+        quoteStyle: 'single',
+      }),
+    ],
+  }
+}
+
+function build(): UserConfig {
+  return {
+    define: {
+      'process.env.NODE_ENV': '\'production\'',
+    },
+    resolve: {
+      conditions: ['production', 'browser', 'sources'],
+      alias: {
+        '/src/style.css': resolve('prebuild/playground.css'),
+        '/src/main': resolve('prebuild/main.mjs'),
+      },
+      dedupe: ['vscode'],
+    },
+    mode: 'production',
+    esbuild: {
+      jsxDev: false,
+    },
+    build: {
+      emptyOutDir: true,
+      cssCodeSplit: false,
+      cssMinify: 'lightningcss',
+      minify: true,
+      // minify: 'terser',
+    },
+    worker: {
+      format: 'es',
+    },
+    plugins: [
+      tsconfigpaths(),
+      react(),
+    ],
   }
 }
 
 export default defineConfig((env) => {
-  switch (true) {
-    case env.mode === 'development':
-      return mergeConfig(baseConfig(env), {
-        plugins: [
-          vanillaExtractPlugin({}),
-          nodePolyfills(),
-          react({}),
-          TanStackRouterVite(tanStackRouterViteCfg),
-        ],
-      })
-    // Pre-build for production
-    // Workaround for incompatibility between vanilla-extract and monaco-editor
-    case env.command === 'build' && env.mode === 'pre':
-      return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
-        define: {
-          'process.env.NODE_ENV': JSON.stringify('production'),
-        },
-        mode: 'production',
-        logLevel: 'warn',
-        build: {
-          cssCodeSplit: false,
-          cssMinify: false,
-          minify: false,
-          target: 'esnext',
-          outDir: resolve('prebuild'),
-          emptyOutDir: true,
-          commonjsOptions: {
-            transformMixedEsModules: true,
-            esmExternals: true,
-          },
-          rollupOptions: {
-            output: {
-              hoistTransitiveImports: false,
-              preserveModules: true,
-              preserveModulesRoot: resolve('src'),
-              entryFileNames: '[name].mjs',
-            },
-            treeshake: {
-              preset: 'recommended',
-            },
-            makeAbsoluteExternalsRelative: 'ifRelativeSource',
-            external: [
-              'react',
-              'react/jsx-runtime',
-              'react/jsx-dev-runtime',
-              'react-dom',
-              'react-dom/client',
-              '@typefox/monaco-editor-react',
-              'monaco-editor',
-              'monaco-editor-wrapper',
-              'monaco-languageclient',
-              'framer-motion',
-              'esm-env',
-              'tslib',
-              '#monaco/bootstrap',
-              '#monaco/config',
-              /@likec4\/(core|icons|log|layouts|language-server).*/,
-              /d3-/,
-              /hpcc-js/,
-              /node_modules.*vscode/,
-              /node_modules.*monaco/,
-            ],
-          },
-          lib: {
-            entry: {
-              main: 'src/main.tsx',
-            },
-            formats: ['es'],
-          },
-        },
-        plugins: [
-          nodePolyfills(),
-          vanillaExtractPlugin({
-            identifiers: 'short',
-          }),
-          react(),
-        ],
-      })
-    case env.command === 'build':
-      return mergeConfig<UserConfig, UserConfig>(baseConfig(env), {
-        define: {
-          'process.env.NODE_ENV': JSON.stringify('production'),
-        },
-        mode: 'production',
-        resolve: {
-          conditions: ['browser', 'production'],
-          alias: {
-            '/src/style.css': resolve('prebuild/style.css'),
-            '/src/main': resolve('prebuild/main.mjs'),
-          },
-        },
-        build: {
-          copyPublicDir: true,
-          modulePreload: false,
-          rollupOptions: {
-            treeshake: {
-              preset: 'recommended',
-            },
-            output: {
-              compact: true,
-              manualChunks: (id) => {
-                if (id.includes('hpcc-js')) {
-                  return 'graphviz'
-                }
-                if (
-                  id.includes('node_modules') && (
-                    id.includes('/vscode/')
-                    || id.includes('/vscode-')
-                    || id.includes('/monaco')
-                  )
-                ) {
-                  return 'monaco'
-                }
-              },
-            },
-          },
-        },
-        plugins: [
-          nodePolyfills(),
-          react(),
-        ],
-      })
-    default:
-      throw new Error(`Unsupported mode: ${env.mode}`)
+  if (env.command === 'build') {
+    if (env.mode === 'prebuild') {
+      return prebuild()
+    } else {
+      return build()
+    }
   }
+  return devconfig()
 })

@@ -52,10 +52,10 @@ jobs:
           env: playground-preview
           ref: ${{ steps.refs.outputs.head_ref }}
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
+      - name: ⚙️ build
         run: |
           yarn turbo run build --filter='@likec4/playground'
 
@@ -132,10 +132,10 @@ jobs:
           env: docs-preview
           ref: ${{ steps.refs.outputs.head_ref }}
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
+      - name: ⚙️ build
         run: |
           yarn turbo run build --filter='@likec4/docs-astro'
 

@@ -1,4 +1,4 @@
-import { Box, Button, Code, Group, Notification } from '@mantine/core'
+import { Box, Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
 import { useCallbackRef } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { deepEqual } from 'fast-equals'
@@ -31,7 +31,9 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
         title={'Oops, something went wrong'}
         p={'xl'}
         withCloseButton={false}>
-        <Code block>{errorString}</Code>
+        <ScrollAreaAutosize maw={'100%'} mah={400}>
+          <Code block>{errorString}</Code>
+        </ScrollAreaAutosize>
         <Group gap={'xs'} mt="xl">
           <Button color="gray" size="xs" variant="light" onClick={() => resetErrorBoundary()}>Reset</Button>
         </Group>

@@ -24,12 +24,12 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: bootstrap
+      - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: vsix package
         run: |
-          yarn dlx vsce package --out likec4.vsix
+          pnpx vsce package --out likec4.vsix
         working-directory: packages/vscode
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
@@ -41,16 +41,16 @@ jobs:
           if-no-files-found: error
           path: packages/vscode/likec4.vsix
 
-      - name: vsce publish
+      - name: publish vsce
         run: |
-          yarn dlx vsce publish --skip-duplicate
+          pnpx vsce publish --skip-duplicate
         working-directory: packages/vscode
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
-      - name: open vsx publish
+      - name: publish open vsx
         run: |
-          yarn dlx ovsx publish  --skip-duplicate likec4.vsix
+          pnpx ovsx publish --skip-duplicate likec4.vsix
         working-directory: packages/vscode
         env:
           OVSX_PAT: ${{ secrets.VSX_PAT }}

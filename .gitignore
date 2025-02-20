@@ -12,6 +12,7 @@
 .idea
 .fleet
 .vscode-test-web
+.pnpm-store/
 
 examples/*/.vscode
 examples/failed

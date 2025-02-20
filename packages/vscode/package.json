@@ -28,14 +28,14 @@
   },
   "scripts": {
     "vscode:prepublish": "tsx scripts/prepublish.mts",
-    "open-web": "run build:turbo && yarn dlx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
+    "open-web": "pnpm build:turbo && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
     "build": "tsx scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f contrib dist src/generated",
-    "vsce:pack": "yarn dlx vsce package",
-    "vsce:publish": "yarn dlx vsce publish --skip-duplicate"
+    "vsce:pack": "pnpx vsce package",
+    "vsce:publish": "pnpx vsce publish --skip-duplicate"
   },
   "engines": {
     "vscode": "^1.84.0"
@@ -206,10 +206,12 @@
     "@types/vscode": "^1.84.0",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.8",
+    "consola": "^3.4.0",
     "esbuild": "^0.25.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
     "esm-env": "^1.2.2",
     "execa": "^9.5.2",
+    "fast-equals": "^5.2.2",
     "langium": "3.3.1",
     "mnemonist": "^0.40.2",
     "p-timeout": "^6.1.4",
@@ -220,13 +222,14 @@
     "tsx": "~4.19.2",
     "turbo": "^2.4.1",
     "type-fest": "4.34.1",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-types": "3.17.5",
-    "vscode-messenger": "^0.4.5",
-    "vscode-uri": "3.0.8"
+    "vscode-messenger": "^0.5.1",
+    "vscode-messenger-common": "^0.5.1",
+    "vscode-uri": "3.1.0"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@10.4.1"
 }

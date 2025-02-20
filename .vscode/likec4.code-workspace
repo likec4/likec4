@@ -63,7 +63,6 @@
     ],
     "mdx.experimentalLanguageServer": true,
     "prettier.enable": true,
-    "npm.packageManager": "yarn",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
     },

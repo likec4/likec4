@@ -7,13 +7,8 @@
     ".tool-versions",
     "package.json"
   ],
+  "ui": "tui",
   "tasks": {
-    "topo": {
-      "dependsOn": [
-        "^topo"
-      ],
-      "outputs": []
-    },
     "generate": {
       "outputs": [],
       "outputLogs": "new-only"
@@ -21,7 +16,6 @@
     "typecheck": {
       "dependsOn": [
         "^generate",
-        "topo",
         "generate"
       ],
       "outputs": [],

@@ -3,22 +3,33 @@
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "types": [
-      "node",
-      "vite/client"
-    ],
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "allowArbitraryExtensions": true,
+    "allowImportingTsExtensions": true,
     "noEmit": true,
-    "paths": {
-      "#monaco/*": [
-        "./src/monaco/*"
-      ],
-    },
     "customConditions": [
       "sources"
     ],
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "$components/*": [
+        "./src/components/*"
+      ],
+      "$state/*": [
+        "./src/state/*"
+      ],
+      "$/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
     "./src",
+  ],
+  "exclude": [
+    "./src/ex/**"
   ]
 }

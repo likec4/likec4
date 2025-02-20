@@ -17,7 +17,9 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "clean": "rm -r -f dist",
-    "package": "yarn pack"
+    "prepack": "turbo run build",
+    "pack": "pnpm pack",
+    "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz"
   },
   "files": [
     "dist",
@@ -113,7 +115,7 @@
   "devDependencies": {
     "@dagrejs/dagre": "1.1.4",
     "@likec4/tsconfig": "workspace:*",
-    "@mantine/colors-generator": "7.16.3",
+    "@mantine/colors-generator": "7.17.0",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
@@ -127,9 +129,9 @@
     "obliterator": "^2.0.5",
     "remeda": "^2.20.1",
     "turbo": "^2.4.1",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:",
     "unbuild": "^3.3.1",
     "vitest": "^3.0.4"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@10.4.1"
 }
