@@ -229,11 +229,11 @@ Check Typescript definitions for available methods.
 In root workspace:
 
 ```sh
-yarn install
-yarn build
+pnpm install
+pnpm build
 
 cd packages/likec4
-yarn dev
+pnpm dev
 ```
 
 ## Support

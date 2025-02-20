@@ -23,8 +23,7 @@
     "email": "denis@davydkov.com"
   },
   "vsce": {
-    "dependencies": false,
-    "yarn": true
+    "dependencies": false
   },
   "scripts": {
     "vscode:prepublish": "tsx scripts/prepublish.mts",

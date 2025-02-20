@@ -57,7 +57,7 @@ jobs:
 
       - name: ⚙️ build
         run: |
-          yarn turbo run build --filter='@likec4/playground'
+          pnpm turbo run build --filter='@likec4/playground'
 
       - id: cloudflare
         name: publish to cloudflare
@@ -67,7 +67,7 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy dist --project-name=likec4-playground --commit-dirty --branch preview
           workingDirectory: apps/playground
-          packageManager: yarn
+          packageManager: pnpm
 
       - name: add comment
         uses: actions/github-script@v7
@@ -137,7 +137,7 @@ jobs:
 
       - name: ⚙️ build
         run: |
-          yarn turbo run build --filter='@likec4/docs-astro'
+          pnpm turbo run build --filter='@likec4/playground'
 
       - id: cloudflare
         name: publish to cloudflare
@@ -147,7 +147,7 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy dist --project-name likec4-docs-astro --commit-dirty --branch preview
           workingDirectory: apps/docs
-          packageManager: yarn
+          packageManager: pnpm
 
       - name: add comment
         uses: actions/github-script@v7

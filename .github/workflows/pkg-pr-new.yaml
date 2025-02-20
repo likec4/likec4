@@ -15,13 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
+      - uses: actions/checkout@v4
+
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ build
         run: |
-          yarn turbo run build --filter='likec4'
+          pnpm turbo run build --filter='likec4'
 
       - name: publish
         run: |
-          yarn dlx pkg-pr-new publish --yarn --comment=off './packages/core' './packages/likec4'
+          pnpx pkg-pr-new publish --comment=off './packages/core' './packages/likec4'
