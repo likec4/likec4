@@ -41,7 +41,7 @@ jobs:
           git config user.email "${{ env.BOT_NAME }}[bot]@users.noreply.github.com"
 
       - name: release
-        run: yarn shipjs trigger
+        run: pnpm shipjs trigger
         env:
           GITHUB_TOKEN: ${{ env.BOT_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

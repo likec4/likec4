@@ -13,8 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - uses: actions/checkout@v4
 
       - name: 🛠️ bootstrap
@@ -22,7 +20,7 @@ jobs:
 
       - name: ⚙️ build
         run: |
-          pnpm turbo run build --filter='likec4'
+          pnpm turbo run pack --filter='likec4'
 
       - name: publish
         run: |
