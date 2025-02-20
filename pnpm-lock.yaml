@@ -1009,7 +1009,7 @@ importers:
         specifier: ^0.25.0
         version: 0.25.0
       esbuild-node-externals:
-        specifier: ^1.16.0
+        specifier: ^1.18.0
         version: 1.18.0(esbuild@0.25.0)
       esm-env:
         specifier: ^1.2.2
