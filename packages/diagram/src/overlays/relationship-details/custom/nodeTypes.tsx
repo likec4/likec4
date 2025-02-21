@@ -9,28 +9,21 @@ import {
 } from '../../../base/primitives'
 import { ElementActions } from './ElementActions'
 
-import type { Fqn } from '@likec4/core'
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import type { NodeProps } from '../../../base'
-import { useEnabledFeature } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
-const ElementDetailsButtonWithHandler = (
-  { fqn, ...props }: NodeProps<RelationshipDetailsTypes.NodeData> & { fqn: Fqn },
-) => {
-  const { enableElementDetails } = useEnabledFeature('ElementDetails')
+const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTypes.NodeData>) => {
   const diagram = useDiagram()
-
-  if (!enableElementDetails) return null
 
   return (
     <ElementDetailsButton
       {...props}
       onClick={e => {
         e.stopPropagation()
-        diagram.openElementDetails(fqn)
+        diagram.openElementDetails(props.data.fqn)
       }}
     />
   )
@@ -40,9 +33,9 @@ export const nodeTypes = {
   element: customNode<RelationshipDetailsTypes.ElementNodeData>((props) => {
     return (
       <ElementNodeContainer nodeProps={props}>
-        <ElementDetailsButtonWithHandler {...props} fqn={props.data.fqn} />
         <ElementShape {...props} />
         <ElementTitle {...props} iconSize={40} />
+        <ElementDetailsButtonWithHandler {...props} />
         <ElementActions {...props} />
         <ElementPorts {...props} />
       </ElementNodeContainer>
@@ -52,7 +45,7 @@ export const nodeTypes = {
   compound: customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
     return (
       <CompoundNodeContainer nodeProps={props}>
-        <ElementDetailsButtonWithHandler {...props} fqn={props.data.fqn} />
+        <ElementDetailsButtonWithHandler {...props} />
         <CompoundTitle {...props} />
         <CompoundPorts {...props} />
       </CompoundNodeContainer>

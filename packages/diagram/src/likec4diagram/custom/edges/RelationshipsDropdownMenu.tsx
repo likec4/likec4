@@ -30,10 +30,9 @@ import { filter, isTruthy, map, partition, pipe } from 'remeda'
 import { Link } from '../../../components/Link'
 import { IfEnabled, useDiagramEventHandlers, useEnabledFeature } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
-import { useDiagram } from '../../../hooks/useDiagram'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useLikeC4Model } from '../../../likec4model'
-import { DiagramContext } from '../../state/machine'
+import { findDiagramEdge, findDiagramNode } from '../../../state/utils'
 import * as css from './RelationshipsDropdownMenu.css'
 
 const stopPropagation: MouseEventHandler = (e) => e.stopPropagation()
@@ -62,9 +61,9 @@ export function RelationshipsDropdownMenu({
   disabled?: boolean | undefined
 }>) {
   const { diagramEdge, sourceNode, targetNode } = useDiagramContext(ctx => ({
-    diagramEdge: DiagramContext.findDiagramEdge(ctx, edgeId),
-    sourceNode: DiagramContext.findDiagramNode(ctx, source),
-    targetNode: DiagramContext.findDiagramNode(ctx, target),
+    diagramEdge: findDiagramEdge(ctx, edgeId),
+    sourceNode: findDiagramNode(ctx, source),
+    targetNode: findDiagramNode(ctx, target),
   }))
   const likec4model = useLikeC4Model(true)
   const diagram = useDiagram()
@@ -189,7 +188,7 @@ const Relationship = forwardRef<
   const diagram = useDiagram()
   const { enableNavigateTo } = useEnabledFeature('NavigateTo')
   const { onOpenSource } = useDiagramEventHandlers()
-  const viewId = diagram.currentView().id
+  const viewId = diagram.currentView.id
 
   const sourceId = getShortId(r, r.source.id, sourceNode)
   const targetId = getShortId(r, r.target.id, targetNode)

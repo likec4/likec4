@@ -42,7 +42,7 @@ import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
-import { useDiagram } from '../../hooks/useDiagram'
+import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
 import * as css from './ElementDetailsCard.css'
@@ -116,14 +116,6 @@ export function ElementDetailsCard({
 
   const elementModel = viewModel.$model.element(fqn)
 
-  // const incoming = elementModel.incoming().map(r => r.id).toArray()
-  // const outgoing = elementModel.outgoing().map(r => r.id).toArray()
-  // const incomingInView = unique(nodeModel.incoming().flatMap(e => e.$edge.relations).toArray())
-  // const outgoingInView = unique(nodeModel.outgoing().flatMap(e => e.$edge.relations).toArray())
-  // const notIncludedRelations = [
-  //   ...incoming,
-  //   ...outgoing
-  // ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
   const [viewsOf, otherViews] = pipe(
     [...elementModel.views()],
     map(v => v.$view),
@@ -229,6 +221,7 @@ export function ElementDetailsCard({
       ref={ref}
       className={css.dialog}
       layout
+      layoutRoot
       initial={{
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '10%',
@@ -301,9 +294,7 @@ export function ElementDetailsCard({
               {elementIcon}
               <Box>
                 <Text
-                  component={m.div}
-                  layout="position"
-                  layoutId={`${viewId}:element:title:${fqn}`}
+                  component={'div'}
                   className={css.title}>
                   {elementModel.title}
                 </Text>
@@ -359,9 +350,9 @@ export function ElementDetailsCard({
                     radius="sm"
                     onClick={e => {
                       e.stopPropagation()
-                      diagram.openSource({
-                        element: elementModel.id,
-                      })
+                      // diagram.openSource({
+                      //   element: elementModel.id,
+                      // })
                     }}>
                     <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
                   </ActionIcon>
@@ -432,11 +423,10 @@ export function ElementDetailsCard({
                 enableRelationshipBrowser: false,
                 enableNavigateTo: false,
               }}>
-              {opened && !!nodeModel && activeTab === 'Relationships' && (
+              {opened && activeTab === 'Relationships' && (
                 <TabPanelRelationships
                   element={elementModel}
-                  node={nodeModel}
-                  currentView={diagram.currentView()} />
+                  node={nodeModel ?? null} />
               )}
             </DiagramFeatures>
           </TabsPanel>

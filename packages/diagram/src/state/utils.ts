@@ -1,7 +1,29 @@
 import type { BBox, XYPoint } from '@likec4/core'
-import type { DiagramContext } from './machine'
+import type { ActorSystem } from 'xstate'
+import type { OverlaysActorRef } from '../overlays/overlaysActor'
+import type { Context } from './diagram-machine'
+import type { DiagramActorRef, System } from './types'
 
-export function focusedBounds(params: { context: DiagramContext }): { bounds: BBox; duration?: number } {
+export function typedSystem(system: ActorSystem<any>) {
+  return {
+    get overlaysActorRef(): OverlaysActorRef | null {
+      return (system as System).get('overlays') ?? null
+    },
+    get diagramActorRef(): DiagramActorRef | null {
+      return (system as System).get('diagram') ?? null
+    },
+  }
+}
+
+export function findDiagramNode(ctx: Context, xynodeId: string) {
+  return ctx.view.nodes.find(n => n.id === xynodeId) ?? null
+}
+
+export function findDiagramEdge(ctx: Context, xyedgeId: string) {
+  return ctx.view.edges.find(e => e.id === xyedgeId) ?? null
+}
+
+export function focusedBounds(params: { context: Context }): { bounds: BBox; duration?: number } {
   const knownAbsolutes = new Map<string, XYPoint>()
 
   const b = params.context.xynodes.reduce((acc, node) => {

@@ -2,20 +2,19 @@ import type { ViewChange, ViewId } from '@likec4/core'
 import { type Rect, boxToRect, getBoundsOfRects, getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, reduce } from 'remeda'
 import {
+  type ActorLogicFrom,
   type ActorRef,
-  type ActorRefFromLogic,
   type MachineSnapshot,
-  type SnapshotFrom,
   assign,
   setup,
 } from 'xstate'
-import { bezierControlPoints, isSamePoint } from '../../utils'
-import type * as Machine from './machine'
+import { bezierControlPoints, isSamePoint } from '../utils'
+import type { Context as DiagramContext, Events as DiagramEvents } from './diagram-machine'
 
 export type Input = {
   parent: ActorRef<
-    MachineSnapshot<Machine.DiagramContext, Machine.Events, any, any, any, any, any, any>,
-    Machine.Events,
+    MachineSnapshot<DiagramContext, DiagramEvents, any, any, any, any, any, any>,
+    DiagramEvents,
     any
   >
   viewId: ViewId
@@ -31,7 +30,7 @@ export type Events =
   | { type: 'cancel' }
   | { type: 'stop' }
 // TODO: naming convention for actors
-export const syncManualLayoutActor = setup({
+export const syncManualLayoutActorLogic = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
@@ -52,8 +51,6 @@ export const syncManualLayoutActor = setup({
   initial: 'idle',
   context: ({ input }) => ({
     ...input,
-    // parent: input.parent,
-    // viewId: input.parent.getSnapshot().context.view.id,
   }),
   states: {
     idle: {
@@ -124,10 +121,9 @@ export const syncManualLayoutActor = setup({
   },
 })
 
-export type SyncLayoutActorRef = ActorRefFromLogic<typeof syncManualLayoutActor>
-export type SyncLayoutActorSnapshot = SnapshotFrom<typeof syncManualLayoutActor>
+export type SyncLayoutActorLogic = ActorLogicFrom<typeof syncManualLayoutActorLogic>
 
-function createViewChange(parentContext: Machine.DiagramContext): ViewChange.SaveManualLayout {
+function createViewChange(parentContext: DiagramContext): ViewChange.SaveManualLayout {
   const { view, xystore, xyflow } = parentContext
 
   const { nodeLookup } = xystore.getState()

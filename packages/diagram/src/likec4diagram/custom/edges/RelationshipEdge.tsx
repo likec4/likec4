@@ -291,7 +291,7 @@ export const RelationshipEdge = customEdge<Types.RelationshipEdgeData>((props) =
   let renderLabel: undefined | ((props: any) => any)
   if (!isControlPointDragging) {
     const notes = props.data.notes
-    if (notes && isStepEdgeId(props.id) && diagram.getState().context.activeWalkthrough?.stepId === props.id) {
+    if (notes && isStepEdgeId(props.id) && diagram.getContext().activeWalkthrough?.stepId === props.id) {
       renderLabel = (props: any) => (
         <NotePopover notes={notes}>
           <div {...props} />

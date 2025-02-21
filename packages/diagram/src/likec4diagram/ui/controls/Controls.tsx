@@ -5,9 +5,7 @@ import { LayoutGroup } from 'framer-motion'
 import { memo } from 'react'
 import { useDiagramEventHandlers, useEnabledFeatures } from '../../../context'
 import { useMantinePortalProps } from '../../../hooks'
-import { useDiagram } from '../../../hooks/useDiagram'
-import { useDiagramSyncLayoutState } from '../../../hooks/useDiagramActor'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
+import { useDiagram, useDiagramContext, useDiagramSyncLayoutState } from '../../../hooks/useDiagram'
 import { stopPropagation } from '../../../utils'
 import { LikeC4Search } from '../search/LikeC4Search'
 import { ActionIcon, Tooltip } from './_shared'
@@ -102,7 +100,7 @@ export const Controls = memo(() => {
       </Stack>
       <Group>
         {enableSearch && <LikeC4Search />}
-        {notReadOnly && <SyncLayoutBadge />}
+        {/* {notReadOnly && <SyncLayoutBadge />} */}
       </Group>
     </Group>
   )

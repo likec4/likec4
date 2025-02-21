@@ -25,8 +25,10 @@ import {
 import { type EdgeChange, type NodeChange, type Rect, type Viewport, nodeToRect } from '@xyflow/system'
 import { clamp, first, hasAtLeast, prop } from 'remeda'
 import {
-  type ActorRefFromLogic,
-  type SnapshotFrom,
+  type ActorLogicFrom,
+  type ActorRef,
+  type AnyEventObject,
+  type Snapshot,
   and,
   assertEvent,
   assign,
@@ -39,14 +41,12 @@ import {
   spawnChild,
   stopChild,
 } from 'xstate'
-import { MinZoom } from '../../base/const'
-import type { EnabledFeatures } from '../../context'
-import { type FeatureName, AllDisabled } from '../../context/DiagramFeatures'
-import type { OpenSourceParams } from '../../LikeC4Diagram.props'
-import { relationshipDetailsActor } from '../../overlays/relationship-details/actor'
-import { relationshipsBrowserActor } from '../../overlays/relationships-browser/actor'
-import type { Types } from '../types'
-import { createLayoutConstraints } from '../useLayoutConstraints'
+import { MinZoom } from '../base/const'
+import { type EnabledFeatures, type FeatureName, AllDisabled } from '../context/DiagramFeatures'
+import type { OpenSourceParams } from '../LikeC4Diagram.props'
+import type { Types } from '../likec4diagram/types'
+import { createLayoutConstraints } from '../likec4diagram/useLayoutConstraints'
+import { overlaysActorLogic } from '../overlays/overlaysActor'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
 import {
   focusNodesEdges,
@@ -61,9 +61,9 @@ import {
   updateNavigationHistory,
   updateNodeData,
 } from './assign'
-import { type HotKeyEvent, hotkeyActor } from './hotkeyActor'
-import { syncManualLayoutActor } from './syncManualLayoutActor'
-import { focusedBounds } from './utils'
+import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
+import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
+import { focusedBounds, typedSystem } from './utils'
 
 type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
 
@@ -88,7 +88,7 @@ export interface Input {
 
 type ToggledFeatures = Partial<EnabledFeatures>
 
-export interface DiagramContext extends Input {
+export interface Context extends Input {
   features: EnabledFeatures
   // This is used to override features from props
   toggledFeatures: ToggledFeatures
@@ -117,22 +117,13 @@ export interface DiagramContext extends Input {
   }
   viewportBeforeFocus: null | Viewport
   xyflow: ReactFlowInstance<Types.Node, Types.Edge> | null
-  syncLayoutActorRef: ActorRefFromLogic<typeof syncManualLayoutActor>
+
+  syncLayoutActorRef: ActorRef<Snapshot<unknown>, SyncLayoutEvents, AnyEventObject>
 
   // If Dynamic View
   activeWalkthrough: null | {
     stepId: StepEdgeId
     parallelPrefix: string | null
-  }
-}
-
-export namespace DiagramContext {
-  export function findDiagramNode(ctx: DiagramContext, xynodeId: string) {
-    return ctx.view.nodes.find(n => n.id === xynodeId) ?? null
-  }
-
-  export function findDiagramEdge(ctx: DiagramContext, xyedgeId: string) {
-    return ctx.view.edges.find(e => e.id === xyedgeId) ?? null
   }
 }
 
@@ -157,7 +148,7 @@ export type Events =
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; edgeId: EdgeId }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn }
-  | { type: 'close.overlay' }
+  // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined }
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
@@ -171,26 +162,24 @@ export type Events =
   | { type: 'walkthrough.end' }
   | { type: 'toggle.feature'; feature: FeatureName; forceValue?: boolean }
 
-export type ActionArg = { context: DiagramContext; event: Events }
+export type ActionArg = { context: Context; event: Events }
 
 // TODO: naming convention for actors
 export const diagramMachine = setup({
   types: {
-    context: {} as DiagramContext,
+    context: {} as Context,
     input: {} as Input,
     children: {} as {
-      hotkey: 'hotkeyActor'
-      syncLayout: 'syncManualLayoutActor'
-      relationshipDetails: 'relationshipDetailsActor'
-      relationshipsBrowser: 'relationshipsBrowserActor'
+      syncLayout: 'syncManualLayoutActorLogic'
+      hotkey: 'hotkeyActorLogic'
+      overlays: 'overlaysActorLogic'
     },
     events: {} as Events,
   },
   actors: {
-    hotkeyActor,
-    syncManualLayoutActor,
-    relationshipsBrowserActor,
-    relationshipDetailsActor,
+    syncManualLayoutActorLogic,
+    hotkeyActorLogic,
+    overlaysActorLogic,
   },
   guards: {
     'enabled: FitView': ({ context }) => context.features.enableFitView,
@@ -312,13 +301,38 @@ export const diagramMachine = setup({
       })
     },
 
-    'updateFeatures': assign(({ event }) => {
+    'updateFeatures': enqueueActions(({ enqueue, system, event }) => {
       assertEvent(event, 'update.features')
-      return {
-        features: {
-          ...event.features,
-        },
+      const { features } = event
+      enqueue.assign({
+        features: { ...features },
+      })
+
+      const enableOverlays = features.enableElementDetails || features.enableRelationshipDetails ||
+        features.enableRelationshipBrowser
+      const hasRunning = typedSystem(system).overlaysActorRef
+      if (enableOverlays && !hasRunning) {
+        enqueue.spawnChild('overlaysActorLogic', { id: 'overlays', systemId: 'overlays' })
+        return
       }
+      if (!enableOverlays && hasRunning) {
+        enqueue.stopChild('overlays')
+      }
+    }),
+
+    'closeAllOverlays': enqueueActions(({ system, enqueue }) => {
+      const overlays = typedSystem(system).overlaysActorRef
+      if (overlays) {
+        enqueue.sendTo(overlays, { type: 'close.all' })
+      }
+    }),
+
+    'stopSyncLayout': enqueueActions(({ context, enqueue }) => {
+      enqueue.sendTo(context.syncLayoutActorRef, { type: 'stop' })
+      enqueue.stopChild(context.syncLayoutActorRef)
+      enqueue.assign({
+        syncLayoutActorRef: null as any,
+      })
     }),
   },
 }).createMachine({
@@ -342,7 +356,7 @@ export const diagramMachine = setup({
     },
     viewport: { x: 0, y: 0, zoom: 1 },
     xyflow: null,
-    syncLayoutActorRef: spawn('syncManualLayoutActor', {
+    syncLayoutActorRef: spawn('syncManualLayoutActorLogic', {
       id: 'syncLayout',
       input: { parent: self, viewId: input.view.id },
     }),
@@ -444,12 +458,25 @@ export const diagramMachine = setup({
           ...focusNodesEdges(s),
           viewportBeforeFocus: { ...s.context.viewport },
         })),
-        spawnChild('hotkeyActor', { id: 'hotkey' }),
+        spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
         {
           type: 'xyflow:fitDiagram',
           params: focusedBounds,
         },
       ],
+      exit: enqueueActions(({ enqueue, context }) => {
+        enqueue.stopChild('hotkey')
+        if (context.viewportBeforeFocus) {
+          enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
+        } else {
+          enqueue({ type: 'xyflow:fitDiagram' })
+        }
+        enqueue.assign((s) => ({
+          ...unfocusNodesEdges(s),
+          viewportBeforeFocus: null,
+          focusedNode: null,
+        }))
+      }),
       on: {
         'xyflow.nodeClick': [
           {
@@ -504,143 +531,6 @@ export const diagramMachine = setup({
           }),
         },
       },
-      exit: [
-        stopChild('hotkey'),
-        enqueueActions(({ enqueue, context }) => {
-          if (context.viewportBeforeFocus) {
-            enqueue({ type: 'xyflow:setViewport', params: { viewport: context.viewportBeforeFocus } })
-          } else {
-            enqueue({ type: 'xyflow:fitDiagram' })
-          }
-          enqueue.assign((s) => ({
-            ...unfocusNodesEdges(s),
-            viewportBeforeFocus: null,
-            focusedNode: null,
-          }))
-        }),
-      ],
-    },
-    overlay: {
-      entry: spawnChild('hotkeyActor', { id: 'hotkey' }),
-      initial: 'hole',
-      states: {
-        hole: {
-          target: '#idle',
-        },
-        elementDetails: {
-          guard: ({ context }: { context: DiagramContext }) => context.activeElementDetails !== null,
-          entry: assign({
-            activeElementDetails: ({ context }) => {
-              const fqn = context.activeElementDetails!.fqn
-              const fromNode = context.activeElementDetails!.fromNode
-              if (fromNode) {
-                const internalNode = nonNullable(
-                  context.xystore.getState().nodeLookup.get(fromNode),
-                  'XY Internal Node not found',
-                )
-                const nodeRect = nodeToRect(internalNode)
-                const zoom = context.xyflow!.getZoom()
-
-                const nodeRectScreen = {
-                  ...context.xyflow!.flowToScreenPosition(nodeRect),
-                  width: nodeRect.width * zoom,
-                  height: nodeRect.height * zoom,
-                }
-
-                return { fqn, fromNode, nodeRect, nodeRectScreen }
-              } else {
-                return { fqn, fromNode }
-              }
-            },
-          }),
-          on: {
-            // Catch event and do nothing
-            'open.elementDetails': {
-              actions: assign({
-                activeElementDetails: ({ event, context }) => ({
-                  ...context.activeElementDetails,
-                  fqn: event.fqn,
-                  fromNode: context.activeElementDetails?.fromNode ?? null,
-                }),
-              }),
-            },
-            'close.overlay': {
-              target: '#idle',
-            },
-            'key.esc': {
-              target: '#idle',
-            },
-          },
-          exit: assign({
-            activeElementDetails: null,
-          }),
-        },
-        relationshipsBrowser: {
-          invoke: {
-            id: 'relationshipsBrowser',
-            src: 'relationshipsBrowserActor',
-            input: ({ context, event }) => {
-              assertEvent(event, 'open.relationshipsBrowser')
-              return {
-                subject: event.fqn,
-                scope: context.view,
-              }
-            },
-            onDone: {
-              target: '#idle',
-            },
-          },
-          on: {
-            'open.relationshipsBrowser': {
-              actions: sendTo('relationshipsBrowser', ({ event }) => ({
-                type: 'navigate.to',
-                subject: event.fqn,
-              })),
-            },
-            'close.overlay': {
-              actions: sendTo('relationshipsBrowser', { type: 'close' }),
-            },
-            'key.esc': {
-              actions: sendTo('relationshipsBrowser', { type: 'close' }),
-            },
-          },
-        },
-        relationshipDetails: {
-          invoke: {
-            id: 'relationshipDetails',
-            src: 'relationshipDetailsActor',
-            input: ({ event, context }) => {
-              assertEvent(event, 'open.relationshipDetails')
-              return {
-                edgeId: event.edgeId,
-                view: context.view,
-              }
-            },
-            onDone: {
-              target: '#idle',
-            },
-          },
-          on: {
-            'close.overlay': {
-              actions: sendTo('relationshipDetails', { type: 'close' }),
-            },
-            'key.esc': {
-              actions: sendTo('relationshipDetails', { type: 'close' }),
-            },
-          },
-        },
-      },
-      on: {
-        // We received another view, close overlay and process event again
-        'update.view': {
-          guard: 'is another view',
-          actions: raise(({ event }) => event, { delay: 50 }),
-          target: '#idle',
-        },
-      },
-      exit: [
-        stopChild('hotkey'),
-      ],
     },
     // Navigating to another view (after `navigateTo` event)
     navigating: {
@@ -649,8 +539,8 @@ export const diagramMachine = setup({
       states: {
         pending: {
           entry: enqueueActions(({ enqueue }) => {
-            enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'stop' })
-            enqueue.stopChild('syncLayout')
+            enqueue('closeAllOverlays')
+            enqueue('stopSyncLayout')
             enqueue({
               type: 'trigger:NavigateTo',
               params: ({ context }) => ({
@@ -697,13 +587,17 @@ export const diagramMachine = setup({
       },
       exit: assign({
         syncLayoutActorRef: ({ self, context, spawn }) =>
-          spawn('syncManualLayoutActor', { id: 'syncLayout', input: { parent: self, viewId: context.view.id } }),
+          spawn('syncManualLayoutActorLogic', {
+            id: 'syncLayout',
+            systemId: 'syncLayout',
+            input: { parent: self, viewId: context.view.id },
+          }),
         lastOnNavigate: null,
       }),
     },
     walkthrough: {
       entry: [
-        spawnChild('hotkeyActor', { id: 'hotkey' }),
+        // spawnChild('hotkeyActor', { id: 'hotkey' }),
         assign({
           viewportBeforeFocus: ({ context }) => context.viewport,
           activeWalkthrough: ({ context, event }) => {
@@ -836,12 +730,16 @@ export const diagramMachine = setup({
           const isAnotherView = check('is another view')
           if (isAnotherView) {
             const viewId = event.view.id
-            enqueue.sendTo(c => c.context.syncLayoutActorRef, { type: 'stop' })
-            enqueue.stopChild('layout')
+
+            enqueue('closeAllOverlays')
+            enqueue('stopSyncLayout')
             enqueue.assign({
               focusedNode: null,
               syncLayoutActorRef: ({ self, spawn }) =>
-                spawn('syncManualLayoutActor', { id: 'syncLayout', input: { parent: self, viewId } }),
+                spawn('syncManualLayoutActorLogic', {
+                  id: 'syncLayout',
+                  input: { parent: self, viewId },
+                }),
             })
             const { fromNode, toNode } = findCorrespondingNode(context, event)
             if (fromNode && toNode) {
@@ -903,28 +801,55 @@ export const diagramMachine = setup({
       ],
     },
     'xyflow.resized': {
-      guard: ({ context }: { context: DiagramContext }) =>
-        context.features.enableFitView && !context.viewportChangedManually,
+      guard: ({ context }: { context: Context }) => context.features.enableFitView && !context.viewportChangedManually,
       actions: [
         cancel('fitDiagram'),
         raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 200 }),
       ],
     },
     'open.elementDetails': {
-      actions: assign({
-        activeElementDetails: ({ event, context }) => ({
-          fqn: event.fqn,
-          fromNode: event.fromNode ?? context.lastClickedNode?.id ?? null,
-          fromNodeScreenPosition: null,
-        }),
+      actions: enqueueActions(({ context, enqueue, system, event }) => {
+        let initiatedFrom = null as null | {
+          node: NodeId
+          clientRect: Rect
+        }
+        const fromNodeId = event.fromNode ?? context.view.nodes.find(n => DiagramNode.modelRef(n) === event.fqn)?.id
+        const internalNode = fromNodeId ? context.xystore.getState().nodeLookup.get(fromNodeId) : null
+        if (fromNodeId && internalNode) {
+          const nodeRect = nodeToRect(internalNode)
+          const zoom = context.xyflow!.getZoom()
+
+          const clientRect = {
+            ...context.xyflow!.flowToScreenPosition(nodeRect),
+            width: nodeRect.width * zoom,
+            height: nodeRect.height * zoom,
+          }
+          initiatedFrom = {
+            node: fromNodeId,
+            clientRect,
+          }
+        }
+        enqueue.sendTo(typedSystem(system).overlaysActorRef!, {
+          type: 'open.elementDetails' as const,
+          subject: event.fqn,
+          currentView: context.view,
+          ...(initiatedFrom && { initiatedFrom }),
+        })
       }),
-      target: '.overlay.elementDetails',
-    },
-    'open.relationshipDetails': {
-      target: '.overlay.relationshipDetails',
     },
     'open.relationshipsBrowser': {
-      target: '.overlay.relationshipsBrowser',
+      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+        type: 'open.relationshipsBrowser',
+        subject: event.fqn,
+        scope: context.view,
+      })),
+    },
+    'open.relationshipDetails': {
+      actions: sendTo(({ system }) => typedSystem(system).overlaysActorRef!, ({ context, event }) => ({
+        type: 'open.relationshipDetails',
+        view: context.view,
+        edgeId: event.edgeId,
+      })),
     },
     'open.source': {
       actions: {
@@ -947,7 +872,7 @@ export const diagramMachine = setup({
     },
   },
   exit: [
-    stopChild('layout'),
+    'stopSyncLayout',
     stopChild('hotkey'),
     assign({
       xyflow: null,
@@ -959,7 +884,7 @@ export const diagramMachine = setup({
 })
 
 const nodeRef = (node: DiagramNode) => DiagramNode.modelRef(node) ?? DiagramNode.deploymentRef(node)
-function findCorrespondingNode(context: DiagramContext, event: { view: DiagramView }) {
+function findCorrespondingNode(context: Context, event: { view: DiagramView }) {
   const fromNodeId = context.lastOnNavigate?.fromNode
   const fromNode = fromNodeId && context.view.nodes.find(n => n.id === fromNodeId)
   const fromRef = fromNode && nodeRef(fromNode)
@@ -967,6 +892,6 @@ function findCorrespondingNode(context: DiagramContext, event: { view: DiagramVi
   return { fromNode, toNode }
 }
 
-export type Machine = typeof diagramMachine
-export type MachineSnapshot = SnapshotFrom<Machine>
-export type LikeC4ViewActorRef = ActorRefFromLogic<Machine>
+export type DiagramMachineLogic = ActorLogicFrom<typeof diagramMachine>
+// export type MachineSnapshot = SnapshotFrom<Machine>
+// export type LikeC4ViewActorRef = ActorRefFromLogic<Machine>

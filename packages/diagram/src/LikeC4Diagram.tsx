@@ -11,11 +11,11 @@ import {
 } from './context'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
-import { DiagramActor } from './likec4diagram/DiagramActor'
 import type { Types } from './likec4diagram/types'
 import { useViewToNodesEdges } from './likec4diagram/useViewToNodesEdges'
 import { LikeC4DiagramXYFlow } from './likec4diagram/XYFlow'
 import { useLikeC4Model } from './likec4model'
+import { DiagramActorProvider } from './state/DiagramActorProvider'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
 export function LikeC4Diagram({
@@ -127,7 +127,7 @@ export function LikeC4Diagram({
                   fitView={fitView}
                   {...initialRef.current}
                 >
-                  <DiagramActor
+                  <DiagramActorProvider
                     input={{
                       view,
                       pannable,
@@ -140,7 +140,7 @@ export function LikeC4Diagram({
                       nodesSelectable={nodesSelectable}
                       background={background}
                     />
-                  </DiagramActor>
+                  </DiagramActorProvider>
                 </XYFlowProvider>
               </RootContainer>
             </DiagramEventHandlers>

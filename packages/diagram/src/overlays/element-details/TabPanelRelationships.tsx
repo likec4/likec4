@@ -1,31 +1,42 @@
-import { type DiagramView, type Fqn, type LikeC4Model, nameFromFqn } from '@likec4/core'
-import { Box, Group, Paper, Stack, Text, ThemeIcon } from '@mantine/core'
+import { type LikeC4Model, nameFromFqn } from '@likec4/core'
+import { Box, Group, Paper, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
 import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
-import { useActorRef } from '@xstate/react'
+import { useSelector } from '@xstate/react'
 import { useState } from 'react'
 import { unique } from 'remeda'
-import { relationshipsBrowserActor } from '../relationships-browser/actor'
 import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
+import { useElementDetailsActorRef } from './actorContext'
 import * as css from './TabPanelRelationships.css'
 
 type RelationshipsTabPanelProps = {
-  currentView: DiagramView
-  node: LikeC4Model.Node
+  node: LikeC4Model.Node | null
   element: LikeC4Model.Element
 }
 
+const Tooltip = MantineTooltip.withProps({
+  color: 'dark',
+  fz: 'xs',
+  openDelay: 600,
+  closeDelay: 120,
+  label: '',
+  children: null,
+  offset: 8,
+  withinPortal: false,
+})
+
 export function TabPanelRelationships({
-  currentView,
   node,
   element,
 }: RelationshipsTabPanelProps) {
+  const delailsActor = useElementDetailsActorRef()
+  const relationshipsBrowserActor = useSelector(delailsActor, s => s.children[`${delailsActor.id}-relationships`])
   const [scope, setScope] = useState<'global' | 'view'>('view')
 
   const incoming = [...element.incoming()].map(r => r.id)
   const outgoing = [...element.outgoing()].map(r => r.id)
 
-  const incomingInView = unique([...node.incoming()].flatMap(e => e.$edge.relations))
-  const outgoingInView = unique([...node.outgoing()].flatMap(e => e.$edge.relations))
+  const incomingInView = node ? unique([...node.incoming()].flatMap(e => e.$edge.relations)) : []
+  const outgoingInView = node ? unique([...node.outgoing()].flatMap(e => e.$edge.relations)) : []
 
   const notIncludedRelations = [
     ...incoming,
@@ -57,22 +68,24 @@ export function TabPanelRelationships({
             </Group>
           </Box>
           {notIncludedRelations > 0 && (
-            <Group
-              mt={'xs'}
-              gap={6}
-              c="orange"
-              style={{ cursor: 'pointer' }}>
-              <IconInfoCircle style={{ width: 14 }} />
-              <Text fz="sm">
-                {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} hidden
-              </Text>
-            </Group>
+            <Tooltip label="Current view does not include some relationships">
+              <Group
+                mt={'xs'}
+                gap={6}
+                c="orange"
+                style={{ cursor: 'pointer' }}>
+                <IconInfoCircle style={{ width: 14 }} />
+                <Text fz="sm">
+                  {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} hidden
+                </Text>
+              </Group>
+            </Tooltip>
           )}
         </Group>
       )}
 
       <Box className={css.xyflow}>
-        <EmbeddedRelationshipsBrowser subjectId={element.id} currentView={currentView} />
+        {relationshipsBrowserActor && <RelationshipsBrowser actorRef={relationshipsBrowserActor} />}
       </Box>
     </Stack>
   )
@@ -140,16 +153,4 @@ function RelationshipsStat({
       }
     </Paper>
   )
-}
-
-const EmbeddedRelationshipsBrowser = ({ subjectId, currentView }: { subjectId: Fqn; currentView: DiagramView }) => {
-  const actor = useActorRef(relationshipsBrowserActor, {
-    input: {
-      subject: subjectId,
-      scope: currentView,
-      closeable: false,
-      enableNavigationMenu: false,
-    },
-  })
-  return <RelationshipsBrowser actorRef={actor} />
 }
