@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { startLanguageServer } from '../dist/bin.mjs'
+import { startLanguageServer } from '.../dist/bundled.mjs'
 
 startLanguageServer().catch((e) => {
   console.error(e)
