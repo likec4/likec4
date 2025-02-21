@@ -66,7 +66,7 @@ export function useCloseSearchAndNavigateTo() {
       const fromNode = fromElementFqn
         ? diagram.getContext().view.nodes.find(n => DiagramNode.modelRef(n) === fromElementFqn)?.id
         : undefined
-      if (diagram.currentView().id === viewId && fromNode) {
+      if (diagram.currentView.id === viewId && fromNode) {
         diagram.focusNode(fromNode)
         return
       }

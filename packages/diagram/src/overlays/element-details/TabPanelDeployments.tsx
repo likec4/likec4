@@ -37,7 +37,7 @@ const DeployedInstanceRenderer = (
   },
 ) => {
   const diagram = useDiagram()
-  const currentViewId = diagram.currentView().id
+  const currentViewId = diagram.currentView.id
   const views = [...instance.views()]
   return (
     (

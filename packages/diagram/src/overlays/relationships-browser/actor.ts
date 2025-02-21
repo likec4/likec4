@@ -14,13 +14,12 @@ import {
   type ActorRefFromLogic,
   type BaseActorRef,
   type SnapshotFrom,
+  assertEvent,
   assign,
   cancel,
   enqueueActions,
   fromPromise,
-  log,
   raise,
-  sendParent,
   setup,
 } from 'xstate'
 import { Base } from '../../base'
@@ -60,7 +59,6 @@ export type Context = Readonly<
     // parentRef: AnyActorRef | null
     xyflow: XYFLowInstance | null
     xystore: XYStoreApi | null
-    initialized: boolean
     layouted: LayoutRelationshipsViewResult | null
     navigateFromNode: string | null
     xynodes: RelationshipsBrowserTypes.Node[]
@@ -80,6 +78,7 @@ export type Events =
   | { type: 'xyflow.edgeMouseEnter'; edge: RelationshipsBrowserTypes.Edge }
   | { type: 'xyflow.edgeMouseLeave'; edge: RelationshipsBrowserTypes.Edge }
   | { type: 'xyflow.updateNodeInternals' }
+  | { type: 'xyflow.unmount' }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'navigate.to'; subject: Fqn; fromNode?: string | undefined }
   | {
@@ -239,7 +238,24 @@ export const relationshipsBrowserLogic = setup({
   actors: {
     layouter,
   },
+  guards: {
+    isReady: ({ context }) => context.xyflow !== null && context.xystore !== null && context.layouted !== null,
+  },
   actions: {
+    'xyflow.init': assign(({ event }) => {
+      assertEvent(event, 'xyflow.init')
+      return {
+        xyflow: event.instance,
+        xystore: event.store,
+      }
+    }),
+    'update.view': assign(({ event }) => {
+      assertEvent(event, 'update.view')
+      return {
+        layouted: event.layouted,
+        ...viewToNodesEdge(event.layouted),
+      }
+    }),
     'xyflow:updateNodeInternals': ({ context }) => {
       invariant(context.xystore, 'xystore is not initialized')
       const { domNode, updateNodeInternals } = context.xystore.getState()
@@ -286,16 +302,12 @@ export const relationshipsBrowserLogic = setup({
       }
     },
   },
-  guards: {
-    'enable: navigate.to': ({ context }) => context.enableNavigationMenu,
-  },
 }).createMachine({
   id: 'relationships-browser',
   context: ({ input }) => ({
     ...input,
     closeable: input.closeable ?? true,
     enableNavigationMenu: input.enableNavigationMenu ?? true,
-    initialized: false,
     xyflow: null,
     xystore: null,
     layouted: null,
@@ -324,34 +336,25 @@ export const relationshipsBrowserLogic = setup({
     initializing: {
       on: {
         'xyflow.init': {
-          actions: [
-            assign({
-              initialized: true,
-              xyflow: ({ event }) => event.instance,
-              xystore: ({ event }) => event.store,
-            }),
-          ],
-          target: 'waiting-data',
+          actions: 'xyflow.init',
+          target: 'isReady',
+        },
+        'update.view': {
+          actions: 'update.view',
+          target: 'isReady',
         },
         'stop': 'closed',
         'close': 'closed',
       },
     },
-    'waiting-data': {
-      on: {
-        'update.view': {
-          actions: [
-            assign(({ event }) => {
-              return {
-                layouted: event.layouted,
-                ...viewToNodesEdge(event.layouted),
-              }
-            }),
-            raise({ type: 'fitDiagram', duration: 0 }),
-          ],
-          target: 'active',
-        },
-      },
+    'isReady': {
+      always: [{
+        guard: 'isReady',
+        actions: raise({ type: 'fitDiagram', duration: 0 }),
+        target: 'active',
+      }, {
+        target: 'initializing',
+      }],
     },
     'active': {
       initial: 'idle',
@@ -404,7 +407,6 @@ export const relationshipsBrowserLogic = setup({
       },
       on: {
         'xyflow.nodeClick': {
-          guard: 'enable: navigate.to',
           actions: enqueueActions(({ event, enqueue }) => {
             if ('fqn' in event.node.data) {
               const fqn = event.node.data.fqn
@@ -417,7 +419,6 @@ export const relationshipsBrowserLogic = setup({
           }),
         },
         'navigate.to': {
-          guard: 'enable: navigate.to',
           actions: [
             assign({
               subject: ({ event }) => event.subject,
@@ -449,6 +450,12 @@ export const relationshipsBrowserLogic = setup({
             raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 300 }),
           ],
         },
+        'xyflow.init': {
+          actions: 'xyflow.init',
+        },
+        'xyflow.unmount': {
+          target: 'initializing',
+        },
         'close': 'closed',
       },
     },
@@ -458,7 +465,6 @@ export const relationshipsBrowserLogic = setup({
     },
   },
   exit: assign({
-    initialized: false,
     xyflow: null,
     layouted: null,
     xystore: null,

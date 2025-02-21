@@ -3,8 +3,7 @@ import { IconChevronRight } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'framer-motion'
 
 import { IconChevronLeft } from '@tabler/icons-react'
-import { useDiagram } from '../../../hooks/useDiagram'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { ActionIcon } from './_shared'
 
 export const NavigationButtons = () => {

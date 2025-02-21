@@ -1,4 +1,3 @@
-import type { Fqn, NodeId } from '@likec4/core'
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import { m } from 'framer-motion'
@@ -12,20 +11,22 @@ import {
   ElementShape,
   ElementTitle,
 } from '../../../base/primitives'
-import { useOverlays } from '../../../hooks/useOverlays'
+import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { ElementActions } from './ElementActions'
 import { EmptyNode } from './EmptyNode'
 
-const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipsBrowserTypes.ElementNodeData | RelationshipsBrowserTypes.CompoundNodeData>) => {
-  const overlays = useOverlays()
+const ElementDetailsButtonWithHandler = (
+  props: NodeProps<RelationshipsBrowserTypes.ElementNodeData | RelationshipsBrowserTypes.CompoundNodeData>,
+) => {
+  const diagram = useDiagram()
 
   return (
     <ElementDetailsButton
       {...props}
       onClick={e => {
         e.stopPropagation()
-        overlays.openElementDetails(props.data.fqn)
+        diagram.openElementDetails(props.data.fqn)
       }}
     />
   )
@@ -47,7 +48,7 @@ export const nodeTypes = {
   compound: customNode<RelationshipsBrowserTypes.CompoundNodeData>((props) => {
     return (
       <CompoundNodeContainer key={props.id} component={m.div} layoutId={props.id} nodeProps={props}>
-        <ElementDetailsButtonWithHandler {...props}/>
+        <ElementDetailsButtonWithHandler {...props} />
         <CompoundTitle {...props} />
         <CompoundPorts {...props} />
       </CompoundNodeContainer>

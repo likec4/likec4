@@ -9,22 +9,21 @@ import {
 } from '../../../base/primitives'
 import { ElementActions } from './ElementActions'
 
-import type { Fqn } from '@likec4/core'
 import { Handle } from '@xyflow/react'
 import { Position } from '@xyflow/system'
 import type { NodeProps } from '../../../base'
-import { useOverlays } from '../../../hooks/useOverlays'
+import { useDiagram } from '../../../hooks/useDiagram'
 import type { RelationshipDetailsTypes } from '../_types'
 
-const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTypes.ElementNodeData>) => {
-  const overlays = useOverlays()
+const ElementDetailsButtonWithHandler = (props: NodeProps<RelationshipDetailsTypes.NodeData>) => {
+  const diagram = useDiagram()
 
   return (
     <ElementDetailsButton
       {...props}
       onClick={e => {
         e.stopPropagation()
-        overlays.openElementDetails(props.data.fqn)
+        diagram.openElementDetails(props.data.fqn)
       }}
     />
   )
@@ -46,7 +45,7 @@ export const nodeTypes = {
   compound: customNode<RelationshipDetailsTypes.CompoundNodeData>((props) => {
     return (
       <CompoundNodeContainer nodeProps={props}>
-        <ElementDetailsButtonWithHandler {...props}/>
+        <ElementDetailsButtonWithHandler {...props} />
         <CompoundTitle {...props} />
         <CompoundPorts {...props} />
       </CompoundNodeContainer>

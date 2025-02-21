@@ -1,11 +1,12 @@
+import type { Fqn } from '@likec4/core'
 import { getHotkeyHandler } from '@mantine/hooks'
-import { last, only, reverse, splitAt } from 'remeda'
+import { isString, last, reverse } from 'remeda'
 import {
+  type ActorLogicFrom,
   type ActorRefFrom,
-  type AnyActorRef,
-  type AnyEventObject,
-  type NonReducibleUnknown,
+  type SnapshotFrom,
   assertEvent,
+  assign,
   enqueueActions,
   fromCallback,
   setup,
@@ -21,15 +22,15 @@ export type OverlayActorEvent =
   | { type: 'open.elementDetails' } & Overlays.ElementDetails.Input
   | { type: 'open.relationshipDetails' } & Overlays.RelationshipDetails.Input
   | { type: 'open.relationshipsBrowser' } & Overlays.RelationshipsBrowser.Input
-  | { type: 'close'; overlayActor?: AnyActorRef | undefined } // Close last overlay
+  | { type: 'close'; actorId?: string | undefined } // Close last overlay if actorId is not provided
   | { type: 'close.all' }
 
 export interface OverlaysContext {
   seq: number
   overlays: Array<
-    | { type: 'elementDetails'; actorRef: Overlays.ElementDetails.ActorRef }
-    | { type: 'relationshipDetails'; actorRef: Overlays.RelationshipDetails.ActorRef }
-    | { type: 'relationshipsBrowser'; actorRef: Overlays.RelationshipsBrowser.ActorRef }
+    | { type: 'elementDetails'; id: `elementDetails-${number}`; subject: Fqn }
+    | { type: 'relationshipDetails'; id: `relationshipDetails-${number}` }
+    | { type: 'relationshipsBrowser'; id: `relationshipsBrowser-${number}`; subject: Fqn }
   >
 }
 
@@ -40,7 +41,7 @@ export type OverlayActorEmitedEvent =
 
 type HotKeyEvent = { type: 'close' }
 // TODO: naming convention for actors
-const hotkeyLogic = fromCallback<AnyEventObject, NonReducibleUnknown, HotKeyEvent>(({ sendBack }: {
+const hotkeyLogic = fromCallback(({ sendBack }: {
   sendBack: (event: HotKeyEvent) => void
 }) => {
   const handler = getHotkeyHandler([
@@ -56,10 +57,6 @@ const hotkeyLogic = fromCallback<AnyEventObject, NonReducibleUnknown, HotKeyEven
 
 export const overlaysActorLogic = setup({
   types: {
-    // input: {} as {
-    //   // xyflow: ReactFlowInstance<Base.Node, Base.Edge>
-    //   // fitViewPadding?: number
-    // },
     context: {} as OverlaysContext,
     events: {} as OverlayActorEvent,
     emitted: {} as OverlayActorEmitedEvent,
@@ -77,144 +74,112 @@ export const overlaysActorLogic = setup({
     hotkey: hotkeyLogic,
   },
   actions: {
-    'closeOverlay': enqueueActions(({ context, enqueue }) => {
+    'closeLastOverlay': enqueueActions(({ context, enqueue }) => {
       if (context.overlays.length === 0) {
         return
       }
-      const [overlays, tail] = context.overlays.length > 1 ? splitAt(context.overlays, -1) : [[], context.overlays]
-      const last = only(tail)
-      if (last === undefined) {
+      const lastOverlay = last(context.overlays)?.id
+      if (!lastOverlay) {
         return
       }
-      enqueue.sendTo(last.actorRef, { type: 'close' })
-      enqueue.stopChild(last.actorRef)
-      enqueue.assign({ overlays })
+      enqueue.sendTo(lastOverlay, { type: 'close' })
+      enqueue.stopChild(lastOverlay)
+      enqueue.assign({
+        overlays: context.overlays.filter(o => o.id !== lastOverlay),
+      })
     }),
-    'closeSpecificOverlay': enqueueActions(({ context, enqueue }, params: { actorRef: AnyActorRef }) => {
-      const toClose = context.overlays.find(o => o.actorRef === params.actorRef)?.actorRef
+    'closeSpecificOverlay': enqueueActions(({ context, enqueue }, params: { actorId: string }) => {
+      const toClose = context.overlays.find(o => o.id === params.actorId)?.id
       if (toClose) {
         enqueue.sendTo(toClose, { type: 'close' })
         enqueue.stopChild(toClose)
         enqueue.assign({
-          overlays: ({ context }) => context.overlays.filter(o => o.actorRef !== toClose),
+          overlays: context.overlays.filter(o => o.id !== toClose),
         })
       }
     }),
     'closeAllOverlays': enqueueActions(({ context, enqueue }) => {
-      reverse(context.overlays).forEach((overlay) => {
-        enqueue.sendTo(overlay.actorRef, { type: 'close' })
-        enqueue(() => overlay.actorRef.stop())
-      })
+      for (const { id } of reverse(context.overlays)) {
+        enqueue.sendTo(id, { type: 'close' })
+        enqueue.stopChild(id)
+      }
+
       enqueue.assign({ overlays: [] })
     }),
-    // 'openElementDetails': assign(({ context: { seq, overlays }, spawn }, params: Overlays.ElementDetails.Input) => {
-    //   return {
-    //     seq: seq + 1,
-    //     overlays: [
-    //       ...overlays,
-    //       {
-    //         type: 'elementDetails' as const,
-    //         actorRef: spawn(`elementDetails`, {
-    //           id: `elementDetails-${seq}`,
-    //           input: params,
-    //         }),
-    //       },
-    //     ],
-    //   }
-    // }),
     'openElementDetails': enqueueActions(({ context, enqueue, event }) => {
       assertEvent(event, 'open.elementDetails')
-      const currentOverlay = last(context.overlays)
-      if (currentOverlay?.type === 'elementDetails') {
-        enqueue.sendTo(currentOverlay.actorRef, {
-          type: 'change.subject',
-          subject: event.subject,
-        })
-      } else {
-        enqueue.assign(({ context, spawn }) => {
-          return {
-            seq: context.seq + 1,
-            overlays: [
-              ...context.overlays,
-              {
-                type: 'elementDetails' as const,
-                actorRef: spawn(`elementDetails`, {
-                  id: `elementDetails-${context.seq}`,
-                  input: event,
-                }),
-              },
-            ],
-          }
-        })
+      if (context.overlays.some(o => o.type === 'elementDetails' && o.subject === event.subject)) {
+        return
       }
+      const id = `elementDetails-${context.seq}` as const
+      enqueue.spawnChild('elementDetails', {
+        id,
+        input: event,
+      })
+      enqueue.assign({
+        seq: context.seq + 1,
+        overlays: [
+          ...context.overlays,
+          {
+            type: 'elementDetails' as const,
+            id,
+            subject: event.subject,
+          },
+        ],
+      })
     }),
-    //     // enqueue.spawnChild('elementDetails', {
-    //     //   id: `elementDetails-${context.seq}`,
-    //     //   input: params,
-    //     // })
-    //     // enqueue.assign({
-    //     //   seq: context.seq + 1,
-    //     //   overlays: [
-    //     //     ...context.overlays,
-    //     //     {
-    //     //       type: 'elementDetails' as const,
-    //     //       actorRef,
-    //     //     },
-    //     //   ],
-    //     // })
-    //   }
-    // }),
     'openRelationshipDetails': enqueueActions(({ context, enqueue, event }) => {
       assertEvent(event, 'open.relationshipDetails')
       const currentOverlay = last(context.overlays)
       if (currentOverlay?.type === 'relationshipDetails') {
-        enqueue.sendTo(currentOverlay.actorRef, {
+        enqueue.sendTo(currentOverlay.id, {
           type: 'navigate.to',
           edgeId: event.edgeId,
         })
-      } else {
-        enqueue.assign(({ context: { seq, overlays }, spawn }) => {
-          return {
-            seq: seq + 1,
-            overlays: [
-              ...overlays,
-              {
-                type: 'relationshipDetails' as const,
-                actorRef: spawn(`relationshipDetails`, {
-                  id: `relationshipDetails-${seq}`,
-                  input: event,
-                }),
-              },
-            ],
-          }
-        })
+        return
       }
+      const id = `relationshipDetails-${context.seq}` as const
+      enqueue.spawnChild('relationshipDetails', {
+        id,
+        input: event,
+      })
+      enqueue.assign({
+        seq: context.seq + 1,
+        overlays: [
+          ...context.overlays,
+          {
+            type: 'relationshipDetails' as const,
+            id,
+          },
+        ],
+      })
     }),
     'openRelationshipsBrowser': enqueueActions(({ context, enqueue, event }) => {
       assertEvent(event, 'open.relationshipsBrowser')
       const currentOverlay = last(context.overlays)
       if (currentOverlay?.type === 'relationshipsBrowser') {
-        enqueue.sendTo(currentOverlay.actorRef, {
+        enqueue.sendTo(currentOverlay.id, {
           type: 'navigate.to',
           subject: event.subject,
         })
-      } else {
-        enqueue.assign(({ context: { seq, overlays }, spawn }) => {
-          return {
-            seq: seq + 1,
-            overlays: [
-              ...overlays,
-              {
-                type: 'relationshipsBrowser' as const,
-                actorRef: spawn(`relationshipsBrowser`, {
-                  id: `relationshipsBrowser-${seq}`,
-                  input: event,
-                }),
-              },
-            ],
-          }
-        })
+        return
       }
+      const id = `relationshipsBrowser-${context.seq}` as const
+      enqueue.spawnChild('relationshipsBrowser', {
+        id,
+        input: event,
+      })
+      enqueue.assign({
+        seq: context.seq + 1,
+        overlays: [
+          ...context.overlays,
+          {
+            type: 'relationshipsBrowser' as const,
+            id,
+            subject: event.subject,
+          },
+        ],
+      })
     }),
     'listenToEsc': spawnChild('hotkey', {
       id: 'hotkey',
@@ -223,9 +188,17 @@ export const overlaysActorLogic = setup({
   },
   guards: {
     'has overlays?': ({ context }) => context.overlays.length > 0,
-    'close specific overlay?': ({ event }) => {
+    'close specific overlay?': ({ context, event }) => {
       assertEvent(event, 'close')
-      return event.overlayActor !== undefined
+      return isString(event.actorId) && context.overlays.some(o => o.id === event.actorId)
+    },
+    'last: is relationshipDetails?': ({ context }) => {
+      const lastOverlay = last(context.overlays)
+      return lastOverlay?.type === 'relationshipDetails'
+    },
+    'last: is relationshipsBrowser?': ({ context }) => {
+      const lastOverlay = last(context.overlays)
+      return lastOverlay?.type === 'relationshipsBrowser'
     },
   },
 }).createMachine({
@@ -239,39 +212,44 @@ export const overlaysActorLogic = setup({
     'open.elementDetails': {
       actions: 'openElementDetails',
       target: '.active',
+      reenter: false,
     },
     'open.relationshipDetails': {
       actions: 'openRelationshipDetails',
       target: '.active',
+      reenter: false,
     },
     'open.relationshipsBrowser': {
       actions: 'openRelationshipsBrowser',
       target: '.active',
+      reenter: false,
     },
   },
-  entry: 'listenToEsc',
   states: {
     idle: {},
     active: {
+      entry: 'listenToEsc',
+      exit: 'stopListeningToEsc',
       on: {
         'close': [
           {
             guard: 'close specific overlay?',
             actions: {
               type: 'closeSpecificOverlay',
-              params: ({ event }) => ({
-                actorRef: event.overlayActor!,
-              }),
+              params: ({ event }) => ({ actorId: event.actorId! }),
             },
             target: 'closing',
           },
           {
-            actions: 'closeOverlay',
+            actions: 'closeLastOverlay',
             target: 'closing',
           },
         ],
         'close.all': {
-          actions: 'closeAllOverlays',
+          actions: [
+            'closeAllOverlays',
+            'stopListeningToEsc',
+          ],
           target: 'idle',
         },
       },
@@ -282,7 +260,10 @@ export const overlaysActorLogic = setup({
           guard: 'has overlays?',
           target: 'active',
         },
-        'idle',
+        {
+          actions: 'stopListeningToEsc',
+          target: 'idle',
+        },
       ],
     },
   },
@@ -292,4 +273,6 @@ export const overlaysActorLogic = setup({
   ],
 })
 
-export interface OverlaysActorRef extends ActorRefFrom<typeof overlaysActorLogic> {}
+export interface OverlaysActorLogic extends ActorLogicFrom<typeof overlaysActorLogic> {}
+export type OverlaysActorSnapshot = SnapshotFrom<OverlaysActorLogic>
+export interface OverlaysActorRef extends ActorRefFrom<OverlaysActorLogic> {}

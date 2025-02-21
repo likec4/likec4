@@ -3,10 +3,10 @@ import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { isEmpty, mergeDeep, omit } from 'remeda'
 import { assertEvent } from 'xstate'
-import { Base } from '../../base'
-import { type Vector, vector, VectorImpl } from '../../utils/vector'
-import type { Types } from '../types'
-import type { ActionArg, DiagramContext } from './machine'
+import { Base } from '../base/types'
+import type { Types } from '../likec4diagram/types'
+import { type Vector, vector, VectorImpl } from '../utils/vector'
+import type { ActionArg, Context as DiagramContext } from './diagram-machine'
 
 export function lastClickedNode(
   params: { context: DiagramContext; event: { node: Types.Node } },

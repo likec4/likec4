@@ -4,20 +4,17 @@ import { IconMenu } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { Link } from '../../../components/Link'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
-import type { DiagramContext } from '../../state/machine'
+import { useDiagramContext } from '../../../hooks/useDiagram'
 import * as css from './DiagramTitlePanel.css'
 
-const selector = (s: DiagramContext) => ({
-  id: s.view.id,
-  title: s.view.title ?? 'untitled',
-  description: s.view.description,
-  links: s.view.links,
-  isNotActiveWalkthrough: s.activeWalkthrough === null,
-})
-
 export function DiagramTitlePanel() {
-  const { id, title, description, links, isNotActiveWalkthrough } = useDiagramContext(selector)
+  const { id, title, description, links, isNotActiveWalkthrough } = useDiagramContext(s => ({
+    id: s.view.id,
+    title: s.view.title ?? 'untitled',
+    description: s.view.description,
+    links: s.view.links,
+    isNotActiveWalkthrough: s.activeWalkthrough === null,
+  }))
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'diagram-title-webview-collapsed',
     defaultValue: false,

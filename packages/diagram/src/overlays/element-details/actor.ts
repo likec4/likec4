@@ -5,8 +5,12 @@ import {
   type ActorRefFromLogic,
   type SnapshotFrom,
   assign,
+  sendTo,
   setup,
+  spawnChild,
+  stopChild,
 } from 'xstate'
+import { relationshipsBrowserLogic } from '../relationships-browser/actor'
 
 export type Input = {
   subject: Fqn
@@ -35,6 +39,12 @@ export const elementDetailsLogic = setup({
     context: {} as Context,
     input: {} as Input,
     events: {} as Events,
+    children: {} as {
+      [key: `${string}-relationships`]: 'relationshipsBrowserLogic'
+    },
+  },
+  actors: {
+    relationshipsBrowserLogic,
   },
 }).createMachine({
   id: 'element-details',
@@ -48,6 +58,19 @@ export const elementDetailsLogic = setup({
   initial: 'active',
   states: {
     'active': {
+      entry: spawnChild('relationshipsBrowserLogic', {
+        id: ({ self }) => `${self.id}-relationships`,
+        input: ({ context }) => ({
+          subject: context.subject,
+          scope: context.currentView,
+          enableNavigationMenu: false,
+          closeable: false,
+        }),
+      }),
+      exit: [
+        sendTo(({ self }) => `${self.id}-relationships`, { type: 'close' }),
+        stopChild(({ self }) => `${self.id}-relationships`),
+      ],
       on: {
         'change.subject': {
           actions: assign({

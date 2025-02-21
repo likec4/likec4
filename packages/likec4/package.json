@@ -78,7 +78,7 @@
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist app/dist dev/.export dev/dist node_modules/.vite",
     "start": "tsx --conditions=sources src/cli/index.ts",
-    "dev": "start serve dev",
+    "dev": "pnpm cli:serve dev",
     "dev:docs:bigbank": "pnpm cli:serve ../../apps/docs/src/components/bigbank",
     "dev:docs:dynamic-view": "pnpm cli:serve ../../apps/docs/src/components/dynamic-view",
     "dev:docs:index-page": "pnpm cli:serve ../../apps/docs/src/components/index-page",

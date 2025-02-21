@@ -1,14 +1,21 @@
-import type { EdgeId, Fqn, NodeId, ViewId } from '@likec4/core'
+import { type DiagramView, type EdgeId, type Fqn, type NodeId, type ViewId } from '@likec4/core'
+import { useCallbackRef } from '@mantine/hooks'
+import { useSelector as useXstateSelector } from '@xstate/react'
+import { shallowEqual } from 'fast-equals'
 import { useMemo, useTransition } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { FeatureName } from '../context/DiagramFeatures'
-import { useDiagramActor } from '../hooks/useDiagramActor'
-import type { AlignmentMode } from '../likec4diagram/state/aligners'
-import { DiagramContext } from '../likec4diagram/state/machine'
+import type { OpenSourceParams } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
+import type { AlignmentMode } from '../state/aligners'
+import type { DiagramActorSnapshot, DiagramContext, SyncLayoutActorRef, SyncLayoutActorSnapshot } from '../state/types'
+import { findDiagramEdge, findDiagramNode } from '../state/utils'
+import { useDiagramActorRef } from './safeContext'
+
+export { useDiagramActorRef }
 
 export function useDiagram() {
-  const actor = useDiagramActor()
+  const actor = useDiagramActorRef()
   const [, startTransition] = useTransition()
   return useMemo(() => ({
     send: actor.send,
@@ -36,9 +43,9 @@ export function useDiagram() {
         actor.send({ type: 'open.relationshipsBrowser', fqn })
       })
     },
-    // openSource: (params: OpenSourceParams) => {
-    //   actor.send({ type: 'open.source', ...params })
-    // },
+    openSource: (params: OpenSourceParams) => {
+      actor.send({ type: 'open.source', ...params })
+    },
     openElementDetails: (fqn: Fqn, fromNode?: NodeId) => {
       startTransition(() => {
         actor.send({ type: 'open.elementDetails', fqn, fromNode })
@@ -49,11 +56,7 @@ export function useDiagram() {
         actor.send({ type: 'open.relationshipDetails', edgeId })
       })
     },
-    closeOverlay: () => {
-      startTransition(() => {
-        // actor.send({ type: 'close.overlay' })
-      })
-    },
+
     updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
       actor.send({ type: 'update.nodeData', nodeId, data })
     },
@@ -72,7 +75,7 @@ export function useDiagram() {
      * @returns true if there was pending request to save layout
      */
     cancelSaveManualLayout: () => {
-      const syncState = actor.getSnapshot().context.syncLayoutActorRef.getSnapshot().value
+      const syncState = actor.getSnapshot().children.syncLayout?.getSnapshot().value
       actor.send({ type: 'saveManualLayout.cancel' })
       return syncState === 'pending' || syncState === 'paused'
     },
@@ -92,11 +95,13 @@ export function useDiagram() {
     /**
      * @warning Do not use in render phase
      */
-    currentView: () => actor.getSnapshot().context.view,
+    get currentView(): DiagramView {
+      return actor.getSnapshot().context.view
+    },
     /**
      * @warning Do not use in render phase
      */
-    getState: () => actor.getSnapshot(),
+    getSnapshot: () => actor.getSnapshot(),
     /**
      * @warning Do not use in render phase
      */
@@ -105,13 +110,13 @@ export function useDiagram() {
      * @warning Do not use in render phase
      */
     findDiagramNode: (xynodeId: string) => {
-      return DiagramContext.findDiagramNode(actor.getSnapshot().context, xynodeId)
+      return findDiagramNode(actor.getSnapshot().context, xynodeId)
     },
     /**
      * @warning Do not use in render phase
      */
     findDiagramEdge: (xyedgeId: string) => {
-      return DiagramContext.findDiagramEdge(actor.getSnapshot().context, xyedgeId)
+      return findDiagramEdge(actor.getSnapshot().context, xyedgeId)
     },
 
     startWalkthrough: () => {
@@ -130,4 +135,27 @@ export function useDiagram() {
       actor.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
     },
   }), [actor])
+}
+
+export function useDiagramActorSnapshot<T = unknown>(
+  selector: (state: DiagramActorSnapshot) => T,
+  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
+): T {
+  const actorRef = useDiagramActorRef()
+  return useXstateSelector(actorRef, useCallbackRef(selector), compare)
+}
+
+export function useDiagramSyncLayoutState<T = unknown>(
+  selector: (state: SyncLayoutActorSnapshot) => T,
+  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
+): T {
+  const syncLayoutActorRef = useDiagramActorSnapshot(s => s.context.syncLayoutActorRef as SyncLayoutActorRef)
+  return useXstateSelector(syncLayoutActorRef, useCallbackRef(selector), compare)
+}
+
+export function useDiagramContext<T = unknown>(
+  selector: (state: DiagramContext) => T,
+  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
+) {
+  return useDiagramActorSnapshot(useCallbackRef(s => selector(s.context)), compare)
 }

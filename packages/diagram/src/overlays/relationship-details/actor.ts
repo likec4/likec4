@@ -21,8 +21,8 @@ type XYFLowInstance = ReactFlowInstance<RelationshipDetailsTypes.Node, Relations
 
 export type Input = {
   edgeId: EdgeId
-  currentView: DiagramView
-  // scope?: DiagramView | null
+  view: DiagramView
+  // view: DiagramView | null
   // parentRef?: AnyActorRef| null
 }
 

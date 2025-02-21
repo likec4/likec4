@@ -1,7 +1,6 @@
 import { IconLock, IconLockOpen2 } from '@tabler/icons-react'
-import { useDiagram } from '../../../hooks/useDiagram'
-import { useDiagramContext } from '../../../hooks/useDiagramContext'
-import type { DiagramContext } from '../../state/machine'
+import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
+import type { DiagramContext } from '../../../state/types'
 import { ActionIcon, Tooltip } from './_shared'
 
 const selector = (state: DiagramContext) => ({

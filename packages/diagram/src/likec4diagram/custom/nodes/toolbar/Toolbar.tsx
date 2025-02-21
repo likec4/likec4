@@ -4,7 +4,7 @@ import { type NodeToolbarProps, NodeToolbar } from '@xyflow/react'
 import clsx from 'clsx'
 import type { ReactNode } from 'react'
 import type { Base } from '../../../../base'
-import { useDiagramContext } from '../../../../hooks/useDiagramContext'
+import { useDiagramContext } from '../../../../hooks/useDiagram'
 import { stopPropagation } from '../../../../utils/xyflow'
 import * as css from './styles.css'
 

@@ -1,5 +1,5 @@
 import { useSyncedRef } from '@react-hookz/web'
-import { type PropsWithChildren, type Ref, type RefObject, createContext, useContext, useMemo } from 'react'
+import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo } from 'react'
 import { isFunction, mapToObj } from 'remeda'
 import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
@@ -52,8 +52,7 @@ export function DiagramEventHandlers({
   }), [handlersRef, ...deps])
 
   return (
-    <DiagramEventHandlersContext.Provider
-      value={value}>
+    <DiagramEventHandlersContext.Provider value={value}>
       {children}
     </DiagramEventHandlersContext.Provider>
   )

@@ -1,17 +1,18 @@
 import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { useOverlays } from '../../hooks/useOverlays'
 import type { ElementDetailsActorRef } from './actor'
+import { ElementDetailsActorContext } from './actorContext'
 import { ElementDetailsCard } from './ElementDetailsCard'
 
 export type ElementDetailsProps = {
   actorRef: ElementDetailsActorRef
+  onClose: () => void
 }
 export function ElementDetails({
   actorRef,
+  onClose,
 }: ElementDetailsProps) {
-  const overlay = useOverlays()
   const props = useSelector(
     actorRef,
     useCallbackRef((s) => ({
@@ -23,10 +24,10 @@ export function ElementDetails({
     shallowEqual,
   )
   return (
-    <ElementDetailsCard
-      onClose={() => {
-        overlay.close(actorRef)
-      }}
-      {...props} />
+    <ElementDetailsActorContext value={actorRef}>
+      <ElementDetailsCard
+        onClose={onClose}
+        {...props} />
+    </ElementDetailsActorContext>
   )
 }
