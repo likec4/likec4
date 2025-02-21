@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.22.1",
+  "version": "1.23.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -74,7 +74,7 @@
     "generate": "tsx scripts/generate.ts",
     "prepack": "turbo run build --log-prefix=none --log-order=grouped",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-$npm_package_version.tgz package.tgz",
+    "postpack": "cp likec4-$npm_package_version.tgz package.tgz || true",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist app/dist dev/.export dev/dist node_modules/.vite",
     "start": "tsx --conditions=sources src/cli/index.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.22.1",
+  "version": "1.23.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -19,7 +19,7 @@
     "clean": "rm -r -f dist",
     "prepack": "turbo run build",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz"
+    "postpack": "cp likec4-core-$npm_package_version.tgz package.tgz || true"
   },
   "files": [
     "dist",

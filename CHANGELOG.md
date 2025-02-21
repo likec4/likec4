@@ -1,3 +1,20 @@
+# [1.23.0](https://github.com/likec4/likec4/compare/v1.22.1...v1.23.0) (2025-02-21)
+
+### Features
+
+* added `details` button to the 'relationship browser' and 'relationship details' overlays, thanks @pavelpykhtin ([#1622](https://github.com/likec4/likec4/issues/1622)) ([ca78487](https://github.com/likec4/likec4/commit/ca784877c066af3355a063b6b9496a1a6c51fa44)), closes [#1452](https://github.com/likec4/likec4/issues/1452)
+* CLI and vscode validation command, thanks @pavelpykhtin ([#1613](https://github.com/likec4/likec4/issues/1613)) ([c4a9740](https://github.com/likec4/likec4/commit/c4a9740412883a21d77d1a59ff035c2114397972)), closes [#1464](https://github.com/likec4/likec4/issues/1464)
+* detail dialogs do not change current state ([#1633](https://github.com/likec4/likec4/issues/1633)) ([854fcaf](https://github.com/likec4/likec4/commit/854fcaf129ed33621211cc5f78367a7034ef2d06))
+
+
+### Bug Fixes
+
+* **diagram:** draggable nodes in locked mode ([5cd7422](https://github.com/likec4/likec4/commit/5cd7422282f0721d014a90a50378b86e5895224b))
+* **lsp:** path to bundled language-server ([134f100](https://github.com/likec4/likec4/commit/134f100913149a6aecbd170239cd175d1f33b4a1))
+* **diagram:** styles of compound node header in light theme, thanks @pavelpykhtin  ([#1623](https://github.com/likec4/likec4/issues/1623)) ([f4b157a](https://github.com/likec4/likec4/commit/f4b157a1787e2393ce037ac379edfa844fa2361b)), closes [#1590](https://github.com/likec4/likec4/issues/1590)
+* **diagram:** temporary disable `onlyRenderVisibleElements` ([7a8f492](https://github.com/likec4/likec4/commit/7a8f49286283df216f54da57579133c0da5b328b))
+
+
 ## [1.22.1](https://github.com/likec4/likec4/compare/v1.22.0...v1.22.1) (2025-02-13)
 
 ### Improvement

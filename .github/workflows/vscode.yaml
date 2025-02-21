@@ -50,7 +50,7 @@ jobs:
 
       - name: publish open vsx
         run: |
-          pnpx ovsx publish --skip-duplicate likec4.vsix
+          npx ovsx publish --skip-duplicate likec4.vsix
         working-directory: packages/vscode
         env:
           OVSX_PAT: ${{ secrets.VSX_PAT }}
