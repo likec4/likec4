@@ -115,7 +115,8 @@ export const BaseXYFlow = <
       {...(!pannable && {
         selectionKeyCode: null,
       })}
-      onlyRenderVisibleElements={nodes.length > 75}
+      // TODO: benchmarks first
+      //onlyRenderVisibleElements={nodes.length > 75}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
