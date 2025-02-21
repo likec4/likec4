@@ -91,7 +91,7 @@
     "strip-indent": "^4.0.0",
     "terser": "^5.38.1",
     "tsx": "~4.19.2",
-    "turbo": "^2.4.1",
+    "turbo": "^2.4.2",
     "type-fest": "4.34.1",
     "typescript": "catalog:",
     "ufo": "^1.5.4",
