@@ -16,5 +16,7 @@ module.exports = {
       'packages/likec4'
     ]
   },
+  installCommand: () => 'pnpm install',
+  buildCommand: () =>  'pnpm build',
   publishCommand: ({ tag }) => `pnpm publish --tag ${tag} --access public --tolerate-republish`
 }
