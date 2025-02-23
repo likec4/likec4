@@ -1,7 +1,7 @@
-import { DocumentState, type LangiumDocument, type MaybePromise } from 'langium'
+import { type LangiumDocument, type MaybePromise, DocumentState, interruptAndCheck } from 'langium'
 import type { CodeLensProvider } from 'langium/lsp'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
-import { isParsedLikeC4LangiumDocument, ViewOps } from '../ast'
+import { isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, ViewOps } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 
@@ -12,15 +12,18 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
   async provideCodeLens(
     doc: LangiumDocument,
     _params: CodeLensParams,
-    cancelToken?: CancellationToken
+    cancelToken?: CancellationToken,
   ): Promise<CodeLens[] | undefined> {
+    if (!isLikeC4LangiumDocument(doc)) {
+      return
+    }
     if (doc.state !== DocumentState.Validated) {
       logger.debug(`Waiting for document ${doc.uri.path} to be validated`)
       await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
       logger.debug(`Document ${doc.uri.path} is validated`)
     }
-    if (!isParsedLikeC4LangiumDocument(doc)) {
-      return
+    if (cancelToken) {
+      await interruptAndCheck(cancelToken)
     }
     const views = doc.parseResult.value.views.flatMap(v => v.views)
     return views.flatMap<CodeLens>(ast => {
@@ -36,14 +39,14 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
           start: range.start,
           end: {
             line: range.start.line,
-            character: range.start.character + 4
-          }
+            character: range.start.character + 4,
+          },
         },
         command: {
           command: 'likec4.open-preview',
           arguments: [viewId],
-          title: 'open preview'
-        }
+          title: 'open preview',
+        },
       }
     })
   }

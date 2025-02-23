@@ -1,5 +1,5 @@
 import type { Fqn } from '@likec4/core'
-import type { DocumentCache, LangiumDocuments, Stream } from 'langium'
+import { type LangiumDocuments, type Stream, DocumentCache } from 'langium'
 import { AstUtils, DocumentState, MultiMap } from 'langium'
 import { forEachObj, groupBy, isTruthy, pipe, prop } from 'remeda'
 import {
@@ -21,7 +21,7 @@ export class DeploymentsIndex {
   constructor(private services: LikeC4Services) {
     this.Names = services.references.NameProvider
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
-    this.documentCache = services.DocumentCache
+    this.documentCache = new DocumentCache(services.shared, DocumentState.IndexedContent)
   }
 
   private documents() {
@@ -69,7 +69,7 @@ export class DeploymentsIndex {
     return id
   }
 
-  public createDocumentIndex(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
+  private createDocumentIndex(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
     const rootNodes = document.parseResult.value.deployments.flatMap(m => m.elements)
     if (rootNodes.length === 0) {
       return DocumentDeploymentsIndex.EMPTY
@@ -187,23 +187,5 @@ export class DocumentDeploymentsIndex {
    */
   public nested(nodeName: string): readonly DeploymentAstNodeDescription[] {
     return this._nested.get(nodeName)
-  }
-
-  /**
-   * Returns all deployment elements in the document,
-   * with unique combination "type and name"
-   */
-  public unique(): readonly DeploymentAstNodeDescription[] {
-    const result = [] as DeploymentAstNodeDescription[]
-    pipe(
-      [...this._byfqn.values()],
-      groupBy(prop('name')),
-      forEachObj(descs => {
-        if (descs.length === 1) {
-          result.push(descs[0])
-        }
-      }),
-    )
-    return result
   }
 }

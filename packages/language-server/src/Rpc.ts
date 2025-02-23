@@ -4,9 +4,8 @@ import type { LikeC4Services } from './module'
 
 import { type DiagramView, nonexhaustive } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
-import { type PublishDiagnosticsParams, DiagnosticSeverity } from 'vscode-languageserver'
+import { DiagnosticSeverity } from 'vscode-languageserver'
 import { isLikeC4LangiumDocument } from './ast'
-import type { Model } from './generated/ast'
 import { Scheme } from './likec4lib'
 import {
   buildDocuments,
@@ -60,8 +59,8 @@ export class Rpc extends ADisposable {
       modelBuilder.onModelParsed(() => notifyModelParsed.call()),
       connection.onRequest(fetchComputedModel, async ({ cleanCaches }, cancelToken) => {
         if (cleanCaches) {
-          this.services.WorkspaceCache.clear()
-          this.services.DocumentCache.clear()
+          const all = LangiumDocuments.all.map(d => d.uri).toArray()
+          await DocumentBuilder.update(all, [], cancelToken)
         }
         const model = await modelBuilder.buildComputedModel(cancelToken)
 

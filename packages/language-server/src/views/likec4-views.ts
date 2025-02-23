@@ -65,16 +65,13 @@ export class LikeC4Views {
 
   async layoutView(viewId: ViewId, cancelToken?: Cancellation.CancellationToken): Promise<GraphvizOut | null> {
     const model = await this.services.likec4.ModelBuilder.buildComputedModel(cancelToken)
-    if (!model) {
-      return null
-    }
-    const view = model.views[viewId]
+    const view = model?.views[viewId]
     if (!view) {
       return null
     }
     let cached = this.cache.get(view)
     if (cached) {
-      return cached
+      return await Promise.resolve(cached)
     }
     try {
       const result = await this.layouter.layout(view)

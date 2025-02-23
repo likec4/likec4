@@ -90,7 +90,6 @@ export interface LikeC4AddedServices {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   WorkspaceCache: WorkspaceCache<string, any>
-  DocumentCache: DocumentCache<string, any>
   Rpc: Rpc
   likec4: {
     Views: LikeC4Views
@@ -131,7 +130,6 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     DocumentationProvider: bind(LikeC4DocumentationProvider),
   },
   WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
-  DocumentCache: (services: LikeC4Services) => new DocumentCache(services.shared),
   Rpc: bind(Rpc),
   likec4: {
     Layouter: (_services: LikeC4Services) => {

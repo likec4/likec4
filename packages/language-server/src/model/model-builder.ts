@@ -12,7 +12,7 @@ import {
 } from '@likec4/core'
 import { resolveRulesExtendedViews } from '@likec4/core/compute-view'
 import { deepEqual as eq } from 'fast-equals'
-import type { Cancellation, LangiumDocument, LangiumDocuments, URI, WorkspaceCache } from 'langium'
+import type { Cancellation, LangiumDocument, URI, WorkspaceCache } from 'langium'
 import { Disposable, DocumentState, interruptAndCheck } from 'langium'
 import {
   filter,
@@ -48,11 +48,11 @@ import type {
   ParsedLikeC4LangiumDocument,
   ParsedLink,
 } from '../ast'
-import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
 import { assignNavigateTo, resolveRelativePaths } from '../view-utils'
+import type { LikeC4ModelParser } from './model-parser'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]): c4.ParsedLikeC4Model {
   // Merge specifications and globals from all documents
@@ -511,13 +511,12 @@ const CACHE_KEY_COMPUTED_MODEL = 'ComputedLikeC4Model'
 type ModelParsedListener = (docs: URI[]) => void
 
 export class LikeC4ModelBuilder extends ADisposable {
-  private langiumDocuments: LangiumDocuments
+  private parser: LikeC4ModelParser
   private listeners: ModelParsedListener[] = []
 
   constructor(private services: LikeC4Services) {
     super()
-    this.langiumDocuments = services.shared.workspace.LangiumDocuments
-    const parser = services.likec4.ModelParser
+    this.parser = services.likec4.ModelParser
 
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
@@ -529,20 +528,9 @@ export class LikeC4ModelBuilder extends ADisposable {
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onBuildPhase(
         DocumentState.Validated,
-        async (docs, _cancelToken) => {
-          let parsed = [] as URI[]
+        (docs, _cancelToken) => {
           logger.debug`[ModelBuilder] onValidated (${docs.length} docs)`
-          for (const doc of docs) {
-            try {
-              parsed.push(parser.parse(doc).uri)
-            } catch (e) {
-              logWarnError(e)
-            }
-          }
-          await interruptAndCheck(_cancelToken)
-          if (parsed.length > 0) {
-            this.notifyListeners(parsed)
-          }
+          this.notifyListeners(docs.map(d => d.uri))
         },
       ),
     )
@@ -571,14 +559,13 @@ export class LikeC4ModelBuilder extends ADisposable {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ParsedLikeC4Model | null>
     const cached = cache.get(CACHE_KEY_PARSED_MODEL)
     if (cached) {
-      return cached
+      return await Promise.resolve(cached)
     }
-    return await this.services.shared.workspace.WorkspaceLock.read(async () => {
-      if (cancelToken) {
-        await interruptAndCheck(cancelToken)
-      }
-      return this.unsafeSyncBuildModel()
-    })
+    await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
+    if (cancelToken) {
+      await interruptAndCheck(cancelToken)
+    }
+    return this.unsafeSyncBuildModel()
   }
 
   private previousViews: Record<ViewId, c4.ComputedView> = {}
@@ -622,18 +609,17 @@ export class LikeC4ModelBuilder extends ADisposable {
   ): Promise<c4.ComputedLikeC4Model | null> {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedLikeC4Model | null>
     if (cache.has(CACHE_KEY_COMPUTED_MODEL)) {
-      return cache.get(CACHE_KEY_COMPUTED_MODEL)!
+      return await Promise.resolve(cache.get(CACHE_KEY_COMPUTED_MODEL)!)
     }
-    return await this.services.shared.workspace.WorkspaceLock.read(async () => {
-      if (cancelToken) {
-        await interruptAndCheck(cancelToken)
-      }
-      const model = this.unsafeSyncBuildModel()
-      if (!model) {
-        return null
-      }
-      return this.unsafeSyncBuildComputedModel(model)
-    })
+    await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
+    if (cancelToken) {
+      await interruptAndCheck(cancelToken)
+    }
+    const model = this.unsafeSyncBuildModel()
+    if (!model) {
+      return null
+    }
+    return this.unsafeSyncBuildComputedModel(model)
   }
 
   public async computeView(
@@ -645,50 +631,48 @@ export class LikeC4ModelBuilder extends ADisposable {
     if (cache.has(cacheKey)) {
       return cache.get(cacheKey)!
     }
-    return await this.services.shared.workspace.WorkspaceLock.read(async () => {
-      if (cancelToken) {
-        await interruptAndCheck(cancelToken)
+    const model = await this.buildModel(cancelToken)
+    if (cancelToken) {
+      await interruptAndCheck(cancelToken)
+    }
+    return cache.get(cacheKey, () => {
+      const view = model?.views[viewId]
+      if (!view) {
+        logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
+        return null
       }
-      return cache.get(cacheKey, () => {
-        const model = this.unsafeSyncBuildModel()
-        const view = model?.views[viewId]
-        if (!view) {
-          logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
-          return null
-        }
-        const result = LikeC4Model.makeCompute(model)(view)
-        if (!result.isSuccess) {
-          logWarnError(result.error)
-          return null
-        }
-        let computedView = result.view
+      const result = LikeC4Model.makeCompute(model)(view)
+      if (!result.isSuccess) {
+        logWarnError(result.error)
+        return null
+      }
+      let computedView = result.view
 
-        const allElementViews = pipe(
-          model.views,
-          values(),
-          filter(isScopedElementView),
-          filter(v => v.id !== viewId),
-          groupBy(v => v.viewOf),
-        )
+      const allElementViews = pipe(
+        model.views,
+        values(),
+        filter(isScopedElementView),
+        filter(v => v.id !== viewId),
+        groupBy(v => v.viewOf),
+      )
 
-        for (const node of computedView.nodes) {
-          if (!node.navigateTo) {
-            const viewsOfNode = allElementViews[node.id]
-            if (viewsOfNode) {
-              node.navigateTo = viewsOfNode[0].id
-            }
+      for (const node of computedView.nodes) {
+        if (!node.navigateTo) {
+          const viewsOfNode = allElementViews[node.id]
+          if (viewsOfNode) {
+            node.navigateTo = viewsOfNode[0].id
           }
         }
+      }
 
-        const previous = this.previousViews[viewId]
-        if (previous && eq(computedView, previous)) {
-          computedView = previous
-        } else {
-          this.previousViews[viewId] = computedView
-        }
+      const previous = this.previousViews[viewId]
+      if (previous && eq(computedView, previous)) {
+        computedView = previous
+      } else {
+        this.previousViews[viewId] = computedView
+      }
 
-        return computedView
-      })
+      return computedView
     })
   }
 
@@ -703,7 +687,7 @@ export class LikeC4ModelBuilder extends ADisposable {
   }
 
   private documents() {
-    return this.langiumDocuments.all.filter(isParsedLikeC4LangiumDocument).toArray()
+    return this.parser.documents().toArray()
   }
 
   private notifyListeners(docs: URI[]) {

@@ -1,22 +1,34 @@
 import type { LangiumDocument, MaybePromise } from 'langium'
-import { AstUtils, GrammarUtils } from 'langium'
+import { AstUtils, DocumentState, GrammarUtils, interruptAndCheck } from 'langium'
 import type { DocumentLinkProvider } from 'langium/lsp'
 import { hasLeadingSlash, hasProtocol, isRelative, withoutBase, withoutLeadingSlash } from 'ufo'
-import type { DocumentLink, DocumentLinkParams } from 'vscode-languageserver'
-import { ast, isParsedLikeC4LangiumDocument } from '../ast'
-import { logWarnError } from '../logger'
+import type { CancellationToken, DocumentLink, DocumentLinkParams } from 'vscode-languageserver'
+import { ast, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument } from '../ast'
+import { logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
+
+const log = logger.getChild('DocumentLinkProvider')
 
 export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   constructor(private services: LikeC4Services) {
     //
   }
-  getDocumentLinks(
+
+  async getDocumentLinks(
     doc: LangiumDocument,
-    _params: DocumentLinkParams
-  ): MaybePromise<DocumentLink[]> {
-    if (!isParsedLikeC4LangiumDocument(doc)) {
+    _params: DocumentLinkParams,
+    cancelToken?: CancellationToken,
+  ): Promise<DocumentLink[]> {
+    if (!isLikeC4LangiumDocument(doc)) {
       return []
+    }
+    if (doc.state !== DocumentState.Validated) {
+      log.debug(`Waiting for document ${doc.uri.path} to be validated`)
+      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
+      log.debug(`Document ${doc.uri.path} is validated`)
+    }
+    if (cancelToken) {
+      await interruptAndCheck(cancelToken)
     }
     return AstUtils.streamAllContents(doc.parseResult.value)
       .filter(ast.isLinkProperty)
@@ -27,7 +39,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
           if (range && hasProtocol(target)) {
             return {
               range,
-              target
+              target,
             }
           }
         } catch (e) {
@@ -57,7 +69,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       const base = new URL(doc.uri.toString(true))
       const linkURL = new URL(link, base).toString()
       return withoutLeadingSlash(
-        withoutBase(linkURL, this.services.shared.workspace.WorkspaceManager.workspaceURL.toString())
+        withoutBase(linkURL, this.services.shared.workspace.WorkspaceManager.workspaceURL.toString()),
       )
     }
     return null

@@ -1,9 +1,9 @@
 import type * as c4 from '@likec4/core'
 import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, LinkedList, nonexhaustive } from '@likec4/core'
-import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
+import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { DocumentState } from 'langium'
 import { clamp, isBoolean, isDefined, isNullish, isTruthy } from 'remeda'
-import type { ConditionalPick, SetRequired, ValueOf, Writable } from 'type-fest'
+import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
@@ -219,23 +219,15 @@ export interface LikeC4DocumentProps {
   c4Views?: ParsedAstView[]
   c4Deployments?: ParsedAstDeployment[]
   c4DeploymentRelations?: ParsedAstDeploymentRelation[]
-  // Fqn -> Element
-  c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
 export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {}
-export interface FqnIndexedDocument extends SetRequired<LikeC4LangiumDocument, 'c4fqnIndex'> {}
-
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {}
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
-}
-
-export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqnIndex
 }
 
 export function isParsedLikeC4LangiumDocument(
@@ -249,7 +241,6 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4ExtendElements
     && !!doc.c4Relations
     && !!doc.c4Views
-    && !!doc.c4fqnIndex
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
   )

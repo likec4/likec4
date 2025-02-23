@@ -1,9 +1,8 @@
 import { invariant } from '@likec4/core'
-import { type LangiumDocument, DocumentCache, DocumentState } from 'langium'
-import { DefaultWeakMap } from 'mnemonist'
+import { type LangiumDocument, type Stream, DocumentCache, DocumentState } from 'langium'
 import { pipe } from 'remeda'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
-import { isFqnIndexedDocument } from '../ast'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'
@@ -36,39 +35,32 @@ export class LikeC4ModelParser {
   private cachedParsers: DocumentCache<string, DocumentParser>
 
   constructor(private services: LikeC4Services) {
-    this.cachedParsers = new DocumentCache(services.shared, DocumentState.Validated)
+    this.cachedParsers = new DocumentCache(services.shared, DocumentState.IndexedReferences)
+
+    // We need to clean up cached parser after document is validated
+    // Because after that parser takes into account validation results
+    services.shared.workspace.DocumentBuilder.onDocumentPhase(
+      DocumentState.Validated,
+      doc => {
+        try {
+          this.cachedParsers.set(doc.uri, 'DocumentParser', this.createParser(doc))
+        } catch (error) {
+          logger.error(`Error caching parser for document ${doc.uri.toString()}`, { error })
+        }
+        return Promise.resolve()
+      },
+    )
+  }
+
+  documents(): Stream<ParsedLikeC4LangiumDocument> {
+    return this.services.shared.workspace.LangiumDocuments.all.map(
+      d => this.parse(d),
+    )
   }
 
   parse(doc: LangiumDocument): ParsedLikeC4LangiumDocument {
-    invariant(isFqnIndexedDocument(doc), `Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
     try {
-      const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
-        c4Specification: {
-          tags: new Set(),
-          elements: {},
-          relationships: {},
-          colors: {},
-          deployments: {},
-        },
-        c4Elements: [],
-        c4ExtendElements: [],
-        c4Relations: [],
-        c4Deployments: [],
-        c4DeploymentRelations: [],
-        c4Globals: {
-          predicates: {},
-          dynamicPredicates: {},
-          styles: {},
-        },
-        c4Views: [],
-      }
-      doc = Object.assign(doc, props)
       const parser = this.forDocument(doc)
-      parser.parseSpecification()
-      parser.parseModel()
-      parser.parseGlobals()
-      parser.parseDeployment()
-      parser.parseViews()
       return parser.doc
     } catch (cause) {
       throw new Error(`Error parsing document ${doc.uri.toString()}`, { cause })
@@ -76,11 +68,42 @@ export class LikeC4ModelParser {
   }
 
   forDocument(doc: LangiumDocument): DocumentParser {
-    invariant(isFqnIndexedDocument(doc), `Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
+    invariant(doc.state >= DocumentState.IndexedReferences, `Not a IndexedReferences: ${doc.uri.toString(true)}`)
     return this.cachedParsers.get(
       doc.uri,
       'DocumentParser',
-      () => new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument),
+      () => this.createParser(doc),
     )
+  }
+
+  private createParser(doc: LangiumDocument): DocumentParser {
+    const props: Required<Omit<LikeC4DocumentProps, 'diagnostics'>> = {
+      c4Specification: {
+        tags: new Set(),
+        elements: {},
+        relationships: {},
+        colors: {},
+        deployments: {},
+      },
+      c4Elements: [],
+      c4ExtendElements: [],
+      c4Relations: [],
+      c4Deployments: [],
+      c4DeploymentRelations: [],
+      c4Globals: {
+        predicates: {},
+        dynamicPredicates: {},
+        styles: {},
+      },
+      c4Views: [],
+    }
+    doc = Object.assign(doc, props)
+    const parser = new DocumentParser(this.services, doc as ParsedLikeC4LangiumDocument)
+    parser.parseSpecification()
+    parser.parseModel()
+    parser.parseGlobals()
+    parser.parseDeployment()
+    parser.parseViews()
+    return parser
   }
 }

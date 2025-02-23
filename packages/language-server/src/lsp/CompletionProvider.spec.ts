@@ -266,8 +266,11 @@ describe('LikeC4CompletionProvider', () => {
         root = component {
           c1 = component {
             c2 = component {
+              unique = component
               notunique = component
             }
+            notunique = component
+
             notunique = component
           }
         }
@@ -284,25 +287,25 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
-      expectedItems: ['root', 'cloud', 'cloud2', 'c1', 'c2', 'notunique'],
+      expectedItems: ['root', 'cloud', 'cloud2', 'c1', 'c2', 'unique'],
       disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 1,
-      expectedItems: ['c1', 'c2'],
+      expectedItems: ['c1', 'c2', 'unique'],
       disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 2,
-      expectedItems: ['c2', 'notunique'],
+      expectedItems: ['c2', 'unique'],
       disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 3,
-      expectedItems: ['notunique'],
+      expectedItems: ['unique', 'notunique'],
     })
   })
   it('should suggest nested elements inside view predicates', async ({ expect }) => {
