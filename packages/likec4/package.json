@@ -86,7 +86,7 @@
     "dev:playground:deployment": "pnpm cli:serve ../../apps/playground/src/examples/deployment",
     "dev:template": "pnpm cli:serve ../create-likec4/template",
     "dev:e2e": "pnpm cli:serve ../../e2e/src",
-    "dev:example-cloud": "cli:serve ../../examples/cloud-system",
+    "dev:example-cloud": "pnpm cli:serve ../../examples/cloud-system",
     "dev:failed": "pnpm cli:serve ../../examples/failed",
     "dev:example-dev": "pnpm cli:serve ../../examples/diagrams-dev/likec4",
     "cli": "tsx --conditions=sources src/cli/index.ts",

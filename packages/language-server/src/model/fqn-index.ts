@@ -103,10 +103,7 @@ export class FqnIndex extends ADisposable {
    */
   public uniqueDescedants(parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     const descendants = this.workspaceCache.get(`${this.cachePrefix}@descendants@${parent}`, () => {
-      const {
-        children,
-        descendants,
-      } = this.documents()
+      const { children, descendants } = this.documents()
         .reduce((map, doc) => {
           const docIndex = this.get(doc)
           docIndex.children(parent).forEach(desc => {
