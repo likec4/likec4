@@ -11,12 +11,12 @@ export async function initWorkspace(rpc: Rpc) {
   try {
     const docs = await findSources(rpc.client)
     if (docs.length <= 0) {
-      logger.warn(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
+      logger.warn('[InitWorkspace] with pattern "{globPattern}" no docs found', { globPattern })
     } else {
-      logger.info(
-        `[InitWorkspace] with pattern "${globPattern}" found:\n`
-          + docs.map(s => '  - ' + s).join('\n')
-      )
+      logger.info(`[InitWorkspace] with pattern "{globPattern}" found:\n {docs} `, {
+        globPattern,
+        docs: docs.map(s => '  - ' + s),
+      })
     }
     const isweb = isWebUi() || isVirtual()
     const minWait = isweb ? 2000 : 500
@@ -33,15 +33,15 @@ export async function rebuildWorkspace(rpc: Rpc) {
     logger.info(`Rebuilding...`)
     const docs = await findSources(rpc.client)
     if (docs.length <= 0) {
-      logger.warn(`[RebuildWorkspace] with pattern "${globPattern}" no docs found`)
+      logger.warn('[RebuildWorkspace] with pattern "{globPattern}" no docs found', { globPattern })
     } else {
-      logger.info(
-        `[RebuildWorkspace] with pattern "${globPattern}" found:\n`
-          + docs.map(s => '  - ' + s).join('\n')
-      )
+      logger.info(`[RebuildWorkspace] with pattern "{globPattern}" found:\n {docs} `, {
+        globPattern,
+        docs: docs.map(s => '  - ' + s),
+      })
     }
     await delay(500, 1000)
-    logger.info(`Send request buildDocuments`)
+    logger.info`Send request buildDocuments`
     await rpc.buildDocuments(docs)
   } catch (e) {
     logWarn(e)
@@ -69,7 +69,7 @@ async function findSources(client: LanguageClient) {
 }
 
 async function findFiles() {
-  logger.info(`call vscode.workspace.findFiles with pattern "${globPattern}"`)
+  logger.info`call vscode.workspace.findFiles with pattern "${globPattern}"`
   return await vscode.workspace.findFiles(globPattern)
 }
 

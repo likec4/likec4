@@ -50,7 +50,7 @@ const base = {
   external: isProduction ? ['vscode'] : [
     'vscode',
     '@vscode/extension-telemetry',
-    // '@hpcc-js/wasm-graphviz'
+    '@hpcc-js/wasm-graphviz',
   ],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),

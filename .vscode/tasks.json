@@ -29,7 +29,7 @@
     {
       "label": "build_extension",
       "type": "shell",
-      "command": "pnpm turbo run build --log-order=grouped --filter='likec4-vscode' --filter='@likec4/vscode-preview' --only",
+      "command": "pnpm turbo run build --log-order=grouped --filter='likec4-vscode' --filter='@likec4/vscode-preview' --filter='!@likec4/language-server' --filter='!@likec4/diagram'",
       "options": {
         "cwd": "${workspaceFolder}/packages/vscode",
         "env": {
