@@ -18,7 +18,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider {
     const entries = [] as FileSystemNode[]
     try {
       const crawled = await new fdir()
-        .withSymlinks()
+        .withSymlinks({resolvePaths: false})
         .withFullPaths()
         .filter(hasExtension)
         .crawl(folderPath.fsPath)
