@@ -45,7 +45,6 @@ export class LikeC4ModelLocator {
     }
 
     const fqn = this.fqnIndex.getFqn(astNodeOrFqn)
-    if (!fqn) return null
     const doc = this.parser.parse(getDocument(astNodeOrFqn))
     return doc.c4Elements.find(e => e.id === fqn) ?? null
   }

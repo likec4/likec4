@@ -22,7 +22,7 @@ export const ConfigurableLayouter = {
       const layouter = new GraphvizLayouter(wasmAdapter)
       const langId = services.LanguageMetaData.languageId
       services.shared.workspace.ConfigurationProvider.onConfigurationSectionUpdate((update) => {
-        logger.debug('Configuration update', { update })
+        logger.debug('Configuration update: {update}', { update })
         if (update.section === langId) {
           try {
             const { mode, path } = update.configuration.graphviz ?? {
@@ -49,14 +49,14 @@ export const ConfigurableLayouter = {
 
             layouter.changePort(new GraphvizBinaryAdapter(binaryPath))
 
-            logger.info(`use graphviz binary: ${binaryPath}`)
+            logger.info`use graphviz binary: ${binaryPath}`
           } catch (error) {
             logger.error('Failed to update configuration', { error })
           }
           return
         }
 
-        logger.warn('Unexpected configuration update', { update })
+        logger.warn('Unexpected configuration update: {update}', { update })
       })
 
       return layouter

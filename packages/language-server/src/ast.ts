@@ -1,14 +1,13 @@
 import type * as c4 from '@likec4/core'
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, LinkedList, nonexhaustive } from '@likec4/core'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { DocumentState } from 'langium'
-import { clamp, isBoolean, isDefined, isNullish, isTruthy } from 'remeda'
+import { clamp, isBoolean, isNullish, isTruthy } from 'remeda'
 import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
-import { elementRef } from './utils/elementRef'
 import type { IsValidFn } from './validation'
 
 export { ast }
@@ -196,13 +195,8 @@ export const ElementOps = {
   },
 }
 
-export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
-  fqn: c4.Fqn
-}
-
-export interface DeploymentAstNodeDescription extends AstNodeDescription {
-  // Fullname of the artifact or node
-  fqn: string
+export interface AstNodeDescriptionWithFqn extends AstNodeDescription {
+  id: c4.Fqn
 }
 
 // export type LikeC4AstNode = ast.LikeC4AstType[keyof ast.LikeC4AstType]
@@ -244,75 +238,6 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
   )
-}
-
-export function* streamModel(doc: LikeC4LangiumDocument) {
-  const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
-  const relations = [] as ast.Relation[]
-  let el
-  while ((el = traverseStack.shift())) {
-    if (ast.isRelation(el)) {
-      relations.push(el)
-      continue
-    }
-    if (el.body && el.body.elements && el.body.elements.length > 0) {
-      for (const child of el.body.elements) {
-        traverseStack.push(child)
-      }
-    }
-    yield el
-  }
-  yield* relations
-  return
-}
-
-export function* streamDeploymentModel(doc: LikeC4LangiumDocument) {
-  const traverseStack = LinkedList.from<ast.DeploymentRelation | ast.DeploymentElement>(
-    doc.parseResult.value.deployments.flatMap(m => m.elements),
-  )
-  const relations = [] as ast.DeploymentRelation[]
-  let el
-  while ((el = traverseStack.shift())) {
-    if (ast.isDeploymentRelation(el)) {
-      relations.push(el)
-      continue
-    }
-    if (ast.isDeploymentNode(el) && el.body && el.body.elements.length > 0) {
-      for (const child of el.body.elements) {
-        traverseStack.push(child)
-      }
-    }
-    yield el
-  }
-  yield* relations
-  return
-}
-
-export function resolveRelationPoints(node: ast.Relation): {
-  source: ast.Element
-  target: ast.Element
-} {
-  const target = elementRef(node.target)
-  if (!target) {
-    throw new Error('RelationRefError: Invalid reference to target')
-  }
-  if (isDefined(node.source)) {
-    const source = elementRef(node.source)
-    if (!source) {
-      throw new Error('RelationRefError: Invalid reference to source')
-    }
-    return {
-      source,
-      target,
-    }
-  }
-  if (!ast.isElementBody(node.$container)) {
-    throw new Error('RelationRefError: Invalid container for sourceless relation')
-  }
-  return {
-    source: node.$container.$container,
-    target,
-  }
 }
 
 export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number {

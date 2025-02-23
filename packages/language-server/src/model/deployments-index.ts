@@ -1,139 +1,89 @@
-import type { Fqn } from '@likec4/core'
-import { type LangiumDocuments, type Stream, DocumentCache } from 'langium'
-import { AstUtils, DocumentState, MultiMap } from 'langium'
-import { forEachObj, groupBy, isTruthy, pipe, prop } from 'remeda'
+import { type Fqn, AsFqn } from '@likec4/core'
+import { MultiMap } from 'langium'
+import { isDefined, isTruthy } from 'remeda'
 import {
-  type DeploymentAstNodeDescription,
+  type AstNodeDescriptionWithFqn,
   type LikeC4LangiumDocument,
   ast,
   ElementOps,
-  isLikeC4LangiumDocument,
 } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
+import { DocumentFqnIndex, FqnIndex } from './fqn-index'
 
-export class DeploymentsIndex {
+export class DeploymentsIndex extends FqnIndex {
   protected Names: LikeC4NameProvider
-  protected langiumDocuments: LangiumDocuments
-  protected documentCache: DocumentCache<string, DocumentDeploymentsIndex>
 
-  constructor(private services: LikeC4Services) {
+  protected override cachePrefix = 'deployments-index'
+
+  constructor(protected override services: LikeC4Services) {
+    super(services)
     this.Names = services.references.NameProvider
-    this.langiumDocuments = services.shared.workspace.LangiumDocuments
-    this.documentCache = new DocumentCache(services.shared, DocumentState.IndexedContent)
   }
 
-  private documents() {
-    return this.langiumDocuments.all.filter((d): d is LikeC4LangiumDocument =>
-      isLikeC4LangiumDocument(d) && d.state >= DocumentState.IndexedContent
-    )
-  }
-
-  public get(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
-    if (document.state < DocumentState.IndexedContent) {
-      logWarnError(`Document ${document.uri.path} is not indexed`)
-    }
-    return this.documentCache.get(document.uri, 'DeploymentsIndex', () => this.createDocumentIndex(document))
-  }
-  /**
-   * Nested elements (nodes/artifacts) of the node
-   * @param nodeName Name of the deployment node
-   * @returns Stream of artifacts
-   */
-  public nested(node: ast.DeploymentNode): Stream<DeploymentAstNodeDescription> {
-    const fqnName = this.getFqn(node)
-    return this.documents().flatMap(doc => this.get(doc).nested(fqnName))
-  }
-
-  public byFqn(fqnName: string): Stream<DeploymentAstNodeDescription> {
-    return this.documents().flatMap(doc => this.get(doc).byFqn(fqnName))
-  }
-
-  public getFqn(node: ast.DeploymentElement): Fqn {
-    let id = ElementOps.readId(node)
-    if (isTruthy(id)) {
-      return id
-    }
-    const fqn = [
-      this.Names.getNameStrict(node),
-    ]
-    let _node = node
-    let parentNode: ast.DeploymentNode | undefined
-    while ((parentNode = AstUtils.getContainerOfType(_node.$container, ast.isDeploymentNode))) {
-      fqn.push(this.Names.getNameStrict(parentNode))
-      _node = parentNode
-    }
-    id = fqn.reduceRight((acc, cur) => `${acc}.${cur}`) as Fqn
-    ElementOps.writeId(node, id)
-    return id
-  }
-
-  private createDocumentIndex(document: LikeC4LangiumDocument): DocumentDeploymentsIndex {
+  protected override createDocumentIndex(document: LikeC4LangiumDocument): DocumentFqnIndex {
     const rootNodes = document.parseResult.value.deployments.flatMap(m => m.elements)
     if (rootNodes.length === 0) {
-      return DocumentDeploymentsIndex.EMPTY
+      return DocumentFqnIndex.EMPTY
     }
-    const _root = new Array<DeploymentAstNodeDescription>()
-    const _nested = new MultiMap<string, DeploymentAstNodeDescription>()
-    const _byfqn = new MultiMap<string, DeploymentAstNodeDescription>()
+    const root = new Array<AstNodeDescriptionWithFqn>()
+    const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
+    const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
+    const byfqn = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const Names = this.Names
     const Descriptions = this.services.workspace.AstNodeDescriptionProvider
 
-    const createAndSaveDescription = (
-      props: { node: ast.DeploymentNode | ast.DeployedInstance; name: string; fqn: string },
-    ) => {
+    const createAndSaveDescription = (node: ast.DeploymentNode | ast.DeployedInstance, name: string, fqn: Fqn) => {
       const desc = {
-        ...Descriptions.createDescription(props.node, props.name, document),
-        fqn: props.fqn,
+        ...Descriptions.createDescription(node, name, document),
+        id: fqn,
       }
-      ElementOps.writeId(props.node, props.fqn as Fqn)
-      _byfqn.add(props.fqn, desc)
+      ElementOps.writeId(node, fqn)
+      byfqn.add(fqn, desc)
       return desc
     }
 
     const traverseNode = (
-      container: ast.DeploymentNode,
-      parentFqn: string,
-    ): readonly DeploymentAstNodeDescription[] => {
-      const _descedants = [] as DeploymentAstNodeDescription[]
-      const children = container.body?.elements
-      if (!children || children.length === 0) {
+      node: ast.DeploymentNode | ast.DeployedInstance,
+      parentFqn: Fqn | null,
+    ): readonly AstNodeDescriptionWithFqn[] => {
+      const name = Names.getName(node)
+      if (!isTruthy(name)) {
         return []
       }
-      const directChildren = new Set<string>()
-      for (const node of children) {
-        if (ast.isDeploymentRelation(node)) {
-          continue
-        }
-        try {
-          const name = Names.getName(node)
-          if (isTruthy(name)) {
-            const fqn = `${parentFqn}.${name}`
-            const desc = createAndSaveDescription({ node, name, fqn })
-            _nested.add(parentFqn, desc)
-            directChildren.add(desc.name)
-            if (ast.isDeploymentNode(node) && node.body) {
-              _descedants.push(...traverseNode(node, fqn))
+      const thisFqn = AsFqn(name, parentFqn)
+      const desc = createAndSaveDescription(node, name, thisFqn)
+      if (!parentFqn) {
+        root.push(desc)
+      } else {
+        children.add(parentFqn, desc)
+      }
+
+      if (ast.isDeployedInstance(node)) {
+        return []
+      }
+
+      let _nested = [] as AstNodeDescriptionWithFqn[]
+      if (isDefined(node.body)) {
+        for (const child of node.body.elements) {
+          if (!ast.isDeploymentRelation(child)) {
+            try {
+              _nested.push(...traverseNode(child, thisFqn))
+            } catch (e) {
+              logWarnError(e)
             }
           }
-        } catch (e) {
-          logWarnError(e)
         }
       }
-      if (_descedants.length > 0) {
-        pipe(
-          _descedants,
-          groupBy(prop('name')),
-          forEachObj((descs, key) => {
-            if (descs.length > 1 || directChildren.has(key)) {
-              return
-            }
-            _nested.add(parentFqn, descs[0])
-          }),
-        )
-      }
-      return _nested.get(parentFqn)
+
+      const directChildren = children.get(thisFqn)
+      _nested = [
+        ...directChildren,
+        ..._nested,
+      ]
+      descendants.addAll(thisFqn, _nested)
+      return _nested
     }
 
     for (const node of rootNodes) {
@@ -141,51 +91,11 @@ export class DeploymentsIndex {
         if (ast.isDeploymentRelation(node)) {
           continue
         }
-        const name = Names.getName(node)
-        if (isTruthy(name)) {
-          _root.push(createAndSaveDescription({ node, name, fqn: name }))
-          traverseNode(node, name)
-        }
+        traverseNode(node, null)
       } catch (e) {
         logWarnError(e)
       }
     }
-    return new DocumentDeploymentsIndex(_root, _nested, _byfqn)
-  }
-}
-
-/**
- * Index of deployment elements in the document
- */
-export class DocumentDeploymentsIndex {
-  static readonly EMPTY = new DocumentDeploymentsIndex([], new MultiMap(), new MultiMap())
-
-  constructor(
-    private _rootNodes: Array<DeploymentAstNodeDescription>,
-    /**
-     * Nested of a deployment node
-     */
-    private _nested: MultiMap<string, DeploymentAstNodeDescription>,
-    /**
-     * All elements by FQN
-     */
-    private _byfqn: MultiMap<string, DeploymentAstNodeDescription>,
-  ) {}
-
-  public rootNodes(): readonly DeploymentAstNodeDescription[] {
-    return this._rootNodes
-  }
-
-  public byFqn(fqnName: string): readonly DeploymentAstNodeDescription[] {
-    return this._byfqn.get(fqnName)
-  }
-
-  /**
-   * Returns artifacts of a deployment node
-   * @param nodeName Name of the deployment node
-   * @returns Stream of artifacts
-   */
-  public nested(nodeName: string): readonly DeploymentAstNodeDescription[] {
-    return this._nested.get(nodeName)
+    return new DocumentFqnIndex(root, children, descendants, byfqn)
   }
 }

@@ -39,13 +39,17 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   // we need lazy resolving here
-  private uniqueDescedants(of: () => ast.Element | undefined): Stream<AstNodeDescription> {
+  private uniqueDescedants(of: () => ast.Element | ast.DeploymentNode | undefined): Stream<AstNodeDescription> {
     return new StreamImpl(
       () => {
         const element = of()
-        const fqn = element && this.fqnIndex.getFqn(element)
-        if (fqn) {
+        if (element && ast.isElement(element)) {
+          const fqn = this.fqnIndex.getFqn(element)
           return this.fqnIndex.uniqueDescedants(fqn).iterator()
+        }
+        if (element && ast.isDeploymentNode(element)) {
+          const fqn = this.deploymentsIndex.getFqn(element)
+          return this.deploymentsIndex.uniqueDescedants(fqn).iterator()
         }
         return null
       },
@@ -155,7 +159,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return EMPTY_SCOPE
     }
     if (ast.isDeploymentNode(parentRef)) {
-      return new StreamScope(this.deploymentsIndex.nested(parentRef))
+      return new StreamScope(this.uniqueDescedants(() => parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
       return new StreamScope(this.scopeElementRef(parentRef.element))

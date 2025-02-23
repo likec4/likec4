@@ -1,11 +1,11 @@
 import type * as c4 from '@likec4/core'
-import { FqnRef, isNonEmptyArray, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
+import { FqnRef, isNonEmptyArray, LinkedList, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
 import { filter, first, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
+  type LikeC4LangiumDocument,
   type ParsedAstDeployment,
   type ParsedAstDeploymentRelation,
   ast,
-  streamDeploymentModel,
   toElementStyle,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
@@ -16,6 +16,28 @@ import { removeIndent, toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
+
+function* streamDeploymentModel(doc: LikeC4LangiumDocument) {
+  const traverseStack = LinkedList.from<ast.DeploymentRelation | ast.DeploymentElement>(
+    doc.parseResult.value.deployments.flatMap(m => m.elements),
+  )
+  const relations = [] as ast.DeploymentRelation[]
+  let el
+  while ((el = traverseStack.shift())) {
+    if (ast.isDeploymentRelation(el)) {
+      relations.push(el)
+      continue
+    }
+    if (ast.isDeploymentNode(el) && el.body && el.body.elements.length > 0) {
+      for (const child of el.body.elements) {
+        traverseStack.push(child)
+      }
+    }
+    yield el
+  }
+  yield* relations
+  return
+}
 
 export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) {
   return class DeploymentModelParser extends B {

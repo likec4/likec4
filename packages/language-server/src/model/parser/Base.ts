@@ -39,9 +39,7 @@ export class BaseParser {
     if (ast.isExtendElement(node)) {
       return getFqnElementRef(node.element)
     }
-    const fqn = this.services.likec4.FqnIndex.getFqn(node)
-    invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)
-    return fqn
+    return this.services.likec4.FqnIndex.getFqn(node)
   }
 
   getAstNodePath(node: AstNode) {

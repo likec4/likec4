@@ -45,6 +45,7 @@ export class LikeC4Views {
       tasks.push(
         this.layouter.layout(view)
           .then(result => {
+            this.viewsWithReportedErrors.delete(view.id)
             this.cache.set(view, result)
             return result
           })
@@ -83,8 +84,8 @@ export class LikeC4Views {
         const errMessage = e instanceof Error ? e.message : '' + e
         this.services.shared.lsp.Connection?.window.showErrorMessage(`LikeC4: ${errMessage}`)
         this.viewsWithReportedErrors.add(viewId)
+        logError(e)
       }
-      logError(e)
       return Promise.reject(e)
     }
   }
