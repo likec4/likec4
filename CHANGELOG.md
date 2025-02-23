@@ -1,10 +1,8 @@
 ## [1.23.1](https://github.com/likec4/likec4/compare/v1.23.0...v1.23.1) (2025-02-23)
 
-
 ### Bug Fixes
 
-* **lsp:** do not resolve real filenames for symbolic links ([#1635](https://github.com/likec4/likec4/issues/1635)) ([b8536a6](https://github.com/likec4/likec4/commit/b8536a693bd6cb91ad8380f3453a62293bc7019f)), closes [#1620](https://github.com/likec4/likec4/issues/1620)
-
+* **lsp:** do not resolve real filename for symbolic links, thanks @davydkov ([#1635](https://github.com/likec4/likec4/issues/1635)) ([b8536a6](https://github.com/likec4/likec4/commit/b8536a693bd6cb91ad8380f3453a62293bc7019f)), closes [#1620](https://github.com/likec4/likec4/issues/1620)
 
 
 # [1.23.0](https://github.com/likec4/likec4/compare/v1.22.1...v1.23.0) (2025-02-21)
