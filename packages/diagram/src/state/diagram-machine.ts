@@ -63,7 +63,7 @@ import {
 } from './assign'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
-import { focusedBounds, typedSystem } from './utils'
+import { findDiagramNode, focusedBounds, typedSystem } from './utils'
 
 type XYStoreApi = ReturnType<typeof useStoreApi<Types.Node, Types.Edge>>
 
@@ -219,6 +219,25 @@ export const diagramMachine = setup({
     },
     'trigger:OpenSource': (_, _params: OpenSourceParams) => {
     },
+
+    'open source of focused node': enqueueActions(({ context, enqueue }) => {
+      if (!context.focusedNode || !context.features.enableVscode) return
+      const diagramNode = findDiagramNode(context, context.focusedNode)
+      if (!diagramNode) return
+
+      enqueue.cancel('openSource')
+      if (DiagramNode.deploymentRef(diagramNode)) {
+        enqueue.raise({ type: 'open.source', deployment: DiagramNode.deploymentRef(diagramNode)! }, {
+          id: 'openSource',
+          delay: 100,
+        })
+      } else if (DiagramNode.modelRef(diagramNode)) {
+        enqueue.raise({ type: 'open.source', element: DiagramNode.modelRef(diagramNode)! }, {
+          id: 'openSource',
+          delay: 100,
+        })
+      }
+    }),
 
     'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
       const {
@@ -458,6 +477,7 @@ export const diagramMachine = setup({
           ...focusNodesEdges(s),
           viewportBeforeFocus: { ...s.context.viewport },
         })),
+        'open source of focused node',
         spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
         {
           type: 'xyflow:fitDiagram',
@@ -490,6 +510,7 @@ export const diagramMachine = setup({
                 focusedNode: ({ event }) => event.node.id as NodeId,
               }),
               assign(focusNodesEdges),
+              'open source of focused node',
               {
                 type: 'xyflow:fitDiagram',
                 params: focusedBounds,
@@ -503,6 +524,7 @@ export const diagramMachine = setup({
               focusedNode: ({ event }) => event.nodeId,
             }),
             assign(focusNodesEdges),
+            'open source of focused node',
             {
               type: 'xyflow:fitDiagram',
               params: focusedBounds,
