@@ -19,5 +19,8 @@ export default defineBuildConfig({
         /\.(c|m)?ts$/,
       ],
     },
+    resolve: {
+      browser: true,
+    },
   },
 })
