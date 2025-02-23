@@ -39,6 +39,7 @@
     "**/.tsbuildinfo": true,
     "**/*.tsbuildinfo": true,
     "**/.turbo": true,
+    ".pnpm-store/**": true,
     "packages/likec4/__app__": true,
     "packages/*/.vscode-test-web": true,
     "packages/*/node_modules/**": true

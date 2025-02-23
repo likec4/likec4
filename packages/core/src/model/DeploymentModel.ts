@@ -1,4 +1,3 @@
-import { DefaultMap } from 'mnemonist'
 import { values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { invariant, nonNullable } from '../errors'
@@ -14,6 +13,7 @@ import {
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { isString } from '../utils/guards'
+import { DefaultMap } from '../utils/mnemonist'
 import {
   type DeployedInstancesIterator,
   type DeploymentElementModel,

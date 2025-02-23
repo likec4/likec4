@@ -5,20 +5,19 @@ export default defineBuildConfig({
   stub: false,
   declaration: true,
   rollup: {
-    emitCJS: true,
+    alias: {
+      entries: {
+        'object-hash': 'object-hash/dist/object_hash.js',
+      },
+    },
     inlineDependencies: true,
     output: {
       hoistTransitiveImports: false,
     },
     commonjs: {
       exclude: [
-        /\.ts$/,
-        /\.cts$/,
-        /\.mts$/,
+        /\.(c|m)?ts$/,
       ],
-    },
-    resolve: {
-      browser: true,
     },
   },
 })

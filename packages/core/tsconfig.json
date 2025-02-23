@@ -6,7 +6,9 @@
       "DOM"
     ],
     "noErrorTruncation": true,
-    "target": "ES2022",
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "rootDir": "src",
     "noEmit": true,
   },

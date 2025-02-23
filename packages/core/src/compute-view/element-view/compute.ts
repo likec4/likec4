@@ -1,4 +1,3 @@
-import { DefaultMap } from 'mnemonist'
 import { filter, findLast, forEach, map, pipe } from 'remeda'
 import { invariant, nonexhaustive, nonNullable } from '../../errors'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
@@ -17,6 +16,7 @@ import type {
 import { isViewRuleAutoLayout, isViewRuleGroup, isViewRulePredicate, whereOperatorAsPredicate } from '../../types'
 import * as Expr from '../../types/expression'
 import { sortParentsFirst } from '../../utils'
+import { DefaultMap } from '../../utils/mnemonist'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'

@@ -1,4 +1,3 @@
-import { DefaultMap } from 'mnemonist'
 import { mapValues, pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { computeView, unsafeComputeView } from '../compute-view'
@@ -11,6 +10,7 @@ import type { AnyParsedLikeC4Model, GenericLikeC4Model, LikeC4ModelDump } from '
 import type { ModelRelation } from '../types/relation'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
+import { DefaultMap } from '../utils/mnemonist'
 import type {
   DeployedInstanceModel,
   DeploymentElementModel,

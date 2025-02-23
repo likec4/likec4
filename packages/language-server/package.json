@@ -117,7 +117,6 @@
     "json5": "^2.2.3",
     "langium": "3.3.1",
     "langium-cli": "3.3.0",
-    "mnemonist": "^0.40.2",
     "natural-compare-lite": "^1.4.0",
     "p-debounce": "^4.0.0",
     "remeda": "^2.20.1",

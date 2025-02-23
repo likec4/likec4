@@ -18,6 +18,11 @@ overrides:
   vscode-languageserver-types: 3.17.5
   vscode-uri: 3.1.0
 
+patchedDependencies:
+  mnemonist@0.40.2:
+    hash: a98ea6210712b35b52d5939a207e1a099f9d684b9007bceb01a69ac901c59d3c
+    path: patches/mnemonist@0.40.2.patch
+
 importers:
 
   .:
@@ -443,8 +448,8 @@ importers:
         specifier: ^0.24.8
         version: 0.24.8
       mnemonist:
-        specifier: ^0.40.2
-        version: 0.40.2
+        specifier: 0.40.2
+        version: 0.40.2(patch_hash=a98ea6210712b35b52d5939a207e1a099f9d684b9007bceb01a69ac901c59d3c)
       natural-compare-lite:
         specifier: ^1.4.0
         version: 1.4.0
@@ -739,9 +744,6 @@ importers:
       langium-cli:
         specifier: 3.3.0
         version: 3.3.0
-      mnemonist:
-        specifier: ^0.40.2
-        version: 0.40.2
       natural-compare-lite:
         specifier: ^1.4.0
         version: 1.4.0
@@ -1233,9 +1235,6 @@ importers:
       langium:
         specifier: 3.3.1
         version: 3.3.1
-      mnemonist:
-        specifier: ^0.40.2
-        version: 0.40.2
       p-timeout:
         specifier: ^6.1.4
         version: 6.1.4
@@ -14037,7 +14036,7 @@ snapshots:
     dependencies:
       obliterator: 2.0.5
 
-  mnemonist@0.40.2:
+  mnemonist@0.40.2(patch_hash=a98ea6210712b35b52d5939a207e1a099f9d684b9007bceb01a69ac901c59d3c):
     dependencies:
       obliterator: 2.0.5
 
