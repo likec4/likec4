@@ -266,8 +266,11 @@ describe('LikeC4CompletionProvider', () => {
         root = component {
           c1 = component {
             c2 = component {
+              unique = component
               notunique = component
             }
+            notunique = component
+
             notunique = component
           }
         }
@@ -284,25 +287,25 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
-      expectedItems: ['root', 'cloud', 'cloud2', 'c1', 'c2', 'notunique'],
+      expectedItems: ['root', 'cloud', 'cloud2', 'c1', 'c2', 'unique'],
       disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 1,
-      expectedItems: ['c1', 'c2'],
+      expectedItems: ['c1', 'c2', 'unique'],
       disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 2,
-      expectedItems: ['c2', 'notunique'],
+      expectedItems: ['c2', 'unique'],
       disposeAfterCheck: true,
     })
     await completion({
       text,
       index: 3,
-      expectedItems: ['notunique'],
+      expectedItems: ['notunique', 'unique'],
     })
   })
   it('should suggest nested elements inside view predicates', async ({ expect }) => {
@@ -728,6 +731,7 @@ describe('LikeC4CompletionProvider', () => {
         expect(completions.items).not.to.be.empty
         expect(pluck('label', completions.items)).to.include.members(['env', 'node'])
       },
+      disposeAfterCheck: true,
     })
 
     await completion({
@@ -737,6 +741,7 @@ describe('LikeC4CompletionProvider', () => {
         'env',
         'node',
       ],
+      disposeAfterCheck: true,
     })
 
     await completion({
@@ -746,16 +751,18 @@ describe('LikeC4CompletionProvider', () => {
         'c1',
         'c2',
       ],
+      disposeAfterCheck: true,
     })
 
     await completion({
       text,
       index: 3,
       expectedItems: [
+        'i1',
         'n1',
         'n2',
-        'i1',
       ],
+      disposeAfterCheck: true,
     })
 
     await completion({
@@ -767,6 +774,7 @@ describe('LikeC4CompletionProvider', () => {
         'n2',
         'i1',
       ],
+      disposeAfterCheck: true,
     })
 
     await completion({
@@ -780,15 +788,16 @@ describe('LikeC4CompletionProvider', () => {
         'c1',
         'c2',
       ],
+      disposeAfterCheck: true,
     })
 
     await completion({
       text,
       index: 6,
       expectedItems: [
+        'i1',
         'n1',
         'n2',
-        'i1',
       ],
     })
   })

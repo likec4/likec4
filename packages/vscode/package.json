@@ -212,7 +212,6 @@
     "execa": "^9.5.2",
     "fast-equals": "^5.2.2",
     "langium": "3.3.1",
-    "mnemonist": "^0.40.2",
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
     "remeda": "^2.20.1",

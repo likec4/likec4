@@ -1,21 +1,68 @@
 import type * as c4 from '@likec4/core'
-import { isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
-import { filter, first, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { isNonEmptyArray, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
+import { filter, first, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
+  type LikeC4LangiumDocument,
   type ParsedAstElement,
-  type ParsedAstExtendElement,
+  type ParsedAstExtend,
   type ParsedAstRelation,
   ast,
-  resolveRelationPoints,
-  streamModel,
   toElementStyle,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
 import { logWarnError } from '../../logger'
+import { elementRef } from '../../utils/elementRef'
 import { stringHash } from '../../utils/stringHash'
 import { type Base, removeIndent, toSingleLine } from './Base'
 
 export type WithModel = ReturnType<typeof ModelParser>
+
+function resolveRelationPoints(node: ast.Relation): {
+  source: ast.Element
+  target: ast.Element
+} {
+  const target = elementRef(node.target)
+  if (!target) {
+    throw new Error('RelationRefError: Invalid reference to target')
+  }
+  if (isDefined(node.source)) {
+    const source = elementRef(node.source)
+    if (!source) {
+      throw new Error('RelationRefError: Invalid reference to source')
+    }
+    return {
+      source,
+      target,
+    }
+  }
+  if (!ast.isElementBody(node.$container)) {
+    throw new Error('RelationRefError: Invalid container for sourceless relation')
+  }
+  return {
+    source: node.$container.$container,
+    target,
+  }
+}
+
+function* streamModel(doc: LikeC4LangiumDocument) {
+  const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
+  const relations = [] as ast.Relation[]
+  let el
+  while ((el = traverseStack.shift())) {
+    if (ast.isRelation(el)) {
+      relations.push(el)
+      continue
+    }
+    if (el.body && el.body.elements && el.body.elements.length > 0) {
+      for (const child of el.body.elements) {
+        traverseStack.push(child)
+      }
+    }
+    yield el
+  }
+  yield* relations
+  return
+}
 
 export function ModelParser<TBase extends Base>(B: TBase) {
   return class ModelParser extends B {
@@ -95,7 +142,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
       }
     }
 
-    parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtendElement | null {
+    parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtend | null {
       const isValid = this.isValid
       const id = this.resolveFqn(astNode)
       const tags = this.parseTags(astNode.body)

@@ -1,11 +1,12 @@
 import type * as c4 from '@likec4/core'
-import { FqnRef, isNonEmptyArray, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
-import { filter, first, isTruthy, map, mapToObj, pipe } from 'remeda'
+import { FqnRef, isNonEmptyArray, LinkedList, nameFromFqn, nonexhaustive, nonNullable } from '@likec4/core'
+import { filter, first, isEmpty, isTruthy, map, mapToObj, pipe } from 'remeda'
 import {
+  type LikeC4LangiumDocument,
   type ParsedAstDeployment,
   type ParsedAstDeploymentRelation,
+  type ParsedAstExtend,
   ast,
-  streamDeploymentModel,
   toElementStyle,
   toRelationshipStyleExcludeDefaults,
 } from '../../ast'
@@ -16,6 +17,32 @@ import { removeIndent, toSingleLine } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
+
+function* streamDeploymentModel(doc: LikeC4LangiumDocument) {
+  const traverseStack = LinkedList.from<ast.DeploymentRelation | ast.DeploymentElement | ast.ExtendDeployment>(
+    doc.parseResult.value.deployments.flatMap(m => m.elements),
+  )
+  const relations = [] as ast.DeploymentRelation[]
+  let el
+  while ((el = traverseStack.shift())) {
+    if (ast.isDeploymentRelation(el)) {
+      relations.push(el)
+      continue
+    }
+    if (ast.isDeployedInstance(el)) {
+      yield el
+      continue
+    }
+    if (el.body && el.body.elements.length > 0) {
+      for (const child of el.body.elements) {
+        traverseStack.push(child)
+      }
+    }
+    yield el
+  }
+  yield* relations
+  return
+}
 
 export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) {
   return class DeploymentModelParser extends B {
@@ -35,6 +62,13 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
               break
             case ast.isDeploymentNode(el): {
               doc.c4Deployments.push(this.parseDeploymentNode(el))
+              break
+            }
+            case ast.isExtendDeployment(el): {
+              const parsed = this.parseExtendDeployment(el)
+              if (parsed) {
+                doc.c4ExtendDeployments.push(parsed)
+              }
               break
             }
             default:
@@ -132,6 +166,29 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...(isTruthy(technology) && { technology }),
         ...(isTruthy(description) && { description }),
         style,
+      }
+    }
+
+    parseExtendDeployment(astNode: ast.ExtendDeployment): ParsedAstExtend | null {
+      if (!this.isValid(astNode)) {
+        return null
+      }
+      const id = this.resolveFqn(astNode)
+      const tags = this.parseTags(astNode.body)
+      const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
+      const astPath = this.getAstNodePath(astNode)
+      const links = this.parseLinks(astNode.body) ?? []
+
+      if (!tags && isEmpty(metadata ?? {}) && isEmpty(links)) {
+        return null
+      }
+
+      return {
+        id,
+        astPath,
+        ...(metadata && { metadata }),
+        ...(tags && { tags }),
+        ...(links && isNonEmptyArray(links) && { links }),
       }
     }
 

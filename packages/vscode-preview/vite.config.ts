@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@likec4/core/model': resolve(__dirname, '../core/src/model'),
         '@likec4/core/types': resolve(__dirname, '../core/src/types'),
+        '@likec4/core/utils': resolve(__dirname, '../core/src/utils'),
         '@likec4/core': resolve(__dirname, '../core/src'),
         '@likec4/diagram': resolve(__dirname, '../diagram/src'),
       },

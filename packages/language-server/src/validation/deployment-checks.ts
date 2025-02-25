@@ -129,3 +129,15 @@ export const deploymentRelationChecks = (services: LikeC4Services): ValidationCh
     }
   })
 }
+
+export const extendDeploymentChecks = (services: LikeC4Services): ValidationCheck<ast.ExtendDeployment> => {
+  return tryOrLog((el, accept) => {
+    const target = el.deploymentNode.value.ref
+    if (!target || !ast.isDeploymentNode(target)) {
+      accept('error', 'ExtendDeployment allows only DeploymentNode', {
+        node: el,
+        property: 'deploymentNode',
+      })
+    }
+  })
+}

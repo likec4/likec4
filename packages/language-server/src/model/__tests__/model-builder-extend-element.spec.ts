@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
-describe('LikeC4ModelBuilder -- extendElement', () => {
+describe('LikeC4ModelBuilder - extend element', () => {
   it('build model returns cached result', async ({ expect }) => {
     const { validate, buildLikeC4Model } = createTestServices()
     await validate(`

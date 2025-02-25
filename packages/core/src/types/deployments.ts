@@ -42,7 +42,6 @@ export interface DeployedInstance {
   readonly title?: string
   readonly description?: string | null
   readonly technology?: string | null
-  readonly kind?: string | null // TODO: ensure the property is set
   readonly tags?: NonEmptyArray<Tag> | null
   readonly links?: NonEmptyArray<Link> | null
   readonly style?: DeploymentElementStyle

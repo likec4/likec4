@@ -1,8 +1,8 @@
-import { DefaultMap } from 'mnemonist'
 import { nonNullable } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
 import type { Fqn } from '../../types'
 import { isAncestor, isDescendantOf, sortParentsFirst } from '../../utils/fqn'
+import { DefaultMap } from '../../utils/mnemonist'
 
 export function treeFromElements(elements: Iterable<ElementModel>) {
   const sorted = sortParentsFirst([...elements]) as ReadonlyArray<ElementModel>

@@ -1,6 +1,5 @@
-import { type AstNode, AstUtils, type MaybePromise } from 'langium'
+import { type AstNode, type MaybePromise, AstUtils } from 'langium'
 import { AstNodeHoverProvider } from 'langium/lsp'
-import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { Hover } from 'vscode-languageserver-types'
 import { ast } from '../ast'
@@ -22,10 +21,8 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       return {
         contents: {
           kind: 'markdown',
-          value: stripIndent(`
-            tag: \`${node.name}\`
-          `)
-        }
+          value: 'tag `' + node.name + '`',
+        },
       }
     }
 
@@ -36,12 +33,12 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       if (el.title !== node.name) {
         lines.push(`### ${el.title}`)
       }
-      lines.push('Deployment: `' + el.kind + '` ')
+      lines.push('deployment node `' + el.kind + '` ')
       return {
         contents: {
           kind: 'markdown',
-          value: lines.join('\n')
-        }
+          value: lines.join('\n'),
+        },
       }
     }
 
@@ -51,40 +48,45 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       const el = this.locator.getParsedElement(instance.element)
       const lines = [instance.id + '  ', `instance of \`${instance.element}\``]
       if (el) {
-        lines.push(`### ${el.title}`, 'Element: `' + el.kind + '` ')
+        lines.push(`### ${el.title}`, 'element kind `' + el.kind + '` ')
       }
       return {
         contents: {
           kind: 'markdown',
-          value: lines.join('\n')
-        }
+          value: lines.join('\n'),
+        },
       }
     }
 
-    // if (ast.isElementKind(node)) {
-    //   const spec = this.specIndex.get(node.name as ElementKind)
-    //   return {
-    //     contents: {
-    //       kind: 'markdown',
-    //       value: stripIndent(`
-    //         kind: **${spec.id}**
-    //         shape: ${spec.style.shape}
-    //       `)
-    //     }
-    //   }
-    // }
+    if (ast.isElementKind(node)) {
+      return {
+        contents: {
+          kind: 'markdown',
+          value: 'element kind `' + node.name + '`',
+        },
+      }
+    }
+
+    if (ast.isDeploymentNodeKind(node)) {
+      return {
+        contents: {
+          kind: 'markdown',
+          value: 'deployment node `' + node.name + '`',
+        },
+      }
+    }
 
     if (ast.isElement(node)) {
       const el = this.locator.getParsedElement(node)
       if (!el) {
         return
       }
-      const lines = [el.id, `### ${el.title}`, 'Element: `' + el.kind + '` ']
+      const lines = [el.id, `### ${el.title}`, 'element kind `' + el.kind + '` ']
       return {
         contents: {
           kind: 'markdown',
-          value: lines.join('\n')
-        }
+          value: lines.join('\n'),
+        },
       }
     }
     return

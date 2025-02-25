@@ -9,6 +9,7 @@ const mkdist: BuildEntry = {
   declaration: true,
   globOptions: {
     ignore: [
+      '**/bundled.ts',
       '**/*.langium',
       '**/__test*/**',
       '**/*.spec.ts',

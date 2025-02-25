@@ -23,7 +23,9 @@
     "vitest": "^3.0.4",
     "zx": "^8.1.8"
   },
-  "resolutions": {
-    "@likec4/core": "file:../packages/core/package.tgz"
+  "pnpm": {
+    "overrides": {
+      "@likec4/core": "file:../packages/core/package.tgz"
+    }
   }
 }

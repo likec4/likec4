@@ -1,14 +1,13 @@
 import type * as c4 from '@likec4/core'
-import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, LinkedList, nonexhaustive } from '@likec4/core'
-import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
+import { DefaultArrowType, DefaultLineStyle, DefaultRelationshipColor, nonexhaustive } from '@likec4/core'
+import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { DocumentState } from 'langium'
-import { clamp, isBoolean, isDefined, isNullish, isTruthy } from 'remeda'
-import type { ConditionalPick, SetRequired, ValueOf, Writable } from 'type-fest'
+import { clamp, isBoolean, isNullish, isTruthy } from 'remeda'
+import type { ConditionalPick, ValueOf, Writable } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
-import { elementRef } from './utils/elementRef'
 import type { IsValidFn } from './validation'
 
 export { ast }
@@ -83,16 +82,16 @@ export interface ParsedAstElement {
   description?: string
   technology?: string
   tags?: c4.NonEmptyArray<c4.Tag>
-  links?: c4.NonEmptyArray<ParsedLink>
+  links?: c4.NonEmptyArray<c4.Link>
   style: ParsedElementStyle
   metadata?: { [key: string]: string }
 }
 
-export interface ParsedAstExtendElement {
+export interface ParsedAstExtend {
   id: c4.Fqn
   astPath: string
   tags?: c4.NonEmptyArray<c4.Tag>
-  links?: c4.NonEmptyArray<ParsedLink>
+  links?: c4.NonEmptyArray<c4.Link>
   metadata?: { [key: string]: string }
 }
 
@@ -110,7 +109,7 @@ export interface ParsedAstRelation {
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
-  links?: c4.NonEmptyArray<ParsedLink>
+  links?: c4.NonEmptyArray<c4.Link>
   navigateTo?: c4.ViewId
   metadata?: { [key: string]: string }
 }
@@ -137,7 +136,7 @@ export interface ParsedAstElementView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<ParsedLink> | null
+  links: c4.NonEmptyArray<c4.Link> | null
   rules: c4.ViewRule[]
   manualLayout?: c4.ViewManualLayout
 }
@@ -149,7 +148,7 @@ export interface ParsedAstDynamicView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<ParsedLink> | null
+  links: c4.NonEmptyArray<c4.Link> | null
   steps: c4.DynamicViewStepOrParallel[]
   rules: Array<c4.DynamicViewRule>
   manualLayout?: c4.ViewManualLayout
@@ -162,7 +161,7 @@ export interface ParsedAstDeploymentView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<ParsedLink> | null
+  links: c4.NonEmptyArray<c4.Link> | null
   rules: Array<c4.DeploymentViewRule>
 }
 
@@ -175,11 +174,6 @@ export const ViewOps = {
   readId(node: ast.LikeC4View): c4.ViewId | undefined {
     return node[idattr]
   },
-}
-
-export interface ParsedLink {
-  title?: string
-  url: string
 }
 
 export const ElementOps = {
@@ -196,13 +190,8 @@ export const ElementOps = {
   },
 }
 
-export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
-  fqn: c4.Fqn
-}
-
-export interface DeploymentAstNodeDescription extends AstNodeDescription {
-  // Fullname of the artifact or node
-  fqn: string
+export interface AstNodeDescriptionWithFqn extends AstNodeDescription {
+  id: c4.Fqn
 }
 
 // export type LikeC4AstNode = ast.LikeC4AstType[keyof ast.LikeC4AstType]
@@ -213,29 +202,22 @@ export interface LikeC4DocumentProps {
   diagnostics?: Array<LikeC4DocumentDiagnostic>
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
-  c4ExtendElements?: ParsedAstExtendElement[]
+  c4ExtendElements?: ParsedAstExtend[]
+  c4ExtendDeployments?: ParsedAstExtend[]
   c4Relations?: ParsedAstRelation[]
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
   c4Deployments?: ParsedAstDeployment[]
   c4DeploymentRelations?: ParsedAstDeploymentRelation[]
-  // Fqn -> Element
-  c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
 export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {}
-export interface FqnIndexedDocument extends SetRequired<LikeC4LangiumDocument, 'c4fqnIndex'> {}
-
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {}
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
-}
-
-export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqnIndex
 }
 
 export function isParsedLikeC4LangiumDocument(
@@ -247,81 +229,12 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Specification
     && !!doc.c4Elements
     && !!doc.c4ExtendElements
+    && !!doc.c4ExtendDeployments
     && !!doc.c4Relations
     && !!doc.c4Views
-    && !!doc.c4fqnIndex
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
   )
-}
-
-export function* streamModel(doc: LikeC4LangiumDocument) {
-  const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
-  const relations = [] as ast.Relation[]
-  let el
-  while ((el = traverseStack.shift())) {
-    if (ast.isRelation(el)) {
-      relations.push(el)
-      continue
-    }
-    if (el.body && el.body.elements && el.body.elements.length > 0) {
-      for (const child of el.body.elements) {
-        traverseStack.push(child)
-      }
-    }
-    yield el
-  }
-  yield* relations
-  return
-}
-
-export function* streamDeploymentModel(doc: LikeC4LangiumDocument) {
-  const traverseStack = LinkedList.from<ast.DeploymentRelation | ast.DeploymentElement>(
-    doc.parseResult.value.deployments.flatMap(m => m.elements),
-  )
-  const relations = [] as ast.DeploymentRelation[]
-  let el
-  while ((el = traverseStack.shift())) {
-    if (ast.isDeploymentRelation(el)) {
-      relations.push(el)
-      continue
-    }
-    if (ast.isDeploymentNode(el) && el.body && el.body.elements.length > 0) {
-      for (const child of el.body.elements) {
-        traverseStack.push(child)
-      }
-    }
-    yield el
-  }
-  yield* relations
-  return
-}
-
-export function resolveRelationPoints(node: ast.Relation): {
-  source: ast.Element
-  target: ast.Element
-} {
-  const target = elementRef(node.target)
-  if (!target) {
-    throw new Error('RelationRefError: Invalid reference to target')
-  }
-  if (isDefined(node.source)) {
-    const source = elementRef(node.source)
-    if (!source) {
-      throw new Error('RelationRefError: Invalid reference to source')
-    }
-    return {
-      source,
-      target,
-    }
-  }
-  if (!ast.isElementBody(node.$container)) {
-    throw new Error('RelationRefError: Invalid container for sourceless relation')
-  }
-  return {
-    source: node.$container.$container,
-    target,
-  }
 }
 
 export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number {

@@ -56,6 +56,9 @@
       "vscode-languageserver-protocol": "3.17.5",
       "vscode-languageserver-types": "3.17.5",
       "vscode-uri": "3.1.0"
+    },
+    "patchedDependencies": {
+      "mnemonist@0.40.2": "patches/mnemonist@0.40.2.patch"
     }
   },
   "nano-staged": {

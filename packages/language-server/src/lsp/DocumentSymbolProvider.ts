@@ -4,11 +4,11 @@ import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
 import { type LikeC4LangiumDocument, ast } from '../ast'
-import { logError, logWarnError } from '../logger'
+import { logWarnError } from '../logger'
 import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
-import { getFqnElementRef } from '../utils/elementRef'
+import { readStrictFqn } from '../utils/elementRef'
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected readonly nodeKindProvider: NodeKindProvider
@@ -158,7 +158,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     return [
       {
         kind: this.symbolKind(astElement),
-        name: getFqnElementRef(astElement.element),
+        name: readStrictFqn(astElement.element),
         range: cst.range,
         selectionRange: nameNode.range,
         children: body.elements.flatMap(e => this.getElementsSymbol(e)),
@@ -250,13 +250,18 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     ]
   }
 
-  protected getDeploymentElementSymbol(el: ast.DeploymentElement | ast.DeploymentRelation): DocumentSymbol[] {
+  protected getDeploymentElementSymbol(
+    el: ast.DeploymentElement | ast.DeploymentRelation | ast.ExtendDeployment,
+  ): DocumentSymbol[] {
     try {
       if (ast.isDeploymentNode(el)) {
         return this.getDeploymentNodeSymbol(el)
       }
       if (ast.isDeployedInstance(el)) {
         return this.getDeployedInstanceSymbol(el)
+      }
+      if (ast.isExtendDeployment(el)) {
+        return []
       }
     } catch (e) {
       logWarnError(e)

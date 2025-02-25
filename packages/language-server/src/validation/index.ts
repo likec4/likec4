@@ -4,7 +4,12 @@ import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { deployedInstanceChecks, deploymentNodeChecks, deploymentRelationChecks } from './deployment-checks'
+import {
+  deployedInstanceChecks,
+  deploymentNodeChecks,
+  deploymentRelationChecks,
+  extendDeploymentChecks,
+} from './deployment-checks'
 import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
@@ -77,6 +82,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isNavigateToProperty,
   ast.isElement,
   ast.isExtendElement,
+  ast.isExtendDeployment,
   ast.isSpecificationElementKind,
   ast.isSpecificationRelationshipKind,
   ast.isSpecificationDeploymentNodeKind,
@@ -129,6 +135,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     DeploymentNodeKind: deploymentNodeKindChecks(services),
     DeploymentNode: deploymentNodeChecks(services),
     DeploymentRelation: deploymentRelationChecks(services),
+    ExtendDeployment: extendDeploymentChecks(services),
     FqnRefExpr: fqnRefExprChecks(services),
     RelationExpr: relationExprChecks(services),
     NotesProperty: notesPropertyRuleChecks(services),

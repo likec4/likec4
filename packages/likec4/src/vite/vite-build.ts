@@ -1,6 +1,6 @@
 import { viteConfig } from '@/vite/config-app'
 import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
-import { copyFileSync, existsSync, rmSync, readdirSync } from 'node:fs'
+import { copyFileSync, existsSync, readdirSync, rmSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -31,7 +31,7 @@ export const viteBuild = async ({
     languageServices,
     likec4AssetsDir,
     webcomponentPrefix,
-    outputSingleFile
+    outputSingleFile,
   })
 
   const publicDir = await mkTempPublicDir()
@@ -43,16 +43,24 @@ export const viteBuild = async ({
     }
   }
 
+  const computed = await languageServices.viewsService.computedViews()
   const diagrams = await languageServices.diagrams()
   if (diagrams.length === 0) {
     process.exitCode = 1
     throw new Error('no views found')
   }
+  if (diagrams.length === computed.length) {
+    config.customLogger.info(`${k.dim('workspace:')} ${k.green(`✓ all views layouted`)}`)
+  } else {
+    config.customLogger.warn(
+      `${k.dim('workspace:')} ${k.yellow(`✗ layouted ${diagrams.length} of ${computed.length} views`)}`,
+    )
+  }
 
   diagrams.forEach(view => {
     if (view.hasLayoutDrift) {
       config.customLogger.warn(
-        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id)
+        k.yellow('drift detected, manual layout can not be applied, view:') + ' ' + k.red(view.id),
       )
     }
   })
@@ -62,7 +70,7 @@ export const viteBuild = async ({
       webcomponentPrefix,
       languageServices,
       outDir: publicDir,
-      base: config.base
+      base: config.base,
     })
     await build(webcomponentConfig)
   }
@@ -71,13 +79,13 @@ export const viteBuild = async ({
   await build({
     ...config,
     publicDir,
-    mode: 'production'
+    mode: 'production',
   })
 
   if (outputSingleFile) {
     // Delete all files other than index.html
-    for(let extraFile of readdirSync(resolve(config.build.outDir)).filter(f => f !== "index.html")) {
-      rmSync(resolve(config.build.outDir, extraFile), {recursive: true});
+    for (let extraFile of readdirSync(resolve(config.build.outDir)).filter(f => f !== 'index.html')) {
+      rmSync(resolve(config.build.outDir, extraFile), { recursive: true })
     }
   } else {
     // Copy index.html to 404.html
@@ -85,7 +93,7 @@ export const viteBuild = async ({
     if (existsSync(indexHtml)) {
       copyFileSync(
         indexHtml,
-        resolve(config.build.outDir, '404.html')
+        resolve(config.build.outDir, '404.html'),
       )
     }
   }

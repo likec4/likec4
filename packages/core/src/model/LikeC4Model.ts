@@ -1,4 +1,3 @@
-import { DefaultMap } from 'mnemonist'
 import { mapValues, pipe, sort, values } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import { computeView, unsafeComputeView } from '../compute-view'
@@ -11,6 +10,7 @@ import type { AnyParsedLikeC4Model, GenericLikeC4Model, LikeC4ModelDump } from '
 import type { ModelRelation } from '../types/relation'
 import { compareNatural } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn } from '../utils/fqn'
+import { DefaultMap } from '../utils/mnemonist'
 import type {
   DeployedInstanceModel,
   DeploymentElementModel,
@@ -417,6 +417,27 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 }
 
 export namespace LikeC4Model {
+  export const EMPTY = LikeC4Model.create({
+    specification: {
+      elements: {},
+      relationships: {},
+      deployments: {},
+      tags: [],
+    },
+    globals: {
+      predicates: {},
+      dynamicPredicates: {},
+      styles: {},
+    },
+    deployments: {
+      elements: {},
+      relations: {},
+    },
+    elements: {},
+    relations: {},
+    views: {},
+  }) as LikeC4Model<AnyAux>
+
   export type Any = Aux<
     string,
     string,

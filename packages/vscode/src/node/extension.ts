@@ -131,7 +131,9 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       }
       : {},
   }
-  logger.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)
+  logger.info('Document selector: { selector }', {
+    selector: clientOptions.documentSelector,
+  })
 
   // Create the language client and start the client.
   return new NodeLanguageClient(languageId, extensionTitle, serverOptions, clientOptions)

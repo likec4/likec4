@@ -6,14 +6,10 @@
   "tasks": {
     "build": {
       "dependsOn": [
-        "topo",
-        "@likec4/language-server#build",
-        "@likec4/vscode-preview#build"
+        "topo"
       ],
       "outputs": [
-        "dist/**",
-        "!dist/src/**",
-        "!dist/**/*.metafile.json"
+        "dist/**"
       ]
     }
   }

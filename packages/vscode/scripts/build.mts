@@ -50,7 +50,7 @@ const base = {
   external: isProduction ? ['vscode'] : [
     'vscode',
     '@vscode/extension-telemetry',
-    // '@hpcc-js/wasm-graphviz'
+    '@hpcc-js/wasm-graphviz',
   ],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
@@ -97,7 +97,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources'],
+  conditions: isProduction ? ['browser', 'production'] : ['sources', 'development'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -107,7 +107,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources'],
+  conditions: isProduction ? ['browser', 'production'] : ['sources', 'development'],
 })
 
 let hasErrors = false

@@ -140,7 +140,7 @@ export type {
   RelationshipKindSpecification,
   RelationshipLineType,
 } from './relation'
-export { isThemeColor } from './theme'
+export { isThemeColor, ThemeColors } from './theme'
 export type {
   Color,
   ColorLiteral,

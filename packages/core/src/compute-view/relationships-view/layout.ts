@@ -1,5 +1,4 @@
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { DefaultMap } from 'mnemonist'
 import { concat, filter, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 import { invariant } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
@@ -7,6 +6,7 @@ import type { RelationshipModel } from '../../model/RelationModel'
 import type { DiagramNode, DiagramView, Fqn, NodeId } from '../../types'
 import { sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
+import { DefaultMap } from '../../utils/mnemonist'
 import type { RelationshipsViewData } from './_types'
 import { treeFromElements } from './utils'
 
