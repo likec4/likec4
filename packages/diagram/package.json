@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit",
     "build": "vite build",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -r -f -g 'dist/*' .tsbuildinfo",
+    "clean": "rm -r -f -g \"dist/*\" .tsbuildinfo",
     "test": "vitest run --no-isolate"
   },
   "dependencies": {

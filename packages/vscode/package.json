@@ -140,17 +140,17 @@
       "webview/context": [
         {
           "command": "likec4.preview-context-open-source",
-          "when": "webviewId == 'likec4-preview'"
+          "when": "webviewId == \"likec4-preview\""
         }
       ],
       "commandPalette": [
         {
           "command": "likec4.preview-context-open-source",
-          "when": "webviewId == 'likec4-preview'"
+          "when": "webviewId == \"likec4-preview\""
         },
         {
           "command": "likec4.locate",
-          "when": "webviewId == 'likec4-preview'"
+          "when": "webviewId == \"likec4-preview\""
         }
       ]
     },
