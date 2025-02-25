@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.23.0",
+  "version": "1.23.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -46,8 +46,8 @@
     "@tabler/icons-react": "3.29.0",
     "@vanilla-extract/dynamic": "^2.1.2",
     "@xstate/react": "^5.0.2",
-    "@xyflow/react": "12.4.2",
-    "@xyflow/system": "0.0.50",
+    "@xyflow/react": "12.4.3",
+    "@xyflow/system": "0.0.51",
     "bezier-js": "^6.1.4",
     "clsx": "^2.1.1",
     "d3-shape": "^3.2.0",
