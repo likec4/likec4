@@ -88,7 +88,7 @@
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate && tsx scripts/generate-icons.ts",
-    "dev": "run-p 'watch:*'",
+    "dev": "run-p \"watch:*\"",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -r -f dist contrib",
     "test": "vitest run --no-isolate",
