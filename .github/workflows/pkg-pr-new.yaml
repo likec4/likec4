@@ -24,4 +24,4 @@ jobs:
 
       - name: publish
         run: |
-          pnpx pkg-pr-new publish --comment=off './packages/core' './packages/likec4'
+          pnpx pkg-pr-new publish --pnpm --comment=off './packages/core' './packages/likec4'
