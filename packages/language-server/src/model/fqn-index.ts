@@ -18,14 +18,13 @@ import {
   ElementOps,
   isLikeC4LangiumDocument,
 } from '../ast'
-import { logger, logWarnError } from '../logger'
+import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
-import { getFqnElementRef } from '../utils/elementRef'
+import { readStrictFqn } from '../utils/elementRef'
 
 export class FqnIndex extends ADisposable {
   protected langiumDocuments: LangiumDocuments
-  protected workspaceCache: WorkspaceCache<string, AstNodeDescriptionWithFqn[]>
   protected documentCache: DefaultWeakMap<LikeC4LangiumDocument, DocumentFqnIndex>
 
   protected cachePrefix = 'fqn-index'
@@ -34,7 +33,6 @@ export class FqnIndex extends ADisposable {
     super()
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     this.documentCache = new DefaultWeakMap(doc => this.createDocumentIndex(doc))
-    this.workspaceCache = new WorkspaceCache(services.shared, DocumentState.IndexedContent)
 
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
@@ -82,8 +80,8 @@ export class FqnIndex extends ADisposable {
   }
 
   public directChildrenOf(parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    const childrenOf = this.workspaceCache.get(`${this.cachePrefix}@children@${parent}`, () => {
-      return this.documents()
+    return stream(
+      this.documents()
         .reduce((map, doc) => {
           this.get(doc).children(parent).forEach(desc => {
             map.add(desc.name, desc)
@@ -93,48 +91,44 @@ export class FqnIndex extends ADisposable {
         .entriesGroupedByKey()
         .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
         .toArray()
-        .sort((a, b) => compareNatural(a.name, b.name))
-    })
-    return stream(childrenOf)
+        .sort((a, b) => compareNatural(a.name, b.name)),
+    )
   }
 
   /**
    * Returns descedant elements with unique names in the scope
    */
   public uniqueDescedants(parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    const descendants = this.workspaceCache.get(`${this.cachePrefix}@descendants@${parent}`, () => {
-      const { children, descendants } = this.documents()
-        .reduce((map, doc) => {
-          const docIndex = this.get(doc)
-          docIndex.children(parent).forEach(desc => {
-            map.children.add(desc.name, desc)
-          })
-          docIndex.descendants(parent).forEach(desc => {
-            map.descendants.add(desc.name, desc)
-          })
-          return map
-        }, {
-          children: new MultiMap<string, AstNodeDescriptionWithFqn>(),
-          descendants: new MultiMap<string, AstNodeDescriptionWithFqn>(),
+    const { children, descendants } = this.documents()
+      .reduce((map, doc) => {
+        const docIndex = this.get(doc)
+        docIndex.children(parent).forEach(desc => {
+          map.children.add(desc.name, desc)
         })
+        docIndex.descendants(parent).forEach(desc => {
+          map.descendants.add(desc.name, desc)
+        })
+        return map
+      }, {
+        children: new MultiMap<string, AstNodeDescriptionWithFqn>(),
+        descendants: new MultiMap<string, AstNodeDescriptionWithFqn>(),
+      })
 
-      const uniqueChildren = children
-        .entriesGroupedByKey()
-        .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
-        .toArray()
-        .sort((a, b) => compareNatural(a.name, b.name))
+    const uniqueChildren = children
+      .entriesGroupedByKey()
+      .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
+      .toArray()
+      .sort((a, b) => compareNatural(a.name, b.name))
 
-      const uniqueDescendants = descendants
-        .entriesGroupedByKey()
-        .flatMap(([_name, descs]) => descs.length === 1 && !children.has(_name) ? descs : [])
-        .toArray()
+    const uniqueDescendants = descendants
+      .entriesGroupedByKey()
+      .flatMap(([_name, descs]) => descs.length === 1 && !children.has(_name) ? descs : [])
+      .toArray()
 
-      return [
-        ...uniqueChildren,
-        ...sortNaturalByFqn(uniqueDescendants),
-      ]
-    })
-    return stream(descendants)
+    return stream([
+      ...uniqueChildren,
+      ...sortNaturalByFqn(uniqueDescendants),
+    ])
   }
 
   protected createDocumentIndex(document: LikeC4LangiumDocument): DocumentFqnIndex {
@@ -172,7 +166,7 @@ export class FqnIndex extends ADisposable {
           children.add(parentFqn, desc)
         }
       } else {
-        thisFqn = getFqnElementRef(el.element)
+        thisFqn = readStrictFqn(el.element)
       }
 
       let _nested = [] as AstNodeDescriptionWithFqn[]

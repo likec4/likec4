@@ -41,7 +41,7 @@
     "build-cli": {
       "dependsOn": [
         "generate",
-        "^build"
+        "@likec4/language-server#build"
       ],
       "outputs": [
         "dist/**"

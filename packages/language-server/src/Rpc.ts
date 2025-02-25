@@ -2,7 +2,7 @@ import { filter, funnel, map, pipe } from 'remeda'
 import { logger } from './logger'
 import type { LikeC4Services } from './module'
 
-import { type DiagramView, nonexhaustive } from '@likec4/core'
+import { type DiagramView, LikeC4Model, nonexhaustive } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver'
 import { isLikeC4LangiumDocument } from './ast'
@@ -62,13 +62,15 @@ export class Rpc extends ADisposable {
           const all = LangiumDocuments.all.map(d => d.uri).toArray()
           await DocumentBuilder.update(all, [], cancelToken)
         }
-        const model = await modelBuilder.buildComputedModel(cancelToken)
-
-        return { model }
+        const likec4model = await modelBuilder.buildLikeC4Model(cancelToken)
+        if (likec4model !== LikeC4Model.EMPTY) {
+          return { model: likec4model.$model }
+        }
+        return { model: null }
       }),
       connection.onRequest(fetchModel, async cancelToken => {
-        const model = await modelBuilder.buildModel(cancelToken)
-        return { model }
+        const parsed = await modelBuilder.parseModel(cancelToken)
+        return { model: parsed?.model ?? null }
       }),
       connection.onRequest(computeView, async ({ viewId }, cancelToken) => {
         const view = await modelBuilder.computeView(viewId, cancelToken)

@@ -4,7 +4,7 @@ import { filter, first, isDefined, isEmpty, isNonNullish, isTruthy, map, mapToOb
 import {
   type LikeC4LangiumDocument,
   type ParsedAstElement,
-  type ParsedAstExtendElement,
+  type ParsedAstExtend,
   type ParsedAstRelation,
   ast,
   toElementStyle,
@@ -142,7 +142,7 @@ export function ModelParser<TBase extends Base>(B: TBase) {
       }
     }
 
-    parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtendElement | null {
+    parseExtendElement(astNode: ast.ExtendElement): ParsedAstExtend | null {
       const isValid = this.isValid
       const id = this.resolveFqn(astNode)
       const tags = this.parseTags(astNode.body)

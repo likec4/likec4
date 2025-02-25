@@ -13,7 +13,7 @@ import { mkTempPublicDir } from './utils'
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   buildWebcomponent?: boolean
   openBrowser?: boolean
-  hmr?: boolean,
+  hmr?: boolean
   listen?: string | undefined
 }
 
@@ -61,7 +61,7 @@ export async function viteDev({
       ...webcomponentConfig,
       logLevel: 'warn',
     }).catch((err) => {
-      consola.warn('webcomponent build failed', err)
+      consola.warn('webcomponent build failed', { err })
       consola.warn('Ignoring error and continuing')
       return Promise.resolve()
     })

@@ -1,4 +1,3 @@
-import { sort } from 'remeda'
 import { nonNullable } from '../../errors'
 import type { IteratorLike } from '../../types'
 import type { Link, Tag } from '../../types/element'
@@ -16,7 +15,7 @@ import {
   isElementView,
   isScopedElementView,
 } from '../../types/view'
-import { compareByFqnHierarchically, getOrCreate, ifind } from '../../utils'
+import { DefaultMap, ifind } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import { type AnyAux, getId } from '../types'
@@ -32,13 +31,13 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
   readonly #includeElements = new Set<M['Element']>()
   readonly #includeDeployments = new Set<M['Deployment']>()
   readonly #includeRelations = new Set<M['RelationId']>()
-  readonly #allTags = new Map<Tag, Set<NodeModel<M, V> | EdgeModel<M, V>>>()
+  readonly #allTags = new DefaultMap((_key: Tag) => new Set<NodeModel<M, V> | EdgeModel<M, V>>())
 
   constructor(
     public readonly $model: LikeC4Model<M>,
     public readonly $view: V,
   ) {
-    for (const node of sort($view.nodes, compareByFqnHierarchically)) {
+    for (const node of $view.nodes) {
       const el = new NodeModel(this, Object.freeze(node))
       this.#nodes.set(node.id, el)
       if (!node.parent) {
@@ -51,7 +50,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
         this.#includeElements.add(el.element.id)
       }
       for (const tag of el.tags) {
-        getOrCreate(this.#allTags, tag, () => new Set()).add(el)
+        this.#allTags.get(tag).add(el)
       }
     }
 
@@ -63,7 +62,7 @@ export class LikeC4ViewModel<M extends AnyAux, V extends ComputedView | DiagramV
         this.node(edge.target),
       )
       for (const tag of edgeModel.tags) {
-        getOrCreate(this.#allTags, tag, () => new Set()).add(edgeModel)
+        this.#allTags.get(tag).add(edgeModel)
       }
       for (const rel of edge.relations) {
         this.#includeRelations.add(rel)

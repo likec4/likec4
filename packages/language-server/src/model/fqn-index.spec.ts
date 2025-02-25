@@ -1,7 +1,6 @@
 import {
   type Fqn,
 } from '@likec4/core'
-import { pick } from 'remeda'
 import { type ExpectStatic, describe, it } from 'vitest'
 import type { LikeC4Services } from '../module'
 import { createTestServices } from '../test'
@@ -27,9 +26,9 @@ function asserts(services: LikeC4Services, expect: ExpectStatic) {
 
 describe('Fqn Index', () => {
   it('one document - one level', async ({ expect }) => {
-    const { parse, services } = createTestServices()
+    const { validate, services } = createTestServices()
     const { expectDirectChildrenOf, expectDescendantsOf } = asserts(services, expect)
-    await parse(`
+    await validate(`
         specification {
           element component
         }
@@ -51,9 +50,9 @@ describe('Fqn Index', () => {
   })
 
   it('one document - more levels', async ({ expect }) => {
-    const { parse, services } = createTestServices()
+    const { validate, services } = createTestServices()
     const { expectDirectChildrenOf, expectDescendantsOf } = asserts(services, expect)
-    await parse(`
+    await validate(`
         specification {
           element component
         }
@@ -103,9 +102,9 @@ describe('Fqn Index', () => {
   })
 
   it('extend element', async ({ expect }) => {
-    const { parse, services } = createTestServices()
+    const { validate, services } = createTestServices()
     const { expectDirectChildrenOf, expectDescendantsOf } = asserts(services, expect)
-    await parse(`
+    await validate(`
         specification {
           element component
         }
@@ -128,7 +127,7 @@ describe('Fqn Index', () => {
       { name: 'd1', fqn: 'c1.duplicate.d1' },
     ])
 
-    await parse(`
+    await validate(`
         model {
           extend c1 {
             component c3
@@ -154,7 +153,7 @@ describe('Fqn Index', () => {
   })
 
   it('extend element (multiple)', async ({ expect }) => {
-    const { parse, services } = createTestServices()
+    const { parse, validateAll, services } = createTestServices()
     const { expectDirectChildrenOf, expectDescendantsOf } = asserts(services, expect)
     await parse(`
         specification {
@@ -183,6 +182,7 @@ describe('Fqn Index', () => {
           }
         }
       `)
+    await validateAll()
     expectDirectChildrenOf('c1').toEqual([
       { name: 'c2', fqn: 'c1.c2' },
     ])

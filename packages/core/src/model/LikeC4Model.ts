@@ -417,6 +417,27 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
 }
 
 export namespace LikeC4Model {
+  export const EMPTY = LikeC4Model.create({
+    specification: {
+      elements: {},
+      relationships: {},
+      deployments: {},
+      tags: [],
+    },
+    globals: {
+      predicates: {},
+      dynamicPredicates: {},
+      styles: {},
+    },
+    deployments: {
+      elements: {},
+      relations: {},
+    },
+    elements: {},
+    relations: {},
+    views: {},
+  }) as LikeC4Model<AnyAux>
+
   export type Any = Aux<
     string,
     string,

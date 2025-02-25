@@ -25,6 +25,10 @@
         "^build",
         "generate"
       ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!src/**/*.langium"
+      ],
       "outputs": [
         "dist/**"
       ],

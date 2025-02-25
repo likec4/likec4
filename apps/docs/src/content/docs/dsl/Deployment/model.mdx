@@ -79,9 +79,27 @@ deployment {
 }
 ```
 
-<Aside type='caution' title='Not implemented yet'>
-  [`extend`](/dsl/workspace/#extend-element) for deployment model is in progress...
-</Aside>
+### Extend nodes
+
+As in the logical model, you can [`extend`](/dsl/workspace/#extend-element) deployment nodes:
+
+```likec4
+// 'deployments/prod.c4'
+deployment {
+  environment prod
+}
+
+// 'deployments/prod/zone-eu.c4'
+deployment {
+  extend prod {
+    zone eu
+  }
+}
+```
+
+Same [rules](/dsl/workspace/#extend-element) apply for extending nodes:
+- extended node must be referenced by a fully qualified name.  
+- define [additional properties](/dsl/workspace/#additional-properties).
 
 ## Deployed instances
 
@@ -135,6 +153,7 @@ deployment {
   }
 }
 ```
+
 
 ## Deployment relationships
 

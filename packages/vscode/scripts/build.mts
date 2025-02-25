@@ -97,7 +97,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources'],
+  conditions: isProduction ? ['browser', 'production'] : ['sources', 'development'],
 }, {
   ...base,
   sourcemap: isDev,
@@ -107,7 +107,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources'],
+  conditions: isProduction ? ['browser', 'production'] : ['sources', 'development'],
 })
 
 let hasErrors = false

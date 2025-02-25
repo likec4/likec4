@@ -13,9 +13,15 @@
       "outputs": [],
       "outputLogs": "new-only"
     },
+    "topo": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
     "typecheck": {
       "dependsOn": [
         "^generate",
+        "topo",
         "generate"
       ],
       "outputs": [],

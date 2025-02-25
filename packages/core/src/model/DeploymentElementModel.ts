@@ -8,6 +8,7 @@ import {
   type DeploymentNode,
   type DeploymentNodeKind,
   type DeploymentRelation,
+  type ElementKind,
   type ElementShape as C4ElementShape,
   type IteratorLike,
   type Link,
@@ -43,6 +44,7 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
 
   abstract readonly $model: LikeC4DeploymentModel<M>
   abstract readonly $node: DeploymentNode | DeployedInstance
+  abstract readonly kind: DeploymentNodeKind | ElementKind
 
   get style(): SetRequired<DeploymentElementStyle, 'shape' | 'color' | 'size'> {
     return {
@@ -63,10 +65,6 @@ abstract class AbstractDeploymentElementModel<M extends AnyAux = AnyAux> {
 
   get tags(): ReadonlyArray<C4Tag> {
     return this.$node.tags ?? []
-  }
-
-  get kind(): DeploymentNodeKind | string | null {
-    return this.$node.kind ?? null
   }
 
   get description(): string | null {
@@ -375,8 +373,8 @@ export class DeployedInstanceModel<M extends AnyAux = AnyAux> extends AbstractDe
     return this.$instance.tags ?? []
   }
 
-  override get kind(): string | null {
-    return this.$instance.kind ?? null
+  override get kind(): ElementKind {
+    return this.element.kind
   }
 
   override get description(): string | null {

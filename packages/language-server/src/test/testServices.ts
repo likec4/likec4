@@ -1,4 +1,4 @@
-import { LikeC4Model } from '@likec4/core'
+import type { ComputedLikeC4Model } from '@likec4/core'
 import { DocumentState, EmptyFileSystem, TextDocument } from 'langium'
 import * as assert from 'node:assert'
 import stripIndent from 'strip-indent'
@@ -22,7 +22,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   let isInitialized = false
   let documentIndex = 1
 
-  const parse = async (input: string, uri?: string) => {
+  const addDocument = async (input: string, uri?: string) => {
     if (!isInitialized) {
       await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
         if (isInitialized) {
@@ -48,6 +48,11 @@ export function createTestServices(workspace = 'file:///test/workspace') {
       docUri,
     )
     langiumDocuments.addDocument(document)
+    return document as LikeC4LangiumDocument
+  }
+
+  const parse = async (input: string, uri?: string) => {
+    const document = await addDocument(input, uri)
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
       await documentBuilder.build([document], { validation: false })
     })
@@ -55,7 +60,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const validate = async (input: string | LikeC4LangiumDocument, uri?: string) => {
-    const document = typeof input === 'string' ? await parse(input, uri) : input
+    const document = typeof input === 'string' ? await addDocument(input, uri) : input
     await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
       await documentBuilder.build([document], { validation: true })
     })
@@ -94,13 +99,12 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const validateAll = async () => {
-    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-      const docs = langiumDocuments.all.toArray()
-      await documentBuilder.build(docs, { validation: true })
-    })
-    await documentBuilder.waitUntil(DocumentState.Validated)
     const docs = langiumDocuments.all.toArray()
     assert.ok(docs.length > 0, 'no documents to validate')
+    await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
+      await documentBuilder.build(docs, { validation: true }, cancelToken)
+    })
+    await documentBuilder.waitUntil(DocumentState.Validated)
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
@@ -113,16 +117,16 @@ export function createTestServices(workspace = 'file:///test/workspace') {
 
   const buildModel = async () => {
     await validateAll()
-    const model = await modelBuilder.buildComputedModel()
-    if (!model) throw new Error('No model found')
-    return model
+    const likec4model = await modelBuilder.buildLikeC4Model()
+    if (!likec4model) throw new Error('No model found')
+    return likec4model.$model as ComputedLikeC4Model
   }
 
   const buildLikeC4Model = async () => {
     await validateAll()
-    const model = await modelBuilder.buildComputedModel()
-    if (!model) throw new Error('No model found')
-    return LikeC4Model.create(model)
+    const likec4model = await modelBuilder.buildLikeC4Model()
+    if (!likec4model) throw new Error('No model found')
+    return likec4model
   }
 
   /**
@@ -137,6 +141,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
 
   return {
     services,
+    addDocument,
     parse,
     validate,
     validateAll,

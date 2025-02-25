@@ -11,12 +11,11 @@ export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef) {
  * Returns FQN of StrictFqnElementRef
  * a.b.c.d - for c node returns a.b.c
  */
-export function getFqnElementRef(node: ast.StrictFqnElementRef): c4.Fqn {
-  // invariant(isElementRefHead(node), 'Expected head StrictElementRef')
-  const name = [node.el.$refText]
+export function readStrictFqn(node: ast.StrictFqnElementRef | ast.StrictFqnRef): c4.Fqn {
+  const name = [node.$type === 'StrictFqnRef' ? node.value.$refText : node.el.$refText]
   let parent = node.parent
   while (parent) {
-    name.push(parent.el.$refText)
+    name.push(parent.$type === 'StrictFqnRef' ? parent.value.$refText : parent.el.$refText)
     parent = parent.parent
   }
   if (name.length === 1) {

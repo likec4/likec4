@@ -531,7 +531,8 @@ ModelDeployments:
   name='deployment' '{'
     elements+=(
       DeploymentNode |
-      DeploymentRelation
+      DeploymentRelation |
+      ExtendDeployment
     )*
   '}';
 
@@ -570,6 +571,22 @@ DeployedInstanceBody: '{'
   props+=ElementProperty*
 '}';
 
+ExtendDeployment:
+  'extend' deploymentNode=StrictFqnRef body=ExtendDeploymentBody
+;
+
+ExtendDeploymentBody:  '{'
+  tags=Tags?
+  props+=ExtendElementProperty*
+
+  elements+=(
+    DeployedInstance |
+    DeploymentRelation |
+    DeploymentNode
+  )*
+'}'
+;
+
 type Referenceable = DeploymentNode | DeployedInstance | Element;
 // Reference to Elements in logical or deployment model
 // Scope computation is based on the parent element:
@@ -579,6 +596,10 @@ type Referenceable = DeploymentNode | DeployedInstance | Element;
 //  Mix of DeploymentRef and ElementRef
 FqnRef:
   value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+
+// Strict reference allows only direct children of parent
+StrictFqnRef:
+  value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
 
 DeploymentRelation:
   source=FqnRef
@@ -714,7 +735,7 @@ GlobalStyleGroup:
     styles+=ViewRuleStyle*
   '}';
 
-type FqnReferenceable = Referenceable | Element | ExtendElement;
+type FqnReferenceable = Referenceable | Element | ExtendElement | ExtendDeployment;
 
 // Common properties -------------------------------------
 

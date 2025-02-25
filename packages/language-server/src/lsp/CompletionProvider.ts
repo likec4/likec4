@@ -1,3 +1,4 @@
+import { ThemeColors } from '@likec4/core'
 import { type GrammarAST, type MaybePromise, AstUtils } from 'langium'
 import {
   type CompletionAcceptor,
@@ -17,6 +18,7 @@ const STYLE_FIELDS = [
   'opacity',
   'multiple',
   'size',
+  'textSize',
 ].join(',')
 
 export class LikeC4CompletionProvider extends DefaultCompletionProvider {
@@ -53,6 +55,22 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         kind: CompletionItemKind.Property,
         insertTextFormat: InsertTextFormat.Snippet,
         insertText: `${keyword.value} '\${0}'`,
+      })
+    }
+    if (keyword.value === 'color') {
+      return acceptor(context, {
+        label: keyword.value,
+        kind: CompletionItemKind.Property,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: `${keyword.value} \${1|${ThemeColors.join(',')}|}\$0`,
+      })
+    }
+    if (keyword.value === 'opacity') {
+      return acceptor(context, {
+        label: keyword.value,
+        kind: CompletionItemKind.Property,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: `${keyword.value} \${0:100}%`,
       })
     }
     if (['views', 'specification', 'model', 'deployment', 'with'].includes(keyword.value)) {
@@ -125,7 +143,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         detail: `Extend another view`,
         kind: CompletionItemKind.Class,
         insertTextFormat: InsertTextFormat.Snippet,
-        insertText: 'extend ${1:element} {\n\t$0\n}',
+        insertText: 'extend $1 {\n\t$0\n}',
       })
     }
 

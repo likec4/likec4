@@ -3,6 +3,7 @@ import { GraphvizLayouter } from '@likec4/layouts'
 import { type Cancellation, type WorkspaceCache } from 'langium'
 import { values } from 'remeda'
 import { logError, logWarnError } from '../logger'
+import { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
 
 export type GraphvizOut = {
@@ -20,8 +21,10 @@ export class LikeC4Views {
   private cache = new WeakMap<ComputedView, GraphvizOut>()
 
   private viewsWithReportedErrors = new Set<ViewId>()
+  private ModelBuilder: LikeC4ModelBuilder
 
   constructor(private services: LikeC4Services) {
+    this.ModelBuilder = services.likec4.ModelBuilder
   }
 
   get layouter(): GraphvizLayouter {
@@ -29,8 +32,8 @@ export class LikeC4Views {
   }
 
   async computedViews(cancelToken?: Cancellation.CancellationToken): Promise<ComputedView[]> {
-    const model = await this.services.likec4.ModelBuilder.buildComputedModel(cancelToken)
-    return model ? values(model.views) : []
+    const likeC4Model = await this.ModelBuilder.buildLikeC4Model(cancelToken)
+    return values(likeC4Model.$model.views)
   }
 
   async layoutAllViews(cancelToken?: Cancellation.CancellationToken): Promise<Array<Readonly<GraphvizOut>>> {
@@ -65,8 +68,8 @@ export class LikeC4Views {
   }
 
   async layoutView(viewId: ViewId, cancelToken?: Cancellation.CancellationToken): Promise<GraphvizOut | null> {
-    const model = await this.services.likec4.ModelBuilder.buildComputedModel(cancelToken)
-    const view = model?.views[viewId]
+    const model = await this.ModelBuilder.buildLikeC4Model(cancelToken)
+    const view = model.findView(viewId)?.$view
     if (!view) {
       return null
     }
@@ -97,7 +100,7 @@ export class LikeC4Views {
 
   async viewsAsGraphvizOut(): Promise<Array<GraphvizSvgOut>> {
     const KEY = 'All-LayoutedViews-DotWithSvg'
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, GraphvizSvgOut[]>
+    const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, GraphvizSvgOut[]>
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }
@@ -125,7 +128,7 @@ export class LikeC4Views {
 
   async overviewGraph(): Promise<OverviewGraph> {
     const KEY = 'OverviewGraph'
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, OverviewGraph>
+    const cache = this.services.ValidatedWorkspaceCache as WorkspaceCache<string, OverviewGraph>
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }

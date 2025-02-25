@@ -1,7 +1,7 @@
 import { GraphvizLayouter, GraphvizWasmAdapter } from '@likec4/layouts'
 import {
   type Module,
-  DocumentCache,
+  DocumentState,
   EmptyFileSystem,
   inject,
   WorkspaceCache,
@@ -89,7 +89,7 @@ export interface LikeC4AddedServices {
     DocumentationProvider: LikeC4DocumentationProvider
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  WorkspaceCache: WorkspaceCache<string, any>
+  ValidatedWorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   likec4: {
     Views: LikeC4Views
@@ -129,7 +129,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   documentation: {
     DocumentationProvider: bind(LikeC4DocumentationProvider),
   },
-  WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
+  ValidatedWorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared, DocumentState.Validated),
   Rpc: bind(Rpc),
   likec4: {
     Layouter: (_services: LikeC4Services) => {

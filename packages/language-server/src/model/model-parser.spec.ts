@@ -12,8 +12,8 @@ import { createTestServices } from '../test'
 describe.concurrent('LikeC4ModelParser', () => {
   describe('parses logical model', () => {
     it('parses styles', async ({ expect }) => {
-      const { parse, services } = createTestServices()
-      const langiumDocument = await parse(`
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
         specification {
           element system {
             style {
@@ -38,7 +38,7 @@ describe.concurrent('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = services.likec4.ModelParser.parse(document)
       expect(doc.c4Elements).toHaveLength(3)
       expect(doc.c4Specification).toMatchObject({
         elements: {

@@ -1,4 +1,4 @@
-import { type Fqn, AsFqn } from '@likec4/core'
+import { type Fqn, ancestorsFqn, AsFqn } from '@likec4/core'
 import { MultiMap } from 'langium'
 import { isDefined, isTruthy } from 'remeda'
 import {
@@ -10,6 +10,7 @@ import {
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
+import { readStrictFqn } from '../utils/elementRef'
 import { DocumentFqnIndex, FqnIndex } from './fqn-index'
 
 export class DeploymentsIndex extends FqnIndex {
@@ -45,23 +46,28 @@ export class DeploymentsIndex extends FqnIndex {
     }
 
     const traverseNode = (
-      node: ast.DeploymentNode | ast.DeployedInstance,
+      node: ast.DeploymentNode | ast.DeployedInstance | ast.ExtendDeployment,
       parentFqn: Fqn | null,
     ): readonly AstNodeDescriptionWithFqn[] => {
-      const name = Names.getName(node)
-      if (!isTruthy(name)) {
-        return []
-      }
-      const thisFqn = AsFqn(name, parentFqn)
-      const desc = createAndSaveDescription(node, name, thisFqn)
-      if (!parentFqn) {
-        root.push(desc)
+      let thisFqn: Fqn
+      if (ast.isExtendDeployment(node)) {
+        thisFqn = readStrictFqn(node.deploymentNode)
       } else {
-        children.add(parentFqn, desc)
-      }
+        const name = Names.getName(node)
+        if (!isTruthy(name)) {
+          return []
+        }
+        thisFqn = AsFqn(name, parentFqn)
+        const desc = createAndSaveDescription(node, name, thisFqn)
+        if (!parentFqn) {
+          root.push(desc)
+        } else {
+          children.add(parentFqn, desc)
+        }
 
-      if (ast.isDeployedInstance(node)) {
-        return []
+        if (ast.isDeployedInstance(node)) {
+          return []
+        }
       }
 
       let _nested = [] as AstNodeDescriptionWithFqn[]
@@ -83,7 +89,12 @@ export class DeploymentsIndex extends FqnIndex {
         ..._nested,
       ]
       descendants.addAll(thisFqn, _nested)
-      return _nested
+      if (ast.isExtendDeployment(node)) {
+        ancestorsFqn(thisFqn).forEach(ancestor => {
+          descendants.addAll(ancestor, _nested)
+        })
+      }
+      return descendants.get(thisFqn)
     }
 
     for (const node of rootNodes) {

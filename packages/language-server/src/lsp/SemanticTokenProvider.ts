@@ -203,7 +203,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if (ast.isFqnRef(node)) {
+    if (ast.isFqnRef(node) || ast.isStrictFqnRef(node)) {
       acceptor({
         node,
         property: 'value',
@@ -364,6 +364,24 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       type: SemanticTokenTypes.keyword,
       modifier: [],
     })
+    if (ast.isElement(node)) {
+      if (node.props.length > 0) {
+        acceptor({
+          node,
+          property: 'props',
+          type: SemanticTokenTypes.string,
+        })
+      }
+      return
+    }
+    // This is DeploymentNode
+    if (node.title) {
+      acceptor({
+        node,
+        property: 'title',
+        type: SemanticTokenTypes.string,
+      })
+    }
   }
 
   private highlightView(node: ast.LikeC4View, acceptor: SemanticTokenAcceptor) {

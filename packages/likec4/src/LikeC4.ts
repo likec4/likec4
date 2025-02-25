@@ -125,7 +125,6 @@ export class LikeC4 {
     return likec4
   }
 
-  private modelComputedRef: WeakRef<LikeC4Model.Computed> | undefined
   private modelLayoutedRef: WeakRef<LikeC4Model.Layouted> | undefined
   private logger: Logger
 
@@ -157,38 +156,28 @@ export class LikeC4 {
   }
 
   /**
-   * Synchronously builds architecture model
-   * Only compute views predicates {@link ComputedView} - i.e. no layout
+   * Builds LikeC4Model from all documents
+   * Only computes view predicates {@link ComputedView} - i.e. no layout
    * Not ready for rendering, but enough to traverse
    */
   computedModel(): LikeC4Model.Computed {
-    let ref = this.modelComputedRef?.deref()
-    if (!ref) {
-      const parsedModel = this.langium.likec4.ModelBuilder.unsafeSyncBuildModel()
-      if (!parsedModel) {
-        throw new Error('Failed to build model')
-      }
-      const computedModel = this.langium.likec4.ModelBuilder.unsafeSyncBuildComputedModel(parsedModel)
-      ref = LikeC4Model.create(computedModel)
-      this.modelComputedRef = new WeakRef(ref)
-    }
-    return ref
+    return this.langium.likec4.ModelBuilder.unsafeSyncBuildModel()
   }
 
   /**
-   * Same as {@link computedModel()}, after applies layout
+   * Same as {@link computedModel()}, but also applies layout
    * Ready for rendering
    */
   async layoutedModel(): Promise<LikeC4Model.Layouted> {
     let ref = this.modelLayoutedRef?.deref()
     if (!ref) {
-      const computedModel = await this.langium.likec4.ModelBuilder.buildComputedModel()
-      if (!computedModel) {
-        throw new Error('Failed to build model')
+      const parsed = await this.langium.likec4.ModelBuilder.parseModel()
+      if (!parsed) {
+        throw new Error('Failed to parse model')
       }
       const diagrams = await this.viewsService.diagrams()
       ref = LikeC4Model.create({
-        ...computedModel,
+        ...parsed.model,
         __: 'layouted' as const,
         views: indexBy(diagrams, prop('id')),
       })
@@ -254,7 +243,6 @@ export class LikeC4 {
    */
   async notifyUpdate({ changed, removed }: { changed?: string; removed?: string }): Promise<boolean> {
     this.modelLayoutedRef = undefined
-    this.modelComputedRef = undefined
     const mutex = this.langium.shared.workspace.WorkspaceLock
     try {
       let completed = false

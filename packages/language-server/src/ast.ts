@@ -82,16 +82,16 @@ export interface ParsedAstElement {
   description?: string
   technology?: string
   tags?: c4.NonEmptyArray<c4.Tag>
-  links?: c4.NonEmptyArray<ParsedLink>
+  links?: c4.NonEmptyArray<c4.Link>
   style: ParsedElementStyle
   metadata?: { [key: string]: string }
 }
 
-export interface ParsedAstExtendElement {
+export interface ParsedAstExtend {
   id: c4.Fqn
   astPath: string
   tags?: c4.NonEmptyArray<c4.Tag>
-  links?: c4.NonEmptyArray<ParsedLink>
+  links?: c4.NonEmptyArray<c4.Link>
   metadata?: { [key: string]: string }
 }
 
@@ -109,7 +109,7 @@ export interface ParsedAstRelation {
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
-  links?: c4.NonEmptyArray<ParsedLink>
+  links?: c4.NonEmptyArray<c4.Link>
   navigateTo?: c4.ViewId
   metadata?: { [key: string]: string }
 }
@@ -136,7 +136,7 @@ export interface ParsedAstElementView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<ParsedLink> | null
+  links: c4.NonEmptyArray<c4.Link> | null
   rules: c4.ViewRule[]
   manualLayout?: c4.ViewManualLayout
 }
@@ -148,7 +148,7 @@ export interface ParsedAstDynamicView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<ParsedLink> | null
+  links: c4.NonEmptyArray<c4.Link> | null
   steps: c4.DynamicViewStepOrParallel[]
   rules: Array<c4.DynamicViewRule>
   manualLayout?: c4.ViewManualLayout
@@ -161,7 +161,7 @@ export interface ParsedAstDeploymentView {
   title: string | null
   description: string | null
   tags: c4.NonEmptyArray<c4.Tag> | null
-  links: c4.NonEmptyArray<ParsedLink> | null
+  links: c4.NonEmptyArray<c4.Link> | null
   rules: Array<c4.DeploymentViewRule>
 }
 
@@ -174,11 +174,6 @@ export const ViewOps = {
   readId(node: ast.LikeC4View): c4.ViewId | undefined {
     return node[idattr]
   },
-}
-
-export interface ParsedLink {
-  title?: string
-  url: string
 }
 
 export const ElementOps = {
@@ -207,7 +202,8 @@ export interface LikeC4DocumentProps {
   diagnostics?: Array<LikeC4DocumentDiagnostic>
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
-  c4ExtendElements?: ParsedAstExtendElement[]
+  c4ExtendElements?: ParsedAstExtend[]
+  c4ExtendDeployments?: ParsedAstExtend[]
   c4Relations?: ParsedAstRelation[]
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
@@ -233,6 +229,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Specification
     && !!doc.c4Elements
     && !!doc.c4ExtendElements
+    && !!doc.c4ExtendDeployments
     && !!doc.c4Relations
     && !!doc.c4Views
     && !!doc.c4Deployments

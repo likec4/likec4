@@ -1,11 +1,11 @@
 import type * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray } from '@likec4/core'
+import { isNonEmptyArray } from '@likec4/core'
 import type { AstNode } from 'langium'
 import { filter, flatMap, fromEntries, isEmpty, isNonNullish, isTruthy, map, pipe, unique } from 'remeda'
 import stripIndent from 'strip-indent'
-import { type ParsedLikeC4LangiumDocument, type ParsedLink, ast } from '../../ast'
+import { type ParsedLikeC4LangiumDocument, ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
-import { getFqnElementRef } from '../../utils/elementRef'
+import { readStrictFqn } from '../../utils/elementRef'
 import { type IsValidFn, checksFromDiagnostics } from '../../validation'
 
 // the class which this mixin is applied to
@@ -33,11 +33,14 @@ export class BaseParser {
   }
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {
+    if (ast.isExtendElement(node)) {
+      return readStrictFqn(node.element)
+    }
+    if (ast.isExtendDeployment(node)) {
+      return readStrictFqn(node.deploymentNode)
+    }
     if (ast.isDeploymentElement(node)) {
       return this.services.likec4.DeploymentsIndex.getFqn(node)
-    }
-    if (ast.isExtendElement(node)) {
-      return getFqnElementRef(node.element)
     }
     return this.services.likec4.FqnIndex.getFqn(node)
   }
@@ -85,10 +88,10 @@ export class BaseParser {
     return isNonEmptyArray(tags) ? tags : null
   }
 
-  convertLinks(source?: ast.LinkProperty['$container']): ParsedLink[] | undefined {
+  convertLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
     return this.parseLinks(source)
   }
-  parseLinks(source?: ast.LinkProperty['$container']): ParsedLink[] | undefined {
+  parseLinks(source?: ast.LinkProperty['$container']): c4.Link[] | undefined {
     if (!source?.props || source.props.length === 0) {
       return undefined
     }
@@ -102,7 +105,12 @@ export class BaseParser {
         const url = p.value
         if (isTruthy(url)) {
           const title = isTruthy(p.title) ? toSingleLine(p.title) : undefined
-          return title ? { url, title } : { url }
+          const relative = this.services.lsp.DocumentLinkProvider.relativeLink(this.doc, url)
+          return {
+            url,
+            ...(title && { title }),
+            ...(relative && relative !== url && { relative }),
+          }
         }
         return []
       }),

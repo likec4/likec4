@@ -43,6 +43,7 @@ export class LikeC4ModelParser {
       DocumentState.Validated,
       doc => {
         try {
+          // Force parser recreation
           this.cachedParsers.set(doc.uri, 'DocumentParser', this.createParser(doc))
         } catch (error) {
           logger.error(`Error caching parser for document ${doc.uri.toString()}`, { error })
@@ -87,6 +88,7 @@ export class LikeC4ModelParser {
       },
       c4Elements: [],
       c4ExtendElements: [],
+      c4ExtendDeployments: [],
       c4Relations: [],
       c4Deployments: [],
       c4DeploymentRelations: [],
