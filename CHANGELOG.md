@@ -1,15 +1,28 @@
 # [1.24.0](https://github.com/likec4/likec4/compare/v1.23.1...v1.24.0) (2025-02-25)
 
+### 🚀 Features
+
+* **`extend` in deployment model**  
+  As in the logical model, you can extend deployment nodes:
+
+  ```zig
+  // 'deployments/prod.c4'
+  deployment {
+    environment prod
+  }
+  
+  // 'deployments/prod/zone-eu.c4'
+  deployment {
+    extend prod {
+      zone eu
+    }
+  }
+  ``` 
+  [Documentation](https://likec4.dev/dsl/deployment/model/#extend-nodes), closes [#1609](https://github.com/likec4/likec4/issues/1609)
 
 ### Bug Fixes
 
-* **diagram:** useless search bar in embedded mode ([69b4930](https://github.com/likec4/likec4/commit/69b49308ee652ef91717d5de935a2a798e8735d1)), closes [#1642](https://github.com/likec4/likec4/issues/1642)
-
-
-### Features
-
-* `extend` in deployment model ([#1643](https://github.com/likec4/likec4/issues/1643)) ([7b5c985](https://github.com/likec4/likec4/commit/7b5c98511f1ff869362422192e33aed709bbe77d)), closes [#1609](https://github.com/likec4/likec4/issues/1609)
-
+* **diagram:** useless search bar in embedded mode, closes [#1642](https://github.com/likec4/likec4/issues/1642)
 
 
 ## [1.23.1](https://github.com/likec4/likec4/compare/v1.23.0...v1.23.1) (2025-02-23)
