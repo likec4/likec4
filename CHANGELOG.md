@@ -1,3 +1,17 @@
+# [1.24.0](https://github.com/likec4/likec4/compare/v1.23.1...v1.24.0) (2025-02-25)
+
+
+### Bug Fixes
+
+* **diagram:** useless search bar in embedded mode ([69b4930](https://github.com/likec4/likec4/commit/69b49308ee652ef91717d5de935a2a798e8735d1)), closes [#1642](https://github.com/likec4/likec4/issues/1642)
+
+
+### Features
+
+* `extend` in deployment model ([#1643](https://github.com/likec4/likec4/issues/1643)) ([7b5c985](https://github.com/likec4/likec4/commit/7b5c98511f1ff869362422192e33aed709bbe77d)), closes [#1609](https://github.com/likec4/likec4/issues/1609)
+
+
+
 ## [1.23.1](https://github.com/likec4/likec4/compare/v1.23.0...v1.23.1) (2025-02-23)
 
 ### Bug Fixes
