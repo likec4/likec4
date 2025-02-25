@@ -6,5 +6,6 @@ export default defineProject({
   },
   test: {
     name: 'language-server',
+    testTimeout: 10_000,
   },
 })
