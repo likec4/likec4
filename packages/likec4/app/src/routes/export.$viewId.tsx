@@ -1,4 +1,4 @@
-import { LikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram, StaticLikeC4Diagram } from '@likec4/diagram'
 import { Box, LoadingOverlay } from '@mantine/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
@@ -141,26 +141,11 @@ function ExportPage() {
         height: height,
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
-      <LikeC4Diagram
+      <StaticLikeC4Diagram
         view={diagram}
-        readonly
         fitView={false}
         fitViewPadding={0}
-        pannable={false}
-        zoomable={false}
-        controls={false}
         background={'transparent'}
-        enableDynamicViewWalkthrough={false}
-        enableElementDetails={false}
-        enableRelationshipBrowser={false}
-        showNavigationButtons={false}
-        enableRelationshipDetails={false}
-        showDiagramTitle={false}
-        showNotations={false}
-        nodesSelectable={false}
-        nodesDraggable={false}
-        enableFocusMode={false}
-        enableSearch={false}
         renderIcon={RenderIcon}
         initialWidth={diagram.bounds.width}
         initialHeight={diagram.bounds.height} />

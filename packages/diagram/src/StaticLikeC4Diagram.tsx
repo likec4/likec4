@@ -43,11 +43,12 @@ export function StaticLikeC4Diagram({
       enableRelationshipDetails={enableRelationshipDetails}
       enableRelationshipBrowser={enableRelationshipBrowser}
       enableDynamicViewWalkthrough={false}
+      showNavigationButtons={false}
       experimentalEdgeEditing={false}
       enableFocusMode={false}
+      enableSearch={false}
       nodesSelectable={false}
       nodesDraggable={false}
-      enableSearch={false}
       {...rest}
     />
   )
