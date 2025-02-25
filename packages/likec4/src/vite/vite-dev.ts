@@ -80,6 +80,10 @@ export async function viteDev({
     publicDir,
     server: {
       host: listen ?? '127.0.0.1',
+      // TODO: temprorary enable access to any host
+      // This is not recommended as it can be a security risk - https://vite.dev/config/server-options#server-allowedhosts
+      // Enabled after request in discord support just to check if it solves the problem
+      allowedHosts: true,
       port,
       hmr: hmr && {
         overlay: true,

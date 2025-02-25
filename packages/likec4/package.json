@@ -62,7 +62,6 @@
   },
   "scripts": {
     "turbo-build": "turbo run build --log-prefix=none --log-order=grouped",
-    "package": "yarn pack",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.cli.json",
     "typecheck": "run-p --print-label \"typecheck:*\"",
