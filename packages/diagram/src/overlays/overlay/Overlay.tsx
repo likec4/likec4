@@ -65,7 +65,7 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
   return (
     <m.dialog
       ref={dialogRef}
-      className={clsx(css.dialog, classes?.dialog, className)}
+      className={clsx(css.dialog, classes?.dialog, className, RemoveScroll.classNames.fullWidth)}
       initial={{
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '5%',
@@ -104,7 +104,7 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
       }}
       {...rest}
     >
-      <RemoveScroll forwardProps>
+      <RemoveScroll forwardProps removeScrollBar={false}>
         <Box className={clsx(css.body, classes?.body)}>
           {opened && <>{children}</>}
         </Box>

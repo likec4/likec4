@@ -45,7 +45,11 @@ export function RelationshipDetails({ actorRef }: RelationshipDetailsProps) {
   return (
     <RelationshipDetailsActorContext.Provider value={actorRef}>
       <ReactFlowProvider {...initialRef.current}>
-        <RelationshipDetailsInner />
+        <LayoutGroup id={actorRef.sessionId} inherit={false}>
+          <AnimatePresence>
+            <RelationshipDetailsInner />
+          </AnimatePresence>
+        </LayoutGroup>
       </ReactFlowProvider>
     </RelationshipDetailsActorContext.Provider>
   )
@@ -89,7 +93,7 @@ const RelationshipDetailsInner = memo(() => {
 
   useEffect(() => {
     if (historyEdgeId !== edgeId) {
-      // browser.navigateTo(historyEdgeId)
+      browser.navigateTo(historyEdgeId)
     }
   }, [historyEdgeId])
 
@@ -97,65 +101,63 @@ const RelationshipDetailsInner = memo(() => {
   const hasStepForward = current + 1 < history.length
 
   return (
-    <LayoutGroup>
-      <BaseXYFlow<Types.Node, Types.Edge>
-        id="relationship-details"
-        nodes={nodes}
-        edges={edges}
-        className={clsx(initialized ? 'initialized' : 'not-initialized')}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        onEdgesChange={onEdgesChange}
-        onNodesChange={onNodesChange}
-        fitViewPadding={0.05}
-        onInit={useCallbackRef((instance) => {
-          browser.send({ type: 'xyflow.init', instance })
-        })}
-        onNodeClick={useCallbackRef((e, node) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.nodeClick', node })
-        })}
-        onEdgeClick={useCallbackRef((e, edge) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.edgeClick', edge })
-        })}
-        onPaneClick={useCallbackRef((e) => {
-          e.stopPropagation()
-          browser.send({ type: 'xyflow.paneClick' })
-        })}
-        onViewportResize={useCallbackRef(() => {
-          browser.send({ type: 'xyflow.resized' })
-        })}
-        nodesDraggable={false}
-        fitView={false}
-        pannable
-        zoomable
-      >
-        <TopLeftPanel
-          edge={edge}
-          view={view}
-          hasStepBack={hasStepBack}
-          hasStepForward={hasStepForward}
-          onStepBack={() => historyOps.back()}
-          onStepForward={() => historyOps.forward()}
-        />
-        <Panel position="top-right">
-          <ActionIcon
-            variant="default"
-            color="gray"
-            // color="gray"
-            // size={'lg'}
-            // data-autofocus
-            // autoFocus
-            onClick={(e) => {
-              e.stopPropagation()
-              browser.close()
-            }}>
-            <IconX />
-          </ActionIcon>
-        </Panel>
-      </BaseXYFlow>
-    </LayoutGroup>
+    <BaseXYFlow<Types.Node, Types.Edge>
+      id={`relationships-details-${browser.actor.sessionId}`}
+      nodes={nodes}
+      edges={edges}
+      className={clsx(initialized ? 'initialized' : 'not-initialized')}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      onEdgesChange={onEdgesChange}
+      onNodesChange={onNodesChange}
+      fitViewPadding={0.05}
+      onInit={useCallbackRef((instance) => {
+        browser.send({ type: 'xyflow.init', instance })
+      })}
+      onNodeClick={useCallbackRef((e, node) => {
+        e.stopPropagation()
+        browser.send({ type: 'xyflow.nodeClick', node })
+      })}
+      onEdgeClick={useCallbackRef((e, edge) => {
+        e.stopPropagation()
+        browser.send({ type: 'xyflow.edgeClick', edge })
+      })}
+      onPaneClick={useCallbackRef((e) => {
+        e.stopPropagation()
+        browser.send({ type: 'xyflow.paneClick' })
+      })}
+      onViewportResize={useCallbackRef(() => {
+        browser.send({ type: 'xyflow.resized' })
+      })}
+      nodesDraggable={false}
+      fitView={false}
+      pannable
+      zoomable
+    >
+      <TopLeftPanel
+        edge={edge}
+        view={view}
+        hasStepBack={hasStepBack}
+        hasStepForward={hasStepForward}
+        onStepBack={() => historyOps.back()}
+        onStepForward={() => historyOps.forward()}
+      />
+      <Panel position="top-right">
+        <ActionIcon
+          variant="default"
+          color="gray"
+          // color="gray"
+          // size={'lg'}
+          // data-autofocus
+          // autoFocus
+          onClick={(e) => {
+            e.stopPropagation()
+            browser.close()
+          }}>
+          <IconX />
+        </ActionIcon>
+      </Panel>
+    </BaseXYFlow>
   )
 })
 

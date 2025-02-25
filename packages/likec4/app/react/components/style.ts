@@ -1,5 +1,5 @@
 import type { DiagramView } from '@likec4/core'
-import { type MantineThemeOverride, createTheme } from '@mantine/core'
+import { type MantineThemeOverride, createTheme, Portal } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme, useDebouncedCallback, useMutationObserver } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useId, useState } from 'react'
@@ -31,6 +31,13 @@ export const DefaultTheme = createTheme({
         // fontSize: '1.85rem',
       },
     },
+  },
+  components: {
+    Portal: Portal.extend({
+      defaultProps: {
+        reuseTargetNode: true,
+      },
+    }),
   },
 }) as MantineThemeOverride
 
