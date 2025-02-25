@@ -22,7 +22,7 @@ const _dirname = dirname(fileURLToPath(import.meta.url))
 export const pkgRoot = resolve(_dirname, '../..')
 
 export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: LikeC4ViteConfig) => {
-  logger.warn('DEVELOPMENT MODE')
+  logger.warn(k.bold(k.yellow('DEVELOPMENT MODE')))
   const useOverviewGraph = cfg?.useOverviewGraph === true
   const customLogger = cfg.customLogger ?? viteLogger
 

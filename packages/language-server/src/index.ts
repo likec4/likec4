@@ -10,6 +10,7 @@ export { getLspConnectionSink, logger as lspLogger } from './logger'
 
 export type { DocumentParser, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 
+export { isLikeC4Builtin } from './likec4lib'
 export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
 export type { LikeC4Services, LikeC4SharedServices } from './module'
 export type { LikeC4Views } from './views'

@@ -1,3 +1,4 @@
+import { isLikeC4Builtin } from '@likec4/language-server'
 import type { CliServices } from './module'
 
 import type { WorkspaceFolder } from 'langium'
@@ -37,18 +38,20 @@ export class CliWorkspace {
     const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
     const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
 
-    const documents = LangiumDocuments.all.toArray()
-    if (documents.length === 0) {
+    const alldocuments = LangiumDocuments.all.toArray()
+    const workspaceDocuments = alldocuments.filter(d => !isLikeC4Builtin(d.uri))
+
+    if (workspaceDocuments.length === 0) {
       logger.error(`no LikeC4 sources found`)
       throw new Error(`no LikeC4 sources found`)
     }
 
-    logger.info(`${k.dim('workspace:')} found ${documents.length} source files`)
+    logger.info(`${k.dim('workspace:')} found ${workspaceDocuments.length} source files`)
 
-    if (documents.length > 2) {
-      await DocumentBuilder.update(documents.map(d => d.uri), [], undefined)
+    if (workspaceDocuments.length > 1) {
+      await DocumentBuilder.update(workspaceDocuments.map(d => d.uri), [], undefined)
     } else {
-      await DocumentBuilder.build(documents, { validation: true })
+      await DocumentBuilder.build(alldocuments, { validation: true })
     }
 
     const model = await modelBuilder.buildLikeC4Model()
