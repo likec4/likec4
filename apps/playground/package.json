@@ -76,7 +76,7 @@
     "elkjs": "^0.9.3",
     "esm-env": "^1.2.2",
     "fast-equals": "^5.2.2",
-    "framer-motion": "^12.4.2",
+    "framer-motion": "^12.4.7",
     "langium": "3.3.1",
     "monaco-editor-wrapper": "~6.3.0",
     "monaco-languageclient": "~9.3.0",
