@@ -1,9 +1,11 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { cssReactFlow } from '../../../LikeC4Diagram.css'
+import { cssReactFlow, hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { vars, xyvars } from '../../../theme-vars'
 import { whereDark, whereLight } from '../../../theme-vars.css'
 
 export const mixColor = createVar('mix-color')
+
+export const dimmed = style({})
 
 export const edgeVars = style({
   vars: {
@@ -15,6 +17,17 @@ export const edgeVars = style({
     [xyvars.edge.strokeWidth]: '3',
   },
 })
+
+export const edgeContainer = style([edgeVars, {
+  selectors: {
+    [`&:is(${dimmed})`]: {
+      opacity: 0.6,
+      transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+      transitionDelay: '200ms',
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+    },
+  },
+}])
 
 globalStyle(`${whereDark} ${edgeVars}`, {
   vars: {
@@ -47,24 +60,14 @@ globalStyle(`:where(${isSelected}) ${edgeVars}[data-edge-hovered='true']`, {
   },
 })
 
-globalStyle(`${cssReactFlow} .react-flow__edges > svg`, {
+globalStyle(`${cssReactFlow}:is([data-likec4-enable-mix-blend]) .react-flow__edges > svg`, {
   mixBlendMode: 'plus-lighter',
 })
-globalStyle(`${whereLight} ${cssReactFlow} .react-flow__edges > svg`, {
+globalStyle(`${whereLight} ${cssReactFlow}:is([data-likec4-enable-mix-blend]) .react-flow__edges > svg`, {
   mixBlendMode: 'screen',
 })
 
-export const dimmed = style({})
-
-globalStyle(`${cssReactFlow} .react-flow__edges > svg:has(${dimmed})`, {
-  opacity: 0.6,
-  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-  transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  willChange: 'opacity, filter',
-})
-
-export const edgePathBg = style({
+export const edgePathBg = style([hiddenIfZoomTooSmall, {
   // strokeWidth: xyvars.edge.strokeWidth,
   strokeOpacity: 0.08,
   // transition: 'stroke-width 175ms ease-in-out',
@@ -78,7 +81,7 @@ export const edgePathBg = style({
       strokeOpacity: 0.15,
     },
   },
-})
+}])
 
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = style({

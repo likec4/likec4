@@ -8,6 +8,7 @@ import {
   useStoreApi,
 } from '@xyflow/react'
 import clsx from 'clsx'
+import { shallowEqual } from 'fast-equals'
 import { useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useUpdateEffect } from '../hooks'
@@ -79,6 +80,7 @@ export const BaseXYFlow = <
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
+  const tooManyElements = nodes.length + edges.length > 50
   return (
     <ReactFlow<NodeType, EdgeType>
       colorMode={colorMode}
@@ -90,7 +92,12 @@ export const BaseXYFlow = <
         background === 'transparent' && css.cssTransparentBg,
         className,
       )}
-      data-likec4-zoom-small={isZoomTooSmall}
+      {...isZoomTooSmall && {
+        ['data-likec4-zoom-small']: true,
+      }}
+      {...!tooManyElements && {
+        ['data-likec4-enable-mix-blend']: true,
+      }}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
       {...(!zoomable && {
@@ -115,8 +122,7 @@ export const BaseXYFlow = <
       {...(!pannable && {
         selectionKeyCode: null,
       })}
-      // TODO: benchmarks first
-      //onlyRenderVisibleElements={nodes.length > 75}
+      onlyRenderVisibleElements={tooManyElements}
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable}
       edgesFocusable={false}
@@ -202,7 +208,7 @@ const ViewportResizeHanlder = ({
 }: {
   onViewportResize: () => void
 }) => {
-  const { width, height } = useStore(selectDimensions)
+  const { width, height } = useStore(selectDimensions, shallowEqual)
   useUpdateEffect(onViewportResize, [width, height])
 
   return <></>

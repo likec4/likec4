@@ -1,8 +1,9 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { vars, whereLight } from '../../../theme-vars'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import { vars } from '../../../theme-vars'
 
-export const compoundTitle = style({
+export const compoundTitle = style([hiddenIfZoomTooSmall, {
   display: 'flex',
   alignItems: 'center',
   gap: 6,
@@ -18,7 +19,7 @@ export const compoundTitle = style({
       paddingLeft: 30,
     },
   },
-})
+}])
 
 export const title = style({
   flex: 1,
@@ -27,14 +28,12 @@ export const title = style({
   fontSize: rem(15),
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  // lineHeight: 1,
-  //
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
-  // paddingLeft: 0,
-  // paddingTop: 13,
-  // paddingBottom: 6,
-  // minHeight: 20,
-  mixBlendMode: 'screen',
+  selectors: {
+    [`:where([data-likec4-enable-mix-blend="true"]) &`]: {
+      mixBlendMode: 'screen',
+    },
+  },
 })
 
 const iconSize = '20px'

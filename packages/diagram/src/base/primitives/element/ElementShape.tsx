@@ -185,7 +185,7 @@ export function ElementShape(
   return (
     <>
       {isMultiple && (
-        <svg className={clsx(css.shapeSvgMultiple, hiddenIfZoomTooSmall)} viewBox={`0 0 ${w} ${h}`}>
+        <svg className={clsx(css.shapeSvgMultiple)} viewBox={`0 0 ${w} ${h}`}>
           <ElementShapeSvg shape={data.shape} w={w} h={h} />
         </svg>
       )}

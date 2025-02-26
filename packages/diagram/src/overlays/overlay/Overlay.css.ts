@@ -42,7 +42,7 @@ export const dialog = style({
       borderRadius: mantine.radius.sm,
       inset: '2rem',
       width: 'calc(100vw - 4rem)',
-      maxWidth: 'calc(100vw - 4rem)',
+      height: 'calc(100vh - 4rem)',
     },
     [mantine.smallerThan('sm')]: {
       border: 'none',
@@ -59,16 +59,8 @@ export const body = style({
   containerType: 'size',
   border: `0 solid transparent`,
   borderRadius: calc(borderRadius).subtract('2px').toString(),
-  // borderRadius: borderRadius,
   backgroundColor: mantine.colors.body,
   overflow: 'hidden',
   width: '100%',
   height: '100%',
-  // visibility: 'hidden',
-  // selectors: {
-  //   [`${dialog}[open] &`]: {
-  //     visibility: 'visible',
-  //   },
-  // },
-  // backgroundColor: 'red',
 })

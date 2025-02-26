@@ -212,11 +212,11 @@ export function ElementDetailsCard({
     if (!ref.current?.open) {
       ref.current?.showModal()
     }
-  }, 30)
+  }, 20)
 
   useTimeoutEffect(() => {
     setOpened(true)
-  }, 120)
+  }, 150)
 
   return (
     <m.dialog

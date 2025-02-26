@@ -274,7 +274,7 @@ export const relationshipsBrowserLogic = setup({
         }
       }
 
-      requestAnimationFrame(() => updateNodeInternals(updates, { triggerFitView: false }))
+      updateNodeInternals(updates, { triggerFitView: false })
     },
     'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
       let {
@@ -289,16 +289,14 @@ export const relationshipsBrowserLogic = setup({
       if (bounds) {
         const { width, height } = xystore.getState()
         const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
-        requestAnimationFrame(() => xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined))
+        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined)
       } else {
-        requestAnimationFrame(() =>
-          xyflow.fitView({
-            minZoom: MinZoom,
-            maxZoom,
-            padding: ViewPadding,
-            ...(duration > 0 && { duration }),
-          })
-        )
+        xyflow.fitView({
+          minZoom: MinZoom,
+          maxZoom,
+          padding: ViewPadding,
+          ...(duration > 0 && { duration }),
+        })
       }
     },
   },
@@ -350,7 +348,10 @@ export const relationshipsBrowserLogic = setup({
     'isReady': {
       always: [{
         guard: 'isReady',
-        actions: raise({ type: 'fitDiagram', duration: 0 }),
+        actions: [
+          raise({ type: 'fitDiagram', duration: 0 }),
+          raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 }),
+        ],
         target: 'active',
       }, {
         target: 'initializing',
@@ -376,17 +377,16 @@ export const relationshipsBrowserLogic = setup({
             },
             onDone: {
               target: 'idle',
-              actions: [
-                assign({
-                  xynodes: ({ event }) => event.output.xynodes,
-                  xyedges: ({ event }) => event.output.xyedges,
+              actions: enqueueActions(({ enqueue, event }) => {
+                enqueue.assign({
+                  xynodes: event.output.xynodes,
+                  xyedges: event.output.xyedges,
                   navigateFromNode: null,
-                }),
-                raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 }),
-                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 }),
-                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 250 }),
-                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 500 }),
-              ],
+                }), enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
+                for (let i = 0; i <= 10; i++) {
+                  enqueue.raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 + i * 50 })
+                }
+              }),
             },
           },
           on: {

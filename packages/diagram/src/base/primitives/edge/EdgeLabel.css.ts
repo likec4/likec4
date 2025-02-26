@@ -1,9 +1,7 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { easings, mantine, transitions, vars, whereDark, whereLight, xyvars } from '../../../theme-vars'
-import { mixColor } from './edge.css'
-
-export { dimmed, edgeVars } from './edge.css'
+import { edgeVars, mixColor } from './edge.css'
 
 const labelBorderRadius = 4
 export const stepEdgeNumber = style({
@@ -24,6 +22,7 @@ export const stepEdgeNumber = style({
       backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, ${mixColor} 15%)`,
     },
     [`:where([data-edge-active='true'], [data-edge-hovered="true"]) &`]: {
+      transition: transitions.fast,
       backgroundColor: 'transparent',
     },
   },
@@ -34,7 +33,7 @@ export const varLabelY = createVar('label-y')
 
 export const varTranslate = createVar('translate')
 
-export const edgeLabelContainer = style({
+export const edgeLabelContainer = style([edgeVars, {
   top: 0,
   left: 0,
   position: 'absolute',
@@ -45,16 +44,21 @@ export const edgeLabelContainer = style({
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: labelBorderRadius,
   border: '0px solid transparent',
-  mixBlendMode: 'plus-lighter',
   transform: varTranslate,
   transition: transitions.fast,
   vars: {
     [varTranslate]: `translate(0,0)`,
   },
   selectors: {
+    [`:where([data-likec4-enable-mix-blend]) &`]: {
+      mixBlendMode: 'plus-lighter',
+    },
+    [`${whereLight} :where([data-likec4-enable-mix-blend]) &`]: {
+      mixBlendMode: 'screen',
+    },
     '&[data-edge-hovered="true"]': {
       mixBlendMode: 'normal',
-      transition: `all 140ms ${easings.inOut}`,
+      transition: `all 190ms ${easings.inOut}`,
       transform: `${varTranslate} scale(1.12)`,
     },
     '&:is([data-edge-dimmed="true"])': {
@@ -62,13 +66,10 @@ export const edgeLabelContainer = style({
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-      willChange: 'opacity, filter',
-    },
-    [`${whereLight} &`]: {
-      mixBlendMode: 'screen',
+      // willChange: 'opacity, filter',
     },
   },
-})
+}])
 
 export const edgeLabel = style({
   fontFamily: vars.likec4.font,

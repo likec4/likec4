@@ -32,14 +32,14 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
   //   return null
   // }
   const initialRef = useRef<{
-    defaultNodes: Types.Node[]
-    defaultEdges: Types.Edge[]
+    initialNodes: Types.Node[]
+    initialEdges: Types.Edge[]
   }>(null)
 
   if (initialRef.current == null) {
     initialRef.current = {
-      defaultNodes: [],
-      defaultEdges: [],
+      initialNodes: [],
+      initialEdges: [],
     }
   }
 
@@ -85,6 +85,7 @@ const RelationshipsBrowserXYFlow = memo(() => {
       className={clsx(isActive ? 'initialized' : 'not-initialized')}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      fitView={false}
       fitViewPadding={ViewPadding}
       onNodeClick={useCallbackRef((e, node) => {
         e.stopPropagation()
@@ -112,7 +113,6 @@ const RelationshipsBrowserXYFlow = memo(() => {
         browser.send({ type: 'xyflow.applyEdgeChanges', changes })
       })}
       nodesDraggable={false}
-      fitView={false}
       pannable
       zoomable
     >

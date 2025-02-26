@@ -1,4 +1,5 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
+import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { easings, mantine, vars } from '../../../theme-vars'
 import { container, stokeFillMix } from './ElementNodeContainer.css'
 
@@ -81,7 +82,7 @@ const shapeBase = style({
   zIndex: -1,
 })
 
-export const shapeSvgMultiple = style([shapeBase, {
+export const shapeSvgMultiple = style([shapeBase, hiddenIfZoomTooSmall, {
   transformOrigin: '50% 25%',
   transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
   filter: ' brightness(0.65) saturate(0.8)',

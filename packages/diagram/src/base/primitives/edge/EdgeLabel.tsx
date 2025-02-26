@@ -49,7 +49,7 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
         technology,
         hovered: isHovered = false,
         active: isActive = false,
-        dimmed = false,
+        dimmed: isDimmed = false,
         labelBBox,
         ...data
       },
@@ -83,16 +83,14 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
         <Box
           className={clsx(
             'nodrag nopan',
-            css.edgeVars,
             css.edgeLabelContainer,
-            !!dimmed && css.dimmed,
             className,
           )}
           data-likec4-color={data.color ?? 'gray'}
           data-edge-active={isActive}
           data-edge-animated={isActive}
           data-edge-hovered={isHovered}
-          data-edge-dimmed={dimmed}
+          data-edge-dimmed={isDimmed}
           style={{
             top: toCssVarValue(labelY),
             left: toCssVarValue(labelX),

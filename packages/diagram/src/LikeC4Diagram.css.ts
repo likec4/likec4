@@ -30,11 +30,6 @@ globalStyle(`.react-flow${cssReactFlow}`, {
 globalStyle(`.react-flow${cssReactFlow} .react-flow__pane`, {
   WebkitUserSelect: 'none',
 })
-
-globalStyle(`.react-flow${cssReactFlow} .xyflow__viewport`, {
-  willChange: 'transform',
-})
-
 export const cssDisablePan = style({})
 
 export const cssTransparentBg = style({})

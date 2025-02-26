@@ -31,19 +31,18 @@ export const container = style({
     background: 'transparent',
     pointerEvents: 'all',
   },
-})
 
-globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="true"])`, {
-  opacity: 0.25,
-  transition: `opacity 400ms ${easings.inOut}, filter 500ms ${easings.inOut}`,
-  transitionDelay: '50ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-  willChange: 'opacity, filter',
-})
-
-globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="immediate"])`, {
-  opacity: 0.25,
-  transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
-  willChange: 'opacity, filter',
+  selectors: {
+    [`&:is([data-likec4-dimmed="true"])`]: {
+      opacity: 0.25,
+      transition: `opacity 400ms ${easings.inOut}, filter 500ms ${easings.inOut}`,
+      transitionDelay: '50ms',
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+    },
+    [`&:is([data-likec4-dimmed="immediate"])`]: {
+      opacity: 0.25,
+      transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+    },
+  },
 })

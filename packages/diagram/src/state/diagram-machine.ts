@@ -197,7 +197,7 @@ export const diagramMachine = setup({
       }
       nonexhaustive(event.type)
     },
-    'click: selected node ': ({ event }) => {
+    'click: selected node': ({ event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return event.node.selected === true
     },
@@ -208,6 +208,10 @@ export const diagramMachine = setup({
     'click: focused node': ({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return context.focusedNode === event.node.id
+    },
+    'click: node has connections': ({ context, event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      return context.xyedges.some(e => e.source === event.node.id || e.target === event.node.id)
     },
   },
   actions: {
@@ -220,22 +224,23 @@ export const diagramMachine = setup({
     'trigger:OpenSource': (_, _params: OpenSourceParams) => {
     },
 
-    'open source of focused node': enqueueActions(({ context, enqueue }) => {
-      if (!context.focusedNode || !context.features.enableVscode) return
-      const diagramNode = findDiagramNode(context, context.focusedNode)
+    'assign lastClickedNode': assign(({ context, event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      return {
+        lastClickedNode: lastClickedNode({ context, event }),
+      }
+    }),
+
+    'open source of focused or last clicked node': enqueueActions(({ context, enqueue }) => {
+      const nodeId = context.focusedNode ?? context.lastClickedNode?.id
+      if (!nodeId || !context.features.enableVscode) return
+      const diagramNode = findDiagramNode(context, nodeId)
       if (!diagramNode) return
 
-      enqueue.cancel('openSource')
       if (DiagramNode.deploymentRef(diagramNode)) {
-        enqueue.raise({ type: 'open.source', deployment: DiagramNode.deploymentRef(diagramNode)! }, {
-          id: 'openSource',
-          delay: 100,
-        })
+        enqueue.raise({ type: 'open.source', deployment: DiagramNode.deploymentRef(diagramNode)! })
       } else if (DiagramNode.modelRef(diagramNode)) {
-        enqueue.raise({ type: 'open.source', element: DiagramNode.modelRef(diagramNode)! }, {
-          id: 'openSource',
-          delay: 100,
-        })
+        enqueue.raise({ type: 'open.source', element: DiagramNode.modelRef(diagramNode)! })
       }
     }),
 
@@ -417,10 +422,11 @@ export const diagramMachine = setup({
           {
             // TODO: xstate fails to infer the type of the guard
             guard: and([
-              'enabled: FocusMode' as const,
+              'enabled: FocusMode',
+              'click: node has connections',
               or([
-                'click: same node' as const,
-                'click: selected node ' as const,
+                'click: same node',
+                'click: selected node',
               ]),
             ]) as any,
             actions: [
@@ -432,9 +438,10 @@ export const diagramMachine = setup({
             target: 'focused',
           },
           {
-            actions: assign({
-              lastClickedNode,
-            }),
+            actions: [
+              'assign lastClickedNode',
+              'open source of focused or last clicked node',
+            ],
           },
         ],
         'xyflow.paneClick': {
@@ -477,7 +484,7 @@ export const diagramMachine = setup({
           ...focusNodesEdges(s),
           viewportBeforeFocus: { ...s.context.viewport },
         })),
-        'open source of focused node',
+        'open source of focused or last clicked node',
         spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
         {
           type: 'xyflow:fitDiagram',
@@ -510,7 +517,7 @@ export const diagramMachine = setup({
                 focusedNode: ({ event }) => event.node.id as NodeId,
               }),
               assign(focusNodesEdges),
-              'open source of focused node',
+              'open source of focused or last clicked node',
               {
                 type: 'xyflow:fitDiagram',
                 params: focusedBounds,
@@ -524,7 +531,7 @@ export const diagramMachine = setup({
               focusedNode: ({ event }) => event.nodeId,
             }),
             assign(focusNodesEdges),
-            'open source of focused node',
+            'open source of focused or last clicked node',
             {
               type: 'xyflow:fitDiagram',
               params: focusedBounds,
@@ -556,57 +563,16 @@ export const diagramMachine = setup({
     },
     // Navigating to another view (after `navigateTo` event)
     navigating: {
-      initial: 'pending',
-      type: 'compound',
-      states: {
-        pending: {
-          entry: enqueueActions(({ enqueue }) => {
-            enqueue('closeAllOverlays')
-            enqueue('stopSyncLayout')
-            enqueue({
-              type: 'trigger:NavigateTo',
-              params: ({ context }) => ({
-                viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
-              }),
-            })
+      entry: [
+        'closeAllOverlays',
+        'stopSyncLayout',
+        {
+          type: 'trigger:NavigateTo',
+          params: ({ context }) => ({
+            viewId: nonNullable(context.lastOnNavigate, 'Invalid state, lastOnNavigate is null').toView,
           }),
-          on: {
-            'update.view': {
-              actions: enqueueActions(({ enqueue, context, event }) => {
-                const { fromNode, toNode } = findCorrespondingNode(context, event)
-                if (fromNode && toNode) {
-                  enqueue({
-                    type: 'xyflow:alignNodeFromToAfterNavigate',
-                    params: {
-                      fromNode: fromNode.id,
-                      toPosition: {
-                        x: toNode.position[0],
-                        y: toNode.position[1],
-                      },
-                    },
-                  })
-                  enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
-                } else {
-                  enqueue({
-                    type: 'xyflow:setViewportCenter',
-                    params: getBBoxCenter(event.view.bounds),
-                  })
-                  enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
-                }
-                enqueue.assign(updateNavigationHistory)
-                enqueue.assign(mergeXYNodesEdges)
-              }),
-              target: 'done',
-            },
-          },
         },
-        done: {
-          type: 'final',
-        },
-      },
-      onDone: {
-        target: 'idle',
-      },
+      ],
       exit: assign({
         syncLayoutActorRef: ({ self, context, spawn }) =>
           spawn('syncManualLayoutActorLogic', {
@@ -614,12 +580,44 @@ export const diagramMachine = setup({
             systemId: 'syncLayout',
             input: { parent: self, viewId: context.view.id },
           }),
-        lastOnNavigate: null,
+        // lastOnNavigate: null,
       }),
+      on: {
+        'update.view': {
+          actions: enqueueActions(({ enqueue, context, event }) => {
+            const { fromNode, toNode } = findCorrespondingNode(context, event)
+            if (fromNode && toNode) {
+              enqueue({
+                type: 'xyflow:alignNodeFromToAfterNavigate',
+                params: {
+                  fromNode: fromNode.id,
+                  toPosition: {
+                    x: toNode.position[0],
+                    y: toNode.position[1],
+                  },
+                },
+              })
+              enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 })
+            } else {
+              enqueue({
+                type: 'xyflow:setViewportCenter',
+                params: getBBoxCenter(event.view.bounds),
+              })
+              enqueue.raise({ type: 'fitDiagram', duration: 200 }, { id: 'fitDiagram', delay: 25 })
+            }
+            enqueue.assign(updateNavigationHistory)
+            enqueue.assign(mergeXYNodesEdges)
+            enqueue.assign({
+              lastOnNavigate: null,
+            })
+          }),
+          target: '#idle',
+        },
+      },
     },
     walkthrough: {
       entry: [
-        // spawnChild('hotkeyActor', { id: 'hotkey' }),
+        spawnChild('hotkeyActorLogic', { id: 'hotkey' }),
         assign({
           viewportBeforeFocus: ({ context }) => context.viewport,
           activeWalkthrough: ({ context, event }) => {

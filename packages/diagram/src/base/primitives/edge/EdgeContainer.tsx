@@ -32,7 +32,7 @@ export function EdgeContainer({
   return (
     <g
       className={clsx(
-        css.edgeVars,
+        css.edgeContainer,
         isDimmed && css.dimmed,
         className,
       )}
