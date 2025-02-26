@@ -709,8 +709,8 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       '@msgpack/msgpack':
-        specifier: ^3.0.0
-        version: 3.0.1
+        specifier: ^3.1.0
+        version: 3.1.0
       '@smithy/util-base64':
         specifier: ^4.0.0
         version: 4.0.0
@@ -2936,8 +2936,8 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
-  '@msgpack/msgpack@3.0.1':
-    resolution: {integrity: sha512-9qysoVTITLcOFIIJeXbdtUgvvY25ojUp+WWfLc0O4H4KKWeamUNAqkjS5mej/PnVDnH70llWKNa7pzv5U4TqVQ==}
+  '@msgpack/msgpack@3.1.0':
+    resolution: {integrity: sha512-igBxaq5JHWdJ0lDyKkCo00pDu+bNVuBAs/cHra6a3ndCw6vlZK9BGLuG7Fvmar/DXK2uJ25zvgcAZEl+AvLpjQ==}
     engines: {node: '>= 18'}
 
   '@nanostores/react@0.8.4':
@@ -10143,7 +10143,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
-  '@msgpack/msgpack@3.0.1': {}
+  '@msgpack/msgpack@3.1.0': {}
 
   '@nanostores/react@0.8.4(nanostores@0.11.3)(react@19.0.0)':
     dependencies:
