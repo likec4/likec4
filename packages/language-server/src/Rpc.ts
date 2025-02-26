@@ -6,7 +6,7 @@ import { type DiagramView, LikeC4Model, nonexhaustive } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver'
 import { isLikeC4LangiumDocument } from './ast'
-import { Scheme } from './likec4lib'
+import { isLikeC4Builtin } from './likec4lib'
 import {
   buildDocuments,
   changeView,
@@ -47,9 +47,8 @@ export class Rpc extends ADisposable {
         })
       },
       {
-        minQuietPeriodMs: 250,
-        maxBurstDurationMs: 1000,
-        minGapMs: 200,
+        triggerAt: 'both',
+        minGapMs: 350,
       },
     )
 
@@ -69,8 +68,8 @@ export class Rpc extends ADisposable {
         return { model: null }
       }),
       connection.onRequest(fetchModel, async cancelToken => {
-        const parsed = await modelBuilder.parseModel(cancelToken)
-        return { model: parsed?.model ?? null }
+        const model = await modelBuilder.parseModel(cancelToken)
+        return { model }
       }),
       connection.onRequest(computeView, async ({ viewId }, cancelToken) => {
         const view = await modelBuilder.computeView(viewId, cancelToken)
@@ -91,9 +90,10 @@ export class Rpc extends ADisposable {
         const changed = docs.map(d => URI.parse(d))
         const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
         const deleted = LangiumDocuments.all
-          .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri) && d.uri.scheme !== Scheme)
-          .map(d => d.uri)
           .toArray()
+          .filter(d => !isLikeC4Builtin(d.uri) && isLikeC4LangiumDocument(d) && notChanged(d.uri))
+          .map(d => d.uri)
+
         logger.debug(
           `[ServerRpc] received request to build:
   changed (total ${changed.length}):${docs.map(d => '\n    - ' + d).join('')}

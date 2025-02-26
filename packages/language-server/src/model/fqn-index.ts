@@ -1,12 +1,12 @@
 import { invariant, nonNullable } from '@likec4/core'
 import { type Fqn, AsFqn } from '@likec4/core/types'
-import { ancestorsFqn, compareNatural, DefaultWeakMap, sortNaturalByFqn } from '@likec4/core/utils'
+import { ancestorsFqn, compareNatural, DefaultWeakMap, MultiMap, sortNaturalByFqn } from '@likec4/core/utils'
 import {
+  type AstNode,
   type LangiumDocuments,
   type Stream,
   AstUtils,
   DocumentState,
-  MultiMap,
   stream,
   WorkspaceCache,
 } from 'langium'
@@ -23,16 +23,19 @@ import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
 
-export class FqnIndex extends ADisposable {
+export class FqnIndex<AstNd extends AstNode = ast.Element> extends ADisposable {
   protected langiumDocuments: LangiumDocuments
   protected documentCache: DefaultWeakMap<LikeC4LangiumDocument, DocumentFqnIndex>
+  protected workspaceCache: WorkspaceCache<string, AstNodeDescriptionWithFqn[]>
 
-  protected cachePrefix = 'fqn-index'
-
-  constructor(protected services: LikeC4Services) {
+  constructor(
+    protected services: LikeC4Services,
+    private cachePrefix = 'fqn-index',
+  ) {
     super()
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     this.documentCache = new DefaultWeakMap(doc => this.createDocumentIndex(doc))
+    this.workspaceCache = new WorkspaceCache(services.shared, DocumentState.IndexedContent)
 
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
@@ -60,7 +63,8 @@ export class FqnIndex extends ADisposable {
     return this.documentCache.get(document)
   }
 
-  public getFqn(el: ast.Element | ast.DeploymentElement): Fqn {
+  public getFqn(el: AstNd): Fqn {
+    invariant(ast.isElement(el) || ast.isDeploymentElement(el))
     let id = ElementOps.readId(el)
     if (isTruthy(id)) {
       return id
@@ -68,30 +72,36 @@ export class FqnIndex extends ADisposable {
     // Document index is not yet created
     const doc = AstUtils.getDocument(el)
     invariant(isLikeC4LangiumDocument(doc))
+    logWarnError(`Document ${doc.uri.path} is not indexed, but getFqn was called`)
     // This will create the document index
     this.get(doc)
     return nonNullable(ElementOps.readId(el), 'Element fqn must be set, invalid state')
   }
 
   public byFqn(fqn: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    return this.documents().flatMap(doc => {
-      return this.get(doc).byFqn(fqn)
-    })
+    return stream(this.workspaceCache.get(`${this.cachePrefix}:${fqn}`, () => {
+      return this
+        .documents()
+        .toArray()
+        .flatMap(doc => {
+          return this.get(doc).byFqn(fqn)
+        })
+    }))
   }
 
   public directChildrenOf(parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
-      this.documents()
-        .reduce((map, doc) => {
-          this.get(doc).children(parent).forEach(desc => {
-            map.add(desc.name, desc)
-          })
-          return map
-        }, new MultiMap<string, AstNodeDescriptionWithFqn>())
-        .entriesGroupedByKey()
-        .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
-        .toArray()
-        .sort((a, b) => compareNatural(a.name, b.name)),
+      this.workspaceCache.get(`${this.cachePrefix}:directChildrenOf:${parent}`, () => {
+        const allchildren = this.documents()
+          .reduce((map, doc) => {
+            this.get(doc).children(parent).forEach(desc => {
+              map.set(desc.name, desc)
+            })
+            return map
+          }, new MultiMap<string, AstNodeDescriptionWithFqn>())
+        return uniqueByName(allchildren)
+          .sort((a, b) => compareNatural(a.name, b.name))
+      }),
     )
   }
 
@@ -99,36 +109,35 @@ export class FqnIndex extends ADisposable {
    * Returns descedant elements with unique names in the scope
    */
   public uniqueDescedants(parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    const { children, descendants } = this.documents()
-      .reduce((map, doc) => {
-        const docIndex = this.get(doc)
-        docIndex.children(parent).forEach(desc => {
-          map.children.add(desc.name, desc)
-        })
-        docIndex.descendants(parent).forEach(desc => {
-          map.descendants.add(desc.name, desc)
-        })
-        return map
-      }, {
-        children: new MultiMap<string, AstNodeDescriptionWithFqn>(),
-        descendants: new MultiMap<string, AstNodeDescriptionWithFqn>(),
-      })
+    return stream(
+      this.workspaceCache.get(`${this.cachePrefix}:uniqueDescedants:${parent}`, () => {
+        const { children, descendants } = this.documents()
+          .reduce((map, doc) => {
+            const docIndex = this.get(doc)
+            docIndex.children(parent).forEach(desc => {
+              map.children.set(desc.name, desc)
+            })
+            docIndex.descendants(parent).forEach(desc => {
+              map.descendants.set(desc.name, desc)
+            })
+            return map
+          }, {
+            children: new MultiMap<string, AstNodeDescriptionWithFqn>(),
+            descendants: new MultiMap<string, AstNodeDescriptionWithFqn>(),
+          })
 
-    const uniqueChildren = children
-      .entriesGroupedByKey()
-      .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
-      .toArray()
-      .sort((a, b) => compareNatural(a.name, b.name))
+        const uniqueChildren = uniqueByName(children)
+          .sort((a, b) => compareNatural(a.name, b.name))
 
-    const uniqueDescendants = descendants
-      .entriesGroupedByKey()
-      .flatMap(([_name, descs]) => descs.length === 1 && !children.has(_name) ? descs : [])
-      .toArray()
+        const uniqueDescendants = [...descendants.associations()]
+          .flatMap(([_name, descs]) => descs.length === 1 && !children.has(_name) ? descs : [])
 
-    return stream([
-      ...uniqueChildren,
-      ...sortNaturalByFqn(uniqueDescendants),
-    ])
+        return [
+          ...uniqueChildren,
+          ...sortNaturalByFqn(uniqueDescendants),
+        ]
+      }),
+    )
   }
 
   protected createDocumentIndex(document: LikeC4LangiumDocument): DocumentFqnIndex {
@@ -148,7 +157,7 @@ export class FqnIndex extends ADisposable {
         id: fqn,
       }
       ElementOps.writeId(node, fqn)
-      byfqn.add(fqn, desc)
+      byfqn.set(fqn, desc)
       return desc
     }
 
@@ -163,7 +172,7 @@ export class FqnIndex extends ADisposable {
         if (!parentFqn) {
           root.push(desc)
         } else {
-          children.add(parentFqn, desc)
+          children.set(parentFqn, desc)
         }
       } else {
         thisFqn = readStrictFqn(el.element)
@@ -182,18 +191,22 @@ export class FqnIndex extends ADisposable {
         }
       }
 
-      const directChildren = children.get(thisFqn)
+      const directChildren = children.get(thisFqn) ?? []
       _nested = [
         ...directChildren,
         ..._nested,
       ]
-      descendants.addAll(thisFqn, _nested)
-      if (ast.isExtendElement(el)) {
-        ancestorsFqn(thisFqn).forEach(ancestor => {
-          descendants.addAll(ancestor, _nested)
-        })
+      for (const child of _nested) {
+        descendants.set(thisFqn, child)
       }
-      return descendants.get(thisFqn)
+      if (ast.isExtendElement(el)) {
+        for (const ancestor of ancestorsFqn(thisFqn)) {
+          for (const child of _nested) {
+            descendants.set(ancestor, child)
+          }
+        }
+      }
+      return descendants.get(thisFqn) ?? []
     }
 
     for (const node of rootElements) {
@@ -209,6 +222,11 @@ export class FqnIndex extends ADisposable {
 
     return new DocumentFqnIndex(root, children, descendants, byfqn)
   }
+}
+
+function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>) {
+  return [...multimap.associations()]
+    .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
 }
 
 export class DocumentFqnIndex {
@@ -235,14 +253,14 @@ export class DocumentFqnIndex {
   }
 
   public byFqn(fqn: Fqn): readonly AstNodeDescriptionWithFqn[] {
-    return this._byfqn.get(fqn)
+    return this._byfqn.get(fqn) ?? []
   }
 
   public children(parent: Fqn): readonly AstNodeDescriptionWithFqn[] {
-    return this._children.get(parent)
+    return this._children.get(parent) ?? []
   }
 
   public descendants(nodeName: Fqn): readonly AstNodeDescriptionWithFqn[] {
-    return this._descendants.get(nodeName)
+    return this._descendants.get(nodeName) ?? []
   }
 }

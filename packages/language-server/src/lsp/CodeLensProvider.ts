@@ -17,14 +17,15 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     if (!isLikeC4LangiumDocument(doc)) {
       return
     }
-    if (doc.state !== DocumentState.Validated) {
-      logger.debug(`Waiting for document ${doc.uri.path} to be validated`)
+    if (doc.state <= DocumentState.Linked) {
+      logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
       await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
       logger.debug(`Document ${doc.uri.path} is validated`)
     }
     if (cancelToken) {
       await interruptAndCheck(cancelToken)
     }
+    this.services.likec4.ModelParser.parse(doc)
     const views = doc.parseResult.value.views.flatMap(v => v.views)
     return views.flatMap<CodeLens>(ast => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

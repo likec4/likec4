@@ -34,16 +34,20 @@ export function notifyAvailableUpdate() {
   const latestVersion = conf.get('latestVersion')
   const shouldUpdate = isEmpty(latestVersion) || isNullish(lastUpdateCheck) || (lastUpdateCheck + ONE_DAY < Date.now())
   if (shouldUpdate) {
-    spawn('likec4', ['check-update'], {
-      stdio: 'ignore',
-      preferLocal: true,
-      detached: true,
-      env: {
-        'NODE_ENV': ENV_CHECK_UPDATE,
-      },
-    }).catch(() => {
-      // ignore output
-    })
+    try {
+      spawn('likec4', ['check-update'], {
+        stdio: 'ignore',
+        preferLocal: true,
+        detached: true,
+        env: {
+          'NODE_ENV': ENV_CHECK_UPDATE,
+        },
+      }).catch(() => {
+        // ignore error
+      })
+    } catch (_error) {
+      // ignore error
+    }
   }
   if (latestVersion && semverGt(latestVersion, version)) {
     boxen([

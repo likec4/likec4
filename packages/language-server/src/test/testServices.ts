@@ -24,11 +24,8 @@ export function createTestServices(workspace = 'file:///test/workspace') {
 
   const addDocument = async (input: string, uri?: string) => {
     if (!isInitialized) {
+      isInitialized = true
       await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
-        if (isInitialized) {
-          return
-        }
-        isInitialized = true
         services.shared.workspace.WorkspaceManager.initialize({
           capabilities: {},
           processId: null,
@@ -104,7 +101,6 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
       await documentBuilder.build(docs, { validation: true }, cancelToken)
     })
-    await documentBuilder.waitUntil(DocumentState.Validated)
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
@@ -116,14 +112,18 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const buildModel = async () => {
-    await validateAll()
+    if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
+      await validateAll()
+    }
     const likec4model = await modelBuilder.buildLikeC4Model()
     if (!likec4model) throw new Error('No model found')
     return likec4model.$model as ComputedLikeC4Model
   }
 
   const buildLikeC4Model = async () => {
-    await validateAll()
+    if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
+      await validateAll()
+    }
     const likec4model = await modelBuilder.buildLikeC4Model()
     if (!likec4model) throw new Error('No model found')
     return likec4model

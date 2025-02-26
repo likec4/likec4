@@ -24,26 +24,37 @@ index dbab8c9292947a27478455e116188a7f073cb572..e95dd0fceeb164c159db9ade501249a4
        "require": "./*.js"
 diff --git a/patch.d.ts b/patch.d.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..d21a135574a27d9572660bfaf03ff24ea2f7b07e
+index 0000000000000000000000000000000000000000..02661c36fb3283b602a80ae5469c93027876597b
 --- /dev/null
 +++ b/patch.d.ts
-@@ -0,0 +1,5 @@
-+export * from './index';
+@@ -0,0 +1,13 @@
++export {
++  DefaultMap,
++  DefaultWeakMap,
++  LinkedList,
++  Queue,
++  Stack,
++  MultiMap
++} from './index';
 +export {
 +  intersection,
-+   symmetricDifference, union
++  symmetricDifference,
++  union
 +} from './set';
 diff --git a/patch.mjs b/patch.mjs
 new file mode 100644
-index 0000000000000000000000000000000000000000..2a51ca9f39c76a0d47453ba2beb6254c8a38a6fc
+index 0000000000000000000000000000000000000000..ca4e93dbba841a307679ae32f2deda0a28717486
 --- /dev/null
 +++ b/patch.mjs
-@@ -0,0 +1,8 @@
+@@ -0,0 +1,11 @@
 +export { default as DefaultMap } from './default-map.js';
 +export { default as DefaultWeakMap } from './default-weak-map.js';
 +export { default as LinkedList } from './linked-list.js';
 +export { default as Queue } from './queue.js';
++export { default as MultiMap } from './multi-map.js';
 +export {
-+  intersection, symmetricDifference, union
++  intersection,
++  symmetricDifference,
++  union
 +} from './set.js';
 +export { default as Stack } from './stack.js';

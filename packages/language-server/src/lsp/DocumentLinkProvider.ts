@@ -1,13 +1,11 @@
-import type { LangiumDocument, MaybePromise } from 'langium'
-import { AstUtils, DocumentState, GrammarUtils, interruptAndCheck } from 'langium'
+import type { LangiumDocument } from 'langium'
+import { AstUtils, GrammarUtils } from 'langium'
 import type { DocumentLinkProvider } from 'langium/lsp'
 import { hasLeadingSlash, hasProtocol, isRelative, withoutBase, withoutLeadingSlash } from 'ufo'
 import type { CancellationToken, DocumentLink, DocumentLinkParams } from 'vscode-languageserver'
-import { ast, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument } from '../ast'
-import { logger, logWarnError } from '../logger'
+import { ast, isLikeC4LangiumDocument } from '../ast'
+import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
-
-const log = logger.getChild('DocumentLinkProvider')
 
 export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   constructor(private services: LikeC4Services) {
@@ -22,21 +20,13 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     if (!isLikeC4LangiumDocument(doc)) {
       return []
     }
-    if (doc.state !== DocumentState.Validated) {
-      log.debug(`Waiting for document ${doc.uri.path} to be validated`)
-      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
-      log.debug(`Document ${doc.uri.path} is validated`)
-    }
-    if (cancelToken) {
-      await interruptAndCheck(cancelToken)
-    }
     return AstUtils.streamAllContents(doc.parseResult.value)
       .filter(ast.isLinkProperty)
       .map((n): DocumentLink | null => {
         try {
           const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
-          const target = this.resolveLink(doc, n.value)
-          if (range && hasProtocol(target)) {
+          const target = range && this.resolveLink(doc, n.value)
+          if (target && hasProtocol(target)) {
             return {
               range,
               target,

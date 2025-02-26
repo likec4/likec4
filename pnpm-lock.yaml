@@ -20,7 +20,7 @@ overrides:
 
 patchedDependencies:
   mnemonist@0.40.2:
-    hash: a98ea6210712b35b52d5939a207e1a099f9d684b9007bceb01a69ac901c59d3c
+    hash: 4f8081a8af19f2a55ea2454978498fcecd46d1f5ea440d0c6f370c620ca3d74f
     path: patches/mnemonist@0.40.2.patch
 
 importers:
@@ -449,7 +449,7 @@ importers:
         version: 0.24.8
       mnemonist:
         specifier: 0.40.2
-        version: 0.40.2(patch_hash=a98ea6210712b35b52d5939a207e1a099f9d684b9007bceb01a69ac901c59d3c)
+        version: 0.40.2(patch_hash=4f8081a8af19f2a55ea2454978498fcecd46d1f5ea440d0c6f370c620ca3d74f)
       natural-compare-lite:
         specifier: ^1.4.0
         version: 1.4.0
@@ -14045,7 +14045,7 @@ snapshots:
     dependencies:
       obliterator: 2.0.5
 
-  mnemonist@0.40.2(patch_hash=a98ea6210712b35b52d5939a207e1a099f9d684b9007bceb01a69ac901c59d3c):
+  mnemonist@0.40.2(patch_hash=4f8081a8af19f2a55ea2454978498fcecd46d1f5ea440d0c6f370c620ca3d74f):
     dependencies:
       obliterator: 2.0.5
 
