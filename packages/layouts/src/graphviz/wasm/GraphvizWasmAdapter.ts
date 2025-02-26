@@ -21,7 +21,8 @@ export class GraphvizWasmAdapter implements GraphvizPort {
         return await fn()
       } catch (e) {
         log.error(`FAILED GraphvizWasm.${logMessage}`, { error: e })
-        log.warn(`FAILED DOT:\n${dot}`)
+        log.warn(`FAILED DOT:`)
+        log.warn(dot)
         Graphviz.unload()
         GraphvizWasmAdapter._graphviz = null
       }
