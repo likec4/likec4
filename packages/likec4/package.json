@@ -155,7 +155,7 @@
     "framer-motion": "^12.4.7",
     "get-port": "^7.1.0",
     "glob": "^11.0.1",
-    "html-to-image": "^1.11.11",
+    "html-to-image": "^1.11.13",
     "json5": "^2.2.3",
     "ky": "^1.7.5",
     "langium": "3.3.1",
