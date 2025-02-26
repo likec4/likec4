@@ -44,7 +44,7 @@
     "esm-env": "^1.2.2",
     "nanostores": "0.11.3",
     "object-hash": "^3.0.0",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.3",
     "react": "~19.0.0",
     "react-dom": "~19.0.0",
     "react-error-boundary": "^5.0.0",

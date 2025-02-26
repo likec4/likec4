@@ -166,7 +166,7 @@
     "npm-run-all2": "^7.0.1",
     "p-limit": "^6.2.0",
     "package-up": "^5.0.0",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.3",
     "postcss-preset-mantine": "^1.17.0",
     "pretty-ms": "^9.2.0",
     "prop-types": "^15.8.1",
