@@ -70,6 +70,7 @@ export function computeDeploymentView<M extends AnyAux>(
 
   return calcViewLayoutHash({
     ...view,
+    rules,
     autoLayout: {
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),

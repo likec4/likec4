@@ -415,34 +415,31 @@ export interface ViewAutoLayout {
 export interface ComputedElementView<
   ViewIDs extends string = string,
   Tags extends string = string,
-> extends Omit<ElementView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
+> extends Omit<ElementView<ViewIDs, Tags>, 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly extends?: ViewId<ViewIDs>
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
-  rules?: never
   docUri?: never
 }
 export interface ComputedDynamicView<
   ViewIDs extends string = string,
   Tags extends string = string,
-> extends Omit<DynamicView<ViewIDs, Tags>, 'rules' | 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation {
+> extends Omit<DynamicView<ViewIDs, Tags>, 'steps' | 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
   steps?: never
-  rules?: never
   docUri?: never
 }
 
 export interface ComputedDeploymentView<
   ViewIDs extends string = string,
   Tags extends string = string,
-> extends Omit<DeploymentView<ViewIDs, Tags>, 'rules' | 'docUri'>, ViewWithHash, ViewWithNotation {
+> extends Omit<DeploymentView<ViewIDs, Tags>, 'docUri'>, ViewWithHash, ViewWithNotation {
   readonly autoLayout: ViewAutoLayout
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
-  rules?: never
   docUri?: never
 }
 

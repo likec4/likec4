@@ -1,18 +1,28 @@
+import { nonexhaustive } from '../../errors'
 import type { ElementModel } from '../../model/ElementModel'
 import type { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
-import type { Fqn } from '../../types'
+import {
+  type Fqn,
+  ComputedNode,
+  ComputedView,
+} from '../../types'
 import { ifind, toSet } from '../../utils/iterable'
+import { applyDeploymentViewRuleStyles } from '../deployment-view/utils'
+import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
+import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
+import { buildComputedNodes } from '../utils/buildComputedNodes'
 
 export function computeRelationshipsView(
   subjectId: Fqn,
   likec4model: LikeC4Model,
+  parentView: ComputedView | null,
 ): {
-  incomers: Set<ElementModel<LikeC4Model.Any>>
+  incomers: Set<ComputedNode>
   incoming: Set<RelationshipModel<LikeC4Model.Any>>
-  subjects: Set<ElementModel<LikeC4Model.Any>>
+  subjects: Set<ComputedNode>
   outgoing: Set<RelationshipModel<LikeC4Model.Any>>
-  outgoers: Set<ElementModel<LikeC4Model.Any>>
+  outgoers: Set<ComputedNode>
 } {
   const subject = likec4model.element(subjectId)
   let relationships = {
@@ -44,12 +54,17 @@ export function computeRelationshipsView(
     return parent ? [r.target, parent] : [r.target]
   }))
 
+  const [incomerNodes, subjectNodes, outgoerNodes] = [incomers, subjects, outgoers]
+    .map(elements => buildNodes(elements))
+    .map(nodes => applyParentViewStyles(parentView, nodes))
+    .map(nodes => new Set(nodes))
+
   return {
-    incomers,
+    incomers: incomerNodes!,
     incoming: new Set(relationships.incoming),
-    subjects,
+    subjects: subjectNodes!,
     outgoing: new Set(relationships.outgoing),
-    outgoers,
+    outgoers: outgoerNodes!,
   }
 
   // return {
@@ -71,4 +86,37 @@ export function computeRelationshipsView(
   //     outgoers,
   //   }),
   // }
+}
+
+function buildNodes(elements: Iterable<ElementModel>): ComputedNode[] {
+  const computedNodeSourcess = [...elements]
+    .map(e => ({ ...e.$element }))
+
+  const computedNodes = buildComputedNodes(computedNodeSourcess)
+
+  return [...computedNodes.values()]
+}
+
+function applyParentViewStyles(parentView: ComputedView | null, nodes: ComputedNode[]) {
+  if (!parentView) {
+    return nodes
+  }
+
+  switch (true) {
+    case ComputedView.isDeployment(parentView):
+      return applyDeploymentViewRuleStyles(parentView.rules, nodes)
+
+    case ComputedView.isElement(parentView):
+    case ComputedView.isDynamic(parentView):
+      return applyCustomElementProperties(
+        parentView.rules,
+        applyViewRuleStyles(
+          parentView.rules,
+          nodes,
+        ),
+      )
+
+    default:
+      nonexhaustive(parentView)
+  }
 }
