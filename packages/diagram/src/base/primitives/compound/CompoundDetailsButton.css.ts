@@ -1,4 +1,5 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
+import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
 import { vars } from '../../../theme-vars'
 
 export const container = style({
@@ -46,6 +47,9 @@ export const actionIcon = style({
         '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 10%)`,
         '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
       },
+    },
+    [`${reactFlowReducedGraphics} &`]: {
+      boxShadow: 'none',
     },
   },
 })

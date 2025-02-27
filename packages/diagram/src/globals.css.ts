@@ -6,6 +6,9 @@ import { mantine, vars, whereDark } from './theme-vars'
 
 export const rootClassName = 'likec4-diagram-root'
 
+export const whereReducedGraphics = `:where(.${rootClassName}:is([data-likec4-reduced-graphics="true"]))`
+export const whereNotReducedGraphics = `:where(.${rootClassName}:not([data-likec4-reduced-graphics]))`
+
 globalStyle(`.${rootClassName}`, {
   overflow: 'hidden',
   position: 'relative',

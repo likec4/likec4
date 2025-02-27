@@ -1,7 +1,7 @@
-import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
-import { easings, mantine, vars, whereLight } from '../../../theme-vars'
+import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
+import { easings, vars, whereLight } from '../../../theme-vars'
 
 export const varCompoundOpacity = createVar('opacity')
 export const varBorderRadius = createVar('borderRadius')
@@ -10,75 +10,55 @@ export const varBorderColor = createVar('border-color')
 const varBorderWidth = createVar('border-width')
 
 export const container = style({
+  vars: {
+    [varBorderRadius]: '6px',
+    [varBorderWidth]: '3px',
+  },
   position: 'relative',
   width: '100%',
   height: '100%',
   padding: 0,
   margin: 0,
   border: '0px solid transparent',
-  vars: {
-    [varBorderRadius]: '6px',
-    [varBorderWidth]: '3px',
-  },
-})
-
-globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="true"])`, {
-  opacity: 0.25,
-  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
-  transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  willChange: 'opacity, filter',
-})
-
-globalStyle(`.react-flow__node:has(${container}[data-likec4-dimmed="immediate"])`, {
-  opacity: 0.25,
-  transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
-  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-  willChange: 'opacity, filter',
-})
-
-const outlineColor = fallbackVar(
-  mantine.colors.primaryColors.outline,
-  mantine.colors.primaryColors.filled,
-  vars.element.stroke,
-)
-
-export const compoundBg = style({
-  borderRadius: varBorderRadius,
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
-  padding: 0,
-  margin: 0,
-  transition: `all 250ms ${easings.inOut}`,
-  // backgroundClip: 'padding-box',
-  // overflow: 'hidden',
-  cursor: 'default',
+  ':before': {
+    borderRadius: varBorderRadius,
+    content: ' ',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    border: '0px solid transparent',
+    background: vars.element.fill,
+    backgroundClip: 'padding-box',
+  },
   selectors: {
-    [`:where(.react-flow__node.dragging) &`]: {
+    [`&:is([data-compound-transparent="true"])`]: {
       boxShadow: 'none',
     },
-    ':where(.react-flow__node:focus-visible) &': {
-      transitionDuration: '0ms',
-      outline: `3px solid ${outlineColor}`,
-      outlineOffset: rem(1.5),
-    },
-    [`:where([data-compound-transparent="true"]) &`]: {
+    [`&:is([data-compound-transparent="true"]):before`]: {
       opacity: varCompoundOpacity,
       borderWidth: calc(varBorderWidth).subtract('1px').toString(),
     },
-    [`:where([data-compound-transparent="true"]:is([data-hovered="true"])) &`]: {
-      transitionDelay: '0.15s',
-      transitionDuration: '0.4s',
+    [`${whereNotReducedGraphics} &:is([data-compound-transparent="true"]):before`]: {
+      transition: `all 200ms ${easings.inOut}`,
+    },
+    [`:where(.react-flow__node.dragging) &`]: {
+      boxShadow: 'none',
+    },
+    [`&:is([data-likec4-dimmed="true"])`]: {
+      opacity: 0.25,
+      transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+      transitionDelay: '200ms',
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+    },
+    [`&:is([data-likec4-dimmed="immediate"])`]: {
+      opacity: 0.25,
+      transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
     },
   },
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  pointerEvents: 'none',
-  border: '0px solid transparent',
-  background: vars.element.fill,
-  backgroundClip: 'padding-box',
 })
 
 globalStyle(`:where([data-mantine-color-scheme='dark'] [data-compound-transparent="true"])`, {
@@ -157,11 +137,13 @@ export const indicator = style({
 
 globalStyle(`${indicator} rect`, {
   stroke: indicatorStroke,
-  transformOrigin: 'center center',
   strokeWidth: indicatorStrokeWidth,
+  fill: 'none',
+})
+globalStyle(`${whereNotReducedGraphics}  ${indicator} rect`, {
+  transformOrigin: 'center center',
   animationDuration: '800ms',
-  animationName: indicatorKeyframes,
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
-  fill: 'none',
+  animationName: indicatorKeyframes,
 })

@@ -5,8 +5,8 @@ import { IconChevronLeft, IconChevronRight, IconX } from '@tabler/icons-react'
 import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
-import { AnimatePresence, LayoutGroup, m, useUnmountEffect } from 'framer-motion'
-import { memo, useEffect, useId, useRef } from 'react'
+import { AnimatePresence, LayoutGroup, m } from 'framer-motion'
+import { memo, useEffect, useRef } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useRelationshipsView } from './-useRelationshipsView'
@@ -18,7 +18,6 @@ import { nodeTypes } from './custom/nodeTypes'
 import {
   RelationshipsBrowserActorContext,
   useRelationshipsBrowser,
-  useRelationshipsBrowserActor,
   useRelationshipsBrowserState,
 } from './hooks'
 import { SelectElement } from './SelectElement'
@@ -32,14 +31,14 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
   //   return null
   // }
   const initialRef = useRef<{
-    defaultNodes: Types.Node[]
-    defaultEdges: Types.Edge[]
+    initialNodes: Types.Node[]
+    initialEdges: Types.Edge[]
   }>(null)
 
   if (initialRef.current == null) {
     initialRef.current = {
-      defaultNodes: [],
-      defaultEdges: [],
+      initialNodes: [],
+      initialEdges: [],
     }
   }
 
@@ -85,6 +84,7 @@ const RelationshipsBrowserXYFlow = memo(() => {
       className={clsx(isActive ? 'initialized' : 'not-initialized')}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      fitView={false}
       fitViewPadding={ViewPadding}
       onNodeClick={useCallbackRef((e, node) => {
         e.stopPropagation()
@@ -111,8 +111,16 @@ const RelationshipsBrowserXYFlow = memo(() => {
       onEdgesChange={useCallbackRef((changes) => {
         browser.send({ type: 'xyflow.applyEdgeChanges', changes })
       })}
+      onEdgeMouseEnter={useCallbackRef((_event, edge) => {
+        browser.send({ type: 'xyflow.edgeMouseEnter', edge })
+      })}
+      onEdgeMouseLeave={useCallbackRef((_event, edge) => {
+        browser.send({ type: 'xyflow.edgeMouseLeave', edge })
+      })}
+      onSelectionChange={useCallbackRef((params) => {
+        browser.send({ type: 'xyflow.selectionChange', ...params })
+      })}
       nodesDraggable={false}
-      fitView={false}
       pannable
       zoomable
     >

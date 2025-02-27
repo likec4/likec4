@@ -1,7 +1,8 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
-import { type PropsWithChildren, type RefObject, createContext, createRef, useContext, useRef } from 'react'
+import { type PropsWithChildren, createContext, createRef, useContext, useRef } from 'react'
 import { rootClassName } from '../globals.css'
+import { useIsReducedGraphics } from '../hooks/useIsReducedGraphics'
 
 const RootContainerContext = createContext(createRef<HTMLDivElement>())
 
@@ -10,8 +11,14 @@ export function RootContainer({
   children,
 }: PropsWithChildren<{ className?: string | undefined }>) {
   const ref = useRef<HTMLDivElement>(null)
+  const reduceGraphics = useIsReducedGraphics()
   return (
-    <Box className={clsx(rootClassName, className)} ref={ref}>
+    <Box
+      className={clsx(rootClassName, className)}
+      ref={ref}
+      {...reduceGraphics && {
+        ['data-likec4-reduced-graphics']: true,
+      }}>
       <RootContainerContext.Provider value={ref}>
         {children}
       </RootContainerContext.Provider>

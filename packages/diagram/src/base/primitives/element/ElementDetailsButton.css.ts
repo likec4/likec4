@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
 import { vars } from '../../../theme-vars'
 
 export const container = style({
@@ -43,12 +44,9 @@ export const actionIcon = style({
   ':hover': {
     boxShadow: '1px 1px 3px 0px rgba(0, 0, 0, 0.15)',
   },
-  // selectors: {
-  //   [`:where([data-hovered='true']) &`]: {
-  //     // boxShadow: '1px 1px 3px 0px rgba(0, 0, 0, 0.15)',
-  //     // vars: {
-  //     //   '--ai-bg': `var(--ai-bg-hover)`,
-  //     // },
-  //   },
-  // },
+  selectors: {
+    [`${reactFlowReducedGraphics} &`]: {
+      boxShadow: 'none',
+    },
+  },
 })

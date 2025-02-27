@@ -1,16 +1,17 @@
+import { memo } from 'react'
 import { useEnabledFeatures } from '../context'
 import { useDiagramActorSnapshot } from '../hooks/useDiagram'
 import { Overlays } from '../overlays/Overlays'
 import { Controls, DiagramTitlePanel, DynamicViewWalkthrough, NotationPanel } from './ui'
 
-export function DiagramUI() {
+export const DiagramUI = memo(() => {
   const {
     enableViewTitle,
     enableNotations,
     enableDynamicViewWalkthrough,
   } = useEnabledFeatures()
 
-  const overlaysActorRef = useDiagramActorSnapshot(s => s.children.overlays)
+  const overlaysActorRef = useDiagramActorSnapshot(s => s.children.overlays, Object.is)
 
   return (
     <>
@@ -21,4 +22,5 @@ export function DiagramUI() {
       {enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
     </>
   )
-}
+})
+DiagramUI.displayName = 'DiagramUI'

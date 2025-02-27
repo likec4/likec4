@@ -1,4 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css'
+import { whereNotReducedGraphics, whereReducedGraphics } from './globals.css'
 import { vars, xyvars } from './theme-vars'
 
 export const cssReactFlow = style({
@@ -12,6 +13,10 @@ export const cssReactFlow = style({
     },
   },
 })
+
+export const reactFlowReducedGraphics = `${whereReducedGraphics} ${cssReactFlow}`
+export const reactFlow = `${whereNotReducedGraphics} ${cssReactFlow}`
+export { whereNotReducedGraphics, whereReducedGraphics }
 
 export const notInitialized = style({
   opacity: 0,
@@ -30,11 +35,6 @@ globalStyle(`.react-flow${cssReactFlow}`, {
 globalStyle(`.react-flow${cssReactFlow} .react-flow__pane`, {
   WebkitUserSelect: 'none',
 })
-
-globalStyle(`.react-flow${cssReactFlow} .xyflow__viewport`, {
-  willChange: 'transform',
-})
-
 export const cssDisablePan = style({})
 
 export const cssTransparentBg = style({})
@@ -54,6 +54,14 @@ globalStyle(`:where(.react-flow${cssReactFlow}, ${cssTransparentBg}) .react-flow
 export const hiddenIfZoomTooSmall = style({
   selectors: {
     [`:where([data-likec4-zoom-small="true"]) &`]: {
+      visibility: 'hidden',
+    },
+  },
+})
+
+export const hiddenIfReducedGraphics = style({
+  selectors: {
+    [`${reactFlowReducedGraphics} &`]: {
       visibility: 'hidden',
     },
   },

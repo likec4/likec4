@@ -77,6 +77,9 @@ export type Events =
   | { type: 'xyflow.resized' }
   | { type: 'xyflow.edgeMouseEnter'; edge: RelationshipsBrowserTypes.Edge }
   | { type: 'xyflow.edgeMouseLeave'; edge: RelationshipsBrowserTypes.Edge }
+  | { type: 'xyflow.selectionChange'; nodes: RelationshipsBrowserTypes.Node[]; edges: RelationshipsBrowserTypes.Edge[] }
+  | { type: 'dim.nonhovered.edges' }
+  | { type: 'undim.edges' }
   | { type: 'xyflow.updateNodeInternals' }
   | { type: 'xyflow.unmount' }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
@@ -274,7 +277,7 @@ export const relationshipsBrowserLogic = setup({
         }
       }
 
-      requestAnimationFrame(() => updateNodeInternals(updates, { triggerFitView: false }))
+      updateNodeInternals(updates, { triggerFitView: false })
     },
     'xyflow:fitDiagram': ({ context }, params?: { duration?: number; bounds?: BBox }) => {
       let {
@@ -289,16 +292,14 @@ export const relationshipsBrowserLogic = setup({
       if (bounds) {
         const { width, height } = xystore.getState()
         const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, ViewPadding)
-        requestAnimationFrame(() => xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined))
+        xyflow.setViewport(viewport, duration > 0 ? { duration } : undefined)
       } else {
-        requestAnimationFrame(() =>
-          xyflow.fitView({
-            minZoom: MinZoom,
-            maxZoom,
-            padding: ViewPadding,
-            ...(duration > 0 && { duration }),
-          })
-        )
+        xyflow.fitView({
+          minZoom: MinZoom,
+          maxZoom,
+          padding: ViewPadding,
+          ...(duration > 0 && { duration }),
+        })
       }
     },
   },
@@ -350,7 +351,10 @@ export const relationshipsBrowserLogic = setup({
     'isReady': {
       always: [{
         guard: 'isReady',
-        actions: raise({ type: 'fitDiagram', duration: 0 }),
+        actions: [
+          raise({ type: 'fitDiagram', duration: 0 }),
+          raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 }),
+        ],
         target: 'active',
       }, {
         target: 'initializing',
@@ -360,7 +364,74 @@ export const relationshipsBrowserLogic = setup({
       initial: 'idle',
       tags: ['active'],
       states: {
-        'idle': {},
+        'idle': {
+          on: {
+            'xyflow.edgeMouseEnter': {
+              actions: [
+                assign({
+                  xyedges: ({ context, event }) => {
+                    const hasDimmed = context.xyedges.some(edge => edge.data.dimmed === true)
+                    return context.xyedges.map(edge => {
+                      if (edge.id === event.edge.id) {
+                        return Base.setData(edge, {
+                          hovered: true,
+                          dimmed: false,
+                        })
+                      }
+                      return hasDimmed && !edge.data.dimmed && !edge.selected ? Base.setDimmed(edge, 'immediate') : edge
+                    })
+                  },
+                }),
+                cancel('undim.edges'),
+                cancel('dim.nonhovered.edges'),
+                raise({ type: 'dim.nonhovered.edges' }, { id: 'dim.nonhovered.edges', delay: 100 }),
+              ],
+            },
+            'xyflow.edgeMouseLeave': {
+              actions: [
+                assign({
+                  xyedges: ({ context, event }) =>
+                    context.xyedges.map(edge => {
+                      if (edge.id === event.edge.id) {
+                        return Base.setHovered(edge, false)
+                      }
+                      return edge
+                    }),
+                }),
+                cancel('dim.nonhovered.edges'),
+                raise({ type: 'undim.edges' }, { id: 'undim.edges', delay: 400 }),
+              ],
+            },
+            'dim.nonhovered.edges': {
+              actions: assign({
+                xyedges: ({ context }) => context.xyedges.map(edge => Base.setDimmed(edge, edge.data.hovered !== true)),
+              }),
+            },
+            'undim.edges': {
+              actions: assign({
+                xyedges: ({ context }) => {
+                  const hasSelected = context.xyedges.some(edge => edge.selected === true)
+                  if (hasSelected) {
+                    return context.xyedges.map(edge =>
+                      Base.setDimmed(edge, edge.selected !== true ? edge.data.dimmed || 'immediate' : false)
+                    )
+                  }
+                  return context.xyedges.map(Base.setDimmed(false))
+                },
+              }),
+            },
+            'xyflow.selectionChange': {
+              actions: enqueueActions(({ event, context, enqueue }) => {
+                if (
+                  event.edges.length === 0 && context.xyedges.some(e => e.data.dimmed) &&
+                  !context.xyedges.some(e => e.data.hovered)
+                ) {
+                  enqueue.raise({ type: 'undim.edges' })
+                }
+              }),
+            },
+          },
+        },
         'layouting': {
           invoke: {
             id: 'layouter',
@@ -376,17 +447,16 @@ export const relationshipsBrowserLogic = setup({
             },
             onDone: {
               target: 'idle',
-              actions: [
-                assign({
-                  xynodes: ({ event }) => event.output.xynodes,
-                  xyedges: ({ event }) => event.output.xyedges,
+              actions: enqueueActions(({ enqueue, event }) => {
+                enqueue.assign({
+                  xynodes: event.output.xynodes,
+                  xyedges: event.output.xyedges,
                   navigateFromNode: null,
-                }),
-                raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 80 }),
-                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 }),
-                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 250 }),
-                raise({ type: 'xyflow.updateNodeInternals' }, { delay: 500 }),
-              ],
+                }), enqueue.raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 50 })
+                for (let i = 0; i <= 10; i++) {
+                  enqueue.raise({ type: 'xyflow.updateNodeInternals' }, { delay: 100 + i * 50 })
+                }
+              }),
             },
           },
           on: {

@@ -1,4 +1,4 @@
-import { DefaultWeakMap, invariant } from '@likec4/core'
+import { DefaultWeakMap } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { type LangiumDocument, type Stream, DocumentState } from 'langium'
 import { pipe } from 'remeda'
@@ -81,7 +81,9 @@ export class LikeC4ModelParser {
   }
 
   forDocument(doc: LangiumDocument): DocumentParser {
-    invariant(doc.state >= DocumentState.Linked, `Not a Linked: ${doc.uri.toString(true)}`)
+    if (doc.state < DocumentState.Linked) {
+      logger.warn(`Document ${doc.uri.toString()} is not linked`)
+    }
     return this.cachedParsers.get(doc)
   }
 

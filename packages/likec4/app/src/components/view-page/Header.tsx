@@ -38,7 +38,6 @@ export function Header({ diagram }: HeaderProps) {
   return (
     <Paper
       className={css.cssHeader}
-      pos={'fixed'}
       top={'0.5rem'}
       right={'0.5rem'}
       p={4}

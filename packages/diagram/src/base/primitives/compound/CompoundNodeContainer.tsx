@@ -1,10 +1,11 @@
 import type { DiagramNode } from '@likec4/core'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
-import { assignInlineVars } from '@vanilla-extract/dynamic'
+import { useDebouncedValue } from '@mantine/hooks'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { clamp, isNumber } from 'remeda'
+import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
 import type { NodeProps } from '../../types'
 import * as css from './CompoundNodeContainer.css'
 
@@ -22,32 +23,49 @@ type CompoundNodeContainerProps =
     nodeProps: NodeProps<RequiredData>
   }>
 
+function getVarName(variable: string): string {
+  var matches = variable.match(/^var\((.*)\)$/)
+  if (matches) {
+    return matches[1]!
+  }
+  return variable
+}
+
+const opacityVar = getVarName(css.varCompoundOpacity)
+const borderTransparencyVar = getVarName(css.varBorderTransparency)
+
 export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundNodeContainerProps>(
   forwardRef<HTMLDivElement, CompoundNodeContainerProps>(({
     nodeProps: {
+      selected: isSelected = false,
       data: {
         hovered: isHovered = false,
         dimmed: isDimmed = false,
-        style,
         ...data
       },
     },
     children,
+    style,
     ...rest
   }, ref) => {
-    const isTransparent = isNumber(style.opacity) && style.opacity < 100
-    let opacity = clamp((style.opacity ?? 100) / 100, {
+    const isReducedGraphics = useIsReducedGraphics()
+    const isTransparent = isNumber(data.style.opacity) && data.style.opacity < 100
+    let _opacity = clamp((data.style.opacity ?? 100) / 100, {
       min: 0,
       max: 1,
     })
-    if (isTransparent && isHovered) {
-      opacity = Math.min(opacity + 0.11, 1)
+    if (isTransparent && isHovered && !isReducedGraphics) {
+      _opacity = Math.min(_opacity + 0.11, 1)
     }
+
+    const [opacity] = useDebouncedValue(Math.round(_opacity * 100) / 100, isHovered ? 200 : 50)
+
     const MAX_TRANSPARENCY = 40
     const borderTransparency = clamp(MAX_TRANSPARENCY - opacity * MAX_TRANSPARENCY, {
       min: 0,
       max: MAX_TRANSPARENCY,
     })
+
     return (
       <Box
         ref={ref}
@@ -63,29 +81,31 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         data-compound-transparent={isTransparent}
         data-likec4-dimmed={isDimmed}
         data-likec4-shape={data.shape}
-        style={assignInlineVars({
-          [css.varCompoundOpacity]: opacity.toFixed(2),
-          [css.varBorderTransparency]: `${borderTransparency}%`,
-        })}
+        style={{
+          ...style,
+          [opacityVar]: opacity,
+          [borderTransparencyVar]: `${borderTransparency}%`,
+        }}
         {...rest}
       >
-        <svg className={css.indicator}>
-          <rect
-            x={0}
-            y={0}
-            width={'100%'}
-            height={'100%'}
-            rx={6}
-          />
-        </svg>
-        <div className={css.compoundBg} />
-        {isTransparent && style.border !== 'none' && (
+        {isTransparent && !isSelected && data.style.border !== 'none' && (
           <div
             className={css.compoundBorder}
             style={{
-              borderStyle: style.border ?? 'dashed',
+              borderStyle: data.style.border ?? 'dashed',
             }}
           />
+        )}
+        {isSelected && (
+          <svg className={css.indicator}>
+            <rect
+              x={0}
+              y={0}
+              width={'100%'}
+              height={'100%'}
+              rx={6}
+            />
+          </svg>
         )}
         {children}
       </Box>

@@ -6,6 +6,7 @@ import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hoo
 import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
 import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
+import { stopPropagation } from '../../utils'
 import * as css from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<
@@ -92,12 +93,14 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
         },
       }}
       onClick={e => {
+        e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          e.stopPropagation()
           dialogRef.current?.close()
           return
         }
       }}
+      onDoubleClick={stopPropagation}
+      onPointerDown={stopPropagation}
       onClose={e => {
         e.stopPropagation()
         close()

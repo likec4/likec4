@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
 import { transitions, vars } from '../../../theme-vars'
 
 export const container = style({
@@ -40,6 +41,9 @@ export const actionIcon = style({
       vars: {
         '--ai-bg': `var(--ai-bg-hover)`,
       },
+    },
+    [`${reactFlowReducedGraphics} &`]: {
+      boxShadow: 'none',
     },
   },
 })
