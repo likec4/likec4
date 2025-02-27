@@ -115,8 +115,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0(@astrojs/starlight@0.31.1(astro@5.2.5(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.34.6)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0)))
       starlight-links-validator:
-        specifier: ^0.14.2
-        version: 0.14.2(@astrojs/starlight@0.31.1(astro@5.2.5(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.34.6)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0)))
+        specifier: ^0.14.3
+        version: 0.14.3(@astrojs/starlight@0.31.1(astro@5.2.5(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.34.6)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0)))
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
@@ -7007,8 +7007,8 @@ packages:
     peerDependencies:
       '@astrojs/starlight': '>=0.30.0'
 
-  starlight-links-validator@0.14.2:
-    resolution: {integrity: sha512-OsPngajtW4kB/oxiW3Kt1Fd+rY3opdIWbD/n5pGQMzil03QujT6rAeHEBR4tXRdjQW4HnFZYIy/ANhBu4kUNfQ==}
+  starlight-links-validator@0.14.3:
+    resolution: {integrity: sha512-2CvQs0ZdIVExrEQ1bn0r2aFx4n+VSOb6vDWK+gTNb5N1c+nXJ7VjUbEsQhj+9Lb7XgY6Nxqz9JXUM9364hJ3ZA==}
     engines: {node: '>=18.17.1'}
     peerDependencies:
       '@astrojs/starlight': '>=0.15.0'
@@ -15205,7 +15205,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-links-validator@0.14.2(@astrojs/starlight@0.31.1(astro@5.2.5(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.34.6)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0))):
+  starlight-links-validator@0.14.3(@astrojs/starlight@0.31.1(astro@5.2.5(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.34.6)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0))):
     dependencies:
       '@astrojs/starlight': 0.31.1(astro@5.2.5(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.34.6)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0))
       '@types/picomatch': 3.0.2
@@ -15214,9 +15214,12 @@ snapshots:
       hast-util-has-property: 3.0.0
       is-absolute-url: 4.0.1
       kleur: 4.1.5
+      mdast-util-mdx-jsx: 3.2.0
       mdast-util-to-string: 4.0.0
       picomatch: 4.0.2
       unist-util-visit: 5.0.0
+    transitivePeerDependencies:
+      - supports-color
 
   std-env@3.8.0: {}
 
