@@ -1,3 +1,16 @@
+## [1.24.1](https://github.com/likec4/likec4/compare/v1.24.0...v1.24.1) (2025-02-27)
+
+
+### Improvements
+
+* **cli:** added an alias for ignore-layout option, thanks @pavelpykhtin ([#1648](https://github.com/likec4/likec4/issues/1648))), closes [#1638](https://github.com/likec4/likec4/issues/1638) 
+* **cli:** temprorary enable access to any host (check [#1649](https://github.com/likec4/likec4/issues/1649) for details)
+
+### Bug Fixes
+
+* **diagram:** reduce visuals for large diagrams, closes [#1624](https://github.com/likec4/likec4/issues/1624) 
+
+
 # [1.24.0](https://github.com/likec4/likec4/compare/v1.23.1...v1.24.0) (2025-02-25)
 
 ### 🚀 Features

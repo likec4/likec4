@@ -1,6 +1,6 @@
 {
   "name": "@likec4/tsconfig",
-  "version": "1.24.0",
+  "version": "1.24.1",
   "private": true,
   "license": "MIT",
   "publishConfig": {
