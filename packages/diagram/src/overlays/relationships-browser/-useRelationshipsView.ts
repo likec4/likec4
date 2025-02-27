@@ -391,6 +391,16 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
     })
   }
 
+  const edgeCount = g.edgeCount()
+  if (edgeCount > 10) {
+    for (const edge of g.edges()) {
+      g.setEdge(edge, {
+        ...Sizes.edgeLabel,
+        width: edgeCount > 30 ? 800 : 400,
+      })
+    }
+  }
+
   const dagreBounds = applyDagreLayout(g)
 
   // Calculate bounds for all nodes except compounds

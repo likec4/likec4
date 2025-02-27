@@ -11,7 +11,8 @@ import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
 import { useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
-import { useUpdateEffect } from '../hooks'
+import { ReducedGraphicsContext } from '../hooks/useIsReducedGraphics'
+import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall } from '../hooks/useXYFlow'
 import * as css from '../LikeC4Diagram.css'
 import { stopPropagation } from '../utils/xyflow'
@@ -21,6 +22,11 @@ import { Base } from './types'
 
 export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Edge> = Simplify<
   & {
+    /**
+     * Reduce visuals (shadows/opacity etc) for performance
+     * @defaultValue false
+     */
+    reduceGraphics?: boolean
     pannable?: boolean
     zoomable?: boolean
     nodesSelectable?: boolean
@@ -42,10 +48,8 @@ export type BaseXYFlowProps<NodeType extends Base.Node, EdgeType extends Base.Ed
       | 'zoomActivationKeyCode'
       | 'zoomOnScroll'
       | 'elementsSelectable'
-      | 'onNodeMouseEnter'
-      | 'onNodeMouseLeave'
-      | 'onEdgeMouseEnter'
-      | 'onEdgeMouseLeave'
+      | 'onNodeDoubleClick'
+      | 'onEdgeDoubleClick'
       | 'fitViewOptions'
     >,
     // Required props
@@ -69,6 +73,7 @@ export const BaseXYFlow = <
   zoomable = true,
   nodesSelectable = true,
   nodesDraggable = false,
+  reduceGraphics = false,
   background = 'dots',
   children,
   colorMode = 'system',
@@ -80,96 +85,97 @@ export const BaseXYFlow = <
 }: BaseXYFlowProps<NodeType, EdgeType>) => {
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
-  const tooManyElements = nodes.length + edges.length > 50
   return (
-    <ReactFlow<NodeType, EdgeType>
-      colorMode={colorMode}
-      nodes={nodes}
-      edges={edges}
-      className={clsx(
-        css.cssReactFlow,
-        pannable !== true && css.cssDisablePan,
-        background === 'transparent' && css.cssTransparentBg,
-        className,
-      )}
-      {...isZoomTooSmall && {
-        ['data-likec4-zoom-small']: true,
-      }}
-      {...!tooManyElements && {
-        ['data-likec4-enable-mix-blend']: true,
-      }}
-      zoomOnPinch={zoomable}
-      zoomOnScroll={!pannable && zoomable}
-      {...(!zoomable && {
-        zoomActivationKeyCode: null,
-      })}
-      zoomOnDoubleClick={zoomOnDoubleClick}
-      maxZoom={zoomable ? MaxZoom : 1}
-      minZoom={zoomable ? MinZoom : 1}
-      fitView={fitView}
-      fitViewOptions={useMemo(() => ({
-        minZoom: MinZoom,
-        maxZoom: 1,
-        padding: fitViewPadding,
-        includeHiddenNodes: false,
-      }), [fitViewPadding])}
-      preventScrolling={zoomable || pannable}
-      defaultMarkerColor="var(--xy-edge-stroke)"
-      noDragClassName="nodrag"
-      noPanClassName="nopan"
-      panOnScroll={pannable}
-      panOnDrag={pannable}
-      {...(!pannable && {
-        selectionKeyCode: null,
-      })}
-      onlyRenderVisibleElements={tooManyElements}
-      elementsSelectable={nodesSelectable}
-      nodesFocusable={nodesDraggable || nodesSelectable}
-      edgesFocusable={false}
-      nodesDraggable={nodesDraggable}
-      nodeDragThreshold={4}
-      nodeClickDistance={1.9}
-      paneClickDistance={1.9}
-      elevateNodesOnSelect={false} // or edges are not visible after select\
-      selectNodesOnDrag={false}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onNodeMouseEnter={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, true),
-        }])
-      })}
-      onNodeMouseLeave={useCallbackRef((_event, node) => {
-        onNodesChange([{
-          id: node.id,
-          type: 'replace',
-          item: Base.setHovered(node, false),
-        }])
-      })}
-      onEdgeMouseEnter={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, true),
-        }])
-      })}
-      onEdgeMouseLeave={useCallbackRef((_event, edge) => {
-        onEdgesChange([{
-          id: edge.id,
-          type: 'replace',
-          item: Base.setHovered(edge, false),
-        }])
-      })}
-      onNodeDoubleClick={stopPropagation}
-      onEdgeDoubleClick={stopPropagation}
-      {...props}
-    >
-      {isBgWithPattern && <Background background={background} />}
-      <BaseXYFlowInner onViewportResize={onViewportResize} />
-      {children}
-    </ReactFlow>
+    <ReducedGraphicsContext value={reduceGraphics}>
+      <ReactFlow<NodeType, EdgeType>
+        colorMode={colorMode}
+        nodes={nodes}
+        edges={edges}
+        className={clsx(
+          css.cssReactFlow,
+          pannable !== true && css.cssDisablePan,
+          background === 'transparent' && css.cssTransparentBg,
+          className,
+        )}
+        {...isZoomTooSmall && {
+          ['data-likec4-zoom-small']: true,
+        }}
+        {...reduceGraphics && {
+          ['data-likec4-reduced-graphics']: true,
+        }}
+        zoomOnPinch={zoomable}
+        zoomOnScroll={!pannable && zoomable}
+        {...(!zoomable && {
+          zoomActivationKeyCode: null,
+        })}
+        zoomOnDoubleClick={zoomOnDoubleClick}
+        maxZoom={zoomable ? MaxZoom : 1}
+        minZoom={zoomable ? MinZoom : 1}
+        fitView={fitView}
+        fitViewOptions={useMemo(() => ({
+          minZoom: MinZoom,
+          maxZoom: 1,
+          padding: fitViewPadding,
+          includeHiddenNodes: false,
+        }), [fitViewPadding])}
+        preventScrolling={zoomable || pannable}
+        defaultMarkerColor="var(--xy-edge-stroke)"
+        noDragClassName="nodrag"
+        noPanClassName="nopan"
+        panOnScroll={pannable}
+        panOnDrag={pannable}
+        {...(!pannable && {
+          selectionKeyCode: null,
+        })}
+        onlyRenderVisibleElements={reduceGraphics}
+        elementsSelectable={nodesSelectable}
+        nodesFocusable={nodesDraggable || nodesSelectable}
+        edgesFocusable={false}
+        nodesDraggable={nodesDraggable}
+        nodeDragThreshold={4}
+        nodeClickDistance={1.9}
+        paneClickDistance={1.9}
+        elevateNodesOnSelect={false} // or edges are not visible after select\
+        selectNodesOnDrag={false}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onNodeMouseEnter={useCallbackRef((_event, node) => {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, true),
+          }])
+        })}
+        onNodeMouseLeave={useCallbackRef((_event, node) => {
+          onNodesChange([{
+            id: node.id,
+            type: 'replace',
+            item: Base.setHovered(node, false),
+          }])
+        })}
+        onEdgeMouseEnter={useCallbackRef((_event, edge) => {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, true),
+          }])
+        })}
+        onEdgeMouseLeave={useCallbackRef((_event, edge) => {
+          onEdgesChange([{
+            id: edge.id,
+            type: 'replace',
+            item: Base.setHovered(edge, false),
+          }])
+        })}
+        onNodeDoubleClick={stopPropagation}
+        onEdgeDoubleClick={stopPropagation}
+        {...props}
+      >
+        {isBgWithPattern && <Background background={background} />}
+        <BaseXYFlowInner onViewportResize={onViewportResize} />
+        {children}
+      </ReactFlow>
+    </ReducedGraphicsContext>
   )
 }
 

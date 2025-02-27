@@ -13,6 +13,10 @@ export const cssReactFlow = style({
   },
 })
 
+export const reactFlowReducedGraphics = `${cssReactFlow}:is([data-likec4-reduced-graphics="true"])`
+export const reactFlow = `${cssReactFlow}:not([data-likec4-reduced-graphics])`
+export const whereNotReducedGraphics = `:where(${reactFlow})`
+
 export const notInitialized = style({
   opacity: 0,
 })
@@ -49,6 +53,14 @@ globalStyle(`:where(.react-flow${cssReactFlow}, ${cssTransparentBg}) .react-flow
 export const hiddenIfZoomTooSmall = style({
   selectors: {
     [`:where([data-likec4-zoom-small="true"]) &`]: {
+      visibility: 'hidden',
+    },
+  },
+})
+
+export const hiddenIfReducedGraphics = style({
+  selectors: {
+    [`${reactFlowReducedGraphics} &`]: {
       visibility: 'hidden',
     },
   },

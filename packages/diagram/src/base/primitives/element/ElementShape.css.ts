@@ -1,5 +1,5 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import { hiddenIfZoomTooSmall, reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
 import { easings, mantine, vars } from '../../../theme-vars'
 import { container, stokeFillMix } from './ElementNodeContainer.css'
 
@@ -20,7 +20,7 @@ const outlineColor = fallbackVar(
 
 const indicatorStroke = createVar('indicator-stroke')
 
-export const indicator = style({
+export const indicator = style([hiddenIfZoomTooSmall, {
   stroke: indicatorStroke,
   fill: 'none',
   transformOrigin: 'center center',
@@ -53,7 +53,7 @@ export const indicator = style({
       },
     },
   },
-})
+}])
 
 export const fillElementFill = style({
   fill: vars.element.fill,
@@ -132,9 +132,10 @@ export const shapeSvg = style([shapeBase, {
       },
     },
     [`:where([data-likec4-zoom-small="true"]) &`]: {
-      vars: {
-        [filterShadow]: `none`,
-      },
+      filter: 'none',
+    },
+    [`${reactFlowReducedGraphics} &`]: {
+      filter: 'none',
     },
   },
 }])

@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import { hiddenIfZoomTooSmall, reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
 import { vars } from '../../../theme-vars'
 
 export const compoundTitle = style([hiddenIfZoomTooSmall, {
@@ -29,9 +29,10 @@ export const title = style({
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
+  mixBlendMode: 'screen',
   selectors: {
-    [`:where([data-likec4-enable-mix-blend="true"]) &`]: {
-      mixBlendMode: 'screen',
+    [`${reactFlowReducedGraphics} &`]: {
+      mixBlendMode: 'unset',
     },
   },
 })

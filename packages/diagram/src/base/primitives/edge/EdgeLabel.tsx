@@ -90,7 +90,9 @@ export const EdgeLabel = createPolymorphicComponent<'div', EdgeLabelProps>(
           data-edge-active={isActive}
           data-edge-animated={isActive}
           data-edge-hovered={isHovered}
-          data-edge-dimmed={isDimmed}
+          {...isDimmed !== false && {
+            'data-edge-dimmed': isDimmed,
+          }}
           style={{
             top: toCssVarValue(labelY),
             left: toCssVarValue(labelX),

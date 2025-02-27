@@ -1,6 +1,7 @@
 import { rem } from '@mantine/core'
 import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
+import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
 import { mantine, vars } from '../../../theme-vars'
 
 export const navigationButtons = style({
@@ -27,7 +28,11 @@ globalStyle(`.likec4-top-left-panel .action-icon .tabler-icon`, {
 })
 
 export const actionIconGroup = style({
-  boxShadow: mantine.shadows.md,
+  selectors: {
+    [`${whereNotReducedGraphics} &`]: {
+      boxShadow: mantine.shadows.md,
+    },
+  },
 })
 
 export const autolayoutIcon = style({})

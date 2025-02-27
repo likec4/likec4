@@ -223,5 +223,5 @@ export function SelectedIndicator({ shape, w, h }: ElementShapeProps) {
       break
     }
   }
-  return <g className={clsx(css.indicator, hiddenIfZoomTooSmall)}>{svg}</g>
+  return <g className={css.indicator}>{svg}</g>
 }

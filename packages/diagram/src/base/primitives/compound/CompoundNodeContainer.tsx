@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { m, useMotionValue, useTransform } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { clamp, isNumber } from 'remeda'
-import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
+import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
 import type { NodeProps } from '../../types'
 import * as css from './CompoundNodeContainer.css'
 
@@ -48,13 +48,13 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
     style,
     ...rest
   }, ref) => {
-    const zoomTooSmall = useIsZoomTooSmall()
+    const isReducedGraphics = useIsReducedGraphics()
     const isTransparent = isNumber(data.style.opacity) && data.style.opacity < 100
     let _opacity = clamp((data.style.opacity ?? 100) / 100, {
       min: 0,
       max: 1,
     })
-    if (isTransparent && isHovered && !zoomTooSmall) {
+    if (isTransparent && isHovered && !isReducedGraphics) {
       _opacity = Math.min(_opacity + 0.11, 1)
     }
 
@@ -96,7 +96,7 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         }}
         {...rest}
       >
-        {isSelected && !zoomTooSmall && (
+        {isSelected && !isReducedGraphics && (
           <svg className={css.indicator}>
             <rect
               x={0}

@@ -77,6 +77,9 @@ export type Events =
   | { type: 'xyflow.resized' }
   | { type: 'xyflow.edgeMouseEnter'; edge: RelationshipsBrowserTypes.Edge }
   | { type: 'xyflow.edgeMouseLeave'; edge: RelationshipsBrowserTypes.Edge }
+  | { type: 'xyflow.selectionChange'; nodes: RelationshipsBrowserTypes.Node[]; edges: RelationshipsBrowserTypes.Edge[] }
+  | { type: 'dim.nonhovered.edges' }
+  | { type: 'undim.edges' }
   | { type: 'xyflow.updateNodeInternals' }
   | { type: 'xyflow.unmount' }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
@@ -361,7 +364,74 @@ export const relationshipsBrowserLogic = setup({
       initial: 'idle',
       tags: ['active'],
       states: {
-        'idle': {},
+        'idle': {
+          on: {
+            'xyflow.edgeMouseEnter': {
+              actions: [
+                assign({
+                  xyedges: ({ context, event }) => {
+                    const hasDimmed = context.xyedges.some(edge => edge.data.dimmed === true)
+                    return context.xyedges.map(edge => {
+                      if (edge.id === event.edge.id) {
+                        return Base.setData(edge, {
+                          hovered: true,
+                          dimmed: false,
+                        })
+                      }
+                      return hasDimmed && !edge.data.dimmed && !edge.selected ? Base.setDimmed(edge, 'immediate') : edge
+                    })
+                  },
+                }),
+                cancel('undim.edges'),
+                cancel('dim.nonhovered.edges'),
+                raise({ type: 'dim.nonhovered.edges' }, { id: 'dim.nonhovered.edges', delay: 100 }),
+              ],
+            },
+            'xyflow.edgeMouseLeave': {
+              actions: [
+                assign({
+                  xyedges: ({ context, event }) =>
+                    context.xyedges.map(edge => {
+                      if (edge.id === event.edge.id) {
+                        return Base.setHovered(edge, false)
+                      }
+                      return edge
+                    }),
+                }),
+                cancel('dim.nonhovered.edges'),
+                raise({ type: 'undim.edges' }, { id: 'undim.edges', delay: 400 }),
+              ],
+            },
+            'dim.nonhovered.edges': {
+              actions: assign({
+                xyedges: ({ context }) => context.xyedges.map(edge => Base.setDimmed(edge, edge.data.hovered !== true)),
+              }),
+            },
+            'undim.edges': {
+              actions: assign({
+                xyedges: ({ context }) => {
+                  const hasSelected = context.xyedges.some(edge => edge.selected === true)
+                  if (hasSelected) {
+                    return context.xyedges.map(edge =>
+                      Base.setDimmed(edge, edge.selected !== true ? edge.data.dimmed || 'immediate' : false)
+                    )
+                  }
+                  return context.xyedges.map(Base.setDimmed(false))
+                },
+              }),
+            },
+            'xyflow.selectionChange': {
+              actions: enqueueActions(({ event, context, enqueue }) => {
+                if (
+                  event.edges.length === 0 && context.xyedges.some(e => e.data.dimmed) &&
+                  !context.xyedges.some(e => e.data.hovered)
+                ) {
+                  enqueue.raise({ type: 'undim.edges' })
+                }
+              }),
+            },
+          },
+        },
         'layouting': {
           invoke: {
             id: 'layouter',

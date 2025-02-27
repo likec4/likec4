@@ -1,19 +1,23 @@
 import { type BBox, type DiagramView, type EdgeId, invariant } from '@likec4/core'
 import {
+  type EdgeChange,
+  type NodeChange,
   type ReactFlowInstance,
+  applyEdgeChanges,
+  applyNodeChanges,
 } from '@xyflow/react'
 import { prop } from 'remeda'
 import {
-  type ActorLogic,
   type ActorLogicFrom,
   type ActorRefFromLogic,
-  type MachineSnapshot,
   type SnapshotFrom,
   assign,
   cancel,
+  enqueueActions,
   raise,
   setup,
 } from 'xstate'
+import { Base } from '../../base'
 import { MinZoom } from '../../base/const'
 import type { RelationshipDetailsTypes } from './_types'
 
@@ -31,6 +35,8 @@ export type Context = Readonly<
     // parentRef: AnyActorRef | null
     xyflow: XYFLowInstance | null
     initialized: boolean
+    xynodes: RelationshipDetailsTypes.Node[]
+    xyedges: RelationshipDetailsTypes.Edge[]
     // bounds: BBox | null
   }
 >
@@ -39,8 +45,20 @@ export type Events =
   | { type: 'xyflow.init'; instance: XYFLowInstance }
   | { type: 'xyflow.nodeClick'; node: RelationshipDetailsTypes.Node }
   | { type: 'xyflow.edgeClick'; edge: RelationshipDetailsTypes.Edge }
+  | { type: 'xyflow.edgeMouseEnter'; edge: RelationshipDetailsTypes.Edge }
+  | { type: 'xyflow.edgeMouseLeave'; edge: RelationshipDetailsTypes.Edge }
+  | { type: 'dim.nonhovered.edges' }
+  | { type: 'undim.edges' }
+  | { type: 'xyflow.selectionChange'; nodes: RelationshipDetailsTypes.Node[]; edges: RelationshipDetailsTypes.Edge[] }
+  | { type: 'xyflow.applyNodeChanges'; changes: NodeChange<RelationshipDetailsTypes.Node>[] }
+  | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<RelationshipDetailsTypes.Edge>[] }
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.resized' }
+  | {
+    type: 'update.xydata'
+    xynodes: RelationshipDetailsTypes.Node[]
+    xyedges: RelationshipDetailsTypes.Edge[]
+  }
   // | { type: 'update.bounds'; bounds: BBox }
   | { type: 'fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'navigate.to'; edgeId: EdgeId }
@@ -82,6 +100,8 @@ export const relationshipDetailsLogic = setup({
     ...input,
     initialized: false,
     xyflow: null,
+    xynodes: [],
+    xyedges: [],
   }),
   states: {
     'opening': {
@@ -104,17 +124,70 @@ export const relationshipDetailsLogic = setup({
         params: { duration: 0 },
       },
       on: {
-        // 'xyflow.nodeClick': {
-        //   actions: enqueueActions(({ event, enqueue }) => {
-        //     if ('fqn' in event.node.data) {
-        //       const fqn = event.node.data.fqn
-        //       enqueue.assign({
-        //         subject: fqn,
-        //       })
-        //       enqueue.raise({ type: 'fitDiagram' }, { delay: 50 })
-        //     }
-        //   }),
-        // },
+        'xyflow.edgeMouseEnter': {
+          actions: [
+            assign({
+              xyedges: ({ context, event }) => {
+                const hasDimmed = context.xyedges.some(edge => edge.data.dimmed === true)
+                return context.xyedges.map(edge => {
+                  if (edge.id === event.edge.id) {
+                    return Base.setData(edge, {
+                      hovered: true,
+                      dimmed: false,
+                    })
+                  }
+                  return hasDimmed && !edge.data.dimmed && !edge.selected ? Base.setDimmed(edge, 'immediate') : edge
+                })
+              },
+            }),
+            cancel('undim.edges'),
+            cancel('dim.nonhovered.edges'),
+            raise({ type: 'dim.nonhovered.edges' }, { id: 'dim.nonhovered.edges', delay: 100 }),
+          ],
+        },
+        'xyflow.edgeMouseLeave': {
+          actions: [
+            assign({
+              xyedges: ({ context, event }) =>
+                context.xyedges.map(edge => {
+                  if (edge.id === event.edge.id) {
+                    return Base.setHovered(edge, false)
+                  }
+                  return edge
+                }),
+            }),
+            cancel('dim.nonhovered.edges'),
+            raise({ type: 'undim.edges' }, { id: 'undim.edges', delay: 400 }),
+          ],
+        },
+        'dim.nonhovered.edges': {
+          actions: assign({
+            xyedges: ({ context }) => context.xyedges.map(edge => Base.setDimmed(edge, edge.data.hovered !== true)),
+          }),
+        },
+        'undim.edges': {
+          actions: assign({
+            xyedges: ({ context }) => {
+              const hasSelected = context.xyedges.some(edge => edge.selected === true)
+              if (hasSelected) {
+                return context.xyedges.map(edge =>
+                  Base.setDimmed(edge, edge.selected !== true ? edge.data.dimmed || 'immediate' : false)
+                )
+              }
+              return context.xyedges.map(Base.setDimmed(false))
+            },
+          }),
+        },
+        'xyflow.selectionChange': {
+          actions: enqueueActions(({ event, context, enqueue }) => {
+            if (
+              event.edges.length === 0 && context.xyedges.some(e => e.data.dimmed) &&
+              !context.xyedges.some(e => e.data.hovered)
+            ) {
+              enqueue.raise({ type: 'undim.edges' })
+            }
+          }),
+        },
         'navigate.to': {
           actions: [
             assign({
@@ -148,6 +221,26 @@ export const relationshipDetailsLogic = setup({
         cancel('fitDiagram'),
         raise({ type: 'fitDiagram' }, { id: 'fitDiagram', delay: 200 }),
       ],
+    },
+    'update.xydata': {
+      actions: assign({
+        xynodes: ({ event }) => event.xynodes,
+        xyedges: ({ event }) => event.xyedges,
+      }),
+    },
+    'xyflow.applyNodeChanges': {
+      actions: assign({
+        xynodes: ({ context, event }) => {
+          return applyNodeChanges(event.changes, context.xynodes)
+        },
+      }),
+    },
+    'xyflow.applyEdgeChanges': {
+      actions: assign({
+        xyedges: ({ context, event }) => {
+          return applyEdgeChanges(event.changes, context.xyedges)
+        },
+      }),
     },
   },
 })

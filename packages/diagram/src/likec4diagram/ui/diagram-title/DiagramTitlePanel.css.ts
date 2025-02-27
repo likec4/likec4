@@ -1,4 +1,5 @@
 import { fallbackVar, style } from '@vanilla-extract/css'
+import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
 import { mantine, vars, whereDark } from '../../../theme-vars'
 
 export const container = style({
@@ -13,8 +14,6 @@ export const card = style({
   minWidth: 200,
   maxWidth: 'calc(100vw - 16px)',
   backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
-  WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-  backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   '@media': {
     [mantine.largerThan('sm')]: {
       minWidth: 250,
@@ -27,6 +26,13 @@ export const card = style({
   },
   selectors: {
     [`${whereDark} &`]: {
+      backgroundColor: mantine.colors.dark[6],
+    },
+    [`${whereNotReducedGraphics} &`]: {
+      WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+      backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+    },
+    [`${whereDark} ${whereNotReducedGraphics} &`]: {
       backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`,
     },
   },

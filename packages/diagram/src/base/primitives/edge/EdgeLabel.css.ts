@@ -1,5 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
 import { easings, mantine, transitions, vars, whereDark, whereLight, xyvars } from '../../../theme-vars'
 import { edgeVars, mixColor } from './edge.css'
 
@@ -46,14 +47,12 @@ export const edgeLabelContainer = style([edgeVars, {
   border: '0px solid transparent',
   transform: varTranslate,
   transition: transitions.fast,
+  mixBlendMode: 'plus-lighter',
   vars: {
     [varTranslate]: `translate(0,0)`,
   },
   selectors: {
-    [`:where([data-likec4-enable-mix-blend]) &`]: {
-      mixBlendMode: 'plus-lighter',
-    },
-    [`${whereLight} :where([data-likec4-enable-mix-blend]) &`]: {
+    [`${whereLight} &`]: {
       mixBlendMode: 'screen',
     },
     '&[data-edge-hovered="true"]': {
@@ -61,12 +60,19 @@ export const edgeLabelContainer = style([edgeVars, {
       transition: `all 190ms ${easings.inOut}`,
       transform: `${varTranslate} scale(1.12)`,
     },
-    '&:is([data-edge-dimmed="true"])': {
-      opacity: 0.3,
+    [`&:is([data-edge-dimmed="true"])`]: {
+      opacity: 0.2,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
-      // willChange: 'opacity, filter',
+    },
+    [`&:is([data-edge-dimmed="immediate"])`]: {
+      opacity: 0.1,
+      transition: 'opacity 75ms ease-in-out, filter 100ms ease-in-out',
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+    },
+    [`${reactFlowReducedGraphics} &`]: {
+      mixBlendMode: 'unset',
     },
   },
 }])

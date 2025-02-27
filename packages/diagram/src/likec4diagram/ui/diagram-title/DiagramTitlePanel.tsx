@@ -41,7 +41,6 @@ export function DiagramTitlePanel() {
       }
       {isNotActiveWalkthrough && (
         <m.div
-          key={id}
           initial={{ opacity: 0.05, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{
@@ -126,10 +125,14 @@ export function DiagramTitlePanel() {
                   <Spoiler
                     maxHeight={42}
                     showLabel={
-                      <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>show more</Button>
+                      <Button component={'div'} color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>
+                        show more
+                      </Button>
                     }
                     hideLabel={
-                      <Button color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>hide</Button>
+                      <Button component={'div'} color="gray" variant="light" fz={'10'} size="compact-xs" tabIndex={-1}>
+                        hide
+                      </Button>
                     }>
                     <Text
                       component={'div'}

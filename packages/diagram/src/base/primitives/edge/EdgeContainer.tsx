@@ -33,7 +33,6 @@ export function EdgeContainer({
     <g
       className={clsx(
         css.edgeContainer,
-        isDimmed && css.dimmed,
         className,
       )}
       data-likec4-color={data.color ?? 'gray'}
@@ -41,7 +40,9 @@ export function EdgeContainer({
       data-edge-active={isActive}
       data-edge-animated={isActive}
       data-edge-hovered={isHovered}
-      data-edge-dimmed={isDimmed}>
+      {...isDimmed !== false && {
+        'data-edge-dimmed': isDimmed,
+      }}>
       {children}
     </g>
   )

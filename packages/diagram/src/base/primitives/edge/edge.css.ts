@@ -1,11 +1,9 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { cssReactFlow, hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
+import { hiddenIfReducedGraphics, hiddenIfZoomTooSmall, reactFlow } from '../../../LikeC4Diagram.css'
 import { vars, xyvars } from '../../../theme-vars'
 import { whereDark, whereLight } from '../../../theme-vars.css'
 
 export const mixColor = createVar('mix-color')
-
-export const dimmed = style({})
 
 export const edgeVars = style({
   vars: {
@@ -20,10 +18,15 @@ export const edgeVars = style({
 
 export const edgeContainer = style([edgeVars, {
   selectors: {
-    [`&:is(${dimmed})`]: {
+    [`&:is([data-edge-dimmed="true"])`]: {
       opacity: 0.6,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
+    },
+    [`&:is([data-edge-dimmed="immediate"])`]: {
+      opacity: 0.25,
+      transition: 'opacity 100ms ease-in-out, filter 100ms ease-in-out',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
     },
   },
@@ -60,14 +63,14 @@ globalStyle(`:where(${isSelected}) ${edgeVars}[data-edge-hovered='true']`, {
   },
 })
 
-globalStyle(`${cssReactFlow}:is([data-likec4-enable-mix-blend]) .react-flow__edges > svg`, {
+globalStyle(`${reactFlow} .react-flow__edges > svg`, {
   mixBlendMode: 'plus-lighter',
 })
-globalStyle(`${whereLight} ${cssReactFlow}:is([data-likec4-enable-mix-blend]) .react-flow__edges > svg`, {
+globalStyle(`${whereLight} ${reactFlow} .react-flow__edges > svg`, {
   mixBlendMode: 'screen',
 })
 
-export const edgePathBg = style([hiddenIfZoomTooSmall, {
+export const edgePathBg = style([hiddenIfZoomTooSmall, hiddenIfReducedGraphics, {
   // strokeWidth: xyvars.edge.strokeWidth,
   strokeOpacity: 0.08,
   // transition: 'stroke-width 175ms ease-in-out',
@@ -105,20 +108,20 @@ export const cssEdgePath = style({
   animationFillMode: 'both',
   strokeDashoffset: 10,
   selectors: {
-    [`:where([data-edge-hovered='true']) &`]: {
+    [`${reactFlow} :where([data-edge-hovered='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '450ms',
       transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
     },
-    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
+    [`${reactFlow} :where(${isSelected}, [data-edge-active='true'], [data-edge-animated='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '0ms',
       transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out',
     },
-    [`:where([data-edge-dir='back']) &`]: {
+    [`${reactFlow} :where([data-edge-dir='back']) &`]: {
       animationDirection: 'reverse',
     },
-    [`${dimmed} &`]: {
+    [`:where([data-edge-dimmed]) &`]: {
       animationPlayState: 'paused',
     },
   },

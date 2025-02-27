@@ -1,4 +1,5 @@
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+import { whereNotReducedGraphics } from '../LikeC4Diagram.css'
 import { mantine, transitions, vars, whereDark, whereLight } from '../theme-vars'
 
 const transparent = createVar('transparent')
@@ -9,12 +10,9 @@ export const root = style({
   paddingRight: '4px',
   borderRadius: mantine.radius.sm,
   color: mantine.colors.placeholder,
-  boxShadow: mantine.shadows.xs,
   border: '1px solid',
   cursor: 'pointer',
   transition: transitions.fast,
-  WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
-  backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
   vars: {
     [transparent]: '20%',
@@ -32,6 +30,11 @@ export const root = style({
       vars: {
         [bgColor]: mantine.colors.dark[6],
       },
+    },
+    [`${whereNotReducedGraphics} &`]: {
+      boxShadow: mantine.shadows.xs,
+      WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+      backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
     },
   },
   ':hover': {

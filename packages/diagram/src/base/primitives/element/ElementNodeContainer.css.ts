@@ -1,4 +1,5 @@
-import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, style } from '@vanilla-extract/css'
+import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
 import { easings, vars } from '../../../theme-vars'
 
 export const stokeFillMix = createVar('stroke-fill-mix')
@@ -15,12 +16,6 @@ export const container = style({
   vars: {
     [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`,
   },
-  // selectors: {
-  //   ':where(.react-flow__node.selected) &': {
-  //     willChange: 'transform',
-  //   },
-  // },
-  // Catch pointer below the element
   ':after': {
     content: ' ',
     position: 'absolute',
@@ -43,6 +38,9 @@ export const container = style({
       opacity: 0.25,
       transition: `opacity 100ms ${easings.inOut}, filter 100ms ${easings.inOut}`,
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+    },
+    [`${reactFlowReducedGraphics} &:after`]: {
+      display: 'none',
     },
   },
 })
