@@ -267,8 +267,8 @@ importers:
         specifier: 1.105.0
         version: 1.105.0(@tanstack/react-router@1.105.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(vite@6.1.0(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       '@typefox/monaco-editor-react':
-        specifier: ~6.3.0
-        version: 6.3.0
+        specifier: ~6.4.0
+        version: 6.4.0
       '@types/node':
         specifier: ^20.17.17
         version: 20.17.18
@@ -3257,8 +3257,8 @@ packages:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
 
-  '@typefox/monaco-editor-react@6.3.0':
-    resolution: {integrity: sha512-Z41D5B4r1SoLiB02dbdc1uqA7k8BlAcsgTtmSRPEBsz7mMv0XdIbCTNydqlfqQVF6RtDsl3nOfO/wLyWx9RXzw==}
+  '@typefox/monaco-editor-react@6.4.0':
+    resolution: {integrity: sha512-j+kT6sBKU6aTFOnsPEwgPwjyFG9GA7f64kbRCOGNTZcBWGvosw9XYmETeM8vV24KC5rxKISFfGFhmjXTS2wRog==}
     engines: {node: '>=18.19.0', npm: '>=10.2.3'}
 
   '@types/acorn@4.0.6':
@@ -5805,8 +5805,16 @@ packages:
     resolution: {integrity: sha512-KQiHvBdYCZg0zvzPF4j5+DapPUm3KaENUQ1/6WRK2kO/rBj6tUBOt8r6qzQZqqDlsJgxE17Q8ucb3SoYLXvjsw==}
     engines: {node: '>=18.19.0', npm: '>=10.2.3'}
 
+  monaco-editor-wrapper@6.4.0:
+    resolution: {integrity: sha512-dIkS03rni9srm1gpPub9xOkxLdgTxMtRj32mTEpmcvKIfs4rJC+X7yvRNcrngAZW3x9WhsdSkmN1zfz/EIJP/Q==}
+    engines: {node: '>=18.19.0', npm: '>=10.2.3'}
+
   monaco-languageclient@9.3.0:
     resolution: {integrity: sha512-XheoSVG+jBaXXcsrDZMhdtDu7/WULDBbG0RMHT2QcWrjcsQe7vYX2/xWOjOH+gv3GmwyXLd7VRlYl3j2vXQRGg==}
+    engines: {node: '>=18.19.0', npm: '>=10.2.3'}
+
+  monaco-languageclient@9.4.0:
+    resolution: {integrity: sha512-IMdArpSbyracRLFCWhovXDyIT4c6lBZsle03vYt4qWoVC5+Qlp3ZyhQtoofuMqqHwmQoNwVZxKdJbBRBgoMTrQ==}
     engines: {node: '>=18.19.0', npm: '>=10.2.3'}
 
   motion-dom@12.4.5:
@@ -10461,10 +10469,10 @@ snapshots:
 
   '@trysound/sax@0.2.0': {}
 
-  '@typefox/monaco-editor-react@6.3.0':
+  '@typefox/monaco-editor-react@6.4.0':
     dependencies:
       '@codingame/monaco-vscode-editor-api': 14.0.4
-      monaco-editor-wrapper: 6.3.0
+      monaco-editor-wrapper: 6.4.0
       react: 19.0.0
 
   '@types/acorn@4.0.6':
@@ -13851,7 +13859,54 @@ snapshots:
       vscode-languageserver-protocol: 3.17.5
       vscode-ws-jsonrpc: 3.4.0
 
+  monaco-editor-wrapper@6.4.0:
+    dependencies:
+      '@codingame/monaco-vscode-api': 14.0.4
+      '@codingame/monaco-vscode-editor-api': 14.0.4
+      '@codingame/monaco-vscode-editor-service-override': 14.0.4
+      '@codingame/monaco-vscode-extension-api': 14.0.4
+      '@codingame/monaco-vscode-language-pack-cs': 14.0.4
+      '@codingame/monaco-vscode-language-pack-de': 14.0.4
+      '@codingame/monaco-vscode-language-pack-es': 14.0.4
+      '@codingame/monaco-vscode-language-pack-fr': 14.0.4
+      '@codingame/monaco-vscode-language-pack-it': 14.0.4
+      '@codingame/monaco-vscode-language-pack-ja': 14.0.4
+      '@codingame/monaco-vscode-language-pack-ko': 14.0.4
+      '@codingame/monaco-vscode-language-pack-pl': 14.0.4
+      '@codingame/monaco-vscode-language-pack-pt-br': 14.0.4
+      '@codingame/monaco-vscode-language-pack-qps-ploc': 14.0.4
+      '@codingame/monaco-vscode-language-pack-ru': 14.0.4
+      '@codingame/monaco-vscode-language-pack-tr': 14.0.4
+      '@codingame/monaco-vscode-language-pack-zh-hans': 14.0.4
+      '@codingame/monaco-vscode-language-pack-zh-hant': 14.0.4
+      '@codingame/monaco-vscode-monarch-service-override': 14.0.4
+      '@codingame/monaco-vscode-textmate-service-override': 14.0.4
+      '@codingame/monaco-vscode-theme-defaults-default-extension': 14.0.4
+      '@codingame/monaco-vscode-theme-service-override': 14.0.4
+      '@codingame/monaco-vscode-views-service-override': 14.0.4
+      '@codingame/monaco-vscode-workbench-service-override': 14.0.4
+      monaco-languageclient: 9.4.0
+      vscode: '@codingame/monaco-vscode-extension-api@14.0.4'
+      vscode-languageclient: 9.0.1
+      vscode-languageserver-protocol: 3.17.5
+      vscode-ws-jsonrpc: 3.4.0
+
   monaco-languageclient@9.3.0:
+    dependencies:
+      '@codingame/monaco-vscode-api': 14.0.4
+      '@codingame/monaco-vscode-configuration-service-override': 14.0.4
+      '@codingame/monaco-vscode-editor-api': 14.0.4
+      '@codingame/monaco-vscode-editor-service-override': 14.0.4
+      '@codingame/monaco-vscode-extension-api': 14.0.4
+      '@codingame/monaco-vscode-extensions-service-override': 14.0.4
+      '@codingame/monaco-vscode-languages-service-override': 14.0.4
+      '@codingame/monaco-vscode-localization-service-override': 14.0.4
+      '@codingame/monaco-vscode-log-service-override': 14.0.4
+      '@codingame/monaco-vscode-model-service-override': 14.0.4
+      vscode: '@codingame/monaco-vscode-extension-api@14.0.4'
+      vscode-languageclient: 9.0.1
+
+  monaco-languageclient@9.4.0:
     dependencies:
       '@codingame/monaco-vscode-api': 14.0.4
       '@codingame/monaco-vscode-configuration-service-override': 14.0.4
