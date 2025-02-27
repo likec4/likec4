@@ -96,7 +96,7 @@
     "@types/object-hash": "^3.0.6",
     "chroma-js": "^3.1.2",
     "defu": "^6.1.4",
-    "graphology": "^0.25.4",
+    "graphology": "^0.26.0",
     "graphology-dag": "^0.4.1",
     "graphology-types": "^0.24.8",
     "mnemonist": "0.40.2",
