@@ -87,7 +87,7 @@
     "react-dom": "~19.0.0",
     "react-error-boundary": "^5.0.0",
     "react-resizable-panels": "^2.1.7",
-    "remeda": "^2.20.1",
+    "remeda": "^2.20.2",
     "strip-indent": "^4.0.0",
     "terser": "^5.39.0",
     "tsx": "~4.19.3",

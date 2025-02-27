@@ -103,7 +103,7 @@
     "natural-compare-lite": "^1.4.0",
     "object-hash": "^3.0.0",
     "obliterator": "^2.0.5",
-    "remeda": "^2.20.1",
+    "remeda": "^2.20.2",
     "turbo": "^2.4.2",
     "typescript": "catalog:",
     "unbuild": "^3.3.1",
