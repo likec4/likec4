@@ -1,16 +1,18 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { hiddenIfZoomTooSmall, reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
+import { hiddenIfZoomTooSmall, whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
 import { vars } from '../../../theme-vars'
 
 export const compoundTitle = style([hiddenIfZoomTooSmall, {
+  position: 'absolute',
   display: 'flex',
   alignItems: 'center',
   gap: 6,
-  paddingLeft: 14,
-  paddingTop: 6,
+  left: 14,
+  top: 6,
+  right: 30,
+  width: 'auto',
   minHeight: 30,
-  paddingRight: 2,
   selectors: {
     [`:where(.react-flow__node.draggable) &`]: {
       cursor: 'grab',
@@ -29,10 +31,9 @@ export const title = style({
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
-  mixBlendMode: 'screen',
   selectors: {
-    [`${reactFlowReducedGraphics} &`]: {
-      mixBlendMode: 'unset',
+    [`${whereNotReducedGraphics} &`]: {
+      mixBlendMode: 'screen',
     },
   },
 })

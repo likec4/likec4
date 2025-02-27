@@ -1,5 +1,6 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { calc } from '@vanilla-extract/css-utils'
+import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
 import { easings, vars, whereLight } from '../../../theme-vars'
 
 export const varCompoundOpacity = createVar('opacity')
@@ -37,9 +38,11 @@ export const container = style({
       boxShadow: 'none',
     },
     [`&:is([data-compound-transparent="true"]):before`]: {
-      transition: `opacity 250ms ${easings.inOut}`,
       opacity: varCompoundOpacity,
       borderWidth: calc(varBorderWidth).subtract('1px').toString(),
+    },
+    [`${whereNotReducedGraphics} &:is([data-compound-transparent="true"]):before`]: {
+      transition: `all 200ms ${easings.inOut}`,
     },
     [`:where(.react-flow__node.dragging) &`]: {
       boxShadow: 'none',
@@ -134,11 +137,13 @@ export const indicator = style({
 
 globalStyle(`${indicator} rect`, {
   stroke: indicatorStroke,
-  transformOrigin: 'center center',
   strokeWidth: indicatorStrokeWidth,
+  fill: 'none',
+})
+globalStyle(`${whereNotReducedGraphics}  ${indicator} rect`, {
+  transformOrigin: 'center center',
   animationDuration: '800ms',
-  animationName: indicatorKeyframes,
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
-  fill: 'none',
+  animationName: indicatorKeyframes,
 })

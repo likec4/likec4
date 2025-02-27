@@ -15,6 +15,11 @@ export const panel = style({
   top: fallbackVar(vars.navigationPanel.top, '1rem'),
   left: fallbackVar(vars.navigationPanel.left, '1rem'),
   margin: 0,
+  pointerEvents: 'none',
+})
+
+globalStyle(`${panel} :where(button, .action-icon)`, {
+  pointerEvents: 'all',
 })
 
 globalStyle(`.likec4-top-left-panel .action-icon`, {

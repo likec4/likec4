@@ -1,5 +1,5 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { hiddenIfZoomTooSmall, reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
+import { hiddenIfZoomTooSmall, reactFlowReducedGraphics, whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
 import { easings, mantine, vars } from '../../../theme-vars'
 import { container, stokeFillMix } from './ElementNodeContainer.css'
 
@@ -37,6 +37,8 @@ export const indicator = style([hiddenIfZoomTooSmall, {
   selectors: {
     ':where(.react-flow__node.selected) &': {
       visibility: 'visible',
+    },
+    [`${whereNotReducedGraphics} :where(.react-flow__node.selected)  &`]: {
       animationName: fallbackVar(vars.safariAnimationHook, indicatorKeyframes),
     },
     [`:where(.react-flow__node:focus-visible, ${container}:focus-visible) &`]: {

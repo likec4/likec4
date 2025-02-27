@@ -13,7 +13,7 @@ export const root = style({
   border: '1px solid',
   cursor: 'pointer',
   transition: transitions.fast,
-  backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
+  backgroundColor: bgColor,
   vars: {
     [transparent]: '20%',
     [bgColor]: mantine.colors.default,
@@ -32,6 +32,7 @@ export const root = style({
       },
     },
     [`${whereNotReducedGraphics} &`]: {
+      backgroundColor: `color-mix(in srgb, ${bgColor}, transparent ${transparent})`,
       boxShadow: mantine.shadows.xs,
       WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
       backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
@@ -61,6 +62,9 @@ export const shortcut = style({
     [`${whereLight} &`]: {
       color: mantine.colors.gray[7],
       borderColor: mantine.colors.gray[2],
+      backgroundColor: mantine.colors.gray[2],
+    },
+    [`${whereLight} ${whereNotReducedGraphics} &`]: {
       backgroundColor: `color-mix(in srgb, ${mantine.colors.gray[2]}, transparent 20%)`,
     },
     [`${whereDark} &`]: {

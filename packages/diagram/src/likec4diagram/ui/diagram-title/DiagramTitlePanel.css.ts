@@ -13,7 +13,7 @@ export const card = style({
   cursor: 'default',
   minWidth: 200,
   maxWidth: 'calc(100vw - 16px)',
-  backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
+  backgroundColor: mantine.colors.body,
   '@media': {
     [mantine.largerThan('sm')]: {
       minWidth: 250,
@@ -29,6 +29,7 @@ export const card = style({
       backgroundColor: mantine.colors.dark[6],
     },
     [`${whereNotReducedGraphics} &`]: {
+      backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
       WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
       backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
     },

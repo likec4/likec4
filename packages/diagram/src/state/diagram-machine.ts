@@ -62,6 +62,7 @@ import {
   updateNodeData,
 } from './assign'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
+import { DiagramToggledFeaturesPersistence } from './persistence'
 import { type Events as SyncLayoutEvents, syncManualLayoutActorLogic } from './syncManualLayoutActor'
 import { findDiagramNode, focusedBounds, typedSystem } from './utils'
 
@@ -364,7 +365,7 @@ export const diagramMachine = setup({
   context: ({ input, self, spawn }) => ({
     ...input,
     features: { ...AllDisabled },
-    toggledFeatures: {
+    toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
     },
     initialized: false,
@@ -883,11 +884,13 @@ export const diagramMachine = setup({
     },
     'toggle.feature': {
       actions: assign({
-        toggledFeatures: ({ context, event }) => ({
-          ...context.toggledFeatures,
-          [`enable${event.feature}`]: event.forceValue ??
-            !(context.toggledFeatures[`enable${event.feature}`] ?? context.features[`enable${event.feature}`]),
-        }),
+        toggledFeatures: ({ context, event }) => {
+          return DiagramToggledFeaturesPersistence.write({
+            ...context.toggledFeatures,
+            [`enable${event.feature}`]: event.forceValue ??
+              !(context.toggledFeatures[`enable${event.feature}`] ?? context.features[`enable${event.feature}`]),
+          })
+        },
       }),
     },
   },

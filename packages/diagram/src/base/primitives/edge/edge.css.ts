@@ -1,5 +1,10 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { hiddenIfReducedGraphics, hiddenIfZoomTooSmall, reactFlow } from '../../../LikeC4Diagram.css'
+import {
+  hiddenIfReducedGraphics,
+  hiddenIfZoomTooSmall,
+  reactFlow,
+  whereNotReducedGraphics,
+} from '../../../LikeC4Diagram.css'
 import { vars, xyvars } from '../../../theme-vars'
 import { whereDark, whereLight } from '../../../theme-vars.css'
 
@@ -11,8 +16,26 @@ export const edgeVars = style({
     [xyvars.edge.stroke]: vars.relation.lineColor,
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 40%)`,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 40%)`,
+    [xyvars.edge.labelBgColor]: vars.relation.labelBgColor,
     [xyvars.edge.strokeWidth]: '3',
+  },
+  selectors: {
+    [`${whereDark} &`]: {
+      vars: {
+        [mixColor]: `white`,
+        [xyvars.edge.labelColor]: vars.relation.labelColor,
+      },
+    },
+    [`${whereNotReducedGraphics} &`]: {
+      vars: {
+        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 40%)`,
+      },
+    },
+    [`${whereDark} ${whereNotReducedGraphics} &`]: {
+      vars: {
+        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`,
+      },
+    },
   },
 })
 
@@ -31,15 +54,6 @@ export const edgeContainer = style([edgeVars, {
     },
   },
 }])
-
-globalStyle(`${whereDark} ${edgeVars}`, {
-  vars: {
-    [mixColor]: `white`,
-    [xyvars.edge.labelColor]: vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`,
-  },
-})
-
 const isSelected = '.react-flow__edge.selected'
 
 globalStyle(`:where(${isSelected}) ${edgeVars}`, {

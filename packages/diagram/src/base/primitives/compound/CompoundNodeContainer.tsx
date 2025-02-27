@@ -1,8 +1,8 @@
 import type { DiagramNode } from '@likec4/core'
 import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
-import { useDebouncedEffect } from '@react-hookz/web'
+import { useDebouncedValue } from '@mantine/hooks'
 import clsx from 'clsx'
-import { m, useMotionValue, useTransform } from 'framer-motion'
+import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
 import { clamp, isNumber } from 'remeda'
 import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
@@ -58,21 +58,13 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
       _opacity = Math.min(_opacity + 0.11, 1)
     }
 
-    const opacity = useMotionValue(_opacity)
-    useDebouncedEffect(
-      () => {
-        opacity.set(Math.round(_opacity * 100) / 100)
-      },
-      [_opacity],
-      isHovered ? 200 : 50,
-    )
+    const [opacity] = useDebouncedValue(Math.round(_opacity * 100) / 100, isHovered ? 200 : 50)
 
     const MAX_TRANSPARENCY = 40
-    const borderTransparency = useTransform(opacity, (v) =>
-      clamp(MAX_TRANSPARENCY - v * MAX_TRANSPARENCY, {
-        min: 0,
-        max: MAX_TRANSPARENCY,
-      }) + '%')
+    const borderTransparency = clamp(MAX_TRANSPARENCY - opacity * MAX_TRANSPARENCY, {
+      min: 0,
+      max: MAX_TRANSPARENCY,
+    })
 
     return (
       <Box
@@ -92,11 +84,19 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
         style={{
           ...style,
           [opacityVar]: opacity,
-          [borderTransparencyVar]: borderTransparency,
+          [borderTransparencyVar]: `${borderTransparency}%`,
         }}
         {...rest}
       >
-        {isSelected && !isReducedGraphics && (
+        {isTransparent && !isSelected && data.style.border !== 'none' && (
+          <div
+            className={css.compoundBorder}
+            style={{
+              borderStyle: data.style.border ?? 'dashed',
+            }}
+          />
+        )}
+        {isSelected && (
           <svg className={css.indicator}>
             <rect
               x={0}
@@ -106,14 +106,6 @@ export const CompoundNodeContainer = createPolymorphicComponent<'div', CompoundN
               rx={6}
             />
           </svg>
-        )}
-        {isTransparent && data.style.border !== 'none' && (
-          <div
-            className={css.compoundBorder}
-            style={{
-              borderStyle: data.style.border ?? 'dashed',
-            }}
-          />
         )}
         {children}
       </Box>
