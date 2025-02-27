@@ -85,10 +85,10 @@ importers:
         specifier: 0.31.1
         version: 0.31.1(astro@5.2.5(@types/node@20.17.18)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.34.6)(sugarss@4.0.1(postcss@8.5.3))(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0))
       '@expressive-code/plugin-collapsible-sections':
-        specifier: ^0.40.1
+        specifier: ^0.40.2
         version: 0.40.2
       '@expressive-code/plugin-line-numbers':
-        specifier: ^0.40.1
+        specifier: ^0.40.2
         version: 0.40.2
       '@fontsource/ibm-plex-sans':
         specifier: ^5.1.1
