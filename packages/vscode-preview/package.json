@@ -49,7 +49,7 @@
     "react-dom": "~19.0.0",
     "react-error-boundary": "^5.0.0",
     "remeda": "^2.20.1",
-    "tsx": "~4.19.2",
+    "tsx": "~4.19.3",
     "type-fest": "4.34.1",
     "typescript": "catalog:",
     "vite": "6.1.0",
