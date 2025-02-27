@@ -173,14 +173,17 @@ export function LanguageClientSync({ config, wrapper }: {
   useEffect(() => {
     const subscribe = monaco.editor.registerCommand('likec4.open-preview', (_, viewId) => {
       if (isString(viewId)) {
+        const workspaceId = playground.workspaceId
+        // Dirty hack to navigate to the correct URL
+        // have no time to find correct way with this router
+        const isELk = router.latestLocation.href.includes('/elk/')
         router.navigate({
-          from: '/w/$workspaceId/$viewId',
-          to: './',
+          to: isELk ? '/w/$workspaceId/elk/$viewId/' : '/w/$workspaceId/$viewId/',
           params: {
+            workspaceId,
             viewId,
           },
         })
-        playground.changeActiveView(viewId as ViewId)
       }
     })
     return () => {
