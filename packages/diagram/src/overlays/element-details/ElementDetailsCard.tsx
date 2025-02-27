@@ -47,6 +47,7 @@ import { useUpdateEffect } from '../../hooks'
 import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
+import { stopPropagation } from '../../utils'
 import * as css from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
@@ -240,11 +241,13 @@ export function ElementDetailsCard({
         },
       }}
       onClick={e => {
+        e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          e.stopPropagation()
           ref.current?.close()
         }
       }}
+      onDoubleClick={stopPropagation}
+      onPointerDown={stopPropagation}
       onClose={e => {
         e.stopPropagation()
         close()

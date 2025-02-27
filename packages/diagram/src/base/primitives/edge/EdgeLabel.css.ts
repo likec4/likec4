@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { reactFlowReducedGraphics } from '../../../LikeC4Diagram.css'
+import { whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
 import { easings, mantine, transitions, vars, whereDark, whereLight, xyvars } from '../../../theme-vars'
 import { edgeVars, mixColor } from './edge.css'
 
@@ -47,14 +47,10 @@ export const edgeLabelContainer = style([edgeVars, {
   border: '0px solid transparent',
   transform: varTranslate,
   transition: transitions.fast,
-  mixBlendMode: 'plus-lighter',
   vars: {
     [varTranslate]: `translate(0,0)`,
   },
   selectors: {
-    [`${whereLight} &`]: {
-      mixBlendMode: 'screen',
-    },
     '&[data-edge-hovered="true"]': {
       mixBlendMode: 'normal',
       transition: `all 190ms ${easings.inOut}`,
@@ -71,8 +67,11 @@ export const edgeLabelContainer = style([edgeVars, {
       transition: 'opacity 75ms ease-in-out, filter 100ms ease-in-out',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
     },
-    [`${reactFlowReducedGraphics} &`]: {
-      mixBlendMode: 'unset',
+    [`${whereNotReducedGraphics} &`]: {
+      mixBlendMode: 'plus-lighter',
+    },
+    [`${whereLight} ${whereNotReducedGraphics} &`]: {
+      mixBlendMode: 'screen',
     },
   },
 }])

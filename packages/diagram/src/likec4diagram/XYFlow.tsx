@@ -23,7 +23,6 @@ const selectXYProps = (ctx: DiagramContext) => ({
   fitViewPadding: ctx.fitViewPadding,
   enableFitView: ctx.features.enableFitView,
   enableReadOnly: ctx.features.enableReadOnly || ctx.toggledFeatures.enableReadOnly,
-  reduceGraphics: ctx.view.bounds.width * ctx.view.bounds.height > 4_000_000,
   ...(!ctx.features.enableFitView && {
     viewport: {
       x: -Math.min(ctx.view.bounds.x, 0),
@@ -39,7 +38,6 @@ const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof
   a.fitViewPadding === b.fitViewPadding &&
   a.enableFitView === b.enableFitView &&
   a.enableReadOnly === b.enableReadOnly &&
-  a.reduceGraphics === b.reduceGraphics &&
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges) &&
   shallowEqual(a.viewport, b.viewport)
@@ -62,7 +60,6 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({ background,
     edges,
     enableReadOnly,
     enableFitView,
-    reduceGraphics,
     ...props
   } = useDiagramContext(selectXYProps, equalsXYProps)
 
@@ -150,7 +147,6 @@ export const LikeC4DiagramXYFlow = memo<LikeC4DiagramXYFlowProps>(({ background,
       }}
       nodesDraggable={notReadOnly && nodesDraggable}
       nodesSelectable={nodesSelectable}
-      reduceGraphics={reduceGraphics}
       {...(notReadOnly && nodesDraggable && layoutConstraints)}
       {...props}>
       <DiagramUI />

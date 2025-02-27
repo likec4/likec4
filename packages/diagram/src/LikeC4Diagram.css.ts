@@ -1,4 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css'
+import { whereNotReducedGraphics, whereReducedGraphics } from './globals.css'
 import { vars, xyvars } from './theme-vars'
 
 export const cssReactFlow = style({
@@ -13,9 +14,9 @@ export const cssReactFlow = style({
   },
 })
 
-export const reactFlowReducedGraphics = `${cssReactFlow}:is([data-likec4-reduced-graphics="true"])`
-export const reactFlow = `${cssReactFlow}:not([data-likec4-reduced-graphics])`
-export const whereNotReducedGraphics = `:where(${reactFlow})`
+export const reactFlowReducedGraphics = `${whereReducedGraphics} ${cssReactFlow}`
+export const reactFlow = `${whereNotReducedGraphics} ${cssReactFlow}`
+export { whereNotReducedGraphics, whereReducedGraphics }
 
 export const notInitialized = style({
   opacity: 0,
