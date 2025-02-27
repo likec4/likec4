@@ -1032,8 +1032,8 @@ importers:
         specifier: ^11.0.1
         version: 11.0.1
       html-to-image:
-        specifier: ^1.11.11
-        version: 1.11.12
+        specifier: ^1.11.13
+        version: 1.11.13
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -4945,8 +4945,8 @@ packages:
   html-escaper@3.0.3:
     resolution: {integrity: sha512-RuMffC89BOWQoY0WKGpIhn5gX3iI54O6nRA0yC124NYVtzjmFWBIiFd8M0x+ZdX0P9R4lADg1mgP8C7PxGOWuQ==}
 
-  html-to-image@1.11.12:
-    resolution: {integrity: sha512-rhfgxyBJ8wLGqetvYk0EmaiPQs+b5JqApb2ImZf46pt8QIw/UzGISXMXTZ/UARnU02TSrTmZMqF0ncIRa/4k4Q==}
+  html-to-image@1.11.13:
+    resolution: {integrity: sha512-cuOPoI7WApyhBElTTb9oqsawRvZ0rHhaHwghRLlTuffoD1B2aDemlCruLeZrUIIdvG7gs9xeELEPm6PhuASqrg==}
 
   html-void-elements@3.0.0:
     resolution: {integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==}
@@ -12746,7 +12746,7 @@ snapshots:
 
   html-escaper@3.0.3: {}
 
-  html-to-image@1.11.12: {}
+  html-to-image@1.11.13: {}
 
   html-void-elements@3.0.0: {}
 
