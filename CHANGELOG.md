@@ -1,3 +1,21 @@
+## [1.24.1](https://github.com/likec4/likec4/compare/v1.24.0...v1.24.1) (2025-02-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency framer-motion to ^12.4.7 ([#1644](https://github.com/likec4/likec4/issues/1644)) ([c7f296b](https://github.com/likec4/likec4/commit/c7f296befd4da3fff6a84e6f986b820f0f980726))
+* **diagram:** reduce graphics for large diagrams ([f4a613a](https://github.com/likec4/likec4/commit/f4a613a977f6b6b430c304b47cf9cfb95ebbe99b))
+* **diagram:** reduce graphics for large diagrams ([7b0dd41](https://github.com/likec4/likec4/commit/7b0dd4116e5af8d52ca42a0d59015e193aa7444e))
+
+
+### Features
+
+* added an alias for ignore-layout option ([#1648](https://github.com/likec4/likec4/issues/1648)) ([2f17064](https://github.com/likec4/likec4/commit/2f17064ed3054652eed8cfc6da38122541309e3e)), closes [#1638](https://github.com/likec4/likec4/issues/1638) [/github.com/likec4/likec4/commit/7b5c98511f1ff869362422192e33aed709bbe77d#diff-e6b879e84bd696db8051d5c7aa46c0b994961913fe99fab9506f783b20570453L60-L66](https://github.com//github.com/likec4/likec4/commit/7b5c98511f1ff869362422192e33aed709bbe77d/issues/diff-e6b879e84bd696db8051d5c7aa46c0b994961913fe99fab9506f783b20570453L60-L66) [#1641](https://github.com/likec4/likec4/issues/1641)
+* **cli:** temprorary enable access to any host ([#1649](https://github.com/likec4/likec4/issues/1649)) ([9334477](https://github.com/likec4/likec4/commit/93344773cf06cb50627c24e02a7382c2e5e6601e))
+* **diagram:** add reduceGraphics property to enhance performance for large diagrams ([895af42](https://github.com/likec4/likec4/commit/895af42bb6a50de65ee0e0ccb8b1a614d05f8ea0))
+
+
+
 # [1.24.0](https://github.com/likec4/likec4/compare/v1.23.1...v1.24.0) (2025-02-25)
 
 ### 🚀 Features
