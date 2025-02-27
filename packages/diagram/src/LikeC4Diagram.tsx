@@ -42,6 +42,7 @@ export function LikeC4Diagram({
   initialWidth,
   initialHeight,
   experimentalEdgeEditing = false,
+  reduceGraphics = 'auto',
   onCanvasClick,
   onCanvasContextMenu,
   onCanvasDblClick,
@@ -83,7 +84,9 @@ export function LikeC4Diagram({
   }
 
   // If view has more then 3000 * 2000 pixels - assume it is a big diagram
-  const reduceGraphics = (view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000
+  const isReducedGraphicsMode = reduceGraphics === 'auto'
+    ? (view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000
+    : reduceGraphics
 
   return (
     <EnsureMantine>
@@ -123,7 +126,7 @@ export function LikeC4Diagram({
                 onOpenSource,
                 onBurgerMenuClick,
               }}>
-              <ReducedGraphicsContext value={reduceGraphics}>
+              <ReducedGraphicsContext value={isReducedGraphicsMode}>
                 <RootContainer className={className}>
                   {!isEmpty(view.customColorDefinitions) && (
                     <LikeC4CustomColors customColors={view.customColorDefinitions} />
