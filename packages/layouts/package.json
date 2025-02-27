@@ -54,7 +54,7 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "fast-equals": "^5.2.2",
-    "graphology": "^0.25.4",
+    "graphology": "^0.26.0",
     "graphology-types": "^0.24.8",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
