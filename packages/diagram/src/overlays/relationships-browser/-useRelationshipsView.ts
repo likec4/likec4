@@ -1,5 +1,7 @@
 import { computeRelationshipsView } from '@likec4/core'
 import type {
+  ComputedNode,
+  ComputedView,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -40,6 +42,7 @@ import {
   sortBy,
   tap,
 } from 'remeda'
+import { useDiagram } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../likec4model/useLikeC4Model'
 import type { RelationshipsBrowserTypes } from './_types'
 
@@ -114,11 +117,11 @@ type G = ReturnType<typeof createGraph>
 
 const PortSuffix = '-port'
 
-function treeFromElements(elements: Iterable<ElementModel>) {
-  const sorted = sortParentsFirst([...elements]) as ReadonlyArray<ElementModel>
+function treeFromElements(elements: Iterable<ComputedNode>) {
+  const sorted = sortParentsFirst([...elements]) as ReadonlyArray<ComputedNode>
   const root = new Set(sorted)
   const map = new Map(sorted.map(e => [e.id, e]))
-  const parents = new DefaultMap<ElementModel, ElementModel | null>(() => null)
+  const parents = new DefaultMap<ComputedNode, ComputedNode | null>(() => null)
   const children = sorted.reduce((acc, parent, index, all) => {
     acc.set(
       parent,
@@ -135,23 +138,23 @@ function treeFromElements(elements: Iterable<ElementModel>) {
             parents.set(el, parent)
           }
           return acc
-        }, [] as ElementModel[]),
+        }, [] as ComputedNode[]),
     )
     return acc
-  }, new DefaultMap<ElementModel, ElementModel[]>(() => []))
+  }, new DefaultMap<ComputedNode, ComputedNode[]>(() => []))
 
   return {
     sorted,
     byId: (id: string) => nonNullable(map.get(id as Fqn), `Element not found by id: ${id}`),
-    root: root as ReadonlySet<ElementModel>,
-    parent: (el: ElementModel) => parents.get(el),
-    children: (el: ElementModel): ReadonlyArray<ElementModel> => children.get(el),
+    root: root as ReadonlySet<ComputedNode>,
+    parent: (el: ComputedNode) => parents.get(el),
+    children: (el: ComputedNode): ReadonlyArray<ComputedNode> => children.get(el),
   }
 }
 
 function createNodes(
   column: RelationshipsBrowserTypes.Column,
-  elements: ReadonlySet<ElementModel>,
+  elements: ReadonlySet<ComputedNode>,
   g: G,
 ) {
   const graphNodes = new DefaultMap<Fqn, { id: string; portId: string }>(key => ({
@@ -235,11 +238,11 @@ function applyDagreLayout(g: G) {
 }
 
 export type RelationshipsViewData = {
-  incomers: ReadonlySet<ElementModel>
+  incomers: ReadonlySet<ComputedNode>
   incoming: ReadonlySet<RelationshipModel>
-  subjects: ReadonlySet<ElementModel>
+  subjects: ReadonlySet<ComputedNode>
   outgoing: ReadonlySet<RelationshipModel>
-  outgoers: ReadonlySet<ElementModel>
+  outgoers: ReadonlySet<ComputedNode>
 }
 
 export type LayoutRelationshipsViewResult = {
@@ -574,7 +577,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
         height: height,
       },
       style: {
-        ...element.$element.style,
+        ...element.style,
       },
       navigateTo,
       inEdges: [],
@@ -638,7 +641,12 @@ export function layoutRelationshipsView(data: RelationshipsViewData): LayoutRela
 
 export function useRelationshipsView(fqn: Fqn) {
   const model = useLikeC4Model(true)
+  const diagram = useDiagram()
+
   return useMemo(() => {
+    const viewId = diagram.currentView.id
+    let parentView = model.view(viewId).$view as ComputedView
+
     return {
       id: `relationships-${fqn}` as ViewId,
       title: `Relationships of ${fqn}`,
@@ -650,7 +658,7 @@ export function useRelationshipsView(fqn: Fqn) {
       links: null,
       hash: 'empty',
       customColorDefinitions: {},
-      ...layoutRelationshipsView(computeRelationshipsView(fqn, model)),
+      ...layoutRelationshipsView(computeRelationshipsView(fqn, model, parentView)),
     }
-  }, [model, fqn, computeRelationshipsView])
+  }, [model, diagram, fqn, computeRelationshipsView])
 }

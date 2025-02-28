@@ -191,6 +191,29 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "width": 320,
     },
   ],
+  "rules": [
+    {
+      "include": [
+        {
+          "wildcard": true,
+        },
+        {
+          "element": "cloud",
+          "isChildren": false,
+        },
+        {
+          "source": {
+            "element": "cloud",
+            "isChildren": true,
+          },
+          "target": {
+            "element": "amazon",
+            "isChildren": false,
+          },
+        },
+      ],
+    },
+  ],
   "tags": null,
   "title": "",
   "viewOf": "amazon",
@@ -737,6 +760,31 @@ sso authentification",
       "width": 320,
     },
   ],
+  "rules": [
+    {
+      "include": [
+        {
+          "wildcard": true,
+        },
+        {
+          "element": "cloud.frontend",
+          "isChildren": true,
+        },
+        {
+          "element": "cloud.backend",
+          "isChildren": true,
+        },
+      ],
+    },
+    {
+      "exclude": [
+        {
+          "element": "cloud.frontend",
+          "isChildren": false,
+        },
+      ],
+    },
+  ],
   "tags": null,
   "title": "",
   "viewOf": "cloud",
@@ -1110,6 +1158,15 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "width": 320,
     },
   ],
+  "rules": [
+    {
+      "include": [
+        {
+          "wildcard": true,
+        },
+      ],
+    },
+  ],
   "tags": null,
   "title": "",
   "viewOf": "cloud",
@@ -1372,6 +1429,15 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "technology": null,
       "title": "Amazon",
       "width": 320,
+    },
+  ],
+  "rules": [
+    {
+      "include": [
+        {
+          "wildcard": true,
+        },
+      ],
     },
   ],
   "tags": null,
