@@ -1,4 +1,4 @@
-import { createTheme, type MantineTheme } from '@mantine/core'
+import { type MantineTheme, createTheme, Portal } from '@mantine/core'
 
 export const theme = createTheme({
   autoContrast: true,
@@ -10,11 +10,18 @@ export const theme = createTheme({
     sizes: {
       h1: {
         // fontSize: '2rem',
-        fontWeight: '600'
+        fontWeight: '600',
       },
       h2: {
         // fontSize: '1.85rem',
-      }
-    }
-  }
+      },
+    },
+  },
+  components: {
+    Portal: Portal.extend({
+      defaultProps: {
+        reuseTargetNode: true,
+      },
+    }),
+  },
 }) as MantineTheme

@@ -173,6 +173,13 @@ export interface LikeC4DiagramProperties {
   experimentalEdgeEditing?: boolean | undefined
 
   /**
+   * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)
+   *
+   * @default 'auto' - will be set to true if view has more then 3000 * 2000 pixels
+   */
+  reduceGraphics?: 'auto' | boolean | undefined
+
+  /**
    * Render icon for an element, bundled or remote
    * By default, if icon is http:// or https://, it will be rendered as an image
    */

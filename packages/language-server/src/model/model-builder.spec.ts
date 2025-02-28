@@ -274,8 +274,8 @@ describe.concurrent('LikeC4ModelBuilder', () => {
   })
 
   it('builds model with extend', async ({ expect }) => {
-    const { parse, validateAll, buildModel } = createTestServices()
-    await parse(`
+    const { addDocument, validateAll, buildModel } = createTestServices()
+    await addDocument(`
       specification {
         element component
         element user
@@ -289,7 +289,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
         }
       }
     `)
-    await parse(`
+    await addDocument(`
       model {
         extend system.backend {
           component api
@@ -433,9 +433,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
   })
 
   it('builds model with relative links inside virtual workspace', async ({ expect }) => {
-    const { parse, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    const { addDocument, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
     // vscode-vfs://host/virtual/src/index.c4
-    await parse(
+    await addDocument(
       `
       specification {
         element component
@@ -459,7 +459,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     )
 
     // vscode-vfs://host/virtual/src/subdir/doc2.c4
-    await parse(
+    await addDocument(
       `
       model {
         component sys2 {
@@ -514,9 +514,9 @@ describe.concurrent('LikeC4ModelBuilder', () => {
   })
 
   it('build model and views have correct relative paths', async ({ expect }) => {
-    const { parse, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    const { addDocument, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
     // vscode-vfs://host/virtual/src/index.c4
-    await parse(
+    await addDocument(
       `
       specification {
         element component
@@ -537,7 +537,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     )
 
     // vscode-vfs://host/virtual/src/subdir/doc2.c4
-    await parse(
+    await addDocument(
       `
       model {
         component sys2 {
@@ -556,7 +556,7 @@ describe.concurrent('LikeC4ModelBuilder', () => {
     )
 
     // vscode-vfs://host/virtual/src/a/b/c/doc3.c4
-    await parse(
+    await addDocument(
       `
       model {
         component sys3 {

@@ -4,9 +4,19 @@
     "//"
   ],
   "tasks": {
+    "generate": {
+      "outputs": [
+        "src/meta.ts"
+      ],
+      "inputs": [
+        "package.json"
+      ],
+      "outputLogs": "new-only"
+    },
     "build": {
       "dependsOn": [
         "topo",
+        "generate",
         "@likec4/language-server#build",
         "@likec4/vscode-preview#build"
       ],

@@ -1,6 +1,6 @@
-import TextEditorWorker from '@codingame/monaco-vscode-api/workers/editor.worker?worker'
+import { type IDisposable } from '@codingame/monaco-vscode-editor-api'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
-import { type IDisposable, Uri } from '@codingame/monaco-vscode-editor-api'
+import TextEditorWorker from '@codingame/monaco-vscode-editor-api/esm/vs/editor/editor.worker.js?worker'
 import {
   type RegisteredFileSystemProvider,
   RegisteredMemoryFile,
@@ -9,7 +9,6 @@ import TextMateWorker from '@codingame/monaco-vscode-textmate-service-override/w
 import { nonNullable } from '@likec4/core'
 import LikeC4LspWorker from '@likec4/language-server/browser-worker?worker'
 import { loggable, logger } from '@likec4/log'
-import type { Logger } from 'monaco-languageclient/tools'
 import { type WorkerLoader, useWorkerFactory } from 'monaco-languageclient/workerFactory'
 import { first } from 'remeda'
 
@@ -25,7 +24,7 @@ export const defineDefaultWorkerLoaders: () => Record<string, WorkerLoader> = ()
   }
 }
 
-export const configureMonacoWorkers = (logger?: Logger) => {
+export const configureMonacoWorkers = (logger?: any) => {
   useWorkerFactory({
     workerLoaders: defineDefaultWorkerLoaders(),
     ...(logger && { logger }),
@@ -36,7 +35,7 @@ export const loadLikeC4Worker = () => {
   return new LikeC4LspWorker()
 }
 
-export const setActiveEditor = (filename: Uri) => {
+export const setActiveEditor = (filename: monaco.Uri) => {
   const activeTextEditor = first(monaco.editor.getEditors())
   if (!activeTextEditor) {
     throw new Error('MonacoEditor: editor is not ready')
@@ -74,7 +73,7 @@ export function createMemoryFileSystem(fsProvider: RegisteredFileSystemProvider,
   const currentModels = new Map(monaco.editor.getModels().map((model) => [model.uri.toString(), model]))
   for (let [file, content] of Object.entries(files)) {
     try {
-      const uri = Uri.file(file)
+      const uri = monaco.Uri.file(file)
       const uriAsString = uri.toString()
       let model = currentModels.get(uriAsString)
       if (model) {

@@ -30,6 +30,7 @@
     "dist",
     "packages/*/contrib",
     "**/routeTree.gen.ts",
+    "packages/vscode/src/state.ts",
     "packages/*/src/generated"
   ],
   "markdown": {},

@@ -1,4 +1,5 @@
-import { createContext, use } from 'react'
+import { createSafeContext } from '@mantine/core'
+import { createContext, use, useContext } from 'react'
 import type { DiagramActorRef } from '../state/types'
 
 /**

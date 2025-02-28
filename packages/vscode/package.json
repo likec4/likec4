@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.24.0",
+  "version": "1.24.1",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -27,7 +27,8 @@
   },
   "scripts": {
     "vscode:prepublish": "tsx scripts/prepublish.mts",
-    "open-web": "pnpm build:turbo && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
+    "generate": "vscode-ext-gen --scope likec4 --output src/meta.ts",
+    "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc --noEmit",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
     "build": "tsx scripts/build.mts",
@@ -54,10 +55,6 @@
     "color": "#111111",
     "theme": "dark"
   },
-  "extensionKind": [
-    "workspace",
-    "ui"
-  ],
   "capabilities": {
     "virtualWorkspaces": true,
     "untrustedWorkspaces": {
@@ -140,17 +137,25 @@
       "webview/context": [
         {
           "command": "likec4.preview-context-open-source",
-          "when": "webviewId == 'likec4-preview'"
+          "when": "webviewId == \"likec4-preview\""
         }
       ],
       "commandPalette": [
         {
           "command": "likec4.preview-context-open-source",
-          "when": "webviewId == 'likec4-preview'"
+          "when": "webviewId == \"likec4-preview\""
         },
         {
           "command": "likec4.locate",
-          "when": "webviewId == 'likec4-preview'"
+          "when": "webviewId == \"likec4-preview\""
+        },
+        {
+          "command": "likec4.restart",
+          "when": "likec4.activated"
+        },
+        {
+          "command": "likec4.validate-layout",
+          "when": "webviewId == \"likec4-preview\""
         }
       ]
     },
@@ -161,8 +166,8 @@
         "category": "%ext.title%"
       },
       {
-        "command": "likec4.rebuild",
-        "title": "%ext.cmd.rebuild%",
+        "command": "likec4.restart",
+        "title": "%ext.cmd.restart%",
         "category": "%ext.title%"
       },
       {
@@ -193,6 +198,12 @@
   ],
   "main": "dist/node/extension.js",
   "browser": "dist/browser/extension.js",
+  "imports": {
+    "#useDocumentSelector": {
+      "browser": "./src/browser/useDocumentSelector.ts",
+      "default": "./src/node/useDocumentSelector.ts"
+    }
+  },
   "devDependencies": {
     "@hpcc-js/wasm-graphviz": "1.7.0",
     "@likec4/core": "workspace:*",
@@ -214,13 +225,15 @@
     "langium": "3.3.1",
     "p-timeout": "^6.1.4",
     "pretty-ms": "^9.2.0",
-    "remeda": "^2.20.1",
+    "reactive-vscode": "^0.2.13",
+    "remeda": "^2.20.2",
     "std-env": "^3.8.0",
     "tslib": "^2.8.1",
-    "tsx": "~4.19.2",
+    "tsx": "~4.19.3",
     "turbo": "^2.4.2",
     "type-fest": "4.34.1",
     "typescript": "catalog:",
+    "vscode-ext-gen": "^1.0.2",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",

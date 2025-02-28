@@ -14,7 +14,7 @@
       },
       "options": {
         "env": {
-          "TURBO_UI": "0"
+          "NODE_ENV": "development"
         }
       },
       "promptOnClose": false,

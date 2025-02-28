@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         input: ['src/index.ts'],
+        experimentalLogSideEffects: true,
         external: [
           ...Object.keys(packageJson.dependencies || {}),
           ...Object.keys(packageJson.peerDependencies || {}),

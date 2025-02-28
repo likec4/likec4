@@ -1,4 +1,5 @@
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
+import { hiddenIfZoomTooSmall, reactFlowReducedGraphics, whereNotReducedGraphics } from '../../../LikeC4Diagram.css'
 import { easings, mantine, vars } from '../../../theme-vars'
 import { container, stokeFillMix } from './ElementNodeContainer.css'
 
@@ -19,7 +20,7 @@ const outlineColor = fallbackVar(
 
 const indicatorStroke = createVar('indicator-stroke')
 
-export const indicator = style({
+export const indicator = style([hiddenIfZoomTooSmall, {
   stroke: indicatorStroke,
   fill: 'none',
   transformOrigin: 'center center',
@@ -36,6 +37,8 @@ export const indicator = style({
   selectors: {
     ':where(.react-flow__node.selected) &': {
       visibility: 'visible',
+    },
+    [`${whereNotReducedGraphics} :where(.react-flow__node.selected)  &`]: {
       animationName: fallbackVar(vars.safariAnimationHook, indicatorKeyframes),
     },
     [`:where(.react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
@@ -52,7 +55,7 @@ export const indicator = style({
       },
     },
   },
-})
+}])
 
 export const fillElementFill = style({
   fill: vars.element.fill,
@@ -81,7 +84,7 @@ const shapeBase = style({
   zIndex: -1,
 })
 
-export const shapeSvgMultiple = style([shapeBase, {
+export const shapeSvgMultiple = style([shapeBase, hiddenIfZoomTooSmall, {
   transformOrigin: '50% 25%',
   transform: 'translate(14px, 14px) perspective(300px) translateZ(-8px)',
   filter: ' brightness(0.65) saturate(0.8)',
@@ -125,15 +128,26 @@ export const shapeSvg = style([shapeBase, {
         `,
       },
     },
+    [`:where([data-likec4-level='true']) &`]: {
+      vars: {
+        [filterShadow]: `
+        drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
+        drop-shadow(0 8px 3px rgba(0, 0, 0, 0.1))
+        drop-shadow(0 10px 10px rgba(0, 0, 0, 0.05))
+
+        `,
+      },
+    },
     [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
       vars: {
         [filterShadow]: `none`,
       },
     },
     [`:where([data-likec4-zoom-small="true"]) &`]: {
-      vars: {
-        [filterShadow]: `none`,
-      },
+      filter: 'none',
+    },
+    [`${reactFlowReducedGraphics} &`]: {
+      filter: 'none',
     },
   },
 }])

@@ -19,6 +19,7 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
+      "debugWebviews": true,
       "runtimeExecutable": "${execPath}",
       "args": [
         "--disable-updates",
@@ -48,9 +49,14 @@
       ],
       "type": "node"
     },
+    // Before launching the extension, make sure to add the following to your package.json of the extension:
+    // "extensionKind": [
+    //    "ui"
+    // ],
     {
       "name": "Run Web Extension in VS Code",
       "type": "extensionHost",
+      "debugWebviews": true,
       "debugWebWorkerHost": true,
       "request": "launch",
       "args": [

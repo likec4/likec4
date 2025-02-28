@@ -9,6 +9,7 @@ import { type BoxProps, Box, createPolymorphicComponent } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
 import { type PropsWithChildren, forwardRef } from 'react'
+import { useIsReducedGraphics } from '../../../hooks/useIsReducedGraphics'
 import type { NodeProps } from '../../types'
 import * as css from './ElementNodeContainer.css'
 
@@ -63,6 +64,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
     children,
     ...rest
   }, ref) => {
+    const nonReducedGraphics = !useIsReducedGraphics()
     let scale = 1
     switch (true) {
       case isHovered:
@@ -88,7 +90,7 @@ export const ElementNodeContainer = createPolymorphicComponent<'div', ElementNod
           'likec4-element-node',
         ])}
         initial={false}
-        {...selectable && {
+        {...selectable && nonReducedGraphics && {
           animate: {
             scale,
           },

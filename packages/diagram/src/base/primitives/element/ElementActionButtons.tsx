@@ -1,6 +1,7 @@
 import { ActionIcon, Box } from '@mantine/core'
 import clsx from 'clsx'
 import { m } from 'framer-motion'
+import { useIsZoomTooSmall } from '../../../hooks/useXYFlow'
 import { hiddenIfZoomTooSmall } from '../../../LikeC4Diagram.css'
 import { stopPropagation } from '../../../utils/xyflow'
 import type { NodeProps } from '../../types'
@@ -18,11 +19,12 @@ export function ElementActionButtons({
   },
   buttons,
 }: ElementActionButtonsProps) {
-  if (!buttons.length) {
+  const zoomTooSmall = useIsZoomTooSmall()
+  if (!buttons.length || zoomTooSmall) {
     return null
   }
   return (
-    <Box className={clsx(css.container, hiddenIfZoomTooSmall)}>
+    <Box className={clsx(css.container)}>
       <Box
         component={m.div}
         layoutRoot

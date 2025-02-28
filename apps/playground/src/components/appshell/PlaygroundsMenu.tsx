@@ -77,19 +77,27 @@ export function PlaygroundsMenu() {
         <MenuDivider />
         <MenuLabel>Examples</MenuLabel>
         <MenuItem
-          renderRoot={(props) => <Link {...props} to={'/w/$workspaceId/'} params={{ workspaceId: 'tutorial' }} />}>
+          renderRoot={(props) => (
+            <Link to={'/w/$workspaceId/$viewId/'} params={{ workspaceId: 'tutorial', viewId: 'index' }} {...props} />
+          )}>
           Tutorial
         </MenuItem>
         <MenuItem
-          renderRoot={(props) => <Link {...props} to={'/w/$workspaceId/'} params={{ workspaceId: 'bigbank' }} />}>
+          renderRoot={(props) => (
+            <Link to={'/w/$workspaceId/$viewId/'} params={{ workspaceId: 'bigbank', viewId: 'index' }} {...props} />
+          )}>
           BigBank
         </MenuItem>
         <MenuItem
-          renderRoot={(props) => <Link {...props} to={'/w/$workspaceId/'} params={{ workspaceId: 'dynamic' }} />}>
+          renderRoot={(props) => (
+            <Link to={'/w/$workspaceId/$viewId/'} params={{ workspaceId: 'dynamic', viewId: 'index' }} {...props} />
+          )}>
           Dynamic View
         </MenuItem>
         <MenuItem
-          renderRoot={(props) => <Link {...props} to={'/w/$workspaceId/'} params={{ workspaceId: 'deployment' }} />}>
+          renderRoot={(props) => (
+            <Link to={'/w/$workspaceId/$viewId/'} params={{ workspaceId: 'deployment', viewId: 'index' }} {...props} />
+          )}>
           Deployments
         </MenuItem>
         {workspaces.length > 0 && (
@@ -103,8 +111,8 @@ export function PlaygroundsMenu() {
             key={key}
             renderRoot={(props) => (
               <Link
-                to={'/w/$workspaceId/'}
-                params={{ workspaceId: name }}
+                to={'/w/$workspaceId/$viewId/'}
+                params={{ workspaceId: name, viewId: 'index' }}
                 activeProps={{
                   ['data-hovered']: true,
                 }}

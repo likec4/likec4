@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.24.0",
+  "version": "1.24.1",
   "packageManager": "pnpm@10.4.1",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "generate:theme": "likec4 gen react -o src/components/likec4-theme/likec4-views.jsx ./src/components/likec4-theme",
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./src/components/bigbank",
     "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./src/components/index-page",
-    "generate": "run-p 'generate:*'",
+    "generate": "run-p \"generate:*\"",
     "dev": "astro dev",
     "start": "astro dev",
     "typecheck": "astro check",
@@ -20,14 +20,14 @@
     "astro": "astro",
     "deploy": "npx wrangler pages deploy dist --commit-dirty=true --project-name likec4-docs-astro",
     "deploy:prod": "run deploy --branch main",
-    "clean": "rm -r -f 'dist' '.astro' 'node_modules'"
+    "clean": "rm -r -f \"dist\" \".astro\" \"node_modules\""
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/react": "4.2.0",
     "@astrojs/starlight": "0.31.1",
-    "@expressive-code/plugin-collapsible-sections": "^0.40.1",
-    "@expressive-code/plugin-line-numbers": "^0.40.1",
+    "@expressive-code/plugin-collapsible-sections": "^0.40.2",
+    "@expressive-code/plugin-line-numbers": "^0.40.2",
     "@fontsource/ibm-plex-sans": "^5.1.1",
     "astro": "5.2.5",
     "astro-og-canvas": "^0.5.6",
@@ -46,6 +46,6 @@
     "@types/react-dom": "19.0.3",
     "likec4": "workspace:*",
     "npm-run-all2": "^7.0.1",
-    "tsx": "~4.19.2"
+    "tsx": "~4.19.3"
   }
 }

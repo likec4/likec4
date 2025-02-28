@@ -1,11 +1,11 @@
 import {
+  type ComputedView,
   type DiagramView,
   type Element,
   type Fqn,
   type LikeC4View,
   type NodeId,
   type ViewId,
-  ComputedView,
   isDeploymentView,
   isScopedElementView,
 } from '@likec4/core'
@@ -21,6 +21,7 @@ import {
   Divider as MantineDivider,
   Flex,
   Group,
+  RemoveScroll,
   ScrollArea,
   Stack,
   Tabs,
@@ -36,15 +37,17 @@ import { useSessionStorage, useViewportSize } from '@mantine/hooks'
 import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hookz/web'
 import { IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@tabler/icons-react'
 import type { Rect } from '@xyflow/system'
+import clsx from 'clsx'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'framer-motion'
 import { type PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { clamp, isNullish, map, only, partition, pipe } from 'remeda'
 import { Link } from '../../components/Link'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useUpdateEffect } from '../../hooks'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { useDiagram } from '../../hooks/useDiagram'
 import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { useLikeC4Model } from '../../likec4model'
+import { stopPropagation } from '../../utils'
 import * as css from './ElementDetailsCard.css'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
@@ -210,16 +213,16 @@ export function ElementDetailsCard({
     if (!ref.current?.open) {
       ref.current?.showModal()
     }
-  }, 30)
+  }, 20)
 
   useTimeoutEffect(() => {
     setOpened(true)
-  }, 120)
+  }, 150)
 
   return (
     <m.dialog
       ref={ref}
-      className={css.dialog}
+      className={clsx(css.dialog, RemoveScroll.classNames.fullWidth)}
       layout
       layoutRoot
       initial={{
@@ -238,252 +241,256 @@ export function ElementDetailsCard({
         },
       }}
       onClick={e => {
+        e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          e.stopPropagation()
           ref.current?.close()
         }
       }}
+      onDoubleClick={stopPropagation}
+      onPointerDown={stopPropagation}
       onClose={e => {
         e.stopPropagation()
         close()
       }}
     >
-      <Card
-        drag
-        dragElastic={0}
-        dragMomentum={false}
-        dragListener={false}
-        dragControls={controls}
-        withBorder
-        shadow="md"
-        component={m.div}
-        className={css.card}
-        initial={{
-          top,
-          left,
-          width: _width,
-          height: _height,
-          opacity: 0,
-          originX,
-          originY,
-          scale: Math.max(fromScale, 0.7),
-        }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-        }}
-        exit={{
-          opacity: 0,
-          scale: 0.9,
-          translateY: -10,
-          transition: {
-            duration: 0.1,
-          },
-        }}
-        style={{
-          // `style` prop in Mantine doesn't accept motion values
-          width: width as any,
-          height: height as any,
-        }}
-        data-likec4-color={nodeModel?.color ?? elementModel.color}>
-        <Box
-          className={css.cardHeader}
-          onPointerDown={e => controls.start(e)}>
-          <Group align="start" justify="space-between" gap={'sm'} mb={'sm'} wrap="nowrap">
-            <Group align="start" gap={'sm'} style={{ cursor: 'default' }} wrap="nowrap">
-              {elementIcon}
-              <Box>
-                <Text
-                  component={'div'}
-                  className={css.title}>
-                  {elementModel.title}
-                </Text>
-                {notation && (
-                  <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
-                    {notation}
-                  </Text>
-                )}
-              </Box>
-            </Group>
-            <CloseButton
-              size={'lg'}
-              onClick={e => {
-                e.stopPropagation()
-                close()
-              }} />
-          </Group>
-          <Group align="baseline" gap={'sm'} wrap="nowrap">
-            <Box>
-              <SmallLabel>kind</SmallLabel>
-              <Badge radius={'sm'} size="sm" fw={600} color="gray">{elementModel.kind}</Badge>
-            </Box>
-            <Box flex={1}>
-              <SmallLabel>tags</SmallLabel>
-              <Flex gap={4} flex={1} mt={6}>
-                {elementModel.tags.map((tag) => (
-                  <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
-                ))}
-                {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
-              </Flex>
-            </Box>
-            <ActionIconGroup
-              style={{
-                alignSelf: 'flex-end',
-              }}>
-              {defaultLink && (
-                <ActionIcon
-                  component="a"
-                  href={defaultLink.url}
-                  target="_blank"
-                  size="lg"
-                  variant="default"
-                  radius="sm"
-                >
-                  <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
-                </ActionIcon>
-              )}
-              <IfEnabled feature="Vscode">
-                <Tooltip label="Open source">
-                  <ActionIcon
-                    size="lg"
-                    variant="default"
-                    radius="sm"
-                    onClick={e => {
-                      e.stopPropagation()
-                      // diagram.openSource({
-                      //   element: elementModel.id,
-                      // })
-                    }}>
-                    <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
-                  </ActionIcon>
-                </Tooltip>
-              </IfEnabled>
-              {defaultView && (
-                <Tooltip label="Open default view">
-                  <ActionIcon
-                    size="lg"
-                    variant="default"
-                    radius="sm"
-                    onClick={e => {
-                      e.stopPropagation()
-                      diagram.navigateTo(defaultView.id, fromNode ?? undefined)
-                    }}>
-                    <IconZoomScan style={{ width: '70%' }} />
-                  </ActionIcon>
-                </Tooltip>
-              )}
-            </ActionIconGroup>
-          </Group>
-        </Box>
-        <Tabs
-          value={activeTab}
-          onChange={v => setActiveTab(v as any)}
-          variant="none"
-          classNames={{
-            root: css.tabsRoot,
-            list: css.tabsList,
-            tab: css.tabsTab,
-            panel: css.tabsPanel,
-          }}>
-          <TabsList>
-            {TABS.map(tab => (
-              <TabsTab key={tab} value={tab}>
-                {tab}
-              </TabsTab>
-            ))}
-          </TabsList>
-
-          <TabsPanel value="Properties">
-            <ScrollArea scrollbars="y" type="auto">
-              <Box className={css.propertiesGrid} pt={'xs'}>
-                <ElementProperty title="description" emptyValue="no description">
-                  {elementModel.description}
-                </ElementProperty>
-                {elementModel.technology && (
-                  <ElementProperty title="technology">
-                    {elementModel.technology}
-                  </ElementProperty>
-                )}
-                {elementModel.links.length > 0 && (
-                  <>
-                    <PropertyLabel>links</PropertyLabel>
-                    <Stack gap={'xs'} align="flex-start">
-                      {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
-                    </Stack>
-                  </>
-                )}
-                {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}
-              </Box>
-            </ScrollArea>
-          </TabsPanel>
-
-          <TabsPanel value="Relationships">
-            <DiagramFeatures
-              overrides={{
-                enableRelationshipBrowser: false,
-                enableNavigateTo: false,
-              }}>
-              {opened && activeTab === 'Relationships' && (
-                <TabPanelRelationships
-                  element={elementModel}
-                  node={nodeModel ?? null} />
-              )}
-            </DiagramFeatures>
-          </TabsPanel>
-
-          <TabsPanel value="Views">
-            <ScrollArea scrollbars="y" type="auto">
-              <Stack gap={'lg'}>
-                {viewsOf.length > 0 && (
-                  <Box>
-                    <Divider label="views of the element (scoped)" />
-                    <Stack gap={'sm'}>
-                      {viewsOf.map((view) => (
-                        <ViewButton
-                          key={view.id}
-                          view={view}
-                          onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
-                {otherViews.length > 0 && (
-                  <Box>
-                    <Divider label="views including this element" />
-                    <Stack gap={'sm'}>
-                      {otherViews.map((view) => (
-                        <ViewButton
-                          key={view.id}
-                          view={view}
-                          onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
-              </Stack>
-            </ScrollArea>
-          </TabsPanel>
-
-          <TabsPanel value="Structure">
-            <ScrollArea scrollbars="y" type="auto">
-              <TabPanelStructure element={elementModel} />
-            </ScrollArea>
-          </TabsPanel>
-
-          <TabsPanel value="Deployments">
-            <ScrollArea scrollbars="y" type="auto">
-              <TabPanelDeployments elementFqn={elementModel.id} />
-            </ScrollArea>
-          </TabsPanel>
-        </Tabs>
-        <m.div
-          className={css.resizeHandle}
+      <RemoveScroll forwardProps removeScrollBar={false}>
+        <Card
           drag
           dragElastic={0}
           dragMomentum={false}
-          onDrag={handleDrag}
-          dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
-      </Card>
+          dragListener={false}
+          dragControls={controls}
+          withBorder
+          shadow="md"
+          component={m.div}
+          className={css.card}
+          initial={{
+            top,
+            left,
+            width: _width,
+            height: _height,
+            opacity: 0,
+            originX,
+            originY,
+            scale: Math.max(fromScale, 0.7),
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          exit={{
+            opacity: 0,
+            scale: 0.9,
+            translateY: -10,
+            transition: {
+              duration: 0.1,
+            },
+          }}
+          style={{
+            // `style` prop in Mantine doesn't accept motion values
+            width: width as any,
+            height: height as any,
+          }}
+          data-likec4-color={nodeModel?.color ?? elementModel.color}>
+          <Box
+            className={css.cardHeader}
+            onPointerDown={e => controls.start(e)}>
+            <Group align="start" justify="space-between" gap={'sm'} mb={'sm'} wrap="nowrap">
+              <Group align="start" gap={'sm'} style={{ cursor: 'default' }} wrap="nowrap">
+                {elementIcon}
+                <Box>
+                  <Text
+                    component={'div'}
+                    className={css.title}>
+                    {elementModel.title}
+                  </Text>
+                  {notation && (
+                    <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
+                      {notation}
+                    </Text>
+                  )}
+                </Box>
+              </Group>
+              <CloseButton
+                size={'lg'}
+                onClick={e => {
+                  e.stopPropagation()
+                  close()
+                }} />
+            </Group>
+            <Group align="baseline" gap={'sm'} wrap="nowrap">
+              <Box>
+                <SmallLabel>kind</SmallLabel>
+                <Badge radius={'sm'} size="sm" fw={600} color="gray">{elementModel.kind}</Badge>
+              </Box>
+              <Box flex={1}>
+                <SmallLabel>tags</SmallLabel>
+                <Flex gap={4} flex={1} mt={6}>
+                  {elementModel.tags.map((tag) => (
+                    <Badge key={tag} radius={'sm'} size="sm" fw={600} variant="gradient">#{tag}</Badge>
+                  ))}
+                  {elementModel.tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
+                </Flex>
+              </Box>
+              <ActionIconGroup
+                style={{
+                  alignSelf: 'flex-end',
+                }}>
+                {defaultLink && (
+                  <ActionIcon
+                    component="a"
+                    href={defaultLink.url}
+                    target="_blank"
+                    size="lg"
+                    variant="default"
+                    radius="sm"
+                  >
+                    <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
+                  </ActionIcon>
+                )}
+                <IfEnabled feature="Vscode">
+                  <Tooltip label="Open source">
+                    <ActionIcon
+                      size="lg"
+                      variant="default"
+                      radius="sm"
+                      onClick={e => {
+                        e.stopPropagation()
+                        // diagram.openSource({
+                        //   element: elementModel.id,
+                        // })
+                      }}>
+                      <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
+                    </ActionIcon>
+                  </Tooltip>
+                </IfEnabled>
+                {defaultView && (
+                  <Tooltip label="Open default view">
+                    <ActionIcon
+                      size="lg"
+                      variant="default"
+                      radius="sm"
+                      onClick={e => {
+                        e.stopPropagation()
+                        diagram.navigateTo(defaultView.id, fromNode ?? undefined)
+                      }}>
+                      <IconZoomScan style={{ width: '70%' }} />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </ActionIconGroup>
+            </Group>
+          </Box>
+          <Tabs
+            value={activeTab}
+            onChange={v => setActiveTab(v as any)}
+            variant="none"
+            classNames={{
+              root: css.tabsRoot,
+              list: css.tabsList,
+              tab: css.tabsTab,
+              panel: css.tabsPanel,
+            }}>
+            <TabsList>
+              {TABS.map(tab => (
+                <TabsTab key={tab} value={tab}>
+                  {tab}
+                </TabsTab>
+              ))}
+            </TabsList>
+
+            <TabsPanel value="Properties">
+              <ScrollArea scrollbars="y" type="auto">
+                <Box className={css.propertiesGrid} pt={'xs'}>
+                  <ElementProperty title="description" emptyValue="no description">
+                    {elementModel.description}
+                  </ElementProperty>
+                  {elementModel.technology && (
+                    <ElementProperty title="technology">
+                      {elementModel.technology}
+                    </ElementProperty>
+                  )}
+                  {elementModel.links.length > 0 && (
+                    <>
+                      <PropertyLabel>links</PropertyLabel>
+                      <Stack gap={'xs'} align="flex-start">
+                        {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
+                      </Stack>
+                    </>
+                  )}
+                  {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}
+                </Box>
+              </ScrollArea>
+            </TabsPanel>
+
+            <TabsPanel value="Relationships">
+              <DiagramFeatures
+                overrides={{
+                  enableRelationshipBrowser: false,
+                  enableNavigateTo: false,
+                }}>
+                {opened && activeTab === 'Relationships' && (
+                  <TabPanelRelationships
+                    element={elementModel}
+                    node={nodeModel ?? null} />
+                )}
+              </DiagramFeatures>
+            </TabsPanel>
+
+            <TabsPanel value="Views">
+              <ScrollArea scrollbars="y" type="auto">
+                <Stack gap={'lg'}>
+                  {viewsOf.length > 0 && (
+                    <Box>
+                      <Divider label="views of the element (scoped)" />
+                      <Stack gap={'sm'}>
+                        {viewsOf.map((view) => (
+                          <ViewButton
+                            key={view.id}
+                            view={view}
+                            onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
+                  {otherViews.length > 0 && (
+                    <Box>
+                      <Divider label="views including this element" />
+                      <Stack gap={'sm'}>
+                        {otherViews.map((view) => (
+                          <ViewButton
+                            key={view.id}
+                            view={view}
+                            onNavigateTo={to => diagram.navigateTo(to, fromNode ?? undefined)} />
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
+                </Stack>
+              </ScrollArea>
+            </TabsPanel>
+
+            <TabsPanel value="Structure">
+              <ScrollArea scrollbars="y" type="auto">
+                <TabPanelStructure element={elementModel} />
+              </ScrollArea>
+            </TabsPanel>
+
+            <TabsPanel value="Deployments">
+              <ScrollArea scrollbars="y" type="auto">
+                <TabPanelDeployments elementFqn={elementModel.id} />
+              </ScrollArea>
+            </TabsPanel>
+          </Tabs>
+          <m.div
+            className={css.resizeHandle}
+            drag
+            dragElastic={0}
+            dragMomentum={false}
+            onDrag={handleDrag}
+            dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
+        </Card>
+      </RemoveScroll>
     </m.dialog>
   )
 }

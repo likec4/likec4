@@ -1,7 +1,7 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "1.24.0",
+  "version": "1.24.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -47,7 +47,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
-    "clean": "rm -r -f -g 'dist/**'"
+    "clean": "rm -r -f -g \"dist/**\""
   },
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "1.7.0",
@@ -60,7 +60,7 @@
     "khroma": "^2.1.0",
     "nano-spawn": "^0.2.0",
     "p-limit": "^6.2.0",
-    "remeda": "^2.20.1",
+    "remeda": "^2.20.2",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
     "type-fest": "4.34.1",
@@ -74,7 +74,7 @@
     "turbo": "^2.4.2",
     "typescript": "catalog:",
     "unbuild": "^3.3.1",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.6"
   },
   "packageManager": "pnpm@10.4.1"
 }

@@ -153,7 +153,7 @@ function WorkspaceDiagramPage() {
   }
   return (
     <Box pos={'relative'} w={'100%'} h={'100%'}>
-      {state === 'pending' && <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />}
+      {state === 'pending' && <LoadingOverlay visible zIndex={10} overlayProps={{ radius: 'sm', blur: 2 }} />}
       <Box className={css.stateAlert}>
         <Notification
           icon={icon}

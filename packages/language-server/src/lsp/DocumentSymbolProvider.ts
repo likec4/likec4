@@ -1,14 +1,17 @@
 import { nonexhaustive } from '@likec4/core'
-import { type AstNode, type MaybePromise, AstUtils, GrammarUtils } from 'langium'
+import { type AstNode, type LangiumDocument, AstUtils, DocumentState, GrammarUtils } from 'langium'
 import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
+import type { CancellationToken, DocumentSymbolParams } from 'vscode-languageserver'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
-import { type LikeC4LangiumDocument, ast } from '../ast'
-import { logWarnError } from '../logger'
+import { ast, isLikeC4LangiumDocument } from '../ast'
+import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
 import { readStrictFqn } from '../utils/elementRef'
+
+const logger = rootLogger.getChild('DocumentSymbolProvider')
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected readonly nodeKindProvider: NodeKindProvider
@@ -23,11 +26,25 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     this.nameProvider = services.references.NameProvider
   }
 
-  getSymbols({
-    parseResult: {
-      value: { specifications, models, deployments, views, likec4lib },
-    },
-  }: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
+  async getSymbols(
+    doc: LangiumDocument,
+    _params: DocumentSymbolParams,
+    cancelToken?: CancellationToken,
+  ): Promise<DocumentSymbol[]> {
+    if (!isLikeC4LangiumDocument(doc)) {
+      return []
+    }
+    if (doc.state <= DocumentState.Linked) {
+      logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
+      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, doc.uri, cancelToken)
+      logger.debug(`document is Linked`)
+    }
+    const {
+      parseResult: {
+        value: { specifications, models, deployments, views, likec4lib },
+      },
+    } = doc
+
     return [
       ...likec4lib.map(l => () => this.getLikec4LibSymbol(l)),
       ...specifications.map(s => () => this.getSpecSymbol(s)),

@@ -22,9 +22,9 @@ export function ElementDetailsButton({
 }: ElementDetailsButtonProps) {
   return (
     <Box className={clsx(css.container, hiddenIfZoomTooSmall, 'details-button')}>
-      <Box
-        className={clsx('nodrag nopan', css.actionIconWrapper)}
-        component={m.div}
+      <ActionIcon
+        className={clsx('nodrag nopan', css.actionIcon)}
+        component={m.button}
         initial={false}
         style={{
           originX: 0.45,
@@ -44,17 +44,13 @@ export function ElementDetailsButton({
           opacity: 1,
         }}
         whileTap={{ scale: 1.15 }}
+        size={'md'}
+        radius="md"
+        onClick={onClick}
+        onDoubleClick={stopPropagation}
       >
-        <ActionIcon
-          className={css.actionIcon}
-          size={'md'}
-          radius="md"
-          onClick={onClick}
-          onDoubleClick={stopPropagation}
-        >
-          {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
-        </ActionIcon>
-      </Box>
+        {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
+      </ActionIcon>
     </Box>
   )
 }

@@ -40,10 +40,13 @@ export function usePlayground() {
     },
 
     changeActiveFile: (filename: string) => {
-      playgroundActor.send({
-        type: 'workspace.changeActiveFile',
-        filename,
-      })
+      const ctx = playgroundActor.getSnapshot().context
+      if (ctx.activeFilename !== filename) {
+        playgroundActor.send({
+          type: 'workspace.changeActiveFile',
+          filename,
+        })
+      }
     },
 
     changeActiveView: (viewId: ViewId) => {

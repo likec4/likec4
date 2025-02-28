@@ -9,6 +9,7 @@ import {
   IconRendererProvider,
   RootContainer,
 } from './context'
+import { ReducedGraphicsContext } from './hooks/useIsReducedGraphics'
 import { LikeC4CustomColors } from './LikeC4CustomColors'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import type { Types } from './likec4diagram/types'
@@ -41,6 +42,7 @@ export function LikeC4Diagram({
   initialWidth,
   initialHeight,
   experimentalEdgeEditing = false,
+  reduceGraphics = 'auto',
   onCanvasClick,
   onCanvasContextMenu,
   onCanvasDblClick,
@@ -81,6 +83,11 @@ export function LikeC4Diagram({
     }
   }
 
+  // If view has more then 3000 * 2000 pixels - assume it is a big diagram
+  const isReducedGraphicsMode = reduceGraphics === 'auto'
+    ? (view.bounds?.width ?? 1) * (view.bounds?.height ?? 1) > 6_000_000
+    : reduceGraphics
+
   return (
     <EnsureMantine>
       <FramerMotionConfig>
@@ -119,30 +126,32 @@ export function LikeC4Diagram({
                 onOpenSource,
                 onBurgerMenuClick,
               }}>
-              <RootContainer className={className}>
-                {!isEmpty(view.customColorDefinitions) && (
-                  <LikeC4CustomColors customColors={view.customColorDefinitions} />
-                )}
-                <XYFlowProvider
-                  fitView={fitView}
-                  {...initialRef.current}
-                >
-                  <DiagramActorProvider
-                    input={{
-                      view,
-                      pannable,
-                      zoomable,
-                      fitViewPadding,
-                      ...xyNodesEdges,
-                    }}>
-                    <LikeC4DiagramXYFlow
-                      nodesDraggable={nodesDraggable}
-                      nodesSelectable={nodesSelectable}
-                      background={background}
-                    />
-                  </DiagramActorProvider>
-                </XYFlowProvider>
-              </RootContainer>
+              <ReducedGraphicsContext value={isReducedGraphicsMode}>
+                <RootContainer className={className}>
+                  {!isEmpty(view.customColorDefinitions) && (
+                    <LikeC4CustomColors customColors={view.customColorDefinitions} />
+                  )}
+                  <XYFlowProvider
+                    fitView={fitView}
+                    {...initialRef.current}
+                  >
+                    <DiagramActorProvider
+                      input={{
+                        view,
+                        pannable,
+                        zoomable,
+                        fitViewPadding,
+                        ...xyNodesEdges,
+                      }}>
+                      <LikeC4DiagramXYFlow
+                        nodesDraggable={nodesDraggable}
+                        nodesSelectable={nodesSelectable}
+                        background={background}
+                      />
+                    </DiagramActorProvider>
+                  </XYFlowProvider>
+                </RootContainer>
+              </ReducedGraphicsContext>
             </DiagramEventHandlers>
           </DiagramFeatures>
         </IconRendererProvider>

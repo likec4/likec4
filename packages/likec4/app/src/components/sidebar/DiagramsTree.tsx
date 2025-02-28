@@ -21,7 +21,7 @@ import {
   IconStarFilled,
 } from '@tabler/icons-react'
 import { useParams, useRouter } from '@tanstack/react-router'
-import { type MouseEvent, type PropsWithChildren, memo, useEffect } from 'react'
+import { type MouseEvent, type PropsWithChildren, memo, useEffect, useTransition } from 'react'
 import { RenderIcon } from '../RenderIcon'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 
@@ -76,6 +76,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
   }, [viewId])
 
   const theme = useComputedColorScheme()
+  const [, startTransition] = useTransition()
 
   return (
     <Box>
@@ -120,11 +121,13 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: { groupBy: GroupB
               {...(!hasChildren && {
                 onClick: (e) => {
                   e.stopPropagation()
-                  router.buildAndCommitLocation({
-                    params: {
-                      viewId: node.value,
-                    },
-                  })
+                  startTransition(() =>
+                    router.buildAndCommitLocation({
+                      params: {
+                        viewId: node.value,
+                      },
+                    })
+                  )
                 },
               })}
             >

@@ -4,7 +4,7 @@ import { AstUtils, GrammarUtils } from 'langium'
 import { isString } from 'remeda'
 import type { Location } from 'vscode-languageserver-types'
 import type { ParsedAstElement } from '../ast'
-import { ast, isParsedLikeC4LangiumDocument } from '../ast'
+import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { DeploymentsIndex } from './deployments-index'
 import { type FqnIndex } from './fqn-index'
@@ -27,7 +27,7 @@ export class LikeC4ModelLocator {
   }
 
   private documents() {
-    return this.parser.documents().toArray()
+    return this.parser.documents()
   }
 
   public getParsedElement(astNodeOrFqn: ast.Element | c4.Fqn): ParsedAstElement | null {

@@ -10,12 +10,11 @@ import type {
   LocateRequest,
   ValidateLayoutRequest,
 } from '@likec4/language-server/protocol'
-import vscode from 'vscode'
+import { nextTick, triggerRef, useDisposable } from 'reactive-vscode'
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
-import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
+import type { BaseLanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-types'
-import { logger } from './logger'
-import { AbstractDisposable } from './util'
+import { computedModel } from './state'
 
 // #region From server
 const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
@@ -32,49 +31,72 @@ const validateLayout: ValidateLayoutRequest = new RequestType('likec4/validate-l
 
 // #endregion
 
-export class Rpc extends AbstractDisposable {
-  constructor(public readonly client: LanguageClient) {
-    super()
+const lsp = {
+  onDidChangeModel,
+  computeView,
+  fetchComputedModel,
+  buildDocuments,
+  locate,
+  changeView,
+  layoutView,
+  validateLayout,
+}
+
+export function useRpc(client: BaseLanguageClient) {
+  let previousOperation = Promise.resolve({} as any)
+
+  async function queue<T>(op: () => Promise<T>): Promise<T> {
+    const opPromise = previousOperation.then(op)
+    // ignore failures
+    previousOperation = opPromise.catch(() => ({} as any))
+    return await opPromise
   }
 
-  override dispose() {
-    super.dispose()
-    logger.info(`[Rpc] disposed`)
+  async function fetchComputedModel(cleanCaches?: true) {
+    const result = await queue(() => client.sendRequest(lsp.fetchComputedModel, { cleanCaches }))
+    if (result.model) {
+      computedModel.value = result.model
+      nextTick(() => triggerRef(computedModel))
+    }
+    return result
   }
 
-  onDidChangeModel(cb: () => void): vscode.Disposable {
-    const disposable = this.client.onNotification(onDidChangeModel, cb)
-    this.onDispose(() => disposable.dispose())
-    return disposable
+  function onDidChangeModel(cb: () => void) {
+    useDisposable(client.onNotification(lsp.onDidChangeModel, cb))
   }
 
-  async fetchComputedModel(cleanCaches?: true) {
-    const { model } = await this.client.sendRequest(fetchComputedModel, { cleanCaches })
-    return model
+  async function layoutView(viewId: ViewID) {
+    const { result } = await queue(() => client.sendRequest(lsp.layoutView, { viewId }))
+    return result
   }
 
-  async computeView(viewId: ViewID) {
-    const { view } = await this.client.sendRequest(computeView, { viewId })
-    return view
+  async function validateLayout() {
+    return await client.sendRequest(lsp.validateLayout, {})
   }
 
-  async layoutView(viewId: ViewID) {
-    return await this.client.sendRequest(layoutView, { viewId })
+  async function buildDocuments(docs: DocumentUri[]) {
+    await client.sendRequest(lsp.buildDocuments, { docs })
   }
 
-  async validateLayout() {
-    return await this.client.sendRequest(validateLayout, {})
+  async function locate(params: LocateParams): Promise<Location | null> {
+    return await client.sendRequest(lsp.locate, params)
   }
 
-  async buildDocuments(docs: DocumentUri[]) {
-    await this.client.sendRequest(buildDocuments, { docs })
+  async function changeView(req: ChangeViewRequestParams) {
+    return await client.sendRequest(lsp.changeView, req)
   }
 
-  async locate(params: LocateParams): Promise<Location | null> {
-    return await this.client.sendRequest(locate, params)
-  }
-
-  async changeView(req: ChangeViewRequestParams) {
-    return await this.client.sendRequest(changeView, req)
+  return {
+    client,
+    onDidChangeModel,
+    fetchComputedModel,
+    // computeView,
+    layoutView,
+    validateLayout,
+    buildDocuments,
+    locate,
+    changeView,
   }
 }
+
+export type Rpc = ReturnType<typeof useRpc>

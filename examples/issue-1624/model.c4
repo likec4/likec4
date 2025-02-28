@@ -1,0 +1,337 @@
+/**
+ See https://github.com/likec4/likec4/issues/1624#issuecomment-2684676220
+ */
+
+specification {
+  element package {
+    notation "UML Package"
+  }
+  element softwareSystem {
+    notation "C4 System / UML Component"
+  }
+  element container {
+    notation "C4 Container"
+  }
+  tag testtag
+  tag testtag2
+}
+
+model {
+  test1 = package {
+    #testtag, #testtag2
+    title 'Package'
+    link https://asdf.com/1 'link 1 title'
+    technology 'testtechnology'
+    description 'this is a description
+
+    new line
+
+    - bullet item 1
+    - bullet item 2
+
+    bold
+    italic'
+    metadata {
+        prop1 'prop1 value'
+        prop2 'prop2 value'
+    }
+  }
+
+    system_1 = softwareSystem "system 1" {
+      #testtag, #testtag2
+
+      link https://asdf.com/2 'link 2 title'
+      technology 'testtechnology'
+      description 'this is a description
+
+      new line
+
+      bullet item 1
+      bullet item 2
+
+      bold
+      italic'
+      metadata {
+          prop1 'prop1 value'
+          prop2 'prop2 value'
+      }
+
+      container_1 = container 'container 1' {
+        #testtag, #testtag2
+
+        link https://asdf.com/2 'link 2 title'
+        technology 'testtechnology'
+        description 'this is a description
+
+        new line
+
+        bullet item 1
+        bullet item 2
+
+        bold
+        italic'
+        metadata {
+            prop1 'prop1 value'
+            prop2 'prop2 value'
+        }
+
+        this -> system_1.container_2 'relationship' {
+          technology 'testtechnology'
+          description 'this is a description'
+        }
+        this -> system_2.container_2 'relationship' {
+          technology 'testtechnology'
+          description 'this is a description'
+        }
+      }
+
+      container_2 = container 'container 2' {
+        #testtag, #testtag2
+
+        link https://asdf.com/2 'link 2 title'
+        technology 'testtechnology'
+        description 'this is a description
+
+        new line
+
+        bullet item 1
+        bullet item 2
+
+        bold
+        italic'
+        metadata {
+            prop1 'prop1 value'
+            prop2 'prop2 value'
+        }
+
+        this -> system_2.container_2 'relationship' {
+          technology 'testtechnology'
+          description 'this is a description'
+        }
+      }
+    }
+
+    system_2 = softwareSystem "system 2" {
+      #testtag, #testtag2
+
+      link https://asdf.com/2 'link 2 title'
+      technology 'testtechnology'
+      description 'this is a description
+
+      new line
+
+      bullet item 1
+      bullet item 2
+
+      bold
+      italic'
+      metadata {
+          prop1 'prop1 value'
+          prop2 'prop2 value'
+      }
+
+      container_1 = container 'container 1' {
+        #testtag, #testtag2
+
+        link https://asdf.com/2 'link 2 title'
+        technology 'testtechnology'
+        description 'this is a description
+
+        new line
+
+        bullet item 1
+        bullet item 2
+
+        bold
+        italic'
+
+        metadata {
+            prop1 'prop1 value'
+            prop2 'prop2 value'
+        }
+
+        this -> system_2.container_2 'relationship' {
+          technology 'testtechnology'
+          description 'this is a description'
+        }
+      }
+
+      container_2 = container 'container 2' {
+        #testtag, #testtag2
+
+        link https://asdf.com/2 'link 2 title'
+        technology 'testtechnology'
+        description 'this is a description
+
+        new line
+
+      bullet item 1
+      bullet item 2
+
+      bold
+      italic'
+      metadata {
+          prop1 'prop1 value'
+          prop2 'prop2 value'
+      }
+
+      this -> container_1 'relationship' {
+        technology 'testtechnology'
+        description 'this is a description'
+      }
+    }
+  }
+
+  wildly_connected_system = softwareSystem "Wildly Connected System" {
+    container1 = container 'Container 1'
+    container2 = container 'Container 2'
+    container3 = container 'Container 3'
+    container4 = container 'Container 4'
+    container5 = container 'Container 5'
+    container6 = container 'Container 6'
+    container7 = container 'Container 7'
+    container8 = container 'Container 8'
+    container9 = container 'Container 9'
+    container10 = container 'Container 10'
+    container11 = container 'Container 11'
+    container12 = container 'Container 12'
+    container13 = container 'Container 13'
+    container14 = container 'Container 14'
+    container15 = container 'Container 15'
+    container16 = container 'Container 16'
+
+    container1 -> container2 'relationship'
+    container1 -> container3 'relationship'
+    container1 -> container4 'relationship'
+    container1 -> container5 'relationship'
+    container1 -> container6 'relationship'
+    container1 -> container7 'relationship'
+    container1 -> container8 'relationship'
+    container1 -> container9 'relationship'
+    container1 -> container10 'relationship'
+    container1 -> container11 'relationship'
+    container1 -> container12 'relationship'
+    container1 -> container13 'relationship'
+    container1 -> container14 'relationship'
+    container1 -> container15 'relationship'
+    container1 -> container16 'relationship'
+
+    container2 -> container12 'relationship'
+    container2 -> container3 'relationship'
+    container2 -> container4 'relationship'
+    container2 -> container5 'relationship'
+    container2 -> container6 'relationship'
+    container2 -> container7 'relationship'
+    container2 -> container8 'relationship'
+    container2 -> container9 'relationship'
+    container2 -> container10 'relationship'
+    container2 -> container11 'relationship'
+    container2 -> container12 'relationship'
+    container2 -> container13 'relationship'
+    container2 -> container14 'relationship'
+    container2 -> container15 'relationship'
+    container2 -> container16 'relationship'
+
+    container3 -> container2 'relationship'
+    container3 -> container13 'relationship'
+    container3 -> container4 'relationship'
+    container3 -> container5 'relationship'
+    container3 -> container6 'relationship'
+    container3 -> container7 'relationship'
+    container3 -> container8 'relationship'
+    container3 -> container9 'relationship'
+    container3 -> container10 'relationship'
+    container3 -> container11 'relationship'
+    container3 -> container12 'relationship'
+    container3 -> container13 'relationship'
+    container3 -> container14 'relationship'
+    container3 -> container15 'relationship'
+    container3 -> container16 'relationship'
+
+    container4 -> container2 'relationship'
+    container4 -> container3 'relationship'
+    container4 -> container14 'relationship'
+    container4 -> container5 'relationship'
+    container4 -> container6 'relationship'
+    container4 -> container7 'relationship'
+    container4 -> container8 'relationship'
+    container4 -> container9 'relationship'
+    container4 -> container10 'relationship'
+    container4 -> container11 'relationship'
+    container4 -> container12 'relationship'
+    container4 -> container13 'relationship'
+    container4 -> container14 'relationship'
+    container4 -> container15 'relationship'
+    container4 -> container16 'relationship'
+
+    container5 -> container2 'relationship'
+    container5 -> container3 'relationship'
+    container5 -> container4 'relationship'
+    container5 -> container15 'relationship'
+    container5 -> container6 'relationship'
+    container5 -> container7 'relationship'
+    container5 -> container8 'relationship'
+    container5 -> container9 'relationship'
+    container5 -> container10 'relationship'
+    container5 -> container11 'relationship'
+    container5 -> container12 'relationship'
+    container5 -> container13 'relationship'
+    container5 -> container14 'relationship'
+    container5 -> container15 'relationship'
+    container5 -> container16 'relationship'
+
+    container6 -> container2 'relationship'
+    container6 -> container3 'relationship'
+    container6 -> container4 'relationship'
+    container6 -> container15 'relationship'
+    container6 -> container11 'relationship'
+    container6 -> container7 'relationship'
+    container6 -> container8 'relationship'
+    container6 -> container9 'relationship'
+    container6 -> container10 'relationship'
+    container6 -> container11 'relationship'
+    container6 -> container12 'relationship'
+    container6 -> container13 'relationship'
+    container6 -> container14 'relationship'
+    container6 -> container15 'relationship'
+    container6 -> container16 'relationship'
+
+    container7 -> container2 'relationship'
+    container7 -> container3 'relationship'
+    container7 -> container4 'relationship'
+    container7 -> container15 'relationship'
+    container7 -> container6 'relationship'
+    container7 -> container13 'relationship'
+    container7 -> container8 'relationship'
+
+    container8 -> container2 'relationship'
+    container8 -> container3 'relationship'
+    container8 -> container4 'relationship'
+    container8 -> container15 'relationship'
+    container8 -> container6 'relationship'
+    container8 -> container7 'relationship'
+    container8 -> container12 'relationship'
+
+    container8 -> system_1 'relationship'
+    container9 -> system_2 'relationship'
+    container10 -> system_1 'relationship'
+    container2 -> system_2 'relationship'
+    container9 -> system_1 'relationship'
+    container7 -> system_2 'relationship'
+    container8 -> system_1 'relationship'
+  }
+}
+
+views {
+  view wildly_connected_system_container_view of wildly_connected_system {
+    include *, system_1._, system_2._
+  }
+
+  view system_1 of system_1 {
+    include *
+  }
+
+  view system_2 of system_2 {
+    include *
+  }
+}

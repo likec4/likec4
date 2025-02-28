@@ -1,9 +1,9 @@
 import {
   type DiagramEdge,
   type EdgeId,
+  type LikeC4Model,
   type NodeId,
   DiagramNode,
-  LikeC4Model,
   nameFromFqn,
 } from '@likec4/core'
 import {

@@ -18,6 +18,7 @@ export function useDiagram() {
   const actor = useDiagramActorRef()
   const [, startTransition] = useTransition()
   return useMemo(() => ({
+    actor,
     send: actor.send,
     navigateTo: (viewId: ViewId, fromNode?: NodeId) => {
       startTransition(() => {

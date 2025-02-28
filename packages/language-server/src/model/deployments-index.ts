@@ -1,5 +1,5 @@
 import { type Fqn, ancestorsFqn, AsFqn } from '@likec4/core'
-import { MultiMap } from 'langium'
+import { MultiMap } from '@likec4/core/utils'
 import { isDefined, isTruthy } from 'remeda'
 import {
   type AstNodeDescriptionWithFqn,
@@ -13,13 +13,11 @@ import type { LikeC4NameProvider } from '../references'
 import { readStrictFqn } from '../utils/elementRef'
 import { DocumentFqnIndex, FqnIndex } from './fqn-index'
 
-export class DeploymentsIndex extends FqnIndex {
+export class DeploymentsIndex extends FqnIndex<ast.DeploymentElement> {
   protected Names: LikeC4NameProvider
 
-  protected override cachePrefix = 'deployments-index'
-
   constructor(protected override services: LikeC4Services) {
-    super(services)
+    super(services, 'deployments-index')
     this.Names = services.references.NameProvider
   }
 
@@ -41,7 +39,7 @@ export class DeploymentsIndex extends FqnIndex {
         id: fqn,
       }
       ElementOps.writeId(node, fqn)
-      byfqn.add(fqn, desc)
+      byfqn.set(fqn, desc)
       return desc
     }
 
@@ -62,7 +60,7 @@ export class DeploymentsIndex extends FqnIndex {
         if (!parentFqn) {
           root.push(desc)
         } else {
-          children.add(parentFqn, desc)
+          children.set(parentFqn, desc)
         }
 
         if (ast.isDeployedInstance(node)) {
@@ -83,18 +81,21 @@ export class DeploymentsIndex extends FqnIndex {
         }
       }
 
-      const directChildren = children.get(thisFqn)
       _nested = [
-        ...directChildren,
+        ...children.get(thisFqn) ?? [],
         ..._nested,
       ]
-      descendants.addAll(thisFqn, _nested)
-      if (ast.isExtendDeployment(node)) {
-        ancestorsFqn(thisFqn).forEach(ancestor => {
-          descendants.addAll(ancestor, _nested)
-        })
+      for (const child of _nested) {
+        descendants.set(thisFqn, child)
       }
-      return descendants.get(thisFqn)
+      if (ast.isExtendDeployment(node)) {
+        for (const ancestor of ancestorsFqn(thisFqn)) {
+          for (const child of _nested) {
+            descendants.set(ancestor, child)
+          }
+        }
+      }
+      return descendants.get(thisFqn) ?? []
     }
 
     for (const node of rootNodes) {

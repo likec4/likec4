@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "1.24.0",
+  "version": "1.24.1",
   "license": "MIT",
   "private": true,
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -42,14 +42,14 @@
     "@likec4/core": "workspace:*",
     "json5": "^2.2.3",
     "langium": "3.3.1",
-    "remeda": "^2.20.1"
+    "remeda": "^2.20.2"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.17.17",
     "typescript": "catalog:",
     "unbuild": "^3.3.1",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.6"
   },
   "packageManager": "pnpm@10.4.1"
 }

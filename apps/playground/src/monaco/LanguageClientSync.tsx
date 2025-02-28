@@ -92,6 +92,8 @@ export function LanguageClientSync({ config, wrapper }: {
       editor.setModel(model)
       editor.setSelection(range)
       editor.revealRangeInCenterIfOutsideViewport(range, monaco.editor.ScrollType.Smooth)
+      const nextFilename = model.uri.path.slice(1)
+      playground.changeActiveFile(nextFilename)
     }
   }
 
@@ -221,23 +223,22 @@ export function LanguageClientSync({ config, wrapper }: {
     return () => listeners.forEach(l => l.unsubscribe())
   }, [playground.actor])
 
-  const activeEditor = wrapper.getEditor()
   useEffect(() => {
-    if (!activeEditor) return
-    const listener = activeEditor.onDidChangeModelContent(() => {
-      const model = activeEditor.getModel()
-      if (model) {
-        const filename = model.uri.path.slice(1)
-        const content = model.getValue()
-        playground.send({
-          type: 'monaco.onTextChanged',
-          filename,
-          modified: content,
-        })
-      }
+    if (playgroundState !== 'ready') return
+    const editor = nonNullable(wrapper.getEditor(), 'editor is not ready')
+    const listener = editor.onDidChangeModelContent((contents) => {
+      const activeModel = nonNullable(editor.getModel(), 'active model is not ready')
+      const filename = activeModel.uri.path.slice(1)
+      playground.send({
+        type: 'monaco.onTextChanged',
+        filename,
+        modified: activeModel.getValue(),
+      })
     })
-    return () => listener.dispose()
-  }, [activeEditor, playground.actor])
+    return () => {
+      listener.dispose()
+    }
+  }, [wrapper, workspaceId, playgroundState, playground.actor])
 
   return null
 }

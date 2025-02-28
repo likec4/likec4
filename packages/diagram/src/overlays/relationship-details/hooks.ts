@@ -3,6 +3,7 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo, useTransition } from 'react'
+import type { OverlaysActorRef } from '../overlaysActor'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 
 export const RelationshipDetailsActorContext = createContext<RelationshipDetailsActorRef | null>(null)
@@ -24,6 +25,7 @@ export function useRelationshipDetails() {
   const actor = useRelationshipDetailsActor()
   const [, startTransition] = useTransition()
   return useMemo(() => ({
+    actor,
     getState: () => actor.getSnapshot().context,
     send: actor.send,
     navigateTo: (edgeId: EdgeId) => {
@@ -40,9 +42,11 @@ export function useRelationshipDetails() {
       })
     },
     close: () => {
-      startTransition(() => {
+      if (actor._parent) {
+        ;(actor._parent as OverlaysActorRef)?.send({ type: 'close', actorId: actor.id })
+      } else {
         actor.send({ type: 'close' })
-      })
+      }
     },
   }), [actor])
 }

@@ -1,8 +1,8 @@
 import {
   type Fqn,
+  type LikeC4Model,
   ifilter,
   isAncestor,
-  LikeC4Model,
   nameFromFqn,
   sortParentsFirst,
   toArray,

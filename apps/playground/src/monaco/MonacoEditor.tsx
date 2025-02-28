@@ -14,9 +14,7 @@ const LazyMonacoEditor = memo(() => {
   const playground = usePlayground()
 
   const onActiveEditorChanged = useCallbackRef((filename: string) => {
-    if (playground.getActiveFile().filename !== filename) {
-      playground.changeActiveFile(filename)
-    }
+    playground.changeActiveFile(filename)
   })
 
   const [wrapper, setWrapper] = useState<MonacoEditorLanguageClientWrapper | null>(null)
@@ -37,12 +35,23 @@ const LazyMonacoEditor = memo(() => {
     // Anything else?
   })
 
+  // const onTextChanged = useCallbackRef((textChanges: TextContents) => {
+  //   logger.debug('onTextChanged', { textChanges })
+  //   const { filename, text } = playground.getActiveFile()
+  //   playground.send({
+  //     type: 'monaco.onTextChanged',
+  //     filename,
+  //     modified: textChanges.modified ?? text,
+  //   })
+  // })
+
   return (
     <>
       <MonacoEditorReactComp
         style={{ width: '100%', height: '100%' }}
         wrapperConfig={wrapperConfig}
         onLoad={onLoad}
+        // onTextChanged={onTextChanged}
         onError={err => {
           logger.error(loggable(err))
         }}

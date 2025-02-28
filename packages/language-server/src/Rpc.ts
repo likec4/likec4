@@ -1,12 +1,12 @@
 import { filter, funnel, map, pipe } from 'remeda'
-import { logger } from './logger'
+import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import { type DiagramView, LikeC4Model, nonexhaustive } from '@likec4/core'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver'
 import { isLikeC4LangiumDocument } from './ast'
-import { Scheme } from './likec4lib'
+import { isLikeC4Builtin } from './likec4lib'
 import {
   buildDocuments,
   changeView,
@@ -19,6 +19,8 @@ import {
   validateLayout,
 } from './protocol'
 import { ADisposable } from './utils'
+
+const logger = rootLogger.getChild('rpc')
 
 export class Rpc extends ADisposable {
   constructor(private services: LikeC4Services) {
@@ -41,15 +43,17 @@ export class Rpc extends ADisposable {
 
     const notifyModelParsed = funnel(
       () => {
+        logger.debug`sendNotification ${'onDidChangeModel'}`
         connection.sendNotification(onDidChangeModel, '').catch(e => {
           logger.warn(`[ServerRpc] error sending onDidChangeModel: ${e}`)
           return Promise.resolve()
         })
       },
       {
-        minQuietPeriodMs: 250,
-        maxBurstDurationMs: 1000,
-        minGapMs: 200,
+        triggerAt: 'end',
+        minQuietPeriodMs: 150,
+        maxBurstDurationMs: 500,
+        minGapMs: 300,
       },
     )
 
@@ -58,6 +62,7 @@ export class Rpc extends ADisposable {
     this.onDispose(
       modelBuilder.onModelParsed(() => notifyModelParsed.call()),
       connection.onRequest(fetchComputedModel, async ({ cleanCaches }, cancelToken) => {
+        logger.debug`received request ${'fetchComputedModel'}`
         if (cleanCaches) {
           const all = LangiumDocuments.all.map(d => d.uri).toArray()
           await DocumentBuilder.update(all, [], cancelToken)
@@ -69,14 +74,15 @@ export class Rpc extends ADisposable {
         return { model: null }
       }),
       connection.onRequest(fetchModel, async cancelToken => {
-        const parsed = await modelBuilder.parseModel(cancelToken)
-        return { model: parsed?.model ?? null }
+        const model = await modelBuilder.parseModel(cancelToken)
+        return { model }
       }),
       connection.onRequest(computeView, async ({ viewId }, cancelToken) => {
         const view = await modelBuilder.computeView(viewId, cancelToken)
         return { view }
       }),
       connection.onRequest(layoutView, async ({ viewId }, cancelToken) => {
+        logger.debug`received request ${'layoutView'} of ${viewId}`
         const result = await views.layoutView(viewId, cancelToken)
         return { result }
       }),
@@ -91,9 +97,10 @@ export class Rpc extends ADisposable {
         const changed = docs.map(d => URI.parse(d))
         const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
         const deleted = LangiumDocuments.all
-          .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri) && d.uri.scheme !== Scheme)
-          .map(d => d.uri)
           .toArray()
+          .filter(d => !isLikeC4Builtin(d.uri) && isLikeC4LangiumDocument(d) && notChanged(d.uri))
+          .map(d => d.uri)
+
         logger.debug(
           `[ServerRpc] received request to build:
   changed (total ${changed.length}):${docs.map(d => '\n    - ' + d).join('')}
@@ -136,6 +143,7 @@ export class Rpc extends ADisposable {
         }
       }),
       connection.onRequest(changeView, async (request, _cancelToken) => {
+        logger.debug`received request ${'changeView'} of ${request.viewId}`
         return await modelEditor.applyChange(request)
       }),
       Disposable.create(() => {

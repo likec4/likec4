@@ -1,8 +1,11 @@
-import { invariant } from '@likec4/core'
-import { type LangiumDocument, type Stream, DocumentCache, DocumentState } from 'langium'
+import { DefaultWeakMap } from '@likec4/core/utils'
+import { loggable } from '@likec4/log'
+import { type LangiumDocument, type Stream, DocumentState } from 'langium'
 import { pipe } from 'remeda'
+import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import type { LikeC4DocumentProps, ParsedLikeC4LangiumDocument } from '../ast'
-import { logger } from '../logger'
+import { isLikeC4Builtin } from '../likec4lib'
+import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'
@@ -31,24 +34,33 @@ const DocumentParserFromMixins = pipe(
 export class DocumentParser extends DocumentParserFromMixins {
 }
 
+const logger = rootLogger.getChild('ModelParser')
+
 export class LikeC4ModelParser {
-  private cachedParsers: DocumentCache<string, DocumentParser>
+  protected cachedParsers = new DefaultWeakMap((doc: LangiumDocument) => this.createParser(doc))
 
   constructor(private services: LikeC4Services) {
-    this.cachedParsers = new DocumentCache(services.shared, DocumentState.IndexedReferences)
+    services.shared.workspace.DocumentBuilder.onDocumentPhase(
+      DocumentState.Linked,
+      doc => {
+        try {
+          if (!isLikeC4Builtin(doc.uri)) {
+            this.cachedParsers.set(doc, this.createParser(doc))
+          }
+        } catch (e) {
+          logger.warn(loggable(e))
+        }
+      },
+    )
 
     // We need to clean up cached parser after document is validated
     // Because after that parser takes into account validation results
     services.shared.workspace.DocumentBuilder.onDocumentPhase(
       DocumentState.Validated,
       doc => {
-        try {
-          // Force parser recreation
-          this.cachedParsers.set(doc.uri, 'DocumentParser', this.createParser(doc))
-        } catch (error) {
-          logger.error(`Error caching parser for document ${doc.uri.toString()}`, { error })
+        if (doc.diagnostics?.some(d => d.severity === DiagnosticSeverity.Error)) {
+          this.cachedParsers.delete(doc)
         }
-        return Promise.resolve()
       },
     )
   }
@@ -69,12 +81,10 @@ export class LikeC4ModelParser {
   }
 
   forDocument(doc: LangiumDocument): DocumentParser {
-    invariant(doc.state >= DocumentState.IndexedReferences, `Not a IndexedReferences: ${doc.uri.toString(true)}`)
-    return this.cachedParsers.get(
-      doc.uri,
-      'DocumentParser',
-      () => this.createParser(doc),
-    )
+    if (doc.state < DocumentState.Linked) {
+      logger.warn(`Document ${doc.uri.toString()} is not linked`)
+    }
+    return this.cachedParsers.get(doc)
   }
 
   private createParser(doc: LangiumDocument): DocumentParser {

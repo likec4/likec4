@@ -86,7 +86,7 @@ export class LikeC4Model<M extends AnyAux = LikeC4Model.Any> {
    */
   static makeCompute<M extends AnyParsedLikeC4Model>(parsed: M): (viewsource: LikeC4View) => ComputeViewResult {
     let { views, ...rest } = parsed as Omit<M, '__'>
-    const model = new LikeC4Model(structuredClone({ ...rest, views: {} }))
+    const model = new LikeC4Model({ ...rest, views: {} })
     return (viewsource) => computeView(viewsource, model)
   }
 

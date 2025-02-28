@@ -6,6 +6,7 @@ import { useDebouncedCallback, useSyncedRef, useTimeoutEffect } from '@react-hoo
 import clsx from 'clsx'
 import { type HTMLMotionProps, m } from 'framer-motion'
 import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react'
+import { stopPropagation } from '../../utils'
 import * as css from './Overlay.css'
 
 type OverlayProps = PropsWithChildren<
@@ -65,7 +66,7 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
   return (
     <m.dialog
       ref={dialogRef}
-      className={clsx(css.dialog, classes?.dialog, className)}
+      className={clsx(css.dialog, classes?.dialog, className, RemoveScroll.classNames.fullWidth)}
       initial={{
         '--backdrop-blur': '0px',
         '--backdrop-opacity': '5%',
@@ -92,19 +93,21 @@ export function Overlay({ children, onClose, className, classes, ...rest }: Over
         },
       }}
       onClick={e => {
+        e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
-          e.stopPropagation()
           dialogRef.current?.close()
           return
         }
       }}
+      onDoubleClick={stopPropagation}
+      onPointerDown={stopPropagation}
       onClose={e => {
         e.stopPropagation()
         close()
       }}
       {...rest}
     >
-      <RemoveScroll forwardProps>
+      <RemoveScroll forwardProps removeScrollBar={false}>
         <Box className={clsx(css.body, classes?.body)}>
           {opened && <>{children}</>}
         </Box>

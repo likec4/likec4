@@ -47,11 +47,7 @@ const base = {
   color: true,
   bundle: true,
   treeShaking: true,
-  external: isProduction ? ['vscode'] : [
-    'vscode',
-    '@vscode/extension-telemetry',
-    '@hpcc-js/wasm-graphviz',
-  ],
+  external: ['vscode'],
   define: {
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
   },
@@ -83,7 +79,7 @@ configs.push({
   ],
   target: 'node20',
   platform: 'node',
-  conditions: isProduction ? ['node', 'production'] : ['sources', 'development'],
+  conditions: isProduction ? ['node', 'production'] : ['sources', 'node', 'development'],
 })
 
 // ----------- Browser
@@ -97,7 +93,7 @@ configs.push({
   target: 'es2022',
   platform: 'browser',
   plugins: [nodeModulesPolyfillPlugin()],
-  conditions: isProduction ? ['browser', 'production'] : ['sources', 'development'],
+  conditions: isProduction ? ['browser', 'production'] : ['sources', 'browser', 'development'],
 }, {
   ...base,
   sourcemap: isDev,
