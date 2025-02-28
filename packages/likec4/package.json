@@ -162,7 +162,7 @@
     "merge-error-cause": "^5.0.0",
     "mkdirp": "^3.0.1",
     "nano-spawn": "^0.2.0",
-    "nanostores": "0.11.3",
+    "nanostores": "0.11.4",
     "npm-run-all2": "^7.0.1",
     "p-limit": "^6.2.0",
     "package-up": "^5.0.0",
