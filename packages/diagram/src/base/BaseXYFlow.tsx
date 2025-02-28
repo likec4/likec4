@@ -118,6 +118,7 @@ export const BaseXYFlow = <
       noPanClassName="nopan"
       panOnScroll={pannable}
       panOnDrag={pannable}
+      panActivationKeyCode={null}
       {...(!pannable && {
         selectionKeyCode: null,
       })}

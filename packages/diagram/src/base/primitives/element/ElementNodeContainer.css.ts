@@ -42,5 +42,8 @@ export const container = style({
     [`${reactFlowReducedGraphics} &:after`]: {
       display: 'none',
     },
+    [`:where(.react-flow__node.selectable:not(.dragging)) &`]: {
+      cursor: 'pointer',
+    },
   },
 })

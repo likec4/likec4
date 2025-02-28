@@ -1,11 +1,11 @@
 import {
+  type ComputedView,
   type DiagramView,
   type Element,
   type Fqn,
   type LikeC4View,
   type NodeId,
   type ViewId,
-  ComputedView,
   isDeploymentView,
   isScopedElementView,
 } from '@likec4/core'

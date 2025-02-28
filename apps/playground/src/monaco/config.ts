@@ -1,7 +1,5 @@
-import type * as monaco from '@codingame/monaco-vscode-editor-api'
-import languageConfig from '../../language-configuration.json?raw'
-import textmateGrammar from '../../likec4.tmLanguage.json?raw' // import LikeC4LspWorker from './lsp/likec4.worker?worker'
-
+import type { PlaygroundActorRef } from '$state/types'
+import * as monaco from '@codingame/monaco-vscode-editor-api'
 import getEditorServiceOverride, { type OpenEditor } from '@codingame/monaco-vscode-editor-service-override'
 import {
   RegisteredFileSystemProvider,
@@ -9,8 +7,10 @@ import {
 } from '@codingame/monaco-vscode-files-service-override'
 import getTextmateServiceOverride from '@codingame/monaco-vscode-textmate-service-override'
 import getThemeServiceOverride from '@codingame/monaco-vscode-theme-service-override'
-import { rootLogger } from '@likec4/log'
 import type { LanguageClientConfig, WrapperConfig } from 'monaco-editor-wrapper'
+import { first } from 'remeda'
+import languageConfig from '../../language-configuration.json?raw'
+import textmateGrammar from '../../likec4.tmLanguage.json?raw'
 import { configureMonacoWorkers, loadLikeC4Worker } from './utils'
 
 export type CustomWrapperConfig = WrapperConfig & {
@@ -18,6 +18,7 @@ export type CustomWrapperConfig = WrapperConfig & {
 }
 
 export const createWrapperConfig = (params: {
+  playgroundActor: PlaygroundActorRef
   onActiveEditorChanged?: (filename: string) => void
   getActiveEditor: () => monaco.editor.ICodeEditor | null
 }): CustomWrapperConfig => {
@@ -40,18 +41,19 @@ export const createWrapperConfig = (params: {
     },
   }
 
-  // const ctx = params.playgroundActor.getSnapshot().context
-  // const modified = {
-  //   text: params.initialFile.text,
-  //   uri: '/' + params.initialFile.filename,
-  //   fileExt: 'c4',
-  // }
+  const ctx = params.playgroundActor.getSnapshot().context
+  const modified = {
+    text: ctx.files[ctx.activeFilename] ?? '',
+    uri: '/' + ctx.activeFilename,
+    fileExt: 'c4',
+  }
 
   const fsProvider = new RegisteredFileSystemProvider(false)
   registerFileSystemOverlay(1, fsProvider)
 
   const openEditorFunc: OpenEditor = async (modelRef, opts, _sideBySide) => {
-    const editor = params.getActiveEditor()
+    debugger
+    const editor = first(monaco.editor.getEditors())
     if (!editor) {
       return undefined
     }
@@ -87,6 +89,9 @@ export const createWrapperConfig = (params: {
     editorAppConfig: {
       useDiffEditor: false,
       monacoWorkerFactory: configureMonacoWorkers,
+      codeResources: {
+        modified,
+      },
       editorOptions: {
         codeLens: true,
         'semanticHighlighting.enabled': true,

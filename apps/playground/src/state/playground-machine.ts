@@ -333,7 +333,7 @@ export const playgroundMachine = setup({
               }),
             }),
             cancel('persist'),
-            raise({ type: 'workspace.persist' }, { id: 'persist', delay: 2000 }),
+            raise({ type: 'workspace.persist' }, { id: 'persist', delay: 1000 }),
           ],
         },
         'workspace.changeActiveFile': {

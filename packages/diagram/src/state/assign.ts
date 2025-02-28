@@ -162,7 +162,21 @@ export function updateNavigationHistory({ context, event }: ActionArg): Partial<
     lastOnNavigate,
     viewport,
   } = context
-  const stepCurrent = nonNullable(history[currentIndex])
+  const stepCurrent = history[currentIndex]
+  if (!stepCurrent) {
+    return {
+      navigationHistory: {
+        currentIndex: 0,
+        history: [
+          {
+            viewId: event.view.id,
+            fromNode: null,
+            viewport: { ...viewport },
+          },
+        ],
+      },
+    }
+  }
   if (stepCurrent.viewId !== event.view.id) {
     // Navigation by browser back/forward ?
     if (!lastOnNavigate) {

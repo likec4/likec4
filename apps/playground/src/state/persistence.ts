@@ -1,3 +1,6 @@
+import { invariant } from '@tanstack/react-router'
+import { first, keys } from 'remeda'
+
 export function readWorkspace(key: string): any {
   const value = localStorage.getItem(key)
   return value ? JSON.parse(value) : null
@@ -12,11 +15,15 @@ export const WorkspacePersistence = {
       if (fromStorage) {
         const parsed = JSON.parse(fromStorage) as {
           activeFilename?: string
-          currentFilename: string
+          currentFilename?: string
           title: string
           files: Record<string, string>
         }
-        const activeFilename = parsed.activeFilename ?? parsed.currentFilename
+        let activeFilename = parsed.activeFilename || parsed.currentFilename
+        if (!activeFilename) {
+          activeFilename = first(keys(parsed.files))
+        }
+        invariant(activeFilename, 'activeFilename is required')
         return {
           workspaceId,
           activeFilename,
@@ -46,6 +53,7 @@ export const WorkspacePersistence = {
       `likec4:workspace:${workspace.workspaceId}`,
       JSON.stringify({
         activeFilename: workspace.activeFilename,
+        currentFilename: workspace.activeFilename,
         title: workspace.title,
         files: workspace.files,
       }),

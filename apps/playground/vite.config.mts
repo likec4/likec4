@@ -23,32 +23,21 @@ function devconfig(): UserConfig {
     },
     optimizeDeps: {
       include: [
-        'react',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom',
-        'react-dom/client',
         '@likec4/icons/all',
-        'langium/lsp',
-        'langium',
-        '@codingame/monaco-vscode-api/vscode/src/vs/editor/common/services/editorSimpleWorker',
-        '@codingame/monaco-vscode-api/workers/editor.worker',
-        '@codingame/monaco-vscode-textmate-service-override/worker',
-        '@codingame/monaco-vscode-api',
-        '@codingame/monaco-vscode-editor-api',
         'vscode-textmate',
         'vscode-oniguruma',
-        'vscode',
         'vscode-uri',
         '@hpcc-js/wasm-graphviz',
         'vscode-languageserver/browser',
+        'vscode-languageclient/browser',
         'vscode-languageclient',
         'vscode-languageserver-types',
         'vscode-languageserver',
         '@tabler/icons-react',
-        'framer-motion',
         'framer-motion/dom',
+        'framer-motion',
       ],
+      holdUntilCrawlEnd: false,
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin as any,
@@ -80,7 +69,10 @@ function prebuild(): UserConfig {
     },
     resolve: {
       conditions: ['sources'],
-      alias,
+      alias: {
+        ...alias,
+        '$/monaco': resolve('./src/monaco/index-prod.tsx'),
+      },
       dedupe: ['vscode'],
     },
     mode: 'production',
@@ -164,6 +156,11 @@ function build(): UserConfig {
       cssCodeSplit: false,
       cssMinify: true,
       minify: true,
+      rollupOptions: {
+        output: {
+          compact: true,
+        },
+      },
       // minify: 'terser',
     },
     worker: {

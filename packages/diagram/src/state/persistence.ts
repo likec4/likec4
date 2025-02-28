@@ -9,7 +9,7 @@ export const DiagramToggledFeaturesPersistence = {
       if (fromStorage) {
         return JSON.parse(fromStorage) as Partial<EnabledFeatures>
       }
-      throw new Error(`Workspace ${key} not found`)
+      return null
     } catch (e) {
       console.error(`Error reading fromStorage ${key}:`, e)
       return null
