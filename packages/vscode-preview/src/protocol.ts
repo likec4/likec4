@@ -5,33 +5,33 @@ import type { NotificationType, RequestType } from 'vscode-messenger-common'
  * Notification sent from the extension to the webview when the model is updated.
  */
 export const BroadcastModelUpdate: NotificationType<never> = {
-  method: 'model-update'
+  method: 'model-update',
 }
 
 export const FetchComputedModel: RequestType<never, { model: ComputedLikeC4Model | null }> = {
-  method: 'fetch-computed-model'
+  method: 'fetch-computed-model',
 }
 
 export const FetchDiagramView: RequestType<ViewId, {
   view: DiagramView | null
   error: string | null
 }> = {
-  method: 'fetch-diagram-view'
+  method: 'fetch-diagram-view',
 }
 
 export const OnOpenView: NotificationType<{ viewId: ViewId }> = {
-  method: 'on-open-view'
+  method: 'on-open-view',
 }
 
-export const GetLastClickedNode: RequestType<never, { elementId: Fqn | null }> = {
-  method: 'get-last-clicked-node'
+export const GetLastClickedNode: RequestType<never, { element: Fqn | null; deployment: Fqn | null }> = {
+  method: 'get-last-clicked-node',
 }
 
 export const WebviewMsgs = {
   CloseMe: { method: 'webview:closeMe' } as NotificationType<never>,
   Locate: { method: 'webview:locate' } as NotificationType<LocateParams>,
   NavigateTo: { method: 'webview:navigate' } as NotificationType<{ viewId: ViewId }>,
-  OnChange: { method: 'webview:change' } as NotificationType<{ viewId: ViewId; change: ViewChange }>
+  OnChange: { method: 'webview:change' } as NotificationType<{ viewId: ViewId; change: ViewChange }>,
 }
 
 // export namespace ExtensionToPanel {

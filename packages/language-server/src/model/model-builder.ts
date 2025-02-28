@@ -93,6 +93,7 @@ export class LikeC4ModelBuilder extends ADisposable {
     if (cached) {
       return await Promise.resolve(cached)
     }
+    logger.debug('parseModel')
     if (this.LangiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       logger.debug('parseModel: waiting for documents to be validated')
       await this.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
@@ -115,6 +116,7 @@ export class LikeC4ModelBuilder extends ADisposable {
       if (!parsed) {
         return LikeC4Model.EMPTY
       }
+      logger.debug('unsafeSyncBuildModel')
 
       const {
         views: parsedViews,
@@ -153,12 +155,14 @@ export class LikeC4ModelBuilder extends ADisposable {
     const cache = this.cache as WorkspaceCache<string, LikeC4Model.Computed>
     const cached = cache.get(CACHE_KEY_COMPUTED_MODEL)
     if (cached) {
+      logger.debug('buildLikeC4Model from cache')
       return await Promise.resolve(cached)
     }
     const model = await this.parseModel(cancelToken)
     if (!model) {
       return LikeC4Model.EMPTY
     }
+    logger.debug('buildLikeC4Model')
     return this.unsafeSyncBuildModel()
   }
 
@@ -178,9 +182,10 @@ export class LikeC4ModelBuilder extends ADisposable {
     return cache.get(cacheKey, () => {
       const view = parsed.views[viewId]
       if (!view) {
-        logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
+        logger.warn`computeView: cant find view ${viewId}`
         return null
       }
+      logger.debug`computeView: ${viewId}`
       const computeView = LikeC4Model.makeCompute(parsed)
       const result = computeView(view)
       if (!result.isSuccess) {
