@@ -5,11 +5,6 @@ export default defineBuildConfig({
   stub: false,
   declaration: true,
   rollup: {
-    alias: {
-      entries: {
-        'object-hash': 'object-hash/dist/object_hash.js',
-      },
-    },
     inlineDependencies: true,
     output: {
       hoistTransitiveImports: false,
