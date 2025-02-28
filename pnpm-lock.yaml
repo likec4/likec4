@@ -1194,7 +1194,7 @@ importers:
         specifier: ^0.25.0
         version: 0.25.0
       esbuild-plugins-node-modules-polyfill:
-        specifier: ^1.6.8
+        specifier: ^1.7.0
         version: 1.7.0(esbuild@0.25.0)
       esm-env:
         specifier: ^1.2.2
