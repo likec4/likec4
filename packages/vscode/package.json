@@ -55,9 +55,6 @@
     "color": "#111111",
     "theme": "dark"
   },
-  "extensionKind": [
-    "workspace"
-  ],
   "capabilities": {
     "virtualWorkspaces": true,
     "untrustedWorkspaces": {

@@ -13,12 +13,17 @@ import {
 } from 'vscode-languageclient/node'
 import { activateLanguageClient } from '../activate'
 import { useExtensionLogger } from '../common/useExtensionLogger'
+import { useTelemetry } from '../common/useTelemetry'
 import { globPattern, isVirtual } from '../const'
+import { logger } from '../logger'
 
-export const { activate, deactivate } = defineExtension(() => {
+export const { activate, deactivate } = defineExtension(async () => {
   const { whenReady } = useExtensionLogger()
-  whenReady.then(() => {
-    activateLanguageClient((id, name, props) => {
+  await whenReady
+  logger.debug('node extension')
+  activateLanguageClient(
+    // Create a language client
+    (id, name, props) => {
       const serverModule = extensionContext.value!.asAbsolutePath(
         path.join(
           'dist',
@@ -72,6 +77,10 @@ export const { activate, deactivate } = defineExtension(() => {
       client.start()
 
       return client
-    })
-  })
+    },
+    // On Activated
+    () => {
+      useTelemetry().sendTelemetryEvent('activation', { extensionKind: 'node' })
+    },
+  )
 })

@@ -68,7 +68,7 @@ export function activateLanguageClient(
         state: any,
       ) {
         activate()
-        logger.debug('deserializeWebviewPanel {state}', { state })
+        logger.debug('deserializeWebviewPanel\n{state}', { state })
         preview.deserialize(panel, state)
       }
     }(),
@@ -92,7 +92,7 @@ function activateLc(
   useBuiltinFileSystem()
   useVscodeContext('likec4.activated', true)
   const output = useExtensionLogger()
-  output.info('starting language server')
+  logger.info('starting language server')
   const documentSelector = useDocumentSelector()
 
   client = createLc(
@@ -172,6 +172,7 @@ function activateLc(
     preview.open(viewId)
     telemetry.sendTelemetryErrorEvent('open-preview')
   })
+
   useCommand(commands.locate, async (params: LocateParams) => {
     const loc = await rpc.locate(params)
     if (!loc) return
@@ -187,6 +188,7 @@ function activateLc(
     })
     editor.revealRange(location.range)
   })
+
   useCommand(commands.previewContextOpenSource, async () => {
     const { element, deployment } = await preview.getLastClickedElement()
     if (deployment) {
@@ -249,7 +251,6 @@ function activateLc(
   const telemetry = activateTelemetry(rpc)
 
   logger.info('LikeC4 activated')
-  telemetry.sendTelemetryEvent('activation')
 
   return {
     rpc,

@@ -43,8 +43,17 @@ const lsp = {
 }
 
 export function useRpc(client: BaseLanguageClient) {
+  let previousOperation = Promise.resolve({} as any)
+
+  async function queue<T>(op: () => Promise<T>): Promise<T> {
+    const opPromise = previousOperation.then(op)
+    // ignore failures
+    previousOperation = opPromise.catch(() => ({} as any))
+    return await opPromise
+  }
+
   async function fetchComputedModel(cleanCaches?: true) {
-    const result = await client.sendRequest(lsp.fetchComputedModel, { cleanCaches })
+    const result = await queue(() => client.sendRequest(lsp.fetchComputedModel, { cleanCaches }))
     if (result.model) {
       computedModel.value = result.model
       nextTick(() => triggerRef(computedModel))
@@ -56,11 +65,8 @@ export function useRpc(client: BaseLanguageClient) {
     useDisposable(client.onNotification(lsp.onDidChangeModel, cb))
   }
 
-  let previousOperation = Promise.resolve({} as any)
   async function layoutView(viewId: ViewID) {
-    const op = previousOperation.then(async () => await client.sendRequest(lsp.layoutView, { viewId }))
-    previousOperation = op.catch(() => ({} as any))
-    const { result } = await op
+    const { result } = await queue(() => client.sendRequest(lsp.layoutView, { viewId }))
     return result
   }
 
