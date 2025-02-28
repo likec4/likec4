@@ -96,10 +96,8 @@
     "vitest:ui": "vitest --no-isolate --ui",
     "test:watch": "vitest"
   },
-  "dependencies": {
-    "@hpcc-js/wasm-graphviz": "1.7.0"
-  },
   "devDependencies": {
+    "@hpcc-js/wasm-graphviz": "1.7.0",
     "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/layouts": "workspace:*",
@@ -119,6 +117,7 @@
     "langium-cli": "3.3.0",
     "natural-compare-lite": "^1.4.0",
     "p-debounce": "^4.0.0",
+    "pretty-ms": "^9.2.0",
     "remeda": "^2.20.2",
     "strip-indent": "^4.0.0",
     "tsx": "~4.19.3",

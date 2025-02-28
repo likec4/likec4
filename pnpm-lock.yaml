@@ -688,11 +688,10 @@ importers:
         version: 5.7.3
 
   packages/language-server:
-    dependencies:
+    devDependencies:
       '@hpcc-js/wasm-graphviz':
         specifier: 1.7.0
         version: 1.7.0
-    devDependencies:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -750,6 +749,9 @@ importers:
       p-debounce:
         specifier: ^4.0.0
         version: 4.0.0
+      pretty-ms:
+        specifier: ^9.2.0
+        version: 9.2.0
       remeda:
         specifier: ^2.20.2
         version: 2.21.0
@@ -1250,6 +1252,9 @@ importers:
       pretty-ms:
         specifier: ^9.2.0
         version: 9.2.0
+      reactive-vscode:
+        specifier: ^0.2.13
+        version: 0.2.13(@types/vscode@1.97.0)
       remeda:
         specifier: ^2.20.2
         version: 2.21.0
@@ -1271,6 +1276,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
+      vscode-ext-gen:
+        specifier: ^1.0.2
+        version: 1.0.2
       vscode-jsonrpc:
         specifier: 8.2.0
         version: 8.2.0
@@ -2919,6 +2927,9 @@ packages:
     peerDependenciesMeta:
       js-cookie:
         optional: true
+
+  '@reactive-vscode/reactivity@0.2.13':
+    resolution: {integrity: sha512-2GZlDFYS2dNqAuDiArXEMszcwOUPoybChH7ltGQldqCyeskqtWTYJ54mW477Qc/Rl6NG4N+IeQ1d22nO7uhRAw==}
 
   '@rollup/plugin-alias@5.1.1':
     resolution: {integrity: sha512-PR9zDb+rOzkRb2VD+EuKB7UC41vU5DIwZ5qqCpk0KJudcWAyi8rvYOhS7+L5aZCspw1stTViLgN5v6FF1p5cgQ==}
@@ -6594,6 +6605,11 @@ packages:
     resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
     engines: {node: '>=0.10.0'}
 
+  reactive-vscode@0.2.13:
+    resolution: {integrity: sha512-c/7cAUKAmIqUJJHIVY6DAOpwTX18uDx3WgVLA9+iF8JUxCqvbivbH18LSnYxSeBiit9yIyvzdGHnXK7lG8W9yA==}
+    peerDependencies:
+      '@types/vscode': ^1.89.0
+
   read-package-json-fast@4.0.0:
     resolution: {integrity: sha512-qpt8EwugBWDw2cgE2W+/3oxC+KTez2uSVR8JU9Q36TXPAGCaozfQUs59v4j4GFpWTaw0i6hAZSvOmu1J0uOEUg==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -7785,6 +7801,10 @@ packages:
 
   vscode-css-languageservice@6.3.2:
     resolution: {integrity: sha512-GEpPxrUTAeXWdZWHev1OJU9lz2Q2/PPBxQ2TIRmLGvQiH3WZbqaNoute0n0ewxlgtjzTW3AKZT+NHySk5Rf4Eg==}
+
+  vscode-ext-gen@1.0.2:
+    resolution: {integrity: sha512-CgKGhGvO4Zpz87v3LRmDLtM1FaMVilJCy7fwKzxvrRnhUPTBgj9zkjlPM8lcVAq5vm87v9V8HzVer9COtU5bNA==}
+    hasBin: true
 
   vscode-html-languageservice@5.3.1:
     resolution: {integrity: sha512-ysUh4hFeW/WOWz/TO9gm08xigiSsV/FOAZ+DolgJfeLftna54YdmZ4A+lIn46RbdO3/Qv5QHTn1ZGqmrXQhZyA==}
@@ -10074,6 +10094,8 @@ snapshots:
       '@react-hookz/deep-equal': 3.0.3
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
+
+  '@reactive-vscode/reactivity@0.2.13': {}
 
   '@rollup/plugin-alias@5.1.1(rollup@4.34.6)':
     optionalDependencies:
@@ -14618,6 +14640,11 @@ snapshots:
 
   react@19.0.0: {}
 
+  reactive-vscode@0.2.13(@types/vscode@1.97.0):
+    dependencies:
+      '@reactive-vscode/reactivity': 0.2.13
+      '@types/vscode': 1.97.0
+
   read-package-json-fast@4.0.0:
     dependencies:
       json-parse-even-better-errors: 4.0.0
@@ -15972,6 +15999,10 @@ snapshots:
       vscode-languageserver-textdocument: 1.0.12
       vscode-languageserver-types: 3.17.5
       vscode-uri: 3.1.0
+
+  vscode-ext-gen@1.0.2:
+    dependencies:
+      cac: 6.7.14
 
   vscode-html-languageservice@5.3.1:
     dependencies:

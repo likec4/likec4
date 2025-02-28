@@ -1,5 +1,5 @@
 import { filter, funnel, map, pipe } from 'remeda'
-import { logger } from './logger'
+import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import { type DiagramView, LikeC4Model, nonexhaustive } from '@likec4/core'
@@ -19,6 +19,8 @@ import {
   validateLayout,
 } from './protocol'
 import { ADisposable } from './utils'
+
+const logger = rootLogger.getChild('rpc')
 
 export class Rpc extends ADisposable {
   constructor(private services: LikeC4Services) {
@@ -41,14 +43,17 @@ export class Rpc extends ADisposable {
 
     const notifyModelParsed = funnel(
       () => {
+        logger.debug`sendNotification ${'onDidChangeModel'}`
         connection.sendNotification(onDidChangeModel, '').catch(e => {
           logger.warn(`[ServerRpc] error sending onDidChangeModel: ${e}`)
           return Promise.resolve()
         })
       },
       {
-        triggerAt: 'both',
-        minGapMs: 350,
+        triggerAt: 'end',
+        minQuietPeriodMs: 150,
+        maxBurstDurationMs: 500,
+        minGapMs: 300,
       },
     )
 
@@ -57,6 +62,7 @@ export class Rpc extends ADisposable {
     this.onDispose(
       modelBuilder.onModelParsed(() => notifyModelParsed.call()),
       connection.onRequest(fetchComputedModel, async ({ cleanCaches }, cancelToken) => {
+        logger.debug`received request ${'fetchComputedModel'}`
         if (cleanCaches) {
           const all = LangiumDocuments.all.map(d => d.uri).toArray()
           await DocumentBuilder.update(all, [], cancelToken)
@@ -76,6 +82,7 @@ export class Rpc extends ADisposable {
         return { view }
       }),
       connection.onRequest(layoutView, async ({ viewId }, cancelToken) => {
+        logger.debug`received request ${'layoutView'} of ${viewId}`
         const result = await views.layoutView(viewId, cancelToken)
         return { result }
       }),
@@ -136,6 +143,7 @@ export class Rpc extends ADisposable {
         }
       }),
       connection.onRequest(changeView, async (request, _cancelToken) => {
+        logger.debug`received request ${'changeView'} of ${request.viewId}`
         return await modelEditor.applyChange(request)
       }),
       Disposable.create(() => {

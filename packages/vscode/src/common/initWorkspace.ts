@@ -5,7 +5,7 @@ import { globPattern, isVirtual, isWebUi } from '../const'
 import { logger, logWarn } from '../logger'
 import type { Rpc } from '../Rpc'
 
-// LSP web extensions does not have access to the file system (even virtual)
+// LSP web extensions does not have access to the file system
 // so we do this trick (find all files and open them)
 export async function initWorkspace(rpc: Rpc) {
   try {

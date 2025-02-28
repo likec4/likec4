@@ -1,8 +1,10 @@
 import type { ComputedView, DiagramView, OverviewGraph, ViewId } from '@likec4/core'
 import { GraphvizLayouter } from '@likec4/layouts'
+import { loggable } from '@likec4/log'
 import { type Cancellation, type WorkspaceCache } from 'langium'
+import prettyMs from 'pretty-ms'
 import { values } from 'remeda'
-import { logError, logWarnError } from '../logger'
+import { logError, logger as rootLogger, logWarnError } from '../logger'
 import { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
 
@@ -16,6 +18,8 @@ type GraphvizSvgOut = {
   dot: string
   svg: string
 }
+
+const logger = rootLogger.getChild('Views')
 
 export class LikeC4Views {
   private cache = new WeakMap<ComputedView, GraphvizOut>()
@@ -41,6 +45,7 @@ export class LikeC4Views {
     if (views.length === 0) {
       return []
     }
+    logger.debug`layoutAll: ${views.length} views`
     const results = [] as GraphvizOut[]
     const tasks = [] as Promise<GraphvizOut>[]
     for (const view of views) {
@@ -64,6 +69,12 @@ export class LikeC4Views {
         results.push(task.value)
       }
     }
+    if (results.length !== views.length) {
+      logger.warn`layouted ${results.length} of ${views.length} views`
+    } else if (results.length > 0) {
+      logger.debug`layouted all ${results.length} views`
+    }
+
     return results
   }
 
@@ -71,20 +82,24 @@ export class LikeC4Views {
     const model = await this.ModelBuilder.buildLikeC4Model(cancelToken)
     const view = model.findView(viewId)?.$view
     if (!view) {
+      logger.warn`layoutView ${viewId} not found`
       return null
     }
     let cached = this.cache.get(view)
     if (cached) {
+      logger.debug`layout ${viewId} from cache`
       return await Promise.resolve(cached)
     }
     try {
+      const start = performance.now()
       const result = await this.layouter.layout(view)
       this.viewsWithReportedErrors.delete(viewId)
       this.cache.set(view, result)
+      logger.debug(`layout {viewId} ready in ${prettyMs(performance.now() - start)}`, { viewId })
       return result
     } catch (e) {
       if (!this.viewsWithReportedErrors.has(viewId)) {
-        const errMessage = e instanceof Error ? e.message : '' + e
+        const errMessage = loggable(e)
         this.services.shared.lsp.Connection?.window.showErrorMessage(`LikeC4: ${errMessage}`)
         this.viewsWithReportedErrors.add(viewId)
         logError(e)
